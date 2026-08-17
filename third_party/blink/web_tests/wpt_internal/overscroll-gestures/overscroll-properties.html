@@ -9,7 +9,7 @@
   <div id=area1 overscrollarea></div>
 </div>
 
-<div id=container2 overscrollcontainer="overlay">
+<div id=container2 overscrollcontainer style="overscroll-container-type: overlay">
   <div id=area2></div>
   <button command="toggle-overscroll" commandfor="area2"></button>
 </div>
@@ -35,10 +35,17 @@ test(() => {
 
 test(() => {
   assert_equals(container1.overscrollcontainer, 'auto');
-  assert_equals(container2.overscrollcontainer, 'overlay');
+  assert_equals(container2.overscrollcontainer, 'auto', 'invalid property value returns auto');
   assert_equals(container3.overscrollcontainer, 'auto', 'invalid property value returns auto');
   assert_equals(container4.overscrollcontainer, null, 'missing property is reflected');
 }, "HTMLElement overscrollcontainer property value");
+
+test(() => {
+  assert_equals(getComputedStyle(container1).overscrollContainerType, 'auto');
+  assert_equals(getComputedStyle(container2).overscrollContainerType, 'overlay');
+  assert_equals(getComputedStyle(container3).overscrollContainerType, 'auto');
+  assert_equals(getComputedStyle(container4).overscrollContainerType, 'auto');
+}, "overscroll-container-type CSS property computed style");
 
 test(() => {
   target.overscrollcontainer = '';

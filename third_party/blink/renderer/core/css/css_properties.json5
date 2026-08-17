@@ -4964,13 +4964,13 @@
       invalidate: ["box-paint-property", "layout", "paint"],
     },
     {
-      name: "-internal-overscroll-area",
+      name: "overscroll-container-type",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
-      keywords: ["none", "auto", "overlay"],
+      keywords: ["none", "auto", "push", "overlay"],
       typedom_types: ["Keyword"],
-      default_value: "none",
+      default_value: "auto",
       runtime_flag: "OverscrollGestures",
     },
     {
@@ -5020,6 +5020,16 @@
       },
       invalidate: ["box-paint-property"],
       valid_for_permission_element: true,
+    },
+    {
+      name: "-internal-overscroll-container",
+      property_methods: ["CSSValueFromComputedStyleInternal"],
+      field_group: "*",
+      field_template: "keyword",
+      keywords: ["none", "auto"],
+      typedom_types: ["Keyword"],
+      default_value: "none",
+      runtime_flag: "OverscrollGestures",
     },
     {
       name: "-internal-overscroll-position",

@@ -2598,11 +2598,9 @@ select optgroup optgroup {
 }
 
 [overscrollcontainer] {
-  -internal-overscroll-area: auto;
+  -internal-overscroll-container: auto;
 }
-[overscrollcontainer="overlay"] {
-  -internal-overscroll-area: overlay;
-}
+
 [overscrollcontainer] > [overscrollarea] {
   -internal-overscroll-position: auto;
 }

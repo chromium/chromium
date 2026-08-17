@@ -3902,7 +3902,7 @@ PhysicalOffset LayoutObject::OffsetFromOverscrollContainer(
     MapCoordinatesFlags mode) const {
   // If either container is not a shifting overscroll area container or we need
   // to ignore scroll offsets, then we can early out.
-  if (container->InternalOverscrollArea() != EInternalOverscrollArea::kAuto ||
+  if (!container->IsContentMovingOverscrollContainer() ||
       mode.Has(MapCoordinatesMode::kIgnoreScrollOffset)) {
     return PhysicalOffset();
   }

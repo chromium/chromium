@@ -1231,15 +1231,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
         element->GetDocument().IsInMainFrame()) {
       builder.SetBackdropFilter(FilterOperations());
     }
-    if (builder.InternalOverscrollArea() != EInternalOverscrollArea::kNone) {
-      // TODO(crbug.com/467112943): Layout containment is currently forced to
-      // ensure that the container of the overscroll areas actually contains
-      // the overscroll areas. However, requiring layout containment is
-      // overly restrictive to the child content that can be used within
-      // the scroller. We should remove this requirement while ensure they are
-      // layout children of the container element.
-      builder.SetContain(builder.Contain() | kContainsLayout);
-    }
   }
 
   // We don't adjust the first letter style earlier because we may change the

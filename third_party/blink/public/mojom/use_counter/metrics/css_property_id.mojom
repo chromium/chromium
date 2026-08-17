@@ -48,7 +48,7 @@ enum CSSSampleId {
     kInternalForcedVisitedColor = 0,
     kInternalOverflowBlock = 0,
     kInternalOverflowInline = 0,
-    kInternalOverscrollArea = 0,
+    kInternalOverscrollContainer = 0,
     kInternalOverscrollPosition = 0,
     kInternalUnbounded = 0,
 
@@ -1035,6 +1035,7 @@ enum CSSSampleId {
     kWindowDrag = 962,
     kMaxContentSizing = 963,
     kTextDecorationInset = 964,
+    kOverscrollContainerType = 965,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

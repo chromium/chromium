@@ -403,6 +403,7 @@ overscrollBehaviorBlock
 overscrollBehaviorInline
 overscrollBehaviorX
 overscrollBehaviorY
+overscrollContainerType
 pad
 padding
 paddingBlock

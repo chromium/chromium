@@ -3307,8 +3307,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
             pseudo_element->UltimateOriginatingElement()
                     .GetOverscrollContainer()
                     ->GetComputedStyle()
-                    ->InternalOverscrollArea() ==
-                EInternalOverscrollArea::kOverlay);
+                    ->EffectiveOverscrollContainerType() ==
+                EOverscrollContainerType::kOverlay);
       }
     } else {
       OnClearClip(properties_->ClearOverflowClip());
@@ -3451,8 +3451,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateContentTranslation() {
     OverscrollAreaTracker* overscroll_area_tracker =
         overscroll_container->GetOverscrollAreaTracker();
     if (!overscroll_area_tracker ||
-        overscroll_container->GetLayoutBox()->InternalOverscrollArea() !=
-            EInternalOverscrollArea::kAuto) {
+        !overscroll_container->GetLayoutBox()
+             ->IsContentMovingOverscrollContainer()) {
       OnClearTransform(properties_->ClearContentTranslation());
       return;
     }
@@ -3511,8 +3511,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
             pseudo_element->UltimateOriginatingElement()
                     .GetOverscrollContainer()
                     ->GetComputedStyle()
-                    ->InternalOverscrollArea() ==
-                EInternalOverscrollArea::kOverlay);
+                    ->EffectiveOverscrollContainerType() ==
+                EOverscrollContainerType::kOverlay);
       }
       object_.GetFrameView()->AddScrollableAreaWithScrollNode(
           *To<LayoutBox>(object_).GetScrollableArea());

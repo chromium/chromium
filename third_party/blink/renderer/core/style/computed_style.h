@@ -1636,11 +1636,13 @@ class ComputedStyle final : public ComputedStyleBase {
   // the LayoutObject is ineligible for the given containment type. See
   // |LayoutObject::IsEligibleForSizeContainment| and similar functions.
 
-  static unsigned EffectiveContainment(unsigned contain,
-                                       unsigned container_type,
-                                       EContentVisibility content_visibility,
-                                       bool skips_contents,
-                                       bool has_size_containment_for_vt_scope) {
+  static unsigned EffectiveContainment(
+      unsigned contain,
+      unsigned container_type,
+      EContentVisibility content_visibility,
+      bool skips_contents,
+      bool has_size_containment_for_vt_scope,
+      EOverscrollContainerType overscroll_container_type) {
     unsigned effective = contain;
 
     if (container_type & kContainerTypeInlineSize) {
@@ -1664,6 +1666,15 @@ class ComputedStyle final : public ComputedStyleBase {
                                ScopedViewTransitionSizeContainmentEnabled())) {
       effective |= kContainsSize;
     }
+    if (overscroll_container_type != EOverscrollContainerType::kNone) {
+      // TODO(crbug.com/467112943): Layout containment is currently forced to
+      // ensure that the container of the overscroll areas actually contains
+      // the overscroll areas. However, requiring layout containment is
+      // overly restrictive to the child content that can be used within
+      // the scroller. We should remove this requirement while ensuring they are
+      // layout children of the container element.
+      effective |= kContainsLayout;
+    }
 
     return effective;
   }
@@ -1673,7 +1684,8 @@ class ComputedStyle final : public ComputedStyleBase {
         Contain(), ContainerType(), ContentVisibility(), SkipsContents(),
         HasSizeContainmentForViewTransitionScope() &&
             RuntimeEnabledFeatures::
-                ScopedViewTransitionSizeContainmentEnabled());
+                ScopedViewTransitionSizeContainmentEnabled(),
+        EffectiveOverscrollContainerType());
   }
 
   bool ContainsStyle() const { return EffectiveContainment() & kContainsStyle; }
@@ -2506,9 +2518,6 @@ class ComputedStyle final : public ComputedStyleBase {
         pseudo == kPseudoIdScrollButtonBlockEnd) {
       return HasPseudoElementStyle(kPseudoIdScrollButton);
     }
-    if (pseudo == kPseudoIdOverscrollAreaParent) {
-      return IsInternalOverscrollArea();
-    }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
     }
@@ -2622,9 +2631,19 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool HasBaseEffectiveAppearance() const;
 
-  bool IsInternalOverscrollArea() const {
-    return InternalOverscrollArea() != EInternalOverscrollArea::kNone;
+  EOverscrollContainerType EffectiveOverscrollContainerType() const {
+    if (InternalOverscrollContainer() == EInternalOverscrollContainer::kNone) {
+      return EOverscrollContainerType::kNone;
+    }
+    return OverscrollContainerType();
   }
+
+  bool IsContentMovingOverscrollContainer() const {
+    EOverscrollContainerType type = EffectiveOverscrollContainerType();
+    return type == EOverscrollContainerType::kAuto ||
+           type == EOverscrollContainerType::kPush;
+  }
+
   bool IsInternalOverscrollPositionAuto() const {
     return InternalOverscrollPosition() == EInternalOverscrollPosition::kAuto;
   }
@@ -3174,7 +3193,8 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
         Contain(), ContainerType(), ContentVisibility(), SkipsContents(),
         HasSizeContainmentForViewTransitionScope() &&
             RuntimeEnabledFeatures::
-                ScopedViewTransitionSizeContainmentEnabled());
+                ScopedViewTransitionSizeContainmentEnabled(),
+        EffectiveOverscrollContainerType());
     return ComputedStyle::ShouldApplyAnyContainment(element, GetDisplayStyle(),
                                                     effective_containment);
   }
@@ -3385,6 +3405,14 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   bool ScrollsOverflow() const {
     return ComputedStyle::ScrollsOverflow(OverflowX()) ||
            ComputedStyle::ScrollsOverflow(OverflowY());
+  }
+
+  // overscroll
+  EOverscrollContainerType EffectiveOverscrollContainerType() const {
+    if (InternalOverscrollContainer() == EInternalOverscrollContainer::kNone) {
+      return EOverscrollContainerType::kNone;
+    }
+    return OverscrollContainerType();
   }
 
   // padding-*

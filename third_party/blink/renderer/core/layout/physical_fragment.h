@@ -410,8 +410,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // True if this is a non-overlay overscroll container which can have
   // its contents shifted by its ::overscroll-area-parents.
   bool IsNonOverlayOverscrollScrollContainer() const {
-    return IsCSSBox() && layout_object_->InternalOverscrollArea() ==
-                             EInternalOverscrollArea::kAuto;
+    return IsCSSBox() && layout_object_->IsContentMovingOverscrollContainer();
   }
 
   // Return true if the given object is the effective root scroller in its

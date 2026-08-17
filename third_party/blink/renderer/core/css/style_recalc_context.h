@@ -124,9 +124,6 @@ class CORE_EXPORT StyleRecalcContext {
 
   // True if this element has a container-type:anchored ancestor.
   bool has_anchored_container = false;
-
-  // True if the direct parent of this element is an overscroll container.
-  bool parent_is_overscroll_container = false;
 };
 
 }  // namespace blink

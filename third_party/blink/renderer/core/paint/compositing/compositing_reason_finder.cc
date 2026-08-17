@@ -518,7 +518,7 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
 
   // TODO(crbug.com/486987060): Support raster inducing scroll on non-overlay
   // overscroll areas.
-  if (object.InternalOverscrollArea() == EInternalOverscrollArea::kAuto) {
+  if (object.IsContentMovingOverscrollContainer()) {
     return true;
   }
 

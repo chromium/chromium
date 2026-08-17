@@ -5685,7 +5685,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
   // also clear GetOverscrollContainer() on `this`).
   bool is_valid_overscroll_area =
       new_style && new_style->IsInternalOverscrollPositionAuto() &&
-      style_recalc_context.parent_is_overscroll_container &&
+      parent_style &&
+      parent_style->EffectiveOverscrollContainerType() !=
+          EOverscrollContainerType::kNone &&
       GetDocument().IsOverscrollCommandTarget(*this);
   Element* parent = parentElement();
 

@@ -2152,5 +2152,9 @@
 
     // max-content-sizing
     "shrink-to-fit",
+
+    // overscroll-container-type
+    // "none", "auto", "overlay" already exist above
+    "push",
   ],
 }

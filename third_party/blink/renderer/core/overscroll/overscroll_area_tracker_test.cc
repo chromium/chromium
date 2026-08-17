@@ -835,7 +835,7 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollOverlayPropertyTrees) {
         overflow: auto;
       }
     </style>
-    <div id="container" overscrollcontainer=overlay>
+    <div id="container" overscrollcontainer style="overscroll-container-type: overlay">
       <div id="foo" overscrollarea></div>
       <div id="bar" overscrollarea></div>
     </div>
@@ -1310,6 +1310,46 @@ TEST_F(OverscrollAreaTrackerTest,
   LayoutObject* menu_layout = menu->GetLayoutObject();
   ASSERT_TRUE(menu_layout);
   EXPECT_EQ(menu_layout->Parent(), parent->GetLayoutObject());
+}
+
+TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerTypeNone) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container {
+        overflow: auto;
+        overscroll-container-type: none;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="foo" overscrollarea></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="foo"></button>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* container = GetElementById("container");
+  Element* foo = GetElementById("foo");
+
+  EXPECT_FALSE(container->GetLayoutObject()->IsOverscrollContainer());
+  EXPECT_FALSE(foo->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  EXPECT_FALSE(container->GetOverscrollAreaTracker());
+
+  container->SetInlineStyleProperty(CSSPropertyID::kOverscrollContainerType,
+                                    "auto");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(container->GetLayoutObject()->IsOverscrollContainer());
+  EXPECT_TRUE(foo->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  EXPECT_TRUE(container->GetOverscrollAreaTracker());
+
+  container->SetInlineStyleProperty(CSSPropertyID::kOverscrollContainerType,
+                                    "none");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(container->GetLayoutObject()->IsOverscrollContainer());
+  EXPECT_FALSE(foo->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  EXPECT_TRUE(
+      container->GetOverscrollAreaTracker()->DOMSortedElements().empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

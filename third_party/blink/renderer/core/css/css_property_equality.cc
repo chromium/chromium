@@ -697,6 +697,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.OverscrollBehaviorX() == b.OverscrollBehaviorX();
     case CSSPropertyID::kOverscrollBehaviorY:
       return a.OverscrollBehaviorY() == b.OverscrollBehaviorY();
+    case CSSPropertyID::kOverscrollContainerType:
+      return a.OverscrollContainerType() == b.OverscrollContainerType();
     case CSSPropertyID::kPaddingBottom:
       return a.PaddingBottom() == b.PaddingBottom();
     case CSSPropertyID::kPaddingLeft:
@@ -1350,7 +1352,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kInternalForcedColor:
     case CSSPropertyID::kInternalForcedOutlineColor:
     case CSSPropertyID::kInternalForcedVisitedColor:
-    case CSSPropertyID::kInternalOverscrollArea:
+    case CSSPropertyID::kInternalOverscrollContainer:
     case CSSPropertyID::kInternalOverscrollPosition:
     case CSSPropertyID::kInternalUnbounded:
     case CSSPropertyID::kInternalVisitedBackgroundColor:
