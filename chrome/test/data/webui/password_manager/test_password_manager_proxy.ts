@@ -106,6 +106,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'revokeActorLoginPermission',
       'requestChangePassword',
       'stopPasswordChange',
+      'openPasswordChangeTab',
       'sharePassword',
       'showAddShortcutDialog',
       'showLastExportedFileInShell',
@@ -470,6 +471,10 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   stopPasswordChange(): void {
     this.methodCalled('stopPasswordChange');
+  }
+
+  openPasswordChangeTab(id: number): void {
+    this.methodCalled('openPasswordChangeTab', id);
   }
 
   getPasswordManagerActionableError(): Promise<PasswordManagerActionableError> {

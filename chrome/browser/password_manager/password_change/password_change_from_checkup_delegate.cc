@@ -25,6 +25,7 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   if (!web_contents) {
     return;
   }
+  web_contents_ = web_contents;
   state_change_callback_ = std::move(callback);
 
   if (!actuator_) {
@@ -75,6 +76,12 @@ void PasswordChangeFromCheckupDelegate::OnActuationStateChanged(
     case PasswordChangeActuator::State::kOtpDetected:
       state_change_callback_.Run(PasswordAutomaticChangeState::kError);
       break;
+  }
+}
+
+void PasswordChangeFromCheckupDelegate::OpenActuationTab() {
+  if (actuator_) {
+    actuator_->OpenPasswordChangeTab(web_contents_.get());
   }
 }
 

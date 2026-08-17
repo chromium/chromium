@@ -246,4 +246,15 @@ TEST_F(PasswordChangeFromCheckupDelegateTest,
   local_delegate.reset();
 }
 
+TEST_F(PasswordChangeFromCheckupDelegateTest, OpenActuationTabCallsActuator) {
+  base::WeakPtr<MockPasswordChangeActuator> mock_actuator =
+      InjectMockActuator();
+  EXPECT_CALL(*mock_actuator, OpenPasswordChangeTab(web_contents()));
+
+  delegate()->StartPasswordChangeFlow(CreateTestCredential(),
+                                      web_contents()->GetWeakPtr());
+  delegate()->OpenActuationTab();
+  delegate()->Stop(actor::ActorTask::StoppedReason::kStoppedByUser);
+}
+
 }  // namespace

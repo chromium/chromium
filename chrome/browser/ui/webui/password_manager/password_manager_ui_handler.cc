@@ -370,11 +370,12 @@ void PasswordManagerUIHandler::StartPasswordChange(int credential_id) {
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   auto* service = PasswordChangeServiceFactory::GetForProfile(profile);
   if (service) {
-    service->StartPasswordChangeFromCheckup(
-        std::move(stored_credentials.front()), web_contents_,
-        base::BindRepeating(
-            &PasswordManagerUIHandler::OnPasswordAutomaticChangeStateUpdated,
-            weak_ptr_factory_.GetWeakPtr(), credential_id));
+    password_change_from_checkup_delegates_[credential_id] =
+        service->StartPasswordChangeFromCheckup(
+            std::move(stored_credentials.front()), web_contents_,
+            base::BindRepeating(&PasswordManagerUIHandler::
+                                    OnPasswordAutomaticChangeStateUpdated,
+                                weak_ptr_factory_.GetWeakPtr(), credential_id));
   }
 }
 
@@ -387,6 +388,16 @@ void PasswordManagerUIHandler::StopPasswordChange() {
   auto* service = PasswordChangeServiceFactory::GetForProfile(profile);
   if (service) {
     service->StopPasswordChangeFromCheckup();
+  }
+}
+
+void PasswordManagerUIHandler::OpenPasswordChangeTab(int credential_id) {
+  CHECK(base::FeatureList::IsEnabled(
+      password_change::features::kPasswordChangeWithGlic));
+  CHECK(web_contents_);
+  auto it = password_change_from_checkup_delegates_.find(credential_id);
+  if (it != password_change_from_checkup_delegates_.end() && it->second) {
+    it->second->OpenActuationTab();
   }
 }
 

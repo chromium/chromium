@@ -57,6 +57,12 @@ class PasswordChangeFromCheckupDelegate
 
   std::u16string generated_password() const;
 
+  void OpenActuationTab();
+
+  base::WeakPtr<PasswordChangeFromCheckupDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
 #if defined(UNIT_TEST)
   void set_actuator_for_testing(
       std::unique_ptr<PasswordChangeActuator> actuator) {
@@ -68,6 +74,9 @@ class PasswordChangeFromCheckupDelegate
  private:
   std::unique_ptr<PasswordChangeActuator> actuator_;
   StateChangeCallback state_change_callback_;
+  base::WeakPtr<content::WebContents> web_contents_;
+  base::WeakPtrFactory<PasswordChangeFromCheckupDelegate> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_CHANGE_PASSWORD_CHANGE_FROM_CHECKUP_DELEGATE_H_

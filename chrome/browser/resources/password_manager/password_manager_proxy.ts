@@ -466,6 +466,12 @@ export interface PasswordManagerProxy {
   stopPasswordChange(): void;
 
   /**
+   * Opens/activates the tab where the automatic password change flow is
+   * running.
+   */
+  openPasswordChangeTab(id: number): void;
+
+  /**
    * Returns the current actionable error.
    */
   getPasswordManagerActionableError(): Promise<PasswordManagerActionableError>;
@@ -974,6 +980,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   stopPasswordChange(): void {
     this.handler.stopPasswordChange();
+  }
+
+  openPasswordChangeTab(id: number): void {
+    this.handler.openPasswordChangeTab(id);
   }
 
   getPasswordManagerActionableError(): Promise<PasswordManagerActionableError> {

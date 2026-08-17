@@ -168,6 +168,10 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
     this.isCancelDisabled_ = false;
   }
 
+  private onOpenInNewClick_() {
+    PasswordManagerImpl.getInstance().openPasswordChangeTab(this.item.id);
+  }
+
   private onCancelAutoChangeClick_() {
     this.isCancelDisabled_ = true;
     PasswordManagerImpl.getInstance().stopPasswordChange();
@@ -230,6 +234,10 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
     return this.i18n('moreActionsAriaDescription', this.getGroupName_());
   }
 
+  private getOpenInNewButtonAriaLabel_(): string {
+    return this.i18n('changePasswordAriaDescription', this.getGroupName_());
+  }
+
   private isAutoChangePasswordIdle_(state: PasswordAutomaticChangeState):
       boolean {
     return state === PasswordAutomaticChangeState.kInactive;
@@ -239,6 +247,11 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
     return state !== PasswordAutomaticChangeState.kAttemptingSignIn &&
       state !== PasswordAutomaticChangeState.kChangingPassword &&
       state !== PasswordAutomaticChangeState.kConfirmingChangedPassword;
+  }
+
+  private shouldShowOpenInNew_(state: PasswordAutomaticChangeState): boolean {
+    return state !== PasswordAutomaticChangeState.kInactive &&
+        state !== PasswordAutomaticChangeState.kPasswordChangedSuccessfully;
   }
 
   private getAutoChangePasswordIcon_(state: PasswordAutomaticChangeState):

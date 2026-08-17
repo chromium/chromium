@@ -5,17 +5,22 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {CheckupListItemElement} from 'chrome://password-manager/password_manager.js';
-import {PasswordAutomaticChangeState} from 'chrome://password-manager/password_manager.js';
+import {PasswordAutomaticChangeState, PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createCredentialGroup, makeInsecureCredential} from './test_util.js';
 
 suite('CheckupListItemTest', function() {
+  let passwordManager: TestPasswordManagerProxy;
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    passwordManager = new TestPasswordManagerProxy();
+    PasswordManagerImpl.setInstance(passwordManager);
     return flushTasks();
   });
 
@@ -128,4 +133,60 @@ suite('CheckupListItemTest', function() {
         loadTimeData.getString('automatedPasswordChangeError'),
         statusTextSpan.textContent.trim());
   });
+
+  test(
+      'running or error APC shows openInNew button and hides more button',
+      async function() {
+        for (const state
+                 of [PasswordAutomaticChangeState.kAttemptingSignIn,
+                     PasswordAutomaticChangeState.kChangingPassword,
+                     PasswordAutomaticChangeState.kConfirmingChangedPassword,
+                     PasswordAutomaticChangeState.kError,
+        ]) {
+          const element = await createCheckupListItem(state);
+
+          const openInNew =
+              element.shadowRoot!.querySelector<HTMLElement>('#openInNew');
+          assertTrue(!!openInNew);
+          assertTrue(isVisible(openInNew));
+
+          const more = element.shadowRoot!.querySelector<HTMLElement>('#more');
+          assertFalse(isVisible(more));
+        }
+      });
+
+  test(
+      'clicking openInNew button calls openPasswordChangeTab with id',
+      async function() {
+        const element =
+            await createCheckupListItem(PasswordAutomaticChangeState.kError);
+
+        const openInNew =
+            element.shadowRoot!.querySelector<HTMLElement>('#openInNew');
+        assertTrue(!!openInNew);
+        openInNew.click();
+        assertEquals(1, passwordManager.getCallCount('openPasswordChangeTab'));
+        const credentialId =
+            passwordManager.getArgs('openPasswordChangeTab')[0];
+        assertEquals(element.item.id, credentialId);
+      });
+
+  test(
+      'inactive and success APC states show more button, hide openInNew button',
+      async function() {
+        for (const state
+                 of [PasswordAutomaticChangeState.kInactive,
+                     PasswordAutomaticChangeState.kPasswordChangedSuccessfully,
+        ]) {
+          const element = await createCheckupListItem(state);
+
+          const openInNew =
+              element.shadowRoot!.querySelector<HTMLElement>('#openInNew');
+          assertFalse(isVisible(openInNew));
+
+          const more = element.shadowRoot!.querySelector<HTMLElement>('#more');
+          assertTrue(!!more);
+          assertTrue(isVisible(more));
+        }
+      });
 });

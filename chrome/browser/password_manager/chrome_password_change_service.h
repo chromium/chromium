@@ -106,11 +106,11 @@ class ChromePasswordChangeService
 #if !BUILDFLAG(IS_ANDROID)
   // Starts the password change flow from the Password Checkup page for the
   // given `credential`.
-  virtual void StartPasswordChangeFromCheckup(
+  virtual base::WeakPtr<PasswordChangeFromCheckupDelegate>
+  StartPasswordChangeFromCheckup(
       password_manager::StoredCredential credential,
       content::WebContents* web_contents,
-      PasswordChangeFromCheckupDelegate::StateChangeCallback callback =
-          base::DoNothing());
+      PasswordChangeFromCheckupDelegate::StateChangeCallback callback);
 
   // Stops the password change flow from the Password Checkup page.
   virtual void StopPasswordChangeFromCheckup();

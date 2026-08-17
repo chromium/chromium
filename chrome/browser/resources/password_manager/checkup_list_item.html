@@ -164,8 +164,14 @@
   <template is="dom-if" if="[[!item.changePasswordUrl]]">
     <span id="changePasswordInApp">$i18n{changePasswordInApp}</span>
   </template>
+  <cr-icon-button iron-icon="cr:open-in-new" id="openInNew"
+      on-click="onOpenInNewClick_"
+      hidden="[[!shouldShowOpenInNew_(passwordChangeState)]]"
+      aria-label$="[[getOpenInNewButtonAriaLabel_(group, item)]]">
+  </cr-icon-button>
   <cr-icon-button class="icon-more-vert" id="more" title="$i18n{moreActions}"
       on-click="onMoreClick_"
+      hidden="[[shouldShowOpenInNew_(passwordChangeState)]]"
       aria-label$="[[getMoreButtonAriaLabel_(group, item)]]">
   </cr-icon-button>
 </div>
