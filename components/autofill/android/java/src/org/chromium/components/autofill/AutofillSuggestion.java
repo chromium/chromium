@@ -6,8 +6,6 @@ package org.chromium.components.autofill;
 
 import android.text.TextUtils;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
@@ -64,8 +62,7 @@ public class AutofillSuggestion {
      * @param originalIndex The index of the suggestion in the list provided by the C++
      *     AutofillKeyboardAccessoryController.
      */
-    @VisibleForTesting
-    public AutofillSuggestion(
+    private AutofillSuggestion(
             @Nullable String label,
             @Nullable String secondaryLabel,
             String sublabel,
