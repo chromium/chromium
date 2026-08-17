@@ -14688,6 +14688,24 @@
             ]
         }
     ],
+    "IOSSettingsDefaultBrowserPromoV2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "SettingsDefaultBrowserPromoType": "0"
+                    },
+                    "enable_features": [
+                        "IOSSettingsDefaultBrowserPromoV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSSkipCookieCaching": [
         {
             "platforms": [
