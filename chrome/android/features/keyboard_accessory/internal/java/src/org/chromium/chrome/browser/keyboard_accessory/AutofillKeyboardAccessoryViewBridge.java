@@ -20,6 +20,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.Acceptability;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.AutofillSuggestion.Payload;
@@ -251,7 +252,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             @JniType("std::string") String featureForIph,
             @JniType("std::u16string") String iphDescriptionText,
             GURL customIconUrl,
-            boolean applyDeactivatedStyle,
+            @Acceptability int acceptability,
             boolean isLoading,
             @Nullable Payload payload,
             int originalIndex) {
@@ -266,7 +267,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 .setFeatureForIph(featureForIph)
                 .setIphDescriptionText(iphDescriptionText)
                 .setCustomIconUrl(customIconUrl)
-                .setApplyDeactivatedStyle(applyDeactivatedStyle)
+                .setAcceptability(acceptability)
                 .setIsLoading(isLoading)
                 .setPayload(payload)
                 .setOriginalIndex(originalIndex)

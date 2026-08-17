@@ -269,12 +269,12 @@ class KeyboardAccessoryViewBinder {
             final boolean isLoading =
                     item.getViewState() == ActionBarItem.ViewState.LOADING
                             || item.getSuggestion().isLoading();
-            final boolean isVisuallyDeactivated =
+            final boolean isUnselectable =
                     item.getViewState() == ActionBarItem.ViewState.DEACTIVATED
-                            || item.getSuggestion().applyDeactivatedStyle();
+                            || !item.getSuggestion().isSelectable();
 
             float iconAlpha;
-            if (isVisuallyDeactivated) {
+            if (isUnselectable) {
                 // Disabling chipview if deactivated style is set.
                 chipView.setEnabled(false);
                 iconAlpha = GRAYED_OUT_OPACITY_ALPHA;

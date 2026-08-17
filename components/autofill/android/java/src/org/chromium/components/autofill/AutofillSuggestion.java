@@ -201,6 +201,18 @@ public class AutofillSuggestion {
         return mChildren;
     }
 
+    public boolean isSelectable() {
+        switch (mAcceptability) {
+            case Acceptability.SELECTABLE_AND_ACCEPTABLE:
+            case Acceptability.SELECTABLE_BUT_UNACCEPTABLE:
+                return true;
+            case Acceptability.UNSELECTABLE_AND_UNACCEPTABLE:
+                return false;
+        }
+        assert false : "Unhandled acceptability value: " + mAcceptability;
+        return false;
+    }
+
     public boolean isAcceptable() {
         if (UNACCEPTABLE_SUGGESTION_TYPES.contains(mSuggestionType)) {
             return false;
