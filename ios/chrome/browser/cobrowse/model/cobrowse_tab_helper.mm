@@ -63,6 +63,12 @@ void CobrowseTabHelper::WasHidden(web::WebState* web_state) {
     return;
   }
 
+  if (delegate_ && !delegate_->IsWebStateActive(web_state)) {
+    // If the web state is no longer active, do not hide the global
+    // assistant.
+    return;
+  }
+
   [scene_handler_ hideAssistant];
 }
 

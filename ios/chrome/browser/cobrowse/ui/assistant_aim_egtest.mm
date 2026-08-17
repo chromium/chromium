@@ -1235,4 +1235,35 @@ id<GREYMatcher> CloseButton() {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:cobrowseTabsAccordion];
 }
 
+- (void)testAssistantVisibleAfterOpeningLinkInNewTab {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  // Inject a link with target="_blank" and tap it to bypass the popup blocker
+  // and trigger the New Tab + Navigation sequentially on the main thread,
+  // bypassing EarlGrey's manual openNewTab synchronization.
+  NSString* linkHTML =
+      [NSString stringWithFormat:
+                    @"<a id='test_link' href='%s' target='_blank'>Click Me</a>",
+                    self.testServer->GetURL("/pony.html").spec().c_str()];
+  NSString* injectScript = [NSString
+      stringWithFormat:@"document.body.innerHTML += \"%@\";", linkHTML];
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:injectScript];
+
+  // Tap the link to open the new tab.
+  [ChromeEarlGrey tapWebStateElementWithID:@"test_link"];
+
+  // Wait for the new tab to become active.
+  [ChromeEarlGrey waitForMainTabCount:2];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  [[EarlGrey selectElementWithMatcher:CloseButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 @end

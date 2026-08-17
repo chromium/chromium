@@ -40,6 +40,7 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   void SetSessionActive(bool active) override;
   bool ShouldHideAssistantForWebState(web::WebState* web_state) override;
   void SetCobrowseContext(CobrowseContext* context) override;
+  bool IsWebStateActive(web::WebState* web_state) override;
 
   // Terminates the cobrowse session and hides the assistant.
   void TerminateSession();

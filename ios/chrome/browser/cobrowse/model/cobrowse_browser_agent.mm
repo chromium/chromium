@@ -243,6 +243,13 @@ bool CobrowseBrowserAgent::ShouldHideAssistantForWebState(
   return false;
 }
 
+bool CobrowseBrowserAgent::IsWebStateActive(web::WebState* web_state) {
+  if (!browser_ || !browser_->GetWebStateList()) {
+    return false;
+  }
+  return browser_->GetWebStateList()->GetActiveWebState() == web_state;
+}
+
 #pragma mark - TabsDependencyInstaller
 
 void CobrowseBrowserAgent::OnWebStateInserted(web::WebState* web_state) {

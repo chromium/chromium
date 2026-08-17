@@ -37,6 +37,9 @@ class CobrowseTabHelper : public web::WebStateObserver,
     // Returns whether the assistant should be hidden for the given WebState.
     virtual bool ShouldHideAssistantForWebState(web::WebState* web_state) = 0;
 
+    // Returns whether the WebState is the active WebState.
+    virtual bool IsWebStateActive(web::WebState* web_state) = 0;
+
     // Sets the context directly.
     virtual void SetCobrowseContext(CobrowseContext* context) = 0;
   };
