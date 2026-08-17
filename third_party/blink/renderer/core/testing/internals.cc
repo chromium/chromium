@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/ad_tracker/extension_script_tracker.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
@@ -3906,6 +3907,23 @@ ScriptPromise<IDLString> Internals::LCPPrediction(ScriptState* script_state,
   lcpp->AddLCPPredictedCallback(
       BindOnce(&OnLCPPredicted, WrapPersistent(resolver)));
   return promise;
+}
+
+bool Internals::isExtensionScriptInStack() const {
+  if (!GetFrame()) {
+    return false;
+  }
+  return GetFrame()->GetExtensionScriptTracker() &&
+         GetFrame()->GetExtensionScriptTracker()->IsExtensionScriptInStack();
+}
+
+bool Internals::isExtensionScriptUrl(const String& url) const {
+  if (!GetFrame()) {
+    return false;
+  }
+  return GetFrame()->GetExtensionScriptTracker() &&
+         GetFrame()->GetExtensionScriptTracker()->IsExtensionScriptUrlMarked(
+             url);
 }
 
 }  // namespace blink

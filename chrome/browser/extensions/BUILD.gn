@@ -2775,6 +2775,7 @@ source_set("browser_tests") {
       "extension_l10n_browsertest.cc",
       "extension_loading_browsertest.cc",
       "extension_resource_request_policy_apitest.cc",
+      "extension_script_tracker_browsertest.cc",
       "extension_security_exploit_browsertest.cc",
       "extension_service_browsertest.cc",
       "extension_shared_array_buffer_browsertest.cc",

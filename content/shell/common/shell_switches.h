@@ -28,11 +28,6 @@ inline constexpr char kCrashDumpsDir[] = "crash-dumps-dir";
 // Disables the check for the system font when specified.
 inline constexpr char kDisableSystemFontCheck[] = "disable-system-font-check";
 
-// Exposes the window.internals object to JavaScript for interactive development
-// and debugging of web tests that rely on it.
-inline constexpr char kExposeInternalsForTesting[] =
-    "expose-internals-for-testing";
-
 // Size for the content_shell's host window (i.e. "800x600").
 inline constexpr char kContentShellHostWindowSize[] =
     "content-shell-host-window-size";

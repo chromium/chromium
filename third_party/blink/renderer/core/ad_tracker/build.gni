@@ -7,6 +7,8 @@ blink_core_sources_ad_tracker = [
   "ad_script_identifier.h",
   "ad_tracker.cc",
   "ad_tracker.h",
+  "extension_script_tracker.cc",
+  "extension_script_tracker.h",
   "lazy_stack_trace.cc",
   "lazy_stack_trace.h",
   "monkey_patchable_api.cc",
@@ -23,6 +25,7 @@ blink_core_sources_ad_tracker = [
 
 blink_core_tests_ad_tracker = [
   "ad_tracker_test.cc",
+  "extension_script_tracker_test.cc",
   "lazy_stack_trace_test.cc",
   "monkey_patchable_api_test.cc",
   "script_ancestry_tracker_test.cc",

@@ -45,14 +45,11 @@ class ChromeTestChromeMainDelegate
     : public ChromeMainDelegate {
 #endif
  public:
-#if BUILDFLAG(IS_ANDROID)
-  ChromeTestChromeMainDelegate() : ChromeMainDelegateAndroid() {}
-#else
-  ChromeTestChromeMainDelegate()
-      : ChromeMainDelegate({.exe_entry_point_ticks = base::TimeTicks::Now()}) {}
-#endif
+  ChromeTestChromeMainDelegate();
+  ~ChromeTestChromeMainDelegate() override;
 
   // ChromeMainDelegateOverrides.
+  content::ContentRendererClient* CreateContentRendererClient() override;
   content::ContentUtilityClient* CreateContentUtilityClient() override;
   std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
 #if BUILDFLAG(IS_WIN)
@@ -60,6 +57,10 @@ class ChromeTestChromeMainDelegate
 #endif
   void CreateThreadPool(std::string_view name) override;
   bool IsInitFeatureListEarly() override;
+
+ private:
+  std::unique_ptr<content::ContentRendererClient>
+      chrome_content_renderer_client_;
 };
 
 // Delegate used for setting up and running chrome browser tests.

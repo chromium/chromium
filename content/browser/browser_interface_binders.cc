@@ -91,6 +91,7 @@
 #include "content/public/browser/web_ui_controller_interface_binder.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "device/gamepad/gamepad_haptics_manager.h"
 #include "device/gamepad/gamepad_monitor.h"
@@ -898,11 +899,8 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::WebInstallService>(
       &EmptyBinderForFrame<blink::mojom::WebInstallService>);
 
-  // Currently defined in content/shell/common/shell_switches.h which we cannot
-  // have a DEPS on.
-  constexpr char kExposeInternalsForTesting[] = "expose-internals-for-testing";
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kExposeInternalsForTesting)) {
+          switches::kExposeInternalsForTesting)) {
     map->Add<blink::mojom::FrameWidgetHost>(base::BindRepeating(
         [](RenderFrameHost* host,
            mojo::PendingReceiver<blink::mojom::FrameWidgetHost> receiver) {

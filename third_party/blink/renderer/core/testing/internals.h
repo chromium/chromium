@@ -341,6 +341,9 @@ class Internals final : public ScriptWrappable {
 
   unsigned numberOfScrollableAreas(Document*);
 
+  bool isExtensionScriptInStack() const;
+  bool isExtensionScriptUrl(const String& url) const;
+
   InternalSettings* settings() const;
   InternalRuntimeFlags* runtimeFlags() const;
   unsigned workerThreadCount() const;

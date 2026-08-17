@@ -315,7 +315,7 @@
       status: "test",
       base_feature: "none",
     },
-        {
+    {
       name: "AIClassifierAPI",
       status: {
         "Win": "experimental",
@@ -2746,6 +2746,16 @@
       origin_trial_feature_name: "ExtendedTextMetrics",
       origin_trial_allows_third_party: true,
       status: "experimental",
+    },
+    {
+      name: "ExtensionScriptTagging",
+      public: true,
+      status: "test",
+      base_feature: "ExtensionScriptTagging",
+    },
+    {
+      name: "ExtensionScriptTaggingTestingAPI",
+      base_feature: "ExtensionScriptTaggingTestingAPI",
     },
     {
       // Kill-switch for crbug.com/40434449.

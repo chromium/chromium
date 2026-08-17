@@ -103,6 +103,7 @@ CONTENT_EXPORT extern const char kEnableExperimentalCookieFeatures[];
 CONTENT_EXPORT extern const char kEnableExperimentalWebAssemblyFeatures[];
 CONTENT_EXPORT extern const char kEnableExperimentalWebPlatformFeatures[];
 CONTENT_EXPORT extern const char kEnableBlinkTestFeatures[];
+CONTENT_EXPORT extern const char kExposeInternalsForTesting[];
 CONTENT_EXPORT extern const char kEnableGpuMemoryBufferVideoFrames[];
 CONTENT_EXPORT extern const char kEnableIsolatedWebAppsInRenderer[];
 CONTENT_EXPORT extern const char kEnableLCDText[];

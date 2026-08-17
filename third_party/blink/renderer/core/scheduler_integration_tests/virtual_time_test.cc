@@ -61,7 +61,8 @@ class VirtualTimeTest : public SimTest {
                         base::Unretained(&callback_helper)),
         BackForwardCacheAware::kAllow,
         mojom::blink::WantResultOption::kWantResult,
-        mojom::blink::PromiseResultOption::kDoNotWait);
+        mojom::blink::PromiseResultOption::kDoNotWait,
+        /*is_injected_extension_script=*/false);
 
     return callback_helper.Result();
   }

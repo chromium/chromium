@@ -158,6 +158,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
+#include "third_party/blink/renderer/core/ad_tracker/extension_script_tracker.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
@@ -981,6 +982,12 @@ bool WebLocalFrameImpl::IsAdScriptInStack() const {
   return GetFrame()->IsAdScriptInStack();
 }
 
+bool WebLocalFrameImpl::IsExtensionScriptInStack() const {
+  DCHECK(GetFrame());
+  return GetFrame()->GetExtensionScriptTracker() &&
+         GetFrame()->GetExtensionScriptTracker()->IsExtensionScriptInStack();
+}
+
 void WebLocalFrameImpl::SetAdEvidence(
     const blink::FrameAdEvidence& ad_evidence) {
   DCHECK(GetFrame());
@@ -1142,12 +1149,13 @@ void WebLocalFrameImpl::RequestExecuteScript(
     WebScriptExecutionCallback callback,
     BackForwardCacheAware back_forward_cache_aware,
     mojom::blink::WantResultOption want_result_option,
-    mojom::blink::PromiseResultOption promise_behavior) {
+    mojom::blink::PromiseResultOption promise_behavior,
+    bool is_injected_extension_script) {
   DCHECK(GetFrame());
   GetFrame()->RequestExecuteScript(
       world_id, sources, user_gesture, evaluation_timing, blocking_option,
       std::move(callback), back_forward_cache_aware, want_result_option,
-      promise_behavior);
+      promise_behavior, is_injected_extension_script);
 }
 
 bool WebLocalFrameImpl::IsInspectorConnected() {

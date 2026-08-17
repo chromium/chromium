@@ -47,7 +47,8 @@ class CORE_EXPORT PausableScriptExecutor final
                            mojom::blink::LoadEventBlockingOption,
                            mojom::blink::WantResultOption,
                            mojom::blink::PromiseResultOption,
-                           WebScriptExecutionCallback);
+                           WebScriptExecutionCallback,
+                           bool is_injected_extension_script = false);
 
   class Executor : public GarbageCollected<Executor> {
    public:
@@ -64,7 +65,8 @@ class CORE_EXPORT PausableScriptExecutor final
                          mojom::blink::WantResultOption,
                          mojom::blink::PromiseResultOption,
                          WebScriptExecutionCallback,
-                         Executor*);
+                         Executor*,
+                         bool is_injected_extension_script);
   ~PausableScriptExecutor() override;
 
   void ContextDestroyed() override;
@@ -89,6 +91,7 @@ class CORE_EXPORT PausableScriptExecutor final
   // Whether to wait for a promise to resolve, if the executed script evaluates
   // to a promise.
   const mojom::blink::PromiseResultOption wait_for_promise_;
+  const bool is_injected_extension_script_;
 
   TaskHandle task_handle_;
 

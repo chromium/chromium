@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
+#include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -250,7 +251,8 @@ void PausableScriptExecutor::CreateAndRun(
           want_result_option, mojom::blink::PromiseResultOption::kDoNotWait,
           std::move(callback),
           MakeGarbageCollected<V8FunctionExecutor>(isolate, function, receiver,
-                                                   argc, argv));
+                                                   argc, argv),
+          /*is_injected_extension_script=*/false);
   executor->Run();
 }
 
@@ -263,12 +265,14 @@ void PausableScriptExecutor::CreateAndRun(
     mojom::blink::LoadEventBlockingOption blocking_option,
     mojom::blink::WantResultOption want_result_option,
     mojom::blink::PromiseResultOption promise_result_option,
-    WebScriptExecutionCallback callback) {
+    WebScriptExecutionCallback callback,
+    bool is_injected_extension_script) {
   auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
       script_state, user_activation_option, blocking_option, want_result_option,
       promise_result_option, std::move(callback),
       MakeGarbageCollected<WebScriptExecutor>(std::move(sources),
-                                              execute_script_policy));
+                                              execute_script_policy),
+      is_injected_extension_script);
   switch (evaluation_timing) {
     case mojom::blink::EvaluationTiming::kAsynchronous:
       executor->RunAsync();
@@ -298,7 +302,8 @@ PausableScriptExecutor::PausableScriptExecutor(
     mojom::blink::WantResultOption want_result_option,
     mojom::blink::PromiseResultOption promise_result_option,
     WebScriptExecutionCallback callback,
-    Executor* executor)
+    Executor* executor,
+    bool is_injected_extension_script)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       script_state_(script_state),
       callback_(std::move(callback)),
@@ -306,6 +311,7 @@ PausableScriptExecutor::PausableScriptExecutor(
       blocking_option_(blocking_option),
       want_result_option_(want_result_option),
       wait_for_promise_(promise_result_option),
+      is_injected_extension_script_(is_injected_extension_script),
       executor_(executor) {
   CHECK(script_state_);
   CHECK(script_state_->ContextIsValid());
@@ -358,7 +364,22 @@ void PausableScriptExecutor::ExecuteAndDestroySelf() {
     }
   }
 
-  v8::LocalVector<v8::Value> results = executor_->Execute(script_state_);
+  v8::LocalVector<v8::Value> results(script_state_->GetIsolate());
+  {
+    std::optional<
+        ScriptInitiationMonitor::ScopedInjectedExtensionScriptExecution>
+        extension_script_scope;
+    if (is_injected_extension_script_) {
+      if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
+        if (LocalFrame* frame = window->GetFrame()) {
+          extension_script_scope.emplace(
+              frame->GetOrCreateScriptInitiationMonitor());
+        }
+      }
+    }
+
+    results = executor_->Execute(script_state_);
+  }
 
   // The script may have removed the frame, in which case contextDestroyed()
   // will have handled the disposal/callback.

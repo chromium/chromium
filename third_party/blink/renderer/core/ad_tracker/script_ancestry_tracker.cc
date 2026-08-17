@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/ad_tracker/lazy_stack_trace.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
@@ -42,12 +43,20 @@ String GenerateFakeUrlFromScriptId(V8ScriptId script_id) {
 ScriptAncestryTracker::ScriptAncestryTracker(LocalFrame* local_root,
                                              ScriptInitiationMonitor* monitor)
     : local_root_(local_root), monitor_(monitor) {
+  CHECK(local_root_);
   if (monitor_) {
     monitor_->AddObserver(this);
   }
 }
 
 ScriptAncestryTracker::~ScriptAncestryTracker() = default;
+
+v8::Isolate* ScriptAncestryTracker::GetIsolate() const {
+  if (local_root_ && local_root_->DomWindow()) {
+    return local_root_->DomWindow()->GetIsolate();
+  }
+  return nullptr;
+}
 
 void ScriptAncestryTracker::WillExecuteScript(
     ExecutionContext& execution_context,

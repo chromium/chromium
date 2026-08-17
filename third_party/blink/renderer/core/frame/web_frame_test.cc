@@ -307,7 +307,8 @@ void ExecuteScriptsInMainWorld(
       mojom::blink::EvaluationTiming::kSynchronous,
       mojom::blink::LoadEventBlockingOption::kDoNotBlock, std::move(callback),
       BackForwardCacheAware::kAllow,
-      mojom::blink::WantResultOption::kWantResult, wait_for_promise);
+      mojom::blink::WantResultOption::kWantResult, wait_for_promise,
+      /*is_injected_extension_script=*/false);
 }
 
 // Same as above, but for a single script.

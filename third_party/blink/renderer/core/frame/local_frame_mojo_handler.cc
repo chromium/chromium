@@ -980,7 +980,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
       wants_result
           ? mojom::blink::WantResultOption::kWantResultDateAndRegExpAllowed
           : mojom::blink::WantResultOption::kNoResult,
-      mojom::blink::PromiseResultOption::kDoNotWait);
+      mojom::blink::PromiseResultOption::kDoNotWait,
+      /*is_injected_extension_script=*/false);
 }
 
 void LocalFrameMojoHandler::InvokeScriptToolForInspector(

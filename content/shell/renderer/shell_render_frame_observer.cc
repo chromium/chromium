@@ -5,6 +5,7 @@
 #include "content/shell/renderer/shell_render_frame_observer.h"
 
 #include "base/command_line.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/shell/common/render_frame_test_helper.mojom.h"

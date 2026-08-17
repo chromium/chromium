@@ -3874,6 +3874,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kEnableExperimentalAccessibilityLabelsDebugging,
       switches::kEnableExperimentalWebPlatformFeatures,
       switches::kEnableBlinkTestFeatures,
+      switches::kExposeInternalsForTesting,
       switches::kEnableGPUClientLogging,
       switches::kEnableGpuClientTracing,
       switches::kEnableGpuMemoryBufferVideoFrames,

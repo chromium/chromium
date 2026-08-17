@@ -202,7 +202,8 @@ class CORE_EXPORT WebLocalFrameImpl final
                             WebScriptExecutionCallback,
                             BackForwardCacheAware back_forward_cache_aware,
                             mojom::blink::WantResultOption,
-                            mojom::blink::PromiseResultOption) override;
+                            mojom::blink::PromiseResultOption,
+                            bool is_injected_extension_script) override;
   bool IsInspectorConnected() override;
   void Alert(const WebString& message) override;
   bool Confirm(const WebString& message) override;
@@ -347,6 +348,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const override;
   bool IsAdFrame() const override;
   bool IsAdScriptInStack() const override;
+  bool IsExtensionScriptInStack() const override;
   void SetAdEvidence(const FrameAdEvidence& ad_evidence) override;
   const std::optional<blink::FrameAdEvidence>& AdEvidence() override;
   bool IsFrameCreatedByAdScript() override;

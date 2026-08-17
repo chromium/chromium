@@ -167,6 +167,12 @@ class CORE_EXPORT ScriptAncestryTracker
   // URL) for a given V8ScriptId.
   const ScriptMetadata* GetScriptMetadata(V8ScriptId script_id) const;
 
+  ScriptInitiationMonitor* GetScriptInitiationMonitor() const {
+    return monitor_.Get();
+  }
+
+  v8::Isolate* GetIsolate() const;
+
  private:
   // Helper for the `ignore_monkey_patch` heuristic. Returns true if the API is
   // called from a non-ad script through an ad script's monkey patch, and this

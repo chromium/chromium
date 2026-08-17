@@ -324,6 +324,9 @@ const char kEnableExperimentalWebPlatformFeatures[] =
 // status:"experimental", which are enabled when running web tests.
 const char kEnableBlinkTestFeatures[] = "enable-blink-test-features";
 
+// Exposes the window.internals object in JavaScript for testing.
+const char kExposeInternalsForTesting[] = "expose-internals-for-testing";
+
 // Disables all RuntimeEnabledFeatures that can be enabled via OriginTrials.
 const char kDisableOriginTrialControlledBlinkFeatures[] =
     "disable-origin-trial-controlled-blink-features";

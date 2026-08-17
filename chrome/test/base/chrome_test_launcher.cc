@@ -36,12 +36,15 @@
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/taskbar_util.h"
+#include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/test/base/chrome_test_suite.h"
 #include "chrome/utility/chrome_content_utility_client.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/sampling_profiler/thread_profiler.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "content/public/test/network_service_test_helper.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
@@ -49,6 +52,8 @@
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "services/test/echo/echo_service.h"
 #include "testing/libfuzzer/fuzztest_init_helper.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_testing_support.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/bundle_locations.h"
@@ -158,6 +163,58 @@ int ChromeTestLauncherDelegate::RunTestSuite(int argc, char** argv) {
 std::string
 ChromeTestLauncherDelegate::GetUserDataDirectoryCommandLineSwitch() {
   return switches::kUserDataDir;
+}
+
+namespace {
+
+// Frame observer that injects `window.internals` JavaScript object whenever a
+// window object is cleared, if `--expose-internals-for-testing` is enabled.
+// Self-deletes via `OnDestruct()` when the associated `RenderFrame` is
+// destroyed.
+class InternalsObjectFrameInjector : public content::RenderFrameObserver {
+ public:
+  explicit InternalsObjectFrameInjector(content::RenderFrame* render_frame)
+      : content::RenderFrameObserver(render_frame) {}
+  void DidClearWindowObject() override {
+    if (render_frame() && render_frame()->GetWebFrame()) {
+      blink::WebTestingSupport::InjectInternalsObject(
+          render_frame()->GetWebFrame());
+    }
+  }
+  void OnDestruct() override { delete this; }
+};
+
+// A replacement ChromeContentRendererClient for browser tests that hooks frame
+// creation to inject test-only bindings like `window.internals` without
+// linking test-only dependencies into production Chrome renderer code.
+class BrowserTestChromeContentRendererClient
+    : public ChromeContentRendererClient {
+ public:
+  void RenderFrameCreated(content::RenderFrame* render_frame) override {
+    ChromeContentRendererClient::RenderFrameCreated(render_frame);
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kExposeInternalsForTesting)) {
+      new InternalsObjectFrameInjector(render_frame);
+    }
+  }
+};
+
+}  // namespace
+
+#if BUILDFLAG(IS_ANDROID)
+ChromeTestChromeMainDelegate::ChromeTestChromeMainDelegate() = default;
+#else
+ChromeTestChromeMainDelegate::ChromeTestChromeMainDelegate()
+    : ChromeMainDelegate({.exe_entry_point_ticks = base::TimeTicks::Now()}) {}
+#endif
+
+ChromeTestChromeMainDelegate::~ChromeTestChromeMainDelegate() = default;
+
+content::ContentRendererClient*
+ChromeTestChromeMainDelegate::CreateContentRendererClient() {
+  chrome_content_renderer_client_ =
+      std::make_unique<BrowserTestChromeContentRendererClient>();
+  return chrome_content_renderer_client_.get();
 }
 
 // A replacement ChromeContentUtilityClient that binds the

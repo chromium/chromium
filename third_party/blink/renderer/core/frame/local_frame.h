@@ -168,6 +168,7 @@ class TextSuggestionController;
 class URLLoader;
 class VirtualKeyboardOverlayChangedObserver;
 class WebAutofillClient;
+class ExtensionScriptTracker;
 class WebContentSettingsClient;
 class WebInputEventAttribution;
 class WebPluginContainerImpl;
@@ -547,6 +548,9 @@ class CORE_EXPORT LocalFrame final
   }
   IdlenessDetector* GetIdlenessDetector() { return idleness_detector_.Get(); }
   AdTracker* GetAdTracker() { return ad_tracker_.Get(); }
+  ExtensionScriptTracker* GetExtensionScriptTracker() {
+    return extension_script_tracker_.Get();
+  }
   ScriptInitiationMonitor* GetScriptInitiationMonitor() const;
   ScriptInitiationMonitor* GetOrCreateScriptInitiationMonitor();
   void SetAdTrackerForTesting(AdTracker* ad_tracker);
@@ -857,7 +861,8 @@ class CORE_EXPORT LocalFrame final
                             WebScriptExecutionCallback,
                             BackForwardCacheAware back_forward_cache_aware,
                             mojom::blink::WantResultOption,
-                            mojom::blink::PromiseResultOption);
+                            mojom::blink::PromiseResultOption,
+                            bool is_injected_extension_script);
 
   void SetEvictCachedSessionStorageOnFreezeOrUnload();
 
@@ -1143,6 +1148,7 @@ class CORE_EXPORT LocalFrame final
   Member<PerformanceMonitor> performance_monitor_;
 
   Member<AdTracker> ad_tracker_;
+  Member<ExtensionScriptTracker> extension_script_tracker_;
   Member<ScriptInitiationMonitor> script_initiation_monitor_;
   Member<IdlenessDetector> idleness_detector_;
   base::OnceClosureList network_idle_callbacks_;

@@ -96,6 +96,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_local_compile_hints_producer.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
+#include "third_party/blink/renderer/core/ad_tracker/extension_script_tracker.h"
 #include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
@@ -520,6 +521,7 @@ LocalFrame::~LocalFrame() {
 
 void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(ad_tracker_);
+  visitor->Trace(extension_script_tracker_);
   visitor->Trace(script_initiation_monitor_);
   visitor->Trace(script_observer_);
   visitor->Trace(probe_sink_);
@@ -801,6 +803,9 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
     if (ad_tracker_) {
       ad_tracker_->Shutdown();
+    }
+    if (extension_script_tracker_) {
+      extension_script_tracker_->Shutdown();
     }
     if (script_initiation_monitor_) {
       script_initiation_monitor_->Shutdown();
@@ -2081,6 +2086,10 @@ LocalFrame::LocalFrame(
       ad_tracker_ = MakeGarbageCollected<AdTracker>(
           this, GetOrCreateScriptInitiationMonitor());
     }
+    if (RuntimeEnabledFeatures::ExtensionScriptTaggingEnabled()) {
+      extension_script_tracker_ = MakeGarbageCollected<ExtensionScriptTracker>(
+          this, GetOrCreateScriptInitiationMonitor());
+    }
     if (blink::LcppScriptObserverEnabled()) {
       script_observer_ = MakeGarbageCollected<LCPScriptObserver>(this);
     }
@@ -2091,6 +2100,7 @@ LocalFrame::LocalFrame(
     UpdateInertIfPossible();
     UpdateInheritedEffectiveTouchActionIfPossible();
     ad_tracker_ = LocalFrameRoot().ad_tracker_;
+    extension_script_tracker_ = LocalFrameRoot().extension_script_tracker_;
     performance_monitor_ = LocalFrameRoot().performance_monitor_;
     script_observer_ = LocalFrameRoot().script_observer_;
   }
@@ -3326,7 +3336,8 @@ void LocalFrame::RequestExecuteScript(
     WebScriptExecutionCallback callback,
     BackForwardCacheAware back_forward_cache_aware,
     mojom::blink::WantResultOption want_result_option,
-    mojom::blink::PromiseResultOption promise_behavior) {
+    mojom::blink::PromiseResultOption promise_behavior,
+    bool is_injected_extension_script) {
   DOMWrapperWorld* world;
   ExecuteScriptPolicy execute_script_policy;
   CHECK(!IsProvisional());
@@ -3382,7 +3393,7 @@ void LocalFrame::RequestExecuteScript(
   PausableScriptExecutor::CreateAndRun(
       script_state, std::move(script_sources), execute_script_policy,
       user_gesture, evaluation_timing, blocking_option, want_result_option,
-      promise_behavior, std::move(callback));
+      promise_behavior, std::move(callback), is_injected_extension_script);
 }
 
 void LocalFrame::SetEvictCachedSessionStorageOnFreezeOrUnload() {

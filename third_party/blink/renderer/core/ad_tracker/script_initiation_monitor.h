@@ -5,12 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_SCRIPT_INITIATION_MONITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_SCRIPT_INITIATION_MONITOR_H_
 
+#include "base/check_deref.h"
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/ad_tracker/lazy_stack_trace.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace v8 {
 class Context;
@@ -102,11 +105,48 @@ class CORE_EXPORT ScriptInitiationMonitor
   void DidRegisterDynamicScript(v8::Local<v8::Context> v8_context,
                                 V8ScriptId script_id);
 
+  class ScopedInjectedExtensionScriptExecution {
+    STACK_ALLOCATED();
+
+   public:
+    explicit ScopedInjectedExtensionScriptExecution(
+        ScriptInitiationMonitor* monitor)
+        : monitor_(CHECK_DEREF(monitor)) {
+      monitor_.EnterInjectedExtensionScriptExecution();
+    }
+    ScopedInjectedExtensionScriptExecution(
+        const ScopedInjectedExtensionScriptExecution&) = delete;
+    ScopedInjectedExtensionScriptExecution& operator=(
+        const ScopedInjectedExtensionScriptExecution&) = delete;
+    ~ScopedInjectedExtensionScriptExecution() {
+      monitor_.ExitInjectedExtensionScriptExecution();
+    }
+
+   private:
+    // Reference is safe because this object is STACK_ALLOCATED() and will
+    // not outlive the stack frame of the executing script.
+    ScriptInitiationMonitor& monitor_;
+  };
+
+  bool IsExecutingInjectedExtensionScript() const {
+    return executing_injected_extension_script_count_ > 0;
+  }
+
   void Trace(Visitor*) const;
+
+ private:
+  void EnterInjectedExtensionScriptExecution() {
+    executing_injected_extension_script_count_++;
+  }
+  void ExitInjectedExtensionScriptExecution() {
+    CHECK_GT(executing_injected_extension_script_count_, 0);
+    executing_injected_extension_script_count_--;
+  }
 
  private:
   Member<LocalFrame> local_root_;
   HeapHashSet<WeakMember<Observer>> observers_;
+  int executing_injected_extension_script_count_ = 0;
 };
 
 }  // namespace blink
