@@ -33,6 +33,9 @@ const CGFloat kQuickActionsHeight = 44.0;
 // The border radius for a quick action button.
 const CGFloat kButtonCornerRadius = 24.0;
 
+// The opacity of the quick action button background.
+const CGFloat kButtonBackgroundOpacity = 0.08;
+
 // The sise of the quick actions symbols.
 const CGFloat kSymbolPointSize = 18.0;
 
@@ -44,10 +47,15 @@ NSString* const kFakeboxMatchingBackgroundColor =
     @"fake_omnibox_bottom_gradient_color";
 
 // Returns the color needed for the background of the button.
-UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
-  // All other treatments use the same color as the fakebox.
-  return colorPalette ? colorPalette.omniboxColor
-                      : [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
+UIColor* ButtonBackgroundColor(NewTabPageColorPalette* color_palette) {
+  if (color_palette) {
+    return color_palette.omniboxColor;
+  }
+  if (IsNewTabPageUICleanupEnabled()) {
+    return [[UIColor colorNamed:kPrimaryColor]
+        colorWithAlphaComponent:kButtonBackgroundOpacity];
+  }
+  return [UIColor colorNamed:kFakeboxMatchingBackgroundColor];
 }
 
 }  // namespace

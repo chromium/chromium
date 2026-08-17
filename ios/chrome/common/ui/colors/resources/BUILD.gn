@@ -75,6 +75,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/pink_700_color.colorset/Contents.json",
     "Assets.xcassets/placeholder_image_tint_color.colorset/Contents.json",
     "Assets.xcassets/primary_background_color.colorset/Contents.json",
+    "Assets.xcassets/primary_color.colorset/Contents.json",
     "Assets.xcassets/purple_500_color.colorset/Contents.json",
     "Assets.xcassets/purple_600_color.colorset/Contents.json",
     "Assets.xcassets/red_100_color.colorset/Contents.json",
