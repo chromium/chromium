@@ -344,7 +344,7 @@ class MEDIA_EXPORT AudioParameters {
   }
   int frames_per_buffer() const { return frames_per_buffer_; }
 
-  std::optional<HardwareCapabilities> hardware_capabilities() const {
+  const std::optional<HardwareCapabilities>& hardware_capabilities() const {
     return hardware_capabilities_;
   }
 

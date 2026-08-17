@@ -96,7 +96,7 @@ struct StructTraits<media::mojom::AudioParametersDataView,
       const media::AudioParameters& input) {
     return input.latency_tag();
   }
-  static std::optional<media::AudioParameters::HardwareCapabilities>
+  static const std::optional<media::AudioParameters::HardwareCapabilities>&
   hardware_capabilities(const media::AudioParameters& input) {
     return input.hardware_capabilities();
   }
