@@ -5906,22 +5906,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.CertVerificationResult.{Condition}"
-    enum="NetErrorCodes" expires_after="2027-01-03">
-  <owner>mattm@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The network error code returned to a QUIC session from the CertVerifier when
-    a certification verification is attempted.
-
-    This metric is only recorded when {Condition}.
-  </summary>
-  <token key="Condition">
-    <variant name="MTCAdvertised2" summary="server advertised MTC support"/>
-    <variant name="MTCReceived2" summary="server sent an MTC"/>
-  </token>
-</histogram>
-
 <histogram name="Net.QuicSession.CertVerifierJob.CompleteTime"
     units="Milliseconds" expires_after="2027-02-02">
   <owner>dschinazi@chromium.org</owner>
@@ -6471,26 +6455,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.HandshakeConfirmedTime.MTC{IsResumption}"
-    units="Milliseconds" expires_after="2027-01-03">
-  <owner>mattm@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The elapsed time between starting the crypto handshake, and receiving
-    confirmation from the server, measured only for servers that sent a Trust
-    Anchor ID corresponding to a Merkle Tree Certificate
-    (https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/) CA,
-    {IsResumption}.
-  </summary>
-  <token key="IsResumption">
-    <variant name=""
-        summary="aggregated across new connections and resumption"/>
-    <variant name=".NewConnection" summary="on a new connection"/>
-    <variant name=".Resumption"
-        summary="on a connection that Chrome is attempting to resume"/>
-  </token>
-</histogram>
-
 <histogram name="Net.QuicSession.HandshakeConfirmedTime.ServerPadding"
     units="Milliseconds" expires_after="2027-01-17">
   <owner>davidben@chromium.org</owner>
@@ -6568,18 +6532,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether path degrading has been detected by the time a QUIC connection is
     closed due to handshake timeout.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.HasMTCMetadata2" enum="Boolean"
-    expires_after="2026-08-23">
-  <owner>mattm@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Whether or not the client has the MtcMetadata needed for validating
-    (signatureless) Merkle tree Certificates. Recorded at certificate validation
-    time on QUIC connections, but only on connections where the client supports
-    verifying MTCs and the server supports sending MTCs.
   </summary>
 </histogram>
 
@@ -6793,54 +6745,6 @@ chromium-metrics-reviews@google.com.
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The minimum RTT observed during the life of a QUIC connection.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.MTCLandmarkDelta2.CurrentClient"
-    units="MTC landmarks" expires_after="2026-12-27">
-  <owner>mattm@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The delta between the server's MTC landmark number and the latest landmark
-    trusted by the client, when the client's landmark number is at least as big
-    as the server's (indicating that the client should be able to verify the
-    server's MTC). Only recorded for QUIC connections where the client supports
-    verifying MTCs and the server supports sending MTCs.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.MTCLandmarkDelta2.OldClient"
-    units="MTC landmarks" expires_after="2026-12-27">
-  <owner>mattm@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The delta between the server's MTC landmark number and the latest landmark
-    trusted by the client, when the server's landmark is greater than the
-    client's (which indicates that the client has out of date information and is
-    unable to verify the server's MTC). Only recorded for QUIC connections where
-    the client supports verifying MTCs and the server supports sending MTCs.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.MTCMetadataAge2" units="Milliseconds"
-    expires_after="2026-08-23">
-  <owner>mattm@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The age of the MtcMetadata used for validating (signatureless) Merkle tree
-    Certificates. Recorded at certificate validation time on QUIC connections,
-    but only on connections where the client supports verifying MTCs and the
-    server supports sending MTCs.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.MTCResult2" enum="MTCResult"
-    expires_after="2026-12-27">
-  <owner>mattm@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    For clients that support verifying MTCs, records what kind of certificate we
-    received from a server that supports sending MTCs.
   </summary>
 </histogram>
 
@@ -7781,26 +7685,6 @@ chromium-metrics-reviews@google.com.
     The time a QuicSessionPool Job takes from host rersolution to connection
     confirmation.
   </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.TLSHandshakeBytes.MTC2{IsResumption}"
-    units="bytes" expires_after="2026-08-23">
-  <owner>mattm@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The number of bytes sent and received in the TLS handshake. This metric is
-    only recorded for servers that sent a Trust Anchor ID corresponding to a
-    Merkle Tree Certificate
-    (https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/) CA,
-    {IsResumption}.
-  </summary>
-  <token key="IsResumption">
-    <variant name=""
-        summary="aggregated across new connections and resumption"/>
-    <variant name=".NewConnection" summary="on a new connection"/>
-    <variant name=".Resumption"
-        summary="on a connection that Chrome is attempting to resume"/>
-  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.TooManyOpenStreams" enum="BooleanTooMany"

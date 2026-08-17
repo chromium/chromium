@@ -178,20 +178,6 @@ enum class EcnPermutations {
   kMaxValue = kNotEctEct1Ect0Ce,
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(MTCResult)
-enum class MTCResult {
-  kValidMTC = 0,
-  kInvalidMTC = 1,
-  kClassicalCertExpectedMTC = 2,
-  kClassicalCertOldClient = 3,
-  kClassicalCertUnknownLandmarkDelta = 4,
-  kMaxValue = kClassicalCertUnknownLandmarkDelta,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:MTCResult)
-
 class NET_EXPORT_PRIVATE QuicChromiumClientSession
     : public quic::QuicSpdyClientSessionBase,
       public MultiplexedSession,
@@ -1325,15 +1311,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool enable_periodic_ping_ = false;
 
   bool crypto_handshake_complete_ = false;
-
-  // If the server supports MTCs, this is set to true in
-  // OnProofVerifyDetailsAvailable. A server is considered to support MTCs if
-  // either it sends an MTC in its Certificate message or if its trust_anchors
-  // extension (in EncryptedExtensions) contains a trust anchor ID corresponding
-  // to a known Merkle Tree Certificate CA.
-  //
-  // This is only used for metrics.
-  bool server_supports_mtc_tai_ = false;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };

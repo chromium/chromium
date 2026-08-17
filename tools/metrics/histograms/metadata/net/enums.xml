@@ -1094,19 +1094,6 @@ historical analysis. -->
 
 <!-- LINT.ThenChange(//net/proxy_resolution/mac/mac_proxy_resolution_status.h:MacProxyResolutionStatus) -->
 
-<!-- LINT.IfChange(MTCResult) -->
-
-<enum name="MTCResult">
-  <int value="0" label="kValidMTC"/>
-  <int value="1" label="kInvalidMTC"/>
-  <int value="2" label="kClassicalCertExpectedMTC"/>
-  <int value="3" label="kClassicalCertOldClient"/>
-  <int value="4" label="kClassicalCertUnknownLandmarkDelta"/>
-  <int value="5" label="Reserved (was kResumption)"/>
-</enum>
-
-<!-- LINT.ThenChange(//net/quic/quic_chromium_client_session.h:MTCResult) -->
-
 <!-- LINT.IfChange(MultiplexedSessionCreationInitiator) -->
 
 <enum name="MultiplexedSessionCreationInitiator">
