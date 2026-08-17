@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/signals/signals_filterer.h"
+#include "components/enterprise/device_trust/core/signals/signals_filterer.h"
 
 #include "components/device_signals/core/common/signals_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"

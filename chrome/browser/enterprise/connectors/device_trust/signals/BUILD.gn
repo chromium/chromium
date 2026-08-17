@@ -5,8 +5,6 @@
 source_set("signals") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
-  public = [ "signals_filterer.h" ]
-
   public_deps = [
     "//base",
     "//chrome/browser/enterprise/core",
@@ -18,11 +16,6 @@ source_set("signals") {
 source_set("test_support") {
   testonly = true
   configs += [ "//components/enterprise:extra_warnings" ]
-
-  sources = [
-    "mock_signals_filterer.cc",
-    "mock_signals_filterer.h",
-  ]
 
   public_deps = [
     ":signals",
@@ -37,23 +30,17 @@ source_set("unit_tests") {
   sources = []
   deps = []
 
-  if (is_linux || is_chromeos || is_mac || is_win) {
-    sources += [
-      "signals_filterer_unittest.cc",
-      "signals_service_impl_unittest.cc",
-    ]
+  if (is_chromeos) {
+    sources += [ "ash/ash_signals_filterer_unittest.cc" ]
     deps += [
+      ":signals",
       ":test_support",
       "//base",
       "//chrome/browser/enterprise:impl",
-      "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common:test_support",
       "//chrome/test:test_support",
+      "//components/device_signals/core/common",
       "//testing/gtest",
     ]
-  }
-
-  if (is_chromeos) {
-    sources += [ "ash/ash_signals_filterer_unittest.cc" ]
   }
 }
 

@@ -69,6 +69,13 @@ void LogAttestationResult(DTAttestationResult result);
 void LogDeviceTrustResponse(const DeviceTrustResponse& response,
                             base::TimeTicks start_time);
 
+// Logs time elapsed since `start_time` to the signals collection histogram
+// dictated by `variant`. See all possible variants, or add new ones, in the
+// enterprise/histograms.xml file at this entry:
+// Enterprise.DeviceTrust.SignalsDecorator.Latency.{Variant}
+void LogSignalsCollectionLatency(const char* variant,
+                                 base::TimeTicks start_time);
+
 #if BUILDFLAG(IS_CHROMEOS)
 void LogOrigin(DTOrigin origin);
 

@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/mock_signals_decorator.h"
+#include "components/enterprise/device_trust/core/signals/decorators/common/mock_signals_decorator.h"
 
-namespace enterprise_connectors {
-namespace test {
+namespace enterprise_connectors::test {
 
 MockSignalsDecorator::MockSignalsDecorator() = default;
 MockSignalsDecorator::~MockSignalsDecorator() = default;
 
-}  // namespace test
-}  // namespace enterprise_connectors
+}  // namespace enterprise_connectors::test

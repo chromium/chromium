@@ -7,24 +7,23 @@ source_set("common") {
 
   public = [
     "common_signals_decorator.h",
-    "metrics_utils.h",
-    "signals_decorator.h",
     "signals_utils.h",
   ]
 
   sources = [
     "common_signals_decorator.cc",
-    "metrics_utils.cc",
     "signals_utils.cc",
   ]
 
   public_deps = [
     "//base",
     "//components/enterprise/device_trust/core/attestation:types",
+    "//components/enterprise/device_trust/core/signals/decorators/common",
   ]
 
   deps = [
     "//components/device_signals/core/common",
+    "//components/enterprise/device_trust/core:metrics",
     "//components/policy/core/common",
     "//components/version_info",
     "//third_party/abseil-cpp:absl",
@@ -35,14 +34,10 @@ source_set("test_support") {
   testonly = true
   configs += [ "//components/enterprise:extra_warnings" ]
 
-  sources = [
-    "mock_signals_decorator.cc",
-    "mock_signals_decorator.h",
-  ]
-
   public_deps = [
     ":common",
     "//components/enterprise/device_trust/core/attestation:types",
+    "//components/enterprise/device_trust/core/signals/decorators/common:test_support",
     "//testing/gmock",
   ]
 }
@@ -61,6 +56,7 @@ source_set("unit_tests") {
     "//components/component_updater",
     "//components/device_signals/core/common",
     "//components/enterprise/device_trust/core/attestation:types",
+    "//components/enterprise/device_trust/core/signals/decorators/common:test_support",
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/prefs:test_support",

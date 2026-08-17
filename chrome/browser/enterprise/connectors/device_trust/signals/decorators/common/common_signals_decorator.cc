@@ -7,8 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "components/enterprise/device_trust/core/metrics_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/version_info/version_info.h"
 

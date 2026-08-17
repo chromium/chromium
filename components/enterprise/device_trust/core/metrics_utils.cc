@@ -109,6 +109,14 @@ void LogDeviceTrustResponse(const DeviceTrustResponse& response,
                                 ResponseToResult(response));
 }
 
+void LogSignalsCollectionLatency(const char* variant,
+                                 base::TimeTicks start_time) {
+  static constexpr char kLatencyHistogramFormat[] =
+      "Enterprise.DeviceTrust.SignalsDecorator.Latency.%s";
+  base::UmaHistogramTimes(base::StringPrintf(kLatencyHistogramFormat, variant),
+                          base::TimeTicks::Now() - start_time);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 void LogOrigin(DTOrigin origin) {
   static constexpr char kOriginHistogram[] = "Enterprise.DeviceTrust.Origin";

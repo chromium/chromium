@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
+#include "components/enterprise/device_trust/core/signals/decorators/common/signals_decorator.h"
 
 namespace policy {
 class BrowserPolicyConnectorAsh;

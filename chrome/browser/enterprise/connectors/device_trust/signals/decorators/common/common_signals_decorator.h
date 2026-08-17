@@ -11,7 +11,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
+#include "components/enterprise/device_trust/core/signals/decorators/common/signals_decorator.h"
 
 namespace enterprise_connectors {
 

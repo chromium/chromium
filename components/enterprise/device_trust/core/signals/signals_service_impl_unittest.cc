@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service_impl.h"
+#include "components/enterprise/device_trust/core/signals/signals_service_impl.h"
 
 #include <memory>
 #include <string>
@@ -13,11 +13,11 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/mock_signals_decorator.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_filterer.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/signals_filterer.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "components/enterprise/device_trust/core/signals/decorators/common/mock_signals_decorator.h"
+#include "components/enterprise/device_trust/core/signals/decorators/common/signals_decorator.h"
+#include "components/enterprise/device_trust/core/signals/mock_signals_filterer.h"
+#include "components/enterprise/device_trust/core/signals/signals_filterer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

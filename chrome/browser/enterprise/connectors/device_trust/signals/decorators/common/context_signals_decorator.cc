@@ -8,10 +8,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_utils.h"
 #include "chrome/browser/enterprise/signals/context_info_fetcher.h"
 #include "components/device_signals/core/common/signals_constants.h"
+#include "components/enterprise/device_trust/core/metrics_utils.h"
 
 namespace enterprise_connectors {
 

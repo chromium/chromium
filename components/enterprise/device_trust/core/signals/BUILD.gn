@@ -3,20 +3,64 @@
 # found in the LICENSE file.
 
 source_set("signals") {
-  public = [ "signals_service.h" ]
+  configs += [ "//components/enterprise:extra_warnings" ]
 
-  public_deps = [ "//base" ]
+  public = [
+    "signals_filterer.h",
+    "signals_service.h",
+    "signals_service_impl.h",
+  ]
+
+  sources = [
+    "signals_filterer.cc",
+    "signals_service_impl.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/enterprise/device_trust/core/signals/decorators/common",
+  ]
+
+  deps = [ "//components/enterprise/device_trust/core:metrics" ]
 }
 
 source_set("test_support") {
   testonly = true
+  configs += [ "//components/enterprise:extra_warnings" ]
+
   sources = [
+    "mock_signals_filterer.cc",
+    "mock_signals_filterer.h",
     "mock_signals_service.cc",
     "mock_signals_service.h",
   ]
 
   public_deps = [
     ":signals",
+    "//components/enterprise/device_trust/core/signals/decorators/common:test_support",
     "//testing/gmock",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "signals_filterer_unittest.cc",
+    "signals_service_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":signals",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/device_signals/core/common",
+    "//components/enterprise/device_trust/core:metrics",
+    "//components/enterprise/device_trust/core/signals/decorators/common:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

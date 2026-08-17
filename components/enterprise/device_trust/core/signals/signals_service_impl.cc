@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/device_trust/signals/signals_service_impl.h"
+#include "components/enterprise/device_trust/core/signals/signals_service_impl.h"
 
 #include <memory>
 #include <utility>
@@ -12,9 +12,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/metrics_utils.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
-#include "chrome/browser/enterprise/connectors/device_trust/signals/signals_filterer.h"
+#include "components/enterprise/device_trust/core/metrics_utils.h"
+#include "components/enterprise/device_trust/core/signals/decorators/common/signals_decorator.h"
+#include "components/enterprise/device_trust/core/signals/signals_filterer.h"
 
 namespace enterprise_connectors {
 
