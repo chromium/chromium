@@ -159,10 +159,6 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   bool IsEditableText(JNIEnv* env, int32_t id);
   bool IsFocused(JNIEnv* env, int32_t id);
   bool IsTextSelectable(JNIEnv* env, int32_t id);
-  // Returns ui::kAXAndroidUndefinedSelectionIndex if no selection.
-  int32_t GetEditableTextSelectionStart(JNIEnv* env, int32_t id);
-  // Returns ui::kAXAndroidUndefinedSelectionIndex if no selection.
-  int32_t GetEditableTextSelectionEnd(JNIEnv* env, int32_t id);
   base::android::ScopedJavaLocalRef<jintArray> GetAbsolutePositionForNode(
       JNIEnv* env,
       int32_t unique_id);
@@ -518,6 +514,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       int32_t unique_id);
 
   base::android::ScopedJavaLocalRef<jintArray> GetExtendedSelection(
+      JNIEnv* env,
+      int32_t unique_id);
+
+  base::android::ScopedJavaLocalRef<jintArray> GetSelectionRangeAsTextOffsets(
       JNIEnv* env,
       int32_t unique_id);
 

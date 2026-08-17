@@ -1767,6 +1767,76 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
+     * Ensure that when moving at granularity with extend selection set to true on an editable node
+     * with an existing selection, the selection anchor is initialized from the existing selection
+     * start and maintained during subsequent granularity movements.
+     */
+    @Test
+    @SmallTest
+    public void testEvent_MovementInitialization_WithExistingSelection_ExtendSelection()
+            throws Throwable {
+        // Build a simple web page with an input and the text "Testing"
+        setupTestWithHTML("<input id='id1' type=\"text\" value=\"Testing\"><p id='id2'>Text1</p>");
+
+        // Find a node in the accessibility tree with input type TYPE_CLASS_TEXT.
+        int vvid = waitForNodeMatching(sInputTypeMatcher, InputType.TYPE_CLASS_TEXT);
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotEquals(mNodeInfo, null);
+
+        for (int forward = 0; forward < 2; forward++) {
+            // Select text (indices 2 to 5) and wait for result.
+            {
+                Bundle bundle = new Bundle();
+                bundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 2);
+                bundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 5);
+                Assert.assertTrue(
+                        performActionOnUiThread(
+                                vvid,
+                                ACTION_SET_SELECTION,
+                                bundle,
+                                () -> {
+                                    return createAccessibilityNodeInfo(vvid).getTextSelectionStart()
+                                                    == 2
+                                            && createAccessibilityNodeInfo(vvid)
+                                                            .getTextSelectionEnd()
+                                                    == 5;
+                                }));
+            }
+
+            focusNode(vvid);
+
+            Bundle args = new Bundle();
+            args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+            args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
+
+            if (forward == 1) {
+                // Simulate swiping right (forward): extends selection from [2, 5] to [2, 6].
+                performTextActionOnUiThread(vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+
+                Assert.assertEquals(5, mTestData.getTraverseFromIndex());
+                Assert.assertEquals(6, mTestData.getTraverseToIndex());
+                Assert.assertEquals(2, mTestData.getSelectionFromIndex());
+                Assert.assertEquals(6, mTestData.getSelectionToIndex());
+            } else {
+                // Simulate swiping left (backward): shrinks selection from [2, 5] to [2, 4].
+                performTextActionOnUiThread(vvid, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
+
+                Assert.assertEquals(4, mTestData.getTraverseFromIndex());
+                Assert.assertEquals(5, mTestData.getTraverseToIndex());
+                Assert.assertEquals(2, mTestData.getSelectionFromIndex());
+                Assert.assertEquals(4, mTestData.getSelectionToIndex());
+            }
+
+            // Focus on another node to reset the status for the next case.
+            if (forward == 0) {
+                int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
+                Assert.assertNotEquals(createAccessibilityNodeInfo(vvid2), null);
+                focusNode(vvid2);
+            }
+        }
+    }
+
+    /**
      * Ensure granularity movement state is reset and properly re-initialized when selection in an
      * editable node changes independently of granularity movement.
      */
@@ -1785,7 +1855,7 @@ public class WebContentsAccessibilityTest {
 
         focusNodeAndWaitForSelection(editTextVirtualViewId);
 
-        // 1. Move forward by 1 character with extended selection.
+        // 1. Move forward by 1 character with extended selection (0 -> 1).
         Bundle args = new Bundle();
         args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
         args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
@@ -1797,21 +1867,100 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(0, mTestData.getSelectionFromIndex());
         Assert.assertEquals(1, mTestData.getSelectionToIndex());
 
-        // 2. Change selection independently (Select All: 0 to 13).
+        // 2. Change selection independently (selection from 3 to 8).
         setAndAssertExtendedSelection(
                 rootVvid,
                 editTextVirtualViewId,
-                0,
+                3,
                 OFFSET_TYPE_TEXT,
                 editTextVirtualViewId,
-                13,
+                8,
                 OFFSET_TYPE_TEXT);
 
-        // Verify that moving forward at character granularity is now at the end of the text
-        // (index 13) and returns false rather than advancing from the stale index 1.
-        Assert.assertFalse(
+        // 3. Move forward with extended selection again. Verify that movement resumes from the
+        // new selection endpoint (8 -> 9) and maintains the selection anchor at 3 (3 -> 9).
+        performTextActionOnUiThread(
+                editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(8, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(9, mTestData.getTraverseToIndex());
+        Assert.assertEquals(3, mTestData.getSelectionFromIndex());
+        Assert.assertEquals(9, mTestData.getSelectionToIndex());
+    }
+
+    /**
+     * Ensure that when moving backward at granularity with extend selection after a "Select All"
+     * action on an editable node, the selection anchor is preserved at 0 and the selection shrinks
+     * rather than resetting the anchor to the end.
+     */
+    @Test
+    @SmallTest
+    public void testEvent_MovementAtGranularity_SelectAllAndDeselect() throws Throwable {
+        // Build a simple web page with an input and the text "Editable Text" (length 13)
+        setupTestWithHTML("<input id=\"fn\" type=\"text\" value=\"Editable Text\">");
+
+        int editTextVirtualViewId =
+                waitForNodeMatching(sInputTypeMatcher, InputType.TYPE_CLASS_TEXT);
+        mNodeInfo = createAccessibilityNodeInfo(editTextVirtualViewId);
+        Assert.assertNotEquals(mNodeInfo, null);
+
+        focusNodeAndWaitForSelection(editTextVirtualViewId);
+
+        // 1. Move cursor to beginning (0, 0).
+        Bundle setSelBundle = new Bundle();
+        setSelBundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 0);
+        setSelBundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 0);
+        Assert.assertTrue(
                 performActionOnUiThread(
-                        editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args));
+                        editTextVirtualViewId,
+                        ACTION_SET_SELECTION,
+                        setSelBundle,
+                        () -> {
+                            return createAccessibilityNodeInfo(editTextVirtualViewId)
+                                                    .getTextSelectionStart()
+                                            == 0
+                                    && createAccessibilityNodeInfo(editTextVirtualViewId)
+                                                    .getTextSelectionEnd()
+                                            == 0;
+                        }));
+
+        // 2. Select all (0, 13).
+        setSelBundle.putInt(ACTION_ARGUMENT_SELECTION_START_INT, 0);
+        setSelBundle.putInt(ACTION_ARGUMENT_SELECTION_END_INT, 13);
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        editTextVirtualViewId,
+                        ACTION_SET_SELECTION,
+                        setSelBundle,
+                        () -> {
+                            return createAccessibilityNodeInfo(editTextVirtualViewId)
+                                                    .getTextSelectionStart()
+                                            == 0
+                                    && createAccessibilityNodeInfo(editTextVirtualViewId)
+                                                    .getTextSelectionEnd()
+                                            == 13;
+                        }));
+
+        // 3. Move backward by character with extended selection.
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
+
+        // Deselect the last character 't' (13 -> 12), maintaining anchor at 0 (0 -> 12).
+        performTextActionOnUiThread(
+                editTextVirtualViewId, ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(12, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(13, mTestData.getTraverseToIndex());
+        Assert.assertEquals(0, mTestData.getSelectionFromIndex());
+        Assert.assertEquals(12, mTestData.getSelectionToIndex());
+
+        // 4. Move forward by character with extended selection.
+        // Re-select 't' (12 -> 13), maintaining anchor at 0 (0 -> 13).
+        performTextActionOnUiThread(
+                editTextVirtualViewId, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(12, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(13, mTestData.getTraverseToIndex());
+        Assert.assertEquals(0, mTestData.getSelectionFromIndex());
+        Assert.assertEquals(13, mTestData.getSelectionToIndex());
     }
 
     /**
@@ -1868,6 +2017,153 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(3, mTestData.getTraverseToIndex());
         Assert.assertEquals(3, mTestData.getSelectionFromIndex());
         Assert.assertEquals(2, mTestData.getSelectionToIndex());
+    }
+
+    /**
+     * Ensure granularity movement state is properly updated when extended selection spans across
+     * non-editable nodes.
+     */
+    @Test
+    @SmallTest
+    public void testEvent_MovementAtGranularity_ExtendedSelectionOnNonEditable() throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="p1">FirstParagraph</p>
+                <p id="p2">SecondParagraph</p>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        focusNode(p2Vvid);
+
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
+
+        // 1. Move forward by 1 character on p2 with extended selection (0 -> 1).
+        performTextActionOnUiThreadAndWaitForTraversalEvent(
+                p2Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(1, mTestData.getTraverseToIndex());
+
+        // 2. Set selection from p1 (offset 2) to p2 (offset 6).
+        setAndAssertExtendedSelection(
+                rootVvid, p1Vvid, 2, OFFSET_TYPE_TEXT, p2Vvid, 6, OFFSET_TYPE_TEXT);
+
+        // 3. Move forward at character granularity again with extended selection. Verify that
+        // movement resumes from the new selection endpoint on p2 (6 -> 7).
+        performTextActionOnUiThreadAndWaitForTraversalEvent(
+                p2Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(6, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(7, mTestData.getTraverseToIndex());
+    }
+
+    /**
+     * Ensure granularity movement correctly resolves child offsets when an editable node is
+     * included in a multi-node extended selection.
+     */
+    @Test
+    @SmallTest
+    public void testEvent_MovementAtGranularity_ChildOffsetSelection() throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="p1">FirstParagraph</p>
+                <input id="input1" type="text" value="EditableText">
+                <p id="p2">SecondParagraph</p>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int input1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "input1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        int input1Index = 1;
+
+        // 1. Set focus to editable.
+        focusNodeAndWaitForSelection(input1Vvid);
+
+        // 2. Movement with selection on editable to select one character (0 -> 1).
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, true);
+
+        performTextActionOnUiThread(input1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(1, mTestData.getTraverseToIndex());
+        Assert.assertEquals(0, mTestData.getSelectionFromIndex());
+        Assert.assertEquals(1, mTestData.getSelectionToIndex());
+
+        // 3. Set extended selection from beginning of p1 to end of editable using child offset.
+        setAndAssertExtendedSelection(
+                rootVvid,
+                p1Vvid,
+                0,
+                OFFSET_TYPE_TEXT,
+                rootVvid,
+                input1Index + 1,
+                OFFSET_TYPE_CHILD,
+                p1Vvid,
+                0,
+                OFFSET_TYPE_TEXT,
+                p2Vvid,
+                0,
+                OFFSET_TYPE_TEXT);
+
+        // 4. Moving forward with extended selection on input1 advances from the local
+        // selection cursor (1 -> 2).
+        performTextActionOnUiThread(input1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(1, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(2, mTestData.getTraverseToIndex());
+    }
+
+    /**
+     * Ensure granularity movement state is preserved when restoring focus to the previous node, but
+     * reset when moving focus to a new node.
+     */
+    @Test
+    @SmallTest
+    public void testEvent_MovementAtGranularity_FocusRestoration() throws Throwable {
+        setupTestWithHTML(
+                """
+                <p id="p1">Hello World</p>
+                <p id="p2">Another Paragraph</p>
+                """);
+
+        int p1Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p1");
+        int p2Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p2");
+
+        focusNode(p1Vvid);
+
+        Bundle args = new Bundle();
+        args.putInt(ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT, MOVEMENT_GRANULARITY_CHARACTER);
+        args.putBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN, false);
+
+        // Move 2 characters forward on p1 (0 -> 1 -> 2).
+        performTextActionOnUiThreadAndWaitForTraversalEvent(
+                p1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        performTextActionOnUiThreadAndWaitForTraversalEvent(
+                p1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(1, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(2, mTestData.getTraverseToIndex());
+
+        // Clear accessibility focus on p1.
+        performActionOnUiThread(p1Vvid, ACTION_CLEAR_ACCESSIBILITY_FOCUS, null);
+
+        // Restore focus back to p1 (restoring focus preserves previous granularity position 2).
+        focusNode(p1Vvid);
+        performTextActionOnUiThreadAndWaitForTraversalEvent(
+                p1Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(2, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(3, mTestData.getTraverseToIndex());
+
+        // Move focus to p2 (new node: granularity index resets for p2).
+        focusNode(p2Vvid);
+        performTextActionOnUiThreadAndWaitForTraversalEvent(
+                p2Vvid, ACTION_NEXT_AT_MOVEMENT_GRANULARITY, args);
+        Assert.assertEquals(0, mTestData.getTraverseFromIndex());
+        Assert.assertEquals(1, mTestData.getTraverseToIndex());
     }
 
     /**
