@@ -6135,6 +6135,10 @@ inline constexpr char kFeedSignedOutViewDemotionName[] =
 inline constexpr char kFeedSignedOutViewDemotionDescription[] =
     "Enables signed-out view demotion for the Discover Feed.";
 
+inline constexpr char kFlyoutInBookmarksBarName[] = "Flyout in Bookmarks Bar";
+inline constexpr char kFlyoutInBookmarksBarDescription[] =
+    "Enables using flyout menus to show nested folders in the bookmarks bar.";
+
 inline constexpr char kFullscreenInsetsApiMigrationName[] =
     "Migrate to the new fullscreen insets APIs";
 inline constexpr char kFullscreenInsetsApiMigrationDescription[] =

@@ -13211,6 +13211,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBookmarksBarContextMenuDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBookmarksBarContextMenu)},
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    {"flyout-in-bookmarks-bar", flag_descriptions::kFlyoutInBookmarksBarName,
+     flag_descriptions::kFlyoutInBookmarksBarDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kFlyoutInBookmarksBar)},
+#endif
 
     {"user-media-element", flag_descriptions::kUserMediaElementName,
      flag_descriptions::kUserMediaElementDescription,

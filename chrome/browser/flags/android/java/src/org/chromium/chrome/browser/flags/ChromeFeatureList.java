@@ -569,6 +569,7 @@ public abstract class ChromeFeatureList {
     public static final String FEED_LOADING_PLACEHOLDER = "FeedLoadingPlaceholder";
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
     public static final String FLUID_RESIZE = "FluidResize";
+    public static final String FLYOUT_IN_BOOKMARKS_BAR = "FlyoutInBookmarksBar";
     public static final String FORCE_TRANSLUCENT_NOTIFICATION_TRAMPOLINE =
             "ForceTranslucentNotificationTrampoline";
     public static final String FORCE_WEB_CONTENTS_DARK_MODE = "WebContentsForceDark";
@@ -1717,6 +1718,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE, true);
     public static final MutableFlagWithSafeDefault sEscCancelDrag =
             newMutableFlagWithSafeDefault(ESC_CANCEL_DRAG, true);
+    public static final MutableFlagWithSafeDefault sFlyoutInBookmarksBar =
+            newMutableFlagWithSafeDefault(FLYOUT_IN_BOOKMARKS_BAR, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
             newMutableFlagWithSafeDefault(INCOGNITO_SCREENSHOT, false);
     public static final MutableFlagWithSafeDefault sInlinePdfV2 =

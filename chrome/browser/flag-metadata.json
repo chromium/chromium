@@ -5158,6 +5158,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "flyout-in-bookmarks-bar",
+    "owners": [ "massan@google.com", "nya@google.com", "lokeric@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "focus-follows-cursor",
     "owners": [ "dandersson@chromium.org", "tclaiborne@chromium.org" ],
     "expiry_milestone": 200
