@@ -65,10 +65,10 @@ window.onload = () => {
 
     await mouseMoveTo(x, y);
     await mouseDownAt(x, y);
-    await mouseMoveTo(x + 10, y);
+    await mouseMoveTo(x + 10, y, Buttons.LEFT);
     assert_true(ltrDiv.scrollLeft > 200, "Thumb drag should cause a scroll.");
 
-    await mouseMoveTo(x + 10, y + 200);
+    await mouseMoveTo(x + 10, y + 200, Buttons.LEFT);
     assert_equals(ltrDiv.scrollLeft, DRAG_ORIGIN, MSG);
     await mouseUpAt(x + 10, y + 200);
   }, "Tests that the thumb snaps back for ltr direction.");
@@ -90,10 +90,10 @@ window.onload = () => {
 
     await mouseMoveTo(x, y);
     await mouseDownAt(x, y);
-    await mouseMoveTo(x - 10, y);
+    await mouseMoveTo(x - 10, y, Buttons.LEFT);
     assert_true(rtlDiv.scrollLeft < -200, "Thumb drag should cause a scroll.");
 
-    await mouseMoveTo(x - 10, y + 200);
+    await mouseMoveTo(x - 10, y + 200, Buttons.LEFT);
     assert_equals(rtlDiv.scrollLeft, DRAG_ORIGIN, MSG);
     await mouseUpAt(x - 10, y + 200);
   }, "Tests that the thumb snaps back for rtl direction.");

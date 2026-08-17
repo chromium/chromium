@@ -593,9 +593,6 @@ crbug.com/329302543 external/wpt/css/css-backgrounds/background-clip/clip-border
 # [css-image-animation]
 crbug.com/536159147 [ Mac ] external/wpt/css/css-image-animation/image-animation-paused-exact-frame.tentative.html [ Failure Pass ]
 
-# Failures due to pointerMove building synthetic events without button information (main thread only).
-crbug.com/1056778 fast/scrolling/scrollbars/scrollbar-thumb-snapping.html [ Failure ]
-
 # Most of these fail due to subpixel differences, but a couple are real failures.
 crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-border-image.html [ Failure ]
 crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-filter.html [ Failure ]
