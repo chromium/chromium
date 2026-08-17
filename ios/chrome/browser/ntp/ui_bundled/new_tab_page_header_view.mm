@@ -137,6 +137,14 @@ NSString* const kMIACircleAnimationDarkMode = @"mia_glowing_circle_animation";
 // Returns the background color for the NTP Header view. This is the color
 // that shows when the fakebox is scrolled up.
 UIColor* HeaderBackgroundColor(id<UITraitEnvironment> environment) {
+  if (IsNewTabPageUICleanupEnabled()) {
+    NewTabPageColorPalette* colorPalette =
+        [environment.traitCollection objectForNewTabPageTrait];
+    if (!colorPalette &&
+        ![environment.traitCollection boolForNewTabPageImageBackgroundTrait]) {
+      return [UIColor colorNamed:kSurfaceContainerColor];
+    }
+  }
   if (IsSplitToolbarMode(environment)) {
     return [UIColor colorNamed:kBackgroundColor];
   } else {

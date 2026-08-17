@@ -1094,6 +1094,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     self.view.backgroundColor = colorPalette.primaryColor;
     [_backgroundGradientView setStartColor:colorPalette.secondaryColor
                                   endColor:colorPalette.primaryColor];
+  } else if (IsNewTabPageUICleanupEnabled()) {
+    _backgroundGradientView.hidden = YES;
+    self.view.backgroundColor = [UIColor colorNamed:kSurfaceContainerColor];
   } else {
     self.view.backgroundColor = [UIColor colorNamed:@"ntp_background_color"];
     [_backgroundGradientView
@@ -1679,6 +1682,15 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 // background color to this view's otherwise.
 - (void)updateModularHomeBackgroundColorForUserInterfaceStyle:
     (UIUserInterfaceStyle)style {
+  if (IsNewTabPageUICleanupEnabled()) {
+    NewTabPageColorPalette* colorPalette =
+        [self.traitCollection objectForNewTabPageTrait];
+    if (!colorPalette &&
+        ![self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
+      _backgroundGradientView.hidden = YES;
+      return;
+    }
+  }
   _backgroundGradientView.hidden =
       style == UIUserInterfaceStyleLight &&
       ![self.traitCollection boolForNewTabPageImageBackgroundTrait];
