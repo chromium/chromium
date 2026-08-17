@@ -103,9 +103,12 @@ import org.chromium.build.annotations.Nullable;
                 isIncognito
                         ? R.drawable.rounded_corner_right_incognito
                         : R.drawable.rounded_corner_right;
+        int bottomLeftResId =
+                isIncognito
+                        ? R.drawable.rounded_corner_bottom_left_incognito
+                        : R.drawable.rounded_corner_bottom_left;
         mTopLeftRoundedCorner.setImageResource(topLeftResId);
         mTopRightRoundedCorner.setImageResource(topRightResId);
-
-        // TODO(crbug.com/537032526): Update VT bottom-left corner for Incognito.
+        mBottomLeftRoundedCorner.setImageResource(bottomLeftResId);
     }
 }

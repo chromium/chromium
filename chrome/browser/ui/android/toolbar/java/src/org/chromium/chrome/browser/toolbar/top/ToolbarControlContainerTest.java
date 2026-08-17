@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -23,8 +24,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.LayerDrawable;
@@ -937,6 +941,51 @@ public class ToolbarControlContainerTest {
         mControlContainer.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mControlContainer.layout(0, 0, 500, 100);
         assertEquals("Corner overlay should be on the left in RTL mode", 0, overlayView.getLeft());
+    }
+
+    @Test
+    public void testTopLeftCornerOverlay_OnTabOrModelChanged() {
+        initControlContainer(R.layout.toolbar_tablet);
+
+        var appHeaderState =
+                new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        mControlContainer.onAppHeaderStateChanged(appHeaderState);
+
+        SettableNonNullObservableSupplier<Boolean> isVerticalTabsActiveSupplier =
+                ObservableSuppliers.createNonNull(true);
+        mControlContainer.setIsVerticalTabsActiveSupplier(isVerticalTabsActiveSupplier);
+
+        View overlayView = mControlContainer.getTopLeftCornerOverlayViewForTesting();
+        assertNotNull(overlayView);
+        assertEquals(View.VISIBLE, overlayView.getVisibility());
+
+        // Ensure background is null to verify onTabOrModelChanged updates state even when
+        // background is null.
+        mControlContainer.setBackground(null);
+
+        Context context = mControlContainer.getContext();
+        Canvas canvas = mock(Canvas.class);
+        ArgumentCaptor<Paint> paintCaptor = ArgumentCaptor.forClass(Paint.class);
+
+        // Switch to incognito model.
+        mControlContainer.onTabOrModelChanged(/* incognito= */ true);
+        overlayView.draw(canvas);
+        verify(canvas, atLeastOnce()).drawPath(any(), paintCaptor.capture());
+        assertEquals(
+                "Corner overlay should draw with incognito tab strip background color",
+                TabUiThemeUtil.getTabStripBackgroundColor(context, true),
+                paintCaptor.getValue().getColor());
+
+        // Switch back to regular model.
+        clearInvocations(canvas);
+        mControlContainer.onTabOrModelChanged(/* incognito= */ false);
+        overlayView.draw(canvas);
+        verify(canvas, atLeastOnce()).drawPath(any(), paintCaptor.capture());
+        assertEquals(
+                "Corner overlay should draw with regular tab strip background color",
+                TabUiThemeUtil.getTabStripBackgroundColor(context, false),
+                paintCaptor.getValue().getColor());
     }
 
     @Test

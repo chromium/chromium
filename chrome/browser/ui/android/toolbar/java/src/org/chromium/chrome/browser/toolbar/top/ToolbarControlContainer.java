@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.ViewResourceCoordinatorLayout;
@@ -174,7 +173,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     @Override
                     protected void onDraw(Canvas canvas) {
                         mPaint.setColor(
-                                SemanticColorUtils.getColorSurfaceContainerHighest(getContext()));
+                                TabUiThemeUtil.getTabStripBackgroundColor(
+                                        getContext(), mIncognito));
                         canvas.drawPath(mPath, mPaint);
                     }
                 };
@@ -240,14 +240,22 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     @Override
     public void onTabOrModelChanged(boolean incognito) {
+        boolean incognitoChanged = mIncognito != incognito;
+        if (incognitoChanged) {
+            mIncognito = incognito;
+            // Invalidate top-left corner overlay to redraw with updated incognito state color.
+            if (mTopLeftCornerOverlayView != null) {
+                mTopLeftCornerOverlayView.invalidate();
+            }
+        }
+
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
                 || getBackground() == null) {
             return;
         }
 
-        if (mIncognito != incognito) {
+        if (incognitoChanged) {
             maybeUpdateTempTabStripDrawableBackground(incognito, getAppHeaderState());
-            mIncognito = incognito;
         }
     }
 

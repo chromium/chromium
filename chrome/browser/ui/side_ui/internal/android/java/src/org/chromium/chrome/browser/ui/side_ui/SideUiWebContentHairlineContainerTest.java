@@ -32,6 +32,7 @@ public class SideUiWebContentHairlineContainerTest {
     private ImageView mRightHairline;
 
     private ImageView mTopLeftRoundedCorner;
+    private ImageView mBottomLeftRoundedCorner;
     private ImageView mTopRightRoundedCorner;
 
     @Before
@@ -49,6 +50,7 @@ public class SideUiWebContentHairlineContainerTest {
         mRightHairline = mContainer.getRightHairline();
 
         mTopLeftRoundedCorner = mContainer.getTopLeftRoundedCorner();
+        mBottomLeftRoundedCorner = mContainer.getBottomLeftRoundedCorner();
         mTopRightRoundedCorner = mContainer.getTopRightRoundedCorner();
     }
 
@@ -68,8 +70,14 @@ public class SideUiWebContentHairlineContainerTest {
                 Shadows.shadowOf(mTopLeftRoundedCorner.getDrawable()).getCreatedFromResId();
         int topRightResId =
                 Shadows.shadowOf(mTopRightRoundedCorner.getDrawable()).getCreatedFromResId();
+        int bottomLeftResId =
+                Shadows.shadowOf(mBottomLeftRoundedCorner.getDrawable()).getCreatedFromResId();
         assertEquals("Unexpected resId.", R.drawable.rounded_corner_left_incognito, topLeftResId);
         assertEquals("Unexpected resId.", R.drawable.rounded_corner_right_incognito, topRightResId);
+        assertEquals(
+                "Unexpected resId.",
+                R.drawable.rounded_corner_bottom_left_incognito,
+                bottomLeftResId);
     }
 
     @Test
@@ -84,7 +92,10 @@ public class SideUiWebContentHairlineContainerTest {
                 Shadows.shadowOf(mTopLeftRoundedCorner.getDrawable()).getCreatedFromResId();
         int topRightResId =
                 Shadows.shadowOf(mTopRightRoundedCorner.getDrawable()).getCreatedFromResId();
+        int bottomLeftResId =
+                Shadows.shadowOf(mBottomLeftRoundedCorner.getDrawable()).getCreatedFromResId();
         assertEquals("Unexpected resId.", R.drawable.rounded_corner_left, topLeftResId);
         assertEquals("Unexpected resId.", R.drawable.rounded_corner_right, topRightResId);
+        assertEquals("Unexpected resId.", R.drawable.rounded_corner_bottom_left, bottomLeftResId);
     }
 }
