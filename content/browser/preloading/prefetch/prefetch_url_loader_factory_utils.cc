@@ -39,18 +39,22 @@ void SetTerminalPrefetchURLLoaderFactoryForTesting(  // IN-TEST
   g_url_loader_factory_for_testing = url_loader_factory;
 }
 
-scoped_refptr<network::SharedURLLoaderFactory> CreatePrefetchURLLoaderFactory(
+// `browser_context`, `referring_origin`, and `renderer_initiator_info` should
+// match with the corresponding fields of `PrefetchRequest`.
+template <typename FactoryType>
+FactoryType CreatePrefetchURLLoaderFactory(
     network::mojom::NetworkContext* network_context,
-    const PrefetchRequest& prefetch_request,
+    BrowserContext* browser_context,
+    const std::optional<url::Origin>& referring_origin,
+    const PrefetchRendererInitiatorInfo* renderer_initiator_info,
     scoped_refptr<network::SharedURLLoaderFactory>
-        pre_prefetch_url_loader_factory) {
+        pre_prefetch_url_loader_factory = nullptr) {
   CHECK(network_context);
 
   RenderFrameHost* referring_render_frame_host;
   int referring_render_process_id;
   ukm::SourceIdObj ukm_source_id;
-  if (auto* renderer_initiator_info =
-          prefetch_request.GetRendererInitiatorInfo()) {
+  if (renderer_initiator_info) {
     referring_render_frame_host = renderer_initiator_info->GetRenderFrameHost();
     CHECK(referring_render_frame_host);
     referring_render_process_id =
@@ -99,14 +103,27 @@ scoped_refptr<network::SharedURLLoaderFactory> CreatePrefetchURLLoaderFactory(
         url_loader_factory::HeaderClientOption::kAllow);
   }();
 
-  return url_loader_factory::Create(
+  return url_loader_factory::CreateInternal<FactoryType>(
       ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
       std::move(terminal_params),
       url_loader_factory::ContentClientParams(
-          prefetch_request.browser_context(), referring_render_frame_host,
-          referring_render_process_id,
-          prefetch_request.referring_origin().value_or(url::Origin()),
-          net::IsolationInfo(), ukm_source_id, &bypass_redirect_checks));
+          browser_context, referring_render_frame_host,
+          referring_render_process_id, referring_origin.value_or(url::Origin()),
+          net::IsolationInfo(), ukm_source_id, &bypass_redirect_checks),
+      /*devtools_params=*/std::nullopt);
+}
+
+scoped_refptr<network::SharedURLLoaderFactory> CreatePrefetchURLLoaderFactory(
+    network::mojom::NetworkContext* network_context,
+    const PrefetchRequest& prefetch_request,
+    scoped_refptr<network::SharedURLLoaderFactory>
+        pre_prefetch_url_loader_factory) {
+  return CreatePrefetchURLLoaderFactory<
+      scoped_refptr<network::SharedURLLoaderFactory>>(
+      network_context, prefetch_request.browser_context(),
+      prefetch_request.referring_origin(),
+      prefetch_request.GetRendererInitiatorInfo(),
+      std::move(pre_prefetch_url_loader_factory));
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>

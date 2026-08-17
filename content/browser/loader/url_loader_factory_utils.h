@@ -203,6 +203,9 @@ class CONTENT_EXPORT TerminalParams final {
 //
 // Note that the created URLLoaderFactory might NOT support auto-reconnect after
 // a crash of Network Service.
+//
+// These methods below are essentially the same, exposed for each of specific
+// return types or for templatization.
 [[nodiscard]] CONTENT_EXPORT scoped_refptr<network::SharedURLLoaderFactory>
 Create(ContentBrowserClient::URLLoaderFactoryType type,
        TerminalParams terminal_params,
@@ -226,6 +229,15 @@ CONTENT_EXPORT void CreateAndConnectToPendingReceiver(
     std::optional<ContentClientParams> content_client_params = std::nullopt,
     std::optional<devtools_instrumentation::WillCreateURLLoaderFactoryParams>
         devtools_params = std::nullopt);
+
+template <typename OutType, typename... FinishArgs>
+[[nodiscard]] CONTENT_EXPORT OutType CreateInternal(
+    ContentBrowserClient::URLLoaderFactoryType type,
+    TerminalParams terminal_params,
+    std::optional<ContentClientParams> content_client_params,
+    std::optional<devtools_instrumentation::WillCreateURLLoaderFactoryParams>
+        devtools_params,
+    FinishArgs... finish_args);
 
 }  // namespace url_loader_factory
 }  // namespace content

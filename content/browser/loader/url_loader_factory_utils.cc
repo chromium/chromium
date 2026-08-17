@@ -221,10 +221,12 @@ std::tuple<bool, bool> GetIsNavigationAndDownload(
   }
 }
 
+}  // namespace
+
 // `FinishArgs...` is `mojo::PendingReceiver<network::mojom::URLLoaderFactory>`
 // when called from `CreateAndConnectToReceiver`, and empty otherwise.
 template <typename OutType, typename... FinishArgs>
-[[nodiscard]] OutType CreateInternal(
+[[nodiscard]] CONTENT_EXPORT OutType CreateInternal(
     ContentBrowserClient::URLLoaderFactoryType type,
     TerminalParams terminal_params,
     std::optional<ContentClientParams> content_client_params,
@@ -314,8 +316,6 @@ template <typename OutType, typename... FinishArgs>
                                 terminal_params.network_context(),
                                 std::move(factory_params));
 }
-
-}  // namespace
 
 scoped_refptr<network::SharedURLLoaderFactory> Create(
     ContentBrowserClient::URLLoaderFactoryType type,
