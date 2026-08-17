@@ -1241,15 +1241,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 }
 
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetOsHotkeyState) {
-  ExecuteJsTest();
-  g_browser_process->local_state()->SetString(prefs::kGlicLauncherHotkey,
-                                              "Ctrl+Shift+1");
-  ContinueJsTest();
-  g_browser_process->local_state()->SetString(prefs::kGlicLauncherHotkey, "");
-  ContinueJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
                        testDaisyChainRecursiveAndInput) {
   RunTestSequence(InstrumentTab(kFirstTab),

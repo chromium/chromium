@@ -381,22 +381,6 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
 
-  async testGetOsHotkeyState() {
-    assertDefined(this.host.getOsHotkeyState);
-    const osHotkeyState = observeSequence(this.host.getOsHotkeyState());
-    let hotkeyState = await osHotkeyState.next();
-    const isMac = /Mac/.test(navigator.platform);
-    let expectedHotkey = isMac ? '<⌃>-<G>' : '<Ctrl>-<G>';
-    assertEquals(expectedHotkey, hotkeyState.hotkey);
-    await this.advanceToNextStep();
-    hotkeyState = await osHotkeyState.next();
-    expectedHotkey = isMac ? '<⌃>-<⇧>-<1>' : '<Ctrl>-<Shift>-<1>';
-    assertEquals(expectedHotkey, hotkeyState.hotkey);
-    await this.advanceToNextStep();
-    hotkeyState = await osHotkeyState.next();
-    expectedHotkey = '';
-    assertEquals(expectedHotkey, hotkeyState.hotkey);
-  }
 
   async testGetUserProfileInfoCached() {
     assertDefined(this.host.getUserProfileInfo);

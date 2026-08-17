@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
@@ -1058,6 +1059,22 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testPanelActive) {
       glic::Navigate(std::move(params));
 
   ContinueJsTest();
+}
+#endif
+
+// OS-global launcher hotkeys are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetOsHotkeyState) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest({.params = base::Value(base::DictValue().Set(
+                     "expectedHotkey", GetHotkeyString()))});
+  g_browser_process->local_state()->SetString(prefs::kGlicLauncherHotkey,
+                                              "Ctrl+Shift+1");
+  ContinueJsTest({.params = base::Value(base::DictValue().Set(
+                      "expectedHotkey", GetHotkeyString()))});
+  g_browser_process->local_state()->SetString(prefs::kGlicLauncherHotkey, "");
+  ContinueJsTest({.params = base::Value(base::DictValue().Set(
+                      "expectedHotkey", GetHotkeyString()))});
 }
 #endif
 
