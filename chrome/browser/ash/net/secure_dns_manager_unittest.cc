@@ -599,9 +599,18 @@ TEST_F(SecureDnsManagerTest, NoDuplicateShillPropertyUpdateRequests) {
   // The two calls are generated:
   // 1. at startup, with an empty value
   // 2. after the template URI resolver is configured
+  base::RunLoop provider_property_update_loop;
+  int providers_property_update_count = 0;
   EXPECT_CALL(observer, OnPropertyChanged(shill::kDNSProxyDOHProvidersProperty,
                                           testing::_))
-      .Times(2);
+      .Times(2)
+      .WillRepeatedly(
+          [&providers_property_update_count, &provider_property_update_loop](
+              const std::string&, const base::Value&) {
+            if (++providers_property_update_count == 2) {
+              provider_property_update_loop.Quit();
+            }
+          });
 
   ash::ShillManagerClient* shill_manager_client =
       ash::ShillManagerClient::Get();
@@ -635,7 +644,7 @@ TEST_F(SecureDnsManagerTest, NoDuplicateShillPropertyUpdateRequests) {
   // Verify that every pref update above will trigger an update request for the
   // DoH providers.
   EXPECT_EQ(actual_uri_template_update_count, 3);
-  base::RunLoop().RunUntilIdle();
+  provider_property_update_loop.Run();
 }
 
 TEST_F(SecureDnsManagerTest, SetDOHIncludedDomains) {
