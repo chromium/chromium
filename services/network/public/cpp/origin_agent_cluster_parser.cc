@@ -10,11 +10,12 @@ namespace network {
 mojom::OriginAgentClusterValue ParseOriginAgentCluster(
     const std::string& header_value) {
   const auto item = net::structured_headers::ParseItem(header_value);
-  if (!item || !item->item.is_boolean())
+  const bool* boolean = item ? item->item.GetIfBoolean() : nullptr;
+  if (!boolean) {
     return mojom::OriginAgentClusterValue::kAbsent;
-  if (item->item.GetBoolean())
-    return mojom::OriginAgentClusterValue::kTrue;
-  return mojom::OriginAgentClusterValue::kFalse;
+  }
+  return *boolean ? mojom::OriginAgentClusterValue::kTrue
+                  : mojom::OriginAgentClusterValue::kFalse;
 }
 
 }  // namespace network
