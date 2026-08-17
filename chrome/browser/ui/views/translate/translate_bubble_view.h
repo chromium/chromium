@@ -148,6 +148,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
                            AlwaysTranslateCheckboxAndDoneButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, SourceResetButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, TargetResetButton);
+  FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, LazyViewInitialization);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, SourceDoneButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest, TargetDoneButton);
   FRIEND_TEST_ALL_PREFIXES(TranslateBubbleViewTest,

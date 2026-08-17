@@ -297,6 +297,10 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
     bubble_->SwitchView(view_state);
   }
 
+  views::View* advanced_view_source() { return bubble_->advanced_view_source_; }
+
+  views::View* advanced_view_target() { return bubble_->advanced_view_target_; }
+
   TranslateLanguageSearchView* translate_language_search_view() {
     return bubble_->translate_language_search_view_;
   }
@@ -471,8 +475,32 @@ TEST_F(TranslateBubbleViewTest, TargetResetButton) {
   EXPECT_FALSE(bubble_->advanced_reset_button_target_->GetEnabled());
 }
 
+TEST_F(TranslateBubbleViewTest, LazyViewInitialization) {
+  base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
+  CreateAndShowBubble();
+
+  // Initially on VIEW_STATE_BEFORE_TRANSLATE, advanced views should not be
+  // created.
+  EXPECT_EQ(nullptr, advanced_view_source());
+  EXPECT_EQ(nullptr, advanced_view_target());
+  EXPECT_EQ(nullptr, translate_language_search_view());
+
+  // Switching to target language view creates the advanced target view.
+  SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
+  EXPECT_NE(nullptr, advanced_view_target());
+  EXPECT_NE(nullptr, translate_language_search_view());
+  EXPECT_EQ(nullptr, advanced_view_source());
+
+  // Switching to source language view creates the advanced source view.
+  SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
+  EXPECT_NE(nullptr, advanced_view_source());
+}
+
 TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
   CreateAndShowBubble();
+  bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
+  bubble_->target_language_combobox_->SetSelectedIndex(20);
+  bubble_->TargetLanguageChanged();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
 
   // Click the "Done" button to translate. The selected languages by the user
@@ -480,8 +508,6 @@ TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
   EXPECT_FALSE(mock_model_->translate_called_);
   bubble_->source_language_combobox_->SetSelectedIndex(10);
   bubble_->SourceLanguageChanged();
-  bubble_->target_language_combobox_->SetSelectedIndex(20);
-  bubble_->TargetLanguageChanged();
   PressButton(TranslateBubbleView::BUTTON_ID_DONE);
   EXPECT_TRUE(mock_model_->translate_called_);
   EXPECT_EQ(10, mock_model_->source_language_index_);
@@ -493,13 +519,14 @@ TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
 
 TEST_F(TranslateBubbleViewTest, TargetDoneButton) {
   CreateAndShowBubble();
+  bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_SOURCE_LANGUAGE);
+  bubble_->source_language_combobox_->SetSelectedIndex(10);
+  bubble_->SourceLanguageChanged();
   bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
 
   // Click the "Done" button to translate. The selected languages by the user
   // are applied.
   EXPECT_FALSE(mock_model_->translate_called_);
-  bubble_->source_language_combobox_->SetSelectedIndex(10);
-  bubble_->SourceLanguageChanged();
   bubble_->target_language_combobox_->SetSelectedIndex(20);
   bubble_->TargetLanguageChanged();
   PressButton(TranslateBubbleView::BUTTON_ID_DONE);
@@ -521,6 +548,9 @@ TEST_F(TranslateBubbleViewTest, DoneButtonWithoutTranslating) {
   // Set translation called to false so it can be verified that translation is
   // not called again.
   mock_model_->translate_called_ = false;
+
+  // Switch to target language view where the "Done" button is located.
+  bubble_->SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
 
   // Click the "Done" button with the current language pair. This time,
   // translation is not performed and the view state will stay at the translated
