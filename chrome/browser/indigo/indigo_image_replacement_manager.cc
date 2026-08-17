@@ -263,6 +263,7 @@ void IndigoImageReplacementManager::GenerateReplacementImage() {
   CHECK(!primary_original_image_webp_bytes_.empty());
 
   CancelActiveRequest();
+  generate_start_time_ = base::TimeTicks::Now();
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
@@ -307,6 +308,8 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
     image_replacement->ReplacementImageURLReady();
   }
 
+  RecordImageDisplayed();
+
   if (auto* controller = GetIndigoPageActionController()) {
     controller->ShowToolbar();
 
@@ -319,6 +322,7 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
 }
 
 void IndigoImageReplacementManager::CancelActiveRequest() {
+  generate_start_time_ = base::TimeTicks();
   generate_weak_ptr_factory_.InvalidateWeakPtrs();
   if (cancel_active_request_) {
     std::move(cancel_active_request_).Run();
@@ -338,6 +342,7 @@ void IndigoImageReplacementManager::OnReceiverDisconnected() {
 }
 
 void IndigoImageReplacementManager::Reset(ResetType reset_type) {
+  generate_start_time_ = base::TimeTicks();
   if (auto* controller = GetIndigoPageActionController()) {
     controller->Reset(reset_type);
   }
@@ -347,6 +352,15 @@ void IndigoImageReplacementManager::ShowErrorToast(
     IndigoTransformationResult result) {
   if (auto* controller = GetIndigoPageActionController()) {
     controller->ShowInvocationErrorToast(result);
+  }
+}
+
+void IndigoImageReplacementManager::RecordImageDisplayed() {
+  if (!generate_start_time_.is_null()) {
+    base::UmaHistogramMediumTimes(
+        "Indigo.ImageReplacement.TotalDuration",
+        base::TimeTicks::Now() - generate_start_time_);
+    generate_start_time_ = base::TimeTicks();
   }
 }
 

@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/id_type.h"
 #include "base/types/pass_key.h"
@@ -96,6 +97,8 @@ class IndigoImageReplacementManager
   void Reset(ResetType reset_type);
   void ShowErrorToast(IndigoTransformationResult result);
 
+  void RecordImageDisplayed();
+
   mojo::ReceiverSet<blink::mojom::ImageReplacementHost, IndigoImageReplacement>
       receivers_;
   std::optional<mojo::ReceiverId> primary_receiver_id_;
@@ -103,6 +106,7 @@ class IndigoImageReplacementManager
   std::vector<uint8_t> primary_original_image_webp_bytes_;
   std::optional<InvocationId> active_invocation_id_;
   base::OnceClosure cancel_active_request_;
+  base::TimeTicks generate_start_time_;
   // This WeakPtr factory is specifically used when creating a callback when
   // starting a generate request. Prefer using `weak_ptr_factory_` for other
   // purposes.

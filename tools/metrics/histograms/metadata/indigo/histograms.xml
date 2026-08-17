@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Indigo.ImageReplacement.TotalDuration" units="ms"
+    expires_after="2027-05-13">
+  <owner>baranerf@google.com</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <summary>
+    Records the total duration in milliseconds from starting the image
+    transformation process until the image is ready to be displayed to the user.
+  </summary>
+</histogram>
+
 <histogram name="Indigo.PageAction.ClickedEntryPoint"
     enum="IndigoPageActionEntryPoint" expires_after="2027-05-13">
   <owner>jbroman@chromium.org</owner>

@@ -741,6 +741,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
+  base::HistogramTester histogram_tester;
+
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
@@ -781,6 +783,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   EXPECT_TRUE(
       WaitUntilReplacementImageSrcMatches(subframe2.get(), success_url.spec()));
+
+  histogram_tester.ExpectTotalCount("Indigo.ImageReplacement.TotalDuration", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
