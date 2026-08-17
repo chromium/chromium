@@ -222,6 +222,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/signin",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/lens:test_support",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/tabs:tab_strip",

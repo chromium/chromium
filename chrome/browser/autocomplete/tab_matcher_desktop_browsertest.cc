@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -80,7 +80,8 @@ IN_PROC_BROWSER_TEST_F(TabMatcherDesktopTest, GetOpenTabsOnlyWithinProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* second_profile = &profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
-  Browser* browser_with_second_profile = CreateBrowser(second_profile);
+  BrowserWindowInterface* browser_with_second_profile =
+      CreateBrowser(second_profile);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser_with_second_profile,
                                            GURL("https://baz.chromium.org")));
 
