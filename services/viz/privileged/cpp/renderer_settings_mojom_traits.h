@@ -126,7 +126,7 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
   }
 
 #if BUILDFLAG(IS_OZONE)
-  static std::vector<viz::OverlayStrategy> overlay_strategies(
+  static const std::vector<viz::OverlayStrategy>& overlay_strategies(
       const viz::RendererSettings& input) {
     return input.overlay_strategies;
   }
