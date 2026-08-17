@@ -71,4 +71,26 @@ TEST_F(FileSystemIdTest, DifferentFilesDifferentIds) {
   EXPECT_NE(id1, id2);
 }
 
+TEST_F(FileSystemIdTest, FileSystemIdEquality) {
+  FileSystemId id1{};
+  FileSystemId id2{};
+  EXPECT_EQ(id1, id2);
+
+#if BUILDFLAG(IS_WIN)
+  id1.volume_serial_number = 123;
+  id1.file_id[0] = 1;
+  EXPECT_NE(id1, id2);
+  id2.volume_serial_number = 123;
+  id2.file_id[0] = 1;
+  EXPECT_EQ(id1, id2);
+#elif BUILDFLAG(IS_POSIX)
+  id1.dev = 1;
+  id1.ino = 2;
+  EXPECT_NE(id1, id2);
+  id2.dev = 1;
+  id2.ino = 2;
+  EXPECT_EQ(id1, id2);
+#endif
+}
+
 }  // namespace sqlite_vfs

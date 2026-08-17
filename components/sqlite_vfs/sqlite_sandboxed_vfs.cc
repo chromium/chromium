@@ -61,6 +61,9 @@ FileType GetFileType(int sqlite_requested_type) {
 
 // Returns true if `file1` and `file2` have the same cached ID.
 bool IsSameFile(const SandboxedFile& file1, const SandboxedFile& file2) {
+  if (&file1 == &file2) {
+    return true;
+  }
   const auto& id1 = file1.file_system_id();
   const auto& id2 = file2.file_system_id();
   return id1.has_value() && id2.has_value() && *id1 == *id2;
