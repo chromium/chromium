@@ -73,7 +73,7 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.minimum_logical_font_size;
   }
 
-  static std::string default_encoding(
+  static const std::string& default_encoding(
       const blink::web_pref::WebPreferences& r) {
     return r.default_encoding;
   }
