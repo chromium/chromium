@@ -2590,46 +2590,26 @@ source_set("browser") {
     "//components/tracing:background_tracing_utils",
     "//components/tracing:tracing_config",
     "//components/tracing:tracing_metrics",
-    "//components/translate/content/browser",
-    "//components/translate/core/browser",
-    "//components/translate/core/common",
-    "//components/trusted_vault",
     "//components/ui_devtools",
     "//components/ukm",
-    "//components/ukm:observers",
     "//components/undo",
     "//components/update_client",
     "//components/upload_list",
     "//components/url_formatter",
     "//components/url_formatter/spoof_checks/top_domains:common",
-    "//components/url_formatter/spoof_checks/top_domains:top_bucket_domains",
     "//components/url_matcher",
     "//components/user_manager",
     "//components/user_prefs",
     "//components/variations",
-    "//components/variations:variations_mojom",
-    "//components/variations/field_trial_config",
-    "//components/variations/net",
-    "//components/variations/proto",
     "//components/variations/service",
     "//components/vector_icons",
-    "//components/version_info",
-    "//components/visited_url_ranking/public",
-    "//components/visitedlink/browser",
-    "//components/visitedlink/common",
     "//components/web_cache/browser",
     "//components/web_resource",
     "//components/webapps/browser",
     "//components/webapps/common",
-    "//components/webapps/common:mojo_bindings",
-    "//components/webauthn/core/browser:passkey_model",
-    "//components/webauthn/core/browser:signal_api_utils",
     "//components/webdata/common",
     "//components/webdata_services",
-    "//components/webid",
-    "//components/webrtc",
     "//components/webrtc_logging/browser",
-    "//components/webrtc_logging/common",
     "//components/webui/chrome_urls",
     "//components/webui/flags",
     "//components/zoom",
@@ -2637,7 +2617,6 @@ source_set("browser") {
     "//content/public/common",
     "//crypto",
     "//device/base",
-    "//device/base/synchronization",
     "//device/fido",
     "//device/gamepad/public/cpp:switches",
     "//device/vr/buildflags",
@@ -2648,8 +2627,6 @@ source_set("browser") {
     "//media/capture",
     "//media/capture:capture_switches",
     "//media/midi",
-    "//media/mojo/common",
-    "//media/mojo/mojom:web_speech_recognition",
     "//media/mojo/services",
     "//media/webrtc",
     "//mojo/core/embedder",
@@ -2669,11 +2646,9 @@ source_set("browser") {
     "//services/device/public/cpp/usb",
     "//services/device/public/mojom",
     "//services/device/public/mojom:usb",
-    "//services/image_annotation:service",
     "//services/media_session/public/mojom",
     "//services/metrics",
     "//services/metrics/public/cpp:metrics_cpp",
-    "//services/metrics/public/cpp:ukm_builders",
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -2684,32 +2659,20 @@ source_set("browser") {
     "//services/preferences/public/cpp/tracked",
     "//services/preferences/public/mojom",
     "//services/preferences/tracked",
-    "//services/proxy_resolver/public/mojom",
-    "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
     "//services/service_manager/public/cpp",
-    "//services/shape_detection/public/mojom",
-    "//services/strings",
-    "//services/webnn/public/mojom",
     "//skia",
     "//sql",
     "//storage/browser",
     "//storage/common",
-    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources",
     "//third_party/blink/public/common",
-    "//third_party/blink/public/common:headers",
     "//third_party/icu",
     "//third_party/leveldatabase",
     "//third_party/libaddressinput",
-    "//third_party/libxml:xml_writer",
     "//third_party/libyuv",
-    "//third_party/metrics_proto",
     "//third_party/re2",
     "//third_party/zlib",
-    "//third_party/zlib:minizip",
-    "//third_party/zlib/google:compression_utils",
-    "//third_party/zlib/google:zip",
     "//ui/accessibility",
     "//ui/actions",
     "//ui/base",
@@ -2760,10 +2723,7 @@ source_set("browser") {
     ]
   }
   if (!is_android || enable_webui_ntp) {
-    deps += [
-      "//ui/webui/resources/cr_components/composebox:mojo_bindings",
-      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
-    ]
+    deps += [ "//ui/webui/resources/cr_components/help_bubble:mojo_bindings" ]
   }
 
   if (is_android) {
@@ -2995,7 +2955,6 @@ source_set("browser") {
       "//components/soda",
       "//components/soda:constants",
       "//components/soda:utils",
-      "//components/trusted_vault/proto",
       "//components/ukm/content",
       "//components/unexportable_keys",
       "//components/user_education/common",
@@ -3004,15 +2963,7 @@ source_set("browser") {
       "//components/web_modal",
       "//components/webapps/isolated_web_apps",
       "//components/webauthn/content/browser",
-      "//components/webauthn/core/browser",
-      "//components/webauthn/core/browser:passkey_model",
-      "//components/webauthn/core/browser:signal_api_utils",
       "//services/device/public/cpp/hid",
-      "//services/screen_ai",
-      "//services/screen_ai/public/cpp:utilities",
-      "//services/screen_ai/public/mojom",
-      "//third_party/crashpad/crashpad/client:common",
-      "//third_party/zxcvbn-cpp",
       "//ui/views",
       "//ui/web_dialogs",
       "//ui/webui",
@@ -3529,24 +3480,16 @@ source_set("browser") {
       "//components/session_manager/core",
       "//components/signin/public/identity_manager",
       "//components/sync/base",
-      "//components/trusted_vault",
       "//components/user_manager",
       "//components/user_manager:multi_user",
-      "//components/webapk:proto",
-      "//components/webauthn/core/browser:passkey_model",
-      "//components/webauthn/core/browser:signal_api_utils",
       "//device/fido",
-      "//device/vr/public/mojom:isolated_xr_service",
 
       # Required for adding browser_interop to allow_circular_includes_from.
       # TODO: crbug.com/395179599 - Remove once //chrome/browser/net has its own
       # build target.
-      "//remoting/host/chromeos:browser_interop",
       "//remoting/host/chromeos:features",
       "//services/device/public/cpp/geolocation",
-      "//services/screen_ai/public/cpp:metrics",
       "//third_party/nearby:rpc_resources_proto",
-      "//third_party/nearby:wire_format_proto",
       "//ui/chromeos",
       "//ui/chromeos/resources",
       "//ui/chromeos/strings",
@@ -3627,7 +3570,6 @@ source_set("browser") {
       "//components/device_signals/core/browser",
       "//components/policy/proto",
       "//components/power_metrics",
-      "//components/webapps/isolated_web_apps:scheme",
       "//services/data_decoder/public/cpp",
     ]
   }
@@ -3673,10 +3615,7 @@ source_set("browser") {
   }
 
   if (is_linux) {
-    deps += [
-      "//chrome/app/theme:chrome_unscaled_resources_grit",
-      "//ui/linux:display_server_utils",
-    ]
+    deps += [ "//chrome/app/theme:chrome_unscaled_resources_grit" ]
 
     if (rtc_use_pipewire) {
       configs +=
@@ -3787,13 +3726,6 @@ source_set("browser") {
     }
   }
 
-  if (enable_device_bound_sessions) {
-    deps += [
-      "//components/unexportable_keys/mojom",
-      "//components/unexportable_keys/mojom:mojo_service",
-    ]
-  }
-
   if (is_mac) {
     deps += [
       "//chrome/browser/ui/webui/unexportable_keys_internals",
@@ -3803,10 +3735,6 @@ source_set("browser") {
     # TODO(crbug.com/364667553, crbug.com/365680821): Remove once
     # modularizations of `//c/b/signin` and `//c/b/profiles` are complete.
     deps += [ "//chrome/browser/ui/webui/unexportable_keys_internals:impl" ]
-  }
-
-  if (enable_media_remoting) {
-    deps += [ "//media/mojo/mojom:remoting" ]
   }
 
   if (enable_guest_view) {
@@ -3837,7 +3765,6 @@ source_set("browser") {
       # is modularized.
       "//chrome/browser/extensions/api/notifications",
       "//extensions/browser:crx_installer",
-      "//extensions/browser:webstore_installer",
       "//extensions/browser/updater",
       "//extensions/strings",
     ]
@@ -3864,13 +3791,10 @@ source_set("browser") {
       "//chrome/common/extensions/api",
       "//components/app_constants",
       "//components/drive",
-      "//extensions/browser/api/content_settings",
       "//extensions/common:mojom",
-      "//extensions/components/javascript_dialog_extensions_client",
       "//google_apis/calendar",
       "//google_apis/common",
       "//google_apis/drive",
-      "//media/cast:sender",
     ]
     deps += [
       # TODO(crbug.com/41410773): mirroring shouldn't depend on
@@ -3897,19 +3821,10 @@ source_set("browser") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/ui/android/extensions",
-      "//extensions/browser:keepalive",
     ]
   }
 
   if (enable_library_cdms) {
-    deps += [ "//media/mojo/mojom" ]
-
-    if (enable_cdm_storage_id) {
-      if (enable_rlz) {
-        deps += [ "//rlz:rlz_lib" ]
-      }
-    }
-
     if (mojo_media_host == "browser") {
       deps += [ "//media/mojo/services" ]
     }
@@ -3972,10 +3887,7 @@ source_set("browser") {
   }
 
   if (enable_vr) {
-    deps += [
-      "//device/vr",
-      "//device/vr/public/mojom:isolated_xr_service",
-    ]
+    deps += [ "//device/vr" ]
   }
 
   if (enable_lens_desktop_google_branded_features) {
