@@ -307,6 +307,12 @@ ScopedFeatureList::ScopedFeatureList(const Feature& enable_feature) {
   InitAndEnableFeature(enable_feature);
 }
 
+ScopedFeatureList::ScopedFeatureList(
+    const std::vector<FeatureRef>& enabled_features,
+    const std::vector<FeatureRef>& disabled_features) {
+  InitWithFeatures(enabled_features, disabled_features);
+}
+
 ScopedFeatureList::~ScopedFeatureList() {
   Reset();
 }

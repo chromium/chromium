@@ -20,6 +20,7 @@ namespace {
 
 BASE_FEATURE(kTestFeature1, FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTestFeature2, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature3, FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kTestFeatureParam1,
@@ -104,6 +105,15 @@ TEST_F(ScopedFeatureListTest, MoveCopy) {
   }
   ExpectFeatures(std::string(), std::string());
   EXPECT_FALSE(FeatureList::IsEnabled(kTestFeature1));
+}
+
+TEST_F(ScopedFeatureListTest, InitMultipleFeaturesInConstructor) {
+  test::ScopedFeatureList feature_list({kTestFeature1, kTestFeature2},
+                                       {kTestFeature3});
+  ExpectFeatures("TestFeature1,TestFeature2", "TestFeature3");
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature1));
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestFeature2));
+  EXPECT_FALSE(FeatureList::IsEnabled(kTestFeature3));
 }
 
 TEST_F(ScopedFeatureListTest, InitFromCommandLineWithFeatureParams) {

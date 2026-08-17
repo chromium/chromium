@@ -88,8 +88,12 @@ class ScopedFeatureList final {
   // Constructs the instance in a non-initialized state.
   ScopedFeatureList();
 
-  // Shorthand for immediately initializing with InitAndEnableFeature().
+  // Shorthand for immediately initializing with `InitAndEnableFeature()`.
   explicit ScopedFeatureList(const Feature& enable_feature);
+  // Shorthand for immediately initializing with `InitWithFeatures()`.
+  explicit ScopedFeatureList(
+      const std::vector<FeatureRef>& enabled_features,
+      const std::vector<FeatureRef>& disabled_features = {});
 
   ScopedFeatureList(const ScopedFeatureList&) = delete;
   ScopedFeatureList& operator=(const ScopedFeatureList&) = delete;
