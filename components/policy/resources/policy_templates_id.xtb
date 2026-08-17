@@ -2106,18 +2106,6 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan mengubah daftar aplika
 
       Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, tombol tidak akan muncul.</translation>
 <translation id="2294382669900758280">Pemutaran video di aplikasi Android tidak dipertimbangkan, meski kebijakan ini disetel ke <ph name="TRUE" />.</translation>
-<translation id="2296529215567227994">Menentukan apakah akan mengganti mode Samaran dengan mode Terisolasi.
-
-Mode Terisolasi adalah mode penjelajahan sementara khusus Enterprise yang menggantikan mode Samaran.
-Tidak seperti mode Samaran, mode Terisolasi mendukung kebijakan Enterprise terkait DLP dan ekstensi yang diinstal otomatis.
-
-Perhatikan bahwa kebijakan terkait mode Samaran tidak diterapkan ke mode Terisolasi.
-
-Jika disetel ke 1 - Aktif, mode Terisolasi akan diaktifkan dan menggantikan mode Samaran.
-
-Jika disetel ke 0 - Nonaktif atau tidak disetel, mode Terisolasi akan dinonaktifkan, dan perilaku mode Samaran standar akan digunakan.
-
-Kebijakan ini memerlukan lisensi `<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />` agar dapat diterapkan.</translation>
 <translation id="2299220924812062390">Tentukan daftar plugin yang diaktifkan</translation>
 <translation id="2299815818824242485">Jangan izinkan pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi</translation>
 <translation id="2303795211377219696">Mengaktifkan IsiOtomatis untuk kartu kredit</translation>

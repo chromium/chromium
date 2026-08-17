@@ -226,7 +226,6 @@
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Согласно правилам вашей организации этот файл может содержать конфиденциальную информацию</translation>
 <translation id="1683276189281028863">Проверка паролей</translation>
-<translation id="168389590065701766">Теперь вы можете открывать Google Объектив из адресной строки и искать всё, что видите.</translation>
 <translation id="1689333818294560261">Название</translation>
 <translation id="169048873465870056">Удалить вкладку и группу?</translation>
 <translation id="1692115862433274081">Использовать другой аккаунт</translation>
@@ -2528,6 +2527,7 @@
 <translation id="9203951165704618409">Чтобы вам было удобнее, выберите, где должна находиться адресная строка: вверху или внизу.</translation>
 <translation id="9205189991633470489">Блокировка вкладок инкогнито</translation>
 <translation id="9206887540681440657">Скорость</translation>
+<translation id="9218430445555521422">Использовать по умолчанию</translation>
 <translation id="9219103736887031265">Картинки</translation>
 <translation id="9219154867334666734">Поиск по вкладкам</translation>
 <translation id="9223358826628549784">Отчет отправлен</translation>

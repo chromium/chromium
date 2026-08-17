@@ -292,7 +292,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1202116106683864634">Kas soovite kindlasti selle pääsuvõtme kustutada?</translation>
 <translation id="1202892408424955784">Jälgitavad tooted</translation>
 <translation id="1203247227716551969">Kinnitage oma konto</translation>
-<translation id="1203559206734265703">Kaitstud vaatajaskondade silumine on lubatud.</translation>
 <translation id="120368089816228251">Muusikanoot</translation>
 <translation id="1203942045716040624">Jagatud töötaja: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Teie turvakood asub kaardi tagaküljel</translation>
@@ -1877,6 +1876,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2458379781610688953">Konto <ph name="EMAIL" /> värskendamine</translation>
 <translation id="2459703812219683497">Tuvastati aktiveerimiskood</translation>
 <translation id="2459706890611560967">Jätka selle vahelehe ülekandmist seadmesse <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Ekraanipildi jagamine</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Aegub täna}=1{Aegub homme}other{Aegub # päeva pärast}}</translation>
 <translation id="2460482211073772897">Teistes kaustades</translation>
 <translation id="2460826998961521840">Teie Google'i kontole salvestatud pääsuvõtmete kasutamiseks</translation>
@@ -2836,6 +2836,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3175862692832442091">Mets</translation>
 <translation id="3176347586396987181">Kasutage hiirenupu pikalt vajutamiseks klahvi „z“</translation>
 <translation id="3176984568033229317">Google'i otsingu toomine Edge'i</translation>
+<translation id="3177338796769255211">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma järjehoidjatele ja muule</translation>
 <translation id="3177430966804511955">Isoleeritud veebirakenduste haldamine (beeta)</translation>
 <translation id="31774765611822736">Uus vaheleht vasakul</translation>
 <translation id="3177909033752230686">Lehe keel:</translation>

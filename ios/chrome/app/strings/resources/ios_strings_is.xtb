@@ -226,7 +226,6 @@
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Samkvæmt reglum fyrirtækisins þíns kann þessi skrá að innihalda viðkvæmar upplýsingar</translation>
 <translation id="1683276189281028863">Aðgangsorðatékk</translation>
-<translation id="168389590065701766">Þú getur núna opnað Google-linsu af veffangastikunni þinni og leitað að hverju sem þú sérð</translation>
 <translation id="1689333818294560261">Gælunafn</translation>
 <translation id="169048873465870056">Fjarlægja flipa og eyða hópi?</translation>
 <translation id="1692115862433274081">Nota annan reikning</translation>
@@ -2528,6 +2527,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="9203951165704618409">Færðu veffangastikuna neðst á skjáinn fyrir sérsniðna vafraupplifun.</translation>
 <translation id="9205189991633470489">Lás huliðsstillingar</translation>
 <translation id="9206887540681440657">Hraði</translation>
+<translation id="9218430445555521422">Velja sem sjálfgefið</translation>
 <translation id="9219103736887031265">Myndir</translation>
 <translation id="9219154867334666734">Leita í flipum…</translation>
 <translation id="9223358826628549784">Hrunskýrsla send.</translation>

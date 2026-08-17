@@ -936,7 +936,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Възстановяване на група раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TAB_COUNT_ONE" /> раздел, като нова група на заден план.}other{Възстановяване на група раздели с(ъс) <ph name="COLOR_NAME" /> цвят, в която има <ph name="TAB_COUNT_MANY" /> раздела, като нова група на заден план.}}</translation>
 <translation id="4849731766219625109">Използване на профила ви в(ъв) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">Изглед</translation>
-<translation id="4852014461738377247">Влизате в профила си…</translation>
 <translation id="4860895144060829044">Обаждане</translation>
 <translation id="4864369630010738180">Извършва се влизане...</translation>
 <translation id="4866368707455379617">Модулът „<ph name="MODULE" />“ за Chrome не може да се инсталира</translation>

@@ -2042,18 +2042,6 @@ Si no se define la política, los usuarios podrán cambiar la lista de aplicacio
 
       Si se le asigna el valor "Falso" o no se le asigna ninguno, no se mostrará ese botón.</translation>
 <translation id="2294382669900758280">La reproducción de vídeo en las aplicaciones para Android no se tiene en cuenta, aunque se haya asignado el valor <ph name="TRUE" /> a esta política.</translation>
-<translation id="2296529215567227994">Especifica si se debe sustituir el modo Incógnito por el modo Aislado.
-
-El modo Aislado es un modo de navegación de carácter efímero exclusivo para empresas que sustituye al modo Incógnito.
-A diferencia del modo Incógnito, el modo Aislado admite políticas de empresa relacionadas con DLP y extensiones instaladas de manera forzada.
-
-Ten en cuenta que las políticas relacionadas con el modo Incógnito no se aplican al modo Aislado.
-
-Si se le asigna el valor 1 (habilitada), se habilitará el modo Aislado y sustituirá al modo Incógnito.
-
-Si se le asigna el valor 0 (inhabilitada) o no se define, se inhabilitará el modo Aislado y se usará el comportamiento estándar de Incógnito.
-
-Es necesario tener una licencia de <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> para poder aplicar esta política.</translation>
 <translation id="2299220924812062390">Especificar una lista de complementos habilitados</translation>
 <translation id="2299815818824242485">No permitir consultas de mayor protección mediante proxy</translation>
 <translation id="2303795211377219696">Habilitar la función Autocompletar para tarjetas de crédito</translation>

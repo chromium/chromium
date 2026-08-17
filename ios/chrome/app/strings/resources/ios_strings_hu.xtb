@@ -226,7 +226,6 @@
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> nyelvről <ph name="TARGET_LANGUAGE" /> nyelvre</translation>
 <translation id="1678855624321223424">A szervezeti házirendek alapján ez a fájl bizalmas információkat tartalmazhat</translation>
 <translation id="1683276189281028863">Jelszóvizsgálat</translation>
-<translation id="168389590065701766">Mostantól a címsávból is megnyithatja a Google Lenst, és bármire rákereshet, amit lát</translation>
 <translation id="1689333818294560261">Egyedi név</translation>
 <translation id="169048873465870056">Eltávolítja a lapot és törli a csoportot?</translation>
 <translation id="1692115862433274081">Másik fiók használata</translation>
@@ -2528,6 +2527,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="9203951165704618409">A személyre szabott böngészési élmény érdekében áthelyezheti a címsávot fentről a képernyő aljára.</translation>
 <translation id="9205189991633470489">Inkognitó mód zárolása</translation>
 <translation id="9206887540681440657">Sebesség</translation>
+<translation id="9218430445555521422">Alapbeállítás</translation>
 <translation id="9219103736887031265">Képek</translation>
 <translation id="9219154867334666734">Keresés a lapokon…</translation>
 <translation id="9223358826628549784">Hibajelentés elküldve.</translation>

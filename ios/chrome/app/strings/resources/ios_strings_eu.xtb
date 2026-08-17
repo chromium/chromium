@@ -226,7 +226,6 @@
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> - <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Zure erakundearen gidalerroen arabera, baliteke fitxategi honek kontuzko informazioa izatea</translation>
 <translation id="1683276189281028863">Pasahitz-egiaztapena</translation>
-<translation id="168389590065701766">Orain, Google Lens helbide-barratik ireki dezakezu, eta ikusten duzun edozer bilatu</translation>
 <translation id="1689333818294560261">Goitizena</translation>
 <translation id="169048873465870056">Fitxa kendu, eta taldea ezabatu nahi duzu?</translation>
 <translation id="1692115862433274081">Erabili beste kontu bat</translation>
@@ -2528,6 +2527,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="9203951165704618409">Aldatu helbide-barra goialdetik behealdera, arakatzeko modua pertsonalizatzeko.</translation>
 <translation id="9205189991633470489">Ezkutuko moduko fitxak blokeatzea</translation>
 <translation id="9206887540681440657">Abiadura</translation>
+<translation id="9218430445555521422">Ezarri lehenetsi gisa</translation>
 <translation id="9219103736887031265">Irudiak</translation>
 <translation id="9219154867334666734">Bilatu fitxetan…</translation>
 <translation id="9223358826628549784">Hutsegite-txostena bidali da</translation>

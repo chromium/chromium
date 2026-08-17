@@ -226,7 +226,6 @@
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Tashkilotingiz siyosatlariga asosan bu faylda maxfiy axborot boʻlishi mumkin</translation>
 <translation id="1683276189281028863">Parol tekshiruvi</translation>
-<translation id="168389590065701766">Endi manzillar qatoridan Google Lensni ochib, ekrandagi istalgan narsani qidirish mumkin</translation>
 <translation id="1689333818294560261">Nik</translation>
 <translation id="169048873465870056">Varaq olib tashlanib, guruh oʻchirilsinmi?</translation>
 <translation id="1692115862433274081">Boshqa hisobdan foydalanish</translation>
@@ -1032,6 +1031,7 @@
 <translation id="4430505936695785931">Saqlangan parollardan boshqa ilovalarda foydalanish</translation>
 <translation id="4431224949908513835">Kiritish uchun toʻlov usulini tanlang.</translation>
 <translation id="4432122368769493392">Sozlamalar</translation>
+<translation id="4439968635693513370">Dam olish kunini rejalashtiring</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Sozlamalarni<ph name="END_BOLD" /> oching</translation>
 <translation id="4445840280797509738"><ph name="CELL_ACCESSIBILITY_LABEL" /> uchun boshqa variantlar</translation>
 <translation id="4455710003856931944">Ortga qaytish yoki oldinga oʻtish uchun chekkasini yonga suring.</translation>
@@ -1101,6 +1101,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Tashkilotingiz internetni pinhona kezishni talab qiladi. Inkognito rejimida varaqlar guruhi sinxronlanmaydi.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Ishonch bilan xarid qiling</translation>
 <translation id="467189612236587057">Biznes bilan telefon chaqiruvi orqali bogʻlaning</translation>
 <translation id="4673565891421389203">Boshqariladigan hisob orqali kirsangiz, varaqlar, parollar va tarix kabi tashkilotingizga oid brauzer maʼlumotlari alohida saqlanadi.
 
@@ -2475,6 +2476,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="9029650858822697271">Hisobingizdan chiqasiz</translation>
 <translation id="9032405509996909363">Brauzer maʼlumotlarini oʻchirishni tasdiqlash</translation>
 <translation id="9035699147763101514">Gemini bilan Personal Intelligence texnologiyasi asosida ishlaydi. Tanlovlarni sozlamalar orqali boshqaring.</translation>
+<translation id="9038526468059454274">Qisqacha mazmunini bilib oling</translation>
 <translation id="9039373489628511875">Trafik nazorati</translation>
 <translation id="9042893549633094279">Maxfiylik va xavfsizlik</translation>
 <translation id="9055291197094969722">Ochilgan sahifalarni tartiblash va samarali ishlash uchun varaqlar guruhini yarating</translation>
@@ -2528,6 +2530,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="9203951165704618409">Sizga qulay boʻlishi uchun manzil qatori tepada yoki pastda boʻlishini tanlang.</translation>
 <translation id="9205189991633470489">Inkognito qulflanishi</translation>
 <translation id="9206887540681440657">Tezlik</translation>
+<translation id="9218430445555521422">Birlamchi qilish</translation>
 <translation id="9219103736887031265">Rasmlar</translation>
 <translation id="9219154867334666734">Varaqlardan qidirish…</translation>
 <translation id="9223358826628549784">Ishdan chiqish hisoboti yuborildi.</translation>

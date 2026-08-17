@@ -292,7 +292,6 @@
 <translation id="1202116106683864634">このパスキーを削除してもよろしいですか？</translation>
 <translation id="1202892408424955784">トラッキングしている商品</translation>
 <translation id="1203247227716551969">アカウントを確認</translation>
-<translation id="1203559206734265703">Protected Audience のデバッグが有効です。</translation>
 <translation id="120368089816228251">音符</translation>
 <translation id="1203942045716040624">共有ワーカー: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">セキュリティ コードはカードの裏面に記載されています</translation>
@@ -2832,6 +2831,7 @@
 <translation id="3175862692832442091">森</translation>
 <translation id="3176347586396987181">Z　キーを使用してマウスボタンを長押しする</translation>
 <translation id="3176984568033229317">Google 検索を Edge に追加</translation>
+<translation id="3177338796769255211">ログインすると、すべてのデバイスで同じブックマークやその他の設定を使用できるようになります</translation>
 <translation id="3177430966804511955">独立したウェブアプリを管理（ベータ版）</translation>
 <translation id="31774765611822736">左側の新しいタブ</translation>
 <translation id="3177909033752230686">ページの言語:</translation>

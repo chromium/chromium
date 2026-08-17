@@ -292,7 +292,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1202116106683864634">Adakah anda pasti mahu memadamkan kunci laluan ini?</translation>
 <translation id="1202892408424955784">Produk yang dijejaki</translation>
 <translation id="1203247227716551969">Sahkan Akaun Anda</translation>
-<translation id="1203559206734265703">Perlindungan Penyahpepijatan Khalayak didayakan.</translation>
 <translation id="120368089816228251">Nota muzik</translation>
 <translation id="1203942045716040624">Pekerja Dikongsi: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Kod keselamatan tertera di bahagian belakang kad anda</translation>
@@ -1886,6 +1885,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2458379781610688953">Kemas kini akaun, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Kod pengaktifan dikesan</translation>
 <translation id="2459706890611560967">Sambung semula penghantaran tab pada <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Kongsi tangkapan skrin</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Tamat tempoh hari ini}=1{Tamat tempoh esok}other{Tamat tempoh dalam masa # hari}}</translation>
 <translation id="2460482211073772897">Dalam folder lain</translation>
 <translation id="2460826998961521840">Untuk menggunakan kunci laluan yang telah disimpan dalam Google Account anda</translation>
@@ -2845,6 +2845,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3175862692832442091">Hutan</translation>
 <translation id="3176347586396987181">Gunakan “z” untuk menekan dan menahan butang tetikus</translation>
 <translation id="3176984568033229317">Bawa Google Search kepada Edge</translation>
+<translation id="3177338796769255211">Log masuk untuk mendapatkan penanda halaman dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="3177430966804511955">Urus apl web terpencil (beta)</translation>
 <translation id="31774765611822736">Tab baharu ke kiri</translation>
 <translation id="3177909033752230686">Bahasa Halaman:</translation>

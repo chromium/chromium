@@ -292,7 +292,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1202116106683864634">Ziur sarbide-gakoa ezabatu nahi duzula?</translation>
 <translation id="1202892408424955784">Jarraipena egiten diezun produktuak</translation>
 <translation id="1203247227716551969">Egiaztatu kontua</translation>
-<translation id="1203559206734265703">Protected Audiences-en arazketa gaituta dago.</translation>
 <translation id="120368089816228251">Nota musikala</translation>
 <translation id="1203942045716040624">Partekatutako langilea: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Segurtasun-kodea txartelaren atzealdean dago</translation>
@@ -2831,6 +2830,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3175862692832442091">Basoa</translation>
 <translation id="3176347586396987181">Erabili "z" saguaren botoi bat sakatuta edukitzeko</translation>
 <translation id="3176984568033229317">Ekarri Google Bilaketa Edge-ra</translation>
+<translation id="3177338796769255211">Hasi saioa laster-markak eta bestelako datuak gailu guztietan lortzeko</translation>
 <translation id="3177430966804511955">Kudeatu sareko aplikazio isolatuak (beta-bertsioa)</translation>
 <translation id="31774765611822736">Fitxa berria ezkerrean</translation>
 <translation id="3177909033752230686">Orriaren hizkuntza:</translation>

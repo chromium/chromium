@@ -2054,18 +2054,6 @@ Nếu bạn không đặt chính sách này, thì người dùng có thể thay 
 
       Nếu bạn đặt chính sách này thành False hoặc không đặt chính sách này, thì sẽ không có nút nào xuất hiện.</translation>
 <translation id="2294382669900758280">Video đang phát trong các ứng dụng Android không được xem xét ngay cả khi chính sách này được đặt thành <ph name="TRUE" />.</translation>
-<translation id="2296529215567227994">Chỉ định xem có thay thế chế độ ẩn danh bằng Chế độ tách biệt hay không.
-
-Chế độ tách biệt là chế độ duyệt web tạm thời chỉ dành cho doanh nghiệp, dùng để thay thế Chế độ ẩn danh.
-Khác với chế độ ẩn danh, Chế độ tách biệt hỗ trợ các chính sách doanh nghiệp liên quan đến DLP (Ngăn chặn mất dữ liệu) và các tiện ích bị buộc cài đặt.
-
-Lưu ý rằng các chính sách liên quan đến Chế độ ẩn danh không được áp dụng cho Chế độ tách biệt.
-
-Nếu được đặt thành 1 – Enabled (Bật), Chế độ tách biệt sẽ bật và thay thế Chế độ ẩn danh.
-
-Nếu được đặt thành 0 – Disabled (Tắt) hoặc không được đặt, Chế độ tách biệt sẽ tắt và Chrome sẽ hoạt động ở Chế độ ẩn danh thông thường.
-
-Chính sách này chỉ có hiệu lực khi người dùng có giấy phép "<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />".</translation>
 <translation id="2299220924812062390">Chỉ định danh sách plugin được phép</translation>
 <translation id="2299815818824242485">Không cho phép hoạt động tra cứu qua proxy với khả năng bảo vệ cao hơn</translation>
 <translation id="2303795211377219696">Bật tính năng Tự động điền cho thẻ tín dụng</translation>

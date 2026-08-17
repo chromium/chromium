@@ -937,7 +937,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{නව පසුබිම් පටිති සමූහයක් ලෙස, <ph name="TAB_COUNT_ONE" /> පටිත්තක පටිති සමූහය, <ph name="COLOR_NAME" /> වර්ණය ප්‍රතිසාධනය කරන්න.}one{නව පසුබිම් පටිති සමූහයක් ලෙස, පටිති <ph name="TAB_COUNT_MANY" />ක පටිති සමූහය, <ph name="COLOR_NAME" /> වර්ණය ප්‍රතිසාධනය කරන්න.}other{නව පසුබිම් පටිති සමූහයක් ලෙස, පටිති <ph name="TAB_COUNT_MANY" />ක පටිති සමූහය, <ph name="COLOR_NAME" /> වර්ණය ප්‍රතිසාධනය කරන්න.}}</translation>
 <translation id="4849731766219625109">ඔබේ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ගිණුම භාවිතා කරන්න</translation>
 <translation id="4850886885716139402">දසුන</translation>
-<translation id="4852014461738377247">පුරමින්…</translation>
 <translation id="4860895144060829044">අමතන්න</translation>
 <translation id="4864369630010738180">පුරමින්...</translation>
 <translation id="4866368707455379617">Chrome සඳහා <ph name="MODULE" /> ස්ථාපන කළ නොහැක</translation>

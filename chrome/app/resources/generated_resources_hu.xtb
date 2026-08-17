@@ -292,7 +292,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1202116106683864634">Biztosan törli ezt az azonosítókulcsot?</translation>
 <translation id="1202892408424955784">Nyomon követett termékek</translation>
 <translation id="1203247227716551969">Fiók igazolása</translation>
-<translation id="1203559206734265703">A Protected Audience hibakeresése engedélyezve van.</translation>
 <translation id="120368089816228251">Hangjegy</translation>
 <translation id="1203942045716040624">Shared worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">A biztonsági kód a kártya hátoldalán található.</translation>
@@ -2844,6 +2843,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3175862692832442091">Erdő</translation>
 <translation id="3176347586396987181">A „z” billentyűvel nyomva tarthatja az egérgombot.</translation>
 <translation id="3176984568033229317">A Google Kereső használata az Edge-ben</translation>
+<translation id="3177338796769255211">Bejelentkezve valamennyi eszközén hozzáférhet könyvjelzőihez és egyebekhez.</translation>
 <translation id="3177430966804511955">Izolált internetes alkalmazások kezelése (béta)</translation>
 <translation id="31774765611822736">Új lap balra</translation>
 <translation id="3177909033752230686">Az oldal nyelve</translation>

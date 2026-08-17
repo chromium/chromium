@@ -936,7 +936,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> қойындының <ph name="COLOR_NAME" /> түсті қойындылар тобын жаңа фондық қойындылар тобы ретінде қалпына келтіру.}other{<ph name="TAB_COUNT_MANY" /> қойындының <ph name="COLOR_NAME" /> түсті қойындылар тобын жаңа фондық қойындылар тобы ретінде қалпына келтіру.}}</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунтыңызды пайдаланыңыз</translation>
 <translation id="4850886885716139402">Көрініс</translation>
-<translation id="4852014461738377247">Жүйеге кіріп жатыр\u2026</translation>
 <translation id="4860895144060829044">Қоңырау шалу</translation>
 <translation id="4864369630010738180">Жүйеге кіруде…</translation>
 <translation id="4866368707455379617">Chrome браузеріне арналған <ph name="MODULE" /> орнату мүмкін болмады.</translation>

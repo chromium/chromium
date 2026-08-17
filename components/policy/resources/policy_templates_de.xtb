@@ -2038,18 +2038,6 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
 
       Ist sie auf „False“ gesetzt oder nicht konfiguriert, wird kein Button angezeigt.</translation>
 <translation id="2294382669900758280">Das Abspielen von Videos in Android-Apps wird nicht berücksichtigt, auch wenn diese Richtlinie auf <ph name="TRUE" /> gesetzt ist.</translation>
-<translation id="2296529215567227994">Gibt an, ob der Inkognitomodus durch den isolierten Modus ersetzt werden soll.
-
-Der isolierte Modus ist ein flüchtiger Browsermodus, der nur für Unternehmen verfügbar ist und den Inkognitomodus ersetzt.
-Im Gegensatz zum Inkognitomodus unterstützt der isolierte Modus auf den Schutz vor Datenverlust bezogene Unternehmensrichtlinien und zwangsinstallierte Erweiterungen.
-
-Richtlinien im Zusammenhang mit dem Inkognitomodus werden nicht auf den isolierten Modus angewendet.
-
-Wenn die Richtlinie auf „1 – Aktiviert“ gesetzt ist, ist der isolierte Modus aktiviert und ersetzt den Inkognitomodus.
-
-Wenn die Richtlinie auf „0 – Deaktiviert“ gesetzt oder nicht konfiguriert ist, ist der isolierte Modus deaktiviert und das Standardverhalten des Inkognitomodus wird verwendet.
-
-Für diese Richtlinie ist eine <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-Lizenz erforderlich, damit sie wirksam wird.</translation>
 <translation id="2299220924812062390">Liste der aktivierten Plug-ins angeben</translation>
 <translation id="2299815818824242485">Keine weitergeleiteten Suchen mit erhöhter Sicherheit zulassen</translation>
 <translation id="2303795211377219696">Autofill für Kreditkartendaten zulassen</translation>

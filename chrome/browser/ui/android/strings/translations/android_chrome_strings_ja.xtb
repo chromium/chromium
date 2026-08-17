@@ -937,7 +937,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のタブのタブグループ（<ph name="COLOR_NAME" />）を新しいバックグラウンドのタブグループとして復元します。}other{<ph name="TAB_COUNT_MANY" /> 個のタブのタブグループ（<ph name="COLOR_NAME" />）を新しいバックグラウンドのタブグループとして復元します。}}</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> アカウントを使用する</translation>
 <translation id="4850886885716139402">表示</translation>
-<translation id="4852014461738377247">ログインしています…</translation>
 <translation id="4860895144060829044">通話</translation>
 <translation id="4864369630010738180">ログインしています...</translation>
 <translation id="4866368707455379617">Chrome 用の <ph name="MODULE" /> をインストールできません</translation>

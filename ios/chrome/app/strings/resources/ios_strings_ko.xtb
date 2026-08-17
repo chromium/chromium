@@ -226,7 +226,6 @@
 <translation id="1674504678466460478">출발어: <ph name="SOURCE_LANGUAGE" />, 도착어: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">조직의 정책에 따라 이 파일에는 민감한 정보가 포함되어 있을 수 있습니다.</translation>
 <translation id="1683276189281028863">비밀번호 진단</translation>
-<translation id="168389590065701766">이제 주소 표시줄에서 Google 렌즈를 열고 눈앞에 있는 사물을 검색할 수 있습니다</translation>
 <translation id="1689333818294560261">닉네임</translation>
 <translation id="169048873465870056">탭 및 그룹을 삭제하시겠습니까?</translation>
 <translation id="1692115862433274081">다른 계정 사용</translation>
@@ -2528,6 +2527,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="9203951165704618409">주소 표시줄을 상단에서 하단으로 전환하여 탐색 환경을 맞춤설정하세요</translation>
 <translation id="9205189991633470489">시크릿 탭 잠금</translation>
 <translation id="9206887540681440657">속도</translation>
+<translation id="9218430445555521422">기본값으로 설정</translation>
 <translation id="9219103736887031265">이미지</translation>
 <translation id="9219154867334666734">탭 검색…</translation>
 <translation id="9223358826628549784">비정상 종료 보고서 전송 완료</translation>

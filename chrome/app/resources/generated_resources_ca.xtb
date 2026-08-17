@@ -292,7 +292,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1202116106683864634">Confirmes que vols suprimir aquesta clau d'accés?</translation>
 <translation id="1202892408424955784">Productes que segueixes</translation>
 <translation id="1203247227716551969">Verifica el compte</translation>
-<translation id="1203559206734265703">La depuració de públics protegits està activada.</translation>
 <translation id="120368089816228251">Nota musical</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">El codi de seguretat és al revers de la targeta</translation>
@@ -2833,6 +2832,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3175862692832442091">Bosc</translation>
 <translation id="3176347586396987181">Utilitza la tecla Z per mantenir premut un botó del ratolí</translation>
 <translation id="3176984568033229317">Porta la Cerca de Google a Edge</translation>
+<translation id="3177338796769255211">Inicia la sessió per obtenir les teves adreces d'interès i més en tots els teus dispositius</translation>
 <translation id="3177430966804511955">Gestiona les aplicacions web aïllades (beta)</translation>
 <translation id="31774765611822736">Pestanya nova a l'esquerra</translation>
 <translation id="3177909033752230686">Idioma de la pàgina:</translation>

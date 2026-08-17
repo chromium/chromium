@@ -226,7 +226,6 @@
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Згідно з правилами вашої організації, цей файл може містити чутливу інформацію</translation>
 <translation id="1683276189281028863">Перевірка паролів</translation>
-<translation id="168389590065701766">Тепер ви можете відкривати Google Об’єктив в адресному рядку й шукати все, що бачите</translation>
 <translation id="1689333818294560261">Псевдонім</translation>
 <translation id="169048873465870056">Вилучити вкладку й видалити групу?</translation>
 <translation id="1692115862433274081">Інший обліковий запис</translation>
@@ -2528,6 +2527,7 @@
 <translation id="9203951165704618409">Щоб налаштувати веб-перегляд, ви можете перемістити адресний рядок згори вниз.</translation>
 <translation id="9205189991633470489">Блокування анонімних вкладок</translation>
 <translation id="9206887540681440657">Швидкість</translation>
+<translation id="9218430445555521422">Використовувати за умовчанням</translation>
 <translation id="9219103736887031265">Зображення</translation>
 <translation id="9219154867334666734">Шукати вкладки…</translation>
 <translation id="9223358826628549784">Звіт про аварійне завершення роботи надіслано.</translation>

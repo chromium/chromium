@@ -937,7 +937,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ట్యాబ్‌కు సంబంధించిన ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగును, కొత్త బ్యాక్‌గ్రౌండ్ ట్యాబ్ గ్రూప్‌గా రీస్టోర్ చేయండి.}other{<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లకు సంబంధించిన ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగును, కొత్త బ్యాక్‌గ్రౌండ్ ట్యాబ్ గ్రూప్‌గా రీస్టోర్ చేయండి.}}</translation>
 <translation id="4849731766219625109">మీ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఖాతాను ఉపయోగించండి</translation>
 <translation id="4850886885716139402">వీక్షణ</translation>
-<translation id="4852014461738377247">సైన్ ఇన్ అవుతోంది\u2026</translation>
 <translation id="4860895144060829044">కాల్ చేయండి</translation>
 <translation id="4864369630010738180">సైన్ ఇన్ అవుతోంది...</translation>
 <translation id="4866368707455379617">Chromeలో <ph name="MODULE" />ని ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు</translation>

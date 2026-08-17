@@ -937,7 +937,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{ჩანართების ჯგუფის <ph name="COLOR_NAME" /> ფერის <ph name="TAB_COUNT_ONE" /> ჩანართის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.}other{ჩანართების ჯგუფის <ph name="COLOR_NAME" /> ფერის <ph name="TAB_COUNT_MANY" /> ჩანართის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.}}</translation>
 <translation id="4849731766219625109">თქვენი <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ანგარიშის გამოყენება</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
-<translation id="4852014461738377247">მიმდინარეობს შესვლა…</translation>
 <translation id="4860895144060829044">დარეკვა</translation>
 <translation id="4864369630010738180">მიმდინარეობს შესვლა…</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> ვერ დაინსტალირდა Chrome-ისთვის</translation>

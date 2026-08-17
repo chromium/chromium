@@ -292,7 +292,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1202116106683864634">Vill du radera den här nyckeln?</translation>
 <translation id="1202892408424955784">Bevakade produkter</translation>
 <translation id="1203247227716551969">Verifiera ditt konto</translation>
-<translation id="1203559206734265703">Felsökning av Protected Audience har aktiverats.</translation>
 <translation id="120368089816228251">Musiknot</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Säkerhetskoden finns på baksidan av kortet</translation>
@@ -2845,6 +2844,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3175862692832442091">Skog</translation>
 <translation id="3176347586396987181">Håll ned en musknapp med z</translation>
 <translation id="3176984568033229317">Använd Google Sök i Edge</translation>
+<translation id="3177338796769255211">Logga in om du vill ha dina bokmärken med mera på alla dina enheter</translation>
 <translation id="3177430966804511955">Hantera isolerade webbappar (beta)</translation>
 <translation id="31774765611822736">Ny flik till vänster</translation>
 <translation id="3177909033752230686">Sidans språk:</translation>

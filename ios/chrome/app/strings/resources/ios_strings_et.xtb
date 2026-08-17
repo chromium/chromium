@@ -226,7 +226,6 @@
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Teie organisatsiooni eeskirjade kohaselt võib see fail sisaldada delikaatset teavet.</translation>
 <translation id="1683276189281028863">Paroolikontroll</translation>
-<translation id="168389590065701766">Nüüd saate aadressiribalt Google Lensi avada ja otsida kõike, mida näete</translation>
 <translation id="1689333818294560261">Hüüdnimi</translation>
 <translation id="169048873465870056">Kas eemaldada vaheleht ja kustutada grupp?</translation>
 <translation id="1692115862433274081">Kasuta teist kontot</translation>
@@ -2528,6 +2527,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="9203951165704618409">Kohandatud sirvimiskogemuse jaoks teisaldage aadressiriba ülaservast allserva.</translation>
 <translation id="9205189991633470489">Inkognito lukk</translation>
 <translation id="9206887540681440657">Kiirus</translation>
+<translation id="9218430445555521422">Määra vaikeseadeks</translation>
 <translation id="9219103736887031265">Pildid</translation>
 <translation id="9219154867334666734">Otsimine vahelehtedelt …</translation>
 <translation id="9223358826628549784">Krahhiaruanne on saadetud.</translation>

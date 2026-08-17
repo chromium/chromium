@@ -292,7 +292,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1202116106683864634">Naozaj chcete odstrániť tento prístupový kľúč?</translation>
 <translation id="1202892408424955784">Sledované produkty</translation>
 <translation id="1203247227716551969">Overte svoj účet</translation>
-<translation id="1203559206734265703">Ladenie chránených publík je povolené.</translation>
 <translation id="120368089816228251">Nota</translation>
 <translation id="1203942045716040624">Spolupracovník: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Bezpečnostný kód je na zadnej strane karty</translation>
@@ -2833,6 +2832,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3175862692832442091">Les</translation>
 <translation id="3176347586396987181">Tlačidlo myši stlačíte a pridržíte klávesom Z</translation>
 <translation id="3176984568033229317">Používajte Vyhľadávanie Google v prehliadači Edge</translation>
+<translation id="3177338796769255211">Prihláste sa a používajte záložky a ďalší obsah vo všetkých svojich zariadeniach</translation>
 <translation id="3177430966804511955">Spravovať izolované webové aplikácie (beta)</translation>
 <translation id="31774765611822736">Nová karta vľavo</translation>
 <translation id="3177909033752230686">Jazyk stránky:</translation>

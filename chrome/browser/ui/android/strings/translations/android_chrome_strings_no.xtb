@@ -936,7 +936,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Gjenopprett fanegruppen med <ph name="TAB_COUNT_ONE" /> fane og fargen <ph name="COLOR_NAME" /> som en ny bakgrunnsfanegruppe.}other{Gjenopprett fanegruppen med <ph name="TAB_COUNT_MANY" /> faner og fargen <ph name="COLOR_NAME" /> som en ny bakgrunnsfanegruppe.}}</translation>
 <translation id="4849731766219625109">Bruk <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-kontoen din</translation>
 <translation id="4850886885716139402">Visning</translation>
-<translation id="4852014461738377247">Logger på \u2026</translation>
 <translation id="4860895144060829044">Ring</translation>
 <translation id="4864369630010738180">Logger på ...</translation>
 <translation id="4866368707455379617">Kan ikke installere <ph name="MODULE" /> for Chrome</translation>

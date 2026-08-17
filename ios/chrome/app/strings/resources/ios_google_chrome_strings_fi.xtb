@@ -168,6 +168,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="5030102366287574140">Chrome voi auttaa suojaamaan sinua esim. tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta.</translation>
 <translation id="5109169629909011627">Chrome-kirjanmerkkien näyttäminen</translation>
 <translation id="5112925986883715005">Näytä Chromen lukulista</translation>
+<translation id="5116239826668864748">Voit käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa</translation>
 <translation id="5119391094379141756">Valitse Chrome</translation>
 <translation id="5123188916260706415">Hae puhumalla Chromesta</translation>
 <translation id="5162467219239570114">Chrome on vanhentunut. Jos päivitystä ei ole saatavilla <ph name="BEGIN_LINK" />sovelluskaupasta<ph name="END_LINK" />, laitteesi ei välttämättä enää tue Chromen uusia versioita.</translation>
@@ -378,6 +379,7 @@ Datasi salataan tunnuslauseella <ph name="TIME" />. Lisää se, niin voit käytt
 <translation id="9122931302567044771">Tämä tarkoittaa, että Chrome pyytää aina tietokonesivustoa.</translation>
 <translation id="9176561303811134420">Hallinnoi maksutapoja Chromessa</translation>
 <translation id="9181628561061032322">Avaa Chromen viimeaikaiset välilehdet.</translation>
+<translation id="924447568950697217">Valitse Chrome oletusselaimeksi</translation>
 <translation id="948597495737267756">Avaa Chromen historiasivun.</translation>
 <translation id="954347330803595209">Tuo data, jotta voit käyttää salasanoja, historiaa, kirjanmerkkejä ja credit-kortteja Chromessa</translation>
 <translation id="97300214378190234">Käytä Chromea aina, kun napautat linkkejä muissa sovelluksissa.</translation>

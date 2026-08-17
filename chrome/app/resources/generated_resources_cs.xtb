@@ -292,7 +292,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1202116106683864634">Opravdu tento přístupový klíč chcete smazat?</translation>
 <translation id="1202892408424955784">Sledované produkty</translation>
 <translation id="1203247227716551969">Ověřte svůj účet</translation>
-<translation id="1203559206734265703">Ladění rozhraní Protected Audience je povoleno.</translation>
 <translation id="120368089816228251">Hudební nota</translation>
 <translation id="1203942045716040624">Spolupracovník: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Váš bezpečnostní kód je na zadní straně karty</translation>
@@ -2833,6 +2832,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3175862692832442091">Les</translation>
 <translation id="3176347586396987181">Klávesou „z“ stisknete a podržíte tlačítko myši</translation>
 <translation id="3176984568033229317">Přidejte si do Edge Vyhledávání Google</translation>
+<translation id="3177338796769255211">Přihlaste se a používejte záložky a další obsah na všech svých zařízeních</translation>
 <translation id="3177430966804511955">Spravovat izolované webové aplikace (beta)</translation>
 <translation id="31774765611822736">Nová karta vlevo</translation>
 <translation id="3177909033752230686">Jazyk stránky:</translation>

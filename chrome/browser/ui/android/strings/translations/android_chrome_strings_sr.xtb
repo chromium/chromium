@@ -937,7 +937,6 @@ Google налог можда има друге облике историје п�
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Вратите групу картица са <ph name="TAB_COUNT_ONE" /> картицом, у боји <ph name="COLOR_NAME" />, као нову групу картица у позадини.}one{Вратите групу картица са <ph name="TAB_COUNT_MANY" /> картицом, у боји <ph name="COLOR_NAME" />, као нову групу картица у позадини.}few{Вратите групу картица са <ph name="TAB_COUNT_MANY" /> картице, у боји <ph name="COLOR_NAME" />, као нову групу картица у позадини.}other{Вратите групу картица са <ph name="TAB_COUNT_MANY" /> картица, у боји <ph name="COLOR_NAME" />, као нову групу картица у позадини.}}</translation>
 <translation id="4849731766219625109">Користите налог <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">Приказ</translation>
-<translation id="4852014461738377247">Пријављујете се…</translation>
 <translation id="4860895144060829044">Позовите</translation>
 <translation id="4864369630010738180">Пријављивање...</translation>
 <translation id="4866368707455379617">Инсталирање модула <ph name="MODULE" /> за Chrome није успело</translation>

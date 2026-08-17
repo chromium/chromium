@@ -226,7 +226,6 @@
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Na základe pravidiel vašej organizácie môže tento súbor obsahovať citlivé údaje</translation>
 <translation id="1683276189281028863">Kontrola hesiel</translation>
-<translation id="168389590065701766">Teraz môžete otvoriť Google Lens z panela s adresou a vyhľadať čokoľvek, čo vidíte</translation>
 <translation id="1689333818294560261">Prezývka</translation>
 <translation id="169048873465870056">Chcete odstrániť kartu aj skupinu?</translation>
 <translation id="1692115862433274081">Použiť iný účet</translation>
@@ -2528,6 +2527,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="9203951165704618409">Prepnite horný panel s adresou na dolný a zaistite si tak prispôsobené prehliadanie.</translation>
 <translation id="9205189991633470489">Zámka režimu inkognito</translation>
 <translation id="9206887540681440657">Rýchlosť</translation>
+<translation id="9218430445555521422">Nastaviť ako predvolený</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="9219154867334666734">Hľadať karty…</translation>
 <translation id="9223358826628549784">Správa o zlyhaní bola odoslaná.</translation>

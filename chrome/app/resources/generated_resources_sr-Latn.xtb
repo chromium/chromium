@@ -292,7 +292,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1202116106683864634">Da li stvarno želite da izbrišete ovaj pristupni kôd?</translation>
 <translation id="1202892408424955784">Proizvodi koje pratite</translation>
 <translation id="1203247227716551969">Verifikujte nalog</translation>
-<translation id="1203559206734265703">Otklanjanje grešaka za Protected Audiences je omogućeno.</translation>
 <translation id="120368089816228251">Muzička nota</translation>
 <translation id="1203942045716040624">Deljeni obrađivač: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Bezbednosni kôd se nalazi na poleđini kartice</translation>
@@ -2832,6 +2831,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3175862692832442091">Šuma</translation>
 <translation id="3176347586396987181">Koristite „z“ da biste pritisnuli i zadržali taster miša</translation>
 <translation id="3176984568033229317">Prenesite Google pretragu u Edge</translation>
+<translation id="3177338796769255211">Prijavite se da biste pristupali obeleživačima i drugom sadržaju na svim uređajima</translation>
 <translation id="3177430966804511955">Upravljaj izolovanim veb-aplikacijama (beta)</translation>
 <translation id="31774765611822736">Nova kartica na levoj strani</translation>
 <translation id="3177909033752230686">Jezik stranice:</translation>

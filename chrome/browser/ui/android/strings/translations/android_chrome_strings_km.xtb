@@ -937,7 +937,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{ស្ដារ​ក្រុមផ្ទាំងដែលមាន <ph name="TAB_COUNT_ONE" /> ផ្ទាំង, ពណ៌<ph name="COLOR_NAME" />, ជា​ក្រុម​ផ្ទាំង​ផ្ទៃខាងក្រោយ​ថ្មី។}other{ស្ដារ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TAB_COUNT_MANY" /> ផ្ទាំង, ពណ៌<ph name="COLOR_NAME" /> ជា​ក្រុម​ផ្ទាំង​ផ្ទៃខាងក្រោយ​ថ្មី។}}</translation>
 <translation id="4849731766219625109">ប្រើ​គណនី <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> របស់អ្នក</translation>
 <translation id="4850886885716139402">មើល</translation>
-<translation id="4852014461738377247">កំពុង​ចូលគណនី\u2026</translation>
 <translation id="4860895144060829044">ហៅ</translation>
 <translation id="4864369630010738180">កំពុង​ចូល...</translation>
 <translation id="4866368707455379617">មិនអាចដំឡើង <ph name="MODULE" /> សម្រាប់ Chrome បានទេ</translation>

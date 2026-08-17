@@ -292,7 +292,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1202116106683864634">Voulez-vous vraiment supprimer cette clé d'accès ?</translation>
 <translation id="1202892408424955784">Produits suivis</translation>
 <translation id="1203247227716551969">Validez votre compte</translation>
-<translation id="1203559206734265703">Débogage des audiences protégées activé.</translation>
 <translation id="120368089816228251">Note de musique</translation>
 <translation id="1203942045716040624">Nœud de calcul partagé : <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Votre code de sécurité figure au verso de votre carte</translation>
@@ -2832,6 +2831,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3175862692832442091">Forêt</translation>
 <translation id="3176347586396987181">Utiliser "Z" pour appuyer de manière prolongée sur un bouton de la souris</translation>
 <translation id="3176984568033229317">Utilisez la recherche Google dans Edge</translation>
+<translation id="3177338796769255211">Connectez-vous pour accéder à vos favoris et plus sur tous vos appareils</translation>
 <translation id="3177430966804511955">Gérer les applications Web isolées (bêta)</translation>
 <translation id="31774765611822736">Nouvel onglet à gauche</translation>
 <translation id="3177909033752230686">Langue de la page :</translation>

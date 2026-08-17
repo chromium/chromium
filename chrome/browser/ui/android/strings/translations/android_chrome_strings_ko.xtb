@@ -936,7 +936,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개, <ph name="COLOR_NAME" /> 색상의 탭 그룹을 새 백그라운드 탭 그룹으로 복원합니다.}other{탭 <ph name="TAB_COUNT_MANY" />개, <ph name="COLOR_NAME" /> 색상의 탭 그룹을 새 백그라운드 탭 그룹으로 복원합니다.}}</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 계정 사용</translation>
 <translation id="4850886885716139402">보기</translation>
-<translation id="4852014461738377247">로그인 중\u2026</translation>
 <translation id="4860895144060829044">전화걸기</translation>
 <translation id="4864369630010738180">로그인 중...</translation>
 <translation id="4866368707455379617">Chrome에 <ph name="MODULE" />을(를) 설치할 수 없습니다.</translation>

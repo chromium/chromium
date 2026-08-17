@@ -226,7 +226,6 @@
 <translation id="1674504678466460478">Од <ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Според правилата на вашата организација, датотекава може да содржи чувствителни податоци</translation>
 <translation id="1683276189281028863">Проверка на лозинки</translation>
-<translation id="168389590065701766">Отсега може да отворате Google Lens од лентата за адреса и да пребарувате што и да гледате</translation>
 <translation id="1689333818294560261">Прекар</translation>
 <translation id="169048873465870056">Да се отстрани картичката и да се избрише групата?</translation>
 <translation id="1692115862433274081">Користете друга сметка</translation>
@@ -2528,6 +2527,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9203951165704618409">Префрлете ја лентата за адреси одозгора најдолу за приспособено доживување при прелистувањето.</translation>
 <translation id="9205189991633470489">Заклучување картички „Инкогнито“</translation>
 <translation id="9206887540681440657">Брзина</translation>
+<translation id="9218430445555521422">Постави како стандардно</translation>
 <translation id="9219103736887031265">Слики</translation>
 <translation id="9219154867334666734">Пребарајте ги картичките…</translation>
 <translation id="9223358826628549784">Извештајот за пад се испрати.</translation>

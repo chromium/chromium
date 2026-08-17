@@ -292,7 +292,6 @@
 <translation id="1202116106683864634">คุณแน่ใจไหมว่าต้องการลบพาสคีย์นี้</translation>
 <translation id="1202892408424955784">สินค้าที่ติดตาม</translation>
 <translation id="1203247227716551969">ยืนยันบัญชี</translation>
-<translation id="1203559206734265703">เปิดใช้การแก้ไขข้อบกพร่องของกลุ่มเป้าหมายที่มีการป้องกันแล้ว</translation>
 <translation id="120368089816228251">โน้ตดนตรี</translation>
 <translation id="1203942045716040624">ผู้ปฏิบัติงานที่แชร์: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">รหัสความปลอดภัยอยู่ที่ด้านหลังบัตร</translation>
@@ -2832,6 +2831,7 @@
 <translation id="3175862692832442091">ป่า</translation>
 <translation id="3176347586396987181">ใช้ปุ่ม "z" เพื่อกดปุ่มเมาส์ค้างไว้</translation>
 <translation id="3176984568033229317">นำ Google Search มาไว้ใน Edge</translation>
+<translation id="3177338796769255211">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์กและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="3177430966804511955">จัดการ Isolated Web App (เบต้า)</translation>
 <translation id="31774765611822736">แท็บใหม่อยู่ด้านซ้าย</translation>
 <translation id="3177909033752230686">ภาษาหน้าเว็บ:</translation>

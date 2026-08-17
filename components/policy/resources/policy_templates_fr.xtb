@@ -2040,18 +2040,6 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent modifier la list
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, ce bouton n'est pas affiché.</translation>
 <translation id="2294382669900758280">La lecture vidéo dans les applications Android n'est pas prise en compte même si cette règle est définie sur "<ph name="TRUE" />".</translation>
-<translation id="2296529215567227994">Indique si le mode navigation privée doit être remplacé par le mode isolé.
-
-Le mode isolé est un mode de navigation éphémère réservé aux entreprises qui remplace le mode navigation privée.
-Contrairement au mode navigation privée, le mode isolé est compatible avec les extensions installées d'office et les règles d'entreprise liées à la protection contre la perte de données.
-
-Notez que les règles liées à la navigation privée ne s'appliquent pas au mode isolé.
-
-Si la valeur est définie sur 1 — Activée, le mode isolé est activé et remplace le mode navigation privée.
-
-Si cette règle est définie sur 0 — Désactivée, ou si elle n'est pas configurée, le mode isolé est désactivé et le comportement standard de la navigation privée est utilisé.
-
-Cette règle nécessite une licence <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> pour être appliquée.</translation>
 <translation id="2299220924812062390">Indiquer une liste de plug-ins activés</translation>
 <translation id="2299815818824242485">Ne pas autoriser la recherche de protection supérieure via proxy</translation>
 <translation id="2303795211377219696">Activer la saisie automatique pour les cartes de crédit</translation>

@@ -2071,18 +2071,6 @@ Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uyg
 
       Politikayı False (Yanlış) değerine ayarlamak veya ayarlamadan bırakmak, düğme görüntülenmeyecek anlamına gelir.</translation>
 <translation id="2294382669900758280">Bu politika <ph name="TRUE" /> seçeneğine ayarlansa bile Android uygulamalarında video oynatma dikkate alınmaz.</translation>
-<translation id="2296529215567227994">Gizli modun Yalıtılmış mod ile değiştirilip değiştirilmeyeceğini belirtir.
-
-Yalıtılmış mod, Gizli modun yerine geçen ve yalnızca kurumsal kullanıma yönelik geçici bir tarama modudur.
-Gizli moddan farklı olarak Yalıtılmış mod, Veri Kaybını Önleme ile ilgili kurumsal politikaları ve zorunlu yüklenmiş uzantıları destekler.
-
-Gizli modla ilgili politikaların Yalıtılmış moda uygulanmadığını unutmayın.
-
-1 - Etkin değerine ayarlanırsa Yalıtılmış mod etkinleştirilir ve Gizli modun yerini alır.
-
-0 - Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa Yalıtılmış mod devre dışı bırakılır ve standart Gizli mod davranışı kullanılır.
-
-Bu politikanın geçerli olması için "<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />" lisansı gerekir.</translation>
 <translation id="2299220924812062390">Etkinleştirilmiş eklentilerin listesini belirt</translation>
 <translation id="2299815818824242485">Daha yüksek korumalı proxy kullanan aramalara izin verme</translation>
 <translation id="2303795211377219696">Kredi kartları için Otomatik Doldurma özelliğini etkinleştirme</translation>

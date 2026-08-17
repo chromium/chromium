@@ -292,7 +292,6 @@ Otvorite <ph name="GOOGLE_PASSWORD_MANAGER" /> da bilo kada provjerite lozinke.<
 <translation id="1202116106683864634">Jeste li sigurni da želite izbrisati ovaj pristupni ključ?</translation>
 <translation id="1202892408424955784">Praćeni proizvodi</translation>
 <translation id="1203247227716551969">Potvrdite račun</translation>
-<translation id="1203559206734265703">Omogućeno je otklanjanje grešaka zaštićene publike</translation>
 <translation id="120368089816228251">Muzička nota</translation>
 <translation id="1203942045716040624">Dijeljeni radnik: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Sigurnosni kôd je na stražnjoj strani kartice</translation>
@@ -2843,6 +2842,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="3175862692832442091">Šuma</translation>
 <translation id="3176347586396987181">Koristite "z" da pritisnete i zadržite dugme miša</translation>
 <translation id="3176984568033229317">Dodajte Google Pretraživanje u Edge</translation>
+<translation id="3177338796769255211">Prijavite se da pristupite svojim oznakama i drugom na svim uređajima</translation>
 <translation id="3177430966804511955">Upravljajte izoliranim web aplikacijama (beta verzija)</translation>
 <translation id="31774765611822736">Nova kartica s lijeve strane</translation>
 <translation id="3177909033752230686">Jezik stranice:</translation>

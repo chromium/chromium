@@ -292,7 +292,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1202116106683864634">Jeste li sigurni da želite izbrisati taj pristupni ključ?</translation>
 <translation id="1202892408424955784">Praćeni proizvodi</translation>
 <translation id="1203247227716551969">Potvrdite svoj račun</translation>
-<translation id="1203559206734265703">Omogućeno je otklanjanje pogrešaka za Protected Audiences.</translation>
 <translation id="120368089816228251">Glazbena nota</translation>
 <translation id="1203942045716040624">Dijeljeni radnik: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Sigurnosni kôd nalazi se na poleđini kartice</translation>
@@ -2833,6 +2832,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3175862692832442091">Šuma</translation>
 <translation id="3176347586396987181">Pomoću tipke z pritisnite i zadržite tipku miša</translation>
 <translation id="3176984568033229317">Upotrebljavajte Google pretraživanje na Edge</translation>
+<translation id="3177338796769255211">Prijavite se kako biste imali pristup svojim oznakama i ostalom na svim svojim uređajima</translation>
 <translation id="3177430966804511955">Upravljajte izoliranim web-aplikacijama (beta)</translation>
 <translation id="31774765611822736">Nova kartica s lijeve strane</translation>
 <translation id="3177909033752230686">Jezik stranice:</translation>

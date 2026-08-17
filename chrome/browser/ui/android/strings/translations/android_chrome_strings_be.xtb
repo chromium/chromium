@@ -937,7 +937,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Аднавіць групу з <ph name="TAB_COUNT_ONE" /> укладкі, колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}one{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}few{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}many{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}other{Аднавіць групу з некалькіх укладак (<ph name="TAB_COUNT_MANY" />), колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.}}</translation>
 <translation id="4849731766219625109">Выкарыстоўваць уліковы запіс <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">Праглядзець</translation>
-<translation id="4852014461738377247">Уваход…</translation>
 <translation id="4860895144060829044">Выклік</translation>
 <translation id="4864369630010738180">Уваход...</translation>
 <translation id="4866368707455379617">Не ўдалося ўсталяваць модуль "<ph name="MODULE" />" для Chrome</translation>

@@ -936,7 +936,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ಗುಂಪಿನಂತೆ ಮರುಸ್ಥಾಪಿಸಿ.}one{<ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ಗುಂಪಿನಂತೆ ಮರುಸ್ಥಾಪಿಸಿ.}other{<ph name="COLOR_NAME" /> ಬಣ್ಣದ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್ ಗುಂಪಿನಂತೆ ಮರುಸ್ಥಾಪಿಸಿ.}}</translation>
 <translation id="4849731766219625109">ನಿಮ್ಮ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಖಾತೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
-<translation id="4852014461738377247">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ\u2026</translation>
 <translation id="4860895144060829044">ಕರೆ</translation>
 <translation id="4864369630010738180">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4866368707455379617">Chrome ಗಾಗಿ <ph name="MODULE" /> ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>

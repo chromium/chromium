@@ -292,7 +292,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1202116106683864634">Czy na pewno chcesz usunąć ten klucz?</translation>
 <translation id="1202892408424955784">Obserwowane produkty</translation>
 <translation id="1203247227716551969">Potwierdź, że to Twoje konto</translation>
-<translation id="1203559206734265703">Debugowanie odbiorców chronionych jest włączone.</translation>
 <translation id="120368089816228251">Nuta</translation>
 <translation id="1203942045716040624">Współdzielona instancja robocza: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Kod zabezpieczający znajduje się na odwrocie karty</translation>
@@ -2826,6 +2825,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="3175862692832442091">Las</translation>
 <translation id="3176347586396987181">Aby nacisnąć i przytrzymać przycisk myszy, użyj klawisza „Z”</translation>
 <translation id="3176984568033229317">Używaj wyszukiwarki Google w Edge</translation>
+<translation id="3177338796769255211">Zaloguj się, aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="3177430966804511955">Zarządzaj izolowanymi aplikacjami internetowymi (beta)</translation>
 <translation id="31774765611822736">Nowa karta po lewej</translation>
 <translation id="3177909033752230686">Język strony:</translation>

@@ -937,7 +937,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> பக்கத்தின் பக்கக் குழுவையும் <ph name="COLOR_NAME" /> வண்ணத்தையும் புதிய பின்னணிப் பக்கக் குழுவாக மீட்டெடுக்கும்.}other{<ph name="TAB_COUNT_MANY" /> பக்கங்களின் பக்கக் குழுவையும் <ph name="COLOR_NAME" /> வண்ணத்தையும் புதிய பின்னணிப் பக்கக் குழுவாக மீட்டெடுக்கும்.}}</translation>
 <translation id="4849731766219625109">உங்கள் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> கணக்கைப் பயன்படுத்துங்கள்</translation>
 <translation id="4850886885716139402">காட்சி</translation>
-<translation id="4852014461738377247">உள்நுழைகிறீர்கள்\u2026</translation>
 <translation id="4860895144060829044">அழை</translation>
 <translation id="4864369630010738180">உள்நுழைகிறீர்கள்...</translation>
 <translation id="4866368707455379617">Chromeமுக்கான <ph name="MODULE" />ஐ நிறுவ முடியவில்லை</translation>

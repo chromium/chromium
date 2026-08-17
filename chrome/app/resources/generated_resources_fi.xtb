@@ -292,7 +292,6 @@
 <translation id="1202116106683864634">Haluatko varmasti poistaa tämän avainkoodin?</translation>
 <translation id="1202892408424955784">Seuratut tuotteet</translation>
 <translation id="1203247227716551969">Tilin todentaminen</translation>
-<translation id="1203559206734265703">Suojattujen yleisöjen virheenkorjaus on käytössä.</translation>
 <translation id="120368089816228251">Nuotti</translation>
 <translation id="1203942045716040624">Shared Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Turvakoodi on kortin kääntöpuolella.</translation>
@@ -2844,6 +2843,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3175862692832442091">Metsä</translation>
 <translation id="3176347586396987181">Paina hiiren painiketta ja pidä sitä painettuna painamalla "z"</translation>
 <translation id="3176984568033229317">Google Haku Edgeen</translation>
+<translation id="3177338796769255211">Kirjaudu sisään, niin voit käyttää esimerkiksi kirjanmerkkejä kaikilla laitteilla</translation>
 <translation id="3177430966804511955">Hallinnoi eristettyjä verkkosovelluksia (beta)</translation>
 <translation id="31774765611822736">Uusi välilehti vasemmalle</translation>
 <translation id="3177909033752230686">Sivun kieli:</translation>

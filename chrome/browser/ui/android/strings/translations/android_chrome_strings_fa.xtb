@@ -937,7 +937,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{بازیابی کردن گروه زبانه با <ph name="TAB_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه زبانه جدید پس‌زمینه.}one{بازیابی کردن گروه زبانه با <ph name="TAB_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه زبانه جدید پس‌زمینه.}other{بازیابی کردن گروه زبانه با <ph name="TAB_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" />، به‌عنوان گروه زبانه جدید پس‌زمینه.}}</translation>
 <translation id="4849731766219625109">استفاده از حساب <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">نما</translation>
-<translation id="4852014461738377247">‏درحال ورود به سیستم\u2026</translation>
 <translation id="4860895144060829044">تماس</translation>
 <translation id="4864369630010738180">درحال ورود به سیستم…</translation>
 <translation id="4866368707455379617">‏<ph name="MODULE" /> برای Chrome نصب نشد</translation>

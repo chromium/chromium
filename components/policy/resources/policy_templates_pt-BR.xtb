@@ -2103,18 +2103,6 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 
       Se ela for definida como falsa ou não for definida, nenhum botão será exibido.</translation>
 <translation id="2294382669900758280">A reprodução de vídeos em apps Android não é levada em consideração, mesmo se esta política estiver definida como <ph name="TRUE" />.</translation>
-<translation id="2296529215567227994">Especifica se o Modo de Navegação Anônima deve ser substituído pelo Modo Isolado.
-
-O Modo Isolado é um modo de navegação temporário exclusivo para empresas que substitui o Modo de Navegação Anônima.
-Ao contrário do Modo de Navegação Anônima, o Modo Isolado é compatível com políticas empresariais relacionadas à DLP e extensões de instalação forçada.
-
-Tenha em mente que as políticas relacionadas à Navegação Anônima não são aplicadas ao Modo Isolado.
-
-Se for definida como 1 – Ativado, o Modo Isolado será ativado e substituirá o Modo de Navegação Anônima.
-
-Se for definida como 0 – Desativada ou deixada sem definição, o Modo Isolado será desativado e a Navegação Anônima será usada como comportamento padrão.
-
-Esta política exige uma licença do <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> para entrar em vigor.</translation>
 <translation id="2299220924812062390">Especifica uma lista de plug-ins ativados</translation>
 <translation id="2299815818824242485">Não permitir pesquisas por proxy com maior proteção</translation>
 <translation id="2303795211377219696">Ativar o preenchimento automático para cartões de crédito</translation>

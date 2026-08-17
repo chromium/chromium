@@ -936,7 +936,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> रंग वाले <ph name="TAB_COUNT_ONE" /> टैब के ग्रुप को, एक नए बैकग्राउंड वाले टैब ग्रुप के तौर पर वापस लाएं.}one{<ph name="COLOR_NAME" /> रंग वाले <ph name="TAB_COUNT_MANY" /> टैब के ग्रुप को, एक नए बैकग्राउंड वाले टैब ग्रुप के तौर पर वापस लाएं.}other{<ph name="COLOR_NAME" /> रंग वाले <ph name="TAB_COUNT_MANY" /> टैब के ग्रुप को, एक नए बैकग्राउंड वाले टैब ग्रुप के तौर पर वापस लाएं.}}</translation>
 <translation id="4849731766219625109">अपने <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाते का इस्तेमाल करें</translation>
 <translation id="4850886885716139402">देखें</translation>
-<translation id="4852014461738377247">साइन इन किया जा रहा है\u2026</translation>
 <translation id="4860895144060829044">कॉल करें</translation>
 <translation id="4864369630010738180">प्रवेश कर रहा है...</translation>
 <translation id="4866368707455379617">Chrome के लिए <ph name="MODULE" /> इंस्टॉल नहीं किया जा सका</translation>

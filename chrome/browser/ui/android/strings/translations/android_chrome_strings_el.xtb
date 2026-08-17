@@ -936,7 +936,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Επαναφέρετε την ομάδα καρτελών που αποτελείται από <ph name="TAB_COUNT_ONE" /> καρτέλα και έχει <ph name="COLOR_NAME" /> χρώμα, ως νέα ομάδα καρτελών στο παρασκήνιο.}other{Επαναφέρετε την ομάδα καρτελών που αποτελείται από <ph name="TAB_COUNT_MANY" /> καρτέλες και έχει <ph name="COLOR_NAME" /> χρώμα, ως νέα ομάδα καρτελών στο παρασκήνιο.}}</translation>
 <translation id="4849731766219625109">Χρήση του λογαριασμού σας <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4850886885716139402">Προβολή</translation>
-<translation id="4852014461738377247">Σύνδεση…</translation>
 <translation id="4860895144060829044">Κλήση</translation>
 <translation id="4864369630010738180">Σύνδεση…</translation>
 <translation id="4866368707455379617">Δεν είναι δυνατή η εγκατάσταση του <ph name="MODULE" /> για το Chrome</translation>

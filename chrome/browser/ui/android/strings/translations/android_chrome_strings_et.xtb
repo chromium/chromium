@@ -765,6 +765,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="4180726336228139707">Ainult selles seadmes</translation>
 <translation id="4181841719683918333">Keeled</translation>
 <translation id="4188221736490993796">Sordi Y-st A-ni järgi</translation>
+<translation id="4188638484665452040">Gemini on vabastatud</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome peatas saidil märguannete saatmise rämpssisu või petliku sisu tõttu.}other{Chrome peatas saitidel märguannete saatmise rämpssisu või petliku sisu tõttu.}}</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 vahekaart selles seadmes}other{# vahekaarti selles seadmes}}</translation>
@@ -936,7 +937,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> vahelehega vahelehegrupi (värv: <ph name="COLOR_NAME" />) taastamine uue taustal oleva vahelehegrupina.}other{<ph name="TAB_COUNT_MANY" /> vahelehega vahelehegrupi (värv: <ph name="COLOR_NAME" />) taastamine uue taustal oleva vahelehegrupina.}}</translation>
 <translation id="4849731766219625109">Kasutage oma <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kontot</translation>
 <translation id="4850886885716139402">Kuva</translation>
-<translation id="4852014461738377247">Sisselogimine …</translation>
 <translation id="4860895144060829044">Helista</translation>
 <translation id="4864369630010738180">Sisselogimine ...</translation>
 <translation id="4866368707455379617">Moodulit <ph name="MODULE" /> ei saa Chrome'i jaoks installida</translation>
@@ -1839,6 +1839,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8393700583063109961">Saatke sõnum</translation>
 <translation id="8396098434728053815">Jaga ka vahekaardi heli</translation>
 <translation id="8398389123831319859">Inkognito režiimile lülitumiseks topeltpuudutage pikalt</translation>
+<translation id="8412037385861858490">Chrome'is töötamise turvalisuse tagamiseks saab teie organisatsioon teatud teavet vaadata või hallata, kui olete Chrome'i sisse logitud. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Kuva kogu ajalugu</translation>
 <translation id="8413795581997394485">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui külastate saiti, saadab Chrome privaatsusserveri kaudu Google'ile URL-i hägustatud osa, mis peidab teie IP-aadressi. Kui sait teeb midagi kahtlast, saadetakse nii täielikud URL-id kui ka osa lehe sisust.</translation>
 <translation id="8414396119627470038">Logige saidile <ph name="SITE_ETLD_PLUS_ONE" /> sisse teenusega <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

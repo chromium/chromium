@@ -292,7 +292,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1202116106683864634">Vai tiešām vēlaties dzēst šo piekļuves atslēgu?</translation>
 <translation id="1202892408424955784">Izsekotie produkti</translation>
 <translation id="1203247227716551969">Konta verifikācija</translation>
-<translation id="1203559206734265703">Saskarnes Protected Audience atkļūdošana ir iespējota.</translation>
 <translation id="120368089816228251">Nots</translation>
 <translation id="1203942045716040624">Kopīgotais skripts: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">Drošības kods ir norādīts kartes aizmugurē.</translation>
@@ -2833,6 +2832,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3175862692832442091">Mežs</translation>
 <translation id="3176347586396987181">Lai nospiestu un turētu peles pogu, izmantojiet taustiņu “z”</translation>
 <translation id="3176984568033229317">Izmantojiet Google meklēšanu pārlūkā Edge</translation>
+<translation id="3177338796769255211">Pierakstieties, lai piekļūtu grāmatzīmēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="3177430966804511955">Pārvaldīt izolētas tīmekļa lietotnes (beta)</translation>
 <translation id="31774765611822736">Jauna cilne pa kreisi</translation>
 <translation id="3177909033752230686">Lapas valoda:</translation>

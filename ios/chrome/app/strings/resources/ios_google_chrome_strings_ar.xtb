@@ -110,6 +110,7 @@
 <translation id="322254490661677575">‏عليك إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك على Google.</translation>
 <translation id="3303503998967553377">‏استخدام ميزة "إجراءات Chrome" على نظام التشغيل iOS</translation>
 <translation id="3348862487678490430">‏إضافة عنصر "قائمة القراءة" إلى متصفِّح Chrome</translation>
+<translation id="3350281376951945723">‏يمكنك فتح الروابط بشكل أسرع عند ضبط Chrome ليكون المتصفّح التلقائي</translation>
 <translation id="3357827134511189025">‏مع ميزة "الملء التلقائي" في Chrome، أصبح تسجيل الدخول إلى أي تطبيق سهلاً باستخدام كلمات المرور ومفاتيح المرور المحفوظة</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقة واحدة ({THRESHOLD}).}zero{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}two{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة دقيقتَين ({THRESHOLD}).}few{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقائق.}many{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}other{‏يحدث هذا الإجراء في حال عدم استخدام Chrome لمدة {THRESHOLD} دقيقة.}}</translation>
 <translation id="3367797402528056312">‏إنهاء عملية إعداد Chrome</translation>
@@ -168,6 +169,7 @@
 <translation id="5030102366287574140">‏يستطيع Chrome المساعدة في حماية بياناتك من عمليات الاختراق والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="5109169629909011627">‏الاطّلاع على الإشارات المرجعية في Chrome</translation>
 <translation id="5112925986883715005">‏الاطّلاع على قائمة القراءة في Chrome</translation>
+<translation id="5116239826668864748">‏يمكنك استخدام Chrome في أي وقت تنقر فيه على روابط في الرسائل والمستندات والتطبيقات الأخرى</translation>
 <translation id="5119391094379141756">‏اختَر Chrome.</translation>
 <translation id="5123188916260706415">‏البحث باستخدام الصوت في Chrome</translation>
 <translation id="5162467219239570114">‏إصدار Chrome قديم. في حال عدم توفُّر تحديث في <ph name="BEGIN_LINK" />متجر التطبيقات<ph name="END_LINK" />، قد يعني هذا أن جهازك لم يعد متوافقًا مع الإصدارات الجديدة من Chrome.</translation>
@@ -378,6 +380,7 @@
 <translation id="9122931302567044771">‏يعني هذا أنّ Chrome سيطلب دائمًا استخدام الموقع الإلكتروني المتوافق مع الكمبيوتر المكتبي.</translation>
 <translation id="9176561303811134420">‏إدارة "طرق الدفع" في Chrome</translation>
 <translation id="9181628561061032322">‏فتح علامات التبويب الأخيرة في Chrome</translation>
+<translation id="924447568950697217">‏جعل Chrome المتصفح التلقائي</translation>
 <translation id="948597495737267756">‏يؤدي هذا الاختصار إلى فتح صفحة "سجلّ Chrome".</translation>
 <translation id="954347330803595209">‏يمكنك استيراد بياناتك لاستخدام كلمات المرور والسجلّ والإشارات المرجعية وبطاقات الائتمان على Chrome</translation>
 <translation id="97300214378190234">‏سيفتح Chrome تلقائيًا عند النقر على روابط في تطبيقات أخرى.</translation>

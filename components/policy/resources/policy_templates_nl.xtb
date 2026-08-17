@@ -2039,18 +2039,6 @@ Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps 
 
       Als je het beleid instelt op 'False' of niet instelt, wordt er geen knop weergegeven.</translation>
 <translation id="2294382669900758280">Er wordt geen rekening gehouden met het afspelen van video in Android-apps, zelfs niet wanneer dit beleid is ingesteld op <ph name="TRUE" /> (Waar).</translation>
-<translation id="2296529215567227994">Geeft aan of de incognitomodus moet worden vervangen door de geïsoleerde modus.
-
-De geïsoleerde modus is een kortstondige browsemodus die alleen beschikbaar is voor Enterprise en die de incognitomodus vervangt.
-In tegenstelling tot de incognitomodus biedt de geïsoleerde modus ondersteuning voor DLP-gerelateerd zakelijk beleid en afgedwongen geïnstalleerde extensies.
-
-Beleid voor de incognitomodus wordt niet toegepast op de geïsoleerde modus.
-
-Als je deze optie instelt op 1 - Aangezet, wordt de geïsoleerde modus geactiveerd en vervangt deze de incognitomodus.
-
-Als je het beleid instelt op 0 - Uitgezet of niet instelt, wordt de geïsoleerde modus uitgezet en wordt het standaardgedrag van Incognito gebruikt.
-
-Dit beleid vereist een <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-licentie om van kracht te worden.</translation>
 <translation id="2299220924812062390">Lijst met aangezette plug-ins specificeren</translation>
 <translation id="2299815818824242485">Lookups via proxy met hogere beveiliging niet toestaan</translation>
 <translation id="2303795211377219696">Automatisch invullen aanzetten voor creditcards</translation>

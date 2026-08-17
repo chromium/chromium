@@ -292,7 +292,6 @@
 <translation id="1202116106683864634">هل تريد فعلاً حذف مفتاح المرور هذا؟</translation>
 <translation id="1202892408424955784">المنتجات التي يتم تتبُّع أسعارها</translation>
 <translation id="1203247227716551969">تأكيد ملكية حسابك</translation>
-<translation id="1203559206734265703">تم تفعيل ميزة "تصحيح أخطاء فئات الجمهور المحمي".</translation>
 <translation id="120368089816228251">نوتة موسيقية</translation>
 <translation id="1203942045716040624">عامل مشترَك: <ph name="SCRIPT_URL" /></translation>
 <translation id="1206832039833782423">يظهر رمز الأمان في الجهة الخلفية من بطاقتك.</translation>
@@ -1876,6 +1875,7 @@
 <translation id="2458379781610688953">تحديث الحساب، <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">تم التعرّف على رمز التفعيل.</translation>
 <translation id="2459706890611560967">استئناف بث علامة التبويب على "<ph name="DEVICE_NAME" />"</translation>
+<translation id="245979889539926662">مشاركة لقطة شاشة</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{ستنتهي صلاحية الإذن اليوم}=1{ستنتهي صلاحية الإذن غدًا}two{ستنتهي صلاحية الإذن بعد يومَين}few{ستنتهي صلاحية الإذن بعد # أيام}many{ستنتهي صلاحية الإذن بعد # يومًا}other{ستنتهي صلاحية الإذن بعد # يوم}}</translation>
 <translation id="2460482211073772897">في مجلدات أخرى</translation>
 <translation id="2460826998961521840">‏لاستخدام مفاتيح المرور المحفوظة في حسابك على Google</translation>
@@ -2835,6 +2835,7 @@
 <translation id="3175862692832442091">غابة</translation>
 <translation id="3176347586396987181">‏للضغط مع الاستمرار على زر الماوس، يجب استخدام مفتاح "z"</translation>
 <translation id="3176984568033229317">‏استخدام "بحث Google" في Microsoft Edge</translation>
+<translation id="3177338796769255211">يمكنك تسجيل الدخول للوصول إلى الإشارات المرجعية وغير ذلك على جميع أجهزتك</translation>
 <translation id="3177430966804511955">إدارة تطبيقات الويب المعزولة (تجريبي)</translation>
 <translation id="31774765611822736">إضافة علامة تبويب جديدة على اليسار</translation>
 <translation id="3177909033752230686">لغة الصفحة:</translation>

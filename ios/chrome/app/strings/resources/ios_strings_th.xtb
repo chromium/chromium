@@ -226,7 +226,6 @@
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />เป็น<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">ไฟล์นี้อาจมีข้อมูลที่ละเอียดอ่อนตามนโยบายขององค์กร</translation>
 <translation id="1683276189281028863">การตรวจสอบรหัสผ่าน</translation>
-<translation id="168389590065701766">ตอนนี้คุณเปิด Google Lens จากแถบที่อยู่และค้นหาทุกสิ่งที่คุณเห็นได้แล้ว</translation>
 <translation id="1689333818294560261">ชื่อเล่น</translation>
 <translation id="169048873465870056">นําแท็บออกและลบกลุ่มใช่ไหม</translation>
 <translation id="1692115862433274081">ใช้บัญชีอื่น</translation>
@@ -2528,6 +2527,7 @@
 <translation id="9203951165704618409">เปลี่ยนแถบที่อยู่จากด้านบนเป็นด้านล่างเพื่อประสบการณ์การท่องเว็บที่ปรับแต่งได้</translation>
 <translation id="9205189991633470489">การล็อกโหมดไม่ระบุตัวตน</translation>
 <translation id="9206887540681440657">ความเร็ว</translation>
+<translation id="9218430445555521422">ตั้งเป็นค่าเริ่มต้น</translation>
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="9219154867334666734">ค้นหาแท็บ…</translation>
 <translation id="9223358826628549784">ส่งรายงานข้อขัดข้องแล้ว</translation>

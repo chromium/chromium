@@ -937,7 +937,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TAB_COUNT_ONE" /> ടാബുള്ള ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.}other{<ph name="COLOR_NAME" /> നിറത്തിലുള്ള <ph name="TAB_COUNT_MANY" /> ടാബുകളുള്ള ടാബ് ഗ്രൂപ്പ്, പശ്ചാത്തലത്തിലുള്ള പുതിയ ടാബ് ഗ്രൂപ്പായി പുനഃസ്ഥാപിക്കുക.}}</translation>
 <translation id="4849731766219625109">നിങ്ങളുടെ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> അക്കൗണ്ട് ഉപയോഗിക്കുക</translation>
 <translation id="4850886885716139402">കാണുക</translation>
-<translation id="4852014461738377247">സൈൻ ഇൻ ചെയ്യുന്നു\u2026</translation>
 <translation id="4860895144060829044">വിളിക്കുക</translation>
 <translation id="4864369630010738180">സൈൻ ഇൻ ചെയ്യുന്നു...</translation>
 <translation id="4866368707455379617">Chrome-നായി <ph name="MODULE" /> ഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല</translation>

@@ -226,7 +226,6 @@
 <translation id="1674504678466460478">Z: <ph name="SOURCE_LANGUAGE" /> na: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Zgodnie z zasadami obowiązującymi w organizacji ten plik może zawierać informacje poufne</translation>
 <translation id="1683276189281028863">Sprawdzanie haseł</translation>
-<translation id="168389590065701766">Teraz możesz otwierać Obiektyw Google z poziomu paska adresu i wyszukiwać wszystko, co widzisz</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="169048873465870056">Usunąć kartę i grupę?</translation>
 <translation id="1692115862433274081">Użyj innego konta</translation>
@@ -2528,6 +2527,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="9203951165704618409">Przenieś pasek adresu z góry na dół, aby spersonalizować przeglądanie.</translation>
 <translation id="9205189991633470489">Blokada trybu incognito</translation>
 <translation id="9206887540681440657">Szybkość</translation>
+<translation id="9218430445555521422">Ustaw jako opcję domyślną</translation>
 <translation id="9219103736887031265">Grafika</translation>
 <translation id="9219154867334666734">Wyszukaj karty…</translation>
 <translation id="9223358826628549784">Raport o awarii został wysłany.</translation>

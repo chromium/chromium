@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> ruxsatini tanlang</translation>
 <translation id="1113000785583998331">IBAN raqami saqlansinmi?</translation>
 <translation id="1113869188872983271">&amp;Qayta tartiblashni qaytarish</translation>
+<translation id="1117709830616495622">Gemini bilan Personal Intelligence texnologiyasi asosida ishlaydi.</translation>
 <translation id="111897705806685148">Boshqa qurilmada kirish kalitini ishlating</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google hisobingizga saqlangan Chrome maʼlumotlarini boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="1121990216147052230">Menga vazifalar roʻyxatini tuzib ber</translation>
@@ -1169,6 +1170,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3005723025932146533">Saqlangan nusxani ko‘rsatish</translation>
 <translation id="300580149047131921">Yaqinda ishlatilgan</translation>
 <translation id="3006864083554020786">uy manzili</translation>
+<translation id="3008410317623852235">Endi Gmail va boshqa ilovalardan ma’lumotlarni topishingiz va toʻldirishingiz mumkin</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, mavjud amallarni kezish uchun Tab, tanlangan amalni bajarish uchun Enter tugmasini bosing.</translation>
 <translation id="3010991137650052245">Bu saytda <ph name="PERMISSION" /> ishlatish uchun <ph name="SHORT_PRODUCT_NAME" />ga ruxsat berish kerak</translation>
 <translation id="3014726756341138577">Kengaytirilgan printer funksiyalari</translation>
@@ -2314,6 +2316,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4941627891654116707">Shrift hajmi</translation>
 <translation id="4943620199112228840">Mikrofonlardan foydalanish</translation>
 <translation id="4943872375798546930">Hech narsa topilmadi</translation>
+<translation id="494701040141924538">Tushunarli, yopish</translation>
 <translation id="495170559598752135">Harakatlar</translation>
 <translation id="4953689047182316270">Qulayliklar ishlatilishi</translation>
 <translation id="4954505713046251871">Tavsiyalar chiqarish va bu funksiyani yaxshilash maqsadida sahifaning URL manzili va kontenti Googlega yuboriladi</translation>
@@ -4289,6 +4292,7 @@ Batafsil axborot:
 <translation id="8350416046273606058">Yorliqda boʻsh joylar boʻlmasligi kerak: “<ph name="SHORTCUT_NAME" />”</translation>
 <translation id="8351131234907093545">Qayd yaratish</translation>
 <translation id="8352849934814541340">Bu qurilma administratori qoʻshimcha funksiyali ilovalarni oʻrnatdi. Bu ilovalar ayrim axborotlaringizdan foydalanishi mumkin.</translation>
+<translation id="8353273112634584260">Gemini bilan Personal Intelligence texnologiyasi asosida ishlaydi. Yaxshilangan avtomatik kiritish funksiyasini yanada takomillashtirish maqsadida soʻrovlaringiz, sahifa sarlavhalari va URL manzillaringiz koʻrib chiqilishi mumkin.</translation>
 <translation id="8355270400102541638">Qurilmadagi ishdan chiqish konteksti:</translation>
 <translation id="8362914115861174987">Bu tilga tarjima qilish</translation>
 <translation id="8363502534493474904">Parvoz rejimini o‘chirib ko‘ring</translation>

@@ -2080,18 +2080,6 @@ Se la policy non viene configurata, gli utenti possono modificare l'elenco di ap
 
       Se la policy è impostata su False o se non viene configurata, non viene visualizzato alcun pulsante.</translation>
 <translation id="2294382669900758280">Il video riprodotto nelle app Android non viene considerato, anche se la norma viene impostata su <ph name="TRUE" />.</translation>
-<translation id="2296529215567227994">Specifica se sostituire la modalità Incognito con la modalità Isolata.
-
-La modalità Isolata è una modalità di navigazione temporanea disponibile solo per le aziende che sostituisce la modalità Incognito.
-A differenza della modalità Incognito, la modalità Isolata supporta le policy aziendali relative a DLP e le estensioni con installazione forzata.
-
-Tieni presente che le policy relative alla modalità Incognito non vengono applicate alla modalità Isolata.
-
-Se impostata su 1 (Attivata), la modalità Isolata viene attivata e sostituisce la modalità Incognito.
-
-Se impostata su 0 (Disattivata) o se non viene configurata, la modalità Isolata viene disattivata e viene utilizzato il comportamento standard della modalità Incognito.
-
-Per essere applicata, questa policy richiede una licenza "<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />".</translation>
 <translation id="2299220924812062390">Consente di specificare un elenco dei plug-in attivati</translation>
 <translation id="2299815818824242485">Non consentire ricerche inviate tramite proxy con una protezione maggiore</translation>
 <translation id="2303795211377219696">Attiva la Compilazione automatica per le carte di credito</translation>

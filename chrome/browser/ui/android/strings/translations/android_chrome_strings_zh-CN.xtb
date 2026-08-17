@@ -936,7 +936,6 @@
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{将包含 <ph name="TAB_COUNT_ONE" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}other{将包含 <ph name="TAB_COUNT_MANY" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}}</translation>
 <translation id="4849731766219625109">使用您的 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号</translation>
 <translation id="4850886885716139402">查看</translation>
-<translation id="4852014461738377247">正在登录\u2026</translation>
 <translation id="4860895144060829044">致电</translation>
 <translation id="4864369630010738180">正在登录…</translation>
 <translation id="4866368707455379617">无法为 Chrome 安装<ph name="MODULE" /></translation>
