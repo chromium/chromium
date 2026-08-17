@@ -58,14 +58,11 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrch
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.OnDropOnArchivalMessageCardEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.SelectionDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
@@ -326,31 +323,12 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     }
                 };
 
-        TabListConfigDelegate tabListConfigDelegate =
-                new TabListConfigDelegate() {
-                    @Override
-                    public @TabListLayoutType int getLayoutType() {
-                        return actionOnRelatedTabs
-                                ? TabListLayoutType.GROUPED
-                                : TabListLayoutType.FLAT;
-                    }
-
-                    @Override
-                    public boolean supportsMessageCards() {
-                        return mMode == TabListMode.GRID;
-                    }
-
-                    @Override
-                    public @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
-                            getRailCollapseStateSupplier() {
-                        return null;
-                    }
-
-                    @Override
-                    public @Nullable TabHoverCardListener getTabHoverCardListener() {
-                        return null;
-                    }
-                };
+        @TabListLayoutType
+        int layoutType = actionOnRelatedTabs ? TabListLayoutType.GROUPED : TabListLayoutType.FLAT;
+        TabListConfig tabListConfig =
+                new TabListConfig.Builder(layoutType)
+                        .setSupportsMessageCards(mMode == TabListMode.GRID)
+                        .build();
 
         mMediator =
                 new TabListMediator(
@@ -363,7 +341,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         mTabListFaviconProvider,
                         selectionDelegateProvider,
                         tabListItemOnClickListenerProvider,
-                        tabListConfigDelegate,
+                        tabListConfig,
                         dialogHandler,
                         priceWelcomeMessageControllerSupplier,
                         componentId,

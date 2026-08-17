@@ -101,6 +101,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -173,13 +174,15 @@ import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -385,7 +388,6 @@ public class TabListMediatorUnitTest {
     @Mock SnackbarManager mSnackbarManager;
     @Mock MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock PropertyObservable.PropertyObserver<PropertyKey> mPropertyObserver;
-    @Mock TabListConfigDelegate mTabListConfigDelegate;
     @Mock MotionEvent mMotionEvent;
     @Mock View mItemView1;
     @Mock View mItemView2;
@@ -421,6 +423,7 @@ public class TabListMediatorUnitTest {
     private Tab mTab2;
     private TabListMediator mMediator;
     private TabListModel mModelList;
+    private TabListConfig mTabListConfig;
     private RecyclerView.ViewHolder mFakeViewHolder1;
     private RecyclerView.ViewHolder mFakeViewHolder2;
     private PriceTabData mPriceTabData;
@@ -432,6 +435,99 @@ public class TabListMediatorUnitTest {
     private Context mContext;
     private SavedTabGroup mSavedTabGroup1;
     private SavedTabGroup mSavedTabGroup2;
+
+    private class MediatorBuilder {
+        private @TabListMode int mMode = TabListMode.GRID;
+        private @Nullable ThumbnailProvider mThumbnailProvider = getTabThumbnailCallback();
+        private @Nullable TabListItemOnClickListenerProvider mTabListItemOnClickListenerProvider =
+                TabListMediatorUnitTest.this.mTabListItemOnClickListenerProvider;
+        private @Nullable TabListConfig mTabListConfig =
+                TabListMediatorUnitTest.this.mTabListConfig;
+        private @Nullable TabGridDialogHandler mDialogHandler;
+        private @TabComponentId int mComponentId = TabComponentId.GRID_TAB_SWITCHER;
+        private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
+        private @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger =
+                TabListMediatorUnitTest.this.mUndoBarExplicitTrigger;
+        private @Nullable SnackbarManager mSnackbarManager;
+        private int mAllowedSelectionCount;
+
+        public MediatorBuilder setMode(@TabListMode int mode) {
+            mMode = mode;
+            return this;
+        }
+
+        public MediatorBuilder setThumbnailProvider(@Nullable ThumbnailProvider thumbnailProvider) {
+            mThumbnailProvider = thumbnailProvider;
+            return this;
+        }
+
+        public MediatorBuilder setTabListItemOnClickListenerProvider(
+                @Nullable TabListItemOnClickListenerProvider provider) {
+            mTabListItemOnClickListenerProvider = provider;
+            return this;
+        }
+
+        public MediatorBuilder setTabListConfig(@Nullable TabListConfig tabListConfig) {
+            mTabListConfig = tabListConfig;
+            return this;
+        }
+
+        public MediatorBuilder setDialogHandler(@Nullable TabGridDialogHandler dialogHandler) {
+            mDialogHandler = dialogHandler;
+            return this;
+        }
+
+        public MediatorBuilder setComponentId(@TabComponentId int componentId) {
+            mComponentId = componentId;
+            return this;
+        }
+
+        public MediatorBuilder setTabActionState(@TabActionState int tabActionState) {
+            mTabActionState = tabActionState;
+            return this;
+        }
+
+        public MediatorBuilder setUndoBarExplicitTrigger(
+                @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger) {
+            mUndoBarExplicitTrigger = undoBarExplicitTrigger;
+            return this;
+        }
+
+        public MediatorBuilder setSnackbarManager(@Nullable SnackbarManager snackbarManager) {
+            mSnackbarManager = snackbarManager;
+            return this;
+        }
+
+        public MediatorBuilder setAllowedSelectionCount(int allowedSelectionCount) {
+            mAllowedSelectionCount = allowedSelectionCount;
+            return this;
+        }
+
+        public TabListMediator build() {
+            return new TabListMediator(
+                    mActivity,
+                    mModelList,
+                    mMode,
+                    mModalDialogManager,
+                    mCurrentTabModelSupplier,
+                    mThumbnailProvider,
+                    mTabListFaviconProvider,
+                    () -> mSelectionDelegate,
+                    mTabListItemOnClickListenerProvider,
+                    mTabListConfig,
+                    mDialogHandler,
+                    /* priceWelcomeMessageControllerSupplier= */ null,
+                    mComponentId,
+                    mTabActionState,
+                    mDataSharingTabManager,
+                    /* onTabGroupCreation= */ null,
+                    mUndoBarExplicitTrigger,
+                    mSnackbarManager,
+                    mAllowedSelectionCount,
+                    /* isSingleContextMode= */ false,
+                    /* onDragStateChangedListener= */ CallbackUtils.emptyRunnable());
+        }
+    }
 
     @Before
     public void setUp() {
@@ -547,8 +643,10 @@ public class TabListMediatorUnitTest {
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         GlicEnabling.setEnabledForTesting(false);
 
-        when(mTabListConfigDelegate.getLayoutType()).thenReturn(TabListLayoutType.GROUPED);
-        when(mTabListConfigDelegate.supportsMessageCards()).thenReturn(true);
+        mTabListConfig =
+                new TabListConfig.Builder(TabListLayoutType.GROUPED)
+                        .setSupportsMessageCards(true)
+                        .build();
 
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
@@ -2261,29 +2359,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabSelection_updatePreviousSelectedTabThumbnailFetcher() {
-        mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        mTabListItemOnClickListenerProvider,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.GRID_TAB_SWITCHER,
-                        TabActionState.CLOSABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        /* undoBarExplicitTrigger= */ null,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+        mMediator = new MediatorBuilder().setUndoBarExplicitTrigger(null).build();
         mMediator.initWithNative(mProfile);
 
         initAndAssertAllProperties();
@@ -3439,28 +3515,10 @@ public class TabListMediatorUnitTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         setPriceTrackingEnabledForTesting(true);
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        null,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.GRID_TAB_SWITCHER,
-                        TabProperties.TabActionState.CLOSABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        /* undoBarExplicitTrigger= */ null,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setUndoBarExplicitTrigger(null)
+                        .build();
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -3476,28 +3534,10 @@ public class TabListMediatorUnitTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         setPriceTrackingEnabledForTesting(true);
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        null,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.GRID_TAB_SWITCHER,
-                        TabProperties.TabActionState.CLOSABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        /* undoBarExplicitTrigger= */ null,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setUndoBarExplicitTrigger(null)
+                        .build();
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initWithThreeTabs();
@@ -3656,28 +3696,10 @@ public class TabListMediatorUnitTest {
     @Test
     public void testTabDescriptionString_Archived() {
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        null,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.ARCHIVED_TABS_DIALOG,
-                        TabProperties.TabActionState.CLOSABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        mUndoBarExplicitTrigger,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setComponentId(TabComponentId.ARCHIVED_TABS_DIALOG)
+                        .build();
         initAndAssertAllProperties();
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -3698,28 +3720,10 @@ public class TabListMediatorUnitTest {
     @Test
     public void testTabDescriptionString_Archived_EmptyTitle() {
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        null,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.ARCHIVED_TABS_DIALOG,
-                        TabProperties.TabActionState.CLOSABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        mUndoBarExplicitTrigger,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setComponentId(TabComponentId.ARCHIVED_TABS_DIALOG)
+                        .build();
         initAndAssertAllProperties();
 
         Tab newTab = prepareTab(TAB3_ID, "", TAB3_URL);
@@ -4075,28 +4079,11 @@ public class TabListMediatorUnitTest {
         when(mSelectionDelegate.isItemSelected(ITEM2_ID)).thenReturn(false);
         when(mSelectionDelegate.isItemSelected(ITEM3_ID)).thenReturn(false);
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        null,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.GRID_TAB_SWITCHER,
-                        TabProperties.TabActionState.SELECTABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        /* undoBarExplicitTrigger= */ null,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setTabActionState(TabActionState.SELECTABLE)
+                        .setUndoBarExplicitTrigger(null)
+                        .build();
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4126,28 +4113,11 @@ public class TabListMediatorUnitTest {
         when(mSelectionDelegate.isItemSelected(ITEM2_ID)).thenReturn(false);
         when(mSelectionDelegate.isItemSelected(ITEM3_ID)).thenReturn(false);
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        null,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.GRID_TAB_SWITCHER,
-                        TabProperties.TabActionState.SELECTABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        /* undoBarExplicitTrigger= */ null,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setTabActionState(TabActionState.SELECTABLE)
+                        .setUndoBarExplicitTrigger(null)
+                        .build();
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4177,28 +4147,11 @@ public class TabListMediatorUnitTest {
         when(mSelectionDelegate.isItemSelected(ITEM2_ID)).thenReturn(false);
         when(mSelectionDelegate.isItemSelected(ITEM3_ID)).thenReturn(false);
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        null,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.GRID_TAB_SWITCHER,
-                        TabProperties.TabActionState.SELECTABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        /* undoBarExplicitTrigger= */ null,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setTabActionState(TabActionState.SELECTABLE)
+                        .setUndoBarExplicitTrigger(null)
+                        .build();
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -4271,28 +4224,10 @@ public class TabListMediatorUnitTest {
         }
         int allowedSelectionCount = 2;
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        null,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.GRID_TAB_SWITCHER,
-                        TabProperties.TabActionState.CLOSABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        mUndoBarExplicitTrigger,
-                        mSnackbarManager,
-                        allowedSelectionCount,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setSnackbarManager(mSnackbarManager)
+                        .setAllowedSelectionCount(allowedSelectionCount)
+                        .build();
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -5200,28 +5135,10 @@ public class TabListMediatorUnitTest {
         when(mSelectionDelegate.isItemSelected(ITEM2_ID)).thenReturn(false);
         when(mSelectionDelegate.isItemSelected(ITEM3_ID)).thenReturn(false);
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        null,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.GRID_TAB_SWITCHER,
-                        TabProperties.TabActionState.CLOSABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        /* undoBarExplicitTrigger= */ null,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setUndoBarExplicitTrigger(null)
+                        .build();
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -5521,31 +5438,13 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testSingleTabClosure_ArchivedTab_ExplicitTriggerSnackbar() {
-        when(mTabListConfigDelegate.getLayoutType()).thenReturn(TabListLayoutType.FLAT);
+        mTabListConfig = new TabListConfig.Builder(TabListLayoutType.FLAT).build();
 
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        null,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.ARCHIVED_TABS_DIALOG,
-                        TabProperties.TabActionState.CLOSABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        mUndoBarExplicitTrigger,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setComponentId(TabComponentId.ARCHIVED_TABS_DIALOG)
+                        .build();
         initAndAssertAllProperties();
 
         mModelList
@@ -5590,29 +5489,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void setTabActionState_bindsTabGroupTypePropertiesCorrectly() {
         // Start off with a closable type but an actionable selection delegate.
-        mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        mTabListItemOnClickListenerProvider,
-                        mTabListConfigDelegate,
-                        null,
-                        null,
-                        TabComponentId.GRID_TAB_SWITCHER,
-                        TabProperties.TabActionState.CLOSABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        /* undoBarExplicitTrigger= */ null,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+        mMediator = new MediatorBuilder().setUndoBarExplicitTrigger(null).build();
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -5881,28 +5758,10 @@ public class TabListMediatorUnitTest {
     @Test
     public void testContextClickListener() {
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        TabListMode.GRID,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        getTabThumbnailCallback(),
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        /* tabListItemOnClickListenerProvider= */ null,
-                        mTabListConfigDelegate,
-                        /* dialogHandler= */ null,
-                        /* priceWelcomeMessageControllerSupplier= */ null,
-                        TabComponentId.GRID_TAB_SWITCHER,
-                        TabProperties.TabActionState.CLOSABLE,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        /* undoBarExplicitTrigger= */ null,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setUndoBarExplicitTrigger(null)
+                        .build();
         mMediator.initWithNative(mProfile);
 
         initAndAssertAllProperties();
@@ -6389,7 +6248,10 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testPriceMessageDisabled_WhenMessageCardsNotSupported() {
-        when(mTabListConfigDelegate.supportsMessageCards()).thenReturn(false);
+        mTabListConfig =
+                new TabListConfig.Builder(TabListLayoutType.GROUPED)
+                        .setSupportsMessageCards(false)
+                        .build();
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
         // Verify getPriceWelcomeMessageInsertionIndex returns INVALID_TAB_INDEX without throwing
@@ -6412,8 +6274,10 @@ public class TabListMediatorUnitTest {
     public void testRailCollapseStateSupplier_updatesExistingTabsAndNewTabs() {
         SettableNonNullObservableSupplier<@RailCollapseState Integer> railCollapseStateSupplier =
                 ObservableSuppliers.createNonNull(RailCollapseState.EXPANDED);
-        when(mTabListConfigDelegate.getRailCollapseStateSupplier())
-                .thenReturn(railCollapseStateSupplier);
+        mTabListConfig =
+                new TabListConfig.Builder(TabListLayoutType.NESTED)
+                        .setRailCollapseStateSupplier(railCollapseStateSupplier)
+                        .build();
 
         setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
 
@@ -6452,14 +6316,54 @@ public class TabListMediatorUnitTest {
     public void testRailCollapseStateSupplier_unregistersOnDestroy() {
         SettableNonNullObservableSupplier<@RailCollapseState Integer> railCollapseStateSupplier =
                 ObservableSuppliers.createNonNull(RailCollapseState.EXPANDED);
-        when(mTabListConfigDelegate.getRailCollapseStateSupplier())
-                .thenReturn(railCollapseStateSupplier);
+        mTabListConfig =
+                new TabListConfig.Builder(TabListLayoutType.NESTED)
+                        .setRailCollapseStateSupplier(railCollapseStateSupplier)
+                        .build();
 
         setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
         assertTrue(railCollapseStateSupplier.hasObservers());
 
         mMediator.destroy();
         assertFalse(railCollapseStateSupplier.hasObservers());
+    }
+
+    @Test
+    public void testToggleTabGroupExpansion_LogsHistogramVertical() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+
+        List<Tab> tabs = List.of(mTab1);
+        createTabGroup(tabs, TAB_GROUP_ID);
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        // Mock tab model collapse state.
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.TabGroupCollapsed", true);
+
+        // Toggle expansion (from expanded (false) to collapsed (true)).
+        mMediator.toggleTabGroupExpansion(TAB1_ID);
+
+        verify(mTabModel)
+                .setTabGroupCollapsed(TAB_GROUP_ID, /* isCollapsed= */ true, /* animate= */ false);
+
+        histogramWatcher.assertExpected();
+
+        // Test expand.
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.TabGroupCollapsed", false);
+
+        // Toggle expansion (from collapsed (true) to expanded (false)).
+        mMediator.toggleTabGroupExpansion(TAB1_ID);
+
+        verify(mTabModel)
+                .setTabGroupCollapsed(TAB_GROUP_ID, /* isCollapsed= */ false, /* animate= */ false);
+
+        histogramWatcher.assertExpected();
     }
 
     private void mockTabIndexes(Tab... tabs) {
@@ -6533,13 +6437,6 @@ public class TabListMediatorUnitTest {
     }
 
     private void setUpTabListMediator(@TabListMediatorType int type, @TabListMode int mode) {
-        setUpTabListMediator(type, mode, TabActionState.CLOSABLE);
-    }
-
-    private void setUpTabListMediator(
-            @TabListMediatorType int type,
-            @TabListMode int mode,
-            @TabActionState int tabActionState) {
         if (mMediator != null) {
             mMediator.resetWithListOfTabs(null, null, false);
             mMediator.destroy();
@@ -6564,31 +6461,34 @@ public class TabListMediatorUnitTest {
         } else if (type == TabListMediatorType.TAB_SWITCHER) {
             layoutType = TabListLayoutType.GROUPED;
         }
-        when(mTabListConfigDelegate.getLayoutType()).thenReturn(layoutType);
+        boolean supportsMessageCards =
+                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
+                        ? mTabListConfig.supportsMessageCards
+                        : (type == TabListMediatorType.TAB_SWITCHER);
+        NonNullObservableSupplier<@RailCollapseState Integer> railCollapseStateSupplier =
+                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
+                        ? mTabListConfig.railCollapseStateSupplier
+                        : null;
+        TabHoverCardListener tabHoverCardListener =
+                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
+                        ? mTabListConfig.tabHoverCardListener
+                        : null;
+
+        mTabListConfig =
+                new TabListConfig.Builder(layoutType)
+                        .setSupportsMessageCards(supportsMessageCards)
+                        .setRailCollapseStateSupplier(railCollapseStateSupplier)
+                        .setTabHoverCardListener(tabHoverCardListener)
+                        .build();
 
         mMediator =
-                new TabListMediator(
-                        mActivity,
-                        mModelList,
-                        mode,
-                        mModalDialogManager,
-                        mCurrentTabModelSupplier,
-                        thumbnailProvider,
-                        mTabListFaviconProvider,
-                        () -> mSelectionDelegate,
-                        mTabListItemOnClickListenerProvider,
-                        mTabListConfigDelegate,
-                        handler,
-                        null,
-                        componentId,
-                        tabActionState,
-                        mDataSharingTabManager,
-                        /* onTabGroupCreation= */ null,
-                        mUndoBarExplicitTrigger,
-                        /* snackbarManager= */ null,
-                        /* allowedSelectionCount= */ 0,
-                        /* isSingleContextMode= */ false,
-                        CallbackUtils.emptyRunnable());
+                new MediatorBuilder()
+                        .setMode(mode)
+                        .setThumbnailProvider(thumbnailProvider)
+                        .setDialogHandler(handler)
+                        .setComponentId(componentId)
+                        .setTabListConfig(mTabListConfig)
+                        .build();
         TrackerFactory.setTrackerForTests(mTracker);
         mMediator.registerOrientationListener(mGridLayoutManager);
 
@@ -6624,7 +6524,7 @@ public class TabListMediatorUnitTest {
                 model.set(TabProperties.TAB_GROUP_ID, null);
             }
             model.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
-            @TabListLayoutType int layoutType = mTabListConfigDelegate.getLayoutType();
+            @TabListLayoutType int layoutType = mTabListConfig.layoutType;
             boolean isCollapsed =
                     layoutType != TabListLayoutType.NESTED
                             || mTabModel.getTabGroupCollapsed(tabGroupId);
@@ -6841,41 +6741,5 @@ public class TabListMediatorUnitTest {
                                         .build()),
                         /* allowDialog= */ eq(true),
                         any());
-    }
-
-    @Test
-    public void testToggleTabGroupExpansion_LogsHistogramVertical() {
-        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
-
-        List<Tab> tabs = List.of(mTab1);
-        createTabGroup(tabs, TAB_GROUP_ID);
-        mMediator.resetWithListOfTabs(tabs, null, false);
-
-        // Mock tab model collapse state.
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
-
-        var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.VerticalTabs.TabGroupCollapsed", true);
-
-        // Toggle expansion (from expanded (false) to collapsed (true)).
-        mMediator.toggleTabGroupExpansion(TAB1_ID);
-
-        verify(mTabModel).setTabGroupCollapsed(TAB_GROUP_ID, true, false);
-
-        histogramWatcher.assertExpected();
-
-        // Test expand.
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
-        histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Android.VerticalTabs.TabGroupCollapsed", false);
-
-        // Toggle expansion (from collapsed (true) to expanded (false)).
-        mMediator.toggleTabGroupExpansion(TAB1_ID);
-
-        verify(mTabModel).setTabGroupCollapsed(TAB_GROUP_ID, false, false);
-
-        histogramWatcher.assertExpected();
     }
 }
