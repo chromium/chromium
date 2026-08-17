@@ -220,6 +220,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
   gap: unset;
   margin-bottom: unset;
   overflow: unset;
+  padding-bottom: 0;
   padding-top: unset;
 }
 
@@ -239,7 +240,7 @@ cr-composebox-contextual-entrypoint-and-menu {
 }
 
 :host([is-fusebox-enabled]) .context-menu-container {
-  padding-block: 10px;
+  padding-block: 0;
 }
 
 :host([is-fusebox-enabled]) cr-composebox-contextual-entrypoint-and-menu {
@@ -309,9 +310,6 @@ cr-composebox-contextual-entrypoint-and-menu {
   opacity: 0;
 }
 
-:host([is-fusebox-enabled][dropdown-is-visible]) .dropdownContainer {
-  padding-bottom: 10px;
-}
 
 :host([is-fusebox-enabled]) .contextualEntrypointContainerCompact {
   box-shadow: none;

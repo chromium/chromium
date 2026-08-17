@@ -324,6 +324,26 @@ suite('OmniboxEverywhereOmniboxTest', () => {
       mockDialog.remove();
     }
   });
+
+  test('dropdownIsVisible preserves bottomControls', async () => {
+    const bottomControls =
+        omnibox.shadowRoot.querySelector<HTMLElement>('#bottomControls');
+    assertTrue(!!bottomControls);
+    assertFalse(omnibox.hasAttribute('dropdown-is-visible'));
+    assertEquals('flex', window.getComputedStyle(bottomControls).display);
+
+    omnibox.dropdownIsVisible = true;
+    await microtasksFinished();
+
+    assertTrue(omnibox.hasAttribute('dropdown-is-visible'));
+    assertEquals('flex', window.getComputedStyle(bottomControls).display);
+
+    omnibox.dropdownIsVisible = false;
+    await microtasksFinished();
+
+    assertFalse(omnibox.hasAttribute('dropdown-is-visible'));
+    assertEquals('flex', window.getComputedStyle(bottomControls).display);
+  });
 });
 
 
