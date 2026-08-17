@@ -1821,9 +1821,11 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
         base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
         task_info_delegate_->GetTaskId().has_value();
 
-    bool should_create_new_task = pending_task_title_mismatch ||
-                                  is_thread_switch ||
-                                  (is_new_conversation && !has_reusable_task);
+    bool should_create_new_task =
+        is_thread_switch ||
+        (!has_reusable_task &&
+         (pending_task_title_mismatch || is_new_conversation));
+
     if (should_create_new_task) {
       OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: "
                                   "FrameNavObserver::DidFinishNavigation "
