@@ -14,10 +14,13 @@
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "components/lens/buildflags.h"
+#include "components/prefs/pref_service.h"
 #include "components/renderer_context_menu/views/toolkit_delegate_views.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -27,6 +30,7 @@
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/accelerators/command.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -263,6 +267,16 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       // the proper accelerator.
       return accelerator_provider->GetAcceleratorForCommandId(
           IDC_SHOW_READING_MODE_KEYBOARD, accel);
+    }
+
+    case IDC_CONTENT_CONTEXT_DICTATION: {
+      const std::string& pref_shortcut =
+          GetProfile()->GetPrefs()->GetString(prefs::kVoiceTypingHotkey);
+      if (pref_shortcut.empty()) {
+        return false;
+      }
+      *accel = ui::Command::StringToAccelerator(pref_shortcut);
+      return !accel->IsEmpty();
     }
 
     case IDC_CONTENT_CONTEXT_EMOJI:

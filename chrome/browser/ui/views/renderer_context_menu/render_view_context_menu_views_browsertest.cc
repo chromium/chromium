@@ -5,15 +5,20 @@
 #include "chrome/browser/ui/views/renderer_context_menu/render_view_context_menu_views.h"
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
 
 namespace {
@@ -35,6 +40,7 @@ class TestRenderViewContextMenuViews : public RenderViewContextMenuViews {
 
   ~TestRenderViewContextMenuViews() override = default;
 
+  using RenderViewContextMenuViews::GetAcceleratorForCommandId;
   using RenderViewContextMenuViews::IsCommandIdChecked;
   using RenderViewContextMenuViews::IsCommandIdEnabled;
 
@@ -105,6 +111,21 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuViewsBrowserTest,
   EXPECT_FALSE(menu.IsCommandIdEnabled(kWritingDirectionDefaultId));
   EXPECT_FALSE(menu.IsCommandIdEnabled(IDC_WRITING_DIRECTION_LTR));
   EXPECT_FALSE(menu.IsCommandIdEnabled(IDC_WRITING_DIRECTION_RTL));
+}
+
+IN_PROC_BROWSER_TEST_F(RenderViewContextMenuViewsBrowserTest,
+                       DictationAcceleratorSetFromPref) {
+  constexpr char kTestVoiceTypingHotkey[] = "Ctrl+Shift+D";
+  browser()->GetProfile()->GetPrefs()->SetString(prefs::kVoiceTypingHotkey,
+                                                 kTestVoiceTypingHotkey);
+  content::ContextMenuParams params;
+  TestRenderViewContextMenuViews menu(GetPrimaryMainFrame(), params);
+  ui::Accelerator accel;
+  EXPECT_TRUE(
+      menu.GetAcceleratorForCommandId(IDC_CONTENT_CONTEXT_DICTATION, &accel));
+  EXPECT_EQ(ui::VKEY_D, accel.key_code());
+  EXPECT_TRUE(accel.IsCtrlDown());
+  EXPECT_TRUE(accel.IsShiftDown());
 }
 
 }  // namespace
