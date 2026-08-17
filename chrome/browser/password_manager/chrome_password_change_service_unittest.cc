@@ -117,6 +117,9 @@ class ChromePasswordChangeServiceBase {
     prefs()->registry()->RegisterTimePref(
         password_manager::prefs::kLastNegativePasswordChangeTimestamp,
         /*default_value=*/base::Time());
+    prefs()->registry()->RegisterBooleanPref(
+        password_manager::prefs::kAutomatedPasswordChangeEnabled,
+        /*default_value=*/true);
     auto feature_manager = std::make_unique<
         testing::StrictMock<password_manager::MockPasswordFeatureManager>>();
     feature_manager_ = feature_manager.get();
@@ -656,6 +659,62 @@ TEST_F(ChromePasswordChangeServiceFeatureEnabledTest,
 
   // We do NOT mock ShouldModelExecutionBeAllowedForUser. A call to it on strict
   // mock would trigger a failure.
+  EXPECT_CALL(settings_service(), IsSettingEnabled)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
+      .WillOnce(testing::Return(true));
+
+  password_manager::PasswordForm form =
+      CreateTestForm(url, /*is_signup_form=*/false);
+  form.change_password_url = GURL("https://test.com/password/");
+
+  EXPECT_TRUE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/false));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChangeAvailability",
+      PasswordChangeAvailability::kAvailable, 1);
+}
+
+TEST_F(ChromePasswordChangeServiceFeatureEnabledTest,
+       PasswordChangeDisabledByUserPref) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
+  GURL url("https://test.com/");
+
+  prefs()->SetBoolean(password_manager::prefs::kAutomatedPasswordChangeEnabled,
+                      false);
+
+  EXPECT_CALL(settings_service(), IsSettingEnabled)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*feature_manager(), IsGenerationEnabled)
+      .WillOnce(testing::Return(true));
+
+  password_manager::PasswordForm form =
+      CreateTestForm(url, /*is_signup_form=*/false);
+  form.change_password_url = GURL("https://test.com/password/");
+
+  EXPECT_FALSE(change_service()->IsPasswordChangeSupported(
+      form, /*is_non_password_login_detected=*/false));
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordChangeAvailability",
+      PasswordChangeAvailability::kDisabledByUser, 1);
+}
+
+TEST_F(ChromePasswordChangeServiceFeatureEnabledTest,
+       PasswordChangeDisabledByUserPrefIgnoredWhenFeatureDisabled) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
+  GURL url("https://test.com/");
+
+  prefs()->SetBoolean(password_manager::prefs::kAutomatedPasswordChangeEnabled,
+                      false);
+
   EXPECT_CALL(settings_service(), IsSettingEnabled)
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*feature_manager(), IsGenerationEnabled)

@@ -825,6 +825,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Signup form"/>
   <int value="12" label="Non-password login"/>
   <int value="13" label="Invisible password field"/>
+  <int value="14" label="Disabled by user"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/password_manager/chrome_password_change_service.h) -->

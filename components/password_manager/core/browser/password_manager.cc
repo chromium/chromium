@@ -564,6 +564,7 @@ void PasswordManager::RegisterProfilePrefs(
                              base::Time());
   registry->RegisterBooleanPref(prefs::kWereOldGoogleLoginsRemoved, false);
   registry->RegisterBooleanPref(prefs::kCredentialsEnablePasskeys, true);
+  registry->RegisterBooleanPref(prefs::kAutomatedPasswordChangeEnabled, true);
 
 #if BUILDFLAG(IS_APPLE)
   registry->RegisterIntegerPref(prefs::kKeychainMigrationStatus,

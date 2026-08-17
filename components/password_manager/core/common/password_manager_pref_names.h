@@ -12,6 +12,10 @@ namespace password_manager::prefs {
 // Alphabetical list of preference names specific to the PasswordManager
 // component.
 
+// Boolean controlling whether automated password change is enabled by the user.
+inline constexpr char kAutomatedPasswordChangeEnabled[] =
+    "automated_password_change_enabled";
+
 // Boolean controlling whether websites and apps can automatically upgrade
 // existing accounts to use passkeys when available.
 //

@@ -344,6 +344,18 @@ PasswordChangeAvailability ChromePasswordChangeService::GetGeneralAvailability()
     return PasswordChangeAvailability::kDisabledByPolicy;
   }
 
+  // The preference is disabled by the user in settings (and feature is enabled)
+  if (!pref_service_->GetBoolean(
+          password_manager::prefs::kAutomatedPasswordChangeEnabled) &&
+      base::FeatureList::IsEnabled(
+          password_change::features::
+              kPasswordChangeWithPrivateInferenceLoginCheck)) {
+    if (logger) {
+      logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_DISABLED_BY_USER);
+    }
+    return PasswordChangeAvailability::kDisabledByUser;
+  }
+
   if (!pref_service_->GetInteger(
           password_manager::prefs::kTotalPasswordsAvailableForAccount) &&
       !pref_service_->GetInteger(
