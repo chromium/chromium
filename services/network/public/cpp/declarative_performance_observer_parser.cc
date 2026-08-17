@@ -4,7 +4,13 @@
 
 #include "services/network/public/cpp/declarative_performance_observer_parser.h"
 
-#include "base/strings/string_util.h"
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include "base/containers/map_util.h"
 #include "net/http/structured_headers.h"
 
 namespace network {
@@ -49,46 +55,43 @@ ParseDeclarativePerformanceObserverPolicy(std::string_view header) {
 
   auto policy = mojom::DeclarativePerformanceObserverPolicy::New();
 
-  if (dict->contains(kReportTo)) {
-    const auto& member = dict->at(kReportTo);
-    if (!member.member_is_inner_list && !member.member.empty() &&
-        member.member[0].item.is_string()) {
-      policy->reporting_endpoint = member.member[0].item.GetString();
+  if (auto* member = base::FindOrNull(*dict, kReportTo);
+      member && !member->member_is_inner_list && !member->member.empty()) {
+    if (std::string* str = member->member.front().item.GetIfString()) {
+      policy->reporting_endpoint = std::move(*str);
     }
   }
 
-  if (dict->contains(kEntryTypes)) {
-    const auto& member = dict->at(kEntryTypes);
-    if (member.member_is_inner_list) {
-      for (const auto& item : member.member) {
-        if (item.item.is_token() || item.item.is_string()) {
-          const std::string& type_str = item.item.GetString();
-          if (auto type = ParseEntryType(type_str)) {
-            policy->entry_types.push_back(*type);
-          }
+  if (const auto* member = base::FindOrNull(*dict, kEntryTypes);
+      member && member->member_is_inner_list) {
+    for (const auto& item : member->member) {
+      const std::string* type_str = item.item.GetIfToken();
+      if (!type_str) {
+        type_str = item.item.GetIfString();
+      }
+      if (type_str) {
+        if (auto type = ParseEntryType(*type_str)) {
+          policy->entry_types.push_back(*type);
         }
       }
     }
   }
 
-  if (dict->contains(kIncludeUserTiming)) {
-    const auto& member = dict->at(kIncludeUserTiming);
-    if (member.member_is_inner_list) {
-      std::vector<std::string> user_timing;
-      for (const auto& item : member.member) {
-        if (item.item.is_string()) {
-          user_timing.push_back(item.item.GetString());
-        }
+  if (auto* member = base::FindOrNull(*dict, kIncludeUserTiming);
+      member && member->member_is_inner_list) {
+    std::vector<std::string> user_timing;
+    for (auto& item : member->member) {
+      if (std::string* str = item.item.GetIfString()) {
+        user_timing.emplace_back(std::move(*str));
       }
-      policy->include_user_timing = std::move(user_timing);
     }
+    policy->include_user_timing = std::move(user_timing);
   }
 
-  if (dict->contains(kCaptureEarlyFailures)) {
-    const auto& member = dict->at(kCaptureEarlyFailures);
-    if (!member.member_is_inner_list && !member.member.empty() &&
-        member.member[0].item.is_boolean()) {
-      policy->capture_early_failures = member.member[0].item.GetBoolean();
+  if (const auto* member = base::FindOrNull(*dict, kCaptureEarlyFailures);
+      member && !member->member_is_inner_list && !member->member.empty()) {
+    if (const bool* boolean = member->member.front().item.GetIfBoolean()) {
+      policy->capture_early_failures = *boolean;
     }
   }
 
