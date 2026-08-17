@@ -35,9 +35,7 @@ DevToolsMediaEncodingServiceImpl::DevToolsMediaEncodingServiceImpl(
 
 DevToolsMediaEncodingServiceImpl::~DevToolsMediaEncodingServiceImpl() {
   StopRecording();
-  if (screencast_mp4_muxer_) {
-    screencast_mp4_muxer_->Flush();
-  }
+  screencast_mp4_muxer_.reset();
 }
 
 void DevToolsMediaEncodingServiceImpl::StartRecording(
@@ -312,9 +310,6 @@ void DevToolsMediaEncodingServiceImpl::TryFlushEncoders() {
   }
 
   if (expected_flushes == 0) {
-    if (screencast_mp4_muxer_) {
-      screencast_mp4_muxer_->Flush();
-    }
     screencast_mp4_muxer_.reset();
     screencast_video_encoder_.reset();
     screencast_audio_encoder_.reset();
@@ -355,9 +350,6 @@ void DevToolsMediaEncodingServiceImpl::OnEncoderFlushed(
   encoders_flushing_--;
   if (encoders_flushing_ <= 0) {
     encoders_flushing_ = 0;
-    if (screencast_mp4_muxer_) {
-      screencast_mp4_muxer_->Flush();
-    }
     screencast_mp4_muxer_.reset();
     screencast_video_encoder_.reset();
     screencast_audio_encoder_.reset();

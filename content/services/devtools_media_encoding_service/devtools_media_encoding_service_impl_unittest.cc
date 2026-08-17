@@ -166,6 +166,124 @@ TEST_F(DevToolsMediaEncodingServiceImplTest, RecordVideoFrame) {
   EXPECT_TRUE(client.ContainsBox("moov"));
 }
 
+TEST_F(DevToolsMediaEncodingServiceImplTest,
+       RecordMultiSecondVideoWithPeriodicFragmentFlush) {
+  mojo::Remote<
+      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
+      server_remote;
+  DevToolsMediaEncodingServiceImpl server(
+      server_remote.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<devtools_media_encoding_service::mojom::
+                   DevToolsMediaEncodingServiceClient>
+      client_remote;
+  DummyClient client(client_remote.BindNewPipeAndPassReceiver());
+
+  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, false);
+
+  gfx::Size size(800, 600);
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+
+  // Send 100 frames spanning > 3 seconds (33ms each) with 30fps.
+  // At 60-frame keyframe interval and 2-second max_data_output_interval, this
+  // triggers periodic fragment flushes during recording, which enters
+  // live_mode_.
+  for (int i = 0; i < 100; ++i) {
+    auto frame = media::VideoFrame::CreateBlackFrame(size);
+    frame->set_timestamp(timestamp - base::TimeTicks() +
+                         base::Milliseconds(i * 33));
+    server_remote->RecordVideoFrame(frame);
+  }
+
+  server_remote->StopRecording();
+
+  client.WaitUntilClosed();
+  EXPECT_TRUE(client.is_closed());
+  EXPECT_GT(client.data_received(), 0u);
+  EXPECT_TRUE(client.ContainsBox("ftyp"));
+  EXPECT_TRUE(client.ContainsBox("mdat"));
+  EXPECT_TRUE(client.ContainsBox("moov"));
+}
+
+TEST_F(DevToolsMediaEncodingServiceImplTest,
+       DestroyServerDuringActiveRecording) {
+  mojo::Remote<
+      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
+      server_remote;
+  auto server = std::make_unique<DevToolsMediaEncodingServiceImpl>(
+      server_remote.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<devtools_media_encoding_service::mojom::
+                   DevToolsMediaEncodingServiceClient>
+      client_remote;
+  DummyClient client(client_remote.BindNewPipeAndPassReceiver());
+
+  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, false);
+
+  gfx::Size size(800, 600);
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+
+  for (int i = 0; i < 100; ++i) {
+    auto frame = media::VideoFrame::CreateBlackFrame(size);
+    frame->set_timestamp(timestamp - base::TimeTicks() +
+                         base::Milliseconds(i * 33));
+    server_remote->RecordVideoFrame(frame);
+  }
+
+  // Allow frames to be encoded and intermediate fragment flushes to occur.
+  task_environment_.RunUntilIdle();
+
+  // Destroying the server directly during active recording tests destructor
+  // teardown.
+  server.reset();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_GT(client.data_received(), 0u);
+  EXPECT_TRUE(client.ContainsBox("ftyp"));
+  EXPECT_TRUE(client.ContainsBox("mdat"));
+  EXPECT_TRUE(client.ContainsBox("moov"));
+}
+
+TEST_F(DevToolsMediaEncodingServiceImplTest,
+       DestroyServerDuringShortActiveRecording) {
+  mojo::Remote<
+      devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
+      server_remote;
+  auto server = std::make_unique<DevToolsMediaEncodingServiceImpl>(
+      server_remote.BindNewPipeAndPassReceiver());
+
+  mojo::Remote<devtools_media_encoding_service::mojom::
+                   DevToolsMediaEncodingServiceClient>
+      client_remote;
+  DummyClient client(client_remote.BindNewPipeAndPassReceiver());
+
+  server_remote->StartRecording(client_remote.Unbind(), 800, 600, 30, false);
+
+  gfx::Size size(800, 600);
+  base::TimeTicks timestamp = base::TimeTicks::Now();
+
+  for (int i = 0; i < 5; ++i) {
+    auto frame = media::VideoFrame::CreateBlackFrame(size);
+    frame->set_timestamp(timestamp - base::TimeTicks() +
+                         base::Milliseconds(i * 33));
+    server_remote->RecordVideoFrame(frame);
+  }
+
+  // Allow frames to be encoded and buffered without triggering intermediate
+  // fragment flushes.
+  task_environment_.RunUntilIdle();
+
+  // Destroying the server directly during active recording tests destructor
+  // teardown when no prior fragment flush has occurred.
+  server.reset();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_GT(client.data_received(), 0u);
+  EXPECT_TRUE(client.ContainsBox("ftyp"));
+  EXPECT_TRUE(client.ContainsBox("mdat"));
+  EXPECT_TRUE(client.ContainsBox("moov"));
+}
+
 TEST_F(DevToolsMediaEncodingServiceImplTest, RecordAudioBuffer) {
   mojo::Remote<
       devtools_media_encoding_service::mojom::DevToolsMediaEncodingService>
