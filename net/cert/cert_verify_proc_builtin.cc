@@ -784,9 +784,7 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       std::optional<base::Time> disqualification_time =
           ct_policy_enforcer_->GetLogDisqualificationTime(
               sct_and_status.sct->log_id);
-      // TODO(https://crbug.com/40840044): use the same time source here as for
-      // the rest of verification.
-      if (disqualification_time && base::Time::Now() >= disqualification_time) {
+      if (disqualification_time && current_time_ >= disqualification_time) {
         continue;
       }
       valid_scts.push_back(sct_and_status.sct);
@@ -831,7 +829,9 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
       }
     }
 
-    if (ct_policy_enforcer_->IsCtEnabled()) {
+    // Only check SCT-based constraints if an up-to-date log list is being used.
+    if (ct_policy_enforcer_->IsCtEnabled() &&
+        ct_policy_enforcer_->IsLogDataTimely(current_time_)) {
       if (constraint.sct_not_after.has_value()) {
         bool found_matching_sct = false;
         for (const auto& sct : ValidScts(delegate_data->scts)) {

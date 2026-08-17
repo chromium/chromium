@@ -2898,35 +2898,12 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreUpdateQwacTest,
   EXPECT_EQ(GetParam(), !!(cert_status & net::CERT_STATUS_IS_QWAC));
 }
 
-// Test suite for tests that depend on both Certificate Transparency and Chrome
-// Root Store updates.
-class PKIMetadataComponentCtAndCrsUpdaterTest
+// Base test suite for tests that depend on both Certificate Transparency and
+// Chrome Root Store updates.
+class PKIMetadataComponentCtAndCrsTestBase
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<CTEnforcement>,
       public PKIMetadataComponentInstallerService::Observer {
  public:
-  PKIMetadataComponentCtAndCrsUpdaterTest() {
-    if (GetParam() == CTEnforcement::kDisabledByFeature) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-              net::features::kChromeRootStoreUsed
-#endif
-          },
-          /*disabled_features=*/{
-              features::kCertificateTransparencyAskBeforeEnabling});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {features::kCertificateTransparencyAskBeforeEnabling,
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-           net::features::kChromeRootStoreUsed
-#endif
-          },
-          /*disabled_features=*/{});
-    }
-  }
   void SetUpInProcessBrowserTestFixture() override {
     PKIMetadataComponentInstallerService::GetInstance()->AddObserver(this);
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -2941,8 +2918,9 @@ class PKIMetadataComponentCtAndCrsUpdaterTest
  protected:
   // Waits for the CT log lists to have been configured at least
   // |expected_times|.
-  void WaitForCtConfiguration(int expected_times) {
-    if (GetParam() == CTEnforcement::kDisabledByFeature) {
+  void WaitForCtConfiguration(int expected_times,
+                              bool ct_disabled_by_feature = false) {
+    if (ct_disabled_by_feature) {
       // When CT is disabled by the feature flag there are no callbacks to
       // wait on, so just spin the runloop.
       base::RunLoop().RunUntilIdle();
@@ -2978,6 +2956,9 @@ class PKIMetadataComponentCtAndCrsUpdaterTest
     waiter.Wait();
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir component_dir_;
+
  private:
   void OnCTLogListConfigured() override {
     ++ct_log_list_configured_times_;
@@ -2996,7 +2977,7 @@ class PKIMetadataComponentCtAndCrsUpdaterTest
 
   class CRSWaiter {
    public:
-    explicit CRSWaiter(PKIMetadataComponentCtAndCrsUpdaterTest* test) {
+    explicit CRSWaiter(PKIMetadataComponentCtAndCrsTestBase* test) {
       test_ = test;
       test_->crs_config_closure_ = run_loop_.QuitClosure();
     }
@@ -3004,17 +2985,131 @@ class PKIMetadataComponentCtAndCrsUpdaterTest
 
    private:
     base::RunLoop run_loop_;
-    raw_ptr<PKIMetadataComponentCtAndCrsUpdaterTest> test_;
+    raw_ptr<PKIMetadataComponentCtAndCrsTestBase> test_;
   };
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::ScopedTempDir component_dir_;
 
   base::OnceClosure pki_metadata_config_closure_;
   int expected_ct_log_list_configured_times_ = 0;
   int ct_log_list_configured_times_ = 0;
   base::OnceClosure crs_config_closure_;
-  int64_t last_used_crs_version_ = net::CompiledChromeRootStoreVersion();
+};
+
+class PKIMetadataComponentSctNotAfter
+    : public PKIMetadataComponentCtAndCrsTestBase {
+ public:
+  PKIMetadataComponentSctNotAfter() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kCertificateTransparencyAskBeforeEnabling,
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+         net::features::kChromeRootStoreUsed
+#endif
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PKIMetadataComponentSctNotAfter,
+                       TestCRSConstraintsWithStaleCTList) {
+  const base::Time kLogStart = base::Time::Now() - base::Days(1);
+  const base::Time kLogEnd = base::Time::Now() + base::Days(1);
+  CTLog log1("log operator 1", kLogStart, kLogEnd,
+             chrome_browser_certificate_transparency::CTLog::RFC6962);
+
+  // Start a test server that uses a certificate with no SCTs
+  net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::EmbeddedTestServer::ServerCertificateConfig server_config;
+  server_config.dns_names = {"*.example.com"};
+  https_server_ok.SetSSLConfig(server_config);
+
+  https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server_ok.Start());
+
+  // Clear test roots so that cert validation only happens with
+  // what's in Chrome Root Store.
+  net::TestRootCerts::GetInstance()->Clear();
+
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  int64_t crs_version = net::CompiledChromeRootStoreVersion();
+
+  // Install CT configuration that trusts log1, but is stale and so should not
+  // be used.
+  chrome_browser_certificate_transparency::CTConfig ct_config;
+  ct_config.mutable_log_list()->mutable_timestamp()->set_seconds(
+      SecondsSinceEpoch(base::Time::Now() - base::Days(300)));
+  AddLogToCTConfig(&ct_config, log1);
+  // Explicitly allow a stale update to override a newer update.
+  PKIMetadataComponentInstallerService::GetInstance()
+      ->AllowOldCTUpdateForTesting(true);
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(PKIMetadataComponentInstallerService::GetInstance()
+                    ->WriteCTDataForTesting(GetComponentDirPath(),
+                                            ct_config.SerializeAsString()));
+  }
+
+  // Install CRS update that trusts root with a SCTNotAfter constraint.
+  {
+    chrome_root_store::RootStore root_store_proto;
+    root_store_proto.set_version_major(++crs_version);
+    chrome_root_store::TrustAnchor* anchor =
+        root_store_proto.add_trust_anchors();
+    anchor->set_der(std::string(
+        net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer())));
+    anchor->add_constraints()->set_sct_not_after_sec(
+        SecondsSinceEpoch(base::Time::Now() - base::Minutes(20)));
+
+    InstallCRSUpdate(root_store_proto);
+  }
+
+  PKIMetadataComponentInstallerService::GetInstance()
+      ->ReconfigureAfterNetworkRestart();
+  WaitForCtConfiguration(1);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
+  // Should be trusted because CT log list is stale, and so SCTs aren't checked
+  // for either CT policy or for SCTNotAfter root constraints.
+  EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+}
+
+// Test suite for tests that depend on both Certificate Transparency and Chrome
+// Root Store updates.
+class PKIMetadataComponentCtAndCrsUpdaterTest
+    : public PKIMetadataComponentCtAndCrsTestBase,
+      public testing::WithParamInterface<CTEnforcement> {
+ public:
+  PKIMetadataComponentCtAndCrsUpdaterTest() {
+    if (GetParam() == CTEnforcement::kDisabledByFeature) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+              net::features::kChromeRootStoreUsed
+#endif
+          },
+          /*disabled_features=*/{
+              features::kCertificateTransparencyAskBeforeEnabling});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {features::kCertificateTransparencyAskBeforeEnabling,
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+           net::features::kChromeRootStoreUsed
+#endif
+          },
+          /*disabled_features=*/{});
+    }
+  }
+
+ protected:
+  void WaitForCtConfiguration(int expected_times) {
+    PKIMetadataComponentCtAndCrsTestBase::WaitForCtConfiguration(
+        expected_times, GetParam() == CTEnforcement::kDisabledByFeature);
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,

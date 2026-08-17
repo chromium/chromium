@@ -5,12 +5,13 @@
 #ifndef NET_CERT_CT_POLICY_ENFORCER_H_
 #define NET_CERT_CT_POLICY_ENFORCER_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <string_view>
 
-#include <stddef.h>
-
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/signed_certificate_timestamp.h"
 
@@ -56,6 +57,9 @@ class NET_EXPORT CTPolicyEnforcer
   // Returns true if Certificate Transparency enforcement is enabled.
   virtual bool IsCtEnabled() const = 0;
 
+  // Returns true if the supplied log data are fresh enough.
+  virtual bool IsLogDataTimely(base::Time current_time) const = 0;
+
  protected:
   virtual ~CTPolicyEnforcer() = default;
 
@@ -81,6 +85,8 @@ class NET_EXPORT DefaultCTPolicyEnforcer : public net::CTPolicyEnforcer {
       std::string_view log_id) const override;
 
   bool IsCtEnabled() const override;
+
+  bool IsLogDataTimely(base::Time current_time) const override;
 
  protected:
   ~DefaultCTPolicyEnforcer() override = default;

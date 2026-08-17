@@ -82,6 +82,10 @@ class PKIMetadataComponentInstallerService final {
   [[nodiscard]] bool WriteCTDataForTesting(const base::FilePath& path,
                                            const std::string& contents);
 
+  // If set to true, allows older CT log list updates to override newer CT log
+  // list updates.
+  void AllowOldCTUpdateForTesting(bool allowed);
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   [[nodiscard]] bool WriteCRSDataForTesting(const base::FilePath& path,
                                             const std::string& contents);
@@ -183,6 +187,8 @@ class PKIMetadataComponentInstallerService final {
   // The time (as seconds since the unix epoch) that the latest MtcMetadata
   // was generated.
   int64_t mtc_metadata_update_time_seconds_ = 0;
+
+  bool allow_old_ct_log_list_updates_for_testing_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

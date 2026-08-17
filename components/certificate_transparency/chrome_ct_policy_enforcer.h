@@ -75,6 +75,9 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
 
   bool IsCtEnabled() const override;
 
+  // Returns true if the supplied log data are fresh enough.
+  bool IsLogDataTimely(base::Time current_time) const override;
+
   // TODO(crbug.com/41479068): These are exposed to allow end-to-end
   // testing by higher layers (i.e. that the ChromeCTPolicyEnforcer is
   // correctly constructed). When either this issue or https://crbug.com/848277
@@ -107,8 +110,6 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
                          base::Time current_time,
                          base::Time* disqualification_date) const;
 
-  // Returns true if the supplied log data are fresh enough.
-  bool IsLogDataTimely(base::Time current_time) const;
 
   net::ct::CTPolicyCompliance CheckCTPolicyCompliance(
       const net::X509Certificate& cert,
