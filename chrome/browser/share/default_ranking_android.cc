@@ -4,8 +4,11 @@
 
 #include "chrome/browser/share/default_ranking.h"
 
-#include <algorithm>
+#include <array>
+#include <string_view>
 
+#include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 
 namespace sharing {
@@ -35,431 +38,412 @@ namespace {
 // them.
 
 struct ComponentName {
-  ComponentName(const std::string& package, const std::string& activity)
-      : package(package), activity(activity) {}
-
-  std::string package;
-  std::string activity;
-
-  // Note: the format of this string must match that returned by
-  // android.content.ComponentName#flattenToString
-  std::string Flatten() const { return package + "/" + activity; }
+  std::string_view package;
+  std::string_view activity;
 };
 
-std::vector<ComponentName> DefaultEnUsImageRanking() {
-  return {
-      {"com.whatsapp", "com.whatsapp.ContactPicker"},
-      {"com.google.android.apps.messaging",
-       "com.google.android.apps.messaging.ui.conversationlist."
-       "ShareIntentActivity"},
-      {"com.google.android.gm",
-       "com.google.android.gm.ComposeActivityGmailExternal"},
-      {"com.facebook.orca",
-       "com.facebook.messenger.intents.ShareIntentHandler"},
-      {"com.facebook.katana",
-       "com.facebook.composer.shareintent."
-       "ImplicitShareIntentHandlerDefaultAlias"},
-      {"com.google.android.apps.photos",
-       "com.google.android.apps.photos.uploadtoalbum.UploadContentActivity"},
-      {
-          "com.snapchat.android",
-          "com.snap.mushroom.MainActivity",
-      },
-      {
-          "org.telegram.messenger",
-          "org.telegram.ui.LaunchActivity",
-      },
-      {"com.instagram.android",
-       "com.instagram.share.handleractivity.StoryShareHandlerActivity"},
-      {"com.instagram.android",
-       "com.instagram.share.handleractivity.ShareHandlerActivity"},
-      {"com.discord", "com.discord.app.AppActivity$AppAction"},
-      {"com.instagram.android",
-       "com.instagram.direct.share.handler."
-       "DirectExternalMediaShareActivityPhoto"},
-      {
-          "com.google.android.talk",
-          "com.google.android.apps.hangouts.phone.ShareIntentActivity",
-      },
-      {
-          "com.google.android.keep",
-          "com.google.android.keep.activities.ShareReceiverActivity",
-      },
-      {
-          "com.google.android.apps.docs.editors.docs",
-          "com.google.android.apps.docs.common.shareitem.UploadMenuActivity",
-      },
-      {
-          "com.verizon.messaging.vzmsgs",
-          "com.verizon.mms.ui.LaunchConversationActivity",
-      },
-      {
-          "org.thoughtcrime.securesms",
-          "org.thoughtcrime.securesms.sharing.ShareActivity",
-      },
-      {
-          "com.twitter.android",
-          "com.twitter.composer.ComposerActivity",
-      },
-      {
-          "com.pinterest",
-          "com.pinterest.activity.create.PinItActivity",
-      },
-      {
-          "com.twitter.android",
-          "com.twitter.app.dm.DMActivity",
-      },
-      {
-          "com.google.android.apps.dynamite",
-          "com.google.android.apps.dynamite.activity.main.MainActivity",
-      },
-      {
-          "com.microsoft.office.outlook",
-          "com.microsoft.office.outlook.compose.ComposeLauncherActivity",
-      },
-      {
-          "com.yahoo.mobile.client.android.mail",
-          "com.yahoo.mail.flux.ui.MailComposeActivity",
-      },
-      {
-          "com.linkedin.android",
-          "com.linkedin.android.publishing.sharing.SharingDeepLinkActivity",
-      },
-      {
-          "com.reddit.frontpage",
-          "com.reddit.sharing.ShareActivity",
-      },
-      {
-          "jp.naver.line.android",
-          "com.linecorp.line.share.common.view.FullPickerLaunchActivity",
-      },
-      {
-          "com.tencent.mm",
-          "com.tencent.mm.ui.tools.ShareImgUI",
-      },
-      {
-          "com.tencent.mm",
-          "com.tencent.mm.ui.tools.ShareToTimeLineUI",
-      },
-  };
-}
+constexpr auto kEnUsImageRanking = std::to_array<ComponentName>({
+    {"com.whatsapp", "com.whatsapp.ContactPicker"},
+    {"com.google.android.apps.messaging",
+     "com.google.android.apps.messaging.ui.conversationlist."
+     "ShareIntentActivity"},
+    {"com.google.android.gm",
+     "com.google.android.gm.ComposeActivityGmailExternal"},
+    {"com.facebook.orca", "com.facebook.messenger.intents.ShareIntentHandler"},
+    {"com.facebook.katana",
+     "com.facebook.composer.shareintent."
+     "ImplicitShareIntentHandlerDefaultAlias"},
+    {"com.google.android.apps.photos",
+     "com.google.android.apps.photos.uploadtoalbum.UploadContentActivity"},
+    {
+        "com.snapchat.android",
+        "com.snap.mushroom.MainActivity",
+    },
+    {
+        "org.telegram.messenger",
+        "org.telegram.ui.LaunchActivity",
+    },
+    {"com.instagram.android",
+     "com.instagram.share.handleractivity.StoryShareHandlerActivity"},
+    {"com.instagram.android",
+     "com.instagram.share.handleractivity.ShareHandlerActivity"},
+    {"com.discord", "com.discord.app.AppActivity$AppAction"},
+    {"com.instagram.android",
+     "com.instagram.direct.share.handler."
+     "DirectExternalMediaShareActivityPhoto"},
+    {
+        "com.google.android.talk",
+        "com.google.android.apps.hangouts.phone.ShareIntentActivity",
+    },
+    {
+        "com.google.android.keep",
+        "com.google.android.keep.activities.ShareReceiverActivity",
+    },
+    {
+        "com.google.android.apps.docs.editors.docs",
+        "com.google.android.apps.docs.common.shareitem.UploadMenuActivity",
+    },
+    {
+        "com.verizon.messaging.vzmsgs",
+        "com.verizon.mms.ui.LaunchConversationActivity",
+    },
+    {
+        "org.thoughtcrime.securesms",
+        "org.thoughtcrime.securesms.sharing.ShareActivity",
+    },
+    {
+        "com.twitter.android",
+        "com.twitter.composer.ComposerActivity",
+    },
+    {
+        "com.pinterest",
+        "com.pinterest.activity.create.PinItActivity",
+    },
+    {
+        "com.twitter.android",
+        "com.twitter.app.dm.DMActivity",
+    },
+    {
+        "com.google.android.apps.dynamite",
+        "com.google.android.apps.dynamite.activity.main.MainActivity",
+    },
+    {
+        "com.microsoft.office.outlook",
+        "com.microsoft.office.outlook.compose.ComposeLauncherActivity",
+    },
+    {
+        "com.yahoo.mobile.client.android.mail",
+        "com.yahoo.mail.flux.ui.MailComposeActivity",
+    },
+    {
+        "com.linkedin.android",
+        "com.linkedin.android.publishing.sharing.SharingDeepLinkActivity",
+    },
+    {
+        "com.reddit.frontpage",
+        "com.reddit.sharing.ShareActivity",
+    },
+    {
+        "jp.naver.line.android",
+        "com.linecorp.line.share.common.view.FullPickerLaunchActivity",
+    },
+    {
+        "com.tencent.mm",
+        "com.tencent.mm.ui.tools.ShareImgUI",
+    },
+    {
+        "com.tencent.mm",
+        "com.tencent.mm.ui.tools.ShareToTimeLineUI",
+    },
+});
 
-std::vector<ComponentName> DefaultEnUsTextRanking() {
-  return {
-      {"com.whatsapp", "com.whatsapp.ContactPicker"},
-      {"com.google.android.apps.messaging",
-       "com.google.android.apps.messaging.ui.conversationlist."
-       "ShareIntentActivity"},
-      {"com.google.android.gm",
-       "com.google.android.gm.ComposeActivityGmailExternal"},
-      {"com.facebook.orca",
-       "com.facebook.messenger.intents.ShareIntentHandler"},
-      {"com.facebook.katana",
-       "com.facebook.composer.shareintent."
-       "ImplicitShareIntentHandlerDefaultAlias"},
-      {
-          "com.snapchat.android",
-          "com.snap.mushroom.MainActivity",
-      },
-      {
-          "org.telegram.messenger",
-          "org.telegram.ui.LaunchActivity",
-      },
-      {"com.discord", "com.discord.app.AppActivity$AppAction"},
-      {"com.instagram.android",
-       "com.instagram.direct.share.handler."
-       "DirectExternalMediaShareActivityPhoto"},
-      {
-          "com.google.android.talk",
-          "com.google.android.apps.hangouts.phone.ShareIntentActivity",
-      },
-      {
-          "com.google.android.keep",
-          "com.google.android.keep.activities.ShareReceiverActivity",
-      },
-      {
-          "com.verizon.messaging.vzmsgs",
-          "com.verizon.mms.ui.LaunchConversationActivity",
-      },
-      {
-          "org.thoughtcrime.securesms",
-          "org.thoughtcrime.securesms.sharing.ShareActivity",
-      },
-      {
-          "com.twitter.android",
-          "com.twitter.composer.ComposerActivity",
-      },
-      {
-          "com.pinterest",
-          "com.pinterest.activity.create.PinItActivity",
-      },
-      {
-          "com.twitter.android",
-          "com.twitter.app.dm.DMActivity",
-      },
-      {
-          "com.ideashower.readitlater.pro",
-          "com.ideashower.readitlater.activity.AddActivity",
-      },
-      {
-          "com.google.android.apps.dynamite",
-          "com.google.android.apps.dynamite.activity.main.MainActivity",
-      },
-      {
-          "com.google.android.apps.docs.editors.docs",
-          "com.google.android.apps.docs.common.shareitem.UploadMenuActivity",
-      },
-      {
-          "com.microsoft.office.outlook",
-          "com.microsoft.office.outlook.compose.ComposeLauncherActivity",
-      },
-      {
-          "com.yahoo.mobile.client.android.mail",
-          "com.yahoo.mail.flux.ui.MailComposeActivity",
-      },
-      {
-          "com.linkedin.android",
-          "com.linkedin.android.publishing.sharing.SharingDeepLinkActivity",
-      },
-      {
-          "com.reddit.frontpage",
-          "com.reddit.sharing.ShareActivity",
-      },
-      {
-          "jp.naver.line.android",
-          "com.linecorp.line.share.common.view.FullPickerLaunchActivity",
-      },
-      {
-          "com.tencent.mm",
-          "com.tencent.mm.ui.tools.ShareImgUI",
-      },
-      {
-          "com.tencent.mm",
-          "com.tencent.mm.ui.tools.ShareToTimeLineUI",
-      },
-  };
-}
+constexpr auto kEnUsTextRanking = std::to_array<ComponentName>({
+    {"com.whatsapp", "com.whatsapp.ContactPicker"},
+    {"com.google.android.apps.messaging",
+     "com.google.android.apps.messaging.ui.conversationlist."
+     "ShareIntentActivity"},
+    {"com.google.android.gm",
+     "com.google.android.gm.ComposeActivityGmailExternal"},
+    {"com.facebook.orca", "com.facebook.messenger.intents.ShareIntentHandler"},
+    {"com.facebook.katana",
+     "com.facebook.composer.shareintent."
+     "ImplicitShareIntentHandlerDefaultAlias"},
+    {
+        "com.snapchat.android",
+        "com.snap.mushroom.MainActivity",
+    },
+    {
+        "org.telegram.messenger",
+        "org.telegram.ui.LaunchActivity",
+    },
+    {"com.discord", "com.discord.app.AppActivity$AppAction"},
+    {"com.instagram.android",
+     "com.instagram.direct.share.handler."
+     "DirectExternalMediaShareActivityPhoto"},
+    {
+        "com.google.android.talk",
+        "com.google.android.apps.hangouts.phone.ShareIntentActivity",
+    },
+    {
+        "com.google.android.keep",
+        "com.google.android.keep.activities.ShareReceiverActivity",
+    },
+    {
+        "com.verizon.messaging.vzmsgs",
+        "com.verizon.mms.ui.LaunchConversationActivity",
+    },
+    {
+        "org.thoughtcrime.securesms",
+        "org.thoughtcrime.securesms.sharing.ShareActivity",
+    },
+    {
+        "com.twitter.android",
+        "com.twitter.composer.ComposerActivity",
+    },
+    {
+        "com.pinterest",
+        "com.pinterest.activity.create.PinItActivity",
+    },
+    {
+        "com.twitter.android",
+        "com.twitter.app.dm.DMActivity",
+    },
+    {
+        "com.ideashower.readitlater.pro",
+        "com.ideashower.readitlater.activity.AddActivity",
+    },
+    {
+        "com.google.android.apps.dynamite",
+        "com.google.android.apps.dynamite.activity.main.MainActivity",
+    },
+    {
+        "com.google.android.apps.docs.editors.docs",
+        "com.google.android.apps.docs.common.shareitem.UploadMenuActivity",
+    },
+    {
+        "com.microsoft.office.outlook",
+        "com.microsoft.office.outlook.compose.ComposeLauncherActivity",
+    },
+    {
+        "com.yahoo.mobile.client.android.mail",
+        "com.yahoo.mail.flux.ui.MailComposeActivity",
+    },
+    {
+        "com.linkedin.android",
+        "com.linkedin.android.publishing.sharing.SharingDeepLinkActivity",
+    },
+    {
+        "com.reddit.frontpage",
+        "com.reddit.sharing.ShareActivity",
+    },
+    {
+        "jp.naver.line.android",
+        "com.linecorp.line.share.common.view.FullPickerLaunchActivity",
+    },
+    {
+        "com.tencent.mm",
+        "com.tencent.mm.ui.tools.ShareImgUI",
+    },
+    {
+        "com.tencent.mm",
+        "com.tencent.mm.ui.tools.ShareToTimeLineUI",
+    },
+});
 
-std::vector<ComponentName> DefaultWorldImageRanking() {
-  return {
-      {"com.whatsapp", "com.whatsapp.ContactPicker"},
-      {"com.google.android.apps.messaging",
-       "com.google.android.apps.messaging.ui.conversationlist."
-       "ShareIntentActivity"},
-      {"com.facebook.orca",
-       "com.facebook.messenger.intents.ShareIntentHandler"},
-      {"com.google.android.gm",
-       "com.google.android.gm.ComposeActivityGmailExternal"},
-      {"com.instagram.android",
-       "com.instagram.share.handleractivity.ShareHandlerActivity"},
-      {"com.instagram.android",
-       "com.instagram.share.handleractivity.StoryShareHandlerActivity"},
-      {
-          "com.tencent.mm",
-          "com.tencent.mm.ui.tools.ShareToTimeLineUI",
-      },
-      {
-          "org.telegram.messenger",
-          "org.telegram.ui.LaunchActivity",
-      },
-      {"com.facebook.katana",
-       "com.facebook.composer.shareintent."
-       "ImplicitShareIntentHandlerDefaultAlias"},
-      {
-          "jp.naver.line.android",
-          "com.linecorp.line.share.common.view.FullPickerLaunchActivity",
-      },
-      {
-          "com.google.android.talk",
-          "com.google.android.apps.hangouts.phone.ShareIntentActivity",
-      },
-      {"com.google.android.apps.photos",
-       "com.google.android.apps.photos.uploadtoalbum.UploadContentActivity"},
-      {
-          "com.google.android.apps.docs.editors.docs",
-          "com.google.android.apps.docs.common.shareitem.UploadMenuActivity",
-      },
-      {"com.instagram.android",
-       "com.instagram.direct.share.handler."
-       "DirectExternalMediaShareActivityPhoto"},
-      {
-          "com.google.android.keep",
-          "com.google.android.keep.activities.ShareReceiverActivity",
-      },
-      {
-          "com.snapchat.android",
-          "com.snap.mushroom.MainActivity",
-      },
-      {"com.discord", "com.discord.app.AppActivity$AppAction"},
-      {
-          "com.twitter.android",
-          "com.twitter.composer.ComposerActivity",
-      },
-      // TODO(crbug.com/40777253): Whatsapp Business
-      {
-          "com.pinterest",
-          "com.pinterest.activity.create.PinItActivity",
-      },
-      {
-          "com.linkedin.android",
-          "com.linkedin.android.publishing.sharing.SharingDeepLinkActivity",
-      },
-      {
-          "com.facebook.mlite",
-          "com.facebook.mlite.share.view.ShareActivity",
-      },
-      {
-          "org.thoughtcrime.securesms",
-          "org.thoughtcrime.securesms.sharing.ShareActivity",
-      },
-      {
-          "com.twitter.android",
-          "com.twitter.app.dm.DMActivity",
-      },
-      {
-          "com.facebook.lite",
-          "com.facebook.lite.stories.activities.ShareToFbStoriesAlias",
-      },
-      {
-          "com.microsoft.office.outlook",
-          "com.microsoft.office.outlook.compose.ComposeLauncherActivity",
-      },
-      {
-          "com.yahoo.mobile.client.android.mail",
-          "com.yahoo.mail.flux.ui.MailComposeActivity",
-      },
-      {
-          "com.viber.voip",
-          "com.viber.voip.WelcomeShareActivity",
-      },
-      {
-          "com.imo.android.imoim",
-          "com.imo.android.imoim.globalshare.SharingActivity2",
-      },
-      {
-          "com.tencent.mm",
-          "com.tencent.mm.ui.tools.ShareImgUI",
-      },
-      {
-          "com.verizon.messaging.vzmsgs",
-          "com.verizon.mms.ui.LaunchConversationActivity",
-      },
-      {
-          "com.google.android.apps.dynamite",
-          "com.google.android.apps.dynamite.activity.main.MainActivity",
-      },
-  };
-}
+constexpr auto kWorldImageRanking = std::to_array<ComponentName>({
+    {"com.whatsapp", "com.whatsapp.ContactPicker"},
+    {"com.google.android.apps.messaging",
+     "com.google.android.apps.messaging.ui.conversationlist."
+     "ShareIntentActivity"},
+    {"com.facebook.orca", "com.facebook.messenger.intents.ShareIntentHandler"},
+    {"com.google.android.gm",
+     "com.google.android.gm.ComposeActivityGmailExternal"},
+    {"com.instagram.android",
+     "com.instagram.share.handleractivity.ShareHandlerActivity"},
+    {"com.instagram.android",
+     "com.instagram.share.handleractivity.StoryShareHandlerActivity"},
+    {
+        "com.tencent.mm",
+        "com.tencent.mm.ui.tools.ShareToTimeLineUI",
+    },
+    {
+        "org.telegram.messenger",
+        "org.telegram.ui.LaunchActivity",
+    },
+    {"com.facebook.katana",
+     "com.facebook.composer.shareintent."
+     "ImplicitShareIntentHandlerDefaultAlias"},
+    {
+        "jp.naver.line.android",
+        "com.linecorp.line.share.common.view.FullPickerLaunchActivity",
+    },
+    {
+        "com.google.android.talk",
+        "com.google.android.apps.hangouts.phone.ShareIntentActivity",
+    },
+    {"com.google.android.apps.photos",
+     "com.google.android.apps.photos.uploadtoalbum.UploadContentActivity"},
+    {
+        "com.google.android.apps.docs.editors.docs",
+        "com.google.android.apps.docs.common.shareitem.UploadMenuActivity",
+    },
+    {"com.instagram.android",
+     "com.instagram.direct.share.handler."
+     "DirectExternalMediaShareActivityPhoto"},
+    {
+        "com.google.android.keep",
+        "com.google.android.keep.activities.ShareReceiverActivity",
+    },
+    {
+        "com.snapchat.android",
+        "com.snap.mushroom.MainActivity",
+    },
+    {"com.discord", "com.discord.app.AppActivity$AppAction"},
+    {
+        "com.twitter.android",
+        "com.twitter.composer.ComposerActivity",
+    },
+    // TODO(crbug.com/40777253): Whatsapp Business
+    {
+        "com.pinterest",
+        "com.pinterest.activity.create.PinItActivity",
+    },
+    {
+        "com.linkedin.android",
+        "com.linkedin.android.publishing.sharing.SharingDeepLinkActivity",
+    },
+    {
+        "com.facebook.mlite",
+        "com.facebook.mlite.share.view.ShareActivity",
+    },
+    {
+        "org.thoughtcrime.securesms",
+        "org.thoughtcrime.securesms.sharing.ShareActivity",
+    },
+    {
+        "com.twitter.android",
+        "com.twitter.app.dm.DMActivity",
+    },
+    {
+        "com.facebook.lite",
+        "com.facebook.lite.stories.activities.ShareToFbStoriesAlias",
+    },
+    {
+        "com.microsoft.office.outlook",
+        "com.microsoft.office.outlook.compose.ComposeLauncherActivity",
+    },
+    {
+        "com.yahoo.mobile.client.android.mail",
+        "com.yahoo.mail.flux.ui.MailComposeActivity",
+    },
+    {
+        "com.viber.voip",
+        "com.viber.voip.WelcomeShareActivity",
+    },
+    {
+        "com.imo.android.imoim",
+        "com.imo.android.imoim.globalshare.SharingActivity2",
+    },
+    {
+        "com.tencent.mm",
+        "com.tencent.mm.ui.tools.ShareImgUI",
+    },
+    {
+        "com.verizon.messaging.vzmsgs",
+        "com.verizon.mms.ui.LaunchConversationActivity",
+    },
+    {
+        "com.google.android.apps.dynamite",
+        "com.google.android.apps.dynamite.activity.main.MainActivity",
+    },
+});
 
-std::vector<ComponentName> DefaultWorldTextRanking() {
-  return {
-      {"com.whatsapp", "com.whatsapp.ContactPicker"},
-      {"com.google.android.apps.messaging",
-       "com.google.android.apps.messaging.ui.conversationlist."
-       "ShareIntentActivity"},
-      {"com.facebook.orca",
-       "com.facebook.messenger.intents.ShareIntentHandler"},
-      {"com.google.android.gm",
-       "com.google.android.gm.ComposeActivityGmailExternal"},
-      {
-          "org.telegram.messenger",
-          "org.telegram.ui.LaunchActivity",
-      },
-      {"com.facebook.katana",
-       "com.facebook.composer.shareintent."
-       "ImplicitShareIntentHandlerDefaultAlias"},
-      {
-          "com.tencent.mm",
-          "com.tencent.mm.ui.tools.ShareToTimeLineUI",
-      },
-      {
-          "com.google.android.talk",
-          "com.google.android.apps.hangouts.phone.ShareIntentActivity",
-      },
-      {
-          "jp.naver.line.android",
-          "com.linecorp.line.share.common.view.FullPickerLaunchActivity",
-      },
-      {
-          "com.google.android.keep",
-          "com.google.android.keep.activities.ShareReceiverActivity",
-      },
-      {
-          "com.snapchat.android",
-          "com.snap.mushroom.MainActivity",
-      },
-      {
-          "com.twitter.android",
-          "com.twitter.composer.ComposerActivity",
-      },
-      {"com.discord", "com.discord.app.AppActivity$AppAction"},
-      // TODO(crbug.com/40777253): Whatsapp Business
-      {
-          "com.ideashower.readitlater.pro",
-          "com.ideashower.readitlater.activity.AddActivity",
-      },
-      {
-          "com.google.android.apps.docs.editors.docs",
-          "com.google.android.apps.docs.common.shareitem.UploadMenuActivity",
-      },
-      {
-          "com.pinterest",
-          "com.pinterest.activity.create.PinItActivity",
-      },
-      {
-          "com.linkedin.android",
-          "com.linkedin.android.publishing.sharing.SharingDeepLinkActivity",
-      },
-      {
-          "com.facebook.mlite",
-          "com.facebook.mlite.share.view.ShareActivity",
-      },
-      {
-          "org.thoughtcrime.securesms",
-          "org.thoughtcrime.securesms.sharing.ShareActivity",
-      },
-      {
-          "com.twitter.android",
-          "com.twitter.app.dm.DMActivity",
-      },
-      {
-          "com.facebook.lite",
-          "com.facebook.lite.stories.activities.ShareToFbStoriesAlias",
-      },
-      {
-          "com.microsoft.office.outlook",
-          "com.microsoft.office.outlook.compose.ComposeLauncherActivity",
-      },
-      {
-          "com.yahoo.mobile.client.android.mail",
-          "com.yahoo.mail.flux.ui.MailComposeActivity",
-      },
-      {
-          "com.viber.voip",
-          "com.viber.voip.WelcomeShareActivity",
-      },
-      {
-          "com.imo.android.imoim",
-          "com.imo.android.imoim.globalshare.SharingActivity2",
-      },
-      {
-          "com.reddit.frontpage",
-          "com.reddit.sharing.ShareActivity",
-      },
-      {
-          "com.tencent.mm",
-          "com.tencent.mm.ui.tools.ShareImgUI",
-      },
-      {
-          "com.verizon.messaging.vzmsgs",
-          "com.verizon.mms.ui.LaunchConversationActivity",
-      },
-      {
-          "com.google.android.apps.dynamite",
-          "com.google.android.apps.dynamite.activity.main.MainActivity",
-      },
-  };
-}
+constexpr auto kWorldTextRanking = std::to_array<ComponentName>({
+    {"com.whatsapp", "com.whatsapp.ContactPicker"},
+    {"com.google.android.apps.messaging",
+     "com.google.android.apps.messaging.ui.conversationlist."
+     "ShareIntentActivity"},
+    {"com.facebook.orca", "com.facebook.messenger.intents.ShareIntentHandler"},
+    {"com.google.android.gm",
+     "com.google.android.gm.ComposeActivityGmailExternal"},
+    {
+        "org.telegram.messenger",
+        "org.telegram.ui.LaunchActivity",
+    },
+    {"com.facebook.katana",
+     "com.facebook.composer.shareintent."
+     "ImplicitShareIntentHandlerDefaultAlias"},
+    {
+        "com.tencent.mm",
+        "com.tencent.mm.ui.tools.ShareToTimeLineUI",
+    },
+    {
+        "com.google.android.talk",
+        "com.google.android.apps.hangouts.phone.ShareIntentActivity",
+    },
+    {
+        "jp.naver.line.android",
+        "com.linecorp.line.share.common.view.FullPickerLaunchActivity",
+    },
+    {
+        "com.google.android.keep",
+        "com.google.android.keep.activities.ShareReceiverActivity",
+    },
+    {
+        "com.snapchat.android",
+        "com.snap.mushroom.MainActivity",
+    },
+    {
+        "com.twitter.android",
+        "com.twitter.composer.ComposerActivity",
+    },
+    {"com.discord", "com.discord.app.AppActivity$AppAction"},
+    // TODO(crbug.com/40777253): Whatsapp Business
+    {
+        "com.ideashower.readitlater.pro",
+        "com.ideashower.readitlater.activity.AddActivity",
+    },
+    {
+        "com.google.android.apps.docs.editors.docs",
+        "com.google.android.apps.docs.common.shareitem.UploadMenuActivity",
+    },
+    {
+        "com.pinterest",
+        "com.pinterest.activity.create.PinItActivity",
+    },
+    {
+        "com.linkedin.android",
+        "com.linkedin.android.publishing.sharing.SharingDeepLinkActivity",
+    },
+    {
+        "com.facebook.mlite",
+        "com.facebook.mlite.share.view.ShareActivity",
+    },
+    {
+        "org.thoughtcrime.securesms",
+        "org.thoughtcrime.securesms.sharing.ShareActivity",
+    },
+    {
+        "com.twitter.android",
+        "com.twitter.app.dm.DMActivity",
+    },
+    {
+        "com.facebook.lite",
+        "com.facebook.lite.stories.activities.ShareToFbStoriesAlias",
+    },
+    {
+        "com.microsoft.office.outlook",
+        "com.microsoft.office.outlook.compose.ComposeLauncherActivity",
+    },
+    {
+        "com.yahoo.mobile.client.android.mail",
+        "com.yahoo.mail.flux.ui.MailComposeActivity",
+    },
+    {
+        "com.viber.voip",
+        "com.viber.voip.WelcomeShareActivity",
+    },
+    {
+        "com.imo.android.imoim",
+        "com.imo.android.imoim.globalshare.SharingActivity2",
+    },
+    {
+        "com.reddit.frontpage",
+        "com.reddit.sharing.ShareActivity",
+    },
+    {
+        "com.tencent.mm",
+        "com.tencent.mm.ui.tools.ShareImgUI",
+    },
+    {
+        "com.verizon.messaging.vzmsgs",
+        "com.verizon.mms.ui.LaunchConversationActivity",
+    },
+    {
+        "com.google.android.apps.dynamite",
+        "com.google.android.apps.dynamite.activity.main.MainActivity",
+    },
+});
 
 bool IsImageType(const std::string& type) {
   // TODO(ellyjones): The type string here comes from the Android side, which is
@@ -474,10 +458,15 @@ bool IsEnUsLocale(const std::string& locale) {
 }
 
 std::vector<std::string> FlattenComponents(
-    const std::vector<ComponentName>& cs) {
+    base::span<const ComponentName> components) {
   std::vector<std::string> result;
-  std::ranges::transform(cs, std::back_inserter(result),
-                         &ComponentName::Flatten);
+  result.reserve(components.size());
+  for (const ComponentName& component : components) {
+    // Note: the format of this string must match that returned by
+    // android.content.ComponentName#flattenToString
+    result.push_back(
+        base::StrCat({component.package, "/", component.activity}));
+  }
   return result;
 }
 
@@ -487,13 +476,15 @@ std::vector<std::string> DefaultRankingForLocaleAndType(
     const std::string& locale,
     const std::string& type) {
   if (IsEnUsLocale(locale)) {
-    if (IsImageType(type))
-      return FlattenComponents(DefaultEnUsImageRanking());
-    return FlattenComponents(DefaultEnUsTextRanking());
+    if (IsImageType(type)) {
+      return FlattenComponents(kEnUsImageRanking);
+    }
+    return FlattenComponents(kEnUsTextRanking);
   }
-  if (IsImageType(type))
-    return FlattenComponents(DefaultWorldImageRanking());
-  return FlattenComponents(DefaultWorldTextRanking());
+  if (IsImageType(type)) {
+    return FlattenComponents(kWorldImageRanking);
+  }
+  return FlattenComponents(kWorldTextRanking);
 }
 
 }  // namespace sharing
