@@ -33,6 +33,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -46,7 +47,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
@@ -124,7 +124,6 @@
 #include "url/url_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "components/sessions/content/session_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"  // nogncheck
@@ -136,8 +135,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
-#include "components/tabs/public/tab_interface.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -182,7 +182,6 @@ void RecordAimEntrypointMetric(const std::string& name,
         value);
   }
 }
-
 
 void EmitEnteredKeywordModeHistogram(
     OmniboxEventProto::KeywordModeEntryMethod entry_method,
@@ -884,6 +883,10 @@ void OmniboxEditModel::OpenLensSearch() {
       client->OpenLensOverlay(
           /*show=*/true,
           lens::LensOverlayInvocationSource::kOmniboxPopupButton);
+    }
+    if (view_) {
+      base::AutoReset<bool> tmp(&in_revert_, true);
+      view_->RevertAll();
     }
     return;
   }
@@ -1981,7 +1984,6 @@ gfx::Image OmniboxEditModel::GetMatchIconIfExtension(
              ? extension_icon
              : controller_->client()->GetSizedIcon(extension_icon);
 }
-
 
 void OmniboxEditModel::ResetPopupToInitialState() {
   if (!popup_view_) {

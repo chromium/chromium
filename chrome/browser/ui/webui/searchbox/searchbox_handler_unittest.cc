@@ -1155,8 +1155,9 @@ TEST_F(WebuiOmniboxHandlerTest,
             searchbox_internal::kReplyRotated180IconResourceName);
 }
 
-TEST_F(WebuiOmniboxHandlerTest,
-       CreateAutocompleteMatch_ContextualSearchIconOverride_AskGSwapSuggestionIconEnabled) {
+TEST_F(
+    WebuiOmniboxHandlerTest,
+    CreateAutocompleteMatch_ContextualSearchIconOverride_AskGSwapSuggestionIconEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kWebUIOmniboxAskGAboutThisPage,
@@ -1179,8 +1180,9 @@ TEST_F(WebuiOmniboxHandlerTest,
             searchbox_internal::kSearchSparkIconResourceName);
 }
 
-TEST_F(WebuiOmniboxHandlerTest,
-       CreateAutocompleteMatch_ContextualSearchIconOverride_AskGSwapIconEnabledOnly) {
+TEST_F(
+    WebuiOmniboxHandlerTest,
+    CreateAutocompleteMatch_ContextualSearchIconOverride_AskGSwapIconEnabledOnly) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kWebUIOmniboxAskGAboutThisPage,
@@ -1257,7 +1259,12 @@ TEST_F(WebuiOmniboxHandlerTest, OpenLensSearch) {
                   true, lens::LensOverlayInvocationSource::kOmniboxPopupButton))
       .Times(1);
 
+  omnibox_controller_->edit_model()->SetUserText(u"query in progress");
+  EXPECT_TRUE(omnibox_controller_->edit_model()->user_input_in_progress());
+
   handler_->OpenLensSearch();
+
+  EXPECT_FALSE(omnibox_controller_->edit_model()->user_input_in_progress());
 }
 
 TEST_F(WebuiOmniboxHandlerTest, OpenMatchResumesNavigationWhenNoDialogShown) {
@@ -1507,7 +1514,6 @@ TEST_F(SearchboxOmniboxClientNavigationTest,
 // scope for Android WebUI NTP.
 #if !BUILDFLAG(IS_ANDROID)
 
-
 class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
  public:
   OmniboxComposeboxHandlerTest() = default;
@@ -1553,6 +1559,8 @@ class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
     auto client = std::make_unique<TestOmniboxClient>();
     omnibox_controller_ =
         std::make_unique<OmniboxController>(std::move(client), std::nullopt);
+    test_omnibox_view_ =
+        std::make_unique<TestOmniboxView>(omnibox_controller_.get());
 
     OmniboxPopupWebContentsHelper::CreateForWebContents(web_contents_.get());
     OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())
@@ -1579,6 +1587,7 @@ class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
         helper->set_omnibox_controller(nullptr);
       }
     }
+    test_omnibox_view_.reset();
     omnibox_controller_.reset();
     session_handle_.reset();
     tab_list_registration_.reset();
@@ -1602,6 +1611,7 @@ class OmniboxComposeboxHandlerTest : public SearchboxHandlerTest {
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
+  std::unique_ptr<TestOmniboxView> test_omnibox_view_;
   std::unique_ptr<OmniboxComposeboxHandler> handler_;
 
   std::unique_ptr<OmniboxComposeboxHandler> CreateHandler(
@@ -1685,7 +1695,12 @@ TEST_F(OmniboxComposeboxHandlerTest, OpenLensSearch) {
   omnibox_controller_->SetAutocompleteControllerForTesting(
       std::move(autocomplete_controller));
 
+  omnibox_controller_->edit_model()->SetUserText(u"query in progress");
+  EXPECT_TRUE(omnibox_controller_->edit_model()->user_input_in_progress());
+
   handler_->OpenLensSearch();
+
+  EXPECT_FALSE(omnibox_controller_->edit_model()->user_input_in_progress());
 }
 
 TEST_F(OmniboxComposeboxHandlerTest, LensSearchEligibility) {
