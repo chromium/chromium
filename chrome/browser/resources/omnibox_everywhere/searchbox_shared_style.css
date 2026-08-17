@@ -89,7 +89,7 @@
 #profileIcon {
   border-radius: 50%;
   height: 36px;
-  pointer-events: auto;
+  pointer-events: none;
   position: absolute;
   right: 16px;
   top: 10px;

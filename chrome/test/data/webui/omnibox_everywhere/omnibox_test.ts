@@ -5,7 +5,7 @@
 import 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 
 import {ComposeboxProxyImpl, getContextMenuDialog, SearchboxBrowserProxy, UnboundedMenuManager, updateUnboundedElementVisibility} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
-import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, OmniboxEverywhereOmniboxElement, UnboundedElement} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
+import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, OmniboxEverywhereOmniboxElement, OmniboxEverywhereProfileIconElement, UnboundedElement} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -945,4 +945,50 @@ suite('OmniboxEverywhereAppTest', () => {
 
     assertFalse(voiceSearch.classList.contains('permission-prompt-showing'));
   });
+});
+
+suite('OmniboxEverywhereProfileIconTest', () => {
+  let profileIcon: OmniboxEverywhereProfileIconElement;
+  let testProxy: TestSearchboxBrowserProxy;
+
+  async function createProfileIcon(profilePickerEnabled: boolean) {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      profileAvatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_0',
+      profileName: 'Test Profile',
+      profileEmail: 'test@example.com',
+      omniboxEverywhereProfilePickerEnabled: profilePickerEnabled,
+    });
+    testProxy = new TestSearchboxBrowserProxy();
+    SearchboxBrowserProxy.setInstance(testProxy);
+    profileIcon = document.createElement('omnibox-everywhere-profile-icon');
+    document.body.appendChild(profileIcon);
+    await microtasksFinished();
+  }
+
+  test(
+      'profile icon is not clickable or hoverable when profile picker ' +
+          'is disabled',
+      async () => {
+        await createProfileIcon(false);
+        const img =
+            profileIcon.shadowRoot.querySelector<HTMLElement>('#profileIcon');
+        assertTrue(!!img);
+        assertFalse(img.classList.contains('clickable'));
+        assertEquals('none', window.getComputedStyle(img).pointerEvents);
+        assertEquals(
+            'none', window.getComputedStyle(profileIcon).pointerEvents);
+      });
+
+  test(
+      'profile icon is clickable and hoverable when profile picker is enabled',
+      async () => {
+        await createProfileIcon(true);
+        const img =
+            profileIcon.shadowRoot.querySelector<HTMLElement>('#profileIcon');
+        assertTrue(!!img);
+        assertTrue(img.classList.contains('clickable'));
+        assertEquals('auto', window.getComputedStyle(img).pointerEvents);
+        assertEquals('pointer', window.getComputedStyle(img).cursor);
+      });
 });

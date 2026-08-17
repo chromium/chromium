@@ -9,6 +9,7 @@
 
 :host {
   display: inline-block;
+  pointer-events: none;
   position: absolute;
   right: 16px;
   top: 10px;
@@ -18,13 +19,14 @@
 #profileIcon {
   border-radius: 50%;
   height: 36px;
-  pointer-events: auto;
+  pointer-events: none;
   width: 36px;
   -webkit-user-drag: none;
 }
 
 #profileIcon.clickable {
   cursor: pointer;
+  pointer-events: auto;
   transition: opacity 150ms ease-in-out;
 }
 
@@ -39,6 +41,7 @@
   --cr-action-menu-padding: 0;
   min-width: 330px;
   max-width: 360px;
+  pointer-events: auto;
 }
 
 #profileMenu::part(dialog) {
