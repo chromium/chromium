@@ -1556,32 +1556,35 @@ void ContextualSearchboxHandler::RecordTabAddedMetric(
 bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
     content::WebContents* active_web_contents,
     contextual_search::ContextualSearchSessionHandle* session_handle) {
-  // In order to open in the lens side panel the following must be
-  // true:
-  // 1) User is not eligible for contextual tasks
-  // 2) Lens M3 is enabled
-  // 3) There is only one submitted context token
-  // 4) The submitted context token is the active tab
-  // 5) Lens Overlay is enabled.
+  if (!active_web_contents ||
+      session_handle->GetSubmittedContextTokens().size() != 1 ||
+      !session_handle->IsTabInContext(
+          sessions::SessionTabHelper::IdForTab(active_web_contents))) {
+    return false;
+  }
+
+  // If Contextual Tasks CoBrowse is enabled and eligible, do not route to the
+  // side panel here so the navigation can be intercepted and handled by
+  // CoBrowse.
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+      contextual_tasks::EntryPointEligibilityManager::IsEligible(profile_)) {
+    return false;
+  }
+
+  // If Contextual Tasks UI / Nexus (e.g. kContextualTasksSidePanel) is enabled,
+  // route to the side panel.
+  if (contextual_tasks::IsContextualTasksUIEnabled()) {
+    return true;
+  }
+
+  // Otherwise, fallback to the Lens side panel if Lens Overlay and AIM M3 are
+  // enabled.
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
-  auto* eligibility_manager =
-      browser_window_interface
-          ? contextual_tasks::EntryPointEligibilityManager::From(
-                browser_window_interface)
-          : nullptr;
-
   auto* entry_point_controller =
       lens::LensOverlayEntryPointController::From(browser_window_interface);
-
-  return active_web_contents &&
-         (!eligibility_manager ||
-          !eligibility_manager->AreEntryPointsEligible()) &&
-         entry_point_controller && entry_point_controller->IsEnabled() &&
-         lens::IsAimM3Enabled(profile_) &&
-         session_handle->GetSubmittedContextTokens().size() == 1 &&
-         session_handle->IsTabInContext(
-             sessions::SessionTabHelper::IdForTab(active_web_contents));
+  return entry_point_controller && entry_point_controller->IsEnabled() &&
+         lens::IsAimM3Enabled(profile_);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

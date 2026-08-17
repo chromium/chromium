@@ -287,6 +287,14 @@ class ContextualSearchboxHandler
     OnInputStateChanged(state);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  bool ShouldOpenInLensSidePanelForTesting(
+      content::WebContents* active_web_contents,
+      contextual_search::ContextualSearchSessionHandle* session_handle) {
+    return ShouldOpenInLensSidePanel(active_web_contents, session_handle);
+  }
+#endif
+
   // Map of context tokens (frontend) to tab IDs (backend);
   // used for determining which tabs to underline based on frontend changes, and
   // for sending `tabID`s to cobrowsing when going from an AIM entrypoint to
