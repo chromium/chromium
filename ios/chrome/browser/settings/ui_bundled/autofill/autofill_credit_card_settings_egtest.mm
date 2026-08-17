@@ -566,21 +566,24 @@ id<GREYMatcher> BottomToolbar() {
                                     ReauthenticationResult::kSuccess];
   [self openCreditCardListInEditMode];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          SettingsBottomToolbarDeleteButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
+  [ChromeEarlGrey
+      waitForMatcher:grey_allOf(
+                         chrome_test_util::SettingsBottomToolbarDeleteButton(),
+                         grey_not(grey_enabled()), nil)];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
                                           [self creditCardLabel:lastDigits])]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          SettingsBottomToolbarDeleteButton()]
-      assertWithMatcher:grey_enabled()];
+  [ChromeEarlGrey
+      waitForMatcher:grey_allOf(
+                         chrome_test_util::SettingsBottomToolbarDeleteButton(),
+                         grey_enabled(), nil)];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
                                           [self creditCardLabel:lastDigits])]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          SettingsBottomToolbarDeleteButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
+  [ChromeEarlGrey
+      waitForMatcher:grey_allOf(
+                         chrome_test_util::SettingsBottomToolbarDeleteButton(),
+                         grey_not(grey_enabled()), nil)];
 }
 
 // Checks that deleting a card from the secondary edit card table works
@@ -594,6 +597,10 @@ id<GREYMatcher> BottomToolbar() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
                                           [self creditCardLabel:lastDigits])]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForMatcher:grey_allOf(
+                         chrome_test_util::SettingsBottomToolbarDeleteButton(),
+                         grey_enabled(), nil)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           SettingsBottomToolbarDeleteButton()]
       performAction:grey_tap()];
