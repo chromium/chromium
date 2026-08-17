@@ -77,11 +77,6 @@ TEST(VerificationKeyUtilsTest, LoadVerificationKeysDev) {
   EXPECT_FALSE(key_map.empty());
 }
 
-TEST(VerificationKeyUtilsTest, LoadVerificationKeysStaging) {
-  auto key_map = LoadVerificationKeys(GetStagingKeysForTesting());
-  EXPECT_FALSE(key_map.empty());
-}
-
 TEST(VerificationKeyUtilsTest, LoadVerificationKeysEmpty) {
   EXPECT_TRUE(LoadVerificationKeys(base::span<const ProcessedKey>()).empty());
 }

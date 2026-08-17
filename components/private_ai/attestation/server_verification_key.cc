@@ -32,14 +32,11 @@ bool ProcessedKey::operator==(const ProcessedKey& other) const {
 base::span<const ProcessedKey> GetServerVerificationKey(const GURL& url) {
   std::string_view host = url.host();
 
-  if (base::StartsWith(host, "autopush")) {
+  if (base::StartsWith(host, "autopush") || base::StartsWith(host, "staging")) {
     return kAutopushServerVerificationKeys;
   }
   if (base::StartsWith(host, "dev")) {
     return kDevServerVerificationKeys;
-  }
-  if (base::StartsWith(host, "staging")) {
-    return kStagingServerVerificationKeys;
   }
   return kProdServerVerificationKeys;
 }
@@ -56,8 +53,5 @@ base::span<const ProcessedKey> GetProdKeysForTesting() {
   return kProdServerVerificationKeys;
 }
 
-base::span<const ProcessedKey> GetStagingKeysForTesting() {
-  return kStagingServerVerificationKeys;
-}
 
 }  // namespace private_ai

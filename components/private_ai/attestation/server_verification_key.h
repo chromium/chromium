@@ -35,7 +35,6 @@ base::span<const ProcessedKey> GetServerVerificationKey(const GURL& url);
 base::span<const ProcessedKey> GetAutopushKeysForTesting();
 base::span<const ProcessedKey> GetDevKeysForTesting();
 base::span<const ProcessedKey> GetProdKeysForTesting();
-base::span<const ProcessedKey> GetStagingKeysForTesting();
 
 }  // namespace private_ai
 

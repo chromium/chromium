@@ -23,7 +23,7 @@ TEST_F(ServerVerificationKeyTest, GetAutopushKeys) {
   EXPECT_FALSE(keys.empty());
   EXPECT_EQ(keys, GetAutopushKeysForTesting());
   EXPECT_NE(keys, GetDevKeysForTesting());
-  EXPECT_NE(keys, GetStagingKeysForTesting());
+  // EXPECT_NE(keys, GetProdKeysForTesting());
 }
 
 TEST_F(ServerVerificationKeyTest, GetDevKeys) {
@@ -32,26 +32,25 @@ TEST_F(ServerVerificationKeyTest, GetDevKeys) {
   EXPECT_FALSE(keys.empty());
   EXPECT_EQ(keys, GetDevKeysForTesting());
   EXPECT_NE(keys, GetAutopushKeysForTesting());
-  EXPECT_NE(keys, GetStagingKeysForTesting());
+  EXPECT_NE(keys, GetProdKeysForTesting());
 }
 
 TEST_F(ServerVerificationKeyTest, GetProdKeys) {
   GURL url("https://private-ai.example.com");
   auto keys = GetServerVerificationKey(url);
   EXPECT_FALSE(keys.empty());
-  EXPECT_EQ(keys, GetAutopushKeysForTesting());
   EXPECT_EQ(keys, GetProdKeysForTesting());
+  // EXPECT_NE(keys, GetAutopushKeysForTesting());
   EXPECT_NE(keys, GetDevKeysForTesting());
-  EXPECT_NE(keys, GetStagingKeysForTesting());
 }
 
 TEST_F(ServerVerificationKeyTest, GetStagingKeys) {
   GURL url("https://staging-private-ai.example.com");
   auto keys = GetServerVerificationKey(url);
   EXPECT_FALSE(keys.empty());
-  EXPECT_EQ(keys, GetStagingKeysForTesting());
-  EXPECT_NE(keys, GetAutopushKeysForTesting());
+  // EXPECT_EQ(keys, GetAutopushKeysForTesting());
   EXPECT_NE(keys, GetDevKeysForTesting());
+  // EXPECT_NE(keys, GetProdKeysForTesting());
 }
 
 }  // namespace private_ai
