@@ -46,12 +46,18 @@ public class TabOnBackGestureHandler implements UserData {
                 .onBackStarted(mNativePtr, progress, edge, forward, isGestureMode);
     }
 
-    public void onBackProgressed(
+    /**
+     * Returns whether this handler is still driving the caller's gesture. When it returns false the
+     * caller owns the gesture again: it must drop its reference to this handler and do its own back
+     * handling, otherwise the navigation is lost. The handler is not necessarily idle then: on an
+     * edge mismatch it may still be driving a newer gesture for another owner.
+     */
+    public boolean onBackProgressed(
             float progress,
             @BackGestureEventSwipeEdge int edge,
             boolean forward,
             boolean isGestureMode) {
-        TabOnBackGestureHandlerJni.get()
+        return TabOnBackGestureHandlerJni.get()
                 .onBackProgressed(mNativePtr, progress, edge, forward, isGestureMode);
     }
 
@@ -84,7 +90,7 @@ public class TabOnBackGestureHandler implements UserData {
                 boolean forward,
                 boolean isGestureMode);
 
-        void onBackProgressed(
+        boolean onBackProgressed(
                 long nativeTabOnBackGestureHandler,
                 float progress,
                 int edge,

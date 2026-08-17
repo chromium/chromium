@@ -623,13 +623,17 @@ public class ToolbarManager
                 return;
             }
 
-            mHandler.onBackProgressed(
+            if (!mHandler.onBackProgressed(
                     backEvent.getProgress(),
                     backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
                             ? BackGestureEventSwipeEdge.LEFT
                             : BackGestureEventSwipeEdge.RIGHT,
                     isForward(),
-                    mIsGestureMode);
+                    mIsGestureMode)) {
+                // The gesture is ours again, so handleBackPress() must fall back to the
+                // regular back handling instead of waiting for a transition.
+                mHandler = null;
+            }
         }
 
         @Override

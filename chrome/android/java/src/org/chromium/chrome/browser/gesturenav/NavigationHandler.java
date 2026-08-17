@@ -516,9 +516,11 @@ class NavigationHandler implements TouchEventObserver {
         if (mState == GestureState.DRAGGED) {
             mModel.set(BUBBLE_OFFSET, mPullOffsetX);
         }
-        if (mTabOnBackGestureHandler != null) {
-            mTabOnBackGestureHandler.onBackProgressed(
-                    getProgress(), mInitiatingEdge, isForward(), false);
+        if (mTabOnBackGestureHandler != null
+                && !mTabOnBackGestureHandler.onBackProgressed(
+                        getProgress(), mInitiatingEdge, isForward(), false)) {
+            // The gesture is ours again, so navigate() must stop deferring to native.
+            mTabOnBackGestureHandler = null;
         }
     }
 

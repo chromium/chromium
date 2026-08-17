@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.UiUtils;
@@ -21,6 +22,8 @@ import org.chromium.ui.UiUtils;
 @JNINamespace("gesturenav")
 @NullMarked
 public class GestureNavigationUtils {
+
+    private static @Nullable Boolean sGestureNavigationModeForTesting;
 
     /**
      * Whether the default nav transition should be allowed for the current tab.
@@ -37,11 +40,30 @@ public class GestureNavigationUtils {
         // If in gesture mode, only U and above support transition.
         Window window = tab.getWindowAndroidChecked().getWindow();
         if (window == null) return false;
-        if (VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE
-                && UiUtils.isGestureNavigationMode(window)) {
+        if (VERSION.SDK_INT < VERSION_CODES.UPSIDE_DOWN_CAKE && isGestureNavigationMode(window)) {
             return false;
         }
         return true;
+    }
+
+    private static boolean isGestureNavigationMode(Window window) {
+        if (sGestureNavigationModeForTesting != null) {
+            return sGestureNavigationModeForTesting;
+        }
+        return UiUtils.isGestureNavigationMode(window);
+    }
+
+    /**
+     * Forces the navigation mode observed by {@link #allowTransition} so tests can exercise the
+     * three-button path on bots that are physically in gesture navigation mode. Pre-UDC gesture
+     * navigation devices otherwise disable back-forward transitions, which would keep a {@link
+     * TabOnBackGestureHandler} from ever being created.
+     *
+     * @param isGestureMode True to simulate gesture navigation, false to simulate three-button.
+     */
+    public static void setGestureNavigationModeForTesting(boolean isGestureMode) {
+        sGestureNavigationModeForTesting = isGestureMode;
+        ResettersForTesting.register(() -> sGestureNavigationModeForTesting = null);
     }
 
     /**
