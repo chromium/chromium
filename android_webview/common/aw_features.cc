@@ -55,13 +55,6 @@ BASE_FEATURE(kWebViewBackgroundTracingInit, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewBypassHttpCacheForPrefetchFromHeader,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, the temporary cookie manager used before WebView startup is
-// bypassed. If WebView isn't already started up, calling
-// `CookieManager.getInstance()` will trigger WebView startup on the main looper
-// and wait for startup to complete.
-BASE_FEATURE(kWebViewBypassProvisionalCookieManager,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, instead of using the 20MiB as the HTTP cache
 // limit, derive the value from the cache quota allocated to the app by the
 // Android framework.

@@ -1113,12 +1113,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, accessing multi-profile APIs skips automatic initialization of the"
                         + " Default profile during startup."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_BYPASS_PROVISIONAL_COOKIE_MANAGER,
-                "When enabled, the temporary cookie manager used before WebView startup is"
-                        + " bypassed. If WebView isn't already started up, calling"
-                        + " `CookieManager.getInstance()` will trigger WebView startup on the main"
-                        + " looper and wait for startup to complete."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_FASTER_GET_DEFAULT_USER_AGENT,
                 "When enabled, the default user agent string is fetched more quickly without"
                         + " waiting for chromium startup to complete."),

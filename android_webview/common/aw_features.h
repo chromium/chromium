@@ -25,7 +25,6 @@ BASE_DECLARE_FEATURE(kWebViewBackgroundClassPreloading);
 BASE_DECLARE_FEATURE(kWebViewBackgroundTracingInit);
 // TODO(crbug.com/455296998): Remove this code for M145.
 BASE_DECLARE_FEATURE(kWebViewBypassHttpCacheForPrefetchFromHeader);
-BASE_DECLARE_FEATURE(kWebViewBypassProvisionalCookieManager);
 BASE_DECLARE_FEATURE(kWebViewCacheSizeLimitDerivedFromAppCacheQuota);
 extern const base::FeatureParam<double> kWebViewCacheSizeLimitMultiplier;
 extern const base::FeatureParam<int> kWebViewCacheSizeLimitMinimum;

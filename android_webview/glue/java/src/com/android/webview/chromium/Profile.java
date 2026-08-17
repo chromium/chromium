@@ -23,7 +23,6 @@ import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -105,10 +104,7 @@ public class Profile {
             ServiceWorkerController serviceWorkerController;
 
             WebViewChromiumFactoryProvider factory = WebViewChromiumFactoryProvider.getSingleton();
-            if (browserContext.isDefaultAwBrowserContext()
-                    && !WebViewCachedFlags.get()
-                            .isCachedFeatureEnabled(
-                                    AwFeatures.WEBVIEW_BYPASS_PROVISIONAL_COOKIE_MANAGER)) {
+            if (browserContext.isDefaultAwBrowserContext()) {
                 cookieManager = CookieManager.getInstance();
             } else {
                 cookieManager = new CookieManagerAdapter(browserContext.getCookieManager());

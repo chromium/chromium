@@ -73,9 +73,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Class controlling the Chromium initialization for WebView. We hold on to most static objects used
@@ -137,13 +135,6 @@ public class WebViewChromiumAwInit {
     private static final int INIT_FINISHED = 2;
 
     private final AtomicInteger mInitState = new AtomicInteger(INIT_NOT_STARTED);
-
-    // Looper on which `getDefaultCookieManager` is called for the first time.
-    private final AtomicReference<Looper> mFirstGetDefaultCookieManagerLooper =
-            new AtomicReference<Looper>();
-    // Set to true if/when `getDefaultCookieManager` is called.
-    private final AtomicBoolean mGetDefaultCookieManagerCalled = new AtomicBoolean(false);
-
     private final WebViewChromiumFactoryProvider mFactory;
     private final StartupDiagnostics mStartupDiagnostics = new StartupDiagnostics();
     private final WebViewChromiumRunQueue mWebViewStartUpCallbackRunQueue =
@@ -747,21 +738,12 @@ public class WebViewChromiumAwInit {
     }
 
     public CookieManager getDefaultCookieManager() {
-        if (!mGetDefaultCookieManagerCalled.get()) {
-            mFirstGetDefaultCookieManagerLooper.compareAndSet(null, Looper.myLooper());
-            mGetDefaultCookieManagerCalled.set(true);
-        }
-        if (WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_BYPASS_PROVISIONAL_COOKIE_MANAGER)) {
-            return getDefaultProfile(StartupCallSite.GET_DEFAULT_COOKIE_MANAGER).getCookieManager();
-        } else {
-            synchronized (mLazyInitLock) {
-                if (mDefaultCookieManager == null) {
-                    mDefaultCookieManager =
-                            new CookieManagerAdapter(AwCookieManager.getDefaultCookieManager());
-                }
-                return mDefaultCookieManager;
+        synchronized (mLazyInitLock) {
+            if (mDefaultCookieManager == null) {
+                mDefaultCookieManager =
+                        new CookieManagerAdapter(AwCookieManager.getDefaultCookieManager());
             }
+            return mDefaultCookieManager;
         }
     }
 
