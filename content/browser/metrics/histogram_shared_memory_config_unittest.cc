@@ -83,7 +83,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(std::vector<ProcessTypeToOptionalConfig>({
         {PROCESS_TYPE_UNKNOWN, std::nullopt},
         {PROCESS_TYPE_BROWSER, std::nullopt},
-        {PROCESS_TYPE_RENDERER, "RendererMetrics", 2 << 20},
+        {PROCESS_TYPE_RENDERER, "RendererMetrics", 1536 << 10},
         {PROCESS_TYPE_PLUGIN_DEPRECATED, std::nullopt},
         {PROCESS_TYPE_WORKER_DEPRECATED, std::nullopt},
         {PROCESS_TYPE_UTILITY, "UtilityMetrics", 512 << 10},
