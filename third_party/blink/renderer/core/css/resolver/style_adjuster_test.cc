@@ -406,12 +406,14 @@ TEST_F(StyleAdjusterTest, AdjustForCanvasDrawableDescendant) {
             <div id="aaba">a2</div>
           </div>
           <div id="aac">a3</div>
+          <span id="nested_span" drawable>nested</span>
         </div>
         <div id="ab">b1</div>
       </div>
       <div id="b" drawable style="background: blue;">
         <div id="ba" drawable></div>
       </div>
+      <span id="immediate_span">immediate</span>
     </canvas>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
@@ -426,6 +428,13 @@ TEST_F(StyleAdjusterTest, AdjustForCanvasDrawableDescendant) {
   EXPECT_FALSE(GetLayoutObjectByElementId("ab")->IsStackingContext());
   EXPECT_TRUE(GetLayoutObjectByElementId("b")->IsStackingContext());
   EXPECT_TRUE(GetLayoutObjectByElementId("ba")->IsStackingContext());
+  EXPECT_EQ(EDisplay::kBlock,
+            GetLayoutObjectByElementId("immediate_span")->StyleRef().Display());
+  EXPECT_TRUE(
+      GetLayoutObjectByElementId("immediate_span")->IsStackingContext());
+  EXPECT_EQ(EDisplay::kInlineBlock,
+            GetLayoutObjectByElementId("nested_span")->StyleRef().Display());
+  EXPECT_TRUE(GetLayoutObjectByElementId("nested_span")->IsStackingContext());
 }
 
 }  // namespace blink

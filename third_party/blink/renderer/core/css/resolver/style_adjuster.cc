@@ -765,11 +765,15 @@ void StyleAdjuster::AdjustStyleForDisplay(
     const ComputedStyle& layout_parent_style,
     const Element* element,
     Document* document) {
-  bool force_canvas_child_layout_subtree_styles =
-      element && element->CanvasForDrawing();
+  HTMLCanvasElement* canvas_for_drawing =
+      element ? element->CanvasForDrawing() : nullptr;
+  bool is_drawable_canvas_descendant = canvas_for_drawing;
+  bool is_immediate_canvas_child =
+      canvas_for_drawing && FlatTreeTraversal::ParentElementSkippingSlots(
+                                *element) == canvas_for_drawing;
 
   if ((layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) ||
-      force_canvas_child_layout_subtree_styles) {
+      is_immediate_canvas_child) {
     builder.SetIsInBlockifyingDisplay();
     if (builder.Display() != EDisplay::kContents) {
       builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
@@ -781,20 +785,25 @@ void StyleAdjuster::AdjustStyleForDisplay(
         layout_parent_style.IsDisplayWebkitBox() ||
         layout_parent_style.IsDisplayGrid() ||
         layout_parent_style.IsDisplayGridLanes() ||
-        layout_parent_style.IsDisplayMath() ||
-        force_canvas_child_layout_subtree_styles) {
+        layout_parent_style.IsDisplayMath() || is_immediate_canvas_child) {
       builder.SetIsInsideDisplayIgnoringFloatingChildren();
     }
 
-    if (force_canvas_child_layout_subtree_styles) {
+    if (is_immediate_canvas_child) {
       builder.SetPosition(EPosition::kStatic);
-      builder.SetContain(builder.Contain() | kContainsPaint);
     }
+  }
+
+  if (is_drawable_canvas_descendant) {
+    if (!is_immediate_canvas_child && builder.Display() == EDisplay::kInline) {
+      builder.SetDisplay(EDisplay::kInlineBlock);
+    }
+    builder.SetContain(builder.Contain() | kContainsPaint);
   }
 
   if (layout_parent_style.InlinifiesChildren() &&
       !builder.HasOutOfFlowPosition() && ShouldBeInlinified(element) &&
-      !force_canvas_child_layout_subtree_styles) {
+      !is_drawable_canvas_descendant) {
     if (builder.IsFloating()) {
       builder.SetFloating(EFloat::kNone);
       if (document) {
@@ -1267,7 +1276,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       (element && IsA<SVGForeignObjectElement>(*element)) || is_in_top_layer ||
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
-      IsCanvasWithDrawElements(element)) {
+      IsCanvasWithDrawElements(element) || is_drawable_canvas_descendant) {
     builder.SetForcesStackingContext(true);
   }
 
