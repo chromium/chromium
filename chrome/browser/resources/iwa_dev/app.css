@@ -17,6 +17,22 @@
 
 h1 {
   font-size: 1.75rem;
+  margin-bottom: 8px;
+}
+
+#learn-more {
+  color: var(--cr-secondary-text-color);
+  font-size: 1rem;
+  margin-bottom: 16px;
+}
+
+#learn-more a {
+  color: var(--cr-link-color);
+  text-decoration: none;
+}
+
+#learn-more a:hover {
+  text-decoration: underline;
 }
 
 .header-row {
@@ -28,6 +44,7 @@ h1 {
 
 h2 {
   font-size: 1.5rem;
+  margin: 0;
 }
 
 #iwa-list {

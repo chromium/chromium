@@ -10,6 +10,12 @@ export function getHtml(this: IwaDevAppElement) {
   // clang-format off
   return html`
 <h1>Isolated Web App Developer Tool</h1>
+<div id="learn-more">
+  Install and test Isolated Web Apps during development.
+  <a href="https://developer.chrome.com/docs/iwa/introduction"
+      target="_blank" rel="noopener"
+      aria-label="Learn more about Isolated Web Apps">Learn more</a>
+</div>
 ${!this.devModeEnabled_ ? html`
   <div id="error-message">
     <p>Isolated Web App Developer Mode is disabled.</p>
