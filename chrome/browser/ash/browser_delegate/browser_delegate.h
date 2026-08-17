@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_DELEGATE_H_
 #define CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_DELEGATE_H_
 
+#include <vector>
+
 #include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "components/account_id/account_id.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/webapps/browser/launch_queue/launch_params.h"
 #include "components/webapps/common/web_app_id.h"
@@ -23,10 +26,6 @@ class Window;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace tab_groups {
-struct TabGroupInfo;
-}  // namespace tab_groups
 
 namespace ui {
 class BaseWindow;
@@ -181,6 +180,9 @@ class BrowserDelegate {
 
   // Creates the specified tab group.
   virtual void CreateTabGroup(const tab_groups::TabGroupInfo& tab_group) = 0;
+
+  // Returns info for all tab groups in this browser.
+  virtual std::vector<tab_groups::TabGroupInfo> GetTabGroupInfos() const = 0;
 
   // Pins the given tab.
   virtual void PinTab(size_t tab_index) = 0;

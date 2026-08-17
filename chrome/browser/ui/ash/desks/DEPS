@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
   "+chrome/browser/ui/browser_window/public/create_browser_window.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
-  "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/web_applications/test",
   "+chrome/browser/web_applications/test",
   "+chrome/grit",
@@ -36,12 +35,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "chrome_saved_desk_delegate_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
+  ],
   ".*_browsertest\\.cc": [
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_tabstrip.h",
     "+chrome/browser/ui/browser_window.h",
-  ],
-  "chrome_saved_desk_delegate_unittest\\.cc": [
-    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
   ],
 }

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
@@ -32,6 +33,7 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_info.h"
+#include "components/tabs/public/tab_group.h"
 #include "ui/base/base_window.h"
 
 namespace ash {
@@ -242,6 +244,23 @@ void BrowserDelegateImpl::CreateTabGroup(
   const tab_groups::TabGroupId new_group_id =
       tab_strip_model->AddToNewGroup(indices);
   tab_strip_model->ChangeTabGroupVisuals(new_group_id, tab_group.visual_data);
+}
+
+std::vector<tab_groups::TabGroupInfo> BrowserDelegateImpl::GetTabGroupInfos()
+    const {
+  std::vector<tab_groups::TabGroupInfo> tab_groups;
+  const TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
+  if (group_model) {
+    for (const auto& group_id : group_model->ListTabGroups()) {
+      const TabGroup* tab_group = group_model->GetTabGroup(group_id);
+      tab_groups.emplace_back(
+          gfx::Range(tab_group->ListTabs()),
+          tab_groups::TabGroupVisualData(*(tab_group->visual_data())));
+    }
+  } else {
+    CHECK(!browser_->tab_strip_model()->SupportsTabGroups());
+  }
+  return tab_groups;
 }
 
 void BrowserDelegateImpl::PinTab(size_t tab_index) {

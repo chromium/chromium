@@ -29,8 +29,6 @@
 #include "chrome/browser/ui/ash/desks/admin_template_service_factory.h"
 #include "chrome/browser/ui/ash/desks/chrome_desks_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -61,23 +59,6 @@
 #include "url/gurl.h"
 
 namespace {
-
-// Returns the TabStripModel that associates with `window` if the given `window`
-// contains a browser frame, otherwise returns nullptr.
-TabStripModel* GetTabstripModelForWindowIfAny(aura::Window* window) {
-  ash::BrowserDelegate* browser =
-      ash::BrowserController::GetInstance()->GetBrowserForWindow(window);
-  return browser ? browser->GetBrowser().GetTabStripModel() : nullptr;
-}
-
-// Returns the list of URLs that are open in `tab_strip_model`.
-std::vector<GURL> GetURLsIfApplicable(TabStripModel& tab_strip_model) {
-  std::vector<GURL> urls;
-  for (tabs::TabInterface* tab : tab_strip_model) {
-    urls.push_back(tab->GetContents()->GetLastCommittedURL());
-  }
-  return urls;
-}
 
 // Return true if `app_id` is available to launch from saved desk.
 bool IsAppAvailable(apps::AppServiceProxy& app_service_proxy,
@@ -316,25 +297,28 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     }
   }
 
-  if (auto* tab_strip_model = GetTabstripModelForWindowIfAny(window)) {
-    app_launch_info->browser_extra_info.urls =
-        GetURLsIfApplicable(*tab_strip_model);
-    app_launch_info->browser_extra_info.active_tab_index =
-        tab_strip_model->active_index();
-    int index_of_first_non_pinned_tab =
-        tab_strip_model->IndexOfFirstNonPinnedTab();
-    // Only set this field if there are pinned tabs. `IndexOfFirstNonPinnedTab`
-    // returns 0 if there are no pinned tabs.
-    if (index_of_first_non_pinned_tab > 0 &&
-        index_of_first_non_pinned_tab <= tab_strip_model->count()) {
+  // If `window` is a browser window, capture its tab and tab group information.
+  if (ash::BrowserDelegate* browser =
+          ash::BrowserController::GetInstance()->GetBrowserForWindow(window)) {
+    int32_t pinned_tab_count = 0;
+    int32_t current_index = 0;
+    for (tabs::TabInterface* tab : browser->GetTabIterator()) {
+      app_launch_info->browser_extra_info.urls.push_back(
+          tab->GetContents()->GetLastCommittedURL());
+      if (tab->IsActivated()) {
+        app_launch_info->browser_extra_info.active_tab_index = current_index;
+      }
+      if (tab->IsPinned()) {
+        pinned_tab_count++;
+      }
+      ++current_index;
+    }
+    if (pinned_tab_count > 0) {
       app_launch_info->browser_extra_info.first_non_pinned_tab_index =
-          index_of_first_non_pinned_tab;
+          pinned_tab_count;
     }
-    if (tab_strip_model->SupportsTabGroups()) {
-      app_launch_info->browser_extra_info.tab_group_infos =
-          chrome_desks_util::ConvertTabGroupsToTabGroupInfos(
-              tab_strip_model->group_model());
-    }
+    app_launch_info->browser_extra_info.tab_group_infos =
+        browser->GetTabGroupInfos();
     std::move(callback).Run(std::move(app_launch_info));
     return;
   }

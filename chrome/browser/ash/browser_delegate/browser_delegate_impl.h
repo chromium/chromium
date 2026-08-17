@@ -59,6 +59,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
       std::optional<webapps::LaunchParams> launch_params =
           std::nullopt) override;
   void CreateTabGroup(const tab_groups::TabGroupInfo& tab_group) override;
+  std::vector<tab_groups::TabGroupInfo> GetTabGroupInfos() const override;
   void PinTab(size_t tab_index) override;
   void MoveTab(size_t tab_index, BrowserDelegate& target_browser) override;
   bool CreateWebAppFromActiveWebContents() override;

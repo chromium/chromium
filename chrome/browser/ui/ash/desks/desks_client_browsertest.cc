@@ -96,7 +96,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
@@ -1156,8 +1155,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   ASSERT_TRUE(new_browser);
 
   std::vector<tab_groups::TabGroupInfo> got_tab_groups =
-      chrome_desks_util::ConvertTabGroupsToTabGroupInfos(
-          new_browser->GetTabStripModel()->group_model());
+      CHECK_DEREF(
+          ash::BrowserController::GetInstance()->GetDelegate(new_browser))
+          .GetTabGroupInfos();
 
   EXPECT_FALSE(got_tab_groups.empty());
 
