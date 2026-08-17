@@ -77,6 +77,12 @@ class TestFormatter(unittest.TestCase):
       'public class Foo {}\n',
     )
 
+  def test_kotlin(self):
+    self.assertEqual(
+        self.run_formatter('foo.kt', 'class Foo{}'),
+        'class Foo {}\n',
+    )
+
   def test_clang_format(self):
     self.assertEqual(
       self.run_formatter('foo.h', '#include <utility>\n#include<algorithm>\n'),
