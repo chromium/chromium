@@ -9,6 +9,7 @@
 #include "base/check_deref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -164,8 +165,16 @@ IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
                   CheckChipVisible(/*visible=*/true));
 }
 
+// TODO(crbug.com/547718513): Re-enable
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PressingChipWithMouseOpensAiMode \
+  DISABLED_PressingChipWithMouseOpensAiMode
+#else
+#define MAYBE_PressingChipWithMouseOpensAiMode \
+  PressingChipWithMouseOpensAiMode
+#endif
 IN_PROC_BROWSER_TEST_F(AiModePageActionControllerInteractiveUiTest,
-                       PressingChipWithMouseOpensAiMode) {
+                       MAYBE_PressingChipWithMouseOpensAiMode) {
   base::HistogramTester histogram_tester;
   RunTestSequence(
       OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
