@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -310,10 +311,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                             });
                 }
 
-                @Nullable
                 @Override
-                public Boolean isTabGroupSelected(Tab tab, PropertyModel model) {
-                    return null;
+                public @TriState int isTabGroupSelected(Tab tab, PropertyModel model) {
+                    return TriState.NOT_SET;
                 }
 
                 @Nullable

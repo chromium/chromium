@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TriState;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -338,8 +339,8 @@ public class TabSwitcherPaneMediator
     }
 
     @Override
-    public @Nullable Boolean isTabGroupSelected(Tab tab, PropertyModel model) {
-        return null;
+    public @TriState int isTabGroupSelected(Tab tab, PropertyModel model) {
+        return TriState.NOT_SET;
     }
 
     @Override

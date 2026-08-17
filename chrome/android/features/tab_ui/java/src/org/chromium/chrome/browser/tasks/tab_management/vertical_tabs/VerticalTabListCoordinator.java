@@ -28,6 +28,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
+import org.chromium.base.TriState;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -229,11 +230,11 @@ public class VerticalTabListCoordinator {
         }
 
         @Override
-        public @Nullable Boolean isTabGroupSelected(Tab tab, PropertyModel model) {
+        public @TriState int isTabGroupSelected(Tab tab, PropertyModel model) {
             // In Vertical Tabs, the Group Header card acts strictly as an expandable accordion
             // header, and is never selectable (individual child webpage rows show active
             // highlights).
-            return false;
+            return TriState.FALSE;
         }
 
         @Override
