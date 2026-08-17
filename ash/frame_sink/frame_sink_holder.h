@@ -12,6 +12,7 @@
 #include "ash/ash_export.h"
 #include "ash/frame_sink/frame_sink_host.h"
 #include "ash/frame_sink/ui_resource_manager.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -23,7 +24,12 @@
 
 namespace cc {
 class LayerTreeFrameSink;
+class ResourcePool;
 }  // namespace cc
+
+namespace viz {
+class ClientResourceProvider;
+}  // namespace viz
 
 namespace ash {
 
@@ -48,6 +54,8 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
       base::RepeatingCallback<std::unique_ptr<viz::CompositorFrame>(
           const viz::BeginFrameAck& begin_frame_ack,
           UiResourceManager& resource_manager,
+          viz::ClientResourceProvider& resource_provider,
+          cc::ResourcePool& resource_pool,
           bool auto_update,
           const gfx::Size& last_submitted_frame_size,
           float last_submitted_frame_dsf)>;
@@ -189,6 +197,12 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
   // compositor frame and the resources that are in-use by the display
   // compositor.
   UiResourceManager resources_manager_;
+
+  std::unique_ptr<viz::ClientResourceProvider> client_resource_provider_;
+  std::unique_ptr<cc::ResourcePool> resource_pool_;
+
+  // Tracks the resources currently exported to the display compositor.
+  base::flat_set<viz::ResourceId> exported_resources_;
 
   // Generates a frame token for the next compositor frame we create.
   viz::FrameTokenGenerator compositor_frame_token_generator_;

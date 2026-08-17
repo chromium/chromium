@@ -11,8 +11,13 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace cc {
+class ResourcePool;
+}  // namespace cc
+
 namespace viz {
 class CompositorFrame;
+class ClientResourceProvider;
 struct TransferableResource;
 }  // namespace viz
 
@@ -31,6 +36,8 @@ class TestFrameFactory {
   std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
       const viz::BeginFrameAck& begin_frame_ack,
       UiResourceManager& resource_manager,
+      viz::ClientResourceProvider& client_resource_provider,
+      cc::ResourcePool& resource_pool,
       bool auto_refresh,
       const gfx::Size& last_submitted_frame_size,
       float last_submitted_frame_dsf);

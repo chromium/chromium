@@ -1,3 +1,5 @@
 include_rules = [
+  "+cc/resources/resource_pool.h",
+  "+components/viz/client/client_resource_provider.h",
   "+gpu/command_buffer/common/shared_image_capabilities.h",
 ]

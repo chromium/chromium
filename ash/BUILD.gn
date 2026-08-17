@@ -4706,6 +4706,7 @@ test("ash_unittests") {
     "//components/user_education/views:test_support",
     "//components/user_manager",
     "//components/user_manager:test_support",
+    "//components/viz/client",
     "//components/viz/host",
     "//components/viz/test:test_support",
 

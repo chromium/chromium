@@ -1,7 +1,9 @@
 include_rules = [
   "+gpu/command_buffer/client/test_shared_image_interface.h",
   "+gpu/ipc/client/client_shared_image_interface.h",
+  "+cc/resources/resource_pool.h",
   "+cc/trees/layer_tree_frame_sink.h",
   "+cc/trees/layer_tree_frame_sink_client.h",
   "+cc/scheduler/scheduler.h",
+  "+components/viz/client/client_resource_provider.h",
 ]

@@ -45,6 +45,8 @@ std::unique_ptr<viz::CompositorFrame>
 ViewTreeHostRootView::CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
     UiResourceManager& resource_manager,
+    viz::ClientResourceProvider& client_resource_provider,
+    cc::ResourcePool& resource_pool,
     bool auto_update,
     const gfx::Size& last_submitted_frame_size,
     float last_submitted_frame_dsf) {

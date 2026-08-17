@@ -35,4 +35,17 @@ bool FrameSinkHolderTestApi::IsObservingBeginFrameSource() const {
   return frame_sink_holder_->begin_frame_observation_.IsObserving();
 }
 
+cc::ResourcePool* FrameSinkHolderTestApi::resource_pool() {
+  return frame_sink_holder_->resource_pool_.get();
+}
+
+viz::ClientResourceProvider*
+FrameSinkHolderTestApi::client_resource_provider() {
+  return frame_sink_holder_->client_resource_provider_.get();
+}
+
+size_t FrameSinkHolderTestApi::GetExportedResourcesCount() const {
+  return frame_sink_holder_->exported_resources_.size();
+}
+
 }  // namespace ash
