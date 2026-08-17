@@ -259,13 +259,13 @@ FakeSendTabToSelfModel::AddEntriesRemotely(
   return results;
 }
 
-void FakeSendTabToSelfModel::RemoveEntryRemotely(const std::string& guid) {
+void FakeSendTabToSelfModel::RemoveEntryRemotely(std::string guid) {
   auto it = entries_.find(guid);
   if (it != entries_.end()) {
+    entries_.erase(it);
     for (auto& observer : observers_) {
       observer.OnEntriesRemovedRemotely({guid});
     }
-    entries_.erase(it);
   }
 }
 

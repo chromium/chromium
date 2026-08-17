@@ -94,8 +94,9 @@ class FakeSendTabToSelfModel final : public SendTabToSelfModel {
   std::vector<const SendTabToSelfEntry*> AddEntriesRemotely(
       std::vector<RemoteEntryParams> entries_params);
 
-  // Simulates an entry being removed from a remote device.
-  void RemoveEntryRemotely(const std::string& guid);
+  // Removes the entry corresponding to the `guid` from the local model and
+  // notify observers that the entry was removed remotely.
+  void RemoveEntryRemotely(std::string guid);
 
   const std::string& last_opened_guid() const { return last_opened_guid_; }
   const std::string& last_dismissed_guid() const {

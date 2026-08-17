@@ -287,7 +287,10 @@ void SendTabToSelfBrowserAgent::DisplayNewEntries(
 
     // Pick the most recently shared entry since only one infobar can be shown
     // at a time.
-    pending_entry_ = GetMostRecentlySharedEntry(new_entries);
+    const send_tab_to_self::SendTabToSelfEntry* entry =
+        GetMostRecentlySharedEntry(new_entries);
+    pending_entry_guid_ =
+        entry ? std::make_optional(entry->GetGUID()) : std::nullopt;
 
     return;
   }
@@ -309,8 +312,8 @@ void SendTabToSelfBrowserAgent::DismissEntries(
     return;
   }
 
-  if (pending_entry_ &&
-      std::ranges::contains(guids, pending_entry_->GetGUID())) {
+  if (pending_entry_guid_ &&
+      std::ranges::contains(guids, *pending_entry_guid_)) {
     CleanUpObserversAndVariables();
   }
 
@@ -353,10 +356,16 @@ void SendTabToSelfBrowserAgent::OnActiveWebStateChanged(
     return;
   }
 
-  if (pending_entry_) {
-    DisplayInfoBar(new_active, pending_entry_, /*opened_tab_count=*/1);
-    CleanUpObserversAndVariables();
+  if (!pending_entry_guid_) {
+    return;
   }
+
+  const send_tab_to_self::SendTabToSelfEntry* entry =
+      model_->GetEntryByGUID(*pending_entry_guid_);
+  if (entry) {
+    DisplayInfoBar(new_active, entry, /*opened_tab_count=*/1);
+  }
+  CleanUpObserversAndVariables();
 }
 
 #pragma mark - WebStateObserver
@@ -368,10 +377,14 @@ void SendTabToSelfBrowserAgent::WasShown(web::WebState* web_state) {
     return;
   }
 
-  DCHECK(pending_entry_);
+  DCHECK(pending_entry_guid_.has_value());
   DCHECK(pending_web_state_);
 
-  DisplayInfoBar(pending_web_state_, pending_entry_, /*opened_tab_count=*/1);
+  const send_tab_to_self::SendTabToSelfEntry* entry =
+      model_->GetEntryByGUID(*pending_entry_guid_);
+  if (entry) {
+    DisplayInfoBar(pending_web_state_, entry, /*opened_tab_count=*/1);
+  }
 
   CleanUpObserversAndVariables();
 }
@@ -410,7 +423,7 @@ void SendTabToSelfBrowserAgent::DisplayInfoBar(
 }
 
 void SendTabToSelfBrowserAgent::CleanUpObserversAndVariables() {
-  pending_entry_ = nullptr;
+  pending_entry_guid_.reset();
 
   web_state_observation_.Reset();
   pending_web_state_ = nullptr;

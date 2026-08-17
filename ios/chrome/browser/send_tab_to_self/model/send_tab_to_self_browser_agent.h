@@ -155,8 +155,9 @@ class SendTabToSelfBrowserAgent
   // Owned by the SendTabToSelfSyncService which should outlive this class
   raw_ptr<send_tab_to_self::SendTabToSelfModel> model_ = nullptr;
 
-  // The pending SendTabToSelf entry to display an InfoBar for.
-  raw_ptr<const send_tab_to_self::SendTabToSelfEntry> pending_entry_ = nullptr;
+  // The GUID of the pending SendTabToSelf entry to display an InfoBar for,
+  // if any.
+  std::optional<std::string> pending_entry_guid_;
 
   // The WebState that is being observed for activation, if any.
   raw_ptr<web::WebState> pending_web_state_ = nullptr;
