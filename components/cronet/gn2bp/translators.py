@@ -255,9 +255,17 @@ def create_proto_modules(blueprint, gn, target, is_test_target, context):
     source_module.genrule_srcs.add(':' + source_module.name)
     source_module.genrule_headers.add(header_module.name)
 
-    cmd += [f'--cpp_out=lite=true:{absolute_cpp_out_dir}']
-
-    cmd += absolute_sources
+    def _format_proto_generator_options(options: Union[str, None]) -> str:
+        if not options:
+            return ""
+        opts = [opt.strip() for opt in options.rstrip(":").split(",") if opt.strip()]
+        # Filter out dllexport_decl as AOSP does not use Windows dllexports and gn2bp
+        # does not run protoc_wrapper.py to inject cc_include headers.
+        filtered_opts = [opt for opt in opts if not opt.startswith("dllexport_decl=")]
+        if not filtered_opts:
+            return ""
+        result = ",".join(filtered_opts) + ":"
+        return shlex.quote(result)
 
     # protoc supports "plugins", which are executable binaries it can call into
     # to customize code generation. In Chromium this feature is seldom used, but
@@ -278,9 +286,15 @@ def create_proto_modules(blueprint, gn, target, is_test_target, context):
         assert len(plugin_modules) == 1, target.name
         (plugin_module, ) = plugin_modules
         cmd += [f"--plugin=protoc-gen-plugin=$(location {plugin_module})"]
-    plugin_options = get_value_arg("--plugin-options")
-    if plugin_options is not None:
-        cmd += [f"--plugin_out={plugin_options}:{absolute_cpp_out_dir}"]
+        plugin_options = get_value_arg("--plugin-options")
+        plugin_options_str = _format_proto_generator_options(plugin_options)
+        cmd += [f"--plugin_out={plugin_options_str}{absolute_cpp_out_dir}"]
+    else:
+        cc_options = get_value_arg("--cc-options")
+        cc_options_str = _format_proto_generator_options(cc_options)
+        cmd += [f"--cpp_out={cc_options_str}{absolute_cpp_out_dir}"]
+
+    cmd += absolute_sources
 
     source_module.cmd = cmd
     header_module.cmd = source_module.cmd
