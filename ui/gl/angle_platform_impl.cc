@@ -5,21 +5,16 @@
 #include "ui/gl/angle_platform_impl.h"
 
 #include <atomic>
-#include <string>
 
-#include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/angle/include/platform/PlatformMethods.h"
-#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace angle {
@@ -37,12 +32,6 @@ double ANGLEPlatformImpl_monotonicallyIncreasingTime(
   return (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
 }
 
-const unsigned char* ANGLEPlatformImpl_getTraceCategoryEnabledFlag(
-    PlatformMethods* platform,
-    const char* category_group) {
-  return TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(category_group);
-}
-
 void ANGLEPlatformImpl_logError(PlatformMethods* platform,
                                 const char* errorMessage) {
   LOG(ERROR) << errorMessage;
@@ -51,63 +40,6 @@ void ANGLEPlatformImpl_logError(PlatformMethods* platform,
 void ANGLEPlatformImpl_logWarning(PlatformMethods* platform,
                                   const char* warningMessage) {
   LOG(WARNING) << warningMessage;
-}
-
-TraceEventHandle ANGLEPlatformImpl_addTraceEvent(
-    PlatformMethods* platform,
-    char phase,
-    const unsigned char* category_group_enabled,
-    const char* name,
-    unsigned long long id,
-    double timestamp,
-    int num_args,
-    const char** arg_names,
-    const unsigned char* arg_types,
-    const unsigned long long* arg_values,
-    unsigned char flags) {
-  base::TimeTicks timestamp_tt = base::TimeTicks() + base::Seconds(timestamp);
-
-  if (phase == 'C') {
-    // SAFETY: This callback is invoked by ANGLE with `arg_values` and
-    // `arg_names` arrays containing `num_args` elements. We verify `num_args`
-    // before indexing into these arrays, ensuring all accesses are within
-    // bounds.
-    UNSAFE_BUFFERS({
-      if (num_args == 1) {
-        int value = static_cast<int>(arg_values[0]);
-        TRACE_COUNTER("gpu",
-                      perfetto::CounterTrack(perfetto::StaticString(name)),
-                      timestamp_tt, value);
-      } else if (num_args == 2) {
-        int value1 = static_cast<int>(arg_values[0]);
-        int value2 = static_cast<int>(arg_values[1]);
-        std::string track1_name = std::string(name) + "." + arg_names[0];
-        std::string track2_name = std::string(name) + "." + arg_names[1];
-        TRACE_COUNTER(
-            "gpu", perfetto::CounterTrack(perfetto::DynamicString(track1_name)),
-            timestamp_tt, value1);
-        TRACE_COUNTER(
-            "gpu", perfetto::CounterTrack(perfetto::DynamicString(track2_name)),
-            timestamp_tt, value2);
-      }
-    });
-    return 0;
-  }
-
-  base::trace_event::TraceArguments args(num_args, arg_names, arg_types,
-                                         arg_values);
-  TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(
-      phase, category_group_enabled, name, id,
-      base::PlatformThread::CurrentId(), timestamp_tt, &args, flags);
-  return 0;
-}
-
-void ANGLEPlatformImpl_updateTraceEventDuration(
-    PlatformMethods* platform,
-    const unsigned char* category_group_enabled,
-    const char* name,
-    TraceEventHandle) {
-  TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION(category_group_enabled, name);
 }
 
 void ANGLEPlatformImpl_histogramCustomCounts(PlatformMethods* platform,
@@ -196,9 +128,6 @@ bool InitializePlatform(EGLDisplay display,
                           &platformMethods))
     return false;
   platformMethods->currentTime = ANGLEPlatformImpl_currentTime;
-  platformMethods->addTraceEvent = ANGLEPlatformImpl_addTraceEvent;
-  platformMethods->getTraceCategoryEnabledFlag =
-      ANGLEPlatformImpl_getTraceCategoryEnabledFlag;
   platformMethods->histogramBoolean = ANGLEPlatformImpl_histogramBoolean;
   platformMethods->histogramCustomCounts =
       ANGLEPlatformImpl_histogramCustomCounts;
@@ -209,8 +138,6 @@ bool InitializePlatform(EGLDisplay display,
   platformMethods->logWarning = ANGLEPlatformImpl_logWarning;
   platformMethods->monotonicallyIncreasingTime =
       ANGLEPlatformImpl_monotonicallyIncreasingTime;
-  platformMethods->updateTraceEventDuration =
-      ANGLEPlatformImpl_updateTraceEventDuration;
   platformMethods->recordShaderCacheUse =
       ANGLEPlatformImpl_recordShaderCacheUse;
 

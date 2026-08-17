@@ -6,7 +6,7 @@
 #define UI_GL_ANGLE_PLATFORM_IMPL_H_
 
 // Implements the ANGLE platform interface, for functionality like
-// histograms and trace profiling.
+// histograms and worker tasks.
 
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_export.h"
