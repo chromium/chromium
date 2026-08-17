@@ -323,6 +323,7 @@ public class SettingsPageTest {
     }
 
     /** Regression test for https://crbug.com/546419920. */
+    // TODO(crbug.com/547889541): Disabled on android-12l-landscape bots due to viewport height.
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)

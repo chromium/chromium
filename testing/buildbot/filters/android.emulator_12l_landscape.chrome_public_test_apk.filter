@@ -9,3 +9,5 @@
 -org.chromium.chrome.browser.webapps.WebappNavigationTest.testCloseButtonReturnsToUrlBeforeRedirects
 -org.chromium.chrome.browser.webapps.WebappNavigationTest.testOffScopeNewTabLinkShowsToolbar
 -org.chromium.chrome.browser.webapps.WebappNavigationTest.testOpenInChromeFromContextMenuTabbedChrome
+# crbug.com/547889541
+-org.chromium.chrome.browser.settings.SettingsPageTest.testAutofillAndPasswordsHighlighting
