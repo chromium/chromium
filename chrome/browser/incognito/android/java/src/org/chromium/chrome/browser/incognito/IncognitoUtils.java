@@ -16,6 +16,8 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -36,7 +38,7 @@ public class IncognitoUtils {
     // Test emulators run as ~8" or ~9" tablets. We need a lower threshold of 8.0" to allow tests to
     // execute incognito multi-window flows without being blocked by the 10.0" production limit.
     private static final double LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES_FOR_TEST = 8.0;
-    private static @Nullable Boolean sIsEnabledForTesting;
+    private static @TriState int sIsEnabledForTesting;
     private static @Nullable Boolean sShouldOpenIncognitoAsWindowForTesting;
 
     private IncognitoUtils() {}
@@ -46,8 +48,8 @@ public class IncognitoUtils {
      * @return Whether incognito mode is enabled.
      */
     public static boolean isIncognitoModeEnabled(Profile profile) {
-        if (sIsEnabledForTesting != null) {
-            return sIsEnabledForTesting;
+        if (sIsEnabledForTesting != TriState.NOT_SET) {
+            return sIsEnabledForTesting == TriState.TRUE;
         }
         return IncognitoUtilsJni.get().getIncognitoModeEnabled(profile);
     }
@@ -95,9 +97,9 @@ public class IncognitoUtils {
         return profile.getProfileKey();
     }
 
-    public static void setEnabledForTesting(Boolean enabled) {
-        sIsEnabledForTesting = enabled;
-        ResettersForTesting.register(() -> sIsEnabledForTesting = null);
+    public static void setEnabledForTesting(boolean enabled) {
+        sIsEnabledForTesting = TriStateUtils.from(enabled);
+        ResettersForTesting.register(() -> sIsEnabledForTesting = TriState.NOT_SET);
     }
 
     /**

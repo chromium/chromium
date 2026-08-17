@@ -28,6 +28,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:tristate_java",
     "//build/android:build_java",
     "//chrome/android/features/tab_ui/public:java",
     "//chrome/browser//device:java",
@@ -95,6 +96,7 @@ android_library("incognito_java_tests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:tristate_java",
     "//base/test:public_transit_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
@@ -153,6 +155,7 @@ robolectric_library("incognito_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:tristate_java",
     "//chrome/android:chrome_java",
     "//chrome/android/features/tab_ui/public:java",
     "//chrome/browser/android/lifecycle:java",
@@ -187,6 +190,7 @@ android_library("incognito_utils_java") {
   srcjar_deps = [ ":jni_headers" ]
   deps = [
     "//base:base_java",
+    "//base:tristate_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/util:java",
