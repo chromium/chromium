@@ -686,7 +686,8 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, ShowHideAIPopup) {
 // one.
 IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, TabAIButton) {
   const char kCheckForceFocusRing[] =
-      "(el) => el.classList.contains('force-focus-ring')";
+      "(el) => "
+      "el.shadowRoot.querySelector('#button').hasAttribute('force-focus-ring')";
 
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),

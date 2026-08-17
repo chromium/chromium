@@ -10,5 +10,6 @@
 :host {
   display: flex;
   align-items: center;
-  gap: var(--location-bar-child-internal-spacing);
+  /* Matches LocationBarView::kBetweenIconSpacing (8px) natively. */
+  gap: 8px;
 }

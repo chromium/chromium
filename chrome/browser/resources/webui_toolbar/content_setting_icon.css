@@ -29,6 +29,22 @@
   --explanatory-text-width: 200px;
 }
 
+/* In native Views, ContentSettingImageView and PageActionIconView both inherit
+ * from IconLabelBubbleView and share the exact same geometric bounds. */
+#chip {
+  --toolbar-chip-height: calc(
+      var(--location-bar-trailing-icon-size) +
+      var(--location-bar-page-action-icon-padding-top) +
+      var(--location-bar-page-action-icon-padding-bottom));
+  --toolbar-chip-icon-size: var(--location-bar-trailing-icon-size);
+  --toolbar-chip-padding-start: calc(
+      var(--location-bar-page-action-icon-padding-start) +
+      var(--location-bar-icon-interior-padding-start));
+  --toolbar-chip-padding-end: calc(
+      var(--location-bar-page-action-icon-padding-end) +
+      var(--location-bar-icon-interior-padding-end));
+}
+
 #icon {
   height: var(--icon-size);
   width: var(--icon-size);

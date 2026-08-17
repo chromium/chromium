@@ -29,10 +29,12 @@
       var(--location-bar-page-action-icon-padding-top) +
       var(--location-bar-page-action-icon-padding-bottom));
   --toolbar-chip-icon-size: var(--location-bar-trailing-icon-size);
-  --toolbar-chip-padding-start:
-      var(--location-bar-page-action-icon-padding-start);
-  --toolbar-chip-padding-end:
-      var(--location-bar-page-action-icon-padding-end);
+  --toolbar-chip-padding-start: calc(
+      var(--location-bar-page-action-icon-padding-start) +
+      var(--location-bar-icon-interior-padding-start));
+  --toolbar-chip-padding-end: calc(
+      var(--location-bar-page-action-icon-padding-end) +
+      var(--location-bar-icon-interior-padding-end));
   /* The 4px manually mirrors the SetExpandedLabelAdditionalInsets(4, 8) gap
    * added dynamically in Native C++ PageActionView::PageActionView(). */
   --toolbar-chip-icon-label-gap:
@@ -48,17 +50,4 @@
   line-height: var(--omnibox-primary-body-3-emphasis-line-height, inherit);
   text-overflow: clip;
   white-space: nowrap;
-}
-
-:host(.force-focus-ring) #button {
-  box-shadow: inset 0 0 0 2px var(--cr-icon-button-focus-outline-color,
-      var(--cr-focus-outline-color));
-}
-
-@media (forced-colors: active) {
-  :host(.force-focus-ring) #button {
-    /* Use outline instead of box-shadow (which does not work) in Windows
-       HCM. */
-    outline: var(--cr-focus-outline-hcm);
-  }
 }

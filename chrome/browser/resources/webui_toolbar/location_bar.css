@@ -103,11 +103,10 @@
 
 permission-dashboard {
   flex-shrink: 0;
-  /* TODO(qingxinwu): 5px and 8px match 'icon_left' and 'text_left'
-   * in LocationBarView::Layout(). Move these to layout_constants.cc and expose
-   * them via CSS variables */
-  margin-inline-end: 8px;
+  /* Mirrors identically to 'icon_left' (5) and 'text_left' (8) mathematically
+   * processed from internal LocationBarView::Layout(). */
   margin-inline-start: calc(5px - var(--border-radius));
+  margin-inline-end: 8px;
 }
 
 permission-dashboard:not([visible]) {
@@ -138,4 +137,12 @@ location-icon {
 selected-keyword {
   flex-shrink: 1;
   max-width: 50%; /* See kLeadingDecorationMaxFraction */
+}
+
+content-settings-icons {
+  /* Matches kContentSettingIntraItemPadding in LocationBarView.
+   * Because native trailing decorations are evaluated as a flat array, the gap
+   * between the right-most Content Setting icon and the adjacent Page Actions
+   * container is naturally treated by C++ as an intra-item gap. */
+  margin-inline-end: 8px;
 }

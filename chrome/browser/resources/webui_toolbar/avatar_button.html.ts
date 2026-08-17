@@ -13,6 +13,7 @@ export function getHtml(this: AvatarButtonElement) {
 <toolbar-chip-button id="button"
     class="${this.getButtonClass_()}"
     ?has-label="${!!this.state.text}"
+    ?outset-focus-ring="${!!this.state.text}"
     ?disabled="${!this.state.enabled}"
     ?has-border="${this.shouldPaintBorder()}"
     ?has-linear-gradient-ring="${this.state.hasLinearGradientRing}"

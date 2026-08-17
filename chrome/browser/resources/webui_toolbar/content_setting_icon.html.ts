@@ -10,7 +10,8 @@ export function getHtml(this: ContentSettingIconElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <!-- TODO: crbug.com/489109708 - Fix anchor highlights. -->
-<toolbar-chip-button id="chip"
+<toolbar-chip-button outset-focus-ring id="chip"
+    .buttonTabIndex="${0}"
     ?has-label="${Boolean(this.state.explanatoryString)}"
     .tooltip="${this.state.tooltip}" .ariaLabel="${this.getAriaLabel_()}"
     @click="${this.onClick_}" @auxclick="${this.onAuxclick_}"

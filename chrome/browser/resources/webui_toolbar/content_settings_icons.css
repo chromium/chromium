@@ -10,7 +10,6 @@
 :host {
   display: flex;
   align-items: center;
-  /* TODO: crbug.com/509570166 - Check if spacing shouldn't change in touch
-   *                             mode. */
-  gap: var(--location-bar-child-internal-spacing);
+  /* Matches kContentSettingIntraItemPadding in LocationBarView. */
+  gap: 8px;
 }

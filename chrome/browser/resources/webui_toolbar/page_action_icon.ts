@@ -43,7 +43,9 @@ export class PageActionIconElement extends CrLitElement {
     return {
       state: {type: Object},
 
-      // Draw a focus ring as if focused.
+      // Draw a focus ring as if focused (e.g., the AI mode chip when the user
+      // tabs through the Omnibox suggestions, keeping real focus in the text
+      // field).
       forceFocusRing: {type: Boolean},
     };
   }
@@ -63,6 +65,10 @@ export class PageActionIconElement extends CrLitElement {
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
+  override focus() {
+    this.$.button.focus();
+  }
+
   protected shouldShowLabel_(): boolean {
     return this.state.shouldShowChip && !!this.state.text;
   }
@@ -75,7 +81,7 @@ export class PageActionIconElement extends CrLitElement {
   override updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
     if (changedProperties.has('forceFocusRing')) {
-      this.classList.toggle('force-focus-ring', this.forceFocusRing);
+      this.$.button.toggleAttribute('force-focus-ring', this.forceFocusRing);
     }
     if (changedProperties.has('state')) {
       const oldState = changedProperties.get('state');

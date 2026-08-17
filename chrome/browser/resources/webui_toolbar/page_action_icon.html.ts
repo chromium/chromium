@@ -10,7 +10,8 @@ import type {PageActionIconElement} from './page_action_icon.js';
 export function getHtml(this: PageActionIconElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<toolbar-chip-button id="button"
+<toolbar-chip-button outset-focus-ring id="button"
+    .buttonTabIndex="${0}"
     ?animates-label="${this.shouldAnimate_()}"
     ?has-label="${this.shouldShowLabel_()}"
     .tooltip="${this.state.tooltipText}"

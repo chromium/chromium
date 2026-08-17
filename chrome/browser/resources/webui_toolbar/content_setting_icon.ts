@@ -52,6 +52,10 @@ export class ContentSettingIconElement extends CrLitElement {
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
+  override focus() {
+    this.$.chip.focus();
+  }
+
   protected getIconUrl_(): string {
     const iconType = this.state.type;
     const blocked = this.state.isBlocked;

@@ -57,10 +57,21 @@ export class ToolbarChipButtonElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      // Draws the focus ring outwards from the button boundary (2px gap, 2px
+      // ring) instead of universally inset. Used by inner-Omnibox chips like
+      // Page Actions.
+      outsetFocusRing: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'outset-focus-ring',
+      },
       animatesLabel: {
         type: Boolean,
         reflect: true,
         attribute: 'animates-label',
+      },
+      buttonTabIndex: {
+        type: Number,
       },
     };
   }
@@ -88,6 +99,9 @@ export class ToolbarChipButtonElement extends CrLitElement {
    * when the chip transitions between states).
    */
   accessor animatesLabel: boolean = false;
+  // Draws an outward-expanding focus ring instead of an inset focus ring.
+  accessor outsetFocusRing: boolean = false;
+  accessor buttonTabIndex: number = -1;
 
   override focus() {
     this.$.button.focus();
