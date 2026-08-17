@@ -1501,6 +1501,69 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   }
 }
 
+// Removing an ancestor of the remembered mouse target promotes the remembered
+// target to the closest surviving view above the removed subtree.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       PromotesMouseTargetPastUnregisteredAncestor) {
+  ChildViewState parent = MakeChildView(view_root_.get());
+  ChildViewState ancestor = MakeChildView(parent.view.get());
+  ChildViewState target = MakeChildView(ancestor.view.get());
+
+  blink::WebMouseEvent mouse_move(
+      blink::WebInputEvent::Type::kMouseMove,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  view_root_->SetHittestResult(target.view.get(), false);
+  rwhier()->RouteMouseEvent(view_root_.get(), &mouse_move, ui::LatencyInfo());
+  ASSERT_EQ(target.view.get(), rwhier()->GetLastMouseMoveTargetForTest());
+
+  rwhier()->RemoveFrameSinkIdOwner(ancestor.view->GetFrameSinkId());
+  EXPECT_EQ(parent.view.get(), rwhier()->GetLastMouseMoveTargetForTest());
+  EXPECT_EQ(view_root_.get(), rwhier()->GetLastMouseMoveRootViewForTest());
+
+  rwhier()->RemoveFrameSinkIdOwner(target.view->GetFrameSinkId());
+  EXPECT_EQ(parent.view.get(), rwhier()->GetLastMouseMoveTargetForTest());
+  EXPECT_EQ(view_root_.get(), rwhier()->GetLastMouseMoveRootViewForTest());
+
+  rwhier()->RemoveFrameSinkIdOwner(parent.view->GetFrameSinkId());
+  EXPECT_EQ(view_root_.get(), rwhier()->GetLastMouseMoveTargetForTest());
+  EXPECT_EQ(view_root_.get(), rwhier()->GetLastMouseMoveRootViewForTest());
+
+  rwhier()->RemoveFrameSinkIdOwner(view_root_->GetFrameSinkId());
+  EXPECT_EQ(nullptr, rwhier()->GetLastMouseMoveTargetForTest());
+  EXPECT_EQ(nullptr, rwhier()->GetLastMouseMoveRootViewForTest());
+}
+
+// A physical parent may already be unregistered even though it remains in the
+// view tree. It must not become the remembered target.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       DoesNotPromoteMouseTargetToUnregisteredParent) {
+  ChildViewState parent = MakeChildView(view_root_.get());
+  ChildViewState ancestor = MakeChildView(parent.view.get());
+  ChildViewState target = MakeChildView(ancestor.view.get());
+
+  blink::WebMouseEvent mouse_move(
+      blink::WebInputEvent::Type::kMouseMove,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  view_root_->SetHittestResult(target.view.get(), false);
+  rwhier()->RouteMouseEvent(view_root_.get(), &mouse_move, ui::LatencyInfo());
+  ASSERT_EQ(target.view.get(), rwhier()->GetLastMouseMoveTargetForTest());
+
+  rwhier()->RemoveFrameSinkIdOwner(parent.view->GetFrameSinkId());
+  ASSERT_EQ(view_root_.get(), rwhier()->GetLastMouseMoveTargetForTest());
+
+  // Simulate a stale hit test recaching the descendant after its ancestor has
+  // unregistered.
+  rwhier()->RouteMouseEvent(view_root_.get(), &mouse_move, ui::LatencyInfo());
+  ASSERT_EQ(target.view.get(), rwhier()->GetLastMouseMoveTargetForTest());
+
+  rwhier()->RemoveFrameSinkIdOwner(ancestor.view->GetFrameSinkId());
+
+  EXPECT_EQ(nullptr, rwhier()->GetLastMouseMoveTargetForTest());
+  EXPECT_EQ(nullptr, rwhier()->GetLastMouseMoveRootViewForTest());
+}
+
 // Calling ShowContextMenuAtPoint without other events will happen when desktop
 // devtools connect to a browser instance running on a mobile.  It should not
 // crash.

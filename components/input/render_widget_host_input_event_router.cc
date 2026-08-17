@@ -419,26 +419,23 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewInputDestroyed(
     bubbling_gesture_scroll_origin_ = nullptr;
   }
 
+  // The remembered target depends on its ancestor chain. If a non-root view in
+  // that path stops being observed, promote its registered parent to be the
+  // new target. Clear the path if the root or no registered parent remains.
   if (view == last_mouse_move_root_view_) {
     last_mouse_move_target_ = nullptr;
     last_mouse_move_root_view_ = nullptr;
-  }
-
-  if (view == last_mouse_move_target_) {
-    // When a child iframe is destroyed, consider its parent to be to be the
-    // most recent target, if possible. In some cases the parent might already
-    // have been destroyed, in which case the last target is cleared.
-    if (view != last_mouse_move_root_view_) {
-      last_mouse_move_target_ = last_mouse_move_target_->GetParentViewInput();
+  } else if (view == last_mouse_move_target_ ||
+             (last_mouse_move_target_ &&
+              RenderWidgetHostViewInput::IsAncestorView(
+                  last_mouse_move_target_, view, last_mouse_move_root_view_))) {
+    auto* parent = view->GetParentViewInput();
+    if (IsViewInMap(parent)) {
+      last_mouse_move_target_ = parent;
     } else {
       last_mouse_move_target_ = nullptr;
-    }
-
-    // If both target and root are the view being destroyed, or the parent
-    // has already been destroyed, then also clear the root view pointer
-    // along with the target pointer.
-    if (!last_mouse_move_target_)
       last_mouse_move_root_view_ = nullptr;
+    }
   }
 
   if (view == last_fling_start_target_)
