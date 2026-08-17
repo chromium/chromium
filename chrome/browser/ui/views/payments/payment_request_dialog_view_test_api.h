@@ -42,6 +42,8 @@ class PaymentRequestDialogViewTestApi {
     return view_->loading_view_overlay_;
   }
 
+  void RemoveLoadingView() { view_->RemoveLoadingView(); }
+
  private:
   const raw_ref<PaymentRequestDialogView> view_;
 };

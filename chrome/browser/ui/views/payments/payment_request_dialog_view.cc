@@ -98,7 +98,7 @@ base::WeakPtr<PaymentRequestDialogView> PaymentRequestDialogView::Create(
 void PaymentRequestDialogView::RequestFocus() {
   if (loading_view_overlay_ && loading_view_overlay_->GetVisible()) {
     loading_view_overlay_->RequestFocus();
-  } else {
+  } else if (view_stack_) {
     view_stack_->RequestFocus();
   }
 }
@@ -125,7 +125,7 @@ void PaymentRequestDialogView::OnDialogClosed() {
   for (const auto& controller : controller_map_) {
     controller.second->Stop();
   }
-  RemoveChildViewT(view_stack_.get());
+  RemoveChildViewT(std::exchange(view_stack_, nullptr));
   controller_map_.clear();
   if (request_) {
     request_->OnUserCancelled();
@@ -625,8 +625,12 @@ void PaymentRequestDialogView::RemoveLoadingView() {
       loading_view_shown_time_ = base::TimeTicks();
     }
     RemoveChildViewT(std::exchange(loading_view_overlay_, nullptr));
-    view_stack_->SetVisible(true);
-    RequestFocus();
+    // RemoveLoadingView() can be invoked after OnDialogClosed(), so view_stack_
+    // might have already been destroyed.
+    if (view_stack_) {
+      view_stack_->SetVisible(true);
+      RequestFocus();
+    }
     if (observer_for_testing_) {
       observer_for_testing_->OnLoadingViewHidden();
     }
