@@ -66,11 +66,6 @@ _Unwind_Reason_Code TraceStackFrame(_Unwind_Context* context, void* arg) {
 }
 #endif  // !UNWIND_WITH_FRAME_POINTERS
 
-bool EndsWith(const std::string& s, const std::string& suffix) {
-  return s.size() >= suffix.size() &&
-         s.substr(s.size() - suffix.size(), suffix.size()) == suffix;
-}
-
 }  // namespace
 
 namespace base {
@@ -165,7 +160,7 @@ void StackTrace::OutputToStreamWithPrefixImpl(
 
     if (iter != regions.end()) {
       *os << base::StringPrintf("%s", iter->path.c_str());
-      if (EndsWith(iter->path, ".apk")) {
+      if (iter->path.ends_with(".apk")) {
         *os << base::StringPrintf(" (offset 0x%llx)", iter->offset);
       }
     } else {

@@ -919,8 +919,7 @@ class SandboxSymbolizeHelper {
           // Skip pseudo-paths, like [stack], [vdso], [heap], etc ...
           continue;
         }
-        if (base::EndsWith(region.path, " (deleted)",
-                           base::CompareCase::SENSITIVE)) {
+        if (region.path.ends_with(" (deleted)")) {
           // Skip deleted files.
           continue;
         }
