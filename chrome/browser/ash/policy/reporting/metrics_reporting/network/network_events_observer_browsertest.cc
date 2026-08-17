@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
@@ -19,7 +19,10 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "chromeos/services/network_health/public/mojom/network_health_types.mojom.h"
@@ -69,6 +72,34 @@ Record GetNextRecord(::chromeos::MissiveClientTestObserver* observer,
   return record;
 }
 
+class WifiDeviceReadyWaiter : public ::ash::NetworkStateHandlerObserver {
+ public:
+  explicit WifiDeviceReadyWaiter(
+      ::ash::NetworkStateHandler* network_state_handler) {
+    network_state_handler_observation_.Observe(network_state_handler);
+  }
+
+  ~WifiDeviceReadyWaiter() override = default;
+
+  bool Wait() { return ready_.Wait(); }
+
+ private:
+  void DeviceListChanged() override { SignalIfReady(); }
+
+  void SignalIfReady() {
+    if (ready_.IsReady() ||
+        !network_state_handler_observation_.GetSource()->GetDeviceState(
+            kWifiDevicePath)) {
+      return;
+    }
+    ready_.SetValue();
+  }
+
+  base::test::TestFuture<void> ready_;
+  ::ash::NetworkStateHandlerScopedObservation
+      network_state_handler_observation_{this};
+};
+
 class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
  protected:
   NetworkEventsBrowserTest() {
@@ -98,8 +129,14 @@ class NetworkEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
     network_handler_test_helper_->AddDefaultProfiles();
     network_handler_test_helper_->ResetDevicesAndServices();
     auto* const device_client = network_handler_test_helper_->device_test();
-    device_client->AddDevice(kWifiDevicePath, shill::kTypeWifi, "wifi0");
-    base::RunLoop().RunUntilIdle();
+    // Service setup requires the device properties to have reached the network
+    // model.
+    {
+      WifiDeviceReadyWaiter waiter(
+          ::ash::NetworkHandler::Get()->network_state_handler());
+      device_client->AddDevice(kWifiDevicePath, shill::kTypeWifi, "wifi0");
+      ASSERT_TRUE(waiter.Wait());
+    }
     auto* const service_client = network_handler_test_helper_->service_test();
     service_client->AddService(kWifiServicePath, kWifiGuid, "wifi-name",
                                shill::kTypeWifi, shill::kStateOnline, true);
