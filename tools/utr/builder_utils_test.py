@@ -12,7 +12,6 @@ import builder_utils
 
 
 class BuilderUtilsTests(unittest.TestCase):
-
   @mock.patch('builder_utils.gn_helpers.ReadArgsGN')
   def testReadExplicitGnArgs(self, mock_read_args):
     mock_read_args.return_value = {'some_arg': 'some_val'}
@@ -50,16 +49,16 @@ class BuilderUtilsTests(unittest.TestCase):
 
     # Case 2: GN args present
     mock_read_args.return_value = {
-        'target_os': 'android',
-        'target_cpu': 'arm64'
+      'target_os': 'android',
+      'target_cpu': 'arm64',
     }
     builder = builder_utils.guess_builder('/some/dir')
     self.assertEqual(builder, ('ci', 'android-14-arm64-rel'))
 
     # Case 3: Unknown combo
     mock_read_args.return_value = {
-        'target_os': 'unknown',
-        'target_cpu': 'unknown'
+      'target_os': 'unknown',
+      'target_cpu': 'unknown',
     }
     builder = builder_utils.guess_builder('/some/dir')
     self.assertIsNone(builder)

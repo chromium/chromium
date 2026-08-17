@@ -27,5 +27,6 @@ def AugmentOptionsForLoadingMetrics(tbm_options):
   cat_filter.AddDisabledByDefault('disabled-by-default-network')
 
   tbm_options.ExtendTimelineBasedMetric(
-      ['loadingMetric', 'coreWebVitalsMetric'])
+    ['loadingMetric', 'coreWebVitalsMetric']
+  )
   return tbm_options

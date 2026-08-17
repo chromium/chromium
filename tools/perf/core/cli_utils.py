@@ -35,10 +35,10 @@ def DaysAgoToTimestamp(num_days):
 def MergeIndexRanges(section_list):
   """Given a list of (begin, end) ranges, return the merged ranges.
 
-    Args:
-      range_list: a list of index ranges as (begin, end)
-    Return:
-      a list of merged index ranges.
+  Args:
+    range_list: a list of index ranges as (begin, end)
+  Return:
+    a list of merged index ranges.
   """
   actions = []
   for section in section_list:

@@ -11,16 +11,19 @@ class BackdropFilterPage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
   TAGS = [story_tags.BACKDROP_FILTER]
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedPageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedPageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(BackdropFilterPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(BackdropFilterPage, self).RunNavigateSteps(action_runner)

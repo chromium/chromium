@@ -20,7 +20,7 @@ from telemetry import story as story_module
 
 # The import error below is mysterious: it produces no detailed error message,
 # while appending a proper sys.path does not help.
-from devil.android.sdk import intent # pylint: disable=import-error
+from devil.android.sdk import intent  # pylint: disable=import-error
 
 # Chrome Startup Benchmarks for mobile devices (running Android).
 #
@@ -71,8 +71,8 @@ from devil.android.sdk import intent # pylint: disable=import-error
 _NUMBER_OF_ITERATIONS = 10
 _MAX_BATTERY_TEMP = 32
 
-class _MobileStartupSharedState(story_module.SharedState):
 
+class _MobileStartupSharedState(story_module.SharedState):
   def __init__(self, test, finder_options, story_set, possible_browser=None):
     """
     Args:
@@ -81,7 +81,8 @@ class _MobileStartupSharedState(story_module.SharedState):
       story_set: opaquely passed to parent class constructor.
     """
     super(_MobileStartupSharedState, self).__init__(
-        test, finder_options, story_set, possible_browser)
+      test, finder_options, story_set, possible_browser
+    )
     self._finder_options = finder_options
     if not self._possible_browser:
       self._possible_browser = browser_finder.FindBrowser(self._finder_options)
@@ -90,16 +91,21 @@ class _MobileStartupSharedState(story_module.SharedState):
     assert isinstance(self.platform, android_platform.AndroidPlatform)
     self._finder_options.browser_options.browser_user_agent_type = 'mobile'
     self._finder_options.browser_options.AppendExtraBrowserArgs(
-        '--skip-webapk-verification')
+      '--skip-webapk-verification'
+    )
     self.platform.Initialize()
     self.platform.SetPerformanceMode(finder_options.performance_mode)
-    self._perf_mode_set = (finder_options.performance_mode !=
-                           android_device.KEEP_PERFORMANCE_MODE)
-    webapk = core_util.FindLatestApkOnHost(finder_options.chrome_root,
-                                           'WebApk.apk')
+    self._perf_mode_set = (
+      finder_options.performance_mode != android_device.KEEP_PERFORMANCE_MODE
+    )
+    webapk = core_util.FindLatestApkOnHost(
+      finder_options.chrome_root, 'WebApk.apk'
+    )
     if not webapk:
-      raise Exception('WebApk not found! Follow the Mini-HOWTO in '
-                      'startup_mobile.py' + finder_options.chrome_root)
+      raise Exception(
+        'WebApk not found! Follow the Mini-HOWTO in '
+        'startup_mobile.py' + finder_options.chrome_root
+      )
     self.platform.InstallApplication(webapk)
     wpr_mode = wpr_modes.WPR_REPLAY
     self._number_of_iterations = _NUMBER_OF_ITERATIONS
@@ -131,11 +137,14 @@ class _MobileStartupSharedState(story_module.SharedState):
       self._possible_browser.FlushOsPageCaches()
     self.platform.WaitForBatteryTemperature(_MAX_BATTERY_TEMP)
     self.platform.StartActivity(
-        intent.Intent(package=self._possible_browser.settings.package,
-                      activity=self._possible_browser.settings.activity,
-                      data=url,
-                      action='android.intent.action.VIEW'),
-        blocking=True)
+      intent.Intent(
+        package=self._possible_browser.settings.package,
+        activity=self._possible_browser.settings.activity,
+        data=url,
+        action='android.intent.action.VIEW',
+      ),
+      blocking=True,
+    )
 
   def LaunchCCT(self, url):
     self.platform.FlushDnsCache()
@@ -145,23 +154,30 @@ class _MobileStartupSharedState(story_module.SharedState):
     # Note: The presence of the extra.SESSION extra defines a CCT intent.
     cct_extras = {'android.support.customtabs.extra.SESSION': None}
     self.platform.StartActivity(
-        intent.Intent(package=self._possible_browser.settings.package,
-                      activity=self._possible_browser.settings.activity,
-                      data=url, extras=cct_extras,
-                      action='android.intent.action.VIEW'),
-        blocking=True)
+      intent.Intent(
+        package=self._possible_browser.settings.package,
+        activity=self._possible_browser.settings.activity,
+        data=url,
+        extras=cct_extras,
+        action='android.intent.action.VIEW',
+      ),
+      blocking=True,
+    )
 
   def LaunchMobilePwa(self):
     # Launches a bound webapk. The APK should be installed by the shared state
     # constructor. Upon launch, Chrome extracts the icon and the URL from the
     # APK.
     self.platform.WaitForBatteryTemperature(_MAX_BATTERY_TEMP)
-    self.platform.StartActivity(intent.Intent(
+    self.platform.StartActivity(
+      intent.Intent(
         package='org.chromium.webapk',
         activity='org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity',
         category='android.intent.category.LAUNCHER',
-        action='android.intent.action.MAIN'),
-                                blocking=True)
+        action='android.intent.action.MAIN',
+      ),
+      blocking=True,
+    )
 
   @contextlib.contextmanager
   def FindBrowser(self):
@@ -175,8 +191,10 @@ class _MobileStartupSharedState(story_module.SharedState):
       yield browser
     except Exception as exc:
       logging.critical(
-          '%s raised during story run. Dumping current browser state to help'
-          ' diagnose this issue.', type(exc).__name__)
+        '%s raised during story run. Dumping current browser state to help'
+        ' diagnose this issue.',
+        type(exc).__name__,
+      )
       browser.DumpStateUponFailure()
       raise
     finally:
@@ -184,11 +202,13 @@ class _MobileStartupSharedState(story_module.SharedState):
 
   def WillRunStory(self, story):
     self.platform.network_controller.StartReplay(
-        self._story_set.WprFilePathForStory(story))
+      self._story_set.WprFilePathForStory(story)
+    )
     # Note: There is no need in StopReplay(), the |network_controller| will do
     # it on Close().
     self._possible_browser.SetUpEnvironment(
-        self._finder_options.browser_options)
+      self._finder_options.browser_options
+    )
     self._current_story = story
 
   def RunStory(self, _):
@@ -220,7 +240,8 @@ def _DriveMobileStartupWithIntent(shared_state, flush_caches):
 class _MobileStartupWithIntentStory(story_module.Story):
   def __init__(self):
     super(_MobileStartupWithIntentStory, self).__init__(
-        _MobileStartupSharedState, name='intent:coldish:bbc')
+      _MobileStartupSharedState, name='intent:coldish:bbc'
+    )
 
   def Run(self, shared_state):
     _DriveMobileStartupWithIntent(shared_state, flush_caches=True)
@@ -229,7 +250,8 @@ class _MobileStartupWithIntentStory(story_module.Story):
 class _MobileStartupWithIntentStoryWarm(story_module.Story):
   def __init__(self):
     super(_MobileStartupWithIntentStoryWarm, self).__init__(
-        _MobileStartupSharedState, name='intent:warm:bbc')
+      _MobileStartupSharedState, name='intent:warm:bbc'
+    )
 
   def Run(self, shared_state):
     _DriveMobileStartupWithIntent(shared_state, flush_caches=False)
@@ -238,7 +260,8 @@ class _MobileStartupWithIntentStoryWarm(story_module.Story):
 class _MobileStartupWithCctIntentStory(story_module.Story):
   def __init__(self):
     super(_MobileStartupWithCctIntentStory, self).__init__(
-        _MobileStartupSharedState, name='cct:coldish:bbc')
+      _MobileStartupSharedState, name='cct:coldish:bbc'
+    )
 
   def Run(self, shared_state):
     for _ in range(shared_state.number_of_iterations):
@@ -250,9 +273,9 @@ class _MobileStartupWithCctIntentStory(story_module.Story):
 
 class _MobilePwaStartupStory(story_module.Story):
   def __init__(self):
-    super(_MobilePwaStartupStory,
-          self).__init__(_MobileStartupSharedState,
-                         name='mobile_pwa:with_http_cache')
+    super(_MobilePwaStartupStory, self).__init__(
+      _MobileStartupSharedState, name='mobile_pwa:with_http_cache'
+    )
 
   def Run(self, shared_state):
     for _ in range(shared_state.number_of_iterations):
@@ -266,16 +289,19 @@ class _MobilePwaStartupStory(story_module.Story):
 class _MobileStartupStorySet(story_module.StorySet):
   def __init__(self):
     super(_MobileStartupStorySet, self).__init__(
-          archive_data_file='../page_sets/data/startup_pages.json',
-          cloud_storage_bucket=story_module.PARTNER_BUCKET)
+      archive_data_file='../page_sets/data/startup_pages.json',
+      cloud_storage_bucket=story_module.PARTNER_BUCKET,
+    )
     self.AddStory(_MobileStartupWithIntentStory())
     self.AddStory(_MobileStartupWithIntentStoryWarm())
     self.AddStory(_MobileStartupWithCctIntentStory())
     self.AddStory(_MobilePwaStartupStory())
 
 
-@benchmark.Info(emails=['pasko@chromium.org', 'lizeb@chromium.org'],
-                component='Speed>Metrics>SystemHealthRegressions')
+@benchmark.Info(
+  emails=['pasko@chromium.org', 'lizeb@chromium.org'],
+  component='Speed>Metrics>SystemHealthRegressions',
+)
 class MobileStartupBenchmark(perf_benchmark.PerfBenchmark):
   """Startup benchmark for Chrome on Android."""
 
@@ -286,15 +312,20 @@ class MobileStartupBenchmark(perf_benchmark.PerfBenchmark):
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
-        filter_string=('navigation,loading,net,netlog,network,offline_pages,'
-                'startup,toplevel,Java,EarlyJava'))
+      filter_string=(
+        'navigation,loading,net,netlog,network,offline_pages,'
+        'startup,toplevel,Java,EarlyJava'
+      )
+    )
 
     options = timeline_based_measurement.Options(cat_filter)
     options.config.enable_chrome_trace = True
-    options.SetTimelineBasedMetrics([
+    options.SetTimelineBasedMetrics(
+      [
         'tracingMetric',
         'androidStartupMetric',
-    ])
+      ]
+    )
     return options
 
   def CreateStorySet(self, options):
@@ -309,4 +340,5 @@ class MobileStartupBenchmark(perf_benchmark.PerfBenchmark):
     # Force online state for the offline indicator so it doesn't show and affect
     # the benchmarks on bots, which are offline by default.
     options.AppendExtraBrowserArgs(
-        '--force-online-connection-state-for-indicator')
+      '--force-online-connection-state-for-indicator'
+    )

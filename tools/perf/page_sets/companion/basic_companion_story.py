@@ -4,12 +4,23 @@
 import json
 import subprocess
 from page_sets.desktop_ui.multitab_story import MultiTabStory
-from page_sets.desktop_ui.ui_devtools_utils import ClickOn, InputText, \
-    PressKey, SHIFT_DOWN
-from page_sets.companion.browser_element_identifiers import \
-    kToolbarSidePanelButtonElementId, kSidePanelComboboxElementId
-from page_sets.companion.histograms import _CQ, _PROMO_EVENT, _SEARCH_BOX, \
-    _STARTUP, _ZERO_STATE
+from page_sets.desktop_ui.ui_devtools_utils import (
+  ClickOn,
+  InputText,
+  PressKey,
+  SHIFT_DOWN,
+)
+from page_sets.companion.browser_element_identifiers import (
+  kToolbarSidePanelButtonElementId,
+  kSidePanelComboboxElementId,
+)
+from page_sets.companion.histograms import (
+  _CQ,
+  _PROMO_EVENT,
+  _SEARCH_BOX,
+  _STARTUP,
+  _ZERO_STATE,
+)
 from page_sets.login_helpers import google_login
 from page_sets.data.companion_test_sites import SITES
 
@@ -24,6 +35,7 @@ _COMPANION_URL = "https://lens.google.com/companion?pli=1"
 
 class CompanionStory(MultiTabStory):
   """Base class for companion stories"""
+
   URL_LIST = [_TEST_SEARCH_URL]
   URL = URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = True
@@ -40,8 +52,9 @@ class CompanionStory(MultiTabStory):
 
   def OpenCompanion(self, action_runner):
     self.ToggleSidePanel(action_runner)
-    combobox_node_id = self._devtools.QueryNodes("id:%s" %
-                                                 kSidePanelComboboxElementId)[0]
+    combobox_node_id = self._devtools.QueryNodes(
+      "id:%s" % kSidePanelComboboxElementId
+    )[0]
     PressKey(self._devtools, combobox_node_id, " ")
     action_runner.Wait(1)
     window_node_id = self._devtools.QueryNodes("<Window>")[0]
@@ -58,23 +71,27 @@ class CompanionStory(MultiTabStory):
     histogram = self.FetchHistogram(action_runner, _STARTUP)
     assert histogram["count"] == 1
 
-  def ConductHistogramCheck(self,
-                            action_runner,
-                            histogram_name,
-                            expected_empty=False,
-                            expected_count=None):
+  def ConductHistogramCheck(
+    self,
+    action_runner,
+    histogram_name,
+    expected_empty=False,
+    expected_count=None,
+  ):
     histogram = self.FetchHistogram(action_runner, histogram_name)
     if expected_empty:
-      assert not histogram, "expected non-existent %s histogram, got %s" % \
-          (histogram_name, histogram)
+      assert not histogram, "expected non-existent %s histogram, got %s" % (
+        histogram_name,
+        histogram,
+      )
     else:
       assert histogram, "%s histogram is non-existent" % histogram_name
 
     if expected_count:
-      assert histogram['count'] == expected_count, \
-          "Expected %s, got %s for histogram %s" % (expected_count,
-                                                     histogram['count'],
-                                                     histogram_name)
+      assert histogram['count'] == expected_count, (
+        "Expected %s, got %s for histogram %s"
+        % (expected_count, histogram['count'], histogram_name)
+      )
 
   def FetchHistogram(self, action_runner, name):
     js = "statsCollectionController.getBrowserHistogram('%s');" % name

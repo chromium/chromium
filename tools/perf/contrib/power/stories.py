@@ -29,12 +29,14 @@ class _FakeIntervalSamplingProfiler:
 
 
 class _SharedState(SharedState):
-  """SharedState that mimics SharedPageState but runs several stories in one go.
+  """SharedState that mimics SharedPageState but runs several stories in
+  one go.
   """
 
   def __init__(self, test, finder_options, story_set, possible_browser):
-    super(_SharedState, self).__init__(test, finder_options, story_set,
-                                       possible_browser)
+    super(_SharedState, self).__init__(
+      test, finder_options, story_set, possible_browser
+    )
 
     self._current_story = None
     self._finder_options = finder_options
@@ -63,7 +65,8 @@ class _SharedState(SharedState):
 
     if browser_options.assert_gpu_compositing:
       gpu_compositing_checker.AssertGpuCompositingEnabled(
-          self._browser.GetSystemInfo())
+        self._browser.GetSystemInfo()
+      )
 
   def _StopBrowser(self):
     if self._browser:
@@ -90,9 +93,11 @@ class _SharedState(SharedState):
 
   def WillRunWrappedStory(self, story):
     archive_path = story.story_set.WprFilePathForStory(
-        story, self.platform.GetOSName())
+      story, self.platform.GetOSName()
+    )
     self.platform.network_controller.StartReplay(
-        archive_path, story.make_javascript_deterministic, self._extra_wpr_args)
+      archive_path, story.make_javascript_deterministic, self._extra_wpr_args
+    )
 
     self.browser.Foreground()
 
@@ -100,10 +105,10 @@ class _SharedState(SharedState):
       if len(self.browser.tabs) == 0:
         self.browser.tabs.New()
       else:
-        # Close all tabs between stories
+        # Close all tabs between stories
         while len(self.browser.tabs) > 1:
           self.browser.tabs[-1].Close()
-        # Close the last tab and open a new one for the next story
+        # Close the last tab and open a new one for the next story
         self.browser.tabs[-1].Close(keep_one=True)
 
       # Must wait for tab to commit otherwise it can commit after the next
@@ -125,7 +130,8 @@ class _SharedState(SharedState):
     self._current_story = story
     print('[  WPR     ] Downloading Archives for stories')
     story.wrapped_page_set.wpr_archive_info.DownloadArchivesIfNeeded(
-        story_names=[s.name for s in story.wrapped_page_set.stories])
+      story_names=[s.name for s in story.wrapped_page_set.stories]
+    )
 
   def DidRunStory(self, results):
     self._current_story = None
@@ -147,8 +153,9 @@ class _SharedState(SharedState):
 
 class StoryWrapper(Story):
   def __init__(self, page_set, name):
-    super(StoryWrapper, self).__init__(shared_state_class=_SharedState,
-                                       name=name)
+    super(StoryWrapper, self).__init__(
+      shared_state_class=_SharedState, name=name
+    )
 
     for s in page_set.stories:
       if len(s.extra_browser_args) != 0:
@@ -161,17 +168,22 @@ class StoryWrapper(Story):
   def Run(self, shared_state):
     total = len(self._page_set.stories)
     for i, s in enumerate(self._page_set.stories):
-      print('[  STORY   ] {i}/{total} {name}'.format(i=i + 1,
-                                                     total=total,
-                                                     name=s.name))
+      print(
+        '[  STORY   ] {i}/{total} {name}'.format(
+          i=i + 1, total=total, name=s.name
+        )
+      )
       try:
         shared_state.WillRunWrappedStory(s)
         s.Run(shared_state)
         shared_state.DidRunWrappedStory(s)
       except page_action.PageActionNotSupported:
         pass
-      except (exceptions.TimeoutException, exceptions.LoginException,
-              py_utils.TimeoutException):
+      except (
+        exceptions.TimeoutException,
+        exceptions.LoginException,
+        py_utils.TimeoutException,
+      ):
         print('[  ERROR   ] {name}'.format(name=s.name))
 
   @property
@@ -180,7 +192,7 @@ class StoryWrapper(Story):
 
 
 class StorySetWrapper(StorySet):
-  """ Wraps multiple Stories into one.
+  """Wraps multiple Stories into one.
 
   Wraps an existing StorySet with multiple Stories into a new StorySet with just
   one Story that runs all original Stories in one go.
@@ -200,5 +212,7 @@ class StorySetWrapper(StorySet):
 
 
 def GetAllMobileSystemHealthStories():
-  return StorySetWrapper(page_sets.SystemHealthStorySet(platform='mobile'),
-                         'contrib_power_mobile_system_health')
+  return StorySetWrapper(
+    page_sets.SystemHealthStorySet(platform='mobile'),
+    'contrib_power_mobile_system_health',
+  )

@@ -16,9 +16,11 @@ import page_sets
 from benchmarks import press
 
 
-@benchmark.Info(emails=['vahl@chromium.org', 'mlippautz@chromium.org'],
-                component='Blink>JavaScript')
-class Octane(press._PressBenchmark): # pylint: disable=protected-access
+@benchmark.Info(
+  emails=['vahl@chromium.org', 'mlippautz@chromium.org'],
+  component='Blink>JavaScript',
+)
+class Octane(press._PressBenchmark):  # pylint: disable=protected-access
   """Google's Octane JavaScript benchmark.
 
   http://chromium.github.io/octane/index.html?auto=1

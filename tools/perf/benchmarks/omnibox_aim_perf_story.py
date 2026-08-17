@@ -11,11 +11,16 @@ from telemetry.timeline import chrome_trace_category_filter
 from telemetry.web_perf import timeline_based_measurement
 
 from page_sets.desktop_ui import omnibox_story
-from page_sets.desktop_ui.ui_devtools_utils import (ClickOn, PressKey,
-                                                    PLATFORM_ACCELERATOR,
-                                                    InputText)
+from page_sets.desktop_ui.ui_devtools_utils import (
+  ClickOn,
+  PressKey,
+  PLATFORM_ACCELERATOR,
+  InputText,
+)
 from page_sets.desktop_ui.browser_element_identifiers import (
-    kAiModePageActionIconElementId, kOmniboxElementId)
+  kAiModePageActionIconElementId,
+  kOmniboxElementId,
+)
 
 import py_utils
 
@@ -29,37 +34,37 @@ AI_MODE_INPUT_ELEMENT_FUNCTION = '''
 '''
 
 WEB_CONTENTS_UMA = [
-    'EventLatency.FirstGestureScrollUpdate.TotalLatency2',
-    'EventLatency.GestureScrollUpdate.TotalLatency2',
-    'Memory.GPU.PeakMemoryUsage2.Scroll',
-    'Memory.GPU.PeakMemoryUsage2.PageLoad',
-    'Graphics.Smoothness.PercentDroppedFrames3.AllAnimations',
-    'Graphics.Smoothness.PercentDroppedFrames3.AllInteractions',
-    'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
-    'Graphics.Smoothness.PercentDroppedFrames4.AllAnimations',
-    'Graphics.Smoothness.PercentDroppedFrames4.AllInteractions',
-    'Graphics.Smoothness.PercentDroppedFrames4.AllSequences',
-    'Omnibox.Popup.WebUI.ConstructionToFirstShownDuration',
-    'Omnibox.Popup.WebUI.CrashRecovery',
-    'Omnibox.Popup.WebUI.PageRemoteIsBoundOnFirstCall',
-    'Omnibox.Popup.WebUI.ShowToPaint.Duration',
-    'Omnibox.Popup.WebUI.ShowToPaint.Duration.FirstShow',
-    'Omnibox.Popup.WebUI.ContentReady.Duration',
-    'Omnibox.Popup.WebUI.ContentReady.Duration.FirstShow',
-    'Omnibox.Popup.WebUI.ContentReady.FromTimeout',
-    'Omnibox.Popup.WebUI.ContentReady.FromTimeout.FirstShow',
-    'Omnibox.Popup.WebUI.RendererProcessGoneStatus',
-    'Omnibox.Popup.WebUI.ResultChangedToRepaintLatency.ToPaint',
-    'Omnibox.Popup.Aim.ConstructionToFirstShownDuration',
-    'Omnibox.Popup.Aim.CrashRecovery',
-    'Omnibox.Popup.Aim.ShowToPaint.Duration',
-    'Omnibox.Popup.Aim.ShowToPaint.Duration.FirstShow',
-    'Omnibox.Popup.Aim.ContentReady.Duration',
-    'Omnibox.Popup.Aim.ContentReady.Duration.FirstShow',
-    'Omnibox.Popup.Aim.ContentReady.FromTimeout',
-    'Omnibox.Popup.Aim.ContentReady.FromTimeout.FirstShow',
-    'Omnibox.Popup.Aim.RendererProcessGoneStatus',
-    'Omnibox.WebUI.CharTypedToRepaintLatency.ToPaint',
+  'EventLatency.FirstGestureScrollUpdate.TotalLatency2',
+  'EventLatency.GestureScrollUpdate.TotalLatency2',
+  'Memory.GPU.PeakMemoryUsage2.Scroll',
+  'Memory.GPU.PeakMemoryUsage2.PageLoad',
+  'Graphics.Smoothness.PercentDroppedFrames3.AllAnimations',
+  'Graphics.Smoothness.PercentDroppedFrames3.AllInteractions',
+  'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
+  'Graphics.Smoothness.PercentDroppedFrames4.AllAnimations',
+  'Graphics.Smoothness.PercentDroppedFrames4.AllInteractions',
+  'Graphics.Smoothness.PercentDroppedFrames4.AllSequences',
+  'Omnibox.Popup.WebUI.ConstructionToFirstShownDuration',
+  'Omnibox.Popup.WebUI.CrashRecovery',
+  'Omnibox.Popup.WebUI.PageRemoteIsBoundOnFirstCall',
+  'Omnibox.Popup.WebUI.ShowToPaint.Duration',
+  'Omnibox.Popup.WebUI.ShowToPaint.Duration.FirstShow',
+  'Omnibox.Popup.WebUI.ContentReady.Duration',
+  'Omnibox.Popup.WebUI.ContentReady.Duration.FirstShow',
+  'Omnibox.Popup.WebUI.ContentReady.FromTimeout',
+  'Omnibox.Popup.WebUI.ContentReady.FromTimeout.FirstShow',
+  'Omnibox.Popup.WebUI.RendererProcessGoneStatus',
+  'Omnibox.Popup.WebUI.ResultChangedToRepaintLatency.ToPaint',
+  'Omnibox.Popup.Aim.ConstructionToFirstShownDuration',
+  'Omnibox.Popup.Aim.CrashRecovery',
+  'Omnibox.Popup.Aim.ShowToPaint.Duration',
+  'Omnibox.Popup.Aim.ShowToPaint.Duration.FirstShow',
+  'Omnibox.Popup.Aim.ContentReady.Duration',
+  'Omnibox.Popup.Aim.ContentReady.Duration.FirstShow',
+  'Omnibox.Popup.Aim.ContentReady.FromTimeout',
+  'Omnibox.Popup.Aim.ContentReady.FromTimeout.FirstShow',
+  'Omnibox.Popup.Aim.RendererProcessGoneStatus',
+  'Omnibox.WebUI.CharTypedToRepaintLatency.ToPaint',
 ]
 
 
@@ -81,8 +86,9 @@ class OmniboxAIModePopupStory(omnibox_story.OmniboxStory):
     node_id = self.GetOmniboxNodeID()
     PressKey(self._devtools, node_id, 'Home')
     PressKey(self._devtools, node_id, 'A', PLATFORM_ACCELERATOR)
-    InputText(self._devtools, node_id,
-              'Entering some text to exercise the metrics')
+    InputText(
+      self._devtools, node_id, 'Entering some text to exercise the metrics'
+    )
 
     # Clear the omnibox by selecting all and backspacing.
     PressKey(self._devtools, node_id, 'Home')
@@ -111,29 +117,37 @@ class OmniboxAIModePopupStory(omnibox_story.OmniboxStory):
       raise Exception('Could not find AIMode popup context')
 
     popup_inspector_backend = inspector_backend.InspectorBackend(
-        browser_backend.devtools_client, popup_context)
-    popup_tab = tab_module.Tab(popup_inspector_backend,
-                               browser_backend.tab_list_backend, browser)
+      browser_backend.devtools_client, popup_context
+    )
+    popup_tab = tab_module.Tab(
+      popup_inspector_backend, browser_backend.tab_list_backend, browser
+    )
     popup_action_runner = popup_tab.action_runner
 
     # Tap the input field in the popup to focus it.
     popup_action_runner.TapElement(
-        element_function=AI_MODE_INPUT_ELEMENT_FUNCTION)
+      element_function=AI_MODE_INPUT_ELEMENT_FUNCTION
+    )
 
     # Enter text into the input field in the popup.
     popup_action_runner.EnterText(text='why is there air?')
 
 
 @benchmark.Info(
-    emails=[
-        'kylixrd@chromium.org', 'mahmadi@chromium.org', "avivkiss@chromium.org"
-    ],
-    component='UI>Browser>Omnibox',
-    documentation_url=
-    'https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/desktop_ui.md'
+  emails=[
+    'kylixrd@chromium.org',
+    'mahmadi@chromium.org',
+    "avivkiss@chromium.org",
+  ],
+  component='UI>Browser>Omnibox',
+  documentation_url=(
+    'https://chromium.googlesource.com/chromium/src/+/main/docs/speed/'
+    'benchmark/harnesses/desktop_ui.md'
+  ),
 )
 class OmniboxPerf(perf_benchmark.PerfBenchmark):
   """Measures the performance of omnibox interactions."""
+
   PLATFORM = 'desktop'
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
   # Do not schedule benchmark at this time.
@@ -141,14 +155,16 @@ class OmniboxPerf(perf_benchmark.PerfBenchmark):
 
   def CreateStorySet(self, options):
     story_set = story.story_set.StorySet(
-        archive_data_file='../data/desktop_ui.json',
-        cloud_storage_bucket=story.PARTNER_BUCKET)
+      archive_data_file='../data/desktop_ui.json',
+      cloud_storage_bucket=story.PARTNER_BUCKET,
+    )
     story_set.AddStory(OmniboxAIModePopupStory(story_set))
     return story_set
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     category_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
-        filter_string='uma,disabled-by-default-histogram_samples')
+      filter_string='uma,disabled-by-default-histogram_samples'
+    )
     options = timeline_based_measurement.Options(category_filter)
     options.SetTimelineBasedMetrics(['umaMetric', 'tbmv3:uma_metrics'])
     return options
@@ -158,13 +174,15 @@ class OmniboxPerf(perf_benchmark.PerfBenchmark):
     options.AppendExtraBrowserArgs('--disable-field-trial-config')
     self.RemoveExtraBrowserArgWithValues(options, '--enable-field-trial-config')
     options.AppendExtraBrowserArgs(
-        '--enable-features=ui-debug-tools-enable-synthetic-events,'
-        'WebUIOmniboxPopup,'
-        'WebUIOmniboxAimPopup:AddContextButtonVariant/below_results,'
-        'AiModeOmniboxEntryPoint')
+      '--enable-features=ui-debug-tools-enable-synthetic-events,'
+      'WebUIOmniboxPopup,'
+      'WebUIOmniboxAimPopup:AddContextButtonVariant/below_results,'
+      'AiModeOmniboxEntryPoint'
+    )
     options.AppendExtraBrowserArgs(
-        '--disable-features=AimServerEligibilityEnabled,'
-        'AimFuseboxEligibilityCheckEnabled')
+      '--disable-features=AimServerEligibilityEnabled,'
+      'AimFuseboxEligibilityCheckEnabled'
+    )
 
   @classmethod
   def Name(cls):

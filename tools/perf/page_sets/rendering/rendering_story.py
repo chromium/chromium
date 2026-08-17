@@ -29,38 +29,41 @@ class RenderingStory(page.Page, metaclass=_MetaRenderingStory):
   URL = NotImplemented
   ABSTRACT_STORY = True
   SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
-  TAGS =[]
+  TAGS = []
   PLATFORM_SPECIFIC = False
   YEAR = None
   DISABLE_TRACING = False
   EXTRA_BROWSER_ARGUMENTS = None
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class,
-               name_suffix='',
-               extra_browser_args=None,
-               make_javascript_deterministic=True,
-               base_dir=None,
-               perform_final_navigation=True):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class,
+    name_suffix='',
+    extra_browser_args=None,
+    make_javascript_deterministic=True,
+    base_dir=None,
+    perform_final_navigation=True,
+  ):
     tags = []
     for t in self.TAGS:
       assert t in story_tags.ALL_TAGS
       tags.append(t.name)
     name = self.BASE_NAME + name_suffix
     if self.YEAR:
-      name += ('_' + self.YEAR)
+      name += '_' + self.YEAR
     super(RenderingStory, self).__init__(
-        page_set=page_set,
-        name=name,
-        url=self.URL,
-        tags=tags,
-        platform_specific=self.PLATFORM_SPECIFIC,
-        shared_page_state_class=shared_page_state_class,
-        extra_browser_args=extra_browser_args,
-        make_javascript_deterministic=make_javascript_deterministic,
-        base_dir=base_dir,
-        perform_final_navigation=perform_final_navigation)
+      page_set=page_set,
+      name=name,
+      url=self.URL,
+      tags=tags,
+      platform_specific=self.PLATFORM_SPECIFIC,
+      shared_page_state_class=shared_page_state_class,
+      extra_browser_args=extra_browser_args,
+      make_javascript_deterministic=make_javascript_deterministic,
+      base_dir=base_dir,
+      perform_final_navigation=perform_final_navigation,
+    )
 
   def WillStartTracing(self, chrome_trace_config):
     chrome_trace_config.category_filter.AddIncludedCategory('benchmark')

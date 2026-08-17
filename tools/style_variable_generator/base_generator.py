@@ -14,14 +14,16 @@ from style_variable_generator.model import Model, Modes, VariableType
 
 _FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 
-_JSON5_PATH = os.path.join(_FILE_PATH, os.pardir, os.pardir, 'third_party',
-                           'pyjson5', 'src')
+_JSON5_PATH = os.path.join(
+    _FILE_PATH, os.pardir, os.pardir, 'third_party', 'pyjson5', 'src'
+)
 sys.path.insert(1, _JSON5_PATH)
 import json5
 
 _JINJA2_PATH = os.path.join(_FILE_PATH, os.pardir, os.pardir, 'third_party')
 sys.path.insert(1, _JINJA2_PATH)
 import jinja2
+
 
 class BaseGenerator:
     '''A generic style variable generator.
@@ -49,7 +51,6 @@ class BaseGenerator:
         # ./README.md for each generators list of options.
         self.generator_options = {}
 
-
     # If true, will attempt to resolve all blend() colors to the RGBA values at
     # compile time. Note that json5 files can specify "preblend" to override
     # this setting for specific files.
@@ -60,8 +61,7 @@ class BaseGenerator:
         return sorted(self.in_file_to_context.keys())
 
     def AddJSONFilesToModel(self, paths):
-        '''Adds one or more JSON files to the model.
-        '''
+        '''Adds one or more JSON files to the model.'''
         for path in paths:
             try:
                 with open(path, 'r') as f:
@@ -80,8 +80,9 @@ class BaseGenerator:
         '''
         # TODO(calamity): Add allow_duplicate_keys=False once pyjson5 is
         # rolled.
-        data = json5.loads(json_string,
-                           object_pairs_hook=collections.OrderedDict)
+        data = json5.loads(
+            json_string, object_pairs_hook=collections.OrderedDict
+        )
 
         context = data.get('options', {})
         context['token_namespace'] = data.get('token_namespace', '')
@@ -110,16 +111,19 @@ class BaseGenerator:
 
         for group_name, value_obj in data.get('untyped_css', {}).items():
             for var_name, value in value_obj.items():
-                self.model.Add(VariableType.UNTYPED_CSS, var_name, value,
-                               context)
+                self.model.Add(
+                    VariableType.UNTYPED_CSS, var_name, value, context
+                )
 
     def ApplyTemplate(self, style_generator, path_to_template, params):
         loader_root_dir = path_overrides.GetFileSystemLoaderRootDirectory()
         jinja_env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(loader_root_dir),
-            keep_trailing_newline=True)
+            keep_trailing_newline=True,
+        )
         jinja_env.globals.update(style_generator.GetGlobals())
         jinja_env.filters.update(style_generator.GetFilters())
         template = jinja_env.get_template(
-            path_overrides.GetPathToTemplate(path_to_template))
+            path_overrides.GetPathToTemplate(path_to_template)
+        )
         return template.render(params)

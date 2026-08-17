@@ -18,13 +18,15 @@ _WAIT_TIME_AFTER_LOAD = 10
 
 class _SystemHealthSharedState(shared_page_state.SharedPageState):
   """Shared state which enables disabling stories on individual platforms.
-     This should be used only to disable the stories permanently. For
-     disabling stories temporarily use story expectations in ./expectations.py.
+  This should be used only to disable the stories permanently. For
+  disabling stories temporarily use story expectations in ./expectations.py.
   """
 
   def CanRunOnBrowser(self, browser_info, page):
-    if (browser_info.browser_type.startswith('android-webview')
-        and page.WEBVIEW_NOT_SUPPORTED):
+    if (
+      browser_info.browser_type.startswith('android-webview')
+      and page.WEBVIEW_NOT_SUPPORTED
+    ):
       return False
 
     if page.TAGS and story_tags.WEBGL in page.TAGS:
@@ -63,8 +65,9 @@ class SystemHealthStory(page_module.Page, metaclass=_MetaSystemHealthStory):
   WEBVIEW_NOT_SUPPORTED = False
   HEAVY_PAGE = False  # True to allow longer runtimes.
 
-  def __init__(self, story_set, take_memory_measurement,
-      extra_browser_args=None):
+  def __init__(
+    self, story_set, take_memory_measurement, extra_browser_args=None
+  ):
     case, group, _ = self.NAME.split(':', 2)
     tags = []
     found_year_tag = False
@@ -74,17 +77,23 @@ class SystemHealthStory(page_module.Page, metaclass=_MetaSystemHealthStory):
       if t in story_tags.YEAR_TAGS:
         # Assert that this is the first year tag.
         assert not found_year_tag, (
-            "%s has more than one year tag found." % self.__class__.__name__)
+          "%s has more than one year tag found." % self.__class__.__name__
+        )
         found_year_tag = True
     # Assert that there is one year tag.
     assert found_year_tag, (
-        "%s needs exactly one year tag." % self.__class__.__name__)
+      "%s needs exactly one year tag." % self.__class__.__name__
+    )
     super(SystemHealthStory, self).__init__(
-        shared_page_state_class=_SystemHealthSharedState,
-        page_set=story_set, name=self.NAME, url=self.URL, tags=tags,
-        grouping_keys={'case': case, 'group': group},
-        platform_specific=self.PLATFORM_SPECIFIC,
-        extra_browser_args=extra_browser_args)
+      shared_page_state_class=_SystemHealthSharedState,
+      page_set=story_set,
+      name=self.NAME,
+      url=self.URL,
+      tags=tags,
+      grouping_keys={'case': case, 'group': group},
+      platform_specific=self.PLATFORM_SPECIFIC,
+      extra_browser_args=extra_browser_args,
+    )
     self._take_memory_measurement = take_memory_measurement
 
   @classmethod
@@ -95,7 +104,7 @@ class SystemHealthStory(page_module.Page, metaclass=_MetaSystemHealthStory):
 
   @classmethod
   def GenerateStoryDescription(cls):
-    """ Subclasses of SystemHealthStory can override this to auto generate
+    """Subclasses of SystemHealthStory can override this to auto generate
     their story description.
     However, it's recommended to use the Python docstring to describe the user
     stories instead and this should only be used for very repetitive cases.
@@ -105,8 +114,9 @@ class SystemHealthStory(page_module.Page, metaclass=_MetaSystemHealthStory):
   def _Measure(self, action_runner):
     if self._take_memory_measurement:
       action_runner.MeasureMemory(
-          deterministic_mode=True,
-          timeout_in_seconds=300 if self.HEAVY_PAGE else 60)
+        deterministic_mode=True,
+        timeout_in_seconds=300 if self.HEAVY_PAGE else 60,
+      )
     else:
       action_runner.Wait(_WAIT_TIME_AFTER_LOAD)
 

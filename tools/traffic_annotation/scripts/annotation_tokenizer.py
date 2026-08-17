@@ -18,21 +18,20 @@ import textwrap
 # 'string_literal' (i.e., R"(...)" would be misinterpreted as the symbol 'R',
 # followed by a string with parentheses in it).
 TOKEN_REGEXEN = [
-    # Comma for separating args.
-    ('comma', re.compile(r'(,)')),
-    # Java text blocks (must come before string_literal).
-    ('text_block', re.compile(r'"""\n(.*?)"""', re.DOTALL)),
-    # String literal. "string" or R"(string)". In Java, this will incorrectly
-    # accept R-strings, which aren't part of the language's syntax. But since
-    # that wouldn't compile anyways, we can just ignore this issue.
-    ('string_literal', re.compile(r'"((?:\\.|[^"])*?)"|R"\((.*?)\)"',
-                                  re.DOTALL)),
-    # C++ or Java identifier.
-    ('symbol', re.compile(r'([a-zA-Z_][a-zA-Z_0-9]*)')),
-    # Left parenthesis.
-    ('left_paren', re.compile(r'(\()')),
-    # Right parenthesis.
-    ('right_paren', re.compile(r'(\))')),
+  # Comma for separating args.
+  ('comma', re.compile(r'(,)')),
+  # Java text blocks (must come before string_literal).
+  ('text_block', re.compile(r'"""\n(.*?)"""', re.DOTALL)),
+  # String literal. "string" or R"(string)". In Java, this will incorrectly
+  # accept R-strings, which aren't part of the language's syntax. But since
+  # that wouldn't compile anyways, we can just ignore this issue.
+  ('string_literal', re.compile(r'"((?:\\.|[^"])*?)"|R"\((.*?)\)"', re.DOTALL)),
+  # C++ or Java identifier.
+  ('symbol', re.compile(r'([a-zA-Z_][a-zA-Z_0-9]*)')),
+  # Left parenthesis.
+  ('left_paren', re.compile(r'(\()')),
+  # Right parenthesis.
+  ('right_paren', re.compile(r'(\))')),
 ]
 
 # Number of characters to include in the context (for error reporting).
@@ -54,9 +53,10 @@ class SourceCodeParsingError(Exception):
   """An error during C++ or Java parsing/tokenizing."""
 
   def __init__(self, expected_type, body, pos, file_path, line_number):
-    context = body[pos:pos + CONTEXT_LENGTH]
-    msg = ("Expected {} in annotation definition at {}:{}.\n" +
-           "near '{}'").format(expected_type, file_path, line_number, context)
+    context = body[pos : pos + CONTEXT_LENGTH]
+    msg = (
+      "Expected {} in annotation definition at {}:{}.\n" + "near '{}'"
+    ).format(expected_type, file_path, line_number, context)
     Exception.__init__(self, msg)
 
 
@@ -79,8 +79,9 @@ class Tokenizer:
       return
     # Skip whitespace to make the error message more useful.
     pos = self._skip_whitespace()
-    raise SourceCodeParsingError(expected_type, self.body, pos, self.file_path,
-                                 self.line_number)
+    raise SourceCodeParsingError(
+      expected_type, self.body, pos, self.file_path, self.line_number
+    )
 
   def _skip_whitespace(self):
     """Return the position of the first non-whitespace character from here."""
@@ -95,7 +96,7 @@ class Tokenizer:
     # Find the token here, if there's one.
     token = None
 
-    for (token_type, regex) in TOKEN_REGEXEN:
+    for token_type, regex in TOKEN_REGEXEN:
       re_match = regex.match(self.body, pos)
       if re_match:
         raw_token = re_match.group(0)

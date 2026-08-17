@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Utility to package and upload the USB gadget framework.
-"""
+"""Utility to package and upload the USB gadget framework."""
 
 import argparse
 import hashlib
@@ -49,44 +48,50 @@ def MakeZip(directory=None, files=None, mtime=(2022, 11, 11, 11, 11, 11)):
 
 
 def EncodeBody(filename, buf):
-  return b'\r\n'.join([
+  return b'\r\n'.join(
+    [
       b'--foo',
-      b'Content-Disposition: form-data; name="file"; filename="%s"' %
-      filename,
+      b'Content-Disposition: form-data; name="file"; filename="%s"' % filename,
       b'Content-Type: application/octet-stream',
       b'',
       buf,
       b'--foo--',
-      b''
-  ])
+      b'',
+    ]
+  )
 
 
 def UploadZip(content, md5, host):
   filename = b'usb_gadget-%s.zip' % md5.encode('utf-8')
-  req = Request(url='http://{}/update'.format(host),
-                data=EncodeBody(filename, content))
+  req = Request(
+    url='http://{}/update'.format(host), data=EncodeBody(filename, content)
+  )
   req.add_header('Content-Type', 'multipart/form-data; boundary=foo')
   urlopen(req)
 
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Package (and upload) the USB gadget framework.')
+    description='Package (and upload) the USB gadget framework.'
+  )
   parser.add_argument(
-      '--dir', type=str, metavar='DIR',
-      help='package all Python files from DIR')
+    '--dir', type=str, metavar='DIR', help='package all Python files from DIR'
+  )
   parser.add_argument(
-      '--zip-file', type=str, metavar='FILE',
-      help='save package as FILE')
+    '--zip-file', type=str, metavar='FILE', help='save package as FILE'
+  )
   parser.add_argument(
-      '--hash-file', type=str, metavar='FILE',
-      help='save package hash as FILE')
+    '--hash-file', type=str, metavar='FILE', help='save package hash as FILE'
+  )
   parser.add_argument(
-      '--upload', type=str, metavar='HOST[:PORT]',
-      help='upload package to target system')
+    '--upload',
+    type=str,
+    metavar='HOST[:PORT]',
+    help='upload package to target system',
+  )
   parser.add_argument(
-      'files', metavar='FILE', type=str, nargs='*',
-      help='source files')
+    'files', metavar='FILE', type=str, nargs='*', help='source files'
+  )
 
   args = parser.parse_args()
 

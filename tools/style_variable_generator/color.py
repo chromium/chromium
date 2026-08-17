@@ -10,8 +10,7 @@ from abc import ABC, abstractmethod
 
 
 def split_args(arg_str):
-    '''Splits a string of args by comma, taking into account brackets.
-    '''
+    '''Splits a string of args by comma, taking into account brackets.'''
     num_unmatched = 0
     prev_index = 0
     for i, c in enumerate(arg_str):
@@ -19,7 +18,7 @@ def split_args(arg_str):
             num_unmatched += 1
         elif c == ')':
             num_unmatched -= 1
-            if (num_unmatched < 0):
+            if num_unmatched < 0:
                 raise ValueError('too many ")"')
         elif c == ',' and num_unmatched == 0:
             yield arg_str[prev_index:i].strip()
@@ -64,8 +63,9 @@ def ParseColor(value):
         if len(value) != 6:
             raise ValueError('Expected #RRGGBB')
 
-        return ColorRGB([int(x, 16) for x in textwrap.wrap(value, 2)],
-                        Opacity(1))
+        return ColorRGB(
+            [int(x, 16) for x in textwrap.wrap(value, 2)], Opacity(1)
+        )
 
     def ParseRGB(value):
         match = re.match(r'^rgb\((.*)\)$', value)
@@ -97,8 +97,10 @@ def ParseColor(value):
         if len(values) == 4:
             return ColorRGB([int(x) for x in values[0:3]], Opacity(values[3]))
 
-        raise ValueError('rgba() expected to have either'
-                         '1 reference + alpha, or 3 ints + alpha')
+        raise ValueError(
+            'rgba() expected to have either'
+            '1 reference + alpha, or 3 ints + alpha'
+        )
 
     def ParseBlend(value):
         match = re.match(r'^blend\((.*)\)$', value)
@@ -112,8 +114,9 @@ def ParseColor(value):
         elif len(values) == 3:
             # blend(color1, blendPercentage%, color2)
             blendPercentage = int(re.match(r'(\d+)%', values[1]).group(1))
-            return ColorBlend([ParseColor(values[0]),
-                               ParseColor(values[2])], blendPercentage)
+            return ColorBlend(
+                [ParseColor(values[0]), ParseColor(values[2])], blendPercentage
+            )
 
         raise ValueError('Unexpected number of arguments for blend()')
 
@@ -131,7 +134,8 @@ def ParseColor(value):
 
         if value.endswith('.rgb'):
             raise ValueError(
-                'color reference cannot resolve to an rgb reference')
+                'color reference cannot resolve to an rgb reference'
+            )
 
         return ColorVar(var)
 
@@ -215,7 +219,7 @@ class ColorRGBVar(Color):
         self.opacity = opacity
 
     def ToVar(self):
-        assert (self.rgb_var)
+        assert self.rgb_var
         return self.rgb_var.replace('.rgb', '')
 
     def GetFormula(self):
@@ -248,11 +252,13 @@ class ColorBlend(Color):
     blended_colors[1]. The mix percentace is `opacity`. If `opacity` is not
     provided, the mix percentage may be taken from A's opacity.
     '''
+
     def __init__(self, colors=[], blendPercentage=None):
         super().__init__()
         if len(colors) not in [0, 2]:
             raise ValueError(
-                f'Can only color-mix 2 colors. Found: {len(colors)}')
+                f'Can only color-mix 2 colors. Found: {len(colors)}'
+            )
         if not all(isinstance(c, Color) for c in colors):
             raise ValueError(f'Non-Color found in {colors}')
 
@@ -261,11 +267,15 @@ class ColorBlend(Color):
 
     def GetFormula(self):
         if self.blendPercentage is None:
-            return 'blend(%s, %s)' % (self.blended_colors[0].GetFormula(),
-                                      self.blended_colors[1].GetFormula())
-        return 'blend(%s, %s, %s)' % (self.blended_colors[0].GetFormula(),
-                                      self.blendPercentage,
-                                      self.blended_colors[1].GetFormula())
+            return 'blend(%s, %s)' % (
+                self.blended_colors[0].GetFormula(),
+                self.blended_colors[1].GetFormula(),
+            )
+        return 'blend(%s, %s, %s)' % (
+            self.blended_colors[0].GetFormula(),
+            self.blendPercentage,
+            self.blended_colors[1].GetFormula(),
+        )
 
     def __repr__(self):
         return (

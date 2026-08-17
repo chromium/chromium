@@ -38,17 +38,23 @@ class RunTbmv3MetricIntegrationTests(unittest.TestCase):
   def CreateEmptyProtoTrace(self):
     """Create an empty file as a proto trace."""
     with tempfile.NamedTemporaryFile(
-        dir=self.output_dir, delete=False) as trace_file:
+      dir=self.output_dir, delete=False
+    ) as trace_file:
       # Open temp file and close it so it's written to disk.
       pass
     return trace_file.name
 
   def testRunTbmv3MetricOnDummyMetric(self):
-    run_tbmv3_metric.Main([
-        '--trace', self.trace_path,
-        '--metric', 'dummy_metric',
-        '--outfile', self.outfile_path,
-    ])
+    run_tbmv3_metric.Main(
+      [
+        '--trace',
+        self.trace_path,
+        '--metric',
+        'dummy_metric',
+        '--outfile',
+        self.outfile_path,
+      ]
+    )
 
     with open(self.outfile_path) as f:
       results = json.load(f)
@@ -69,11 +75,16 @@ class RunTbmv3MetricIntegrationTests(unittest.TestCase):
     for filename in os.listdir(trace_processor.METRICS_PATH):
       name, ext = os.path.splitext(filename)
       if ext == '.sql':
-        run_tbmv3_metric.Main([
-            '--trace', self.trace_path,
-            '--metric', name,
-            '--outfile', self.outfile_path,
-        ])
+        run_tbmv3_metric.Main(
+          [
+            '--trace',
+            self.trace_path,
+            '--metric',
+            name,
+            '--outfile',
+            self.outfile_path,
+          ]
+        )
 
   def testRunInternalTBMv3Metric(self):
     """Run metric that is compiled into Trace Processor."""
@@ -81,8 +92,13 @@ class RunTbmv3MetricIntegrationTests(unittest.TestCase):
     # annotated. Check only that it doesn't throw errors. 'trace_metadata'
     # metric is relatively unlikely to be removed from Perfetto, but if it
     # is, we will have to pick a different metric.
-    run_tbmv3_metric.Main([
-        '--trace', self.trace_path,
-        '--metric', 'trace_metadata',
-        '--outfile', self.outfile_path,
-    ])
+    run_tbmv3_metric.Main(
+      [
+        '--trace',
+        self.trace_path,
+        '--metric',
+        'trace_metadata',
+        '--outfile',
+        self.outfile_path,
+      ]
+    )

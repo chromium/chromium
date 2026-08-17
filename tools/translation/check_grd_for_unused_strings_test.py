@@ -14,7 +14,6 @@ _GrdParseResult = check_grd_for_unused_strings.GrdParseResult
 
 
 class ParseIdsTest(fake_filesystem_unittest.TestCase):
-
   def setUp(self):
     self.setUpPyfakefs()
 
@@ -89,45 +88,41 @@ class ParseIdsTest(fake_filesystem_unittest.TestCase):
 
 
 class FilterGrdsTest(unittest.TestCase):
-
   def test_filter_grds(self):
     a_path = pathlib.Path('a.grd')
     b_path = pathlib.Path('b.grdp')
     c_path = pathlib.Path('c.grdp')
     results_by_path = {
-        a_path:
-        _GrdParseResult(
-            ids={'IDS_A'},
-            parts={'b.grdp'},
-            generates_runtime_strings=True,
-        ),
-        b_path:
-        _GrdParseResult(ids={'IDS_B'}),
-        c_path:
-        _GrdParseResult(ids={'IDS_C'}),
+      a_path: _GrdParseResult(
+        ids={'IDS_A'},
+        parts={'b.grdp'},
+        generates_runtime_strings=True,
+      ),
+      b_path: _GrdParseResult(ids={'IDS_B'}),
+      c_path: _GrdParseResult(ids={'IDS_C'}),
     }
     filtered = check_grd_for_unused_strings.filter_grds(results_by_path)
-    self.assertEqual({pathlib.Path('c.grdp'): _GrdParseResult(ids={'IDS_C'})},
-                     filtered)
+    self.assertEqual(
+      {pathlib.Path('c.grdp'): _GrdParseResult(ids={'IDS_C'})}, filtered
+    )
 
   def test_filter_grds_recursive(self):
     a_path = pathlib.Path('a.grd')
     b_path = pathlib.Path('b.grdp')
     c_path = pathlib.Path('c.grdp')
     results_by_path = {
-        a_path: _GrdParseResult(
-            parts={'b.grdp'},
-            generates_runtime_strings=True,
-        ),
-        b_path: _GrdParseResult(parts={'c.grdp'}),
-        c_path: _GrdParseResult(ids={'IDS_C'}),
+      a_path: _GrdParseResult(
+        parts={'b.grdp'},
+        generates_runtime_strings=True,
+      ),
+      b_path: _GrdParseResult(parts={'c.grdp'}),
+      c_path: _GrdParseResult(ids={'IDS_C'}),
     }
     filtered = check_grd_for_unused_strings.filter_grds(results_by_path)
     self.assertEqual({}, filtered)
 
 
 class RemoveStringsTest(fake_filesystem_unittest.TestCase):
-
   def setUp(self):
     self.setUpPyfakefs()
 

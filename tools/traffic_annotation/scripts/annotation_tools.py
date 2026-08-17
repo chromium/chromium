@@ -22,7 +22,7 @@ from clang import compile_db  # type: ignore
 SUPPORTED_PLATFORMS = ['android', 'linux', 'windows']
 
 
-class NetworkTrafficAnnotationTools():
+class NetworkTrafficAnnotationTools:
   def __init__(self, build_path=None):
     """Initializes a NetworkTrafficAnnotationTools object.
 
@@ -44,14 +44,15 @@ class NetworkTrafficAnnotationTools():
     # For each platform, map the returned platform name from python sys, to
     # directory name of traffic_annotation_auditor executable.
     host_platform = {
-        'linux': 'linux64',
-        'linux2': 'linux64',
-        'darwin': 'mac',
-        'win32': 'win32',
+      'linux': 'linux64',
+      'linux2': 'linux64',
+      'darwin': 'mac',
+      'win32': 'win32',
     }[sys.platform]
 
-    path = os.path.join(self.this_dir, '..', 'bin', host_platform,
-                        'traffic_annotation_auditor')
+    path = os.path.join(
+      self.this_dir, '..', 'bin', host_platform, 'traffic_annotation_auditor'
+    )
     if sys.platform == 'win32':
       path += '.exe'
 
@@ -71,8 +72,9 @@ class NetworkTrafficAnnotationTools():
     if os.path.exists(out):
       for folder in os.listdir(out):
         candidate = os.path.join(out, folder)
-        if (os.path.isdir(candidate) and
-            self._CheckIfDirectorySeemsAsBuild(candidate)):
+        if os.path.isdir(candidate) and self._CheckIfDirectorySeemsAsBuild(
+          candidate
+        ):
           return candidate
     return None
 
@@ -80,8 +82,10 @@ class NetworkTrafficAnnotationTools():
     """Checks to see if a directory seems to be a compiled build directory by
     searching for 'gen' folder and 'build.ninja' file in it.
     """
-    return all(os.path.exists(
-        os.path.join(path, item)) for item in ('gen', 'build.ninja'))
+    return all(
+      os.path.exists(os.path.join(path, item))
+      for item in ('gen', 'build.ninja')
+    )
 
   def GetCompDBFiles(self, generate_compdb):
     """Gets the list of files.
@@ -102,8 +106,8 @@ class NetworkTrafficAnnotationTools():
 
     compdb = compile_db.Read(self.build_path)
     return set(
-        os.path.abspath(os.path.join(self.build_path, e['file']))
-        for e in compdb)
+      os.path.abspath(os.path.join(self.build_path, e['file'])) for e in compdb
+    )
 
   def GetModifiedFiles(self):
     """Gets the list of modified files from git. Returns None if any error
@@ -127,15 +131,16 @@ class NetworkTrafficAnnotationTools():
 
     # Change directory to src (two levels upper than build path).
     os.chdir(os.path.join(self.build_path, "..", ".."))
-    command = subprocess.Popen(args,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               encoding="utf-8")
+    command = subprocess.Popen(
+      args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding="utf-8"
+    )
     stdout_text, stderr_text = command.communicate()
 
     if stderr_text:
-      print("Could not run '%s' to get the list of changed files "
-            "because: %s" % (" ".join(args), stderr_text))
+      print(
+        "Could not run '%s' to get the list of changed files "
+        "because: %s" % (" ".join(args), stderr_text)
+      )
       os.chdir(original_path)
       return None
 
@@ -167,17 +172,22 @@ class NetworkTrafficAnnotationTools():
       # On Windows, subprocess.Popen without shell=True can't find vpython3
       # unless the .bat extension is specified explicitly.
       command_line = [
-          "vpython3.bat" if sys.platform == "win32" else "vpython3",
-          self.python_auditor_path, "--build-path=" + self.build_path
+        "vpython3.bat" if sys.platform == "win32" else "vpython3",
+        self.python_auditor_path,
+        "--build-path=" + self.build_path,
       ] + args
     else:
-      command_line = [self.auditor_path, "--build-path=" + self.build_path
-                      ] + args
+      command_line = [
+        self.auditor_path,
+        "--build-path=" + self.build_path,
+      ] + args
 
-    command = subprocess.Popen(command_line,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               encoding="utf-8")
+    command = subprocess.Popen(
+      command_line,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+      encoding="utf-8",
+    )
     stdout_text, stderr_text = command.communicate()
     return_code = command.returncode
 

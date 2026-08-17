@@ -20,29 +20,28 @@ import usb_constants
 
 
 class EchoFeature(hid_gadget.HidFeature):
-
   REPORT_DESC = hid_descriptors.ReportDescriptor(
-      hid_descriptors.UsagePage(0xFF00),  # Vendor Defined
+    hid_descriptors.UsagePage(0xFF00),  # Vendor Defined
+    hid_descriptors.Usage(0),
+    hid_descriptors.Collection(
+      hid_constants.CollectionType.APPLICATION,
+      hid_descriptors.LogicalMinimum(0, force_length=1),
+      hid_descriptors.LogicalMaximum(255, force_length=2),
+      hid_descriptors.ReportSize(8),
+      hid_descriptors.ReportCount(8),
       hid_descriptors.Usage(0),
-      hid_descriptors.Collection(
-          hid_constants.CollectionType.APPLICATION,
-          hid_descriptors.LogicalMinimum(0, force_length=1),
-          hid_descriptors.LogicalMaximum(255, force_length=2),
-          hid_descriptors.ReportSize(8),
-          hid_descriptors.ReportCount(8),
-          hid_descriptors.Usage(0),
-          hid_descriptors.Input(hid_descriptors.Data,
-                                hid_descriptors.Variable,
-                                hid_descriptors.Absolute),
-          hid_descriptors.Usage(0),
-          hid_descriptors.Output(hid_descriptors.Data,
-                                 hid_descriptors.Variable,
-                                 hid_descriptors.Absolute),
-          hid_descriptors.Usage(0),
-          hid_descriptors.Feature(hid_descriptors.Data,
-                                  hid_descriptors.Variable,
-                                  hid_descriptors.Absolute)
-      )
+      hid_descriptors.Input(
+        hid_descriptors.Data, hid_descriptors.Variable, hid_descriptors.Absolute
+      ),
+      hid_descriptors.Usage(0),
+      hid_descriptors.Output(
+        hid_descriptors.Data, hid_descriptors.Variable, hid_descriptors.Absolute
+      ),
+      hid_descriptors.Usage(0),
+      hid_descriptors.Feature(
+        hid_descriptors.Data, hid_descriptors.Variable, hid_descriptors.Absolute
+      ),
+    ),
   )
 
   def __init__(self):
@@ -51,17 +50,17 @@ class EchoFeature(hid_gadget.HidFeature):
     self._feature_report = 0
 
   def SetInputReport(self, data):
-    self._input_output_report, = struct.unpack('<Q', data)
+    (self._input_output_report,) = struct.unpack('<Q', data)
     self.SendReport(struct.pack('<Q', self._input_output_report))
     return True
 
   def SetOutputReport(self, data):
-    self._input_output_report, = struct.unpack('<Q', data)
+    (self._input_output_report,) = struct.unpack('<Q', data)
     self.SendReport(struct.pack('<Q', self._input_output_report))
     return True
 
   def SetFeatureReport(self, data):
-    self._feature_report, = struct.unpack('<Q', data)
+    (self._feature_report,) = struct.unpack('<Q', data)
     return True
 
   def GetInputReport(self):
@@ -75,18 +74,18 @@ class EchoFeature(hid_gadget.HidFeature):
 
 
 class EchoGadget(hid_gadget.HidGadget):
-
   def __init__(self):
     self._feature = EchoFeature()
     super(EchoGadget, self).__init__(
-        report_desc=EchoFeature.REPORT_DESC,
-        features={0: self._feature},
-        packet_size=8,
-        interval_ms=1,
-        out_endpoint=True,
-        vendor_id=usb_constants.VendorID.GOOGLE,
-        product_id=usb_constants.ProductID.GOOGLE_HID_ECHO_GADGET,
-        device_version=0x0100)
+      report_desc=EchoFeature.REPORT_DESC,
+      features={0: self._feature},
+      packet_size=8,
+      interval_ms=1,
+      out_endpoint=True,
+      vendor_id=usb_constants.VendorID.GOOGLE,
+      product_id=usb_constants.ProductID.GOOGLE_HID_ECHO_GADGET,
+      device_version=0x0100,
+    )
     self.AddStringDescriptor(1, 'Google Inc.')
     self.AddStringDescriptor(2, 'HID Echo Gadget')
 
@@ -95,11 +94,14 @@ def RegisterHandlers():
   from tornado import web
 
   class WebConfigureHandler(web.RequestHandler):
-
     def post(self):
       server.SwitchGadget(EchoGadget())
 
   import server
-  server.app.add_handlers('.*$', [
+
+  server.app.add_handlers(
+    '.*$',
+    [
       (r'/hid_echo/configure', WebConfigureHandler),
-  ])
+    ],
+  )

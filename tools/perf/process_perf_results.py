@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# pylint: disable=too-many-lines
+
 from __future__ import absolute_import
 from __future__ import print_function
 
@@ -35,7 +37,8 @@ import json_util
 logging.basicConfig(
     level=logging.INFO,
     format='(%(levelname)s) %(asctime)s pid=%(process)d'
-           '  %(module)s.%(funcName)s:%(lineno)d  %(message)s')
+    '  %(module)s.%(funcName)s:%(lineno)d  %(message)s',
+)
 
 path_util.AddAndroidPylibToPath()
 path_util.AddBuildUtilToPath()
@@ -46,15 +49,18 @@ try:
 except ImportError:
   pass
 
-
 RESULTS_URL = 'https://chromeperf.appspot.com'
 
 # Until we are migrated to LUCI, we will be utilizing a hard
 # coded master name based on what is passed in in the build properties.
 # See crbug.com/801289 for more details.
 MACHINE_GROUP_JSON_FILE = os.path.join(
-      path_util.GetChromiumSrcDir(), 'tools', 'perf', 'core',
-      'perf_dashboard_machine_group_mapping.json')
+    path_util.GetChromiumSrcDir(),
+    'tools',
+    'perf',
+    'core',
+    'perf_dashboard_machine_group_mapping.json',
+)
 
 JSON_CONTENT_TYPE = 'application/json'
 
@@ -73,7 +79,7 @@ def _GetMachineGroup(build_properties):
   if build_properties.get('perf_dashboard_machine_group', False):
     # Once luci migration is complete this will exist as a property
     # in the build properties
-    machine_group =  build_properties['perf_dashboard_machine_group']
+    machine_group = build_properties['perf_dashboard_machine_group']
   else:
     builder_group_mapping = {}
     with open(MACHINE_GROUP_JSON_FILE) as fp:
@@ -95,7 +101,7 @@ def _GetMachineGroup(build_properties):
 
 
 def _upload_perf_results(json_to_upload, name, configuration_name,
-    build_properties, output_json_file):
+                         build_properties, output_json_file):
   """Upload the contents of result JSON(s) to the perf dashboard."""
   args = [
       '--buildername',
@@ -127,8 +133,10 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
 
   if 'build' in buildbucket:
     args += [
-      '--project', buildbucket['build'].get('project'),
-      '--buildbucket', buildbucket['build'].get('bucket'),
+        '--project',
+        buildbucket['build'].get('project'),
+        '--buildbucket',
+        buildbucket['build'].get('bucket'),
     ]
 
   if build_properties.get('got_revision'):
@@ -137,7 +145,7 @@ def _upload_perf_results(json_to_upload, name, configuration_name,
   if _is_histogram(json_to_upload):
     args.append('--send-as-histograms')
 
-  #TODO(crbug.com/40127249): log this in top level
+  # TODO(crbug.com/40127249): log this in top level
   logging.info('upload_results_to_perf_dashboard: %s.' % args)
 
   # Duplicate part of the results upload to staging.
@@ -212,8 +220,7 @@ def _merge_json_output(output_json,
   return 0
 
 
-def _handle_perf_json_test_results(
-    benchmark_directory_map, test_results_list):
+def _handle_perf_json_test_results(benchmark_directory_map, test_results_list):
   """Checks the test_results.json under each folder:
 
   1. mark the benchmark 'enabled' if tests results are found
@@ -233,8 +240,8 @@ def _handle_perf_json_test_results(
             # Output is null meaning the test didn't produce any results.
             # Want to output an error and continue loading the rest of the
             # test results.
-            logging.warning(
-                'No results produced for %s, skipping upload' % directory)
+            logging.warning('No results produced for %s, skipping upload' %
+                            directory)
             continue
           if json_results.get('version') == 3:
             # Non-telemetry tests don't have written json results but
@@ -255,8 +262,8 @@ def _handle_perf_json_test_results(
       if not enabled:
         # We don't upload disabled benchmarks or tests that are run
         # as a smoke test
-        logging.info(
-            'Benchmark %s ran no tests on at least one shard' % benchmark_name)
+        logging.info('Benchmark %s ran no tests on at least one shard' %
+                     benchmark_name)
         continue
       benchmark_enabled_map[benchmark_name] = True
 
@@ -270,7 +277,7 @@ def _generate_unique_logdog_filename(name_prefix):
 
 
 def _handle_perf_logs(benchmark_directory_map, extra_links):
-  """ Upload benchmark logs to logdog and add a page entry for them. """
+  """Upload benchmark logs to logdog and add a page entry for them."""
   begin_time = time.time()
   benchmark_logs_links = collections.defaultdict(list)
 
@@ -286,9 +293,13 @@ def _handle_perf_logs(benchmark_directory_map, extra_links):
 
   logdog_file_name = _generate_unique_logdog_filename('Benchmarks_Logs')
   logdog_stream = logdog_helper.text(
-      logdog_file_name, json.dumps(benchmark_logs_links, sort_keys=True,
-                                   indent=4, separators=(',', ': ')),
-      content_type=JSON_CONTENT_TYPE)
+      logdog_file_name,
+      json.dumps(benchmark_logs_links,
+                 sort_keys=True,
+                 indent=4,
+                 separators=(',', ': ')),
+      content_type=JSON_CONTENT_TYPE,
+  )
   extra_links['Benchmarks logs'] = logdog_stream
   end_time = time.time()
   print_duration('Generating perf log streams', begin_time, end_time)
@@ -339,15 +350,17 @@ def _scan_output_dir(task_output_dir):
   return benchmark_directory_map, benchmarks_shard_map_file
 
 
-def process_perf_results(output_json,
-                         configuration_name,
-                         build_properties,
-                         task_output_dir,
-                         smoke_test_mode,
-                         output_results_dir,
-                         lightweight=False,
-                         skip_perf=False,
-                         upload_skia_json=False):
+def process_perf_results(
+    output_json,
+    configuration_name,
+    build_properties,
+    task_output_dir,
+    smoke_test_mode,
+    output_results_dir,
+    lightweight=False,
+    skip_perf=False,
+    upload_skia_json=False,
+):
   """Process perf results.
 
   Consists of merging the json-test-format output, uploading the perf test
@@ -404,9 +417,14 @@ def process_perf_results(output_json,
   if not smoke_test_mode and handle_perf:
     try:
       return_code, benchmark_upload_result_map = _handle_perf_results(
-          benchmark_enabled_map, benchmark_directory_map, configuration_name,
-          build_properties_map, extra_links, output_results_dir,
-          upload_skia_json)
+          benchmark_enabled_map,
+          benchmark_directory_map,
+          configuration_name,
+          build_properties_map,
+          extra_links,
+          output_results_dir,
+          upload_skia_json,
+      )
     except Exception:
       logging.exception('Error handling perf results jsons')
       return_code = 1
@@ -416,8 +434,11 @@ def process_perf_results(output_json,
     # output location
     try:
       _merge_json_output(
-          output_json, test_results_list, extra_links,
-          configuration_name in cross_device_test_config.TARGET_DEVICES)
+          output_json,
+          test_results_list,
+          extra_links,
+          configuration_name in cross_device_test_config.TARGET_DEVICES,
+      )
     except Exception:
       logging.exception('Error handling test results jsons.')
 
@@ -455,11 +476,9 @@ def _merge_perf_results(benchmark_name, results_filename, directories):
     except IOError as e:
       # TODO(crbug.com/40615891): Figure out how to surface these errors. Should
       # we have a non-zero exit code if we error out?
-      logging.error('Failed to obtain perf results from %s: %s',
-                    directory, e)
+      logging.error('Failed to obtain perf results from %s: %s', directory, e)
   if len(histograms_results) == 0 and charts_count == 0:
-    logging.error('Failed to obtain any perf results from %s.',
-                  benchmark_name)
+    logging.error('Failed to obtain any perf results from %s.', benchmark_name)
     return False, 0, 0
   if len(histograms_results) > 0:
     # Ignoring Charts, as uploading mixed results isn't supported.
@@ -474,13 +493,19 @@ def _merge_perf_results(benchmark_name, results_filename, directories):
     json.dump(merged_results, rf)
 
   end_time = time.time()
-  print_duration(('%s results merging' % (benchmark_name)),
-                 begin_time, end_time)
+  print_duration(('%s results merging' % (benchmark_name)), begin_time,
+                 end_time)
   return True, charts_count, len(histograms_results)
 
 
-def _upload_individual(benchmark_name, directories, configuration_name,
-                       build_properties, output_json_file, upload_skia_json):
+def _upload_individual(
+    benchmark_name,
+    directories,
+    configuration_name,
+    build_properties,
+    output_json_file,
+    upload_skia_json,
+):
   """Uploads individual benchmark.
 
   Args:
@@ -510,24 +535,30 @@ def _upload_individual(benchmark_name, directories, configuration_name,
     if not success or charts_count > 0:
       # Skip uploading Charts due to crbug.com/418674022#comment19
       return (benchmark_name, success, logdog_dict)
-    results_size_in_mib = os.path.getsize(results_filename) / (2 ** 20)
+    results_size_in_mib = os.path.getsize(results_filename) / (2**20)
     logging.info('Uploading perf results from %s benchmark (size %s Mib)' %
-          (benchmark_name, results_size_in_mib))
-    upload_return_code = _upload_perf_results(results_filename, benchmark_name,
-                                              configuration_name,
-                                              build_properties,
-                                              output_json_file)
+                 (benchmark_name, results_size_in_mib))
+    upload_return_code = _upload_perf_results(
+        results_filename,
+        benchmark_name,
+        configuration_name,
+        build_properties,
+        output_json_file,
+    )
     upload_end_time = time.time()
     print_duration(('%s upload time' % (benchmark_name)), upload_begin_time,
                    upload_end_time)
     logdog_dict[base_benchmark_name]['upload_failed'] = (
         'True' if upload_return_code else 'False')
     if upload_skia_json:
-      upload_return_code += _upload_skia_json(benchmark_name,
-                                              configuration_name,
-                                              results_filename, tmpfile_dir,
-                                              build_properties,
-                                              logdog_dict[base_benchmark_name])
+      upload_return_code += _upload_skia_json(
+          benchmark_name,
+          configuration_name,
+          results_filename,
+          tmpfile_dir,
+          build_properties,
+          logdog_dict[base_benchmark_name],
+      )
 
     return (benchmark_name, upload_return_code == 0, logdog_dict)
   finally:
@@ -537,7 +568,8 @@ def _upload_individual(benchmark_name, directories, configuration_name,
 def _process_skia_json(
     results_filename: str,
     builder_details: json_util.PerfBuilderDetails,
-    benchmark_name: str) -> Optional[Dict[Any, Any]]:
+    benchmark_name: str,
+) -> Optional[Dict[Any, Any]]:
   """Converts result2 json to skia json.
 
   Args:
@@ -556,20 +588,25 @@ def _process_skia_json(
     skia_json_data = util.process(builder_details=builder_details,
                                   benchmark_name=benchmark_name)
     process_end_time = time.time()
-    print_duration(('%s skia json processing time' % (builder_details.bot)),
-                   process_begin_time, process_end_time)
+    print_duration(
+        ('%s skia json processing time' % (builder_details.bot)),
+        process_begin_time,
+        process_end_time,
+    )
     return skia_json_data
   except ValueError:
     logging.exception('Error processing perf results jsons')
     return None
 
 
-def _upload_skia_json(benchmark_name: str,
-                      configuration_name: str,
-                      results_filename: str,
-                      tmpfile_dir:str,
-                      build_properties: Dict[str, Any],
-                      logdog_benchmark_dict: Dict[str, Any]) -> int:
+def _upload_skia_json(
+    benchmark_name: str,
+    configuration_name: str,
+    results_filename: str,
+    tmpfile_dir: str,
+    build_properties: Dict[str, Any],
+    logdog_benchmark_dict: Dict[str, Any],
+) -> int:
   """Converts result2 json to skia json and uploads to gcs.
 
   This function currently supports Histograms results, but not Charts.
@@ -587,9 +624,10 @@ def _upload_skia_json(benchmark_name: str,
   builder_details = json_util.perf_builder_details_from_build_properties(
       properties=build_properties,
       configuration_name=configuration_name,
-      machine_group=_GetMachineGroup(build_properties))
-  skia_json_data = _process_skia_json(
-      results_filename, builder_details, benchmark_name)
+      machine_group=_GetMachineGroup(build_properties),
+  )
+  skia_json_data = _process_skia_json(results_filename, builder_details,
+                                      benchmark_name)
   if json_util.is_empty(skia_json_data):
     logdog_benchmark_dict['skia_json_empty'] = 'True'  # skip upload.
     logdog_benchmark_dict['skia_json_upload_skipped'] = 'True'
@@ -603,33 +641,42 @@ def _upload_skia_json(benchmark_name: str,
   bucket_names = json_util.gcs_buckets_from_builder_name(
       builder_name=build_properties['buildername'],
       master_name=_GetMachineGroup(build_properties),
-      public_copy_to_experiment=True)
+      public_copy_to_experiment=True,
+  )
   logging.info('Uploading skia json to buckets: %s', bucket_names)
   for bucket_name in bucket_names:
     dest = google_storage_helper.unique_name(
-          'skia_results_%s_%s_%s' % (benchmark_name,
-                                     build_properties['buildername'],
-                                     build_properties['buildnumber']),
-          suffix='.json')
+        'skia_results_%s_%s_%s' % (
+            benchmark_name,
+            build_properties['buildername'],
+            build_properties['buildnumber'],
+        ),
+        suffix='.json',
+    )
     gcs_prefix_path = json_util.get_gcs_prefix_path(
         build_properties=build_properties,
-        builder_details= builder_details,
+        builder_details=builder_details,
         benchmark_name=benchmark_name,
         given_datetime=None,
-        filename=dest)
+        filename=dest,
+    )
     # Check for whether to upload to internal or external bucket based on the
     # builder name.
     try:
       upload_begin_time = time.time()
       google_storage_helper.upload(
-        name=gcs_prefix_path,
-        filepath=skia_results_filename,
-        bucket=bucket_name,
-        content_type='application/json',
-        authenticated_link=True)
+          name=gcs_prefix_path,
+          filepath=skia_results_filename,
+          bucket=bucket_name,
+          content_type='application/json',
+          authenticated_link=True,
+      )
       upload_end_time = time.time()
-      print_duration(('%s skia json upload time' % (benchmark_name)),
-                     upload_begin_time, upload_end_time)
+      print_duration(
+          ('%s skia json upload time' % (benchmark_name)),
+          upload_begin_time,
+          upload_end_time,
+      )
       logdog_benchmark_dict['skia_json_upload_failed'] = 'False'
     except FileNotFoundError:
       logging.exception('Command not found:')
@@ -654,11 +701,15 @@ def _upload_individual_benchmark(params):
     base_benchmark_name = benchmark_name.replace('.reference', '')
     upload_succeed = False
     logging.exception('Error uploading perf result of %s' % benchmark_name)
-    return benchmark_name, upload_succeed, {
-        base_benchmark_name: {
-            'upload_failed': 'True'
-        }
-    }
+    return (
+        benchmark_name,
+        upload_succeed,
+        {
+            base_benchmark_name: {
+                'upload_failed': 'True'
+            }
+        },
+    )
 
 
 def _GetCpuCount(log=True):
@@ -721,11 +772,14 @@ def _update_perf_json_with_summary_on_device_id(directory, device_id):
   summary_key_generic_set = {
       'values': ['device_id'],
       'guid': summary_key_guid,
-      'type': 'GenericSet'
+      'type': 'GenericSet',
   }
   perf_json.insert(0, summary_key_generic_set)
-  logging.info('Inserted summary key generic set for perf result in %s: %s',
-               directory, summary_key_generic_set)
+  logging.info(
+      'Inserted summary key generic set for perf result in %s: %s',
+      directory,
+      summary_key_generic_set,
+  )
   stories_guids = set()
   for entry in perf_json:
     if 'diagnostics' in entry:
@@ -743,25 +797,27 @@ def _update_perf_json_with_summary_on_device_id(directory, device_id):
   logging.info('Finished adding device id %s in perf result.', device_id)
 
 
-def _handle_perf_results(benchmark_enabled_map,
-                         benchmark_directory_map,
-                         configuration_name,
-                         build_properties,
-                         extra_links,
-                         output_results_dir,
-                         upload_skia_json=False):
+def _handle_perf_results(
+    benchmark_enabled_map,
+    benchmark_directory_map,
+    configuration_name,
+    build_properties,
+    extra_links,
+    output_results_dir,
+    upload_skia_json=False,
+):
   """
-    Upload perf results to the perf dashboard.
+  Upload perf results to the perf dashboard.
 
-    This method also upload the perf results to logdog and augment it to
-    |extra_links|.
+  This method also upload the perf results to logdog and augment it to
+  |extra_links|.
 
-    Returns:
-      (return_code, benchmark_upload_result_map)
-      return_code is 0 if this upload to perf dashboard successfully, 1
-        otherwise.
-       benchmark_upload_result_map is a dictionary describes which benchmark
-        was successfully uploaded.
+  Returns:
+    (return_code, benchmark_upload_result_map)
+    return_code is 0 if this upload to perf dashboard successfully, 1
+      otherwise.
+     benchmark_upload_result_map is a dictionary describes which benchmark
+      was successfully uploaded.
   """
   begin_time = time.time()
   # Upload all eligible benchmarks to the perf dashboard
@@ -773,13 +829,19 @@ def _handle_perf_results(benchmark_enabled_map,
       continue
     # Create a place to write the perf results that you will write out to
     # logdog.
-    output_json_file = os.path.join(
-        output_results_dir, (str(uuid.uuid4()) + benchmark_name))
+    output_json_file = os.path.join(output_results_dir,
+                                    (str(uuid.uuid4()) + benchmark_name))
     results_dict[benchmark_name] = output_json_file
-    #TODO(crbug.com/40127249): pass final arguments instead of build properties
+    # TODO(crbug.com/40127249): pass final arguments instead of build properties
     # and configuration_name
-    invocations.append((benchmark_name, directories, configuration_name,
-                        build_properties, output_json_file, upload_skia_json))
+    invocations.append((
+        benchmark_name,
+        directories,
+        configuration_name,
+        build_properties,
+        output_json_file,
+        upload_skia_json,
+    ))
 
   # Kick off the uploads in multiple processes
   # crbug.com/1035930: We are hitting HTTP Response 429. Limit ourselves
@@ -789,8 +851,7 @@ def _handle_perf_results(benchmark_enabled_map,
   pool = multiprocessing.Pool(2)
   upload_result_timeout = False
   try:
-    async_result = pool.map_async(
-        _upload_individual_benchmark, invocations)
+    async_result = pool.map_async(_upload_individual_benchmark, invocations)
     # TODO(crbug.com/40620578): What timeout is reasonable?
     results = async_result.get(timeout=4000)
   except multiprocessing.TimeoutError:
@@ -819,18 +880,27 @@ def _handle_perf_results(benchmark_enabled_map,
       upload_failures_counter += 1
     is_reference = '.reference' in benchmark_name
     _write_perf_data_to_logfile(
-      benchmark_name, output_file,
-      configuration_name, build_properties, logdog_dict,
-      is_reference, upload_failure=not upload_succeed)
+        benchmark_name,
+        output_file,
+        configuration_name,
+        build_properties,
+        logdog_dict,
+        is_reference,
+        upload_failure=not upload_succeed,
+    )
 
   logdog_file_name = _generate_unique_logdog_filename('Results_Dashboard_')
-  logdog_stream = logdog_helper.text(logdog_file_name,
-      json.dumps(dict(logdog_dict), sort_keys=True,
-                  indent=4, separators=(',', ': ')),
-      content_type=JSON_CONTENT_TYPE)
+  logdog_stream = logdog_helper.text(
+      logdog_file_name,
+      json.dumps(dict(logdog_dict),
+                 sort_keys=True,
+                 indent=4,
+                 separators=(',', ': ')),
+      content_type=JSON_CONTENT_TYPE,
+  )
   if upload_failures_counter > 0:
     logdog_label += (' %s merge script perf data upload failures' %
-                      upload_failures_counter)
+                     upload_failures_counter)
   extra_links[logdog_label] = logdog_stream
   end_time = time.time()
   print_duration('Uploading results to perf dashboard', begin_time, end_time)
@@ -839,9 +909,15 @@ def _handle_perf_results(benchmark_enabled_map,
   return 0, benchmark_upload_result_map
 
 
-def _write_perf_data_to_logfile(benchmark_name, output_file,
-    configuration_name, build_properties,
-    logdog_dict, is_ref, upload_failure):
+def _write_perf_data_to_logfile(
+    benchmark_name,
+    output_file,
+    configuration_name,
+    build_properties,
+    logdog_dict,
+    is_ref,
+    upload_failure,
+):
   viewer_url = None
   # logdog file to write perf results to
   if os.path.exists(output_file):
@@ -851,7 +927,7 @@ def _write_perf_data_to_logfile(benchmark_name, output_file,
         results = json.load(f)
       except ValueError:
         logging.error('Error parsing perf results JSON for benchmark  %s' %
-              benchmark_name)
+                      benchmark_name)
     if results:
       output_json_file = logdog_helper.open_text(benchmark_name)
       if output_json_file:
@@ -867,7 +943,7 @@ def _write_perf_data_to_logfile(benchmark_name, output_file,
                         benchmark_name)
   else:
     logging.warning("Perf results JSON file doesn't exist for benchmark %s" %
-          benchmark_name)
+                    benchmark_name)
 
   base_benchmark_name = benchmark_name.replace('.reference', '')
 
@@ -885,9 +961,11 @@ def _write_perf_data_to_logfile(benchmark_name, output_file,
     logdog_dict[base_benchmark_name]['dashboard_url'] = (
         upload_results_to_perf_dashboard.GetDashboardUrl(
             benchmark_name,
-            configuration_name, RESULTS_URL,
+            configuration_name,
+            RESULTS_URL,
             build_properties['got_revision_cp'],
-            _GetMachineGroup(build_properties)))
+            _GetMachineGroup(build_properties),
+        ))
     if viewer_url:
       logdog_dict[base_benchmark_name]['perf_results'] = viewer_url
     if upload_failure:
@@ -899,7 +977,7 @@ def print_duration(step, start, end):
 
 
 def main():
-  """ See collect_task.collect_task for more on the merge script API. """
+  """See collect_task.collect_task for more on the merge script API."""
   logging.info(sys.argv)
   parser = argparse.ArgumentParser()
   # configuration-name (previously perf-id) is the name of bot the tests run on
@@ -911,34 +989,50 @@ def main():
   parser.add_argument('--build-properties', help=argparse.SUPPRESS)
   parser.add_argument('--summary-json', help=argparse.SUPPRESS)
   parser.add_argument('--task-output-dir', help=argparse.SUPPRESS)
-  parser.add_argument('-o', '--output-json', required=True,
+  parser.add_argument('-o',
+                      '--output-json',
+                      required=True,
                       help=argparse.SUPPRESS)
   parser.add_argument(
       '--skip-perf',
       action='store_true',
       help='In lightweight mode, using --skip-perf will skip the performance'
-      ' data handling.')
+      ' data handling.',
+  )
   parser.add_argument(
       '--lightweight',
       action='store_true',
       help='Choose the lightweight mode in which the perf result handling'
-      ' is performed on a separate VM.')
+      ' is performed on a separate VM.',
+  )
   parser.add_argument('json_files', nargs='*', help=argparse.SUPPRESS)
-  parser.add_argument('--smoke-test-mode', action='store_true',
-                      help='This test should be run in smoke test mode'
-                      ' meaning it does not upload to the perf dashboard')
-  parser.add_argument('--upload-skia-json',
-                      action='store_true',
-                      help='Upload skia formatted json to the gcs directly')
+  parser.add_argument(
+      '--smoke-test-mode',
+      action='store_true',
+      help='This test should be run in smoke test mode'
+      ' meaning it does not upload to the perf dashboard',
+  )
+  parser.add_argument(
+      '--upload-skia-json',
+      action='store_true',
+      help='Upload skia formatted json to the gcs directly',
+  )
 
   args = parser.parse_args()
 
   output_results_dir = tempfile.mkdtemp('outputresults')
   try:
     return_code, _ = process_perf_results(
-        args.output_json, args.configuration_name, args.build_properties,
-        args.task_output_dir, args.smoke_test_mode, output_results_dir,
-        args.lightweight, args.skip_perf, args.upload_skia_json)
+        args.output_json,
+        args.configuration_name,
+        args.build_properties,
+        args.task_output_dir,
+        args.smoke_test_mode,
+        output_results_dir,
+        args.lightweight,
+        args.skip_perf,
+        args.upload_skia_json,
+    )
     return return_code
   finally:
     # crbug/1378275. In some cases, the temp dir could be deleted. Add a

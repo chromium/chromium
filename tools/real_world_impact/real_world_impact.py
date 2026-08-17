@@ -64,9 +64,9 @@ def MakeDirsIfNotExist(dir):
 def SetupPathsAndOut():
   global chromium_src_root, chromium_out_dir, output_dir
   global image_diff, content_shell
-  chromium_src_root = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                   os.pardir,
-                                                   os.pardir))
+  chromium_src_root = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+  )
   # Find out directory (might be out_linux for users of cr).
   for out_suffix in ["_linux", ""]:
     out_dir = os.path.join(chromium_src_root, "out" + out_suffix)
@@ -77,22 +77,23 @@ def SetupPathsAndOut():
     return False
 
   this_script_name = "real_world_impact"
-  output_dir = os.path.join(chromium_out_dir,
-                            "Release",
-                            this_script_name)
+  output_dir = os.path.join(chromium_out_dir, "Release", this_script_name)
   MakeDirsIfNotExist(output_dir)
 
   image_diff = os.path.join(chromium_out_dir, "Release", "image_diff")
 
   if sys.platform == 'darwin':
-    content_shell = os.path.join(chromium_out_dir, "Release",
-                    "Content Shell.app/Contents/MacOS/Content Shell")
+    content_shell = os.path.join(
+      chromium_out_dir,
+      "Release",
+      "Content Shell.app/Contents/MacOS/Content Shell",
+    )
   elif sys.platform.startswith('linux'):
-    content_shell = os.path.join(chromium_out_dir, "Release",
-                    "content_shell")
+    content_shell = os.path.join(chromium_out_dir, "Release", "content_shell")
   elif sys.platform.startswith('win'):
-    content_shell = os.path.join(chromium_out_dir, "Release",
-                    "content_shell.exe")
+    content_shell = os.path.join(
+      chromium_out_dir, "Release", "content_shell.exe"
+    )
   return True
 
 
@@ -138,8 +139,10 @@ def PickSampleUrls():
   urls_path = os.path.join(data_dir, "%06d_urls.txt" % num_sites)
   if not os.path.exists(urls_path):
     if action == 'compare':
-      print("Error: you must run 'before %d' and 'after %d' before "
-            "running 'compare %d'" % (num_sites, num_sites, num_sites))
+      print(
+        "Error: you must run 'before %d' and 'after %d' before "
+        "running 'compare %d'" % (num_sites, num_sites, num_sites)
+      )
       return False
     print("Picking %d sample urls..." % num_sites)
 
@@ -189,29 +192,36 @@ def DownloadStaticCopyTask(url):
   # (e.g. CSS, JS, images).
   success = True
   try:
-    subprocess.check_call(["wget",
-                           "--execute", "robots=off",
-                           ("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS "
-                            "X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) C"
-                            "hrome/32.0.1700.14 Safari/537.36"),
-                           "--page-requisites",
-                           "--span-hosts",
-                           "--adjust-extension",
-                           "--convert-links",
-                           "--directory-prefix=" + host_dir,
-                           "--force-directories",
-                           "--default-page=index.html",
-                           "--no-check-certificate",
-                           "--timeout=5", # 5s timeout
-                           "--tries=2",
-                           "--quiet",
-                           url])
+    subprocess.check_call(
+      [
+        "wget",
+        "--execute",
+        "robots=off",
+        (
+          "--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS "
+          "X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) C"
+          "hrome/32.0.1700.14 Safari/537.36"
+        ),
+        "--page-requisites",
+        "--span-hosts",
+        "--adjust-extension",
+        "--convert-links",
+        "--directory-prefix=" + host_dir,
+        "--force-directories",
+        "--default-page=index.html",
+        "--no-check-certificate",
+        "--timeout=5",  # 5s timeout
+        "--tries=2",
+        "--quiet",
+        url,
+      ]
+    )
   except KeyboardInterrupt:
     success = False
   except subprocess.CalledProcessError:
     # Ignoring these for now, as some sites have issues with their subresources
     # yet still produce a renderable index.html
-    pass #success = False
+    pass  # success = False
   if success:
     download_path = os.path.join(host_dir, url_parts.hostname, "index.html")
     if not os.path.exists(download_path):
@@ -241,7 +251,7 @@ def DownloadStaticCopies():
     start_time = time.time()
 
     results = multiprocessing.Pool(20).map(DownloadStaticCopyTask, new_urls)
-    failed_urls = [new_urls[i] for i,ret in enumerate(results) if not ret]
+    failed_urls = [new_urls[i] for i, ret in enumerate(results) if not ret]
     if failed_urls:
       bad_urls_path = os.path.join(output_dir, "data", "bad_urls.txt")
       with open(bad_urls_path, 'a') as f:
@@ -267,10 +277,12 @@ def RunDrtTask(url):
       if not html:
         return False
       # These aren't intended to be XSS safe :)
-      block_tags = (r'<\s*(script|object|video|audio|iframe|frameset|frame)'
-                    r'\b.*?<\s*\/\s*\1\s*>')
+      block_tags = (
+        r'<\s*(script|object|video|audio|iframe|frameset|frame)'
+        r'\b.*?<\s*\/\s*\1\s*>'
+      )
       block_attrs = r'\s(onload|onerror)\s*=\s*(\'[^\']*\'|"[^"]*|\S*)'
-      html = re.sub(block_tags, '', html, flags=re.I|re.S)
+      html = re.sub(block_tags, '', html, flags=re.I | re.S)
       html = re.sub(block_attrs, '', html, flags=re.I)
       with open(nojs_path, 'w') as f:
         f.write(html)
@@ -279,17 +291,20 @@ def RunDrtTask(url):
   start_time = time.time()
 
   with open(os.devnull, "w") as fnull:
-    p = subprocess.Popen([content_shell,
-                          "--run-web-tests",
-                          additional_content_shell_flags,
-                          html_path
-                         ],
-                         shell=False,
-                         stdout=subprocess.PIPE,
-                         stderr=fnull)
+    p = subprocess.Popen(
+      [
+        content_shell,
+        "--run-web-tests",
+        additional_content_shell_flags,
+        html_path,
+      ],
+      shell=False,
+      stdout=subprocess.PIPE,
+      stderr=fnull,
+    )
   result = p.stdout.read()
-  PNG_START = b"\x89\x50\x4E\x47\x0D\x0A\x1A\x0A"
-  PNG_END = b"\x49\x45\x4E\x44\xAE\x42\x60\x82"
+  PNG_START = b"\x89\x50\x4e\x47\x0d\x0a\x1a\x0a"
+  PNG_END = b"\x49\x45\x4e\x44\xae\x42\x60\x82"
   try:
     start = result.index(PNG_START)
     end = result.rindex(PNG_END) + 8
@@ -323,8 +338,10 @@ def CompareResultsTask(url):
   MakeDirsIfNotExist(os.path.join(output_dir, "diff"))
 
   # TODO(johnme): Don't hardcode "real_world_impact".
-  red_path = ("data:image/gif;base64,R0lGODlhAQABAPAAAP8AAP///yH5BAAAAAAALAAAAA"
-              "ABAAEAAAICRAEAOw==")
+  red_path = (
+    "data:image/gif;base64,R0lGODlhAQABAPAAAP8AAP///yH5BAAAAAAALAAAAA"
+    "ABAAEAAAICRAEAOw=="
+  )
 
   before_exists = os.path.exists(before_path)
   after_exists = os.path.exists(after_path)
@@ -336,15 +353,19 @@ def CompareResultsTask(url):
     return (200, url, red_path)
 
   # Get percentage difference.
-  p = subprocess.Popen([image_diff, "--histogram",
-                        before_path, after_path],
-                        shell=False,
-                        stdout=subprocess.PIPE)
-  output,_ = p.communicate()
+  p = subprocess.Popen(
+    [image_diff, "--histogram", before_path, after_path],
+    shell=False,
+    stdout=subprocess.PIPE,
+  )
+  output, _ = p.communicate()
   if p.returncode == 0:
     return (0, url, before_path)
-  diff_match = re.match(r'histogram diff: (\d+\.\d{2})% (?:passed|failed)\n'
-                         'exact diff: (\d+\.\d{2})% (?:passed|failed)', output)
+  diff_match = re.match(
+    r'histogram diff: (\d+\.\d{2})% (?:passed|failed)\n'
+    'exact diff: (\d+\.\d{2})% (?:passed|failed)',
+    output,
+  )
   if not diff_match:
     raise Exception("image_diff output format changed")
   histogram_diff = float(diff_match.group(1))
@@ -366,7 +387,8 @@ def CompareResults():
   PrintElapsedTime(time.time() - start_time)
 
   now = datetime.datetime.today().strftime("%a %Y-%m-%d %H:%M")
-  html_start = textwrap.dedent("""\
+  html_start = textwrap.dedent(
+    """\
   <!DOCTYPE html>
   <html>
   <head>
@@ -452,7 +474,9 @@ def CompareResults():
     <p class="info">Press 1, 2 and 3 to switch between before, after and diff
     screenshots respectively; or hover over the images to rapidly alternate
     between before and after.</p>
-  """ % (now, num_sites, now))
+  """
+    % (now, num_sites, now)
+  )
 
   html_same_row = """\
   <h2>No difference on <a href="%s">%s</a>.</h2>
@@ -480,7 +504,7 @@ def CompareResults():
   html_path = os.path.join(output_dir, "diff.html")
   with open(html_path, 'w') as f:
     f.write(html_start)
-    for (diff_float, url, diff_path) in results:
+    for diff_float, url, diff_path in results:
       diff_path = os.path.relpath(diff_path, output_dir)
       if diff_float == 0:
         f.write(html_same_row % (url, url))
@@ -497,9 +521,10 @@ def main(argv):
   global num_sites, action, allow_js, additional_content_shell_flags
 
   parser = argparse.ArgumentParser(
-      formatter_class=RawTextHelpFormatter,
-      description="Compare the real world impact of a content shell change.",
-      epilog=textwrap.dedent("""\
+    formatter_class=RawTextHelpFormatter,
+    description="Compare the real world impact of a content shell change.",
+    epilog=textwrap.dedent(
+      """\
           Example usage:
             1. Build content_shell in out/Release without any changes.
             2. Run: %s before [num sites to test (default %d)].
@@ -509,34 +534,45 @@ def main(argv):
             4. Run: %s after [num sites to test (default %d)].
             5. Run: %s compare [num sites to test (default %d)].
                This will open the results in your web browser.
-          """ % (argv[0], num_sites, argv[0], num_sites, argv[0], num_sites)))
-  parser.add_argument("--allow_js", help="Don't disable Javascript",
-                      action="store_true")
-  parser.add_argument("--additional_flags",
-                      help="Additional flags to pass to content shell")
-  parser.add_argument("action",
-                      help=textwrap.dedent("""\
+          """
+      % (argv[0], num_sites, argv[0], num_sites, argv[0], num_sites)
+    ),
+  )
+  parser.add_argument(
+    "--allow_js", help="Don't disable Javascript", action="store_true"
+  )
+  parser.add_argument(
+    "--additional_flags", help="Additional flags to pass to content shell"
+  )
+  parser.add_argument(
+    "action",
+    help=textwrap.dedent("""\
                         Action to perform.
                           download - Just download the sites.
                           before - Run content shell and record 'before' result.
                           after - Run content shell and record 'after' result.
                           compare - Compare before and after results.
                       """),
-                      choices=["download", "before", "after", "compare"])
-  parser.add_argument("num_sites",
-                      help="Number of sites (default %s)" % num_sites,
-                      type=int, default=num_sites, nargs='?')
+    choices=["download", "before", "after", "compare"],
+  )
+  parser.add_argument(
+    "num_sites",
+    help="Number of sites (default %s)" % num_sites,
+    type=int,
+    default=num_sites,
+    nargs='?',
+  )
   args = parser.parse_args()
 
   action = args.action
 
-  if (args.num_sites):
+  if args.num_sites:
     num_sites = args.num_sites
 
-  if (args.allow_js):
+  if args.allow_js:
     allow_js = args.allow_js
 
-  if (args.additional_flags):
+  if args.additional_flags:
     additional_content_shell_flags = args.additional_flags
 
   if not SetupPathsAndOut() or not CheckPrerequisites() or not PickSampleUrls():

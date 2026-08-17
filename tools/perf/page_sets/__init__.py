@@ -17,5 +17,6 @@ base_classes = [story.StorySet]
 
 for base_class in base_classes:
   for cls in discover.DiscoverClasses(
-      start_dir, top_level_dir, base_class).values():
+    start_dir, top_level_dir, base_class
+  ).values():
     setattr(sys.modules[__name__], cls.__name__, cls)

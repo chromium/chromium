@@ -4,20 +4,23 @@
 
 # Ignore the following files from SVG optimization checks.
 BLOCKLIST = [
-    # Ignore since it holds documentation comments.
-    "components/dom_distiller/core/images/dom_distiller_material_spinner.svg",
+  # Ignore since it holds documentation comments.
+  "components/dom_distiller/core/images/dom_distiller_material_spinner.svg",
 ]
 
 
 def CheckOptimized(input_api, output_api):
-  file_filter = lambda f: f.LocalPath().endswith('.svg') and \
-      f.LocalPath().replace('\\', '/') not in BLOCKLIST
+  file_filter = lambda f: (
+    f.LocalPath().endswith('.svg')
+    and f.LocalPath().replace('\\', '/') not in BLOCKLIST
+  )
   svgs = input_api.AffectedFiles(file_filter=file_filter, include_deletes=False)
 
   if not svgs:
     return []
 
   from resources import svgo
+
   unoptimized = []
 
   def _ToBinary(s):
@@ -29,8 +32,10 @@ def CheckOptimized(input_api, output_api):
   for f in svgs:
     original = b'\n'.join(_ToBinary(line) for line in f.NewContents()).strip()
     output = _ToBinary(
-        svgo.Run(input_api.os_path,
-                 ['-o', '-', '-i', f.AbsoluteLocalPath()]).strip())
+      svgo.Run(
+        input_api.os_path, ['-o', '-', '-i', f.AbsoluteLocalPath()]
+      ).strip()
+    )
     if original != output:
       unoptimized.append(f.LocalPath())
 

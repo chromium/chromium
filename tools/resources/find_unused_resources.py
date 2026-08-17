@@ -39,17 +39,30 @@ def GetBaseResourceId(resource_id):
     A string with the base part of the resource ID.
   """
   suffixes = [
-      '_TOP_LEFT', '_TOP', '_TOP_RIGHT',
-      '_LEFT', '_CENTER', '_RIGHT',
-      '_BOTTOM_LEFT', '_BOTTOM', '_BOTTOM_RIGHT',
-      '_TL', '_T', '_TR',
-      '_L', '_M', '_R',
-      '_BL', '_B', '_BR']
+    '_TOP_LEFT',
+    '_TOP',
+    '_TOP_RIGHT',
+    '_LEFT',
+    '_CENTER',
+    '_RIGHT',
+    '_BOTTOM_LEFT',
+    '_BOTTOM',
+    '_BOTTOM_RIGHT',
+    '_TL',
+    '_T',
+    '_TR',
+    '_L',
+    '_M',
+    '_R',
+    '_BL',
+    '_B',
+    '_BR',
+  ]
   # Note: This does not check _HOVER, _PRESSED, _HOT, etc. as those are never
   # used in macros.
   for suffix in suffixes:
     if resource_id.endswith(suffix):
-      resource_id = resource_id[:-len(suffix)]
+      resource_id = resource_id[: -len(suffix)]
   return resource_id
 
 
@@ -66,9 +79,18 @@ def FindFilesWithContents(string_a, string_b):
   Returns:
     A list of file paths as strings.
   """
-  matching_files = subprocess.check_output([
-      'git', 'grep', '--name-only', '--fixed-strings', '-e', string_a,
-      '-e', string_b])
+  matching_files = subprocess.check_output(
+    [
+      'git',
+      'grep',
+      '--name-only',
+      '--fixed-strings',
+      '-e',
+      string_a,
+      '-e',
+      string_b,
+    ]
+  )
   files_list = matching_files.split('\n')
   # The output ends in a newline, so slice that off.
   files_list = files_list[:-1]
@@ -94,10 +116,11 @@ def GetUnusedResources(grd_filepath):
   # ...name="IDR_FOO_123" file="common/foo.png"...
   # by matching between the quotation marks.
   pattern = re.compile(
-      r"""name="([^"]*)"  # Match resource ID between quotes.
+    r"""name="([^"]*)"  # Match resource ID between quotes.
       \s*                 # Run of whitespace, including newlines.
       file="([^"]*)"      # Match file path between quotes.""",
-      re.VERBOSE)
+    re.VERBOSE,
+  )
   # Use finditer over the file contents because there may be newlines between
   # the name and file attributes.
   searched = set()

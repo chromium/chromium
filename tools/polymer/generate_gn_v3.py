@@ -32,15 +32,17 @@ def main(created_by, input_files):
   targets = ''
 
   def _target_name(target_file):
-    return target_file[:-len('.js')]
+    return target_file[: -len('.js')]
 
   def _extract_imports(input_file):
     path_to_acorn = path.join('node_modules', 'acorn', 'bin', 'acorn')
     ast = node.RunNode([path_to_acorn, '--module', input_file])
     imports = map(
-        lambda n: n['source']['raw'][1:-1],
-        filter(lambda n: n['type'] == 'ImportDeclaration',
-               json.loads(ast)['body']))
+      lambda n: n['source']['raw'][1:-1],
+      filter(
+        lambda n: n['type'] == 'ImportDeclaration', json.loads(ast)['body']
+      ),
+    )
     return set(imports)
 
   for input_file in sorted(input_files, key=_target_name):
@@ -71,8 +73,10 @@ def main(created_by, input_files):
 
   if targets:
     current_year = 2021
-    print(_COMPILED_RESOURCES_TEMPLATE %
-          (current_year, created_by, _COMPILE_JS, targets))
+    print(
+      _COMPILED_RESOURCES_TEMPLATE
+      % (current_year, created_by, _COMPILE_JS, targets)
+    )
 
 
 if __name__ == '__main__':

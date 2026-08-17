@@ -10,11 +10,11 @@ navigating using a pointing device. This includes mouse movement,
 clicking with any button, and dragging.
 """
 
-import time                 # for sleep
+import time  # for sleep
 
-import win32api             # for mouse_event
-import win32con             # Windows constants
-import win32gui             # for window functions
+import win32api  # for mouse_event
+import win32con  # Windows constants
+import win32gui  # for window functions
 
 
 def ScreenToMouse(pt):
@@ -38,8 +38,11 @@ def ScreenToMouse(pt):
     desktop = win32gui.GetClientRect(win32gui.GetDesktopWindow())
     ScreenToMouse._SCREEN_DIMENSIONS = (desktop[2], desktop[3])
 
-  return ((65535 * pt[0]) / ScreenToMouse._SCREEN_DIMENSIONS[0],
-          (65535 * pt[1]) / ScreenToMouse._SCREEN_DIMENSIONS[1])
+  return (
+    (65535 * pt[0]) / ScreenToMouse._SCREEN_DIMENSIONS[0],
+    (65535 * pt[1]) / ScreenToMouse._SCREEN_DIMENSIONS[1],
+  )
+
 
 ScreenToMouse._SCREEN_DIMENSIONS = None
 
@@ -57,10 +60,10 @@ def PressButton(down, button='left'):
 
   # Put the mouse_event flags in a convenient dictionary by button
   flags = {
-    'left':   (win32con.MOUSEEVENTF_LEFTUP,   win32con.MOUSEEVENTF_LEFTDOWN),
+    'left': (win32con.MOUSEEVENTF_LEFTUP, win32con.MOUSEEVENTF_LEFTDOWN),
     'middle': (win32con.MOUSEEVENTF_MIDDLEUP, win32con.MOUSEEVENTF_MIDDLEDOWN),
-    'right':  (win32con.MOUSEEVENTF_RIGHTUP,  win32con.MOUSEEVENTF_RIGHTDOWN)
-    }
+    'right': (win32con.MOUSEEVENTF_RIGHTUP, win32con.MOUSEEVENTF_RIGHTDOWN),
+  }
 
   # hit the button
   win32api.mouse_event(flags[button][down], 0, 0)
@@ -109,26 +112,32 @@ def MoveToLocation(pos, duration=0, tick=0.01):
     None
   """
   # calculate the number of moves to reach the destination
-  num_steps = (duration/tick)+1
+  num_steps = (duration / tick) + 1
 
   # get the current and final mouse position in mouse coords
   current_location = ScreenToMouse(win32gui.GetCursorPos())
   end_location = ScreenToMouse(pos)
 
   # Calculate the step size
-  step_size = ((end_location[0]-current_location[0])/num_steps,
-               (end_location[1]-current_location[1])/num_steps)
+  step_size = (
+    (end_location[0] - current_location[0]) / num_steps,
+    (end_location[1] - current_location[1]) / num_steps,
+  )
   step = 0
 
   while step < num_steps:
     # Move the mouse one step
-    current_location = (current_location[0]+step_size[0],
-                        current_location[1]+step_size[1])
+    current_location = (
+      current_location[0] + step_size[0],
+      current_location[1] + step_size[1],
+    )
 
     # Coerce the coords to int to avoid a warning from pywin32
     win32api.mouse_event(
-      win32con.MOUSEEVENTF_MOVE|win32con.MOUSEEVENTF_ABSOLUTE,
-      int(current_location[0]), int(current_location[1]))
+      win32con.MOUSEEVENTF_MOVE | win32con.MOUSEEVENTF_ABSOLUTE,
+      int(current_location[0]),
+      int(current_location[1]),
+    )
 
     step += 1
     time.sleep(tick)
@@ -163,7 +172,8 @@ def ClickInWindow(hwnd, offset=None, button='left', click_time=0):
   """
 
   rect = win32gui.GetClientRect(hwnd)
-  if offset is None: offset = (rect[2]/2, rect[3]/2)
+  if offset is None:
+    offset = (rect[2] / 2, rect[3] / 2)
 
   # get the screen coordinates of the window's center
   pos = win32gui.ClientToScreen(hwnd, offset)
@@ -172,7 +182,8 @@ def ClickInWindow(hwnd, offset=None, button='left', click_time=0):
 
 
 def DoubleClickInWindow(
-  hwnd, offset=None, button='left', click_time=0, time_between_clicks=0.1):
+  hwnd, offset=None, button='left', click_time=0, time_between_clicks=0.1
+):
   """Simulate a user mouse double click in the center of a window.
 
   Args:
@@ -213,7 +224,7 @@ def main():
 
   # move the mouse away and then click the left button to dismiss the
   # context menu
-  MoveToLocation((screen_size[0]/2, screen_size[1]/2), 3)
+  MoveToLocation((screen_size[0] / 2, screen_size[1] / 2), 3)
   MoveToLocation((0, 0), 3)
   ClickButton()
 

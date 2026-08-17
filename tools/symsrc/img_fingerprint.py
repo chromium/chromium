@@ -27,7 +27,9 @@ def GetImgFingerprint(filename):
   """Returns the fingerprint for an image file"""
   pe = pefile.PE(filename)
   return "%08X%x" % (
-    pe.FILE_HEADER.TimeDateStamp, pe.OPTIONAL_HEADER.SizeOfImage)
+    pe.FILE_HEADER.TimeDateStamp,
+    pe.OPTIONAL_HEADER.SizeOfImage,
+  )
 
 
 def main():

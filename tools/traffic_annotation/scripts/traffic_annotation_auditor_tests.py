@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Runs tests to ensure annotation tests are working as expected.
-"""
+"""Runs tests to ensure annotation tests are working as expected."""
 
 from __future__ import print_function
 
@@ -26,12 +25,11 @@ USE_PYTHON_AUDITOR = True
 
 MINIMUM_EXPECTED_NUMBER_OF_ANNOTATIONS = 260
 
-class TrafficAnnotationTestsChecker():
 
-  def __init__(self,
-               build_path=None,
-               annotations_filename=None,
-               errors_filename=None):
+class TrafficAnnotationTestsChecker:
+  def __init__(
+    self, build_path=None, annotations_filename=None, errors_filename=None
+  ):
     """Initializes a TrafficAnnotationTestsChecker object.
 
     Args:
@@ -56,7 +54,6 @@ class TrafficAnnotationTestsChecker():
     """Runs all tests and returns the result."""
     return self.CheckAuditorResults() and self.CheckOutputExpectations()
 
-
   def CheckAuditorResults(self):
     """Runs auditor using different configurations, expecting to run error free,
     and having equal results in the exported TSV file in all cases. The TSV file
@@ -67,19 +64,19 @@ class TrafficAnnotationTestsChecker():
     """
 
     configs = [
-        # Similar to trybot.
+      # Similar to trybot.
       [
-          "--test-only",
-          "--error-resilient",
+        "--test-only",
+        "--error-resilient",
       ],
       # Failing on any runtime error.
       [
-          "--test-only",
+        "--test-only",
       ],
       # No heuristic filtering.
       [
-          "--test-only",
-          "--no-filtering",
+        "--test-only",
+        "--no-filtering",
       ],
     ]
 
@@ -95,7 +92,6 @@ class TrafficAnnotationTestsChecker():
       self.last_result = result
     return True
 
-
   def CheckOutputExpectations(self):
     # This test can be replaced by getting results from a diagnostic mode call
     # to traffic_annotation_auditor, and checking for an expected minimum number
@@ -110,11 +106,12 @@ class TrafficAnnotationTestsChecker():
     print("%i annotations found in auditor's output." % annotations_count)
 
     if annotations_count < MINIMUM_EXPECTED_NUMBER_OF_ANNOTATIONS:
-      print("Annotations are expected to be at least %i." %
-                MINIMUM_EXPECTED_NUMBER_OF_ANNOTATIONS)
+      print(
+        "Annotations are expected to be at least %i."
+        % MINIMUM_EXPECTED_NUMBER_OF_ANNOTATIONS
+      )
       return False
     return True
-
 
   def _RunTest(self, args, use_python_auditor):
     """Runs the auditor test with given |args|, and returns the extracted
@@ -141,17 +138,25 @@ class TrafficAnnotationTestsChecker():
       pass
 
     stdout_text, stderr_text, return_code = self.tools.RunAuditor(
-        args + [
-            "--annotations-file", self.annotations_filename, "--errors-file",
-            self.errors_filename
-        ], use_python_auditor)
+      args
+      + [
+        "--annotations-file",
+        self.annotations_filename,
+        "--errors-file",
+        self.errors_filename,
+      ],
+      use_python_auditor,
+    )
 
     annotations = None
     if os.path.exists(self.annotations_filename):
       # When tests are run on all files (without filtering), there might be some
       # compile errors in irrelevant files on Windows that can be ignored.
-      if (return_code and "--no-filtering" in args and
-          sys.platform.startswith(('win', 'cygwin'))):
+      if (
+        return_code
+        and "--no-filtering" in args
+        and sys.platform.startswith(('win', 'cygwin'))
+      ):
         print("Ignoring return code: %i" % return_code)
         return_code = 0
       if not return_code:
@@ -177,22 +182,26 @@ def main():
     return 0
 
   parser = argparse.ArgumentParser(
-      description="Traffic Annotation Tests checker.")
+    description="Traffic Annotation Tests checker."
+  )
   parser.add_argument(
-      '--build-path',
-      help='Specifies a compiled build directory, e.g. out/Debug. If not '
-           'specified, the script tries to guess it. Will not proceed if not '
-           'found.')
+    '--build-path',
+    help='Specifies a compiled build directory, e.g. out/Debug. If not '
+    'specified, the script tries to guess it. Will not proceed if not '
+    'found.',
+  )
   parser.add_argument(
-      '--annotations-file',
-      help='Optional path to a TSV output file with all annotations.')
-  parser.add_argument('--errors-file',
-                      help="Optional path to a JSON output file with errors.")
+    '--annotations-file',
+    help='Optional path to a TSV output file with all annotations.',
+  )
+  parser.add_argument(
+    '--errors-file', help="Optional path to a JSON output file with errors."
+  )
 
   args = parser.parse_args()
-  checker = TrafficAnnotationTestsChecker(args.build_path,
-                                          args.annotations_file,
-                                          args.errors_file)
+  checker = TrafficAnnotationTestsChecker(
+    args.build_path, args.annotations_file, args.errors_file
+  )
   return 0 if checker.RunAllTests() else 1
 
 

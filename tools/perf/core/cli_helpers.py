@@ -109,7 +109,7 @@ def Ask(question, answers=None, default=None):
   common_prefixes = set()
   for ans, retval in answers.items():
     for i in range(len(ans)):
-      inp = ans[:i+1]
+      inp = ans[: i + 1]
       if inp in inputs:
         common_prefixes.add(inp)
         del inputs[inp]
@@ -134,8 +134,9 @@ def Ask(question, answers=None, default=None):
     if choice.lower() in inputs:
       return inputs[choice.lower()]
     choices = sorted(['"%s"' % a for a in sorted(answers.keys())])
-    Error('Please respond with %s or %s.' %
-          (', '.join(choices[:-1]), choices[-1]))
+    Error(
+      'Please respond with %s or %s.' % (', '.join(choices[:-1]), choices[-1])
+    )
 
 
 def Prompt(question, accept_empty=False):
@@ -160,13 +161,16 @@ def CheckLog(command, log_path, env=None):
   """
   with open(log_path, 'w') as f:
     try:
-      cmd_str = (' '.join(
-          shlex.quote(c)
-          for c in command) if isinstance(command, list) else command)
+      cmd_str = (
+        ' '.join(shlex.quote(c) for c in command)
+        if isinstance(command, list)
+        else command
+      )
       print(Colored(cmd_str, 'blue'))
       print(Colored('Logging stdout & stderr to %s' % log_path, 'blue'))
       subprocess.check_call(
-          command, stdout=f, stderr=subprocess.STDOUT, shell=False, env=env)
+        command, stdout=f, stderr=subprocess.STDOUT, shell=False, env=env
+      )
     except subprocess.CalledProcessError:
       Error('=' * 80)
       Error('Received non-zero return code. Log content:')

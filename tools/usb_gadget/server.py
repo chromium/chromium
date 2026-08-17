@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""WSGI application to manage a USB gadget.
-"""
+"""WSGI application to manage a USB gadget."""
 
 from __future__ import print_function
 
@@ -44,7 +43,6 @@ def SwitchGadget(new_gadget):
 
 
 class VersionHandler(web.RequestHandler):
-
   def get(self):
     version = 'unpackaged'
     for path in sys.path:
@@ -57,7 +55,6 @@ class VersionHandler(web.RequestHandler):
 
 
 class UpdateHandler(web.RequestHandler):
-
   def post(self):
     fileinfo = self.request.files['file'][0]
 
@@ -78,10 +75,16 @@ class UpdateHandler(web.RequestHandler):
     with open(filename, 'wb') as f:
       f.write(content)
 
-    args = ['/usr/bin/python', filename,
-            '--interface', interface,
-            '--port', str(port),
-            '--hardware', hardware]
+    args = [
+      '/usr/bin/python',
+      filename,
+      '--interface',
+      interface,
+      '--port',
+      str(port),
+      '--hardware',
+      hardware,
+    ]
     if claimed_by is not None:
       args.extend(['--start-claimed', claimed_by])
 
@@ -97,8 +100,7 @@ class UpdateHandler(web.RequestHandler):
     while True:
       child.poll()
       if child.returncode is not None:
-        self.write('New package exited with error {}.'
-                   .format(child.returncode))
+        self.write('New package exited with error {}.'.format(child.returncode))
         self.set_status(500)
 
         http_server = httpserver.HTTPServer(app)
@@ -119,7 +121,6 @@ class UpdateHandler(web.RequestHandler):
 
 
 class ClaimHandler(web.RequestHandler):
-
   def post(self):
     global claimed_by
 
@@ -131,7 +132,6 @@ class ClaimHandler(web.RequestHandler):
 
 
 class UnclaimHandler(web.RequestHandler):
-
   def post(self):
     global claimed_by
     claimed_by = None
@@ -140,26 +140,24 @@ class UnclaimHandler(web.RequestHandler):
 
 
 class UnconfigureHandler(web.RequestHandler):
-
   def post(self):
     SwitchGadget(default)
 
 
 class DisconnectHandler(web.RequestHandler):
-
   def post(self):
     if chip.IsConfigured():
       chip.Destroy()
 
 
 class ReconnectHandler(web.RequestHandler):
-
   def post(self):
     if not chip.IsConfigured():
       chip.Create(gadget)
 
 
-app = web.Application([
+app = web.Application(
+  [
     (r'/version', VersionHandler),
     (r'/update', UpdateHandler),
     (r'/claim', ClaimHandler),
@@ -167,6 +165,7 @@ app = web.Application([
     (r'/unconfigure', UnconfigureHandler),
     (r'/disconnect', DisconnectHandler),
     (r'/reconnect', ReconnectHandler),
-])
+  ]
+)
 
 http_server = httpserver.HTTPServer(app)

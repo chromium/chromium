@@ -58,7 +58,8 @@ def cmd_list(args):
     for schedule_file in schedule_files:
       for row in load_benchmark(schedule_file):
         bot_to_benchmarks[row['bot']].append(
-            (schedule_file.stem, _format_bot_row(row)))
+          (schedule_file.stem, _format_bot_row(row))
+        )
 
     for bot in sorted(bot_to_benchmarks.keys()):
       print(f'Benchmarks for bot {bot!r}:')
@@ -74,9 +75,12 @@ def _get_filtered_schedule_files(benchmarks: list[str]) -> list[pathlib.Path]:
   directory = pathlib.Path(__file__).resolve().parent
   csv_files = _get_schedule_files(directory)
   filtered_files = [
-      csv_file for csv_file in csv_files if any(
-          csv_file.match(pattern) or csv_file.stem == pattern
-          for pattern in benchmarks)
+    csv_file
+    for csv_file in csv_files
+    if any(
+      csv_file.match(pattern) or csv_file.stem == pattern
+      for pattern in benchmarks
+    )
   ]
   return filtered_files
 
@@ -90,21 +94,28 @@ def cmd_add(args):
     add_bot(csv_file, args.bot, args.repeat, args.shard, args.flags)
 
 
-def add_bot(path: pathlib.Path, bot: str, repeat: int | None, shard: int | None,
-            flags: str | None):
+def add_bot(
+  path: pathlib.Path,
+  bot: str,
+  repeat: int | None,
+  shard: int | None,
+  flags: str | None,
+):
   data = load_benchmark(path)
   reader = bot_platforms.ReadCSV(path)
   fieldnames = list(reader.fieldnames or [])
 
   if any(row['bot'] == bot for row in data):
-    print(f'Error: Bot {bot!r} already exists in {path.name}. '
-          'Updates are not supported to preserve comments.')
+    print(
+      f'Error: Bot {bot!r} already exists in {path.name}. '
+      'Updates are not supported to preserve comments.'
+    )
     return
 
   new_row = {
-      'bot': bot,
-      'repeat': '1',
-      'shard': '1',
+    'bot': bot,
+    'repeat': '1',
+    'shard': '1',
   }
   if repeat:
     new_row['repeat'] = str(repeat)
@@ -112,9 +123,11 @@ def add_bot(path: pathlib.Path, bot: str, repeat: int | None, shard: int | None,
     new_row['shard'] = str(shard)
   if flags is not None:
     if 'flags' not in fieldnames:
-      print(f'Error: "flags" column missing in {path.name}. '
-            'Cannot add flags without overwriting the header. '
-            'Please add the column manually first.')
+      print(
+        f'Error: "flags" column missing in {path.name}. '
+        'Cannot add flags without overwriting the header. '
+        'Please add the column manually first.'
+      )
       return
     new_row['flags'] = flags
 
@@ -183,9 +196,11 @@ def closest_matches_error(msg, value, choices):
     error_msg += f" choices are: {', '.join(c for c in choices)}"
   return argparse.ArgumentTypeError(error_msg)
 
+
 def main():
   parser = argparse.ArgumentParser(
-      description='Query and modify benchmark schedules.')
+    description='Query and modify benchmark schedules.'
+  )
   subparsers = parser.add_subparsers(dest='command')
 
   bot_choices = sorted(bot_platforms.PLATFORM_INFO.keys())
@@ -206,44 +221,51 @@ def main():
       return value
     raise closest_matches_error('Invalid bot', value, bot_choices)
 
-
   # list command
   list_parser = subparsers.add_parser('list', help='list benchmarks or bots')
-  list_parser.add_argument('--bot',
-                           help='list all benchmarks run by this bot',
-                           type=bot_type,
-                           metavar='BOT')
   list_parser.add_argument(
-      '--benchmark',
-      help='list all bots running this benchmark (supports globs)',
-      type=benchmark_type,
-      metavar='BENCHMARK')
+    '--bot',
+    help='list all benchmarks run by this bot',
+    type=bot_type,
+    metavar='BOT',
+  )
+  list_parser.add_argument(
+    '--benchmark',
+    help='list all bots running this benchmark (supports globs)',
+    type=benchmark_type,
+    metavar='BENCHMARK',
+  )
 
   # Add command
-  add_parser = subparsers.add_parser('add',
-                                     help='Add or update a bot in benchmarks')
+  add_parser = subparsers.add_parser(
+    'add', help='Add or update a bot in benchmarks'
+  )
   add_parser.add_argument('bot', help='Bot name', type=bot_type, metavar='BOT')
-  add_parser.add_argument('benchmarks',
-                          nargs='+',
-                          help='Benchmark names or glob patterns',
-                          type=benchmark_type,
-                          metavar='BENCHMARK')
+  add_parser.add_argument(
+    'benchmarks',
+    nargs='+',
+    help='Benchmark names or glob patterns',
+    type=benchmark_type,
+    metavar='BENCHMARK',
+  )
   add_parser.add_argument('--repeat', type=int, help='Number of repeats')
   add_parser.add_argument('--shard', type=int, help='Number of shards')
   add_parser.add_argument('--flags', help='Custom flags')
 
   # Remove command
-  remove_parser = subparsers.add_parser('remove',
-                                        help='Remove a bot from benchmarks')
-  remove_parser.add_argument('bot',
-                             help='Bot name',
-                             type=bot_type,
-                             metavar='BOT')
-  remove_parser.add_argument('benchmarks',
-                             nargs='+',
-                             help='Benchmark names or glob patterns',
-                             type=benchmark_type,
-                             metavar='BENCHMARK')
+  remove_parser = subparsers.add_parser(
+    'remove', help='Remove a bot from benchmarks'
+  )
+  remove_parser.add_argument(
+    'bot', help='Bot name', type=bot_type, metavar='BOT'
+  )
+  remove_parser.add_argument(
+    'benchmarks',
+    nargs='+',
+    help='Benchmark names or glob patterns',
+    type=benchmark_type,
+    metavar='BENCHMARK',
+  )
 
   args = parser.parse_args()
   cmd = args.command

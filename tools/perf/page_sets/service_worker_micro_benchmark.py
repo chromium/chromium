@@ -19,8 +19,9 @@ class ServiceWorkerMicroBenchmarkPageSet(story.StorySet):
 
   def __init__(self):
     super(ServiceWorkerMicroBenchmarkPageSet, self).__init__(
-        archive_data_file='data/service_worker_micro_benchmark.json',
-        cloud_storage_bucket=story.PUBLIC_BUCKET)
+      archive_data_file='data/service_worker_micro_benchmark.json',
+      cloud_storage_bucket=story.PUBLIC_BUCKET,
+    )
 
     # pylint: disable=line-too-long
     # The latest code of localhost:8091 is from:
@@ -29,7 +30,11 @@ class ServiceWorkerMicroBenchmarkPageSet(story.StorySet):
     # TODO(falken): House the code in GoogleChrome's GitHub repository.
     # pylint: enable=C0301
     # Why: to measure performance of many concurrent fetches
-    self.AddStory(ServiceWorkerBenchmarkPage(
-        'http://localhost:8091/index.html', self,
+    self.AddStory(
+      ServiceWorkerBenchmarkPage(
+        'http://localhost:8091/index.html',
+        self,
         make_javascript_deterministic=False,
-        name='http://localhost:8091/index.html'))
+        name='http://localhost:8091/index.html',
+      )
+    )

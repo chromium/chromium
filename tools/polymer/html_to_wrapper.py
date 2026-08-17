@@ -80,11 +80,11 @@ LIT_TOKEN = '//resources/lit/v3_0/lit.rollup.js'
 
 # Map holding all the different types of HTML files to generate wrappers for.
 TEMPLATE_MAP = {
-    'lit': _LIT_ELEMENT_TEMPLATE,
-    'lit_icons': _LIT_ICONS_TEMPLATE,
-    'native': _NATIVE_ELEMENT_TEMPLATE,
-    'polymer_icons': _POLYMER_ICONS_TEMPLATE,
-    'polymer': _POLYMER_ELEMENT_TEMPLATE,
+  'lit': _LIT_ELEMENT_TEMPLATE,
+  'lit_icons': _LIT_ICONS_TEMPLATE,
+  'native': _NATIVE_ELEMENT_TEMPLATE,
+  'polymer_icons': _POLYMER_ICONS_TEMPLATE,
+  'polymer': _POLYMER_ELEMENT_TEMPLATE,
 }
 
 
@@ -105,8 +105,9 @@ def detect_icon_template_type(icons_file):
     content = f.read()
     if 'iron-iconset-svg' in content:
       return 'polymer_icons'
-    assert 'cr-iconset' in content, \
-        'icons files must include iron-iconset-svg or cr-iconset'
+    assert 'cr-iconset' in content, (
+      'icons files must include iron-iconset-svg or cr-iconset'
+    )
     return 'lit_icons'
 
 
@@ -141,10 +142,10 @@ def _extract_import_metadata(file, minify):
     return None
 
   return {
-      # Strip metadata from content, unless minification is used, which will
-      # strip any HTML comments anyway.
-      'content': None if minify else '\n'.join(lines[end_line + 1:]),
-      'imports': '\n'.join(lines[start_line + 1:end_line]) + '\n',
+    # Strip metadata from content, unless minification is used, which will
+    # strip any HTML comments anyway.
+    'content': None if minify else '\n'.join(lines[end_line + 1 :]),
+    'imports': '\n'.join(lines[start_line + 1 : end_line]) + '\n',
   }
 
 
@@ -155,12 +156,12 @@ def main(argv):
   parser.add_argument('--in_files', required=True, nargs="*")
   parser.add_argument('--minify', action='store_true')
   parser.add_argument('--use_js', action='store_true')
-  parser.add_argument('--template',
-                      choices=['polymer', 'lit', 'native', 'detect'],
-                      default='lit')
-  parser.add_argument('--scheme',
-                      choices=['chrome', 'relative'],
-                      default='relative')
+  parser.add_argument(
+    '--template', choices=['polymer', 'lit', 'native', 'detect'], default='lit'
+  )
+  parser.add_argument(
+    '--scheme', choices=['chrome', 'relative'], default='relative'
+  )
 
   args = parser.parse_args(argv)
 
@@ -182,8 +183,9 @@ def main(argv):
     try:
       wrapper_in_folder = tmp_out_dir
       node.RunNode(
-          [path.join(_HERE_PATH, 'css_minifier.js'), in_folder, tmp_out_dir] +
-          args.in_files)
+        [path.join(_HERE_PATH, 'css_minifier.js'), in_folder, tmp_out_dir]
+        + args.in_files
+      )
     except RuntimeError as err:
       shutil.rmtree(tmp_out_dir)
       raise err
@@ -205,31 +207,35 @@ def main(argv):
         template_type = 'lit_icons'
       else:
         assert args.template == 'detect', (
-            r'Polymer/Lit icons files not supported with template="%s"' %
-            args.template)
+          r'Polymer/Lit icons files not supported with template="%s"'
+          % args.template
+        )
         template_type = detect_icon_template_type(wrapper_in_file)
     elif filename.endswith('icons_lit.html'):
       assert args.template == 'lit' or args.template == 'detect', (
-          r'Lit icons files not supported with template="%s"' % args.template)
+        r'Lit icons files not supported with template="%s"' % args.template
+      )
       # Grab the content from the equivalent Polymer file, and substitute
       # cr-iconset for iron-iconset-svg.
-      polymer_file = path.join(wrapper_in_folder,
-                               in_file.replace('icons_lit', 'icons'))
+      polymer_file = path.join(
+        wrapper_in_folder, in_file.replace('icons_lit', 'icons')
+      )
       effective_in_file = polymer_file
       template_type = 'lit_icons'
     elif template_type == 'detect':
       # Locate the file that holds the web component's definition. Assumed to
       # be in the same folder as input HTML template file.
-      definition_file = path.splitext(path.join(in_folder,
-                                                in_file))[0] + extension
+      definition_file = (
+        path.splitext(path.join(in_folder, in_file))[0] + extension
+      )
       template_type = detect_template_type(definition_file)
 
     with io.open(effective_in_file, encoding='utf-8', mode='r') as f:
       html_content = f.read()
 
       substitutions = {
-          'content': html_content,
-          'scheme': 'chrome:' if args.scheme == 'chrome' else '',
+        'content': html_content,
+        'scheme': 'chrome:' if args.scheme == 'chrome' else '',
       }
 
       if template_type == 'lit_icons':
@@ -249,9 +255,11 @@ def main(argv):
 
         # Extracting import metadata from original non-minified template.
         import_metadata = _extract_import_metadata(
-            path.join(args.in_folder, in_file), args.minify)
-        substitutions['imports'] = \
-            '' if import_metadata is None else import_metadata['imports']
+          path.join(args.in_folder, in_file), args.minify
+        )
+        substitutions['imports'] = (
+          '' if import_metadata is None else import_metadata['imports']
+        )
         if import_metadata is not None and not args.minify:
           # Remove metadata lines from content.
           substitutions['content'] = import_metadata['content']

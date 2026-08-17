@@ -42,77 +42,104 @@ class TestDashboardApi(unittest.TestCase):
   def testDescribe(self):
     self.assertEqual(dashboard_service.Describe('my_test'), 'OK')
     self.mock_request.assert_called_once_with(
-        dashboard_service.SERVICE_URL + '/api/describe', method='POST',
-        params={'test_suite': 'my_test'}, use_auth=True, accept='json')
+      dashboard_service.SERVICE_URL + '/api/describe',
+      method='POST',
+      params={'test_suite': 'my_test'},
+      use_auth=True,
+      accept='json',
+    )
 
   def testListTestPaths(self):
     self.assertEqual(
-        dashboard_service.ListTestPaths('my_test', 'a_rotation'), 'OK')
+      dashboard_service.ListTestPaths('my_test', 'a_rotation'), 'OK'
+    )
     self.mock_request.assert_called_once_with(
-        dashboard_service.SERVICE_URL + '/api/list_timeseries/my_test',
-        method='POST', params={'sheriff': 'a_rotation'}, use_auth=True,
-        accept='json')
+      dashboard_service.SERVICE_URL + '/api/list_timeseries/my_test',
+      method='POST',
+      params={'sheriff': 'a_rotation'},
+      use_auth=True,
+      accept='json',
+    )
 
   def testMatchTestPaths(self):
-    self.assertEqual(
-        dashboard_service.MatchTestPaths('*/*/benchmark/*'), 'OK')
+    self.assertEqual(dashboard_service.MatchTestPaths('*/*/benchmark/*'), 'OK')
     self.mock_request.assert_called_once_with(
-        dashboard_service.SERVICE_URL + '/list_tests',
-        method='POST', params={'type': 'pattern', 'p': '*/*/benchmark/*'},
-        use_auth=True, accept='json')
+      dashboard_service.SERVICE_URL + '/list_tests',
+      method='POST',
+      params={'type': 'pattern', 'p': '*/*/benchmark/*'},
+      use_auth=True,
+      accept='json',
+    )
 
   def testTimeseries2(self):
     response = dashboard_service.Timeseries2(
-        test_suite='loading.mobile',
-        measurement='timeToFirstContenrfulPaint',
-        bot='ChromiumPerf:androd-go-perf',
-        columns='revision,avg')
+      test_suite='loading.mobile',
+      measurement='timeToFirstContenrfulPaint',
+      bot='ChromiumPerf:androd-go-perf',
+      columns='revision,avg',
+    )
     self.assertEqual(response, 'OK')
     self.mock_request.assert_called_once_with(
-        dashboard_service.SERVICE_URL + '/api/timeseries2',
-        params={'test_suite': 'loading.mobile',
-                'measurement': 'timeToFirstContenrfulPaint',
-                'bot': 'ChromiumPerf:androd-go-perf',
-                'columns': 'revision,avg'},
-        method='POST', use_auth=True, accept='json')
+      dashboard_service.SERVICE_URL + '/api/timeseries2',
+      params={
+        'test_suite': 'loading.mobile',
+        'measurement': 'timeToFirstContenrfulPaint',
+        'bot': 'ChromiumPerf:androd-go-perf',
+        'columns': 'revision,avg',
+      },
+      method='POST',
+      use_auth=True,
+      accept='json',
+    )
 
   def testTimeseries2_notFoundRaisesKeyError(self):
     self.mock_request.side_effect = TestResponse(404, 'Not found')
     with self.assertRaises(KeyError):
       dashboard_service.Timeseries2(
-          test_suite='loading.mobile',
-          measurement='timeToFirstContenrfulPaint',
-          bot='ChromiumPerf:androd-go-perf',
-          columns='revision,avg')
+        test_suite='loading.mobile',
+        measurement='timeToFirstContenrfulPaint',
+        bot='ChromiumPerf:androd-go-perf',
+        columns='revision,avg',
+      )
 
   def testTimeseries2_missingArgsRaisesTypeError(self):
     with self.assertRaises(TypeError):
       dashboard_service.Timeseries2(
-          test_suite='loading.mobile',
-          measurement='timeToFirstContenrfulPaint')
+        test_suite='loading.mobile', measurement='timeToFirstContenrfulPaint'
+      )
 
   def testTimeseries(self):
     response = dashboard_service.Timeseries('some test path')
     self.assertEqual(response, 'OK')
     self.mock_request.assert_called_once_with(
-        dashboard_service.SERVICE_URL + '/api/timeseries/some%20test%20path',
-        params={'num_days': 30}, method='POST', use_auth=True, accept='json')
+      dashboard_service.SERVICE_URL + '/api/timeseries/some%20test%20path',
+      params={'num_days': 30},
+      method='POST',
+      use_auth=True,
+      accept='json',
+    )
 
   def testTimeseries_notFoundRaisesKeyError(self):
     self.mock_request.side_effect = TestResponse(
-        400, '{"error": "Invalid test_path"}')
+      400, '{"error": "Invalid test_path"}'
+    )
     with self.assertRaises(KeyError):
       dashboard_service.Timeseries('some test path')
 
   def testBugs(self):
     self.assertEqual(dashboard_service.Bugs(123), 'OK')
     self.mock_request.assert_called_once_with(
-        dashboard_service.SERVICE_URL + '/api/bugs/123', method='POST',
-        use_auth=True, accept='json')
+      dashboard_service.SERVICE_URL + '/api/bugs/123',
+      method='POST',
+      use_auth=True,
+      accept='json',
+    )
 
   def testIterAlerts(self):
-    pages = {'page1': {'data': 'foo', 'next_cursor': 'page2'},
-             'page2': {'data': 'bar'}}
+    pages = {
+      'page1': {'data': 'foo', 'next_cursor': 'page2'},
+      'page2': {'data': 'bar'},
+    }
 
     def RequestStub(endpoint, method=None, params=None, **kwargs):
       del kwargs  # Unused.
@@ -125,8 +152,9 @@ class TestDashboardApi(unittest.TestCase):
 
     self.mock_request.side_effect = RequestStub
     response = [
-        resp['data']
-        for resp in dashboard_service.IterAlerts(test_suite='loading.mobile')]
+      resp['data']
+      for resp in dashboard_service.IterAlerts(test_suite='loading.mobile')
+    ]
     self.assertEqual(response, ['foo', 'bar'])
     self.assertEqual(self.mock_request.call_count, 2)
 

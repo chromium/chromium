@@ -9,7 +9,6 @@ from telemetry import story
 
 
 class IntlJaZhPage(page_cycler_story.PageCyclerStory):
-
   def __init__(self, url, page_set, cache_temperature=None):
     if cache_temperature == cache_temperature_module.COLD:
       temp_suffix = '_cold'
@@ -19,21 +18,28 @@ class IntlJaZhPage(page_cycler_story.PageCyclerStory):
       raise NotImplementedError
 
     super(IntlJaZhPage, self).__init__(
-        url=url, page_set=page_set,
-        shared_page_state_class=shared_page_state.SharedDesktopPageState,
-        cache_temperature=cache_temperature,
-        name=url+temp_suffix)
+      url=url,
+      page_set=page_set,
+      shared_page_state_class=shared_page_state.SharedDesktopPageState,
+      cache_temperature=cache_temperature,
+      name=url + temp_suffix,
+    )
 
 
 class IntlJaZhPageSet(story.StorySet):
+  """Popular pages in Japanese and Chinese."""
 
-  """ Popular pages in Japanese and Chinese. """
-
-  def __init__(self, cache_temperatures=(cache_temperature_module.COLD,
-                                         cache_temperature_module.WARM)):
+  def __init__(
+    self,
+    cache_temperatures=(
+      cache_temperature_module.COLD,
+      cache_temperature_module.WARM,
+    ),
+  ):
     super(IntlJaZhPageSet, self).__init__(
       archive_data_file='data/intl_ja_zh.json',
-      cloud_storage_bucket=story.PARTNER_BUCKET)
+      cloud_storage_bucket=story.PARTNER_BUCKET,
+    )
     if cache_temperatures is None:
       cache_temperatures = [cache_temperature_module.ANY]
 
@@ -65,7 +71,7 @@ class IntlJaZhPageSet(story.StorySet):
       # pylint: disable=line-too-long
       'http://www.google.com.hk/#q=%E9%82%84%E6%8F%90%E4%BE%9B&fp=c44d333e710cb480',
       'http://udn.com/NEWS/mainpage.shtml',
-      'http://ruten.com.tw/'
+      'http://ruten.com.tw/',
     ]
 
     for url in urls_list:

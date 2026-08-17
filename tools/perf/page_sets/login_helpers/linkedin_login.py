@@ -5,8 +5,11 @@
 from page_sets.login_helpers import login_utils
 
 
-def LoginDesktopAccount(action_runner, credential,
-                 credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH):
+def LoginDesktopAccount(
+  action_runner,
+  credential,
+  credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH,
+):
   """Logs in into a Linkedin account.
 
   This function navigates the tab into Linkedin's login page and logs in a user
@@ -22,17 +25,19 @@ def LoginDesktopAccount(action_runner, credential,
     for a detailed list of possible exceptions.
   """
   account_name, password = login_utils.GetAccountNameAndPassword(
-      credential, credentials_path=credentials_path)
+    credential, credentials_path=credentials_path
+  )
 
   action_runner.Navigate('https://www.linkedin.com/uas/login')
-  action_runner.Wait(1) # Error page happens if this wait is not here.
+  action_runner.Wait(1)  # Error page happens if this wait is not here.
   login_utils.InputWithSelector(
-      action_runner, '%s@gmail.com' % account_name, 'input[type=text]')
-  login_utils.InputWithSelector(
-      action_runner, password, 'input[type=password]')
+    action_runner, '%s@gmail.com' % account_name, 'input[type=text]'
+  )
+  login_utils.InputWithSelector(action_runner, password, 'input[type=password]')
 
   login_button_function = (
-      '''document.querySelectorAll("[aria-label^='Sign in']")[0]''')
+    '''document.querySelectorAll("[aria-label^='Sign in']")[0]'''
+  )
   action_runner.WaitForElement(element_function=login_button_function)
   action_runner.ClickElement(element_function=login_button_function)
 
@@ -40,27 +45,33 @@ def LoginDesktopAccount(action_runner, credential,
   # This reload is needed for opening desktop page on mobile device
   action_runner.ReloadPage()
 
-  search_bar_function = (
-      "document.getElementById('extended-nav-search')")
+  search_bar_function = "document.getElementById('extended-nav-search')"
   action_runner.WaitForElement(element_function=search_bar_function)
 
 
-def LoginMobileAccount(action_runner, credential,
-                 credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH):
+def LoginMobileAccount(
+  action_runner,
+  credential,
+  credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH,
+):
   """Mobile equivalent of above"""
 
   account_name, password = login_utils.GetAccountNameAndPassword(
-      credential, credentials_path=credentials_path)
+    credential, credentials_path=credentials_path
+  )
 
   action_runner.Navigate('https://www.linkedin.com/uas/login')
-  action_runner.Wait(1) # Error page happens if this wait is not here.
+  action_runner.Wait(1)  # Error page happens if this wait is not here.
   login_utils.InputWithSelector(
-      action_runner, '%s@gmail.com' % account_name, 'input[name=session_key]')
+    action_runner, '%s@gmail.com' % account_name, 'input[name=session_key]'
+  )
   login_utils.InputWithSelector(
-      action_runner, password, 'input[name=session_password]')
+    action_runner, password, 'input[name=session_password]'
+  )
 
   login_button_function = (
-      '''document.querySelectorAll("[aria-label^='Sign in']")[0]''')
+    '''document.querySelectorAll("[aria-label^='Sign in']")[0]'''
+  )
   action_runner.WaitForElement(element_function=login_button_function)
   action_runner.ClickElement(element_function=login_button_function)
 

@@ -19,8 +19,9 @@ import os
 import re
 import sys
 
-CHROME_STDLIB_DIR = Path(
-    os.path.dirname(__file__)) / '../../base/tracing/stdlib'
+CHROME_STDLIB_DIR = (
+  Path(os.path.dirname(__file__)) / '../../base/tracing/stdlib'
+)
 
 
 def ReadStdlib(path: Path) -> Dict[str, str]:
@@ -38,9 +39,9 @@ def ReadStdlib(path: Path) -> Dict[str, str]:
       if not file.endswith('.sql'):
         continue
       with open(os.path.join(root, file)) as f:
-        module = os.path.join(os.path.relpath(root, path),
-                              file.removesuffix('.sql')).replace(
-                                  os.path.sep, '.')
+        module = os.path.join(
+          os.path.relpath(root, path), file.removesuffix('.sql')
+        ).replace(os.path.sep, '.')
         result[module] = f.read()
   return result
 
@@ -48,13 +49,15 @@ def ReadStdlib(path: Path) -> Dict[str, str]:
 @dataclass
 class Module:
   """A class representing a parsed SQL module."""
+
   name: str
   includes: List[str]
   content: str
 
 
-def ParseModule(name: str, content: str,
-                known_stdlib_modules: Collection[str]) -> Module:
+def ParseModule(
+  name: str, content: str, known_stdlib_modules: Collection[str]
+) -> Module:
   """
   Parses a given SQL modules, resolving includes and updating
   CREATE PERFETTO ... statements to CREATE OR REPLACE.
@@ -76,8 +79,9 @@ def ParseModule(name: str, content: str,
       return ''
     return match.group(0)
 
-  content = re.sub(r'INCLUDE PERFETTO MODULE ([\w\.]*);', ReplaceInclude,
-                   content)
+  content = re.sub(
+    r'INCLUDE PERFETTO MODULE ([\w\.]*);', ReplaceInclude, content
+  )
   content = content.replace('CREATE PERFETTO', 'CREATE OR REPLACE PERFETTO')
   # If the module doesn't end with a semicolon, add one to terminate the statement.
   if not content.strip().endswith(';'):
@@ -97,13 +101,14 @@ def ParseModules(stdlib: Dict[str, str]) -> List[Module]:
     A list of Module objects, each representing a parsed module.
   """
   return [
-      ParseModule(name, content, stdlib.keys())
-      for name, content in stdlib.items()
+    ParseModule(name, content, stdlib.keys())
+    for name, content in stdlib.items()
   ]
 
 
-def SortModules(stdlib: List[Module],
-                targets: List[str] | None = None) -> List[Module]:
+def SortModules(
+  stdlib: List[Module], targets: List[str] | None = None
+) -> List[Module]:
   """
   Topologically sorts the given modules based on their includes.
   Assumes that there are no circular includes -- otherwise the behaviour is undefined.

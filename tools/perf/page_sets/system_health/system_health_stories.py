@@ -20,14 +20,13 @@ class SystemHealthStorySet(story.StorySet):
   See https://goo.gl/Jek2NL.
   """
 
-  def __init__(self,
-               platform,
-               case=None,
-               take_memory_measurement=False,
-               tag=None):
+  def __init__(
+    self, platform, case=None, take_memory_measurement=False, tag=None
+  ):
     super(SystemHealthStorySet, self).__init__(
-        archive_data_file=('../data/system_health_%s.json' % platform),
-        cloud_storage_bucket=story.PARTNER_BUCKET)
+      archive_data_file=('../data/system_health_%s.json' % platform),
+      cloud_storage_bucket=story.PARTNER_BUCKET,
+    )
 
     assert platform in platforms.ALL_PLATFORMS
 
@@ -55,10 +54,12 @@ class SystemHealthStorySet(story.StorySet):
 
 class SystemHealthBlankStorySet(story.StorySet):
   """A story set containing the chrome:blank story only."""
+
   def __init__(self, take_memory_measurement=False):
     super(SystemHealthBlankStorySet, self).__init__()
     self.AddStory(
-        chrome_stories.BlankAboutBlankStory(self, take_memory_measurement))
+      chrome_stories.BlankAboutBlankStory(self, take_memory_measurement)
+    )
 
 
 class DesktopSystemHealthStorySet(SystemHealthStorySet):
@@ -69,9 +70,11 @@ class DesktopSystemHealthStorySet(SystemHealthStorySet):
   the generic SystemHealthStorySet class instead (you'll need to override the
   CreateStorySet method of your benchmark).
   """
+
   def __init__(self):
     super(DesktopSystemHealthStorySet, self).__init__(
-        'desktop', take_memory_measurement=False)
+      'desktop', take_memory_measurement=False
+    )
 
 
 class MobileSystemHealthStorySet(SystemHealthStorySet):
@@ -82,9 +85,11 @@ class MobileSystemHealthStorySet(SystemHealthStorySet):
   the generic SystemHealthStorySet class instead (you'll need to override the
   CreateStorySet method of your benchmark).
   """
+
   def __init__(self):
     super(MobileSystemHealthStorySet, self).__init__(
-        'mobile', take_memory_measurement=False)
+      'mobile', take_memory_measurement=False
+    )
 
 
 def IterAllSystemHealthStoryClasses():
@@ -96,8 +101,11 @@ def IterAllSystemHealthStoryClasses():
   start_dir = os.path.dirname(os.path.abspath(__file__))
   # Sort the classes by their names so that their order is stable and
   # deterministic.
-  for unused_cls_name, cls in sorted(discover.DiscoverClasses(
+  for unused_cls_name, cls in sorted(
+    discover.DiscoverClasses(
       start_dir=start_dir,
       top_level_dir=os.path.dirname(start_dir),
-      base_class=system_health_story.SystemHealthStory).items()):
+      base_class=system_health_story.SystemHealthStory,
+    ).items()
+  ):
     yield cls

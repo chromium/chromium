@@ -25,38 +25,42 @@ class MouseFeature(hid_gadget.HidFeature):
   """
 
   REPORT_DESC = hid_descriptors.ReportDescriptor(
-      hid_descriptors.UsagePage(0x01),  # Generic Desktop
-      hid_descriptors.Usage(0x02),  # Mouse
+    hid_descriptors.UsagePage(0x01),  # Generic Desktop
+    hid_descriptors.Usage(0x02),  # Mouse
+    hid_descriptors.Collection(
+      hid_constants.CollectionType.APPLICATION,
+      hid_descriptors.Usage(0x01),  # Pointer
       hid_descriptors.Collection(
-          hid_constants.CollectionType.APPLICATION,
-          hid_descriptors.Usage(0x01),  # Pointer
-          hid_descriptors.Collection(
-              hid_constants.CollectionType.PHYSICAL,
-              hid_descriptors.UsagePage(0x09),  # Buttons
-              hid_descriptors.UsageMinimum(1),
-              hid_descriptors.UsageMaximum(3),
-              hid_descriptors.LogicalMinimum(0, force_length=1),
-              hid_descriptors.LogicalMaximum(1),
-              hid_descriptors.ReportCount(3),
-              hid_descriptors.ReportSize(1),
-              hid_descriptors.Input(hid_descriptors.Data,
-                                    hid_descriptors.Variable,
-                                    hid_descriptors.Absolute),
-              hid_descriptors.ReportCount(1),
-              hid_descriptors.ReportSize(5),
-              hid_descriptors.Input(hid_descriptors.Constant),
-              hid_descriptors.UsagePage(0x01),  # Generic Desktop
-              hid_descriptors.Usage(0x30),  # X
-              hid_descriptors.Usage(0x31),  # Y
-              hid_descriptors.LogicalMinimum(0x81),  # -127
-              hid_descriptors.LogicalMaximum(127),
-              hid_descriptors.ReportSize(8),
-              hid_descriptors.ReportCount(2),
-              hid_descriptors.Input(hid_descriptors.Data,
-                                    hid_descriptors.Variable,
-                                    hid_descriptors.Relative)
-          )
-      )
+        hid_constants.CollectionType.PHYSICAL,
+        hid_descriptors.UsagePage(0x09),  # Buttons
+        hid_descriptors.UsageMinimum(1),
+        hid_descriptors.UsageMaximum(3),
+        hid_descriptors.LogicalMinimum(0, force_length=1),
+        hid_descriptors.LogicalMaximum(1),
+        hid_descriptors.ReportCount(3),
+        hid_descriptors.ReportSize(1),
+        hid_descriptors.Input(
+          hid_descriptors.Data,
+          hid_descriptors.Variable,
+          hid_descriptors.Absolute,
+        ),
+        hid_descriptors.ReportCount(1),
+        hid_descriptors.ReportSize(5),
+        hid_descriptors.Input(hid_descriptors.Constant),
+        hid_descriptors.UsagePage(0x01),  # Generic Desktop
+        hid_descriptors.Usage(0x30),  # X
+        hid_descriptors.Usage(0x31),  # Y
+        hid_descriptors.LogicalMinimum(0x81),  # -127
+        hid_descriptors.LogicalMaximum(127),
+        hid_descriptors.ReportSize(8),
+        hid_descriptors.ReportCount(2),
+        hid_descriptors.Input(
+          hid_descriptors.Data,
+          hid_descriptors.Variable,
+          hid_descriptors.Relative,
+        ),
+      ),
+    ),
   )
 
   def __init__(self):
@@ -98,14 +102,15 @@ class MouseGadget(hid_gadget.HidGadget):
   def __init__(self):
     self._feature = MouseFeature()
     super(MouseGadget, self).__init__(
-        report_desc=MouseFeature.REPORT_DESC,
-        features={0: self._feature},
-        packet_size=8,
-        interval_ms=1,
-        out_endpoint=False,
-        vendor_id=usb_constants.VendorID.GOOGLE,
-        product_id=usb_constants.ProductID.GOOGLE_MOUSE_GADGET,
-        device_version=0x0100)
+      report_desc=MouseFeature.REPORT_DESC,
+      features={0: self._feature},
+      packet_size=8,
+      interval_ms=1,
+      out_endpoint=False,
+      vendor_id=usb_constants.VendorID.GOOGLE,
+      product_id=usb_constants.ProductID.GOOGLE_MOUSE_GADGET,
+      device_version=0x0100,
+    )
     self.AddStringDescriptor(1, 'Google Inc.')
     self.AddStringDescriptor(2, 'Mouse Gadget')
 
@@ -125,18 +130,16 @@ def RegisterHandlers():
   from tornado import web
 
   class WebConfigureHandler(web.RequestHandler):
-
     def post(self):
       gadget = MouseGadget()
       server.SwitchGadget(gadget)
 
   class WebClickHandler(web.RequestHandler):
-
     def post(self):
       BUTTONS = {
-          '1': hid_constants.Mouse.BUTTON_1,
-          '2': hid_constants.Mouse.BUTTON_2,
-          '3': hid_constants.Mouse.BUTTON_3,
+        '1': hid_constants.Mouse.BUTTON_1,
+        '2': hid_constants.Mouse.BUTTON_2,
+        '3': hid_constants.Mouse.BUTTON_3,
       }
 
       button = BUTTONS[self.get_argument('button')]
@@ -144,15 +147,18 @@ def RegisterHandlers():
       server.gadget.ButtonUp(button)
 
   class WebMoveHandler(web.RequestHandler):
-
     def post(self):
       x = int(self.get_argument('x'))
       y = int(self.get_argument('y'))
       server.gadget.Move(x, y)
 
   import server
-  server.app.add_handlers('.*$', [
+
+  server.app.add_handlers(
+    '.*$',
+    [
       (r'/mouse/configure', WebConfigureHandler),
       (r'/mouse/move', WebMoveHandler),
       (r'/mouse/click', WebClickHandler),
-  ])
+    ],
+  )

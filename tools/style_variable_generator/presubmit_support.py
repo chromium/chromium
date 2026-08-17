@@ -41,10 +41,12 @@ def FindDeletedCSSVariables(input_api, output_api, input_file_filter):
             return False
         # Normalise windows file paths to unix format.
         file_path = "/".join(os.path.split(file_path))
-        return any([
-            re.search(pattern, file_path) != None
-            for pattern in input_file_filter
-        ])
+        return any(
+            [
+                re.search(pattern, file_path) != None
+                for pattern in input_file_filter
+            ]
+        )
 
     files = input_api.AffectedFiles(file_filter=IsInputFile)
 
@@ -54,8 +56,9 @@ def FindDeletedCSSVariables(input_api, output_api, input_file_filter):
             file_contents = contents_function(f)
             if len(file_contents) == 0:
                 continue
-            style_generator.AddJSONToModel('\n'.join(file_contents),
-                                           in_file=f.LocalPath())
+            style_generator.AddJSONToModel(
+                '\n'.join(file_contents), in_file=f.LocalPath()
+            )
         return set(style_generator.GetCSSVarNames().keys())
 
     old_names = get_css_var_names_for_contents(lambda f: f.OldContents())
@@ -67,17 +70,24 @@ def FindDeletedCSSVariables(input_api, output_api, input_file_filter):
 
     # Use --full-name and -n for formatting, -E for extended regexp, and :/
     # as pathspec for grepping across entire repository (assumes git > 1.9.1)
-    problems = RunGit([
-        'grep', '--full-name', '-En',
-        BuildGrepQuery(deleted_names), '--', ':/'
-    ]).splitlines()
+    problems = RunGit(
+        [
+            'grep',
+            '--full-name',
+            '-En',
+            BuildGrepQuery(deleted_names),
+            '--',
+            ':/',
+        ]
+    ).splitlines()
 
     if not problems:
         return []
 
     return [
         output_api.PresubmitPromptWarning(
-            'style_variable_generator variables were deleted but usages of ' +
-            'generated CSS variables were found in the codebase:',
-            items=problems)
+            'style_variable_generator variables were deleted but usages of '
+            + 'generated CSS variables were found in the codebase:',
+            items=problems,
+        )
     ]

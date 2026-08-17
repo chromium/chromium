@@ -10,7 +10,7 @@ from py_utils import cloud_storage
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_TRACE_DIR = os.path.join(_SCRIPT_DIR, 'traces')
 
-HTML_URL_PREFIX = ('https://storage.cloud.google.com/chrome-telemetry-output/')
+HTML_URL_PREFIX = 'https://storage.cloud.google.com/chrome-telemetry-output/'
 
 
 def _GetSubpathInBucket(html_url):
@@ -27,17 +27,20 @@ def _GetProtoTraceLinkFromTraceEventsDir(link_prefix):
   """Returns the first proto trace in |link_prefix|/trace/traceEvents/"""
   proto_link_prefix = '/'.join([link_prefix, 'trace/traceEvents/**'])
   try:
-    for link in cloud_storage.List(cloud_storage.TELEMETRY_OUTPUT,
-                                   proto_link_prefix):
+    for link in cloud_storage.List(
+      cloud_storage.TELEMETRY_OUTPUT, proto_link_prefix
+    ):
       if link.endswith('.pb.gz') or link.endswith('.pb'):
         return link[1:]  # Strip the initial '/'.
   except cloud_storage.NotFoundError as e:
     # This directory doesn't exist at all.
-    raise cloud_storage.NotFoundError('No URLs match the prefix %s: %s' %
-                                      (proto_link_prefix, str(e)))
+    raise cloud_storage.NotFoundError(
+      'No URLs match the prefix %s: %s' % (proto_link_prefix, str(e))
+    )
   # The directory exists, but no proto trace found.
   raise cloud_storage.NotFoundError(
-      'Proto trace not found in cloud storage. Path: %s.' % proto_link_prefix)
+    'Proto trace not found in cloud storage. Path: %s.' % proto_link_prefix
+  )
 
 
 def GetFileExtension(file_path):
@@ -59,7 +62,7 @@ def GetLocalTraceFileName(html_url):
   extensions. It's up to the caller to add .html or .pb etc."""
   subpath = _GetSubpathInBucket(html_url)
   extension = GetFileExtension(subpath)
-  no_extension_subpath = subpath[:-len(extension)]
+  no_extension_subpath = subpath[: -len(extension)]
   return '_'.join(no_extension_subpath.split('/'))
 
 
@@ -96,7 +99,8 @@ def DownloadHtmlTrace(html_url, download_dir=DEFAULT_TRACE_DIR):
   remote_path = _GetSubpathInBucket(html_url)
   if not cloud_storage.Exists(cloud_storage.TELEMETRY_OUTPUT, remote_path):
     raise cloud_storage.NotFoundError(
-        'HTML trace %s not found in cloud storage.' % html_url)
+      'HTML trace %s not found in cloud storage.' % html_url
+    )
 
   cloud_storage.Get(cloud_storage.TELEMETRY_OUTPUT, remote_path, local_path)
   return local_path

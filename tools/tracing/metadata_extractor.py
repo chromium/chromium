@@ -13,17 +13,20 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.pardir, 'perf'))
 from core.tbmv3 import trace_processor
 
 VERSION_NUM_QUERY = (
-    'select str_value from metadata where name LIKE "cr-%product-version"')
+  'select str_value from metadata where name LIKE "cr-%product-version"'
+)
 OS_NAME_QUERY = 'select str_value from metadata where name LIKE "cr-%os-name"'
 ARCH_QUERY = 'select str_value from metadata where name LIKE "cr-%os-arch"'
 BITNESS_QUERY = (
-    'select int_value from metadata where name LIKE "cr-%chrome-bitness"')
-VERSION_CODE_QUERY = ('select int_value from metadata '
-                      'where name LIKE "cr-%playstore_version_code"')
+  'select int_value from metadata where name LIKE "cr-%chrome-bitness"'
+)
+VERSION_CODE_QUERY = (
+  'select int_value from metadata where name LIKE "cr-%playstore_version_code"'
+)
 MODULES_QUERY = 'select name, build_id from stack_profile_mapping'
 
 
-class OSName():
+class OSName:
   ANDROID = 'Android'
   LINUX = 'Linux'
   MAC = 'Mac OS X'
@@ -63,40 +66,41 @@ class MetadataExtractor:
     self.modules = None
 
   def __str__(self):
-    return ('Initialized: {initialized}\n'
-            'Trace Processor Path: {trace_processor_path}\n'
-            'Trace File: {trace_file}\n'
-            'Version Number: {version_number}\n'
-            'OS Name: {os_name}\n'
-            'Architecture: {architecture}\n'
-            'Bitness: {bitness}\n'
-            'Version Code: {version_code}\n'
-            'Modules: {modules}\n'.format(
-                initialized=self._initialized,
-                trace_processor_path=self._trace_processor_path,
-                trace_file=self._trace_file,
-                version_number=self.version_number,
-                os_name=self.os_name,
-                architecture=self.architecture,
-                bitness=self.bitness,
-                version_code=self.version_code,
-                modules=self.modules))
+    return (
+      'Initialized: {initialized}\n'
+      'Trace Processor Path: {trace_processor_path}\n'
+      'Trace File: {trace_file}\n'
+      'Version Number: {version_number}\n'
+      'OS Name: {os_name}\n'
+      'Architecture: {architecture}\n'
+      'Bitness: {bitness}\n'
+      'Version Code: {version_code}\n'
+      'Modules: {modules}\n'.format(
+        initialized=self._initialized,
+        trace_processor_path=self._trace_processor_path,
+        trace_file=self._trace_file,
+        version_number=self.version_number,
+        os_name=self.os_name,
+        architecture=self.architecture,
+        bitness=self.bitness,
+        version_code=self.version_code,
+        modules=self.modules,
+      )
+    )
 
   @property
   def trace_file(self):
     return self._trace_file
 
   def GetModuleIds(self):
-    """Returns set of all module IDs in |modules| field.
-    """
+    """Returns set of all module IDs in |modules| field."""
     self.Initialize()
     if self.modules is None:
       return None
     return set(self.modules.values())
 
   def Initialize(self):
-    """Extracts metadata from perfetto system trace.
-    """
+    """Extracts metadata from perfetto system trace."""
     # TODO(crbug.com/40193968): Implement Trace Processor method to run multiple
     # SQL queries without processing trace for every query.
 
@@ -155,16 +159,19 @@ class MetadataExtractor:
       return OSName.CROS
     if raw_os_name == 'Fuschia':
       return OSName.FUSCHIA
-    raise Exception('OS name "%s" not recognized: %s' %
-                    (raw_os_name, self._trace_file))
+    raise Exception(
+      'OS name "%s" not recognized: %s' % (raw_os_name, self._trace_file)
+    )
 
-  def InitializeForTesting(self,
-                           version_number=None,
-                           os_name=None,
-                           architecture=None,
-                           bitness=None,
-                           version_code=None,
-                           modules=None):
+  def InitializeForTesting(
+    self,
+    version_number=None,
+    os_name=None,
+    architecture=None,
+    bitness=None,
+    version_code=None,
+    modules=None,
+  ):
     """Sets class parameter values for test cases.
 
     The |trace_processor_path| and |trace_file| parameters should
@@ -179,36 +186,37 @@ class MetadataExtractor:
     self.modules = modules
 
   def _GetStringValueFromQuery(self, sql):
-    """Runs SQL query on trace processor and returns 'str_value' result.
-    """
+    """Runs SQL query on trace processor and returns 'str_value' result."""
     try:
-      return trace_processor.RunQuery(self._trace_processor_path,
-                                      self._trace_file, sql)[0]['str_value']
+      return trace_processor.RunQuery(
+        self._trace_processor_path, self._trace_file, sql
+      )[0]['str_value']
     except Exception:
       return None
 
   def _GetIntValueFromQuery(self, sql):
-    """Runs SQL query on trace processor and returns 'int_value' result.
-    """
+    """Runs SQL query on trace processor and returns 'int_value' result."""
     try:
-      return trace_processor.RunQuery(self._trace_processor_path,
-                                      self._trace_file, sql)[0]['int_value']
+      return trace_processor.RunQuery(
+        self._trace_processor_path, self._trace_file, sql
+      )[0]['int_value']
     except Exception:
       return None
 
   def _ExtractValidModuleMap(self):
-    """Extracts valid module name to module debug ID map/dict from trace.
-    """
+    """Extracts valid module name to module debug ID map/dict from trace."""
     try:
-      query_result = trace_processor.RunQuery(self._trace_processor_path,
-                                              self._trace_file, MODULES_QUERY)
+      query_result = trace_processor.RunQuery(
+        self._trace_processor_path, self._trace_file, MODULES_QUERY
+      )
       module_map = {}
       for row in query_result:
         row_name = row['name']
         row_debug_id = row['build_id']
         # Discard invalid key, value pairs
-        if ((row_name is None or row_name == '/missing')
-            or (row_debug_id is None or row_debug_id == '/missing')):
+        if (row_name is None or row_name == '/missing') or (
+          row_debug_id is None or row_debug_id == '/missing'
+        ):
           continue
         module_map[row_name] = row_debug_id.upper()
 

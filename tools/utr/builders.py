@@ -12,10 +12,12 @@ _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
 # TODO(crbug.com/41492688): Support src-internal configs too. When this is done,
 # ensure tools/utr/recipe.py is not using the public reclient instance
-_BUILDER_PROP_DIRS = _SRC_DIR.joinpath('infra', 'config', 'generated',
-                                       'builders')
-_INTERNAL_BUILDER_PROP_DIRS = _SRC_DIR.joinpath('internal', 'infra', 'config',
-                                                'generated', 'builders')
+_BUILDER_PROP_DIRS = _SRC_DIR.joinpath(
+  'infra', 'config', 'generated', 'builders'
+)
+_INTERNAL_BUILDER_PROP_DIRS = _SRC_DIR.joinpath(
+  'internal', 'infra', 'config', 'generated', 'builders'
+)
 
 
 def find_builder_props(builder_name, bucket_name=None, project_name=None):
@@ -36,8 +38,9 @@ def find_builder_props(builder_name, bucket_name=None, project_name=None):
     if not props_dir.exists():
       return matches
     for bucket_path in props_dir.iterdir():
-      if not bucket_path.is_dir() or (bucket_name
-                                      and bucket_path.name != bucket_name):
+      if not bucket_path.is_dir() or (
+        bucket_name and bucket_path.name != bucket_name
+      ):
         continue
       for builder_path in bucket_path.iterdir():
         if builder_path.name != builder_name:
@@ -45,8 +48,9 @@ def find_builder_props(builder_name, bucket_name=None, project_name=None):
         prop_file = builder_path.joinpath('properties.json')
         if not prop_file.exists():
           logging.warning(
-              'Found generated dir for builder at %s, but no prop file?',
-              builder_path)
+            'Found generated dir for builder at %s, but no prop file?',
+            builder_path,
+          )
           continue
         matches.append(prop_file)
     return matches
@@ -65,36 +69,49 @@ def find_builder_props(builder_name, bucket_name=None, project_name=None):
       possible_matches += matches
 
   if not possible_matches:
-    if (project_name and project_name.startswith('chrome')
-        and not _INTERNAL_BUILDER_PROP_DIRS.exists()):
+    if (
+      project_name
+      and project_name.startswith('chrome')
+      and not _INTERNAL_BUILDER_PROP_DIRS.exists()
+    ):
       logging.warning(
-          '[red]%s looks like an internal builder, but src-internal is not '
-          'present in this checkout. Make sure checkout_src_internal is set to '
-          'True in your .gclient file and run `gclient sync`.[/]', builder_name)
+        '[red]%s looks like an internal builder, but src-internal is not '
+        'present in this checkout. Make sure checkout_src_internal is set to '
+        'True in your .gclient file and run `gclient sync`.[/]',
+        builder_name,
+      )
     # Try also fetching the props from buildbucket. This will give us needed
     # vals like recipe and builder-group name for builders that aren't
     # bootstrapped.
     if bucket_name and project_name:
       logging.info(
-          'Prop file not found, attempting to fetch props from buildbucket.')
-      props = fetch_props_from_buildbucket(builder_name, bucket_name,
-                                           project_name)
+        'Prop file not found, attempting to fetch props from buildbucket.'
+      )
+      props = fetch_props_from_buildbucket(
+        builder_name, bucket_name, project_name
+      )
       if props:
         return props, project_name
     logging.error(
-        '[red]No props found. Are you sure you have the correct project '
-        '("%s"), bucket ("%s"), and builder name ("%s")?[/]', project_name,
-        bucket_name, builder_name)
+      '[red]No props found. Are you sure you have the correct project '
+      '("%s"), bucket ("%s"), and builder name ("%s")?[/]',
+      project_name,
+      bucket_name,
+      builder_name,
+    )
     if not _INTERNAL_BUILDER_PROP_DIRS.exists():
       logging.warning(
-          'src-internal not detected in this checkout. Perhaps the builder '
-          'is a "chrome" one, in which: case make sure to add src-internal to '
-          "your checkout if a you're a Googler.")
+        'src-internal not detected in this checkout. Perhaps the builder '
+        'is a "chrome" one, in which: case make sure to add src-internal to '
+        "your checkout if a you're a Googler."
+      )
     return None, None
   if len(possible_matches) > 1:
     logging.error(
-        '[red]Found multiple prop files for builder %s. Pass in a project '
-        '("-p") and bucket name ("-B").[/]', builder_name)
+      '[red]Found multiple prop files for builder %s. Pass in a project '
+      '("-p") and bucket name ("-B").[/]',
+      builder_name,
+    )
     for m in possible_matches:
       logging.error(m)
     return None, None
@@ -119,29 +136,31 @@ def fetch_props_from_buildbucket(builder_name, bucket_name, project_name):
     Dict of the builder's input props
   """
   input_json = {
-      'id': {
-          'project': project_name,
-          'bucket': bucket_name,
-          'builder': builder_name,
-      }
+    'id': {
+      'project': project_name,
+      'bucket': bucket_name,
+      'builder': builder_name,
+    }
   }
   cmd = [
-      'luci-auth',
-      'context',
-      '--',
-      'prpc',
-      'call',
-      'cr-buildbucket.appspot.com',
-      'buildbucket.v2.Builders.GetBuilder',
+    'luci-auth',
+    'context',
+    '--',
+    'prpc',
+    'call',
+    'cr-buildbucket.appspot.com',
+    'buildbucket.v2.Builders.GetBuilder',
   ]
   logging.debug('Running prpc:')
   logging.debug(' '.join(cmd))
-  p = subprocess.run(cmd,
-                     input=json.dumps(input_json),
-                     text=True,
-                     stdout=subprocess.PIPE,
-                     stderr=subprocess.STDOUT,
-                     check=False)
+  p = subprocess.run(
+    cmd,
+    input=json.dumps(input_json),
+    text=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    check=False,
+  )
   if p.returncode:
     logging.warning('Error fetching the build template from buildbucket')
     # Use the "basic_logger" here (and below) to avoid rich from coloring random

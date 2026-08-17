@@ -35,8 +35,10 @@ def Compare(file1, file2, **kwargs):
   im2 = Image.open(file2)
 
   if im1.size != im2.size:
-    return ("The images are of different size (%r vs %r)" %
-            (im1.size, im2.size), im1)
+    return (
+      "The images are of different size (%r vs %r)" % (im1.size, im2.size),
+      im1,
+    )
 
   diff = ImageChops.difference(im1, im2)
 
@@ -46,8 +48,11 @@ def Compare(file1, file2, **kwargs):
       mask = Image.open(maskfile)
 
       if mask.size != im1.size:
-        return ("The mask is of a different size than the images (%r vs %r)" %
-                (mask.size, im1.size), mask)
+        return (
+          "The mask is of a different size than the images (%r vs %r)"
+          % (mask.size, im1.size),
+          mask,
+        )
 
       diff = ImageChops.multiply(diff, mask.convert(diff.mode))
 

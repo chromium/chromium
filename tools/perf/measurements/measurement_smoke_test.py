@@ -22,13 +22,18 @@ def _GetAllPossiblePageTestInstances():
   # Get all page test instances from measurement classes that are directly
   # constructible
   all_measurement_classes = discover.DiscoverClasses(
-      measurements_dir, top_level_dir, legacy_page_test.LegacyPageTest,
-      index_by_class_name=True, directly_constructable=True).values()
+    measurements_dir,
+    top_level_dir,
+    legacy_page_test.LegacyPageTest,
+    index_by_class_name=True,
+    directly_constructable=True,
+  ).values()
   for measurement_class in all_measurement_classes:
     page_test_instances.append(measurement_class())
 
   all_benchmarks_classes = discover.DiscoverClasses(
-      benchmarks_dir, top_level_dir, benchmark_module.Benchmark).values()
+    benchmarks_dir, top_level_dir, benchmark_module.Benchmark
+  ).values()
 
   # Get all page test instances from defined benchmarks.
   # Note: since this depends on the command line options, there is no guarantee

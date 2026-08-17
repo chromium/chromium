@@ -40,27 +40,34 @@ def RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
       file_path = os.path.abspath(os.path.join(subdir_path, filename))
 
       if '.breakpad' not in filename:
-        flag_utils.GetTracingLogger().debug('File is not a breakpad file: %s',
-                                            file_path)
+        flag_utils.GetTracingLogger().debug(
+          'File is not a breakpad file: %s', file_path
+        )
         continue
 
       module_id = ExtractModuleIdIfValidBreakpad(file_path)
       if module_id is None:
         flag_utils.GetTracingLogger().debug(
-            'Failed to extract file module id: %s', file_path)
+          'Failed to extract file module id: %s', file_path
+        )
         continue
 
       new_filename = module_id + '.breakpad'
       dest_path = os.path.abspath(
-          os.path.join(breakpad_output_dir, new_filename))
+        os.path.join(breakpad_output_dir, new_filename)
+      )
 
       # Ensure all new filenames (module ids) are unique. If there is module id
       # repetition, the first file with the same module_id has already been
       # moved.
       if os.path.exists(dest_path):
-        raise AssertionError(('Symbol file modules ids are not '
-                              'unique: %s\nSee these files: %s, %s' %
-                              (module_id, file_path, dest_path)))
+        raise AssertionError(
+          (
+            'Symbol file modules ids are not '
+            'unique: %s\nSee these files: %s, %s'
+            % (module_id, file_path, dest_path)
+          )
+        )
 
       shutil.move(file_path, dest_path)
 

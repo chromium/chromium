@@ -14,6 +14,7 @@ import shutil
 import sys
 
 from core import path_util
+
 path_util.AddPyUtilsToPath()
 sys.path.append(path_util.GetTracingDir())
 
@@ -25,6 +26,7 @@ import test_env
 
 # Note the name should be the one used by results_processor.ProcessResults.
 MERGED_RESULTS = '_test_results.jsonl'
+
 
 def _GetTraceDir(options):
   return os.path.join(options.intermediate_dir, 'trace')
@@ -85,9 +87,9 @@ def _MergeResultsJson(trace_dir, output_file):
   concatenates them into a jsonl file to feed result processor scripts later on.
   """
   result_files = [
-      os.path.join(trace_dir, trace)
-      for trace in os.listdir(trace_dir)
-      if trace.endswith('test_result.json')
+    os.path.join(trace_dir, trace)
+    for trace in os.listdir(trace_dir)
+    if trace.endswith('test_result.json')
   ]
   with open(output_file, 'w') as output:
     for result_file in result_files:
@@ -99,8 +101,10 @@ def _MergeResultsJson(trace_dir, output_file):
 
 def ProcessResults(options):
   """Collect generated results and call results_processor to compute results."""
-  _MergeResultsJson(_GetTraceDir(options),
-                    os.path.join(options.intermediate_dir, MERGED_RESULTS))
+  _MergeResultsJson(
+    _GetTraceDir(options),
+    os.path.join(options.intermediate_dir, MERGED_RESULTS),
+  )
   process_return_code = results_processor.ProcessResults(options)
   if process_return_code != 0:
     return process_return_code

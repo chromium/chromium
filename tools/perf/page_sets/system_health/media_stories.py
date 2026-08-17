@@ -39,12 +39,14 @@ class _MediaStory(system_health_story.SystemHealthStory):
     action_runner.Wait(self.PLAY_DURATION)
     while self._GetTimeInSeconds(action_runner) < self.PLAY_DURATION:
       action_runner.Wait(
-          self.PLAY_DURATION - self._GetTimeInSeconds(action_runner))
+        self.PLAY_DURATION - self._GetTimeInSeconds(action_runner)
+      )
 
   def _GetTimeInSeconds(self, action_runner):
     minutes, seconds = action_runner.EvaluateJavaScript(
-        'document.querySelector({{ selector }}).textContent',
-        selector=self.TIME_SELECTOR).split(':')
+      'document.querySelector({{ selector }}).textContent',
+      selector=self.TIME_SELECTOR,
+    ).split(':')
     return int(minutes * 60 + seconds)
 
 
@@ -55,6 +57,7 @@ class _MediaStory(system_health_story.SystemHealthStory):
 
 class GooglePlayMusicDesktopStory(_MediaStory):
   """Browse the songs list in music.google.com, then play a song."""
+
   NAME = 'play:media:google_play_music'
   URL = 'https://music.google.com'
   TAGS = [story_tags.HEALTH_CHECK, story_tags.YEAR_2016]
@@ -74,12 +77,14 @@ class GooglePlayMusicDesktopStory(_MediaStory):
     self._WaitForAndClickElementBySelector(action_runner, self.SEARCH_SELECTOR)
     # Clicks on playlist.
     action_runner.Wait(1)  # Add 1 second wait to make the browsing realistic.
-    self._WaitForAndClickElementBySelector(action_runner,
-                                           self.NAVIGATE_SELECTOR)
+    self._WaitForAndClickElementBySelector(
+      action_runner, self.NAVIGATE_SELECTOR
+    )
 
 
 class SoundCloudDesktopStory2018(_MediaStory):
   """Load soundcloud.com, search for "Smooth Jazz", then play a song."""
+
   NAME = 'play:media:soundcloud:2018'
   URL = 'https://soundcloud.com'
   TAGS = [story_tags.YEAR_2018]

@@ -20,15 +20,23 @@ import node
 import node_modules
 
 from path_utils import isInAshFolder, getTargetPath
-from validate_tsconfig import validateTsconfigJson, validateJavaScriptAllowed, validateRootDir, isUnsupportedJsTarget, isMappingAllowed, validateDefinitionDeps
+from validate_tsconfig import (
+  validateTsconfigJson,
+  validateJavaScriptAllowed,
+  validateRootDir,
+  isUnsupportedJsTarget,
+  isMappingAllowed,
+  validateDefinitionDeps,
+)
 
 
 def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
   if not os.path.exists(gen_dir):
     os.makedirs(gen_dir)
 
-  with open(os.path.join(gen_dir, tsconfig_file), 'w',
-            encoding='utf-8') as generated_tsconfig:
+  with open(
+    os.path.join(gen_dir, tsconfig_file), 'w', encoding='utf-8'
+  ) as generated_tsconfig:
     json.dump(tsconfig, generated_tsconfig, indent=2)
   return
 
@@ -36,8 +44,9 @@ def _write_tsconfig_json(gen_dir, tsconfig, tsconfig_file):
 # Normalize `input_path` from being relative to _CWD, to being relative to
 # _SRC_DIR.
 def _relative_to_src(input_path):
-  return os.path.relpath(os.path.normpath(os.path.join(_CWD, input_path)),
-                         _SRC_DIR)
+  return os.path.relpath(
+    os.path.normpath(os.path.join(_CWD, input_path)), _SRC_DIR
+  )
 
 
 def main(argv):
@@ -57,9 +66,9 @@ def main(argv):
   parser.add_argument('--manifest_excludes', nargs='*')
   parser.add_argument('--definitions', nargs='*')
   parser.add_argument('--composite', action='store_true')
-  parser.add_argument('--platform',
-                      choices=['other', 'ios', 'chromeos_ash'],
-                      default='other')
+  parser.add_argument(
+    '--platform', choices=['other', 'ios', 'chromeos_ash'], default='other'
+  )
   parser.add_argument('--enable_source_maps', action='store_true')
   parser.add_argument('--output_suffix', required=True)
   parser.add_argument('--use_typescript_go', action='store_true')
@@ -68,9 +77,9 @@ def main(argv):
   root_dir = os.path.relpath(args.root_dir, args.gen_dir)
   out_dir = os.path.relpath(args.out_dir, args.gen_dir)
 
-  is_root_dir_valid, error = validateRootDir(args.root_dir, args.gen_dir,
-                                             args.root_gen_dir,
-                                             args.platform == 'ios')
+  is_root_dir_valid, error = validateRootDir(
+    args.root_dir, args.gen_dir, args.root_gen_dir, args.platform == 'ios'
+  )
   if not is_root_dir_valid:
     raise AssertionError(error)
 
@@ -78,12 +87,15 @@ def main(argv):
 
   tsconfig = collections.OrderedDict()
 
-  tsconfig['extends'] = args.tsconfig_base \
-      if args.tsconfig_base is not None \
-      else os.path.relpath(TSCONFIG_BASE_PATH, args.gen_dir)
+  tsconfig['extends'] = (
+    args.tsconfig_base
+    if args.tsconfig_base is not None
+    else os.path.relpath(TSCONFIG_BASE_PATH, args.gen_dir)
+  )
 
   tsconfig_base_file = os.path.normpath(
-      os.path.join(args.gen_dir, tsconfig['extends']))
+    os.path.join(args.gen_dir, tsconfig['extends'])
+  )
 
   tsconfig['compilerOptions'] = collections.OrderedDict()
 
@@ -99,9 +111,11 @@ def main(argv):
       # Validate each encountered tsconfig files against a set of constraints.
       parent_tsconfig_file_normalized = _relative_to_src(parent_tsconfig_file)
       is_base_tsconfig = parent_tsconfig_file_normalized.endswith(
-          os.path.normpath('tools/typescript/tsconfig_base.json'))
+        os.path.normpath('tools/typescript/tsconfig_base.json')
+      )
       is_tsconfig_valid, error = validateTsconfigJson(
-          parent_tsconfig, parent_tsconfig_file_normalized, is_base_tsconfig)
+        parent_tsconfig, parent_tsconfig_file_normalized, is_base_tsconfig
+      )
       if not is_tsconfig_valid:
         raise AssertionError(error)
 
@@ -109,8 +123,10 @@ def main(argv):
       # chain, used further below to automatically populate 'skipLibCheck' where
       # possible.
       if not has_skip_lib_check:
-        has_skip_lib_check = 'compilerOptions' in parent_tsconfig and \
-            'skipLibCheck' in parent_tsconfig['compilerOptions']
+        has_skip_lib_check = (
+          'compilerOptions' in parent_tsconfig
+          and 'skipLibCheck' in parent_tsconfig['compilerOptions']
+        )
 
       # Work-around for https://github.com/microsoft/TypeScript/issues/30024.
       # Need to append 'trusted-types' in cases where the default
@@ -121,20 +137,24 @@ def main(argv):
       # 'trusted-types'.
       # TODO(dpapad): Remove if/when the TypeScript bug has been fixed.
       if parent_tsconfig_counter == 0:
-        if 'compilerOptions' in parent_tsconfig and \
-            'types' in parent_tsconfig['compilerOptions']:
+        if (
+          'compilerOptions' in parent_tsconfig
+          and 'types' in parent_tsconfig['compilerOptions']
+        ):
           types = parent_tsconfig['compilerOptions']['types']
 
           if 'trusted-types' not in types:
             # Ensure that typeRoots is not overridden in an incompatible way.
             ERROR_MSG = (
-                'Need to include \'third_party/node/node_modules/@types\' '
-                'when overriding the default typeRoots')
-            assert ('typeRoots'
-                    in parent_tsconfig['compilerOptions']), ERROR_MSG
+              'Need to include \'third_party/node/node_modules/@types\' '
+              'when overriding the default typeRoots'
+            )
+            assert 'typeRoots' in parent_tsconfig['compilerOptions'], ERROR_MSG
             type_roots = parent_tsconfig['compilerOptions']['typeRoots']
-            has_type_root = any(r.endswith('third_party/node/node_modules/@types') \
-                for r in type_roots)
+            has_type_root = any(
+              r.endswith('third_party/node/node_modules/@types')
+              for r in type_roots
+            )
             assert has_type_root, ERROR_MSG
 
             augmented_types = types.copy()
@@ -145,7 +165,8 @@ def main(argv):
       extends = parent_tsconfig.get('extends', None)
       if extends != None:
         parent_tsconfig_file = os.path.normpath(
-            os.path.join(os.path.dirname(parent_tsconfig_file), extends))
+          os.path.join(os.path.dirname(parent_tsconfig_file), extends)
+        )
         parent_tsconfig_counter += 1
       else:
         parent_tsconfig_file = None
@@ -154,18 +175,21 @@ def main(argv):
   tsconfig['compilerOptions']['outDir'] = out_dir
 
   includes_js = False
-  if (args.in_files):
+  if args.in_files:
     for file in args.in_files:
       if file.endswith('.js'):
         includes_js = True
 
   if includes_js or isUnsupportedJsTarget(args.gen_dir, args.root_gen_dir):
-    source_dir = os.path.realpath(os.path.join(_CWD, args.gen_dir,
-                                               root_dir)).replace('\\', '/')
-    out_dir = os.path.realpath(os.path.join(_CWD, args.gen_dir,
-                                            out_dir)).replace('\\', '/')
-    is_js_allowed, error = validateJavaScriptAllowed(source_dir, out_dir,
-                                                     args.platform)
+    source_dir = os.path.realpath(
+      os.path.join(_CWD, args.gen_dir, root_dir)
+    ).replace('\\', '/')
+    out_dir = os.path.realpath(
+      os.path.join(_CWD, args.gen_dir, out_dir)
+    ).replace('\\', '/')
+    is_js_allowed, error = validateJavaScriptAllowed(
+      source_dir, out_dir, args.platform
+    )
     if not is_js_allowed:
       raise AssertionError(error)
     tsconfig['compilerOptions']['allowJs'] = True
@@ -180,7 +204,8 @@ def main(argv):
     tsconfig['compilerOptions']['inlineSourceMap'] = True
     tsconfig['compilerOptions']['inlineSources'] = True
     tsconfig['compilerOptions']['sourceRoot'] = os.path.realpath(
-        os.path.join(_CWD, args.gen_dir, root_dir))
+      os.path.join(_CWD, args.gen_dir, root_dir)
+    )
 
   tsconfig['files'] = []
   if args.in_files is not None:
@@ -190,15 +215,19 @@ def main(argv):
   has_local_definitions = False
   if args.definitions is not None:
     for d in args.definitions:
-      assert d.endswith(
-          '.d.ts'), f'Invalid definition \'{d}\'. Should end with \'.d.ts\''
+      assert d.endswith('.d.ts'), (
+        f'Invalid definition \'{d}\'. Should end with \'.d.ts\''
+      )
     tsconfig['files'].extend(args.definitions)
 
-    SHARED_DEFINITIONS_FOLDER = os.path.join(args.root_src_dir,
-                                             'tools/typescript/definitions')
+    SHARED_DEFINITIONS_FOLDER = os.path.join(
+      args.root_src_dir, 'tools/typescript/definitions'
+    )
     local_definitions = list(
-        filter(lambda d: not d.startswith(SHARED_DEFINITIONS_FOLDER),
-               args.definitions))
+      filter(
+        lambda d: not d.startswith(SHARED_DEFINITIONS_FOLDER), args.definitions
+      )
+    )
     has_local_definitions = len(local_definitions) > 0
 
   # Set 'skipLibCheck' to true if not specified in any parent config and if no
@@ -215,7 +244,7 @@ def main(argv):
 
   path_mappings = collections.defaultdict(list)
   # Load all mappings from the input file, if one exists.
-  if (args.path_mappings_file is not None):
+  if args.path_mappings_file is not None:
     path_mappings_path = os.path.join(args.gen_dir, args.path_mappings_file)
     with open(path_mappings_path, 'r', encoding='utf-8') as f:
       file_mappings = json.loads(f.read())
@@ -227,9 +256,10 @@ def main(argv):
     for m in args.path_mappings:
       mapping = m.split('|')
       mapping_path = os.path.relpath(mapping[1], args.root_src_dir)
-      assert isMappingAllowed(is_ash_target, target_path, mapping_path), \
-          f'Cannot use mapping to Ash-specific folder {mapping_path} from ' \
-          f'non-Ash target {target_path}'
+      assert isMappingAllowed(is_ash_target, target_path, mapping_path), (
+        f'Cannot use mapping to Ash-specific folder {mapping_path} from '
+        f'non-Ash target {target_path}'
+      )
       path_mappings[mapping[0]].append(os.path.join('./', mapping[1]))
 
   tsconfig['compilerOptions']['paths'] = path_mappings
@@ -282,12 +312,16 @@ def main(argv):
       import typescript
 
       typescript.RunTypeScript(
-          ['--project', os.path.join(args.gen_dir, tsconfig_file)])
+        ['--project', os.path.join(args.gen_dir, tsconfig_file)]
+      )
     else:
-      node.RunNode([
-          node_modules.PathToTypescript(), '--project',
-          os.path.join(args.gen_dir, tsconfig_file)
-      ])
+      node.RunNode(
+        [
+          node_modules.PathToTypescript(),
+          '--project',
+          os.path.join(args.gen_dir, tsconfig_file),
+        ]
+      )
   finally:
     if args.composite:
       # `.tsbuildinfo` is generated by TypeScript for incremenetal compilation
@@ -309,39 +343,47 @@ def main(argv):
   # files that are used by the build, but not properly declared as dependencies.
   out = None
   if args.use_typescript_go:
-    out = typescript.RunTypeScript([
+    out = typescript.RunTypeScript(
+      [
         '--project',
-        os.path.join(args.gen_dir, tsconfig_file), '--listFilesOnly'
-    ])
+        os.path.join(args.gen_dir, tsconfig_file),
+        '--listFilesOnly',
+      ]
+    )
   else:
-    out = node.RunNode([
+    out = node.RunNode(
+      [
         node_modules.PathToTypescript(),
         '--project',
         os.path.join(args.gen_dir, tsconfig_file),
         '--listFilesOnly',
-    ])
+      ]
+    )
 
   files_list = out.split('\n')
   definitions_files = list(filter(lambda f: f.endswith('.d.ts'), files_list))
   definitions = args.definitions if args.definitions is not None else []
-  list_valid, error_msg = validateDefinitionDeps(definitions_files, target_path,
-                                                 args.gen_dir,
-                                                 args.root_gen_dir, definitions)
+  list_valid, error_msg = validateDefinitionDeps(
+    definitions_files, target_path, args.gen_dir, args.root_gen_dir, definitions
+  )
   if not list_valid:
     raise AssertionError(error_msg)
 
   if args.in_files is not None:
-    manifest_path = os.path.join(args.gen_dir,
-                                 f'{args.output_suffix}_manifest.json')
+    manifest_path = os.path.join(
+      args.gen_dir, f'{args.output_suffix}_manifest.json'
+    )
     with open(manifest_path, 'w', encoding='utf-8') as manifest_file:
       manifest_data = {}
       manifest_data['base_dir'] = args.out_dir
       manifest_files = args.in_files
       if args.manifest_excludes is not None:
-        manifest_files = filter(lambda f: f not in args.manifest_excludes,
-                                args.in_files)
-      manifest_data['files'] = \
-          [re.sub(r'\.ts$', '.js', f) for f in manifest_files]
+        manifest_files = filter(
+          lambda f: f not in args.manifest_excludes, args.in_files
+        )
+      manifest_data['files'] = [
+        re.sub(r'\.ts$', '.js', f) for f in manifest_files
+      ]
       json.dump(manifest_data, manifest_file)
 
 

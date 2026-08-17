@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""HID constant definitions.
-"""
+"""HID constant definitions."""
 
 import usb_constants
 
@@ -14,6 +13,7 @@ class DescriptorType(object):
   See Device Class Definition for Human Interface Devices (HID) Version 1.11
   section 7.1.
   """
+
   HID = usb_constants.Type.CLASS | 0x01
   REPORT = usb_constants.Type.CLASS | 0x02
   PHYSICAL = usb_constants.Type.CLASS | 0x03
@@ -25,6 +25,7 @@ class Scope(object):
   See Device Class Definition for Human Interface Devices (HID) Version 1.11
   section 6.2.2.2.
   """
+
   MAIN = 0
   GLOBAL = 1
   LOCAL = 2
@@ -36,6 +37,7 @@ class CollectionType(object):
   See Device Class Definition for Human Interface Devices (HID) Version 1.11
   section 6.2.2.4.
   """
+
   PHYSICAL = 0
   APPLICATION = 1
   LOGICAL = 2
@@ -51,6 +53,7 @@ class Request(object):
   See Device Class Definition for Human Interface Devices (HID) Version 1.11
   section 7.2.
   """
+
   GET_REPORT = 1
   GET_IDLE = 2
   GET_PROTOCOL = 3
@@ -65,6 +68,7 @@ class ReportType(object):
   See Device Class Definition for Human Interface Devices (HID) Version 1.11
   section 7.2.1.
   """
+
   INPUT = 1
   OUTPUT = 2
   FEATURE = 3
@@ -76,6 +80,7 @@ class ModifierKey(object):
   See Device Class Definition for Human Interface Devices (HID) Version 1.11
   section 8.3 and HID Usage Tables Version 1.1 Table 12.
   """
+
   L_CTRL = 0x01
   L_SHIFT = 0x02
   L_ALT = 0x04
@@ -92,6 +97,7 @@ class LED(object):
   See Device Class Definition for Human Interface Devices (HID) Version 1.11
   section B.1 and HID Usage Tables Version 1.1 Table 13.
   """
+
   NUM_LOCK = 0x01
   CAPS_LOCK = 0x02
   SCROLL_LOCK = 0x04
@@ -105,6 +111,7 @@ class Mouse(object):
   See Device Class Definition for Human Interface Devices (HID) Version 1.11
   section B.2.
   """
+
   BUTTON_1 = 0x01
   BUTTON_2 = 0x02
   BUTTON_3 = 0x04
@@ -122,11 +129,38 @@ for key, code in zip('-=[]\\', xrange(45, 50)):
 for key, code in zip(';\'`,./', xrange(51, 57)):
   KEY_CODES[key] = code
 for key, code in zip(
-    ['CapsLock', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10',
-     'F11', 'F12', 'PrintScreen', 'ScrollLock', 'Pause', 'Insert', 'Home',
-     'PageUp', 'PageDown', 'Delete', 'End', 'PageDown', 'RightArrow',
-     'LeftArrow', 'DownArrow', 'UpArrow', 'NumLock'],
-    xrange(57, 84)):
+  [
+    'CapsLock',
+    'F1',
+    'F2',
+    'F3',
+    'F4',
+    'F5',
+    'F6',
+    'F7',
+    'F8',
+    'F9',
+    'F10',
+    'F11',
+    'F12',
+    'PrintScreen',
+    'ScrollLock',
+    'Pause',
+    'Insert',
+    'Home',
+    'PageUp',
+    'PageDown',
+    'Delete',
+    'End',
+    'PageDown',
+    'RightArrow',
+    'LeftArrow',
+    'DownArrow',
+    'UpArrow',
+    'NumLock',
+  ],
+  xrange(57, 84),
+):
   KEY_CODES[key] = code
 
 SHIFT_KEY_CODES = {}

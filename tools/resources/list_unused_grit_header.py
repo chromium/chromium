@@ -103,7 +103,8 @@ def GetResourcesForGrdFile(tree, grd_file):
     resources_node = FindNodeWithTag(release_node, node_type + 's')
     if resources_node != None:
       resources = resources.union(
-          set(GetResourcesForNode(resources_node, grd_file, node_type)))
+        set(GetResourcesForNode(resources_node, grd_file, node_type))
+      )
   return resources
 
 
@@ -170,9 +171,9 @@ def NeedsGritInclude(grit_header, resources, filename):
   # A list of special keywords that implies the file needs grit headers.
   # To be more thorough, one would need to run a pre-processor.
   SPECIAL_KEYWORDS = (
-      '#include "ui_localizer_table.h"',  # ui_localizer.mm
-      'DECLARE_RESOURCE_ID',  # chrome/browser/android/resource_mapper.cc
-      )
+    '#include "ui_localizer_table.h"',  # ui_localizer.mm
+    'DECLARE_RESOURCE_ID',  # chrome/browser/android/resource_mapper.cc
+  )
   with open(filename, 'rb') as f:
     grit_header_line = grit_header + '"\n'
     has_grit_header = False
@@ -187,8 +188,9 @@ def NeedsGritInclude(grit_header, resources, filename):
     if not has_grit_header:
       return True
     rest_of_the_file = f.read()
-    return (any(resource in rest_of_the_file for resource in resources) or
-            any(keyword in rest_of_the_file for keyword in SPECIAL_KEYWORDS))
+    return any(resource in rest_of_the_file for resource in resources) or any(
+      keyword in rest_of_the_file for keyword in SPECIAL_KEYWORDS
+    )
 
 
 def main(argv):
@@ -218,8 +220,12 @@ def main(argv):
           dirs.remove('.git')
         full_paths = [os.path.join(root, f) for f in files if ShouldScanFile(f)]
         files_with_unneeded_grit_includes.extend(
-            [f for f in full_paths
-             if not NeedsGritInclude(grit_header, resources, f)])
+          [
+            f
+            for f in full_paths
+            if not NeedsGritInclude(grit_header, resources, f)
+          ]
+        )
     elif os.path.isfile(path_to_scan):
       if not NeedsGritInclude(grit_header, resources, path_to_scan):
         files_with_unneeded_grit_includes.append(path_to_scan)

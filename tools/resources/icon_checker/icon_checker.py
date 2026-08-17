@@ -37,8 +37,12 @@ def ExtractIconsFromHtml(input_api):
   affected_icons = []
   for f in input_api.AffectedFiles(include_deletes=False):
     basename = input_api.os_path.basename(f.LocalPath())
-    if not (basename.endswith('_icons.html') or basename == 'icons.html' or
-            basename.endswith('_icons.html.ts') or basename == 'icons.html.ts'):
+    if not (
+      basename.endswith('_icons.html')
+      or basename == 'icons.html'
+      or basename.endswith('_icons.html.ts')
+      or basename == 'icons.html.ts'
+    ):
       continue
     # Only check files that appear to be iconsets.
     if not any('<cr-iconset' in line for line in f.NewContents()):
@@ -66,8 +70,9 @@ def CheckIcons(input_api, output_api, affected_icons):
     return []
 
   valid_names = FetchValidIconNames()
-  assert valid_names is not None, \
+  assert valid_names is not None, (
     'Could not read tools/resources/icon_list.json.'
+  )
 
   results = []
   for file_path, icon_name, line_num in affected_icons:
@@ -77,18 +82,19 @@ def CheckIcons(input_api, output_api, affected_icons):
       match = _ALLOWED_PRIMARY_SUFFIX_PATTERN.search(name_to_check)
       if not match:
         break
-      name_to_check = name_to_check[:match.start()]
+      name_to_check = name_to_check[: match.start()]
 
     if name_to_check not in valid_names:
       msg = (
-          f'File {file_path}:{line_num if line_num else ""}\n'
-          f'Icon "{icon_name}" does not match the name of any known icon. '
-          f'If you are adding a new icon into the code base, please consider '
-          f'matching the name of the .icon file to its appropriate name in '
-          f'icon_list.json. Doing so allows developers and UX partners to '
-          f'quickly cross reference the icons when it comes time to update '
-          f'them. If this icon is intended to be custom please disregard this '
-          'warning.')
+        f'File {file_path}:{line_num if line_num else ""}\n'
+        f'Icon "{icon_name}" does not match the name of any known icon. '
+        f'If you are adding a new icon into the code base, please consider '
+        f'matching the name of the .icon file to its appropriate name in '
+        f'icon_list.json. Doing so allows developers and UX partners to '
+        f'quickly cross reference the icons when it comes time to update '
+        f'them. If this icon is intended to be custom please disregard this '
+        'warning.'
+      )
       results.append(output_api.PresubmitPromptWarning(msg))
 
   return results

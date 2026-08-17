@@ -22,23 +22,58 @@ import zlib
 # - number of top-level functions to call
 # - loop count
 
+
 def _ParseArguments():
-  parser = argparse.ArgumentParser(
-      description='Synthetic Javascript generator')
-  parser.add_argument('--closure-count', metavar='N', type=int, default=1,
-                      help='Number of top-level closures to generate')
-  parser.add_argument('--function-count', metavar='N', type=int, default=1,
-                      help='Number of top-level functions to generate')
-  parser.add_argument('--inner-function-count', metavar='N', type=int,
-                      default=1, help='Number of inner functions to generate')
-  parser.add_argument('--inner-function-line-count', metavar='N', type=int,
-                      default=1, help='Lines of code in each inner function')
-  parser.add_argument('--closure-call-count', metavar='N', type=int,
-                      default=1, help='Number of top-level closures to call')
-  parser.add_argument('--function-call-count', metavar='N', type=int,
-                      default=1, help='Number of top-level functions to call')
-  parser.add_argument('--loop-count', metavar='N', type=int,
-                      default=1, help='Number of top-level loop iterations')
+  parser = argparse.ArgumentParser(description='Synthetic Javascript generator')
+  parser.add_argument(
+    '--closure-count',
+    metavar='N',
+    type=int,
+    default=1,
+    help='Number of top-level closures to generate',
+  )
+  parser.add_argument(
+    '--function-count',
+    metavar='N',
+    type=int,
+    default=1,
+    help='Number of top-level functions to generate',
+  )
+  parser.add_argument(
+    '--inner-function-count',
+    metavar='N',
+    type=int,
+    default=1,
+    help='Number of inner functions to generate',
+  )
+  parser.add_argument(
+    '--inner-function-line-count',
+    metavar='N',
+    type=int,
+    default=1,
+    help='Lines of code in each inner function',
+  )
+  parser.add_argument(
+    '--closure-call-count',
+    metavar='N',
+    type=int,
+    default=1,
+    help='Number of top-level closures to call',
+  )
+  parser.add_argument(
+    '--function-call-count',
+    metavar='N',
+    type=int,
+    default=1,
+    help='Number of top-level functions to call',
+  )
+  parser.add_argument(
+    '--loop-count',
+    metavar='N',
+    type=int,
+    default=1,
+    help='Number of top-level loop iterations',
+  )
   return parser.parse_args()
 
 
@@ -73,21 +108,29 @@ def _TopLevelClosureEntryPoint(closure_index):
 
 
 def _GenerateTopLevelClosures(
-    out, count, inner_function_count, inner_function_line_count):
+  out, count, inner_function_count, inner_function_line_count
+):
   for closure_index in range(count):
     print('(function() {  // closure %d' % closure_index, file=out)
     for inner_index in range(inner_function_count):
       _GenerateLeafFunction(
-          out,
-          _ClosureInnerFunctionName(closure_index, inner_index),
-          inner_function_line_count,
-          indent=1)
+        out,
+        _ClosureInnerFunctionName(closure_index, inner_index),
+        inner_function_line_count,
+        indent=1,
+      )
 
-    print('window.%s = function(value) {' %
-        _TopLevelClosureEntryPoint(closure_index), file=out)
+    print(
+      'window.%s = function(value) {'
+      % _TopLevelClosureEntryPoint(closure_index),
+      file=out,
+    )
     for inner_index in range(inner_function_count):
-      print('  value = %s(value);' %
-          _ClosureInnerFunctionName(closure_index, inner_index), file=out)
+      print(
+        '  value = %s(value);'
+        % _ClosureInnerFunctionName(closure_index, inner_index),
+        file=out,
+      )
     print('  return value;', file=out)
     print('}', file=out)
     print('})();  // closure %d\n' % closure_index, file=out)
@@ -102,27 +145,35 @@ def _TopLevelFunctionEntryPoint(function_index):
 
 
 def _GenerateTopLevelFunctions(
-    out, count, inner_function_count, inner_function_line_count):
+  out, count, inner_function_count, inner_function_line_count
+):
   for function_index in range(count):
     for inner_index in range(inner_function_count / 2):
       _GenerateLeafFunction(
-          out,
-          _FunctionInnerFunctionName(function_index, inner_index),
-          inner_function_line_count)
+        out,
+        _FunctionInnerFunctionName(function_index, inner_index),
+        inner_function_line_count,
+      )
 
-    print('function %s(value) {' %
-        _TopLevelFunctionEntryPoint(function_index), file=out)
+    print(
+      'function %s(value) {' % _TopLevelFunctionEntryPoint(function_index),
+      file=out,
+    )
 
     for inner_index in range(inner_function_count / 2, inner_function_count):
       _GenerateLeafFunction(
-          out,
-          _FunctionInnerFunctionName(function_index, inner_index),
-          inner_function_line_count,
-          indent=1)
+        out,
+        _FunctionInnerFunctionName(function_index, inner_index),
+        inner_function_line_count,
+        indent=1,
+      )
 
     for inner_index in range(inner_function_count):
-      print('  value = %s(value);' %
-          _FunctionInnerFunctionName(function_index, inner_index), file=out)
+      print(
+        '  value = %s(value);'
+        % _FunctionInnerFunctionName(function_index, inner_index),
+        file=out,
+      )
     print('  return value;', file=out)
     print('}\n', file=out)
 
@@ -148,20 +199,20 @@ def Main():
   print('// %s' % ' '.join(sys.argv), file=out)
   print(file=out)
   _GenerateTopLevelClosures(
-      out,
-      args.closure_count,
-      args.inner_function_count,
-      args.inner_function_line_count)
+    out,
+    args.closure_count,
+    args.inner_function_count,
+    args.inner_function_line_count,
+  )
   _GenerateTopLevelFunctions(
-      out,
-      args.function_count,
-      args.inner_function_count,
-      args.inner_function_line_count)
+    out,
+    args.function_count,
+    args.inner_function_count,
+    args.inner_function_line_count,
+  )
   _GenerateMain(
-      out,
-      args.loop_count,
-      args.closure_call_count,
-      args.function_call_count)
+    out, args.loop_count, args.closure_call_count, args.function_call_count
+  )
   print(out.getvalue())
 
 

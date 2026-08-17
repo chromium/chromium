@@ -9,15 +9,17 @@ from telemetry.web_perf import timeline_based_measurement
 class DualMetricMeasurement(story_test.StoryTest):
   """Test class supporting both ad hoc measurements and trace based metrics.
 
-    Currently only works with PressStory pages, which implement
-    GetMeasurements().
+  Currently only works with PressStory pages, which implement
+  GetMeasurements().
   """
+
   def __init__(self, tbm_options):
     super(DualMetricMeasurement, self).__init__()
     # Only enable tracing if metrics have been specified.
     if tbm_options.GetTimelineBasedMetrics():
       self._tbm_test = timeline_based_measurement.TimelineBasedMeasurement(
-          tbm_options)
+        tbm_options
+      )
       self._enable_tracing = True
     else:
       self._enable_tracing = False

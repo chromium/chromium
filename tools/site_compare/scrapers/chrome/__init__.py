@@ -22,10 +22,12 @@ def GetScraper(version):
 
   parsed_version = [int(x) for x in version.split(".")]
 
-  if (parsed_version[0] > 0 or
-      parsed_version[1] > 1 or
-      parsed_version[2] > 97 or
-      parsed_version[3] > 0):
+  if (
+    parsed_version[0] > 0
+    or parsed_version[1] > 1
+    or parsed_version[2] > 97
+    or parsed_version[3] > 0
+  ):
     scraper_version = "chrome011010"
   else:
     scraper_version = "chrome01970"

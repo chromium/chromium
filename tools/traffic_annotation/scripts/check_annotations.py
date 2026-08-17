@@ -29,7 +29,7 @@ USE_PYTHON_AUDITOR = True
 CHANGELIST_SIZE_TO_TRIGGER_FULL_TEST = 100
 
 
-class NetworkTrafficAnnotationChecker():
+class NetworkTrafficAnnotationChecker:
   EXTENSIONS = ['.cc', '.mm', '.java']
   IMPORTANT_FILES = {'annotations.xml', 'grouping.xml', 'safe_list.txt'}
 
@@ -64,7 +64,8 @@ class NetworkTrafficAnnotationChecker():
     file_paths = self.tools.GetModifiedFiles() or []
 
     important_file_changed = any(
-        self.IsImportantFile(file_path) for file_path in file_paths)
+      self.IsImportantFile(file_path) for file_path in file_paths
+    )
 
     # If the annotations file has changed, trigger a full test to avoid
     # missing a case where the annotations file has changed, but not the
@@ -74,8 +75,8 @@ class NetworkTrafficAnnotationChecker():
       return []
 
     file_paths = [
-        file_path for file_path in file_paths if self.ShouldCheckFile(
-            file_path)]
+      file_path for file_path in file_paths if self.ShouldCheckFile(file_path)
+    ]
     if not file_paths:
       return None
 
@@ -103,9 +104,11 @@ class NetworkTrafficAnnotationChecker():
       int Exit code of the network traffic annotation auditor.
     """
     if not self.tools.CanRunAuditor(use_python_auditor):
-      print("Network traffic annotation presubmit check was not performed. A "
-            "compiled build directory and traffic_annotation_auditor binary "
-            "are required to do it.")
+      print(
+        "Network traffic annotation presubmit check was not performed. A "
+        "compiled build directory and traffic_annotation_auditor binary "
+        "are required to do it."
+      )
       return 0
 
     file_paths = self.GetFilePaths(complete_run, limit)
@@ -118,7 +121,8 @@ class NetworkTrafficAnnotationChecker():
     args += file_paths
 
     stdout_text, stderr_text, return_code = self.tools.RunAuditor(
-        args, use_python_auditor)
+      args, use_python_auditor
+    )
 
     if stdout_text:
       print(stdout_text)
@@ -133,32 +137,41 @@ def main():
     return 0
 
   parser = argparse.ArgumentParser(
-      description="Network Traffic Annotation Presubmit checker.")
+    description="Network Traffic Annotation Presubmit checker."
+  )
   parser.add_argument(
-      '--build-path',
-      help='Specifies a compiled build directory, e.g. out/Debug. If not '
-           'specified, the script tries to guess it. Will not proceed if not '
-           'found.')
+    '--build-path',
+    help='Specifies a compiled build directory, e.g. out/Debug. If not '
+    'specified, the script tries to guess it. Will not proceed if not '
+    'found.',
+  )
   parser.add_argument(
-      '--limit',
-      default=5,
-      type=int,
-      help='Limit for the maximum number of returned errors and warnings. '
-      'Default value is 5, use 0 for unlimited.')
+    '--limit',
+    default=5,
+    type=int,
+    help='Limit for the maximum number of returned errors and warnings. '
+    'Default value is 5, use 0 for unlimited.',
+  )
   parser.add_argument(
-      '--complete', action='store_true',
-      help='Run the test on the complete repository. Otherwise only the '
-           'modified files are tested.')
-  parser.add_argument('--errors-file',
-                      type=str,
-                      help='Optional path to a JSON output file with errors.')
+    '--complete',
+    action='store_true',
+    help='Run the test on the complete repository. Otherwise only the '
+    'modified files are tested.',
+  )
+  parser.add_argument(
+    '--errors-file',
+    type=str,
+    help='Optional path to a JSON output file with errors.',
+  )
 
   args = parser.parse_args()
   checker = NetworkTrafficAnnotationChecker(args.build_path)
-  exit_code = checker.CheckFiles(args.complete,
-                                 args.limit,
-                                 args.errors_file,
-                                 use_python_auditor=USE_PYTHON_AUDITOR)
+  exit_code = checker.CheckFiles(
+    args.complete,
+    args.limit,
+    args.errors_file,
+    use_python_auditor=USE_PYTHON_AUDITOR,
+  )
 
   return exit_code
 

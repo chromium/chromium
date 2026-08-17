@@ -55,9 +55,11 @@ class DownloadMobile(perf_benchmark.PerfBenchmark):
   def SetExtraBrowserOptions(self, options):
     # Note that this overwrites the --proxy-bypass-list argument
     # set in chrome_startup_args.py.
-    options.AppendExtraBrowserArgs([
+    options.AppendExtraBrowserArgs(
+      [
         '--proxy-bypass-list=<-loopback>;storage.googleapis.com',
-    ])
+      ]
+    )
 
   @classmethod
   def Name(cls):

@@ -7,14 +7,19 @@ from contrib.vr_benchmarks.vr_story_set import VrStorySet
 
 
 class WebVrSamplePage(VrSamplePage):
-
-  def __init__(self, page_set, url_parameters, sample_page,
-      extra_browser_args=None,):
+  def __init__(
+    self,
+    page_set,
+    url_parameters,
+    sample_page,
+    extra_browser_args=None,
+  ):
     super(WebVrSamplePage, self).__init__(
-        sample_page=sample_page,
-        page_set=page_set,
-        url_parameters=url_parameters,
-        extra_browser_args=extra_browser_args)
+      sample_page=sample_page,
+      page_set=page_set,
+      url_parameters=url_parameters,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunPageInteractions(self, action_runner):
     action_runner.TapElement(selector='canvas[id="webgl-canvas"]')
@@ -32,7 +37,8 @@ class WebVrSamplePageSet(VrStorySet):
 
   def __init__(self, use_fake_pose_tracker=True):
     super(WebVrSamplePageSet, self).__init__(
-        use_fake_pose_tracker=use_fake_pose_tracker)
+      use_fake_pose_tracker=use_fake_pose_tracker
+    )
 
     # Test cases that use the synthetic cube field page
     cube_test_cases = [
@@ -41,22 +47,40 @@ class WebVrSamplePageSet(VrStorySet):
       # Increased render scale
       ['canvasClickPresents=1', 'renderScale=1.5'],
       # Default render scale, increased load
-      ['canvasClickPresents=1', 'renderScale=1', 'heavyGpu=1', 'cubeScale=0.2',
-          'workTime=5'],
+      [
+        'canvasClickPresents=1',
+        'renderScale=1',
+        'heavyGpu=1',
+        'cubeScale=0.2',
+        'workTime=5',
+      ],
       # Further increased load
-      ['canvasClickPresents=1', 'renderScale=1', 'heavyGpu=1', 'cubeScale=0.3',
-          'workTime=10'],
+      [
+        'canvasClickPresents=1',
+        'renderScale=1',
+        'heavyGpu=1',
+        'cubeScale=0.3',
+        'workTime=10',
+      ],
       # Absurd load for fill-rate testing
-      ['canvasClickPresents=1', 'renderScale=1.6', 'heavyGpu=1',
-          'cubeScale=0.3', 'workTime=4'],
+      [
+        'canvasClickPresents=1',
+        'renderScale=1.6',
+        'heavyGpu=1',
+        'cubeScale=0.3',
+        'workTime=4',
+      ],
     ]
 
     for url_parameters in cube_test_cases:
       # Standard set of pages with defaults
       self.AddStory(WebVrSamplePage(self, url_parameters, 'test-slow-render'))
       # Set of pages with standardized render size
-      self.AddStory(WebVrSamplePage(self, url_parameters + ['standardSize=1'],
-          'test-slow-render'))
+      self.AddStory(
+        WebVrSamplePage(
+          self, url_parameters + ['standardSize=1'], 'test-slow-render'
+        )
+      )
 
     # Test cases that use the 360 video page
     video_test_cases = [

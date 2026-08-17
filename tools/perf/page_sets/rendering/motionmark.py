@@ -16,20 +16,23 @@ class MotionMarkPage(rendering_story.RenderingStory):
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   EXTRA_BROWSER_ARGS = None
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedMobilePageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedMobilePageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     extra_browser_args = ['--report-silk-details', '--disable-top-sites']
     if self.EXTRA_BROWSER_ARGS is not None:
       extra_browser_args.append(self.EXTRA_BROWSER_ARGS)
-    super(MotionMarkPage,
-          self).__init__(page_set=page_set,
-                         shared_page_state_class=shared_page_state_class,
-                         name_suffix=name_suffix,
-                         make_javascript_deterministic=False,
-                         extra_browser_args=extra_browser_args)
+    super(MotionMarkPage, self).__init__(
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      make_javascript_deterministic=False,
+      extra_browser_args=extra_browser_args,
+    )
     self._score = 0
     self._scoreLowerBound = 0
     self._scoreUpperBound = 0
@@ -41,18 +44,21 @@ class MotionMarkPage(rendering_story.RenderingStory):
   def RunNavigateSteps(self, action_runner):
     action_runner.Navigate(self.url)
     action_runner.WaitForJavaScriptCondition(
-        'document.readyState == "complete"')
+      'document.readyState == "complete"'
+    )
 
   def RunPageInteractions(self, action_runner):
     action_runner.Wait(3)
     with action_runner.CreateInteraction('Filter'):
       action_runner.Wait(20)
       action_runner.WaitForJavaScriptCondition(
-          'window.benchmarkRunnerClient.results._results')
+        'window.benchmarkRunnerClient.results._results'
+      )
       [score, lower, upper] = action_runner.EvaluateJavaScript(
-          '''[window.benchmarkRunnerClient.results.score,
+        '''[window.benchmarkRunnerClient.results.score,
              window.benchmarkRunnerClient.results.scoreLowerBound,
-             window.benchmarkRunnerClient.results.scoreUpperBound]''')
+             window.benchmarkRunnerClient.results.scoreUpperBound]'''
+      )
       self._score = score
       self._scoreLowerBound = lower
       self._scoreUpperBound = upper
@@ -99,21 +105,23 @@ class MotionMarkPage(rendering_story.RenderingStory):
     # Using latest MotionMark 1.3.1 as previous patches from 1.3 were pulled
     # into the main repo. Commit at time of recording
     # https://github.com/WebKit/MotionMark/commit/be2a5fea89b6ef411b053ebeb95a6302b3dc0ecb
-    return ('https://browserbench.org/MotionMark1.3.1/developer.html'
-            '?suite-name=%s'
-            '&test-name=%s'
-            '&complexity=%d'
-            '&test-interval=20'
-            '&warmup-length=2000'
-            '&warmup-frame-count=30'
-            '&first-frame-minimum-length=0'
-            '&display=minimal'
-            '&tiles=big'
-            '&controller=fixed'
-            '&system-frame-rate=60'
-            '&frame-rate=60'
-            '&time-measurement=performance') % (suite_name, test_name,
-                                                complexity)
+    return (
+      'https://browserbench.org/MotionMark1.3.1/developer.html'
+      '?suite-name=%s'
+      '&test-name=%s'
+      '&complexity=%d'
+      '&test-interval=20'
+      '&warmup-length=2000'
+      '&warmup-frame-count=30'
+      '&first-frame-minimum-length=0'
+      '&display=minimal'
+      '&tiles=big'
+      '&controller=fixed'
+      '&system-frame-rate=60'
+      '&frame-rate=60'
+      '&time-measurement=performance'
+    ) % (suite_name, test_name, complexity)
+
 
 class MotionMarkRampPage(MotionMarkPage):
   ABSTRACT_STORY = True
@@ -130,18 +138,20 @@ class MotionMarkRampPage(MotionMarkPage):
     # Using latest MotionMark 1.3.1 as previous patches from 1.3 were pulled
     # into the main repo. Commit at time of recording
     # https://github.com/WebKit/MotionMark/commit/be2a5fea89b6ef411b053ebeb95a6302b3dc0ecb
-    return ('https://browserbench.org/MotionMark1.3.1/developer.html'
-            '?suite-name=%s'
-            '&test-name=%s'
-            '&test-interval=20'
-            '&display=minimal'
-            '&tiles=big'
-            '&controller=ramp'
-            '&system-frame-rate=60'
-            '&frame-rate=60'
-            '&warmup-length=2000'
-            '&warmup-frame-count=30'
-            '&time-measurement=performance') % (suite_name, test_name)
+    return (
+      'https://browserbench.org/MotionMark1.3.1/developer.html'
+      '?suite-name=%s'
+      '&test-name=%s'
+      '&test-interval=20'
+      '&display=minimal'
+      '&tiles=big'
+      '&controller=ramp'
+      '&system-frame-rate=60'
+      '&frame-rate=60'
+      '&warmup-length=2000'
+      '&warmup-frame-count=30'
+      '&time-measurement=performance'
+    ) % (suite_name, test_name)
 
 
 class MotionMarkRampMultiply(MotionMarkRampPage):
@@ -206,20 +216,24 @@ class MotionMarkRampComposite(MotionMarkPage):
         }
     ''')
     action_runner.ExecuteJavaScript(
-        'window.benchmarkController.startBenchmark()')
+      'window.benchmarkController.startBenchmark()'
+    )
     action_runner.WaitForJavaScriptCondition(
-        'document.readyState == "complete"')
+      'document.readyState == "complete"'
+    )
 
   def RunPageInteractions(self, action_runner):
     action_runner.Wait(3)
     with action_runner.CreateInteraction('Filter'):
       action_runner.Wait(300)  # Determined experimentally
       action_runner.WaitForJavaScriptCondition(
-          'window.benchmarkRunnerClient.results._results')
+        'window.benchmarkRunnerClient.results._results'
+      )
       [score, lower, upper] = action_runner.EvaluateJavaScript(
-          '''[window.benchmarkRunnerClient.results.score,
+        '''[window.benchmarkRunnerClient.results.score,
              window.benchmarkRunnerClient.results.scoreLowerBound,
-             window.benchmarkRunnerClient.results.scoreUpperBound]''')
+             window.benchmarkRunnerClient.results.scoreUpperBound]'''
+      )
       self._score = score
       self._scoreLowerBound = lower
       self._scoreUpperBound = upper
@@ -227,8 +241,8 @@ class MotionMarkRampComposite(MotionMarkPage):
       # The MotionMark object is a non-iterable map, so we need to access the
       # components manually. Currently we only run one iteration, this would
       # need to be updated if we add iteration support in the future.
-      [stories, scores, lowerBounds,
-       upperBounds] = action_runner.EvaluateJavaScript('''const stories =
+      [stories, scores, lowerBounds, upperBounds] = (
+        action_runner.EvaluateJavaScript('''const stories =
                  window.benchmarkRunnerClient.results._results.
                      iterationsResults[0].testsResults.MotionMark;
              const scores = [];
@@ -241,6 +255,7 @@ class MotionMarkRampComposite(MotionMarkPage):
                   upperBounds.push(story.scoreUpperBound);
              }
              [stories, scores, lowerBounds, upperBounds]''')
+      )
 
       self._stories = stories
       self._storyScores = scores
@@ -263,98 +278,112 @@ class MotionMarkFixed2SecondsPage(MotionMarkPage):
   def RunPageInteractions(self, action_runner):
     with action_runner.CreateInteraction('Filter'):
       action_runner.WaitForJavaScriptCondition(
-          'window.benchmarkRunnerClient.results._results')
+        'window.benchmarkRunnerClient.results._results'
+      )
 
   @classmethod
-  def GetFixed2SecondsUrl(cls, suite_name, test_name, complexity,
-                          test_interval):
+  def GetFixed2SecondsUrl(
+    cls, suite_name, test_name, complexity, test_interval
+  ):
     # Strip unwanted characters from names
     for ch in [' ', '.', ',']:
       suite_name = suite_name.replace(ch, '')
       test_name = test_name.replace(ch, '')
 
-  # Using latest MotionMark 1.3.1 as previous patches from 1.3 were pulled
-  # into the main repo. Commit at time of recording#
-  # https://github.com/WebKit/MotionMark/commit/be2a5fea89b6ef411b053ebeb95a6302b3dc0ecb
-    return ('https://browserbench.org/MotionMark1.3.1/developer.html'
-            '?suite-name=%s'
-            '&test-name=%s'
-            '&complexity=%d'
-            '&test-interval=%d'
-            '&warmup-length=0'
-            '&warmup-frame-count=0'
-            '&first-frame-minimum-length=0'
-            '&display=minimal'
-            '&tiles=big'
-            '&controller=fixed'
-            '&system-frame-rate=60'
-            '&frame-rate=60'
-            '&time-measurement=performance') % (suite_name, test_name,
-                                                complexity, test_interval)
+    # Using latest MotionMark 1.3.1 as previous patches from 1.3 were pulled
+    # into the main repo. Commit at time of recording#
+    # https://github.com/WebKit/MotionMark/commit/be2a5fea89b6ef411b053ebeb95a6302b3dc0ecb
+    return (
+      'https://browserbench.org/MotionMark1.3.1/developer.html'
+      '?suite-name=%s'
+      '&test-name=%s'
+      '&complexity=%d'
+      '&test-interval=%d'
+      '&warmup-length=0'
+      '&warmup-frame-count=0'
+      '&first-frame-minimum-length=0'
+      '&display=minimal'
+      '&tiles=big'
+      '&controller=fixed'
+      '&system-frame-rate=60'
+      '&frame-rate=60'
+      '&time-measurement=performance'
+    ) % (suite_name, test_name, complexity, test_interval)
 
 
 # Numbers for complexity come from recent high scores on perf bots with a PGO
 # build.
-#TODO(vmiura): Update names from fixed_2_seconds to match the new durations.
+# TODO(vmiura): Update names from fixed_2_seconds to match the new durations.
 class MotionMarkFixed2SecondsMultiply(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_multiply'
-  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
-                                                        'Multiply', 5150, 5)
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl(
+    'MotionMark', 'Multiply', 5150, 5
+  )
 
 
 class MotionMarkFixed2SecondsCanvasArcs(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_canvas_arcs'
-  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
-                                                        'Canvas Arcs', 17400, 5)
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl(
+    'MotionMark', 'Canvas Arcs', 17400, 5
+  )
 
 
 class MotionMarkFixed2SecondsLeaves(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_leaves'
-  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Leaves',
-                                                        4300, 5)
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl(
+    'MotionMark', 'Leaves', 4300, 5
+  )
 
 
 class MotionMarkFixed2SecondsPaths(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_paths'
-  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Paths',
-                                                        64700, 5)
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl(
+    'MotionMark', 'Paths', 64700, 5
+  )
 
 
 class MotionMarkFixed2SecondsCanvasLines(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_canvas_lines'
-  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark',
-                                                        'Canvas Lines', 54200,
-                                                        5)
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl(
+    'MotionMark', 'Canvas Lines', 54200, 5
+  )
 
 
 class MotionMarkFixed2SecondsImages(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_images'
-  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Images',
-                                                        440, 5)
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl(
+    'MotionMark', 'Images', 440, 5
+  )
 
 
 class MotionMarkFixed2SecondsDesign(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_design'
-  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Design',
-                                                        705, 5)
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl(
+    'MotionMark', 'Design', 705, 5
+  )
 
 
 class MotionMarkFixed2SecondsSuits(MotionMarkFixed2SecondsPage):
   BASE_NAME = 'motionmark_fixed_2_seconds_suits'
-  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl('MotionMark', 'Suits',
-                                                        2800, 5)
+  URL = MotionMarkFixed2SecondsPage.GetFixed2SecondsUrl(
+    'MotionMark', 'Suits', 2800, 5
+  )
 
 
-@benchmark.Info(emails=['chrome-skia-graphite@google.com'],
-                component='Internals>GPU>Internals')
+@benchmark.Info(
+  emails=['chrome-skia-graphite@google.com'],
+  component='Internals>GPU>Internals',
+)
 class MotionMarkRampCompositeGraphite(MotionMarkRampComposite):
   BASE_NAME = 'motionmark_ramp_composite_graphite'
   SUPPORTED_PLATFORMS = [story.expectations.ALL_MAC, story.expectations.ALL_WIN]
   EXTRA_BROWSER_ARGS = '--enable-skia-graphite'
 
 
-@benchmark.Info(emails=['chrome-skia-graphite@google.com'],
-                component='Internals>GPU>Internals')
+@benchmark.Info(
+  emails=['chrome-skia-graphite@google.com'],
+  component='Internals>GPU>Internals',
+)
 class MotionMarkRampCompositeGanesh(MotionMarkRampComposite):
   BASE_NAME = 'motionmark_ramp_composite_ganesh'
   SUPPORTED_PLATFORMS = [story.expectations.ALL_WIN]

@@ -5,8 +5,9 @@
 import unittest
 from unittest import mock
 
-from contrib.power.perf_benchmark_with_profiling \
-    import PerfBenchmarkWithProfiling
+from contrib.power.perf_benchmark_with_profiling import (
+  PerfBenchmarkWithProfiling,
+)
 from telemetry.core import android_platform
 from telemetry.internal.backends import android_browser_backend_settings
 from telemetry.internal.backends.chrome import android_browser_finder
@@ -29,23 +30,26 @@ class PerfBenchmarkWithProfilingTest(unittest.TestCase):
     self._fake_platform = mock.Mock(spec=android_platform.AndroidPlatform)
     # pylint: disable=protected-access
     self._fake_platform._platform_backend = mock.Mock(
-        spec=android_platform_backend.AndroidPlatformBackend)
+      spec=android_platform_backend.AndroidPlatformBackend
+    )
 
   def testWithoutBrowser(self):
     benchmark = PerfBenchmarkForTesting()
-    benchmark.CustomizeOptions(finder_options=self._finder_options,
-                               possible_browser=None)
+    benchmark.CustomizeOptions(
+      finder_options=self._finder_options, possible_browser=None
+    )
     options = benchmark.CreateCoreTimelineBasedMeasurementOptions()
     text_config = options.config.system_trace_config.GetTextConfig()
     self.assertNotIn('name: "linux.perf"', text_config)
 
   def testWithoutAndroidBrowser(self):
     benchmark = PerfBenchmarkForTesting()
-    possible_browser = PossibleBrowser(browser_type="reference",
-                                       target_os="linux",
-                                       supports_tab_control=None)
-    benchmark.CustomizeOptions(finder_options=self._finder_options,
-                               possible_browser=possible_browser)
+    possible_browser = PossibleBrowser(
+      browser_type="reference", target_os="linux", supports_tab_control=None
+    )
+    benchmark.CustomizeOptions(
+      finder_options=self._finder_options, possible_browser=possible_browser
+    )
     options = benchmark.CreateCoreTimelineBasedMeasurementOptions()
     text_config = options.config.system_trace_config.GetTextConfig()
     self.assertNotIn('name: "linux.perf"', text_config)
@@ -54,10 +58,14 @@ class PerfBenchmarkWithProfilingTest(unittest.TestCase):
   def testWithAndroidBrowser(self):
     benchmark = PerfBenchmarkForTesting()
     possible_browser = android_browser_finder.PossibleAndroidBrowser(
-        "android-chromium-bundle", self._finder_options, self._fake_platform,
-        android_browser_backend_settings.ANDROID_CHROMIUM_BUNDLE)
-    benchmark.CustomizeOptions(finder_options=self._finder_options,
-                               possible_browser=possible_browser)
+      "android-chromium-bundle",
+      self._finder_options,
+      self._fake_platform,
+      android_browser_backend_settings.ANDROID_CHROMIUM_BUNDLE,
+    )
+    benchmark.CustomizeOptions(
+      finder_options=self._finder_options, possible_browser=possible_browser
+    )
     options = benchmark.CreateCoreTimelineBasedMeasurementOptions()
     text_config = options.config.system_trace_config.GetTextConfig()
     self.assertIn('name: "linux.perf"', text_config)

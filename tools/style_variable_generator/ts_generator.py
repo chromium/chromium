@@ -5,6 +5,7 @@
 import re
 from style_variable_generator.css_generator import CSSStyleGenerator
 
+
 class TSStyleGenerator(CSSStyleGenerator):
     '''Generator for TS Variables'''
 
@@ -13,13 +14,15 @@ class TSStyleGenerator(CSSStyleGenerator):
         return 'TS'
 
     def Render(self):
-        return self.ApplyTemplate(self, 'templates/ts_generator.tmpl',
-                                  self.GetParameters())
+        return self.ApplyTemplate(
+            self, 'templates/ts_generator.tmpl', self.GetParameters()
+        )
 
     def GetParameters(self):
         params = CSSStyleGenerator.GetParameters(self)
-        params['include_style_sheet'] = self.generator_options.get(
-            'include_style_sheet', 'false') == 'true'
+        params['include_style_sheet'] = (
+            self.generator_options.get('include_style_sheet', 'false') == 'true'
+        )
         return params
 
     def GetFilters(self):

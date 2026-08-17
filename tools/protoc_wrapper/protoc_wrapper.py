@@ -40,14 +40,17 @@ def FormatGeneratorOptions(options):
 def VerifyProtoNames(protos):
   for filename in protos:
     if "-" in filename:
-      raise RuntimeError("Proto file names must not contain hyphens "
-                         "(see http://crbug.com/386125 for more information).")
+      raise RuntimeError(
+        "Proto file names must not contain hyphens "
+        "(see http://crbug.com/386125 for more information)."
+      )
 
 
 def StripProtoExtension(filename):
   if not filename.endswith(".proto"):
-    raise RuntimeError("Invalid proto filename extension: "
-                       "{0} .".format(filename))
+    raise RuntimeError(
+      "Invalid proto filename extension: {0} .".format(filename)
+    )
   return filename.rsplit(".", 1)[0]
 
 
@@ -61,8 +64,11 @@ def RewriteImports(ts_files):
         modified = False
         for i, line in enumerate(itertools.islice(lines, 50)):
           if "@bufbuild/protobuf/" in line:
-            lines[i] = re.sub(r"'@bufbuild\/protobuf\/(\w+)'",
-                              r"'/@bufbuild/protobuf/\1/index.js'", line)
+            lines[i] = re.sub(
+              r"'@bufbuild\/protobuf\/(\w+)'",
+              r"'/@bufbuild/protobuf/\1/index.js'",
+              line,
+            )
             modified = True
         if modified:
           f.seek(0)
@@ -88,8 +94,9 @@ def WriteIncludes(headers, include):
           contents.append(extra_statement)
 
       if not include_point_found:
-        raise RuntimeError("Include point not found in header: "
-                           "{0} .".format(filename))
+        raise RuntimeError(
+          "Include point not found in header: {0} .".format(filename)
+        )
 
     with open(filename, "w") as f:
       for line in contents:
@@ -98,58 +105,78 @@ def WriteIncludes(headers, include):
 
 def main(argv):
   parser = argparse.ArgumentParser()
-  parser.add_argument("--protoc", required=True,
-                      help="Relative path to compiler.")
-
-  parser.add_argument("--proto-in-dir", required=True,
-                      help="Base directory with source protos.")
-  parser.add_argument("--cc-out-dir",
-                      help="Output directory for standard C++ generator.")
-  parser.add_argument("--py-out-dir",
-                      help="Output directory for standard Python generator.")
-  parser.add_argument("--js-out-dir",
-                      help="Output directory for standard JS generator.")
-  parser.add_argument("--protoc-gen-js",
-                      help="Relative path to javascript compiler.")
-  parser.add_argument("--ts-out-dir",
-                      help="Output directory for standard TS generator.")
-  parser.add_argument("--protoc-gen-ts",
-                      help="Relative path to typescript compiler.")
-
-  parser.add_argument("--plugin-out-dir",
-                      help="Output directory for custom generator plugin.")
-
-  parser.add_argument('--enable-kythe-annotations', action='store_true',
-                      help='Enable generation of Kythe kzip, used for '
-                      'codesearch.')
-  parser.add_argument("--plugin",
-                      help="Relative path to custom generator plugin.")
-  parser.add_argument("--plugin-options",
-                      help="Custom generator plugin options.")
-  parser.add_argument("--cc-options",
-                      help="Standard C++ generator options.")
-  parser.add_argument("--include",
-                      help="Name of include to insert into generated headers.")
-  parser.add_argument("--import-dir", action="append", default=[],
-                      help="Extra import directory for protos, can be repeated."
-  )
-  parser.add_argument("--descriptor-set-out",
-                      help="Path to write a descriptor.")
   parser.add_argument(
-      "--descriptor-set-dependency-file",
-      help="Path to write the dependency file for descriptor set.")
+    "--protoc", required=True, help="Relative path to compiler."
+  )
+
+  parser.add_argument(
+    "--proto-in-dir", required=True, help="Base directory with source protos."
+  )
+  parser.add_argument(
+    "--cc-out-dir", help="Output directory for standard C++ generator."
+  )
+  parser.add_argument(
+    "--py-out-dir", help="Output directory for standard Python generator."
+  )
+  parser.add_argument(
+    "--js-out-dir", help="Output directory for standard JS generator."
+  )
+  parser.add_argument(
+    "--protoc-gen-js", help="Relative path to javascript compiler."
+  )
+  parser.add_argument(
+    "--ts-out-dir", help="Output directory for standard TS generator."
+  )
+  parser.add_argument(
+    "--protoc-gen-ts", help="Relative path to typescript compiler."
+  )
+
+  parser.add_argument(
+    "--plugin-out-dir", help="Output directory for custom generator plugin."
+  )
+
+  parser.add_argument(
+    '--enable-kythe-annotations',
+    action='store_true',
+    help='Enable generation of Kythe kzip, used for codesearch.',
+  )
+  parser.add_argument(
+    "--plugin", help="Relative path to custom generator plugin."
+  )
+  parser.add_argument(
+    "--plugin-options", help="Custom generator plugin options."
+  )
+  parser.add_argument("--cc-options", help="Standard C++ generator options.")
+  parser.add_argument(
+    "--include", help="Name of include to insert into generated headers."
+  )
+  parser.add_argument(
+    "--import-dir",
+    action="append",
+    default=[],
+    help="Extra import directory for protos, can be repeated.",
+  )
+  parser.add_argument(
+    "--descriptor-set-out", help="Path to write a descriptor."
+  )
+  parser.add_argument(
+    "--descriptor-set-dependency-file",
+    help="Path to write the dependency file for descriptor set.",
+  )
   # The meaning of this flag is flipped compared to the corresponding protoc
   # flag due to this script previously passing --include_imports. Removing the
   # --include_imports is likely to have unintended consequences.
   parser.add_argument(
-      "--exclude-imports",
-      help="Do not include imported files into generated descriptor.",
-      action="store_true",
-      default=False)
+    "--exclude-imports",
+    help="Do not include imported files into generated descriptor.",
+    action="store_true",
+    default=False,
+  )
   parser.add_argument('--fatal_warnings', action='store_true')
 
-  parser.add_argument("protos", nargs="+",
-                      help="Input protobuf definition file(s).")
+  parser.add_argument(
+    "protos", nargs="+", help="Input protobuf definition file(s)."
+  )
 
   options = parser.parse_args(argv)
 
@@ -169,17 +196,16 @@ def main(argv):
 
   if options.js_out_dir:
     protoc_cmd += [
-        "--js_out",
-        "one_output_file_per_input_file,binary:" + options.js_out_dir,
-        "--plugin=protoc-gen-js=" + os.path.realpath(options.protoc_gen_js),
+      "--js_out",
+      "one_output_file_per_input_file,binary:" + options.js_out_dir,
+      "--plugin=protoc-gen-js=" + os.path.realpath(options.protoc_gen_js),
     ]
   if options.ts_out_dir:
     protoc_cmd += [
-        "--ts_proto_out=" + options.ts_out_dir,
-        "--ts_proto_opt=env=browser,esModuleInterop=true,importSuffix=.js",
-        "--ts_proto_opt=useOptionals=all",
-        "--plugin=protoc-gen-ts_proto=" +
-        os.path.realpath(options.protoc_gen_ts),
+      "--ts_proto_out=" + options.ts_out_dir,
+      "--ts_proto_opt=env=browser,esModuleInterop=true,importSuffix=.js",
+      "--ts_proto_opt=useOptionals=all",
+      "--plugin=protoc-gen-ts_proto=" + os.path.realpath(options.protoc_gen_ts),
     ]
     for filename in protos:
       stripped_name = StripProtoExtension(filename)
@@ -189,10 +215,13 @@ def main(argv):
     cc_out_dir = options.cc_out_dir
     cc_options_list = []
     if options.enable_kythe_annotations:
-      cc_options_list.extend([
-          'annotate_headers', 'annotation_pragma_name=kythe_metadata',
-          'annotation_guard_name=KYTHE_IS_RUNNING'
-      ])
+      cc_options_list.extend(
+        [
+          'annotate_headers',
+          'annotation_pragma_name=kythe_metadata',
+          'annotation_guard_name=KYTHE_IS_RUNNING',
+        ]
+      )
 
     # cc_options will likely have trailing colon so needs to be inserted at the
     # end.
@@ -208,8 +237,10 @@ def main(argv):
   if options.plugin_out_dir:
     plugin_options = FormatGeneratorOptions(options.plugin_options)
     protoc_cmd += [
-      "--plugin", "protoc-gen-plugin=" + os.path.relpath(options.plugin),
-      "--plugin_out", plugin_options + options.plugin_out_dir
+      "--plugin",
+      "protoc-gen-plugin=" + os.path.relpath(options.plugin),
+      "--plugin_out",
+      plugin_options + options.plugin_out_dir,
     ]
 
   protoc_cmd += ["--proto_path", proto_dir]
@@ -244,8 +275,9 @@ def main(argv):
       error_number = "0x%08X" % (ret + (1 << 32))
     else:
       error_number = "%d" % ret
-    raise RuntimeError("Protoc has returned non-zero status: "
-                       "{0}".format(error_number))
+    raise RuntimeError(
+      "Protoc has returned non-zero status: {0}".format(error_number)
+    )
 
   if dependency_file_data:
     with open(options.descriptor_set_dependency_file, 'w') as f:

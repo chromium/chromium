@@ -18,9 +18,9 @@ def CheckStyle(input_api, output_api, file_filter=lambda f: True):
   apis = input_api, output_api
   wrapped_filter = lambda f: file_filter(f) and IsResource(f)
   checkers = [
-      html_checker.HtmlChecker(*apis, file_filter=wrapped_filter),
-      js_checker.JSChecker(*apis, file_filter=wrapped_filter),
-      resource_checker.ResourceChecker(*apis, file_filter=wrapped_filter),
+    html_checker.HtmlChecker(*apis, file_filter=wrapped_filter),
+    js_checker.JSChecker(*apis, file_filter=wrapped_filter),
+    resource_checker.ResourceChecker(*apis, file_filter=wrapped_filter),
   ]
   results = []
   for checker in checkers:
@@ -30,27 +30,31 @@ def CheckStyle(input_api, output_api, file_filter=lambda f: True):
 
 def CheckStyleESLint(input_api, output_api):
   should_check = lambda f: f.LocalPath().endswith(('.js', '.ts'))
-  files_to_check = input_api.AffectedFiles(file_filter=should_check,
-                                           include_deletes=False)
+  files_to_check = input_api.AffectedFiles(
+    file_filter=should_check, include_deletes=False
+  )
   if not files_to_check:
     return []
-  return js_checker.JSChecker(input_api,
-                              output_api).RunEsLintChecks(files_to_check)
+  return js_checker.JSChecker(input_api, output_api).RunEsLintChecks(
+    files_to_check
+  )
 
 
 def DisallowIncludes(input_api, output_api, msg):
   return resource_checker.ResourceChecker(
-      input_api, output_api, file_filter=IsResource).DisallowIncludes(msg)
+    input_api, output_api, file_filter=IsResource
+  ).DisallowIncludes(msg)
 
 
 def DisallowNewJsFiles(input_api, output_api, file_filter=lambda f: True):
-  return added_js_files_check.AddedJsFilesCheck(input_api,
-                                                output_api,
-                                                file_filter=file_filter)
+  return added_js_files_check.AddedJsFilesCheck(
+    input_api, output_api, file_filter=file_filter
+  )
 
 
-def DisallowNewPolymerElements(input_api,
-                               output_api,
-                               file_filter=lambda f: True):
+def DisallowNewPolymerElements(
+  input_api, output_api, file_filter=lambda f: True
+):
   return added_polymer_imports_check.AddedPolymerImportsCheck(
-      input_api, output_api, file_filter=file_filter)
+    input_api, output_api, file_filter=file_filter
+  )

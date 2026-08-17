@@ -18,18 +18,18 @@ import py_utils
 
 # Possible ways that gl::Crash() will show up in a stack trace.
 GPU_CRASH_SIGNATURES = [
-    'gl::Crash',
-    'chrome!Crash',
-    'GpuServiceImpl::Crash()',
+  'gl::Crash',
+  'chrome!Crash',
+  'GpuServiceImpl::Crash()',
 ]
 # Possible ways that a renderer process crash intentionally caused by DevTools
 # can show up in a stack trace.
 FORCED_RENDERER_CRASH_SIGNATURES = [
-    'base::debug::BreakDebugger',
-    'blink::DevToolsSession::IOSession::DispatchProtocolCommand',
-    'blink::HandleChromeDebugURL',
-    'chrome!DispatchProtocolCommand',
-    'logging::LogMessage::~LogMessage',
+  'base::debug::BreakDebugger',
+  'blink::DevToolsSession::IOSession::DispatchProtocolCommand',
+  'blink::HandleChromeDebugURL',
+  'chrome!DispatchProtocolCommand',
+  'logging::LogMessage::~LogMessage',
 ]
 
 # At the time of writing, this is the default timeout for
@@ -55,7 +55,8 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     # debugging information we can from the bots since it may be difficult to
     # reproduce the issue locally. So, use the full logger implementation.
     artifact_logger.RegisterArtifactImplementation(
-        acw.FullLoggingArtifactImpl())
+      acw.FullLoggingArtifactImpl()
+    )
     super(BrowserMinidumpTest, self).setUp()
 
   def tearDown(self):
@@ -63,34 +64,40 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     artifact_logger.RegisterArtifactImplementation(None)
 
   def assertContainsAtLeastOne(self, expected_values, checked_value):
-    self.assertTrue(ContainsAtLeastOne(expected_values, checked_value),
-                    'None of %s found in %s' % (expected_values, checked_value))
+    self.assertTrue(
+      ContainsAtLeastOne(expected_values, checked_value),
+      'None of %s found in %s' % (expected_values, checked_value),
+    )
 
   @decorators.Isolated
   # Minidump symbolization doesn't work in ChromeOS local mode if the rootfs is
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
-      'chromeos-local',
-      'win7',  # https://crbug.com/1084931
+    'chromeos-local',
+    'win7',  # https://crbug.com/1084931
   )
   def testSymbolizeMinidump(self):
     # Wait for the browser to restart fully before crashing
     self._LoadPageThenWait('var sam = "car";', 'sam')
     self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=10)
     crash_minidump_path = self._browser.GetRecentMinidumpPathWithTimeout(
-        timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT)
+      timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT
+    )
     self.assertIsNotNone(crash_minidump_path)
 
     if crash_minidump_path is not None:
-      logging.info('testSymbolizeMinidump: most recent path = '
-          + crash_minidump_path)
+      logging.info(
+        'testSymbolizeMinidump: most recent path = ' + crash_minidump_path
+      )
     all_paths = self._browser.GetAllMinidumpPaths()
     if all_paths is not None:
       logging.info('testSymbolizeMinidump: all paths ' + ''.join(all_paths))
     all_unsymbolized_paths = self._browser.GetAllUnsymbolizedMinidumpPaths()
     if all_unsymbolized_paths is not None:
-      logging.info('testSymbolizeMinidump: all unsymbolized paths '
-          + ''.join(all_unsymbolized_paths))
+      logging.info(
+        'testSymbolizeMinidump: all unsymbolized paths '
+        + ''.join(all_unsymbolized_paths)
+      )
 
     # Flakes on chromeos: crbug.com/1014754
     # This has failed to repro either locally or on swarming, so dump extra
@@ -104,36 +111,44 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     self.assertTrue(succeeded)
     self.assertContainsAtLeastOne(GPU_CRASH_SIGNATURES, stack)
 
-    all_unsymbolized_after_symbolize_paths = \
-        self._browser.GetAllUnsymbolizedMinidumpPaths()
+    all_unsymbolized_after_symbolize_paths = (
+      self._browser.GetAllUnsymbolizedMinidumpPaths()
+    )
     if all_unsymbolized_after_symbolize_paths is not None:
-      logging.info('testSymbolizeMinidump: after symbolize all '
-          + 'unsymbolized paths: '
-          + ''.join(all_unsymbolized_after_symbolize_paths))
+      logging.info(
+        'testSymbolizeMinidump: after symbolize all '
+        + 'unsymbolized paths: '
+        + ''.join(all_unsymbolized_after_symbolize_paths)
+      )
     self.assertTrue(len(all_unsymbolized_after_symbolize_paths) == 0)
 
   @decorators.Isolated
   # Minidump symbolization doesn't work in ChromeOS local mode if the rootfs is
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
-      'chromeos-local',
-      'win7',  # https://crbug.com/1084931
+    'chromeos-local',
+    'win7',  # https://crbug.com/1084931
   )
   def testMultipleCrashMinidumps(self):
     # Wait for the browser to restart fully before crashing
     self._LoadPageThenWait('var cat = "dog";', 'cat')
     self._browser.tabs.New().Navigate('chrome://gpucrash', timeout=10)
     first_crash_path = self._browser.GetRecentMinidumpPathWithTimeout(
-        timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT)
+      timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT
+    )
 
     self.assertIsNotNone(first_crash_path)
     if first_crash_path is not None:
-      logging.info('testMultipleCrashMinidumps: first crash most recent path ' +
-                   first_crash_path)
+      logging.info(
+        'testMultipleCrashMinidumps: first crash most recent path '
+        + first_crash_path
+      )
     all_paths = self._browser.GetAllMinidumpPaths()
     if all_paths is not None:
-      logging.info('testMultipleCrashMinidumps: first crash all paths: '
-          + ''.join(all_paths))
+      logging.info(
+        'testMultipleCrashMinidumps: first crash all paths: '
+        + ''.join(all_paths)
+      )
     # Flakes on chromeos: crbug.com/1014754
     # This has failed to repro either locally or on swarming, so dump extra
     # information if this is hit on the bots.
@@ -144,8 +159,10 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     all_unsymbolized_paths = self._browser.GetAllUnsymbolizedMinidumpPaths()
     self.assertTrue(len(all_unsymbolized_paths) == 1)
     if all_unsymbolized_paths is not None:
-      logging.info('testMultipleCrashMinidumps: first crash all unsymbolized '
-          'paths: ' + ''.join(all_unsymbolized_paths))
+      logging.info(
+        'testMultipleCrashMinidumps: first crash all unsymbolized '
+        'paths: ' + ''.join(all_unsymbolized_paths)
+      )
 
     # Restart the browser and then crash a second time
     logging.info('Restarting the browser')
@@ -159,28 +176,34 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     # timestamp so we don't get the first one returned to us again
     oldest_ts = os.path.getmtime(first_crash_path) + 1
     second_crash_path = self._browser.GetRecentMinidumpPathWithTimeout(
-        timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT, oldest_ts=oldest_ts)
+      timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT, oldest_ts=oldest_ts
+    )
     self.assertIsNotNone(second_crash_path)
     if second_crash_path is not None:
       logging.info(
-          'testMultipleCrashMinidumps: second crash most recent path ' +
-          second_crash_path)
+        'testMultipleCrashMinidumps: second crash most recent path '
+        + second_crash_path
+      )
     second_crash_all_paths = self._browser.GetAllMinidumpPaths()
     if second_crash_all_paths is not None:
-      logging.info('testMultipleCrashMinidumps: second crash all paths: '
-          + ''.join(second_crash_all_paths))
-    second_crash_all_unsymbolized_paths = \
-        self._browser.GetAllUnsymbolizedMinidumpPaths()
-    #self.assertTrue(len(all_unsymbolized_paths) == 1)
+      logging.info(
+        'testMultipleCrashMinidumps: second crash all paths: '
+        + ''.join(second_crash_all_paths)
+      )
+    second_crash_all_unsymbolized_paths = (
+      self._browser.GetAllUnsymbolizedMinidumpPaths()
+    )
+    # self.assertTrue(len(all_unsymbolized_paths) == 1)
     if second_crash_all_unsymbolized_paths is not None:
-      logging.info('testMultipleCrashMinidumps: second crash all unsymbolized '
-          'paths: ' + ''.join(second_crash_all_unsymbolized_paths))
+      logging.info(
+        'testMultipleCrashMinidumps: second crash all unsymbolized '
+        'paths: ' + ''.join(second_crash_all_unsymbolized_paths)
+      )
     self.assertEqual(len(second_crash_all_paths), 2)
     # Check that both paths are now present and unsymbolized
     self.assertTrue(first_crash_path in second_crash_all_paths)
     self.assertTrue(second_crash_path in second_crash_all_paths)
     self.assertTrue(len(second_crash_all_unsymbolized_paths) == 2)
-
 
     # Now symbolize one of those paths and assert that there is still one
     # unsymbolized
@@ -190,15 +213,20 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
 
     after_symbolize_all_paths = self._browser.GetAllMinidumpPaths()
     if after_symbolize_all_paths is not None:
-      logging.info('testMultipleCrashMinidumps: after symbolize all paths: '
-          + ''.join(after_symbolize_all_paths))
+      logging.info(
+        'testMultipleCrashMinidumps: after symbolize all paths: '
+        + ''.join(after_symbolize_all_paths)
+      )
     self.assertEqual(len(after_symbolize_all_paths), 2)
-    after_symbolize_all_unsymbolized_paths = \
-        self._browser.GetAllUnsymbolizedMinidumpPaths()
+    after_symbolize_all_unsymbolized_paths = (
+      self._browser.GetAllUnsymbolizedMinidumpPaths()
+    )
     if after_symbolize_all_unsymbolized_paths is not None:
-      logging.info('testMultipleCrashMinidumps: after symbolize all '
-          + 'unsymbolized paths: '
-          + ''.join(after_symbolize_all_unsymbolized_paths))
+      logging.info(
+        'testMultipleCrashMinidumps: after symbolize all '
+        + 'unsymbolized paths: '
+        + ''.join(after_symbolize_all_unsymbolized_paths)
+      )
     self.assertEqual(after_symbolize_all_unsymbolized_paths, [first_crash_path])
 
     # Explicitly ignore the remaining minidump so that it isn't detected during
@@ -209,9 +237,9 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   # Minidump symbolization doesn't work in ChromeOS local mode if the rootfs is
   # still read-only, so skip the test in that case.
   @decorators.Disabled(
-      'chromeos-board-eve',  # b/312565719
-      'chromeos-local',
-      'win7',  # https://crbug.com/1084931
+    'chromeos-board-eve',  # b/312565719
+    'chromeos-local',
+    'win7',  # https://crbug.com/1084931
   )
   def testMinidumpFromRendererHang(self):
     """Tests that renderer hangs result in minidumps.
@@ -237,7 +265,8 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
       # Try to until at least one minidump is written to disk. If none end up
       # being written, the test will fail shortly after.
       _ = self._browser.GetRecentMinidumpPathWithTimeout(
-          timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT)
+        timeout_s=WAIT_FOR_MINIDUMP_TIMEOUT
+      )
 
       # If we time out while crashing the renderer process, the minidump should
       # still exist, we just have to manually look for it instead of it being
@@ -247,8 +276,9 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
       # get one from the renderer process being notified of the GPU process
       # crash.
       num_paths = len(all_paths)
-      self.assertTrue(num_paths in (2, 3),
-                      'Got %d minidumps, expected 2 or 3' % num_paths)
+      self.assertTrue(
+        num_paths in (2, 3), 'Got %d minidumps, expected 2 or 3' % num_paths
+      )
       found_renderer = False
       found_gpu = False
       for p in all_paths:
@@ -269,8 +299,9 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
       self.assertTrue(e.is_valid_dump)
       # We should get one minidump from the GPU process (gl::Crash()) and one
       # minidump from the renderer process (base::debug::BreakDebugger()).
-      self.assertContainsAtLeastOne(FORCED_RENDERER_CRASH_SIGNATURES,
-                                    '\n'.join(e.stack_trace))
+      self.assertContainsAtLeastOne(
+        FORCED_RENDERER_CRASH_SIGNATURES, '\n'.join(e.stack_trace)
+      )
       # There appears to be a bug on older versions of Windows 10 where the GPU
       # minidump won't be found by the AppCrashException no matter how long we
       # wait after the crash takes place. So, look for it afterwards.
@@ -296,8 +327,9 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
     # wait on to ensure that all browser load processes have finished
     time.sleep(5)
     new_tab = self._browser.tabs.New()
-    new_tab.Navigate(self.UrlOfUnittestFile('blank.html'),
-        script_to_evaluate_on_commit=script)
+    new_tab.Navigate(
+      self.UrlOfUnittestFile('blank.html'), script_to_evaluate_on_commit=script
+    )
     # Wait until the javascript has run ensuring that
     # the new browser has restarted before we crash it again
     py_utils.WaitFor(lambda: new_tab.EvaluateJavaScript(value), 60)

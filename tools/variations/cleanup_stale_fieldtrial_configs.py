@@ -43,28 +43,27 @@ THREAD_COUNT = 16
 # studies (and studies that depend on features) that are not visible in code.
 # Eg. ChromeOS where experiments are passed from ash to platform services.
 _LITERAL_SKIP_REGEX_STRINGS = [
-    '^CrOSLateBoot.*',
-    '^CrOSEarlyBoot.*',
-    '^V8Flag_.*',
-    '^WebRTC-.*',
+  '^CrOSLateBoot.*',
+  '^CrOSEarlyBoot.*',
+  '^V8Flag_.*',
+  '^WebRTC-.*',
 ]
 
 _LITERAL_SKIP_REGEXES = [
-    re.compile(regexp_str) for regexp_str in _LITERAL_SKIP_REGEX_STRINGS
+  re.compile(regexp_str) for regexp_str in _LITERAL_SKIP_REGEX_STRINGS
 ]
 
 _DECLARE_FEATURE_PATTERNS = [
-    # Basic form: BASE_FEATURE(kMyFeature...)
-    re.compile(r'BASE_FEATURE\s*\([^)]*\bk(\w+)[^)]*\)'),
-    # Extra pattern for net/dns
-    re.compile(r'MAKE_BASE_FEATURE_WITH_STATIC_STORAGE\s*\([^)]*\bk(\w+)[^)]*\)'
-               ),
-    # Quoted old-style form: BASE_FEATURE(.., "My-Feature",...)
-    re.compile(r'BASE_FEATURE\s*\([^)]*"([\w-]+)"[^)]*\)'),
-    # Forward declaration: BASE_DECLARE_FEATURE(kMyFeature...)
-    re.compile(r'BASE_DECLARE_FEATURE\s*\([^)]*\bk(\w+)[^)]*\)'),
-    # Java syntax: Flag.baseFeature("My-Feature")
-    re.compile(r'Flag\.baseFeature\s*\([^)]*"([\w-]+)"[^)]*\)'),
+  # Basic form: BASE_FEATURE(kMyFeature...)
+  re.compile(r'BASE_FEATURE\s*\([^)]*\bk(\w+)[^)]*\)'),
+  # Extra pattern for net/dns
+  re.compile(r'MAKE_BASE_FEATURE_WITH_STATIC_STORAGE\s*\([^)]*\bk(\w+)[^)]*\)'),
+  # Quoted old-style form: BASE_FEATURE(.., "My-Feature",...)
+  re.compile(r'BASE_FEATURE\s*\([^)]*"([\w-]+)"[^)]*\)'),
+  # Forward declaration: BASE_DECLARE_FEATURE(kMyFeature...)
+  re.compile(r'BASE_DECLARE_FEATURE\s*\([^)]*\bk(\w+)[^)]*\)'),
+  # Java syntax: Flag.baseFeature("My-Feature")
+  re.compile(r'Flag\.baseFeature\s*\([^)]*"([\w-]+)"[^)]*\)'),
 ]
 
 
@@ -100,9 +99,12 @@ def skip_exempted_studies(literals: dict[str, set[str]]) -> set[str]:
   return found_studies
 
 
-def thread_func(thread_limiter: threading.BoundedSemaphore, file_name: str,
-                literal_to_study: dict[str, set[str]],
-                found_studies: set[str]) -> None:
+def thread_func(
+  thread_limiter: threading.BoundedSemaphore,
+  file_name: str,
+  literal_to_study: dict[str, set[str]],
+  found_studies: set[str],
+) -> None:
   """Runs a task that scans a file for the presence of studies.
 
   Essentially for given file this function performs regular expression matching.
@@ -125,18 +127,22 @@ def thread_func(thread_limiter: threading.BoundedSemaphore, file_name: str,
           found_literal = match.group(1)
           for study in literal_to_study.get(found_literal, []):
             found_studies.add(study)
-            print(f'Found study {study} by {pattern.pattern} for literal '
-                  f'{found_literal} in {file_name}. '
-                  f'Confirmed studies: {len(found_studies)}')
+            print(
+              f'Found study {study} by {pattern.pattern} for literal '
+              f'{found_literal} in {file_name}. '
+              f'Confirmed studies: {len(found_studies)}'
+            )
 
   finally:
     thread_limiter.release()
 
 
-def find_studies_by_literals(all_files: bytes,
-                             literals_by_study: dict[str, set[str]],
-                             found_studies: set[str],
-                             thread_limiter: threading.BoundedSemaphore):
+def find_studies_by_literals(
+  all_files: bytes,
+  literals_by_study: dict[str, set[str]],
+  found_studies: set[str],
+  thread_limiter: threading.BoundedSemaphore,
+):
   """Finds studies by literals.
 
   For each file in files, iterates over literals and checks if the literal is
@@ -195,13 +201,17 @@ def invert_studies(studies: dict[str, set[str]]) -> dict[str, set[str]]:
 
 def main():
   parser = optparse.OptionParser()
-  parser.add_option('--input_path',
-                    help='Path to the fieldtrial config file to clean.')
-  parser.add_option('--output_path',
-                    help='Path to write cleaned up fieldtrial config file.')
-  parser.add_option('--thread_count',
-                    type='int',
-                    help='The number of threads to use for scanning.')
+  parser.add_option(
+    '--input_path', help='Path to the fieldtrial config file to clean.'
+  )
+  parser.add_option(
+    '--output_path', help='Path to write cleaned up fieldtrial config file.'
+  )
+  parser.add_option(
+    '--thread_count',
+    type='int',
+    help='The number of threads to use for scanning.',
+  )
 
   opts, _ = parser.parse_args()
   input_path = os.path.expanduser(opts.input_path or CONFIG_PATH)
@@ -220,16 +230,30 @@ def main():
   command.extend(['-not', '-name', '*test.mm'])
   command.extend(['-not', '-name', '*Test.java'])
   # Pick headers, objective-c and c++ modules.
-  command.extend([
-      '(', '-name', '*.h', '-o', '-name', '*.cc', '-o', '-name', '*.mm', '-o',
-      '-name', '*.java', ')'
-  ])
+  command.extend(
+    [
+      '(',
+      '-name',
+      '*.h',
+      '-o',
+      '-name',
+      '*.cc',
+      '-o',
+      '-name',
+      '*.mm',
+      '-o',
+      '-name',
+      '*.java',
+      ')',
+    ]
+  )
 
   # All relevant source files.
   all_files = sort_find_output(
-      subprocess.Popen(command,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.DEVNULL).stdout.read())
+    subprocess.Popen(
+      command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+    ).stdout.read()
+  )
   print(f'Working with {len(all_files.splitlines())} source files')
 
   # Feature and study name literals, per study.
@@ -243,8 +267,9 @@ def main():
 
   # Stage two: find studies that have any related literal present
   # in the codebase.
-  find_studies_by_literals(all_files, literals_by_study, found_studies,
-                           thread_limiter)
+  find_studies_by_literals(
+    all_files, literals_by_study, found_studies, thread_limiter
+  )
 
   # Stage three: copy over studies that are found.
   clean_studies = dict()

@@ -19,5 +19,6 @@ def ProcessHistogramDicts(histogram_dicts, options):
   open(output_file, 'a').close()  # Create file if it doesn't exist.
   with codecs.open(output_file, mode='r+', encoding='utf-8') as output_stream:
     vulcanize_histograms_viewer.VulcanizeAndRenderHistogramsViewer(
-        histogram_dicts, output_stream, options.reset_results)
+      histogram_dicts, output_stream, options.reset_results
+    )
   return output_file

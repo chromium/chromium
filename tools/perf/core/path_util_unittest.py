@@ -9,7 +9,6 @@ from core import path_util
 
 
 class PathUtilTest(unittest.TestCase):
-
   def testSysPath(self):
     sys_path_before = list(sys.path)
     with path_util.SysPath('_test_dir'):

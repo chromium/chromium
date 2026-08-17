@@ -29,6 +29,7 @@ from drivers import windowing
 MAX_URL = 1024
 PORT = 42492
 
+
 def SetupIterationCommandLine(cmd):
   """Adds the necessary flags for iteration to a command.
 
@@ -36,24 +37,29 @@ def SetupIterationCommandLine(cmd):
     cmd: an object created by cmdline.AddCommand
   """
   cmd.AddArgument(
-    ["-b", "--browser"], "Browser to use (ie, firefox, chrome)",
-    type="string", required=True)
+    ["-b", "--browser"],
+    "Browser to use (ie, firefox, chrome)",
+    type="string",
+    required=True,
+  )
   cmd.AddArgument(
-    ["-b1v", "--browserver"], "Version of browser", metaname="VERSION")
+    ["-b1v", "--browserver"], "Version of browser", metaname="VERSION"
+  )
   cmd.AddArgument(
-    ["-p", "--browserpath"], "Path to browser.",
-    type="string", required=False)
+    ["-p", "--browserpath"], "Path to browser.", type="string", required=False
+  )
+  cmd.AddArgument(["-u", "--url"], "URL to visit")
   cmd.AddArgument(
-    ["-u", "--url"], "URL to visit")
-  cmd.AddArgument(
-    ["-l", "--list"], "File containing list of URLs to visit", type="readfile")
+    ["-l", "--list"], "File containing list of URLs to visit", type="readfile"
+  )
   cmd.AddMutualExclusion(["--url", "--list"])
+  cmd.AddArgument(["-s", "--startline"], "First line of URL list", type="int")
   cmd.AddArgument(
-    ["-s", "--startline"], "First line of URL list", type="int")
+    ["-e", "--endline"], "Last line of URL list (exclusive)", type="int"
+  )
   cmd.AddArgument(
-    ["-e", "--endline"], "Last line of URL list (exclusive)", type="int")
-  cmd.AddArgument(
-    ["-c", "--count"], "Number of lines of URL file to use", type="int")
+    ["-c", "--count"], "Number of lines of URL file to use", type="int"
+  )
   cmd.AddDependency("--startline", "--list")
   cmd.AddRequiredGroup(["--url", "--list"])
   cmd.AddDependency("--endline", "--list")
@@ -61,11 +67,14 @@ def SetupIterationCommandLine(cmd):
   cmd.AddMutualExclusion(["--count", "--endline"])
   cmd.AddDependency("--count", "--startline")
   cmd.AddArgument(
-    ["-t", "--timeout"], "Amount of time (seconds) to wait for browser to "
-    "finish loading",
-    type="int", default=300)
+    ["-t", "--timeout"],
+    "Amount of time (seconds) to wait for browser to finish loading",
+    type="int",
+    default=300,
+  )
   cmd.AddArgument(
-    ["-sz", "--size"], "Browser window size", default=(800, 600), type="coords")
+    ["-sz", "--size"], "Browser window size", default=(800, 600), type="coords"
+  )
 
 
 def Iterate(command, iteration_func):
@@ -83,7 +92,8 @@ def Iterate(command, iteration_func):
     """Invoke the browser process and connect to the socket."""
     (proc, frame, wnd) = scraper.GetBrowser(path)
 
-    if not wnd: raise ValueError("Could not invoke browser.")
+    if not wnd:
+      raise ValueError("Could not invoke browser.")
 
     # Try to connect the socket. If it fails, wait and try
     # again. Do this for ten seconds
@@ -139,25 +149,25 @@ def Iterate(command, iteration_func):
   else:
     startline = command["--startline"]
     if command["--count"]:
-      endline = startline+command["--count"]
+      endline = startline + command["--count"]
     else:
       endline = command["--endline"]
 
     url_list = []
     file = open(command["--list"], "r")
 
-    for line in xrange(startline-1):
+    for line in xrange(startline - 1):
       file.readline()
 
-    for line in xrange(endline-startline):
+    for line in xrange(endline - startline):
       url_list.append(file.readline().strip())
 
   timeout = command["--timeout"]
 
   # Loop through the URLs and send them through the socket
-  Iterate.s    = None
+  Iterate.s = None
   Iterate.proc = None
-  Iterate.wnd  = None
+  Iterate.wnd = None
 
   for url in url_list:
     # Invoke the browser if necessary
@@ -168,8 +178,7 @@ def Iterate(command, iteration_func):
 
     response = ""
 
-    while (response.find("\n") < 0):
-
+    while response.find("\n") < 0:
       try:
         recv = Iterate.s.recv(MAX_URL)
         response = response + recv

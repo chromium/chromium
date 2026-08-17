@@ -31,15 +31,19 @@ def _RunMetric(test_result, metrics):
   # outputting logs while waiting for metrics to be calculated.
   TEN_MINUTES = 60 * 10
   mre_result = metric_runner.RunMetricOnSingleTrace(
-      html_local_path, metrics, canonical_url=html_remote_url,
-      timeout=TEN_MINUTES,
-      extra_import_options={'trackDetailedModelStats': True})
+    html_local_path,
+    metrics,
+    canonical_url=html_remote_url,
+    timeout=TEN_MINUTES,
+    extra_import_options={'trackDetailedModelStats': True},
+  )
 
   if mre_result.failures:
     util.SetUnexpectedFailure(test_result)
     for f in mre_result.failures:
-      logging.error('Failure recorded for test %s: %s',
-                    test_result['testPath'], f)
+      logging.error(
+        'Failure recorded for test %s: %s', test_result['testPath'], f
+      )
 
   return mre_result.pairs.get('histograms', [])
 
@@ -56,44 +60,53 @@ def ComputeTBMv2Metrics(test_result):
   if test_result['status'] == 'SKIP':
     return
 
-  metrics = [tag['value'] for tag in test_result.get('tags', [])
-             if tag['key'] == 'tbmv2']
+  metrics = [
+    tag['value'] for tag in test_result.get('tags', []) if tag['key'] == 'tbmv2'
+  ]
   if not metrics:
     logging.debug('%s: No TBMv2 metrics specified.', test_result['testPath'])
     return
 
   if HTML_TRACE_NAME not in artifacts:
     util.SetUnexpectedFailure(test_result)
-    logging.error('%s: No traces to compute metrics on.',
-                  test_result['testPath'])
+    logging.error(
+      '%s: No traces to compute metrics on.', test_result['testPath']
+    )
     return
 
-  trace_size_in_mib = (os.path.getsize(artifacts[HTML_TRACE_NAME]['filePath'])
-                       / (2 ** 20))
+  trace_size_in_mib = os.path.getsize(
+    artifacts[HTML_TRACE_NAME]['filePath']
+  ) / (2**20)
   # Bails out on traces that are too big. See crbug.com/812631 for more
   # details.
   if trace_size_in_mib > 400:
     util.SetUnexpectedFailure(test_result)
-    logging.error('%s: Trace size is too big: %s MiB',
-                  test_result['testPath'], trace_size_in_mib)
+    logging.error(
+      '%s: Trace size is too big: %s MiB',
+      test_result['testPath'],
+      trace_size_in_mib,
+    )
     return
 
   start = time.time()
   test_result['_histograms'].ImportDicts(_RunMetric(test_result, metrics))
-  logging.info('%s: Computing TBMv2 metrics took %.3f seconds.' % (
-      test_result['testPath'], time.time() - start))
+  logging.info(
+    '%s: Computing TBMv2 metrics took %.3f seconds.'
+    % (test_result['testPath'], time.time() - start)
+  )
 
 
-def ComputeTBMv3Metrics(test_result,
-                        trace_processor_path,
-                        fetch_power_profile=False):
+def ComputeTBMv3Metrics(
+  test_result, trace_processor_path, fetch_power_profile=False
+):
   artifacts = test_result.get('outputArtifacts', {})
 
   if test_result['status'] == 'SKIP':
     return
 
-  metrics = [tag['value'] for tag in test_result.get('tags', [])
-             if tag['key'] == 'tbmv3']
+  metrics = [
+    tag['value'] for tag in test_result.get('tags', []) if tag['key'] == 'tbmv3'
+  ]
   if not metrics:
     logging.debug('%s: No TBMv3 metrics specified.', test_result['testPath'])
     return
@@ -103,14 +116,20 @@ def ComputeTBMv3Metrics(test_result,
     # generation is enabled only on selected bots. Make this an error
     # when Telemetry is switched over to proto trace generation everywhere.
     # Also don't forget to call util.SetUnexpectedFailure(test_result).
-    logging.warning('%s: No proto traces to compute metrics on.',
-                    test_result['testPath'])
+    logging.warning(
+      '%s: No proto traces to compute metrics on.', test_result['testPath']
+    )
     return
 
   start = time.time()
   histograms = trace_processor.RunMetrics(
-      trace_processor_path, artifacts[CONCATENATED_PROTO_NAME]['filePath'],
-      metrics, fetch_power_profile)
+    trace_processor_path,
+    artifacts[CONCATENATED_PROTO_NAME]['filePath'],
+    metrics,
+    fetch_power_profile,
+  )
   test_result['_histograms'].Merge(histograms)
-  logging.info('%s: Computing TBMv3 metrics took %.3f seconds.' % (
-      test_result['testPath'], time.time() - start))
+  logging.info(
+    '%s: Computing TBMv3 metrics took %.3f seconds.'
+    % (test_result['testPath'], time.time() - start)
+  )

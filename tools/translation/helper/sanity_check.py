@@ -27,8 +27,9 @@ def list_files_in_repository(repo_path, pattern):
   """Lists all files matching given pattern in the given git repository"""
   # This works because git does its own glob expansion even though there is no
   # shell to do it.
-  output = subprocess.check_output([GIT, 'ls-files', '--', pattern],
-                                   cwd=repo_path).decode('utf-8')
+  output = subprocess.check_output(
+    [GIT, 'ls-files', '--', pattern], cwd=repo_path
+  ).decode('utf-8')
   return output.strip().splitlines()
 
 
@@ -66,24 +67,28 @@ def Run():
   # Additional check for translateable grds. Translateable grds are a subset
   # of all grds so this checks some files twice, but it exercises the
   # get_translatable_grds() path and also doesn't need to skip internal.grd.
-  TRANSLATION_EXPECTATIONS_PATH = os.path.join(repo_root, 'tools',
-                                               'gritsettings',
-                                               'translation_expectations.pyl')
-  translateable_grds = translation_helper.get_translatable_grds(
-      repo_root,
-      grds,
-      TRANSLATION_EXPECTATIONS_PATH,
-      # Since we're using git ls-files above, this isn't being run in a Cog
-      # workspace.
-      is_cog=False,
+  TRANSLATION_EXPECTATIONS_PATH = os.path.join(
+    repo_root, 'tools', 'gritsettings', 'translation_expectations.pyl'
   )
-  print('Found %d translateable .grd files in translation expectations.' %
-        len(translateable_grds))
+  translateable_grds = translation_helper.get_translatable_grds(
+    repo_root,
+    grds,
+    TRANSLATION_EXPECTATIONS_PATH,
+    # Since we're using git ls-files above, this isn't being run in a Cog
+    # workspace.
+    is_cog=False,
+  )
+  print(
+    'Found %d translateable .grd files in translation expectations.'
+    % len(translateable_grds)
+  )
   for grd in translateable_grds:
     path = os.path.join(repo_root, grd.path)
     grd_helper.GetGrdMessages(path, os.path.dirname(path))
-  print('Successfully parsed all translateable_grds .grd files in translation '
-        'expectations.')
+  print(
+    'Successfully parsed all translateable_grds .grd files in translation '
+    'expectations.'
+  )
   print('DONE')
 
 

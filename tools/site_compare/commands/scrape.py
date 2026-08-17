@@ -23,19 +23,26 @@ import command_line
 from drivers import windowing
 from utils import browser_iterate
 
+
 def CreateCommand(cmdline):
   """Inserts the command and arguments into a command line for parsing."""
   cmd = cmdline.AddCommand(
     ["scrape"],
     "Scrapes an image from a URL or series of URLs.",
     None,
-    ExecuteScrape)
+    ExecuteScrape,
+  )
 
   browser_iterate.SetupIterationCommandLine(cmd)
   cmd.AddArgument(
-    ["-log", "--logfile"], "File to write text output", type="string")
+    ["-log", "--logfile"], "File to write text output", type="string"
+  )
   cmd.AddArgument(
-    ["-out", "--outdir"], "Directory to store scrapes", type="string", required=True)
+    ["-out", "--outdir"],
+    "Directory to store scrapes",
+    type="string",
+    required=True,
+  )
 
 
 def ExecuteScrape(command):
@@ -43,17 +50,21 @@ def ExecuteScrape(command):
 
   def ScrapeResult(url, proc, wnd, result):
     """Capture and save the scrape."""
-    if log_file: log_file.write(result)
+    if log_file:
+      log_file.write(result)
 
     # Scrape the page
     image = windowing.ScrapeWindow(wnd)
     filename = windowing.URLtoFilename(url, command["--outdir"], ".bmp")
     image.save(filename)
 
-  if command["--logfile"]: log_file = open(command["--logfile"], "w")
-  else: log_file = None
+  if command["--logfile"]:
+    log_file = open(command["--logfile"], "w")
+  else:
+    log_file = None
 
   browser_iterate.Iterate(command, ScrapeResult)
 
   # Close the log file and return. We're done.
-  if log_file: log_file.close()
+  if log_file:
+    log_file.close()

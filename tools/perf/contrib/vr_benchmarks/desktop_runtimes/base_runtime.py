@@ -19,47 +19,58 @@ class DesktopRuntimeBase(object):
     self._possible_browser = possible_browser
 
     self._finder_options.browser_options.AppendExtraBrowserArgs(
-        '--enable-features=%s' % self.GetFeatureName())
+      '--enable-features=%s' % self.GetFeatureName()
+    )
     # Disable all other runtimes other than the current one.
     for feature in ALL_RUNTIMES - set([self.GetFeatureName()]):
       self._finder_options.browser_options.AppendExtraBrowserArgs(
-        '--disable-features=%s' % feature)
+        '--disable-features=%s' % feature
+      )
 
     if self.GetSandboxSupported():
       self._finder_options.browser_options.AppendExtraBrowserArgs(
-        '--enable-features=%s' % SANDBOX_FEATURE)
+        '--enable-features=%s' % SANDBOX_FEATURE
+      )
       self.SetupSandboxAcls(os.path.abspath(possible_browser.browser_directory))
     else:
       self._finder_options.browser_options.AppendExtraBrowserArgs(
-        '--disable-features=%s' % SANDBOX_FEATURE)
+        '--disable-features=%s' % SANDBOX_FEATURE
+      )
 
     if self._finder_options.mock_runtime_directory:
       self._mock_runtime_directory = os.path.abspath(
-          self._finder_options.mock_runtime_directory)
+        self._finder_options.mock_runtime_directory
+      )
     else:
       self._mock_runtime_directory = os.path.abspath(
-          os.path.join(self._possible_browser.browser_directory,
-                       'mock_vr_clients'))
+        os.path.join(
+          self._possible_browser.browser_directory, 'mock_vr_clients'
+        )
+      )
       logging.warning('Using mock directory %s', self._mock_runtime_directory)
 
   def Setup(self):
     """Called once before any stories are run."""
     raise NotImplementedError(
-        'No runtime setup defined for %s' % self.__class__.__name__)
+      'No runtime setup defined for %s' % self.__class__.__name__
+    )
 
   def WillRunStory(self):
     """Called before each story is run."""
     raise NotImplementedError(
-        'No runtime pre-story defined for %s' % self.__class__.__name__)
+      'No runtime pre-story defined for %s' % self.__class__.__name__
+    )
 
   def TearDown(self):
     """Called once after all stories are run."""
     raise NotImplementedError(
-        'No runtime tear down defined for %s' % self.__class__.__name__)
+      'No runtime tear down defined for %s' % self.__class__.__name__
+    )
 
   def GetFeatureName(self):
     raise NotImplementedError(
-        'No feature defined for %s' % self.__class__.__name__)
+      'No feature defined for %s' % self.__class__.__name__
+    )
 
   def GetSandboxSupported(self):
     # The majority of runtimes don't support being run in the sandboxed process
@@ -79,10 +90,20 @@ class DesktopRuntimeBase(object):
     # it's testing.
     # //chrome/browser/vr/test/
     import_dir = os.path.join(
-        os.path.dirname(__file__), '..', '..', '..', '..', '..',
-        'chrome', 'browser', 'vr', 'test')
+      os.path.dirname(__file__),
+      '..',
+      '..',
+      '..',
+      '..',
+      '..',
+      'chrome',
+      'browser',
+      'vr',
+      'test',
+    )
     if import_dir not in sys.path:
       sys.path.append(import_dir)
     # pylint: disable=import-error,wrong-import-position,import-outside-toplevel
     import run_xr_browser_tests
+
     run_xr_browser_tests.SetupWindowsACLs(directory)

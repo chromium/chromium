@@ -24,17 +24,23 @@ def ParseArgs():
   """Parse application arguments."""
   parser = argparse.ArgumentParser(description='USB gadget server.')
   parser.add_argument(
-      '-i', '--interface', default='lo',
-      help='Listen for HTTP connections on this interface.')
+    '-i',
+    '--interface',
+    default='lo',
+    help='Listen for HTTP connections on this interface.',
+  )
   parser.add_argument(
-      '-p', '--port', default=8080,
-      help='Listen for HTTP connections on this port.')
+    '-p',
+    '--port',
+    default=8080,
+    help='Listen for HTTP connections on this port.',
+  )
   parser.add_argument(
-      '--hardware', default='beaglebone-black',
-      help='Hardware configuration.')
+    '--hardware', default='beaglebone-black', help='Hardware configuration.'
+  )
   parser.add_argument(
-      '--start-claimed',
-      help='Start with the device claimed by this client.')
+    '--start-claimed', help='Start with the device claimed by this client.'
+  )
   return parser.parse_args()
 
 

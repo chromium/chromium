@@ -25,11 +25,12 @@ sys.path.insert(1, _PEFILE_DIR)
 import pefile
 
 
-__CV_INFO_PDB70_format__ = ('CV_INFO_PDB70',
-  ('4s,CvSignature', '16s,Signature', 'L,Age'))
+__CV_INFO_PDB70_format__ = (
+  'CV_INFO_PDB70',
+  ('4s,CvSignature', '16s,Signature', 'L,Age'),
+)
 
-__GUID_format__ = ('GUID',
-  ('L,Data1', 'H,Data2', 'H,Data3', '8s,Data4'))
+__GUID_format__ = ('GUID', ('L,Data1', 'H,Data2', 'H,Data3', '8s,Data4'))
 
 
 def GetPDBInfoFromImg(filename):
@@ -41,11 +42,11 @@ def GetPDBInfoFromImg(filename):
     if dbg.struct.Type == 2:  # IMAGE_DEBUG_TYPE_CODEVIEW
       off = dbg.struct.AddressOfRawData
       size = dbg.struct.SizeOfData
-      data = pe.get_memory_mapped_image()[off:off+size]
+      data = pe.get_memory_mapped_image()[off : off + size]
 
       cv = pefile.Structure(__CV_INFO_PDB70_format__)
       cv.__unpack__(data)
-      cv.PdbFileName = data[cv.sizeof():]
+      cv.PdbFileName = data[cv.sizeof() :]
       guid = pefile.Structure(__GUID_format__)
       guid.__unpack__(cv.Signature)
 
@@ -56,9 +57,18 @@ def GetPDBInfoFromImg(filename):
       guid.Data4_0 = ''.join("%02X" % x for x in guid.Data4[0:2])
       guid.Data4_1 = ''.join("%02X" % x for x in guid.Data4[2:])
 
-      return ("%08X%04X%04X%s%s%d" % (guid.Data1, guid.Data2, guid.Data3,
-                                      guid.Data4_0, guid.Data4_1, cv.Age),
-              str(cv.PdbFileName.split(b'\x00', 1)[0].decode()))
+      return (
+        "%08X%04X%04X%s%s%d"
+        % (
+          guid.Data1,
+          guid.Data2,
+          guid.Data3,
+          guid.Data4_0,
+          guid.Data4_1,
+          cv.Age,
+        ),
+        str(cv.PdbFileName.split(b'\x00', 1)[0].decode()),
+      )
 
     break
 

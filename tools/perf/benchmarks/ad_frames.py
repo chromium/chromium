@@ -12,7 +12,7 @@ from telemetry.timeline import chrome_trace_category_filter
 
 
 class _AdFramesBase(perf_benchmark.PerfBenchmark):
-  """ A base class for loading benchmarks into ad frames. """
+  """A base class for loading benchmarks into ad frames."""
 
   def SetExtraBrowserOptions(self, options):
     # --disable-background-networking causes the server to send the ads without
@@ -22,16 +22,18 @@ class _AdFramesBase(perf_benchmark.PerfBenchmark):
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
-        filter_string='disabled-by-default-histogram_samples')
+      filter_string='disabled-by-default-histogram_samples'
+    )
     options = timeline_based_measurement.Options(cat_filter)
     loading_metrics_category.AugmentOptionsForLoadingMetrics(options)
     # Enable "Memory.GPU.PeakMemoryUsage2.PageLoad" so we can measure the GPU
     # memory used throughout the page loading tests. Include "umaMetric" as a
     # timeline so that we can parse this UMA Histogram.
     options.config.chrome_trace_config.EnableUMAHistograms(
-        'PageLoad.PaintTiming.NavigationToFirstContentfulPaint',
-        'PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstContentfulPaint',
-        'PageLoad.Clients.ThirdParty.Frames.NavigationToFirstContentfulPaint3')
+      'PageLoad.PaintTiming.NavigationToFirstContentfulPaint',
+      'PageLoad.Clients.FencedFrames.PaintTiming.NavigationToFirstContentfulPaint',
+      'PageLoad.Clients.ThirdParty.Frames.NavigationToFirstContentfulPaint3',
+    )
 
     # Add "umaMetric" to the timeline based metrics. This does not override
     # those added in loading_metrics_category.AugmentOptionsForLoadingMetrics.
@@ -42,11 +44,13 @@ class _AdFramesBase(perf_benchmark.PerfBenchmark):
     return options
 
 
-@benchmark.Info(emails=['lbrady@google.com'],
-                component='Blink>FencedFrames',
-                documentation_url='https://tinyurl.com/fenced-frame-benchmark')
+@benchmark.Info(
+  emails=['lbrady@google.com'],
+  component='Blink>FencedFrames',
+  documentation_url='https://tinyurl.com/fenced-frame-benchmark',
+)
 class FencedFrameBenchmark(_AdFramesBase):
-  """ A benchmark measuring loading performance inside MPArch fenced frames. """
+  """A benchmark measuring loading performance inside MPArch fenced frames."""
 
   def CreateStorySet(self, options):
     return page_sets.FencedFramePageSet()
@@ -56,11 +60,13 @@ class FencedFrameBenchmark(_AdFramesBase):
     return 'ad_frames.fencedframe'
 
 
-@benchmark.Info(emails=['lbrady@google.com'],
-                component='Blink>FencedFrames',
-                documentation_url='https://tinyurl.com/fenced-frame-benchmark')
+@benchmark.Info(
+  emails=['lbrady@google.com'],
+  component='Blink>FencedFrames',
+  documentation_url='https://tinyurl.com/fenced-frame-benchmark',
+)
 class IframeBenchmark(_AdFramesBase):
-  """ A benchmark measuring loading performance inside iframes. """
+  """A benchmark measuring loading performance inside iframes."""
 
   def CreateStorySet(self, options):
     return page_sets.IframePageSet()

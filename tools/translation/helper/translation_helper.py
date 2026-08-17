@@ -37,13 +37,16 @@ class GRDFile:
     self.path = path
     self.dir, self.name = os.path.split(path)
     dom, self.grdp_paths = _parse_grd_file(path)
-    self.structure_paths = [os.path.join(self.dir, s.get('file'))
-                            for s in dom.findall('.//structure')]
-    self.xtb_paths = [os.path.join(self.dir, f.get('path'))
-                      for f in dom.findall('.//file')]
+    self.structure_paths = [
+      os.path.join(self.dir, s.get('file')) for s in dom.findall('.//structure')
+    ]
+    self.xtb_paths = [
+      os.path.join(self.dir, f.get('path')) for f in dom.findall('.//file')
+    ]
     self.lang_to_xtb_path = {}
-    self.appears_translatable = (len(self.xtb_paths) != 0 or
-                                 dom.find('.//message') is not None)
+    self.appears_translatable = (
+      len(self.xtb_paths) != 0 or dom.find('.//message') is not None
+    )
     self.expected_languages = None
 
   def _populate_lang_to_xtb_path(self, errors):
@@ -54,9 +57,11 @@ class GRDFile:
       xtb_basename = os.path.basename(xtb_path)
       xtb_lang_match = re.match(lang_pattern, xtb_basename)
       if not xtb_lang_match:
-        errors.append('%s: invalid xtb name: %s. xtb name must be %s_<lang>'
-                      '.xtb where <lang> is the language code.' %
-                      (self.name, xtb_basename, grd_root))
+        errors.append(
+          '%s: invalid xtb name: %s. xtb name must be %s_<lang>'
+          '.xtb where <lang> is the language code.'
+          % (self.name, xtb_basename, grd_root)
+        )
         continue
       xtb_lang = xtb_lang_match.group(1)
       if xtb_lang in self.lang_to_xtb_path:
@@ -67,8 +72,9 @@ class GRDFile:
     return errors
 
 
-def get_translatable_grds(repo_root, all_grd_paths,
-                          translation_expectations_path, is_cog):
+def get_translatable_grds(
+  repo_root, all_grd_paths, translation_expectations_path, is_cog
+):
   """Returns all the grds that should be translated as a list of GRDFiles.
 
   This verifies that every grd file that appears translatable is listed in
@@ -83,7 +89,8 @@ def get_translatable_grds(repo_root, all_grd_paths,
     is_cog: Whether the repository is a cog workspace (go/cog).
   """
   parsed_expectations = _parse_translation_expectations(
-      translation_expectations_path)
+    translation_expectations_path
+  )
   grd_to_langs, untranslated_grds, internal_grds = parsed_expectations
   grds_with_expectations = set(grd_to_langs.keys()).union(untranslated_grds)
 
@@ -92,14 +99,16 @@ def get_translatable_grds(repo_root, all_grd_paths,
     # Cog doesn't support git, so all_grd_paths will be an empty list.  We can
     # still check that the expected grds exist, though.
     all_grd_paths = [
-       p for p in grds_with_expectations
-       if os.path.exists(os.path.join(repo_root, p))
+      p
+      for p in grds_with_expectations
+      if os.path.exists(os.path.join(repo_root, p))
     ]
     for internal_grd in internal_grds:
       if not os.path.exists(os.path.join(repo_root, internal_grd)):
         errors.append(
-            '%s is listed in translation expectations as an internal file to '
-            'be ignored, but this grd file does not exist.' % internal_grd)
+          '%s is listed in translation expectations as an internal file to '
+          'be ignored, but this grd file does not exist.' % internal_grd
+        )
   else:
     # Make sure that grds in internal_grds aren't processed, since they might
     # contain pieces not available publicly.
@@ -108,8 +117,9 @@ def get_translatable_grds(repo_root, all_grd_paths,
         all_grd_paths.remove(internal_grd)
       except ValueError:
         errors.append(
-            '%s is listed in translation expectations as an internal file to '
-            'be ignored, but this grd file does not exist.' % internal_grd)
+          '%s is listed in translation expectations as an internal file to '
+          'be ignored, but this grd file does not exist.' % internal_grd
+        )
 
   # Check that every grd that appears translatable is listed in
   # the translation expectations.  This is a no-op for Cog workspaces.
@@ -117,19 +127,25 @@ def get_translatable_grds(repo_root, all_grd_paths,
   for path, grd in all_grds.items():
     if grd.appears_translatable:
       if path not in grds_with_expectations:
-        errors.append('%s appears to be translatable (because it contains '
-            '<file> or <message> elements), but is not listed in the '
-            'translation expectations.' % path)
+        errors.append(
+          '%s appears to be translatable (because it contains '
+          '<file> or <message> elements), but is not listed in the '
+          'translation expectations.' % path
+        )
 
   # Check that every file in translation_expectations exists.
   for path in grds_with_expectations:
     if path not in all_grd_paths:
-      errors.append('%s is listed in the translation expectations, but this '
-          'grd file does not exist.' % path)
+      errors.append(
+        '%s is listed in the translation expectations, but this '
+        'grd file does not exist.' % path
+      )
 
   if errors:
-    raise Exception('%s needs to be updated. Please fix these issues:\n - %s' %
-                    (translation_expectations_path, '\n - '.join(errors)))
+    raise Exception(
+      '%s needs to be updated. Please fix these issues:\n - %s'
+      % (translation_expectations_path, '\n - '.join(errors))
+    )
 
   translatable_grds = []
   for path, expected_languages_list in grd_to_langs.items():
@@ -142,20 +158,22 @@ def get_translatable_grds(repo_root, all_grd_paths,
     expected_languages = set(expected_languages_list)
     actual_languages = set(grd.lang_to_xtb_path.keys())
     if expected_languages.difference(actual_languages):
-      errors.append('%s: missing translations for these languages: %s. Add '
-                    '<file> and <output> elements to the grd file, or update '
-                    'the translation expectations.' % (grd.name,
-                    sorted(expected_languages.difference(actual_languages))))
+      errors.append(
+        '%s: missing translations for these languages: %s. Add '
+        '<file> and <output> elements to the grd file, or update '
+        'the translation expectations.'
+        % (grd.name, sorted(expected_languages.difference(actual_languages)))
+      )
     if actual_languages.difference(expected_languages):
-      errors.append('%s: references translations for unexpected languages: %s. '
-                    'Remove the offending <file> and <output> elements from the'
-                    ' grd file, or update the translation expectations.'
-                    % (grd.name,
-                    sorted(actual_languages.difference(expected_languages))))
+      errors.append(
+        '%s: references translations for unexpected languages: %s. '
+        'Remove the offending <file> and <output> elements from the'
+        ' grd file, or update the translation expectations.'
+        % (grd.name, sorted(actual_languages.difference(expected_languages)))
+      )
 
   if errors:
-    raise Exception('Please fix these issues:\n - %s' %
-                    ('\n - '.join(errors)))
+    raise Exception('Please fix these issues:\n - %s' % ('\n - '.join(errors)))
 
   return translatable_grds
 
@@ -225,12 +243,14 @@ def _parse_translation_expectations(path):
 
   def assert_list_of_strings(l, name):
     assert isinstance(l, list) and all(isinstance(s, basestring) for s in l), (
-        '%s must be a list of strings' % name)
+      '%s must be a list of strings' % name
+    )
 
   try:
     translations_expectations = ast.literal_eval(file_contents)
     assert isinstance(translations_expectations, dict), (
-        '%s must be a python dict' % path)
+      '%s must be a python dict' % path
+    )
 
     grd_to_langs = {}
     untranslated_grds = []

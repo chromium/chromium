@@ -11,6 +11,7 @@ from core import perf_benchmark
 
 import benchmarks.rendering as rendering
 
+
 def ScrollToEndOfPage(action_runner):
   action_runner.Wait(1)
   with action_runner.CreateGestureInteraction('ScrollAction'):
@@ -36,16 +37,22 @@ class RenderingCT(perf_benchmark.PerfBenchmark):
 
   def CreateStorySet(self, options):
     return page_set.CTPageSet(
-        options.urls_list, options.user_agent, options.archive_data_file,
-        run_page_interaction_callback=ScrollToEndOfPage)
+      options.urls_list,
+      options.user_agent,
+      options.archive_data_file,
+      run_page_interaction_callback=ScrollToEndOfPage,
+    )
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     category_filter = chrome_trace_category_filter.CreateLowOverheadFilter()
     category_filter.AddDisabledByDefault(
-        'disabled-by-default-histogram_samples')
+      'disabled-by-default-histogram_samples'
+    )
     options = timeline_based_measurement.Options(category_filter)
     options.config.chrome_trace_config.EnableUMAHistograms(
-        *rendering.RENDERING_BENCHMARK_UMA)
+      *rendering.RENDERING_BENCHMARK_UMA
+    )
     options.SetTimelineBasedMetrics(
-        ['renderingMetric', 'umaMetric', 'tbmv3:uma_metrics'])
+      ['renderingMetric', 'umaMetric', 'tbmv3:uma_metrics']
+    )
     return options

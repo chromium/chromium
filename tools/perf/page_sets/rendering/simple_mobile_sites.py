@@ -13,17 +13,19 @@ class SimplePage(rendering_story.RenderingStory):
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   TAGS = [story_tags.SIMPLE_MOBILE_SITES]
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=(
-                   shared_page_state.SharedMobilePageState),
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=(shared_page_state.SharedMobilePageState),
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(SimplePage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(SimplePage, self).RunNavigateSteps(action_runner)

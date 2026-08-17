@@ -16,7 +16,8 @@ def GetBenchmarkStorySet(benchmark, exhaustive=False):
   if not isinstance(benchmark, b_module.Benchmark):
     raise ValueError(
       '|benchmark| must be an instace of telemetry.benchmark.Benchmark class. '
-      'Instead found object of type: %s' % type(benchmark))
+      'Instead found object of type: %s' % type(benchmark)
+    )
   options = browser_options.BrowserFinderOptions()
   # Add default values for any extra commandline options
   # provided by the benchmark.
@@ -35,9 +36,10 @@ def GetBenchmarkStorySet(benchmark, exhaustive=False):
 def GetBenchmarkStoryInfo(benchmark):
   """Return a list with StoryInfo objects for each story in a benchmark."""
   stories = [
-      StoryInfo(name=story.name, description=DescribeStory(story),
-                tags=list(story.tags))
-      for story in GetBenchmarkStorySet(benchmark)
+    StoryInfo(
+      name=story.name, description=DescribeStory(story), tags=list(story.tags)
+    )
+    for story in GetBenchmarkStorySet(benchmark)
   ]
   stories.sort(key=lambda s: s.name)
   return stories

@@ -24,17 +24,20 @@ import win32process
 from drivers import windowing
 from utils import browser_iterate
 
+
 def CreateCommand(cmdline):
   """Inserts the command and arguments into a command line for parsing."""
   cmd = cmdline.AddCommand(
     ["measure"],
     "Measures how long a series of URLs takes to load in one or more browsers.",
     None,
-    ExecuteMeasure)
+    ExecuteMeasure,
+  )
 
   browser_iterate.SetupIterationCommandLine(cmd)
   cmd.AddArgument(
-    ["-log", "--logfile"], "File to write output", type="string", required=True)
+    ["-log", "--logfile"], "File to write output", type="string", required=True
+  )
 
 
 def ExecuteMeasure(command):

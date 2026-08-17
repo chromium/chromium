@@ -11,21 +11,24 @@ class ToughWebglPage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
   TAGS = [story_tags.REQUIRED_WEBGL, story_tags.TOUGH_WEBGL]
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     if extra_browser_args is None:
       extra_browser_args = []
     extra_browser_args.append("--enable-webgl-draft-extensions")
     extra_browser_args.append("--disable-features=V8TurboFastApiCalls")
     super(ToughWebglPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args,
-        make_javascript_deterministic=False)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+      make_javascript_deterministic=False,
+    )
 
   @property
   def skipped_gpus(self):
@@ -35,7 +38,8 @@ class ToughWebglPage(rendering_story.RenderingStory):
   def RunNavigateSteps(self, action_runner):
     super(ToughWebglPage, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
-        'document.readyState == "complete"')
+      'document.readyState == "complete"'
+    )
     action_runner.Wait(2)
 
   def RunPageInteractions(self, action_runner):
@@ -85,6 +89,7 @@ class Aquarium20KFish(ToughWebglPage):
   URL = 'http://webglsamples.org/aquarium/aquarium.html?numFish=20000'
   TAGS = ToughWebglPage.TAGS + [story_tags.REPRESENTATIVE_WIN_DESKTOP]
 
+
 class Blob(ToughWebglPage):
   BASE_NAME = 'blob'
   URL = 'http://webglsamples.org/blob/blob.html'
@@ -132,9 +137,8 @@ class AnimometerWebGLAttribArrays(ToughWebglPage):
   BASE_NAME = 'animometer_webgl_attrib_arrays'
   # pylint: disable=line-too-long
   URL = 'http://kenrussell.github.io/webgl-animometer/Animometer/tests/3d/webgl.html?use_attributes=1'
-  TAGS = ToughWebglPage.TAGS + [
-    story_tags.REPRESENTATIVE_MAC_DESKTOP
-  ]
+  TAGS = ToughWebglPage.TAGS + [story_tags.REPRESENTATIVE_MAC_DESKTOP]
+
 
 class CameraToWebGL(ToughWebglPage):
   TAGS = ToughWebglPage.TAGS + [story_tags.USE_FAKE_CAMERA_DEVICE]
@@ -162,15 +166,18 @@ class SkelebuddiesWasm2020(UnityPage):
   # pylint: disable=line-too-long
   URL = 'http://clb.confined.space/emunittest/Skelebuddies-Wasm-Release-2020-10-26-profiling/Skelebuddies.html?playback'
 
+
 class TinyRacingV3Wasm2020(UnityPage):
   BASE_NAME = 'tiny_racing_v3_wasm_2020'
   # pylint: disable=line-too-long
   URL = 'http://clb.confined.space/emunittest/llvm-tinyracing-wasm-release-2020-03-17/TinyRacing.html?playback'
 
+
 class MicrogameFPS(UnityPage):
   BASE_NAME = 'microgame_fps'
   # pylint: disable=line-too-long
   URL = 'http://clb.confined.space/emunittest/microgame-fps_20190922_131915_wasm_release_profiling/index.html?playback'
+
 
 class LostCrypt(UnityPage):
   BASE_NAME = 'lost_crypt'
@@ -180,31 +187,37 @@ class LostCrypt(UnityPage):
 
 
 def MakeFastCallVariant(cls):
-  def __init__(self,
-               page_set,
-               shared_page_state_class,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     if extra_browser_args is None:
       extra_browser_args = []
-    super(cls, self).__init__(page_set=page_set,
-                              shared_page_state_class=shared_page_state_class,
-                              name_suffix=name_suffix,
-                              extra_browser_args=extra_browser_args)
+    super(cls, self).__init__(
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
     # This has to be after after superclass init in order to override the args
     # added by ToughWebglPage.__init__
     extra_browser_args.remove("--disable-features=V8TurboFastApiCalls")
     extra_browser_args.append("--enable-features=V8TurboFastApiCalls")
 
   return type(
-      cls.__name__ + 'FastCall', (cls,), {
-          'BASE_NAME':
-          cls.BASE_NAME + '_fast_call',
-          'SUPPORTED_PLATFORMS':
-          cls.SUPPORTED_PLATFORMS.intersection(platforms.DESKTOP_ONLY),
-          '__init__':
-          __init__,
-      })
+    cls.__name__ + 'FastCall',
+    (cls,),
+    {
+      'BASE_NAME': cls.BASE_NAME + '_fast_call',
+      'SUPPORTED_PLATFORMS': cls.SUPPORTED_PLATFORMS.intersection(
+        platforms.DESKTOP_ONLY
+      ),
+      '__init__': __init__,
+    },
+  )
 
 
 AnimometerWebGLFastCall = MakeFastCallVariant(AnimometerWebGL)

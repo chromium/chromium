@@ -82,8 +82,10 @@ def Timeseries(test_path, days=30):
     KeyError if the test_path is not found.
   """
   try:
-    return Request('/api/timeseries/%s' % urllib.parse.quote(test_path),
-                   params={'num_days': days})
+    return Request(
+      '/api/timeseries/%s' % urllib.parse.quote(test_path),
+      params={'num_days': days},
+    )
   except request.ClientError as exc:
     if 'Invalid test_path' in exc.json['error']:
       raise KeyError(test_path)
@@ -104,7 +106,8 @@ def ListTestPaths(test_suite, sheriff):
     A list of test paths. Ex. ['TestPath1', 'TestPath2']
   """
   return Request(
-      '/api/list_timeseries/%s' % test_suite, params={'sheriff': sheriff})
+    '/api/list_timeseries/%s' % test_suite, params={'sheriff': sheriff}
+  )
 
 
 def MatchTestPaths(pattern, only_with_rows=False):

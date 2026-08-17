@@ -23,13 +23,19 @@ import usb_descriptors
 
 
 class HidCompositeFeature(composite_gadget.CompositeFeature):
-  """Generic HID feature for a composite device.
-  """
+  """Generic HID feature for a composite device."""
 
-  def __init__(self, report_desc, features,
-               packet_size=64, interval_ms=10, interface_number=0,
-               interface_string=0,
-               in_endpoint=0x81, out_endpoint=0x01):
+  def __init__(
+    self,
+    report_desc,
+    features,
+    packet_size=64,
+    interval_ms=10,
+    interface_number=0,
+    interface_string=0,
+    in_endpoint=0x81,
+    out_endpoint=0x01,
+  ):
     """Create a composite device feature implementing the HID protocol.
 
     Args:
@@ -46,67 +52,83 @@ class HidCompositeFeature(composite_gadget.CompositeFeature):
       ValueError: If any of the parameters are out of range.
     """
     fs_interface_desc = usb_descriptors.InterfaceDescriptor(
-        bInterfaceNumber=interface_number,
-        bInterfaceClass=usb_constants.DeviceClass.HID,
-        bInterfaceSubClass=0,  # Non-bootable.
-        bInterfaceProtocol=0,  # None.
-        iInterface=interface_string,
+      bInterfaceNumber=interface_number,
+      bInterfaceClass=usb_constants.DeviceClass.HID,
+      bInterfaceSubClass=0,  # Non-bootable.
+      bInterfaceProtocol=0,  # None.
+      iInterface=interface_string,
     )
 
     hs_interface_desc = usb_descriptors.InterfaceDescriptor(
-        bInterfaceNumber=interface_number,
-        bInterfaceClass=usb_constants.DeviceClass.HID,
-        bInterfaceSubClass=0,  # Non-bootable.
-        bInterfaceProtocol=0,  # None.
-        iInterface=interface_string,
+      bInterfaceNumber=interface_number,
+      bInterfaceClass=usb_constants.DeviceClass.HID,
+      bInterfaceSubClass=0,  # Non-bootable.
+      bInterfaceProtocol=0,  # None.
+      iInterface=interface_string,
     )
 
     hid_desc = usb_descriptors.HidDescriptor()
-    hid_desc.AddDescriptor(hid_constants.DescriptorType.REPORT,
-                           len(report_desc))
+    hid_desc.AddDescriptor(
+      hid_constants.DescriptorType.REPORT, len(report_desc)
+    )
     fs_interface_desc.Add(hid_desc)
     hs_interface_desc.Add(hid_desc)
 
     fs_interval = math.ceil(math.log(interval_ms, 2)) + 1
     if fs_interval < 1 or fs_interval > 16:
-      raise ValueError('Full speed interval out of range: {} ({} ms)'
-                       .format(fs_interval, interval_ms))
+      raise ValueError(
+        'Full speed interval out of range: {} ({} ms)'.format(
+          fs_interval, interval_ms
+        )
+      )
 
-    fs_interface_desc.AddEndpoint(usb_descriptors.EndpointDescriptor(
+    fs_interface_desc.AddEndpoint(
+      usb_descriptors.EndpointDescriptor(
         bEndpointAddress=in_endpoint,
         bmAttributes=usb_constants.TransferType.INTERRUPT,
         wMaxPacketSize=packet_size,
-        bInterval=fs_interval
-    ))
+        bInterval=fs_interval,
+      )
+    )
 
     hs_interval = math.ceil(math.log(interval_ms, 2)) + 4
     if hs_interval < 1 or hs_interval > 16:
-      raise ValueError('High speed interval out of range: {} ({} ms)'
-                       .format(hs_interval, interval_ms))
+      raise ValueError(
+        'High speed interval out of range: {} ({} ms)'.format(
+          hs_interval, interval_ms
+        )
+      )
 
-    hs_interface_desc.AddEndpoint(usb_descriptors.EndpointDescriptor(
+    hs_interface_desc.AddEndpoint(
+      usb_descriptors.EndpointDescriptor(
         bEndpointAddress=in_endpoint,
         bmAttributes=usb_constants.TransferType.INTERRUPT,
         wMaxPacketSize=packet_size,
-        bInterval=hs_interval
-    ))
+        bInterval=hs_interval,
+      )
+    )
 
     if out_endpoint is not None:
-      fs_interface_desc.AddEndpoint(usb_descriptors.EndpointDescriptor(
+      fs_interface_desc.AddEndpoint(
+        usb_descriptors.EndpointDescriptor(
           bEndpointAddress=out_endpoint,
           bmAttributes=usb_constants.TransferType.INTERRUPT,
           wMaxPacketSize=packet_size,
-          bInterval=fs_interval
-      ))
-      hs_interface_desc.AddEndpoint(usb_descriptors.EndpointDescriptor(
+          bInterval=fs_interval,
+        )
+      )
+      hs_interface_desc.AddEndpoint(
+        usb_descriptors.EndpointDescriptor(
           bEndpointAddress=out_endpoint,
           bmAttributes=usb_constants.TransferType.INTERRUPT,
           wMaxPacketSize=packet_size,
-          bInterval=hs_interval
-      ))
+          bInterval=hs_interval,
+        )
+      )
 
     super(HidCompositeFeature, self).__init__(
-        [fs_interface_desc], [hs_interface_desc])
+      [fs_interface_desc], [hs_interface_desc]
+    )
     self._report_desc = report_desc
     self._features = features
     self._interface_number = interface_number
@@ -127,13 +149,14 @@ class HidCompositeFeature(composite_gadget.CompositeFeature):
     if recipient == usb_constants.Recipient.INTERFACE:
       if index == self._interface_number:
         desc_type = value >> 8
-        desc_index = value & 0xff
+        desc_index = value & 0xFF
         if desc_type == hid_constants.DescriptorType.REPORT:
           if desc_index == 0:
             return self._report_desc[:length]
 
     return super(HidCompositeFeature, self).StandardControlRead(
-        recipient, request, value, index, length)
+      recipient, request, value, index, length
+    )
 
   def ClassControlRead(self, recipient, request, value, index, length):
     """Handle class-specific control requests.
@@ -159,8 +182,11 @@ class HidCompositeFeature(composite_gadget.CompositeFeature):
 
     if request == hid_constants.Request.GET_REPORT:
       report_type, report_id = value >> 8, value & 0xFF
-      print('GetReport(type={}, id={}, length={})'.format(
-          report_type, report_id, length))
+      print(
+        'GetReport(type={}, id={}, length={})'.format(
+          report_type, report_id, length
+        )
+      )
       return self.GetReport(report_type, report_id, length)
 
   def ClassControlWrite(self, recipient, request, value, index, data):
@@ -186,13 +212,15 @@ class HidCompositeFeature(composite_gadget.CompositeFeature):
 
     if request == hid_constants.Request.SET_REPORT:
       report_type, report_id = value >> 8, value & 0xFF
-      print('SetReport(type={}, id={}, length={})'
-            .format(report_type, report_id, len(data)))
+      print(
+        'SetReport(type={}, id={}, length={})'.format(
+          report_type, report_id, len(data)
+        )
+      )
       return self.SetReport(report_type, report_id, data)
     elif request == hid_constants.Request.SET_IDLE:
       duration, report_id = value >> 8, value & 0xFF
-      print('SetIdle(duration={}, report={})'
-            .format(duration, report_id))
+      print('SetIdle(duration={}, report={})'.format(duration, report_id))
       return True
 
   def GetReport(self, report_type, report_id, length):
@@ -276,7 +304,7 @@ class HidCompositeFeature(composite_gadget.CompositeFeature):
     if 0 in self._features:
       self._features[0].SetOutputReport(data)
     elif len(data) >= 1:
-      report_id, = struct.unpack('B', data[0])
+      (report_id,) = struct.unpack('B', data[0])
       feature = self._features.get(report_id, None)
       if feature is None or feature.SetOutputReport(data[1:]) is None:
         self.HaltEndpoint(endpoint)
@@ -384,13 +412,21 @@ class HidFeature(object):
     """
     pass  # pragma: no cover
 
-class HidGadget(composite_gadget.CompositeGadget):
-  """Generic HID gadget.
-  """
 
-  def __init__(self, report_desc, features, vendor_id, product_id,
-               packet_size=64, interval_ms=10, out_endpoint=True,
-               device_version=0x0100):
+class HidGadget(composite_gadget.CompositeGadget):
+  """Generic HID gadget."""
+
+  def __init__(
+    self,
+    report_desc,
+    features,
+    vendor_id,
+    product_id,
+    packet_size=64,
+    interval_ms=10,
+    out_endpoint=True,
+    device_version=0x0100,
+  ):
     """Create a HID gadget.
 
     Args:
@@ -407,13 +443,14 @@ class HidGadget(composite_gadget.CompositeGadget):
       ValueError: If any of the parameters are out of range.
     """
     device_desc = usb_descriptors.DeviceDescriptor(
-        idVendor=vendor_id,
-        idProduct=product_id,
-        bcdUSB=0x0200,
-        iManufacturer=1,
-        iProduct=2,
-        iSerialNumber=3,
-        bcdDevice=device_version)
+      idVendor=vendor_id,
+      idProduct=product_id,
+      bcdUSB=0x0200,
+      iManufacturer=1,
+      iProduct=2,
+      iSerialNumber=3,
+      bcdDevice=device_version,
+    )
 
     if out_endpoint:
       out_endpoint = 0x01
@@ -421,11 +458,12 @@ class HidGadget(composite_gadget.CompositeGadget):
       out_endpoint = None
 
     self._hid_feature = HidCompositeFeature(
-        report_desc=report_desc,
-        features=features,
-        packet_size=packet_size,
-        interval_ms=interval_ms,
-        out_endpoint=out_endpoint)
+      report_desc=report_desc,
+      features=features,
+      packet_size=packet_size,
+      interval_ms=interval_ms,
+      out_endpoint=out_endpoint,
+    )
 
     super(HidGadget, self).__init__(device_desc, [self._hid_feature])
     self.AddStringDescriptor(3, '{:06X}'.format(uuid.getnode()))

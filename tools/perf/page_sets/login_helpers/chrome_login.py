@@ -16,8 +16,11 @@ def GetGaiaContext(tab):
   return None
 
 
-def LoginChromeAccount(action_runner, credential,
-                       credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH):
+def LoginChromeAccount(
+  action_runner,
+  credential,
+  credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH,
+):
   """Logs in a Gaia account into Chrome.
 
   This function navigates the tab into Chrome's login page and logs in a user
@@ -34,7 +37,8 @@ def LoginChromeAccount(action_runner, credential,
       for a detailed list of possible exceptions.
   """
   account_name, password = login_utils.GetAccountNameAndPassword(
-      credential, credentials_path=credentials_path)
+    credential, credentials_path=credentials_path
+  )
 
   action_runner.Navigate('chrome://chrome-signin')
 
@@ -46,13 +50,16 @@ def LoginChromeAccount(action_runner, credential,
   gaia_action_runner = action_runner_module.ActionRunner(gaia_context)
 
   new_flow = gaia_action_runner.EvaluateJavaScript(
-      'document.querySelector("#gaia_firsform") != null')
+    'document.querySelector("#gaia_firsform") != null'
+  )
   gaia_form_id = 'gaia_firstform' if new_flow else 'gaia_loginform'
-  login_utils.InputForm(gaia_action_runner, account_name, input_id='Email',
-                        form_id=gaia_form_id)
+  login_utils.InputForm(
+    gaia_action_runner, account_name, input_id='Email', form_id=gaia_form_id
+  )
   if new_flow:
     gaia_action_runner.ClickElement(selector='#%s #next' % gaia_form_id)
-  login_utils.InputForm(gaia_action_runner, password, input_id='Passwd',
-                        form_id=gaia_form_id)
+  login_utils.InputForm(
+    gaia_action_runner, password, input_id='Passwd', form_id=gaia_form_id
+  )
   gaia_action_runner.ClickElement(selector='#signIn')
   action_runner.WaitForNavigate()

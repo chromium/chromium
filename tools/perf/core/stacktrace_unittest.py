@@ -11,7 +11,6 @@ from telemetry.testing import tab_test_case
 
 
 class TabStackTraceTest(tab_test_case.TabTestCase):
-
   # Stack traces do not currently work on Mac 10.6.
   @decorators.Isolated
   @decorators.Disabled('snowleopard', 'chromeos-local')
@@ -34,8 +33,7 @@ class TabStackTraceTest(tab_test_case.TabTestCase):
   def testCrashMinimalSymbols(self):
     with self.assertRaises(exceptions.DevtoolsTargetCrashException) as c:
       self._tab.Navigate('chrome://crash', timeout=20)
-    self.assertIn('HandleRendererDebugURL',
-                  '\n'.join(c.exception.stack_trace))
+    self.assertIn('HandleRendererDebugURL', '\n'.join(c.exception.stack_trace))
 
   # The breakpad file specific test only apply to platforms which use the
   # breakpad symbol format. This also must be tested in isolation because it can
@@ -46,10 +44,12 @@ class TabStackTraceTest(tab_test_case.TabTestCase):
     # pylint: disable=protected-access
     executable_path = self._browser._browser_backend._executable
     executable = os.path.basename(executable_path)
-    with tempfile.NamedTemporaryFile(mode='wt',
-                                     dir=os.path.dirname(executable_path),
-                                     prefix=executable + '.breakpad',
-                                     delete=True) as f:
+    with tempfile.NamedTemporaryFile(
+      mode='wt',
+      dir=os.path.dirname(executable_path),
+      prefix=executable + '.breakpad',
+      delete=True,
+    ) as f:
       garbage_hash = 'ABCDEF1234567'
       f.write('MODULE PLATFORM ARCH %s %s' % (garbage_hash, executable))
       f.flush()

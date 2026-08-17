@@ -14,11 +14,12 @@ import google.path_utils
 # the PlatformUtility class.
 _cygpath_proc = None
 
+
 class PlatformUtility(object):
   def __init__(self, base_dir):
     """Args:
-         base_dir: a directory above which third_party/cygwin can be found,
-             used to locate the cygpath executable for path conversions.
+    base_dir: a directory above which third_party/cygwin can be found,
+        used to locate the cygpath executable for path conversions.
     """
     self._cygwin_root = None
     self._base_dir = base_dir
@@ -26,8 +27,9 @@ class PlatformUtility(object):
   def _CygwinRoot(self):
     """Returns the full path to third_party/cygwin/."""
     if not self._cygwin_root:
-      self._cygwin_root = google.path_utils.FindUpward(self._base_dir,
-                                                       'third_party', 'cygwin')
+      self._cygwin_root = google.path_utils.FindUpward(
+        self._base_dir, 'third_party', 'cygwin'
+      )
     return self._cygwin_root
 
   def _PathToExecutable(self, executable):
@@ -45,11 +47,16 @@ class PlatformUtility(object):
       return os.path.abspath(path)
     global _cygpath_proc
     if not _cygpath_proc:
-      cygpath_command = [self._PathToExecutable("cygpath.exe"),
-                         "-a", "-m", "-f", "-"]
-      _cygpath_proc = subprocess.Popen(cygpath_command,
-                                       stdin=subprocess.PIPE,
-                                       stdout=subprocess.PIPE)
+      cygpath_command = [
+        self._PathToExecutable("cygpath.exe"),
+        "-a",
+        "-m",
+        "-f",
+        "-",
+      ]
+      _cygpath_proc = subprocess.Popen(
+        cygpath_command, stdin=subprocess.PIPE, stdout=subprocess.PIPE
+      )
     _cygpath_proc.stdin.write(path + "\n")
     return _cygpath_proc.stdout.readline().rstrip()
 
@@ -87,9 +94,14 @@ class PlatformUtility(object):
       return "%s://127.0.0.1:%s/%s" % (protocol, str(port), path)
     return "file:///" + self.GetAbsolutePath(path)
 
-  def GetStartHttpdCommand(self, output_dir,
-                           httpd_conf_path, mime_types_path,
-                           document_root=None, apache2=False):
+  def GetStartHttpdCommand(
+    self,
+    output_dir,
+    httpd_conf_path,
+    mime_types_path,
+    document_root=None,
+    apache2=False,
+  ):
     """Prepares the config file and output directory to start an httpd server.
     Returns a list of strings containing the server's command line+args.
 
@@ -112,15 +124,21 @@ class PlatformUtility(object):
     cert_file = ""
     if apache2:
       exe_name = "httpd2"
-      cert_file = google.path_utils.FindUpward(self._base_dir, 'tools',
-                                               'python', 'google',
-                                               'httpd_config', 'httpd2.pem')
+      cert_file = google.path_utils.FindUpward(
+        self._base_dir,
+        'tools',
+        'python',
+        'google',
+        'httpd_config',
+        'httpd2.pem',
+      )
     httpd_vars = {
       "httpd_executable_path": GetCygwinPath(
-          os.path.join(self._CygwinRoot(), "usr", "sbin", exe_name)),
+        os.path.join(self._CygwinRoot(), "usr", "sbin", exe_name)
+      ),
       "httpd_conf_path": GetCygwinPath(httpd_conf_path),
       "ssl_certificate_file": GetCygwinPath(cert_file),
-      "document_root" : document_root,
+      "document_root": document_root,
       "server_root": GetCygwinPath(os.path.join(self._CygwinRoot(), "usr")),
       "mime_types_path": GetCygwinPath(mime_types_path),
       "output_dir": GetCygwinPath(output_dir),
@@ -130,8 +148,9 @@ class PlatformUtility(object):
     if not httpd_vars["user"]:
       # Failed to get the username from the environment; use whoami.exe
       # instead.
-      proc = subprocess.Popen(self._PathToExecutable("whoami.exe"),
-                              stdout=subprocess.PIPE)
+      proc = subprocess.Popen(
+        self._PathToExecutable("whoami.exe"), stdout=subprocess.PIPE
+      )
       httpd_vars["user"] = proc.stdout.read().strip()
 
     if not httpd_vars["user"]:
@@ -157,8 +176,11 @@ class PlatformUtility(object):
       ' -C \'ServerRoot "%(server_root)s"\''
     )
     if apache2:
-      httpd_cmd_string = ('export CYGWIN=server;' + httpd_cmd_string +
-          ' -c \'SSLCertificateFile "%(ssl_certificate_file)s"\'')
+      httpd_cmd_string = (
+        'export CYGWIN=server;'
+        + httpd_cmd_string
+        + ' -c \'SSLCertificateFile "%(ssl_certificate_file)s"\''
+      )
     if document_root:
       httpd_cmd_string += ' -C \'DocumentRoot "%(document_root)s"\''
 
@@ -173,9 +195,11 @@ class PlatformUtility(object):
     # killing httpd processes that we didn't start.
     return ["taskkill.exe", "/f", "/im", "httpd*"]
 
+
 ###########################################################################
 # This method is specific to windows, expected to be used only by *_win.py
 # files.
+
 
 def GetCygwinPath(path):
   """Convert a Windows path to a cygwin path.
@@ -188,7 +212,9 @@ def GetCygwinPath(path):
   The path is expected to be an absolute path, on any drive.
   """
   drive_regexp = re.compile(r'([a-z]):[/\\]', re.IGNORECASE)
+
   def LowerDrive(matchobj):
     return '/cygdrive/%s/' % matchobj.group(1).lower()
+
   path = drive_regexp.sub(LowerDrive, path)
   return path.replace('\\', '/')

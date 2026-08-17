@@ -11,21 +11,25 @@ class ToughCanvasPage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
   TAGS = [story_tags.TOUGH_CANVAS]
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedPageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedPageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(ToughCanvasPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(ToughCanvasPage, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
-        "document.readyState == 'complete'")
+      "document.readyState == 'complete'"
+    )
 
   def RunPageInteractions(self, action_runner):
     with action_runner.CreateInteraction('CanvasAnimation'):
@@ -36,6 +40,7 @@ class MicrosoftFirefliesPage(ToughCanvasPage):
   BASE_NAME = 'microsoft_fireflies'
   # pylint: disable=line-too-long
   URL = 'http://ie.microsoft.com/testdrive/Performance/Fireflies/Default.html'
+
 
 class RunwayPage(ToughCanvasPage):
   BASE_NAME = 'runway'
@@ -53,7 +58,9 @@ class MicrosoftFishIETankPage(ToughCanvasPage):
 class MicrosoftSpeedReadingPage(ToughCanvasPage):
   BASE_NAME = 'microsoft_speed_reading'
   # pylint: disable=line-too-long
-  URL = 'http://ie.microsoft.com/testdrive/Performance/SpeedReading/Default.html'
+  URL = (
+    'http://ie.microsoft.com/testdrive/Performance/SpeedReading/Default.html'
+  )
 
 
 class Kevs3DPage(ToughCanvasPage):
@@ -115,7 +122,9 @@ class MicrosoftSnowPage(ToughCanvasPage):
 class MicrosoftWorkerFountainsPage(ToughCanvasPage):
   BASE_NAME = 'microsoft_worker_fountains'
   # pylint: disable=line-too-long
-  URL = 'http://ie.microsoft.com/testdrive/Graphics/WorkerFountains/Default.html'
+  URL = (
+    'http://ie.microsoft.com/testdrive/Graphics/WorkerFountains/Default.html'
+  )
 
 
 class MicrosoftTweetMapPage(ToughCanvasPage):
@@ -131,7 +140,9 @@ class MicrosoftVideoCityPage(ToughCanvasPage):
 class MicrosoftAsteroidBeltPage(ToughCanvasPage):
   BASE_NAME = 'microsoft_asteroid_belt'
   # pylint: disable=line-too-long
-  URL = 'http://ie.microsoft.com/testdrive/Performance/AsteroidBelt/Default.html'
+  URL = (
+    'http://ie.microsoft.com/testdrive/Performance/AsteroidBelt/Default.html'
+  )
 
 
 class SmashCatPage(ToughCanvasPage):
@@ -189,7 +200,9 @@ class CanvasLinesPage(ToughCanvasPage):
 
 class PutGetImageDataPage(ToughCanvasPage):
   BASE_NAME = 'put_get_image_data'
-  URL = 'file://../tough_canvas_cases/rendering_throughput/put_get_image_data.html'
+  URL = (
+    'file://../tough_canvas_cases/rendering_throughput/put_get_image_data.html'
+  )
 
 
 class FillShapesPage(ToughCanvasPage):
@@ -218,10 +231,14 @@ class BouncingGradientCirclesPage(ToughCanvasPage):
 class BouncingSVGImagesPage(ToughCanvasPage):
   BASE_NAME = 'bouncing_svg_images'
   # pylint: disable=line-too-long
-  URL = 'file://../tough_canvas_cases/rendering_throughput/bouncing_svg_images.html'
+  URL = (
+    'file://../tough_canvas_cases/rendering_throughput/bouncing_svg_images.html'
+  )
 
 
 class BouncingPNGImagesPage(ToughCanvasPage):
   BASE_NAME = 'bouncing_png_images'
   # pylint: disable=line-too-long
-  URL = 'file://../tough_canvas_cases/rendering_throughput/bouncing_png_images.html'
+  URL = (
+    'file://../tough_canvas_cases/rendering_throughput/bouncing_png_images.html'
+  )

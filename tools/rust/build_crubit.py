@@ -35,26 +35,39 @@ from pathlib import Path
 
 # Get variables and helpers from `//tools/clang/scripts/build.py`.
 sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
-                 'scripts'))
-from build import (AddZlibToPath, CheckoutGitRepo, GetLatestCommit,
-                   GetLibXml2Dirs)
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), '..', 'clang', 'scripts'
+    )
+)
+from build import (
+    AddZlibToPath,
+    CheckoutGitRepo,
+    GetLatestCommit,
+    GetLibXml2Dirs,
+)
 
-from update_rust import (CHROMIUM_DIR, CRUBIT_REVISION, RUST_TOOLCHAIN_OUT_DIR)
+from update_rust import CHROMIUM_DIR, CRUBIT_REVISION, RUST_TOOLCHAIN_OUT_DIR
 
 # Get `RunCargo` from `//tools/crates/run_cargo.py`.
 sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'crates'))
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'crates')
+)
 from run_cargo import RunCargo
 
-CRUBIT_GIT = 'https://chromium.googlesource.com/external/github.com/google/crubit'
+CRUBIT_GIT = (
+    'https://chromium.googlesource.com/external/github.com/google/crubit'
+)
 
-CRUBIT_SRC_DIR = os.path.join(CHROMIUM_DIR, 'third_party',
-                              'rust-toolchain-intermediate', 'crubit')
-CC_BINDINGS_FROM_RS_CARGO_TOML_PATH = os.path.join(CRUBIT_SRC_DIR, "cargo",
-                                                   "cc_bindings_from_rs",
-                                                   "cc_bindings_from_rs",
-                                                   "Cargo.toml")
+CRUBIT_SRC_DIR = os.path.join(
+    CHROMIUM_DIR, 'third_party', 'rust-toolchain-intermediate', 'crubit'
+)
+CC_BINDINGS_FROM_RS_CARGO_TOML_PATH = os.path.join(
+    CRUBIT_SRC_DIR,
+    "cargo",
+    "cc_bindings_from_rs",
+    "cc_bindings_from_rs",
+    "Cargo.toml",
+)
 
 EXE = '.exe' if sys.platform == 'win32' else ''
 
@@ -74,12 +87,12 @@ def GetCcBindingsFromRsRustFlags():
     if sys.platform == 'darwin':
         return [
             "-Zosx-rpath-install-name",
-            "-Clink-args=-Wl,-rpath,@loader_path/../lib"
+            "-Clink-args=-Wl,-rpath,@loader_path/../lib",
         ]
     elif sys.platform != 'win32':
         return [
             "-Clink-args=-Wl,-z,origin",
-            "-Clink-args=-Wl,-rpath,$ORIGIN/../lib"
+            "-Clink-args=-Wl,-rpath,$ORIGIN/../lib",
         ]
     else:
         return []
@@ -99,7 +112,7 @@ def GetNativeLibsRustFlags():
         zlib_lib_path = AddZlibToPath()
         return [
             f'-Clink-arg=/LIBPATH:{libxml2_lib_path}',
-            f'-Clink-arg=/LIBPATH:{zlib_lib_path}'
+            f'-Clink-arg=/LIBPATH:{zlib_lib_path}',
         ]
 
     # No native libs needed on other platforms:
@@ -120,8 +133,7 @@ def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
     extra_rustflags = GetCcBindingsFromRsRustFlags()
     if not skip_checkout:
         extra_rustflags += GetNativeLibsRustFlags()
-    cargo_result = RunCargo(rust_sysroot, home_dir, cargo_args,
-                            extra_rustflags)
+    cargo_result = RunCargo(rust_sysroot, home_dir, cargo_args, extra_rustflags)
     print(f'Building cc_bindings_from_rs ... done.  Result: {cargo_result}')
     if cargo_result:
         return cargo_result
@@ -131,15 +143,18 @@ def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
     for bin in CRUBIT_BINS:
         bin = bin + EXE
         print(f'    Copying {bin} ...')
-        shutil.copy(os.path.join(release_dir, bin),
-                    os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', bin))
+        shutil.copy(
+            os.path.join(release_dir, bin),
+            os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', bin),
+        )
 
     # `crubit_target_dir` below helps ensure that Chromium can use the same
     # `#include` paths as other Crubit clients like google3 - e.g.
     # `#include "third_party/crubit/support/rs_std/slice_ref.h"`.
     print(f'Installing `crubit/support` to {RUST_TOOLCHAIN_OUT_DIR} ...')
-    crubit_target_dir = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib',
-                                     'third_party', 'crubit')
+    crubit_target_dir = os.path.join(
+        RUST_TOOLCHAIN_OUT_DIR, 'lib', 'third_party', 'crubit'
+    )
     for item in ["BUILD.gn", "LICENSE", "crubit.gni", "support"]:
         source_path = os.path.join(CRUBIT_SRC_DIR, item)
         target_path = os.path.join(crubit_target_dir, item)
@@ -154,22 +169,28 @@ def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Build and package Crubit tools')
+        description='Build and package Crubit tools'
+    )
     parser.add_argument(
         '--skip-checkout',
         action='store_true',
-        help=('skip checking out source code. Useful for trying local'
-              'changes'))
+        help=('skip checking out source code. Useful for trying localchanges'),
+    )
     parser.add_argument(
         '--out-dir',
-        help='cache artifacts in specified directory instead of a temp dir.')
-    parser.add_argument('--debug',
-                        action='store_true',
-                        help=('build Crubit in debug mode'))
-    parser.add_argument('--crubit-force-head-revision',
-                        action='store_true',
-                        help=('build the most recent commit of crubit '
-                              'instead of the current pinned version'))
+        help='cache artifacts in specified directory instead of a temp dir.',
+    )
+    parser.add_argument(
+        '--debug', action='store_true', help=('build Crubit in debug mode')
+    )
+    parser.add_argument(
+        '--crubit-force-head-revision',
+        action='store_true',
+        help=(
+            'build the most recent commit of crubit '
+            'instead of the current pinned version'
+        ),
+    )
     args = parser.parse_args()
 
     if args.crubit_force_head_revision:
@@ -181,12 +202,14 @@ def main():
         CheckoutGitRepo("crubit", CRUBIT_GIT, crubit_revision, CRUBIT_SRC_DIR)
 
     if args.out_dir:
-        return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, args.out_dir,
-                           args.skip_checkout)
+        return BuildCrubit(
+            RUST_TOOLCHAIN_OUT_DIR, args.out_dir, args.skip_checkout
+        )
     else:
         with tempfile.TemporaryDirectory() as out_dir:
-            return BuildCrubit(RUST_TOOLCHAIN_OUT_DIR, out_dir,
-                               args.skip_checkout)
+            return BuildCrubit(
+                RUST_TOOLCHAIN_OUT_DIR, out_dir, args.skip_checkout
+            )
 
 
 if __name__ == '__main__':

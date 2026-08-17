@@ -48,6 +48,7 @@ def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
       everything would take too long to run.
     story_tag_filter: only smoke test stories matching with tags.
   """
+
   # NOTE TO SHERIFFS: DO NOT DISABLE THIS TEST.
   #
   # This smoke test dynamically tests all benchmarks. So disabling it for one
@@ -63,13 +64,14 @@ def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
 
     with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
       options = testing.GetRunOptions(
-          output_dir=temp_dir,
-          benchmark_cls=benchmark_class,
-          overrides={
-              'story_shard_end_index': num_pages,
-              'story_tag_filter': story_tag_filter
-          },
-          environment=chromium_config.GetDefaultChromiumConfig())
+        output_dir=temp_dir,
+        benchmark_cls=benchmark_class,
+        overrides={
+          'story_shard_end_index': num_pages,
+          'story_tag_filter': story_tag_filter,
+        },
+        environment=chromium_config.GetDefaultChromiumConfig(),
+      )
       options.pageset_repeat = 1  # For smoke testing only run the page once.
       options.output_formats = ['histograms']
       options.max_values_per_test_case = MAX_VALUES_PER_TEST_CASE
@@ -81,12 +83,14 @@ def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
       if return_code in (-1, 111):
         self.skipTest('The benchmark was not run.')
       self.assertEqual(
-          return_code, 0,
-          msg='Benchmark run failed: %s' % benchmark_class.Name())
+        return_code, 0, msg='Benchmark run failed: %s' % benchmark_class.Name()
+      )
       return_code = results_processor.ProcessResults(options, is_unittest=True)
       self.assertEqual(
-          return_code, 0,
-          msg='Result processing failed: %s' % benchmark_class.Name())
+        return_code,
+        0,
+        msg='Result processing failed: %s' % benchmark_class.Name(),
+      )
 
   # Set real_test_func as benchmark_class to make typ
   # write benchmark_class source filepath to trace instead of
@@ -98,34 +102,38 @@ def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
 
 # The list of benchmark modules to be excluded from our smoke tests.
 _BLOCK_LIST_TEST_MODULES = {
-    octane,  # Often fails & take long time to timeout on cq bot.
-    rasterize_and_record_micro,  # Always fails on cq bot.
-    speedometer1,  # Takes 101 seconds.
-    jetstream2,  # Causes CQ shard to timeout, crbug.com/992837
-    v8_browsing,  # Flaky on Android, crbug.com/628368.
+  octane,  # Often fails & take long time to timeout on cq bot.
+  rasterize_and_record_micro,  # Always fails on cq bot.
+  speedometer1,  # Takes 101 seconds.
+  jetstream2,  # Causes CQ shard to timeout, crbug.com/992837
+  v8_browsing,  # Flaky on Android, crbug.com/628368.
 }
 
 # The list of benchmark names to be excluded from our smoke tests.
 _BLOCK_LIST_TEST_NAMES = [
-    'memory.long_running_idle_gmail_background_tbmv2',
-    'UNSCHEDULED_ad_frames.iframe',  # b/342449133
-    'UNSCHEDULED_oortonline_tbmv2',
-    'webrtc',  # crbug.com/932036
-    'v8.runtime_stats.top_25',  # Fails in Windows, crbug.com/1043048
-    'wasmpspdfkit',  # Fails in Chrome OS, crbug.com/1191938
-    'memory.desktop',  # crbug.com/1277277 and b/286898261
-    'desktop_ui' if sys.platform == 'darwin' else None,  # crbug.com/1370958
-    'power.desktop' if sys.platform == 'darwin' else None,  # crbug.com/1370958
-    'omnibox.aim.perf' if sys.platform == 'darwin' else None,  # b/544452037
-    ('UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr'
-     if sys.platform == 'darwin' else None),  # b/544452037
+  'memory.long_running_idle_gmail_background_tbmv2',
+  'UNSCHEDULED_ad_frames.iframe',  # b/342449133
+  'UNSCHEDULED_oortonline_tbmv2',
+  'webrtc',  # crbug.com/932036
+  'v8.runtime_stats.top_25',  # Fails in Windows, crbug.com/1043048
+  'wasmpspdfkit',  # Fails in Chrome OS, crbug.com/1191938
+  'memory.desktop',  # crbug.com/1277277 and b/286898261
+  'desktop_ui' if sys.platform == 'darwin' else None,  # crbug.com/1370958
+  'power.desktop' if sys.platform == 'darwin' else None,  # crbug.com/1370958
+  'omnibox.aim.perf' if sys.platform == 'darwin' else None,  # b/544452037
+  (
+    'UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr'
+    if sys.platform == 'darwin'
+    else None
+  ),  # b/544452037
 ]
 
 
 def MergeDecorators(method, method_attribute, benchmark, benchmark_attribute):
   # Do set union of attributes to eliminate duplicates.
   merged_attributes = getattr(method, method_attribute, set()).union(
-      getattr(benchmark, benchmark_attribute, set()))
+    getattr(benchmark, benchmark_attribute, set())
+  )
   if merged_attributes:
     setattr(method, method_attribute, merged_attributes)
 
@@ -144,8 +152,11 @@ def load_tests(loader, standard_tests, pattern):
   # Using the default of |index_by_class_name=False| means that if a module
   # has multiple benchmarks, only the last one is returned.
   all_benchmarks = discover.DiscoverClasses(
-      benchmarks_dir, top_level_dir, benchmark_module.Benchmark,
-      index_by_class_name=False).values()
+    benchmarks_dir,
+    top_level_dir,
+    benchmark_module.Benchmark,
+    index_by_class_name=False,
+  ).values()
   for benchmark in all_benchmarks:
     if sys.modules[benchmark.__module__] in _BLOCK_LIST_TEST_MODULES:
       continue
@@ -154,9 +165,9 @@ def load_tests(loader, standard_tests, pattern):
 
     if 'desktop_ui' in benchmark.Name():
       # Run tests with a specific smoke_test tag.
-      method = SmokeTestGenerator(benchmark,
-                                  num_pages=None,
-                                  story_tag_filter='smoke_test')
+      method = SmokeTestGenerator(
+        benchmark, num_pages=None, story_tag_filter='smoke_test'
+      )
     else:
       method = SmokeTestGenerator(benchmark)
 
@@ -172,10 +183,12 @@ def load_tests(loader, standard_tests, pattern):
     enabled_benchmark_attr = decorators.EnabledAttributeName(benchmark)
     enabled_method_attr = decorators.EnabledAttributeName(method)
 
-    MergeDecorators(method, disabled_method_attr, benchmark,
-                    disabled_benchmark_attr)
-    MergeDecorators(method, enabled_method_attr, benchmark,
-                    enabled_benchmark_attr)
+    MergeDecorators(
+      method, disabled_method_attr, benchmark, disabled_benchmark_attr
+    )
+    MergeDecorators(
+      method, enabled_method_attr, benchmark, enabled_benchmark_attr
+    )
 
     setattr(BenchmarkSmokeTest, benchmark.Name(), method)
 

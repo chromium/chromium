@@ -9,7 +9,9 @@ from pathlib import Path
 if len(Path(__file__).parents) > 2:
     sys.path += [str(Path(__file__).parents[2])]
 
-from style_variable_generator.find_invalid_css_variables import FindInvalidCSSVariables
+from style_variable_generator.find_invalid_css_variables import (
+    FindInvalidCSSVariables,
+)
 import unittest
 
 
@@ -34,8 +36,9 @@ a:1:--test-toolbar'''
 }
         '''
 
-        result = FindInvalidCSSVariables({'test': json_string},
-                                         git_runner=GitResult)
+        result = FindInvalidCSSVariables(
+            {'test': json_string}, git_runner=GitResult
+        )
         unused = set()
         self.assertEqual(result['unused'], unused)
         unspecified = ['a:1:--test-not-specified']
@@ -80,14 +83,17 @@ a:1:--test-toolbar'''
 }
         '''
 
-        result = FindInvalidCSSVariables({'test': json_string},
-                                         git_runner=GitResult)
-        unused = set([
-            'unused_opacity',
-            'unused_css',
-            'headline_1',
-            'unused',
-        ])
+        result = FindInvalidCSSVariables(
+            {'test': json_string}, git_runner=GitResult
+        )
+        unused = set(
+            [
+                'unused_opacity',
+                'unused_css',
+                'headline_1',
+                'unused',
+            ]
+        )
         self.assertEqual(result['unused'], unused)
         unspecified = []
         self.assertEqual(result['unspecified'], unspecified)
@@ -103,9 +109,12 @@ a:1:--test-toolbar'''
   }
 }
         '''
-        self.assertRaises(KeyError,
-                          FindInvalidCSSVariables, {'test': json_string},
-                          git_runner=GitResult)
+        self.assertRaises(
+            KeyError,
+            FindInvalidCSSVariables,
+            {'test': json_string},
+            git_runner=GitResult,
+        )
 
 
 if __name__ == '__main__':

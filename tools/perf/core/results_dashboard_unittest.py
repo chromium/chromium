@@ -18,7 +18,6 @@ from core import results_dashboard
 
 
 class ResultsDashboardTest(unittest.TestCase):
-
   def setUp(self):
     self.dummy_token_generator = lambda: 'Arthur-Merlin'
     self.perf_data = {'foo': 1, 'bar': 2}
@@ -34,22 +33,23 @@ class ResultsDashboardTest(unittest.TestCase):
 
     with mock.patch('core.results_dashboard.time.sleep') as sleep_mock:
       with mock.patch(
-          'core.results_dashboard._SendHistogramJson',
-          side_effect=raise_retry_exception) as m:
+        'core.results_dashboard._SendHistogramJson',
+        side_effect=raise_retry_exception,
+      ) as m:
         upload_result = results_dashboard.SendResults(
-            self.perf_data,
-            'dummy_benchmark',
-            self.dashboard_url,
-            send_as_histograms=True,
-            token_generator_callback=self.dummy_token_generator,
-            num_retries=5)
+          self.perf_data,
+          'dummy_benchmark',
+          self.dashboard_url,
+          send_as_histograms=True,
+          token_generator_callback=self.dummy_token_generator,
+          num_retries=5,
+        )
         self.assertFalse(upload_result)
         self.assertEqual(m.call_count, 5)
         self.assertEqual(
-            sleep_mock.mock_calls,
-            [call(15), call(30),
-             call(60), call(120),
-             call(240)])
+          sleep_mock.mock_calls,
+          [call(15), call(30), call(60), call(120), call(240)],
+        )
 
   def testNoRetryForSendResultFatalException(self):
 
@@ -60,15 +60,17 @@ class ResultsDashboardTest(unittest.TestCase):
 
     with mock.patch('core.results_dashboard.time.sleep') as sleep_mock:
       with mock.patch(
-          'core.results_dashboard._SendHistogramJson',
-          side_effect=raise_retry_exception) as m:
+        'core.results_dashboard._SendHistogramJson',
+        side_effect=raise_retry_exception,
+      ) as m:
         upload_result = results_dashboard.SendResults(
-            self.perf_data,
-            'dummy_benchmark',
-            self.dashboard_url,
-            send_as_histograms=True,
-            token_generator_callback=self.dummy_token_generator,
-            num_retries=5)
+          self.perf_data,
+          'dummy_benchmark',
+          self.dashboard_url,
+          send_as_histograms=True,
+          token_generator_callback=self.dummy_token_generator,
+          num_retries=5,
+        )
         self.assertFalse(upload_result)
         self.assertEqual(m.call_count, 1)
         self.assertFalse(sleep_mock.mock_calls)
@@ -77,12 +79,13 @@ class ResultsDashboardTest(unittest.TestCase):
     with mock.patch('core.results_dashboard.time.sleep') as sleep_mock:
       with mock.patch('core.results_dashboard._SendHistogramJson') as m:
         upload_result = results_dashboard.SendResults(
-            self.perf_data,
-            'dummy_benchmark',
-            self.dashboard_url,
-            send_as_histograms=True,
-            token_generator_callback=self.dummy_token_generator,
-            num_retries=5)
+          self.perf_data,
+          'dummy_benchmark',
+          self.dashboard_url,
+          send_as_histograms=True,
+          token_generator_callback=self.dummy_token_generator,
+          num_retries=5,
+        )
         self.assertTrue(upload_result)
         self.assertEqual(m.call_count, 1)
         self.assertFalse(sleep_mock.mock_calls)
@@ -90,8 +93,9 @@ class ResultsDashboardTest(unittest.TestCase):
   def testNoRetryAfterSucessfulSendResult(self):
     counter = [0]
 
-    def raise_retry_exception_first_two_times(url, histogramset_json,
-                                              token_generator_callback):
+    def raise_retry_exception_first_two_times(
+      url, histogramset_json, token_generator_callback
+    ):
       del url, histogramset_json  # unused
       del token_generator_callback  # unused
       counter[0] += 1
@@ -100,15 +104,17 @@ class ResultsDashboardTest(unittest.TestCase):
 
     with mock.patch('core.results_dashboard.time.sleep') as sleep_mock:
       with mock.patch(
-          'core.results_dashboard._SendHistogramJson',
-          side_effect=raise_retry_exception_first_two_times) as m:
+        'core.results_dashboard._SendHistogramJson',
+        side_effect=raise_retry_exception_first_two_times,
+      ) as m:
         upload_result = results_dashboard.SendResults(
-            self.perf_data,
-            'dummy_benchmark',
-            self.dashboard_url,
-            send_as_histograms=True,
-            token_generator_callback=self.dummy_token_generator,
-            num_retries=5)
+          self.perf_data,
+          'dummy_benchmark',
+          self.dashboard_url,
+          send_as_histograms=True,
+          token_generator_callback=self.dummy_token_generator,
+          num_retries=5,
+        )
         self.assertTrue(upload_result)
         self.assertEqual(m.call_count, 3)
         self.assertEqual(sleep_mock.mock_calls, [call(15), call(30)])
@@ -127,20 +133,21 @@ class ResultsDashboardTest(unittest.TestCase):
 
     with mock.patch('core.results_dashboard.time.sleep') as sleep_mock:
       with mock.patch.object(
-          results_dashboard.httplib2.Http, 'request', new=request):
+        results_dashboard.httplib2.Http, 'request', new=request
+      ):
         upload_result = results_dashboard.SendResults(
-            self.perf_data,
-            'dummy_benchmark',
-            self.dashboard_url,
-            send_as_histograms=True,
-            token_generator_callback=self.dummy_token_generator,
-            num_retries=5)
+          self.perf_data,
+          'dummy_benchmark',
+          self.dashboard_url,
+          send_as_histograms=True,
+          token_generator_callback=self.dummy_token_generator,
+          num_retries=5,
+        )
         self.assertFalse(upload_result)
         self.assertEqual(
-            sleep_mock.mock_calls,
-            [call(15), call(30),
-             call(60), call(120),
-             call(240)])
+          sleep_mock.mock_calls,
+          [call(15), call(30), call(60), call(120), call(240)],
+        )
 
   def testSendHistogramJsonTypeWarning(self):
 
@@ -155,15 +162,16 @@ class ResultsDashboardTest(unittest.TestCase):
 
     with mock.patch('core.results_dashboard.time.sleep') as sleep_mock:
       with mock.patch.object(
-          results_dashboard.httplib2.Http, 'request', new=request):
-
+        results_dashboard.httplib2.Http, 'request', new=request
+      ):
         upload_result = results_dashboard.SendResults(
-            self.perf_data,
-            'dummy_benchmark',
-            self.dashboard_url,
-            send_as_histograms=True,
-            token_generator_callback=self.dummy_token_generator,
-            num_retries=5)
+          self.perf_data,
+          'dummy_benchmark',
+          self.dashboard_url,
+          send_as_histograms=True,
+          token_generator_callback=self.dummy_token_generator,
+          num_retries=5,
+        )
 
         # upload should still be successful, despite failing to fetch token.
         self.assertTrue(upload_result)
@@ -182,15 +190,16 @@ class ResultsDashboardTest(unittest.TestCase):
 
     with mock.patch('core.results_dashboard.time.sleep') as sleep_mock:
       with mock.patch.object(
-          results_dashboard.httplib2.Http, 'request', new=request):
-
+        results_dashboard.httplib2.Http, 'request', new=request
+      ):
         upload_result = results_dashboard.SendResults(
-            self.perf_data,
-            'dummy_benchmark',
-            self.dashboard_url,
-            send_as_histograms=True,
-            token_generator_callback=self.dummy_token_generator,
-            num_retries=5)
+          self.perf_data,
+          'dummy_benchmark',
+          self.dashboard_url,
+          send_as_histograms=True,
+          token_generator_callback=self.dummy_token_generator,
+          num_retries=5,
+        )
 
         # upload should still be successful, despite failing to fetch token.
         self.assertTrue(upload_result)
@@ -209,16 +218,17 @@ class ResultsDashboardTest(unittest.TestCase):
 
     with mock.patch('core.results_dashboard.time.sleep') as sleep_mock:
       with mock.patch.object(
-          results_dashboard.httplib2.Http, 'request', new=request):
+        results_dashboard.httplib2.Http, 'request', new=request
+      ):
         with mock.patch.object(logging, 'info') as log_mock:
-
           upload_result = results_dashboard.SendResults(
-              self.perf_data,
-              'dummy_benchmark',
-              self.dashboard_url,
-              send_as_histograms=True,
-              token_generator_callback=self.dummy_token_generator,
-              num_retries=5)
+            self.perf_data,
+            'dummy_benchmark',
+            self.dashboard_url,
+            send_as_histograms=True,
+            token_generator_callback=self.dummy_token_generator,
+            num_retries=5,
+          )
 
           self.assertTrue(upload_result)
           self.assertFalse(sleep_mock.mock_calls)
@@ -231,26 +241,32 @@ class ResultsDashboardTest(unittest.TestCase):
               found_token = True
               break
           self.assertTrue(
-              found_token, msg='Upload completion token not found in logs.')
+            found_token, msg='Upload completion token not found in logs.'
+          )
 
   def testMakeBuildStatusUrlEscapesPathParts(self):
     # pylint: disable=protected-access
-    url = results_dashboard._MakeBuildStatusUrl('chrome project', 'try bucket',
-                                                'builder name', '123 456')
+    url = results_dashboard._MakeBuildStatusUrl(
+      'chrome project', 'try bucket', 'builder name', '123 456'
+    )
     self.assertEqual(
-        'https://ci.chromium.org/ui/p/chrome%20project/builders/'
-        'try%20bucket/builder%20name/123%20456', url)
+      'https://ci.chromium.org/ui/p/chrome%20project/builders/'
+      'try%20bucket/builder%20name/123%20456',
+      url,
+    )
 
   @mock.patch('urllib.request.urlopen')
   def testSendResultsJson(self, urlopen_mock):
     # pylint: disable=protected-access
-    results_dashboard._SendResultsJson(self.dashboard_url, '{"foo": "bar baz"}',
-                                       self.dummy_token_generator)
+    results_dashboard._SendResultsJson(
+      self.dashboard_url, '{"foo": "bar baz"}', self.dummy_token_generator
+    )
 
     urlopen_mock.assert_called_once_with(mock.ANY, timeout=60 * 5)
     req = urlopen_mock.call_args[0][0]
-    self.assertEqual(self.dashboard_url + results_dashboard.SEND_RESULTS_PATH,
-                     req.full_url)
+    self.assertEqual(
+      self.dashboard_url + results_dashboard.SEND_RESULTS_PATH, req.full_url
+    )
     self.assertEqual('Bearer Arthur-Merlin', req.headers['Authorization'])
     self.assertEqual(b'data=%7B%22foo%22%3A+%22bar+baz%22%7D', req.data)
 

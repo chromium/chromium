@@ -5,6 +5,7 @@ import logging
 
 from telemetry.page import shared_page_state
 
+
 class WebGLSupportedSharedState(shared_page_state.SharedPageState):
   def CanRunOnBrowser(self, browser_info, page):
     assert hasattr(page, 'skipped_gpus')

@@ -10,12 +10,14 @@ import unittest
 
 import generate_legacy_perf_dashboard_json
 
+
 class LegacyResultsProcessorUnittest(unittest.TestCase):
   def setUp(self):
     """Set up for all test method of each test method below."""
     super(LegacyResultsProcessorUnittest, self).setUp()
     self.data_directory = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), 'testdata', 'python3')
+      os.path.dirname(os.path.abspath(__file__)), 'testdata', 'python3'
+    )
 
   def _ConstructDefaultProcessor(self):
     """Creates a LegacyResultsProcessor instance.
@@ -64,8 +66,7 @@ class LegacyResultsProcessorUnittest(unittest.TestCase):
 
     return logs
 
-  def _ConstructParseAndCheckJSON(
-      self, inputfiles, logfiles, graphs):
+  def _ConstructParseAndCheckJSON(self, inputfiles, logfiles, graphs):
     """Processes input with a log processor and checks against expectations.
 
     Args:
@@ -82,16 +83,24 @@ class LegacyResultsProcessorUnittest(unittest.TestCase):
       path = os.path.join(self.data_directory, filename)
       with open(path) as expected_file:
         expected = json.load(expected_file)
-      self.assertEqual(expected, actual, 'JSON data in %s did not match '
-          'expectations.' % filename)
+      self.assertEqual(
+        expected,
+        actual,
+        'JSON data in %s did not match expectations.' % filename,
+      )
 
       index += 1
 
-
   def testSummary(self):
-    graphs = ['commit_charge',
-        'ws_final_total', 'vm_final_browser', 'vm_final_total',
-        'ws_final_browser', 'processes', 'artificial_graph']
+    graphs = [
+      'commit_charge',
+      'ws_final_total',
+      'vm_final_browser',
+      'vm_final_total',
+      'ws_final_browser',
+      'processes',
+      'artificial_graph',
+    ]
     # Tests the output of "summary" files, which contain per-graph data.
     input_files = ['graphing_processor.log']
     output_files = ['%s-summary.dat' % graph for graph in graphs]

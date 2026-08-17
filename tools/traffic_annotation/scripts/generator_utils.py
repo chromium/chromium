@@ -23,8 +23,9 @@ import io
 import re
 
 TrafficAnnotation = namedtuple(
-    "TrafficAnnotation",
-    ["unique_id", "description", "trigger", "data", "settings", "policy"])
+  "TrafficAnnotation",
+  ["unique_id", "description", "trigger", "data", "settings", "policy"],
+)
 
 
 class Placeholder(str, enum.Enum):
@@ -35,33 +36,25 @@ class Placeholder(str, enum.Enum):
 
 
 PLACEHOLDER_STYLES = {
-    Placeholder.GROUP: {
-        "bold": False,
-        "font": "Roboto",
-        "fontSize": 20,
-        "namedStyleType": "HEADING_1"
-    },
-    Placeholder.SENDER: {
-        "bold": True,
-        "font": "Roboto",
-        "fontSize": 14,
-        "namedStyleType": "HEADING_2"
-    },
-    Placeholder.ANNOTATION: {
-        "bold": False,
-        "font": "Roboto",
-        "fontSize": 9
-    },
-    Placeholder.ANNOTATION_BOLD: {
-        "bold": True,
-        "font": "Roboto",
-        "fontSize": 9
-    }
+  Placeholder.GROUP: {
+    "bold": False,
+    "font": "Roboto",
+    "fontSize": 20,
+    "namedStyleType": "HEADING_1",
+  },
+  Placeholder.SENDER: {
+    "bold": True,
+    "font": "Roboto",
+    "fontSize": 14,
+    "namedStyleType": "HEADING_2",
+  },
+  Placeholder.ANNOTATION: {"bold": False, "font": "Roboto", "fontSize": 9},
+  Placeholder.ANNOTATION_BOLD: {"bold": True, "font": "Roboto", "fontSize": 9},
 }
 
 
 def load_tsv_file(file_path, verbose):
-  """ Loads annotations TSV file.
+  """Loads annotations TSV file.
 
   Args:
     file_path: str
@@ -153,7 +146,11 @@ class XMLParser:
         for tag in ["traffic_annotation", "annotation"]:
           for t_annotation in sender.iter(tag):
             if t_annotation.attrib.get("hidden", "") != "true":
-              traffic_annotations.append(t_annotation.attrib.get("id", t_annotation.attrib.get("unique_id", "")))
+              traffic_annotations.append(
+                t_annotation.attrib.get(
+                  "id", t_annotation.attrib.get("unique_id", "")
+                )
+              )
 
         self.parsed_xml[group_name][sender_name] = sorted(traffic_annotations)
 
@@ -161,11 +158,11 @@ class XMLParser:
     """Sort on the group and sender keys in alphabetical order, note that
     annotations are already sorted."""
     self.parsed_xml = {
-        k: OrderedDict(sorted(v.items()))
-        for k, v in self.parsed_xml.items()
+      k: OrderedDict(sorted(v.items())) for k, v in self.parsed_xml.items()
     }
     self.parsed_xml = OrderedDict(
-        sorted(self.parsed_xml.items(), key=lambda t: t[0]))
+      sorted(self.parsed_xml.items(), key=lambda t: t[0])
+    )
 
   def _add_group_placeholder(self, name):
     return {"type": Placeholder.GROUP, "name": name}
@@ -183,14 +180,19 @@ class XMLParser:
     is_complete = traffic_annotation and all(traffic_annotation)
     if not is_complete:
       print(
-          "Warning: {} row is empty in annotations.tsv but is in grouping.xml".
-          format(unique_id))
-      traffic_annotation = TrafficAnnotation(unique_id, "NA", "NA", "NA", "NA",
-                                             "NA")
+        (
+            "Warning: {} row is empty in annotations.tsv but is in grouping.xml"
+        ).format(
+          unique_id
+        )
+      )
+      traffic_annotation = TrafficAnnotation(
+        unique_id, "NA", "NA", "NA", "NA", "NA"
+      )
 
     return {
-        "type": Placeholder.ANNOTATION,
-        "traffic_annotation": traffic_annotation
+      "type": Placeholder.ANNOTATION,
+      "traffic_annotation": traffic_annotation,
     }
 
   def build_placeholders(self):
@@ -259,7 +261,10 @@ def find_first_index(doc):
       end_index = element["endIndex"]
       lines = element["paragraph"]["elements"]
       for text_run in lines:
-        if "textRun" in text_run and target_text in text_run["textRun"]["content"]:
+        if (
+          "textRun" in text_run
+          and target_text in text_run["textRun"]["content"]
+        ):
           return end_index + padding
 
 
@@ -314,7 +319,8 @@ def find_bold_ranges(doc, debug=False):
     # Unique id column, messy parsing through. You can inspect the json output
     # with jprint() to confirm/debug if broken.
     unique_id_col = element["table"]["tableRows"][0]["tableCells"][0][
-        "content"][0]["paragraph"]["elements"][0]
+      "content"
+    ][0]["paragraph"]["elements"][0]
     if debug:
       jprint(unique_id_col)
     assert "textRun" in unique_id_col, "Not the correct unique_id cell"

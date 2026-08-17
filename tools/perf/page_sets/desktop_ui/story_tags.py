@@ -7,5 +7,6 @@ import collections
 Tag = collections.namedtuple('Tag', ['name', 'description'])
 
 SMOKE_TEST = Tag(
-    'smoke_test',
-    'Run by the smoke test. Add this tag to get the feature covered on CQ')
+  'smoke_test',
+  'Run by the smoke test. Add this tag to get the feature covered on CQ',
+)

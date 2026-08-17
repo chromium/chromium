@@ -5,8 +5,11 @@
 import logging
 import py_utils
 from page_sets.desktop_ui import desktop_ui_shared_state
-from page_sets.desktop_ui.js_utils import MEASURE_FRAME_TIME_SCRIPT, \
-    START_MEASURING_FRAME_TIME, STOP_MEASURING_FRAME_TIME
+from page_sets.desktop_ui.js_utils import (
+  MEASURE_FRAME_TIME_SCRIPT,
+  START_MEASURING_FRAME_TIME,
+  STOP_MEASURING_FRAME_TIME,
+)
 from telemetry.page import page
 
 
@@ -19,12 +22,13 @@ class MultiTabStory(page.Page):
       for t in self.TAGS:
         tags.append(t.name)
     super(MultiTabStory, self).__init__(
-        url=self.URL,
-        name=self.NAME,
-        tags=tags,
-        page_set=story_set,
-        extra_browser_args=extra_browser_args,
-        shared_page_state_class=desktop_ui_shared_state.DesktopUISharedState)
+      url=self.URL,
+      name=self.NAME,
+      tags=tags,
+      page_set=story_set,
+      extra_browser_args=extra_browser_args,
+      shared_page_state_class=desktop_ui_shared_state.DesktopUISharedState,
+    )
     self._devtools = None
 
   def RunNavigateSteps(self, action_runner):
@@ -40,8 +44,9 @@ class MultiTabStory(page.Page):
         try:
           tabs[i].action_runner.WaitForNetworkQuiescence()
         except py_utils.TimeoutException:
-          logging.warning('WaitForNetworkQuiescence() timeout, url[%d]: %s' %
-                          (i, url))
+          logging.warning(
+            'WaitForNetworkQuiescence() timeout, url[%d]: %s' % (i, url)
+          )
     self._devtools = action_runner.tab.browser.GetUIDevtools()
 
   def StartMeasuringFrameTime(self, action_runner, name):

@@ -10,6 +10,7 @@ import os
 from core import benchmark_utils
 from core import benchmark_finders
 from core import path_util
+
 path_util.AddTelemetryToPath()
 path_util.AddAndroidPylibToPath()
 
@@ -19,15 +20,24 @@ from typ import expectations_parser as typ_expectations_parser
 
 
 CLUSTER_TELEMETRY_DIR = os.path.join(
-    path_util.GetChromiumSrcDir(), 'tools', 'perf', 'contrib',
-    'cluster_telemetry')
+  path_util.GetChromiumSrcDir(), 'tools', 'perf', 'contrib', 'cluster_telemetry'
+)
 CLUSTER_TELEMETRY_BENCHMARKS = [
-    ct_benchmark.Name() for ct_benchmark in
-    benchmark_finders.GetBenchmarksInSubDirectory(CLUSTER_TELEMETRY_DIR)
+  ct_benchmark.Name()
+  for ct_benchmark in benchmark_finders.GetBenchmarksInSubDirectory(
+    CLUSTER_TELEMETRY_DIR
+  )
 ]
 MOBILE_PREFIXES = {'android', 'mobile'}
 DESKTOP_PREFIXES = {
-    'chromeos', 'desktop', 'linux', 'mac', 'win', 'sierra', 'highsierra'}
+  'chromeos',
+  'desktop',
+  'linux',
+  'mac',
+  'win',
+  'sierra',
+  'highsierra',
+}
 
 
 def is_desktop_tag(tag):
@@ -43,14 +53,16 @@ def validate_story_names(benchmarks, test_expectations):
   for benchmark in benchmarks:
     if benchmark.Name() in CLUSTER_TELEMETRY_BENCHMARKS:
       continue
-    story_set = benchmark_utils.GetBenchmarkStorySet(benchmark(),
-                                                     exhaustive=True)
+    story_set = benchmark_utils.GetBenchmarkStorySet(
+      benchmark(), exhaustive=True
+    )
     stories.extend([benchmark.Name() + '/' + s.name for s in story_set.stories])
   broken_expectations = test_expectations.check_for_broken_expectations(stories)
   unused_patterns = ''
   for pattern in {e.test for e in broken_expectations}:
-    unused_patterns += ("Expectations with pattern '%s'"
-                        " do not apply to any stories\n" % pattern)
+    unused_patterns += (
+      "Expectations with pattern '%s' do not apply to any stories\n" % pattern
+    )
   assert not unused_patterns, unused_patterns
 
 
@@ -65,16 +77,18 @@ def validate_expectations_component_tags(test_expectations):
       has_mobile_tags = any(is_mobile_tag(t) for t in e.tags)
       has_desktop_tags = any(is_desktop_tag(t) for t in e.tags)
       assert not (has_mobile_tags and has_desktop_tags), (
-              ("Expectation on %d is mixing "
-               "mobile and desktop condition tags") % e.lineno)
+        "Expectation on %d is mixing mobile and desktop condition tags"
+      ) % e.lineno
 
 
 def validate_supported_platform_lists(benchmarks):
   for b in benchmarks:
-    assert all(tag.lower() in SYSTEM_CONDITION_TAGS
-               for tag in b.SUPPORTED_PLATFORM_TAGS), (
-        "%s's SUPPORTED_PLATFORM_TAGS contains a tag not"
-        " defined in expectations.config" % b.Name())
+    assert all(
+      tag.lower() in SYSTEM_CONDITION_TAGS for tag in b.SUPPORTED_PLATFORM_TAGS
+    ), (
+      "%s's SUPPORTED_PLATFORM_TAGS contains a tag not"
+      " defined in expectations.config" % b.Name()
+    )
 
 
 def main():

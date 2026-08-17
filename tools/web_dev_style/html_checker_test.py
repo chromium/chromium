@@ -104,19 +104,17 @@ class HtmlCheckerTest(unittest.TestCase):
       '<br name="a">',
     ]
     for line in lines:
-      self.ShouldFailCheck(
-          line, self.checker.DoNotUseBrElementCheck)
+      self.ShouldFailCheck(line, self.checker.DoNotUseBrElementCheck)
 
   def testDoNotUseBrElementCheckPasses(self):
     lines = [
       "br",
       "br>",
       "<browser-switch-app></browser-switch-app>",
-      "give me a break"
+      "give me a break",
     ]
     for line in lines:
-      self.ShouldPassCheck(
-          line, self.checker.DoNotUseBrElementCheck)
+      self.ShouldPassCheck(line, self.checker.DoNotUseBrElementCheck)
 
   def testDoNotUseInputTypeButtonCheckFails(self):
     lines = [
@@ -137,7 +135,6 @@ class HtmlCheckerTest(unittest.TestCase):
       '<button type="button">',
       '<button type="reset">',
       '<button type="submit">',
-
     ]
     for line in lines:
       self.ShouldPassCheck(line, self.checker.DoNotUseInputTypeButtonCheck)

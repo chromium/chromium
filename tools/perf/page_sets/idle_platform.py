@@ -10,7 +10,8 @@ from telemetry import story as story_module
 class _IdleSharedState(shared_page_state.SharedPageState):
   def __init__(self, test, finder_options, story_set, possible_browser=None):
     super(_IdleSharedState, self).__init__(
-        test, finder_options, story_set, possible_browser)
+      test, finder_options, story_set, possible_browser
+    )
     self._current_story = None
 
   def WillRunStory(self, story):
@@ -27,7 +28,8 @@ class _IdleSharedState(shared_page_state.SharedPageState):
 class _IdleStory(story_module.Story):
   def __init__(self, name, duration):
     super(_IdleStory, self).__init__(
-        shared_state_class=_IdleSharedState, name=name)
+      shared_state_class=_IdleSharedState, name=name
+    )
     self._duration = duration
     # https://github.com/catapult-project/catapult/issues/3489
     # Even though there is no actual url being used, it is required for

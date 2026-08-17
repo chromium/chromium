@@ -22,9 +22,10 @@ import urllib.parse
 from core import results_dashboard
 
 logging.basicConfig(
-    level=logging.INFO,
-    format='(%(levelname)s) %(asctime)s pid=%(process)d'
-    '  %(module)s.%(funcName)s:%(lineno)d  %(message)s')
+  level=logging.INFO,
+  format='(%(levelname)s) %(asctime)s pid=%(process)d'
+  '  %(module)s.%(funcName)s:%(lineno)d  %(message)s',
+)
 
 RESULTS_LINK_PATH = '/report?masters=%s&bots=%s&tests=%s&rev=%s'
 
@@ -41,10 +42,12 @@ def _CommitPositionNumber(commit_pos):
 
 def _GetDashboardJson(args):
   main_revision = _CommitPositionNumber(args.got_revision_cp)
-  revisions = _GetPerfDashboardRevisionsWithProperties(args.got_webrtc_revision,
-                                                       args.got_v8_revision,
-                                                       args.git_revision,
-                                                       main_revision)
+  revisions = _GetPerfDashboardRevisionsWithProperties(
+    args.got_webrtc_revision,
+    args.got_v8_revision,
+    args.git_revision,
+    main_revision,
+  )
   reference_build = 'reference' in args.name
   stripped_test_name = args.name.replace('.reference', '')
   results = {}
@@ -55,27 +58,31 @@ def _GetDashboardJson(args):
   if 'charts' not in results:
     # These are legacy results.
     dashboard_json = results_dashboard.MakeListOfPoints(
-        results,
-        args.configuration_name,
-        stripped_test_name,
-        args.project,
-        args.buildbucket,
-        args.buildername,
-        args.buildnumber, {},
-        args.perf_dashboard_machine_group,
-        revisions_dict=revisions)
+      results,
+      args.configuration_name,
+      stripped_test_name,
+      args.project,
+      args.buildbucket,
+      args.buildername,
+      args.buildnumber,
+      {},
+      args.perf_dashboard_machine_group,
+      revisions_dict=revisions,
+    )
   else:
     dashboard_json = results_dashboard.MakeDashboardJsonV1(
-        results,
-        revisions,
-        stripped_test_name,
-        args.configuration_name,
-        args.project,
-        args.buildbucket,
-        args.buildername,
-        args.buildnumber, {},
-        reference_build,
-        perf_dashboard_machine_group=args.perf_dashboard_machine_group)
+      results,
+      revisions,
+      stripped_test_name,
+      args.configuration_name,
+      args.project,
+      args.buildbucket,
+      args.buildername,
+      args.buildnumber,
+      {},
+      reference_build,
+      perf_dashboard_machine_group=args.perf_dashboard_machine_group,
+    )
   return dashboard_json
 
 
@@ -83,8 +90,9 @@ def _GetDashboardHistogramData(args):
   revisions = {}
 
   if args.got_revision_cp:
-    revisions['--chromium_commit_positions'] = \
-        _CommitPositionNumber(args.got_revision_cp)
+    revisions['--chromium_commit_positions'] = _CommitPositionNumber(
+      args.got_revision_cp
+    )
   if args.git_revision:
     revisions['--chromium_revisions'] = args.git_revision
   if args.got_webrtc_revision:
@@ -103,21 +111,24 @@ def _GetDashboardHistogramData(args):
   try:
     begin_time = time.time()
     results_dashboard.MakeHistogramSetWithDiagnostics(
-        histograms_file=args.results_file,
-        test_name=stripped_test_name,
-        bot=args.configuration_name,
-        buildername=args.buildername,
-        buildnumber=args.buildnumber,
-        project=args.project,
-        buildbucket=args.buildbucket,
-        revisions_dict=revisions,
-        is_reference_build=is_reference_build,
-        perf_dashboard_machine_group=args.perf_dashboard_machine_group,
-        output_dir=output_dir,
-        max_bytes=max_bytes)
+      histograms_file=args.results_file,
+      test_name=stripped_test_name,
+      bot=args.configuration_name,
+      buildername=args.buildername,
+      buildnumber=args.buildnumber,
+      project=args.project,
+      buildbucket=args.buildbucket,
+      revisions_dict=revisions,
+      is_reference_build=is_reference_build,
+      perf_dashboard_machine_group=args.perf_dashboard_machine_group,
+      output_dir=output_dir,
+      max_bytes=max_bytes,
+    )
     end_time = time.time()
-    logging.info('Duration of adding diagnostics for %s: %d seconds' %
-                 (stripped_test_name, end_time - begin_time))
+    logging.info(
+      'Duration of adding diagnostics for %s: %d seconds'
+      % (stripped_test_name, end_time - begin_time)
+    )
 
     # Read all batch files from output_dir.
     dashboard_jsons = []
@@ -186,18 +197,23 @@ def main(argv):
   if dashboard_jsons:
     if args.output_json_dashboard_url:
       # Dump dashboard url to file.
-      dashboard_url = GetDashboardUrl(args.name, args.configuration_name,
-                                      args.results_url, args.got_revision_cp,
-                                      args.perf_dashboard_machine_group)
+      dashboard_url = GetDashboardUrl(
+        args.name,
+        args.configuration_name,
+        args.results_url,
+        args.got_revision_cp,
+        args.perf_dashboard_machine_group,
+      )
       with open(args.output_json_dashboard_url, 'w') as f:
         json.dump(dashboard_url if dashboard_url else '', f)
 
     for batch in dashboard_jsons:
       if not results_dashboard.SendResults(
-          batch,
-          args.name,
-          args.results_url,
-          send_as_histograms=args.send_as_histograms):
+        batch,
+        args.name,
+        args.results_url,
+        send_as_histograms=args.send_as_histograms,
+      ):
         return 1
   else:
     # The upload didn't fail since there was no data to upload.
@@ -205,23 +221,34 @@ def main(argv):
   return 0
 
 
-def GetDashboardUrl(name, configuration_name, results_url,
-    got_revision_cp, perf_dashboard_machine_group):
+def GetDashboardUrl(
+  name,
+  configuration_name,
+  results_url,
+  got_revision_cp,
+  perf_dashboard_machine_group,
+):
   """Optionally writes the dashboard URL to a file and returns a link to the
   dashboard.
   """
   name = name.replace('.reference', '')
   dashboard_url = results_url + RESULTS_LINK_PATH % (
-      urllib.parse.quote(perf_dashboard_machine_group),
-      urllib.parse.quote(configuration_name), urllib.parse.quote(name),
-      _CommitPositionNumber(got_revision_cp))
+    urllib.parse.quote(perf_dashboard_machine_group),
+    urllib.parse.quote(configuration_name),
+    urllib.parse.quote(name),
+    _CommitPositionNumber(got_revision_cp),
+  )
 
   return dashboard_url
 
 
 def _GetPerfDashboardRevisionsWithProperties(
-    got_webrtc_revision, got_v8_revision, git_revision, main_revision,
-    point_id=None):
+  got_webrtc_revision,
+  got_v8_revision,
+  git_revision,
+  main_revision,
+  point_id=None,
+):
   """Fills in the same revisions fields that process_log_utils does."""
   versions = {}
   versions['rev'] = main_revision

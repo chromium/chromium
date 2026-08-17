@@ -5,8 +5,11 @@
 from page_sets.login_helpers import login_utils
 
 
-def LoginAccount(action_runner, credential,
-                 credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH):
+def LoginAccount(
+  action_runner,
+  credential,
+  credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH,
+):
   """Logs in into a Dropbox account.
 
   This function navigates the tab into Dropbox's login page and logs in a user
@@ -22,23 +25,28 @@ def LoginAccount(action_runner, credential,
     for a detailed list of possible exceptions.
   """
   account_name, password = login_utils.GetAccountNameAndPassword(
-      credential, credentials_path=credentials_path)
+    credential, credentials_path=credentials_path
+  )
 
   action_runner.Navigate('https://www.dropbox.com/login')
   login_utils.InputWithSelector(
-      action_runner, account_name, 'input[name=login_email]')
+    action_runner, account_name, 'input[name=login_email]'
+  )
   login_utils.InputWithSelector(
-      action_runner, password, 'input[name=login_password]')
+    action_runner, password, 'input[name=login_password]'
+  )
 
   # Wait until the "Sign in" button is enabled and then click it.
   login_button_selector = '.login-form .login-button'
-  action_runner.WaitForJavaScriptCondition('''
+  action_runner.WaitForJavaScriptCondition(
+    '''
       (function() {
         var loginButton = document.querySelector({{ selector }});
         if (!loginButton)
           return false;
         return !loginButton.disabled;
       })();''',
-      selector=login_button_selector)
+    selector=login_button_selector,
+  )
   action_runner.ClickElement(selector=login_button_selector)
   action_runner.WaitForNavigate()

@@ -10,65 +10,75 @@ import io
 import os
 from path_utils import isInAshFolder, getTargetPath
 
+
 def _add_ui_webui_resources_mappings(path_mappings, root_gen_dir):
   # Calculate mappings for ui/webui/resources/ sub-folders that have a dedicated
   # ts_library() target. The naming of the ts_library() target is expected to
   # follow the default "build_ts" naming in the build_webui() rule. The output
   # folder is expected to be at '$root_gen_dir/ui/webui/resources/tsc/'.
   shared_ts_folders = [
-      "cr_elements",
-      "js",
-      "mojo",
-      "cr_components/app_management",
-      "cr_components/color_change_listener",
-      "cr_components/commerce",
-      "cr_components/cr_shortcut_input",
-      "cr_components/customize_color_scheme_mode",
-      "cr_components/customize_themes",
-      "cr_components/help_bubble",
-      "cr_components/history",
-      "cr_components/history_embeddings",
-      "cr_components/history_clusters",
-      "cr_components/localized_link",
-      "cr_components/managed_dialog",
-      "cr_components/managed_footnote",
-      "cr_components/most_visited",
-      "cr_components/page_image_service",
-      "cr_components/searchbox",
-      "cr_components/composebox",
-      "cr_components/search",
-      "cr_components/settings_prefs",
-      "cr_components/theme_color_picker",
+    "cr_elements",
+    "js",
+    "mojo",
+    "cr_components/app_management",
+    "cr_components/color_change_listener",
+    "cr_components/commerce",
+    "cr_components/cr_shortcut_input",
+    "cr_components/customize_color_scheme_mode",
+    "cr_components/customize_themes",
+    "cr_components/help_bubble",
+    "cr_components/history",
+    "cr_components/history_embeddings",
+    "cr_components/history_clusters",
+    "cr_components/localized_link",
+    "cr_components/managed_dialog",
+    "cr_components/managed_footnote",
+    "cr_components/most_visited",
+    "cr_components/page_image_service",
+    "cr_components/searchbox",
+    "cr_components/composebox",
+    "cr_components/search",
+    "cr_components/settings_prefs",
+    "cr_components/theme_color_picker",
   ]
 
   for c in shared_ts_folders:
-    path_mappings[f'//ui/webui/resources/{c}:build_ts'] = [(
+    path_mappings[f'//ui/webui/resources/{c}:build_ts'] = [
+      (
         f'//resources/{c}/*',
         f'{root_gen_dir}/ui/webui/resources/tsc/{c}/*',
-    )]
+      )
+    ]
 
 
 def _add_third_party_polymer_mappings(path_mappings, root_src_dir):
   path_mappings[f'//third_party/polymer/v3_0:library'] = [
-      ('//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
-       f'{root_src_dir}/third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts'
-       ),
-      ('//resources/polymer/v3_0/*',
-       f'{root_src_dir}/third_party/polymer/v3_0/components-chromium/*')
+    (
+      '//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
+      (
+          f'{root_src_dir}/third_party/polymer/v3_0/components-chromium/'
+          'polymer/polymer.d.ts'
+      ),
+    ),
+    (
+      '//resources/polymer/v3_0/*',
+      f'{root_src_dir}/third_party/polymer/v3_0/components-chromium/*',
+    ),
   ]
 
 
 def _add_third_party_d3_mappings(path_mappings, root_src_dir):
   path_mappings[f'//third_party/d3:library'] = [
-      ('//resources/d3/d3.min.js',
-       f'{root_src_dir}/third_party/d3/src/d3.d.ts'),
+    ('//resources/d3/d3.min.js', f'{root_src_dir}/third_party/d3/src/d3.d.ts'),
   ]
 
 
 def _add_third_party_lit_mappings(path_mappings, root_gen_dir):
   path_mappings[f'//third_party/lit/v3_0:build_ts'] = [
-      ('//resources/lit/v3_0/lit.rollup.js',
-       f'{root_gen_dir}/third_party/lit/v3_0/lit.d.ts'),
+    (
+      '//resources/lit/v3_0/lit.rollup.js',
+      f'{root_gen_dir}/third_party/lit/v3_0/lit.d.ts',
+    ),
   ]
 
 
@@ -78,10 +88,12 @@ def _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir):
   # below. Eventually this target should be removed and everything should reside
   # in a subfolder, so that missing deps can surface during the build, similar
   # to how ui/webui/resources/ works.
-  path_mappings['//ash/webui/common/resources:build_ts'] = [(
+  path_mappings['//ash/webui/common/resources:build_ts'] = [
+    (
       '//resources/ash/common/*',
       f'{root_gen_dir}/ash/webui/common/resources/preprocessed/*',
-  )]
+    )
+  ]
 
   # Calculate mappings for ash/webui/common/resources/ sub-folders that have a
   # dedicated ts_library() target. The naming of the ts_library() target is
@@ -89,32 +101,39 @@ def _add_ash_mappings(path_mappings, root_gen_dir, root_src_dir):
   # The output folder is expected to be at
   # '$root_gen_dir/ash/webui/common/resources/preprocessed/'.
   shared_ts_folders = [
-      "cellular_setup",
-      "cr_elements",
-      "personalization",
-      "sea_pen",
-
-      # List more folders here as they get migrated to use build_webui().
+    "cellular_setup",
+    "cr_elements",
+    "personalization",
+    "sea_pen",
+    # List more folders here as they get migrated to use build_webui().
   ]
 
   for c in shared_ts_folders:
-    path_mappings[f'//ash/webui/common/resources/{c}:build_ts'] = [(
+    path_mappings[f'//ash/webui/common/resources/{c}:build_ts'] = [
+      (
         f'//resources/ash/common/{c}/*',
         f'{root_gen_dir}/ash/webui/common/resources/preprocessed/{c}/*',
-    )]
+      )
+    ]
 
-  path_mappings['//third_party/cros-components:cros_components_ts'] = [(
+  path_mappings['//third_party/cros-components:cros_components_ts'] = [
+    (
       '//resources/cros_components/*',
       f'{root_gen_dir}/ui/webui/resources/tsc/cros_components/to_be_rewritten/*',
-  )]
-  path_mappings['//third_party/material_web_components:library'] = [(
+    )
+  ]
+  path_mappings['//third_party/material_web_components:library'] = [
+    (
       '//resources/mwc/@material/*',
       f'{root_src_dir}/third_party/material_web_components/components-chromium/'
       'node_modules/@material/*',
-  )]
+    )
+  ]
   path_mappings['//third_party/material_web_components:bundle_lit_ts'] = [
-      ('//resources/mwc/lit/index.js',
-       f'{root_src_dir}/third_party/material_web_components/lit_exports.d.ts')
+    (
+      '//resources/mwc/lit/index.js',
+      f'{root_src_dir}/third_party/material_web_components/lit_exports.d.ts',
+    )
   ]
 
 
@@ -134,9 +153,9 @@ def GetDepToPathMappings(root_gen_dir, root_src_dir, platform):
 
 def _is_browser_only_dep(dep):
   browser_only_deps = [
-      '//ui/webui/resources/cr_elements',
-      '//ui/webui/resources/cr_components/localized_link',
-      '//ui/webui/resources/cr_components/managed_footnote',
+    '//ui/webui/resources/cr_elements',
+    '//ui/webui/resources/cr_components/localized_link',
+    '//ui/webui/resources/cr_components/managed_footnote',
   ]
   return any(dep.startswith(dep_folder) for dep_folder in browser_only_deps)
 
@@ -144,8 +163,8 @@ def _is_browser_only_dep(dep):
 def _is_dependency_allowed(is_ash_target, raw_dep, target_path):
   # TODO: Update Ash Print Preview to use ash cr_elements.
   exceptions = [
-      'chrome/browser/resources/ash/print_preview',
-      'chrome/test/data/webui/chromeos/print_preview',
+    'chrome/browser/resources/ash/print_preview',
+    'chrome/test/data/webui/chromeos/print_preview',
   ]
   if is_ash_target and _is_browser_only_dep(raw_dep):
     return target_path in exceptions
@@ -158,8 +177,9 @@ def _is_dependency_allowed(is_ash_target, raw_dep, target_path):
   return target_path == "chrome/browser/resources/settings"
 
 
-def _write_path_mappings_file(path_mappings, output_suffix, out_dir,
-                              pretty_print):
+def _write_path_mappings_file(
+  path_mappings, output_suffix, out_dir, pretty_print
+):
   path_mappings_filename = f'path_mappings_{output_suffix}.json'
   if not os.path.exists(out_dir):
     os.makedirs(out_dir)
@@ -177,20 +197,22 @@ def main(argv):
   parser.add_argument('--gen_dir', required=True)
   parser.add_argument('--output_suffix', required=True)
   parser.add_argument(
-      '--webui_context_type',
-      choices=['trusted', 'untrusted', 'relative', 'trusted_only'],
-      default='trusted')
+    '--webui_context_type',
+    choices=['trusted', 'untrusted', 'relative', 'trusted_only'],
+    default='trusted',
+  )
   parser.add_argument('--pretty_print', action='store_true')
-  parser.add_argument('--platform',
-                      choices=['other', 'ios', 'chromeos_ash'],
-                      default='other')
+  parser.add_argument(
+    '--platform', choices=['other', 'ios', 'chromeos_ash'], default='other'
+  )
   args = parser.parse_args(argv)
 
   dep_to_path_mappings = GetDepToPathMappings(
-      args.root_gen_dir,
-      # Sometimes root_src_dir has trailing slashes. Remove them if necessary.
-      args.root_src_dir.rstrip('/'),
-      args.platform)
+    args.root_gen_dir,
+    # Sometimes root_src_dir has trailing slashes. Remove them if necessary.
+    args.root_src_dir.rstrip('/'),
+    args.platform,
+  )
 
   target_path = getTargetPath(args.gen_dir, args.root_gen_dir)
   is_ash_target = isInAshFolder(target_path)
@@ -199,36 +221,45 @@ def main(argv):
   # First, add a path mapping for '/strings.m.js', which is not tied to
   # `raw_deps` and is used extensively throughout WebUI.
   path_mappings['/strings.m.js'].append(
-      f'{args.root_src_dir}/tools/typescript/definitions/strings.d.ts'.replace(
-          '\\', '/'))
+    f'{args.root_src_dir}/tools/typescript/definitions/strings.d.ts'.replace(
+      '\\', '/'
+    )
+  )
 
   # Then add path mappings that can be derived from `raw_deps`.
   for dep in args.raw_deps:
     dependencyType = 'Browser-only' if is_ash_target else 'Ash-only'
-    assert _is_dependency_allowed(is_ash_target, dep, target_path), \
-        f'{target_path} should not use {dependencyType} dependency {dep}.'
+    assert _is_dependency_allowed(is_ash_target, dep, target_path), (
+      f'{target_path} should not use {dependencyType} dependency {dep}.'
+    )
 
     if dep not in dep_to_path_mappings:
-      assert not dep.startswith("//ui/webui/resources"), \
-          f'Missing path mapping for \'{dep}\'. Update ' \
-          '//tools/typescript/path_mappings.py accordingly.'
+      assert not dep.startswith("//ui/webui/resources"), (
+        f'Missing path mapping for \'{dep}\'. Update '
+        '//tools/typescript/path_mappings.py accordingly.'
+      )
 
       # Path mappings outside of //ui/webui/resources are not inferred from
       # |args.deps| yet.
       continue
 
     mappings = dep_to_path_mappings[dep]
-    scheme = \
-        'chrome-untrusted:' if args.webui_context_type == 'untrusted' else 'chrome:'
-    for (url, dir) in mappings:
-      if (args.webui_context_type != 'trusted_only'):
+    scheme = (
+      'chrome-untrusted:'
+      if args.webui_context_type == 'untrusted'
+      else 'chrome:'
+    )
+    for url, dir in mappings:
+      if args.webui_context_type != 'trusted_only':
         path_mappings[url].append(os.path.join('./', dir).replace('\\', '/'))
-      if (url.startswith("//") and args.webui_context_type != 'relative'):
+      if url.startswith("//") and args.webui_context_type != 'relative':
         path_mappings[scheme + url].append(
-            os.path.join('./', dir).replace('\\', '/'))
+          os.path.join('./', dir).replace('\\', '/')
+        )
 
-  _write_path_mappings_file(path_mappings, args.output_suffix, args.gen_dir,
-                            args.pretty_print)
+  _write_path_mappings_file(
+    path_mappings, args.output_suffix, args.gen_dir, args.pretty_print
+  )
 
 
 if __name__ == '__main__':

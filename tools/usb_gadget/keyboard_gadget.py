@@ -25,43 +25,43 @@ class KeyboardFeature(hid_gadget.HidFeature):
   """
 
   REPORT_DESC = hid_descriptors.ReportDescriptor(
-      hid_descriptors.UsagePage(0x01),  # Generic Desktop
-      hid_descriptors.Usage(0x06),  # Keyboard
-      hid_descriptors.Collection(
-          hid_constants.CollectionType.APPLICATION,
-          hid_descriptors.UsagePage(0x07),  # Key Codes
-          hid_descriptors.UsageMinimum(224),
-          hid_descriptors.UsageMaximum(231),
-          hid_descriptors.LogicalMinimum(0, force_length=1),
-          hid_descriptors.LogicalMaximum(1),
-          hid_descriptors.ReportSize(1),
-          hid_descriptors.ReportCount(8),
-          hid_descriptors.Input(hid_descriptors.Data,
-                                hid_descriptors.Variable,
-                                hid_descriptors.Absolute),
-          hid_descriptors.ReportCount(1),
-          hid_descriptors.ReportSize(8),
-          hid_descriptors.Input(hid_descriptors.Constant),
-          hid_descriptors.ReportCount(5),
-          hid_descriptors.ReportSize(1),
-          hid_descriptors.UsagePage(0x08),  # LEDs
-          hid_descriptors.UsageMinimum(1),
-          hid_descriptors.UsageMaximum(5),
-          hid_descriptors.Output(hid_descriptors.Data,
-                                 hid_descriptors.Variable,
-                                 hid_descriptors.Absolute),
-          hid_descriptors.ReportCount(1),
-          hid_descriptors.ReportSize(3),
-          hid_descriptors.Output(hid_descriptors.Constant),
-          hid_descriptors.ReportCount(6),
-          hid_descriptors.ReportSize(8),
-          hid_descriptors.LogicalMinimum(0, force_length=1),
-          hid_descriptors.LogicalMaximum(101),
-          hid_descriptors.UsagePage(0x07),  # Key Codes
-          hid_descriptors.UsageMinimum(0, force_length=1),
-          hid_descriptors.UsageMaximum(101),
-          hid_descriptors.Input(hid_descriptors.Data, hid_descriptors.Array)
-      )
+    hid_descriptors.UsagePage(0x01),  # Generic Desktop
+    hid_descriptors.Usage(0x06),  # Keyboard
+    hid_descriptors.Collection(
+      hid_constants.CollectionType.APPLICATION,
+      hid_descriptors.UsagePage(0x07),  # Key Codes
+      hid_descriptors.UsageMinimum(224),
+      hid_descriptors.UsageMaximum(231),
+      hid_descriptors.LogicalMinimum(0, force_length=1),
+      hid_descriptors.LogicalMaximum(1),
+      hid_descriptors.ReportSize(1),
+      hid_descriptors.ReportCount(8),
+      hid_descriptors.Input(
+        hid_descriptors.Data, hid_descriptors.Variable, hid_descriptors.Absolute
+      ),
+      hid_descriptors.ReportCount(1),
+      hid_descriptors.ReportSize(8),
+      hid_descriptors.Input(hid_descriptors.Constant),
+      hid_descriptors.ReportCount(5),
+      hid_descriptors.ReportSize(1),
+      hid_descriptors.UsagePage(0x08),  # LEDs
+      hid_descriptors.UsageMinimum(1),
+      hid_descriptors.UsageMaximum(5),
+      hid_descriptors.Output(
+        hid_descriptors.Data, hid_descriptors.Variable, hid_descriptors.Absolute
+      ),
+      hid_descriptors.ReportCount(1),
+      hid_descriptors.ReportSize(3),
+      hid_descriptors.Output(hid_descriptors.Constant),
+      hid_descriptors.ReportCount(6),
+      hid_descriptors.ReportSize(8),
+      hid_descriptors.LogicalMinimum(0, force_length=1),
+      hid_descriptors.LogicalMaximum(101),
+      hid_descriptors.UsagePage(0x07),  # Key Codes
+      hid_descriptors.UsageMinimum(0, force_length=1),
+      hid_descriptors.UsageMaximum(101),
+      hid_descriptors.Input(hid_descriptors.Data, hid_descriptors.Array),
+    ),
   )
 
   def __init__(self):
@@ -127,7 +127,7 @@ class KeyboardFeature(hid_gadget.HidFeature):
       True on success, None to stall the pipe.
     """
     if len(data) >= 1:
-      self._leds, = struct.unpack('B', data)
+      (self._leds,) = struct.unpack('B', data)
     return True
 
 
@@ -137,14 +137,15 @@ class KeyboardGadget(hid_gadget.HidGadget):
   def __init__(self, vendor_id=0x18D1, product_id=0xFF02):
     self._feature = KeyboardFeature()
     super(KeyboardGadget, self).__init__(
-        report_desc=KeyboardFeature.REPORT_DESC,
-        features={0: self._feature},
-        packet_size=8,
-        interval_ms=1,
-        out_endpoint=True,
-        vendor_id=usb_constants.VendorID.GOOGLE,
-        product_id=usb_constants.ProductID.GOOGLE_KEYBOARD_GADGET,
-        device_version=0x0100)
+      report_desc=KeyboardFeature.REPORT_DESC,
+      features={0: self._feature},
+      packet_size=8,
+      interval_ms=1,
+      out_endpoint=True,
+      vendor_id=usb_constants.VendorID.GOOGLE,
+      product_id=usb_constants.ProductID.GOOGLE_KEYBOARD_GADGET,
+      device_version=0x0100,
+    )
     self.AddStringDescriptor(1, 'Google Inc.')
     self.AddStringDescriptor(2, 'Keyboard Gadget')
 
@@ -167,12 +168,10 @@ def RegisterHandlers():
   from tornado import web
 
   class WebConfigureHandler(web.RequestHandler):
-
     def post(self):
       server.SwitchGadget(KeyboardGadget())
 
   class WebTypeHandler(web.RequestHandler):
-
     def post(self):
       string = self.get_argument('string')
       for char in string:
@@ -188,15 +187,18 @@ def RegisterHandlers():
           server.gadget.ModifierUp(hid_constants.ModifierKey.L_SHIFT)
 
   class WebPressHandler(web.RequestHandler):
-
     def post(self):
       code = hid_constants.KEY_CODES[self.get_argument('key')]
       server.gadget.KeyDown(code)
       server.gadget.KeyUp(code)
 
   import server
-  server.app.add_handlers('.*$', [
+
+  server.app.add_handlers(
+    '.*$',
+    [
       (r'/keyboard/configure', WebConfigureHandler),
       (r'/keyboard/type', WebTypeHandler),
       (r'/keyboard/press', WebPressHandler),
-  ])
+    ],
+  )

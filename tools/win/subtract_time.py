@@ -15,12 +15,14 @@ def ParseTime(time_string):
     # (and there might be other variants as well)
     match = re.match("(\d+)\D*(\d+)\D*(\d+)\D*(\d+)", time_string.strip())
     hours, minutes, seconds, fraction = map(int, match.groups())
-    result = hours * 3600 + minutes * 60 + seconds + fraction * .01
+    result = hours * 3600 + minutes * 60 + seconds + fraction * 0.01
     if result < 0:
         # Handle test runs that go past midnight.
         result += 3600 * 24
     return result
 
 
-print("%1.2f seconds elapsed time" %
-      (ParseTime(sys.argv[1]) - ParseTime(sys.argv[2])))
+print(
+    "%1.2f seconds elapsed time"
+    % (ParseTime(sys.argv[1]) - ParseTime(sys.argv[2]))
+)

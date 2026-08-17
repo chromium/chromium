@@ -16,7 +16,6 @@ import builders
 
 
 class BuilderPropsTests(unittest.TestCase):
-
   def setUp(self):
     self.tmp_dir = pathlib.Path(tempfile.mkdtemp())
     self.tmp_internal_dir = pathlib.Path(tempfile.mkdtemp())
@@ -26,7 +25,8 @@ class BuilderPropsTests(unittest.TestCase):
     self.addCleanup(patch_props_dir.stop)
 
     patch_internal_props_dir = mock.patch(
-        'builders._INTERNAL_BUILDER_PROP_DIRS', self.tmp_internal_dir)
+      'builders._INTERNAL_BUILDER_PROP_DIRS', self.tmp_internal_dir
+    )
     patch_internal_props_dir.start()
     self.addCleanup(patch_internal_props_dir.stop)
 
@@ -37,26 +37,30 @@ class BuilderPropsTests(unittest.TestCase):
 
   def testNoProps(self):
     # Empty base dir
-    props, _ = builders.find_builder_props('some-builder',
-                                           bucket_name='some-bucket')
+    props, _ = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket'
+    )
     self.assertIsNone(props)
 
     # Empty bucket dir
     os.makedirs(self.tmp_dir.joinpath('some-bucket'))
-    props, _ = builders.find_builder_props('some-builder',
-                                           bucket_name='some-bucket')
+    props, _ = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket'
+    )
     self.assertIsNone(props)
 
     # Empty builder dir
     os.makedirs(self.tmp_dir.joinpath('some-bucket', 'some-builder'))
-    props, _ = builders.find_builder_props('some-builder',
-                                           bucket_name='some-bucket')
+    props, _ = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket'
+    )
     self.assertIsNone(props)
 
     # No src-internal checkout.
     shutil.rmtree(self.tmp_internal_dir)
-    props, _ = builders.find_builder_props('some-builder',
-                                           bucket_name='some-bucket')
+    props, _ = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket'
+    )
     self.assertIsNone(props)
 
   def testSomeProps(self):
@@ -65,8 +69,9 @@ class BuilderPropsTests(unittest.TestCase):
     with open(builder_dir.joinpath('properties.json'), 'w') as f:
       json.dump({'some-key': 'some-val'}, f)
 
-    props, _ = builders.find_builder_props('some-builder',
-                                           bucket_name='some-bucket')
+    props, _ = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket'
+    )
     self.assertEqual(props['some-key'], 'some-val')
 
   def testBucketName(self):
@@ -96,25 +101,27 @@ class BuilderPropsTests(unittest.TestCase):
       json.dump({'some-key': 'some-public-val'}, f)
 
     internal_builder_dir = self.tmp_internal_dir.joinpath(
-        'some-bucket', 'some-builder')
+      'some-bucket', 'some-builder'
+    )
     os.makedirs(internal_builder_dir)
     with open(internal_builder_dir.joinpath('properties.json'), 'w') as f:
       json.dump({'some-key': 'some-internal-val'}, f)
 
-    props, _ = builders.find_builder_props('some-builder',
-                                           bucket_name='some-bucket',
-                                           project_name='chromium')
+    props, _ = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket', project_name='chromium'
+    )
     self.assertEqual(props['some-key'], 'some-public-val')
 
-    props, _ = builders.find_builder_props('some-builder',
-                                           bucket_name='some-bucket',
-                                           project_name='chrome')
+    props, _ = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket', project_name='chrome'
+    )
     self.assertEqual(props['some-key'], 'some-internal-val')
 
     # Missing project_name should return the internal builder since that's what
     # we want to default to.
-    props, project = builders.find_builder_props('some-builder',
-                                                 bucket_name='some-bucket')
+    props, project = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket'
+    )
     self.assertEqual(props['some-key'], 'some-internal-val')
     self.assertEqual(project, 'chrome')
 
@@ -125,30 +132,32 @@ class BuilderPropsTests(unittest.TestCase):
 
     # Failed bb RPC.
     mock_p.returncode = 1
-    props, _ = builders.find_builder_props('some-builder',
-                                           bucket_name='some-bucket',
-                                           project_name='some-project')
+    props, _ = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket', project_name='some-project'
+    )
     self.assertIsNone(props)
 
     # Empty json from bb RPC.
     mock_p.returncode = 0
     mock_p.stdout = '{}'
-    props, _ = builders.find_builder_props('some-builder',
-                                           bucket_name='some-bucket',
-                                           project_name='some-project')
+    props, _ = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket', project_name='some-project'
+    )
     self.assertIsNone(props)
 
     # Successful bb RPC.
     props = {'key1': 1, 'key2': 'val2'}
     mock_p.returncode = 0
-    mock_p.stdout = json.dumps({
+    mock_p.stdout = json.dumps(
+      {
         'config': {
-            'properties': json.dumps(props),
+          'properties': json.dumps(props),
         },
-    })
-    props, _ = builders.find_builder_props('some-builder',
-                                           bucket_name='some-bucket',
-                                           project_name='some-project')
+      }
+    )
+    props, _ = builders.find_builder_props(
+      'some-builder', bucket_name='some-bucket', project_name='some-project'
+    )
     self.assertEqual(props, {'key1': 1, 'key2': 'val2'})
 
 

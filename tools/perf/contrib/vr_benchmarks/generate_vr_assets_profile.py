@@ -17,18 +17,22 @@ import sys
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--output',
-                      required=True,
-                      help='The gen directory to put the profile directory in')
-  parser.add_argument('--asset-dir',
-                      required=True,
-                      help='The directory containing the asset information')
+  parser.add_argument(
+    '--output',
+    required=True,
+    help='The gen directory to put the profile directory in',
+  )
+  parser.add_argument(
+    '--asset-dir',
+    required=True,
+    help='The directory containing the asset information',
+  )
   args, _ = parser.parse_known_args()
 
   # Add the directory to the path so we can get the parse_version script.
   asset_dir = args.asset_dir
   sys.path.append(asset_dir)
-  #pylint: disable=import-error,import-outside-toplevel
+  # pylint: disable=import-error,import-outside-toplevel
   import parse_version
 
   # Get the assets version.
@@ -56,23 +60,30 @@ def main():
       break
   if not found_asset:
     return
-  profile_dir = os.path.join(profile_dir, 'VrAssets',
-                             '%d.%d' % (version.major, version.minor))
+  profile_dir = os.path.join(
+    profile_dir, 'VrAssets', '%d.%d' % (version.major, version.minor)
+  )
   os.makedirs(profile_dir)
 
   # Only copy the files specified by the asset JSON file.
-  with open(os.path.join(asset_dir,
-        'vr_assets_component_files.json'), 'r') as asset_json_file:
+  with open(
+    os.path.join(asset_dir, 'vr_assets_component_files.json'), 'r'
+  ) as asset_json_file:
     asset_files = json.load(asset_json_file)
     for asset in asset_files:
       shutil.copy(os.path.join(asset_dir, asset), profile_dir)
 
   # Generate the manifest file.
   with open(os.path.join(profile_dir, 'manifest.json'), 'w') as manifest_file:
-    json.dump({
+    json.dump(
+      {
         'manifest_version': 2,
         'name': 'VrAssets',
-        'version': '%d.%d' % (version.major, version.minor)}, manifest_file)
+        'version': '%d.%d' % (version.major, version.minor),
+      },
+      manifest_file,
+    )
+
 
 if __name__ == '__main__':
   main()

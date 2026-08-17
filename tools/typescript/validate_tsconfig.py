@@ -17,54 +17,56 @@ from path_utils import isInAshFolder, getTargetPath
 
 _CWD = os.getcwd().replace('\\', '/')
 _HERE_DIR = os.path.dirname(__file__)
-_SRC_DIR = os.path.normpath(os.path.join(_HERE_DIR, '..',
-                                         '..')).replace('\\', '/')
+_SRC_DIR = os.path.normpath(os.path.join(_HERE_DIR, '..', '..')).replace(
+  '\\', '/'
+)
 
 # Options configured by the ts_library should not be set separately.
 _tsconfig_compiler_options_mappings = {
-    'composite': 'composite=true',
-    'declaration': 'composite=true',
-    'inlineSourceMap': 'enable_source_maps=true',
-    'inlineSources': 'enable_source_maps=true',
-    'outDir': 'out_dir',
-    'paths': 'path_mappings',
-    'rootDir': 'root_dir',
-    'tsBuildInfoFile': 'composite=true',
+  'composite': 'composite=true',
+  'declaration': 'composite=true',
+  'inlineSourceMap': 'enable_source_maps=true',
+  'inlineSources': 'enable_source_maps=true',
+  'outDir': 'out_dir',
+  'paths': 'path_mappings',
+  'rootDir': 'root_dir',
+  'tsBuildInfoFile': 'composite=true',
 }
 
 # Allowed options within tsconfig_base.json
 _allowed_config_options = [
-    'extends',
-    'compilerOptions',
+  'extends',
+  'compilerOptions',
 ]
 
 # Allowed compilerOptions. A 'None' value indicates that all values are allowed,
 # otherwise only the set of specified values is allowed.
 _allowed_compiler_options = {
-    'allowUmdGlobalAccess': None,
-    'isolatedModules': None,
-    'lib': None,
-    'module': ['NodeNext', 'preserve'],
-    'moduleResolution': ['NodeNext', 'bundler'],
-    'noPropertyAccessFromIndexSignature': None,
-    'noUncheckedIndexedAccess': None,
-    'noUncheckedSideEffectImports': None,
-    'noUnusedLocals': None,
-    'skipLibCheck': None,
-    'strictPropertyInitialization': None,
-    'target': ['ESNext', 'ES2024'],
-    'typeRoots': None,
-    'types': None,
+  'allowUmdGlobalAccess': None,
+  'isolatedModules': None,
+  'lib': None,
+  'module': ['NodeNext', 'preserve'],
+  'moduleResolution': ['NodeNext', 'bundler'],
+  'noPropertyAccessFromIndexSignature': None,
+  'noUncheckedIndexedAccess': None,
+  'noUncheckedSideEffectImports': None,
+  'noUnusedLocals': None,
+  'skipLibCheck': None,
+  'strictPropertyInitialization': None,
+  'target': ['ESNext', 'ES2024'],
+  'typeRoots': None,
+  'types': None,
 }
 
 _ash_configs = [
-    'ash/webui/camera_app_ui/resources/tsconfig_base.json',
-    'ash/webui/recorder_app_ui/resources/tsconfig_base.json',
-    'chrome/browser/resources/chromeos/desk_api/tsconfig_base.json',
-    'chrome/test/data/webui/chromeos/ash_common/tsconfig_base.json',
-    'tools/typescript/tsconfig_base_polymer_cros.json',
-    'third_party/cros-components/tsconfig_base.json',
+  'ash/webui/camera_app_ui/resources/tsconfig_base.json',
+  'ash/webui/recorder_app_ui/resources/tsconfig_base.json',
+  'chrome/browser/resources/chromeos/desk_api/tsconfig_base.json',
+  'chrome/test/data/webui/chromeos/ash_common/tsconfig_base.json',
+  'tools/typescript/tsconfig_base_polymer_cros.json',
+  'third_party/cros-components/tsconfig_base.json',
 ]
+
 
 def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
   # Special exception for material_web_components, which uses ts_library()
@@ -84,17 +86,23 @@ def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
   if not is_base_tsconfig:
     for param in tsconfig.keys():
       if param not in _allowed_config_options:
-        return False, f'Invalid |{param}| option detected in ' + \
-            f'{tsconfig_file}.Only |extends| and |compilerOptions| may ' + \
-            'be specified.'
+        return (
+          False,
+          f'Invalid |{param}| option detected in '
+          + f'{tsconfig_file}.Only |extends| and |compilerOptions| may '
+          + 'be specified.',
+        )
 
   if 'compilerOptions' in tsconfig:
     for param in _tsconfig_compiler_options_mappings.keys():
       if param in tsconfig['compilerOptions']:
         tslibrary_flag = _tsconfig_compiler_options_mappings[param]
-        return False, f'Invalid |{param}| flag detected in {tsconfig_file}.' + \
-            f' Use the dedicated |{tslibrary_flag}| attribute in '+ \
-            'ts_library() instead.'
+        return (
+          False,
+          f'Invalid |{param}| flag detected in {tsconfig_file}.'
+          + f' Use the dedicated |{tslibrary_flag}| attribute in '
+          + 'ts_library() instead.',
+        )
 
     if 'ui/file_manager' in tsconfig_file:
       # File manager uses ts_library() in an unsupported way. Just return true
@@ -104,16 +112,24 @@ def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
     if not is_base_tsconfig:
       for param, param_value in tsconfig['compilerOptions'].items():
         if param not in _allowed_compiler_options:
-          if param != 'useDefineForClassFields' or \
-             tsconfig_file not in _ash_configs:
-            return False, f'Disallowed |{param}| flag detected in '+ \
-                f'\'{tsconfig_file}\'.'
+          if (
+            param != 'useDefineForClassFields'
+            or tsconfig_file not in _ash_configs
+          ):
+            return (
+              False,
+              f'Disallowed |{param}| flag detected in '
+              + f'\'{tsconfig_file}\'.',
+            )
         else:
           allowed_values = _allowed_compiler_options[param]
-          if (allowed_values is not None and param_value not in allowed_values):
-            return False, f'Disallowed value |{param_value}| for |{param}| ' + \
-                f'flag detected in \'{tsconfig_file}\'. Must be one of ' + \
-                f'{allowed_values}.'
+          if allowed_values is not None and param_value not in allowed_values:
+            return (
+              False,
+              f'Disallowed value |{param_value}| for |{param}| '
+              + f'flag detected in \'{tsconfig_file}\'. Must be one of '
+              + f'{allowed_values}.',
+            )
 
   return True, None
 
@@ -139,26 +155,26 @@ def validateJavaScriptAllowed(source_dir, out_dir, platform):
     # TODO (rbpotter): If possible, standardize the build setup in some of these
     # folders such that they can be more accurately specified in the list below.
     ash_directories = [
-        'ash/webui/annotator/resources/untrusted/',
-        'ash/webui/camera_app_ui/',
-        'ash/webui/common/resources/',
-        'ash/webui/file_manager/resources/labs/',
-        # TODO(b/314827247): Migrate media_app_ui to TypeScript and remove
-        # exception.
-        'ash/webui/media_app_ui/',
-        # TODO(b/313562946): Migrate help_app_ui mojo pipeline to TypeScript and
-        # remove.
-        'ash/webui/help_app_ui/',
-        # TODO(b/267329383): Migrate A11y to TypeScript.
-        'chrome/browser/resources/chromeos/accessibility',
-        'chrome/browser/resources/chromeos/account_manager',
-        'chrome/browser/resources/chromeos/drive_internals',
-        'chrome/browser/resources/chromeos/sys_internals',
-        'chrome/test/data/webui/chromeos',
-        'chrome/test/data/webui/chromeos/ash_common',
-        'chrome/test/data/webui/chromeos/nearby_share',
-        'chrome/test/data/webui/cr_components/chromeos',
-        'ui/file_manager/',
+      'ash/webui/annotator/resources/untrusted/',
+      'ash/webui/camera_app_ui/',
+      'ash/webui/common/resources/',
+      'ash/webui/file_manager/resources/labs/',
+      # TODO(b/314827247): Migrate media_app_ui to TypeScript and remove
+      # exception.
+      'ash/webui/media_app_ui/',
+      # TODO(b/313562946): Migrate help_app_ui mojo pipeline to TypeScript and
+      # remove.
+      'ash/webui/help_app_ui/',
+      # TODO(b/267329383): Migrate A11y to TypeScript.
+      'chrome/browser/resources/chromeos/accessibility',
+      'chrome/browser/resources/chromeos/account_manager',
+      'chrome/browser/resources/chromeos/drive_internals',
+      'chrome/browser/resources/chromeos/sys_internals',
+      'chrome/test/data/webui/chromeos',
+      'chrome/test/data/webui/chromeos/ash_common',
+      'chrome/test/data/webui/chromeos/nearby_share',
+      'chrome/test/data/webui/cr_components/chromeos',
+      'ui/file_manager/',
     ]
     for directory in ash_directories:
       if directory in source_dir:
@@ -166,30 +182,33 @@ def validateJavaScriptAllowed(source_dir, out_dir, platform):
 
   # Specific exceptions for directories that are still migrating to TS.
   migrating_directories = [
-      # TODO(crbug.com/385341235): Migrate inspect to TypeScript.
-      'chrome/browser/resources/inspect',
-      'chrome/browser/resources/net_internals',
-      'chrome/test/data/webui',
-      'components/autofill/core/browser/autofill_and_password_manager_internals',
-      'components/net_log/resources',
-      'components/safe_browsing/content/browser/web_ui/resources',
-      'components/translate/translate_internals',
-      'content/browser/webrtc/resources',
-      'ui/webui/resources/js',
-      'ui/webui/resources/mojo',
-
-      # TODO(crbug.com/40280699) : Migrate to TypeScript.
-      'chrome/test/data/webui/media_internals',
-      'content/browser/resources/media',
+    # TODO(crbug.com/385341235): Migrate inspect to TypeScript.
+    'chrome/browser/resources/inspect',
+    'chrome/browser/resources/net_internals',
+    'chrome/test/data/webui',
+    'components/autofill/core/browser/autofill_and_password_manager_internals',
+    'components/net_log/resources',
+    'components/safe_browsing/content/browser/web_ui/resources',
+    'components/translate/translate_internals',
+    'content/browser/webrtc/resources',
+    'ui/webui/resources/js',
+    'ui/webui/resources/mojo',
+    # TODO(crbug.com/40280699) : Migrate to TypeScript.
+    'chrome/test/data/webui/media_internals',
+    'content/browser/resources/media',
   ]
   for directory in migrating_directories:
-    if (source_dir.endswith(directory)
-        or source_dir.endswith(directory + '/preprocessed')):
+    if source_dir.endswith(directory) or source_dir.endswith(
+      directory + '/preprocessed'
+    ):
       return True, None
 
-  return False, 'Invalid JS file detected for input directory ' + \
-      f'{source_dir} and output directory {out_dir}, all new ' + \
-      'code should be added in TypeScript.'
+  return (
+    False,
+    'Invalid JS file detected for input directory '
+    + f'{source_dir} and output directory {out_dir}, all new '
+    + 'code should be added in TypeScript.',
+  )
 
 
 def isMappingAllowed(is_ash_target, target_path, mapping_path):
@@ -204,7 +223,7 @@ def isMappingAllowed(is_ash_target, target_path, mapping_path):
 def isUnsupportedJsTarget(gen_dir, root_gen_dir):
   target_path = getTargetPath(gen_dir, root_gen_dir)
   exceptions = [
-      'chrome/browser/resources/chromeos/accessibility/select_to_speak',
+    'chrome/browser/resources/chromeos/accessibility/select_to_speak',
   ]
   return target_path in exceptions
 
@@ -215,65 +234,77 @@ def isUnsupportedJsTarget(gen_dir, root_gen_dir):
 #   - within the folder tree starting at the ts_library() target's corresponding
 #     target_gen_dir location.
 def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
-  root_gen_dir_from_build = os.path.normpath(os.path.join(
-      gen_dir, root_gen_dir)).replace('\\', '/')
-  target_path = os.path.relpath(gen_dir,
-                                root_gen_dir_from_build).replace('\\', '/')
+  root_gen_dir_from_build = os.path.normpath(
+    os.path.join(gen_dir, root_gen_dir)
+  ).replace('\\', '/')
+  target_path = os.path.relpath(gen_dir, root_gen_dir_from_build).replace(
+    '\\', '/'
+  )
 
   # Broadly special casing ios/ for now, since compile_ts.gni relies on
   # unsupported behavior of setting the root_dir to src/.
   # TODO (https://www.crbug.com/493269336): Make iOS TypeScript build tools use
   # ts_library in a supported way, or change them to not rely on ts_library.
-  if is_ios and ('ios' in pathlib.Path(target_path).parts
-                 or 'ios_internal' in pathlib.Path(target_path).parts):
+  if is_ios and (
+    'ios' in pathlib.Path(target_path).parts
+    or 'ios_internal' in pathlib.Path(target_path).parts
+  ):
     return True, None
 
   # Legacy cases supported for backward-compatibility. Do not add new targets
   # here. The existing exceptions should be removed over time.
   exceptions = [
-      # ChromeOS cases
-      'ash/webui/color_internals/mojom',
+    # ChromeOS cases
+    'ash/webui/color_internals/mojom',
   ]
 
   if target_path in exceptions:
     return True, None
 
-  target_path_src = os.path.relpath(os.path.join(_SRC_DIR, target_path),
-                                    _CWD).replace('\\', '/')
-  root_path_from_gen = os.path.relpath(root_dir,
-                                       root_gen_dir_from_build).replace(
-                                           '\\', '/')
-  root_path_from_src = os.path.relpath(os.path.join(_CWD, root_dir),
-                                       _SRC_DIR).replace('\\', '/')
+  target_path_src = os.path.relpath(
+    os.path.join(_SRC_DIR, target_path), _CWD
+  ).replace('\\', '/')
+  root_path_from_gen = os.path.relpath(
+    root_dir, root_gen_dir_from_build
+  ).replace('\\', '/')
+  root_path_from_src = os.path.relpath(
+    os.path.join(_CWD, root_dir), _SRC_DIR
+  ).replace('\\', '/')
 
-  if (root_path_from_gen.startswith(target_path)
-      or root_path_from_src.startswith(target_path)):
+  if root_path_from_gen.startswith(
+    target_path
+  ) or root_path_from_src.startswith(target_path):
     return True, None
 
-  return False, f'Error: root_dir ({root_dir}) should be within {gen_dir} ' + \
-      f'or {target_path_src}.'
+  return (
+    False,
+    f'Error: root_dir ({root_dir}) should be within {gen_dir} '
+    + f'or {target_path_src}.',
+  )
 
 
-def validateDefinitionDeps(definitions_files, target_path, gen_dir,
-                           root_gen_dir, definitions):
+def validateDefinitionDeps(
+  definitions_files, target_path, gen_dir, root_gen_dir, definitions
+):
   # Root gen dir relative to the current working directory (essentially 'gen')
-  gen_dir_from_build = os.path.normpath(os.path.join(gen_dir,
-                                                     root_gen_dir)).replace(
-                                                         '\\', '/')
+  gen_dir_from_build = os.path.normpath(
+    os.path.join(gen_dir, root_gen_dir)
+  ).replace('\\', '/')
 
   def getPathFromCwd(exception):
-    return os.path.relpath(os.path.join(_SRC_DIR, exception),
-                           _CWD).replace('\\', '/')
+    return os.path.relpath(os.path.join(_SRC_DIR, exception), _CWD).replace(
+      '\\', '/'
+    )
 
   # TODO(https://crbug.com/326005022): Determine if the following are actually
   # safe for computation of gn input values.
   exceptions_list = [
-      'third_party/d3/',
-      'third_party/material_web_components/',
-      'third_party/node/node_modules/',
-      'third_party/polymer/v3_0/',
-      'third_party/typescript/',
-      'tools/typescript/tests/',
+    'third_party/d3/',
+    'third_party/material_web_components/',
+    'third_party/node/node_modules/',
+    'third_party/polymer/v3_0/',
+    'third_party/typescript/',
+    'tools/typescript/tests/',
   ]
   exceptions = [getPathFromCwd(e) for e in exceptions_list]
   definitions_normalized = [d.replace('\\', '/') for d in definitions]
@@ -284,17 +315,23 @@ def validateDefinitionDeps(definitions_files, target_path, gen_dir,
     f_from_cwd = os.path.relpath(f, _CWD).replace('\\', '/')
     is_gen_file = f_from_cwd.startswith(gen_dir_from_build)
     f_from_gen = os.path.relpath(f, gen_dir).replace('\\', '/')
-    if not is_gen_file and f_from_gen not in definitions_normalized and \
-        not any(f_from_cwd.startswith(exception) for exception in exceptions):
+    if (
+      not is_gen_file
+      and f_from_gen not in definitions_normalized
+      and not any(f_from_cwd.startswith(exception) for exception in exceptions)
+    ):
       missing_inputs.append(
-          os.path.relpath(f_from_cwd, _SRC_DIR).replace('\\', '/'))
+        os.path.relpath(f_from_cwd, _SRC_DIR).replace('\\', '/')
+      )
 
   if not missing_inputs:
     return True, None
 
-  errorMessage = 'Undeclared dependencies to definition files encountered ' + \
-                 f'while building {target_path}. Please list the following ' + \
-                 'file(s) in |definitions|:\n'
+  errorMessage = (
+    'Undeclared dependencies to definition files encountered '
+    + f'while building {target_path}. Please list the following '
+    + 'file(s) in |definitions|:\n'
+  )
   for missing_input in missing_inputs:
     errorMessage += f'//{missing_input}\n'
 

@@ -15,8 +15,10 @@ import re
 import subprocess
 import sys
 
+
 class LineBuffered(object):
   """Disable buffering on a file object."""
+
   def __init__(self, stream):
     self.stream = stream
 
@@ -45,9 +47,15 @@ def set_symbolizer_path():
     # Assume this script resides three levels below src/ (i.e.
     # src/tools/valgrind/asan/).
     src_root = os.path.join(script_dir, "..", "..", "..")
-    symbolizer_path = os.path.join(src_root, 'third_party',
-        'llvm-build', 'Release+Asserts', 'bin', 'llvm-symbolizer')
-    assert(os.path.isfile(symbolizer_path))
+    symbolizer_path = os.path.join(
+      src_root,
+      'third_party',
+      'llvm-build',
+      'Release+Asserts',
+      'bin',
+      'llvm-symbolizer',
+    )
+    assert os.path.isfile(symbolizer_path)
     os.environ['LLVM_SYMBOLIZER_PATH'] = os.path.abspath(symbolizer_path)
 
 
@@ -125,15 +133,17 @@ def chrome_dsym_hints(binary):
       framework_positions.append(index)
   bundle_positions = app_positions + framework_positions
   bundle_positions.sort()
-  assert len(bundle_positions) <= 2, \
-      "The path contains more than two nested bundles: %s" % binary
+  assert len(bundle_positions) <= 2, (
+    "The path contains more than two nested bundles: %s" % binary
+  )
   if len(bundle_positions) == 0:
     # Case 1: this is a standalone executable or dylib.
     return []
-  assert (not (len(app_positions) == 1 and
-               len(framework_positions) == 1 and
-               app_positions[0] > framework_positions[0])), \
-      "The path contains an app bundle inside a framework: %s" % binary
+  assert not (
+    len(app_positions) == 1
+    and len(framework_positions) == 1
+    and app_positions[0] > framework_positions[0]
+  ), "The path contains an app bundle inside a framework: %s" % binary
   # Cases 2 and 3. The outermost bundle (which is the only bundle in the case 2)
   # is located in the product dir.
   outermost_bundle = bundle_positions[0]
@@ -157,11 +167,11 @@ class JSONTestRunSymbolizer(object):
 
   def symbolize(self, test_run):
     original_snippet = base64.b64decode(
-        test_run['output_snippet_base64']).decode('utf-8', 'replace')
+      test_run['output_snippet_base64']
+    ).decode('utf-8', 'replace')
 
     # replace non-ascii character with '?'.
-    original_snippet = ''.join(i if i <= u'~' else u'?'
-                               for i in original_snippet)
+    original_snippet = ''.join(i if i <= '~' else '?' for i in original_snippet)
 
     symbolized_snippet = self.symbolize_snippet(original_snippet)
     if symbolized_snippet == original_snippet:
@@ -169,12 +179,14 @@ class JSONTestRunSymbolizer(object):
       return
 
     test_run['original_output_snippet'] = test_run['output_snippet']
-    test_run['original_output_snippet_base64'] = \
-        test_run['output_snippet_base64']
+    test_run['original_output_snippet_base64'] = test_run[
+      'output_snippet_base64'
+    ]
 
     test_run['output_snippet'] = symbolized_snippet
-    test_run['output_snippet_base64'] = \
-        base64.b64encode(symbolized_snippet.encode('utf-8', 'replace')).decode()
+    test_run['output_snippet_base64'] = base64.b64encode(
+      symbolized_snippet.encode('utf-8', 'replace')
+    ).decode()
     test_run['snippet_processed_by'] = 'asan_symbolize.py'
 
 
@@ -230,24 +242,33 @@ class CheckUTF8:
     try:
       return l.decode()
     except UnicodeDecodeError:
-      print("WARNING: asan_symbolize.py failed to decode %s (base64 encoded)" %
-            base64.b64encode(l).decode())
+      print(
+        "WARNING: asan_symbolize.py failed to decode %s (base64 encoded)"
+        % base64.b64encode(l).decode()
+      )
       return ""
 
 
 def main():
   parser = argparse.ArgumentParser(description='Symbolize sanitizer reports.')
-  parser.add_argument('--test-summary-json-file',
-      help='Path to a JSON file produced by the test launcher. The script will '
-           'ignore stdandard input and instead symbolize the output stnippets '
-           'inside the JSON file. The result will be written back to the JSON '
-           'file.')
-  parser.add_argument('strip_path_prefix', nargs='*',
-      help='When printing source file names, the longest prefix ending in one '
-           'of these substrings will be stripped. E.g.: "Release/../../".')
-  parser.add_argument('--executable-path',
-      help='Path to program executable. Used on OSX swarming bots to locate '
-           'dSYM bundles for associated frameworks and bundles.')
+  parser.add_argument(
+    '--test-summary-json-file',
+    help='Path to a JSON file produced by the test launcher. The script will '
+    'ignore stdandard input and instead symbolize the output stnippets '
+    'inside the JSON file. The result will be written back to the JSON '
+    'file.',
+  )
+  parser.add_argument(
+    'strip_path_prefix',
+    nargs='*',
+    help='When printing source file names, the longest prefix ending in one '
+    'of these substrings will be stripped. E.g.: "Release/../../".',
+  )
+  parser.add_argument(
+    '--executable-path',
+    help='Path to program executable. Used on OSX swarming bots to locate '
+    'dSYM bundles for associated frameworks and bundles.',
+  )
   parser.add_argument('--sysroot', help='Root directory for symbol files')
   args = parser.parse_args()
 
@@ -270,7 +291,8 @@ def main():
       plugin_proxy.add_plugin(macos_filter)
 
     loop = asan_symbolize.SymbolizationLoop(
-        plugin_proxy=plugin_proxy, dsym_hint_producer=chrome_dsym_hints)
+      plugin_proxy=plugin_proxy, dsym_hint_producer=chrome_dsym_hints
+    )
 
     if args.test_summary_json_file:
       symbolize_snippets_in_json(args.test_summary_json_file, loop)

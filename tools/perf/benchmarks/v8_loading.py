@@ -19,13 +19,18 @@ class _V8LoadingBenchmark(v8_helper.V8PerfMixin, perf_benchmark.PerfBenchmark):
     return page_sets.SystemHealthStorySet(platform=self.PLATFORM, case='load')
 
 
-@benchmark.Info(emails=[
-    'cbruni@chromium.org', 'vahl@chromium.org', 'almuthanna@chromium.org'
-],
-                component='Blink>JavaScript',
-                documentation_url='https://bit.ly/system-health-v8-benchmarks')
+@benchmark.Info(
+  emails=[
+    'cbruni@chromium.org',
+    'vahl@chromium.org',
+    'almuthanna@chromium.org',
+  ],
+  component='Blink>JavaScript',
+  documentation_url='https://bit.ly/system-health-v8-benchmarks',
+)
 class V8DesktopLoadingBenchmark(_V8LoadingBenchmark):
   """See _V8BrowsingBenchmark."""
+
   PLATFORM = 'desktop'
   # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
   # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
@@ -40,12 +45,14 @@ class V8DesktopLoadingBenchmark(_V8LoadingBenchmark):
     return 'UNSCHEDULED_v8.loading_desktop'
 
 
-@benchmark.Info(emails=[
-    'cbruni@chromium.org', 'leszeks@chromium.org'],
-                component='Blink>JavaScript',
-                documentation_url='https://bit.ly/system-health-v8-benchmarks')
+@benchmark.Info(
+  emails=['cbruni@chromium.org', 'leszeks@chromium.org'],
+  component='Blink>JavaScript',
+  documentation_url='https://bit.ly/system-health-v8-benchmarks',
+)
 class V8MobileLoadingBenchmark(_V8LoadingBenchmark):
   """See _V8BrowsingBenchmark."""
+
   PLATFORM = 'mobile'
   # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
   # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.

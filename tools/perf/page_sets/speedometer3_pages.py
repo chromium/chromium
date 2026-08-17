@@ -1,8 +1,8 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Speedometer 3 Web Interaction Benchmark Pages
-"""
+"""Speedometer 3 Web Interaction Benchmark Pages"""
+
 import os
 import re
 
@@ -44,20 +44,23 @@ _SPEEDOMETER_SUITES = (
   'React-Stockcharts-SVG',
   'Perf-Dashboard',
 )
-_PAGE_SET_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'tools', 'perf',
-                             'page_sets')
+_PAGE_SET_DIR = os.path.join(
+  path_util.GetChromiumSrcDir(), 'tools', 'perf', 'page_sets'
+)
 
 
 class _Speedometer3Story(press_story.PressStory):
   URL = 'file://index.html'
 
-  def __init__(self,
-               page_set,
-               should_filter_suites,
-               filtered_suite_names=None,
-               iterations=None,
-               enable_details=False,
-               take_memory_measurement=False):
+  def __init__(
+    self,
+    page_set,
+    should_filter_suites,
+    filtered_suite_names=None,
+    iterations=None,
+    enable_details=False,
+    take_memory_measurement=False,
+  ):
     super(_Speedometer3Story, self).__init__(page_set)
     self._should_filter_suites = should_filter_suites
     self._filtered_suite_names = filtered_suite_names
@@ -77,23 +80,26 @@ class _Speedometer3Story(press_story.PressStory):
 
     url = self.file_path_url_with_scheme if self.is_file else self.url
 
-    iterations = (self._iterations
-                  if self._iterations is not None else DEFAULT_ITERATIONS)
+    iterations = (
+      self._iterations if self._iterations is not None else DEFAULT_ITERATIONS
+    )
     url = "%s?iterationCount=%s" % (url, iterations)
     action_runner.Navigate(
-        url, script_to_evaluate_on_commit=self.script_to_evaluate_on_commit)
+      url, script_to_evaluate_on_commit=self.script_to_evaluate_on_commit
+    )
 
   def ExecuteTest(self, action_runner):
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
 
     if self._should_filter_suites:
       action_runner.ExecuteJavaScript(
-          """
+        """
         Suites.forEach(function(suite) {
           suite.disabled = {{ filtered_suites }}.indexOf(suite.name) == -1;
         });
       """,
-          filtered_suites=self._filtered_suite_names)
+        filtered_suites=self._filtered_suite_names,
+      )
 
     action_runner.ExecuteJavaScript("""
         // Store all the results in the benchmarkClient
@@ -127,11 +133,12 @@ class _Speedometer3Story(press_story.PressStory):
   def ParseTestResults(self, action_runner):
     # Extract the timings for each suite
     metrics = action_runner.EvaluateJavaScript(
-        "(function() { return window.metrics })()")
+      "(function() { return window.metrics })()"
+    )
     assert metrics, "Expected metrics dict but got: %s" % metrics
     UNIT_LOOKUP = {
-        "ms": "ms_smallerIsBetter",
-        "score": "unitless_biggerIsBetter",
+      "ms": "ms_smallerIsBetter",
+      "score": "unitless_biggerIsBetter",
     }
     for name, metric in metrics.items():
       if not self._IsSpeedometerMetricEnabled(name):
@@ -169,6 +176,7 @@ class Speedometer30CrossbenchStory(story.StorySet):
 
   def __init__(self):
     super().__init__(
-        base_dir=_PAGE_SET_DIR,
-        archive_data_file='data/crossbench_android_speedometer_3.0.json',
-        cloud_storage_bucket=story.PARTNER_BUCKET)
+      base_dir=_PAGE_SET_DIR,
+      archive_data_file='data/crossbench_android_speedometer_3.0.json',
+      cloud_storage_bucket=story.PARTNER_BUCKET,
+    )

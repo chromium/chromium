@@ -17,14 +17,18 @@ from chrome_telemetry_build import chromium_config
 from core import benchmark_finders
 from core import path_util
 from page_sets import (
-    crossbench_embedder, crossbench_gma_embedder, crossbench_loading,
-    speedometer3_pages)
+  crossbench_embedder,
+  crossbench_gma_embedder,
+  crossbench_loading,
+  speedometer3_pages,
+)
 from py_utils import cloud_storage
 
 from telemetry.core import optparse_argparse_migration as oam
 
+
 def _FetchDependenciesIfNeeded(story_set):
-  """ Download files needed by a user story set. """
+  """Download files needed by a user story set."""
   # Download files in serving_dirs.
   serving_dirs = story_set.serving_dirs
   for directory in serving_dirs:
@@ -54,8 +58,7 @@ def _EnumerateDependencies(story_set):
       raise ValueError('Trying to serve root directory from HTTP server.')
     for dirpath, _, filenames in os.walk(directory):
       for filename in filenames:
-        path_name, extension = os.path.splitext(
-            os.path.join(dirpath, filename))
+        path_name, extension = os.path.splitext(os.path.join(dirpath, filename))
         if extension == '.sha1':
           deps.add(path_name)
 
@@ -87,10 +90,10 @@ def _FetchDepsForBenchmark(benchmark):
 def GetCrossbenchStorySets():
   # Note: Any new crossbench archives need to be added below
   return [
-      speedometer3_pages.Speedometer30CrossbenchStory(),
-      crossbench_loading.LoadingCrossbenchStorySet(),
-      crossbench_embedder.EmbedderCrossbenchStorySet(),
-      crossbench_gma_embedder.GmaEmbedderCrossbenchStorySet(),
+    speedometer3_pages.Speedometer30CrossbenchStory(),
+    crossbench_loading.LoadingCrossbenchStorySet(),
+    crossbench_embedder.EmbedderCrossbenchStorySet(),
+    crossbench_gma_embedder.GmaEmbedderCrossbenchStorySet(),
   ]
 
 
@@ -110,41 +113,58 @@ def _JobsArgumentType(value):
     return int(value)
   except ValueError:
     raise argparse.ArgumentTypeError(
-        f"invalid value for --jobs: {value!r} must be 'auto' or an integer")
+      f"invalid value for --jobs: {value!r} must be 'auto' or an integer"
+    )
 
 
 def main(args):
   parser = argparse.ArgumentParser(
-         description='Fetch the dependencies of perf benchmark(s).')
+    description='Fetch the dependencies of perf benchmark(s).'
+  )
   parser.add_argument('benchmark_name', type=str, nargs='?')
-  parser.add_argument('--force',
-                      '-f',
-                      '--all',
-                      help=('Force fetching all the benchmarks when '
-                            'benchmark_name is not specified'),
-                      action='store_true',
-                      default=False)
-  parser.add_argument('--platform',
-                      '-p',
-                      choices=['win', 'linux', 'mac', 'android'],
-                      help=('Only fetch benchmarks for the specified platform '
-                            '(win, linux, mac, android)'),
-                      default=None)
+  parser.add_argument(
+    '--force',
+    '-f',
+    '--all',
+    help=(
+      'Force fetching all the benchmarks when benchmark_name is not specified'
+    ),
+    action='store_true',
+    default=False,
+  )
+  parser.add_argument(
+    '--platform',
+    '-p',
+    choices=['win', 'linux', 'mac', 'android'],
+    help=(
+      'Only fetch benchmarks for the specified platform '
+      '(win, linux, mac, android)'
+    ),
+    default=None,
+  )
   # Flag --output-deps: output the dependencies to a json file, CrOS autotest
   # telemetry_runner parses the output to upload the dependencies to the DUT.
   # Example output, fetch_benchmark_deps.py --output-deps=deps octane:
   # {'octane': ['tools/perf/page_sets/data/octane_002.wprgo']}
-  parser.add_argument('--output-deps',
-                      help=('Output dependencies to a json file'))
-  parser.add_argument('--jobs',
-                      '-j',
-                      type=_JobsArgumentType,
-                      default="auto",
-                      help="Number of parallel jobs to use, or 'auto' for "
-                      "CPU count. Default is 'auto'.")
   parser.add_argument(
-        '-v', '--verbose', action='count', dest='verbosity', default=0,
-        help='Increase verbosity level (repeat as needed)')
+    '--output-deps', help=('Output dependencies to a json file')
+  )
+  parser.add_argument(
+    '--jobs',
+    '-j',
+    type=_JobsArgumentType,
+    default="auto",
+    help="Number of parallel jobs to use, or 'auto' for "
+    "CPU count. Default is 'auto'.",
+  )
+  parser.add_argument(
+    '-v',
+    '--verbose',
+    action='count',
+    dest='verbosity',
+    default=0,
+    help='Increase verbosity level (repeat as needed)',
+  )
 
   options = parser.parse_args(args)
 
@@ -160,10 +180,13 @@ def main(args):
 
   if options.benchmark_name:
     perf_dir = path_util.GetPerfDir()
-    benchmark_dirs=[os.path.join(perf_dir, 'benchmarks'),
-                    os.path.join(perf_dir, 'contrib')]
+    benchmark_dirs = [
+      os.path.join(perf_dir, 'benchmarks'),
+      os.path.join(perf_dir, 'contrib'),
+    ]
     config = chromium_config.ChromiumConfig(
-        top_level_dir=path_util.GetPerfDir(), benchmark_dirs=benchmark_dirs)
+      top_level_dir=path_util.GetPerfDir(), benchmark_dirs=benchmark_dirs
+    )
     benchmark = config.GetBenchmarkByName(options.benchmark_name)
     if not benchmark:
       raise ValueError('No such benchmark: %s' % options.benchmark_name)
@@ -172,13 +195,17 @@ def main(args):
     story_sets_to_fetch.append(story_set)
   else:
     if not options.force:
-      input('No benchmark name is specified. Fetching all benchmark deps. '
-            'Press enter to continue...')
+      input(
+        'No benchmark name is specified. Fetching all benchmark deps. '
+        'Press enter to continue...'
+      )
     for b in benchmark_finders.GetOfficialBenchmarks():
       supported_platforms = b.GetSupportedPlatformNames(b.SUPPORTED_PLATFORMS)
-      if(not options.platform or
-         options.platform in supported_platforms or
-         'all' in supported_platforms):
+      if (
+        not options.platform
+        or options.platform in supported_platforms
+        or 'all' in supported_platforms
+      ):
         b_deps, story_set = _FetchDepsForBenchmark(b)
         deps[b.Name()] = b_deps
         story_sets_to_fetch.append(story_set)

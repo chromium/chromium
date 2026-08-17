@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" Generates legacy perf dashboard json from non-telemetry based perf tests.
+"""Generates legacy perf dashboard json from non-telemetry based perf tests.
 Taken from chromium/build/scripts/slave/performance_log_processory.py
 (https://goo.gl/03SQRk)
 """
@@ -52,21 +52,25 @@ class LegacyResultsProcessor(object):
   Semantic note: The terms graph and chart are used interchangeably here.
   """
 
-  RESULTS_REGEX = re.compile(r'(?P<IMPORTANT>\*)?RESULT '
-                             r'(?P<GRAPH>[^:]*): (?P<TRACE>[^=]*)= '
-                             r'(?P<VALUE>[\{\[]?[-\d\., ]+[\}\]]?)('
-                             r' ?(?P<UNITS>.+))?')
+  RESULTS_REGEX = re.compile(
+    r'(?P<IMPORTANT>\*)?RESULT '
+    r'(?P<GRAPH>[^:]*): (?P<TRACE>[^=]*)= '
+    r'(?P<VALUE>[\{\[]?[-\d\., ]+[\}\]]?)('
+    r' ?(?P<UNITS>.+))?'
+  )
   # TODO(eyaich): Determine if this format is still used by any perf tests
-  HISTOGRAM_REGEX = re.compile(r'(?P<IMPORTANT>\*)?HISTOGRAM '
-                               r'(?P<GRAPH>[^:]*): (?P<TRACE>[^=]*)= '
-                               r'(?P<VALUE_JSON>{.*})(?P<UNITS>.+)?')
+  HISTOGRAM_REGEX = re.compile(
+    r'(?P<IMPORTANT>\*)?HISTOGRAM '
+    r'(?P<GRAPH>[^:]*): (?P<TRACE>[^=]*)= '
+    r'(?P<VALUE_JSON>{.*})(?P<UNITS>.+)?'
+  )
 
   def __init__(self):
     # A dict of Graph objects, by name.
     self._graphs = {}
     # A dict mapping output file names to lists of lines in a file.
     self._output = {}
-    self._percentiles = [.1, .25, .5, .75, .90, .95, .99]
+    self._percentiles = [0.1, 0.25, 0.5, 0.75, 0.90, 0.95, 0.99]
 
   class Trace(object):
     """Encapsulates data for one trace. Here, this means one point."""
@@ -104,7 +108,6 @@ class LegacyResultsProcessor(object):
         traces_dict[name] = [str(trace.mean), str(trace.stddev)]
       return traces_dict
 
-
   def GenerateJsonResults(self, filename):
     # Iterate through the file and process each output line
     with open(filename) as f:
@@ -113,11 +116,9 @@ class LegacyResultsProcessor(object):
     # After all results have been seen, generate the graph json data
     return self.GenerateGraphJson()
 
-
   def _PrependLog(self, filename, data):
     """Prepends some data to an output file."""
     self._output[filename] = data + self._output.get(filename, [])
-
 
   def ProcessLine(self, line):
     """Processes one result line, and updates the state accordingly."""
@@ -127,7 +128,6 @@ class LegacyResultsProcessor(object):
       self._ProcessResultLine(results_match)
     elif histogram_match:
       raise Exception("Error: Histogram results parsing not supported yet")
-
 
   def _ProcessResultLine(self, line_match):
     """Processes a line that matches the standard RESULT line format.
@@ -158,7 +158,8 @@ class LegacyResultsProcessor(object):
         return
       trace.values += value_list
       trace.mean, trace.stddev, filedata = self._CalculateStatistics(
-        trace.values, trace_name)
+        trace.values, trace_name
+      )
       assert filedata is not None
       for filename in filedata:
         self._PrependLog(filename, filedata[filename])
@@ -173,7 +174,8 @@ class LegacyResultsProcessor(object):
       try:
         trace.values.append(float(value))
         trace.mean, trace.stddev, filedata = self._CalculateStatistics(
-          trace.values, trace_name)
+          trace.values, trace_name
+        )
         assert filedata is not None
         for filename in filedata:
           self._PrependLog(filename, filedata[filename])
@@ -184,10 +186,8 @@ class LegacyResultsProcessor(object):
     graph.traces[trace_name] = trace
     self._graphs[graph_name] = graph
 
-
   def GenerateGraphJson(self):
-    """Writes graph json for each graph seen.
-    """
+    """Writes graph json for each graph seen."""
     charts = {}
     for graph_name, graph in self._graphs.items():
       traces = graph.BuildTracesDict()
@@ -196,10 +196,12 @@ class LegacyResultsProcessor(object):
       for _, trace in traces.items():
         assert len(trace) == 2
 
-      graph_dict = collections.OrderedDict([
-        ('traces', traces),
-        ('units', str(graph.units)),
-      ])
+      graph_dict = collections.OrderedDict(
+        [
+          ('traces', traces),
+          ('units', str(graph.units)),
+        ]
+      )
 
       # Include a sorted list of important trace names if there are any.
       important = [t for t in graph.traces.keys() if graph.traces[t].important]
@@ -208,7 +210,6 @@ class LegacyResultsProcessor(object):
 
       charts[graph_name] = graph_dict
     return json.dumps(charts)
-
 
   # _CalculateStatistics needs to be a member function.
   # pylint: disable=R0201
@@ -233,7 +234,7 @@ class LegacyResultsProcessor(object):
     if n == 0:
       return 0.0, 0.0, {}
     mean = float(sum(value_list)) / n
-    variance = sum([(element - mean)**2 for element in value_list]) / n
+    variance = sum([(element - mean) ** 2 for element in value_list]) / n
     stddev = math.sqrt(variance)
 
     return mean, stddev, {}
@@ -250,10 +251,10 @@ def _FormatHumanReadable(number):
     682851200 => 683M
   """
   metric_prefixes = {-3: 'm', 0: '', 3: 'k', 6: 'M'}
-  scientific = '%.2e' % float(number)     # 6.83e+005
-  e_idx = scientific.find('e')            # 4, or 5 if negative
-  digits = float(scientific[:e_idx])      # 6.83
-  exponent = int(scientific[e_idx + 1:])  # int('+005') = 5
+  scientific = '%.2e' % float(number)  # 6.83e+005
+  e_idx = scientific.find('e')  # 4, or 5 if negative
+  digits = float(scientific[:e_idx])  # 6.83
+  exponent = int(scientific[e_idx + 1 :])  # int('+005') = 5
   while exponent % 3:
     digits *= 10
     exponent -= 1

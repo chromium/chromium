@@ -16,8 +16,9 @@ class PowerPerfBenchmarkBase(PerfBenchmark):
     raise NotImplementedError("GetTraceConfig not implemented")
 
   def CustomizeOptions(self, finder_options, possible_browser=None):
-    super(PowerPerfBenchmarkBase,
-          self).CustomizeOptions(finder_options, possible_browser)
+    super(PowerPerfBenchmarkBase, self).CustomizeOptions(
+      finder_options, possible_browser
+    )
 
     if finder_options is None or possible_browser is None:
       return
@@ -36,5 +37,6 @@ class PowerPerfBenchmarkBase(PerfBenchmark):
     options = timeline_based_measurement.Options()
     options.config.enable_experimental_system_tracing = True
     options.config.system_trace_config.SetTextConfig(
-        self.GetTraceConfig(self._browser_package))
+      self.GetTraceConfig(self._browser_package)
+    )
     return options

@@ -10,9 +10,9 @@ pressing keys on a keyboard. Support is provided for formatted strings
 including special characters to represent modifier keys like CTRL and ALT
 """
 
-import time             # for sleep
-import win32api         # for keybd_event and VkKeyCode
-import win32con         # Windows constants
+import time  # for sleep
+import win32api  # for keybd_event and VkKeyCode
+import win32con  # Windows constants
 
 # TODO(jhaas): Ask the readability people if this would be acceptable:
 #
@@ -58,10 +58,12 @@ def TypeKey(key, keystroke_time=0):
   PressKey(False, key)
 
 
-def TypeString(string_to_type,
-               use_modifiers=False,
-               keystroke_time=0,
-               time_between_keystrokes=0):
+def TypeString(
+  string_to_type,
+  use_modifiers=False,
+  keystroke_time=0,
+  time_between_keystrokes=0,
+):
   """Simulate typing a string on the keyboard.
 
   Args:
@@ -87,13 +89,20 @@ def TypeString(string_to_type,
     None
   """
 
-  shift_held = win32api.GetAsyncKeyState(win32con.VK_SHIFT  ) < 0
-  ctrl_held  = win32api.GetAsyncKeyState(win32con.VK_CONTROL) < 0
-  alt_held   = win32api.GetAsyncKeyState(win32con.VK_MENU   ) < 0
+  shift_held = win32api.GetAsyncKeyState(win32con.VK_SHIFT) < 0
+  ctrl_held = win32api.GetAsyncKeyState(win32con.VK_CONTROL) < 0
+  alt_held = win32api.GetAsyncKeyState(win32con.VK_MENU) < 0
 
   next_escaped = False
   escape_chars = {
-    'a': '\a', 'b': '\b', 'f': '\f', 'n': '\n', 'r': '\r', 't': '\t', 'v': '\v'}
+    'a': '\a',
+    'b': '\b',
+    'f': '\f',
+    'n': '\n',
+    'r': '\r',
+    't': '\t',
+    'v': '\v',
+  }
 
   for char in string_to_type:
     vk = None
@@ -120,7 +129,8 @@ def TypeString(string_to_type,
 
     # If this is an explicitly-escaped character, replace it with the
     # appropriate code
-    if next_escaped and char in escape_chars: char = escape_chars[char]
+    if next_escaped and char in escape_chars:
+      char = escape_chars[char]
 
     # If this is \p, pause for one second.
     if next_escaped and char == 'p':
@@ -131,7 +141,8 @@ def TypeString(string_to_type,
     # If this is \(d), press F key
     if next_escaped and char.isdigit():
       fkey = int(char)
-      if not fkey: fkey = 10
+      if not fkey:
+        fkey = 10
       next_escaped = False
       vk = win32con.VK_F1 + fkey - 1
 
@@ -144,14 +155,15 @@ def TypeString(string_to_type,
     # escaped special character which should be treated as a literal
     if not handled:
       next_escaped = False
-      if not vk: vk = win32api.VkKeyScan(char)
+      if not vk:
+        vk = win32api.VkKeyScan(char)
 
       # VkKeyScan() returns the scan code in the low byte. The upper
       # byte specifies modifiers necessary to produce the given character
       # from the given scan code. The only one we're concerned with at the
       # moment is Shift. Determine the shift state and compare it to the
       # current state... if it differs, press or release the shift key.
-      new_shift_held = bool(vk & (1<<8))
+      new_shift_held = bool(vk & (1 << 8))
 
       if new_shift_held != shift_held:
         PressKey(new_shift_held, win32con.VK_SHIFT)
@@ -162,9 +174,12 @@ def TypeString(string_to_type,
       time.sleep(time_between_keystrokes)
 
   # Release the modifier keys, if held
-  if shift_held: PressKey(False, win32con.VK_SHIFT)
-  if ctrl_held:  PressKey(False, win32con.VK_CONTROL)
-  if alt_held:   PressKey(False, win32con.VK_MENU)
+  if shift_held:
+    PressKey(False, win32con.VK_SHIFT)
+  if ctrl_held:
+    PressKey(False, win32con.VK_CONTROL)
+  if alt_held:
+    PressKey(False, win32con.VK_MENU)
 
 
 def main():
@@ -185,16 +200,20 @@ def main():
   time.sleep(1)
   TypeString("This is a test of SiteCompare's Keyboard.py module.\n\n")
   TypeString("There should be a blank line above and below this one.\n\n")
-  TypeString("This line has control characters to make "
-             "[b]boldface text[b] and [i]italic text[i] and normal text.\n\n",
-             use_modifiers=True)
-  TypeString(r"This line should be typed with a visible delay between "
-             "characters. When it ends, there should be a 3-second pause, "
-             "then the menu will select File/Exit, then another 3-second "
-             "pause, then No to exit without saving. Ready?\p\p\p{f}x\p\p\pn",
-             use_modifiers=True,
-             keystroke_time=0.05,
-             time_between_keystrokes=0.05)
+  TypeString(
+    "This line has control characters to make "
+    "[b]boldface text[b] and [i]italic text[i] and normal text.\n\n",
+    use_modifiers=True,
+  )
+  TypeString(
+    r"This line should be typed with a visible delay between "
+    "characters. When it ends, there should be a 3-second pause, "
+    "then the menu will select File/Exit, then another 3-second "
+    "pause, then No to exit without saving. Ready?\p\p\p{f}x\p\p\pn",
+    use_modifiers=True,
+    keystroke_time=0.05,
+    time_between_keystrokes=0.05,
+  )
 
 
 if __name__ == "__main__":

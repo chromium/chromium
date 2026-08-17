@@ -4,7 +4,12 @@
 
 from style_variable_generator.base_generator import BaseGenerator
 from style_variable_generator.model import Modes, VariableType
-from style_variable_generator.color import ColorBlend, ColorVar, ColorRGBVar, ColorRGB
+from style_variable_generator.color import (
+    ColorBlend,
+    ColorVar,
+    ColorRGBVar,
+    ColorRGB,
+)
 import collections
 
 
@@ -16,22 +21,24 @@ class CSSStyleGenerator(BaseGenerator):
         return 'CSS'
 
     def Render(self):
-        return self.ApplyTemplate(self, 'templates/css_generator.tmpl',
-                                  self.GetParameters())
+        return self.ApplyTemplate(
+            self, 'templates/css_generator.tmpl', self.GetParameters()
+        )
 
     def GetParameters(self):
         if self.generate_single_mode:
             resolved_colors = self.model.colors.Flatten(resolve_missing=True)
             resolved_opacities = self.model.opacities.Flatten(
-                resolve_missing=True)
+                resolve_missing=True
+            )
             resolved_legacy_mappings = self.model.legacy_mappings.Flatten(
-                resolve_missing=True)
-            colors = {
-                Modes.DEFAULT: resolved_colors[self.generate_single_mode]
-            }
+                resolve_missing=True
+            )
+            colors = {Modes.DEFAULT: resolved_colors[self.generate_single_mode]}
             legacy_mappings = {
-                Modes.DEFAULT:
-                resolved_legacy_mappings[self.generate_single_mode]
+                Modes.DEFAULT: resolved_legacy_mappings[
+                    self.generate_single_mode
+                ]
             }
             opacities = {
                 Modes.DEFAULT: resolved_opacities[self.generate_single_mode]
@@ -62,18 +69,16 @@ class CSSStyleGenerator(BaseGenerator):
 
     def GetGlobals(self):
         return {
-            'css_color_var':
-            self.CSSColorVar,
-            'needs_rgb_variant':
-            self.NeedsRGBVariant,
-            'in_files':
-            self.GetInputFiles(),
-            'dark_mode_selector':
-            self.generator_options.get('dark_mode_selector', None),
-            'suppress_sources_comment':
-            self.generator_options.get('suppress_sources_comment', False),
-            'Modes':
-            Modes,
+            'css_color_var': self.CSSColorVar,
+            'needs_rgb_variant': self.NeedsRGBVariant,
+            'in_files': self.GetInputFiles(),
+            'dark_mode_selector': self.generator_options.get(
+                'dark_mode_selector', None
+            ),
+            'suppress_sources_comment': self.generator_options.get(
+                'suppress_sources_comment', False
+            ),
+            'Modes': Modes,
         }
 
     def DefaultPreblend(self):
@@ -97,13 +102,16 @@ class CSSStyleGenerator(BaseGenerator):
         elif variable_type == VariableType.FONT_FAMILY:
             AddVarNames(variable.name, ['$css_name'])
         elif variable_type == VariableType.TYPEFACE:
-            AddVarNames(variable.name, [
-                '$css_name-font',
-                '$css_name-font-family',
-                '$css_name-font-size',
-                '$css_name-font-weight',
-                '$css_name-line-height',
-            ])
+            AddVarNames(
+                variable.name,
+                [
+                    '$css_name-font',
+                    '$css_name-font-family',
+                    '$css_name-font-size',
+                    '$css_name-font-weight',
+                    '$css_name-line-height',
+                ],
+            )
         elif variable_type == VariableType.FONT_FACE:
             # Font faces are not individual attributes
             pass
@@ -115,7 +123,7 @@ class CSSStyleGenerator(BaseGenerator):
 
     def GetCSSVarNames(self):
         '''Returns a map of all generated names to the model names that
-           generated them.
+        generated them.
         '''
         var_names = dict()
         for variable in self.model.variable_map.values():
@@ -125,7 +133,7 @@ class CSSStyleGenerator(BaseGenerator):
 
     def ProcessSimpleRef(self, value):
         '''If |value| is a simple '$other_variable' reference, returns a
-           CSS variable that points to '$other_variable'.'''
+        CSS variable that points to '$other_variable'.'''
         if value.startswith('$'):
             ref_name = value[1:]
             assert ref_name in self.model.variable_map
@@ -134,8 +142,11 @@ class CSSStyleGenerator(BaseGenerator):
         return value
 
     def _GetCSSVarPrefix(self, name):
-        prefix = self.model.variable_map[name].context.get(
-            CSSStyleGenerator.GetName(), {}).get('prefix')
+        prefix = (
+            self.model.variable_map[name]
+            .context.get(CSSStyleGenerator.GetName(), {})
+            .get('prefix')
+        )
         return prefix + '-' if prefix else ''
 
     def ToCSSVarName(self, name):
@@ -169,27 +180,30 @@ class CSSStyleGenerator(BaseGenerator):
     def CSSBlendInputColor(self, c, mode):
         '''Resolves a color for use in a color-mix call.'''
         # TODO(b/278121949): Assert that the color is opaque.
-        if (isinstance(c, ColorVar)):
+        if isinstance(c, ColorVar):
             return 'var(%s)' % self.ToCSSVarName(c.var)
-        if (isinstance(c, ColorBlend)):
+        if isinstance(c, ColorBlend):
             return self.ToBlendColor(c, mode)
         return 'rgb(%s)' % self.CSSColorRGB(c)
 
     def ToBlendColor(self, color, mode):
         '''Resolves a color blend. Allows for nested blends.'''
-        assert (isinstance(color, ColorBlend))
+        assert isinstance(color, ColorBlend)
         blendPercentage = float(
             color.blendPercentage
-            or self.ExtractOpacity(color.blended_colors[0], mode))
+            or self.ExtractOpacity(color.blended_colors[0], mode)
+        )
         return 'color-mix(in srgb, %s %s%%, %s)' % (
-            self.CSSBlendInputColor(color.blended_colors[0],
-                                    mode), blendPercentage,
-            self.CSSBlendInputColor(color.blended_colors[1], mode))
+            self.CSSBlendInputColor(color.blended_colors[0], mode),
+            blendPercentage,
+            self.CSSBlendInputColor(color.blended_colors[1], mode),
+        )
 
     def ExtractOpacity(self, c, mode):
         if isinstance(c, ColorVar):
-            return self.ExtractOpacity(self.model.colors.Resolve(c.var, mode),
-                                       mode)
+            return self.ExtractOpacity(
+                self.model.colors.Resolve(c.var, mode), mode
+            )
         if c.opacity:
             return self.model.opacities.ResolveOpacity(c.opacity, mode).a * 100
 
@@ -209,10 +223,14 @@ class CSSStyleGenerator(BaseGenerator):
         if isinstance(color, ColorBlend):
             return self.ToBlendColor(color, mode)
 
-        if isinstance(color,
-                      ((ColorRGB, ColorRGBVar))) and color.opacity.a != 1:
-            return 'rgba(var(%s-rgb), %s)' % (var_name,
-                                              self._CSSOpacity(color.opacity))
+        if (
+            isinstance(color, ((ColorRGB, ColorRGBVar)))
+            and color.opacity.a != 1
+        ):
+            return 'rgba(var(%s-rgb), %s)' % (
+                var_name,
+                self._CSSOpacity(color.opacity),
+            )
 
         return 'rgb(var(%s-rgb))' % var_name
 

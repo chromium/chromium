@@ -11,6 +11,7 @@ import os
 import subprocess
 import sys
 import tempfile
+
 """
 This script connects to Buildbucket to pull the logs from all tryjobs for a
 gerrit cl, and writes them to local files.
@@ -112,23 +113,31 @@ def parse_args(args):
         "cl": 0,
         "patchset": 0,
         "step_names": [
-            "compile (with patch)", "compile", "compile (without patch)",
-            "run coverage script"
+            "compile (with patch)",
+            "compile",
+            "compile (without patch)",
+            "run coverage script",
         ],
         "filter": lambda s: not s.startswith("["),
     }
 
-    parser = argparse.ArgumentParser(description=__doc__,)
-    parser.add_argument("-c",
-                        "--cl",
-                        type=int,
-                        default=default_config["cl"],
-                        help="CL number whose logs should be pulled.")
-    parser.add_argument("-p",
-                        "--patchset",
-                        type=int,
-                        default=default_config["patchset"],
-                        help="Patchset number whose logs should be pulled.")
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+    )
+    parser.add_argument(
+        "-c",
+        "--cl",
+        type=int,
+        default=default_config["cl"],
+        help="CL number whose logs should be pulled.",
+    )
+    parser.add_argument(
+        "-p",
+        "--patchset",
+        type=int,
+        default=default_config["patchset"],
+        help="Patchset number whose logs should be pulled.",
+    )
     parser.add_argument(
         "-t",
         "--tot",
@@ -136,7 +145,8 @@ def parse_args(args):
         help="If passed, pull scripts from all the ToT bots (as defined at "
         "the top of the script) instead of from a specific CL. Useful for "
         "debugging new warnings when gardening clang. "
-        "Overrides --cl and --patchset.")
+        "Overrides --cl and --patchset.",
+    )
     parser.add_argument(
         "-l",
         "-o",
@@ -146,27 +156,32 @@ def parse_args(args):
         default=default_config["log_dir"],
         help="Absolute path to a directory to store the downloaded logs. "
         "Will be created if it doesn't exist. "
-        "Include a trailing slash.")
-    parser.add_argument("-s",
-                        "--step",
-                        type=str,
-                        action="append",
-                        default=default_config["step_names"],
-                        help="Name of the build step to pull logs for. "
-                        "May be specified multiple times; logs are pulled "
-                        "for each step in order until one succeeds.")
+        "Include a trailing slash.",
+    )
+    parser.add_argument(
+        "-s",
+        "--step",
+        type=str,
+        action="append",
+        default=default_config["step_names"],
+        help="Name of the build step to pull logs for. "
+        "May be specified multiple times; logs are pulled "
+        "for each step in order until one succeeds.",
+    )
     parser.add_argument(
         "-f",
         "--filter",
         action="store_true",
         help="If true, strip uninteresting build lines (those which begin "
-        "with '[').")
+        "with '[').",
+    )
     parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
         help="If passed, print additional logging information for moitoring "
-        "or debugging purposes.")
+        "or debugging purposes.",
+    )
 
     handle_existing = parser.add_mutually_exclusive_group()
     handle_existing.add_argument(
@@ -174,21 +189,23 @@ def parse_args(args):
         "--delete-logs",
         action="store_true",
         help="If passed, delete existing txt files from the log directory. "
-        "Mutually exclusive with --resume.")
+        "Mutually exclusive with --resume.",
+    )
     handle_existing.add_argument(
         "-r",
         "--resume",
         action="store_true",
         help="If passed, don't download logs that are already present in the"
         "output directory. Useful if the previous download got interrupted. "
-        "Mutually exclusive with --delete-logs.")
+        "Mutually exclusive with --delete-logs.",
+    )
 
     parsed_args = vars(parser.parse_args(args))
 
     # Validate and/or the parsed args before returning.
-    if (not parsed_args["tot"] and parsed_args["cl"] <= 0):
+    if not parsed_args["tot"] and parsed_args["cl"] <= 0:
         raise ValueError("You must enter a real CL number")
-    if (not parsed_args["tot"] and parsed_args["patchset"] <= 0):
+    if not parsed_args["tot"] and parsed_args["patchset"] <= 0:
         raise ValueError("You must enter a real patchset number")
 
     if parsed_args["filter"]:
@@ -210,8 +227,10 @@ def identify_builds(cl_id, patchset):
     Use the bb tool to retrieve list of builds associated with this cl and
     patchset. Only return builds associated with the most recent run.
     """
-    cl_str = ("https://chromium-review.googlesource.com/"
-              "c/chromium/src/+/{}/{}".format(cl_id, patchset))
+    cl_str = (
+        "https://chromium-review.googlesource.com/"
+        "c/chromium/src/+/{}/{}".format(cl_id, patchset)
+    )
 
     # Make sure we're only getting the most recent set of builds by grabbing the
     # cq_attempt_key tag from the first build returned. If the tag isn't present
@@ -224,11 +243,14 @@ def identify_builds(cl_id, patchset):
         [bb, "ls", "-cl", cl_str, "-" + str(num_builds_to_check), "-json"],
         check=True,
         stdout=subprocess.PIPE,
-        text=True)
+        text=True,
+    )
 
-    if (len(most_recent_builds.stdout) == 0):
-        raise RuntimeError("Couldn't find any builds. Did you use a valid "
-                           "cl_id AND patchset number?")
+    if len(most_recent_builds.stdout) == 0:
+        raise RuntimeError(
+            "Couldn't find any builds. Did you use a valid "
+            "cl_id AND patchset number?"
+        )
 
     output = [
         json.loads(build) for build in most_recent_builds.stdout.splitlines()
@@ -240,20 +262,30 @@ def identify_builds(cl_id, patchset):
                 cq_attempt_key = tag["value"]
                 break
     if not cq_attempt_key:
-        raise RuntimeError(
+        msg = (
             "None of the {} most recent builds were associated with a CQ run. "
-            "Did you launch a bunch of manual builds after hitting the button?".
-            format(num_builds_to_check))
+            "Did you launch a bunch of manual builds after hitting the button?"
+        ).format(num_builds_to_check)
+        raise RuntimeError(msg)
 
     # Grab the info for all builds in the most recent set
-    build_list = subprocess.run([
-        bb, "ls", "-cl", cl_str, "-json", "-fields", "input", "-t",
-        "cq_attempt_key:" + cq_attempt_key
-    ],
-                                check=True,
-                                stdout=subprocess.PIPE,
-                                text=True)
-    if (len(build_list.stdout) == 0):
+    build_list = subprocess.run(
+        [
+            bb,
+            "ls",
+            "-cl",
+            cl_str,
+            "-json",
+            "-fields",
+            "input",
+            "-t",
+            "cq_attempt_key:" + cq_attempt_key,
+        ],
+        check=True,
+        stdout=subprocess.PIPE,
+        text=True,
+    )
+    if len(build_list.stdout) == 0:
         raise RuntimeError("Somehow couldn't find any builds the second time.")
 
     # Retrieve the name and id of each build
@@ -278,13 +310,23 @@ def identify_tot_builds():
     """
     target_builds = []
     for bot in ToT_builders:
-        build_info = subprocess.run([
-            bb, "ls", "-json", "-fields", "input", "-1", "-status", "ended", bot
-        ],
-                                    check=True,
-                                    stdout=subprocess.PIPE,
-                                    text=True)
-        if (len(build_info.stdout) == 0):
+        build_info = subprocess.run(
+            [
+                bb,
+                "ls",
+                "-json",
+                "-fields",
+                "input",
+                "-1",
+                "-status",
+                "ended",
+                bot,
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            text=True,
+        )
+        if len(build_info.stdout) == 0:
             raise RuntimeError("Couldn't find any builds for " + bot)
 
         build = json.loads(build_info.stdout)
@@ -302,10 +344,12 @@ def try_pull_step(build_id, step_names):
     If one is successfully pulled, return the incoming data as a stream.
     """
     for step_name in step_names:
-        output = subprocess.Popen([bb, "log", build_id, step_name],
-                                  stdout=subprocess.PIPE,
-                                  stderr=subprocess.STDOUT,
-                                  text=True)
+        output = subprocess.Popen(
+            [bb, "log", build_id, step_name],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
         first_line = output.stdout.readline()
         if first_line.startswith("step \"{}\" not found".format(step_name)):
             continue
@@ -375,9 +419,12 @@ def pull_and_filter_logs(parsed_args, target_builds):
                     partial_logs.append(name + " ({})".format(build_id) + "\n")
                     output.kill()
                     write_line(
-                        lambda _: True, file,
+                        lambda _: True,
+                        file,
                         "Failed to pull entire log for {} ({})".format(
-                            name, build_id))
+                            name, build_id
+                        ),
+                    )
                     break
                 write_line(parsed_args["filter"], file, line)
     return failures, partial_logs
@@ -385,7 +432,7 @@ def pull_and_filter_logs(parsed_args, target_builds):
 
 def main(args):
     parsed_args = parse_args(args)
-    if (parsed_args["tot"]):
+    if parsed_args["tot"]:
         builds = identify_tot_builds()
     else:
         builds = identify_builds(parsed_args["cl"], parsed_args["patchset"])
@@ -397,14 +444,16 @@ def main(args):
             "They likely failed before the compile step (often this means an "
             "infra failure).\n"
             "You might want to download logs from the last valid build "
-            "manually:\n")
+            "manually:\n"
+        )
         for failure in sorted(failures):
             sys.stderr.write(failure)
 
     if len(partial_logs) > 0:
         sys.stderr.write(
             "Only pulled partial logs for the following builders. You might "
-            "want to download them manually and/or re-run the builders:\n")
+            "want to download them manually and/or re-run the builders:\n"
+        )
         for failure in sorted(partial_logs):
             sys.stderr.write(failure)
 

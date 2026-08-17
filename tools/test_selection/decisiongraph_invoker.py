@@ -26,15 +26,15 @@ class TestSelectionPhase(Enum):
 API_URL = 'https://decisiongraph-pa.googleapis.com/v1/rundecisiongraph'
 DECISION_GRAPH_NAME = {
     TestSelectionPhase.TRIGGER: 'sts_chrome_trigger_model_root',
-    TestSelectionPhase.FETCH: 'sts_chrome_fetch_results_root'
+    TestSelectionPhase.FETCH: 'sts_chrome_fetch_results_root',
 }
 STAGE_ID = {
     TestSelectionPhase.TRIGGER: 'trigger_model_for_%d_%d_%d',
-    TestSelectionPhase.FETCH: 'fetch_results_for_%d_%d_%d'
+    TestSelectionPhase.FETCH: 'fetch_results_for_%d_%d_%d',
 }
 STAGE_NAME = {
     TestSelectionPhase.TRIGGER: 'sts_chrome_trigger_model',
-    TestSelectionPhase.FETCH: 'sts_chrome_fetch_results'
+    TestSelectionPhase.FETCH: 'sts_chrome_fetch_results',
 }
 PROJECT = 'chromium/src'
 BRANCH = 'main'
@@ -54,21 +54,21 @@ BATCH_SIZE = 5
 
 def fetch_api_data(url, json_payload=None):
   """
-    Sends an HTTP POST request to the url and returns the JSON response.
+  Sends an HTTP POST request to the url and returns the JSON response.
 
-    Args:
-      url: The url to send request to.
-      json_payload: The payload to send with request.
+  Args:
+    url: The url to send request to.
+    json_payload: The payload to send with request.
 
-    Returns:
-      The JSON response as a dictionary, or None if the request fails.
-    """
+  Returns:
+    The JSON response as a dictionary, or None if the request fails.
+  """
   try:
     response = requests.post(url, json=json_payload, timeout=TIMEOUT_SECONDS)
     print(response.text)
     print(response.status_code)
-    response.raise_for_status(
-    )  # Raise an HTTPError for bad responses (4xx and 5xx)
+    # Raise an HTTPError for bad responses (4xx and 5xx).
+    response.raise_for_status()
     return response.json()
   except requests.exceptions.RequestException as e:
     print(f'An error occurred: {e}')
@@ -77,13 +77,13 @@ def fetch_api_data(url, json_payload=None):
 
 def load_config_from_json(file_path):
   """
-    Reads the configuration parameters from a JSON file.
+  Reads the configuration parameters from a JSON file.
 
-    Args:
-      file_path: Path to the JSON file.
-    Returns:
-      A dictionary containing the configuration parameters.
-    """
+  Args:
+    file_path: Path to the JSON file.
+  Returns:
+    A dictionary containing the configuration parameters.
+  """
   config_data = {}
   try:
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -173,26 +173,31 @@ def main():
   parser = argparse.ArgumentParser(
       description=
       'A script to trigger or fetch results for Smart Test Selection.')
-  parser.add_argument('--test-targets',
-                      required=True,
-                      nargs='+',
-                      type=str,
-                      help='Name of the test targets e.g., browser_tests.')
+  parser.add_argument(
+      '--test-targets',
+      required=True,
+      nargs='+',
+      type=str,
+      help='Name of the test targets e.g., browser_tests.',
+  )
   parser.add_argument(
       '--sts-config-file',
       required=True,
       type=str,
-      help='Path to the JSON file containing config for smart test selection.')
+      help='Path to the JSON file containing config for smart test selection.',
+  )
   parser.add_argument(
       '--test-selection-phase',
       required=True,
       type=str.upper,
       choices=[p.name for p in TestSelectionPhase],
-      help='The phase of test selection to run: TRIGGER or FETCH.')
+      help='The phase of test selection to run: TRIGGER or FETCH.',
+  )
   parser.add_argument(
       '--filter-file-dir',
       type=str,
-      help='Directory to write test filter files. Required for FETCH phase.')
+      help='Directory to write test filter files. Required for FETCH phase.',
+  )
   args = parser.parse_args()
 
   # Set the phase based on the command-line flag.
@@ -277,7 +282,7 @@ def main():
                     'patchset': patchset,
                 }],
             },
-        }]
+        }],
     }
     print('payload = ')
     pprint.pprint(payload)

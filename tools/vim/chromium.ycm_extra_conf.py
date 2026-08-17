@@ -70,23 +70,23 @@ import ycm_core
 # first attempt to find compilation flags in the compile-commands.json file in that
 # directory first.
 database = None
-compilation_database_folder=os.getenv('CHROMIUM_BUILD_DIR')
+compilation_database_folder = os.getenv('CHROMIUM_BUILD_DIR')
 if compilation_database_folder and os.path.exists(compilation_database_folder):
   database = ycm_core.CompilationDatabase(compilation_database_folder)
 
 # Flags from YCM's default config.
 _default_flags = [
-    '-DUSE_CLANG_COMPLETER',
-    '-std=c++14',
-    '-x',
-    'c++',
+  '-DUSE_CLANG_COMPLETER',
+  '-std=c++14',
+  '-x',
+  'c++',
 ]
 
 _header_alternates = ('.cc', '.cpp', '.c', '.mm', '.m')
 
 _extension_flags = {
-    '.m': ['-x', 'objective-c'],
-    '.mm': ['-x', 'objective-c++'],
+  '.m': ['-x', 'objective-c'],
+  '.mm': ['-x', 'objective-c++'],
 }
 
 
@@ -107,8 +107,10 @@ def FindChromeSrcFromFilename(filename):
   """
   curdir = os.path.normpath(os.path.dirname(filename))
   while not (
-      os.path.basename(curdir) == 'src' and PathExists(curdir, 'DEPS') and
-      (PathExists(curdir, '..', '.gclient') or PathExists(curdir, '.git'))):
+    os.path.basename(curdir) == 'src'
+    and PathExists(curdir, 'DEPS')
+    and (PathExists(curdir, '..', '.gclient') or PathExists(curdir, '.git'))
+  ):
     nextdir = os.path.normpath(os.path.join(curdir, '..'))
     if nextdir == curdir:
       return None
@@ -158,10 +160,11 @@ def GetNinjaBuildOutputsForSourceFile(out_dir, filename):
   rel_filename = os.path.relpath(filename, out_dir)
 
   p = subprocess.Popen(
-      ['ninja', '-C', out_dir, '-t', 'query', rel_filename],
-      stdout=subprocess.PIPE,
-      stderr=subprocess.STDOUT,
-      universal_newlines=True)
+    ['ninja', '-C', out_dir, '-t', 'query', rel_filename],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    universal_newlines=True,
+  )
   stdout, _ = p.communicate()
   if p.returncode != 0:
     return []
@@ -176,8 +179,9 @@ def GetNinjaBuildOutputsForSourceFile(out_dir, filename):
   outputs_text = stdout.partition('\n  outputs:\n')[2]
   output_lines = [line.strip() for line in outputs_text.split('\n')]
   return [
-      target for target in output_lines
-      if target and (target.endswith('.o') or target.endswith('.obj'))
+    target
+    for target in output_lines
+    if target and (target.endswith('.o') or target.endswith('.obj'))
   ]
 
 
@@ -196,10 +200,11 @@ def GetClangCommandLineForNinjaOutput(out_dir, build_target):
         be determined.
   """
   p = subprocess.Popen(
-      ['ninja', '-v', '-C', out_dir, '-t', 'commands', build_target],
-      encoding='unicode_escape',
-      stdout=subprocess.PIPE,
-      universal_newlines=True)
+    ['ninja', '-v', '-C', out_dir, '-t', 'commands', build_target],
+    encoding='unicode_escape',
+    stdout=subprocess.PIPE,
+    universal_newlines=True,
+  )
   stdout, stderr = p.communicate()
   if p.returncode != 0:
     return None
@@ -273,8 +278,10 @@ def ProcessIndividualFlag(flag, next_token, out_dir):
       return '--sysroot=' + abspath(sysroot_path)
   return flag
 
-def GetClangOptionsFromCommandLine(clang_commandline, out_dir,
-                                   additional_flags):
+
+def GetClangOptionsFromCommandLine(
+  clang_commandline, out_dir, additional_flags
+):
   """Extracts relevant command line options from |clang_commandline|
 
   Args:
@@ -296,13 +303,16 @@ def GetClangOptionsFromCommandLine(clang_commandline, out_dir,
   lexer.quotes = '\''
   clang_tokens = list(lexer)
   for flag_index, flag in enumerate(clang_tokens):
-    next_token = clang_tokens[flag_index + 1] \
-        if flag_index + 1 < len(clang_tokens) \
-        else None
+    next_token = (
+      clang_tokens[flag_index + 1]
+      if flag_index + 1 < len(clang_tokens)
+      else None
+    )
     processed_flag = ProcessIndividualFlag(flag, next_token, out_dir)
     if processed_flag:
       clang_flags.append(processed_flag)
   return clang_flags
+
 
 def FileCompilationCandidates(filename):
   basename, extension = os.path.splitext(filename)
@@ -312,6 +322,7 @@ def FileCompilationCandidates(filename):
     candidates = [filename]
 
   return candidates
+
 
 def GetAdditionalFlags(chrome_root):
   # Generally, everyone benefits from including Chromium's src/, because all of
@@ -324,7 +335,6 @@ def GetAdditionalFlags(chrome_root):
   # warnings (and errors, because of '-Werror');
   additional_flags.append('-Wno-unknown-warning-option')
   return additional_flags
-
 
 
 def GetClangOptionsFromNinjaForFilename(chrome_root, filename):
@@ -351,6 +361,7 @@ def GetClangOptionsFromNinjaForFilename(chrome_root, filename):
 
   sys.path.append(os.path.join(chrome_root, 'tools', 'vim'))
   from ninja_output import GetNinjaOutputDirectory
+
   out_dir = GetNinjaOutputDirectory(chrome_root)
 
   clang_line = None
@@ -367,15 +378,15 @@ def GetClangOptionsFromNinjaForFilename(chrome_root, filename):
     # If ninja didn't know about filename or it's companion files, then try a
     # default build target. It is possible that the file is new, or build.ninja
     # is stale.
-    clang_line = GetClangCommandLineFromNinjaForSource(out_dir,
-                                                       GetDefaultSourceFile(
-                                                           chrome_root,
-                                                           filename))
+    clang_line = GetClangCommandLineFromNinjaForSource(
+      out_dir, GetDefaultSourceFile(chrome_root, filename)
+    )
 
   if not clang_line:
     return additional_flags
 
   return GetClangOptionsFromCommandLine(clang_line, out_dir, additional_flags)
+
 
 def GetClangOptionsFromDBForFilename(chrome_root, filename):
   if not chrome_root:
@@ -392,12 +403,14 @@ def GetClangOptionsFromDBForFilename(chrome_root, filename):
       # ycm_core returns a StringVector we need to convert it.
       flags = [] + additional_flags
       for flag in compilation_info.compiler_flags_:
-        processed_flag = ProcessIndividualFlag(flag, None,
-                                               compilation_database_folder)
+        processed_flag = ProcessIndividualFlag(
+          flag, None, compilation_database_folder
+        )
         if processed_flag:
           flags.append(processed_flag)
       return flags
   return None
+
 
 # FlagsForFile entrypoint is deprecated in YCM and has replaced by
 # Settings.
@@ -413,6 +426,7 @@ def FlagsForFile(filename):
       'do_cache': (Boolean) True if the result should be cached.
   """
   return Settings(filename=filename)
+
 
 def Settings(**kwargs):
   filename = kwargs['filename']

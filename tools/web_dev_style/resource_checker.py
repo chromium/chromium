@@ -16,12 +16,22 @@ class ResourceChecker(object):
     self.file_filter = file_filter
 
   def DeprecatedMojoBindingsCheck(self, line_number, line):
-    return regex_check.RegexCheck(self.input_api.re, line_number, line,
-        r'(mojo_bindings\.js)', 'Please use mojo_bindings_lite.js in new code')
+    return regex_check.RegexCheck(
+      self.input_api.re,
+      line_number,
+      line,
+      r'(mojo_bindings\.js)',
+      'Please use mojo_bindings_lite.js in new code',
+    )
 
   def DisallowIncludeCheck(self, msg, line_number, line):
-    return regex_check.RegexCheck(self.input_api.re, line_number, line,
-        r'^\s*(?:\/[\*\/])?\s*(<include)\s*src=', msg)
+    return regex_check.RegexCheck(
+      self.input_api.re,
+      line_number,
+      line,
+      r'^\s*(?:\/[\*\/])?\s*(<include)\s*src=',
+      msg,
+    )
 
   # This is intentionally not included in RunChecks(). It's an optional check
   # that can be used from a PRESUBMIT.py in a directory that does not wish to
@@ -29,29 +39,37 @@ class ResourceChecker(object):
   # process, etc.).
   def DisallowIncludes(self, msg):
     check = lambda *args: self.DisallowIncludeCheck(msg, *args)
-    return self._RunCheckOnAffectedFiles(check, 'Found resource errors in %s',
-                                         is_error=True)
+    return self._RunCheckOnAffectedFiles(
+      check, 'Found resource errors in %s', is_error=True
+    )
 
   def SelfClosingIncludeCheck(self, line_number, line):
-    return regex_check.RegexCheck(self.input_api.re, line_number, line,
-        '(</include>|<include.*/>)', 'Closing <include> tags is unnecessary.')
+    return regex_check.RegexCheck(
+      self.input_api.re,
+      line_number,
+      line,
+      '(</include>|<include.*/>)',
+      'Closing <include> tags is unnecessary.',
+    )
 
   def RunChecks(self):
     msg = 'Found resources style issues in %s'
     # TODO(crbug.com/40613816): is_error for Mojo check when -lite is majority?
-    return self._RunCheckOnAffectedFiles(self.DeprecatedMojoBindingsCheck,
-        msg, only_changed_lines=True) + \
-        self._RunCheckOnAffectedFiles(self.SelfClosingIncludeCheck, msg)
+    return self._RunCheckOnAffectedFiles(
+      self.DeprecatedMojoBindingsCheck, msg, only_changed_lines=True
+    ) + self._RunCheckOnAffectedFiles(self.SelfClosingIncludeCheck, msg)
 
-  def _RunCheckOnAffectedFiles(self, check, msg_template, is_error=False,
-                               only_changed_lines=False):
+  def _RunCheckOnAffectedFiles(
+    self, check, msg_template, is_error=False, only_changed_lines=False
+  ):
     """Check for violations of the Chromium web development style guide. See
-       https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md
+    https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md
     """
     results = []
 
-    affected_files= self.input_api.AffectedFiles(file_filter=self.file_filter,
-                                                 include_deletes=False)
+    affected_files = self.input_api.AffectedFiles(
+      file_filter=self.file_filter, include_deletes=False
+    )
     for f in affected_files:
       errors = []
       if only_changed_lines:

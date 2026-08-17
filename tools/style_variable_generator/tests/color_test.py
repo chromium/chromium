@@ -66,7 +66,8 @@ class ColorTest(unittest.TestCase):
 
         # Some color 6% over Grey 900 60%.
         c = ParseColor(
-            'blend(rgba($some_color.rgb, 0.06), rgba(32, 33, 36, 0.6))')
+            'blend(rgba($some_color.rgb, 0.06), rgba(32, 33, 36, 0.6))'
+        )
         self.assertEqual(len(c.blended_colors), 2)
         c0 = c.blended_colors[0]
         self.assertEqual(c0.rgb_var, 'some_color.rgb')

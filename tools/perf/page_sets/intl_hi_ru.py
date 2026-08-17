@@ -9,7 +9,6 @@ from telemetry import story
 
 
 class IntlHiRuPage(page_cycler_story.PageCyclerStory):
-
   def __init__(self, url, page_set, cache_temperature=None):
     if cache_temperature == cache_temperature_module.COLD:
       temp_suffix = '_cold'
@@ -19,21 +18,28 @@ class IntlHiRuPage(page_cycler_story.PageCyclerStory):
       raise NotImplementedError
 
     super(IntlHiRuPage, self).__init__(
-        url=url, page_set=page_set,
-        shared_page_state_class=shared_page_state.SharedDesktopPageState,
-        cache_temperature=cache_temperature,
-        name=url+temp_suffix)
+      url=url,
+      page_set=page_set,
+      shared_page_state_class=shared_page_state.SharedDesktopPageState,
+      cache_temperature=cache_temperature,
+      name=url + temp_suffix,
+    )
 
 
 class IntlHiRuPageSet(story.StorySet):
+  """Popular pages in Hindi and Russian."""
 
-  """ Popular pages in Hindi and Russian. """
-
-  def __init__(self, cache_temperatures=(cache_temperature_module.COLD,
-                                         cache_temperature_module.WARM)):
+  def __init__(
+    self,
+    cache_temperatures=(
+      cache_temperature_module.COLD,
+      cache_temperature_module.WARM,
+    ),
+  ):
     super(IntlHiRuPageSet, self).__init__(
       archive_data_file='data/intl_hi_ru.json',
-      cloud_storage_bucket=story.PARTNER_BUCKET)
+      cloud_storage_bucket=story.PARTNER_BUCKET,
+    )
     if cache_temperatures is None:
       cache_temperatures = [cache_temperature_module.ANY]
 
@@ -54,7 +60,7 @@ class IntlHiRuPageSet(story.StorySet):
       # Why: #9 site in India
       'http://www.indiatimes.com/',
       # Why: #2 site in India
-      'http://news.google.co.in/nwshp?tab=in&hl=hi'
+      'http://news.google.co.in/nwshp?tab=in&hl=hi',
     ]
 
     for url in urls_list:

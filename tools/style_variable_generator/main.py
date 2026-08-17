@@ -11,11 +11,20 @@ sys.path += [os.path.dirname(os.path.dirname(__file__))]
 
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.ts_generator import TSStyleGenerator
-from style_variable_generator.proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
+from style_variable_generator.proto_generator import (
+    ProtoStyleGenerator,
+    ProtoJSONStyleGenerator,
+)
 from style_variable_generator.json_generator import JSONStyleGenerator
-from style_variable_generator.views_generator import ViewsCCStyleGenerator, ViewsHStyleGenerator
+from style_variable_generator.views_generator import (
+    ViewsCCStyleGenerator,
+    ViewsHStyleGenerator,
+)
 from style_variable_generator.base_generator import Modes
-from style_variable_generator.color_mappings_generator import ColorMappingsCCStyleGenerator, ColorMappingsHStyleGenerator
+from style_variable_generator.color_mappings_generator import (
+    ColorMappingsCCStyleGenerator,
+    ColorMappingsHStyleGenerator,
+)
 
 
 def parseGeneratorOptionList(options):
@@ -31,13 +40,19 @@ def parseGeneratorOptionList(options):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Generate style variables from JSON5 color file.')
+        description='Generate style variables from JSON5 color file.'
+    )
 
     generators = [
-        CSSStyleGenerator, ViewsCCStyleGenerator, ViewsHStyleGenerator,
-        ProtoStyleGenerator, ProtoJSONStyleGenerator, TSStyleGenerator,
-        JSONStyleGenerator, ColorMappingsCCStyleGenerator,
-        ColorMappingsHStyleGenerator
+        CSSStyleGenerator,
+        ViewsCCStyleGenerator,
+        ViewsHStyleGenerator,
+        ProtoStyleGenerator,
+        ProtoJSONStyleGenerator,
+        TSStyleGenerator,
+        JSONStyleGenerator,
+        ColorMappingsCCStyleGenerator,
+        ColorMappingsHStyleGenerator,
     ]
 
     parser.add_argument(
@@ -46,28 +61,35 @@ def main():
         required=True,
         help='type of file to generate, provide this option multiple '
         'times to use multiple generators',
-        action='append')
-    parser.add_argument('--generate-single-mode',
-                        choices=Modes.ALL,
-                        help='generates output for a single mode')
+        action='append',
+    )
+    parser.add_argument(
+        '--generate-single-mode',
+        choices=Modes.ALL,
+        help='generates output for a single mode',
+    )
     parser.add_argument(
         '--out-file',
         help='file to write output to, the number of out-files '
         'must match the number of generators if specified',
-        action='append')
-    parser.add_argument('--generator-option',
-                        metavar='KEY=VALUE',
-                        action='append',
-                        help='Set a option specific to the selected generator '
-                        'via a key value pair. See the README.md for a '
-                        'full list of generator specific options.')
+        action='append',
+    )
+    parser.add_argument(
+        '--generator-option',
+        metavar='KEY=VALUE',
+        action='append',
+        help='Set a option specific to the selected generator '
+        'via a key value pair. See the README.md for a '
+        'full list of generator specific options.',
+    )
     parser.add_argument('targets', nargs='+', help='source json5 color files')
 
     args = parser.parse_args()
 
     if args.out_file and len(args.generator) != len(args.out_file):
         raise ValueError(
-            'number of --out-files must match number of --generators')
+            'number of --out-files must match number of --generators'
+        )
 
     for i, g in enumerate(args.generator):
         gen_constructor = next(x for x in generators if g == x.GetName())
@@ -77,7 +99,8 @@ def main():
 
         style_generator.generate_single_mode = args.generate_single_mode
         style_generator.generator_options = parseGeneratorOptionList(
-            args.generator_option)
+            args.generator_option
+        )
 
         if args.out_file:
             style_generator.out_file_path = args.out_file[i]

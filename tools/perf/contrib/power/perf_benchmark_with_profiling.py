@@ -36,8 +36,9 @@ class PerfBenchmarkWithProfiling(PerfBenchmark):
 
     Instead, override SetExtraBrowserOptions.
     """
-    super(PerfBenchmarkWithProfiling,
-          self).CustomizeOptions(finder_options, possible_browser)
+    super(PerfBenchmarkWithProfiling, self).CustomizeOptions(
+      finder_options, possible_browser
+    )
 
     if finder_options is None or possible_browser is None:
       return
@@ -57,17 +58,19 @@ class PerfBenchmarkWithProfiling(PerfBenchmark):
 
     Instead, override CustomizeSystemTraceConfig.
     """
-    options = super(PerfBenchmarkWithProfiling,
-                    self).CreateCoreTimelineBasedMeasurementOptions()
+    options = super(
+      PerfBenchmarkWithProfiling, self
+    ).CreateCoreTimelineBasedMeasurementOptions()
 
     # Here, we implicitly assume that CreateCoreTimelineBasedMeasurementOptions
     # is called after CustomizeOptions.
     if self._browser_package is not None:
       options.config.enable_experimental_system_tracing = True
       options.config.system_trace_config.EnableProfiling(
-          # Enable wildcard to sample all processes for the selected browser.
-          "{}*".format(self._browser_package),
-          self.GetSamplingFrequencyHz())
+        # Enable wildcard to sample all processes for the selected browser.
+        "{}*".format(self._browser_package),
+        self.GetSamplingFrequencyHz(),
+      )
       # This adds metadata about Chrome processes to the profile.
       options.config.system_trace_config.EnableChrome(ChromeTraceConfig())
 

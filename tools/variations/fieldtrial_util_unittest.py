@@ -10,15 +10,15 @@ import tempfile
 
 
 class FieldTrialUtilUnittest(unittest.TestCase):
-
   def runGenerateArgs(self, config, platform, override_args=None):
     result = None
     with tempfile.NamedTemporaryFile('w', delete=False) as base_file:
       try:
         base_file.write(config)
         base_file.close()
-        result = fieldtrial_util.GenerateArgs(base_file.name, platform,
-                                              override_args)
+        result = fieldtrial_util.GenerateArgs(
+          base_file.name, platform, override_args
+        )
       finally:
         os.unlink(base_file.name)
     return result
@@ -62,13 +62,18 @@ class FieldTrialUtilUnittest(unittest.TestCase):
       ]
     }'''
     result = self.runGenerateArgs(config, 'windows')
-    self.assertEqual(['--force-fieldtrials='
+    self.assertEqual(
+      [
+        '--force-fieldtrials='
         'BrowserBlackList/Enabled/SimpleParams/Default/c/d.',
         '--force-fieldtrial-params='
         'SimpleParams.Default:id/abc,'
         'c.d%2E:url/http%3A%2F%2Fwww%2Egoogle%2Ecom',
         '--enable-features=a<SimpleParams,b<SimpleParams,x<c',
-        '--disable-features=y<c'], result)
+        '--disable-features=y<c',
+      ],
+      result,
+    )
 
   def test_GenArgsSomeExperimentsDisabledForBenchmarking(self):
     config = '''{
@@ -107,12 +112,15 @@ class FieldTrialUtilUnittest(unittest.TestCase):
       ]
     }'''
     result = self.runGenerateArgs(config, 'windows')
-    self.assertEqual(['--force-fieldtrials='
-        'BrowserBlackList/Enabled/c/d.',
-        '--force-fieldtrial-params='
-        'c.d%2E:url/http%3A%2F%2Fwww%2Egoogle%2Ecom',
+    self.assertEqual(
+      [
+        '--force-fieldtrials=BrowserBlackList/Enabled/c/d.',
+        '--force-fieldtrial-params=c.d%2E:url/http%3A%2F%2Fwww%2Egoogle%2Ecom',
         '--enable-features=x<c',
-        '--disable-features=y<c'], result)
+        '--disable-features=y<c',
+      ],
+      result,
+    )
 
   def test_GenArgsDuplicateEnableFeatures(self):
     config = '''{
@@ -141,8 +149,9 @@ class FieldTrialUtilUnittest(unittest.TestCase):
     }'''
     with self.assertRaises(Exception) as raised:
       self.runGenerateArgs(config, 'windows')
-    self.assertEqual('Duplicate feature(s) in enable_features: x',
-                     str(raised.exception))
+    self.assertEqual(
+      'Duplicate feature(s) in enable_features: x', str(raised.exception)
+    )
 
   def test_GenArgsDuplicateDisableFeatures(self):
     config = '''{
@@ -171,9 +180,9 @@ class FieldTrialUtilUnittest(unittest.TestCase):
     }'''
     with self.assertRaises(Exception) as raised:
       self.runGenerateArgs(config, 'windows')
-    self.assertEqual('Duplicate feature(s) in enable_features: y, z',
-                     str(raised.exception))
-
+    self.assertEqual(
+      'Duplicate feature(s) in enable_features: y, z', str(raised.exception)
+    )
 
   def test_GenArgsDuplicateEnableDisable(self):
     config = '''{
@@ -202,8 +211,10 @@ class FieldTrialUtilUnittest(unittest.TestCase):
     }'''
     with self.assertRaises(Exception) as raised:
       self.runGenerateArgs(config, 'windows')
-    self.assertEqual('Conflicting features set as both enabled and disabled: x',
-                     str(raised.exception))
+    self.assertEqual(
+      'Conflicting features set as both enabled and disabled: x',
+      str(raised.exception),
+    )
 
   def test_GenArgsOverrideArgs(self):
     config = '''{
@@ -252,19 +263,24 @@ class FieldTrialUtilUnittest(unittest.TestCase):
       ]
     }'''
     result = self.runGenerateArgs(
-        config, 'windows', ['--enable-features=y', '--disable-features=qq'])
-    self.assertEqual(['--force-fieldtrials='
-        'BrowserBlackList/Enabled/SimpleParams/Default',
-        '--force-fieldtrial-params='
-        'SimpleParams.Default:id/abc',
-        '--enable-features=a<SimpleParams,b<SimpleParams'], result)
+      config, 'windows', ['--enable-features=y', '--disable-features=qq']
+    )
+    self.assertEqual(
+      [
+        '--force-fieldtrials=BrowserBlackList/Enabled/SimpleParams/Default',
+        '--force-fieldtrial-params=SimpleParams.Default:id/abc',
+        '--enable-features=a<SimpleParams,b<SimpleParams',
+      ],
+      result,
+    )
 
   def test_MergeArgsEmpty(self):
     args = fieldtrial_util.MergeFeaturesAndFieldTrialsArgs([])
     self.assertEqual([], args)
 
   def test_MergeArgsRepeats(self):
-    args = fieldtrial_util.MergeFeaturesAndFieldTrialsArgs([
+    args = fieldtrial_util.MergeFeaturesAndFieldTrialsArgs(
+      [
         '--disable-features=Feature1,Feature2',
         '--disable-features=Feature2,Feature3',
         '--enable-features=Feature4,Feature5',
@@ -274,11 +290,15 @@ class FieldTrialUtilUnittest(unittest.TestCase):
         '--force-fieldtrials=Group3/Exp3/Group4/Exp4',
         '--force-fieldtrial-params=Group1.Exp1:id/abc,Group2.Exp2:id/bcd',
         '--force-fieldtrial-params=Group4.Exp4:id/cde',
-        '--bar'])
+        '--bar',
+      ]
+    )
 
     # For each flag, we expect alphabetical ordering of the pieces merged as
     # they are sorted first.
-    self.assertEqual(args, [
+    self.assertEqual(
+      args,
+      [
         '--foo',
         '--bar',
         '--disable-features=Feature1,Feature2,Feature3',
@@ -286,7 +306,9 @@ class FieldTrialUtilUnittest(unittest.TestCase):
         '--force-fieldtrials=Group1/Exp1/Group2/Exp2/Group3/Exp3/Group4/Exp4',
         '--force-fieldtrial-params=Group1.Exp1:id/abc,Group2.Exp2:id/bcd,'
         + 'Group4.Exp4:id/cde',
-    ])
+      ],
+    )
+
 
 if __name__ == '__main__':
   unittest.main()

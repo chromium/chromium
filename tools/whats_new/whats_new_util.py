@@ -37,22 +37,24 @@ class ValidIcons(object):
 
 def UpdateWhatsNewItemAndGetNewTypeValue(feature_dict: dict[str, str]) -> int:
     """Updates whats_new_item.h with the new feature entry and returns
-     the new enum value.
+       the new enum value.
 
-  Args:
-      feature_dict: Data for the new What's New feature.
-  Returns:
-      The enum value for the new WhatsNewType
-  """
+    Args:
+        feature_dict: Data for the new What's New feature.
+    Returns:
+        The enum value for the new WhatsNewType
+    """
     feature_name = feature_dict['Feature name']
     whats_new_item_file = os.path.join(
         BASE_DIR,
-        '../ios/chrome/browser/whats_new/ui/data_source/whats_new_item.h')
+        '../ios/chrome/browser/whats_new/ui/data_source/whats_new_item.h',
+    )
     with open(whats_new_item_file, 'r+', encoding='utf-8', newline='') as file:
         file_content = file.read()
         read_whats_new_types_regex = r'enum class WhatsNewType\s*\{\s(.*?)\s\}'
-        match_whats_new_types = re.search(read_whats_new_types_regex,
-                                          file_content, re.DOTALL)
+        match_whats_new_types = re.search(
+            read_whats_new_types_regex, file_content, re.DOTALL
+        )
         assert match_whats_new_types
         matches = match_whats_new_types.group(1).split(',\n')
         max_enum = matches[-1]
@@ -61,8 +63,9 @@ def UpdateWhatsNewItemAndGetNewTypeValue(feature_dict: dict[str, str]) -> int:
         next_type_value = len(matches) - 3
         new_enum_definition = []
         new_feature_id = 'k' + feature_name
-        new_enum_definition.append(new_feature_id + ' = ' +
-                                   str(next_type_value) + ',')
+        new_enum_definition.append(
+            new_feature_id + ' = ' + str(next_type_value) + ','
+        )
         new_enum_definition.append('kMaxValue = ' + new_feature_id)
         final_str = '\n'.join(new_enum_definition)
         new_file_content = file_content.replace(max_enum, final_str)
@@ -74,11 +77,11 @@ def UpdateWhatsNewItemAndGetNewTypeValue(feature_dict: dict[str, str]) -> int:
 def _GetPrimaryAction(action: str) -> int:
     """Get the WhatsNewPrimaryAction corresponding to a primary button string.
 
-  Args:
-      action: Primary button text string.
-  Returns:
-      The enum for WhatsNewPrimaryAction.
-  """
+    Args:
+        action: Primary button text string.
+    Returns:
+        The enum for WhatsNewPrimaryAction.
+    """
     if action == 'iOS Settings':
         return 1
     if action == 'Chrome Privacy Settings':
@@ -101,12 +104,12 @@ def _GetPrimaryAction(action: str) -> int:
 
 
 def CleanUpFeaturesPlist() -> None:
-    """Removes all existing features from the plist.
-
-  """
+    """Removes all existing features from the plist."""
     whats_new_plist_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/whats_new/ui/data_source/'
-        'resources/whats_new_entries.plist')
+        BASE_DIR,
+        '../ios/chrome/browser/whats_new/ui/data_source/'
+        'resources/whats_new_entries.plist',
+    )
     with open(whats_new_plist_file, 'rb') as file:
         plist_data = plistlib.load(file)
         plist_data['Features'] = []
@@ -114,25 +117,32 @@ def CleanUpFeaturesPlist() -> None:
             plistlib.dump(plist_data, plist_file, sort_keys=False)
 
 
-def UpdateWhatsNewPlist(feature_dict: dict[str, str], feature_type: int,
-                        path_to_milestone_folder: str) -> None:
+def UpdateWhatsNewPlist(
+    feature_dict: dict[str, str],
+    feature_type: int,
+    path_to_milestone_folder: str,
+) -> None:
     """Updates whats_new_entries.plist with the new feature entry.
 
-  Args:
-      feature_dict: Data for the new What's New feature.
-      feature_type: Newly added WhatsNewType for the new What's New feature.
-      path_to_milestone_folder: Path to the milestone folder.
-  """
+    Args:
+        feature_dict: Data for the new What's New feature.
+        feature_type: Newly added WhatsNewType for the new What's New feature.
+        path_to_milestone_folder: Path to the milestone folder.
+    """
     # Format and clean up the instructions text field ID.
-    instruction_steps = StripWhitespacesAndEmptyLines(feature_dict['Instructions'])
+    instruction_steps = StripWhitespacesAndEmptyLines(
+        feature_dict['Instructions']
+    )
     serialized_animation_texts = feature_dict['Animation texts'].splitlines()
     animation_text_dict = {}
     for animation_text_string in serialized_animation_texts:
         animations_text = json.loads(animation_text_string)
         processed_lines = StripWhitespacesAndEmptyLines(
-            animations_text['value'])
+            animations_text['value']
+        )
         animation_text_dict[animations_text['key'].strip()] = "".join(
-            processed_lines)
+            processed_lines
+        )
     new_entry = {
         'Type': feature_type,
         'Title': feature_dict['Title'],
@@ -145,11 +155,13 @@ def UpdateWhatsNewPlist(feature_dict: dict[str, str], feature_type: int,
         'IsSystemSymbol': feature_dict['Icon Type'] == 'Default',
         'InstructionSteps': instruction_steps,
         'PrimaryAction': _GetPrimaryAction(feature_dict['Primary action']),
-        'LearnMoreUrlString': feature_dict['Help url']
+        'LearnMoreUrlString': feature_dict['Help url'],
     }
     whats_new_plist_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/whats_new/ui/data_source/'
-        'resources/whats_new_entries.plist')
+        BASE_DIR,
+        '../ios/chrome/browser/whats_new/ui/data_source/'
+        'resources/whats_new_entries.plist',
+    )
     with open(whats_new_plist_file, 'rb') as file:
         plist_data = plistlib.load(file)
         plist_data['Features'].append(new_entry)
@@ -160,18 +172,21 @@ def UpdateWhatsNewPlist(feature_dict: dict[str, str], feature_type: int,
 def UpdateWhatsNewUtils(feature_dict: dict[str, str]) -> None:
     """Updates whats_new_util.mm with the new feature entry.
 
-  Args:
-      feature_dict: Data for the new What's New feature.
-  """
+    Args:
+        feature_dict: Data for the new What's New feature.
+    """
     feature_name = feature_dict['Feature name']
     whats_new_util_file = os.path.join(
-        BASE_DIR, '..',
-        'ios/chrome/browser/whats_new/coordinator/whats_new_util.mm')
+        BASE_DIR,
+        '..',
+        'ios/chrome/browser/whats_new/coordinator/whats_new_util.mm',
+    )
     with open(whats_new_util_file, 'r+', encoding='utf-8', newline='') as file:
         read_data = file.read()
         whats_new_type_error_regex = r'case WhatsNewType::kError:'
-        case_to_replace = re.search(whats_new_type_error_regex, read_data,
-                                    re.DOTALL)
+        case_to_replace = re.search(
+            whats_new_type_error_regex, read_data, re.DOTALL
+        )
         assert case_to_replace
         new_case = []
         new_case.append('case WhatsNewType::k' + feature_name + ':')
@@ -183,29 +198,35 @@ def UpdateWhatsNewUtils(feature_dict: dict[str, str]) -> None:
         file.write(data)
 
 
-def CopyAnimationFilesToResources(feature_dict: dict[str, str],
-                                  path_to_milestone_folder: str) -> None:
+def CopyAnimationFilesToResources(
+    feature_dict: dict[str, str], path_to_milestone_folder: str
+) -> None:
     """Copy and rename the new feature lottie files.
 
-  Args:
-      feature_dict: Data for the new What's New feature.
-      path_to_milestone_folder: Path to the milestone folder.
-  """
+    Args:
+        feature_dict: Data for the new What's New feature.
+        path_to_milestone_folder: Path to the milestone folder.
+    """
     feature_name = feature_dict['Feature name']
     animation_name_darkmode = feature_dict['Animation darkmode']
     animation_name = feature_dict['Animation']
     milestone = feature_dict['Milestone'].lower()
     DEST_DIR = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/whats_new/ui/data_source/resources',
-        milestone)
+        BASE_DIR,
+        '../ios/chrome/browser/whats_new/ui/data_source/resources',
+        milestone,
+    )
     os.makedirs(DEST_DIR, exist_ok=True)
-    darkmode_src_file = os.path.join(path_to_milestone_folder, feature_name,
-                                     animation_name_darkmode)
-    new_darkmode_dst_file = os.path.join(DEST_DIR,
-                                         feature_name + '_darkmode.json')
+    darkmode_src_file = os.path.join(
+        path_to_milestone_folder, feature_name, animation_name_darkmode
+    )
+    new_darkmode_dst_file = os.path.join(
+        DEST_DIR, feature_name + '_darkmode.json'
+    )
     shutil.copyfile(darkmode_src_file, new_darkmode_dst_file)
-    src_file = os.path.join(path_to_milestone_folder, feature_name,
-                            animation_name)
+    src_file = os.path.join(
+        path_to_milestone_folder, feature_name, animation_name
+    )
     new_animation_dst_file = os.path.join(DEST_DIR, feature_name + '.json')
     shutil.copyfile(src_file, new_animation_dst_file)
 
@@ -213,46 +234,51 @@ def CopyAnimationFilesToResources(feature_dict: dict[str, str],
 def UpdateResourcesBuildFile(feature_dict: dict[str, str]) -> None:
     """Updates the data source BUILD.gn with the new animation assets.
 
-  Args:
-      feature_dict: Data for the new What's New feature.
-  """
+    Args:
+        feature_dict: Data for the new What's New feature.
+    """
     feature_name = feature_dict['Feature name']
     screenshots_lists_regex = r'screenshots_lists\s*=\s*(\[.*?\])'
     milestone = feature_dict['Milestone'].lower()
     whats_new_resources_build_file = os.path.join(
         BASE_DIR,
-        '../ios/chrome/browser/whats_new/ui/data_source/resources/BUILD.gn')
-    with open(whats_new_resources_build_file,
-              'r+',
-              encoding='utf-8',
-              newline='') as file:
+        '../ios/chrome/browser/whats_new/ui/data_source/resources/BUILD.gn',
+    )
+    with open(
+        whats_new_resources_build_file, 'r+', encoding='utf-8', newline=''
+    ) as file:
         original_file_content = file.read()
-        match = re.search(screenshots_lists_regex, original_file_content,
-                          re.DOTALL)
+        match = re.search(
+            screenshots_lists_regex, original_file_content, re.DOTALL
+        )
         assert match
         in_app_images = ast.literal_eval(match.group(1))
         in_app_images.append(os.path.join(milestone, feature_name + '.json'))
         in_app_images.append(
-            os.path.join(milestone, feature_name + '_darkmode.json'))
+            os.path.join(milestone, feature_name + '_darkmode.json')
+        )
         in_app_images_serialized = json.dumps(in_app_images)
-        data = original_file_content.replace(match.group(1),
-                                             in_app_images_serialized)
+        data = original_file_content.replace(
+            match.group(1), in_app_images_serialized
+        )
         file.seek(0)
         file.write(data)
 
 
-def AddStrings(feature_dict: dict[str, str],
-               path_to_milestone_folder: str) -> None:
+def AddStrings(
+    feature_dict: dict[str, str], path_to_milestone_folder: str
+) -> None:
     """Adds the feature strings.
 
-  Args:
-      feature_dict: Data for the new What's New feature.
-      path_to_milestone_folder: Path to the milestone folder.
-  """
+    Args:
+        feature_dict: Data for the new What's New feature.
+        path_to_milestone_folder: Path to the milestone folder.
+    """
     feature_name = feature_dict['Feature name']
     milestone = feature_dict['Milestone'].lower()
-    strings_doc_file = os.path.join(path_to_milestone_folder, feature_name,
-                                    'strings.docx')
+    strings_doc_file = os.path.join(
+        path_to_milestone_folder, feature_name, 'strings.docx'
+    )
     paragraphs_string_builder = []
     with open(strings_doc_file, 'rb') as file:
         read_data = Document(file)
@@ -260,58 +286,66 @@ def AddStrings(feature_dict: dict[str, str],
             if paragraph.text:
                 paragraphs_string_builder.append(paragraph.text)
     milestone_string_grd_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/whats_new/ui/strings/',
-        milestone + '_strings.grdp')
+        BASE_DIR,
+        '../ios/chrome/browser/whats_new/ui/strings/',
+        milestone + '_strings.grdp',
+    )
     if not os.path.exists(milestone_string_grd_file):
-        #Create new file and add to grd main
+        # Create new file and add to grd main
         with open(milestone_string_grd_file, 'w') as grd_file_handler:
             grd_content_builder = []
-            grd_content_builder.append(
-                '<?xml version="1.0" encoding="utf-8"?>')
+            grd_content_builder.append('<?xml version="1.0" encoding="utf-8"?>')
             grd_content_builder.append('<grit-part>')
             grd_content_builder.append(' <!-- Milestone specific strings -->')
             grd_content_builder.extend(paragraphs_string_builder)
             grd_content_builder.append('</grit-part>')
             grd_file_handler.write('\n'.join(grd_content_builder))
-        #open and add to main grd
+        # open and add to main grd
         whats_new_strings_grd_file = os.path.join(
-            BASE_DIR, '../ios/chrome/browser/whats_new/ui',
-            'strings/ios_whats_new_strings.grd')
-        with open(whats_new_strings_grd_file,
-                  'r+',
-                  encoding='utf-8',
-                  newline='') as file:
+            BASE_DIR,
+            '../ios/chrome/browser/whats_new/ui',
+            'strings/ios_whats_new_strings.grd',
+        )
+        with open(
+            whats_new_strings_grd_file, 'r+', encoding='utf-8', newline=''
+        ) as file:
             read_data = file.read()
-            match_grdp_part = re.search(r'<part file="(.*?)_strings.grdp" />',
-                                        read_data, re.DOTALL)
+            match_grdp_part = re.search(
+                r'<part file="(.*?)_strings.grdp" />', read_data, re.DOTALL
+            )
             assert match_grdp_part
             new_str_entry = '<part file="' + milestone + '_strings.grdp" />'
             data = read_data.replace(match_grdp_part.group(0), new_str_entry)
             file.seek(0)
             file.write(data)
     else:
-        #search for '</grit-part>' and add above
+        # search for '</grit-part>' and add above
         feature_strings_grd_file = os.path.join(
-            BASE_DIR, '../ios/chrome/browser/whats_new/ui/strings/',
-            milestone + '_strings.grdp')
-        with open(feature_strings_grd_file, 'r+', encoding='utf-8',
-                  newline='') as file:
+            BASE_DIR,
+            '../ios/chrome/browser/whats_new/ui/strings/',
+            milestone + '_strings.grdp',
+        )
+        with open(
+            feature_strings_grd_file, 'r+', encoding='utf-8', newline=''
+        ) as file:
             read_data = file.read()
             paragraphs_string_builder.append('</grit-part>')
-            data = read_data.replace('</grit-part>',
-                                     '\n'.join(paragraphs_string_builder))
+            data = read_data.replace(
+                '</grit-part>', '\n'.join(paragraphs_string_builder)
+            )
             file.seek(0)
             file.write(data)
 
 
-def UploadScreenshots(feature_dict: dict[str, str],
-                      path_to_milestone_folder: str) -> None:
+def UploadScreenshots(
+    feature_dict: dict[str, str], path_to_milestone_folder: str
+) -> None:
     """Upload the screenshots.
 
-  Args:
-      feature_dict: Data for the new What's New feature.
-      path_to_milestone_folder: Path to the milestone folder.
-  """
+    Args:
+        feature_dict: Data for the new What's New feature.
+        path_to_milestone_folder: Path to the milestone folder.
+    """
     titles = []
     milestone = feature_dict['Milestone'].lower()
     feature_name = feature_dict['Feature name']
@@ -320,21 +354,29 @@ def UploadScreenshots(feature_dict: dict[str, str],
     feature_screenshot = feature_dict['Feature screenshot']
     titles.extend(StripWhitespacesAndEmptyLines(feature_dict['Instructions']))
     animation_texts_string = feature_dict['Animation texts'].splitlines()
-    titles.extend("".join(StripWhitespacesAndEmptyLines(json.loads(a)['value'])) for a in animation_texts_string)
+    titles.extend(
+        "".join(StripWhitespacesAndEmptyLines(json.loads(a)['value']))
+        for a in animation_texts_string
+    )
     screenshot_dir = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/whats_new/ui/strings',
-        milestone + '_strings_grdp')
+        BASE_DIR,
+        '../ios/chrome/browser/whats_new/ui/strings',
+        milestone + '_strings_grdp',
+    )
     os.makedirs(screenshot_dir, exist_ok=True)
     for title in titles:
-        src_file = os.path.join(path_to_milestone_folder, feature_name,
-                                feature_screenshot)
+        src_file = os.path.join(
+            path_to_milestone_folder, feature_name, feature_screenshot
+        )
         new_dst_file = os.path.join(screenshot_dir, title + '.png')
         shutil.copyfile(src_file, new_dst_file)
     # Run screenshot uploader
-    subprocess.run(['python3', 'tools/translation/upload_screenshots.py'],
-                   capture_output=True,
-                   text=True,
-                   input='Y')
+    subprocess.run(
+        ['python3', 'tools/translation/upload_screenshots.py'],
+        capture_output=True,
+        text=True,
+        input='Y',
+    )
     # Remove the pngs
     for title in titles:
         os.remove(os.path.join(screenshot_dir, title + '.png'))
@@ -342,23 +384,25 @@ def UploadScreenshots(feature_dict: dict[str, str],
 
 def UpdateWhatsNewFETEvent(milestone: str) -> None:
     """Updates ios_promo_feature_configuration.cc and event_constants.cc
-       with the new what's new fet event name.
+         with the new what's new fet event name.
 
-  Args:
-      milestone: What's New milestone.
-  """
+    Args:
+        milestone: What's New milestone.
+    """
     whats_new_fet_event_regex = r'"viewed_whats_new_(.*?)"'
     new_event_str = '"viewed_whats_new_' + milestone + '"'
     event_constants_file = os.path.join(
-        BASE_DIR, '../components/feature_engagement/public/event_constants.cc')
-    with open(event_constants_file, 'r+', encoding='utf-8',
-              newline='') as file:
+        BASE_DIR, '../components/feature_engagement/public/event_constants.cc'
+    )
+    with open(event_constants_file, 'r+', encoding='utf-8', newline='') as file:
         file_content = file.read()
-        match_whats_new_fet_event = re.search(whats_new_fet_event_regex,
-                                              file_content, re.DOTALL)
+        match_whats_new_fet_event = re.search(
+            whats_new_fet_event_regex, file_content, re.DOTALL
+        )
         assert match_whats_new_fet_event
         new_file_content = file_content.replace(
-            match_whats_new_fet_event.group(0), new_event_str)
+            match_whats_new_fet_event.group(0), new_event_str
+        )
         file.seek(0)
         file.write(new_file_content)
 
@@ -366,17 +410,21 @@ def UpdateWhatsNewFETEvent(milestone: str) -> None:
 def RemoveStringsForMilestone(milestone: str) -> None:
     """Removes the strings for a specific milestone.
 
-      Args:
-        milestone: milestone for which the strings will be removed.
+    Args:
+      milestone: milestone for which the strings will be removed.
     """
     whats_new_strings_grd_file = os.path.join(
-        BASE_DIR, '../ios/chrome/browser/whats_new/ui',
-        'strings/ios_whats_new_strings.grd')
-    with open(whats_new_strings_grd_file, 'r+', encoding='utf-8',
-              newline='') as file:
+        BASE_DIR,
+        '../ios/chrome/browser/whats_new/ui',
+        'strings/ios_whats_new_strings.grd',
+    )
+    with open(
+        whats_new_strings_grd_file, 'r+', encoding='utf-8', newline=''
+    ) as file:
         read_data = file.read()
-        match_grdp_part = re.search(r'<part file="(.*?)_strings.grdp" />',
-                                    read_data, re.DOTALL)
+        match_grdp_part = re.search(
+            r'<part file="(.*?)_strings.grdp" />', read_data, re.DOTALL
+        )
         assert match_grdp_part
         if match_grdp_part.group(1) == milestone:
             raise AssertionError(
@@ -384,19 +432,26 @@ def RemoveStringsForMilestone(milestone: str) -> None:
                 'ios_whats_new_strings.grd. Please upload new features '
                 'to What\s New before removing strings and assets. '
                 'Please see "tools/whats_new/upload_whats_new_features" '
-                'for more information.')
+                'for more information.'
+            )
     try:
         screenshot_milestone_dir = os.path.join(
-            BASE_DIR, '../ios/chrome/browser/whats_new/ui/strings',
-            milestone + '_strings_grdp')
+            BASE_DIR,
+            '../ios/chrome/browser/whats_new/ui/strings',
+            milestone + '_strings_grdp',
+        )
         shutil.rmtree(screenshot_milestone_dir)
     except:
-        print('The strings grdp directory for this milestone has already '
-              'been removed.')
+        print(
+            'The strings grdp directory for this milestone has already '
+            'been removed.'
+        )
     try:
         strings_file = os.path.join(
-            BASE_DIR, '../ios/chrome/browser/whats_new/ui/strings',
-            milestone + '_strings.grdp')
+            BASE_DIR,
+            '../ios/chrome/browser/whats_new/ui/strings',
+            milestone + '_strings.grdp',
+        )
         os.remove(strings_file)
     except:
         print(
@@ -407,36 +462,40 @@ def RemoveStringsForMilestone(milestone: str) -> None:
 def RemoveAnimationAssetsForMilestone(milestone: str) -> None:
     """Removes the animation assets for a specific milestone.
 
-      Args:
-        milestone: milestone for which the animations will be removed.
+    Args:
+      milestone: milestone for which the animations will be removed.
     """
     try:
         whats_new_milestone_resource_dir = os.path.join(
             BASE_DIR,
             '../ios/chrome/browser/whats_new/ui/data_source/resources',
-            milestone)
+            milestone,
+        )
         shutil.rmtree(whats_new_milestone_resource_dir)
     except:
-        print('The animation assets for this milestone have already'
-              'been removed.')
+        print(
+            'The animation assets for this milestone have alreadybeen removed.'
+        )
     screenshots_lists_regex = r'screenshots_lists\s*=\s*(\[.*?\])'
     whats_new_resources_build_file = os.path.join(
         BASE_DIR,
-        '../ios/chrome/browser/whats_new/ui/data_source/resources/BUILD.gn')
-    with open(whats_new_resources_build_file,
-              'r+',
-              encoding='utf-8',
-              newline='') as file:
+        '../ios/chrome/browser/whats_new/ui/data_source/resources/BUILD.gn',
+    )
+    with open(
+        whats_new_resources_build_file, 'r+', encoding='utf-8', newline=''
+    ) as file:
         original_file_content = file.read()
-        match = re.search(screenshots_lists_regex, original_file_content,
-                          re.DOTALL)
+        match = re.search(
+            screenshots_lists_regex, original_file_content, re.DOTALL
+        )
         assert match
         in_app_images = ast.literal_eval(match.group(1))
         regex = re.compile(rf'{milestone}/(.*?)')
         filtered = [i for i in in_app_images if not regex.match(i)]
         in_app_images_serialized = json.dumps(filtered)
-        data = original_file_content.replace(match.group(1),
-                                             in_app_images_serialized)
+        data = original_file_content.replace(
+            match.group(1), in_app_images_serialized
+        )
         file.seek(0)
         file.write(data)
         file.truncate()
@@ -445,8 +504,8 @@ def RemoveAnimationAssetsForMilestone(milestone: str) -> None:
 def LoadValidIconNames() -> ValidIcons:
     """Loads the valid icon names from the src code.
 
-      Returns:
-        ValidIcons instance representing all the different valid icon names
+    Returns:
+      ValidIcons instance representing all the different valid icon names
     """
     valid_custom_icons = set()
     valid_default_icons = set()
@@ -475,7 +534,8 @@ def LoadValidIconNames() -> ValidIcons:
     # Open SF Symbols.app to find all possible icon names.
     sf_symbols_path = os.path.join(
         DEFAULT_SF_SYMBOLS_PATH,
-        'Contents/Resources/Metadata/name_availability.plist')
+        'Contents/Resources/Metadata/name_availability.plist',
+    )
 
     if os.path.exists(sf_symbols_path):
         with open(sf_symbols_path, 'rb') as file:
@@ -488,15 +548,16 @@ def LoadValidIconNames() -> ValidIcons:
     return ValidIcons(valid_custom_icons, valid_default_icons, all_icons)
 
 
-def ValidateWhatsNewData(feature_dict: dict[str, str],
-                         valid_icons: ValidIcons) -> str:
+def ValidateWhatsNewData(
+    feature_dict: dict[str, str], valid_icons: ValidIcons
+) -> str:
     """Validates the provided data represents a valid What's New feature.
 
-      Args:
-        feature_dict: Data for the new What's New feature
-        valid_icons: A ValidIcons instance representing which icons are valid
-      Returns:
-        An empty string if the data is valid
+    Args:
+      feature_dict: Data for the new What's New feature
+      valid_icons: A ValidIcons instance representing which icons are valid
+    Returns:
+      An empty string if the data is valid
     """
     icon_name = feature_dict['Icon name']
     if feature_dict['Icon Type'] == 'Custom':
@@ -506,10 +567,13 @@ def ValidateWhatsNewData(feature_dict: dict[str, str],
         if icon_name not in valid_icons.full_default:
             return f'Invalid Default icon name: {icon_name}'
         else:
-            return (f'Default icon {icon_name} not present '
-                    f'in //{CHROME_ICON_FILENAME}')
+            return (
+                f'Default icon {icon_name} not present '
+                f'in //{CHROME_ICON_FILENAME}'
+            )
 
     return ""
+
 
 def StripWhitespacesAndEmptyLines(text: str) -> list[str]:
     """Strips all whitespace and empty lines from text including whitespace
@@ -556,8 +620,9 @@ def ExtractTextLayerIDs(lottie_json: dict) -> set[str]:
     return text_layer_ids
 
 
-def ValidateLottieTextLayers(feature_dict: dict[str, str],
-                             path_to_milestone_folder: str) -> None:
+def ValidateLottieTextLayers(
+    feature_dict: dict[str, str], path_to_milestone_folder: str
+) -> None:
     """Validates that all animation text keys correspond to text layers in
     Lottie files.
 
@@ -575,7 +640,8 @@ def ValidateLottieTextLayers(feature_dict: dict[str, str],
     # Validate that the animation names are not empty
     if not animation_name or not animation_name_darkmode:
         raise AssertionError(
-            "Animation and Animation darkmode names cannot be empty")
+            "Animation and Animation darkmode names cannot be empty"
+        )
 
     # Get the provided animation text keys
     animation_texts = feature_dict['Animation texts'].splitlines()
@@ -587,17 +653,27 @@ def ValidateLottieTextLayers(feature_dict: dict[str, str],
                 provided_keys.add(animation_text['key'])
             else:
                 # Handle case where 'key' is missing
-                raise AssertionError(
-                    f"Missing 'key' in animation text: {text}")
+                raise AssertionError(f"Missing 'key' in animation text: {text}")
         except json.JSONDecodeError as e:
             raise AssertionError(
-                f"Invalid JSON format in animation texts: {text}") from e
+                f"Invalid JSON format in animation texts: {text}"
+            ) from e
 
     # Read and validate both light and dark mode Lottie files
-    lottie_files = [(os.path.join(path_to_milestone_folder, feature_name,
-                                  animation_name), "light mode"),
-                    (os.path.join(path_to_milestone_folder, feature_name,
-                                  animation_name_darkmode), "dark mode")]
+    lottie_files = [
+        (
+            os.path.join(
+                path_to_milestone_folder, feature_name, animation_name
+            ),
+            "light mode",
+        ),
+        (
+            os.path.join(
+                path_to_milestone_folder, feature_name, animation_name_darkmode
+            ),
+            "dark mode",
+        ),
+    ]
 
     for lottie_file_path, mode in lottie_files:
         try:
@@ -620,7 +696,8 @@ def ValidateLottieTextLayers(feature_dict: dict[str, str],
         if missing_keys:
             raise AssertionError(
                 f"The following animation text keys were not found as text layers in the {mode} "
-                f"Lottie file: {', '.join(missing_keys)}")
+                f"Lottie file: {', '.join(missing_keys)}"
+            )
 
         # Warn about text layers without corresponding keys
         unused_layers = text_layer_ids - provided_keys

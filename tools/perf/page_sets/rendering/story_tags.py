@@ -12,84 +12,89 @@ Tag = collections.namedtuple('Tag', ['name', 'description'])
 # A story can have multiple tags. All the tags should be nouns.
 
 GPU_RASTERIZATION = Tag(
-    'gpu_rasterization', 'Story tests performance with GPU rasterization.')
-FASTPATH = Tag(
-    'fastpath', 'Fast path stories.')
+  'gpu_rasterization', 'Story tests performance with GPU rasterization.'
+)
+FASTPATH = Tag('fastpath', 'Fast path stories.')
 REQUIRED_WEBGL = Tag(
-    'required_webgl', 'Stories that are skipped if no webgl support')
+  'required_webgl', 'Stories that are skipped if no webgl support'
+)
 USE_FAKE_CAMERA_DEVICE = Tag(
-    'use_fake_camera_device', 'Story requires a camera device for media')
+  'use_fake_camera_device', 'Story requires a camera device for media'
+)
 
 # Below are tags for filtering by page sets
 
-BACKDROP_FILTER = Tag(
-    'backdrop_filter', 'Backdrop filter stories')
+BACKDROP_FILTER = Tag('backdrop_filter', 'Backdrop filter stories')
 IMAGE_DECODING = Tag(
-    'image_decoding', ('Stories decoding JPEG and WebP (and using GPU '
-                       'rasterization) to compare YUV and RGB'))
-KEY_DESKTOP_MOVE = Tag(
-    'key_desktop_move', 'Key desktop move stories')
-KEY_SILK = Tag(
-    'key_silk', 'Key silk stories')
-KEY_NOOP = Tag(
-    'key_noop', 'Key noop stories')
-KEY_IDLE_POWER = Tag(
-    'key_idle_power', 'Key idle power stories')
-MAPS = Tag(
-    'maps', 'Maps stories')
-MOTIONMARK = Tag('motionmark',
-                 'Motionmark benchmark stories (fixed complexity)')
-MOTIONMARK_RAMP = Tag('motionmark_ramp',
-                      'Motionmark benchmark stories (ramped complexity)')
+  'image_decoding',
+  (
+    'Stories decoding JPEG and WebP (and using GPU '
+    'rasterization) to compare YUV and RGB'
+  ),
+)
+KEY_DESKTOP_MOVE = Tag('key_desktop_move', 'Key desktop move stories')
+KEY_SILK = Tag('key_silk', 'Key silk stories')
+KEY_NOOP = Tag('key_noop', 'Key noop stories')
+KEY_IDLE_POWER = Tag('key_idle_power', 'Key idle power stories')
+MAPS = Tag('maps', 'Maps stories')
+MOTIONMARK = Tag(
+  'motionmark', 'Motionmark benchmark stories (fixed complexity)'
+)
+MOTIONMARK_RAMP = Tag(
+  'motionmark_ramp', 'Motionmark benchmark stories (ramped complexity)'
+)
 MOTIONMARK_FIXED_2_SECONDS = Tag(
-    'motionmark_fixed_2_seconds',
-    'Motionmark benchmark stories running with fixed complexity for 2 seconds')
+  'motionmark_fixed_2_seconds',
+  'Motionmark benchmark stories running with fixed complexity for 2 seconds',
+)
 PATHOLOGICAL_MOBILE_SITES = Tag(
-    'pathological_mobile_sites', 'Pathological mobile sites')
-REPAINT_DESKTOP = Tag(
-    'repaint_desktop', 'Repaint desktop stories')
+  'pathological_mobile_sites', 'Pathological mobile sites'
+)
+REPAINT_DESKTOP = Tag('repaint_desktop', 'Repaint desktop stories')
 # Representative story_tags are the cluster representatives of benchamrks
 # Documentation: https://goto.google.com/chrome-benchmark-clustering
 REPRESENTATIVE_MAC_DESKTOP = Tag(
-    'representative_mac_desktop', 'Rendering desktop representatives for mac')
+  'representative_mac_desktop', 'Rendering desktop representatives for mac'
+)
 REPRESENTATIVE_MOBILE = Tag(
-    'representative_mobile', 'Rendering mobile representatives')
+  'representative_mobile', 'Rendering mobile representatives'
+)
 REPRESENTATIVE_WIN_DESKTOP = Tag(
-    'representative_win_desktop',
-    'Rendering desktop representatives for windows')
+  'representative_win_desktop', 'Rendering desktop representatives for windows'
+)
 SIMPLE_CANVAS = Tag('simple_canvas', 'Simple canvas stories')
-SIMPLE_MOBILE_SITES = Tag(
-    'simple_mobile_sites', 'Simple mobile sites')
+SIMPLE_MOBILE_SITES = Tag('simple_mobile_sites', 'Simple mobile sites')
 THROUGHPUT_TEST = Tag(
-    'throughput_test', 'Test cases for throughput measurement')
+  'throughput_test', 'Test cases for throughput measurement'
+)
 TOP_REAL_WORLD_DESKTOP = Tag(
-    'top_real_world_desktop', 'Top real world desktop stories')
+  'top_real_world_desktop', 'Top real world desktop stories'
+)
 TOP_REAL_WORLD_MOBILE = Tag(
-    'top_real_world_mobile', 'Top real world mobile stories')
-TOUGH_ANIMATION = Tag(
-    'tough_animation', 'Tough animation stories')
-TOUGH_CANVAS = Tag(
-    'tough_canvas', 'Tough canvas stories')
-TOUGH_COMPOSITOR = Tag(
-    'tough_compositor', 'Tough compositor stories')
-TOUGH_FILTERS = Tag(
-    'tough_filters', 'Tough filters stories')
+  'top_real_world_mobile', 'Top real world mobile stories'
+)
+TOUGH_ANIMATION = Tag('tough_animation', 'Tough animation stories')
+TOUGH_CANVAS = Tag('tough_canvas', 'Tough canvas stories')
+TOUGH_COMPOSITOR = Tag('tough_compositor', 'Tough compositor stories')
+TOUGH_FILTERS = Tag('tough_filters', 'Tough filters stories')
 TOUGH_PATH_RENDERING = Tag(
-    'tough_path_rendering', 'Tough path rendering stories')
+  'tough_path_rendering', 'Tough path rendering stories'
+)
 TOUGH_PINCH_ZOOM = Tag(
-    'tough_pinch_zoom', 'Tough pinch zoom stories (only on Mac for desktop)')
+  'tough_pinch_zoom', 'Tough pinch zoom stories (only on Mac for desktop)'
+)
 TOUGH_PINCH_ZOOM_MOBILE = Tag(
-    'tough_pinch_zoom_mobile', 'Tough pinch zoom mobile stories')
-TOUGH_SCHEDULING = Tag(
-    'tough_scheduling', 'Tough scheduling stories')
-TOUGH_SCROLLBAR_SCROLLING = Tag('tough_scrollbar_scrolling',
-                                'Tough Scrollbar Scrolling stories')
-TOUGH_SCROLLING = Tag(
-    'tough_scrolling', 'Tough scrolling stories')
+  'tough_pinch_zoom_mobile', 'Tough pinch zoom mobile stories'
+)
+TOUGH_SCHEDULING = Tag('tough_scheduling', 'Tough scheduling stories')
+TOUGH_SCROLLBAR_SCROLLING = Tag(
+  'tough_scrollbar_scrolling', 'Tough Scrollbar Scrolling stories'
+)
+TOUGH_SCROLLING = Tag('tough_scrolling', 'Tough scrolling stories')
 TOUGH_TEXTURE_UPLOAD = Tag(
-    'tough_texture_upload', 'Tough texture upload stories')
-TOUGH_WEBGL = Tag(
-    'tough_webgl', 'Tough webgl stories')
+  'tough_texture_upload', 'Tough texture upload stories'
+)
+TOUGH_WEBGL = Tag('tough_webgl', 'Tough webgl stories')
 
 
 def _ExtractAllTags():

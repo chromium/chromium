@@ -14,14 +14,15 @@ import time
 
 
 class WebXrSamplePage(XrSamplePage):
-
-  def __init__(self, page_set, url_parameters, sample_page,
-      extra_browser_args=None):
+  def __init__(
+    self, page_set, url_parameters, sample_page, extra_browser_args=None
+  ):
     super(WebXrSamplePage, self).__init__(
-        sample_page=sample_page,
-        page_set=page_set,
-        url_parameters=url_parameters,
-        extra_browser_args=extra_browser_args)
+      sample_page=sample_page,
+      page_set=page_set,
+      url_parameters=url_parameters,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunPageInteractions(self, action_runner):
     # The user-visible text differs per-page (e.g. "Enter VR"), but the
@@ -29,14 +30,17 @@ class WebXrSamplePage(XrSamplePage):
     action_runner.WaitForElement(selector='button[title="Enter XR"]')
     action_runner.TapElement(selector='button[title="Enter XR"]')
 
-    if (self.platform.GetOSName().lower() == 'android'
-        and '--deny-permission-prompts'
-        not in action_runner.tab.browser.startup_args):
+    if (
+      self.platform.GetOSName().lower() == 'android'
+      and '--deny-permission-prompts'
+      not in action_runner.tab.browser.startup_args
+    ):
       # Grant the Chrome permission for the site.
       try:
         app_ui = action_runner.tab.browser.GetAppUi()
         allow_this_time_button = app_ui.WaitForUiNode(
-            timeout=10, retries=1, content_desc='Allow this time')
+          timeout=10, retries=1, content_desc='Allow this time'
+        )
         allow_this_time_button.Tap()
       except device_errors.CommandTimeoutError:
         # It is possible that the permission has been granted in this browser
@@ -61,7 +65,8 @@ class WebXrSamplePageSet(VrStorySet):
 
   def __init__(self, use_fake_pose_tracker=True):
     super(WebXrSamplePageSet, self).__init__(
-        use_fake_pose_tracker=use_fake_pose_tracker)
+      use_fake_pose_tracker=use_fake_pose_tracker
+    )
 
     # Test cases that use the synthetic cube field page
     cube_test_cases = [
@@ -76,8 +81,14 @@ class WebXrSamplePageSet(VrStorySet):
       # Absurd load for fill-rate testing. Only half the cube sea is rendered,
       # and the page automatically rotates the view between the rendered and
       # unrendered halves.
-      ['frameBufferScale=1.4', 'heavyGpu=1', 'cubeScale=0.4', 'workTime=4',
-       'halfOnly=1', 'autorotate=1'],
+      [
+        'frameBufferScale=1.4',
+        'heavyGpu=1',
+        'cubeScale=0.4',
+        'workTime=4',
+        'halfOnly=1',
+        'autorotate=1',
+      ],
     ]
 
     for url_parameters in cube_test_cases:

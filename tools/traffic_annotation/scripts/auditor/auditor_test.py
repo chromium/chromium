@@ -26,34 +26,43 @@ TEST_DATA_DIR = SCRIPT_DIR.parent / "test_data"
 
 
 class AuditorTest(unittest.TestCase):
-
   def setUp(self):
     build_path = TEST_DATA_DIR / "out" / "Debug"
 
     unittest.TestCase.setUp(self)
 
     path_filters = [
-        (TEST_DATA_DIR /
-         "test_sample_annotations.cc").relative_to(SRC_DIR).as_posix(),
-        (TEST_DATA_DIR /
-         "missing_new_field_sample_data/test_new_field_safelisted.cc"
-         ).relative_to(SRC_DIR).as_posix(),
-        (TEST_DATA_DIR /
-         "missing_new_field_sample_data/sample_new_field_not_safelisted.cc"
-         ).relative_to(SRC_DIR).as_posix()
+      (TEST_DATA_DIR / "test_sample_annotations.cc")
+      .relative_to(SRC_DIR)
+      .as_posix(),
+      (
+        TEST_DATA_DIR
+        / "missing_new_field_sample_data/test_new_field_safelisted.cc"
+      )
+      .relative_to(SRC_DIR)
+      .as_posix(),
+      (
+        TEST_DATA_DIR
+        / "missing_new_field_sample_data/sample_new_field_not_safelisted.cc"
+      )
+      .relative_to(SRC_DIR)
+      .as_posix(),
     ]
-    self.auditor_ui = AuditorUI(build_path,
-                                path_filters,
-                                no_filtering=False,
-                                test_only=True,
-                                skip_stale_build_check=True)
+    self.auditor_ui = AuditorUI(
+      build_path,
+      path_filters,
+      no_filtering=False,
+      test_only=True,
+      skip_stale_build_check=True,
+    )
     self.auditor = self.auditor_ui.auditor
-    self.auditor.file_filter.git_file_for_testing = (TEST_DATA_DIR /
-                                                     "git_list.txt")
+    self.auditor.file_filter.git_file_for_testing = (
+      TEST_DATA_DIR / "git_list.txt"
+    )
 
-    all_annotations = self.auditor.run_extractor(self.auditor_ui.build_path,
-                                                 self.auditor_ui.path_filters,
-                                                 skip_compdb=True)
+    all_annotations = self.auditor.run_extractor(
+      self.auditor_ui.build_path, self.auditor_ui.path_filters, skip_compdb=True
+    )
 
     self.sample_annotations = {}
     for annotation in all_annotations:
@@ -63,28 +72,30 @@ class AuditorTest(unittest.TestCase):
     global traffic_annotation
     traffic_annotation = self.auditor_ui.traffic_annotation
 
-  def deserialize(self,
-                  file_name: str) -> Tuple[Annotation, List[AuditorError]]:
+  def deserialize(
+    self, file_name: str
+  ) -> Tuple[Annotation, List[AuditorError]]:
     file_path = TEST_DATA_DIR / "extractor_outputs" / file_name
     lines = file_path.read_text(encoding="utf-8").splitlines()
 
     annotation = Annotation()
     language = extractor.LANGUAGE_MAPPING[Path(lines[0]).suffix]
     type_name = extractor.AnnotationType(lines[2])
-    extracted_annotation = extractor.Annotation(language=language,
-                                                file_path=Path(lines[0]),
-                                                line_number=int(lines[1]),
-                                                type_name=type_name,
-                                                unique_id=lines[3],
-                                                extra_id=lines[4],
-                                                text="\n".join(lines[5:]))
+    extracted_annotation = extractor.Annotation(
+      language=language,
+      file_path=Path(lines[0]),
+      line_number=int(lines[1]),
+      type_name=type_name,
+      unique_id=lines[3],
+      extra_id=lines[4],
+      text="\n".join(lines[5:]),
+    )
     errors = annotation.deserialize(extracted_annotation)
     return annotation, errors
 
-  def create_annotation_sample(self,
-                               type=Annotation.Type.COMPLETE,
-                               unique_id=0,
-                               second_id=0) -> Annotation:
+  def create_annotation_sample(
+    self, type=Annotation.Type.COMPLETE, unique_id=0, second_id=0
+  ) -> Annotation:
     if not unique_id:
       instance, errors = self.deserialize("good_complete_annotation.txt")
       assert not errors
@@ -110,10 +121,11 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual(70581310, iterative_hash("123_id"))
     self.assertEqual(69491511, iterative_hash("ID123"))
     self.assertEqual(
-        98652091,
-        iterative_hash(
-            "a_unique_looooooooooooooooooooooooooooooooooooooooooooooooooooooong"
-            "_id"))
+      98652091,
+      iterative_hash(
+        "a_unique_looooooooooooooooooooooooooooooooooooooooooooooooooooooong_id"
+      ),
+    )
     self.assertEqual(124751853, iterative_hash("bébé"))
 
   def test_get_files_from_git(self):
@@ -124,15 +136,14 @@ class AuditorTest(unittest.TestCase):
     filter.get_files_from_git()
 
     all_files = [
-        "tools/traffic_annotation/scripts/test_data/git_list.txt",
-        "tools/traffic_annotation/scripts/test_data/irrelevant_file_name.txt",
-        "tools/traffic_annotation/scripts/test_data/objective_cpp.mm",
-        "tools/traffic_annotation/scripts/test_data/"
-        "test_sample_annotations.cc",
-        "tools/traffic_annotation/scripts/test_data/"
-        "missing_new_field_sample_data/test_new_field_safelisted.cc",
-        "tools/traffic_annotation/scripts/test_data/"
-        "missing_new_field_sample_data/sample_new_field_not_safelisted.cc"
+      "tools/traffic_annotation/scripts/test_data/git_list.txt",
+      "tools/traffic_annotation/scripts/test_data/irrelevant_file_name.txt",
+      "tools/traffic_annotation/scripts/test_data/objective_cpp.mm",
+      "tools/traffic_annotation/scripts/test_data/test_sample_annotations.cc",
+      "tools/traffic_annotation/scripts/test_data/"
+      "missing_new_field_sample_data/test_new_field_safelisted.cc",
+      "tools/traffic_annotation/scripts/test_data/"
+      "missing_new_field_sample_data/sample_new_field_not_safelisted.cc",
     ]
     self.assertCountEqual([Path(f) for f in all_files], filter.git_files)
 
@@ -144,38 +155,46 @@ class AuditorTest(unittest.TestCase):
     filter.get_files_from_git()
 
     relevant_files = [
-        Path("tools/traffic_annotation/scripts/test_data/objective_cpp.mm"),
-        Path("tools/traffic_annotation/scripts/test_data/"
-             "test_sample_annotations.cc"),
-        Path("tools/traffic_annotation/scripts/test_data/"
-             "missing_new_field_sample_data/test_new_field_safelisted.cc"),
-        Path("tools/traffic_annotation/scripts/test_data/"
-             "missing_new_field_sample_data/sample_new_field_not_safelisted.cc")
+      Path("tools/traffic_annotation/scripts/test_data/objective_cpp.mm"),
+      Path(
+        "tools/traffic_annotation/scripts/test_data/test_sample_annotations.cc"
+      ),
+      Path(
+        "tools/traffic_annotation/scripts/test_data/"
+        "missing_new_field_sample_data/test_new_field_safelisted.cc"
+      ),
+      Path(
+        "tools/traffic_annotation/scripts/test_data/"
+        "missing_new_field_sample_data/sample_new_field_not_safelisted.cc"
+      ),
     ]
 
     # Check if all relevant files are returned with no ignore list and prefix.
     ignore_list = {}
     self.assertCountEqual(
-        relevant_files,
-        filter.get_filtered_files([".cc", ".mm"], ignore_list, ""))
+      relevant_files, filter.get_filtered_files([".cc", ".mm"], ignore_list, "")
+    )
 
     # Check if a file is ignored when added to the ignore list.
     ignore_list = {
-        ExceptionType.ALL: [re.compile(relevant_files[0].as_posix())]
+      ExceptionType.ALL: [re.compile(relevant_files[0].as_posix())]
     }
     self.assertCountEqual(
-        set(relevant_files) - set(relevant_files[:1]),
-        filter.get_filtered_files([".cc", ".mm"], ignore_list, ""))
+      set(relevant_files) - set(relevant_files[:1]),
+      filter.get_filtered_files([".cc", ".mm"], ignore_list, ""),
+    )
 
     # Check if files are filtered based on given directory.
     ignore_list = {}
     self.assertCountEqual(
-        relevant_files,
-        filter.get_filtered_files([".cc", ".mm"], ignore_list,
-                                  "tools/traffic_annotation"))
-    self.assertEqual([],
-                     filter.get_filtered_files([".cc", ".mm"], ignore_list,
-                                               "content"))
+      relevant_files,
+      filter.get_filtered_files(
+        [".cc", ".mm"], ignore_list, "tools/traffic_annotation"
+      ),
+    )
+    self.assertEqual(
+      [], filter.get_filtered_files([".cc", ".mm"], ignore_list, "content")
+    )
 
   def test_get_filtered_files_sequential(self):
     """Tests that FileFilter.get_filtered_files() correctly respects different
@@ -188,7 +207,8 @@ class AuditorTest(unittest.TestCase):
     for f in cc_files:
       self.assertEqual(".cc", f.suffix)
     self.assertTrue(
-        any(f.name == "test_sample_annotations.cc" for f in cc_files))
+      any(f.name == "test_sample_annotations.cc" for f in cc_files)
+    )
 
     mm_files = filter.get_filtered_files([".mm"], {}, "")
     for f in mm_files:
@@ -203,7 +223,8 @@ class AuditorTest(unittest.TestCase):
       # Anything in /tools directory is safelisted for all types.
       self.assertTrue(auditor._is_safe_listed(Path("tools/something.cc"), t))
       self.assertTrue(
-          auditor._is_safe_listed(Path("tools/somewhere/something.mm"), t))
+        auditor._is_safe_listed(Path("tools/somewhere/something.mm"), t)
+      )
 
       # Anything in a general folder is not safelisted for any type.
       self.assertFalse(auditor._is_safe_listed(Path("something.cc"), t))
@@ -212,43 +233,56 @@ class AuditorTest(unittest.TestCase):
     # Files defining missing annotation functions in net/ are exception of
     # 'missing' type.
     self.assertFalse(
-        auditor._is_safe_listed(Path("net/url_request/url_fetcher.cc"),
-                                ExceptionType.MISSING))
+      auditor._is_safe_listed(
+        Path("net/url_request/url_fetcher.cc"), ExceptionType.MISSING
+      )
+    )
     self.assertTrue(
-        auditor._is_safe_listed(Path("net/url_request/url_request_context.cc"),
-                                ExceptionType.MISSING))
+      auditor._is_safe_listed(
+        Path("net/url_request/url_request_context.cc"), ExceptionType.MISSING
+      )
+    )
 
     # Files with the word "test" in their path can have the "test" annotation.
     self.assertFalse(
-        auditor._is_safe_listed(Path("net/url_request/url_fetcher.cc"),
-                                ExceptionType.TEST_ANNOTATION))
+      auditor._is_safe_listed(
+        Path("net/url_request/url_fetcher.cc"), ExceptionType.TEST_ANNOTATION
+      )
+    )
     self.assertTrue(
-        auditor._is_safe_listed(Path("chrome/browser/test_something.cc"),
-                                ExceptionType.TEST_ANNOTATION))
+      auditor._is_safe_listed(
+        Path("chrome/browser/test_something.cc"), ExceptionType.TEST_ANNOTATION
+      )
+    )
     self.assertTrue(
-        auditor._is_safe_listed(Path("test/send_something.cc"),
-                                ExceptionType.TEST_ANNOTATION))
+      auditor._is_safe_listed(
+        Path("test/send_something.cc"), ExceptionType.TEST_ANNOTATION
+      )
+    )
 
   def test_annotation_deserialization(self) -> None:
     test_cases = [
-        ("good_complete_annotation.txt", None, Annotation.Type.COMPLETE),
-        ("good_branched_completing_annotation.txt", None,
-         Annotation.Type.BRANCHED_COMPLETING),
-        ("good_completing_annotation.txt", None, Annotation.Type.COMPLETING),
-        ("good_partial_annotation.txt", None, Annotation.Type.PARTIAL),
-        ("good_test_annotation.txt", ErrorType.TEST_ANNOTATION, None),
-        ("missing_annotation.txt", ErrorType.MISSING_TAG_USED, None),
-        ("good_no_annotation.txt", ErrorType.NO_ANNOTATION, None),
-        ("bad_syntax_annotation1.txt", ErrorType.SYNTAX, None),
-        ("bad_syntax_annotation2.txt", ErrorType.SYNTAX, None),
-        ("bad_syntax_annotation3.txt", ErrorType.SYNTAX, None),
-        ("bad_syntax_annotation4.txt", ErrorType.SYNTAX, None),
-        ("bad_syntax_annotation5.txt", ErrorType.SYNTAX, None),
-        ("bad_syntax_annotation6.txt", ErrorType.SYNTAX, None),
-        # "fatal" means a Python exception gets raised.
-        ("fatal_annotation1.txt", "fatal", None),
-        ("fatal_annotation2.txt", "fatal", None),
-        ("fatal_annotation3.txt", "fatal", None),
+      ("good_complete_annotation.txt", None, Annotation.Type.COMPLETE),
+      (
+        "good_branched_completing_annotation.txt",
+        None,
+        Annotation.Type.BRANCHED_COMPLETING,
+      ),
+      ("good_completing_annotation.txt", None, Annotation.Type.COMPLETING),
+      ("good_partial_annotation.txt", None, Annotation.Type.PARTIAL),
+      ("good_test_annotation.txt", ErrorType.TEST_ANNOTATION, None),
+      ("missing_annotation.txt", ErrorType.MISSING_TAG_USED, None),
+      ("good_no_annotation.txt", ErrorType.NO_ANNOTATION, None),
+      ("bad_syntax_annotation1.txt", ErrorType.SYNTAX, None),
+      ("bad_syntax_annotation2.txt", ErrorType.SYNTAX, None),
+      ("bad_syntax_annotation3.txt", ErrorType.SYNTAX, None),
+      ("bad_syntax_annotation4.txt", ErrorType.SYNTAX, None),
+      ("bad_syntax_annotation5.txt", ErrorType.SYNTAX, None),
+      ("bad_syntax_annotation6.txt", ErrorType.SYNTAX, None),
+      # "fatal" means a Python exception gets raised.
+      ("fatal_annotation1.txt", "fatal", None),
+      ("fatal_annotation2.txt", "fatal", None),
+      ("fatal_annotation3.txt", "fatal", None),
     ]
 
     for test_case in test_cases:
@@ -275,20 +309,25 @@ class AuditorTest(unittest.TestCase):
       if file_name != "good_complete_annotation.txt":
         continue
 
-      self.assertEqual(annotation.unique_id,
-                       "supervised_user_refresh_token_fetcher")
       self.assertEqual(
-          annotation.file,
-          Path("chrome/browser/supervised_user/legacy/"
-               "supervised_user_refresh_token_fetcher.cc"))
+        annotation.unique_id, "supervised_user_refresh_token_fetcher"
+      )
+      self.assertEqual(
+        annotation.file,
+        Path(
+          "chrome/browser/supervised_user/legacy/"
+          "supervised_user_refresh_token_fetcher.cc"
+        ),
+      )
       self.assertEqual(annotation.line, 166)
       self.assertEqual(annotation.proto.semantics.sender, "Supervised Users")
       self.assertEqual(annotation.proto.policy.cookies_allowed, 1)
 
   def test_get_reserved_ids_coverage(self):
     """Tests if RESERVED_IDS has all known ids."""
-    self.assertEqual(["test", "test_partial", "missing", "undefined"],
-                     RESERVED_IDS)
+    self.assertEqual(
+      ["test", "test_partial", "missing", "undefined"], RESERVED_IDS
+    )
 
   def test_reserved_ids_usage_detection(self):
     """Tests if use of reserved ids are detected."""
@@ -313,18 +352,19 @@ class AuditorTest(unittest.TestCase):
 
     # Check if several different hash codes result in no error.
     annotations = [
-        self.create_annotation_sample(unique_id=i) for i in range(10)
+      self.create_annotation_sample(unique_id=i) for i in range(10)
     ]
     errors = id_checker.check_ids(annotations)
     self.assertEqual([], errors)
 
     # Check if repeating the same hash codes results in errors.
     annotations = [
-        self.create_annotation_sample(unique_id=i // 2) for i in range(20)
+      self.create_annotation_sample(unique_id=i // 2) for i in range(20)
     ]
     errors = id_checker.check_ids(annotations)
-    self.assertCountEqual([ErrorType.REPEATED_ID] * 10,
-                          [e.type for e in errors])
+    self.assertCountEqual(
+      [ErrorType.REPEATED_ID] * 10, [e.type for e in errors]
+    )
 
   def test_similar_unique_and_second_ids_detection(self):
     """Tests if having the same unique id and second id is detected."""
@@ -347,10 +387,14 @@ class AuditorTest(unittest.TestCase):
       if annotation_types.index(type2) < annotation_types.index(type1):
         continue
 
-      for id1, id2, id3, id4 in \
-          itertools.product(*[range(1, 5) for i in range(4)]):
-        logger.debug("Testing ({}, {}, {}, {}, {}, {})".format(
-            type1, type2, id1, id2, id3, id4))
+      for id1, id2, id3, id4 in itertools.product(
+        *[range(1, 5) for i in range(4)]
+      ):
+        logger.debug(
+          "Testing ({}, {}, {}, {}, {}, {})".format(
+            type1, type2, id1, id2, id3, id4
+          )
+        )
 
         annotation1 = Annotation()
         annotation1.type = type1
@@ -368,8 +412,9 @@ class AuditorTest(unittest.TestCase):
         first_needs_two = annotation1.needs_two_ids()
         second_needs_two = annotation2.needs_two_ids()
 
-        unique_ids = set(id for a in [annotation1, annotation2]
-                         for id in a.get_ids())
+        unique_ids = set(
+          id for a in [annotation1, annotation2] for id in a.get_ids()
+        )
 
         if first_needs_two and second_needs_two:
           # If both need 2 ids, either the 4 ids should be different, or the
@@ -378,9 +423,11 @@ class AuditorTest(unittest.TestCase):
           if len(unique_ids) == 4:
             self.assertFalse(errors)
           elif len(unique_ids) == 3:
-            acceptable = (id2 == id4
-                          and type1 in [T.PARTIAL, T.BRANCHED_COMPLETING]
-                          and type2 in [T.PARTIAL, T.BRANCHED_COMPLETING])
+            acceptable = (
+              id2 == id4
+              and type1 in [T.PARTIAL, T.BRANCHED_COMPLETING]
+              and type2 in [T.PARTIAL, T.BRANCHED_COMPLETING]
+            )
             self.assertEqual(not acceptable, bool(errors))
           else:
             self.assertTrue(errors)
@@ -391,8 +438,9 @@ class AuditorTest(unittest.TestCase):
           if len(unique_ids) == 3:
             self.assertFalse(errors)
           elif len(unique_ids) == 2:
-            acceptable = (id2 == id3 and type1 == T.PARTIAL
-                          and type2 == T.COMPLETING)
+            acceptable = (
+              id2 == id3 and type1 == T.PARTIAL and type2 == T.COMPLETING
+            )
             self.assertEqual(not acceptable, bool(errors))
           else:
             self.assertTrue(errors)
@@ -406,12 +454,12 @@ class AuditorTest(unittest.TestCase):
   def test_check_ids_format(self):
     """Tests if IDs' format is correctly checked."""
     test_cases = [
-        ("ID1", True),
-        ("id2", True),
-        ("Id_3", True),
-        ("ID?4", False),
-        ("ID:5", False),
-        ("ID>>6", False),
+      ("ID1", True),
+      ("id2", True),
+      ("Id_3", True),
+      ("ID?4", False),
+      ("ID:5", False),
+      ("ID>>6", False),
     ]
 
     annotation = self.create_annotation_sample()
@@ -463,7 +511,8 @@ class AuditorTest(unittest.TestCase):
       test_description = ""
       expect_error = True
       logger.info(
-          "test_check_complete_annotations test number {}".format(test_no))
+        "test_check_complete_annotations test number {}".format(test_no)
+      )
       if test_no == 0:
         test_description = "All fields OK."
         expect_error = False
@@ -486,25 +535,29 @@ class AuditorTest(unittest.TestCase):
         test_description = "Missing policy::cookies_allowed"
         annotation.proto.policy.cookies_allowed = CookiesAllowed.UNSPECIFIED
       elif test_no == 7:
-        test_description = \
-            "policy::cookies_allowed = NO with existing policy::cookies_store."
+        test_description = (
+          "policy::cookies_allowed = NO with existing policy::cookies_store."
+        )
         annotation.proto.policy.cookies_allowed = CookiesAllowed.NO
         annotation.proto.policy.cookies_store = "somewhere"
       elif test_no == 8:
-        test_description = \
-            "policy::cookies_allowed = NO and no policy::cookies_store."
+        test_description = (
+          "policy::cookies_allowed = NO and no policy::cookies_store."
+        )
         annotation.proto.policy.cookies_allowed = CookiesAllowed.NO
         annotation.proto.policy.cookies_store = ""
         expect_error = False
       elif test_no == 9:
-        test_description = \
-            "policy::cookies_allowed = YES and policy::cookies_store exists."
+        test_description = (
+          "policy::cookies_allowed = YES and policy::cookies_store exists."
+        )
         annotation.proto.policy.cookies_allowed = CookiesAllowed.YES
         annotation.proto.policy.cookies_store = "somewhere"
         expect_error = False
       elif test_no == 10:
-        test_description = \
-            "policy::cookies_allowed = YES and no policy::cookies_store."
+        test_description = (
+          "policy::cookies_allowed = YES and no policy::cookies_store."
+        )
         annotation.proto.policy.cookies_allowed = CookiesAllowed.YES
         annotation.proto.policy.cookies_store = ""
       elif test_no == 11:
@@ -512,31 +565,34 @@ class AuditorTest(unittest.TestCase):
         annotation.proto.policy.setting = ""
         expect_error = False
       elif test_no == 12:
-        test_description = \
-            "Missing chrome policy and " \
-            "policy::policy_exception_justification."
+        test_description = (
+          "Missing chrome policy and policy::policy_exception_justification."
+        )
         annotation.proto.policy.ClearField("chrome_policy")
         annotation.proto.policy.ClearField("chrome_device_policy")
         annotation.proto.policy.policy_exception_justification = ""
       elif test_no == 13:
-        test_description = \
-            "Missing chrome policy and existing " \
-            "policy::policy_exception_justification."
+        test_description = (
+          "Missing chrome policy and existing "
+          "policy::policy_exception_justification."
+        )
         annotation.proto.policy.ClearField("chrome_policy")
         annotation.proto.policy.ClearField("chrome_device_policy")
         annotation.proto.policy.policy_exception_justification = "Because!"
         expect_error = False
       elif test_no == 14:
-        test_description = \
-            "Existing chrome policy and no " \
-            "policy::policy_exception_justification."
+        test_description = (
+          "Existing chrome policy and no "
+          "policy::policy_exception_justification."
+        )
         self.assertTrue(annotation.proto.policy.chrome_policy)
         annotation.proto.policy.policy_exception_justification = ""
         expect_error = False
       elif test_no == 15:
-        test_description = \
-            "Existing chrome policy and existing " \
-            "policy::policy_exception_justification."
+        test_description = (
+          "Existing chrome policy and existing "
+          "policy::policy_exception_justification."
+        )
         self.assertTrue(annotation.proto.policy.chrome_policy)
         annotation.proto.policy.policy_exception_justification = "Because!"
       elif test_no == 16:
@@ -555,9 +611,10 @@ class AuditorTest(unittest.TestCase):
         test_description = "Invalid format semantics::last_reviewed"
         annotation.proto.semantics.last_reviewed = "23-12-2023"
       elif test_no == 21:
-        test_description = \
-            "Existing chrome policy (device policy only) and " \
-            "missing policy::policy_exception_justification."
+        test_description = (
+          "Existing chrome policy (device policy only) and "
+          "missing policy::policy_exception_justification."
+        )
         self.assertTrue(annotation.proto.policy.chrome_device_policy)
         annotation.proto.policy.ClearField("chrome_policy")
         annotation.proto.policy.policy_exception_justification = ""
@@ -572,11 +629,13 @@ class AuditorTest(unittest.TestCase):
       errors = self.auditor.check_annotation_contents()
 
       if expect_error:
-        self.assertEqual(1, len(errors),
-                         "test_no={}, errors={}".format(test_no, errors))
+        self.assertEqual(
+          1, len(errors), "test_no={}, errors={}".format(test_no, errors)
+        )
       else:
-        self.assertEqual([], errors,
-                         "test_no={}, errors={}".format(test_no, errors))
+        self.assertEqual(
+          [], errors, "test_no={}, errors={}".format(test_no, errors)
+        )
 
       annotations.append(annotation)
 
@@ -595,20 +654,29 @@ class AuditorTest(unittest.TestCase):
     T = Annotation.Type
     for type1, type2 in itertools.product(*[list(T)] * 2):
       for ids in range(256):
-        annotation1 = self.create_annotation_sample(type1, ids % 4,
-                                                    (ids >> 2) % 4)
-        annotation2 = self.create_annotation_sample(type2, (ids >> 4) % 4,
-                                                    (ids >> 6))
+        annotation1 = self.create_annotation_sample(
+          type1, ids % 4, (ids >> 2) % 4
+        )
+        annotation2 = self.create_annotation_sample(
+          type2, (ids >> 4) % 4, (ids >> 6)
+        )
         expectation = False
         if annotation1.type == T.PARTIAL and annotation1.second_id:
-          expectation = expectation or \
-            (annotation2.type  == T.COMPLETING and
-             annotation1.second_id_hash_code == annotation2.unique_id_hash_code)
-          expectation = expectation or \
-            (annotation2.type  == T.BRANCHED_COMPLETING and
-             annotation1.second_id_hash_code == annotation2.second_id_hash_code)
-        self.assertEqual(annotation1.is_completable_with(annotation2),
-                         expectation, "{} <=> {}".format(type1, type2))
+          expectation = expectation or (
+            annotation2.type == T.COMPLETING
+            and annotation1.second_id_hash_code
+            == annotation2.unique_id_hash_code
+          )
+          expectation = expectation or (
+            annotation2.type == T.BRANCHED_COMPLETING
+            and annotation1.second_id_hash_code
+            == annotation2.second_id_hash_code
+          )
+        self.assertEqual(
+          annotation1.is_completable_with(annotation2),
+          expectation,
+          "{} <=> {}".format(type1, type2),
+        )
 
   def test_create_complete_annotation(self):
     """Tests is Annotation.create_complete_annotation() works as
@@ -628,8 +696,9 @@ class AuditorTest(unittest.TestCase):
     other.unique_id = "SomeID"
     combination, errors = instance.create_complete_annotation(other)
     self.assertEqual([], errors)
-    self.assertEqual(combination.unique_id_hash_code,
-                     instance.unique_id_hash_code)
+    self.assertEqual(
+      combination.unique_id_hash_code, instance.unique_id_hash_code
+    )
 
     # Partial and Branched-completing.
     other.type = Annotation.Type.BRANCHED_COMPLETING
@@ -658,15 +727,17 @@ class AuditorTest(unittest.TestCase):
 
   def test_load_from_archive(self):
     """Tests that Annotation.load_from_archive() works as expected."""
-    archived = ArchivedAnnotation(type=Annotation.Type.PARTIAL,
-                                  id=UniqueId("foobar"),
-                                  second_id=UniqueId("baz"),
-                                  content_hash_code=HashCode(32),
-                                  os_list=["linux", "windows"],
-                                  added_in_milestone=62,
-                                  semantics_fields=[2, 3],
-                                  policy_fields=[-1, 3, 4],
-                                  file_path=Path("foobar.cc"))
+    archived = ArchivedAnnotation(
+      type=Annotation.Type.PARTIAL,
+      id=UniqueId("foobar"),
+      second_id=UniqueId("baz"),
+      content_hash_code=HashCode(32),
+      os_list=["linux", "windows"],
+      added_in_milestone=62,
+      semantics_fields=[2, 3],
+      policy_fields=[-1, 3, 4],
+      file_path=Path("foobar.cc"),
+    )
     annotation = Annotation.load_from_archive(archived)
     self.assertTrue(annotation.is_loaded_from_archive)
     self.assertEqual(annotation.type, archived.type)
@@ -675,10 +746,12 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual(annotation.second_id, archived.second_id)
     self.assertEqual(annotation.archived_content_hash_code, 32)
     self.assertEqual(annotation.archived_added_in_milestone, 62)
-    self.assertEqual(annotation.get_semantics_field_numbers(),
-                     archived.semantics_fields)
-    self.assertEqual(annotation.get_policy_field_numbers(),
-                     archived.policy_fields)
+    self.assertEqual(
+      annotation.get_semantics_field_numbers(), archived.semantics_fields
+    )
+    self.assertEqual(
+      annotation.get_policy_field_numbers(), archived.policy_fields
+    )
     self.assertEqual(annotation.file, archived.file_path)
 
   def test_annotations_xml(self):
@@ -708,33 +781,41 @@ class AuditorTest(unittest.TestCase):
   def test_grouping_required_fields_errors(self) -> None:
     """Tests is grouping.xml has no content."""
     # grouping.xml should parse with errors.
-    grouping_erro_xml_path = \
+    grouping_erro_xml_path = (
       TEST_DATA_DIR / "test_required_field_error_grouping.xml"
+    )
     exporter = Exporter(get_current_platform())
     self.assertRaises(
-        ValueError, lambda: exporter.load_grouping_xml(grouping_erro_xml_path))
+      ValueError, lambda: exporter.load_grouping_xml(grouping_erro_xml_path)
+    )
 
   def test_annotations_xml_differences(self):
     """Tests if annotations.xml changes are correctly reported."""
     exporter = Exporter(get_current_platform())
 
-    xml1 = (TEST_DATA_DIR /
-            "annotations_sample1.xml").read_text(encoding="utf-8")
-    xml2 = (TEST_DATA_DIR /
-            "annotations_sample2.xml").read_text(encoding="utf-8")
-    xml3 = (TEST_DATA_DIR /
-            "annotations_sample3.xml").read_text(encoding="utf-8")
+    xml1 = (TEST_DATA_DIR / "annotations_sample1.xml").read_text(
+      encoding="utf-8"
+    )
+    xml2 = (TEST_DATA_DIR / "annotations_sample2.xml").read_text(
+      encoding="utf-8"
+    )
+    xml3 = (TEST_DATA_DIR / "annotations_sample3.xml").read_text(
+      encoding="utf-8"
+    )
 
     diff12 = exporter._get_xml_differences(xml1, xml2)
     diff13 = exporter._get_xml_differences(xml1, xml3)
     diff23 = exporter._get_xml_differences(xml2, xml3)
 
-    expected_diff12 = (TEST_DATA_DIR /
-                       "annotations_diff12.txt").read_text(encoding="utf-8")
-    expected_diff13 = (TEST_DATA_DIR /
-                       "annotations_diff13.txt").read_text(encoding="utf-8")
-    expected_diff23 = (TEST_DATA_DIR /
-                       "annotations_diff23.txt").read_text(encoding="utf-8")
+    expected_diff12 = (TEST_DATA_DIR / "annotations_diff12.txt").read_text(
+      encoding="utf-8"
+    )
+    expected_diff13 = (TEST_DATA_DIR / "annotations_diff13.txt").read_text(
+      encoding="utf-8"
+    )
+    expected_diff23 = (TEST_DATA_DIR / "annotations_diff23.txt").read_text(
+      encoding="utf-8"
+    )
 
     self.assertEqual(expected_diff12, diff12)
     self.assertEqual(expected_diff13, diff13)
@@ -746,21 +827,33 @@ class AuditorTest(unittest.TestCase):
     errors = self.auditor.run_all_checks([], True, grouping_xml_path)
     self.assertTrue(errors)
     grouping_xml_ids = self.auditor._get_grouping_xml_ids(grouping_xml_path)
-    self.assertCountEqual([
-        "foobar_policy_fetcher", "foobar_info_fetcher",
-        "fizzbuzz_handle_front_end_messages", "fizzbuzz_hard_coded_data_source",
-        "fizzbuzz_http_handler", "widget_grabber"
-    ], grouping_xml_ids)
+    self.assertCountEqual(
+      [
+        "foobar_policy_fetcher",
+        "foobar_info_fetcher",
+        "fizzbuzz_handle_front_end_messages",
+        "fizzbuzz_hard_coded_data_source",
+        "fizzbuzz_http_handler",
+        "widget_grabber",
+      ],
+      grouping_xml_ids,
+    )
 
   def test_setup(self) -> None:
     """|self.sample_annotations| should include all those inside
     test_data/test_sample_annotations.cc"""
     expected = [
-        "ok_annotation", "ok_annotation_only_owner", "syntax_error_annotation",
-        "incomplete_error_annotation", "invalid_assignment_annotation",
-        "partially_populated_safe_listed", "missing_all_new_field_safe_listed",
-        "ok_new_fields_safe_listed", "missing_new_fields_not_safe_listed",
-        "missing_email_not_safe_listed", "invalid_userdata_not_safe_listed"
+      "ok_annotation",
+      "ok_annotation_only_owner",
+      "syntax_error_annotation",
+      "incomplete_error_annotation",
+      "invalid_assignment_annotation",
+      "partially_populated_safe_listed",
+      "missing_all_new_field_safe_listed",
+      "ok_new_fields_safe_listed",
+      "missing_new_fields_not_safe_listed",
+      "missing_email_not_safe_listed",
+      "invalid_userdata_not_safe_listed",
     ]
     self.assertCountEqual(expected, self.sample_annotations.keys())
 
@@ -778,7 +871,8 @@ class AuditorTest(unittest.TestCase):
 
   def test_result_ok(self) -> None:
     errors = self.auditor.parse_extractor_output(
-        [self.sample_annotations["ok_annotation"]])
+      [self.sample_annotations["ok_annotation"]]
+    )
 
     # Assert that correct annotation has been extracted and is OK (no errors).
     self.assertTrue(self.auditor.extracted_annotations)
@@ -786,7 +880,8 @@ class AuditorTest(unittest.TestCase):
 
   def test_syntax_error(self) -> None:
     errors = self.auditor.parse_extractor_output(
-        [self.sample_annotations["syntax_error_annotation"]])
+      [self.sample_annotations["syntax_error_annotation"]]
+    )
 
     self.assertTrue(errors)
     result = errors[0]
@@ -795,7 +890,8 @@ class AuditorTest(unittest.TestCase):
 
   def test_incomplete_error(self) -> None:
     self.auditor.parse_extractor_output(
-        [self.sample_annotations["incomplete_error_annotation"]])
+      [self.sample_annotations["incomplete_error_annotation"]]
+    )
 
     self.assertTrue(self.auditor.extracted_annotations)
     errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
@@ -804,16 +900,21 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual(ErrorType.INCOMPLETE_ANNOTATION, result.type)
 
     expected_missing_fields = [
-        "sender", "chrome_policy", "chrome_device_policy", "cookies_store",
-        "policy_exception_justification"
+      "sender",
+      "chrome_policy",
+      "chrome_device_policy",
+      "cookies_store",
+      "policy_exception_justification",
     ]
-    missing_fields = str(result).split("missing fields:",
-                                       1)[1].lstrip().split(", ")
+    missing_fields = (
+      str(result).split("missing fields:", 1)[1].lstrip().split(", ")
+    )
     self.assertCountEqual(expected_missing_fields, missing_fields)
 
   def test_invalid_date_format_errors(self) -> None:
     self.auditor.parse_extractor_output(
-        [self.sample_annotations["invalid_assignment_annotation"]])
+      [self.sample_annotations["invalid_assignment_annotation"]]
+    )
 
     self.assertTrue(self.auditor.extracted_annotations)
     errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
@@ -825,9 +926,12 @@ class AuditorTest(unittest.TestCase):
     """Annotation is Missing new fields, related class is not in safe_list.txt.
     Annotation check returns MISSING_NEW_FIELDS error."""
     self.auditor.parse_extractor_output(
-        [self.sample_annotations["missing_new_fields_not_safe_listed"]])
+      [self.sample_annotations["missing_new_fields_not_safe_listed"]]
+    )
     expected_error_msg = [
-        'last_reviewed', 'internal::contacts', 'user_data::type'
+      'last_reviewed',
+      'internal::contacts',
+      'user_data::type',
     ]
 
     self.assertTrue(self.auditor.extracted_annotations)
@@ -841,19 +945,25 @@ class AuditorTest(unittest.TestCase):
     """Annotation is Missing email value, related class is not in safe_list.txt.
     Annotation check returns MISSING_NEW_FIELDS error."""
     self.auditor.parse_extractor_output(
-        [self.sample_annotations["missing_email_not_safe_listed"]])
+      [self.sample_annotations["missing_email_not_safe_listed"]]
+    )
     self.assertTrue(self.auditor.extracted_annotations)
     errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
     self.assertTrue(errors)
     self.assertEqual(ErrorType.MISSING_NEW_FIELDS, errors[0].type)
-    self.assertTrue(errors[0].message.find(
-        'internal::contacts::email or internal::contacts::owners') >= 0)
+    self.assertTrue(
+      errors[0].message.find(
+        'internal::contacts::email or internal::contacts::owners'
+      )
+      >= 0
+    )
 
   def test_user_data_unspecified(self) -> None:
     """Annotation user_data::type contains UNSPECIFIED value. Annotation Check
     returns INVALID_USER_DATA_TYPE error."""
     self.auditor.parse_extractor_output(
-        [self.sample_annotations["invalid_userdata_not_safe_listed"]])
+      [self.sample_annotations["invalid_userdata_not_safe_listed"]]
+    )
     self.assertTrue(self.auditor.extracted_annotations)
     errors = self.auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
     self.assertTrue(errors)
@@ -862,12 +972,13 @@ class AuditorTest(unittest.TestCase):
   def test_missing_new_fields_safe_listed_file(self) -> None:
     """Check annotation without new fields, related class is
     in safe_list.txt. Annotation Check does not return
-    an new fields related error. """
+    an new fields related error."""
 
     ## use real safe_list.txt
     auditor = Auditor(get_current_platform())
     auditor.parse_extractor_output(
-        [self.sample_annotations["missing_all_new_field_safe_listed"]])
+      [self.sample_annotations["missing_all_new_field_safe_listed"]]
+    )
     self.assertTrue(auditor.extracted_annotations)
     errors = auditor.run_all_checks([], False, Exporter.GROUPING_XML_PATH)
     self.assertFalse(errors)
@@ -878,7 +989,8 @@ class AuditorTest(unittest.TestCase):
     annotation error."""
     auditor = Auditor(get_current_platform())
     auditor.parse_extractor_output(
-        [self.sample_annotations["partially_populated_safe_listed"]])
+      [self.sample_annotations["partially_populated_safe_listed"]]
+    )
     self.assertTrue(auditor.extracted_annotations)
     errors = auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
     self.assertTrue(errors)
@@ -890,7 +1002,8 @@ class AuditorTest(unittest.TestCase):
     safe_list.txt. Check returns error to REMOVE_FROM_SAFE_LIST."""
     auditor = Auditor(get_current_platform())
     auditor.parse_extractor_output(
-        [self.sample_annotations["ok_new_fields_safe_listed"]])
+      [self.sample_annotations["ok_new_fields_safe_listed"]]
+    )
     self.assertTrue(auditor.extracted_annotations)
     errors = auditor.run_all_checks([], True, Exporter.GROUPING_XML_PATH)
     self.assertTrue(errors)
@@ -900,13 +1013,16 @@ class AuditorTest(unittest.TestCase):
     host_platform = platform.system().lower()
 
     if host_platform == "windows":
-      self.assertEqual("windows",
-                       get_current_platform(TEST_DATA_DIR / "out" / "Debug"))
+      self.assertEqual(
+        "windows", get_current_platform(TEST_DATA_DIR / "out" / "Debug")
+      )
     elif host_platform == "linux":
-      self.assertEqual("linux",
-                       get_current_platform(TEST_DATA_DIR / "out" / "Debug"))
-      self.assertEqual("android",
-                       get_current_platform(TEST_DATA_DIR / "out" / "Android"))
+      self.assertEqual(
+        "linux", get_current_platform(TEST_DATA_DIR / "out" / "Debug")
+      )
+      self.assertEqual(
+        "android", get_current_platform(TEST_DATA_DIR / "out" / "Android")
+      )
     else:
       raise ValueError("Unrecognized host platform {}".format(host_platform))
 
@@ -932,7 +1048,8 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
     instead of email for contact info. Check returns no errors related to
     contact email or other new fields."""
     self.auditor.parse_extractor_output(
-        [self.sample_annotations["ok_annotation_only_owner"]])
+      [self.sample_annotations["ok_annotation_only_owner"]]
+    )
     errors = self.auditor.run_all_checks([], False, Exporter.GROUPING_XML_PATH)
 
     # Assert that correct annotation has been extracted and is OK (no errors).
@@ -943,11 +1060,13 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
     """Test run_all_checks with a path filter defined. This simulates how the
     CQ auditor performs tests, since we only check updated files."""
     path_filter = [
-        (TEST_DATA_DIR /
-         "test_sample_annotations.cc").relative_to(SRC_DIR).as_posix()
+      (TEST_DATA_DIR / "test_sample_annotations.cc")
+      .relative_to(SRC_DIR)
+      .as_posix()
     ]
-    errors = self.auditor.run_all_checks(path_filter, True,
-                                         Exporter.GROUPING_XML_PATH)
+    errors = self.auditor.run_all_checks(
+      path_filter, True, Exporter.GROUPING_XML_PATH
+    )
     self.assertFalse(errors)
 
   def test_get_gn_file_mtime_max(self):
@@ -956,8 +1075,9 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
       # Mock SRC_DIR
       with mock.patch("auditor.SRC_DIR", tmp_path):
         self.auditor.file_filter.git_files = [
-            Path("BUILD.gn"), Path("foo.gni"),
-            Path("src.cc")
+          Path("BUILD.gn"),
+          Path("foo.gni"),
+          Path("src.cc"),
         ]
         (tmp_path / "BUILD.gn").write_text("")
         # sleep briefly to ensure mtimes are different
@@ -968,18 +1088,20 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
         mtime1 = os.path.getmtime(tmp_path / "BUILD.gn")
         mtime2 = os.path.getmtime(tmp_path / "foo.gni")
 
-        self.assertEqual(max(mtime1, mtime2),
-                         self.auditor._get_gn_file_mtime_max())
+        self.assertEqual(
+          max(mtime1, mtime2), self.auditor._get_gn_file_mtime_max()
+        )
 
   def test_header_annotations_error(self):
     """Check that header files are rejected during deserialization."""
     annotation = extractor.Annotation(
-        language=extractor.CPP_LANGUAGE,
-        file_path=Path("chrome/browser/foobar.h"),
-        line_number=42,
-        type_name=extractor.AnnotationType.COMPLETE,
-        unique_id="test_header_id",
-        text='sender: "foobar"')
+      language=extractor.CPP_LANGUAGE,
+      file_path=Path("chrome/browser/foobar.h"),
+      line_number=42,
+      type_name=extractor.AnnotationType.COMPLETE,
+      unique_id="test_header_id",
+      text='sender: "foobar"',
+    )
     errors = Annotation().deserialize(annotation)
     self.assertEqual(1, len(errors))
     self.assertEqual(ErrorType.HEADER_ANNOTATION, errors[0].type)

@@ -5,9 +5,9 @@
 from page_sets.desktop_ui.multitab_story import MultiTabStory
 
 NEW_TAB_PAGE_BENCHMARK_UMA = [
-    'NewTabPage.LoadTime.WebUINTP',
-    'NewTabPage.MainUi.ShownTime',
-    'NewTabPage.Modules.ShownTime',
+  'NewTabPage.LoadTime.WebUINTP',
+  'NewTabPage.MainUi.ShownTime',
+  'NewTabPage.Modules.ShownTime',
 ]
 
 NEW_TAB_PAGE_URL = 'chrome://new-tab-page'
@@ -15,6 +15,7 @@ NEW_TAB_PAGE_URL = 'chrome://new-tab-page'
 
 class NewTabPageStory(MultiTabStory):
   """Base class for new tab page stories"""
+
   URL_LIST = [NEW_TAB_PAGE_URL]
   # URL must be set to an external link in order to trigger a WPR download.
   URL = 'https://google.com'

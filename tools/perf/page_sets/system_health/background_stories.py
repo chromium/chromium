@@ -10,12 +10,14 @@ from page_sets.system_health import browsing_stories
 
 _WAIT_FOR_VIDEO_SECONDS = 5
 
+
 class _BackgroundStory(system_health_story.SystemHealthStory):
   """Abstract base class for background stories
 
   As in _LoadingStory except it puts the browser into the
   background before measuring.
   """
+
   ABSTRACT_STORY = True
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
 

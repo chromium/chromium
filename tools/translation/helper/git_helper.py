@@ -19,8 +19,9 @@ def list_grds_in_repository(repo_path):
   # shell to do it.
   # TODO(meacer): This should use list_grds_in_repository() from the internal
   #               translate.py.
-  output = subprocess.check_output([GIT, 'ls-files', '--', '*.grd'],
-                                   cwd=repo_path)
+  output = subprocess.check_output(
+    [GIT, 'ls-files', '--', '*.grd'], cwd=repo_path
+  )
   # Need to decode because Python3 returns subprocess output as bytes.
   return output.decode('utf8').strip().splitlines()
 
@@ -31,7 +32,7 @@ def git_add(files, repo_root):
   BATCH_SIZE = 50
   added_count = 0
   while added_count < len(files):
-    batch = files[added_count:added_count + BATCH_SIZE]
+    batch = files[added_count : added_count + BATCH_SIZE]
     command = [GIT, 'add'] + batch
     subprocess.check_call(command, cwd=repo_root)
     added_count += len(batch)

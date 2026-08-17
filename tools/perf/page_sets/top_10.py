@@ -11,8 +11,11 @@ class SimplePage(page_module.Page):
     if name == '':
       name = url
     super(SimplePage, self).__init__(
-        url, page_set=page_set, name=name,
-        shared_page_state_class=shared_page_state.SharedDesktopPageState)
+      url,
+      page_set=page_set,
+      name=name,
+      shared_page_state_class=shared_page_state.SharedDesktopPageState,
+    )
 
   def RunPageInteractions(self, action_runner):
     pass
@@ -21,7 +24,8 @@ class SimplePage(page_module.Page):
 class Google(SimplePage):
   def __init__(self, page_set):
     super(Google, self).__init__(
-      url='https://www.google.com/#hl=en&q=barack+obama', page_set=page_set)
+      url='https://www.google.com/#hl=en&q=barack+obama', page_set=page_set
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(Google, self).RunNavigateSteps(action_runner)
@@ -31,21 +35,21 @@ class Google(SimplePage):
 class Gmail(SimplePage):
   def __init__(self, page_set):
     super(Gmail, self).__init__(
-      url='https://mail.google.com/mail/',
-      page_set=page_set)
+      url='https://mail.google.com/mail/', page_set=page_set
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(Gmail, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
-        'window.gmonkey !== undefined &&'
-        'document.getElementById("gb") !== null')
+      'window.gmonkey !== undefined &&document.getElementById("gb") !== null'
+    )
 
 
 class GoogleCalendar(SimplePage):
   def __init__(self, page_set):
     super(GoogleCalendar, self).__init__(
-      url='https://www.google.com/calendar/',
-      page_set=page_set)
+      url='https://www.google.com/calendar/', page_set=page_set
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(GoogleCalendar, self).RunNavigateSteps(action_runner)
@@ -62,8 +66,8 @@ class GoogleCalendar(SimplePage):
 class Youtube(SimplePage):
   def __init__(self, page_set):
     super(Youtube, self).__init__(
-      url='http://www.youtube.com',
-      page_set=page_set)
+      url='http://www.youtube.com', page_set=page_set
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(Youtube, self).RunNavigateSteps(action_runner)
@@ -75,7 +79,8 @@ class Facebook(SimplePage):
     super(Facebook, self).__init__(
       url='https://www.facebook.com/barackobama',
       page_set=page_set,
-      name='Facebook')
+      name='Facebook',
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(Facebook, self).RunNavigateSteps(action_runner)
@@ -88,14 +93,15 @@ class Top10PageSet(story.StorySet):
   def __init__(self):
     super(Top10PageSet, self).__init__(
       archive_data_file='data/top_10.json',
-      cloud_storage_bucket=story.PARTNER_BUCKET)
+      cloud_storage_bucket=story.PARTNER_BUCKET,
+    )
 
     # top google property; a google tab is often open
     self.AddStory(Google(self))
 
     # productivity, top google properties
     # TODO(dominikg): fix crbug.com/386152
-    #self.AddStory(Gmail(self))
+    # self.AddStory(Gmail(self))
 
     # productivity, top google properties
     self.AddStory(GoogleCalendar(self))
@@ -107,8 +113,11 @@ class Top10PageSet(story.StorySet):
     self.AddStory(Facebook(self))
 
     # #6 (Alexa) most visited worldwide,Picked an interesting page
-    self.AddStory(SimplePage('http://en.wikipedia.org/wiki/Wikipedia',
-                                  self, name='Wikipedia'))
+    self.AddStory(
+      SimplePage(
+        'http://en.wikipedia.org/wiki/Wikipedia', self, name='Wikipedia'
+      )
+    )
 
     # #1 world commerce website by visits; #3 commerce in the US by time spent
     self.AddStory(SimplePage('http://www.amazon.com', self))

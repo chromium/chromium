@@ -10,22 +10,25 @@ from page_sets.rendering import story_tags
 
 
 class KeySilkPage(rendering_story.RenderingStory):
-  """ Base class for all key silk cases pages."""
+  """Base class for all key silk cases pages."""
 
   ABSTRACT_STORY = True
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   TAGS = [story_tags.KEY_SILK]
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedMobilePageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedMobilePageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(KeySilkPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(KeySilkPage, self).RunNavigateSteps(action_runner)
@@ -37,7 +40,7 @@ class KeySilkPage(rendering_story.RenderingStory):
     self.PerformPageInteractions(action_runner)
 
   def PerformPageInteractions(self, action_runner):
-    """ Perform interactions on page after navigate steps.
+    """Perform interactions on page after navigate steps.
     Override this to define custom actions to be run after navigate steps.
     """
     with action_runner.CreateGestureInteraction('ScrollAction'):
@@ -45,8 +48,7 @@ class KeySilkPage(rendering_story.RenderingStory):
 
 
 class Page1(KeySilkPage):
-
-  """ Why: Infinite scroll. Brings out all of our perf issues. """
+  """Why: Infinite scroll. Brings out all of our perf issues."""
 
   BASE_NAME = 'list_recycle_transform'
   URL = 'http://groupcloned.com/test/plain/list-recycle-transform.html'
@@ -57,8 +59,7 @@ class Page1(KeySilkPage):
 
 
 class Page2(KeySilkPage):
-
-  """ Why: Brings out layer management bottlenecks. """
+  """Why: Brings out layer management bottlenecks."""
 
   BASE_NAME = 'list_animation_simple'
   URL = 'file://../key_silk_cases/list_animation_simple.html'
@@ -69,7 +70,6 @@ class Page2(KeySilkPage):
 
 
 class Page3(KeySilkPage):
-
   """
   Why: Best-known method for fake sticky. Janks sometimes. Interacts badly with
   compositor scrolls.
@@ -85,7 +85,6 @@ class Page3(KeySilkPage):
 
 
 class Page4(KeySilkPage):
-
   """
   Why: Card expansion: only the card should repaint, but in reality lots of
   storms happen.
@@ -100,7 +99,6 @@ class Page4(KeySilkPage):
 
 
 class Page5(KeySilkPage):
-
   """
   Why: Card expansion with animated contents, using will-change on the card
   """
@@ -108,16 +106,19 @@ class Page5(KeySilkPage):
   BASE_NAME = 'card_expansion_animated'
   URL = 'http://jsfiddle.net/jx5De/14/show/'
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedMobilePageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedMobilePageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(Page5, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
     self.gpu_raster = True
 
@@ -127,7 +128,6 @@ class Page5(KeySilkPage):
 
 
 class Page6(KeySilkPage):
-
   """
   Why: Card fly-in: It should be fast to animate in a bunch of cards using
   margin-top and letting layout do the rest.
@@ -142,7 +142,6 @@ class Page6(KeySilkPage):
 
 
 class Page7(KeySilkPage):
-
   """
   Why: Image search expands a spacer div when you click an image to accomplish
   a zoomin effect. Each image has a layer. Even so, this triggers a lot of
@@ -158,7 +157,6 @@ class Page7(KeySilkPage):
 
 
 class Page8(KeySilkPage):
-
   """
   Why: Swipe to dismiss of an element that has a fixed-position child that is
   its pseudo-sticky header. Brings out issues with layer creation and
@@ -174,7 +172,6 @@ class Page8(KeySilkPage):
 
 
 class Page9(KeySilkPage):
-
   """
   Why: Horizontal and vertical expansion of a card that is cheap to layout but
   costly to rasterize.
@@ -183,16 +180,19 @@ class Page9(KeySilkPage):
   BASE_NAME = 'horizontal_vertical_expansion'
   URL = 'http://jsfiddle.net/TLXLu/3/show/'
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedMobilePageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedMobilePageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(Page9, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
     self.gpu_raster = True
 
@@ -202,7 +202,6 @@ class Page9(KeySilkPage):
 
 
 class Page10(KeySilkPage):
-
   """
   Why: Vertical Expansion of a card that is cheap to layout but costly to
   rasterize.
@@ -211,16 +210,19 @@ class Page10(KeySilkPage):
   BASE_NAME = 'vertical_expansion'
   URL = 'http://jsfiddle.net/cKB9D/7/show/'
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedMobilePageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedMobilePageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(Page10, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
     self.gpu_raster = True
 
@@ -230,7 +232,6 @@ class Page10(KeySilkPage):
 
 
 class Page11(KeySilkPage):
-
   """
   Why: Parallax effect is common on photo-viewer-like applications, overloading
   software rasterization
@@ -239,16 +240,19 @@ class Page11(KeySilkPage):
   BASE_NAME = 'parallax_effect'
   URL = 'http://jsfiddle.net/vBQHH/11/show/'
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedMobilePageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedMobilePageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(Page11, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
     self.gpu_raster = True
 
@@ -258,8 +262,7 @@ class Page11(KeySilkPage):
 
 
 class Page12(KeySilkPage):
-
-  """ Why: Addressing paint storms during coordinated animations. """
+  """Why: Addressing paint storms during coordinated animations."""
 
   BASE_NAME = 'coordinated_animation'
   URL = 'http://jsfiddle.net/ugkd4/10/show/'
@@ -270,22 +273,24 @@ class Page12(KeySilkPage):
 
 
 class Page13(KeySilkPage):
-
-  """ Why: Mask transitions are common mobile use cases. """
+  """Why: Mask transitions are common mobile use cases."""
 
   BASE_NAME = 'mask_transition_animation'
   URL = 'http://jsfiddle.net/xLuvC/1/show/'
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedMobilePageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedMobilePageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(Page13, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
     self.gpu_raster = True
 
@@ -295,22 +300,24 @@ class Page13(KeySilkPage):
 
 
 class Page14(KeySilkPage):
-
-  """ Why: Card expansions with images and text are pretty and common. """
+  """Why: Card expansions with images and text are pretty and common."""
 
   BASE_NAME = 'card_expansion_images_text'
   URL = 'http://jsfiddle.net/bNp2h/3/show/'
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedMobilePageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedMobilePageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(Page14, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
     self.gpu_raster = True
 
@@ -320,8 +327,7 @@ class Page14(KeySilkPage):
 
 
 class Page15(KeySilkPage):
-
-  """ Why: Coordinated animations for expanding elements. """
+  """Why: Coordinated animations for expanding elements."""
 
   BASE_NAME = 'font_wipe'
   URL = 'file://../key_silk_cases/font_wipe.html'
@@ -332,8 +338,7 @@ class Page15(KeySilkPage):
 
 
 class Page20(KeySilkPage):
-
-  """ Why: Shadow DOM infinite scrolling. """
+  """Why: Shadow DOM infinite scrolling."""
 
   BASE_NAME = 'infinite_scrolling'
   URL = 'file://../key_silk_cases/infinite_scrolling.html'
@@ -341,11 +346,11 @@ class Page20(KeySilkPage):
   def PerformPageInteractions(self, action_runner):
     with action_runner.CreateGestureInteraction('ScrollAction'):
       action_runner.ScrollElement(
-          selector='#container', speed_in_pixels_per_second=5000)
+        selector='#container', speed_in_pixels_per_second=5000
+      )
 
 
 class GwsExpansionPage(KeySilkPage):
-
   """Abstract base class for pages that expand Google knowledge panels."""
 
   ABSTRACT_STORY = True
@@ -358,22 +363,22 @@ class GwsExpansionPage(KeySilkPage):
     # expand card
     with action_runner.CreateInteraction('Action_TapAction'):
       action_runner.TapElement(
-          element_function='document.getElementsByClassName("vk_arc")[0]')
+        element_function='document.getElementsByClassName("vk_arc")[0]'
+      )
       action_runner.Wait(2)
 
   def ScrollKnowledgeCardToTop(self, action_runner, card_id):
     # scroll until the knowledge card is at the top
     action_runner.ExecuteJavaScript(
-        "document.getElementById({{ card_id }}).scrollIntoView()",
-        card_id=card_id)
+      "document.getElementById({{ card_id }}).scrollIntoView()", card_id=card_id
+    )
 
   def PerformPageInteractions(self, action_runner):
     self.ExpandKnowledgeCard(action_runner)
 
 
 class GwsGoogleExpansion(GwsExpansionPage):
-
-  """ Why: Animating height of a complex content card is common. """
+  """Why: Animating height of a complex content card is common."""
 
   BASE_NAME = 'gws_google_expansion'
   URL = 'http://www.google.com/#q=google'
@@ -384,8 +389,7 @@ class GwsGoogleExpansion(GwsExpansionPage):
 
 
 class GwsBoogieExpansion(GwsExpansionPage):
-
-  """ Why: Same case as Google expansion but text-heavy rather than image. """
+  """Why: Same case as Google expansion but text-heavy rather than image."""
 
   BASE_NAME = 'gws_boogie_expansion'
   URL = 'https://www.google.com/search?hl=en&q=define%3Aboogie'
@@ -396,14 +400,14 @@ class GwsBoogieExpansion(GwsExpansionPage):
 
 
 class Page22(KeySilkPage):
-
   BASE_NAME = 'basic_stream'
   URL = 'http://plus.google.com/app/basic/stream'
 
   def RunNavigateSteps(self, action_runner):
     super(Page22, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
-        'document.getElementsByClassName("fHa").length > 0')
+      'document.getElementsByClassName("fHa").length > 0'
+    )
     action_runner.Wait(2)
 
   def PerformPageInteractions(self, action_runner):
@@ -412,7 +416,6 @@ class Page22(KeySilkPage):
 
 
 class Page23(KeySilkPage):
-
   """
   Why: Physical simulation demo that does a lot of element.style mutation
   triggering JS and recalc slowness
@@ -422,19 +425,19 @@ class Page23(KeySilkPage):
   URL = 'file://../key_silk_cases/physical_simulation.html'
 
   def PerformPageInteractions(self, action_runner):
-    with action_runner.CreateGestureInteraction('ScrollAction',
-                                                repeatable=True):
+    with action_runner.CreateGestureInteraction(
+      'ScrollAction', repeatable=True
+    ):
       action_runner.ScrollPage(
-          distance_expr='window.innerHeight / 2',
-          direction='down',
-          use_touch=True)
-    with action_runner.CreateGestureInteraction('ScrollAction',
-                                                repeatable=True):
+        distance_expr='window.innerHeight / 2', direction='down', use_touch=True
+      )
+    with action_runner.CreateGestureInteraction(
+      'ScrollAction', repeatable=True
+    ):
       action_runner.Wait(1)
 
 
 class Page24(KeySilkPage):
-
   """
   Why: Google News: this iOS version is slower than accelerated scrolling
   """
@@ -445,40 +448,43 @@ class Page24(KeySilkPage):
   def RunNavigateSteps(self, action_runner):
     super(Page24, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
-        'document.getElementById(":h") != null')
+      'document.getElementById(":h") != null'
+    )
     action_runner.Wait(1)
 
   def PerformPageInteractions(self, action_runner):
     with action_runner.CreateGestureInteraction('ScrollAction'):
       action_runner.ScrollElement(
-          element_function='document.getElementById(":5")',
-          distance=2500,
-          use_touch=True)
+        element_function='document.getElementById(":5")',
+        distance=2500,
+        use_touch=True,
+      )
 
 
 class Page25(KeySilkPage):
-
   BASE_NAME = 'mobile_news_sandbox'
   URL = 'http://mobile-news.sandbox.google.com/news/pt0?swipe'
 
   def RunNavigateSteps(self, action_runner):
     super(Page25, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
-        'document.getElementById(":h") != null')
+      'document.getElementById(":h") != null'
+    )
     action_runner.Wait(1)
 
   def PerformPageInteractions(self, action_runner):
     with action_runner.CreateGestureInteraction('SwipeAction', repeatable=True):
       action_runner.SwipeElement(
-          direction='left', distance=100,
-          element_function='document.getElementById(":f")')
+        direction='left',
+        distance=100,
+        element_function='document.getElementById(":f")',
+      )
     with action_runner.CreateGestureInteraction('SwipeAction', repeatable=True):
       action_runner.Wait(1)
 
 
 class Page26(KeySilkPage):
-
-  """ Why: famo.us twitter demo """
+  """Why: famo.us twitter demo"""
 
   BASE_NAME = 'famo_us_twitter_demo'
   URL = 'http://s.codepen.io/befamous/fullpage/pFsqb?scroll'
@@ -486,7 +492,8 @@ class Page26(KeySilkPage):
   def RunNavigateSteps(self, action_runner):
     super(Page26, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
-        'document.getElementsByClassName("tweet").length > 0')
+      'document.getElementsByClassName("tweet").length > 0'
+    )
     action_runner.Wait(1)
 
   def PerformPageInteractions(self, action_runner):
@@ -502,30 +509,28 @@ class Page26(KeySilkPage):
 
 
 class SVGIconRaster(KeySilkPage):
-
-  """ Why: Mutating SVG icons; these paint storm and paint slowly. """
+  """Why: Mutating SVG icons; these paint storm and paint slowly."""
 
   BASE_NAME = 'svg_icon_raster'
   URL = 'http://wiltzius.github.io/shape-shifter/'
 
   def RunNavigateSteps(self, action_runner):
     super(SVGIconRaster, self).RunNavigateSteps(action_runner)
-    action_runner.WaitForJavaScriptCondition(
-        'loaded = true')
+    action_runner.WaitForJavaScriptCondition('loaded = true')
     action_runner.Wait(1)
 
   def PerformPageInteractions(self, action_runner):
     for i in range(9):
-      button_func = ('document.getElementById("demo").$.'
-                     'buttons.children[%d]') % i
+      button_func = (
+        'document.getElementById("demo").$.buttons.children[%d]'
+      ) % i
       with action_runner.CreateInteraction('Action_TapAction', repeatable=True):
         action_runner.TapElement(element_function=button_func)
         action_runner.Wait(1)
 
 
 class UpdateHistoryState(KeySilkPage):
-
-  """ Why: Modern apps often update history state, which currently is janky."""
+  """Why: Modern apps often update history state, which currently is janky."""
 
   BASE_NAME = 'update_history_state'
   URL = 'file://../key_silk_cases/pushState.html'
@@ -538,28 +543,27 @@ class UpdateHistoryState(KeySilkPage):
           });
         ''')
     action_runner.WaitForJavaScriptCondition(
-        'window.__history_state_loaded == true;')
+      'window.__history_state_loaded == true;'
+    )
 
   def PerformPageInteractions(self, action_runner):
     with action_runner.CreateInteraction('animation_interaction'):
-      action_runner.Wait(5) # JS runs the animation continuously on the page
+      action_runner.Wait(5)  # JS runs the animation continuously on the page
 
 
 class SilkFinance(KeySilkPage):
-
-  """ Why: Some effects repaint the page, possibly including plenty of text. """
+  """Why: Some effects repaint the page, possibly including plenty of text."""
 
   BASE_NAME = 'silk_finance'
   URL = 'file://../key_silk_cases/silk_finance.html'
 
   def PerformPageInteractions(self, action_runner):
     with action_runner.CreateInteraction('animation_interaction'):
-      action_runner.Wait(10) # animation runs automatically
+      action_runner.Wait(10)  # animation runs automatically
 
 
 class Masonry(KeySilkPage):
-
-  """ Why: Popular layout hack. """
+  """Why: Popular layout hack."""
 
   BASE_NAME = 'masonry'
   URL = 'file://../key_silk_cases/masonry.html'
@@ -573,13 +577,13 @@ class Masonry(KeySilkPage):
 # TODO(crbug.com/40537750):remove this class after smoothness.key_silk_cases
 # benchmark is completely replaced by rendering benchmarks
 class KeySilkCasesPageSet(story.StorySet):
-
-  """ Pages hand-picked for project Silk. """
+  """Pages hand-picked for project Silk."""
 
   def __init__(self):
     super(KeySilkCasesPageSet, self).__init__(
       archive_data_file='../data/key_silk_cases.json',
-      cloud_storage_bucket=story.PARTNER_BUCKET)
+      cloud_storage_bucket=story.PARTNER_BUCKET,
+    )
 
     page_classes = [
       Page1,
@@ -609,14 +613,16 @@ class KeySilkCasesPageSet(story.StorySet):
       SVGIconRaster,
       UpdateHistoryState,
       SilkFinance,
-      Masonry
+      Masonry,
     ]
 
     for page_class in page_classes:
       self.AddStory(page_class(self))
 
     for page in self:
-      assert (page.__class__.RunPageInteractions ==
-              KeySilkPage.RunPageInteractions), (
-              'Pages in this page set must not override KeySilkPage\' '
-              'RunPageInteractions method.')
+      assert (
+        page.__class__.RunPageInteractions == KeySilkPage.RunPageInteractions
+      ), (
+        'Pages in this page set must not override KeySilkPage\' '
+        'RunPageInteractions method.'
+      )

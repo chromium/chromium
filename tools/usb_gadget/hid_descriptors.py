@@ -3,8 +3,7 @@
 # found in the LICENSE file.
 
 
-"""Utility functions for constructing HID report descriptors.
-"""
+"""Utility functions for constructing HID report descriptors."""
 
 import struct
 
@@ -32,11 +31,11 @@ def _PackItem(tag, typ, value=0, force_length=0):
   """
   if value == 0 and force_length <= 0:
     return struct.pack('<B', tag << 4 | typ << 2 | 0)
-  elif value <= 0xff and force_length <= 1:
+  elif value <= 0xFF and force_length <= 1:
     return struct.pack('<BB', tag << 4 | typ << 2 | 1, value)
-  elif value <= 0xffff and force_length <= 2:
+  elif value <= 0xFFFF and force_length <= 2:
     return struct.pack('<BH', tag << 4 | typ << 2 | 2, value)
-  elif value <= 0xffffffff and force_length <= 4:
+  elif value <= 0xFFFFFFFF and force_length <= 4:
     return struct.pack('<BI', tag << 4 | typ << 2 | 3, value)
   else:
     raise NotImplementedError('Long items are not implemented.')
@@ -91,6 +90,7 @@ def _DefineMainItem(name, tag):
   EncodeMainItem.__name__ = name
   return EncodeMainItem
 
+
 Input = _DefineMainItem('Input', 8)
 Output = _DefineMainItem('Output', 9)
 Feature = _DefineMainItem('Feature', 11)
@@ -124,6 +124,7 @@ def Collection(typ, *items):
   end = struct.pack('<B', 0xC0)
   return start + ''.join(items) + end
 
+
 # Global Items
 #
 # See Device Class Definition for Human Interface Devices (HID) Version 1.11
@@ -149,10 +150,12 @@ Usage = _DefineItem('Usage', 0, hid_constants.Scope.LOCAL)
 UsageMinimum = _DefineItem('UsageMinimum', 1, hid_constants.Scope.LOCAL)
 UsageMaximum = _DefineItem('UsageMaximum', 2, hid_constants.Scope.LOCAL)
 DesignatorIndex = _DefineItem('DesignatorIndex', 3, hid_constants.Scope.LOCAL)
-DesignatorMinimum = _DefineItem('DesignatorMinimum', 4,
-                                hid_constants.Scope.LOCAL)
-DesignatorMaximum = _DefineItem('DesignatorMaximum', 5,
-                                hid_constants.Scope.LOCAL)
+DesignatorMinimum = _DefineItem(
+  'DesignatorMinimum', 4, hid_constants.Scope.LOCAL
+)
+DesignatorMaximum = _DefineItem(
+  'DesignatorMaximum', 5, hid_constants.Scope.LOCAL
+)
 StringIndex = _DefineItem('StringIndex', 7, hid_constants.Scope.LOCAL)
 StringMinimum = _DefineItem('StringMinimum', 8, hid_constants.Scope.LOCAL)
 StringMaximum = _DefineItem('StringMaximum', 9, hid_constants.Scope.LOCAL)

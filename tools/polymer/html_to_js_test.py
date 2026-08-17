@@ -30,14 +30,16 @@ class HtmlToJsTest(unittest.TestCase):
   def _run_test(self, js_file, js_file_expected):
     assert not self._out_folder
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
-    html_to_js.main([
+    html_to_js.main(
+      [
         '--in_folder',
         os.path.join(_HERE_DIR, 'tests'),
         '--out_folder',
         self._out_folder,
         '--js_files',
         js_file,
-    ])
+      ]
+    )
 
     actual_js = self._read_out_file(js_file)
     with open(os.path.join(_HERE_DIR, 'tests', js_file_expected), 'r') as f:

@@ -48,22 +48,24 @@ class JSONStyleGenerator(CSSStyleGenerator):
             # formula for these.
             if SYS_SUBSTR in name:
                 color_item["mode_values"] = {
-                    Modes.LIGHT:
-                    color_model.Resolve(name, Modes.LIGHT).GetFormula(),
-                    Modes.DARK:
-                    color_model.Resolve(name, Modes.DARK).GetFormula()
+                    Modes.LIGHT: color_model.Resolve(
+                        name, Modes.LIGHT
+                    ).GetFormula(),
+                    Modes.DARK: color_model.Resolve(
+                        name, Modes.DARK
+                    ).GetFormula(),
                 }
                 sys_tokens.append(color_item)
             else:
                 ref_tokens.append(color_item)
         return {
-            "tokens":
-            json.dumps(
+            "tokens": json.dumps(
                 {
                     TokenArrayPropertyTitle(REF_SUBSTR): ref_tokens,
                     TokenArrayPropertyTitle(SYS_SUBSTR): sys_tokens,
                 },
-                indent=4)
+                indent=4,
+            )
         }
 
     def GetGlobals(self):
@@ -73,5 +75,6 @@ class JSONStyleGenerator(CSSStyleGenerator):
         return {}
 
     def Render(self):
-        return self.ApplyTemplate(self, "templates/json_generator.tmpl",
-                                  self.GetParameters())
+        return self.ApplyTemplate(
+            self, "templates/json_generator.tmpl", self.GetParameters()
+        )

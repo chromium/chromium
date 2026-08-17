@@ -26,8 +26,9 @@ def _write_tsconfig_json(gen_dir, tsconfig):
   if not os.path.exists(gen_dir):
     os.makedirs(gen_dir)
 
-  with open(os.path.join(gen_dir, _TSCONFIG_GEN), 'w',
-            encoding='utf-8') as generated_tsconfig:
+  with open(
+    os.path.join(gen_dir, _TSCONFIG_GEN), 'w', encoding='utf-8'
+  ) as generated_tsconfig:
     json.dump(tsconfig, generated_tsconfig, indent=2)
   return
 
@@ -43,8 +44,9 @@ def main(argv):
   parser.add_argument('--use_typescript_go', action='store_true')
   args = parser.parse_args(argv)
 
-  with open(os.path.join(_HERE_DIR, _TSCONFIG_BASE),
-            encoding='utf-8') as root_tsconfig:
+  with open(
+    os.path.join(_HERE_DIR, _TSCONFIG_BASE), encoding='utf-8'
+  ) as root_tsconfig:
     tsconfig = json.loads(root_tsconfig.read())
 
   root_dir = os.path.relpath(args.root_dir, args.gen_dir)
@@ -54,9 +56,10 @@ def main(argv):
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
   if tsconfig['compilerOptions']['typeRoots'] is not None:
-    tsconfig['compilerOptions']['typeRoots'] = \
-        [os.path.relpath(os.path.join(_HERE_DIR, f), args.gen_dir) for f \
-             in tsconfig['compilerOptions']['typeRoots']]
+    tsconfig['compilerOptions']['typeRoots'] = [
+      os.path.relpath(os.path.join(_HERE_DIR, f), args.gen_dir)
+      for f in tsconfig['compilerOptions']['typeRoots']
+    ]
 
   # Handle custom path mappings, for example chrome://resources/ URLs.
   if args.path_mappings is not None:
@@ -71,7 +74,7 @@ def main(argv):
 
   _write_tsconfig_json(args.gen_dir, tsconfig)
 
-  if (args.root_dir == args.out_dir):
+  if args.root_dir == args.out_dir:
     # Delete .d.ts files if they already exist, otherwise TypeScript compiler
     # throws "error TS5055: Cannot write file ... because it would overwrite
     # input file" errors.
@@ -86,12 +89,16 @@ def main(argv):
     import typescript
 
     stdout = typescript.RunTypeScript(
-        ['--project', os.path.join(args.gen_dir, _TSCONFIG_GEN)])
+      ['--project', os.path.join(args.gen_dir, _TSCONFIG_GEN)]
+    )
   else:
-    stdout = node.RunNode([
-        node_modules.PathToTypescript(), '--project',
-        os.path.join(args.gen_dir, _TSCONFIG_GEN)
-    ])
+    stdout = node.RunNode(
+      [
+        node_modules.PathToTypescript(),
+        '--project',
+        os.path.join(args.gen_dir, _TSCONFIG_GEN),
+      ]
+    )
 
   # Verify that that no unexpected .d.ts files were generated.
   lines = stdout.splitlines()
@@ -100,7 +107,8 @@ def main(argv):
   for l in lines:
     if token in l:
       generated_files.append(
-          os.path.normpath(os.path.relpath(l[len(token):], args.out_dir)))
+        os.path.normpath(os.path.relpath(l[len(token) :], args.out_dir))
+      )
 
   args.js_files.sort()
   generated_files_set = set(generated_files)
@@ -123,9 +131,10 @@ def main(argv):
     for f in generated_files:
       os.remove(os.path.join(args.out_dir, f))
 
-    raise Exception(\
-        'Unexpected file(s) \'%s\' generated, deleting all generated files.' \
-        % generated_files_set)
+    raise Exception(
+      'Unexpected file(s) \'%s\' generated, deleting all generated files.'
+      % generated_files_set
+    )
 
 
 if __name__ == '__main__':

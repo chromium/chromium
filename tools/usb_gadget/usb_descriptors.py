@@ -67,8 +67,10 @@ class Descriptor(object):
     cls._fields.append(Field(name, str_fmt, struct_fmt, default is None))
 
     member_name = '_{}'.format(name)
+
     def Setter(self, value):
       setattr(self, member_name, value)
+
     def Getter(self):
       try:
         return getattr(self, member_name)
@@ -100,6 +102,7 @@ class Descriptor(object):
 
     def Setter(unused_self, unused_value):
       raise RuntimeError('{} is a fixed field.'.format(name))
+
     def Getter(unused_self):
       return value
 
@@ -128,6 +131,7 @@ class Descriptor(object):
 
     def Setter(unused_self, unused_value):
       raise RuntimeError('{} is a computed field.'.format(name))
+
     def Getter(self):
       return getattr(self, property_name)
 
@@ -182,11 +186,14 @@ class Descriptor(object):
     max_length = max(len(field.name) for field in self._fields)
 
     return '{}:\n  {}'.format(
-        self.__class__.__name__,
-        '\n  '.join('{} {}'.format(
-            '{}:'.format(field.name).ljust(max_length+1),
-            field.Format(getattr(self, field.name))
-        ) for field in self._fields)
+      self.__class__.__name__,
+      '\n  '.join(
+        '{} {}'.format(
+          '{}:'.format(field.name).ljust(max_length + 1),
+          field.Format(getattr(self, field.name)),
+        )
+        for field in self._fields
+      ),
     )
 
 
@@ -195,18 +202,24 @@ class DeviceDescriptor(Descriptor):
 
   See Universal Serial Bus Specification Revision 2.0 Table 9-8.
   """
+
   pass
 
+
 DeviceDescriptor.AddComputedField('bLength', 'B', 'struct_size')
-DeviceDescriptor.AddFixedField('bDescriptorType', 'B',
-                               usb_constants.DescriptorType.DEVICE)
+DeviceDescriptor.AddFixedField(
+  'bDescriptorType', 'B', usb_constants.DescriptorType.DEVICE
+)
 DeviceDescriptor.AddField('bcdUSB', 'H', default=0x0200, str_fmt='0x{:04X}')
-DeviceDescriptor.AddField('bDeviceClass', 'B',
-                          default=usb_constants.DeviceClass.PER_INTERFACE)
-DeviceDescriptor.AddField('bDeviceSubClass', 'B',
-                          default=usb_constants.DeviceSubClass.PER_INTERFACE)
-DeviceDescriptor.AddField('bDeviceProtocol', 'B',
-                          default=usb_constants.DeviceProtocol.PER_INTERFACE)
+DeviceDescriptor.AddField(
+  'bDeviceClass', 'B', default=usb_constants.DeviceClass.PER_INTERFACE
+)
+DeviceDescriptor.AddField(
+  'bDeviceSubClass', 'B', default=usb_constants.DeviceSubClass.PER_INTERFACE
+)
+DeviceDescriptor.AddField(
+  'bDeviceProtocol', 'B', default=usb_constants.DeviceProtocol.PER_INTERFACE
+)
 DeviceDescriptor.AddField('bMaxPacketSize0', 'B', default=64)
 DeviceDescriptor.AddField('idVendor', 'H', str_fmt='0x{:04X}')
 DeviceDescriptor.AddField('idProduct', 'H', str_fmt='0x{:04X}')
@@ -230,8 +243,9 @@ class DescriptorContainer(Descriptor):
 
   @property
   def total_size(self):
-    return self.struct_size + sum([descriptor.total_size
-                                   for descriptor in self._descriptors])
+    return self.struct_size + sum(
+      [descriptor.total_size for descriptor in self._descriptors]
+    )
 
   def Add(self, descriptor):
     self._descriptors.append(descriptor)
@@ -242,9 +256,10 @@ class DescriptorContainer(Descriptor):
     return ''.join(bufs)
 
   def __str__(self):
-    return '{}\n{}'.format(super(DescriptorContainer, self).__str__(),
-                           '\n'.join(str(descriptor)
-                                     for descriptor in self._descriptors))
+    return '{}\n{}'.format(
+      super(DescriptorContainer, self).__str__(),
+      '\n'.join(str(descriptor) for descriptor in self._descriptors),
+    )
 
 
 class StringDescriptor(Descriptor):
@@ -262,17 +277,20 @@ class StringDescriptor(Descriptor):
     return self.struct_size + len(self.bString.encode('UTF-16LE'))
 
   def Encode(self):
-    return (
-        super(StringDescriptor, self).Encode() +
-        self.bString.encode('UTF-16LE'))
+    return super(StringDescriptor, self).Encode() + self.bString.encode(
+      'UTF-16LE'
+    )
 
   def __str__(self):
     return '{}\n  bString:         "{}"'.format(
-        super(StringDescriptor, self).__str__(), self.bString)
+      super(StringDescriptor, self).__str__(), self.bString
+    )
+
 
 StringDescriptor.AddComputedField('bLength', 'B', 'total_size')
 StringDescriptor.AddFixedField(
-    'bDescriptorType', 'B', usb_constants.DescriptorType.STRING)
+  'bDescriptorType', 'B', usb_constants.DescriptorType.STRING
+)
 
 
 class ConfigurationDescriptor(DescriptorContainer):
@@ -293,20 +311,24 @@ class ConfigurationDescriptor(DescriptorContainer):
   def AddInterface(self, interface):
     key = (interface.bInterfaceNumber, interface.bAlternateSetting)
     if key in self._interfaces:
-      raise RuntimeError('Interface {} (alternate {}) already defined.'
-                         .format(key[0], key[1]))
+      raise RuntimeError(
+        'Interface {} (alternate {}) already defined.'.format(key[0], key[1])
+      )
     self._interfaces[key] = interface
     self.Add(interface)
 
   def GetInterfaces(self):
     return self._interfaces.values()
 
+
 ConfigurationDescriptor.AddComputedField('bLength', 'B', 'struct_size')
 ConfigurationDescriptor.AddFixedField(
-    'bDescriptorType', 'B', usb_constants.DescriptorType.CONFIGURATION)
+  'bDescriptorType', 'B', usb_constants.DescriptorType.CONFIGURATION
+)
 ConfigurationDescriptor.AddComputedField('wTotalLength', 'H', 'total_size')
-ConfigurationDescriptor.AddComputedField('bNumInterfaces', 'B',
-                                         'num_interfaces')
+ConfigurationDescriptor.AddComputedField(
+  'bNumInterfaces', 'B', 'num_interfaces'
+)
 ConfigurationDescriptor.AddField('bConfigurationValue', 'B', default=1)
 ConfigurationDescriptor.AddField('iConfiguration', 'B', default=0)
 ConfigurationDescriptor.AddField('bmAttributes', 'B', str_fmt='0x{:02X}')
@@ -329,26 +351,34 @@ class InterfaceDescriptor(DescriptorContainer):
 
   def AddEndpoint(self, endpoint):
     if endpoint.bEndpointAddress in self._endpoints:
-      raise RuntimeError('Endpoint 0x{:02X} already defined on this interface.'
-                         .format(endpoint.bEndpointAddress))
+      raise RuntimeError(
+        'Endpoint 0x{:02X} already defined on this interface.'.format(
+          endpoint.bEndpointAddress
+        )
+      )
     self._endpoints[endpoint.bEndpointAddress] = endpoint
     self.Add(endpoint)
 
   def GetEndpoints(self):
     return self._endpoints.values()
 
+
 InterfaceDescriptor.AddComputedField('bLength', 'B', 'struct_size')
-InterfaceDescriptor.AddFixedField('bDescriptorType', 'B',
-                                  usb_constants.DescriptorType.INTERFACE)
+InterfaceDescriptor.AddFixedField(
+  'bDescriptorType', 'B', usb_constants.DescriptorType.INTERFACE
+)
 InterfaceDescriptor.AddField('bInterfaceNumber', 'B')
 InterfaceDescriptor.AddField('bAlternateSetting', 'B', default=0)
 InterfaceDescriptor.AddComputedField('bNumEndpoints', 'B', 'num_endpoints')
-InterfaceDescriptor.AddField('bInterfaceClass', 'B',
-                             default=usb_constants.InterfaceClass.VENDOR)
-InterfaceDescriptor.AddField('bInterfaceSubClass', 'B',
-                             default=usb_constants.InterfaceSubClass.VENDOR)
-InterfaceDescriptor.AddField('bInterfaceProtocol', 'B',
-                             default=usb_constants.InterfaceProtocol.VENDOR)
+InterfaceDescriptor.AddField(
+  'bInterfaceClass', 'B', default=usb_constants.InterfaceClass.VENDOR
+)
+InterfaceDescriptor.AddField(
+  'bInterfaceSubClass', 'B', default=usb_constants.InterfaceSubClass.VENDOR
+)
+InterfaceDescriptor.AddField(
+  'bInterfaceProtocol', 'B', default=usb_constants.InterfaceProtocol.VENDOR
+)
 InterfaceDescriptor.AddField('iInterface', 'B', default=0)
 
 
@@ -357,11 +387,14 @@ class EndpointDescriptor(Descriptor):
 
   See Universal Serial Bus Specification Revision 2.0 Table 9-13.
   """
+
   pass
 
+
 EndpointDescriptor.AddComputedField('bLength', 'B', 'struct_size')
-EndpointDescriptor.AddFixedField('bDescriptorType', 'B',
-                                 usb_constants.DescriptorType.ENDPOINT)
+EndpointDescriptor.AddFixedField(
+  'bDescriptorType', 'B', usb_constants.DescriptorType.ENDPOINT
+)
 EndpointDescriptor.AddField('bEndpointAddress', 'B', str_fmt='0x{:02X}')
 EndpointDescriptor.AddField('bmAttributes', 'B', str_fmt='0x{:02X}')
 EndpointDescriptor.AddField('wMaxPacketSize', 'H')
@@ -392,19 +425,27 @@ class HidDescriptor(Descriptor):
 
   def Encode(self):
     bufs = [super(HidDescriptor, self).Encode()]
-    bufs.extend(struct.pack('<BH', typ, length)
-                for typ, length in self._descriptors)
+    bufs.extend(
+      struct.pack('<BH', typ, length) for typ, length in self._descriptors
+    )
     return ''.join(bufs)
 
   def __str__(self):
     return '{}\n{}'.format(
-        super(HidDescriptor, self).__str__(),
-        '\n'.join('  bDescriptorType: 0x{:02X}\n  wDescriptorLength: {}'
-                  .format(typ, length) for typ, length in self._descriptors))
+      super(HidDescriptor, self).__str__(),
+      '\n'.join(
+        '  bDescriptorType: 0x{:02X}\n  wDescriptorLength: {}'.format(
+          typ, length
+        )
+        for typ, length in self._descriptors
+      ),
+    )
+
 
 HidDescriptor.AddComputedField('bLength', 'B', 'struct_size')
-HidDescriptor.AddFixedField('bDescriptorType', 'B',
-                            hid_constants.DescriptorType.HID)
+HidDescriptor.AddFixedField(
+  'bDescriptorType', 'B', hid_constants.DescriptorType.HID
+)
 HidDescriptor.AddField('bcdHID', 'H', default=0x0111, str_fmt='0x{:04X}')
 HidDescriptor.AddField('bCountryCode', 'B', default=0)
 HidDescriptor.AddComputedField('bNumDescriptors', 'B', 'num_descriptors')
@@ -431,9 +472,11 @@ class BosDescriptor(DescriptorContainer):
   def GetDeviceCapabilities(self):
     return self._device_caps
 
+
 BosDescriptor.AddComputedField('bLength', 'B', 'struct_size')
-BosDescriptor.AddFixedField('bDescriptorType', 'B',
-                            usb_constants.DescriptorType.BOS)
+BosDescriptor.AddFixedField(
+  'bDescriptorType', 'B', usb_constants.DescriptorType.BOS
+)
 BosDescriptor.AddComputedField('wTotalLength', 'H', 'total_size')
 BosDescriptor.AddComputedField('bNumDeviceCaps', 'B', 'num_device_caps')
 
@@ -443,12 +486,16 @@ class ContainerIdDescriptor(Descriptor):
 
   See Universal Serial Bus 3.1 Specification, Revision 1.0 Table 9-17.
   """
+
   pass
+
 
 ContainerIdDescriptor.AddComputedField('bLength', 'B', 'struct_size')
 ContainerIdDescriptor.AddFixedField(
-    'bDescriptorType', 'B', usb_constants.DescriptorType.DEVICE_CAPABILITY)
+  'bDescriptorType', 'B', usb_constants.DescriptorType.DEVICE_CAPABILITY
+)
 ContainerIdDescriptor.AddFixedField(
-    'bDevCapabilityType', 'B', usb_constants.CapabilityType.CONTAINER_ID)
+  'bDevCapabilityType', 'B', usb_constants.CapabilityType.CONTAINER_ID
+)
 ContainerIdDescriptor.AddFixedField('bReserved', 'B', 0)
 ContainerIdDescriptor.AddField('ContainerID', '16s')

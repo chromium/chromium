@@ -11,9 +11,16 @@ import sys
 import tempfile
 
 sys.path.insert(
-    0,
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, 'third_party',
-                 'catapult', 'systrace'))
+  0,
+  os.path.join(
+    os.path.dirname(__file__),
+    os.pardir,
+    os.pardir,
+    'third_party',
+    'catapult',
+    'systrace',
+  ),
+)
 
 import breakpad_file_extractor
 import flag_utils
@@ -37,8 +44,9 @@ def SymbolizeTrace(trace_file, options):
 
   need_cleanup = False
   if options.local_breakpad_dir is None:
-    breakpad_file_extractor.EnsureDumpSymsBinary(options.dump_syms_path,
-                                                 options.local_build_dir)
+    breakpad_file_extractor.EnsureDumpSymsBinary(
+      options.dump_syms_path, options.local_build_dir
+    )
 
     # Ensure valid |breakpad_output_dir|
     if options.breakpad_output_dir is None:
@@ -47,21 +55,25 @@ def SymbolizeTrace(trace_file, options):
       options.breakpad_output_dir = tempfile.mkdtemp()
       need_cleanup = True
       flag_utils.GetTracingLogger().warning(
-          'Created temporary directory to hold symbol files. These symbols '
-          'will be cleaned up after symbolization. Please specify '
-          '--breakpad_output_dir=<cached_dir> to save the symbols, if you need '
-          'to profile multiple times. The future runs need to use '
-          '--local_breakpad_dir=<cached_dir> flag so the symbolizer uses the '
-          'cache.')
+        'Created temporary directory to hold symbol files. These symbols '
+        'will be cleaned up after symbolization. Please specify '
+        '--breakpad_output_dir=<cached_dir> to save the symbols, if you need '
+        'to profile multiple times. The future runs need to use '
+        '--local_breakpad_dir=<cached_dir> flag so the symbolizer uses the '
+        'cache.'
+      )
     else:
       if os.path.isdir(options.breakpad_output_dir):
         if os.listdir(options.breakpad_output_dir):
-          raise Exception('Breakpad output directory is not empty: ' +
-                          options.breakpad_output_dir)
+          raise Exception(
+            'Breakpad output directory is not empty: '
+            + options.breakpad_output_dir
+          )
       else:
         os.makedirs(options.breakpad_output_dir)
         flag_utils.GetTracingLogger().debug(
-            'Created directory to hold symbol files.')
+          'Created directory to hold symbol files.'
+        )
   else:
     if not os.path.isdir(options.local_breakpad_dir):
       raise Exception('Local breakpad directory is not valid.')
@@ -72,11 +84,16 @@ def SymbolizeTrace(trace_file, options):
   # Set output file to write trace data and symbols to.
   if options.output_file is None:
     options.output_file = os.path.join(
-        os.path.dirname(trace_file),
-        os.path.basename(trace_file) + '_symbolized_trace')
+      os.path.dirname(trace_file),
+      os.path.basename(trace_file) + '_symbolized_trace',
+    )
 
-  _Symbolize(trace_file, options.symbolizer_path, options.breakpad_output_dir,
-             options.output_file)
+  _Symbolize(
+    trace_file,
+    options.symbolizer_path,
+    options.breakpad_output_dir,
+    options.output_file,
+  )
 
   print('Symbolized trace saved to: ' + os.path.abspath(options.output_file))
 
@@ -105,39 +122,49 @@ def _EnsureBreakpadSymbols(trace_file, options):
   # Extract Metadata
   flag_utils.GetTracingLogger().info('Extracting proto trace metadata.')
   trace_metadata = metadata_extractor.MetadataExtractor(
-      options.trace_processor_path, trace_file)
+    options.trace_processor_path, trace_file
+  )
   trace_metadata.Initialize()
   flag_utils.GetTracingLogger().info(trace_metadata)
 
   if options.local_build_dir is not None:
     # Extract breakpad symbol files from binaries in |options.local_build_dir|.
     if not breakpad_file_extractor.ExtractBreakpadFiles(
-        options.dump_syms_path,
-        options.local_build_dir,
-        options.breakpad_output_dir,
-        search_unstripped=True,
-        module_ids=breakpad_file_extractor.GetModuleIdsToSymbolize(
-            trace_metadata)):
+      options.dump_syms_path,
+      options.local_build_dir,
+      options.breakpad_output_dir,
+      search_unstripped=True,
+      module_ids=breakpad_file_extractor.GetModuleIdsToSymbolize(
+        trace_metadata
+      ),
+    ):
       raise Exception(
-          'No breakpad symbols could be extracted from files in: %s xor %s' %
-          (options.local_build_dir,
-           os.path.join(options.local_build_dir, 'lib.unstripped')))
+        'No breakpad symbols could be extracted from files in: %s xor %s'
+        % (
+          options.local_build_dir,
+          os.path.join(options.local_build_dir, 'lib.unstripped'),
+        )
+      )
 
-    rename_breakpad.RenameBreakpadFiles(options.breakpad_output_dir,
-                                        options.breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(
+      options.breakpad_output_dir, options.breakpad_output_dir
+    )
     return
 
   # Fetch trace breakpad symbols from GCS
   flag_utils.GetTracingLogger().info(
-      'Fetching and extracting trace breakpad symbols.')
-  symbol_fetcher.GetTraceBreakpadSymbols(options.cloud_storage_bucket,
-                                         trace_metadata,
-                                         options.breakpad_output_dir,
-                                         options.dump_syms_path)
+    'Fetching and extracting trace breakpad symbols.'
+  )
+  symbol_fetcher.GetTraceBreakpadSymbols(
+    options.cloud_storage_bucket,
+    trace_metadata,
+    options.breakpad_output_dir,
+    options.dump_syms_path,
+  )
 
 
 def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
-  """"Symbolizes a trace.
+  """ "Symbolizes a trace.
 
   Args:
     trace_file: The trace file to be symbolized.
@@ -166,8 +193,11 @@ def _Symbolize(trace_file, symbolizer_path, breakpad_output_dir, output_file):
       f.write(trace_data)
       f.write(symbol_data)
       flag_utils.GetTracingLogger().info(
-          'Symbolized %s(%d bytes) with %d bytes of symbol data',
-          os.path.abspath(trace_file), len(trace_data), len(symbol_data))
+        'Symbolized %s(%d bytes) with %d bytes of symbol data',
+        os.path.abspath(trace_file),
+        len(trace_data),
+        len(symbol_data),
+      )
 
 
 def _RunSymbolizer(cmd, env, stdout):

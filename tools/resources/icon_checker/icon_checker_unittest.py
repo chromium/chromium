@@ -14,7 +14,6 @@ import icon_checker
 
 
 class IconCheckerTest(unittest.TestCase):
-
   def test_CheckIcons_Valid(self):
     input_api = MagicMock()
     input_api.change.RepositoryRoot.return_value = '/root'
@@ -22,11 +21,17 @@ class IconCheckerTest(unittest.TestCase):
     output_api = MagicMock()
 
     # Mock FetchValidIconNames to return a set with 'menu' and 'add_to_drive'
-    with patch('icon_checker.FetchValidIconNames',
-               return_value={'menu', 'add_to_drive'}):
-      affected_icons = [('components/vector_icons/menu.icon', 'menu', None),
-                        ('chrome/browser/resources/pdf/elements/icons.html',
-                         'add-to-drive', 10)]
+    with patch(
+      'icon_checker.FetchValidIconNames', return_value={'menu', 'add_to_drive'}
+    ):
+      affected_icons = [
+        ('components/vector_icons/menu.icon', 'menu', None),
+        (
+          'chrome/browser/resources/pdf/elements/icons.html',
+          'add-to-drive',
+          10,
+        ),
+      ]
 
       results = icon_checker.CheckIcons(input_api, output_api, affected_icons)
       self.assertEqual(len(results), 0)
@@ -38,21 +43,25 @@ class IconCheckerTest(unittest.TestCase):
     output_api = MagicMock()
 
     # Mock FetchValidIconNames to return a set with 'menu' and 'add_to_drive'
-    with patch('icon_checker.FetchValidIconNames',
-               return_value={'menu', 'add_to_drive'}):
+    with patch(
+      'icon_checker.FetchValidIconNames', return_value={'menu', 'add_to_drive'}
+    ):
       affected_icons = [
-          ('components/vector_icons/menu_custom.icon', 'menu_custom', None),
-          ('components/vector_icons/menu_filled.icon', 'menu_filled', None),
-          ('components/vector_icons/menu_flippable.icon', 'menu_flippable',
-           None),
-          ('chrome/browser/resources/pdf/elements/icons.html', 'menu-custom',
-           10),
-          ('chrome/browser/resources/pdf/elements/icons.html', 'menu-filled',
-           11),
-          ('chrome/browser/resources/pdf/elements/icons.html', 'menu-flippable',
-           12),
-          ('components/vector_icons/menu_filled_flippable.icon',
-           'menu_filled_flippable', None),
+        ('components/vector_icons/menu_custom.icon', 'menu_custom', None),
+        ('components/vector_icons/menu_filled.icon', 'menu_filled', None),
+        ('components/vector_icons/menu_flippable.icon', 'menu_flippable', None),
+        ('chrome/browser/resources/pdf/elements/icons.html', 'menu-custom', 10),
+        ('chrome/browser/resources/pdf/elements/icons.html', 'menu-filled', 11),
+        (
+          'chrome/browser/resources/pdf/elements/icons.html',
+          'menu-flippable',
+          12,
+        ),
+        (
+          'components/vector_icons/menu_filled_flippable.icon',
+          'menu_filled_flippable',
+          None,
+        ),
       ]
 
       results = icon_checker.CheckIcons(input_api, output_api, affected_icons)
@@ -68,10 +77,9 @@ class IconCheckerTest(unittest.TestCase):
     # Mock FetchValidIconNames
     with patch('icon_checker.FetchValidIconNames', return_value={'menu'}):
       affected_icons = [
-          ('components/vector_icons/invalid.icon', 'invalid', None),
-          ('components/vector_icons/invalid_custom.icon', 'invalid_custom',
-           None),
-          ('components/vector_icons/custom.icon', 'custom', None),
+        ('components/vector_icons/invalid.icon', 'invalid', None),
+        ('components/vector_icons/invalid_custom.icon', 'invalid_custom', None),
+        ('components/vector_icons/custom.icon', 'custom', None),
       ]
 
       results = icon_checker.CheckIcons(input_api, output_api, affected_icons)
@@ -100,8 +108,9 @@ class IconCheckerTest(unittest.TestCase):
 
       with self.assertRaises(AssertionError) as cm:
         icon_checker.CheckIcons(input_api, output_api, affected_icons)
-      self.assertIn('Could not read tools/resources/icon_list.json',
-                    str(cm.exception))
+      self.assertIn(
+        'Could not read tools/resources/icon_list.json', str(cm.exception)
+      )
 
 
 if __name__ == '__main__':

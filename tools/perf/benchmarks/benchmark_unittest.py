@@ -17,12 +17,16 @@ from telemetry.testing import progress_reporter
 
 from py_utils import discover
 
+
 def _GetAllPerfBenchmarks():
   return list(
-      discover.DiscoverClasses(path_util.GetOfficialBenchmarksDir(),
-                               path_util.GetPerfDir(),
-                               benchmark_module.Benchmark,
-                               index_by_class_name=True).values())
+    discover.DiscoverClasses(
+      path_util.GetOfficialBenchmarksDir(),
+      path_util.GetPerfDir(),
+      benchmark_module.Benchmark,
+      index_by_class_name=True,
+    ).values()
+  )
 
 
 def _BenchmarkOptionsTestGenerator(benchmark):
@@ -32,11 +36,11 @@ def _BenchmarkOptionsTestGenerator(benchmark):
       options_for_unittests.GetRunOptions(benchmark_cls=benchmark)
     except benchmark_module.InvalidOptionsError as exc:
       self.fail(str(exc))
+
   return testBenchmarkOptions
 
 
 class TestNoBenchmarkNamesDuplication(unittest.TestCase):
-
   def runTest(self):
     all_benchmarks = _GetAllPerfBenchmarks()
     names_to_benchmarks = defaultdict(list)
@@ -44,13 +48,14 @@ class TestNoBenchmarkNamesDuplication(unittest.TestCase):
       names_to_benchmarks[b.Name()].append(b)
     for n in names_to_benchmarks:
       self.assertEqual(
-          1, len(names_to_benchmarks[n]),
-          'Multiple benchmarks with the same name %s are '
-          'found: %s' % (n, str(names_to_benchmarks[n])))
+        1,
+        len(names_to_benchmarks[n]),
+        'Multiple benchmarks with the same name %s are '
+        'found: %s' % (n, str(names_to_benchmarks[n])),
+      )
 
 
 class TestBenchmarkNamingMobile(unittest.TestCase):
-
   # TODO(rnephew): This needs to be fixed after we move to CanRunOnBrowser.
   @decorators.Disabled('all')
   def runTest(self):
@@ -64,26 +69,28 @@ class TestBenchmarkNamingMobile(unittest.TestCase):
         enabled_tags = decorators.GetEnabledAttributes(bench)
         disabled_tags = decorators.GetDisabledAttributes(bench)
 
-        self.assertTrue('all' in disabled_tags or 'android' in enabled_tags,
-                        ','.join([
-                            str(bench), bench.Name(),
-                            str(disabled_tags), str(enabled_tags)]))
+        self.assertTrue(
+          'all' in disabled_tags or 'android' in enabled_tags,
+          ','.join(
+            [str(bench), bench.Name(), str(disabled_tags), str(enabled_tags)]
+          ),
+        )
 
 
 class TestNoOverrideCustomizeOptions(unittest.TestCase):
-
   def runTest(self):
     all_benchmarks = _GetAllPerfBenchmarks()
     for benchmark in all_benchmarks:
       self.assertEqual(
-          True, issubclass(benchmark, perf_benchmark.PerfBenchmark),
-          'Benchmark %s needs to subclass from PerfBenchmark' %
-          benchmark.Name())
+        True,
+        issubclass(benchmark, perf_benchmark.PerfBenchmark),
+        'Benchmark %s needs to subclass from PerfBenchmark' % benchmark.Name(),
+      )
       self.assertEqual(
-          benchmark.CustomizeOptions,
-          perf_benchmark.PerfBenchmark.CustomizeOptions,
-          'Benchmark %s should not override CustomizeOptions' %
-          benchmark.Name())
+        benchmark.CustomizeOptions,
+        perf_benchmark.PerfBenchmark.CustomizeOptions,
+        'Benchmark %s should not override CustomizeOptions' % benchmark.Name(),
+      )
 
 
 class BenchmarkOptionsTest(unittest.TestCase):
@@ -99,8 +106,11 @@ def _AddBenchmarkOptionsTests(suite):
       # No need to test benchmarks that have not defined options.
       continue
 
-    setattr(BenchmarkOptionsTest, benchmark.Name(),
-            _BenchmarkOptionsTestGenerator(benchmark))
+    setattr(
+      BenchmarkOptionsTest,
+      benchmark.Name(),
+      _BenchmarkOptionsTestGenerator(benchmark),
+    )
     suite.addTest(BenchmarkOptionsTest(benchmark.Name()))
 
 

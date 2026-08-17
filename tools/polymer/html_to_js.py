@@ -15,8 +15,9 @@ _CWD = getcwd()
 
 
 def _add_template_markers(html_template):
-  return '<!--_html_template_start_-->%s<!--_html_template_end_-->' % \
-      html_template
+  return (
+    '<!--_html_template_start_-->%s<!--_html_template_end_-->' % html_template
+  )
 
 
 def _extract_template(html_file):
@@ -41,12 +42,17 @@ def process_v3_ready(js_file, html_file):
       lines[i] = line
 
   if found == 0:
-    raise AssertionError('No HTML placeholder ' + HTML_TEMPLATE_REGEX +
-                         ' found in ' + js_file)
+    raise AssertionError(
+      'No HTML placeholder ' + HTML_TEMPLATE_REGEX + ' found in ' + js_file
+    )
 
   if found > 1:
-    raise AssertionError('Multiple HTML placeholders ' + HTML_TEMPLATE_REGEX +
-                         ' found in ' + js_file)
+    raise AssertionError(
+      'Multiple HTML placeholders '
+      + HTML_TEMPLATE_REGEX
+      + ' found in '
+      + js_file
+    )
 
   out_filename = path.basename(js_file)
   return lines, out_filename
@@ -66,9 +72,10 @@ def main(argv):
   for js_file in args.js_files:
     # Detect file extension, since it can be either a .ts or .js file.
     extension = path.splitext(js_file)[1]
-    html_file = js_file[:-len(extension)] + '.html'
+    html_file = js_file[: -len(extension)] + '.html'
     result = process_v3_ready(
-        path.join(in_folder, js_file), path.join(in_folder, html_file))
+      path.join(in_folder, js_file), path.join(in_folder, html_file)
+    )
 
     out_folder_for_file = path.join(out_folder, path.dirname(js_file))
     makedirs(out_folder_for_file, exist_ok=True)

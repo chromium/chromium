@@ -14,10 +14,12 @@ _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _CIPD_ROOT_BASE_DIR = _THIS_DIR.joinpath('.bundles')
 
 _CHROME_RECIPE_BUNDLE = (
-    'infra_internal/recipe_bundles/chrome-internal.googlesource.com/'
-    'chrome/tools/build')
+  'infra_internal/recipe_bundles/chrome-internal.googlesource.com/'
+  'chrome/tools/build'
+)
 _CHROMIUM_RECIPE_BUNDLE = (
-    'infra/recipe_bundles/chromium.googlesource.com/chromium/tools/build')
+  'infra/recipe_bundles/chromium.googlesource.com/chromium/tools/build'
+)
 _RECIPE_BUNDLE_VERSION = 'refs/heads/main'
 
 
@@ -41,14 +43,14 @@ def fetch_recipe_bundle(project, is_verbose):
   if project in ('chromium', 'dawn'):
     recipe_bundle_package = _CHROMIUM_RECIPE_BUNDLE
   cmd = [
-      exe,
-      'install',
-      recipe_bundle_package,
-      _RECIPE_BUNDLE_VERSION,
-      '-root',
-      str(cipd_root_dir),
-      '-log-level',
-      'debug' if is_verbose else 'warning',
+    exe,
+    'install',
+    recipe_bundle_package,
+    _RECIPE_BUNDLE_VERSION,
+    '-root',
+    str(cipd_root_dir),
+    '-log-level',
+    'debug' if is_verbose else 'warning',
   ]
   logging.info('[cyan]Running bundle install command:[/]')
   logging.getLogger('basic_logger').info(' '.join(cmd))
@@ -58,10 +60,11 @@ def fetch_recipe_bundle(project, is_verbose):
     subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
   except subprocess.CalledProcessError:
     logging.error(
-        'Failed to install recipe bundle via CIPD. Note: If running in '
-        'a non-interactive remote environment, this may be caused '
-        'by Context Aware Access (CAA) / BeyondCorp blocks preventing '
-        'downloads. Please ensure your remote session is explicitly '
-        'authenticated.')
+      'Failed to install recipe bundle via CIPD. Note: If running in '
+      'a non-interactive remote environment, this may be caused '
+      'by Context Aware Access (CAA) / BeyondCorp blocks preventing '
+      'downloads. Please ensure your remote session is explicitly '
+      'authenticated.'
+    )
     raise
   return cipd_root_dir

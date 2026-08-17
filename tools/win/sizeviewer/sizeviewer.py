@@ -16,9 +16,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def Run(*args):
-    p = subprocess.Popen(args,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     out, err = p.communicate()
     if p.returncode != 0:
         raise SystemExit(out)
@@ -94,11 +92,22 @@ def main():
             print('Tallying %s...' % dll_path)
             json_path = dll_path + '.json'
             Run(
-                os.path.join(BASE_DIR, '..', '..', '..', 'third_party',
-                             'syzygy', 'binaries', 'exe', 'experimental',
-                             'code_tally.exe'), '--input-image=' + dll_path,
+                os.path.join(
+                    BASE_DIR,
+                    '..',
+                    '..',
+                    '..',
+                    'third_party',
+                    'syzygy',
+                    'binaries',
+                    'exe',
+                    'experimental',
+                    'code_tally.exe',
+                ),
+                '--input-image=' + dll_path,
                 '--input-pdb=' + dll_path + '.pdb',
-                '--output-file=' + json_path)
+                '--output-file=' + json_path,
+            )
             jsons.append(json_path)
     if not jsons:
         print('Couldn\'t find dlls.')
@@ -139,17 +148,21 @@ def main():
                             # 0 == size,
                             # 1 == symbol list.
                             by_source[source]['lines'].setdefault(
-                                line_number, [0, []])
-                            by_source[source]['lines'][line_number][
-                                0] += per_line[j + 1]
+                                line_number, [0, []]
+                            )
+                            by_source[source]['lines'][line_number][0] += (
+                                per_line[j + 1]
+                            )
                             if symbol in symbols_index:
                                 symindex = symbols_index[symbol]
                             else:
                                 symbols.append(symbol)
-                                symbols_index[symbol] = symindex = len(
-                                    symbols) - 1
+                                symbols_index[symbol] = symindex = (
+                                    len(symbols) - 1
+                                )
                             by_source[source]['lines'][line_number][1].append(
-                                symindex)
+                                symindex
+                            )
                         by_source[source]['total_size'] += size
         binary_name = all_data['executable']['name']
         data = {}
@@ -191,7 +204,8 @@ def main():
             # fragmentation. So instead, we just append them as variables to the
             # file and then refer to the variables in the main script.
             filedata_str = json.dumps(file_contents).replace(
-                '</script>', '</scr"+"ipt>')
+                '</script>', '</scr"+"ipt>'
+            )
             AppendAsScriptBlock(f, filedata_str, var='g_file_contents')
             AppendAsScriptBlock(f, json.dumps(line_data), var='g_line_data')
             AppendAsScriptBlock(f, json.dumps(symbols), var='g_symbol_list')

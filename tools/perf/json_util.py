@@ -22,9 +22,8 @@ import json_constants
 
 # The source of truth for public perf builders, which is extracted from
 # datastore (url http://shortn/_ApO0FuH9pg and url http://shortn/_pKoMUP1fe6).
-PUBLIC_PERF_BUILDERS_PATH = os.path.join(
-      path_util.GetChromiumSrcDir(), "tools", "perf",
-      "public_builders.json")
+PUBLIC_PERF_BUILDERS_PATH = os.path.join(path_util.GetChromiumSrcDir(), "tools",
+                                         "perf", "public_builders.json")
 
 
 def EscapeName(name: str) -> str:
@@ -37,6 +36,7 @@ def EscapeName(name: str) -> str:
     An escaped version of the name.
   """
   return re.sub(r'[\:|=/#&,]', '_', name)
+
 
 def is_public_builder(builder_name: str) -> bool:
   """Returns whether the builder is public.
@@ -58,8 +58,9 @@ def is_public_builder(builder_name: str) -> bool:
 def gcs_buckets_from_builder_name(
     builder_name: str,
     master_name: str,
-    experiment_only: bool=False,
-    public_copy_to_experiment: bool=False) -> List[str]:
+    experiment_only: bool = False,
+    public_copy_to_experiment: bool = False,
+) -> List[str]:
   """Returns the GCS buckets to upload the json to.
 
   Args:
@@ -79,9 +80,11 @@ def gcs_buckets_from_builder_name(
   for _, value in json_constants.REPOSITORY_PROPERTY_MAP.items():
     if master_name in value["masters"]:
       if public_copy_to_experiment and is_public:
-        return [value["public_bucket_name"],
-                value["internal_bucket_name"],
-                json_constants.EXPERIMENT_GCS_BUCKET]
+        return [
+            value["public_bucket_name"],
+            value["internal_bucket_name"],
+            json_constants.EXPERIMENT_GCS_BUCKET,
+        ]
       if is_public:
         return [value["public_bucket_name"], value["internal_bucket_name"]]
       return [value["internal_bucket_name"]]
@@ -105,8 +108,14 @@ def calculate_stats(values):
   # If there is only one value, the standard deviation is 0.
   std_dev = (statistics.stdev(filtered_values)
              if len(filtered_values) > 1 else 0.0)
-  return (average, std_dev, n, max(filtered_values), min(filtered_values),
-          sum(filtered_values))
+  return (
+      average,
+      std_dev,
+      n,
+      max(filtered_values),
+      min(filtered_values),
+      sum(filtered_values),
+  )
 
 
 def extract_subtest_from_stories_tags(stories: List[str],
@@ -183,7 +192,8 @@ def get_gcs_prefix_path(
     builder_details: PerfBuilderDetails,
     benchmark_name: str,
     given_datetime: Optional[datetime.datetime],
-    filename: Optional[str]) -> str:
+    filename: Optional[str],
+) -> str:
   """Returns the gcs prefix path.
 
   Args:
@@ -218,8 +228,7 @@ def get_gcs_prefix_path(
 
 
 def perf_builder_details_from_build_properties(
-    properties: Dict[str, Any],
-    configuration_name: str,
+    properties: Dict[str, Any], configuration_name: str,
     machine_group: str) -> PerfBuilderDetails:
   """Returns a PerfBuilderDetails from a given environment."""
   match = re.search(r"@\{#(\d+)\}", properties["got_revision_cp"])
@@ -339,8 +348,10 @@ class JsonUtil:
               logging.warning(
                   'Expected guid "%s" for diagnostic type "%s" in metric "%s", '
                   'but it is not in the guid_to_values. Skipping.',
-                  guid, diagnostic_type,
-                  item.get(json_constants.NAME, "UnknownMetric"))
+                  guid,
+                  diagnostic_type,
+                  item.get(json_constants.NAME, "UnknownMetric"),
+              )
               continue
             values = guid_to_values[guid]
           elif isinstance(guid, dict):
@@ -350,20 +361,24 @@ class JsonUtil:
             values = guid.get(json_constants.VALUES)
           else:
             logging.warning(
-                'Expected string or dict for diagnostic type "%s" in metric ' \
+                'Expected string or dict for diagnostic type "%s" in metric '
                 '"%s" but got type %s: %s. Skipping.',
-                diagnostic_type, item.get(json_constants.NAME, "UnknownMetric"),
+                diagnostic_type,
+                item.get(json_constants.NAME, "UnknownMetric"),
                 type(guid).__name__,
-                str(guid)[:200])
+                str(guid)[:200],
+            )
             continue
 
           if not isinstance(values, list):
             logging.warning(
-                'Expected list for diagnostic type "%s" in metric ' \
+                'Expected list for diagnostic type "%s" in metric '
                 '"%s" but got type %s: %s. Skipping.',
-                diagnostic_type, item.get(json_constants.NAME, "UnknownMetric"),
+                diagnostic_type,
+                item.get(json_constants.NAME, "UnknownMetric"),
                 type(values).__name__,
-                str(values)[:200])
+                str(values)[:200],
+            )
             continue
 
           if diagnostic_type == json_constants.BOT_ID:
@@ -384,10 +399,11 @@ class JsonUtil:
             sample_values = item[json_constants.SAMPLE_VALUES]
             if not isinstance(sample_values, list):
               logging.warning(
-                  'Expected "sampleValues" to be a list for metric "%s", ' \
+                  'Expected "sampleValues" to be a list for metric "%s", '
                   'got %s. Skipping sample values.',
                   item.get(json_constants.NAME, "UnknownMetric"),
-                  type(sample_values).__name__)
+                  type(sample_values).__name__,
+              )
               continue
 
             subtest_1, subtest_2 = extract_subtest_from_stories_tags(
@@ -422,9 +438,9 @@ class JsonUtil:
     key = key_from_builder_details(builder_details, benchmark_key)
     return merged_results, links, key
 
-  def process(
-      self, builder_details: PerfBuilderDetails, benchmark_name: str=''
-      ) -> Dict[str, Any]:
+  def process(self,
+              builder_details: PerfBuilderDetails,
+              benchmark_name: str = '') -> Dict[str, Any]:
     """Processes the result2 jsons and returns a skia json.
 
     Args:
@@ -435,10 +451,12 @@ class JsonUtil:
       The skia json data.
     """
     output = {
-        json_constants.VERSION: 1,
-        json_constants.GIT_HASH: (builder_details.git_hash if builder_details else
-                                  ''),
-        json_constants.KEY: collections.defaultdict(str),
+        json_constants.VERSION:
+        1,
+        json_constants.GIT_HASH:
+        (builder_details.git_hash if builder_details else ''),
+        json_constants.KEY:
+        collections.defaultdict(str),
         json_constants.RESULTS: [],
     }
 
@@ -500,11 +518,11 @@ class JsonUtil:
           },
           {
               json_constants.VALUE: json_constants.MIN,
-              json_constants.MEASUREMENT: min_val
+              json_constants.MEASUREMENT: min_val,
           },
           {
               json_constants.VALUE: json_constants.SUM,
-              json_constants.MEASUREMENT: sum_val
+              json_constants.MEASUREMENT: sum_val,
           },
       ]
       result = {
@@ -525,8 +543,8 @@ class JsonUtil:
 
       # Generate a synthetic measurement that ends with "_avg", "_min", "_max",
       # and "_sum" to support the data parity with the chromeperf.
-      if self.generate_synthetic_measurements and histogram_helpers.ShouldGenerateStatistics(
-          benchmark_name):
+      if (self.generate_synthetic_measurements
+          and histogram_helpers.ShouldGenerateStatistics(benchmark_name)):
         synthetic_keys_base = {
             json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
             json_constants.UNIT: unit,
@@ -539,22 +557,26 @@ class JsonUtil:
             ('min', (json_constants.VALUE, min_val), None, None),
             ('max', (json_constants.VALUE, max_val), None, None),
             ('sum', (json_constants.VALUE, sum_val), None, None),
-            ('count', (json_constants.VALUE, count), "up",
-             "unitless_biggerIsBetter"),
+            (
+                'count',
+                (json_constants.VALUE, count),
+                "up",
+                "unitless_biggerIsBetter",
+            ),
             ('std', (json_constants.VALUE, std_err), "down", None),
         ]
 
         # Loop through the definitions and generate measurements
         for suffix, (
-            value, measurement
+            value,
+            measurement,
         ), dir_override, unit_override in synthetic_stats_to_generate:
           if not self._should_filter_statistic(test_name, benchmark_name,
                                                suffix):
-
             # Start with the base keys and add the specific test name
             keys = {
-                **synthetic_keys_base, json_constants.TEST:
-                f'{test_name}_{suffix}'
+                **synthetic_keys_base,
+                json_constants.TEST: f'{test_name}_{suffix}',
             }
 
             # Apply overrides if they exist
@@ -617,7 +639,9 @@ class JsonUtil:
       return True
     if benchmark_name.startswith(
         'memory') and not benchmark_name.startswith('memory.long_running'):
-      if 'memory:' in test_name and stat_name in histogram_helpers._STATS_BLACKLIST:  # pylint: disable=protected-access
+      if ('memory:' in test_name
+          and stat_name in histogram_helpers._STATS_BLACKLIST  # pylint: disable=protected-access
+          ):
         return True
     if benchmark_name.startswith('memory.long_running'):
       value_name = '%s_%s' % (test_name, stat_name)

@@ -42,8 +42,9 @@ def guess_builder(build_dir):
   gn_args = read_explicit_gn_args(build_dir)
 
   if not gn_args:
-    logging.info('No GN args found in build dir, '
-                 'falling back to host machine dimensions.')
+    logging.info(
+      'No GN args found in build dir, falling back to host machine dimensions.'
+    )
     target_os, target_cpu = get_host_fallback_args()
   else:
     target_os = gn_args.get('target_os')
@@ -56,16 +57,16 @@ def guess_builder(build_dir):
       target_cpu = target_cpu or fallback_cpu
 
   mapping = {
-      ('linux', 'x64'): ('ci', 'Linux Tests'),
-      ('mac', 'x64'): ('ci', 'mac15-x64-rel-tests'),
-      ('mac', 'arm64'): ('ci', 'mac15-arm64-rel-tests'),
-      ('win', 'x64'): ('ci', 'Win10 Tests x64'),
-      ('android', 'arm64'): ('ci', 'android-14-arm64-rel'),
-      ('android', 'x64'): ('ci', 'android-16-x64-rel'),
-      ('android', 'x86'): ('ci', 'android-x86-rel'),
-      ('chromeos', 'x64'): ('ci', 'chromeos-amd64-generic-rel-gtest'),
-      ('chromeos', 'arm64'): ('ci', 'chromeos-arm64-generic-rel'),
-      ('ios', 'arm64'): ('ci', 'ios-simulator'),
+    ('linux', 'x64'): ('ci', 'Linux Tests'),
+    ('mac', 'x64'): ('ci', 'mac15-x64-rel-tests'),
+    ('mac', 'arm64'): ('ci', 'mac15-arm64-rel-tests'),
+    ('win', 'x64'): ('ci', 'Win10 Tests x64'),
+    ('android', 'arm64'): ('ci', 'android-14-arm64-rel'),
+    ('android', 'x64'): ('ci', 'android-16-x64-rel'),
+    ('android', 'x86'): ('ci', 'android-x86-rel'),
+    ('chromeos', 'x64'): ('ci', 'chromeos-amd64-generic-rel-gtest'),
+    ('chromeos', 'arm64'): ('ci', 'chromeos-arm64-generic-rel'),
+    ('ios', 'arm64'): ('ci', 'ios-simulator'),
   }
 
   key = (target_os, target_cpu)

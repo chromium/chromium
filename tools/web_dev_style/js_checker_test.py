@@ -32,26 +32,29 @@ class JsCheckerTest(unittest.TestCase):
     self.assertTrue(highlight.startswith(".bind(this"))
 
   def ShouldPassBindThisCheck(self, line):
-    self.assertEqual("", self.checker.BindThisCheck(1, line),
-        "Should not be flagged as style error: " + line)
+    self.assertEqual(
+      "",
+      self.checker.BindThisCheck(1, line),
+      "Should not be flagged as style error: " + line,
+    )
 
   def testBindThisFails(self):
     lines = [
-        'this.api_.getThinger((function() {console.log(\'foo\');}).bind(this));',
-        'this.api_.getThinger((function foo() {console.log(\'foo\');}).bind(this));',
+      'this.api_.getThinger((function() {console.log(\'foo\');}).bind(this));',
+      'this.api_.getThinger((function foo() {console.log(\'foo\');}).bind(this));',
     ]
     for line in lines:
       self.ShouldFailBindThisCheck(line)
 
   def testBindThisPasses(self):
     lines = [
-        'let bound = this.method_.bind(this);',
-        "document.addEventListener('click', this.onClick_.bind(this));",
-        'this.api_.onEvent = this.onClick_.bind(this);',
-        'this.api_.getThinger(this.gotThinger_.bind(this));',
-        'this.api_.getThinger(this.gotThinger_.bind(this, param1, param2));',
-        '// And in the darkness bind them.',
-        'this.methodName_.bind(scope, param)',
+      'let bound = this.method_.bind(this);',
+      "document.addEventListener('click', this.onClick_.bind(this));",
+      'this.api_.onEvent = this.onClick_.bind(this);',
+      'this.api_.getThinger(this.gotThinger_.bind(this));',
+      'this.api_.getThinger(this.gotThinger_.bind(this, param1, param2));',
+      '// And in the darkness bind them.',
+      'this.methodName_.bind(scope, param)',
     ]
     for line in lines:
       self.ShouldPassBindThisCheck(line)
@@ -65,31 +68,34 @@ class JsCheckerTest(unittest.TestCase):
 
   def ShouldPassCommentCheck(self, line):
     """Checks that commented "<if>" and "<include>" are allowed."""
-    self.assertEqual("", self.checker.CommentIfAndIncludeCheck(1, line),
-        "Should not be flagged as style error: " + line)
+    self.assertEqual(
+      "",
+      self.checker.CommentIfAndIncludeCheck(1, line),
+      "Should not be flagged as style error: " + line,
+    )
 
   def testCommentFails(self):
     lines = [
-        '<include src="blah.js">',
-        # Currently, only "// " is accepted (not just "//" or "//\s+") as Python
-        # can't do variable-length lookbehind.
-        '//<include src="blah.js">',
-        '//  <include src="blah.js">',
-        '             <include src="blee.js">',
-        '  <if expr="chromeos">',
-        '<if expr="lang == \'de\'">',
-        '//<if expr="bitness == 64">',
+      '<include src="blah.js">',
+      # Currently, only "// " is accepted (not just "//" or "//\s+") as Python
+      # can't do variable-length lookbehind.
+      '//<include src="blah.js">',
+      '//  <include src="blah.js">',
+      '             <include src="blee.js">',
+      '  <if expr="chromeos">',
+      '<if expr="lang == \'de\'">',
+      '//<if expr="bitness == 64">',
     ]
     for line in lines:
       self.ShouldFailCommentCheck(line)
 
   def testCommentPasses(self):
     lines = [
-        '// <include src="assert.js">',
-        '             // <include src="util.js"/>',
-        '// <if expr="chromeos">',
-        '           // <if expr="not chromeos">',
-        "   '<iframe src=blah.html>';",
+      '// <include src="assert.js">',
+      '             // <include src="util.js"/>',
+      '// <if expr="chromeos">',
+      '           // <if expr="not chromeos">',
+      "   '<iframe src=blah.html>';",
     ]
     for line in lines:
       self.ShouldPassCommentCheck(line)
@@ -102,25 +108,28 @@ class JsCheckerTest(unittest.TestCase):
 
   def ShouldPassChromeSendCheck(self, line):
     """Checks that the "chrome.send" checker doesn"t flag |line| as a style
-       error.
+    error.
     """
-    self.assertEqual("", self.checker.ChromeSendCheck(1, line),
-        "Should not be flagged as style error: " + line)
+    self.assertEqual(
+      "",
+      self.checker.ChromeSendCheck(1, line),
+      "Should not be flagged as style error: " + line,
+    )
 
   def testChromeSendFails(self):
     lines = [
-        "chrome.send('message', []);",
-        "  chrome.send('message', []);",
+      "chrome.send('message', []);",
+      "  chrome.send('message', []);",
     ]
     for line in lines:
       self.ShouldFailChromeSendCheck(line)
 
   def testChromeSendPasses(self):
     lines = [
-        'chrome.send("message", constructArgs("foo", []));',
-        '  chrome.send("message", constructArgs("foo", []));',
-        'chrome.send("message", constructArgs([]));',
-        '  chrome.send("message", constructArgs([]));',
+      'chrome.send("message", constructArgs("foo", []));',
+      '  chrome.send("message", constructArgs("foo", []));',
+      'chrome.send("message", constructArgs([]));',
+      '  chrome.send("message", constructArgs([]));',
     ]
     for line in lines:
       self.ShouldPassChromeSendCheck(line)
@@ -133,26 +142,29 @@ class JsCheckerTest(unittest.TestCase):
 
   def ShouldPassEndJsDocCommentCheck(self, line):
     """Checks that the **/ checker doesn"t flag |line| as a style error."""
-    self.assertEqual("", self.checker.EndJsDocCommentCheck(1, line),
-        "Should not be flagged as style error: " + line)
+    self.assertEqual(
+      "",
+      self.checker.EndJsDocCommentCheck(1, line),
+      "Should not be flagged as style error: " + line,
+    )
 
   def testEndJsDocCommentFails(self):
     lines = [
-        "/** @override **/",
-        "/** @type {number} @const **/",
-        "  **/",
-        "**/  ",
+      "/** @override **/",
+      "/** @type {number} @const **/",
+      "  **/",
+      "**/  ",
     ]
     for line in lines:
       self.ShouldFailEndJsDocCommentCheck(line)
 
   def testEndJsDocCommentPasses(self):
     lines = [
-        "/***************/",  # visual separators
-        "  */",  # valid JSDoc comment ends
-        "*/  ",
-        "/**/",  # funky multi-line comment enders
-        "/** @override */",  # legit JSDoc one-liners
+      "/***************/",  # visual separators
+      "  */",  # valid JSDoc comment ends
+      "*/  ",
+      "/**/",  # funky multi-line comment enders
+      "/** @override */",  # legit JSDoc one-liners
     ]
     for line in lines:
       self.ShouldPassEndJsDocCommentCheck(line)
@@ -165,9 +177,9 @@ class JsCheckerTest(unittest.TestCase):
 
   def testExtraDotInGenericFails(self):
     lines = [
-        "/** @private {!Array.<!Frobber>} */",
-        "var a = /** @type {Object.<number>} */({});",
-        "* @return {!Promise.<Change>}"
+      "/** @private {!Array.<!Frobber>} */",
+      "var a = /** @type {Object.<number>} */({});",
+      "* @return {!Promise.<Change>}",
     ]
     for line in lines:
       self.ShouldFailExtraDotInGenericCheck(line)
@@ -180,25 +192,28 @@ class JsCheckerTest(unittest.TestCase):
 
   def ShouldPassInheritDocCheck(self, line):
     """Checks that the "@inheritDoc" checker doesn"t flag |line| as a style
-       error.
+    error.
     """
-    self.assertEqual("", self.checker.InheritDocCheck(1, line),
-        msg="Should not be flagged as style error: " + line)
+    self.assertEqual(
+      "",
+      self.checker.InheritDocCheck(1, line),
+      msg="Should not be flagged as style error: " + line,
+    )
 
   def testInheritDocFails(self):
     lines = [
-        " /** @inheritDoc */",
-        "   * @inheritDoc",
+      " /** @inheritDoc */",
+      "   * @inheritDoc",
     ]
     for line in lines:
       self.ShouldFailInheritDocCheck(line)
 
   def testInheritDocPasses(self):
     lines = [
-        "And then I said, but I won't @inheritDoc! Hahaha!",
-        " If your dad's a doctor, do you inheritDoc?",
-        "  What's up, inherit doc?",
-        "   this.inheritDoc(someDoc)",
+      "And then I said, but I won't @inheritDoc! Hahaha!",
+      " If your dad's a doctor, do you inheritDoc?",
+      "  What's up, inherit doc?",
+      "   this.inheritDoc(someDoc)",
     ]
     for line in lines:
       self.ShouldPassInheritDocCheck(line)
@@ -211,26 +226,29 @@ class JsCheckerTest(unittest.TestCase):
 
   def ShouldPassPolymerLocalIdCheck(self, line):
     """Checks that element.$.localId check doesn't mark |line| as a style
-       error."""
-    self.assertEqual("", self.checker.PolymerLocalIdCheck(1, line),
-        msg="Should not be flagged as a style error: " + line)
+    error."""
+    self.assertEqual(
+      "",
+      self.checker.PolymerLocalIdCheck(1, line),
+      msg="Should not be flagged as a style error: " + line,
+    )
 
   def testPolymerLocalIdFails(self):
     lines = [
-        "cat.$.dog",
-        "thing1.$.thing2",
-        "element.$.localId",
-        'element.$["fancy-hyphenated-id"]',
+      "cat.$.dog",
+      "thing1.$.thing2",
+      "element.$.localId",
+      'element.$["fancy-hyphenated-id"]',
     ]
     for line in lines:
       self.ShouldFailPolymerLocalIdCheck(line)
 
   def testPolymerLocalIdPasses(self):
     lines = [
-        "this.$.id",
-        "this.$.localId",
-        'this.$["fancy-id"]',
-        "this.page.$.flushForTesting()",
+      "this.$.id",
+      "this.$.localId",
+      'this.$["fancy-id"]',
+      "this.page.$.flushForTesting()",
     ]
     for line in lines:
       self.ShouldPassPolymerLocalIdCheck(line)
@@ -244,15 +262,18 @@ class JsCheckerTest(unittest.TestCase):
 
   def ShouldPassVariableNameCheck(self, line):
     """Checks that variableNamesLikeThis aren"t style errors."""
-    self.assertEqual("", self.checker.VariableNameCheck(1, line),
-        msg="Should not be flagged as style error: " + line)
+    self.assertEqual(
+      "",
+      self.checker.VariableNameCheck(1, line),
+      msg="Should not be flagged as style error: " + line,
+    )
 
   def testVariableNameFails(self):
     lines = [
-        "%s private_;",
-        "%s hostName_ = 'https://google.com';",
-        " %s _super_private",
-        "  %s unix_hacker = someFunc();",
+      "%s private_;",
+      "%s hostName_ = 'https://google.com';",
+      " %s _super_private",
+      "  %s unix_hacker = someFunc();",
     ]
     for line in lines:
       for declaration_method in _DECLARATION_METHODS:
@@ -260,18 +281,18 @@ class JsCheckerTest(unittest.TestCase):
 
   def testVariableNamePasses(self):
     lines = [
-        "  %s namesLikeThis = [];",
-        " for (%s i = 0; i < 10; ++i) { ",
-        "for (%s i in obj) {",
-        " %s one, two, three;",
-        "  %s magnumPI = {};",
-        " %s g_browser = 'da browzer';",
-        "/** @const */ %s Bla = options.Bla;",  # goog.scope() replacement.
-        " %s $ = function() {",  # For legacy reasons.
-        "  %s StudlyCaps = cr.define('bla')",  # Classes.
-        " %s SCARE_SMALL_CHILDREN = [",  # TODO(dbeam): add @const in
-        # front of all these vars like
-        # "/** @const */ %s CONST_VAR = 1;",          # this line has (<--).
+      "  %s namesLikeThis = [];",
+      " for (%s i = 0; i < 10; ++i) { ",
+      "for (%s i in obj) {",
+      " %s one, two, three;",
+      "  %s magnumPI = {};",
+      " %s g_browser = 'da browzer';",
+      "/** @const */ %s Bla = options.Bla;",  # goog.scope() replacement.
+      " %s $ = function() {",  # For legacy reasons.
+      "  %s StudlyCaps = cr.define('bla')",  # Classes.
+      " %s SCARE_SMALL_CHILDREN = [",  # TODO(dbeam): add @const in
+      # front of all these vars like
+      # "/** @const */ %s CONST_VAR = 1;",          # this line has (<--).
     ]
     for line in lines:
       for declaration_method in _DECLARATION_METHODS:

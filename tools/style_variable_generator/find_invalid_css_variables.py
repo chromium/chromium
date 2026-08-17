@@ -23,7 +23,7 @@ def FindInvalidCSSVariables(file_to_json_strings, git_runner=RunGit):
         referenced_vars |= set(re.findall(r'\$([a-z_0-9]+)', json_string))
 
         context = style_generator.in_file_to_context.get(f, {}).get('CSS')
-        if (not context or 'prefix' not in context):
+        if not context or 'prefix' not in context:
             raise KeyError('This tool only works on files with a CSS prefix.')
 
         css_prefixes.add('--' + context['prefix'] + '-')
@@ -34,25 +34,37 @@ def FindInvalidCSSVariables(file_to_json_strings, git_runner=RunGit):
     unused = set(css_var_names.values()).difference(referenced_vars)
 
     for css_prefix in css_prefixes:
-        grep_result = git_runner([
-            'grep', '-on',
-            '\\%s[a-z0-9-]*' % css_prefix, '--', '*.css', '*.html', '*.js'
-        ]).decode('utf-8').splitlines()
+        grep_result = (
+            git_runner(
+                [
+                    'grep',
+                    '-on',
+                    '\\%s[a-z0-9-]*' % css_prefix,
+                    '--',
+                    '*.css',
+                    '*.html',
+                    '*.js',
+                ]
+            )
+            .decode('utf-8')
+            .splitlines()
+        )
         found_files_and_names = [x.split(':') for x in grep_result]
         found_names = set()
-        for (filename, line, name) in found_files_and_names:
+        for filename, line, name in found_files_and_names:
             found_names.add(name)
             if name in valid_names and css_var_names[name] in unused:
                 unused.remove(css_var_names[name])
 
         unspecified = found_names.difference(valid_names)
-        for (filename, line, name) in found_files_and_names:
+        for filename, line, name in found_files_and_names:
             if filename.find('test') != -1:
                 continue
 
             if name in unspecified:
-                unspecified_file_and_names.append('%s:%s:%s' %
-                                                  (filename, line, name))
+                unspecified_file_and_names.append(
+                    '%s:%s:%s' % (filename, line, name)
+                )
 
     return {
         'unspecified': unspecified_file_and_names,
@@ -68,7 +80,11 @@ def main():
         description='''Finds CSS variables in the codebase that are prefixed
         with |input_files|' CSS prefix but aren't specified in |input_files|.'''
     )
-    parser.add_argument('targets', nargs='+', help='source json5 color files', )
+    parser.add_argument(
+        'targets',
+        nargs='+',
+        help='source json5 color files',
+    )
     args = parser.parse_args()
 
     input_files = args.targets

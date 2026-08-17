@@ -23,11 +23,11 @@ def read_file_as_text(path):
 
 
 class GrdHelperTest(unittest.TestCase):
-
   def testReadGrdMessages(self):
     grd_dir = os.path.join(repo_root, 'tools', 'translation', 'testdata')
     messages = grd_helper.GetGrdMessages(
-        os.path.join(grd_dir, 'test.grd'), grd_dir)
+      os.path.join(grd_dir, 'test.grd'), grd_dir
+    )
     # Result should contain only the messages in test.grd. Even though the file
     # includes part.grdp via a <part> tag, part.grdp's messages should not be
     # listed here.
@@ -37,9 +37,10 @@ class GrdHelperTest(unittest.TestCase):
 
   def testReadGrdpMessages(self):
     messages = grd_helper.GetGrdpMessagesFromString(
-        read_file_as_text(
-            os.path.join(repo_root, 'tools', 'translation', 'testdata',
-                         'part.grdp')))
+      read_file_as_text(
+        os.path.join(repo_root, 'tools', 'translation', 'testdata', 'part.grdp')
+      )
+    )
     self.assertTrue('IDS_PART_STRING1' in messages)
     self.assertTrue('IDS_PART_STRING2' in messages)
     print('DONE')

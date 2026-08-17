@@ -28,26 +28,30 @@ def run_extractor(file_path: Path) -> Tuple[bytes, bytes]:
   script_path = Path('../extractor.py')
   cmd_line = ('python3', str(script_path), '--no-filter', file_path)
   return subprocess.Popen(
-      cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    cmd_line, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+  )
 
 
 def get_expected_files(source_file: Path) -> Path:
-  stdout_file = (source_file.with_name('%s-stdout' %
-                                       source_file.stem).with_suffix('.txt'))
-  stderr_file = (source_file.with_name('%s-stderr' %
-                                       source_file.stem).with_suffix('.txt'))
+  stdout_file = source_file.with_name(
+    '%s-stdout' % source_file.stem
+  ).with_suffix('.txt')
+  stderr_file = source_file.with_name(
+    '%s-stderr' % source_file.stem
+  ).with_suffix('.txt')
   return (stdout_file, stderr_file)
 
 
 def remove_tracebacks(body: str):
   """Removes python tracebacks from the string."""
   regex = re.compile(
-      r'''
+    r'''
        # A line that says "Traceback (...):"
        ^Traceback[^\n]*:\n
        # Followed by lines that begin with whitespace.
        ((\s.*)?\n)*''',
-      re.MULTILINE | re.VERBOSE)
+    re.MULTILINE | re.VERBOSE,
+  )
   return re.sub(regex, '', body)
 
 
@@ -84,12 +88,16 @@ def generate_expected_files():
     stdout_file.write_text(stdout, newline='\n')
     stderr_file.write_text(stderr, newline='\n')
 
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
-      description="Network Traffic Annotation Extractor Unit Tests")
+    description="Network Traffic Annotation Extractor Unit Tests"
+  )
   parser.add_argument(
-      '--generate-expected-files', action='store_true',
-      help='Generate "-stdout.txt" and "-stderr.txt" for file in test_data')
+    '--generate-expected-files',
+    action='store_true',
+    help='Generate "-stdout.txt" and "-stderr.txt" for file in test_data',
+  )
   args, unknown_args = parser.parse_known_args()
 
   # Set directory for both test and gen command to the test_data folder.

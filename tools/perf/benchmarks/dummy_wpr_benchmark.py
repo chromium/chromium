@@ -24,9 +24,10 @@ class DummyWprLoadBenchmark(perf_benchmark.PerfBenchmark):
     tbm_options = timeline_based_measurement.Options()
     loading_metrics_category.AugmentOptionsForLoadingMetrics(tbm_options)
     tbm_options.config.chrome_trace_config.EnableUMAHistograms(
-        'PageLoad.PaintTiming.NavigationToLargestContentfulPaint',
-        'PageLoad.PaintTiming.NavigationToFirstContentfulPaint',
-        'PageLoad.LayoutInstability.CumulativeShiftScore')
+      'PageLoad.PaintTiming.NavigationToLargestContentfulPaint',
+      'PageLoad.PaintTiming.NavigationToFirstContentfulPaint',
+      'PageLoad.LayoutInstability.CumulativeShiftScore',
+    )
     return tbm_options
 
   def CreateStorySet(self, options):

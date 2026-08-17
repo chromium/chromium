@@ -10,8 +10,9 @@ executable profile_chrome_startup script.
 import os
 import sys
 
-_CATAPULT_DIR = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir,
-                             'third_party', 'catapult')
+_CATAPULT_DIR = os.path.join(
+  os.path.dirname(__file__), os.pardir, os.pardir, 'third_party', 'catapult'
+)
 
 sys.path.insert(0, os.path.join(_CATAPULT_DIR, 'systrace'))
 sys.path.insert(0, os.path.join(_CATAPULT_DIR, 'devil'))
@@ -42,8 +43,10 @@ def ProfileChrome(options):
     if len(devices) == 0:
       raise RuntimeError('No ADB devices connected.')
     if len(devices) >= 2:
-      raise RuntimeError('Multiple devices connected, serial number ' +
-                         'required. Specify the -e flag.')
+      raise RuntimeError(
+        'Multiple devices connected, serial number '
+        + 'required. Specify the -e flag.'
+      )
     options.device_serial_number = devices[0]
 
   # Check if the device is healthy.
@@ -54,8 +57,9 @@ def ProfileChrome(options):
       device = d
       break
   if device is None:
-    raise RuntimeError('No valid connected devices. Check the device ' +
-                       'serial number.')
+    raise RuntimeError(
+      'No valid connected devices. Check the device ' + 'serial number.'
+    )
   package_info = util.get_supported_browsers()[options.browser]
 
   options.device = device
@@ -70,11 +74,13 @@ def ProfileChrome(options):
   # to pull the trace.
   adb_wrapper.AdbWrapper(options.device).Root()
 
-  trace_file = profiler.CaptureProfile(options,
-                                       options.trace_time,
-                                       _CHROME_STARTUP_MODULES,
-                                       output=options.output_file,
-                                       compress=options.compress,
-                                       trace_format=options.trace_format)
+  trace_file = profiler.CaptureProfile(
+    options,
+    options.trace_time,
+    _CHROME_STARTUP_MODULES,
+    output=options.output_file,
+    compress=options.compress,
+    trace_format=options.trace_format,
+  )
 
   return trace_file

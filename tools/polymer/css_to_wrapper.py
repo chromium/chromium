@@ -81,10 +81,10 @@ try {
 
 # Map holding all the different types of CSS files to generate wrappers for.
 _TEMPLATE_MAP = {
-    'style': _POLYMER_STYLE_TEMPLATE,
-    'style-lit': _LIT_STYLE_TEMPLATE,
-    'vars': _VARS_TEMPLATE,
-    'vars-lit': _VARS_TEMPLATE,
+  'style': _POLYMER_STYLE_TEMPLATE,
+  'style-lit': _LIT_STYLE_TEMPLATE,
+  'vars': _VARS_TEMPLATE,
+  'vars-lit': _VARS_TEMPLATE,
 }
 
 # A suffix used for style files that are copies of Polymer styles ported into
@@ -98,9 +98,10 @@ _LIT_SUFFIX = "_lit.css"
 def _parse_style_line(line, metadata):
   include_match = re.search(_INCLUDE_REGEX, line)
   if include_match:
-    assert not metadata[
-        'include'], f'Found multiple "{_INCLUDE_REGEX}" lines. Only one should exist.'
-    metadata['include'] = line[include_match.end():]
+    assert not metadata['include'], (
+      f'Found multiple "{_INCLUDE_REGEX}" lines. Only one should exist.'
+    )
+    metadata['include'] = line[include_match.end() :]
 
   _parse_import_line(line, metadata)
 
@@ -108,7 +109,7 @@ def _parse_style_line(line, metadata):
 def _parse_import_line(line, metadata):
   import_match = re.search(_IMPORT_REGEX, line)
   if import_match:
-    metadata['imports'].append(line[import_match.end():])
+    metadata['imports'].append(line[import_match.end() :])
 
 
 def _extract_content(css_file, metadata, minified):
@@ -120,7 +121,7 @@ def _extract_content(css_file, metadata, minified):
     # If minification is off, strip the special metadata comments from the
     # original file.
     lines = f.read().splitlines()
-    return '\n'.join(lines[metadata['metadata_end_line'] + 1:])
+    return '\n'.join(lines[metadata['metadata_end_line'] + 1 :])
 
 
 def _extract_metadata(css_file):
@@ -143,33 +144,33 @@ def _extract_metadata(css_file):
         if not metadata['type']:
           type_match = re.search(_TYPE_REGEX, line)
           if type_match:
-            type = line[type_match.end():]
+            type = line[type_match.end() :]
             assert type in ['style', 'style-lit', 'vars', 'vars-lit']
 
             if type == 'style':
               id = path.splitext(path.basename(css_file))[0].replace('_', '-')
               metadata = {
-                  'id': id,
-                  'imports': [],
-                  'include': None,
-                  'metadata_end_line': -1,
-                  'scheme': metadata['scheme'],
-                  'type': type,
+                'id': id,
+                'imports': [],
+                'include': None,
+                'metadata_end_line': -1,
+                'scheme': metadata['scheme'],
+                'type': type,
               }
             elif type == 'style-lit':
               metadata = {
-                  'imports': [],
-                  'include': None,
-                  'metadata_end_line': -1,
-                  'scheme': metadata['scheme'],
-                  'type': type,
+                'imports': [],
+                'include': None,
+                'metadata_end_line': -1,
+                'scheme': metadata['scheme'],
+                'type': type,
               }
             elif type == 'vars' or type == 'vars-lit':
               metadata = {
-                  'imports': [],
-                  'metadata_end_line': -1,
-                  'scheme': metadata['scheme'],
-                  'type': type,
+                'imports': [],
+                'metadata_end_line': -1,
+                'scheme': metadata['scheme'],
+                'type': type,
               }
 
         elif metadata['type'] == 'style' or metadata['type'] == 'style-lit':
@@ -180,7 +181,7 @@ def _extract_metadata(css_file):
         if metadata['scheme'] == 'default':
           scheme_match = re.search(_SCHEME_REGEX, line)
           if scheme_match:
-            scheme = line[scheme_match.end():]
+            scheme = line[scheme_match.end() :]
             assert scheme in ['chrome', 'relative']
             metadata['scheme'] = scheme
 
@@ -222,8 +223,9 @@ def main(argv):
     try:
       wrapper_in_folder = tmp_out_dir
       node.RunNode(
-          [path.join(_HERE_PATH, 'css_minifier.js'), in_folder, tmp_out_dir] +
-          args.in_files)
+        [path.join(_HERE_PATH, 'css_minifier.js'), in_folder, tmp_out_dir]
+        + args.in_files
+      )
     except RuntimeError as err:
       shutil.rmtree(tmp_out_dir)
       raise err
@@ -259,7 +261,8 @@ def main(argv):
   def _deps_to_function_calls(style_deps):
     # Convert 'some-style' to 'getSomeStyle()'.
     return ','.join(
-        map(lambda d: 'get' + _dash_case_to_title_case(d) + '()', style_deps))
+      map(lambda d: 'get' + _dash_case_to_title_case(d) + '()', style_deps)
+    )
 
   for in_file in args.in_files:
     # Extract metadata from the original file, as the special metadata comments
@@ -274,16 +277,19 @@ def main(argv):
       # extract the CSS content from, to facilitate migration without having to
       # duplicate styles, such that the Lit file acts as the canonical source.
       lit_metadata = _extract_metadata(path.join(in_folder, lit_in_file))
-      content = _extract_content(path.join(wrapper_in_folder, lit_in_file),
-                                 lit_metadata, args.minify)
+      content = _extract_content(
+        path.join(wrapper_in_folder, lit_in_file), lit_metadata, args.minify
+      )
     else:
       # Extract the CSS content from either the original or the minified files.
-      content = _extract_content(path.join(wrapper_in_folder, in_file),
-                                 metadata, args.minify)
+      content = _extract_content(
+        path.join(wrapper_in_folder, in_file), metadata, args.minify
+      )
 
     if not content:
-      assert metadata['type'] == 'style-lit' and metadata['include'], \
-          'Unexpected empty CSS file found: ' + in_file
+      assert metadata['type'] == 'style-lit' and metadata['include'], (
+        'Unexpected empty CSS file found: ' + in_file
+      )
 
     # Extract the URL scheme that should be used for absolute URL imports.
     scheme = None
@@ -300,25 +306,26 @@ def main(argv):
         include = f' include="{parsed_include}"'
 
       substitutions = {
-          'imports': _urls_to_imports(metadata['imports']),
-          'content': content,
-          'include': include,
-          'id': metadata['id'],
-          'scheme': scheme,
+        'imports': _urls_to_imports(metadata['imports']),
+        'content': content,
+        'include': include,
+        'id': metadata['id'],
+        'scheme': scheme,
       }
     elif metadata['type'] == 'style-lit':
       substitutions = {
-          'imports': _urls_to_imports_lit(metadata),
-          'deps': '' if metadata['include'] is None else \
-              _deps_to_function_calls(metadata['include'].split()),
-          'content': content,
-          'scheme': scheme,
+        'imports': _urls_to_imports_lit(metadata),
+        'deps': ''
+        if metadata['include'] is None
+        else _deps_to_function_calls(metadata['include'].split()),
+        'content': content,
+        'scheme': scheme,
       }
     elif metadata['type'] == 'vars' or metadata['type'] == 'vars-lit':
       substitutions = {
-          'imports': _urls_to_imports(metadata['imports']),
-          'content': content,
-          'scheme': scheme,
+        'imports': _urls_to_imports(metadata['imports']),
+        'content': content,
+        'scheme': scheme,
       }
 
     assert substitutions

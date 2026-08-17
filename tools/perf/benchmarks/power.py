@@ -12,8 +12,10 @@ from telemetry.timeline import chrome_trace_category_filter
 from telemetry.web_perf import timeline_based_measurement
 
 
-@benchmark.Info(emails=['brucedawson@chromium.org'],
-                documentation_url='https://bit.ly/power-benchmarks')
+@benchmark.Info(
+  emails=['brucedawson@chromium.org'],
+  documentation_url='https://bit.ly/power-benchmarks',
+)
 class PowerDesktop(perf_benchmark.PerfBenchmark):
   # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
   # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
@@ -25,13 +27,15 @@ class PowerDesktop(perf_benchmark.PerfBenchmark):
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     category_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
-        filter_string='toplevel')
+      filter_string='toplevel'
+    )
     options = timeline_based_measurement.Options(category_filter)
     options.config.enable_chrome_trace = True
     options.config.enable_cpu_trace = True
     options.config.chrome_trace_config.SetTraceBufferSizeInKb(300 * 1024)
-    options.SetTimelineBasedMetrics(['tbmv2:cpuTimeMetric',
-                                     'tbmv3:console_error_metric'])
+    options.SetTimelineBasedMetrics(
+      ['tbmv2:cpuTimeMetric', 'tbmv3:console_error_metric']
+    )
     return options
 
   @classmethod

@@ -11,16 +11,19 @@ class ToughSchedulingPage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
   TAGS = [story_tags.TOUGH_SCHEDULING]
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedMobilePageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedMobilePageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(ToughSchedulingPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunPageInteractions(self, action_runner):
     with action_runner.CreateGestureInteraction('ScrollAction'):
@@ -28,7 +31,6 @@ class ToughSchedulingPage(rendering_story.RenderingStory):
 
 
 class TouchDraggingPage(ToughSchedulingPage):
-
   """Why: Simple JS touch dragging."""
 
   BASE_NAME = 'simple_touch_drag'
@@ -37,63 +39,57 @@ class TouchDraggingPage(ToughSchedulingPage):
   def RunPageInteractions(self, action_runner):
     with action_runner.CreateGestureInteraction('ScrollAction'):
       action_runner.ScrollElement(
-          selector='#card',
-          use_touch=True,
-          direction='up',
-          speed_in_pixels_per_second=150,
-          distance=400)
+        selector='#card',
+        use_touch=True,
+        direction='up',
+        speed_in_pixels_per_second=150,
+        distance=400,
+      )
 
 
 class SimpleTextPage(ToughSchedulingPage):
-
-  """ Why: Simple scrolling baseline"""
+  """Why: Simple scrolling baseline"""
 
   BASE_NAME = 'simple_text_page'
   URL = 'file://../tough_scheduling_cases/simple_text_page.html'
 
 
 class TouchHandlerScrollingPage(ToughSchedulingPage):
-
-  """ Why: Touch handler scrolling baseline"""
+  """Why: Touch handler scrolling baseline"""
 
   BASE_NAME = 'touch_handler_scrolling'
   URL = 'file://../tough_scheduling_cases/touch_handler_scrolling.html'
 
 
 class RafScrollingPage(ToughSchedulingPage):
-
-  """ Why: requestAnimationFrame scrolling baseline"""
+  """Why: requestAnimationFrame scrolling baseline"""
 
   BASE_NAME = 'raf'
   URL = 'file://../tough_scheduling_cases/raf.html'
 
 
 class RafCanvasScrollingPage(ToughSchedulingPage):
-
-  """  Why: Test canvas blocking behavior"""
+  """Why: Test canvas blocking behavior"""
 
   BASE_NAME = 'raf_canvas'
   URL = 'file://../tough_scheduling_cases/raf_canvas.html'
 
 
 class RafAnimationScrollingPage(ToughSchedulingPage):
-
-  """  Why: Test a requestAnimationFrame with concurrent CSS animation"""
+  """Why: Test a requestAnimationFrame with concurrent CSS animation"""
 
   BASE_NAME = 'raf_animation'
   URL = 'file://../tough_scheduling_cases/raf_animation.html'
 
 
 class RafTouchAnimationScrollingPage(ToughSchedulingPage):
-
-  """  Why: Stress test for the scheduler"""
+  """Why: Stress test for the scheduler"""
 
   BASE_NAME = 'raf_touch_animation'
   URL = 'file://../tough_scheduling_cases/raf_touch_animation.html'
 
 
 class SynchronizedScrollOffsetPage(ToughSchedulingPage):
-
   """Why: For measuring the latency of scroll-synchronized effects."""
 
   BASE_NAME = 'sync_scroll_offset'
@@ -105,9 +101,8 @@ class SynchronizedScrollOffsetPage(ToughSchedulingPage):
 
 
 class SecondBatchJsPage(ToughSchedulingPage):
-
   """Why: For testing dynamically loading a large batch of Javascript and
-          running a part of it in response to user input.
+  running a part of it in response to user input.
   """
 
   ABSTRACT_STORY = True

@@ -23,11 +23,13 @@ TRACE_PROCESSOR_METRIC_METHOD = 'core.tbmv3.trace_processor.RunMetrics'
 class ComputeMetricsTest(unittest.TestCase):
   def testComputeTBMv2Metrics(self):
     test_result = testing.TestResult(
-        'benchmark/story1',
-        output_artifacts={
-            compute_metrics.HTML_TRACE_NAME:
-                testing.Artifact('/trace1.html', 'gs://trace1.html')},
-        tags=['tbmv2:metric1'],
+      'benchmark/story1',
+      output_artifacts={
+        compute_metrics.HTML_TRACE_NAME: testing.Artifact(
+          '/trace1.html', 'gs://trace1.html'
+        )
+      },
+      tags=['tbmv2:metric1'],
     )
     test_result['_histograms'] = histogram_set.HistogramSet()
 
@@ -47,11 +49,13 @@ class ComputeMetricsTest(unittest.TestCase):
 
   def testComputeTBMv2MetricsTraceTooBig(self):
     test_result = testing.TestResult(
-        'benchmark/story1',
-        output_artifacts={
-            compute_metrics.HTML_TRACE_NAME:
-                testing.Artifact('/trace1.html', 'gs://trace1.html')},
-        tags=['tbmv2:metric1'],
+      'benchmark/story1',
+      output_artifacts={
+        compute_metrics.HTML_TRACE_NAME: testing.Artifact(
+          '/trace1.html', 'gs://trace1.html'
+        )
+      },
+      tags=['tbmv2:metric1'],
     )
     test_result['_histograms'] = histogram_set.HistogramSet()
 
@@ -68,11 +72,13 @@ class ComputeMetricsTest(unittest.TestCase):
 
   def testComputeTBMv2MetricsFailure(self):
     test_result = testing.TestResult(
-        'benchmark/story1',
-        output_artifacts={
-            compute_metrics.HTML_TRACE_NAME:
-                testing.Artifact('/trace1.html', 'gs://trace1.html')},
-        tags=['tbmv2:metric1'],
+      'benchmark/story1',
+      output_artifacts={
+        compute_metrics.HTML_TRACE_NAME: testing.Artifact(
+          '/trace1.html', 'gs://trace1.html'
+        )
+      },
+      tags=['tbmv2:metric1'],
     )
     test_result['_histograms'] = histogram_set.HistogramSet()
 
@@ -92,12 +98,14 @@ class ComputeMetricsTest(unittest.TestCase):
 
   def testComputeTBMv2MetricsSkipped(self):
     test_result = testing.TestResult(
-        'benchmark/story1',
-        output_artifacts={
-            compute_metrics.HTML_TRACE_NAME:
-                testing.Artifact('/trace1.html', 'gs://trace1.html')},
-        tags=['tbmv2:metric1'],
-        status='SKIP',
+      'benchmark/story1',
+      output_artifacts={
+        compute_metrics.HTML_TRACE_NAME: testing.Artifact(
+          '/trace1.html', 'gs://trace1.html'
+        )
+      },
+      tags=['tbmv2:metric1'],
+      status='SKIP',
     )
     test_result['_histograms'] = histogram_set.HistogramSet()
 
@@ -111,11 +119,13 @@ class ComputeMetricsTest(unittest.TestCase):
 
   def testComputeTBMv3Metrics(self):
     test_result = testing.TestResult(
-        'benchmark/story1',
-        output_artifacts={
-            compute_metrics.CONCATENATED_PROTO_NAME:
-                testing.Artifact('/concatenated.pb')},
-        tags=['tbmv3:metric'],
+      'benchmark/story1',
+      output_artifacts={
+        compute_metrics.CONCATENATED_PROTO_NAME: testing.Artifact(
+          '/concatenated.pb'
+        )
+      },
+      tags=['tbmv3:metric'],
     )
     test_result['_histograms'] = histogram_set.HistogramSet()
 

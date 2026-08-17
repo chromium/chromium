@@ -38,11 +38,12 @@ class ChalkboardPage(rendering_story.RenderingStory):
   URL = 'https://testdrive-archive.azurewebsites.net/performance/chalkboard/'
   TAGS = [
     story_tags.TOUGH_PATH_RENDERING,
-    story_tags.REPRESENTATIVE_MAC_DESKTOP
+    story_tags.REPRESENTATIVE_MAC_DESKTOP,
   ]
 
   def RunPageInteractions(self, action_runner):
     with action_runner.CreateInteraction('ClickStart'):
       action_runner.EvaluateJavaScript(
-          'document.getElementById("StartButton").click()')
+        'document.getElementById("StartButton").click()'
+      )
       action_runner.Wait(20)

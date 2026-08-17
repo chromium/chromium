@@ -16,9 +16,7 @@ import recipe
 
 
 class LegacyRunnerTests(unittest.TestCase):
-
   class AsyncMock(mock.MagicMock):
-
     def __init__(self, *args, **kwargs):
       super().__init__(*args, **kwargs)
       self.returncode = 0
@@ -49,49 +47,95 @@ class LegacyRunnerTests(unittest.TestCase):
     self.addCleanup(patch_terminal_size.stop)
 
   def testProps(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
-                                 'some-bucket', 'some-builder', [], False,
-                                 False, False, self.build_dir)
+    runner = recipe.LegacyRunner(
+      self.tmp_dir,
+      {},
+      'some-project',
+      'some-bucket',
+      'some-builder',
+      [],
+      False,
+      False,
+      False,
+      self.build_dir,
+    )
     self.assertEqual(
-        runner._input_props['$recipe_engine/buildbucket']['build']['builder']
-        ['builder'], 'some-builder')
+      runner._input_props['$recipe_engine/buildbucket']['build']['builder'][
+        'builder'
+      ],
+      'some-builder',
+    )
 
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'dawn', 'some-bucket',
-                                 'some-builder', [], False, False, False,
-                                 self.build_dir)
+    runner = recipe.LegacyRunner(
+      self.tmp_dir,
+      {},
+      'dawn',
+      'some-bucket',
+      'some-builder',
+      [],
+      False,
+      False,
+      False,
+      self.build_dir,
+    )
     self.assertEqual(runner._swarming_server, 'chromium-swarm')
     self.assertEqual(runner._luci_realm, 'dawn:try')
     self.assertEqual(runner._utr_recipe, 'chromium/universal_test_runner')
 
     custom_src = pathlib.Path('/some/custom/src')
-    runner = recipe.LegacyRunner(self.tmp_dir, {},
-                                 'dawn',
-                                 'some-bucket',
-                                 'some-builder', [],
-                                 False,
-                                 False,
-                                 False,
-                                 self.build_dir,
-                                 src_dir=custom_src)
-    self.assertEqual(runner._input_props['checkout_path'],
-                     str(custom_src.absolute()))
+    runner = recipe.LegacyRunner(
+      self.tmp_dir,
+      {},
+      'dawn',
+      'some-bucket',
+      'some-builder',
+      [],
+      False,
+      False,
+      False,
+      self.build_dir,
+      src_dir=custom_src,
+    )
+    self.assertEqual(
+      runner._input_props['checkout_path'], str(custom_src.absolute())
+    )
 
   def testRun(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
-                                 'some-bucket', 'some-builder', [], False,
-                                 False, False, self.build_dir)
+    runner = recipe.LegacyRunner(
+      self.tmp_dir,
+      {},
+      'some-project',
+      'some-bucket',
+      'some-builder',
+      [],
+      False,
+      False,
+      False,
+      self.build_dir,
+    )
     self.subp_mock.returncode = 123
-    with mock.patch('asyncio.create_subprocess_exec',
-                    return_value=self.subp_mock):
+    with mock.patch(
+      'asyncio.create_subprocess_exec', return_value=self.subp_mock
+    ):
       exit_code, _ = runner.run_recipe()
       self.assertEqual(exit_code, 123)
 
   def testJson(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
-                                 'some-bucket', 'some-builder', [], False,
-                                 False, False, self.build_dir)
-    with mock.patch('asyncio.create_subprocess_exec',
-                    return_value=self.subp_mock):
+    runner = recipe.LegacyRunner(
+      self.tmp_dir,
+      {},
+      'some-project',
+      'some-bucket',
+      'some-builder',
+      [],
+      False,
+      False,
+      False,
+      self.build_dir,
+    )
+    with mock.patch(
+      'asyncio.create_subprocess_exec', return_value=self.subp_mock
+    ):
       # Passing run.
       self.subp_mock.returncode = 0
       with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
@@ -121,11 +165,21 @@ class LegacyRunnerTests(unittest.TestCase):
       self.assertIsNone(error_msg)
 
   def testReruns(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
-                                 'some-bucket', 'some-builder', [], False,
-                                 False, False, self.build_dir)
-    with mock.patch('asyncio.create_subprocess_exec',
-                    return_value=self.subp_mock):
+    runner = recipe.LegacyRunner(
+      self.tmp_dir,
+      {},
+      'some-project',
+      'some-bucket',
+      'some-builder',
+      [],
+      False,
+      False,
+      False,
+      self.build_dir,
+    )
+    with mock.patch(
+      'asyncio.create_subprocess_exec', return_value=self.subp_mock
+    ):
       # Input "n" to the first re-run prompt.
       self.mock_input.return_value = 'n'
       with open(self.tmp_dir.joinpath('rerun_props.json'), 'w') as f:
@@ -152,13 +206,22 @@ class LegacyRunnerTests(unittest.TestCase):
       _, error_msg = runner.run_recipe()
       self.assertIsNone(error_msg)
 
-
   def testRerunsWithForce(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
-                                 'some-bucket', 'some-builder', [], False,
-                                 False, True, self.build_dir)
-    with mock.patch('asyncio.create_subprocess_exec',
-                    return_value=self.subp_mock):
+    runner = recipe.LegacyRunner(
+      self.tmp_dir,
+      {},
+      'some-project',
+      'some-bucket',
+      'some-builder',
+      [],
+      False,
+      False,
+      True,
+      self.build_dir,
+    )
+    with mock.patch(
+      'asyncio.create_subprocess_exec', return_value=self.subp_mock
+    ):
       # Re-running once and succeeding. Need to manage two different tmp dirs,
       # one for each recipe invocations. input() shouldn't be called since we
       # pass --force.
@@ -173,17 +236,22 @@ class LegacyRunnerTests(unittest.TestCase):
       self.mock_input.assert_not_called()
 
   def testRerunsWithOverwrite(self):
-    runner = recipe.LegacyRunner(self.tmp_dir, {},
-                                 'some-project',
-                                 'some-bucket',
-                                 'some-builder', [],
-                                 False,
-                                 False,
-                                 False,
-                                 self.build_dir,
-                                 skip_coverage=True)
-    with mock.patch('asyncio.create_subprocess_exec',
-                    return_value=self.subp_mock):
+    runner = recipe.LegacyRunner(
+      self.tmp_dir,
+      {},
+      'some-project',
+      'some-bucket',
+      'some-builder',
+      [],
+      False,
+      False,
+      False,
+      self.build_dir,
+      skip_coverage=True,
+    )
+    with mock.patch(
+      'asyncio.create_subprocess_exec', return_value=self.subp_mock
+    ):
       self.mock_input.return_value = 'n'
       with open(self.tmp_dir.joinpath('rerun_props.json'), 'w') as f:
         json.dump([['y', {'some-new-prop': 'some-val'}], ['n', {}]], f)

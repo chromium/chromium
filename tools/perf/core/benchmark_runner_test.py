@@ -40,9 +40,19 @@ class BenchmarkRunnerUnittest(unittest.TestCase):
 
       # Note: We pass `--output-format none` and a non-existent output
       # dir to prevent the results processor from processing any results.
-      return_code = benchmark_runner.main(config, [
-          'run', 'some.benchmark', '--browser', 'stable',
-          '--output-dir', '/does/not/exist', '--output-format', 'none'])
+      return_code = benchmark_runner.main(
+        config,
+        [
+          'run',
+          'some.benchmark',
+          '--browser',
+          'stable',
+          '--output-dir',
+          '/does/not/exist',
+          '--output-format',
+          'none',
+        ],
+      )
       self.assertEqual(return_code, 42)
 
 
@@ -53,8 +63,7 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
   """
 
   def setUp(self):
-    self.options = testing.GetRunOptions(
-        output_dir=tempfile.mkdtemp())
+    self.options = testing.GetRunOptions(output_dir=tempfile.mkdtemp())
     self.options.output_formats = ['histograms']
     results_processor.ProcessOptions(self.options)
 
@@ -66,7 +75,8 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     self.assertIn(diag_info.name, hist.diagnostics)
     diag = hist.diagnostics[diag_info.name]
     self.assertIsInstance(
-        diag, all_diagnostics.GetDiagnosticClassForName(diag_info.type))
+      diag, all_diagnostics.GetDiagnosticClassForName(diag_info.type)
+    )
     if value is not None:
       # Assume we expect singleton GenericSet with the given value.
       self.assertEqual(len(diag), 1)
@@ -84,8 +94,9 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     run_return_code = benchmark_class().Run(self.options)
     self.assertEqual(run_return_code, 0)
 
-    process_return_code = results_processor.ProcessResults(self.options,
-                                                           is_unittest=True)
+    process_return_code = results_processor.ProcessResults(
+      self.options, is_unittest=True
+    )
     self.assertEqual(process_return_code, 0)
 
     histograms_file = os.path.join(self.options.output_dir, 'histograms.json')
@@ -98,12 +109,14 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     return histograms
 
   @decorators.Disabled(
-      'chromeos',  # TODO(crbug.com/40137013): Fix the test.
-      'android-nougat',  # Flaky: https://crbug.com/1342706
-      'mac')  # Failing: https://crbug.com/1370958
+    'chromeos',  # TODO(crbug.com/40137013): Fix the test.
+    'android-nougat',  # Flaky: https://crbug.com/1342706
+    'mac',
+  )  # Failing: https://crbug.com/1370958
   def testTimelineBasedEndToEnd(self):
     class TestTimelineBasedBenchmark(perf_benchmark.PerfBenchmark):
       """A dummy benchmark that records a trace and runs sampleMetric on it."""
+
       def CreateCoreTimelineBasedMeasurementOptions(self):
         options = timeline_based_measurement.Options()
         options.config.enable_chrome_trace = True
@@ -115,7 +128,8 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
           action_runner.EvaluateJavaScript('console.error("foo!")')
 
         return test_stories.SinglePageStorySet(
-            name='log_error_story', story_run_side_effect=log_error)
+          name='log_error_story', story_run_side_effect=log_error
+        )
 
       @classmethod
       def Name(cls):
@@ -126,8 +140,9 @@ class BenchmarkRunnerIntegrationTest(unittest.TestCase):
     # Verify that the injected console.log error was counted by the metric.
     hist = histograms.GetHistogramNamed('console:error:js')
     self.assertEqual(hist.average, 1)
-    self.assertHasDiagnostic(hist, reserved_infos.BENCHMARKS,
-                             'test_benchmark.timeline_based')
+    self.assertHasDiagnostic(
+      hist, reserved_infos.BENCHMARKS, 'test_benchmark.timeline_based'
+    )
     self.assertHasDiagnostic(hist, reserved_infos.STORIES, 'log_error_story')
     self.assertHasDiagnostic(hist, reserved_infos.STORYSET_REPEATS, 0)
     self.assertHasDiagnostic(hist, reserved_infos.TRACE_START)

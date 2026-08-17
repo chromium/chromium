@@ -52,8 +52,10 @@ def _AddChangesToBranch() -> None:
         subprocess.run(command_git, check=True)
         end = time.time()
         execution_time = _GetExecutionTime(start, end)
-        print('The time of execution to add the changes to the branch: '
-              f'{execution_time}')
+        print(
+            'The time of execution to add the changes to the branch: '
+            f'{execution_time}'
+        )
     except subprocess.CalledProcessError as exc:
         raise Exception(f'Failed to add changes to a branch: {exc}')
 
@@ -61,14 +63,14 @@ def _AddChangesToBranch() -> None:
 def _CommitChangesToBranch() -> None:
     try:
         start = time.time()
-        command_git = [
-            'git', 'commit', '-m', 'Add new features to What\'s New'
-        ]
+        command_git = ['git', 'commit', '-m', 'Add new features to What\'s New']
         subprocess.run(command_git, check=True)
         end = time.time()
         execution_time = _GetExecutionTime(start, end)
-        print('The time of execution to commit the changes to the branch: '
-              f'{execution_time}')
+        print(
+            'The time of execution to commit the changes to the branch: '
+            f'{execution_time}'
+        )
     except subprocess.CalledProcessError as exc:
         raise Exception(f'Failed to commit the changes to a branch: {exc}')
 
@@ -77,39 +79,58 @@ def _UploadChangesToCL(message: str) -> None:
     try:
         start = time.time()
         command_git = [
-            'git', 'cl', 'upload', '--bypass-hooks', '--bypass-watchlists',
-            '--force', '--message', message, '--cq-dry-run', '--auto-submit',
-            '-o', 'uploadvalidator~skip'
+            'git',
+            'cl',
+            'upload',
+            '--bypass-hooks',
+            '--bypass-watchlists',
+            '--force',
+            '--message',
+            message,
+            '--cq-dry-run',
+            '--auto-submit',
+            '-o',
+            'uploadvalidator~skip',
         ]
         subprocess.run(command_git, check=True)
         end = time.time()
         execution_time = _GetExecutionTime(start, end)
-        print('The time of execution to upload the changes to a cl: '
-              f'{execution_time}')
+        print(
+            'The time of execution to upload the changes to a cl: '
+            f'{execution_time}'
+        )
     except subprocess.CalledProcessError as exc:
         raise Exception(f'Failed to upload the changes to a branch: {exc}')
 
 
-def _AddFeature(index: int, feature_dict: dict[str, str],
-                valid_icons: whats_new_util.ValidIcons,
-                path_to_milestone_folder: str) -> None:
+def _AddFeature(
+    index: int,
+    feature_dict: dict[str, str],
+    valid_icons: whats_new_util.ValidIcons,
+    path_to_milestone_folder: str,
+) -> None:
     start = time.time()
     # Validate the Lottie files first
-    whats_new_util.ValidateLottieTextLayers(feature_dict, path_to_milestone_folder)
+    whats_new_util.ValidateLottieTextLayers(
+        feature_dict, path_to_milestone_folder
+    )
     validation_error = whats_new_util.ValidateWhatsNewData(
-        feature_dict, valid_icons)
+        feature_dict, valid_icons
+    )
     if validation_error:
         print(
             f'Error in row {index}, {feature_dict["Feature name"]}, '
-            f'submitter {feature_dict["Submitter email"]}: {validation_error}')
+            f'submitter {feature_dict["Submitter email"]}: {validation_error}'
+        )
         return
-    new_enum = whats_new_util.UpdateWhatsNewItemAndGetNewTypeValue(
-        feature_dict)
-    whats_new_util.UpdateWhatsNewPlist(feature_dict, new_enum,
-                                       path_to_milestone_folder)
+    new_enum = whats_new_util.UpdateWhatsNewItemAndGetNewTypeValue(feature_dict)
+    whats_new_util.UpdateWhatsNewPlist(
+        feature_dict, new_enum, path_to_milestone_folder
+    )
     whats_new_util.UpdateWhatsNewUtils(feature_dict)
-    whats_new_util.CopyAnimationFilesToResources(feature_dict,
-                                                 path_to_milestone_folder)
+    whats_new_util.CopyAnimationFilesToResources(
+        feature_dict, path_to_milestone_folder
+    )
     whats_new_util.UpdateResourcesBuildFile(feature_dict)
     whats_new_util.AddStrings(feature_dict, path_to_milestone_folder)
     whats_new_util.UploadScreenshots(feature_dict, path_to_milestone_folder)
@@ -119,7 +140,7 @@ def _AddFeature(index: int, feature_dict: dict[str, str],
 
 
 def _GetExecutionTime(start: float, end: float) -> str:
-    return f'{(end-start)*10**3:.03f}ms'
+    return f'{(end - start) * 10**3:.03f}ms'
 
 
 def main():
@@ -127,22 +148,25 @@ def main():
     print('Start...')
     parser = parser = argparse.ArgumentParser(
         description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument(
         '--milestone-absolute-path',
         required=True,
-        help='Specify the absolute path to the milestone directory.')
+        help='Specify the absolute path to the milestone directory.',
+    )
     args = parser.parse_args()
     if not args.milestone_absolute_path:
         raise ValueError('Missing input through --milestone-absolute-path.')
 
     milestone_folder_absolute_path = args.milestone_absolute_path
-    xlsx_file_path = os.path.join(milestone_folder_absolute_path,
-                                  'whats_new_features.xlsx')
+    xlsx_file_path = os.path.join(
+        milestone_folder_absolute_path, 'whats_new_features.xlsx'
+    )
     xlsx_content = pd.read_excel(xlsx_file_path)
     milestone = xlsx_content.iloc[0]['Milestone']
 
-    #Create branch
+    # Create branch
     _CreateBranch(milestone.lower())
 
     # Delete existing features from the plist
@@ -151,8 +175,9 @@ def main():
     valid_icons = whats_new_util.LoadValidIconNames()
     for index, feature_row in pd.DataFrame(xlsx_content).iterrows():
         feature_row.fillna('', inplace=True)
-        _AddFeature(index, feature_row, valid_icons,
-                    milestone_folder_absolute_path)
+        _AddFeature(
+            index, feature_row, valid_icons, milestone_folder_absolute_path
+        )
         features_name.append(feature_row['Feature name'])
 
     # Update FET event
@@ -165,9 +190,11 @@ def main():
 
     comment_builder = []
     comment_builder.append(
-        f'[iOS][WhatsNew] Add new features for {milestone}\n')
+        f'[iOS][WhatsNew] Add new features for {milestone}\n'
+    )
     comment_builder.append(
-        'This CL adds the following features to What\'s New:')
+        'This CL adds the following features to What\'s New:'
+    )
     comment_builder.append('\n'.join(features_name))
     _UploadChangesToCL('\n'.join(comment_builder))
 

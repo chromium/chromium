@@ -10,6 +10,7 @@ import unittest
 
 from strict_enum_value_checker import StrictEnumValueChecker
 
+
 class MockLogging(object):
   def __init__(self):
     self.lines = []
@@ -19,6 +20,7 @@ class MockLogging(object):
 
   def debug(self, message):
     self.lines.append(message)
+
 
 class MockInputApi(object):
   def __init__(self):
@@ -76,8 +78,9 @@ class MockFile(object):
 
   def GenerateScmDiff(self):
     result = ""
-    for line in difflib.unified_diff(self._old_contents, self._new_contents,
-                                     self._local_path, self._local_path):
+    for line in difflib.unified_diff(
+      self._old_contents, self._new_contents, self._local_path, self._local_path
+    ):
       result += line
     return result
 
@@ -86,10 +89,10 @@ class MockFile(object):
   def ChangedContents(self):
     """Returns a list of tuples (line number, line text) of all new lines.
 
-     This relies on the scm diff output describing each changed code section
-     with a line of the form
+    This relies on the scm diff output describing each changed code section
+    with a line of the form
 
-     ^@@ <old line num>,<old size> <new line num>,<new size> @@$
+    ^@@ <old line num>,<old size> <new line num>,<new size> @@$
     """
     if self._cached_changed_contents is not None:
       return self._cached_changed_contents[:]
@@ -147,88 +150,106 @@ class StrictEnumValueCheckerTest(unittest.TestCase):
     else:
       new_contents = self._ReadTextFileContents(new_file_path)
     input_api = MockInputApi()
-    mock_file = MockFile(self.MOCK_FILE_LOCAL_PATH,
-                         old_contents,
-                         new_contents)
+    mock_file = MockFile(self.MOCK_FILE_LOCAL_PATH, old_contents, new_contents)
     input_api.files.append(mock_file)
     output_api = MockOutputApi()
     return input_api, output_api
 
   def _RunTest(self, new_file_path):
     input_api, output_api = self._PrepareTest(new_file_path)
-    checker = StrictEnumValueChecker(input_api, output_api, self.START_MARKER,
-                                     self.END_MARKER, self.MOCK_FILE_LOCAL_PATH)
+    checker = StrictEnumValueChecker(
+      input_api,
+      output_api,
+      self.START_MARKER,
+      self.END_MARKER,
+      self.MOCK_FILE_LOCAL_PATH,
+    )
     results = checker.Run()
     return results
 
   def testDeleteFile(self):
     results = self._RunTest(new_file_path=None)
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(1, len(results),
-                      "We should get a single warning about file deletion.")
+    self.assertEquals(
+      1, len(results), "We should get a single warning about file deletion."
+    )
 
   def testSimpleValidEdit(self):
     results = self._RunTest(self.TEST_FILE_PATTERN % "1")
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(0, len(results),
-                      "We should get no warning for simple edits.")
+    self.assertEquals(
+      0, len(results), "We should get no warning for simple edits."
+    )
 
   def testSingleDeletionOfEntry(self):
     results = self._RunTest(self.TEST_FILE_PATTERN % "2")
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(1, len(results),
-                      "We should get a warning for an entry deletion.")
+    self.assertEquals(
+      1, len(results), "We should get a warning for an entry deletion."
+    )
 
   def testSingleRenameOfEntry(self):
     results = self._RunTest(self.TEST_FILE_PATTERN % "3")
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(1, len(results),
-                      "We should get a warning for an entry rename, even "
-                      "though it is not optimal.")
+    self.assertEquals(
+      1,
+      len(results),
+      "We should get a warning for an entry rename, even "
+      "though it is not optimal.",
+    )
 
   def testMissingEnumStartOfEntry(self):
     results = self._RunTest(self.TEST_FILE_PATTERN % "4")
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(1, len(results),
-                      "We should get a warning for a missing enum marker.")
+    self.assertEquals(
+      1, len(results), "We should get a warning for a missing enum marker."
+    )
 
   def testMissingEnumEndOfEntry(self):
     results = self._RunTest(self.TEST_FILE_PATTERN % "5")
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(1, len(results),
-                      "We should get a warning for a missing enum marker.")
+    self.assertEquals(
+      1, len(results), "We should get a warning for a missing enum marker."
+    )
 
   def testInvertedEnumMarkersOfEntry(self):
     results = self._RunTest(self.TEST_FILE_PATTERN % "6")
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(1, len(results),
-                      "We should get a warning for inverted enum markers.")
+    self.assertEquals(
+      1, len(results), "We should get a warning for inverted enum markers."
+    )
 
   def testMultipleInvalidEdits(self):
     results = self._RunTest(self.TEST_FILE_PATTERN % "7")
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(3, len(results),
-                      "We should get 3 warnings (one per edit).")
+    self.assertEquals(
+      3, len(results), "We should get 3 warnings (one per edit)."
+    )
 
   def testSingleInvalidInserts(self):
     results = self._RunTest(self.TEST_FILE_PATTERN % "8")
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(1, len(results),
-                      "We should get a warning for a single invalid "
-                      "insertion inside the enum.")
+    self.assertEquals(
+      1,
+      len(results),
+      "We should get a warning for a single invalid insertion inside the enum.",
+    )
 
   def testMulitpleValidInserts(self):
     results = self._RunTest(self.TEST_FILE_PATTERN % "9")
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(0, len(results),
-                      "We should not get a warning mulitple valid edits")
+    self.assertEquals(
+      0, len(results), "We should not get a warning mulitple valid edits"
+    )
 
   def testSingleValidDeleteOutsideOfEnum(self):
     results = self._RunTest(self.TEST_FILE_PATTERN % "10")
     # TODO(rpaquay) How to check it's the expected warning?'
-    self.assertEquals(0, len(results),
-                      "We should not get a warning for a deletion outside of "
-                      "the enum")
+    self.assertEquals(
+      0,
+      len(results),
+      "We should not get a warning for a deletion outside of the enum",
+    )
 
 
 if __name__ == '__main__':

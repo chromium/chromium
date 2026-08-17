@@ -13,6 +13,7 @@ import time
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from core import path_util
+
 path_util.AddPyUtilsToPath()
 path_util.AddTracingToPath()
 
@@ -22,7 +23,8 @@ from core.tbmv3 import trace_processor
 
 def _PerfettoRevision():
   deps_line_re = re.compile(
-      r".*'/external/github.com/google/perfetto.git' \+ '@' \+ '([a-f0-9]+)'")
+    r".*'/external/github.com/google/perfetto.git' \+ '@' \+ '([a-f0-9]+)'"
+  )
   deps_file = os.path.join(path_util.GetChromiumSrcDir(), 'DEPS')
   with open(deps_file) as deps:
     for line in deps:
@@ -35,25 +37,31 @@ def _PerfettoRevision():
 def main(args):
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--path', help='Path to trace_processor_shell binary.', required=True)
+    '--path', help='Path to trace_processor_shell binary.', required=True
+  )
   parser.add_argument(
-      '--revision',
-      help=('Perfetto revision. '
-            'If not supplied, will try to infer from DEPS file.'))
-  parser.add_argument('--isolated-script-test-output',
-                      help='Path to the output file.')
+    '--revision',
+    help=(
+      'Perfetto revision. If not supplied, will try to infer from DEPS file.'
+    ),
+  )
+  parser.add_argument(
+    '--isolated-script-test-output', help='Path to the output file.'
+  )
 
   args = parser.parse_args(args)
 
   revision = args.revision or _PerfettoRevision()
 
-  binary_deps_manager.UploadHostBinaryChromium(trace_processor.TP_BINARY_NAME,
-                                               args.path, revision)
+  binary_deps_manager.UploadHostBinaryChromium(
+    trace_processor.TP_BINARY_NAME, args.path, revision
+  )
 
   # CI bot expects a valid JSON object as script output.
   if args.isolated_script_test_output is not None:
     with open(args.isolated_script_test_output, 'w') as f:
-      f.write('''{
+      f.write(
+        '''{
           "interrupted": false,
           "num_failures_by_type": {
               "FAIL": 0,
@@ -67,7 +75,9 @@ def main(args):
                }
           },
           "version": 3
-      }''' % time.time())
+      }'''
+        % time.time()
+      )
 
 
 if __name__ == '__main__':

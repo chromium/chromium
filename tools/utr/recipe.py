@@ -26,8 +26,9 @@ logging.getLogger('markdown_it').setLevel(logging.WARNING)
 _THIS_DIR = pathlib.Path(__file__).resolve().parent
 _SRC_DIR = _THIS_DIR.parents[1]
 
-_RECLIENT_CLI = _SRC_DIR.joinpath('buildtools', 'reclient_cfgs',
-                                  'configure_reclient_cfgs.py')
+_RECLIENT_CLI = _SRC_DIR.joinpath(
+  'buildtools', 'reclient_cfgs', 'configure_reclient_cfgs.py'
+)
 _SISO_CLI = _SRC_DIR.joinpath('build', 'config', 'siso', 'configure_siso.py')
 _DEFAULT_RBE_PROJECT = 'rbe-chrome-untrusted'
 
@@ -41,26 +42,32 @@ def check_luci_context_auth():
     logging.error("'luci-auth' binary not found. Is depot_tools not on PATH?")
     return False
   cmd = [
-      luci_auth_path, 'info', '-scopes',
-      'https://www.googleapis.com/auth/userinfo.email'
+    luci_auth_path,
+    'info',
+    '-scopes',
+    'https://www.googleapis.com/auth/userinfo.email',
   ]
   try:
-    subprocess.run(cmd,
-                   stdout=subprocess.PIPE,
-                   stderr=subprocess.STDOUT,
-                   text=True,
-                   check=True)
+    subprocess.run(
+      cmd,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
+      text=True,
+      check=True,
+    )
   except subprocess.CalledProcessError as e:
     logging.error('luci-auth context auth unavailable:')
     logging.error(e.output.strip())
     logging.error(
-        "Please run 'luci-auth login -scopes "
-        "https://www.googleapis.com/auth/userinfo.email' to authenticate, "
-        'preferring your @google.com account if you have one.')
+      "Please run 'luci-auth login -scopes "
+      "https://www.googleapis.com/auth/userinfo.email' to authenticate, "
+      'preferring your @google.com account if you have one.'
+    )
     logging.error(
-        'Note: If running in a non-interactive remote environment, '
-        'this failure may be due to Context Aware Access (CAA) / BeyondCorp '
-        'token blocks. You may need to re-authenticate explicitly.')
+      'Note: If running in a non-interactive remote environment, '
+      'this failure may be due to Context Aware Access (CAA) / BeyondCorp '
+      'token blocks. You may need to re-authenticate explicitly.'
+    )
     return False
   return True
 
@@ -75,9 +82,10 @@ def get_prompt_resp(rerun_props):
     Dict of properties to use for the next recipe invocation. None or an empty
         dict of properties indicate the recipe should not be reinvoked.
   """
-  options = '/'.join(f'({option.prompt[0]}){option.prompt[1:]}'
-                     for option in rerun_props)
-  prompt = (f'How do you wish to proceed? Please enter {options} to confirm: ')
+  options = '/'.join(
+    f'({option.prompt[0]}){option.prompt[1:]}' for option in rerun_props
+  )
+  prompt = f'How do you wish to proceed? Please enter {options} to confirm: '
   resp = input(prompt).strip().lower()
 
   for option in rerun_props:
@@ -95,27 +103,29 @@ class LegacyRunner:
   updated to support and utilize that new mode if/when it's available.
   """
 
-  def __init__(self,
-               recipes_py,
-               builder_props,
-               project,
-               bucket,
-               builder,
-               tests,
-               skip_compile,
-               skip_test,
-               skip_prompts,
-               build_dir,
-               additional_test_args=None,
-               swarming_dimensions=None,
-               swarming_shards=None,
-               reuse_task=None,
-               skip_coverage=False,
-               no_rbe=False,
-               no_siso=False,
-               use_autoninja=False,
-               src_dir=None,
-               **kwargs):
+  def __init__(
+    self,
+    recipes_py,
+    builder_props,
+    project,
+    bucket,
+    builder,
+    tests,
+    skip_compile,
+    skip_test,
+    skip_prompts,
+    build_dir,
+    additional_test_args=None,
+    swarming_dimensions=None,
+    swarming_shards=None,
+    reuse_task=None,
+    skip_coverage=False,
+    no_rbe=False,
+    no_siso=False,
+    use_autoninja=False,
+    src_dir=None,
+    **kwargs,
+  ):
     """Constructor for LegacyRunner
 
     Args:
@@ -203,15 +213,15 @@ class LegacyRunner:
     # Need to pretend we're an actual build for various builder look-ups in
     # the recipe.
     input_props['$recipe_engine/buildbucket'] = {
-        'build': {
-            'builder': {
-                # Should be safe to hard-code to 'chromium' even if the current
-                # checkout is on a release branch.
-                'project': 'chromium',
-                'bucket': bucket,
-                'builder': builder,
-            },
+      'build': {
+        'builder': {
+          # Should be safe to hard-code to 'chromium' even if the current
+          # checkout is on a release branch.
+          'project': 'chromium',
+          'bucket': bucket,
+          'builder': builder,
         },
+      },
     }
     # Some merge scripts need these two props. eg: The android result merge
     # incorporates buildnumber in the GS URL it uploads to. We don't want the
@@ -254,28 +264,30 @@ class LegacyRunner:
     return merged_rerun_props
 
   def _get_cmd_output(self, cmd):
-    p = subprocess.run(cmd,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT,
-                       text=True,
-                       check=False)
+    p = subprocess.run(
+      cmd,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
+      text=True,
+      check=False,
+    )
     if p.returncode == 0:
       return p.stdout.strip()
     return ''
 
   def _get_reclient_instance(self):
     cmd = [
-        'python3',
-        str(_RECLIENT_CLI),
-        '--get-rbe-instance',
+      'python3',
+      str(_RECLIENT_CLI),
+      '--get-rbe-instance',
     ]
     return self._get_cmd_output(cmd) or _DEFAULT_RBE_PROJECT
 
   def _get_siso_project(self):
     cmd = [
-        'python3',
-        str(_SISO_CLI),
-        '--get-siso-project',
+      'python3',
+      str(_SISO_CLI),
+      '--get-siso-project',
     ]
     return self._get_cmd_output(cmd) or _DEFAULT_RBE_PROJECT
 
@@ -294,24 +306,23 @@ class LegacyRunner:
     input_props = self._input_props.copy()
     input_props['rerun_options'] = self._merge_rerun_props(rerun_props or {})
     with tempfile.TemporaryDirectory() as tmp_dir:
-
       output_path = pathlib.Path(tmp_dir).joinpath('out.json')
       rerun_props_path = pathlib.Path(tmp_dir).joinpath('rerun_props.json')
       input_props['output_properties_file'] = str(rerun_props_path)
       cmd = [
-          'rdb',
-          'stream',
-          '-new',
-          '-realm',
-          self._luci_realm,
-          '--',
-          self._recipes_py,
-          'run',
-          '--output-result-json',
-          output_path,
-          '--properties-file',
-          '-',  # '-' means read from stdin
-          self._utr_recipe,
+        'rdb',
+        'stream',
+        '-new',
+        '-realm',
+        self._luci_realm,
+        '--',
+        self._recipes_py,
+        'run',
+        '--output-result-json',
+        output_path,
+        '--properties-file',
+        '-',  # '-' means read from stdin
+        self._utr_recipe,
       ]
       env = os.environ.copy()
       # This env var is read by both the cas and swarming recipe modules to
@@ -320,13 +331,14 @@ class LegacyRunner:
 
       async def exec_recipe():
         proc = await asyncio.create_subprocess_exec(
-            cmd[0],
-            *cmd[1:],
-            limit=1024 * 1024 * 128,  # 128 MiB: there can be massive lines
-            env=env,
-            stdin=asyncio.subprocess.PIPE,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.STDOUT)
+          cmd[0],
+          *cmd[1:],
+          limit=1024 * 1024 * 128,  # 128 MiB: there can be massive lines
+          env=env,
+          stdin=asyncio.subprocess.PIPE,
+          stdout=asyncio.subprocess.PIPE,
+          stderr=asyncio.subprocess.STDOUT,
+        )
 
         proc.stdin.write(json.dumps(input_props).encode('ascii'))
         proc.stdin.write_eof()
@@ -365,7 +377,8 @@ class LegacyRunner:
           raw_json = json.load(f)
           for prompt in raw_json:
             rerun_props.append(
-                RerunOption(prompt=prompt[0], properties=prompt[1]))
+              RerunOption(prompt=prompt[0], properties=prompt[1])
+            )
 
       return returncode, failure_md, rerun_props
 
@@ -386,7 +399,8 @@ class LegacyRunner:
     # final result. Put a cap on the amount of re-runs though, just in case.
     for _ in range(10):
       exit_code, failure_md, rerun_prop_options = self._run(
-          adapter, rerun_props)
+        adapter, rerun_props
+      )
       # For in-line code snippets in markdown, style them as python. This
       # seems the least weird-looking.
       pretty_md = markdown.Markdown(failure_md, inline_code_lexer='python')
@@ -408,8 +422,9 @@ class LegacyRunner:
         rerun_props = get_prompt_resp(rerun_prop_options)
       else:
         logging.warning(
-            '[yellow]Proceeding despite the recipe warning due to the presence '
-            'of "--force".[/]')
+          '[yellow]Proceeding despite the recipe warning due to the presence '
+          'of "--force".[/]'
+        )
         if len(rerun_prop_options) < 1 or len(rerun_prop_options[0]) < 2:
           return 1, 'Received bad run options from the recipe'
         # Properties of the first option is the default path

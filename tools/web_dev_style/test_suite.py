@@ -6,6 +6,6 @@
 import subprocess
 import sys
 
-subprocess.check_call([
-    sys.executable, '-m', 'unittest', 'discover', '-p', '*test.py', '-t', '..'
-])
+subprocess.check_call(
+  [sys.executable, '-m', 'unittest', 'discover', '-p', '*test.py', '-t', '..']
+)

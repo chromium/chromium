@@ -11,22 +11,26 @@ class KeyIdlePowerPage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   TAGS = [story_tags.KEY_IDLE_POWER]
-  TURN_SCREEN_OFF =  True
+  TURN_SCREEN_OFF = True
   DURATION_SECONDS = 20
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=(android_screen_restoration_shared_state.
-                                        AndroidScreenRestorationSharedState),
-               name_suffix='',
-               extra_browser_args=None,
-               perform_final_navigation=False):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=(
+      android_screen_restoration_shared_state.AndroidScreenRestorationSharedState
+    ),
+    name_suffix='',
+    extra_browser_args=None,
+    perform_final_navigation=False,
+  ):
     super(KeyIdlePowerPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=['--report-silk-details', '--disable-top-sites'],
-        perform_final_navigation=perform_final_navigation)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=['--report-silk-details', '--disable-top-sites'],
+      perform_final_navigation=perform_final_navigation,
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(KeyIdlePowerPage, self).RunNavigateSteps(action_runner)

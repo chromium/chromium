@@ -1,8 +1,7 @@
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Displays a trace file in a browser.
-"""
+"""Displays a trace file in a browser."""
 
 import logging
 import os
@@ -21,13 +20,17 @@ def DisplayInBrowser(trace_file, trace_format='proto'):
     trace_format: Storage format of trace file.
   """
   if trace_format == 'json':
-    raise Exception('The --view option and --trace_format=json are not'
-                    'supported together')
+    raise Exception(
+      'The --view option and --trace_format=json are notsupported together'
+    )
   if trace_format == 'proto':
     flag_utils.GetTracingLogger().info('Opening trace in browser')
     open_trace_ui_path = os.path.join(
-        os.path.dirname(__file__), os.pardir, os.pardir,
-        'third_party/perfetto/tools/open_trace_in_ui')
+      os.path.dirname(__file__),
+      os.pardir,
+      os.pardir,
+      'third_party/perfetto/tools/open_trace_in_ui',
+    )
     trace_file_path = os.path.abspath(trace_file)
     cmd = [open_trace_ui_path, '-i', trace_file_path]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

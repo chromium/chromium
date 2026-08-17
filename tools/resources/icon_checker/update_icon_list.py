@@ -8,12 +8,13 @@ import os
 import urllib.request
 import sys
 
-_METADATA_URL = 'https://fonts.google.com/metadata/icons/Material%20Symbols?lod=MINIMAL'
+_METADATA_URL = (
+  'https://fonts.google.com/metadata/icons/Material%20Symbols?lod=MINIMAL'
+)
 
 
 def main():
-  """Updates tools/resources/icon_list.json from the Google Symbols API.
-  """
+  """Updates tools/resources/icon_list.json from the Google Symbols API."""
   try:
     print(f'Fetching icon metadata from {_METADATA_URL}...')
     with urllib.request.urlopen(_METADATA_URL, timeout=10) as f:
@@ -32,7 +33,8 @@ def main():
       json.dump(data, out, indent=2, sort_keys=True)
 
     print(
-        f'Successfully updated {output_path} with {len(data["icons"])} icons.')
+      f'Successfully updated {output_path} with {len(data["icons"])} icons.'
+    )
     return 0
 
   except Exception as e:

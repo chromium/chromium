@@ -113,7 +113,7 @@ def ParseVerbose(input_file):
                 # which caused the linker to load it.
                 references = []
                 # Grab the symbol name
-                symbol = line[len(found_prefix):].strip()
+                symbol = line[len(found_prefix) :].strip()
                 if symbol[0] == '"':
                     # Strip off leading and trailing quotes if present.
                     symbol = symbol[1:-1]
@@ -136,10 +136,10 @@ def ParseVerbose(input_file):
                             # This indicates a match that is just a pure .obj
                             # file name I think this means that the .obj file
                             # was specified on the linker command line.
-                            reference = ('Command-line obj file: ' + obj_name)
+                            reference = 'Command-line obj file: ' + obj_name
                         references.append(reference)
                     else:
-                        assert (match_type == 'Loaded ')
+                        assert match_type == 'Loaded '
                         if '.lib' in obj_name and '.obj' in obj_name:
                             cross_refs[obj_name] = references
                             cross_refed_symbols[obj_name] = symbol
@@ -181,8 +181,9 @@ def TrackObj(cross_refs, cross_refed_symbols, obj_name):
                 if target in cross_refs.keys():
                     symbol = cross_refed_symbols[target]
                     printed = True
-                    print('%s.obj pulled in for symbol "%s" by' %
-                          (target, symbol))
+                    print(
+                        '%s.obj pulled in for symbol "%s" by' % (target, symbol)
+                    )
                     for ref in cross_refs[target]:
                         print('\t%s' % ref)
                         new_targets[ref] = True
@@ -191,8 +192,10 @@ def TrackObj(cross_refs, cross_refed_symbols, obj_name):
         print()
         targets = new_targets.keys()
     if not printed:
-        print('No references to %s found. Directly specified in sources or a '
-              'source_set?' % obj_name)
+        print(
+            'No references to %s found. Directly specified in sources or a '
+            'source_set?' % obj_name
+        )
 
 
 def main():

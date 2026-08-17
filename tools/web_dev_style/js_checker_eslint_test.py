@@ -38,8 +38,9 @@ class JsCheckerEsLintTest(unittest.TestCase):
 
     checker = js_checker.JSChecker(input_api, MockOutputApi())
 
-    output = checker.RunEsLintChecks(input_api.AffectedFiles(),
-                                     format='json')[0]
+    output = checker.RunEsLintChecks(input_api.AffectedFiles(), format='json')[
+      0
+    ]
 
     # Extract ESLint's error from the PresubmitError.
     # ESLint's errors are in JSON format.
@@ -56,10 +57,12 @@ class JsCheckerEsLintTest(unittest.TestCase):
     self._assertError(results, 'no-new-wrappers', 1)
 
     results = self._runChecks(
-        '''
+      '''
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const a: number = new Number(1);
-''', 'ts')
+''',
+      'ts',
+    )
     self._assertError(results, 'no-new-wrappers', 3)
 
   def testTypeScriptEslintPluginCheck(self):

@@ -10,12 +10,12 @@ import page_sets
 
 
 class TracingWithDebugOverhead(perf_benchmark.PerfBenchmark):
-
   page_set = page_sets.Top10PageSet
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     options = timeline_based_measurement.Options(
-        timeline_based_measurement.DEBUG_OVERHEAD_LEVEL)
+      timeline_based_measurement.DEBUG_OVERHEAD_LEVEL
+    )
     options.SetTimelineBasedMetrics(['tracingMetric'])
     return options
 

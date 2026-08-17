@@ -13,7 +13,7 @@ import google.path_utils
 class PlatformUtility(object):
   def __init__(self, base_dir):
     """Args:
-         base_dir: the base dir for running tests.
+    base_dir: the base dir for running tests.
     """
     self._base_dir = base_dir
     self._httpd_cmd_string = None  # used for starting/stopping httpd
@@ -55,9 +55,14 @@ class PlatformUtility(object):
       return "%s://127.0.0.1:%d/%s" % (protocol, port, path)
     return "file://" + path
 
-  def GetStartHttpdCommand(self, output_dir,
-                           httpd_conf_path, mime_types_path,
-                           document_root=None, apache2=False):
+  def GetStartHttpdCommand(
+    self,
+    output_dir,
+    httpd_conf_path,
+    mime_types_path,
+    document_root=None,
+    apache2=False,
+  ):
     """Prepares the config file and output directory to start an httpd server.
     Returns a list of strings containing the server's command line+args.
 
@@ -77,21 +82,22 @@ class PlatformUtility(object):
     """
 
     exe_name = "httpd"
-    cert_file = google.path_utils.FindUpward(self._base_dir, 'tools',
-                                             'python', 'google',
-                                             'httpd_config', 'httpd2.pem')
+    cert_file = google.path_utils.FindUpward(
+      self._base_dir, 'tools', 'python', 'google', 'httpd_config', 'httpd2.pem'
+    )
     ssl_enabled = os.path.exists('/etc/apache2/mods-enabled/ssl.conf')
 
     httpd_vars = {
-      "httpd_executable_path":
-          os.path.join(self._UnixRoot(), "usr", "sbin", exe_name),
+      "httpd_executable_path": os.path.join(
+        self._UnixRoot(), "usr", "sbin", exe_name
+      ),
       "httpd_conf_path": httpd_conf_path,
       "ssl_certificate_file": cert_file,
-      "document_root" : document_root,
+      "document_root": document_root,
       "server_root": os.path.join(self._UnixRoot(), "usr"),
       "mime_types_path": mime_types_path,
       "output_dir": output_dir,
-      "ssl_mutex": "file:"+os.path.join(output_dir, "ssl_mutex"),
+      "ssl_mutex": "file:" + os.path.join(output_dir, "ssl_mutex"),
       "user": os.environ.get("USER", "#%d" % os.geteuid()),
       "lock_file": os.path.join(output_dir, "accept.lock"),
     }
@@ -139,7 +145,7 @@ class PlatformUtility(object):
     """
 
     if not self._httpd_cmd_string:
-      return ["true"]   # Haven't been asked for the start cmd yet. Just pass.
+      return ["true"]  # Haven't been asked for the start cmd yet. Just pass.
     # Add a sleep after the shutdown because sometimes it takes some time for
     # the port to be available again.
     return [self._bash, "-c", self._httpd_cmd_string + ' -k stop && sleep 5']

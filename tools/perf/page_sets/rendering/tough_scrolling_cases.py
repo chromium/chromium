@@ -21,20 +21,23 @@ class ToughFastScrollingPage(rendering_story.RenderingStory):
   VSYNC_OFFSET_US = 0
   INPUT_EVENT_PATTERN = page_action.INPUT_EVENT_PATTERN_DEFAULT
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedPageState,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedPageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     if self.EXTRA_BROWSER_ARGS is not None:
       if extra_browser_args is None:
         extra_browser_args = []
       extra_browser_args.append(self.EXTRA_BROWSER_ARGS)
     super(ToughFastScrollingPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunPageInteractions(self, action_runner):
     start = time.time()
@@ -47,27 +50,30 @@ class ToughFastScrollingPage(rendering_story.RenderingStory):
       while time.time() - start < 15:
         if self.USE_FLING_SCROLL:
           action_runner.SwipePage(
-              direction=direction,
-              speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND)
+            direction=direction,
+            speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
+          )
           action_runner.Wait(1)
         else:
           if selector is None:
             action_runner.ScrollPage(
-                direction=direction,
-                speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
-                synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE,
-                vsync_offset_ms=self.VSYNC_OFFSET_US * 0.001,
-                input_event_pattern=self.INPUT_EVENT_PATTERN)
+              direction=direction,
+              speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
+              synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE,
+              vsync_offset_ms=self.VSYNC_OFFSET_US * 0.001,
+              input_event_pattern=self.INPUT_EVENT_PATTERN,
+            )
           else:
             # When there is a `selector` specified, scroll just that particular
             # element, rather than the entire page.
             action_runner.ScrollElement(
-                selector=selector,
-                direction=direction,
-                speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
-                synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE,
-                vsync_offset_ms=self.VSYNC_OFFSET_US * 0.001,
-                input_event_pattern=self.INPUT_EVENT_PATTERN)
+              selector=selector,
+              direction=direction,
+              speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
+              synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE,
+              vsync_offset_ms=self.VSYNC_OFFSET_US * 0.001,
+              input_event_pattern=self.INPUT_EVENT_PATTERN,
+            )
         direction = 'up' if direction == 'down' else 'down'
 
 
@@ -232,7 +238,7 @@ class ScrollingCanvas5000Page(ToughFastScrollingPage):
   SPEED_IN_PIXELS_PER_SECOND = 5000
   TAGS = ToughFastScrollingPage.TAGS + [
     story_tags.REPRESENTATIVE_MOBILE,
-    story_tags.REPRESENTATIVE_MAC_DESKTOP
+    story_tags.REPRESENTATIVE_MAC_DESKTOP,
   ]
 
 
@@ -273,7 +279,9 @@ class ScrollingCanvas90000Page(ToughFastScrollingPage):
 
 
 class NonOpaqueBackgroundMainThreadScrolling00050Page(ToughFastScrollingPage):
-  BASE_NAME = 'non_opaque_background_main_thread_scrolling_00050_pixels_per_second'
+  BASE_NAME = (
+    'non_opaque_background_main_thread_scrolling_00050_pixels_per_second'
+  )
   URL = 'file://../tough_scrolling_cases/text_on_non_opaque_background.html'
   EXTRA_BROWSER_ARGS = '--disable-prefer-compositing-to-lcd-text'
   SELECTOR = '#scroll'
@@ -281,8 +289,11 @@ class NonOpaqueBackgroundMainThreadScrolling00050Page(ToughFastScrollingPage):
 
 
 class NonOpaqueBackgroundCompositorThreadScrolling00050Page(
-    ToughFastScrollingPage):
-  BASE_NAME = 'non_opaque_background_compositor_thread_scrolling_00050_pixels_per_second'
+  ToughFastScrollingPage
+):
+  BASE_NAME = (
+    'non_opaque_background_compositor_thread_scrolling_00050_pixels_per_second'
+  )
   URL = 'file://../tough_scrolling_cases/text_on_non_opaque_background.html'
   SELECTOR = '#scroll'
   SPEED_IN_PIXELS_PER_SECOND = 50

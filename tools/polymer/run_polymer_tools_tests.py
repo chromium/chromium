@@ -10,8 +10,7 @@ import sys
 
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 SRC_DIR = os.path.dirname(os.path.dirname(CUR_DIR))
-TYP_DIR = os.path.join(
-    SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ')
+TYP_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ')
 
 if TYP_DIR not in sys.path:
   sys.path.insert(0, TYP_DIR)

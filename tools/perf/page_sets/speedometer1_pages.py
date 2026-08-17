@@ -10,13 +10,13 @@ class Speedometer1Story(press_story.PressStory):
   URL = 'http://browserbench.org/Speedometer/'
 
   enabled_suites = [
-      'VanillaJS-TodoMVC',
-      'EmberJS-TodoMVC',
-      'BackboneJS-TodoMVC',
-      'jQuery-TodoMVC',
-      'AngularJS-TodoMVC',
-      'React-TodoMVC',
-      'FlightJS-TodoMVC',
+    'VanillaJS-TodoMVC',
+    'EmberJS-TodoMVC',
+    'BackboneJS-TodoMVC',
+    'jQuery-TodoMVC',
+    'AngularJS-TodoMVC',
+    'React-TodoMVC',
+    'FlightJS-TodoMVC',
   ]
 
   def ExecuteTest(self, action_runner):
@@ -27,7 +27,8 @@ class Speedometer1Story(press_story.PressStory):
     if action_runner.tab.browser.platform.GetOSName() == 'android':
       iterationCount = 3
 
-    action_runner.ExecuteJavaScript("""
+    action_runner.ExecuteJavaScript(
+      """
         // Store all the results in the benchmarkClient
         benchmarkClient._measuredValues = []
         benchmarkClient.didRunSuites = function(measuredValues) {
@@ -37,22 +38,27 @@ class Speedometer1Story(press_story.PressStory):
         benchmarkClient.iterationCount = {{ count }};
         startTest();
         """,
-                                    count=iterationCount)
+      count=iterationCount,
+    )
     action_runner.WaitForJavaScriptCondition(
-        'benchmarkClient._finishedTestCount == benchmarkClient.testsCount',
-        timeout=600)
+      'benchmarkClient._finishedTestCount == benchmarkClient.testsCount',
+      timeout=600,
+    )
 
   def ParseTestResults(self, action_runner):
     self.AddJavaScriptMeasurement('Total', 'ms', 'benchmarkClient._timeValues')
     self.AddJavaScriptMeasurement(
-        'RunsPerMinute', 'score',
-        '[parseFloat(document.getElementById("result-number").innerText)];')
+      'RunsPerMinute',
+      'score',
+      '[parseFloat(document.getElementById("result-number").innerText)];',
+    )
 
     # Extract the timings for each suite
     for suite_name in self.enabled_suites:
-      self.AddJavaScriptMeasurement(suite_name,
-                                    'ms',
-                                    """
+      self.AddJavaScriptMeasurement(
+        suite_name,
+        'ms',
+        """
           var suite_times = [];
           for(var i = 0; i < benchmarkClient.iterationCount; i++) {
             suite_times.push(
@@ -60,13 +66,15 @@ class Speedometer1Story(press_story.PressStory):
           };
           suite_times;
           """,
-                                    key=suite_name)
+        key=suite_name,
+      )
 
 
 class Speedometer1StorySet(story.StorySet):
   def __init__(self):
-    super(Speedometer1StorySet,
-          self).__init__(archive_data_file='data/speedometer.json',
-                         cloud_storage_bucket=story.PUBLIC_BUCKET)
+    super(Speedometer1StorySet, self).__init__(
+      archive_data_file='data/speedometer.json',
+      cloud_storage_bucket=story.PUBLIC_BUCKET,
+    )
 
     self.AddStory(Speedometer1Story(self))

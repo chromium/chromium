@@ -11,21 +11,25 @@ class SimpleCanvasPage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
   TAGS = [story_tags.SIMPLE_CANVAS]
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedPageState,
-               name_suffix='',
-               extra_browser_args=None):
-    super(SimpleCanvasPage,
-          self).__init__(page_set=page_set,
-                         shared_page_state_class=shared_page_state_class,
-                         name_suffix=name_suffix,
-                         extra_browser_args=extra_browser_args)
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedPageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
+    super(SimpleCanvasPage, self).__init__(
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunNavigateSteps(self, action_runner):
     super(SimpleCanvasPage, self).RunNavigateSteps(action_runner)
     action_runner.WaitForJavaScriptCondition(
-        "document.readyState == 'complete'")
+      "document.readyState == 'complete'"
+    )
 
   def RunPageInteractions(self, action_runner):
     with action_runner.CreateInteraction('CanvasAnimation'):
@@ -183,7 +187,9 @@ class VideoToSubTexturePremultiply(SimpleCanvasPage):
 class VideoToSubTextureFlipAndPremultiply(SimpleCanvasPage):
   BASE_NAME = 'video_to_sub_texture_flip_and_premultiply'
   # pylint: disable=line-too-long
-  URL = 'file://../simple_canvas/video_to_sub_texture.html?flip_y=true&premult=true'
+  URL = (
+    'file://../simple_canvas/video_to_sub_texture.html?flip_y=true&premult=true'
+  )
 
 
 class VideoToTexture(SimpleCanvasPage):

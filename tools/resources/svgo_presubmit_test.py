@@ -16,23 +16,27 @@ from resources import svgo_presubmit
 from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockFile
 
 _OPTIMIZED_SVG = (
-    b'<svg xmlns="http://www.w3.org/2000/svg" id="EXPORT_preserved_id" ' +
-    b'width="24" height="24" fill="#757575" viewBox="0 0 24 24"><path ' +
-    b'd="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 ' +
-    b'2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>')
+  b'<svg xmlns="http://www.w3.org/2000/svg" id="EXPORT_preserved_id" '
+  + b'width="24" height="24" fill="#757575" viewBox="0 0 24 24"><path '
+  + b'd="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 '
+  + b'2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>'
+)
 
-_UNOPTIMIZED_SVG = (b'''
+_UNOPTIMIZED_SVG = (
+  b'''
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
   viewBox="0 0 24 24" fill="#757575">
-  <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 ''' +
-                    b'''2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"></path>
+  <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 '''
+  + b'''2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"></path>
 </svg>
-''')
+'''
+)
 
 _UNOPTIMIZED_IDS_SVG = (
-    b'<svg xmlns="http://www.w3.org/2000/svg" id="stripped_id"><path d="M10 ' +
-    b'4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 ' +
-    b'2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>')
+  b'<svg xmlns="http://www.w3.org/2000/svg" id="stripped_id"><path d="M10 '
+  + b'4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 '
+  + b'2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>'
+)
 
 
 class SvgPresubmitTest(unittest.TestCase):
@@ -47,7 +51,7 @@ class SvgPresubmitTest(unittest.TestCase):
 
     input_api = MockInputApi()
     input_api.files = [
-        MockFile(os.path.abspath(self._tmp_file), file_contents.splitlines())
+      MockFile(os.path.abspath(self._tmp_file), file_contents.splitlines())
     ]
     input_api.presubmit_local_path = _HERE_PATH
 

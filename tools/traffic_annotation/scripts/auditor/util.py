@@ -17,8 +17,9 @@ from typing import NewType, Any, Optional, List, Iterable, TYPE_CHECKING
 
 if TYPE_CHECKING:
   import traffic_annotation_pb2
-  from traffic_annotation_pb2 import NetworkTrafficAnnotation as \
-    traffic_annotation
+  from traffic_annotation_pb2 import (
+    NetworkTrafficAnnotation as traffic_annotation,
+  )
   from auditor import Annotation
 
 UniqueId = NewType("UniqueId", str)
@@ -26,8 +27,9 @@ HashCode = NewType("HashCode", int)
 
 # Configure logging with timestamp, log level, filename, and line number.
 logging.basicConfig(
-    level=logging.INFO,
-    format="[%(asctime)s:%(levelname)s:%(filename)s(%(lineno)d)] %(message)s")
+  level=logging.INFO,
+  format="[%(asctime)s:%(levelname)s:%(filename)s(%(lineno)d)] %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 
@@ -45,15 +47,19 @@ def import_compiled_proto(build_path) -> Any:
     global traffic_annotation_pb2
     global traffic_annotation
     import traffic_annotation_pb2
+
     # Used for accessing enum constants.
-    from traffic_annotation_pb2 import NetworkTrafficAnnotation as \
-      traffic_annotation
+    from traffic_annotation_pb2 import (
+      NetworkTrafficAnnotation as traffic_annotation,
+    )
+
     return traffic_annotation_pb2
   except ImportError as e:
     logger.critical(
-        "Failed to import the compiled traffic annotation proto. Make sure "
-        "you're on Linux or Windows and Chrome is built in '{}' before "
-        "running this script.".format(build_path))
+      "Failed to import the compiled traffic annotation proto. Make sure "
+      "you're on Linux or Windows and Chrome is built in '{}' before "
+      "running this script.".format(build_path)
+    )
     raise
 
 
@@ -68,7 +74,8 @@ def get_current_platform(build_path: Optional[Path] = None) -> str:
     try:
       gn_args = (build_path / "args.gn").read_text(encoding="utf-8")
       pattern = re.compile(
-          r"^\s*target_os\s*=\s*\"(android|chromeos|win)\"\s*$", re.MULTILINE)
+        r"^\s*target_os\s*=\s*\"(android|chromeos|win)\"\s*$", re.MULTILINE
+      )
       match = pattern.search(gn_args)
       if match:
         current_platform = match.group(1)
@@ -109,8 +116,12 @@ def iterative_hash(s: str) -> HashCode:
     A hash code.
   """
   return HashCode(
-      reduce(lambda acc, b: (acc * 31 + twos_complement_8bit(b)) % 138003713,
-             s.encode("utf-8"), 0))
+    reduce(
+      lambda acc, b: (acc * 31 + twos_complement_8bit(b)) % 138003713,
+      s.encode("utf-8"),
+      0,
+    )
+  )
 
 
 def compute_hash_value(text: str) -> HashCode:
@@ -122,14 +133,16 @@ def merge_string_field(src: Message, dst: Message, field: str):
   """Merges the content of one string field into an annotation."""
   if getattr(src, field):
     if getattr(dst, field):
-      setattr(dst, field, "{}\n{}".format(getattr(src, field),
-                                          getattr(dst, field)))
+      setattr(
+        dst, field, "{}\n{}".format(getattr(src, field), getattr(dst, field))
+      )
     else:
       setattr(dst, field, getattr(src, field))
 
 
-def fill_proto_with_bogus(unique_id: str, proto: Message,
-                          field_numbers: List[int]):
+def fill_proto_with_bogus(
+  unique_id: str, proto: Message, field_numbers: List[int]
+):
   """Fill proto with bogus values for the fields identified by field_numbers.
   Uses reflection to fill the proto with the right types."""
   descriptor = proto.DESCRIPTOR
@@ -137,8 +150,9 @@ def fill_proto_with_bogus(unique_id: str, proto: Message,
     field_number = abs(field_number)
 
     if field_number not in descriptor.fields_by_number:
-      raise ValueError("{} is not a valid {} field".format(
-          field_number, descriptor.name))
+      raise ValueError(
+        "{} is not a valid {} field".format(field_number, descriptor.name)
+      )
 
     field = descriptor.fields_by_number[field_number]
     repeated = field.label == FieldDescriptor.LABEL_REPEATED
@@ -158,9 +172,13 @@ def fill_proto_with_bogus(unique_id: str, proto: Message,
       pass
     else:
       raise NotImplementedError(
-          "Unimplemented proto field {} of type {} ({}) in {}".format(
-              field.name, field.type,
-              "repeated" if repeated else "non-repeated", unique_id))
+        "Unimplemented proto field {} of type {} ({}) in {}".format(
+          field.name,
+          field.type,
+          "repeated" if repeated else "non-repeated",
+          unique_id,
+        )
+      )
 
 
 def extract_annotation_id(line: str) -> Optional[UniqueId]:
@@ -207,34 +225,41 @@ def policy_to_text(chrome_policy: Iterable[Message]) -> str:
           # text_format.PrintField needs repeated fields passed in
           # one-at-a-time.
           for repeated_value in subvalue:
-            text_format.PrintField(subfield,
-                                   repeated_value,
-                                   writer,
-                                   as_one_line=True,
-                                   use_short_repeated_primitives=True)
+            text_format.PrintField(
+              subfield,
+              repeated_value,
+              writer,
+              as_one_line=True,
+              use_short_repeated_primitives=True,
+            )
         else:
-          text_format.PrintField(subfield,
-                                 subvalue,
-                                 writer,
-                                 as_one_line=True,
-                                 use_short_repeated_primitives=True)
+          text_format.PrintField(
+            subfield,
+            subvalue,
+            writer,
+            as_one_line=True,
+            use_short_repeated_primitives=True,
+          )
         items.append(writer.getvalue().strip())
   # We wrote an extra comma at the end, remove it before returning.
   return ", ".join(items)
   return re.sub(r", $", "", writer.getvalue()).strip()
 
 
-def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
-                               missing_ids: List[UniqueId]):
+def write_annotations_tsv_file(
+  file_path: Path, annotations: List["Annotation"], missing_ids: List[UniqueId]
+):
   """Writes a TSV file of all annotations and their contents in file_path."""
   logger.info("Saving annotations to TSV file: {}.".format(file_path))
   Destination = traffic_annotation.TrafficSemantics.Destination
   CookiesAllowed = traffic_annotation.TrafficPolicy.CookiesAllowed
 
   lines = []
-  title = "Unique ID\tLast Update\tSender\tDescription\tTrigger\tData\t" + \
-  "Destination\tCookies Allowed\tCookies Store\tSetting\tChrome Policy\t" + \
-  "Comments\tSource File"
+  title = (
+    "Unique ID\tLast Update\tSender\tDescription\tTrigger\tData\t"
+    + "Destination\tCookies Allowed\tCookies Store\tSetting\tChrome Policy\t"
+    + "Comments\tSource File"
+  )
 
   column_count = title.count("\t")
   for missing_id in missing_ids:
@@ -253,31 +278,34 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
     # Semantics.
     semantics = annotation.proto.semantics
     semantics_list = [
-        semantics.sender,
-        escape_for_tsv(semantics.description),
-        escape_for_tsv(semantics.trigger),
-        escape_for_tsv(semantics.data),
+      semantics.sender,
+      escape_for_tsv(semantics.description),
+      escape_for_tsv(semantics.trigger),
+      escape_for_tsv(semantics.data),
     ]
 
     for semantic_info in semantics_list:
       line += "\t{}".format(semantic_info)
 
     destination_names = {
-        Destination.WEBSITE: "Website",
-        Destination.GOOGLE_OWNED_SERVICE: "Google",
-        Destination.LOCAL: "Local",
-        Destination.PROXIED_GOOGLE_OWNED_SERVICE: "Proxied to Google",
-        Destination.OTHER: "Other",
+      Destination.WEBSITE: "Website",
+      Destination.GOOGLE_OWNED_SERVICE: "Google",
+      Destination.LOCAL: "Local",
+      Destination.PROXIED_GOOGLE_OWNED_SERVICE: "Proxied to Google",
+      Destination.OTHER: "Other",
     }
-    if (semantics.destination == Destination.OTHER
-        and semantics.destination_other):
+    if (
+      semantics.destination == Destination.OTHER and semantics.destination_other
+    ):
       line += "\tOther: {}".format(semantics.destination_other)
     elif semantics.destination in destination_names:
       line += "\t{}".format(destination_names[semantics.destination])
     else:
       raise ValueError(
-          "Invalid value for the semantics.destination field: {}".format(
-              semantics.destination))
+        "Invalid value for the semantics.destination field: {}".format(
+          semantics.destination
+        )
+      )
 
     # Policy.
     policy = annotation.proto.policy
@@ -292,7 +320,8 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
     # Chrome policies.
     if annotation.has_policy():
       policies_text = policy_to_text(
-          chain(policy.chrome_policy, policy.chrome_device_policy))
+        chain(policy.chrome_policy, policy.chrome_device_policy)
+      )
     else:
       policies_text = policy.policy_exception_justification
     line += "\t{}".format(escape_for_tsv(policies_text))
@@ -301,8 +330,9 @@ def write_annotations_tsv_file(file_path: Path, annotations: List["Annotation"],
     line += "\t{}".format(escape_for_tsv(annotation.proto.comments))
     # Source.
     code_search_link = "https://cs.chromium.org/chromium/src/"
-    line += "\t{}{}?l={}".format(code_search_link, annotation.file.as_posix(),
-                                 annotation.line)
+    line += "\t{}{}?l={}".format(
+      code_search_link, annotation.file.as_posix(), annotation.line
+    )
     lines.append(line)
 
   lines.sort()

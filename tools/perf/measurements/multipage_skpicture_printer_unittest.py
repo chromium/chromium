@@ -9,10 +9,12 @@ from measurements import multipage_skpicture_printer
 
 
 class MultipageSkpicturePrinterUnitTest(
-    legacy_page_test_case.LegacyPageTestCase):
+  legacy_page_test_case.LegacyPageTestCase
+):
   # Picture printing is not supported on all platforms.
   @decorators.Disabled('android', 'chromeos')
   def testSkpicturePrinter(self):
     page_test = multipage_skpicture_printer.MultipageSkpicturePrinter(
-        self.options.output_dir)
+      self.options.output_dir
+    )
     self.RunPageTest(page_test, 'file://blank.html')

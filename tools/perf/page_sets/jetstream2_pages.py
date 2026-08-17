@@ -21,19 +21,25 @@ class _JetStream2Story(press_story.PressStory):
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
     # Wait till the elements with selector "#results>.benchmark" are available
     # as they are required for running "JetStream.start()"
-    action_runner.WaitForJavaScriptCondition("""
+    action_runner.WaitForJavaScriptCondition(
+      """
         document.querySelectorAll("#results>.benchmark").length > 0
-        """, timeout=60*2)
+        """,
+      timeout=60 * 2,
+    )
     action_runner.EvaluateJavaScript('JetStream.start()')
 
   def ParseTestResults(self, action_runner):
     # JetStream2 is using document object to set done of benchmark runs.
-    action_runner.WaitForJavaScriptCondition("""
+    action_runner.WaitForJavaScriptCondition(
+      """
         (function() {
           let summaryElement = document.getElementById("result-summary");
           return (summaryElement.classList.contains('done'));
         })();
-        """, timeout=60*20)
+        """,
+      timeout=60 * 20,
+    )
     # JetStream2 calculates scores for each benchmark across iterations
     # so for each benchmark, return its calculated score and sub-results(
     # For JavaScript benchmarks, it's scores of "First", "Worst", "Average"
@@ -58,8 +64,7 @@ class _JetStream2Story(press_story.PressStory):
             allScores.push(benchmark.score);
           };
           return [result, geomean(allScores)];
-        })();"""
-    )
+        })();""")
 
     self.AddMeasurement('Score', 'score', score)
     for k, v in result.items():
@@ -67,11 +72,17 @@ class _JetStream2Story(press_story.PressStory):
       # as a sub-category of the metric
       benchmark = str(k).replace('.', '_')
       self.AddMeasurement(
-          benchmark, 'score', v['Score'],
-          description='Geometric mean of the iterations')
+        benchmark,
+        'score',
+        v['Score'],
+        description='Geometric mean of the iterations',
+      )
       self.AddMeasurement(
-          '%s.Iterations' % benchmark, 'count', v['Iterations'],
-          description='Total number of iterations')
+        '%s.Iterations' % benchmark,
+        'count',
+        v['Iterations'],
+        description='Total number of iterations',
+      )
       for sub_k, sub_v in v['SubResults'].items():
         self.AddMeasurement('%s.%s' % (benchmark, sub_k), 'score', sub_v)
 
@@ -97,9 +108,10 @@ class JetStream2Story(JetStream22Story):
 
 class _JetStream2StorySet(story.StorySet):
   def __init__(self, test_list=None):
-    super(_JetStream2StorySet,
-          self).__init__(archive_data_file='data/jetstream2.json',
-                         cloud_storage_bucket=story.INTERNAL_BUCKET)
+    super(_JetStream2StorySet, self).__init__(
+      archive_data_file='data/jetstream2.json',
+      cloud_storage_bucket=story.INTERNAL_BUCKET,
+    )
     self.AddStory(self._STORY_CLS(self, test_list))
 
 

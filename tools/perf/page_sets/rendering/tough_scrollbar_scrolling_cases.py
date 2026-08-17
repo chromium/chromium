@@ -10,7 +10,7 @@ from page_sets.rendering import rendering_story
 from page_sets.rendering import story_tags
 
 TOUGH_SCROLLBAR_UMA = [
-    'Graphics.Smoothness.Checkerboarding4.CompositorThread.ScrollbarScroll',
+  'Graphics.Smoothness.Checkerboarding4.CompositorThread.ScrollbarScroll',
 ]
 
 
@@ -20,38 +20,44 @@ class ToughFastScrollbarScrollingPage(rendering_story.RenderingStory):
   SYNTHETIC_GESTURE_SOURCE = page_action.GESTURE_SOURCE_MOUSE
   TAGS = [story_tags.GPU_RASTERIZATION, story_tags.TOUGH_SCROLLBAR_SCROLLING]
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedPageState,
-               name_suffix='',
-               extra_browser_args=None):
-    super(ToughFastScrollbarScrollingPage,
-          self).__init__(page_set=page_set,
-                         shared_page_state_class=shared_page_state_class,
-                         name_suffix=name_suffix,
-                         extra_browser_args=extra_browser_args)
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedPageState,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
+    super(ToughFastScrollbarScrollingPage, self).__init__(
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunPageInteractions(self, action_runner):
-    scrollbar_x, scrollbar_top, scrollbar_bottom, top_button, bottom_button = \
+    scrollbar_x, scrollbar_top, scrollbar_bottom, top_button, bottom_button = (
       self._ScrollBarRatios(action_runner)
+    )
     start = time.time()
     with action_runner.CreateGestureInteraction('DragAction'):
       direction = 'down'
       while time.time() - start < 15:
         if direction == 'down':
           action_runner.DragPage(
-              left_start_ratio=scrollbar_x,
-              top_start_ratio=scrollbar_top,
-              left_end_ratio=scrollbar_x,
-              top_end_ratio=bottom_button,
-              speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND)
+            left_start_ratio=scrollbar_x,
+            top_start_ratio=scrollbar_top,
+            left_end_ratio=scrollbar_x,
+            top_end_ratio=bottom_button,
+            speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
+          )
         else:
           action_runner.DragPage(
-              left_start_ratio=scrollbar_x,
-              top_start_ratio=scrollbar_bottom,
-              left_end_ratio=scrollbar_x,
-              top_end_ratio=top_button,
-              speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND)
+            left_start_ratio=scrollbar_x,
+            top_start_ratio=scrollbar_bottom,
+            left_end_ratio=scrollbar_x,
+            top_end_ratio=top_button,
+            speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
+          )
         direction = 'up' if direction == 'down' else 'down'
 
   def _ScrollBarRatios(self, action_runner):
@@ -61,7 +67,7 @@ class ToughFastScrollbarScrollingPage(rendering_story.RenderingStory):
     # client width again and then calculate the difference to get the
     # scrollbar thickness.
     scrollbar_thickness = float(
-        action_runner.EvaluateJavaScript('''
+      action_runner.EvaluateJavaScript('''
         (function() {
           window.__scrollableElementForTelemetry = document.scrollingElement;
           var container = document.createElement("div");
@@ -84,20 +90,28 @@ class ToughFastScrollbarScrollingPage(rendering_story.RenderingStory):
 
           window.__scrollbarThickness = widthBefore - widthAfter;
           return window.__scrollbarThickness;
-        })();'''))
+        })();''')
+    )
     window_width = float(action_runner.EvaluateJavaScript('window.innerWidth'))
     window_height = float(
-        action_runner.EvaluateJavaScript('window.innerHeight'))
+      action_runner.EvaluateJavaScript('window.innerHeight')
+    )
     # Works only when there is no horizontally overflowing content.
     left_margin = float(
-        action_runner.EvaluateJavaScript(
-            'document.body.getBoundingClientRect().x'))
+      action_runner.EvaluateJavaScript(
+        'document.body.getBoundingClientRect().x'
+      )
+    )
     body_width = float(
-        action_runner.EvaluateJavaScript(
-            'document.body.getBoundingClientRect().width'))
+      action_runner.EvaluateJavaScript(
+        'document.body.getBoundingClientRect().width'
+      )
+    )
     top_margin = float(
-        action_runner.EvaluateJavaScript(
-            'document.body.getBoundingClientRect().y'))
+      action_runner.EvaluateJavaScript(
+        'document.body.getBoundingClientRect().y'
+      )
+    )
     window_height = window_height - top_margin
 
     # For regular scrollbars the minimal thumb length is one and two times the
@@ -106,12 +120,15 @@ class ToughFastScrollbarScrollingPage(rendering_story.RenderingStory):
     # (Button Length) <= (Track width * |track_to_arrow_button_ratio|) <=
     # (Button Length + Minimum thumb length) for all scrollbars.
     track_to_arrow_button_ratio = 1.8
-    top = (scrollbar_thickness * track_to_arrow_button_ratio -
-           top_margin) / (window_height)
-    bottom = 1 - (scrollbar_thickness *
-                  track_to_arrow_button_ratio) / window_height
-    scrollbar_mid_x = (window_width - left_margin -
-                       (scrollbar_thickness / 2)) / body_width
+    top = (scrollbar_thickness * track_to_arrow_button_ratio - top_margin) / (
+      window_height
+    )
+    bottom = (
+      1 - (scrollbar_thickness * track_to_arrow_button_ratio) / window_height
+    )
+    scrollbar_mid_x = (
+      window_width - left_margin - (scrollbar_thickness / 2)
+    ) / body_width
     # Ensure the thumb goes through the full range of motion. These
     # variables make the the mouse drag until the middle of the scrollbar
     # buttons.

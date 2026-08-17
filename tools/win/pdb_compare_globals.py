@@ -82,8 +82,10 @@ def main():
         print('No data found in %s - fastlink?' % sys.argv[2])
         return
 
-    print('%d interesting globals in %s, %d interesting globals in %s' %
-          (len(symbols_1), sys.argv[1], len(symbols_2), sys.argv[2]))
+    print(
+        '%d interesting globals in %s, %d interesting globals in %s'
+        % (len(symbols_1), sys.argv[1], len(symbols_2), sys.argv[2])
+    )
 
     ShowExtras(symbols_1, symbols_2, sys.argv[1], sys.argv[2])
     ShowExtras(symbols_2, symbols_1, sys.argv[2], sys.argv[1])

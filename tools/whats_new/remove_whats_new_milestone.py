@@ -21,11 +21,13 @@ import argparse
 def main():
     parser = parser = argparse.ArgumentParser(
         description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument(
         '--milestone',
         required=True,
-        help='Specify the the What\'s New milestone you want to remove.')
+        help='Specify the the What\'s New milestone you want to remove.',
+    )
     args = parser.parse_args()
     if not args.milestone:
         raise ValueError('Missing input through --milestone.')
@@ -35,10 +37,12 @@ def main():
     whats_new_util.RemoveAnimationAssetsForMilestone(milestone)
 
     command_git_format = ['git', 'cl', 'format']
-    error = subprocess.Popen(command_git_format,
-                             universal_newlines=True,
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE).communicate()
+    error = subprocess.Popen(
+        command_git_format,
+        universal_newlines=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    ).communicate()
     if error:
         print(error)
 

@@ -33,9 +33,12 @@ def FindBootstrapDependencies(base_dir):
   if not os.path.exists(deps_file):
     return []
   deps_paths = bootstrap.ListAllDepsPaths(deps_file)
-  return set(os.path.realpath(os.path.join(
-      path_util.GetChromiumSrcDir(), '..', deps_path))
-             for deps_path in deps_paths)
+  return set(
+    os.path.realpath(
+      os.path.join(path_util.GetChromiumSrcDir(), '..', deps_path)
+    )
+    for deps_path in deps_paths
+  )
 
 
 def FindPythonDependencies(module_path):
@@ -54,7 +57,8 @@ def FindPythonDependencies(module_path):
     # Load the module to inherit its sys.path modifications.
     sys.path.insert(0, os.path.abspath(os.path.dirname(module_path)))
     imp.load_source(
-        os.path.splitext(os.path.basename(module_path))[0], module_path)
+      os.path.splitext(os.path.basename(module_path))[0], module_path
+    )
 
     # Analyze the module for its imports.
     graph = modulegraph.ModuleGraph()
@@ -81,9 +85,13 @@ def FindPythonDependencies(module_path):
 
       incoming_edges = graph.getReferers(node)
       message = 'Discovered %s (Imported by: %s)' % (
-          node.filename, ', '.join(
-              d.filename for d in incoming_edges
-              if d is not None and d.filename is not None))
+        node.filename,
+        ', '.join(
+          d.filename
+          for d in incoming_edges
+          if d is not None and d.filename is not None
+        ),
+      )
       logging.info(message)
 
       # This check is done after the logging/printing above to make sure that
@@ -133,8 +141,9 @@ def FindExcludedFiles(files, options):
 
   def MatchesExcludeOptions(path_string):
     for pattern in options.exclude:
-      if (fnmatch.fnmatch(path_string, pattern) or
-          fnmatch.fnmatch(os.path.basename(path_string), pattern)):
+      if fnmatch.fnmatch(path_string, pattern) or fnmatch.fnmatch(
+        os.path.basename(path_string), pattern
+      ):
         return True
     return False
 
@@ -144,11 +153,11 @@ def FindExcludedFiles(files, options):
 
   # Collect filters we're going to use to exclude files.
   exclude_conditions = [
-      IsHidden,
-      IsPyc,
-      IsInCloudStorage,
-      MatchesExcludeOptions,
-      IsWebPageReplayThirdParty,
+    IsHidden,
+    IsPyc,
+    IsInCloudStorage,
+    MatchesExcludeOptions,
+    IsWebPageReplayThirdParty,
   ]
 
   # Check all the files against the filters.
@@ -171,12 +180,20 @@ def FindDependencies(target_paths, options):
   # Including Telemetry's major entry points will (hopefully) include Telemetry
   # and all its dependencies. If the user doesn't pass any arguments, we just
   # have Telemetry.
-  dependencies |= FindPythonDependencies(os.path.realpath(
-      os.path.join(path_util.GetTelemetryDir(),
-                   'telemetry', 'command_line', 'parser.py')))
-  dependencies |= FindPythonDependencies(os.path.realpath(
-      os.path.join(path_util.GetTelemetryDir(),
-                   'telemetry', 'testing', 'run_tests.py')))
+  dependencies |= FindPythonDependencies(
+    os.path.realpath(
+      os.path.join(
+        path_util.GetTelemetryDir(), 'telemetry', 'command_line', 'parser.py'
+      )
+    )
+  )
+  dependencies |= FindPythonDependencies(
+    os.path.realpath(
+      os.path.join(
+        path_util.GetTelemetryDir(), 'telemetry', 'testing', 'run_tests.py'
+      )
+    )
+  )
 
   # Add dependencies.
   dependencies.add(os.path.realpath(GetWebPageReplayDir()))
@@ -201,25 +218,28 @@ def ZipDependencies(target_paths, dependencies, options):
     # Add dependencies to archive.
     for dependency_path in dependencies:
       path_in_archive = os.path.join(
-          'telemetry', os.path.relpath(dependency_path, base_dir))
+        'telemetry', os.path.relpath(dependency_path, base_dir)
+      )
       zip_file.write(dependency_path, path_in_archive)
 
     # Add symlinks to executable paths, for ease of use.
     for target_path in target_paths:
       link_info = zipfile.ZipInfo(
-          os.path.join('telemetry', os.path.basename(target_path)))
+        os.path.join('telemetry', os.path.basename(target_path))
+      )
       link_info.create_system = 3  # Unix attributes.
       # 010 is regular file, 0111 is the permission bits rwxrwxrwx.
       link_info.external_attr = 0o0100777 << 16  # Octal.
 
       relative_path = os.path.relpath(target_path, base_dir)
       link_script = (
-          '#!/usr/bin/env vpython\n\n'
-          'import os\n'
-          'import sys\n\n\n'
-          'script = os.path.join(os.path.dirname(__file__), \'%s\')\n'
-          'os.execv(sys.executable, [sys.executable, script] + sys.argv[1:])'
-          % relative_path)
+        '#!/usr/bin/env vpython\n\n'
+        'import os\n'
+        'import sys\n\n\n'
+        'script = os.path.join(os.path.dirname(__file__), \'%s\')\n'
+        'os.execv(sys.executable, [sys.executable, script] + sys.argv[1:])'
+        % relative_path
+      )
 
       zip_file.writestr(link_info, link_script)
 
@@ -229,23 +249,26 @@ class FindDependenciesCommand(command_line.Command):
 
   @classmethod
   def AddCommandLineArgs(cls, parser):
-    parser.add_argument('-v',
-                        '--verbose',
-                        action='count',
-                        dest='verbosity',
-                        default=0,
-                        help='Increase verbosity level (repeat as needed).')
+    parser.add_argument(
+      '-v',
+      '--verbose',
+      action='count',
+      dest='verbosity',
+      default=0,
+      help='Increase verbosity level (repeat as needed).',
+    )
 
     parser.add_argument(
-        '-e',
-        '--exclude',
-        action='append',
-        default=[],
-        help='Exclude paths matching EXCLUDE. Can be used multiple times.')
+      '-e',
+      '--exclude',
+      action='append',
+      default=[],
+      help='Exclude paths matching EXCLUDE. Can be used multiple times.',
+    )
 
-    parser.add_argument('-z',
-                        '--zip',
-                        help='Store files in a zip archive at ZIP.')
+    parser.add_argument(
+      '-z', '--zip', help='Store files in a zip archive at ZIP.'
+    )
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):

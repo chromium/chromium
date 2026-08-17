@@ -82,8 +82,9 @@ def main():
             print('%s does not exist!' % pe_path)
             continue
 
-        print('Size of %s is %1.6f MB' %
-              (pe_path, os.path.getsize(pe_path) / 1e6))
+        print(
+            'Size of %s is %1.6f MB' % (pe_path, os.path.getsize(pe_path) / 1e6)
+        )
         print('%10s:  %9s  ,  %9s' % ('name', 'mem size', 'disk size'))
 
         sections = None
@@ -113,8 +114,10 @@ def main():
                         if abs(memory_size - disk_size) < 512:
                             print('%10s: %9.6f MB' % (name, memory_size / 1e6))
                         else:
-                            print('%10s: %9.6f MB, %9.6f MB' %
-                                  (name, memory_size / 1e6, disk_size / 1e6))
+                            print(
+                                '%10s: %9.6f MB, %9.6f MB'
+                                % (name, memory_size / 1e6, disk_size / 1e6)
+                            )
                         results.append((name, memory_size))
                         sections = None
         except WindowsError as error:
@@ -123,7 +126,8 @@ def main():
                     r'Cannot find dumpbin. Run "C:\Program Files\Microsoft '
                     r'Visual Studio\2022\Professional\VC\Auxiliary\Build'
                     r'\vcvarsall.bat amd64" or similar to add dumpbin to the '
-                    r'path.')
+                    r'path.'
+                )
             else:
                 print(error)
             break

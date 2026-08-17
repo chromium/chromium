@@ -13,40 +13,39 @@ import run
 
 
 class ParseArgsTest(unittest.TestCase):
-
   def testRunModes(self):
     argv = [
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        'compile',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      'compile',
     ]
     args = run.parse_args(argv)
     self.assertEqual(args.run_mode, 'compile')
 
     argv = [
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        'wrong-mode',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      'wrong-mode',
     ]
     # Invalid run_mode choice should make the parser error out.
     with self.assertRaises(SystemExit):
       args = run.parse_args(argv)
 
     argv = [
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
     ]
     # No run_mode choice should make the parser error out.
     with self.assertRaises(SystemExit):
@@ -59,8 +58,10 @@ class ParseArgsTest(unittest.TestCase):
     with self.assertLogs() as info_log:
       run.maybe_print_survey_link()
       self.assertIn(
-          'INFO:root:Help us improve by sharing your feedback in this short '
-          'survey: https://forms.gle/tA41evzW5goqR5WF9', info_log.output)
+        'INFO:root:Help us improve by sharing your feedback in this short '
+        'survey: https://forms.gle/tA41evzW5goqR5WF9',
+        info_log.output,
+      )
 
     # No logs to the mock result in an exception trying to assert
     # Verify nothing new is logged instead
@@ -69,35 +70,35 @@ class ParseArgsTest(unittest.TestCase):
       logging.info('')
       run.maybe_print_survey_link()
       self.assertEqual(
-          ['INFO:root:'],
-          info_log.output,
+        ['INFO:root:'],
+        info_log.output,
       )
     mock_random.stop()
 
   def testTests(self):
     argv = [
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        'test',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      'test',
     ]
     # No test should make the parser error out.
     with self.assertRaises(SystemExit):
       args = run.parse_args(argv)
 
     argv = [
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'test1',
-        '-t',
-        'test2',
-        'test',
-        '--',
-        '--gtest_repeat=100',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'test1',
+      '-t',
+      'test2',
+      'test',
+      '--',
+      '--gtest_repeat=100',
     ]
     args = run.parse_args(argv)
     self.assertEqual(args.tests, ['test1', 'test2'])
@@ -106,144 +107,144 @@ class ParseArgsTest(unittest.TestCase):
 
   def testProject(self):
     argv = [
-        '-p',
-        'some-weird-project',
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        'compile',
+      '-p',
+      'some-weird-project',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      'compile',
     ]
     # Unknown project should make the parser error out.
     with self.assertRaises(SystemExit):
       args = run.parse_args(argv)
 
     argv = [
-        '-p',
-        'chrome-m123xyz',
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        'compile',
+      '-p',
+      'chrome-m123xyz',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      'compile',
     ]
     # Wrong milestone project format should make the parser error out.
     with self.assertRaises(SystemExit):
       args = run.parse_args(argv)
 
     argv = [
-        '-p',
-        'chromium-m123',
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        'compile',
+      '-p',
+      'chromium-m123',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      'compile',
     ]
     # 'chromium123' should get corrected to just 'chromium'.
     args = run.parse_args(argv)
     self.assertEqual(args.project, 'chromium')
 
     argv = [
-        '-p',
-        'dawn',
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        'compile',
+      '-p',
+      'dawn',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      'compile',
     ]
     args = run.parse_args(argv)
     self.assertEqual(args.project, 'dawn')
 
     argv = [
-        '-p',
-        'chromium',
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        '-d',
-        'foo:bar',
-        'compile',
+      '-p',
+      'chromium',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      '-d',
+      'foo:bar',
+      'compile',
     ]
     # Dimensions with 'compile' should error out.
     with self.assertRaises(SystemExit):
       args = run.parse_args(argv)
 
     argv = [
-        '-p',
-        'chromium',
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        '-d',
-        'foobar',
-        'test',
+      '-p',
+      'chromium',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      '-d',
+      'foobar',
+      'test',
     ]
     # Bad dimension arg should error out.
     with self.assertRaises(SystemExit):
       args = run.parse_args(argv)
 
     argv = [
-        '-p',
-        'chromium',
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        '-d',
-        'foo=bar',
-        'test',
+      '-p',
+      'chromium',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      '-d',
+      'foo=bar',
+      'test',
     ]
     # Key=Value dimension passes the regex.
     args = run.parse_args(argv)
     self.assertEqual(args.dimensions, ['foo=bar'])
 
     argv = [
-        '-p',
-        'chromium',
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        '-d',
-        'foo=',
-        'test',
+      '-p',
+      'chromium',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      '-d',
+      'foo=',
+      'test',
     ]
     # Key= dimension passes the regex.
     args = run.parse_args(argv)
     self.assertEqual(args.dimensions, ['foo='])
 
     argv = [
-        '-p',
-        'chromium',
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        '-d',
-        'foo=bar=baz',
-        'test',
+      '-p',
+      'chromium',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      '-d',
+      'foo=bar=baz',
+      'test',
     ]
     # Accept dimension value with =.
     args = run.parse_args(argv)
@@ -251,15 +252,15 @@ class ParseArgsTest(unittest.TestCase):
 
   def testCheckoutDir(self):
     argv = [
-        '--checkout-dir',
-        'third_party/dawn',
-        '-B',
-        'bucket',
-        '-b',
-        'builder',
-        '-t',
-        'some_test',
-        'compile',
+      '--checkout-dir',
+      'third_party/dawn',
+      '-B',
+      'bucket',
+      '-b',
+      'builder',
+      '-t',
+      'some_test',
+      'compile',
     ]
     args = run.parse_args(argv)
     self.assertEqual(args.checkout_dir, run.pathlib.Path('third_party/dawn'))

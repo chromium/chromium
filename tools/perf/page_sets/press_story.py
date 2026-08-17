@@ -8,41 +8,40 @@ from telemetry.page import page as page_module
 class PressStory(page_module.Page):
   """Base class for Press stories.
 
-    Override ExecuteTest to execute javascript on the page and
-    ParseTestResults to obtain javascript metrics from page.
+  Override ExecuteTest to execute javascript on the page and
+  ParseTestResults to obtain javascript metrics from page.
 
-    Example Implementation:
+  Example Implementation:
 
-    class FooPressStory:
-      URL = 'http://example.com/foo_story'
-      NAME = 'FooStory'
+  class FooPressStory:
+    URL = 'http://example.com/foo_story'
+    NAME = 'FooStory'
 
-      def ExecuteTest(self, action_runner):
-        // Execute some javascript
+    def ExecuteTest(self, action_runner):
+      // Execute some javascript
 
-      def ParseTestResults(self, action_runner):
-        js_code = 'some_js_expression;'
-        self.AddJavaScriptMeasurement(name, unit, js_code)
+    def ParseTestResults(self, action_runner):
+      js_code = 'some_js_expression;'
+      self.AddJavaScriptMeasurement(name, unit, js_code)
 
   """
+
   URL = None
   DETERMINISTIC_JS = False
   NAME = None
 
-  def __init__(self,
-               page_set,
-               tags=None,
-               extra_browser_args=None,
-               url=None,
-               name=None):
-    super(PressStory,
-          self).__init__(url or self.URL,
-                         page_set,
-                         base_dir=page_set.base_dir,
-                         make_javascript_deterministic=self.DETERMINISTIC_JS,
-                         name=name or self.NAME or self.URL,
-                         tags=self.PreprocessTags(tags),
-                         extra_browser_args=extra_browser_args)
+  def __init__(
+    self, page_set, tags=None, extra_browser_args=None, url=None, name=None
+  ):
+    super(PressStory, self).__init__(
+      url or self.URL,
+      page_set,
+      base_dir=page_set.base_dir,
+      make_javascript_deterministic=self.DETERMINISTIC_JS,
+      name=name or self.NAME or self.URL,
+      tags=self.PreprocessTags(tags),
+      extra_browser_args=extra_browser_args,
+    )
     self._measurements = []
     self._action_runner = None
 
@@ -71,8 +70,14 @@ class PressStory(page_module.Page):
     # the results object, rather than held on this temporary list. That needs,
     # however, another slight refactor to make the results object available at
     # this point.
-    self._measurements.append({'name': name, 'unit': unit, 'samples': samples,
-                               'description': description})
+    self._measurements.append(
+      {
+        'name': name,
+        'unit': unit,
+        'samples': samples,
+        'description': description,
+      }
+    )
 
   def AddJavaScriptMeasurement(self, name, unit, code, **kwargs):
     """Run some JavaScript to obtain and record an ad-hoc measurements.

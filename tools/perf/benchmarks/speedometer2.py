@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Apple's Speedometer 2 performance benchmark.
-"""
+"""Apple's Speedometer 2 performance benchmark."""
 
 import os
 import re
@@ -19,8 +18,9 @@ from telemetry.web_perf import timeline_based_measurement
 
 from page_sets import speedometer2_pages
 
-_SPEEDOMETER_DIR = os.path.join(path_util.GetChromiumSrcDir(), 'third_party',
-                                'speedometer')
+_SPEEDOMETER_DIR = os.path.join(
+  path_util.GetChromiumSrcDir(), 'third_party', 'speedometer'
+)
 
 
 class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
@@ -49,7 +49,8 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
     should_filter_suites = bool(options.suite)
     story_cls = self.GetStoryClass()
     filtered_suite_names = list(
-        map(story_cls.GetFullSuiteName, story_cls.GetSuites(options.suite)))
+      map(story_cls.GetFullSuiteName, story_cls.GetSuites(options.suite))
+    )
 
     story_set = story.StorySet(base_dir=self._SOURCE_DIR)
 
@@ -60,8 +61,10 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
       iteration_count = self.iteration_count
 
     story_set.AddStory(
-        story_cls(story_set, should_filter_suites, filtered_suite_names,
-                  iteration_count))
+      story_cls(
+        story_set, should_filter_suites, filtered_suite_names, iteration_count
+      )
+    )
     return story_set
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
@@ -86,7 +89,8 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
       cat_filter.AddDisabledByDefault('disabled-by-default-v8.runtime_stats')
 
       tbm_options = timeline_based_measurement.Options(
-          overhead_level=cat_filter)
+        overhead_level=cat_filter
+      )
       tbm_options.SetTimelineBasedMetrics(['runtimeStatsTotalMetric'])
       return tbm_options
 
@@ -97,18 +101,22 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
   def SetExtraBrowserOptions(self, options):
     if self.enable_rcs:
       options.AppendExtraBrowserArgs(
-          '--enable-blink-features=BlinkRuntimeCallStats')
+        '--enable-blink-features=BlinkRuntimeCallStats'
+      )
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_argument('--suite',
-                        help='Only runs suites that match regex provided')
-    parser.add_argument('--enable-rcs',
-                        action='store_true',
-                        help='Enables runtime call stats')
-    parser.add_argument('--iteration-count',
-                        type=int,
-                        help='Override the default number of iterations')
+    parser.add_argument(
+      '--suite', help='Only runs suites that match regex provided'
+    )
+    parser.add_argument(
+      '--enable-rcs', action='store_true', help='Enables runtime call stats'
+    )
+    parser.add_argument(
+      '--iteration-count',
+      type=int,
+      help='Override the default number of iterations',
+    )
 
   @classmethod
   def ProcessCommandLineArgs(cls, parser, args):
@@ -128,9 +136,11 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
       cls.iteration_count = args.iteration_count
 
 
-@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
-                component='Blink>JavaScript',
-                documentation_url='https://browserbench.org/Speedometer2.0')
+@benchmark.Info(
+  emails=['cbruni@chromium.org', 'vahl@chromium.org'],
+  component='Blink>JavaScript',
+  documentation_url='https://browserbench.org/Speedometer2.0',
+)
 class Speedometer20(_Speedometer2):
   """Speedometer2.0 benchmark.
   Explicitly named version."""
@@ -147,9 +157,11 @@ class Speedometer20(_Speedometer2):
     return 'speedometer2.0'
 
 
-@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
-                component='Blink>JavaScript',
-                documentation_url='https://browserbench.org/Speedometer2.1')
+@benchmark.Info(
+  emails=['cbruni@chromium.org', 'vahl@chromium.org'],
+  component='Blink>JavaScript',
+  documentation_url='https://browserbench.org/Speedometer2.1',
+)
 class Speedometer21(_Speedometer2):
   """Speedometer2.1 benchmark.
   Explicitly named version."""
@@ -166,9 +178,11 @@ class Speedometer21(_Speedometer2):
     return 'speedometer2.1'
 
 
-@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
-                component='Blink>JavaScript',
-                documentation_url='https://browserbench.org/Speedometer2.1')
+@benchmark.Info(
+  emails=['cbruni@chromium.org', 'vahl@chromium.org'],
+  component='Blink>JavaScript',
+  documentation_url='https://browserbench.org/Speedometer2.1',
+)
 class Speedometer2(Speedometer21):
   """The latest version of the Speedometer2 benchmark."""
 
@@ -183,9 +197,11 @@ class Speedometer2(Speedometer21):
     return 'speedometer2'
 
 
-@benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
-                component='Blink>JavaScript',
-                documentation_url='https://browserbench.org/Speedometer2.1')
+@benchmark.Info(
+  emails=['cbruni@chromium.org', 'vahl@chromium.org'],
+  component='Blink>JavaScript',
+  documentation_url='https://browserbench.org/Speedometer2.1',
+)
 class V8Speedometer2Future(Speedometer2):
   """The latest Speedometer2 benchmark with the V8 flag --future.
 
@@ -202,14 +218,17 @@ class V8Speedometer2Future(Speedometer2):
     options.AppendExtraBrowserArgs('--enable-features=V8VmFuture')
 
 
-@benchmark.Info(emails=['rasikan@google.com', 'wnwen@google.com'],
-                component='Blink>JavaScript',
-                documentation_url='https://browserbench.org/Speedometer2.1')
+@benchmark.Info(
+  emails=['rasikan@google.com', 'wnwen@google.com'],
+  component='Blink>JavaScript',
+  documentation_url='https://browserbench.org/Speedometer2.1',
+)
 class Speedometer2Predictable(Speedometer2):
   """The latest Speedometer2 benchmark with V8's `predictable` mode.
 
   This should (hopefully) help reduce variance in the score.
   """
+
   SCHEDULED = False
 
   @classmethod

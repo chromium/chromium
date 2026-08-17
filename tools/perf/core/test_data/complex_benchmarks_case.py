@@ -8,21 +8,18 @@ from core.test_data import simple_benchmarks_case
 
 
 class TestBenchmarkComplexFoo(perf_benchmark.PerfBenchmark):
-
   @classmethod
   def Name(cls):
     return 'test_benchmark_complex_1'
 
 
 class TestBenchmarkComplexSubclass(TestBenchmarkComplexFoo):
-
   @classmethod
   def Name(cls):
     return 'test_benchmark_complex_subclass'
 
 
 class TestBenchmarkComplexBar(simple_benchmarks_case.TestBenchmarkSubclassBar):
-
   @classmethod
   def Name(cls):
     return 'test_benchmark_complex_subclass_from_other_module'

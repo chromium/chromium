@@ -13,6 +13,7 @@ def Run(os_path=None, args=None):
     _NODE_PATH = os_path.join(_SRC_PATH, 'third_party', 'node')
 
     import sys
+
     old_sys_path = sys.path[:]
     sys.path.append(_NODE_PATH)
 
@@ -25,15 +26,19 @@ def Run(os_path=None, args=None):
   # navigate parent directories via '../'. We must set the repository's root as
   # the cwd.
   os.chdir(_SRC_PATH)
-  return node.RunNodeRaw([
+  return node.RunNodeRaw(
+    [
       node_modules.PathToEsLint(),
       '--quiet',
       '--config',
       os_path.join(_HERE_PATH, 'eslint.config.mjs'),
-  ] + args)
+    ]
+    + args
+  )
 
 
 if __name__ == '__main__':
   import os
   import sys
+
   Run(os_path=os.path, args=sys.argv[1:])

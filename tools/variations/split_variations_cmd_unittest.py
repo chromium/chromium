@@ -12,8 +12,8 @@ _DISABLE_FEATURES_SWITCH_NAME = 'disable-features'
 _FORCE_FIELD_TRIALS_SWITCH_NAME = 'force-fieldtrials'
 _FORCE_FIELD_TRIAL_PARAMS_SWITCH_NAME = 'force-fieldtrial-params'
 
-class SplitVariationsCmdUnittest(unittest.TestCase):
 
+class SplitVariationsCmdUnittest(unittest.TestCase):
   def _CompareCommandLineSwitches(self, filename, cmd_list):
     """Compares two sets of command line switches.
 
@@ -57,7 +57,8 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
                          |items| is a list of items representing switch value.
     """
     data_lists = [
-        split[switch_name] for split in splits if switch_name in split]
+      split[switch_name] for split in splits if switch_name in split
+    ]
     if len(data_lists) == 0:
       self.assertFalse(ref_switch_data)
       return
@@ -70,7 +71,6 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
       joined_switch_data.extend(data)
     self.assertCountEqual(ref_switch_data, joined_switch_data)
 
-
   def testLoadFromFileAndSaveToStrings(self):
     # Verifies we load data from the file and save it to a list of strings,
     # the two data sets contain the same command line switches.
@@ -80,15 +80,16 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
     cmd_list = split_variations_cmd.VariationsCmdToStrings(data)
     self.assertTrue(self._CompareCommandLineSwitches(data_file, cmd_list))
 
-
   def _testSplitVariationsCmdHelper(self, input_data):
     # Verifies we correctly and (almost) evenly split one set of command line
     # switches into two sets.
     splits = split_variations_cmd.SplitVariationsCmd(input_data)
-    switches = [_ENABLE_FEATURES_SWITCH_NAME,
-                _DISABLE_FEATURES_SWITCH_NAME,
-                _FORCE_FIELD_TRIALS_SWITCH_NAME,
-                _FORCE_FIELD_TRIAL_PARAMS_SWITCH_NAME]
+    switches = [
+      _ENABLE_FEATURES_SWITCH_NAME,
+      _DISABLE_FEATURES_SWITCH_NAME,
+      _FORCE_FIELD_TRIALS_SWITCH_NAME,
+      _FORCE_FIELD_TRIAL_PARAMS_SWITCH_NAME,
+    ]
     for switch in switches:
       self._VerifySplits(switch, splits, input_data.get(switch, []))
     # Verify both split variations are valid.
@@ -96,70 +97,73 @@ class SplitVariationsCmdUnittest(unittest.TestCase):
       cmd_list = split_variations_cmd.VariationsCmdToStrings(variations_cmd)
       split_variations_cmd.ParseVariationsCmdFromString(' '.join(cmd_list))
 
-
   def testSplitVariationsCmd(self):
     input_file = os.path.join(self._GetUnittestDataDir(), 'variations_cmd.txt')
     assert os.path.isfile(input_file)
     data = split_variations_cmd.ParseVariationsCmdFromFile(input_file)
     self._testSplitVariationsCmdHelper(data)
 
-
   def testSplitVariationsCmdWithMissingEnableDisableFeatures(self):
     input_string = (
-        '--force-fieldtrials="Tria1/Disabled/*Trial2/Enabled/" '
-        '--force-fieldtrial-params="Trial2.Enabled:age/18/gender/male" '
-        '--disable-features="FeatureA<FeatureA"')
+      '--force-fieldtrials="Tria1/Disabled/*Trial2/Enabled/" '
+      '--force-fieldtrial-params="Trial2.Enabled:age/18/gender/male" '
+      '--disable-features="FeatureA<FeatureA"'
+    )
     data = split_variations_cmd.ParseVariationsCmdFromString(input_string)
     self._testSplitVariationsCmdHelper(data)
 
-
   def testSplitVariationsCmdWithMissingForceFieldTrialParams(self):
     input_string = (
-        '--force-fieldtrials="*Trial2/Enabled/" '
-        '--enable-features="FeatureA<FeatureA,FeatureB<FeatureB" '
-        '--disable-features="FeatureC<FeatureC,FeatureD<FeatureD"')
+      '--force-fieldtrials="*Trial2/Enabled/" '
+      '--enable-features="FeatureA<FeatureA,FeatureB<FeatureB" '
+      '--disable-features="FeatureC<FeatureC,FeatureD<FeatureD"'
+    )
     data = split_variations_cmd.ParseVariationsCmdFromString(input_string)
     self._testSplitVariationsCmdHelper(data)
 
   def testSplitVariationsCmdNoFurtherSplit(self):
     input_string = (
-        '--force-fieldtrials="*Trial2/Enabled/" '
-        '--enable-features="FeatureA<FeatureA" '
-        '--disable-features="FeatureC<FeatureC" '
-        '--disable-field-trial-config')
+      '--force-fieldtrials="*Trial2/Enabled/" '
+      '--enable-features="FeatureA<FeatureA" '
+      '--disable-features="FeatureC<FeatureC" '
+      '--disable-field-trial-config'
+    )
     splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
     self.assertEqual(1, len(splits))
 
   def testFieldTrialsEncodingParams(self):
     """Check that spaces in force-fieldtrial-params are duly decoded."""
     input_string = (
-        '--force-fieldtrials="*ScaleTile MemoryLimit/Scale 120%/" '
-        '--force-fieldtrial-params="ScaleTile+MemoryLimit.Scale+120%:x/100/y/Test"')
+      '--force-fieldtrials="*ScaleTile MemoryLimit/Scale 120%/" '
+      '--force-fieldtrial-params="ScaleTile+MemoryLimit.Scale+120%:x/100/y/Test"'
+    )
     splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
     self.assertEqual(1, len(splits))
 
   def testSplitFeaturesGroupedByValue(self):
     """Check that features are grouped by values."""
-    input_string = ('--enable-features="FeatureA<Trial1,FeatureB<Trial1"')
+    input_string = '--enable-features="FeatureA<Trial1,FeatureB<Trial1"'
     splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
     self.assertEqual(len(splits), 1)
 
   def testSplitVariationsCmdFeatureByTrials(self):
     """Check that features are assigned to corresponding trial groups"""
     input_string = (
-        '--force-fieldtrials="Trial1/Disabled/*Trial2/Enabled/" '
-        '--enable-features="FeatureA<Trial1,FeatureC<Trial1"')
+      '--force-fieldtrials="Trial1/Disabled/*Trial2/Enabled/" '
+      '--enable-features="FeatureA<Trial1,FeatureC<Trial1"'
+    )
     splits = split_variations_cmd.SplitVariationsCmdFromString(input_string)
     self.assertEqual(len(splits), 2)
     for split_str in splits:
       data = split_variations_cmd.ParseVariationsCmdFromString(split_str)
       trials = [
-          t.trial_name for t in data.get(_FORCE_FIELD_TRIALS_SWITCH_NAME, [])
+        t.trial_name for t in data.get(_FORCE_FIELD_TRIALS_SWITCH_NAME, [])
       ]
       features = [f.key for f in data.get(_ENABLE_FEATURES_SWITCH_NAME, [])]
       if 'Trial1' in trials:
         self.assertIn('FeatureA', features)
         self.assertIn('FeatureC', features)
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -7,9 +7,16 @@
 import json
 
 
-def TestResult(test_path, status='PASS', expected=None,
-               start_time='2015-10-21T07:28:00.000Z', run_duration='1.00s',
-               output_artifacts=None, tags=None, result_id=None):
+def TestResult(
+  test_path,
+  status='PASS',
+  expected=None,
+  start_time='2015-10-21T07:28:00.000Z',
+  run_duration='1.00s',
+  output_artifacts=None,
+  tags=None,
+  result_id=None,
+):
   """Build a TestResult dict.
 
   This follows the TestResultEntry spec of LUCI Test Results format.
@@ -37,11 +44,11 @@ def TestResult(test_path, status='PASS', expected=None,
   if expected is None:
     expected = status in ('PASS', 'SKIP')
   test_result = {
-      'testPath': test_path,
-      'status': status,
-      'expected': expected,
-      'startTime': start_time,
-      'runDuration': run_duration,
+    'testPath': test_path,
+    'status': status,
+    'expected': expected,
+    'startTime': start_time,
+    'runDuration': run_duration,
   }
   if output_artifacts is not None:
     test_result['outputArtifacts'] = dict(output_artifacts)
@@ -53,8 +60,12 @@ def TestResult(test_path, status='PASS', expected=None,
   return test_result
 
 
-def Artifact(file_path, view_url=None, fetch_url=None,
-             content_type='application/octet-stream'):
+def Artifact(
+  file_path,
+  view_url=None,
+  fetch_url=None,
+  content_type='application/octet-stream',
+):
   """Build an Artifact dict.
 
   Args:
@@ -82,8 +93,9 @@ def SerializeIntermediateResults(in_results, filepath):
   """
   with open(filepath, 'w') as fp:
     for test_result in in_results:
-      json.dump({'testResult': test_result}, fp,
-                sort_keys=True, separators=(',', ':'))
+      json.dump(
+        {'testResult': test_result}, fp, sort_keys=True, separators=(',', ':')
+      )
       fp.write('\n')
 
 

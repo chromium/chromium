@@ -26,7 +26,6 @@ import mock
 
 
 class ExtractBreakpadTestCase(unittest.TestCase):
-
   def setUp(self):
     # Create test inputs for ExtractBreakpadFiles() function.
     self.test_build_dir = tempfile.mkdtemp()
@@ -36,8 +35,9 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     # NamedTemporaryFile() is hard coded to have a set of random 8 characters
     # appended to whatever prefix is given. Those characters can't be easily
     # removed, so |self.test_dump_syms_binary| is opened this way.
-    self.test_dump_syms_binary = os.path.join(self.test_dump_syms_dir,
-                                              'dump_syms')
+    self.test_dump_syms_binary = os.path.join(
+      self.test_dump_syms_dir, 'dump_syms'
+    )
     with open(self.test_dump_syms_binary, 'w'):
       pass
 
@@ -73,19 +73,22 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
     # Build side effect mapping.
     side_effect_map = {
-        symbol_files[0]:
-        'MODULE Android x86_64 34984AB4EF948C0000000000000000000 subdir.so',
-        symbol_files[1]: 'MODULE Android x86_64 34984AB4EF948D unstripped.so',
-        symbol_files[2]: 'MODULE Android x86_64 34984AB4EF949A unstripped2.so'
+      symbol_files[
+        0
+      ]: 'MODULE Android x86_64 34984AB4EF948C0000000000000000000 subdir.so',
+      symbol_files[1]: 'MODULE Android x86_64 34984AB4EF948D unstripped.so',
+      symbol_files[2]: 'MODULE Android x86_64 34984AB4EF949A unstripped2.so',
     }
 
     return symbol_files, side_effect_map
 
   def _getDumpSymsMockSideEffect(self, side_effect_map):
-    def run_dumpsyms_side_effect(dump_syms_binary,
-                                 input_file_path,
-                                 output_file_path,
-                                 only_module_header=False):
+    def run_dumpsyms_side_effect(
+      dump_syms_binary,
+      input_file_path,
+      output_file_path,
+      only_module_header=False,
+    ):
       self.assertEqual(self.test_dump_syms_binary, dump_syms_binary)
       if only_module_header:
         # Extract Module ID.
@@ -102,19 +105,24 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
   def _getExpectedModuleExtractionCalls(self, symbol_files):
     expected_module_calls = [
-        mock.call(self.test_dump_syms_binary,
-                  symbol_fle,
-                  mock.ANY,
-                  only_module_header=True) for symbol_fle in symbol_files
+      mock.call(
+        self.test_dump_syms_binary,
+        symbol_fle,
+        mock.ANY,
+        only_module_header=True,
+      )
+      for symbol_fle in symbol_files
     ]
     return expected_module_calls
 
-  def _getExpectedBreakpadExtractionCalls(self, extracted_files,
-                                          breakpad_files):
+  def _getExpectedBreakpadExtractionCalls(
+    self, extracted_files, breakpad_files
+  ):
     expected_extract_calls = [
-        mock.call(self.test_dump_syms_binary, extracted_file,
-                  breakpad_files[file_iter])
-        for file_iter, extracted_file in enumerate(extracted_files)
+      mock.call(
+        self.test_dump_syms_binary, extracted_file, breakpad_files[file_iter]
+      )
+      for file_iter, extracted_file in enumerate(extracted_files)
     ]
     return expected_extract_calls
 
@@ -123,7 +131,7 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     for extracted_file in extracted_files:
       breakpad_filename = os.path.basename(extracted_file) + '.breakpad'
       breakpad_file = os.path.join(self.test_breakpad_dir, breakpad_filename)
-      assert (os.path.isfile(breakpad_file))
+      assert os.path.isfile(breakpad_file)
       breakpad_files.append(breakpad_file)
     return breakpad_files
 
@@ -131,7 +139,7 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     breakpad_files = []
     for extracted_file in extracted_files:
       breakpad_file = extracted_file + '.breakpad'
-      assert (os.path.isfile(breakpad_file))
+      assert os.path.isfile(breakpad_file)
       breakpad_files.append(breakpad_file)
     return breakpad_files
 
@@ -142,49 +150,55 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     # is not used.
     input_file_name = os.path.split(test_input_file.name)[1]
     test_output_file_path = '{output_path}.breakpad'.format(
-        output_path=os.path.join(breakpad_dir, input_file_name))
+      output_path=os.path.join(breakpad_dir, input_file_name)
+    )
     with open(test_output_file_path, 'w'):
       pass
 
     # Create tempfiles that should be ignored when extracting symbol files.
-    with tempfile.NamedTemporaryFile(
-        suffix='.TOC', dir=build_dir), tempfile.NamedTemporaryFile(
-            suffix='.java', dir=build_dir), tempfile.NamedTemporaryFile(
-                suffix='.zip', dir=build_dir), tempfile.NamedTemporaryFile(
-                    suffix='_apk', dir=build_dir), tempfile.NamedTemporaryFile(
-                        suffix='.so.dwp',
-                        dir=build_dir), tempfile.NamedTemporaryFile(
-                            suffix='.so.dwo',
-                            dir=build_dir), tempfile.NamedTemporaryFile(
-                                suffix='_chromesymbols.zip', dir=build_dir):
+    with (
+      tempfile.NamedTemporaryFile(suffix='.TOC', dir=build_dir),
+      tempfile.NamedTemporaryFile(suffix='.java', dir=build_dir),
+      tempfile.NamedTemporaryFile(suffix='.zip', dir=build_dir),
+      tempfile.NamedTemporaryFile(suffix='_apk', dir=build_dir),
+      tempfile.NamedTemporaryFile(suffix='.so.dwp', dir=build_dir),
+      tempfile.NamedTemporaryFile(suffix='.so.dwo', dir=build_dir),
+      tempfile.NamedTemporaryFile(suffix='_chromesymbols.zip', dir=build_dir),
+    ):
       breakpad_file_extractor._RunDumpSyms = mock.MagicMock()
-      breakpad_file_extractor.ExtractBreakpadFiles(dump_syms_path, build_dir,
-                                                   breakpad_dir)
+      breakpad_file_extractor.ExtractBreakpadFiles(
+        dump_syms_path, build_dir, breakpad_dir
+      )
 
     breakpad_file_extractor._RunDumpSyms.assert_called_once_with(
-        dump_syms_path, test_input_file.name, test_output_file_path)
+      dump_syms_path, test_input_file.name, test_output_file_path
+    )
 
     # Check that one file exists in the output directory.
     self.assertEqual(len(os.listdir(breakpad_dir)), 1)
     self.assertEqual(
-        os.listdir(breakpad_dir)[0],
-        os.path.basename(test_input_file.name) + '.breakpad')
+      os.listdir(breakpad_dir)[0],
+      os.path.basename(test_input_file.name) + '.breakpad',
+    )
 
   def testOneBinaryFile(self):
-    self._checkExtractWithOneBinary(self.test_dump_syms_binary,
-                                    self.test_build_dir, self.test_breakpad_dir)
+    self._checkExtractWithOneBinary(
+      self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir
+    )
 
   def testDumpSymsInBuildDir(self):
     new_dump_syms_path = os.path.join(self.test_build_dir, 'dump_syms')
     with open(new_dump_syms_path, 'w'):
       pass
-    self._checkExtractWithOneBinary(new_dump_syms_path, self.test_build_dir,
-                                    self.test_breakpad_dir)
+    self._checkExtractWithOneBinary(
+      new_dump_syms_path, self.test_build_dir, self.test_breakpad_dir
+    )
 
   def testSymbolsInLibUnstrippedFolder(self):
     os.path.join(self.test_build_dir, 'lib.unstripped')
-    self._checkExtractWithOneBinary(self.test_dump_syms_binary,
-                                    self.test_build_dir, self.test_breakpad_dir)
+    self._checkExtractWithOneBinary(
+      self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir
+    )
 
   def testMultipleBinaryFiles(self):
     # Create files in |test_build_dir|. All files are removed when
@@ -205,46 +219,50 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
     # Form output file paths.
     breakpad_file_extractor._RunDumpSyms = mock.MagicMock(
-        side_effect=self._getDumpSymsMockSideEffect({}))
-    breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
-                                                 self.test_build_dir,
-                                                 self.test_breakpad_dir)
+      side_effect=self._getDumpSymsMockSideEffect({})
+    )
+    breakpad_file_extractor.ExtractBreakpadFiles(
+      self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir
+    )
 
     # Check that each expected call to _RunDumpSyms() has been made.
     breakpad_files = self._getAndEnsureExtractedBreakpadFiles(symbol_files)
     expected_calls = self._getExpectedBreakpadExtractionCalls(
-        symbol_files, breakpad_files)
-    breakpad_file_extractor._RunDumpSyms.assert_has_calls(expected_calls,
-                                                          any_order=True)
+      symbol_files, breakpad_files
+    )
+    breakpad_file_extractor._RunDumpSyms.assert_has_calls(
+      expected_calls, any_order=True
+    )
 
   def testDumpSymsNotFound(self):
     breakpad_file_extractor._RunDumpSyms = mock.MagicMock()
     exception_msg = 'dump_syms binary not found.'
     with self.assertRaises(Exception) as e:
-      breakpad_file_extractor.ExtractBreakpadFiles('fake/path/dump_syms',
-                                                   self.test_build_dir,
-                                                   self.test_breakpad_dir)
+      breakpad_file_extractor.ExtractBreakpadFiles(
+        'fake/path/dump_syms', self.test_build_dir, self.test_breakpad_dir
+      )
     self.assertIn(exception_msg, str(e.exception))
 
   def testFakeDirectories(self):
     breakpad_file_extractor._RunDumpSyms = mock.MagicMock()
     exception_msg = 'Invalid breakpad output directory'
     with self.assertRaises(Exception) as e:
-      breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
-                                                   self.test_build_dir,
-                                                   'fake_breakpad_dir')
+      breakpad_file_extractor.ExtractBreakpadFiles(
+        self.test_dump_syms_binary, self.test_build_dir, 'fake_breakpad_dir'
+      )
     self.assertIn(exception_msg, str(e.exception))
 
     exception_msg = 'Invalid build directory'
     with self.assertRaises(Exception) as e:
-      breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
-                                                   'fake_binary_dir',
-                                                   self.test_breakpad_dir)
+      breakpad_file_extractor.ExtractBreakpadFiles(
+        self.test_dump_syms_binary, 'fake_binary_dir', self.test_breakpad_dir
+      )
     self.assertIn(exception_msg, str(e.exception))
 
   def testSymbolizedNoFiles(self):
     did_extract = breakpad_file_extractor.ExtractBreakpadFiles(
-        self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir)
+      self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir
+    )
     self.assertFalse(did_extract)
 
   def testNotSearchUnstripped(self):
@@ -263,26 +281,32 @@ class ExtractBreakpadTestCase(unittest.TestCase):
       pass
 
     breakpad_file_extractor._RunDumpSyms = mock.MagicMock()
-    breakpad_file_extractor.ExtractBreakpadFiles(self.test_dump_syms_binary,
-                                                 self.test_build_dir,
-                                                 self.test_breakpad_dir,
-                                                 search_unstripped=False)
+    breakpad_file_extractor.ExtractBreakpadFiles(
+      self.test_dump_syms_binary,
+      self.test_build_dir,
+      self.test_breakpad_dir,
+      search_unstripped=False,
+    )
 
     # Check that _RunDumpSyms() only called for extracted file and not the
     # lib.unstripped files.
     extracted_output_path = '{output_path}.breakpad'.format(
-        output_path=os.path.join(self.test_breakpad_dir, extracted_file_name))
+      output_path=os.path.join(self.test_breakpad_dir, extracted_file_name)
+    )
     breakpad_file_extractor._RunDumpSyms.assert_called_once_with(
-        self.test_dump_syms_binary, extracted_file, extracted_output_path)
+      self.test_dump_syms_binary, extracted_file, extracted_output_path
+    )
 
   def testIgnorePartitionFiles(self):
     partition_file = os.path.join(self.test_build_dir, 'partition.so')
     with open(partition_file, 'w') as file1:
       file1.write(
-          'MODULE Linux x86_64 34984AB4EF948C0000000000000000000 name1.so')
+        'MODULE Linux x86_64 34984AB4EF948C0000000000000000000 name1.so'
+      )
 
     did_extract = breakpad_file_extractor.ExtractBreakpadFiles(
-        self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir)
+      self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir
+    )
     self.assertFalse(did_extract)
 
     os.remove(partition_file)
@@ -292,13 +316,16 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     combined_file2 = os.path.join(self.test_build_dir, 'libchrome_combined.so')
     with open(combined_file1, 'w') as file1:
       file1.write(
-          'MODULE Linux x86_64 34984AB4EF948C0000000000000000000 name1.so')
+        'MODULE Linux x86_64 34984AB4EF948C0000000000000000000 name1.so'
+      )
     with open(combined_file2, 'w') as file2:
       file2.write(
-          'MODULE Linux x86_64 34984AB4EF948C0000000000000000000 name2.so')
+        'MODULE Linux x86_64 34984AB4EF948C0000000000000000000 name2.so'
+      )
 
     did_extract = breakpad_file_extractor.ExtractBreakpadFiles(
-        self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir)
+      self.test_dump_syms_binary, self.test_build_dir, self.test_breakpad_dir
+    )
     self.assertFalse(did_extract)
 
     os.remove(combined_file1)
@@ -311,57 +338,68 @@ class ExtractBreakpadTestCase(unittest.TestCase):
     unstripped_symbols = symbol_files[1]
 
     # Setup metadata.
-    metadata = metadata_extractor.MetadataExtractor('trace_processor_shell',
-                                                    'trace_file.proto')
+    metadata = metadata_extractor.MetadataExtractor(
+      'trace_processor_shell', 'trace_file.proto'
+    )
     metadata.InitializeForTesting(
-        modules={
-            '/subdir.so': '34984AB4EF948D',
-            '/unstripped.so': '34984AB4EF948C0000000000000000000'
-        })
+      modules={
+        '/subdir.so': '34984AB4EF948D',
+        '/unstripped.so': '34984AB4EF948C0000000000000000000',
+      }
+    )
     extracted_files = [subdir_symbols, unstripped_symbols]
 
     # Setup |_RunDumpSyms| mock for module ID optimization.
     breakpad_file_extractor._RunDumpSyms = mock.MagicMock(
-        side_effect=self._getDumpSymsMockSideEffect(side_effect_map))
-    breakpad_file_extractor.ExtractBreakpadOnSubtree(self.test_breakpad_dir,
-                                                     metadata,
-                                                     self.test_dump_syms_binary)
+      side_effect=self._getDumpSymsMockSideEffect(side_effect_map)
+    )
+    breakpad_file_extractor.ExtractBreakpadOnSubtree(
+      self.test_breakpad_dir, metadata, self.test_dump_syms_binary
+    )
 
     # Ensure correct |_RunDumpSyms| calls.
     expected_module_calls = self._getExpectedModuleExtractionCalls(symbol_files)
 
     breakpad_files = self._getAndEnsureExpectedSubtreeBreakpadFiles(
-        extracted_files)
+      extracted_files
+    )
     expected_extract_calls = self._getExpectedBreakpadExtractionCalls(
-        extracted_files, breakpad_files)
+      extracted_files, breakpad_files
+    )
 
     breakpad_file_extractor._RunDumpSyms.assert_has_calls(
-        expected_module_calls + expected_extract_calls, any_order=True)
+      expected_module_calls + expected_extract_calls, any_order=True
+    )
 
   def testSubtreeNoFilesExtracted(self):
     # Setup subtree symbol files. No files to be extracted.
     symbol_files, side_effect_map = self._setupSubtreeFiles()
 
     # Empty set of module IDs to extract. Nothing should be extracted.
-    metadata = metadata_extractor.MetadataExtractor('trace_processor_shell',
-                                                    'trace_file.proto')
+    metadata = metadata_extractor.MetadataExtractor(
+      'trace_processor_shell', 'trace_file.proto'
+    )
     metadata.InitializeForTesting(modules={})
 
     # Setup |_RunDumpSyms| mock for module ID optimization.
     breakpad_file_extractor._RunDumpSyms = mock.MagicMock(
-        side_effect=self._getDumpSymsMockSideEffect(side_effect_map))
+      side_effect=self._getDumpSymsMockSideEffect(side_effect_map)
+    )
     exception_msg = (
-        'No breakpad symbols could be extracted from files in the subtree: ' +
-        self.test_breakpad_dir)
+      'No breakpad symbols could be extracted from files in the subtree: '
+      + self.test_breakpad_dir
+    )
     with self.assertRaises(Exception) as e:
       breakpad_file_extractor.ExtractBreakpadOnSubtree(
-          self.test_breakpad_dir, metadata, self.test_dump_syms_binary)
+        self.test_breakpad_dir, metadata, self.test_dump_syms_binary
+      )
     self.assertIn(exception_msg, str(e.exception))
 
     # Should be calls to extract module ID, but none to extract breakpad.
     expected_module_calls = self._getExpectedModuleExtractionCalls(symbol_files)
-    breakpad_file_extractor._RunDumpSyms.assert_has_calls(expected_module_calls,
-                                                          any_order=True)
+    breakpad_file_extractor._RunDumpSyms.assert_has_calls(
+      expected_module_calls, any_order=True
+    )
 
   def testFindOnSubtree(self):
     # Setup subtree symbol files.
@@ -369,11 +407,14 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
     # Setup |_RunDumpSyms| mock for module ID optimization.
     breakpad_file_extractor._RunDumpSyms = mock.MagicMock(
-        side_effect=self._getDumpSymsMockSideEffect(side_effect_map))
+      side_effect=self._getDumpSymsMockSideEffect(side_effect_map)
+    )
 
     found = get_symbols_util.FindMatchingModule(
-        self.test_breakpad_dir, self.test_dump_syms_binary,
-        '34984AB4EF948C0000000000000000000')
+      self.test_breakpad_dir,
+      self.test_dump_syms_binary,
+      '34984AB4EF948C0000000000000000000',
+    )
     self.assertIn('subdir.so', found)
 
   def testNotFindOnSubtree(self):
@@ -382,11 +423,12 @@ class ExtractBreakpadTestCase(unittest.TestCase):
 
     # Setup |_RunDumpSyms| mock for module ID optimization.
     breakpad_file_extractor._RunDumpSyms = mock.MagicMock(
-        side_effect=self._getDumpSymsMockSideEffect(side_effect_map))
+      side_effect=self._getDumpSymsMockSideEffect(side_effect_map)
+    )
 
-    found = get_symbols_util.FindMatchingModule(self.test_breakpad_dir,
-                                                self.test_dump_syms_binary,
-                                                'NOTFOUND')
+    found = get_symbols_util.FindMatchingModule(
+      self.test_breakpad_dir, self.test_dump_syms_binary, 'NOTFOUND'
+    )
     self.assertIsNone(found)
 
 

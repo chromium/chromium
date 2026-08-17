@@ -50,10 +50,12 @@ class ProfilingUtilTests(unittest.TestCase):
     self._profile_file_name = 'pprof'
     # This needs to include 'perf_profile-', since this is what `traceconv`
     # outputs, too.
-    self._profile_source_dir = os.path.join(self._temp_directory,
-                                            'perf_profile-dir')
-    self._profile_path = os.path.join(self._temp_directory,
-                                      self._profile_file_name)
+    self._profile_source_dir = os.path.join(
+      self._temp_directory, 'perf_profile-dir'
+    )
+    self._profile_path = os.path.join(
+      self._temp_directory, self._profile_file_name
+    )
 
     os.environ['PERFETTO_BINARY_PATH'] = 'placeholder_binary_path'
 
@@ -66,14 +68,18 @@ class ProfilingUtilTests(unittest.TestCase):
   # pylint: disable=unused-argument
   def writePlaceholderProfile(self, *args, **kwargs):
     os.makedirs(self._profile_source_dir)
-    with open(os.path.join(self._profile_source_dir, self._profile_file_name),
-              'w') as profile_file:
+    with open(
+      os.path.join(self._profile_source_dir, self._profile_file_name), 'w'
+    ) as profile_file:
       profile_file.write('placeholder_pprof')
     # Return output needs to include self._profile_source_dir, since this is
     # what `traceconv` does, too.
-    return MockPopen(return_code=0,
-                     stdout='Outputting to {}'.format(
-                         self._profile_source_dir).encode('utf-8'))
+    return MockPopen(
+      return_code=0,
+      stdout='Outputting to {}'.format(self._profile_source_dir).encode(
+        'utf-8'
+      ),
+    )
 
   @mock.patch('contrib.power.profiling_util.logging.warning')
   def testSymbolizeTraceWithoutBinaryPath(self, mock_warning):
@@ -85,33 +91,39 @@ class ProfilingUtilTests(unittest.TestCase):
   @mock.patch('contrib.power.profiling_util.subprocess.Popen')
   def testSymbolizeTraceWithTraceconvError(self, mock_popen, mock_error):
     mock_popen.return_value = MockPopen(
-        return_code=-1, stderr='placeholder_error'.encode('utf-8'))
+      return_code=-1, stderr='placeholder_error'.encode('utf-8')
+    )
     profiling_util.SymbolizeTrace(self._trace_path)
     mock_error.assert_called()
 
   @mock.patch('contrib.power.profiling_util.subprocess.Popen')
   def testSymbolizeTraceWithTraceconvSuccess(self, mock_popen):
     mock_popen.return_value = MockPopen(
-        return_code=0, stdout='placeholder_symbols'.encode('utf-8'))
+      return_code=0, stdout='placeholder_symbols'.encode('utf-8')
+    )
     profiling_util.SymbolizeTrace(self._trace_path)
     with open(self._trace_path, 'r') as trace_file:
-      self.assertEqual(trace_file.read(),
-                       'placeholder_traceplaceholder_symbols')
+      self.assertEqual(
+        trace_file.read(), 'placeholder_traceplaceholder_symbols'
+      )
 
   @mock.patch('contrib.power.profiling_util.logging.error')
   @mock.patch('contrib.power.profiling_util.subprocess.Popen')
   def testGenerateProfilesWithTraceconvError(self, mock_popen, mock_error):
     mock_popen.return_value = MockPopen(
-        return_code=-1, stderr='placeholder_error'.encode('utf-8'))
+      return_code=-1, stderr='placeholder_error'.encode('utf-8')
+    )
     profiling_util.GenerateProfiles(self._trace_path)
     mock_error.assert_called()
 
   @mock.patch('contrib.power.profiling_util.logging.error')
   @mock.patch('contrib.power.profiling_util.subprocess.Popen')
-  def testGenerateProfilesWithInvalidTraceconvOutput(self, mock_popen,
-                                                     mock_error):
+  def testGenerateProfilesWithInvalidTraceconvOutput(
+    self, mock_popen, mock_error
+  ):
     mock_popen.return_value = MockPopen(
-        return_code=0, stdout='placeholder_output'.encode('utf-8'))
+      return_code=0, stdout='placeholder_output'.encode('utf-8')
+    )
     profiling_util.GenerateProfiles(self._trace_path)
     mock_error.assert_called()
 

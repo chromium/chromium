@@ -12,11 +12,13 @@ import usb_descriptors
 class DescriptorWithField(usb_descriptors.Descriptor):
   pass
 
+
 DescriptorWithField.AddField('bField', 'B')
 
 
 class DescriptorWithDefault(usb_descriptors.Descriptor):
   pass
+
 
 DescriptorWithDefault.AddField('bDefault', 'B', default=42)
 
@@ -24,14 +26,15 @@ DescriptorWithDefault.AddField('bDefault', 'B', default=42)
 class DescriptorWithFixed(usb_descriptors.Descriptor):
   pass
 
+
 DescriptorWithFixed.AddFixedField('bFixed', 'B', 42)
 
 
 class DescriptorWithComputed(usb_descriptors.Descriptor):
-
   @property
   def foo(self):
     return 42
+
 
 DescriptorWithComputed.AddComputedField('bComputed', 'B', 'foo')
 
@@ -39,11 +42,11 @@ DescriptorWithComputed.AddComputedField('bComputed', 'B', 'foo')
 class DescriptorWithDescriptors(usb_descriptors.DescriptorContainer):
   pass
 
+
 DescriptorWithDescriptors.AddField('bType', 'B')
 
 
 class DescriptorTest(unittest.TestCase):
-
   def test_default(self):
     obj = DescriptorWithDefault()
     self.assertEquals(obj.bDefault, 42)
@@ -97,7 +100,7 @@ class DescriptorTest(unittest.TestCase):
     self.assertEquals(obj.total_size, 1)
 
   def test_encode(self):
-    obj = DescriptorWithField(bField=0xff)
+    obj = DescriptorWithField(bField=0xFF)
     self.assertEquals(obj.Encode(), '\xff')
 
   def test_string(self):
@@ -120,27 +123,26 @@ class DescriptorTest(unittest.TestCase):
 
 
 class TestUsbDescriptors(unittest.TestCase):
-
   def test_device_descriptor(self):
     device_desc = usb_descriptors.DeviceDescriptor(
-        idVendor=0xDEAD,
-        idProduct=0xBEEF,
-        bcdDevice=0x0100,
-        bNumConfigurations=1)
+      idVendor=0xDEAD, idProduct=0xBEEF, bcdDevice=0x0100, bNumConfigurations=1
+    )
     self.assertEquals(
-        device_desc.Encode(),
-        '\x12\x01\x00\x02\x00\x00\x00\x40\xAD\xDE\xEF\xBE\x00\x01\x00\x00\x00'
-        '\x01')
+      device_desc.Encode(),
+      '\x12\x01\x00\x02\x00\x00\x00\x40\xad\xde\xef\xbe\x00\x01\x00\x00\x00'
+      '\x01',
+    )
 
   def test_unique_interfaces(self):
     interface_desc1 = usb_descriptors.InterfaceDescriptor(bInterfaceNumber=1)
-    interface_desc2 = usb_descriptors.InterfaceDescriptor(bInterfaceNumber=1,
-                                                          bAlternateSetting=1)
+    interface_desc2 = usb_descriptors.InterfaceDescriptor(
+      bInterfaceNumber=1, bAlternateSetting=1
+    )
     interface_desc3 = usb_descriptors.InterfaceDescriptor(bInterfaceNumber=1)
 
     configuration_desc = usb_descriptors.ConfigurationDescriptor(
-        bmAttributes=0xC0,
-        MaxPower=100)
+      bmAttributes=0xC0, MaxPower=100
+    )
     configuration_desc.AddInterface(interface_desc1)
     configuration_desc.AddInterface(interface_desc2)
     with self.assertRaisesRegexp(RuntimeError, r'Interface 1 \(alternate 0\)'):
@@ -148,20 +150,14 @@ class TestUsbDescriptors(unittest.TestCase):
 
   def test_unique_endpoints(self):
     endpoint_desc1 = usb_descriptors.EndpointDescriptor(
-        bEndpointAddress=0x01,
-        bmAttributes=0x02,
-        wMaxPacketSize=64,
-        bInterval=1)
+      bEndpointAddress=0x01, bmAttributes=0x02, wMaxPacketSize=64, bInterval=1
+    )
     endpoint_desc2 = usb_descriptors.EndpointDescriptor(
-        bEndpointAddress=0x81,
-        bmAttributes=0x02,
-        wMaxPacketSize=64,
-        bInterval=1)
+      bEndpointAddress=0x81, bmAttributes=0x02, wMaxPacketSize=64, bInterval=1
+    )
     endpoint_desc3 = usb_descriptors.EndpointDescriptor(
-        bEndpointAddress=0x01,
-        bmAttributes=0x01,
-        wMaxPacketSize=32,
-        bInterval=10)
+      bEndpointAddress=0x01, bmAttributes=0x01, wMaxPacketSize=32, bInterval=10
+    )
 
     interface_desc = usb_descriptors.InterfaceDescriptor(bInterfaceNumber=1)
     interface_desc.AddEndpoint(endpoint_desc1)
@@ -171,34 +167,34 @@ class TestUsbDescriptors(unittest.TestCase):
 
   def test_configuration_descriptor(self):
     endpoint_desc = usb_descriptors.EndpointDescriptor(
-        bEndpointAddress=0x01,
-        bmAttributes=0x02,
-        wMaxPacketSize=64,
-        bInterval=1)
+      bEndpointAddress=0x01, bmAttributes=0x02, wMaxPacketSize=64, bInterval=1
+    )
     encoded_endpoint = '\x07\x05\x01\x02\x40\x00\x01'
     self.assertEquals(endpoint_desc.Encode(), encoded_endpoint)
 
     interface_desc = usb_descriptors.InterfaceDescriptor(bInterfaceNumber=1)
     interface_desc.AddEndpoint(endpoint_desc)
     self.assertEquals([endpoint_desc], interface_desc.GetEndpoints())
-    encoded_interface = ('\x09\x04\x01\x00\x01\xFF\xFF\xFF\x00' +
-                         encoded_endpoint)
+    encoded_interface = (
+      '\x09\x04\x01\x00\x01\xff\xff\xff\x00' + encoded_endpoint
+    )
     self.assertEquals(interface_desc.Encode(), encoded_interface)
 
     configuration_desc = usb_descriptors.ConfigurationDescriptor(
-        bmAttributes=0xC0,
-        MaxPower=100)
+      bmAttributes=0xC0, MaxPower=100
+    )
     configuration_desc.AddInterface(interface_desc)
     self.assertEquals([interface_desc], configuration_desc.GetInterfaces())
-    encoded_configuration = ('\x09\x02\x19\x00\x01\x01\x00\xC0\x64' +
-                             encoded_interface)
+    encoded_configuration = (
+      '\x09\x02\x19\x00\x01\x01\x00\xc0\x64' + encoded_interface
+    )
     self.assertEquals(configuration_desc.Encode(), encoded_configuration)
 
   def test_encode_hid_descriptor(self):
     hid_desc = usb_descriptors.HidDescriptor()
     hid_desc.AddDescriptor(hid_constants.DescriptorType.REPORT, 0x80)
     hid_desc.AddDescriptor(hid_constants.DescriptorType.PHYSICAL, 0x60)
-    encoded_desc = '\x0C\x21\x11\x01\x00\x02\x22\x80\x00\x23\x60\x00'
+    encoded_desc = '\x0c\x21\x11\x01\x00\x02\x22\x80\x00\x23\x60\x00'
     self.assertEquals(hid_desc.Encode(), encoded_desc)
 
   def test_print_hid_descriptor(self):

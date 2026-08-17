@@ -13,13 +13,15 @@ PRESUBMIT_VERSION = '2.0.0'
 def CheckRunTypescriptTests(input_api, output_api):
   affected = input_api.AffectedFiles()
 
-  sources = set([
+  sources = set(
+    [
       'path_mappings.py',
       'path_utils.py',
       'tsconfig_base.json',
       'ts_library.py',
       'validate_tsconfig.py',
-  ])
+    ]
+  )
   affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
   if not sources.intersection(set(affected_files)):
     return []
@@ -35,10 +37,12 @@ def CheckStyleESLint(input_api, output_api):
 
   try:
     import sys
+
     old_sys_path = sys.path[:]
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '..', '..', 'tools')]
     from web_dev_style import presubmit_support
+
     results += presubmit_support.CheckStyleESLint(input_api, output_api)
   finally:
     sys.path = old_sys_path

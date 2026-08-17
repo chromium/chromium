@@ -2,8 +2,7 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-'''Script to generate PGO profiles for WebView
-'''
+'''Script to generate PGO profiles for WebView'''
 
 import argparse
 from dataclasses import dataclass
@@ -34,8 +33,14 @@ sys.path.append(str(_SRC_PATH / 'third_party/catapult/devil'))
 from devil.android import device_utils
 
 sys.path.append(_THIS_DIR)
-from generate_profile import (MergeError, run_profdata_merge, merge_profdata,
-                              _PROFDATA, _UPDATE_PY, _LLVM_DIR)
+from generate_profile import (
+    MergeError,
+    run_profdata_merge,
+    merge_profdata,
+    _PROFDATA,
+    _UPDATE_PY,
+    _LLVM_DIR,
+)
 
 
 # Use this custom Namespace to provide type checking and type hinting.
@@ -59,51 +64,66 @@ class OptionsNamespace(argparse.Namespace):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        epilog=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+        epilog=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     # ▼▼▼▼▼ Please update OptionsNamespace when adding or modifying args. ▼▼▼▼▼
-    parser.add_argument('-C',
-                        '--builddir',
-                        help='Path to build directory.',
-                        required=True)
     parser.add_argument(
-        '--outputdir',
-        help='Path to store final outputs, default is builddir.')
-    parser.add_argument('--profiledir',
-                        help='Path to store temporary profiles, default is '
-                        'builddir/profile.')
+        '-C', '--builddir', help='Path to build directory.', required=True
+    )
+    parser.add_argument(
+        '--outputdir', help='Path to store final outputs, default is builddir.'
+    )
+    parser.add_argument(
+        '--profiledir',
+        help='Path to store temporary profiles, default is builddir/profile.',
+    )
     parser.add_argument(
         '--profile-target',
         choices=['agsa', 'gma', 'combined'],
         default='combined',
-        help='The target app to profile (AGSA, GMA, or both Combined).')
+        help='The target app to profile (AGSA, GMA, or both Combined).',
+    )
     parser.add_argument(
         '--webview-build-target',
         default='system_webview_google_64_32_bundle',
-        help=
-        'The WebView installer/bundle target to use. (default: %(default)s)')
-    parser.add_argument('--keep-temps',
-                        action='store_true',
-                        default=False,
-                        help='Whether to keep temp files')
-    parser.add_argument('--skip-profdata',
-                        action='store_true',
-                        default=False,
-                        help='Only run benchmarks and skip merging profile '
-                        'data. Used for sample-based profiling for Propeller '
-                        'and BOLT')
+        help=(
+            'The WebView installer/bundle target to use. (default: %(default)s)'
+        ),
+    )
+    parser.add_argument(
+        '--keep-temps',
+        action='store_true',
+        default=False,
+        help='Whether to keep temp files',
+    )
+    parser.add_argument(
+        '--skip-profdata',
+        action='store_true',
+        default=False,
+        help='Only run benchmarks and skip merging profile '
+        'data. Used for sample-based profiling for Propeller '
+        'and BOLT',
+    )
     parser.add_argument(
         '--temporal-trace-length',
         type=int,
-        help='Add flags necessary for temporal PGO (experimental).')
-    parser.add_argument('-v',
-                        '--verbose',
-                        action='count',
-                        default=0,
-                        help='Increase verbosity level (repeat as needed)')
-    parser.add_argument('--isolated-script-test-output',
-                        help='Output.json file that the script can write to.')
-    parser.add_argument('--isolated-script-test-perf-output',
-                        help='Deprecated and ignored, but bots pass it.')
+        help='Add flags necessary for temporal PGO (experimental).',
+    )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='count',
+        default=0,
+        help='Increase verbosity level (repeat as needed)',
+    )
+    parser.add_argument(
+        '--isolated-script-test-output',
+        help='Output.json file that the script can write to.',
+    )
+    parser.add_argument(
+        '--isolated-script-test-perf-output',
+        help='Deprecated and ignored, but bots pass it.',
+    )
     # ▲▲▲▲▲ Please update OptionsNamespace when adding or modifying args. ▲▲▲▲▲
 
     args = parser.parse_args(namespace=OptionsNamespace())
@@ -145,15 +165,15 @@ def trigger_dump(port=9222):
     _LOGGER.info(f"Connecting to {ws_url}...")
     try:
         # Suppress Origin header to bypass 403 Forbidden
-        ws = websocket.create_connection(ws_url,
-                                         suppress_origin=True,
-                                         timeout=5)
+        ws = websocket.create_connection(
+            ws_url, suppress_origin=True, timeout=5
+        )
         _LOGGER.info(
             "Connected. Sending NativeProfiling.dumpProfilingDataOfAllProcesses"
         )
         request = {
             "id": 1,
-            "method": "NativeProfiling.dumpProfilingDataOfAllProcesses"
+            "method": "NativeProfiling.dumpProfilingDataOfAllProcesses",
         }
         ws.send(json.dumps(request))
         response = ws.recv()
@@ -162,8 +182,10 @@ def trigger_dump(port=9222):
         return True
     except Exception as e:
         _LOGGER.error(f"Failed to connect or send command: {e}")
-        _LOGGER.error("Ensure the app is debuggable "
-                      "(setWebContentsDebuggingEnabled(true)).")
+        _LOGGER.error(
+            "Ensure the app is debuggable "
+            "(setWebContentsDebuggingEnabled(true))."
+        )
         return False
 
 
@@ -176,23 +198,27 @@ def forward_socket(device, pid, local_port=9222):
     socket_name = f"webview_devtools_remote_{pid}"
     _LOGGER.info(
         f"Forwarding local port {local_port} to remote abstract socket "
-        f"{socket_name}")
-    device.adb.Forward(f'tcp:{local_port}',
-                       f'localabstract:{socket_name}',
-                       allow_rebind=True)
+        f"{socket_name}"
+    )
+    device.adb.Forward(
+        f'tcp:{local_port}', f'localabstract:{socket_name}', allow_rebind=True
+    )
 
 
 def clear_remote_profiles(device, device_profiles_dir):
     _LOGGER.info(f"Clearing existing profiles in {device_profiles_dir}...")
     try:
-        device.RunShellCommand(f'rm -rf {device_profiles_dir}*',
-                               shell=True,
-                               check_return=True,
-                               as_root=True)
+        device.RunShellCommand(
+            f'rm -rf {device_profiles_dir}*',
+            shell=True,
+            check_return=True,
+            as_root=True,
+        )
     except Exception:
         _LOGGER.warning(
             "Failed to clear remote profiles. Directory might be empty or "
-            "missing.")
+            "missing."
+        )
 
 
 @dataclass
@@ -203,13 +229,20 @@ class CrossbenchArgumentFragments:
     disable_features: list[str]
 
 
-def _get_cb_arg_fragments(args: OptionsNamespace) -> CrossbenchArgumentFragments:
+def _get_cb_arg_fragments(
+    args: OptionsNamespace,
+) -> CrossbenchArgumentFragments:
     arch = 'arm64'
-    driver_path_arg = [
-        f'--driver-path={os.path.join(args.builddir, "clang_x64", "chromedriver")}'
-    ]
-    adb_bin_path = os.path.join(_SRC_PATH, 'third_party', 'android_sdk',
-                                'public', 'platform-tools', 'adb')
+    driver_path = os.path.join(args.builddir, 'clang_x64', 'chromedriver')
+    driver_path_arg = [f'--driver-path={driver_path}']
+    adb_bin_path = os.path.join(
+        _SRC_PATH,
+        'third_party',
+        'android_sdk',
+        'public',
+        'platform-tools',
+        'adb',
+    )
     adb_bin_path_arg_fragment = f',"adb_bin":"{adb_bin_path}"'
     disable_features = [
         'SpareRendererForSitePerProcess',
@@ -220,7 +253,7 @@ def _get_cb_arg_fragments(args: OptionsNamespace) -> CrossbenchArgumentFragments
         arch=arch,
         driver_path_arg=driver_path_arg,
         adb_bin_path_arg_fragment=adb_bin_path_arg_fragment,
-        disable_features=disable_features
+        disable_features=disable_features,
     )
 
 
@@ -228,18 +261,22 @@ def launch_agsa(args: OptionsNamespace):
     _LOGGER.info("Launching AGSA search results page...")
     fragments = _get_cb_arg_fragments(args)
 
-    cmd = [
-        'tools/perf/cb',
-        'embedder',
-        f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{fragments.arch}/Velvet_{fragments.arch}.apk",driver:{{type:"Android"{fragments.adb_bin_path_arg_fragment}}}}}',
-    ] + fragments.driver_path_arg + [
-        '--splashscreen=skip',
-        '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
-        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo","skip_deterministic_script_injection":true}',
-        '--embedder-process-name=googleapp',
-        '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',
-        f'--disable-features={",".join(fragments.disable_features)}',
-    ]
+    cmd = (
+        [
+            'tools/perf/cb',
+            'embedder',
+            f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{fragments.arch}/Velvet_{fragments.arch}.apk",driver:{{type:"Android"{fragments.adb_bin_path_arg_fragment}}}}}',  # pylint: disable=line-too-long
+        ]
+        + fragments.driver_path_arg
+        + [
+            '--splashscreen=skip',
+            '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',  # pylint: disable=line-too-long
+            '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo","skip_deterministic_script_injection":true}',  # pylint: disable=line-too-long
+            '--embedder-process-name=googleapp',
+            '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',  # pylint: disable=line-too-long
+            f'--disable-features={",".join(fragments.disable_features)}',
+        ]
+    )
     subprocess.check_call(cmd, cwd=_SRC_PATH)
 
 
@@ -247,31 +284,50 @@ def launch_gma(args: OptionsNamespace):
     _LOGGER.info("Launching Mobile Ads WebView (Interstitial)...")
     fragments = _get_cb_arg_fragments(args)
 
-    hosts_src = os.path.join(_SRC_PATH, 'third_party', 'crossbench', 'config',
-                             'team', 'woa', 'hosts')
-    dnsmasq_src = os.path.join(_SRC_PATH, 'third_party', 'crossbench',
-                                'config', 'team', 'woa', 'dnsmasq.conf')
+    hosts_src = os.path.join(
+        _SRC_PATH, 'third_party', 'crossbench', 'config', 'team', 'woa', 'hosts'
+    )
+    dnsmasq_src = os.path.join(
+        _SRC_PATH,
+        'third_party',
+        'crossbench',
+        'config',
+        'team',
+        'woa',
+        'dnsmasq.conf',
+    )
     dummy_vpn_src = os.path.join(
-        _SRC_PATH, 'clank', 'android_webview', 'tools', 'crossbench_config',
-        'cipd', 'arm64', 'dummy_vpn.apk')
+        _SRC_PATH,
+        'clank',
+        'android_webview',
+        'tools',
+        'crossbench_config',
+        'cipd',
+        'arm64',
+        'dummy_vpn.apk',
+    )
 
-    cmd = [
-        'tools/perf/cb',
-        'embedder',
-        f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{fragments.arch}/webview_test_app_binary.apk",driver:{{type:"Android"{fragments.adb_bin_path_arg_fragment}}}}}',
-    ] + fragments.driver_path_arg + [
-        '--splashscreen=skip',
-        '--cuj-config=third_party/crossbench/config/team/woa/gma_interstitial_cuj_config.hjson',
-        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_gma_embedder_000.wprgo","skip_deterministic_script_injection":true,"http_port":8080,"https_port":8081}',
-        '--android-activity=MainActivity',
-        '--android-action=',
-        '--embedder-setup-command-config=third_party/crossbench/config/team/woa/gma_device_setup.hjson',
-        '--embedder-teardown-command-config=third_party/crossbench/config/team/woa/gma_device_teardown.hjson',
-        f'--embedder-push-files={hosts_src}:/data/local/tmp/hosts',
-        f'--embedder-push-files={dnsmasq_src}:/data/local/tmp/dnsmasq.conf',
-        f'--embedder-push-files={dummy_vpn_src}:/data/local/tmp/dummy_vpn.apk',
-        f'--disable-features={",".join(fragments.disable_features)}',
-    ]
+    cmd = (
+        [
+            'tools/perf/cb',
+            'embedder',
+            f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{fragments.arch}/webview_test_app_binary.apk",driver:{{type:"Android"{fragments.adb_bin_path_arg_fragment}}}}}',  # pylint: disable=line-too-long
+        ]
+        + fragments.driver_path_arg
+        + [
+            '--splashscreen=skip',
+            '--cuj-config=third_party/crossbench/config/team/woa/gma_interstitial_cuj_config.hjson',  # pylint: disable=line-too-long
+            '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_gma_embedder_000.wprgo","skip_deterministic_script_injection":true,"http_port":8080,"https_port":8081}',  # pylint: disable=line-too-long
+            '--android-activity=MainActivity',
+            '--android-action=',
+            '--embedder-setup-command-config=third_party/crossbench/config/team/woa/gma_device_setup.hjson',  # pylint: disable=line-too-long
+            '--embedder-teardown-command-config=third_party/crossbench/config/team/woa/gma_device_teardown.hjson',  # pylint: disable=line-too-long
+            f'--embedder-push-files={hosts_src}:/data/local/tmp/hosts',
+            f'--embedder-push-files={dnsmasq_src}:/data/local/tmp/dnsmasq.conf',
+            f'--embedder-push-files={dummy_vpn_src}:/data/local/tmp/dummy_vpn.apk',  # pylint: disable=line-too-long
+            f'--disable-features={",".join(fragments.disable_features)}',
+        ]
+    )
     subprocess.check_call(cmd, cwd=_SRC_PATH)
 
 
@@ -291,7 +347,8 @@ def run_target(device, target: str, args: OptionsNamespace):
         launch_func = lambda: launch_agsa(args)
     else:
         package = (
-            'com.google.android.libraries.ads.mobile.maitier.testapps.webview')
+            'com.google.android.libraries.ads.mobile.maitier.testapps.webview'
+        )
         process_name = package
         launch_func = lambda: launch_gma(args)
 
@@ -303,7 +360,8 @@ def run_target(device, target: str, args: OptionsNamespace):
 
     if os.path.exists(profraw_path):
         _LOGGER.debug(
-            f"Removing existing raw profile directory: {profraw_path}")
+            f"Removing existing raw profile directory: {profraw_path}"
+        )
         shutil.rmtree(profraw_path)
     os.makedirs(profraw_path, exist_ok=True)
 
@@ -335,8 +393,9 @@ def run_target(device, target: str, args: OptionsNamespace):
             pull_profraw(device, device_profiles_dir, profraw_path)
 
             if not args.skip_profdata:
-                profraw_files = glob.glob(f'{profraw_path}/**/*.profraw',
-                                          recursive=True)
+                profraw_files = glob.glob(
+                    f'{profraw_path}/**/*.profraw', recursive=True
+                )
                 if not profraw_files:
                     _LOGGER.error(f"No profraw files found in {profraw_path}")
                     return
@@ -383,7 +442,8 @@ def main():
 
     handler = logging.StreamHandler()
     formatter = logging.Formatter(
-        '%(levelname).1s %(relativeCreated)6d %(message)s')
+        '%(levelname).1s %(relativeCreated)6d %(message)s'
+    )
     handler.setFormatter(formatter)
     _LOGGER.addHandler(handler)
 
@@ -404,7 +464,8 @@ def main():
             _LOGGER.warning(f'{_PROFDATA} does not exist, downloading it')
             subprocess.run(
                 [sys.executable, _UPDATE_PY, '--package=coverage_tools'],
-                check=True)
+                check=True,
+            )
     assert os.path.exists(_PROFDATA), f'{_PROFDATA} does not exist'
 
     if os.path.exists(args.profiledir):
@@ -424,8 +485,9 @@ def main():
         merge_profdata(profile_output_path, args)
 
     if not args.keep_temps:
-        _LOGGER.info('Cleaning up %s, use --keep-temps to keep it.',
-                     args.profiledir)
+        _LOGGER.info(
+            'Cleaning up %s, use --keep-temps to keep it.', args.profiledir
+        )
         shutil.rmtree(args.profiledir, ignore_errors=True)
 
 

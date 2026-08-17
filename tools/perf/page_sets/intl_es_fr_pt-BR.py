@@ -9,7 +9,6 @@ from telemetry.page import shared_page_state
 
 
 class IntlEsFrPtBrPage(page_cycler_story.PageCyclerStory):
-
   def __init__(self, url, page_set, cache_temperature=None):
     if cache_temperature == cache_temperature_module.COLD:
       temp_suffix = '_cold'
@@ -19,23 +18,30 @@ class IntlEsFrPtBrPage(page_cycler_story.PageCyclerStory):
       raise NotImplementedError
 
     super(IntlEsFrPtBrPage, self).__init__(
-        url=url, page_set=page_set,
-        shared_page_state_class=shared_page_state.SharedDesktopPageState,
-        cache_temperature=cache_temperature,
-        name=url + temp_suffix)
+      url=url,
+      page_set=page_set,
+      shared_page_state_class=shared_page_state.SharedDesktopPageState,
+      cache_temperature=cache_temperature,
+      name=url + temp_suffix,
+    )
 
 
 class IntlEsFrPtBrPageSet(story.StorySet):
-
   """
   Popular pages in Romance languages Spanish, French and Brazilian Portuguese.
   """
 
-  def __init__(self, cache_temperatures=(cache_temperature_module.COLD,
-                                         cache_temperature_module.WARM)):
+  def __init__(
+    self,
+    cache_temperatures=(
+      cache_temperature_module.COLD,
+      cache_temperature_module.WARM,
+    ),
+  ):
     super(IntlEsFrPtBrPageSet, self).__init__(
       archive_data_file='data/intl_es_fr_pt-BR.json',
-      cloud_storage_bucket=story.PARTNER_BUCKET)
+      cloud_storage_bucket=story.PARTNER_BUCKET,
+    )
     if cache_temperatures is None:
       cache_temperatures = [cache_temperature_module.ANY]
 
@@ -53,7 +59,7 @@ class IntlEsFrPtBrPageSet(story.StorySet):
       'http://www.uol.com.br/',
       # Why: #10 site in Brazil
       # pylint: disable=line-too-long
-      'http://produto.mercadolivre.com.br/MLB-468424957-pelicula-protetora-smartphone-h5500-e-h5300-43-frete-free-_JM'
+      'http://produto.mercadolivre.com.br/MLB-468424957-pelicula-protetora-smartphone-h5500-e-h5300-43-frete-free-_JM',
     ]
 
     for url in urls_list:

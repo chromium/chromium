@@ -50,22 +50,22 @@ def Convert(test_results, base_dir, test_path_format):
     artifacts = result.get('outputArtifacts', {})
     shard = _GetTagValue(result.get('tags', []), 'shard', as_type=int)
     _MergeDict(
-        results['tests'],
-        {
-            benchmark_name: {
-                story_name: {
-                    'actual': actual_status,
-                    'expected': expected_status,
-                    'is_unexpected': not result['expected'],
-                    'times': float(result['runDuration'].rstrip('s')),
-                    'shard': shard,
-                    'artifacts': {
-                        name: _ArtifactPath(artifact, base_dir)
-                        for name, artifact in artifacts.items()
-                    }
-                }
-            }
+      results['tests'],
+      {
+        benchmark_name: {
+          story_name: {
+            'actual': actual_status,
+            'expected': expected_status,
+            'is_unexpected': not result['expected'],
+            'times': float(result['runDuration'].rstrip('s')),
+            'shard': shard,
+            'artifacts': {
+              name: _ArtifactPath(artifact, base_dir)
+              for name, artifact in artifacts.items()
+            },
+          }
         }
+      },
     )
 
   for stories in results['tests'].values():
@@ -80,18 +80,22 @@ def Convert(test_results, base_dir, test_path_format):
 
   # Test results are written in order of execution, so the first test start
   # time is approximately the start time of the whole suite.
-  test_suite_start_time = (test_results[0]['startTime'] if test_results
-                           else datetime.datetime.utcnow().isoformat() + 'Z')
+  test_suite_start_time = (
+    test_results[0]['startTime']
+    if test_results
+    else datetime.datetime.utcnow().isoformat() + 'Z'
+  )
   # If Telemetry stops with a unhandleable error, then remaining stories
   # are marked as unexpectedly skipped.
-  interrupted = any(t['status'] == 'SKIP' and not t['expected']
-                    for t in test_results)
+  interrupted = any(
+    t['status'] == 'SKIP' and not t['expected'] for t in test_results
+  )
   results.update(
-      seconds_since_epoch=util.IsoTimestampToEpoch(test_suite_start_time),
-      interrupted=interrupted,
-      num_failures_by_type=dict(status_counter),
-      path_delimiter='/',
-      version=3,
+    seconds_since_epoch=util.IsoTimestampToEpoch(test_suite_start_time),
+    interrupted=interrupted,
+    num_failures_by_type=dict(status_counter),
+    path_delimiter='/',
+    version=3,
   )
 
   return results

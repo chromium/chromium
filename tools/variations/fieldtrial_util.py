@@ -9,10 +9,12 @@ import sys
 
 import fieldtrial_to_struct
 
+
 def _hex(ch):
   hv = hex(ord(ch)).replace('0x', '')
   hv.zfill(2)
   return hv.upper()
+
 
 # URL escapes the delimiter characters from the output. urllib.quote is not
 # used because it cannot escape '.'.
@@ -22,6 +24,7 @@ def _escape(str):
   for c in '%:/.,':
     result = result.replace(c, '%' + _hex(c))
   return result
+
 
 def _FindDuplicates(entries):
   seen = set()
@@ -33,33 +36,43 @@ def _FindDuplicates(entries):
       seen.add(entry)
   return sorted(duplicates)
 
+
 def _CheckForDuplicateFeatures(enable_features, disable_features):
   enable_features = [f.split('<')[0] for f in enable_features]
   enable_features_set = set(enable_features)
   if len(enable_features_set) != len(enable_features):
-    raise Exception('Duplicate feature(s) in enable_features: ' +
-                    ', '.join(_FindDuplicates(enable_features)))
+    raise Exception(
+      'Duplicate feature(s) in enable_features: '
+      + ', '.join(_FindDuplicates(enable_features))
+    )
 
   disable_features = [f.split('<')[0] for f in disable_features]
   disable_features_set = set(disable_features)
   if len(disable_features_set) != len(disable_features):
-    raise Exception('Duplicate feature(s) in disable_features: ' +
-                    ', '.join(_FindDuplicates(disable_features)))
+    raise Exception(
+      'Duplicate feature(s) in disable_features: '
+      + ', '.join(_FindDuplicates(disable_features))
+    )
 
   features_in_both = enable_features_set.intersection(disable_features_set)
   if len(features_in_both) > 0:
-    raise Exception('Conflicting features set as both enabled and disabled: ' +
-                    ', '.join(features_in_both))
+    raise Exception(
+      'Conflicting features set as both enabled and disabled: '
+      + ', '.join(features_in_both)
+    )
+
 
 def _FindFeaturesOverriddenByArgs(args):
   """Returns a list of the features enabled or disabled by the flags in args."""
   overridden_features = []
   for arg in args:
-    if (arg.startswith('--enable-features=')
-        or arg.startswith('--disable-features=')):
+    if arg.startswith('--enable-features=') or arg.startswith(
+      '--disable-features='
+    ):
       _, _, arg_val = arg.partition('=')
       overridden_features.extend(arg_val.split(','))
   return [f.split('<')[0] for f in overridden_features]
+
 
 def MergeFeaturesAndFieldTrialsArgs(args):
   """Merges duplicate features and field trials arguments.
@@ -101,19 +114,24 @@ def MergeFeaturesAndFieldTrialsArgs(args):
 
   # Sort arguments to ensure determinism.
   if disable_features:
-    merged_args.append('--disable-features=%s' % ','.join(
-        sorted(disable_features)))
+    merged_args.append(
+      '--disable-features=%s' % ','.join(sorted(disable_features))
+    )
   if enable_features:
-    merged_args.append('--enable-features=%s' % ','.join(
-        sorted(enable_features)))
+    merged_args.append(
+      '--enable-features=%s' % ','.join(sorted(enable_features))
+    )
   if force_fieldtrials:
-    merged_args.append('--force-fieldtrials=%s' % '/'.join(
-        sorted(force_fieldtrials)))
+    merged_args.append(
+      '--force-fieldtrials=%s' % '/'.join(sorted(force_fieldtrials))
+    )
   if force_fieldtrial_params:
-    merged_args.append('--force-fieldtrial-params=%s' % ','.join(
-        sorted(force_fieldtrial_params)))
+    merged_args.append(
+      '--force-fieldtrial-params=%s' % ','.join(sorted(force_fieldtrial_params))
+    )
 
   return merged_args
+
 
 def GenerateArgs(config_path, platform, override_args=None):
   """Generates command-line flags for enabling field trials.
@@ -142,6 +160,7 @@ def GenerateArgs(config_path, platform, override_args=None):
   if override_args is None:
     override_args = []
   overriden_features_set = set(_FindFeaturesOverriddenByArgs(override_args))
+
   # Should skip any experiment that will enable or disable a feature that is
   # also enabled or disabled in the override_args.
   #
@@ -153,8 +172,9 @@ def GenerateArgs(config_path, platform, override_args=None):
   def ShouldSkipExperiment(experiment):
     if experiment.get('disable_benchmarking', False):
       return True
-    experiment_features = (experiment.get('disable_features', [])
-                           + experiment.get('enable_features', []))
+    experiment_features = experiment.get(
+      'disable_features', []
+    ) + experiment.get('enable_features', [])
     return not overriden_features_set.isdisjoint(experiment_features)
 
   studies = []
@@ -199,6 +219,7 @@ def GenerateArgs(config_path, platform, override_args=None):
     args.append('--disable-features=%s' % ','.join(disable_features))
   return args
 
+
 def main():
   if len(sys.argv) < 3:
     print('Usage: fieldtrial_util.py [config_path] [platform]')
@@ -207,11 +228,20 @@ def main():
     exit(-1)
   print_shell_cmd = len(sys.argv) >= 4 and sys.argv[3] == 'shell_cmd'
 
-  supported_platforms = ['android', 'android_webview', 'chromeos', 'ios',
-                         'linux', 'mac', 'windows']
+  supported_platforms = [
+    'android',
+    'android_webview',
+    'chromeos',
+    'ios',
+    'linux',
+    'mac',
+    'windows',
+  ]
   if sys.argv[2] not in supported_platforms:
-    print('\'%s\' is an unknown platform. Supported platforms: %s' %
-          (sys.argv[2], supported_platforms))
+    print(
+      '\'%s\' is an unknown platform. Supported platforms: %s'
+      % (sys.argv[2], supported_platforms)
+    )
     exit(-1)
 
   generated_args = GenerateArgs(sys.argv[1], sys.argv[2])

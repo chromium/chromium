@@ -24,12 +24,13 @@ class DesktopMemorySharedState(shared_page_state.SharedDesktopPageState):
 
 
 class DesktopMemoryPage(page_module.Page):
-
   def __init__(self, url, page_set):
     super(DesktopMemoryPage, self).__init__(
-        url=url, page_set=page_set,
-        shared_page_state_class=DesktopMemorySharedState,
-        name=url)
+      url=url,
+      page_set=page_set,
+      shared_page_state_class=DesktopMemorySharedState,
+      name=url,
+    )
 
   def _DumpMemory(self, action_runner, phase):
     with action_runner.CreateInteraction(phase):
@@ -58,7 +59,7 @@ class DesktopMemoryPage(page_module.Page):
 
 
 class DesktopMemoryPageSet(story_module.StorySet):
-  """ Desktop sites with interesting memory characteristics """
+  """Desktop sites with interesting memory characteristics"""
 
   def __init__(self):
     super(DesktopMemoryPageSet, self).__init__()
@@ -92,6 +93,7 @@ class LongRunningMemoryBenchmarkSitesDesktop(perf_benchmark.PerfBenchmark):
   in these traces can be compare (diff) to determine which objects are potential
   memory leaks.
   """
+
   options = {
     'pageset_repeat': 30,
     'use_live_sites': True,
@@ -105,9 +107,13 @@ class LongRunningMemoryBenchmarkSitesDesktop(perf_benchmark.PerfBenchmark):
 
   def SetExtraBrowserOptions(self, options):
     memory.SetExtraBrowserOptionsForMemoryMeasurement(options)
-    options.AppendExtraBrowserArgs([
-        '--memlog=all', '--memlog-sampling',
-        '--memlog-stack-mode=native-with-thread-names'])
+    options.AppendExtraBrowserArgs(
+      [
+        '--memlog=all',
+        '--memlog-sampling',
+        '--memlog-stack-mode=native-with-thread-names',
+      ]
+    )
     # Disable taking screenshot on failing pages.
     options.take_screenshot_for_failed_page = False
 

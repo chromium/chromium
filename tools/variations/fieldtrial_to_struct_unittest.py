@@ -9,7 +9,6 @@ import fieldtrial_to_struct
 
 
 class FieldTrialToStruct(unittest.TestCase):
-
   def FullRelativePath(self, relative_path):
     base_path = os.path.dirname(__file__)
     if not base_path:
@@ -19,107 +18,95 @@ class FieldTrialToStruct(unittest.TestCase):
 
   def test_FieldTrialToDescription(self):
     config = {
-        'Trial1': [{
-            'platforms': ['windows'],
-            'experiments': [
-                {
-                    'name': 'Group1',
-                    'params': {
-                        'x': '1',
-                        'y': '2'
-                    },
-                    'enable_features': ['A', 'B'],
-                    'disable_features': ['C']
-                },
-                {
-                    'name': 'Group2',
-                    'params': {
-                        'x': '3',
-                        'y': '4'
-                    },
-                    'enable_features': ['D', 'E'],
-                    'disable_features': ['F']
-                },
-            ]
-        }],
-        'Trial2': [{
-            'platforms': ['windows'],
-            'experiments': [{
-                'name': 'OtherGroup'
-            }]
-        }],
-        'TrialWithForcingFlag': [{
-            'platforms': ['windows'],
-            'experiments': [{
-                'name': 'ForcedGroup',
-                'forcing_flag': 'my-forcing-flag'
-            }]
-        }]
+      'Trial1': [
+        {
+          'platforms': ['windows'],
+          'experiments': [
+            {
+              'name': 'Group1',
+              'params': {'x': '1', 'y': '2'},
+              'enable_features': ['A', 'B'],
+              'disable_features': ['C'],
+            },
+            {
+              'name': 'Group2',
+              'params': {'x': '3', 'y': '4'},
+              'enable_features': ['D', 'E'],
+              'disable_features': ['F'],
+            },
+          ],
+        }
+      ],
+      'Trial2': [
+        {'platforms': ['windows'], 'experiments': [{'name': 'OtherGroup'}]}
+      ],
+      'TrialWithForcingFlag': [
+        {
+          'platforms': ['windows'],
+          'experiments': [
+            {'name': 'ForcedGroup', 'forcing_flag': 'my-forcing-flag'}
+          ],
+        }
+      ],
     }
     result = fieldtrial_to_struct._FieldTrialConfigToDescription(
-        config, ['windows'])
+      config, ['windows']
+    )
     expected = {
-        'elements': {
-            'kFieldTrialConfig': {
-                'studies': [
-                    {
-                        'name':
-                        'Trial1',
-                        'experiments': [
-                            {
-                                'name':
-                                'Group1',
-                                'platforms': ['Study::PLATFORM_WINDOWS'],
-                                'params': [{
-                                    'key': 'x',
-                                    'value': '1'
-                                }, {
-                                    'key': 'y',
-                                    'value': '2'
-                                }],
-                                'enable_features': ['A', 'B'],
-                                'disable_features': ['C'],
-                                'form_factors': [],
-                            },
-                            {
-                                'name':
-                                'Group2',
-                                'platforms': ['Study::PLATFORM_WINDOWS'],
-                                'params': [{
-                                    'key': 'x',
-                                    'value': '3'
-                                }, {
-                                    'key': 'y',
-                                    'value': '4'
-                                }],
-                                'enable_features': ['D', 'E'],
-                                'disable_features': ['F'],
-                                'form_factors': [],
-                            },
-                        ],
-                    },
-                    {
-                        'name':
-                        'Trial2',
-                        'experiments': [{
-                            'name': 'OtherGroup',
-                            'platforms': ['Study::PLATFORM_WINDOWS'],
-                            'form_factors': [],
-                        }]
-                    },
-                    {
-                        'name':
-                        'TrialWithForcingFlag',
-                        'experiments': [{
-                            'name': 'ForcedGroup',
-                            'platforms': ['Study::PLATFORM_WINDOWS'],
-                            'forcing_flag': 'my-forcing-flag',
-                            'form_factors': [],
-                        }]
-                    },
-                ]
-            }
+      'elements': {
+        'kFieldTrialConfig': {
+          'studies': [
+            {
+              'name': 'Trial1',
+              'experiments': [
+                {
+                  'name': 'Group1',
+                  'platforms': ['Study::PLATFORM_WINDOWS'],
+                  'params': [
+                    {'key': 'x', 'value': '1'},
+                    {'key': 'y', 'value': '2'},
+                  ],
+                  'enable_features': ['A', 'B'],
+                  'disable_features': ['C'],
+                  'form_factors': [],
+                },
+                {
+                  'name': 'Group2',
+                  'platforms': ['Study::PLATFORM_WINDOWS'],
+                  'params': [
+                    {'key': 'x', 'value': '3'},
+                    {'key': 'y', 'value': '4'},
+                  ],
+                  'enable_features': ['D', 'E'],
+                  'disable_features': ['F'],
+                  'form_factors': [],
+                },
+              ],
+            },
+            {
+              'name': 'Trial2',
+              'experiments': [
+                {
+                  'name': 'OtherGroup',
+                  'platforms': ['Study::PLATFORM_WINDOWS'],
+                  'form_factors': [],
+                }
+              ],
+            },
+            {
+              'name': 'TrialWithForcingFlag',
+              'experiments': [
+                {
+                  'name': 'ForcedGroup',
+                  'platforms': ['Study::PLATFORM_WINDOWS'],
+                  'forcing_flag': 'my-forcing-flag',
+                  'form_factors': [],
+                }
+              ],
+            },
+          ]
         }
+      }
     }
     self.maxDiff = None
     self.assertEqual(expected, result)
@@ -132,44 +119,29 @@ class FieldTrialToStruct(unittest.TestCase):
         'experiments': [
           {
             'name': 'Group1',
-            'params': {
-              'x': '1',
-              'y': '2'
-            },
+            'params': {'x': '1', 'y': '2'},
             'enable_features': ['A', 'B'],
-            'disable_features': ['C']
+            'disable_features': ['C'],
           },
           {
             'name': 'Group2',
-            'params': {
-              'x': '3',
-              'y': '4'
-            },
+            'params': {'x': '3', 'y': '4'},
             'enable_features': ['D', 'E'],
-            'disable_features': ['F']
-          }
-        ]
+            'disable_features': ['F'],
+          },
+        ],
       },
-      {
-        'platforms': ['ios'],
-        'experiments': [
-          {
-            'name': 'IOSOnly'
-          }
-        ]
-      },
+      {'platforms': ['ios'], 'experiments': [{'name': 'IOSOnly'}]},
     ],
     'Trial2': [
-      {
-        'platforms': ['windows', 'mac'],
-        'experiments': [{'name': 'OtherGroup'}]
-      }
-    ]
+      {'platforms': ['windows', 'mac'], 'experiments': [{'name': 'OtherGroup'}]}
+    ],
   }
 
   def test_FieldTrialToDescriptionMultipleSinglePlatformMultipleTrial(self):
     result = fieldtrial_to_struct._FieldTrialConfigToDescription(
-        self._MULTIPLE_PLATFORM_CONFIG, ['ios'])
+      self._MULTIPLE_PLATFORM_CONFIG, ['ios']
+    )
     expected = {
       'elements': {
         'kFieldTrialConfig': {
@@ -182,7 +154,7 @@ class FieldTrialToStruct(unittest.TestCase):
                   'platforms': ['Study::PLATFORM_IOS'],
                   'params': [
                     {'key': 'x', 'value': '1'},
-                    {'key': 'y', 'value': '2'}
+                    {'key': 'y', 'value': '2'},
                   ],
                   'enable_features': ['A', 'B'],
                   'disable_features': ['C'],
@@ -194,7 +166,7 @@ class FieldTrialToStruct(unittest.TestCase):
                   'platforms': ['Study::PLATFORM_IOS'],
                   'params': [
                     {'key': 'x', 'value': '3'},
-                    {'key': 'y', 'value': '4'}
+                    {'key': 'y', 'value': '4'},
                   ],
                   'enable_features': ['D', 'E'],
                   'disable_features': ['F'],
@@ -217,7 +189,8 @@ class FieldTrialToStruct(unittest.TestCase):
 
   def test_FieldTrialToDescriptionMultipleSinglePlatformSingleTrial(self):
     result = fieldtrial_to_struct._FieldTrialConfigToDescription(
-        self._MULTIPLE_PLATFORM_CONFIG, ['mac'])
+      self._MULTIPLE_PLATFORM_CONFIG, ['mac']
+    )
     expected = {
       'elements': {
         'kFieldTrialConfig': {
@@ -240,25 +213,26 @@ class FieldTrialToStruct(unittest.TestCase):
     self.assertEqual(expected, result)
 
   _MULTIPLE_FORM_FACTORS_CONFIG = {
-      'Trial1': [
-        {
-          'platforms': ['windows'],
-          'form_factors': ['desktop', 'phone'],
-          'experiments': [{'name': 'Group1'}]
-        }
-      ],
-      'Trial2': [
-        {
-          'platforms': ['windows'],
-          'form_factors': ['tablet'],
-          'experiments': [{'name': 'OtherGroup'}]
-        }
-      ]
-    }
+    'Trial1': [
+      {
+        'platforms': ['windows'],
+        'form_factors': ['desktop', 'phone'],
+        'experiments': [{'name': 'Group1'}],
+      }
+    ],
+    'Trial2': [
+      {
+        'platforms': ['windows'],
+        'form_factors': ['tablet'],
+        'experiments': [{'name': 'OtherGroup'}],
+      }
+    ],
+  }
 
   def test_FieldTrialToDescriptionMultipleFormFactorsTrial(self):
     result = fieldtrial_to_struct._FieldTrialConfigToDescription(
-        self._MULTIPLE_FORM_FACTORS_CONFIG, ['windows'])
+      self._MULTIPLE_FORM_FACTORS_CONFIG, ['windows']
+    )
     expected = {
       'elements': {
         'kFieldTrialConfig': {
@@ -291,70 +265,82 @@ class FieldTrialToStruct(unittest.TestCase):
     self.assertEqual(expected, result)
 
   _DISABLE_BENCHMARKING_CONFIG = {
-      'Trial1': [{
-          'platforms': ['windows'],
-          'experiments': [
-              {
-                  'name': 'Group1',
-                  'disable_benchmarking': True,
-              },
-          ]
-      }],
-      'Trial2': [{
-          'platforms': ['windows'],
-          'experiments': [{
-              'name': 'Group2',
-              'disable_benchmarking': False,
-          }]
-      }],
-      'Trial3': [{
-          'platforms': ['windows'],
-          'experiments': [{
-              'name': 'Group3',
-          }]
-      }]
+    'Trial1': [
+      {
+        'platforms': ['windows'],
+        'experiments': [
+          {
+            'name': 'Group1',
+            'disable_benchmarking': True,
+          },
+        ],
+      }
+    ],
+    'Trial2': [
+      {
+        'platforms': ['windows'],
+        'experiments': [
+          {
+            'name': 'Group2',
+            'disable_benchmarking': False,
+          }
+        ],
+      }
+    ],
+    'Trial3': [
+      {
+        'platforms': ['windows'],
+        'experiments': [
+          {
+            'name': 'Group3',
+          }
+        ],
+      }
+    ],
   }
 
   def test_FieldTrialToDescriptionWithDisableBenchmarkingTrial(self):
     result = fieldtrial_to_struct._FieldTrialConfigToDescription(
-        self._DISABLE_BENCHMARKING_CONFIG, ['windows'])
+      self._DISABLE_BENCHMARKING_CONFIG, ['windows']
+    )
     expected = {
-        'elements': {
-            'kFieldTrialConfig': {
-                'studies': [{
-                    'name':
-                    'Trial1',
-                    'experiments': [
-                        {
-                            'name': 'Group1',
-                            'platforms': ['Study::PLATFORM_WINDOWS'],
-                            'disable_benchmarking': True,
-                            'form_factors': [],
-                        },
-                    ],
-                }, {
-                    'name':
-                    'Trial2',
-                    'experiments': [
-                        {
-                            'name': 'Group2',
-                            'platforms': ['Study::PLATFORM_WINDOWS'],
-                            'form_factors': [],
-                        },
-                    ],
-                }, {
-                    'name':
-                    'Trial3',
-                    'experiments': [
-                        {
-                            'name': 'Group3',
-                            'platforms': ['Study::PLATFORM_WINDOWS'],
-                            'form_factors': [],
-                        },
-                    ],
-                }]
-            }
+      'elements': {
+        'kFieldTrialConfig': {
+          'studies': [
+            {
+              'name': 'Trial1',
+              'experiments': [
+                {
+                  'name': 'Group1',
+                  'platforms': ['Study::PLATFORM_WINDOWS'],
+                  'disable_benchmarking': True,
+                  'form_factors': [],
+                },
+              ],
+            },
+            {
+              'name': 'Trial2',
+              'experiments': [
+                {
+                  'name': 'Group2',
+                  'platforms': ['Study::PLATFORM_WINDOWS'],
+                  'form_factors': [],
+                },
+              ],
+            },
+            {
+              'name': 'Trial3',
+              'experiments': [
+                {
+                  'name': 'Group3',
+                  'platforms': ['Study::PLATFORM_WINDOWS'],
+                  'form_factors': [],
+                },
+              ],
+            },
+          ]
         }
+      }
     }
     self.maxDiff = None
     self.assertEqual(expected, result)
@@ -362,17 +348,20 @@ class FieldTrialToStruct(unittest.TestCase):
   def test_FieldTrialToStructMain(self):
     self.maxDiff = None
     schema = self.FullRelativePath(
-              '/../../components/variations/field_trial_config/'
-              'field_trial_testing_config_schema.json')
+      '/../../components/variations/field_trial_config/'
+      'field_trial_testing_config_schema.json'
+    )
     unittest_data_dir = self.FullRelativePath('/unittest_data/')
     test_output_filename = 'test_output'
-    fieldtrial_to_struct.main([
-      '--schema=' + schema,
-      '--output=' + test_output_filename,
-      '--platform=windows',
-      '--year=2015',
-      unittest_data_dir + 'test_config.json'
-    ])
+    fieldtrial_to_struct.main(
+      [
+        '--schema=' + schema,
+        '--output=' + test_output_filename,
+        '--platform=windows',
+        '--year=2015',
+        unittest_data_dir + 'test_config.json',
+      ]
+    )
     header_filename = test_output_filename + '.h'
     with open(header_filename, 'r') as header:
       test_header = header.read()
@@ -388,6 +377,7 @@ class FieldTrialToStruct(unittest.TestCase):
         expected_cc = expected.read()
         self.assertEqual(expected_cc, test_cc)
     os.unlink(cc_filename)
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -23,20 +23,27 @@ import xml.sax
 _ANDROID_MANIFEST_PATTERN = re.compile('[\'"]@string/(?P<name>\\w*)[\'"]')
 _CPP_ID_PATTERN = re.compile(r'\bIDS_\w*\b')
 _JAVA_ID_PATTERN = re.compile(
-    r'\bR\s*\.\s*(string|plurals)\s*\.\s*(?P<name>\w*)\b')
+  r'\bR\s*\.\s*(string|plurals)\s*\.\s*(?P<name>\w*)\b'
+)
 
 _GRD_SKIP_LIST = {
-    # These have special generated usage that static analysis can't detect, so
-    # just skip them.
-    pathlib.Path('components', 'printing_component_strings.grdp'),
-    pathlib.Path('third_party', 'blink', 'public', 'strings',
-                 'permission_element_strings.grd'),
-    pathlib.Path('third_party', 'libaddressinput', 'chromium',
-                 'address_input_strings.grdp'),
-    # These strings should naturally age out.
-    pathlib.Path('ios', 'chrome', 'browser', 'whats_new', 'ui', 'strings'),
-    # This example is not shipped.
-    pathlib.Path('ui', 'views', 'examples', 'views_examples_resources.grd'),
+  # These have special generated usage that static analysis can't detect, so
+  # just skip them.
+  pathlib.Path('components', 'printing_component_strings.grdp'),
+  pathlib.Path(
+    'third_party',
+    'blink',
+    'public',
+    'strings',
+    'permission_element_strings.grd',
+  ),
+  pathlib.Path(
+    'third_party', 'libaddressinput', 'chromium', 'address_input_strings.grdp'
+  ),
+  # These strings should naturally age out.
+  pathlib.Path('ios', 'chrome', 'browser', 'whats_new', 'ui', 'strings'),
+  # This example is not shipped.
+  pathlib.Path('ui', 'views', 'examples', 'views_examples_resources.grd'),
 }
 
 _EMPTY_IF_PATTERN = re.compile(r'<if[^>]*>\s*</if>\s*', flags=re.DOTALL)
@@ -49,14 +56,15 @@ def _should_analyze(path: pathlib.Path) -> bool:
 
 
 def _list_paths(include_paths: list[pathlib.Path]) -> Iterator[pathlib.Path]:
-  repo_root = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
-                                      text=True)
+  repo_root = subprocess.check_output(
+    ['git', 'rev-parse', '--show-toplevel'], text=True
+  )
   repo_root = pathlib.Path(repo_root.strip())
   with subprocess.Popen(
-      ['git', 'ls-files', '--', *include_paths],
-      stdout=subprocess.PIPE,
-      cwd=repo_root,
-      text=True,
+    ['git', 'ls-files', '--', *include_paths],
+    stdout=subprocess.PIPE,
+    cwd=repo_root,
+    text=True,
   ) as ls_proc:
     for line in ls_proc.stdout:
       path_from_root = pathlib.Path(line.strip())
@@ -76,13 +84,13 @@ class GrdParseResult:
         to detect statically whether a string is unused, so skip such `.grd`s
         and their constituent parts.
   """
+
   ids: MutableSet[str] = dataclasses.field(default_factory=set)
   parts: MutableSet[str] = dataclasses.field(default_factory=set)
   generates_runtime_strings: bool = False
 
 
 class _GrdParser(xml.sax.handler.ContentHandler):
-
   def __init__(self):
     super().__init__()
     self.result = GrdParseResult()
@@ -95,8 +103,8 @@ class _GrdParser(xml.sax.handler.ContentHandler):
     if name == 'message' and (msg_id := attrs['name']).startswith('IDS_'):
       self.result.ids.add(msg_id)
     elif name == 'output' and attrs['type'] in {
-        'chrome_messages_json',
-        'chrome_messages_json_gzip',
+      'chrome_messages_json',
+      'chrome_messages_json_gzip',
     }:
       self.result.generates_runtime_strings = True
     elif name == 'part':
@@ -159,15 +167,18 @@ def parse_used_ids(path: pathlib.Path) -> set[str]:
     return set()
 
 
-def remove_strings(grd_path: pathlib.Path,
-                   ids_to_remove: Collection[str]) -> None:
+def remove_strings(
+  grd_path: pathlib.Path, ids_to_remove: Collection[str]
+) -> None:
   with grd_path.open() as grd_file:
     grd_content = grd_file.read()
   # Use regex instead of structured parsing because comments don't survive
   # round-tripping.
   names_pattern = '|'.join(map(re.escape, ids_to_remove))
-  pattern = (r'<message\s+[^>]*name\s*=\s*'
-             f'[\'"]({names_pattern})[\'"].*?</message>\\s*')
+  pattern = (
+    r'<message\s+[^>]*name\s*=\s*'
+    f'[\'"]({names_pattern})[\'"].*?</message>\\s*'
+  )
   grd_content = re.sub(pattern, '', grd_content, flags=re.DOTALL)
   grd_content = _EMPTY_IF_PATTERN.sub('', grd_content)
   with grd_path.open('w') as grd_file:
@@ -184,21 +195,29 @@ def remove_strings(grd_path: pathlib.Path,
 
 def main() -> int:
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument('--max-workers',
-                      type=int,
-                      default=8,
-                      help='Maximum number of workers to use.')
   parser.add_argument(
-      '--fix',
-      action='store_true',
-      help=('Try removing orphaned strings from `.grd(p)` files. You should '
-            'review the output because of imperfect formatting and comments '
-            "that can't be checked for validity."))
+    '--max-workers',
+    type=int,
+    default=8,
+    help='Maximum number of workers to use.',
+  )
   parser.add_argument(
-      'include_paths',
-      nargs='*',
-      help=('Paths relative to the repo root to analyze. If no paths are '
-            'given, analyze all source files.'))
+    '--fix',
+    action='store_true',
+    help=(
+      'Try removing orphaned strings from `.grd(p)` files. You should '
+      'review the output because of imperfect formatting and comments '
+      "that can't be checked for validity."
+    ),
+  )
+  parser.add_argument(
+    'include_paths',
+    nargs='*',
+    help=(
+      'Paths relative to the repo root to analyze. If no paths are '
+      'given, analyze all source files.'
+    ),
+  )
   args = parser.parse_args()
 
   include_paths = list(map(pathlib.Path, args.include_paths))
@@ -214,7 +233,8 @@ def main() -> int:
   # Python's Global Interpreter Lock (GIL).
   with ProcessPoolExecutor(max_workers=args.max_workers) as pool:
     grd_results_by_path = dict(
-        zip(grd_paths, pool.map(parse_grd, grd_paths, chunksize=200)))
+      zip(grd_paths, pool.map(parse_grd, grd_paths, chunksize=200))
+    )
     grd_results_by_path = filter_grds(grd_results_by_path)
 
     used_ids = set()
@@ -222,8 +242,10 @@ def main() -> int:
       used_ids.update(file_ids)
 
     declared_ids = set(
-        itertools.chain.from_iterable(
-            result.ids for result in grd_results_by_path.values()))
+      itertools.chain.from_iterable(
+        result.ids for result in grd_results_by_path.values()
+      )
+    )
     orphaned_ids = declared_ids - used_ids
     for orphan in sorted(orphaned_ids):
       print(orphan)

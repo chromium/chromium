@@ -43,17 +43,17 @@ from typing import Iterable, List, Optional, Sequence, Set, Text, Tuple
 from xml.etree import ElementTree as ET
 
 IGNORED_PATHSPECS = [
-    ':!**/docs/**',
-    ':!**/pdfium/**',
-    ':!**/test/**',
-    ':!**/testdata/**',
-    ':!**/testing/**',
-    ':!**/vectorcanvastest/**',
-    ':!**/*unittest/**',
-    ':!docs/**',
-    ':!testing/**',
-    ':!third_party/**',
-    ':!tools/perf/page_sets/**',
+  ':!**/docs/**',
+  ':!**/pdfium/**',
+  ':!**/test/**',
+  ':!**/testdata/**',
+  ':!**/testing/**',
+  ':!**/vectorcanvastest/**',
+  ':!**/*unittest/**',
+  ':!docs/**',
+  ':!testing/**',
+  ':!third_party/**',
+  ':!tools/perf/page_sets/**',
 ]
 
 logger = logging.getLogger(__name__)
@@ -64,7 +64,8 @@ def init_logger():
   ch = logging.StreamHandler()
   ch.setLevel(logging.INFO)
   formatter = logging.Formatter(
-      '%(levelname)s %(asctime)s %(filename)s:%(lineno)d] %(message)s')
+    '%(levelname)s %(asctime)s %(filename)s:%(lineno)d] %(message)s'
+  )
   ch.setFormatter(formatter)
   logger.addHandler(ch)
 
@@ -72,13 +73,17 @@ def init_logger():
 def parse_args():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--src_dir',
-      help='Optional chromium/src directory to analyze. If not specified, '
-      'defaults to current working directory.')
-  parser.add_argument('--output_unused_files',
-                      help='Filepath to output the list of unused files.')
-  parser.add_argument('--output_all_png_files',
-                      help='Filepath to output the list of all PNG files.')
+    '--src_dir',
+    help='Optional chromium/src directory to analyze. If not specified, '
+    'defaults to current working directory.',
+  )
+  parser.add_argument(
+    '--output_unused_files', help='Filepath to output the list of unused files.'
+  )
+  parser.add_argument(
+    '--output_all_png_files',
+    help='Filepath to output the list of all PNG files.',
+  )
   return parser.parse_args()
 
 
@@ -111,9 +116,9 @@ def find_filepath_usage(fpath: str, segs: int = 1):
 
 
 @functools.lru_cache()
-def grep_pattern(pattern: Text,
-                 pathspecs: Optional[Sequence[Text]] = None,
-                 fixed: bool = False) -> List[Text]:
+def grep_pattern(
+  pattern: Text, pathspecs: Optional[Sequence[Text]] = None, fixed: bool = False
+) -> List[Text]:
   """Greps for the specified pattern.
 
   Args:
@@ -141,9 +146,9 @@ def grep_pattern(pattern: Text,
       raise
 
 
-def find_usage_of_java_res(fpath: Text,
-                           pathspecs: Optional[Iterable[Text]] = None
-                           ) -> List[Text]:
+def find_usage_of_java_res(
+  fpath: Text, pathspecs: Optional[Iterable[Text]] = None
+) -> List[Text]:
   """Finds usage of a Java image resource.
 
   Args:
@@ -154,8 +159,9 @@ def find_usage_of_java_res(fpath: Text,
     A list of filepaths that use |fpath|.
   """
   pathspecs = pathspecs or []
-  common_pathspecs = list(pathspecs) + [':!**/*.gni', ':!**/*.gn'
-                                        ] + IGNORED_PATHSPECS
+  common_pathspecs = (
+    list(pathspecs) + [':!**/*.gni', ':!**/*.gn'] + IGNORED_PATHSPECS
+  )
   basename = os.path.basename(fpath).rsplit('.')[0]
   dirname = os.path.dirname(fpath)
   if 'drawable' in dirname:
@@ -166,40 +172,48 @@ def find_usage_of_java_res(fpath: Text,
     raise ValueError(f'Could not parse resource type from filepath: {fpath}')
 
   pathspec_prefixes = [
-      'android_webview',
-      'chrome/android',
-      'chrome/browser',
-      'components',
-      'content/public/android',
-      'content/shell/android',
-      'remoting/android',
-      'tools/android',
-      'ui/android',
+    'android_webview',
+    'chrome/android',
+    'chrome/browser',
+    'components',
+    'content/public/android',
+    'content/shell/android',
+    'remoting/android',
+    'tools/android',
+    'ui/android',
   ]
 
   xml_pattern = f'@{res_type}/{basename}'
   found = grep_pattern(
-      xml_pattern,
-      pathspecs=tuple([p + '/**/*.xml'
-                       for p in pathspec_prefixes] + common_pathspecs),
-      fixed=True)
+    xml_pattern,
+    pathspecs=tuple(
+      [p + '/**/*.xml' for p in pathspec_prefixes] + common_pathspecs
+    ),
+    fixed=True,
+  )
 
   java_pattern = f'R.{res_type}.{basename}'
   found = found or grep_pattern(
-      java_pattern,
-      pathspecs=tuple([p + '/**/*.java' for p in pathspec_prefixes] + [
-          'chrome/browser/android/resource_id.h',
-          'components/resources/android/*.h'
-      ] + common_pathspecs),
-      fixed=True)
+    java_pattern,
+    pathspecs=tuple(
+      [p + '/**/*.java' for p in pathspec_prefixes]
+      + [
+        'chrome/browser/android/resource_id.h',
+        'components/resources/android/*.h',
+      ]
+      + common_pathspecs
+    ),
+    fixed=True,
+  )
 
   if not found:
     logger.info('Found unused file: %s', fpath)
   return found
 
 
-def filter_usages_of_java_res(png_files: Iterable[Text], path_pattern: Text
-                              ) -> Tuple[Set[Text], Set[Text]]:
+def filter_usages_of_java_res(
+  png_files: Iterable[Text], path_pattern: Text
+) -> Tuple[Set[Text], Set[Text]]:
   """Filters and finds used and unused Java image resources.
 
   Args:
@@ -223,18 +237,23 @@ def filter_usages_of_java_res(png_files: Iterable[Text], path_pattern: Text
       containing_files |= set(found)
     else:
       unused_png_files.add(png_file)
-  logger.info('Found %d PNG files used under %s dirs.', len(used_png_files),
-              path_pattern)
-  logger.info('Found %d unused PNG files under %s dirs.', len(unused_png_files),
-              path_pattern)
-  logger.debug('Containing files:\n%s',
-               pprint.pformat(sorted(containing_files)))
+  logger.info(
+    'Found %d PNG files used under %s dirs.', len(used_png_files), path_pattern
+  )
+  logger.info(
+    'Found %d unused PNG files under %s dirs.',
+    len(unused_png_files),
+    path_pattern,
+  )
+  logger.debug(
+    'Containing files:\n%s', pprint.pformat(sorted(containing_files))
+  )
   return used_png_files, unused_png_files
 
 
-def find_images_by_filepath_string(filepaths: Iterable[Text],
-                                   all_png_files: Set[Text]
-                                   ) -> Tuple[Set[Text], Set[Text]]:
+def find_images_by_filepath_string(
+  filepaths: Iterable[Text], all_png_files: Set[Text]
+) -> Tuple[Set[Text], Set[Text]]:
   """Finds images used and maybe unused by looking at filepath strings.
 
   The maybe unused files are determined by the fact that they're not referenced
@@ -267,14 +286,20 @@ def find_images_by_filepath_string(filepaths: Iterable[Text],
         if rooted_img_path in all_png_files:
           used_by_current_file.add(rooted_img_path)
         else:
-          logger.warning('PNG file %s does not exist, reffed in %s as %s',
-                         rooted_img_path, filepath, img_relpath)
+          logger.warning(
+            'PNG file %s does not exist, reffed in %s as %s',
+            rooted_img_path,
+            filepath,
+            img_relpath,
+          )
     used_files |= used_by_current_file
     # Consider any images in subdirectories that were not used by this file as
     # unused. Nested BUILD.gn files will be handled outside the loop.
     maybe_unused_files |= set(
-        f for f in all_png_files
-        if f.startswith(rel_dir) and f not in used_by_current_file)
+      f
+      for f in all_png_files
+      if f.startswith(rel_dir) and f not in used_by_current_file
+    )
   # Handles nested BUILD.gn files.
   maybe_unused_files -= used_files
   maybe_unused_files -= ignored_files
@@ -296,19 +321,22 @@ def find_images_used_by_grd(all_png_files: Set[Text]) -> Set[Text]:
     grd_dir = os.path.dirname(grd_file)
     cur_relpaths = set()
     grd_root = ET.parse(grd_file).getroot()
-    for elem in itertools.chain(grd_root.iter('include'),
-                                grd_root.iter('structure')):
+    for elem in itertools.chain(
+      grd_root.iter('include'), grd_root.iter('structure')
+    ):
       relpath = elem.get('file')
       if relpath and relpath.endswith('.png'):
         relpath = relpath.replace('\\', '/')
         relpath = relpath.replace(
-            '${input_tools_root_dir}',
-            'third_party/google_input_tools/src/chrome/os')
+          '${input_tools_root_dir}',
+          'third_party/google_input_tools/src/chrome/os',
+        )
         if relpath.startswith('${root_src_dir}'):
           relpath = relpath[len('${root_src_dir}') + 1]
         if relpath.startswith('/') or '$' in relpath:
-          logger.error('When processing %s got weird relpath: %s', grd_file,
-                       relpath)
+          logger.error(
+            'When processing %s got weird relpath: %s', grd_file, relpath
+          )
           raise ValueError('Unexpected relpath!')
         rooted_filepath = os.path.normpath(os.path.join(grd_dir, relpath))
         if rooted_filepath in all_png_files:
@@ -363,8 +391,12 @@ def find_images_used_by_html(all_png_files: Set[Text]) -> Set[Text]:
         # I don't know how to handle this yet.
         continue
       if rooted_src_path not in all_png_files:
-        logger.debug('PNG file %s does not exist, reffed in %s as %s',
-                     rooted_src_path, html_file, src_relpath)
+        logger.debug(
+          'PNG file %s does not exist, reffed in %s as %s',
+          rooted_src_path,
+          html_file,
+          src_relpath,
+        )
         continue
       used_files.add(rooted_src_path)
   return used_files
@@ -392,8 +424,12 @@ def find_images_used_by_css(all_png_files: Set[Text]) -> Set[Text]:
         # css file (current assumption) or the including html file.
         rooted_url_path = normalize_resource_url_path(css_dir, url_relpath)
         if rooted_url_path not in all_png_files:
-          logger.debug('PNG file %s does not exist, reffed in %s as %s',
-                       rooted_url_path, css_file, url_relpath)
+          logger.debug(
+            'PNG file %s does not exist, reffed in %s as %s',
+            rooted_url_path,
+            css_file,
+            url_relpath,
+          )
           continue
         used_files.add(rooted_url_path)
   return used_files
@@ -412,7 +448,7 @@ def normalize_resource_url_path(rel_dir: Text, url: Text) -> Text:
     The joined and normalized filepath.
   """
   if url.startswith('chrome://'):
-    rooted_path = os.path.join('ui/webui', url[len('chrome://'):])
+    rooted_path = os.path.join('ui/webui', url[len('chrome://') :])
   else:
     rooted_path = os.path.join(rel_dir, url)
   return os.path.normpath(rooted_path)
@@ -445,13 +481,18 @@ def find_images_used_by_markdown(all_png_files: Set[Text]) -> Set[Text]:
         if rooted_filepath in all_png_files:
           used_files.add(rooted_filepath)
         else:
-          logger.warning('PNG file %s does not exist, reffed in %s as %s',
-                         rooted_filepath, md_file, url_relpath)
+          logger.warning(
+            'PNG file %s does not exist, reffed in %s as %s',
+            rooted_filepath,
+            md_file,
+            url_relpath,
+          )
   return used_files
 
 
-def find_images_used_by_ios_imageset(all_png_files: Set[Text]
-                                     ) -> Tuple[Set[Text], Set[Text]]:
+def find_images_used_by_ios_imageset(
+  all_png_files: Set[Text],
+) -> Tuple[Set[Text], Set[Text]]:
   """Finds images used and unused by ios imagesets and friends.
 
   Args:
@@ -463,8 +504,9 @@ def find_images_used_by_ios_imageset(all_png_files: Set[Text]
   used_files = set()
   unused_files = set()
   json_files = set(
-      get_all_ext_files('imageset/Contents.json') +
-      get_all_ext_files('appiconset/Contents.json'))
+    get_all_ext_files('imageset/Contents.json')
+    + get_all_ext_files('appiconset/Contents.json')
+  )
   for json_file in json_files:
     rel_dir = os.path.dirname(json_file)
     with open(json_file, 'rb') as f:
@@ -475,8 +517,12 @@ def find_images_used_by_ios_imageset(all_png_files: Set[Text]
           continue
         rooted_img_path = os.path.join(rel_dir, img_relpath)
         if rooted_img_path not in all_png_files:
-          logger.warning('PNG file %s does not exist, reffed in %s as %s',
-                         rooted_img_path, json_file, img_relpath)
+          logger.warning(
+            'PNG file %s does not exist, reffed in %s as %s',
+            rooted_img_path,
+            json_file,
+            img_relpath,
+          )
           continue
         else:
           used_files.add(rooted_img_path)
@@ -485,7 +531,8 @@ def find_images_used_by_ios_imageset(all_png_files: Set[Text]
   imageset_png_files = set()
   for imageset_dir in imageset_dirs:
     imageset_png_files |= set(
-        list_files([imageset_dir + '/*.png', imageset_dir + '/**/*.png']))
+      list_files([imageset_dir + '/*.png', imageset_dir + '/**/*.png'])
+    )
   unused_files = (imageset_png_files & all_png_files) - used_files
 
   return used_files, unused_files
@@ -548,12 +595,14 @@ def main() -> None:
   # Find images used by ios imagesets.
   logger.info('Looking for usages by ios imagesets...')
   used_by_imageset, unused_by_imageset = find_images_used_by_ios_imageset(
-      all_png_files)
+    all_png_files
+  )
   logger.info('Found %d PNG files used in json.', len(used_by_imageset))
   used_png_files |= used_by_imageset
   png_files -= used_png_files
-  logger.info('Found %d likely unused imageset PNG files.',
-              len(unused_by_imageset))
+  logger.info(
+    'Found %d likely unused imageset PNG files.', len(unused_by_imageset)
+  )
   likely_unused_png_files |= unused_by_imageset
   png_files -= likely_unused_png_files
 
@@ -562,22 +611,30 @@ def main() -> None:
   for pathspec in manifest_pathspecs:
     logger.info('Looking for usages with pathspec: %s', pathspec)
     used_by_pathspec, unused_by_pathspec = find_images_by_filepath_string(
-        list_files([pathspec]), all_png_files)
+      list_files([pathspec]), all_png_files
+    )
     used_png_files |= used_by_pathspec
     png_files -= used_png_files
     likely_unused_png_files |= unused_by_pathspec
     png_files -= likely_unused_png_files
-    logger.info('Found %d used PNG files from pathspec: %s',
-                len(used_by_pathspec), pathspec)
-    logger.info('Found %d likely unused PNG files from pathspec: %s',
-                len(unused_by_pathspec), pathspec)
+    logger.info(
+      'Found %d used PNG files from pathspec: %s',
+      len(used_by_pathspec),
+      pathspec,
+    )
+    logger.info(
+      'Found %d likely unused PNG files from pathspec: %s',
+      len(unused_by_pathspec),
+      pathspec,
+    )
 
   # Check java resources image files.
   logger.info('Looking for usages by java or android resources...')
   path_patterns = [r'/res\w*/(drawable|mipmap)']
   for path_pattern in path_patterns:
     used_java_res_png_files, unused_java_res_png_files = (
-        filter_usages_of_java_res(all_png_files, path_pattern=path_pattern))
+      filter_usages_of_java_res(all_png_files, path_pattern=path_pattern)
+    )
     used_png_files |= used_java_res_png_files
     png_files -= used_png_files
     likely_unused_png_files |= unused_java_res_png_files
@@ -603,8 +660,8 @@ def main() -> None:
   with futures.ThreadPoolExecutor(max_workers=32) as executor:
     num_processed = 0
     for future in futures.as_completed(
-        executor.submit(find_filepath_usage_wrapper, fpath)
-        for fpath in png_files):
+      executor.submit(find_filepath_usage_wrapper, fpath) for fpath in png_files
+    ):
       num_processed += 1
       if num_processed % 20 == 0:
         logger.info('Checked %d files so far.', num_processed)
@@ -624,8 +681,9 @@ def main() -> None:
   # Summarize findings.
   likely_unused_png_files = sorted(likely_unused_png_files)
   logger.info('Summary:')
-  logger.info('  Found %d used files out of %d.', len(used_png_files),
-              len(all_png_files))
+  logger.info(
+    '  Found %d used files out of %d.', len(used_png_files), len(all_png_files)
+  )
   logger.info('  Found %d likely unused files.', len(likely_unused_png_files))
   pprint.pprint(likely_unused_png_files)
 
@@ -634,8 +692,9 @@ def main() -> None:
       for fp in likely_unused_png_files:
         fout.write(fp)
         fout.write('\n')
-    logger.info('Saved list of likely unused files to: %s',
-                args.output_unused_files)
+    logger.info(
+      'Saved list of likely unused files to: %s', args.output_unused_files
+    )
 
 
 if __name__ == '__main__':

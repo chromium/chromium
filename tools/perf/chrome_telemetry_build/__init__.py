@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" This directory contains all the necessary files for clients in chromium/src
+"""This directory contains all the necessary files for clients in chromium/src
 to use telemetry.
 
 Those includes:

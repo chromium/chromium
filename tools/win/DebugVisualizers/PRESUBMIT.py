@@ -28,7 +28,9 @@ def _CheckNatvisIsValidXml(input_api, output_api):
         except xml.etree.ElementTree.ParseError as e:
             results.append(
                 output_api.PresubmitError(
-                    f"{f.LocalPath()} has invalid XML:\n{str(e)}"))
+                    f"{f.LocalPath()} has invalid XML:\n{str(e)}"
+                )
+            )
     return results
 
 

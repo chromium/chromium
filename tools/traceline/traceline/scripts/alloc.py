@@ -11,7 +11,7 @@ from syscalls import syscalls
 
 
 def parseEvents(z):
-  calls = { }
+  calls = {}
   for e in z:
     if e['eventtype'] == 'EVENT_TYPE_SYSCALL' and e['syscall'] == 17:
       delta = e['done'] - e['ms']

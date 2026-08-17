@@ -10,20 +10,28 @@ of processing is not supported by GN.
 import argparse
 import subprocess
 
+
 def Main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--protoc', help='Path to protoc compiler.')
-  parser.add_argument('--infile', required=True,
-                      help='Path to input file that will be used as stdin.')
-  parser.add_argument('--outfile', required=True,
-                      help='Path to output file that will be used as stdout.')
+  parser.add_argument(
+    '--infile',
+    required=True,
+    help='Path to input file that will be used as stdin.',
+  )
+  parser.add_argument(
+    '--outfile',
+    required=True,
+    help='Path to output file that will be used as stdout.',
+  )
   args, passthrough_args = parser.parse_known_args()
 
   stdin = open(args.infile, 'r')
   stdout = open(args.outfile, 'w')
 
-  subprocess.check_call([args.protoc] + passthrough_args, stdin=stdin,
-      stdout=stdout)
+  subprocess.check_call(
+    [args.protoc] + passthrough_args, stdin=stdin, stdout=stdout
+  )
 
 
 if __name__ == '__main__':

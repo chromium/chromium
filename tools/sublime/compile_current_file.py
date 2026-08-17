@@ -41,10 +41,12 @@ class CompileCurrentFile(sublime_plugin.TextCommand):
     self.interrupted = False
 
   def description(self):
-    return ("Compiles the file in the current view using Ninja, so all that "
-            "this file and it's project depends on will be built first\n"
-            "Note that this command is a toggle so invoking it while it runs "
-            "will interrupt it.")
+    return (
+      "Compiles the file in the current view using Ninja, so all that "
+      "this file and it's project depends on will be built first\n"
+      "Note that this command is a toggle so invoking it while it runs "
+      "will interrupt it."
+    )
 
   def draw_panel_text(self):
     """Draw in the output.exec panel the text accumulated in self.text_to_draw.
@@ -106,16 +108,22 @@ class CompileCurrentFile(sublime_plugin.TextCommand):
 
     try:
       os.chdir(cwd)
-      proc = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True,
-                              stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
+      proc = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        shell=True,
+        stderr=subprocess.STDOUT,
+        stdin=subprocess.PIPE,
+      )
     except OSError as e:
       logging.exception('Execution of %s raised exception: %s.', (command, e))
       return -1
 
     # Use a Queue to pass the text from the reading thread to this one.
     stdout_queue = Queue.Queue()
-    stdout_thread = threading.Thread(target=EnqueueOutput,
-                                     args=(proc.stdout, stdout_queue))
+    stdout_thread = threading.Thread(
+      target=EnqueueOutput, args=(proc.stdout, stdout_queue)
+    )
     stdout_thread.daemon = True  # Ensure this exits if the parent dies
     stdout_thread.start()
 
@@ -124,8 +132,9 @@ class CompileCurrentFile(sublime_plugin.TextCommand):
       try:
         exit_code = proc.poll()
       except OSError as e:
-        logging.exception('Polling execution of %s raised exception: %s.',
-                          command, e)
+        logging.exception(
+          'Polling execution of %s raised exception: %s.', command, e
+        )
         return -2
 
       # Try to read output content from the queue
@@ -140,14 +149,16 @@ class CompileCurrentFile(sublime_plugin.TextCommand):
       if exit_code is not None:
         while stdout_thread.isAlive() or not stdout_queue.empty():
           try:
-            current_content += stdout_queue.get(
-                               block=True, timeout=1).decode('utf-8')
+            current_content += stdout_queue.get(block=True, timeout=1).decode(
+              'utf-8'
+            )
           except Queue.Empty:
             # Queue could still potentially contain more input later.
             pass
         time_length = datetime.datetime.now() - self.start_time
-        self.update_panel_text("%s\nDone!\n(%s seconds)" %
-                               (current_content, time_length.seconds))
+        self.update_panel_text(
+          "%s\nDone!\n(%s seconds)" % (current_content, time_length.seconds)
+        )
         return exit_code
       # We sleep a little to give the child process a chance to move forward
       # before we poll it again.
@@ -183,35 +194,42 @@ class CompileCurrentFile(sublime_plugin.TextCommand):
     self.view.window().run_command("show_panel", {"panel": "output.exec"})
     # TODO(mad): Not sure if the project folder is always the first one... ???
     project_folder = self.view.window().folders()[0]
-    self.update_panel_text("Compiling current file %s\n" %
-                           self.view.file_name())
+    self.update_panel_text(
+      "Compiling current file %s\n" % self.view.file_name()
+    )
     # The file must be somewhere under the project folder...
-    if (project_folder.lower() !=
-        self.view.file_name()[:len(project_folder)].lower()):
+    if (
+      project_folder.lower()
+      != self.view.file_name()[: len(project_folder)].lower()
+    ):
       self.update_panel_text(
-          "ERROR: File %s is not in current project folder %s\n" %
-              (self.view.file_name(), project_folder))
+        "ERROR: File %s is not in current project folder %s\n"
+        % (self.view.file_name(), project_folder)
+      )
     else:
       output_dir = os.path.join(project_folder, 'out', target_build)
-      source_relative_path = os.path.relpath(self.view.file_name(),
-                                             output_dir)
+      source_relative_path = os.path.relpath(self.view.file_name(), output_dir)
       # On Windows the caret character needs to be escaped as it's an escape
       # character.
       carets = '^'
       if sys.platform.startswith('win'):
         carets = '^^'
       command = [
-          os.path.join(project_folder, rel_path_to_ninja), "-C",
-          os.path.join(project_folder, 'out', target_build),
-          source_relative_path + carets]
+        os.path.join(project_folder, rel_path_to_ninja),
+        "-C",
+        os.path.join(project_folder, 'out', target_build),
+        source_relative_path + carets,
+      ]
       self.update_panel_text(' '.join(command) + '\n')
       self.interrupted = False
-      self.thread = threading.Thread(target=self.execute_command,
-                                     kwargs={"command":command,
-                                             "cwd": output_dir})
+      self.thread = threading.Thread(
+        target=self.execute_command,
+        kwargs={"command": command, "cwd": output_dir},
+      )
       self.thread.start()
 
     time_length = datetime.datetime.now() - self.start_time
-    logging.debug("Took %s seconds on UI thread to startup",
-                  time_length.seconds)
+    logging.debug(
+      "Took %s seconds on UI thread to startup", time_length.seconds
+    )
     self.view.window().focus_view(self.view)

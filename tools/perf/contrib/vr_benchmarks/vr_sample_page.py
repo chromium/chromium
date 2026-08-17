@@ -8,20 +8,43 @@ from telemetry import page
 from contrib.vr_benchmarks import shared_vr_page_state as vr_state
 
 WEBVR_SAMPLE_DIR = os.path.join(
-    os.path.dirname(__file__), '..', '..', '..', '..', 'chrome', 'test',
-    'data', 'xr', 'webvr_info', 'samples')
+  os.path.dirname(__file__),
+  '..',
+  '..',
+  '..',
+  '..',
+  'chrome',
+  'test',
+  'data',
+  'xr',
+  'webvr_info',
+  'samples',
+)
 
 
 WEBXR_SAMPLE_DIR = os.path.join(
-    os.path.dirname(__file__), '..', '..', '..', '..', 'third_party',
-        'webxr_test_pages', 'webxr-samples')
+  os.path.dirname(__file__),
+  '..',
+  '..',
+  '..',
+  '..',
+  'third_party',
+  'webxr_test_pages',
+  'webxr-samples',
+)
 
 
 class _VrXrSamplePage(page.Page):
   """Superclass for all VR and XR sample pages."""
 
-  def __init__(self, sample_directory, sample_page, page_set,
-      url_parameters=None, extra_browser_args=None):
+  def __init__(
+    self,
+    sample_directory,
+    sample_page,
+    page_set,
+    url_parameters=None,
+    extra_browser_args=None,
+  ):
     url = '%s.html' % sample_page
     if url_parameters is not None:
       url += '?' + '&'.join(url_parameters)
@@ -35,11 +58,12 @@ class _VrXrSamplePage(page.Page):
     name = re.sub(r'[^a-zA-Z\d\?\-\.]+', '_', name)
     url = 'file://' + os.path.join(sample_directory, url)
     super(_VrXrSamplePage, self).__init__(
-        url=url,
-        page_set=page_set,
-        name=name,
-        extra_browser_args=extra_browser_args,
-        shared_page_state_class=vr_state.SharedVrPageStateFactory)
+      url=url,
+      page_set=page_set,
+      name=name,
+      extra_browser_args=extra_browser_args,
+      shared_page_state_class=vr_state.SharedVrPageStateFactory,
+    )
     self._shared_page_state = None
 
   def Run(self, shared_state):
@@ -54,27 +78,31 @@ class _VrXrSamplePage(page.Page):
 class VrSamplePage(_VrXrSamplePage):
   """Superclass for all VR sample pages."""
 
-  def __init__(self, sample_page, page_set, url_parameters=None,
-      extra_browser_args=None):
+  def __init__(
+    self, sample_page, page_set, url_parameters=None, extra_browser_args=None
+  ):
     super(VrSamplePage, self).__init__(
-        sample_directory=WEBVR_SAMPLE_DIR,
-        sample_page=sample_page,
-        page_set=page_set,
-        url_parameters=url_parameters,
-        extra_browser_args=extra_browser_args)
+      sample_directory=WEBVR_SAMPLE_DIR,
+      sample_page=sample_page,
+      page_set=page_set,
+      url_parameters=url_parameters,
+      extra_browser_args=extra_browser_args,
+    )
 
 
 class XrSamplePage(_VrXrSamplePage):
   """Superclass for all XR sample pages."""
 
-  def __init__(self, sample_page, page_set, url_parameters=None,
-      extra_browser_args=None):
+  def __init__(
+    self, sample_page, page_set, url_parameters=None, extra_browser_args=None
+  ):
     super(XrSamplePage, self).__init__(
-        sample_directory=WEBXR_SAMPLE_DIR,
-        sample_page=sample_page,
-        page_set=page_set,
-        url_parameters=url_parameters,
-        extra_browser_args=extra_browser_args)
+      sample_directory=WEBXR_SAMPLE_DIR,
+      sample_page=sample_page,
+      page_set=page_set,
+      url_parameters=url_parameters,
+      extra_browser_args=extra_browser_args,
+    )
 
   @property
   def serving_dir(self):

@@ -32,18 +32,22 @@ class _JetStream2Base(press._PressBenchmark):  # pylint:disable=protected-access
 
   Run all the JetStream 2.x benchmarks by default.
   """
+
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    parser.add_argument('--test-list',
-                        help='Only run specific tests, separated by commas.')
+    parser.add_argument(
+      '--test-list', help='Only run specific tests, separated by commas.'
+    )
 
 
 @benchmark.Info(
-    emails=['vahl@chromium.org', 'cbruni@chromium.org'],
-    component='Blink>JavaScript',
-    documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
+  emails=['vahl@chromium.org', 'cbruni@chromium.org'],
+  component='Blink>JavaScript',
+  documentation_url='https://browserbench.org/JetStream2.0/in-depth.html',
+)
 class JetStream20(_JetStream2Base):
   """JetStream 2.0"""
+
   @classmethod
   def Name(cls):
     return 'UNSCHEDULED_jetstream20'
@@ -53,11 +57,13 @@ class JetStream20(_JetStream2Base):
 
 
 @benchmark.Info(
-    emails=['vahl@chromium.org', 'cbruni@chromium.org'],
-    component='Blink>JavaScript',
-    documentation_url='https://browserbench.org/JetStream2.1/in-depth.html')
+  emails=['vahl@chromium.org', 'cbruni@chromium.org'],
+  component='Blink>JavaScript',
+  documentation_url='https://browserbench.org/JetStream2.1/in-depth.html',
+)
 class JetStream21(_JetStream2Base):
   """JetStream 2.1"""
+
   @classmethod
   def Name(cls):
     return 'UNSCHEDULED_jetstream21'
@@ -67,9 +73,10 @@ class JetStream21(_JetStream2Base):
 
 
 @benchmark.Info(
-    emails=['vahl@chromium.org', 'cbruni@chromium.org'],
-    component='Blink>JavaScript',
-    documentation_url='https://browserbench.org/JetStream2.2/in-depth.html')
+  emails=['vahl@chromium.org', 'cbruni@chromium.org'],
+  component='Blink>JavaScript',
+  documentation_url='https://browserbench.org/JetStream2.2/in-depth.html',
+)
 class JetStream22(_JetStream2Base):
   """JetStream 2.2"""
 
@@ -82,11 +89,13 @@ class JetStream22(_JetStream2Base):
 
 
 @benchmark.Info(
-    emails=['vahl@chromium.org', 'cbruni@chromium.org'],
-    component='Blink>JavaScript',
-    documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
+  emails=['vahl@chromium.org', 'cbruni@chromium.org'],
+  component='Blink>JavaScript',
+  documentation_url='https://browserbench.org/JetStream2.0/in-depth.html',
+)
 class JetStream2(_JetStream2Base):
-  """Latest JetStream 2.x """
+  """Latest JetStream 2.x"""
+
   @classmethod
   def Name(cls):
     return 'jetstream2'
@@ -96,12 +105,12 @@ class JetStream2(_JetStream2Base):
 
 
 @benchmark.Info(
-    emails=['vahl@chromium.org', 'cbruni@chromium.org'],
-    component='Blink>JavaScript',
-    documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
+  emails=['vahl@chromium.org', 'cbruni@chromium.org'],
+  component='Blink>JavaScript',
+  documentation_url='https://browserbench.org/JetStream2.0/in-depth.html',
+)
 class JetStream2NoFieldTrial(JetStream2):
-  """Latest JetStream 2.x without field-trials
-  """
+  """Latest JetStream 2.x without field-trials"""
 
   SCHEDULED = False
 

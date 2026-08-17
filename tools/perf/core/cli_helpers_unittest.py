@@ -53,11 +53,14 @@ class CLIHelpersTest(unittest.TestCase):
   def testPrintsStep(self, print_mock):
     long_step_name = 'foobar' * 15
     cli_helpers.Step(long_step_name)
-    self.assertListEqual(print_mock.call_args_list, [
+    self.assertListEqual(
+      print_mock.call_args_list,
+      [
         mock.call('\033[92m' + ('=' * 90) + '\033[0m'),
         mock.call('\033[92m' + long_step_name + '\033[0m'),
         mock.call('\033[92m' + ('=' * 90) + '\033[0m'),
-    ])
+      ],
+    )
 
   @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch(BUILTIN_MODULE + '.input')
@@ -66,11 +69,14 @@ class CLIHelpersTest(unittest.TestCase):
   def testAskAgainOnInvalidAnswer(self, input_mock, print_mock):
     input_mock.side_effect = ['foobar', 'y']
     self.assertTrue(cli_helpers.Ask('Ready?'))
-    self.assertListEqual(print_mock.mock_calls, [
-      mock.call('\033[96mReady? [no/YES] \033[0m', end=' '),
-      mock.call('\033[91mPlease respond with "no" or "yes".\033[0m'),
-      mock.call('\033[96mReady? [no/YES] \033[0m', end=' ')
-    ])
+    self.assertListEqual(
+      print_mock.mock_calls,
+      [
+        mock.call('\033[96mReady? [no/YES] \033[0m', end=' '),
+        mock.call('\033[91mPlease respond with "no" or "yes".\033[0m'),
+        mock.call('\033[96mReady? [no/YES] \033[0m', end=' '),
+      ],
+    )
 
   @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch(BUILTIN_MODULE + '.input')
@@ -79,9 +85,11 @@ class CLIHelpersTest(unittest.TestCase):
   def testAskWithCustomAnswersAndDefault(self, input_mock, print_mock):
     input_mock.side_effect = ['']
     self.assertFalse(
-        cli_helpers.Ask('Ready?', {'foo': True, 'bar': False}, default='bar'))
+      cli_helpers.Ask('Ready?', {'foo': True, 'bar': False}, default='bar')
+    )
     print_mock.assert_called_once_with(
-        '\033[96mReady? [BAR/foo] \033[0m', end=' ')
+      '\033[96mReady? [BAR/foo] \033[0m', end=' '
+    )
 
   @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch(BUILTIN_MODULE + '.input')
@@ -90,10 +98,11 @@ class CLIHelpersTest(unittest.TestCase):
   def testAskWithCustomAnswersAndCaps(self, input_mock, print_mock):
     input_mock.side_effect = ['Foo/Bar/Baz']
     self.assertEqual(
-        cli_helpers.Ask('Ready?', ["Foo/Bar/Baz", "other"]),
-        'Foo/Bar/Baz')
+      cli_helpers.Ask('Ready?', ["Foo/Bar/Baz", "other"]), 'Foo/Bar/Baz'
+    )
     print_mock.assert_called_once_with(
-        '\033[96mReady? [Foo/Bar/Baz/other] \033[0m', end=' ')
+      '\033[96mReady? [Foo/Bar/Baz/other] \033[0m', end=' '
+    )
 
   @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch(BUILTIN_MODULE + '.input')
@@ -102,11 +111,14 @@ class CLIHelpersTest(unittest.TestCase):
   def testAskNoDefaultCustomAnswersAsList(self, input_mock, print_mock):
     input_mock.side_effect = ['', 'FoO']
     self.assertEqual(cli_helpers.Ask('Ready?', ['foo', 'bar']), 'foo')
-    self.assertListEqual(print_mock.mock_calls, [
-      mock.call('\033[96mReady? [foo/bar] \033[0m', end=' '),
-      mock.call('\033[91mPlease respond with "bar" or "foo".\033[0m'),
-      mock.call('\033[96mReady? [foo/bar] \033[0m', end=' ')
-    ])
+    self.assertListEqual(
+      print_mock.mock_calls,
+      [
+        mock.call('\033[96mReady? [foo/bar] \033[0m', end=' '),
+        mock.call('\033[91mPlease respond with "bar" or "foo".\033[0m'),
+        mock.call('\033[96mReady? [foo/bar] \033[0m', end=' '),
+      ],
+    )
 
   def testAskWithInvalidDefaultAnswer(self):
     with self.assertRaises(ValueError):
@@ -116,26 +128,30 @@ class CLIHelpersTest(unittest.TestCase):
   @mock.patch('subprocess.check_call')
   @mock.patch(BUILTIN_MODULE + '.open')
   @mock.patch('datetime.datetime')
-  def testCheckLog(
-      self, dt_mock, open_mock, check_call_mock, print_mock):
+  def testCheckLog(self, dt_mock, open_mock, check_call_mock, print_mock):
     file_mock = mock.Mock()
     open_mock.return_value.__enter__.return_value = file_mock
     dt_mock.now.return_value.strftime.return_value = '_2018_12_10_16_22_11'
 
     cli_helpers.CheckLog(
-        ['command', 'arg with space'], '/tmp/tmpXYZ.tmp', env={'foo': 'bar'})
+      ['command', 'arg with space'], '/tmp/tmpXYZ.tmp', env={'foo': 'bar'}
+    )
 
     check_call_mock.assert_called_once_with(
-        ['command', 'arg with space'],
-        stdout=file_mock,
-        stderr=subprocess.STDOUT,
-        shell=False,
-        env={'foo': 'bar'})
+      ['command', 'arg with space'],
+      stdout=file_mock,
+      stderr=subprocess.STDOUT,
+      shell=False,
+      env={'foo': 'bar'},
+    )
     open_mock.assert_called_once_with('/tmp/tmpXYZ.tmp', 'w')
-    self.assertListEqual(print_mock.mock_calls, [
-      mock.call("\033[94mcommand 'arg with space'\033[0m"),
-      mock.call('\033[94mLogging stdout & stderr to /tmp/tmpXYZ.tmp\033[0m'),
-    ])
+    self.assertListEqual(
+      print_mock.mock_calls,
+      [
+        mock.call("\033[94mcommand 'arg with space'\033[0m"),
+        mock.call('\033[94mLogging stdout & stderr to /tmp/tmpXYZ.tmp\033[0m'),
+      ],
+    )
 
   @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('core.cli_helpers.Error')
@@ -143,7 +159,8 @@ class CLIHelpersTest(unittest.TestCase):
   @mock.patch('subprocess.call')
   @mock.patch(BUILTIN_MODULE + '.open')
   def testCheckLogError(
-      self, open_mock, call_mock, check_call_mock, error_mock, print_mock):
+    self, open_mock, call_mock, check_call_mock, error_mock, print_mock
+  ):
     del print_mock, open_mock  # Unused.
     check_call_mock.side_effect = [subprocess.CalledProcessError(87, ['cmd'])]
 
@@ -151,12 +168,15 @@ class CLIHelpersTest(unittest.TestCase):
       cli_helpers.CheckLog(['cmd'], '/tmp/tmpXYZ.tmp')
 
     call_mock.assert_called_once_with(['cat', '/tmp/tmpXYZ.tmp'])
-    self.assertListEqual(error_mock.mock_calls, [
-      mock.call('=' * 80),
-      mock.call('Received non-zero return code. Log content:'),
-      mock.call('=' * 80),
-      mock.call('=' * 80),
-    ])
+    self.assertListEqual(
+      error_mock.mock_calls,
+      [
+        mock.call('=' * 80),
+        mock.call('Received non-zero return code. Log content:'),
+        mock.call('=' * 80),
+        mock.call('=' * 80),
+      ],
+    )
 
   @mock.patch(BUILTIN_MODULE + '.print')
   @mock.patch('subprocess.check_call')
@@ -165,7 +185,8 @@ class CLIHelpersTest(unittest.TestCase):
     with self.assertRaises(subprocess.CalledProcessError):
       cli_helpers.Run(['cmd', 'arg with space'], env={'a': 'b'})
     check_call_mock.assert_called_once_with(
-        ['cmd', 'arg with space'], env={'a': 'b'})
+      ['cmd', 'arg with space'], env={'a': 'b'}
+    )
     print_mock.assert_called_once_with('\033[94mcmd \'arg with space\'\033[0m')
 
   @mock.patch(BUILTIN_MODULE + '.print')
@@ -183,11 +204,14 @@ class CLIHelpersTest(unittest.TestCase):
   @mock.patch(BUILTIN_MODULE + '.input')
   def testPrompt(self, input_mock, print_mock):
     input_mock.side_effect = ['', '42']
-    self.assertEqual(cli_helpers.Prompt(
-        'What is the ultimate meaning of life, universe and everything?'), '42')
+    self.assertEqual(
+      cli_helpers.Prompt(
+        'What is the ultimate meaning of life, universe and everything?'
+      ),
+      '42',
+    )
     self.assertEqual(input_mock.call_count, 2)
     self.assertEqual(print_mock.call_count, 3)
-
 
 
 if __name__ == "__main__":

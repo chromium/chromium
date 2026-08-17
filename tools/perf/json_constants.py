@@ -51,12 +51,25 @@ VERSION = 'version'
 WEBRTC_GIT_HASH = 'WebRTC'
 REPOSITORY_PROPERTY_MAP = {
   'chromium': {
-    'masters': ['ChromeFYIInternal', 'ChromiumAndroid', 'ChromiumChrome',
-    'ChromiumChromiumos', 'ChromiumClang', 'ChromiumFuchsia', 'ChromiumGPUFYI',
-    'ChromiumPerf', 'ChromiumPerfFyi', 'ChromiumPerfPGO',
-    'TryServerChromiumFuchsia', 'TryserverChromiumChromiumOS',
-    'ChromiumFuchsiaFyi', 'TryserverChromiumAndroid',
-    'ChromiumAndroidFyi', 'ChromiumFYI', 'ChromiumPerfFyi.all'],
+    'masters': [
+      'ChromeFYIInternal',
+      'ChromiumAndroid',
+      'ChromiumChrome',
+      'ChromiumChromiumos',
+      'ChromiumClang',
+      'ChromiumFuchsia',
+      'ChromiumGPUFYI',
+      'ChromiumPerf',
+      'ChromiumPerfFyi',
+      'ChromiumPerfPGO',
+      'TryServerChromiumFuchsia',
+      'TryserverChromiumChromiumOS',
+      'ChromiumFuchsiaFyi',
+      'TryserverChromiumAndroid',
+      'ChromiumAndroidFyi',
+      'ChromiumFYI',
+      'ChromiumPerfFyi.all',
+    ],
     'public_bucket_name': 'chrome-perf-public',
     'internal_bucket_name': 'chrome-perf-non-public',
     'ingest_folder': 'ingest',
@@ -110,5 +123,5 @@ REPOSITORY_PROPERTY_MAP = {
     'ingest_folder': 'ingest',
     'commit_number': False,
     'revision_param': 'r_fuchsia_integ_pub_git',
-  }
+  },
 }

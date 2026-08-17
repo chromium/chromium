@@ -10,6 +10,7 @@ import unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.pardir, 'perf'))
 
 from core import path_util
+
 path_util.AddPyUtilsToPath()
 path_util.AddTracingToPath()
 
@@ -33,13 +34,15 @@ class ExtractMetadataTestCase(unittest.TestCase):
     """
     return (self.trace_processor_path, self.trace_file, query)
 
-  def _CreateRunQueryResults(self,
-                             version_number_results=frozenset([]),
-                             os_name_results=frozenset([]),
-                             architecture_results=frozenset([]),
-                             bitness_results=frozenset([]),
-                             version_code_results=frozenset([]),
-                             modules_results=frozenset([])):
+  def _CreateRunQueryResults(
+    self,
+    version_number_results=frozenset([]),
+    os_name_results=frozenset([]),
+    architecture_results=frozenset([]),
+    bitness_results=frozenset([]),
+    version_code_results=frozenset([]),
+    modules_results=frozenset([]),
+  ):
     """Mock return of RunQuery calls.
 
     See trace_processor.RunQuery for the format of the query results.
@@ -52,24 +55,27 @@ class ExtractMetadataTestCase(unittest.TestCase):
       RunQuery function return values.
     """
     return {
-        self._RunQueryParams(metadata_extractor.VERSION_NUM_QUERY):
-        version_number_results,
-        self._RunQueryParams(metadata_extractor.OS_NAME_QUERY): os_name_results,
-        self._RunQueryParams(metadata_extractor.ARCH_QUERY):
-        architecture_results,
-        self._RunQueryParams(metadata_extractor.BITNESS_QUERY): bitness_results,
-        self._RunQueryParams(metadata_extractor.VERSION_CODE_QUERY):
-        version_code_results,
-        self._RunQueryParams(metadata_extractor.MODULES_QUERY): modules_results
+      self._RunQueryParams(
+        metadata_extractor.VERSION_NUM_QUERY
+      ): version_number_results,
+      self._RunQueryParams(metadata_extractor.OS_NAME_QUERY): os_name_results,
+      self._RunQueryParams(metadata_extractor.ARCH_QUERY): architecture_results,
+      self._RunQueryParams(metadata_extractor.BITNESS_QUERY): bitness_results,
+      self._RunQueryParams(
+        metadata_extractor.VERSION_CODE_QUERY
+      ): version_code_results,
+      self._RunQueryParams(metadata_extractor.MODULES_QUERY): modules_results,
     }
 
-  def _CreateRunQueryResultsFromValues(self,
-                                       version_number=None,
-                                       os_name=None,
-                                       architecture=None,
-                                       bitness=None,
-                                       version_code=None,
-                                       modules=None):
+  def _CreateRunQueryResultsFromValues(
+    self,
+    version_number=None,
+    os_name=None,
+    architecture=None,
+    bitness=None,
+    version_code=None,
+    modules=None,
+  ):
     """Mock return of RunQuery calls by values, except for modules.
 
     Args:
@@ -90,48 +96,34 @@ class ExtractMetadataTestCase(unittest.TestCase):
       A dictionary mapping of RunQuery parameters to their mocked
       RunQuery function return values.
     """
-    return self._CreateRunQueryResults(version_number_results=[{
-        'str_value':
-        version_number
-    }],
-                                       os_name_results=[{
-                                           'str_value': os_name
-                                       }],
-                                       architecture_results=[{
-                                           'str_value':
-                                           architecture
-                                       }],
-                                       bitness_results=[{
-                                           'int_value': bitness
-                                       }],
-                                       version_code_results=[{
-                                           'int_value':
-                                           version_code
-                                       }],
-                                       modules_results=modules)
+    return self._CreateRunQueryResults(
+      version_number_results=[{'str_value': version_number}],
+      os_name_results=[{'str_value': os_name}],
+      architecture_results=[{'str_value': architecture}],
+      bitness_results=[{'int_value': bitness}],
+      version_code_results=[{'int_value': version_code}],
+      modules_results=modules,
+    )
 
   def testExtractMetadata(self):
     def side_effect(*args):
       params = self._CreateRunQueryResultsFromValues(
-          version_number='Chrome/36.9.7934.4',
-          os_name='Android',
-          architecture='x86_64',
-          bitness='64',
-          version_code='857854',
-          modules=[{
-              'name': '/libmonochrome.so',
-              'build_id': '3284389AB83CD'
-          }, {
-              'name': '/missing',
-              'build_id': 'AB3288CDE3283'
-          }, {
-              'name': '/chrome.so',
-              'build_id': 'abcdef'
-          }])
+        version_number='Chrome/36.9.7934.4',
+        os_name='Android',
+        architecture='x86_64',
+        bitness='64',
+        version_code='857854',
+        modules=[
+          {'name': '/libmonochrome.so', 'build_id': '3284389AB83CD'},
+          {'name': '/missing', 'build_id': 'AB3288CDE3283'},
+          {'name': '/chrome.so', 'build_id': 'abcdef'},
+        ],
+      )
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
@@ -140,18 +132,19 @@ class ExtractMetadataTestCase(unittest.TestCase):
     self.assertEqual(extractor.architecture, 'x86_64')
     self.assertEqual(extractor.bitness, '64')
     self.assertEqual(extractor.version_code, '857854')
-    self.assertEqual(extractor.modules, {
-        '/libmonochrome.so': '3284389AB83CD',
-        '/chrome.so': 'ABCDEF'
-    })
+    self.assertEqual(
+      extractor.modules,
+      {'/libmonochrome.so': '3284389AB83CD', '/chrome.so': 'ABCDEF'},
+    )
 
   def testExtractMetadataEmptyList(self):
     def side_effect(*args):
       params = self._CreateRunQueryResults()
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
@@ -164,17 +157,17 @@ class ExtractMetadataTestCase(unittest.TestCase):
 
   def testExtractMetadataValuesNull(self):
     def side_effect(*args):
-      params = self._CreateRunQueryResultsFromValues(modules=[{
-          'name': None,
-          'build_id': None
-      }, {
-          'name': None,
-          'build_id': None
-      }])
+      params = self._CreateRunQueryResultsFromValues(
+        modules=[
+          {'name': None, 'build_id': None},
+          {'name': None, 'build_id': None},
+        ]
+      )
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
@@ -188,11 +181,13 @@ class ExtractMetadataTestCase(unittest.TestCase):
   def testExtractMetadataVersionNumberParsed(self):
     def side_effect(*args):
       params = self._CreateRunQueryResultsFromValues(
-          version_number='36.9.7934.4')
+        version_number='36.9.7934.4'
+      )
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
@@ -203,8 +198,9 @@ class ExtractMetadataTestCase(unittest.TestCase):
       params = self._CreateRunQueryResultsFromValues(os_name='Android')
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
@@ -215,8 +211,9 @@ class ExtractMetadataTestCase(unittest.TestCase):
       params = self._CreateRunQueryResultsFromValues(os_name='Linux')
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
@@ -225,11 +222,13 @@ class ExtractMetadataTestCase(unittest.TestCase):
   def testParseMac64(self):
     def side_effect(*args):
       params = self._CreateRunQueryResultsFromValues(
-          os_name='Mac OS X', version_number='Chrome/28.9.9364.32-64')
+        os_name='Mac OS X', version_number='Chrome/28.9.9364.32-64'
+      )
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
@@ -241,8 +240,9 @@ class ExtractMetadataTestCase(unittest.TestCase):
       params = self._CreateRunQueryResultsFromValues(os_name='Windows NT')
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
@@ -253,8 +253,9 @@ class ExtractMetadataTestCase(unittest.TestCase):
       params = self._CreateRunQueryResultsFromValues(os_name='CrOS')
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
@@ -265,8 +266,9 @@ class ExtractMetadataTestCase(unittest.TestCase):
       params = self._CreateRunQueryResultsFromValues(os_name='Fuschia')
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
     extractor.Initialize()
 
@@ -277,8 +279,9 @@ class ExtractMetadataTestCase(unittest.TestCase):
       params = self._CreateRunQueryResultsFromValues(os_name='blah')
       return params[args]
 
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     trace_processor.RunQuery = mock.MagicMock(side_effect=side_effect)
 
     exception_msg = 'OS name "blah" not recognized: ' + self.trace_file
@@ -287,25 +290,31 @@ class ExtractMetadataTestCase(unittest.TestCase):
     self.assertEqual(exception_msg, str(context.exception))
 
   def testGetModuleIds(self):
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
-    extractor.InitializeForTesting(modules={
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
+    extractor.InitializeForTesting(
+      modules={
         'name': '13423EDFAB2',
         'name2': '321468945',
-        'name3': '4093492737482'
-    })
-    self.assertEqual(extractor.GetModuleIds(),
-                     {'13423EDFAB2', '321468945', '4093492737482'})
+        'name3': '4093492737482',
+      }
+    )
+    self.assertEqual(
+      extractor.GetModuleIds(), {'13423EDFAB2', '321468945', '4093492737482'}
+    )
 
   def testGetModuleIdsEmpty(self):
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     extractor.InitializeForTesting(modules={})
     self.assertEqual(extractor.GetModuleIds(), set())
 
   def testGetModuleIdsNone(self):
-    extractor = metadata_extractor.MetadataExtractor(self.trace_processor_path,
-                                                     self.trace_file)
+    extractor = metadata_extractor.MetadataExtractor(
+      self.trace_processor_path, self.trace_file
+    )
     extractor.InitializeForTesting(modules=None)
     self.assertEqual(extractor.GetModuleIds(), None)
 

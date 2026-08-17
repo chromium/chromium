@@ -17,7 +17,6 @@ from core.schedule import query
 
 
 class QueryTest(unittest.TestCase):
-
   def setUp(self):
     self.tmp_dir = tempfile.TemporaryDirectory()
     self.path = pathlib.Path(self.tmp_dir.name)
@@ -38,8 +37,9 @@ class QueryTest(unittest.TestCase):
 
   def test_add_bot_to_file_with_flags(self):
     csv_path = self.path / 'benchmark.csv'
-    csv_path.write_text('bot,repeat,shard,flags\nbot1,1,1,flag1\n',
-                        encoding='utf-8')
+    csv_path.write_text(
+      'bot,repeat,shard,flags\nbot1,1,1,flag1\n', encoding='utf-8'
+    )
 
     with mock.patch('core.bot_platforms.LoadScheduleFile'):
       query.add_bot(csv_path, 'bot2', 1, 1, 'flag2')
@@ -112,8 +112,9 @@ bot2,1,1
 
   def test_main_invalid_benchmark(self):
     # Test that argparse validates the benchmark choice.
-    with mock.patch('sys.argv',
-                    ['query.py', 'list', '--benchmark', 'invalid-benchmark']):
+    with mock.patch(
+      'sys.argv', ['query.py', 'list', '--benchmark', 'invalid-benchmark']
+    ):
       with mock.patch('sys.stderr', new=io.StringIO()) as mock_stderr:
         with self.assertRaises(SystemExit) as cm:
           query.main()
@@ -124,8 +125,9 @@ bot2,1,1
   def test_main_valid_benchmark_glob(self):
     # Test that globs are allowed even if they don't match anything in
     # all_benchmarks (validation happens later in cmd_*)
-    with mock.patch('sys.argv',
-                    ['query.py', 'list', '--benchmark', 'blink_perf.*']):
+    with mock.patch(
+      'sys.argv', ['query.py', 'list', '--benchmark', 'blink_perf.*']
+    ):
       with mock.patch('core.schedule.query.cmd_list') as mock_cmd:
         query.main()
         mock_cmd.assert_called_once()

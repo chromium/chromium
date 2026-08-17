@@ -20,8 +20,8 @@ class RasterizeAndRecordMicroCT(
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):
-    (rasterize_and_record_micro._RasterizeAndRecordMicro.
-        AddBenchmarkCommandLineArgs(parser))
+    micro = rasterize_and_record_micro._RasterizeAndRecordMicro
+    micro.AddBenchmarkCommandLineArgs(parser)
     ct_benchmarks_util.AddBenchmarkCommandLineArgs(parser)
 
   @classmethod
@@ -30,5 +30,8 @@ class RasterizeAndRecordMicroCT(
 
   def CreateStorySet(self, options):
     return page_set.CTPageSet(
-        options.urls_list, options.user_agent, options.archive_data_file,
-        run_page_interaction_callback=repaint_helpers.WaitThenRepaint)
+        options.urls_list,
+        options.user_agent,
+        options.archive_data_file,
+        run_page_interaction_callback=repaint_helpers.WaitThenRepaint,
+    )

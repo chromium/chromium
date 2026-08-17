@@ -30,8 +30,10 @@ from pathlib import Path
 # has been processed, since that needs to work when running this script
 # in isolation.
 sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
-                 'scripts'))
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), '..', 'clang', 'scripts'
+    )
+)
 
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
@@ -48,7 +50,9 @@ CRUBIT_REVISION = '12b60aff50f64ba5964514e21af3c6d409915d93'
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
-STAGE0_JSON_SHA256 = 'ee610c286b028bb69a7778b566a2a4352ef0d8ca5499700d7c9cfa70fa92b306'
+STAGE0_JSON_SHA256 = (
+    'ee610c286b028bb69a7778b566a2a4352ef0d8ca5499700d7c9cfa70fa92b306'
+)
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..'))
@@ -61,6 +65,7 @@ VERSION_SRC_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, VERSION_SRC_FILENAME)
 
 def GetRustClangRevision():
     from update import CLANG_REVISION
+
     return f'{RUST_REVISION}-{RUST_SUB_REVISION}-{CLANG_REVISION}'
 
 
@@ -81,7 +86,8 @@ def GetStampVersion():
 def main():
     parser = argparse.ArgumentParser(
         description='Update Rust package',
-        formatter_class=argparse.RawTextHelpFormatter)
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
     parser.add_argument(
         '--print-revision',
         choices=['rust', 'installed', 'validate'],
@@ -92,7 +98,8 @@ def main():
         '  rust and clang revisions), without checking that it matches the\n'
         '  expected version in this file.\n'
         '- validate: print the expected package version, and ensure it\n'
-        '  matches the installed package.')
+        '  matches the installed package.',
+    )
     parser.add_argument('--output-dir', help='Where to extract the package.')
 
     args = parser.parse_args()
@@ -102,10 +109,14 @@ def main():
         return 0
     elif args.print_revision:
         stamp_version = GetStampVersion()
-        if (args.print_revision == 'validate'
-                and stamp_version != GetRustClangRevision()):
-            print(f'The expected Rust version is {GetRustClangRevision()} '
-                  f'but the actual version is {stamp_version}')
+        if (
+            args.print_revision == 'validate'
+            and stamp_version != GetRustClangRevision()
+        ):
+            print(
+                f'The expected Rust version is {GetRustClangRevision()} '
+                f'but the actual version is {stamp_version}'
+            )
             print('Did you run "gclient sync"?')
             return 1
         print(stamp_version)
@@ -117,8 +128,7 @@ def main():
         output_dir = os.path.abspath(args.output_dir)
         VERSION_SRC_PATH = os.path.join(output_dir, VERSION_SRC_FILENAME)
 
-    from update import (DownloadAndUnpack, GetDefaultHostOs,
-                        GetPlatformUrlPrefix)
+    from update import DownloadAndUnpack, GetDefaultHostOs, GetPlatformUrlPrefix
 
     platform_prefix = GetPlatformUrlPrefix(GetDefaultHostOs())
 
@@ -135,7 +145,8 @@ def main():
     # from the first class dep and the dir needs to be cleared.
     if os.path.exists(output_dir):
         if version == GetStampVersion() and not glob.glob(
-                os.path.join(output_dir, '.*_is_first_class_gcs')):
+            os.path.join(output_dir, '.*_is_first_class_gcs')
+        ):
             return 0
 
     if os.path.exists(output_dir):

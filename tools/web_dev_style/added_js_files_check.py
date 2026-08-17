@@ -1,8 +1,7 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Checks for new additions of JS (rather than TS) files.
-"""
+"""Checks for new additions of JS (rather than TS) files."""
 
 
 def AddedJsFilesCheck(input_api, output_api, file_filter=lambda f: True):
@@ -16,14 +15,16 @@ def AddedJsFilesCheck(input_api, output_api, file_filter=lambda f: True):
   # most files, thus reducing the number of calls to file_filter which might be
   # expensive.
   wrapped_filter = lambda f: AddedJsFilesFilter(f) and file_filter(f)
-  added_js_files = input_api.AffectedFiles(include_deletes=False,
-                                           file_filter=wrapped_filter)
+  added_js_files = input_api.AffectedFiles(
+    include_deletes=False, file_filter=wrapped_filter
+  )
 
   for f in added_js_files:
     results += [
-        output_api.PresubmitError(
-            'Disallowed JS file found \'%s\'. New WebUI files must be written '
-            'in TypeScript instead.' % f.LocalPath())
+      output_api.PresubmitError(
+        'Disallowed JS file found \'%s\'. New WebUI files must be written '
+        'in TypeScript instead.' % f.LocalPath()
+      )
     ]
 
   return results

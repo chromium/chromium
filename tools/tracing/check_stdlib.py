@@ -13,16 +13,19 @@ import sys
 
 def main():
   perfetto_dir = os.path.abspath(
-      os.path.join(__file__, "..", "..", "..", "third_party", "perfetto"))
+    os.path.join(__file__, "..", "..", "..", "third_party", "perfetto")
+  )
   tool = os.path.join(perfetto_dir, "tools", "check_sql_modules.py")
-  stdlib_sources = os.path.join(perfetto_dir, "..", "..", "base", "tracing",
-                                "stdlib")
+  stdlib_sources = os.path.join(
+    perfetto_dir, "..", "..", "base", "tracing", "stdlib"
+  )
 
   vpython = 'vpython3.bat' if sys.platform == 'win32' else 'vpython3'
   completed_process = subprocess.run(
-      [vpython, tool, "--stdlib-sources", stdlib_sources],
-      check=False,
-      capture_output=True)
+    [vpython, tool, "--stdlib-sources", stdlib_sources],
+    check=False,
+    capture_output=True,
+  )
   sys.stderr.buffer.write(completed_process.stderr)
   sys.stdout.buffer.write(completed_process.stdout)
   return completed_process.returncode

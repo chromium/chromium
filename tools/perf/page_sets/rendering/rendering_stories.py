@@ -17,14 +17,13 @@ from py_utils import discover
 class RenderingStorySet(story.StorySet):
   """Stories related to rendering."""
 
-  def __init__(self,
-               platform,
-               scroll_forever=False,
-               disable_tracing=False,
-               os_name=None):
+  def __init__(
+    self, platform, scroll_forever=False, disable_tracing=False, os_name=None
+  ):
     super(RenderingStorySet, self).__init__(
-        archive_data_file=('../data/rendering_%s.json' % platform),
-        cloud_storage_bucket=story.PARTNER_BUCKET)
+      archive_data_file=('../data/rendering_%s.json' % platform),
+      cloud_storage_bucket=story.PARTNER_BUCKET,
+    )
 
     assert platform in platforms.ALL_PLATFORMS
     self._platform = platform
@@ -42,9 +41,13 @@ class RenderingStorySet(story.StorySet):
     self.target_scale_factor = 4.0
 
     for story_class in _IterAllRenderingStoryClasses():
-      if (story_class.ABSTRACT_STORY or not _IsSupportedPlatform(
-          platform, story_class.SUPPORTED_PLATFORMS, os_name)
-          or story_class.DISABLE_TRACING != disable_tracing):
+      if (
+        story_class.ABSTRACT_STORY
+        or not _IsSupportedPlatform(
+          platform, story_class.SUPPORTED_PLATFORMS, os_name
+        )
+        or story_class.DISABLE_TRACING != disable_tracing
+      ):
         continue
 
       required_args = []
@@ -52,14 +55,16 @@ class RenderingStorySet(story.StorySet):
         required_args += story_class.EXTRA_BROWSER_ARGUMENTS
 
       name_suffix = ''
-      if (story_class.TAGS and
-          story_tags.USE_FAKE_CAMERA_DEVICE in story_class.TAGS):
+      if (
+        story_class.TAGS
+        and story_tags.USE_FAKE_CAMERA_DEVICE in story_class.TAGS
+      ):
         required_args += [
-            # Use a fake camera showing a placeholder video.
-            '--use-fake-device-for-media-stream',
-            # Don't prompt for camera access. (Conveniently,
-            # this takes precedent over --deny-permission-prompts.)
-            '--use-fake-ui-for-media-stream',
+          # Use a fake camera showing a placeholder video.
+          '--use-fake-device-for-media-stream',
+          # Don't prompt for camera access. (Conveniently,
+          # this takes precedent over --deny-permission-prompts.)
+          '--use-fake-ui-for-media-stream',
         ]
 
       if story_class.TAGS and story_tags.BACKDROP_FILTER in story_class.TAGS:
@@ -69,24 +74,32 @@ class RenderingStorySet(story.StorySet):
 
       # TODO(crbug.com/40629637): We must run without out-of-process
       # rasterization until that branch is implemented for YUV decoding.
-      if (story_class.TAGS and story_tags.IMAGE_DECODING in story_class.TAGS
-          and story_tags.GPU_RASTERIZATION in story_class.TAGS):
+      if (
+        story_class.TAGS
+        and story_tags.IMAGE_DECODING in story_class.TAGS
+        and story_tags.GPU_RASTERIZATION in story_class.TAGS
+      ):
         required_args += ['--enable-gpu-rasterization']
         # Run RGB decoding with GPU rasterization (to be most comparable to YUV)
-        self.AddStory(story_class(
+        self.AddStory(
+          story_class(
             page_set=self,
-            extra_browser_args=required_args +
-                ['--disable-yuv-image-decoding'],
+            extra_browser_args=required_args + ['--disable-yuv-image-decoding'],
             shared_page_state_class=shared_page_state_class,
-            name_suffix='_rgb_and_gpu_rasterization'))
+            name_suffix='_rgb_and_gpu_rasterization',
+          )
+        )
         # Also run YUV decoding story with GPU rasterization.
         name_suffix = '_yuv_and_gpu_rasterization'
 
-      self.AddStory(story_class(
+      self.AddStory(
+        story_class(
           page_set=self,
           extra_browser_args=required_args,
           shared_page_state_class=shared_page_state_class,
-          name_suffix=name_suffix))
+          name_suffix=name_suffix,
+        )
+      )
 
   def GetAbridgedStorySetTagFilter(self):
     if self._platform == platforms.DESKTOP:
@@ -108,6 +121,7 @@ class DesktopRenderingStorySet(RenderingStorySet):
   the generic RenderingStorySet class instead (you'll need to override the
   CreateStorySet method of your benchmark).
   """
+
   def __init__(self):
     super(DesktopRenderingStorySet, self).__init__(platform='desktop')
 
@@ -116,10 +130,13 @@ def _IterAllRenderingStoryClasses():
   start_dir = os.path.dirname(os.path.abspath(__file__))
   # Sort the classes by their names so that their order is stable and
   # deterministic.
-  for _, cls in sorted(discover.DiscoverClasses(
+  for _, cls in sorted(
+    discover.DiscoverClasses(
       start_dir=start_dir,
       top_level_dir=os.path.dirname(start_dir),
-      base_class=rendering_story.RenderingStory).items()):
+      base_class=rendering_story.RenderingStory,
+    ).items()
+  ):
     yield cls
 
 
@@ -132,8 +149,11 @@ def _IsSupportedPlatform(platform, story_supported_platforms, os_name):
 
   if platform == platforms.DESKTOP and os_name is not None:
     # TODO(jonross): port all rendering benchmarks to use stories.exceptions
-    if story_supported_platforms in (platforms.MOBILE, platforms.MOBILE_ONLY,
-                                     platforms.NO_PLATFORMS):
+    if story_supported_platforms in (
+      platforms.MOBILE,
+      platforms.MOBILE_ONLY,
+      platforms.NO_PLATFORMS,
+    ):
       return False
     # Stories can have multiple separate `_TestConditionByPlatformList` set as
     # expectations, check in each. For details see

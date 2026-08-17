@@ -14,7 +14,6 @@ import cipd
 
 
 class FetchBundleTest(unittest.TestCase):
-
   def setUp(self):
     self.tmp_dir = pathlib.Path(tempfile.mkdtemp())
     patch_cipd_dir = mock.patch('cipd._CIPD_ROOT_BASE_DIR', self.tmp_dir)
@@ -35,8 +34,9 @@ class FetchBundleTest(unittest.TestCase):
 
     bundle_dir = cipd.fetch_recipe_bundle('dawn', True)
     self.assertEqual(bundle_dir, self.tmp_dir.joinpath('dawn'))
-    self.assertIn(cipd._CHROMIUM_RECIPE_BUNDLE,
-                  self.subp_mock.call_args.args[0])
+    self.assertIn(
+      cipd._CHROMIUM_RECIPE_BUNDLE, self.subp_mock.call_args.args[0]
+    )
 
   def testUnknownProject(self):
     # Unknown project defaults to chrome for safety.

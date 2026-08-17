@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""USB constant definitions.
-"""
+"""USB constant definitions."""
 
 
 class DescriptorType(object):
@@ -11,6 +10,7 @@ class DescriptorType(object):
 
   See Universal Serial Bus Specification Revision 2.0 Table 9-5.
   """
+
   DEVICE = 1
   CONFIGURATION = 2
   STRING = 3
@@ -27,6 +27,7 @@ class CapabilityType(object):
 
   See Universal Serial Bus 3.1 Specification, Revision 1.0 Table 9-14.
   """
+
   WIRELESS_USB = 0x01
   USB_20_EXTENSION = 0x02
   SUPERSPEED_USB = 0x03
@@ -46,6 +47,7 @@ class DeviceClass(object):
 
   See http://www.usb.org/developers/defined_class.
   """
+
   PER_INTERFACE = 0
   AUDIO = 1
   COMM = 2
@@ -67,6 +69,7 @@ class DeviceSubClass(object):
 
   See http://www.usb.org/developers/defined_class.
   """
+
   PER_INTERFACE = 0
   VENDOR = 0xFF
 
@@ -76,6 +79,7 @@ class DeviceProtocol(object):
 
   See http://www.usb.org/developers/defined_class.
   """
+
   PER_INTERFACE = 0
   VENDOR = 0xFF
 
@@ -85,6 +89,7 @@ class InterfaceClass(object):
 
   See http://www.usb.org/developers/defined_class.
   """
+
   VENDOR = 0xFF
 
 
@@ -93,6 +98,7 @@ class InterfaceSubClass(object):
 
   See http://www.usb.org/developers/defined_class.
   """
+
   VENDOR = 0xFF
 
 
@@ -101,6 +107,7 @@ class InterfaceProtocol(object):
 
   See http://www.usb.org/developers/defined_class.
   """
+
   VENDOR = 0xFF
 
 
@@ -109,6 +116,7 @@ class TransferType(object):
 
   See http://www.usb.org/developers/defined_class.
   """
+
   MASK = 3
   CONTROL = 0
   ISOCHRONOUS = 1
@@ -121,6 +129,7 @@ class Dir(object):
 
   See Universal Serial Bus Specification Revision 2.0 Table 9-2.
   """
+
   OUT = 0
   IN = 0x80
 
@@ -130,6 +139,7 @@ class Type(object):
 
   See Universal Serial Bus Specification Revision 2.0 Table 9-2.
   """
+
   MASK = 0x60
   STANDARD = 0x00
   CLASS = 0x20
@@ -142,7 +152,8 @@ class Recipient(object):
 
   See Universal Serial Bus Specification Revision 2.0 Table 9-2.
   """
-  MASK = 0x1f
+
+  MASK = 0x1F
   DEVICE = 0
   INTERFACE = 1
   ENDPOINT = 2
@@ -154,6 +165,7 @@ class Request(object):
 
   See Universal Serial Bus Specification Revision 2.0 Table 9-4.
   """
+
   GET_STATUS = 0x00
   CLEAR_FEATURE = 0x01
   SET_FEATURE = 0x03

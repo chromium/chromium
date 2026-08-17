@@ -9,23 +9,29 @@ from page_sets.helpers import override_online
 
 def _LoginAccount(action_runner, credential, credentials_path):
   account_name, password = login_utils.GetAccountNameAndPassword(
-      credential, credentials_path=credentials_path)
+    credential, credentials_path=credentials_path
+  )
 
-  action_runner.Navigate('https://www.pinterest.co.uk/login/',
-                         override_online.ALWAYS_ONLINE)
-  action_runner.Wait(1) # Error page happens if this wait is not here.
+  action_runner.Navigate(
+    'https://www.pinterest.co.uk/login/', override_online.ALWAYS_ONLINE
+  )
+  action_runner.Wait(1)  # Error page happens if this wait is not here.
   action_runner.WaitForElement(selector='button[type=submit]')
 
   login_utils.InputWithSelector(
-      action_runner, '%s@gmail.com' % account_name, 'input[type=email]')
+    action_runner, '%s@gmail.com' % account_name, 'input[type=email]'
+  )
 
-  login_utils.InputWithSelector(
-      action_runner, password, 'input[type=password]')
+  login_utils.InputWithSelector(action_runner, password, 'input[type=password]')
 
   action_runner.ClickElement(selector='button[type=submit]')
 
-def LoginDesktopAccount(action_runner, credential,
-                        credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH):
+
+def LoginDesktopAccount(
+  action_runner,
+  credential,
+  credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH,
+):
   """Logs in into a Pinterest account on desktop.
 
   This function navigates the tab into Pinterest's login page and logs in a user
@@ -43,8 +49,12 @@ def LoginDesktopAccount(action_runner, credential,
   _LoginAccount(action_runner, credential, credentials_path)
   action_runner.WaitForElement(selector='input[name=searchBoxInput]')
 
-def LoginMobileAccount(action_runner, credential,
-                        credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH):
+
+def LoginMobileAccount(
+  action_runner,
+  credential,
+  credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH,
+):
   """Logs in into a Pinterest account on mobile.
 
   This function navigates the tab into Pinterest's login page and logs in a user

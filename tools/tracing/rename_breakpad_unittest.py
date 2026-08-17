@@ -13,6 +13,7 @@ import shutil
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.pardir, 'perf'))
 
 from core import path_util
+
 path_util.AddPyUtilsToPath()
 path_util.AddTracingToPath()
 import py_utils
@@ -34,8 +35,7 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     shutil.rmtree(self.breakpad_output_dir)
 
   def _listSubtree(self, root):
-    """Returns absolute paths of files and dirs in root subtree.
-    """
+    """Returns absolute paths of files and dirs in root subtree."""
     files = set()
     dirs = set()
     for topdir, subdirs, filenames in os.walk(root):
@@ -45,9 +45,9 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
         dirs.add(os.path.join(topdir, subdir))
     return dirs, files
 
-  def _assertFilesInInputDir(self,
-                             expected_unmoved_files=frozenset(),
-                             expected_unmoved_dirs=frozenset()):
+  def _assertFilesInInputDir(
+    self, expected_unmoved_files=frozenset(), expected_unmoved_dirs=frozenset()
+  ):
     """Ensures that |RenameBreakpadFiles| doesn't move files/dirs.
 
     Automatically adds |self.breakpad_unzip_dir| to
@@ -61,8 +61,7 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     self.assertEqual(expected_unmoved_dirs, unmoved_dirs)
 
   def _assertFilesInOutputDir(self, expected_moved_files=frozenset()):
-    """Ensures that |RenameBreakpadFiles| correctly moves files.
-    """
+    """Ensures that |RenameBreakpadFiles| correctly moves files."""
     moved_files = set(os.listdir(self.breakpad_output_dir))
     self.assertEqual(expected_moved_files, moved_files)
 
@@ -75,8 +74,9 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     with open(breakpad_file2, 'w') as file2:
       file2.write('MODULE mac x86_64 29e6f9a7ce00f name2.so')
 
-    rename_breakpad.RenameBreakpadFiles(self.breakpad_dir,
-                                        self.breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(
+      self.breakpad_dir, self.breakpad_output_dir
+    )
 
     self._assertFilesInInputDir()
 
@@ -89,8 +89,9 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     with open(breakpad_file1, 'w') as file1:
       file1.write('MODULE Linux x86_64 12a345b6c7def890 name1.so')
 
-    rename_breakpad.RenameBreakpadFiles(self.breakpad_dir,
-                                        self.breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(
+      self.breakpad_dir, self.breakpad_output_dir
+    )
 
     self._assertFilesInInputDir()
 
@@ -103,8 +104,9 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     with open(breakpad_file1, 'w') as file1:
       file1.write('MODULE Linux x86_64 34984AB4EF948C name1.so')
 
-    rename_breakpad.RenameBreakpadFiles(self.breakpad_dir,
-                                        self.breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(
+      self.breakpad_dir, self.breakpad_output_dir
+    )
 
     self._assertFilesInInputDir()
 
@@ -125,14 +127,17 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     with open(breakpad_file3, 'w') as file3:
       file3.write('MODULE mac x86_64 45DFE name3.so')
 
-    rename_breakpad.RenameBreakpadFiles(self.breakpad_dir,
-                                        self.breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(
+      self.breakpad_dir, self.breakpad_output_dir
+    )
 
     expected_unmoved_dirs = {subdir1, subdir2}
     self._assertFilesInInputDir(expected_unmoved_dirs=expected_unmoved_dirs)
 
     expected_moved_files = {
-        '48537ABD.breakpad', '38ABC9F.breakpad', '45DFE.breakpad'
+      '48537ABD.breakpad',
+      '38ABC9F.breakpad',
+      '45DFE.breakpad',
     }
     self._assertFilesInOutputDir(expected_moved_files)
 
@@ -152,8 +157,9 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     with open(non_breakpad_file, 'w') as file3:
       file3.write('MODULE mac x86_64 329FDEA987BC name.so')
 
-    rename_breakpad.RenameBreakpadFiles(self.breakpad_dir,
-                                        self.breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(
+      self.breakpad_dir, self.breakpad_output_dir
+    )
 
     expected_unmoved_files = {fake_file, empty_file, non_breakpad_file}
     expected_unmoved_dirs = {random_dir}
@@ -177,8 +183,9 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     with open(short_file, 'w') as file3:
       file3.write('MODULE mac 1240DF90E9AC39038EF400 name')
 
-    rename_breakpad.RenameBreakpadFiles(self.breakpad_dir,
-                                        self.breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(
+      self.breakpad_dir, self.breakpad_output_dir
+    )
 
     expected_unmoved_files = {empty_file, no_module_file, short_file}
     self._assertFilesInInputDir(expected_unmoved_files)
@@ -205,11 +212,16 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     with open(non_breakpad_file, 'w') as file4:
       file4.write('MODULE mac x86_64 1240DF90E9AC39038EF400 Chrome Name')
 
-    rename_breakpad.RenameBreakpadFiles(self.breakpad_dir,
-                                        self.breakpad_output_dir)
+    rename_breakpad.RenameBreakpadFiles(
+      self.breakpad_dir, self.breakpad_output_dir
+    )
 
     expected_unmoved_files = {
-        fake_file, non_breakpad_file, empty_file, no_module_file, short_file
+      fake_file,
+      non_breakpad_file,
+      empty_file,
+      no_module_file,
+      short_file,
     }
     expected_unmoved_dirs = {random_dir}
     self._assertFilesInInputDir(expected_unmoved_files, expected_unmoved_dirs)
@@ -226,17 +238,19 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
       file2.write('MODULE mac x86_64 12ABC8987DE name.so')
 
     # Check that the right exception is raised.
-    exception_msg = ('Symbol file modules ids are not unique')
+    exception_msg = 'Symbol file modules ids are not unique'
 
     with self.assertRaises(AssertionError) as e:
-      rename_breakpad.RenameBreakpadFiles(self.breakpad_dir,
-                                          self.breakpad_output_dir)
+      rename_breakpad.RenameBreakpadFiles(
+        self.breakpad_dir, self.breakpad_output_dir
+      )
     self.assertIn(exception_msg, str(e.exception))
 
     # Check breakpad file with repeated module id is not moved. More
     # complicated because either of the breakpad files could be moved.
     self.assertTrue(
-        os.path.isfile(breakpad_file1) ^ os.path.isfile(breakpad_file2))
+      os.path.isfile(breakpad_file1) ^ os.path.isfile(breakpad_file2)
+    )
 
     # Ensure one of the breakpad module files got moved. No matter which
     # breakpad file got moved, it will have the same new module-based filename.
@@ -255,16 +269,18 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
       file2.write('MODULE mac x86_64 ABCE4853004895 name.so')
 
     # Check that the right exception is raised.
-    exception_msg = ('Symbol file modules ids are not unique')
+    exception_msg = 'Symbol file modules ids are not unique'
     with self.assertRaises(AssertionError) as e:
-      rename_breakpad.RenameBreakpadFiles(self.breakpad_dir,
-                                          self.breakpad_output_dir)
+      rename_breakpad.RenameBreakpadFiles(
+        self.breakpad_dir, self.breakpad_output_dir
+      )
     self.assertIn(exception_msg, str(e.exception))
 
     # Check breakpad file with repeated module id is not moved. More
     # complicated because either of the breakpad files could be moved.
     self.assertTrue(
-        os.path.isfile(breakpad_file1) ^ os.path.isfile(breakpad_file2))
+      os.path.isfile(breakpad_file1) ^ os.path.isfile(breakpad_file2)
+    )
 
     # Ensure one of the breakpad module files got moved. No matter which
     # breakpad file got moved, it will have the same new module-based filename.
@@ -302,14 +318,17 @@ class RenameBreakpadFilesTestCase(unittest.TestCase):
     with open(breakpad_file2, 'w') as file2:
       file2.write('MODULE mac x86_64 29e6f9a7ce00f name2.so')
 
-    rename_breakpad.RenameBreakpadFiles(self.breakpad_dir,
-                                        self.breakpad_unzip_dir)
+    rename_breakpad.RenameBreakpadFiles(
+      self.breakpad_dir, self.breakpad_unzip_dir
+    )
 
     # All files should be renamed but not moved.
-    unmoved_breakpad1 = os.path.join(self.breakpad_unzip_dir,
-                                     '34984AB4EF948C.breakpad')
-    unmoved_breakpad2 = os.path.join(self.breakpad_unzip_dir,
-                                     '29E6F9A7CE00F.breakpad')
+    unmoved_breakpad1 = os.path.join(
+      self.breakpad_unzip_dir, '34984AB4EF948C.breakpad'
+    )
+    unmoved_breakpad2 = os.path.join(
+      self.breakpad_unzip_dir, '29E6F9A7CE00F.breakpad'
+    )
     expected_renamed_files = {unmoved_breakpad1, unmoved_breakpad2}
     self._assertFilesInInputDir(expected_renamed_files)
 

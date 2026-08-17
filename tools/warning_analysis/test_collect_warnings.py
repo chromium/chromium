@@ -20,7 +20,6 @@ import collect_warnings
 
 
 class TestCollectWarnings(unittest.TestCase):
-
     @property
     def _input_dir(self):
         base = os.path.dirname(os.path.abspath(__file__))
@@ -58,17 +57,20 @@ class TestCollectWarnings(unittest.TestCase):
     ## Tests for specific warning, to ensure we filter out warnings we don't
     ## want, and don't generate duplicates
     def testMissingInitializers(self):
-        self.RunTestForWarning("[-Wmissing-field-initializers]",
-                               "missing_initializers.txt", ["-s"])
+        self.RunTestForWarning(
+            "[-Wmissing-field-initializers]", "missing_initializers.txt", ["-s"]
+        )
 
     def testUnusedParameter(self):
-        self.RunTestForWarning("[-Wunused-parameter]", "unused_parameter.txt",
-                               ["-s"])
+        self.RunTestForWarning(
+            "[-Wunused-parameter]", "unused_parameter.txt", ["-s"]
+        )
 
     # This warning only appears in the Windows output
     def testNontrivialMemcall(self):
-        self.RunTestForWarning("[-Wnontrivial-memcall]",
-                               "nontrivial_memcall.txt", ["-s"])
+        self.RunTestForWarning(
+            "[-Wnontrivial-memcall]", "nontrivial_memcall.txt", ["-s"]
+        )
 
     ## Tests for the various output formats (json/text, links/no links)
     def testEverything(self):
@@ -92,6 +94,7 @@ class TestCollectWarnings(unittest.TestCase):
         self.assertIn("fn foo()", written_text)
         self.assertIn("let x", written_text)
         self.assertNotIn("struct bar;", written_text)
+
 
 if __name__ == '__main__':
     unittest.main()

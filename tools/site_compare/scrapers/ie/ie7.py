@@ -18,6 +18,7 @@ version = "7.0.5730.1"
 
 DEFAULT_PATH = r"c:\program files\internet explorer\iexplore.exe"
 
+
 def GetBrowser(path):
   """Invoke the IE browser and return the process, frame, and content window.
 
@@ -27,7 +28,8 @@ def GetBrowser(path):
   Returns:
     A tuple of (process handle, render pane)
   """
-  if not path: path = DEFAULT_PATH
+  if not path:
+    path = DEFAULT_PATH
 
   (iewnd, ieproc, address_bar, render_pane, tab_window) = InvokeBrowser(path)
   return (ieproc, iewnd, render_pane)
@@ -50,12 +52,16 @@ def InvokeBrowser(path):
   for tries in xrange(10):
     try:
       address_bar = windowing.FindChildWindow(
-        iewnd, "WorkerW|Navigation Bar/ReBarWindow32/"
-        "Address Band Root/ComboBoxEx32/ComboBox/Edit")
+        iewnd,
+        "WorkerW|Navigation Bar/ReBarWindow32/"
+        "Address Band Root/ComboBoxEx32/ComboBox/Edit",
+      )
       render_pane = windowing.FindChildWindow(
-        iewnd, "TabWindowClass/Shell DocObject View")
+        iewnd, "TabWindowClass/Shell DocObject View"
+      )
       tab_window = windowing.FindChildWindow(
-        iewnd, "CommandBarClass/ReBarWindow32/TabBandClass/DirectUIHWND")
+        iewnd, "CommandBarClass/ReBarWindow32/TabBandClass/DirectUIHWND"
+      )
     except IndexError:
       time.sleep(1)
       continue
@@ -80,29 +86,28 @@ def Scrape(urls, outdir, size, pos, timeout=20, **kwargs):
   """
   path = r"c:\program files\internet explorer\iexplore.exe"
 
-  if "path" in kwargs and kwargs["path"]: path = kwargs["path"]
+  if "path" in kwargs and kwargs["path"]:
+    path = kwargs["path"]
 
-  (iewnd, ieproc, address_bar, render_pane, tab_window) = (
-    InvokeBrowser(path) )
+  (iewnd, ieproc, address_bar, render_pane, tab_window) = InvokeBrowser(path)
 
   # Resize and reposition the frame
   windowing.MoveAndSizeWindow(iewnd, pos, size, render_pane)
 
   # Visit each URL we're given
-  if type(urls) in types.StringTypes: urls = [urls]
+  if type(urls) in types.StringTypes:
+    urls = [urls]
 
   timedout = False
 
   for url in urls:
-
     # Double-click in the address bar, type the name, and press Enter
     mouse.DoubleClickInWindow(address_bar)
     keyboard.TypeString(url)
     keyboard.TypeString("\n")
 
     # Wait for the page to finish loading
-    load_time = windowing.WaitForThrobber(
-      tab_window, (6, 8, 22, 24), timeout)
+    load_time = windowing.WaitForThrobber(tab_window, (6, 8, 22, 24), timeout)
     timedout = load_time < 0
 
     if timedout:
@@ -139,12 +144,15 @@ def Time(urls, size, timeout, **kwargs):
   Returns:
     A list of tuples (url, time). "time" can be "crashed" or "timeout"
   """
-  if "path" in kwargs and kwargs["path"]: path = kwargs["path"]
-  else: path = DEFAULT_PATH
+  if "path" in kwargs and kwargs["path"]:
+    path = kwargs["path"]
+  else:
+    path = DEFAULT_PATH
   proc = None
 
   # Visit each URL we're given
-  if type(urls) in types.StringTypes: urls = [urls]
+  if type(urls) in types.StringTypes:
+    urls = [urls]
 
   ret = []
   for url in urls:
@@ -154,7 +162,7 @@ def Time(urls, size, timeout, **kwargs):
         (wnd, proc, address_bar, render_pane, tab_window) = InvokeBrowser(path)
 
         # Resize and reposition the frame
-        windowing.MoveAndSizeWindow(wnd, (0,0), size, render_pane)
+        windowing.MoveAndSizeWindow(wnd, (0, 0), size, render_pane)
 
       # Double-click in the address bar, type the name, and press Enter
       mouse.DoubleClickInWindow(address_bar)
@@ -162,8 +170,7 @@ def Time(urls, size, timeout, **kwargs):
       keyboard.TypeString("\n")
 
       # Wait for the page to finish loading
-      load_time = windowing.WaitForThrobber(
-        tab_window, (6, 8, 22, 24), timeout)
+      load_time = windowing.WaitForThrobber(tab_window, (6, 8, 22, 24), timeout)
       timedout = load_time < 0
 
       if timedout:
@@ -180,7 +187,7 @@ def Time(urls, size, timeout, **kwargs):
       load_time = "crashed"
       proc = None
 
-    ret.append( (url, load_time) )
+    ret.append((url, load_time))
 
   # Send an alt-F4 to make the browser close; if this times out,
   # we've probably got a crash
@@ -199,10 +206,11 @@ def main():
 
   # Scrape three sites and save the results
   Scrape(
-    ["http://www.microsoft.com",
-     "http://www.google.com",
-     "http://www.sun.com"],
-    path, (1024, 768), (0, 0))
+    ["http://www.microsoft.com", "http://www.google.com", "http://www.sun.com"],
+    path,
+    (1024, 768),
+    (0, 0),
+  )
   return 0
 
 

@@ -27,13 +27,13 @@ def GetQueryTestResult(buildbucket_id):
     buildbucket_id: An int with the build number to get.
   """
   invocation_id = f'invocations/build-{buildbucket_id}'
-  return Request('QueryTestResults',
-                 data={
-                     'invocations': [invocation_id],
-                     'predicate': {
-                         'expectancy': 'VARIANTS_WITH_UNEXPECTED_RESULTS'
-                     }
-                 })
+  return Request(
+    'QueryTestResults',
+    data={
+      'invocations': [invocation_id],
+      'predicate': {'expectancy': 'VARIANTS_WITH_UNEXPECTED_RESULTS'},
+    },
+  )
 
 
 def GetQueryTestResults(buildbucket_ids):
@@ -42,13 +42,12 @@ def GetQueryTestResults(buildbucket_ids):
   Args:
     buildbucket_ids: A list of buildbucket ids.
   """
-  invocation_ids = list(map(lambda x: f'invocations/build-{x}',
-                            buildbucket_ids))
+  invocation_ids = list(
+    map(lambda x: f'invocations/build-{x}', buildbucket_ids)
+  )
   data = {
-      'invocations': invocation_ids,
-      'predicate': {
-          'expectancy': 'VARIANTS_WITH_UNEXPECTED_RESULTS'
-      }
+    'invocations': invocation_ids,
+    'predicate': {'expectancy': 'VARIANTS_WITH_UNEXPECTED_RESULTS'},
   }
 
   return Request('QueryTestResults', data=data)

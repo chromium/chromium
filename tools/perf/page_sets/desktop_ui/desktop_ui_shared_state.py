@@ -6,7 +6,7 @@ from telemetry.page import shared_page_state
 
 
 class DesktopUISharedState(shared_page_state.SharedPageState):
-  """ Ensures the browser is restarted for each test, for all platforms. """
+  """Ensures the browser is restarted for each test, for all platforms."""
 
   def ShouldReuseBrowserForAllStoryRuns(self):
     return False

@@ -37,67 +37,90 @@ class TestRequest(unittest.TestCase):
     self.http.request.return_value = Response(200, 'OK!')
     self.assertEqual(request.Request('http://example.com/'), 'OK!')
     self.http.request.assert_called_once_with(
-        'http://example.com/', method='GET', body=None, headers=mock.ANY)
+      'http://example.com/', method='GET', body=None, headers=mock.ANY
+    )
 
   def testRequest_acceptJson(self):
     self.http.request.return_value = Response(200, b'{"code": "ok!"}')
-    self.assertEqual(request.Request('http://example.com/', accept='json'),
-                     {'code': 'ok!'})
+    self.assertEqual(
+      request.Request('http://example.com/', accept='json'), {'code': 'ok!'}
+    )
     self.http.request.assert_called_once_with(
-        'http://example.com/', method='GET', body=None, headers=mock.ANY)
+      'http://example.com/', method='GET', body=None, headers=mock.ANY
+    )
 
   def testRequest_acceptJsonWithSecurityPrefix(self):
     self.http.request.return_value = Response(200, b')]}\'{"code": "ok!"}')
-    self.assertEqual(request.Request('http://example.com/', accept='json'),
-                     {'code': 'ok!'})
+    self.assertEqual(
+      request.Request('http://example.com/', accept='json'), {'code': 'ok!'}
+    )
     self.http.request.assert_called_once_with(
-        'http://example.com/', method='GET', body=None, headers=mock.ANY)
+      'http://example.com/', method='GET', body=None, headers=mock.ANY
+    )
 
   def testRequest_postWithParams(self):
     self.http.request.return_value = Response(200, 'OK!')
-    self.assertEqual(request.Request(
-        'http://example.com/', params={'q': 'foo'}, method='POST'), 'OK!')
+    self.assertEqual(
+      request.Request(
+        'http://example.com/', params={'q': 'foo'}, method='POST'
+      ),
+      'OK!',
+    )
     self.http.request.assert_called_once_with(
-        'http://example.com/?q=foo', method='POST', body=None, headers=mock.ANY)
+      'http://example.com/?q=foo', method='POST', body=None, headers=mock.ANY
+    )
 
   def testRequest_postWithParamsEscapesSpaces(self):
     self.http.request.return_value = Response(200, 'OK!')
     self.assertEqual(
-        request.Request('http://example.com/',
-                        params={'q': 'foo bar'},
-                        method='POST'), 'OK!')
-    self.http.request.assert_called_once_with('http://example.com/?q=foo+bar',
-                                              method='POST',
-                                              body=None,
-                                              headers=mock.ANY)
+      request.Request(
+        'http://example.com/', params={'q': 'foo bar'}, method='POST'
+      ),
+      'OK!',
+    )
+    self.http.request.assert_called_once_with(
+      'http://example.com/?q=foo+bar',
+      method='POST',
+      body=None,
+      headers=mock.ANY,
+    )
 
   def testRequest_postWithData(self):
     self.http.request.return_value = Response(200, 'OK!')
-    self.assertEqual(request.Request(
-        'http://example.com/', data={'q': 'foo'}, method='POST'), 'OK!')
+    self.assertEqual(
+      request.Request('http://example.com/', data={'q': 'foo'}, method='POST'),
+      'OK!',
+    )
     self.http.request.assert_called_once_with(
-        'http://example.com/', method='POST', body='q=foo', headers=mock.ANY)
+      'http://example.com/', method='POST', body='q=foo', headers=mock.ANY
+    )
 
   def testRequest_postWithJsonData(self):
     self.http.request.return_value = Response(200, 'OK!')
-    self.assertEqual(request.Request(
-        'http://example.com/', data={'q': 'foo'}, content_type='json',
-        method='POST'), 'OK!')
+    self.assertEqual(
+      request.Request(
+        'http://example.com/',
+        data={'q': 'foo'},
+        content_type='json',
+        method='POST',
+      ),
+      'OK!',
+    )
     self.http.request.assert_called_once_with(
-        'http://example.com/', method='POST', body='{"q":"foo"}',
-        headers=mock.ANY)
+      'http://example.com/', method='POST', body='{"q":"foo"}', headers=mock.ANY
+    )
 
   def testRequest_retryOnServerError(self):
     self.http.request.side_effect = [
-        Response(500, 'Oops. Something went wrong!'),
-        Response(200, 'All is now OK.')
+      Response(500, 'Oops. Something went wrong!'),
+      Response(200, 'All is now OK.'),
     ]
     self.assertEqual(request.Request('http://example.com/'), 'All is now OK.')
 
   def testRequest_failOnClientError(self):
     self.http.request.side_effect = [
-        Response(400, 'Bad request!'),
-        Response(200, 'This is not called.')
+      Response(400, 'Bad request!'),
+      Response(200, 'This is not called.'),
     ]
     with self.assertRaises(request.ClientError):
       request.Request('http://example.com/')
@@ -107,17 +130,21 @@ class TestRequest(unittest.TestCase):
     get_access_token.return_value = 'access-token'
     self.http.request.return_value = Response(200, 'OK!')
     self.assertEqual(
-        request.Request('http://example.com/', use_auth=True), 'OK!')
+      request.Request('http://example.com/', use_auth=True), 'OK!'
+    )
     self.http.request.assert_called_once_with(
-        'http://example.com/', method='GET', body=None, headers={
-            'Content-Length': '0',
-            'Authorization': 'Bearer access-token'})
+      'http://example.com/',
+      method='GET',
+      body=None,
+      headers={'Content-Length': '0', 'Authorization': 'Bearer access-token'},
+    )
 
 
 class TestRequestErrors(unittest.TestCase):
   def testClientErrorPickleable(self):
     error = request.ClientError(
-        'api', *Response(400, 'You made a bad request!'))
+      'api', *Response(400, 'You made a bad request!')
+    )
     error = pickle.loads(pickle.dumps(error))
     self.assertIsInstance(error, request.ClientError)
     self.assertEqual(error.request, 'api')
@@ -125,8 +152,7 @@ class TestRequestErrors(unittest.TestCase):
     self.assertEqual(error.content, 'You made a bad request!')
 
   def testServerErrorPickleable(self):
-    error = request.ServerError(
-        'api', *Response(500, 'Oops, I had a problem!'))
+    error = request.ServerError('api', *Response(500, 'Oops, I had a problem!'))
     error = pickle.loads(pickle.dumps(error))
     self.assertIsInstance(error, request.ServerError)
     self.assertEqual(error.request, 'api')
@@ -134,13 +160,14 @@ class TestRequestErrors(unittest.TestCase):
     self.assertEqual(error.content, 'Oops, I had a problem!')
 
   def testJsonErrorMessageToString(self):
-    message = u'Something went wrong. That\u2019s all we know.'
+    message = 'Something went wrong. That\u2019s all we know.'
     error = request.ServerError(
-        '/endpoint', *Response(500, json.dumps({'error': message})))
+      '/endpoint', *Response(500, json.dumps({'error': message}))
+    )
     self.assertIn('Something went wrong.', str(error))
 
   def testErrorMessageToString(self):
-    content = u'Something went wrong. That\u2019s all we know.'.encode('utf-8')
+    content = 'Something went wrong. That\u2019s all we know.'.encode('utf-8')
     error = request.ServerError('/endpoint', *Response(500, content))
     self.assertIn('Something went wrong.', str(error))
 

@@ -16,90 +16,97 @@ PRESUBMIT_VERSION = '2.0.0'
 def _CommonChecks(input_api, output_api, block_on_failure=False):
   """Performs common checks that vary between commit and upload.
 
-    block_on_failure: For some failures, we would like to warn the
-        user but still allow them to upload the change. However, we
-        don't want them to commit code with those failures, so we
-        need to block the change on commit.
+  block_on_failure: For some failures, we would like to warn the
+      user but still allow them to upload the change. However, we
+      don't want them to commit code with those failures, so we
+      need to block the change on commit.
   """
   results = []
 
   results.extend(
-      _CheckPerfDataCurrentness(input_api, output_api, block_on_failure))
-  results.extend(
-      _CheckPerfJsonConfigs(input_api, output_api, block_on_failure))
+    _CheckPerfDataCurrentness(input_api, output_api, block_on_failure)
+  )
+  results.extend(_CheckPerfJsonConfigs(input_api, output_api, block_on_failure))
   results.extend(_CheckShardMaps(input_api, output_api, block_on_failure))
   return results
 
 
 def CheckPyLint(input_api, output_api):
   disabled_warnings = [
-      'broad-exception-raised',
-      'consider-using-dict-items',
-      'consider-using-f-string',
-      'consider-using-from-import',
-      'consider-using-generator',
-      'consider-using-with',
-      'deprecated-module',
-      'possibly-used-before-assignment',
-      'redundant-u-string-prefix',
-      'superfluous-parens',
-      'unknown-option-value',
-      'unnecessary-lambda-assignment',
-      'unspecified-encoding',
-      'use-dict-literal',
-      'use-yield-from',
-      'used-before-assignment',
-      'useless-option-value',
+    'broad-exception-raised',
+    'consider-using-dict-items',
+    'consider-using-f-string',
+    'consider-using-from-import',
+    'consider-using-generator',
+    'consider-using-with',
+    'deprecated-module',
+    'possibly-used-before-assignment',
+    'redundant-u-string-prefix',
+    'superfluous-parens',
+    'unknown-option-value',
+    'unnecessary-lambda-assignment',
+    'unspecified-encoding',
+    'use-dict-literal',
+    'use-yield-from',
+    'used-before-assignment',
+    'useless-option-value',
   ]
   return input_api.RunTests(
-      input_api.canned_checks.GetPylint(
-          input_api,
-          output_api,
-          disabled_warnings=disabled_warnings,
-          extra_paths_list=_GetPathsToPrepend(input_api),
-          pylintrc='pylintrc',
-          version='3.2'))
+    input_api.canned_checks.GetPylint(
+      input_api,
+      output_api,
+      disabled_warnings=disabled_warnings,
+      extra_paths_list=_GetPathsToPrepend(input_api),
+      pylintrc='pylintrc',
+      version='3.2',
+    )
+  )
 
 
 def _GetPathsToPrepend(input_api):
   perf_dir = input_api.PresubmitLocalPath()
   chromium_src_dir = input_api.os_path.join(perf_dir, '..', '..')
   telemetry_dir = input_api.os_path.join(
-      chromium_src_dir, 'third_party', 'catapult', 'telemetry')
+    chromium_src_dir, 'third_party', 'catapult', 'telemetry'
+  )
   typ_dir = input_api.os_path.join(
-       chromium_src_dir, 'third_party', 'catapult', 'third_party', 'typ')
+    chromium_src_dir, 'third_party', 'catapult', 'third_party', 'typ'
+  )
   experimental_dir = input_api.os_path.join(
-      chromium_src_dir, 'third_party', 'catapult', 'experimental')
+    chromium_src_dir, 'third_party', 'catapult', 'experimental'
+  )
   tracing_dir = input_api.os_path.join(
-      chromium_src_dir, 'third_party', 'catapult', 'tracing')
+    chromium_src_dir, 'third_party', 'catapult', 'tracing'
+  )
   py_utils_dir = input_api.os_path.join(
-      chromium_src_dir, 'third_party', 'catapult', 'common', 'py_utils')
+    chromium_src_dir, 'third_party', 'catapult', 'common', 'py_utils'
+  )
   android_pylib_dir = input_api.os_path.join(
-      chromium_src_dir, 'build', 'android')
+    chromium_src_dir, 'build', 'android'
+  )
   testing_dir = input_api.os_path.join(chromium_src_dir, 'testing')
   return [
-      telemetry_dir,
-      typ_dir,
-      experimental_dir,
-      tracing_dir,
-      py_utils_dir,
-      android_pylib_dir,
-      testing_dir,
+    telemetry_dir,
+    typ_dir,
+    experimental_dir,
+    tracing_dir,
+    py_utils_dir,
+    android_pylib_dir,
+    testing_dir,
   ]
 
 
 def _RunArgs(args, input_api):
-  p = input_api.subprocess.Popen(args, stdout=input_api.subprocess.PIPE,
-                                 stderr=input_api.subprocess.STDOUT)
+  p = input_api.subprocess.Popen(
+    args, stdout=input_api.subprocess.PIPE, stderr=input_api.subprocess.STDOUT
+  )
   out, _ = p.communicate()
   return (out, p.returncode)
 
+
 def _RunValidationScript(
-    input_api,
-    output_api,
-    script_path,
-    extra_args = None,
-    block_on_failure = None):
+  input_api, output_api, script_path, extra_args=None, block_on_failure=None
+):
   results = []
   vpython = 'vpython3.bat' if input_api.is_windows else 'vpython3'
   perf_dir = input_api.PresubmitLocalPath()
@@ -121,7 +128,7 @@ def _RunValidationScript(
   files_per_command = 50 if input_api.is_windows else 1000
   # Handle the case where extra_args is empty.
   for i in range(0, len(extra_args) if extra_args else 1, files_per_command):
-    args = [vpython, script_abs_path] + extra_args[i:i + files_per_command]
+    args = [vpython, script_abs_path] + extra_args[i : i + files_per_command]
     out, return_code = _RunArgs(args, input_api)
     if return_code:
       error_msg = 'Script ' + script_path + ' failed.'
@@ -129,33 +136,36 @@ def _RunValidationScript(
         results.append(output_api.PresubmitError(error_msg, long_text=out))
       else:
         results.append(
-            output_api.PresubmitPromptWarning(error_msg, long_text=out))
+          output_api.PresubmitPromptWarning(error_msg, long_text=out)
+        )
   return results
 
 
 def CheckExpectations(input_api, output_api):
   return _RunValidationScript(
-      input_api,
-      output_api,
-      'validate_story_expectation_data',
+    input_api,
+    output_api,
+    'validate_story_expectation_data',
   )
+
 
 def _CheckPerfDataCurrentness(input_api, output_api, block_on_failure):
   return _RunValidationScript(
-      input_api,
-      output_api,
-      'generate_perf_data',
-      ['--validate-only'],
-      block_on_failure
+    input_api,
+    output_api,
+    'generate_perf_data',
+    ['--validate-only'],
+    block_on_failure,
   )
+
 
 def _CheckPerfJsonConfigs(input_api, output_api, block_on_failure):
   return _RunValidationScript(
-      input_api,
-      output_api,
-      'validate_perf_json_config',
-      ['--validate-only'],
-      block_on_failure
+    input_api,
+    output_api,
+    'validate_perf_json_config',
+    ['--validate-only'],
+    block_on_failure,
   )
 
 
@@ -168,19 +178,17 @@ def CheckWprShaFiles(input_api, output_api):
       continue
     wpr_archive_shas.append(filename)
   return _RunValidationScript(
-      input_api,
-      output_api,
-      'validate_wpr_archives',
-      wpr_archive_shas
+    input_api, output_api, 'validate_wpr_archives', wpr_archive_shas
   )
+
 
 def _CheckShardMaps(input_api, output_api, block_on_failure):
   return _RunValidationScript(
-      input_api,
-      output_api,
-      'generate_perf_sharding.py',
-      ['validate'],
-      block_on_failure
+    input_api,
+    output_api,
+    'generate_perf_sharding.py',
+    ['validate'],
+    block_on_failure,
   )
 
 
@@ -190,8 +198,10 @@ def CheckJson(input_api, output_api):
     filename = affected_file.AbsoluteLocalPath()
     if os.path.splitext(filename)[1] != '.json':
       continue
-    if (os.path.basename(filename) == 'perf_results.json' and
-        os.path.basename(os.path.dirname(filename)) == 'speedometer2-future'):
+    if (
+      os.path.basename(filename) == 'perf_results.json'
+      and os.path.basename(os.path.dirname(filename)) == 'speedometer2-future'
+    ):
       # Intentionally invalid JSON file.
       continue
     try:
@@ -203,11 +213,13 @@ def CheckJson(input_api, output_api):
 
 def CheckVersionsInSmokeTests(input_api, output_api):
   return _RunValidationScript(
-      input_api,
-      output_api,
-      input_api.os_path.join(
-          'benchmarks', 'system_health_load_tests_smoke_test.py'),
+    input_api,
+    output_api,
+    input_api.os_path.join(
+      'benchmarks', 'system_health_load_tests_smoke_test.py'
+    ),
   )
+
 
 def CheckChangeOnUpload(input_api, output_api):
   report = []

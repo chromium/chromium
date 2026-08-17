@@ -23,8 +23,9 @@ def SysPath(path, position=None):
 
 
 def GetChromiumSrcDir():
-  return os.path.abspath(os.path.join(
-      os.path.dirname(__file__), '..', '..', '..'))
+  return os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..')
+  )
 
 
 def GetAndroidDeviceInteractionToPath():
@@ -37,17 +38,18 @@ def GetBuildUtilDir():
 
 def GetTelemetryDir():
   return os.path.join(
-      GetChromiumSrcDir(), 'third_party', 'catapult', 'telemetry')
+    GetChromiumSrcDir(), 'third_party', 'catapult', 'telemetry'
+  )
 
 
 def GetTracingDir():
-  return os.path.join(
-      GetChromiumSrcDir(), 'third_party', 'catapult', 'tracing')
+  return os.path.join(GetChromiumSrcDir(), 'third_party', 'catapult', 'tracing')
 
 
 def GetPyUtilsDir():
   return os.path.join(
-      GetChromiumSrcDir(), 'third_party', 'catapult', 'common', 'py_utils')
+    GetChromiumSrcDir(), 'third_party', 'catapult', 'common', 'py_utils'
+  )
 
 
 def GetCrossBenchDir():
@@ -79,8 +81,10 @@ def GetVariationsDir():
 
 
 def GetDashboardDir():
-  return os.path.join(GetChromiumSrcDir(), 'third_party', 'catapult',
-                      'dashboard')
+  return os.path.join(
+    GetChromiumSrcDir(), 'third_party', 'catapult', 'dashboard'
+  )
+
 
 def AddAndroidDeviceInteractionToPath():
   device_interaction_path = GetAndroidDeviceInteractionToPath()
@@ -122,6 +126,7 @@ def AddDashboardToPath():
   dashboard_path = GetDashboardDir()
   if dashboard_path not in sys.path:
     sys.path.insert(1, dashboard_path)
+
 
 def GetExpectationsPath():
   return os.path.join(GetPerfDir(), 'expectations.config')

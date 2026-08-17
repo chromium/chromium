@@ -19,7 +19,6 @@ from core import bot_platforms
 
 
 class ScheduleValidationTest(unittest.TestCase):
-
   def testInlineComments(self):
     with tempfile.TemporaryDirectory() as tmp_dir:
       benchmark_name = 'speedometer3.crossbench'
@@ -53,13 +52,17 @@ win-10-perf,2,1
   def verify_schedule(self, path):
     content = path.read_text(encoding='utf-8')
     assert content, "Unexpected empty file"
-    self.assertTrue(content.endswith('\n'),
-                    f"File {path.name} must end with a newline")
+    self.assertTrue(
+      content.endswith('\n'), f"File {path.name} must end with a newline"
+    )
     reader = bot_platforms.ReadCSV(path)
     assert reader.fieldnames, "Missing header"
     if 'flags' in reader.fieldnames:
-      self.assertEqual(reader.fieldnames[-1], 'flags',
-                       f"'flags' must be the last column in {path}")
+      self.assertEqual(
+        reader.fieldnames[-1],
+        'flags',
+        f"'flags' must be the last column in {path}",
+      )
     bots = set()
     row_count = 0
     for row in reader:
@@ -68,25 +71,32 @@ win-10-perf,2,1
       # Validate bot uniqueness
       self.assertIsNotNone(bot, f"Missing 'bot' column in {path}")
       self.assertIn(
-          bot, bot_platforms.PLATFORM_INFO.keys(),
-          f"Bot '{bot}' in {path.name} not found in "
-          f"bot_platforms.ALL_PLATFORM_NAMES")
+        bot,
+        bot_platforms.PLATFORM_INFO.keys(),
+        f"Bot '{bot}' in {path.name} not found in "
+        f"bot_platforms.ALL_PLATFORM_NAMES",
+      )
       self.assertNotIn(bot, bots, f"Duplicate bot '{bot}' in {path}")
       bots.add(bot)
       repeats = row.get('repeat')
       self.assertIsNotNone(repeats, f"Missing 'repeat' column in {path}")
       repeats = int(repeats)
       self.assertGreater(
-          repeats, 0, f"'repeats' value {repeats} must be positive in {path} "
-          f"for bot {bot}")
+        repeats,
+        0,
+        f"'repeats' value {repeats} must be positive in {path} for bot {bot}",
+      )
       shard = row.get('shard')
       self.assertIsNotNone(shard, f"Missing 'shard' column in {path}")
       shard = int(shard)
       self.assertGreater(
-          shard, 0, f"'shard' value {shard} must be positive in {path} "
-          f"for bot {bot}")
-    self.assertGreater(row_count, 0,
-                       f"No rows found in {path}, please remove file.")
+        shard,
+        0,
+        f"'shard' value {shard} must be positive in {path} for bot {bot}",
+      )
+    self.assertGreater(
+      row_count, 0, f"No rows found in {path}, please remove file."
+    )
 
   def testParse(self):
     schedule_dir = FILE_PATH.absolute().parent / 'schedule'
@@ -122,6 +132,7 @@ win-10-perf,2,1
     for name in sorted(list(legacy_keys)):
       with self.subTest(benchmark=name):
         self.assertEqual(legacy_map[name], csv_map[name])
+
 
 if __name__ == '__main__':
   unittest.main()

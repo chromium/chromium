@@ -13,8 +13,11 @@ import threading
 
 # traceconv is used for symbolization and generating pprof profiles.
 _TRACECONV_PATH = os.path.normpath(
-    os.path.join(os.path.abspath(__file__),
-                 '../../../../../third_party/perfetto/tools/traceconv'))
+  os.path.join(
+    os.path.abspath(__file__),
+    '../../../../../third_party/perfetto/tools/traceconv',
+  )
+)
 # traceconv is not guaranteed to be thread-safe.
 _TRACECONV_LOCK = threading.Lock()
 
@@ -38,8 +41,9 @@ def _CopyFiles(source_directory_path, destination_directory_path):
   if file_names is None:
     return
   for file_name in file_names:
-    shutil.copy(os.path.join(source_directory_path, file_name),
-                destination_directory_path)
+    shutil.copy(
+      os.path.join(source_directory_path, file_name), destination_directory_path
+    )
 
 
 def SymbolizeTrace(trace_path):
@@ -54,30 +58,37 @@ def SymbolizeTrace(trace_path):
   binary_path = os.getenv('PERFETTO_BINARY_PATH')
   if binary_path is None:
     logging.warning(
-        'Not symbolizing trace at %s since PERFETTO_BINARY_PATH is not set.',
-        trace_path)
+      'Not symbolizing trace at %s since PERFETTO_BINARY_PATH is not set.',
+      trace_path,
+    )
     return
 
   symbols = None
   # Symbolize the trace.
   with _TRACECONV_LOCK:
-    popen = subprocess.Popen([_TRACECONV_PATH, 'symbolize', trace_path],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
+    popen = subprocess.Popen(
+      [_TRACECONV_PATH, 'symbolize', trace_path],
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+    )
     stdout, stderr = popen.communicate()
 
     if popen.return_code == 0:
       symbols = stdout
     else:
-      logging.error('Failed to symbolize trace at %s: %s', trace_path,
-                    stderr.decode('utf-8'))
+      logging.error(
+        'Failed to symbolize trace at %s: %s',
+        trace_path,
+        stderr.decode('utf-8'),
+      )
   if symbols is None:
     return
 
   parent_dir = os.path.dirname(trace_path)
   symbols_path = os.path.join(parent_dir, 'symbols')
   symbolized_trace_path = os.path.join(
-      parent_dir, 'symbolized_{}'.format(os.path.basename(trace_path)))
+    parent_dir, 'symbolized_{}'.format(os.path.basename(trace_path))
+  )
 
   # We write the symbols to a file in case they are useful for debugging, etc.
   with open(symbols_path, 'wb') as symbols_file:
@@ -99,15 +110,20 @@ def GenerateProfiles(trace_path):
   """
   traceconv_output = None
   with _TRACECONV_LOCK:
-    popen = subprocess.Popen([_TRACECONV_PATH, 'profile', '--perf', trace_path],
-                             stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE)
+    popen = subprocess.Popen(
+      [_TRACECONV_PATH, 'profile', '--perf', trace_path],
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+    )
     stdout, stderr = popen.communicate()
     if popen.return_code == 0:
       traceconv_output = stdout.decode('utf-8')
     else:
-      logging.error('Unable to extract pprof profiles from trace at %s: %s',
-                    trace_path, stderr.decode('utf-8'))
+      logging.error(
+        'Unable to extract pprof profiles from trace at %s: %s',
+        trace_path,
+        stderr.decode('utf-8'),
+      )
   if traceconv_output is None:
     return
 
@@ -120,5 +136,6 @@ def GenerateProfiles(trace_path):
     logging.error('No profiles were extracted from trace at %s.', trace_path)
   else:
     _CopyFiles(profiles_output_directory, os.path.dirname(trace_path))
-    logging.info('Successfully generated pprof profiles from trace at %s',
-                 trace_path)
+    logging.info(
+      'Successfully generated pprof profiles from trace at %s', trace_path
+    )

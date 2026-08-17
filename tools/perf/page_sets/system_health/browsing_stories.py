@@ -43,10 +43,12 @@ class _BrowsingStory(system_health_story.SystemHealthStory):
   CONTAINER_SELECTOR = None
   ABSTRACT_STORY = True
 
-  def __init__(self, story_set, take_memory_measurement,
-               extra_browser_args=None):
-    super(_BrowsingStory, self).__init__(story_set,
-        take_memory_measurement, extra_browser_args)
+  def __init__(
+    self, story_set, take_memory_measurement, extra_browser_args=None
+  ):
+    super(_BrowsingStory, self).__init__(
+      story_set, take_memory_measurement, extra_browser_args
+    )
     self.script_to_evaluate_on_commit = override_online.ALWAYS_ONLINE
 
   def _WaitForNavigation(self, action_runner):
@@ -55,13 +57,15 @@ class _BrowsingStory(system_health_story.SystemHealthStory):
 
   def _NavigateToItem(self, action_runner, index):
     item_selector = js_template.Render(
-        'document.querySelectorAll({{ selector }})[{{ index }}]',
-        selector=self.ITEM_SELECTOR, index=index)
+      'document.querySelectorAll({{ selector }})[{{ index }}]',
+      selector=self.ITEM_SELECTOR,
+      index=index,
+    )
     # Only scrolls if element is not currently in viewport.
     action_runner.WaitForElement(element_function=item_selector)
     action_runner.ScrollPageToElement(
-        element_function=item_selector,
-        container_selector=self.CONTAINER_SELECTOR)
+      element_function=item_selector, container_selector=self.CONTAINER_SELECTOR
+    )
     self._ClickLink(action_runner, item_selector)
 
   def _ClickLink(self, action_runner, element_function):
@@ -125,15 +129,17 @@ class _ArticleBrowsingStory(_BrowsingStory):
     if not self.SCROLL_DURING_LOADING:
       if self.COMPLETE_STATE_WAIT_TIMEOUT is not None:
         action_runner.tab.WaitForDocumentReadyStateToBeComplete(
-            timeout=self.COMPLETE_STATE_WAIT_TIMEOUT)
+          timeout=self.COMPLETE_STATE_WAIT_TIMEOUT
+        )
       else:
         action_runner.tab.WaitForDocumentReadyStateToBeComplete()
       action_runner.Wait(self.ITEM_READ_TIME_IN_SECONDS / 2.0)
     else:
       action_runner.tab.WaitForDocumentReadyStateToBeInteractiveOrBetter()
     action_runner.RepeatableBrowserDrivenScroll(
-        repeat_count=self.ITEM_SCROLL_REPEAT)
-    action_runner.Wait(self.ITEM_READ_TIME_IN_SECONDS/2.0)
+      repeat_count=self.ITEM_SCROLL_REPEAT
+    )
+    action_runner.Wait(self.ITEM_READ_TIME_IN_SECONDS / 2.0)
 
   def _ScrollMainPage(self, action_runner):
     if not self.SCROLL_DURING_LOADING:
@@ -141,7 +147,8 @@ class _ArticleBrowsingStory(_BrowsingStory):
     else:
       action_runner.tab.WaitForDocumentReadyStateToBeInteractiveOrBetter()
     action_runner.RepeatableBrowserDrivenScroll(
-        repeat_count=self.MAIN_PAGE_SCROLL_REPEAT)
+      repeat_count=self.MAIN_PAGE_SCROLL_REPEAT
+    )
 
 
 ##############################################################################
@@ -151,17 +158,21 @@ class _ArticleBrowsingStory(_BrowsingStory):
 
 class CnnStory2021(_ArticleBrowsingStory):
   """The second top website in http://www.alexa.com/topsites/category/News"""
+
   NAME = 'browse:news:cnn:2021'
   URL = 'http://edition.cnn.com/'
   ITEM_SELECTOR = '.cd__content > h3 > a'
   ITEMS_TO_VISIT = 2
   TAGS = [
-      story_tags.HEALTH_CHECK, story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2021
+    story_tags.HEALTH_CHECK,
+    story_tags.JAVASCRIPT_HEAVY,
+    story_tags.YEAR_2021,
   ]
 
 
 class BusinessInsiderMobile2021(_ArticleBrowsingStory):
   """A newsite where we've seen janky performance in bug reports"""
+
   NAME = 'browse:news:businessinsider:2021'
   URL = 'https://www.businessinsider.com/'
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
@@ -173,8 +184,8 @@ class BusinessInsiderMobile2021(_ArticleBrowsingStory):
   SCROLL_BEFORE_BROWSE = True
   SCROLL_DURING_LOADING = False
   _ACCEPTED_COOKIE = {
-      'businessinsider': '#sp_message_iframe_364841',
-      'insider': '#sp_message_iframe_364844'
+    'businessinsider': '#sp_message_iframe_364841',
+    'insider': '#sp_message_iframe_364844',
   }
 
   def _GetCookieContextId(self, tab):
@@ -182,8 +193,9 @@ class BusinessInsiderMobile2021(_ArticleBrowsingStory):
     for context in contexts:
       try:
         result = tab.EvaluateJavaScript(
-            'document.querySelector(".message-button") != null;',
-            context_id=context)
+          'document.querySelector(".message-button") != null;',
+          context_id=context,
+        )
       except exceptions.EvaluateException:
         continue
       if result:
@@ -196,11 +208,16 @@ class BusinessInsiderMobile2021(_ArticleBrowsingStory):
     else:
       action_runner.tab.WaitForDocumentReadyStateToBeComplete()
     # We want to clear any cookie.
-    url = re.search(r'https://(www\.)?([^.]+\.)?([^.]+)\.com.*',
-                    action_runner.tab.GetUrl())
+    url = re.search(
+      r'https://(www\.)?([^.]+\.)?([^.]+)\.com.*', action_runner.tab.GetUrl()
+    )
     if url is None:
-      raise RuntimeError("no matching for " + action_runner.tab.GetUrl() +
-                         " using " + url.group(2))
+      raise RuntimeError(
+        "no matching for "
+        + action_runner.tab.GetUrl()
+        + " using "
+        + url.group(2)
+      )
     iframe = self._ACCEPTED_COOKIE[url.group(3)]
     if iframe != '':
       try:
@@ -212,14 +229,18 @@ class BusinessInsiderMobile2021(_ArticleBrowsingStory):
       if cookie_context is not None:
         self._ACCEPTED_COOKIE[url.group(3)] = ''
         action_runner.ExecuteJavaScript(
-            ('document.querySelectorAll(".message-button")[0].dispatchEvent('
-             'new MouseEvent("click", {bubbles: true, cancellable: true}));'),
-            context_id=cookie_context,
-            user_gesture=True)
+          (
+            'document.querySelectorAll(".message-button")[0].dispatchEvent('
+            'new MouseEvent("click", {bubbles: true, cancellable: true}));'
+          ),
+          context_id=cookie_context,
+          user_gesture=True,
+        )
 
 
 class BusinessInsiderScrollWhileLoadingMobile2021(BusinessInsiderMobile2021):
   """A newsite where we've seen janky performance in bug reports"""
+
   NAME = 'browse:news:businessinsider:loading:2021'
   SCROLL_DURING_LOADING = True
   # This is only used in system_health.scroll_jank at the moment. So to avoid
@@ -248,9 +269,11 @@ class FacebookMobileStory2019(_ArticleBrowsingStory):
     # the elements. Retry 5 times waiting a bit each time.
     for _ in range(5):
       action_runner.RepeatableBrowserDrivenScroll(
-          repeat_count=self.MAIN_PAGE_SCROLL_REPEAT)
+        repeat_count=self.MAIN_PAGE_SCROLL_REPEAT
+      )
       result = action_runner.EvaluateJavaScript(
-          'document.querySelectorAll("._5msj").length')
+        'document.querySelectorAll("._5msj").length'
+      )
       if result:
         break
       action_runner.Wait(1)
@@ -307,6 +330,7 @@ class NytimesDesktopStory2020(_ArticleBrowsingStory):
   - window.EventTracker is not loaded
   - all network errors are related to ads
   """
+
   NAME = 'browse:news:nytimes:2020'
   URL = 'http://www.nytimes.com'
   ITEM_SELECTOR = "a[href*='/2020/']"
@@ -316,6 +340,7 @@ class NytimesDesktopStory2020(_ArticleBrowsingStory):
 
 class NytimesMobileStory2019(_ArticleBrowsingStory):
   """The third top website in http://www.alexa.com/topsites/category/News"""
+
   NAME = 'browse:news:nytimes:2019'
   URL = 'http://mobile.nytimes.com'
   ITEM_SELECTOR = '.css-1yjtett a'
@@ -338,6 +363,7 @@ class QqMobileStory2019(_ArticleBrowsingStory):
 
 class RedditDesktopStory2020(_ArticleBrowsingStory):
   """The top website in http://www.alexa.com/topsites/category/News"""
+
   NAME = 'browse:news:reddit:2020'
   URL = 'https://www.reddit.com/r/news/top/?sort=top&t=week'
   IS_SINGLE_PAGE_APP = True
@@ -375,14 +401,20 @@ class RedditMobileStory2019(_ArticleBrowsingStory):
 class TwitterMobileStory2019(_ArticleBrowsingStory):
   NAME = 'browse:social:twitter:2019'
   URL = 'https://www.twitter.com/nasa'
-  ITEM_SELECTOR = ('[class="css-901oao r-hkyrab r-1qd0xha r-1b43r93 r-16dba41 '
-      'r-ad9z0x r-bcqeeo r-bnwqim r-qvutc0"]')
+  ITEM_SELECTOR = (
+    '[class="css-901oao r-hkyrab r-1qd0xha r-1b43r93 r-16dba41 '
+    'r-ad9z0x r-bcqeeo r-bnwqim r-qvutc0"]'
+  )
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   TAGS = [story_tags.HEALTH_CHECK, story_tags.YEAR_2019]
 
   def _WaitForNavigation(self, action_runner):
-    action_runner.WaitForElement(selector=('[class="css-901oao css-16my406 '
-        'r-1qd0xha r-ad9z0x r-bcqeeo r-qvutc0"]'))
+    action_runner.WaitForElement(
+      selector=(
+        '[class="css-901oao css-16my406 r-1qd0xha r-ad9z0x r-bcqeeo r-qvutc0"]'
+      )
+    )
+
 
 class TwitterDesktopStory2018(_ArticleBrowsingStory):
   NAME = 'browse:social:twitter:2018'
@@ -395,6 +427,7 @@ class TwitterDesktopStory2018(_ArticleBrowsingStory):
 
 class WashingtonPostMobileStory2019(_ArticleBrowsingStory):
   """Progressive website"""
+
   NAME = 'browse:news:washingtonpost:2019'
   URL = 'https://www.washingtonpost.com/pwa'
   IS_SINGLE_PAGE_APP = True
@@ -422,11 +455,12 @@ class WashingtonPostMobileStory2019(_ArticleBrowsingStory):
 
 
 class GoogleAmpStory2018(_ArticleBrowsingStory):
-  """ Story for Google's Accelerated Mobile Pages (AMP).
+  """Story for Google's Accelerated Mobile Pages (AMP).
 
-    The main thing we care about measuring here is load, so just query for
-    news articles and then load the first amp link.
+  The main thing we care about measuring here is load, so just query for
+  news articles and then load the first amp link.
   """
+
   NAME = 'browse:search:amp:2018'
   URL = 'https://www.google.com/search?q=news&hl=en'
   # Need to find the first card in the news section that has an amp
@@ -438,19 +472,22 @@ class GoogleAmpStory2018(_ArticleBrowsingStory):
   def _DidLoadDocument(self, action_runner):
     # Click on the amp news link and then just wait for it to load.
     element_function = js_template.Render(
-        'document.querySelectorAll({{ selector }})[{{ index }}]',
-        selector=self.ITEM_SELECTOR, index=0)
+      'document.querySelectorAll({{ selector }})[{{ index }}]',
+      selector=self.ITEM_SELECTOR,
+      index=0,
+    )
     action_runner.WaitForElement(element_function=element_function)
     action_runner.ClickElement(element_function=element_function)
     action_runner.Wait(2)
 
+
 class GoogleAmpSXGStory2019(_ArticleBrowsingStory):
-  """ Story for Google's Signed Exchange (SXG) Accelerated Mobile Pages (AMP).
-  """
+  """Story for Google's Signed Exchange (SXG) Accelerated Mobile Pages (AMP)."""
+
   NAME = 'browse:search:amp:sxg:2019'
   # Specific URL for site that supports SXG, travel.yahoo.co.jp
   # pylint: disable=line-too-long
-  URL='https://www.google.com/search?q=%E5%85%AD%E6%9C%AC%E6%9C%A8%E3%80%80%E3%83%A4%E3%83%95%E3%83%BC%E3%80%80%E3%83%9B%E3%83%86%E3%83%AB&esrch=SignedExchange::Demo'
+  URL = 'https://www.google.com/search?q=%E5%85%AD%E6%9C%AC%E6%9C%A8%E3%80%80%E3%83%A4%E3%83%95%E3%83%BC%E3%80%80%E3%83%9B%E3%83%86%E3%83%AB&esrch=SignedExchange::Demo'
   # Need to find the SXG AMPlink in the results
   ITEM_SELECTOR = 'a > div > span[aria-label="AMP logo"]'
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
@@ -463,8 +500,10 @@ class GoogleAmpSXGStory2019(_ArticleBrowsingStory):
     action_runner.Wait(2)
     # Click on the yahoo amp link and then just wait for it to load.
     element_function = js_template.Render(
-        'document.querySelectorAll({{ selector }})[{{ index }}]',
-        selector=self.ITEM_SELECTOR, index=0)
+      'document.querySelectorAll({{ selector }})[{{ index }}]',
+      selector=self.ITEM_SELECTOR,
+      index=0,
+    )
     action_runner.WaitForElement(element_function=element_function)
     action_runner.ClickElement(element_function=element_function)
     # Waiting for the document to fully render
@@ -485,6 +524,7 @@ class GoogleDesktopStory2018(_ArticleBrowsingStory):
     _ Scroll the search page.
 
   """
+
   NAME = 'browse:search:google:2020'
   URL = 'https://www.google.com/search?q=flower&hl=en'
   _SEARCH_BOX_SELECTOR = 'input[aria-label="Search"]'
@@ -507,8 +547,9 @@ class GoogleDesktopStory2018(_ArticleBrowsingStory):
     # Click on the search box.
     action_runner.WaitForElement(selector=self._SEARCH_BOX_SELECTOR)
     action_runner.ExecuteJavaScript(
-        'document.querySelector({{ selector }}).focus()',
-        selector=self._SEARCH_BOX_SELECTOR)
+      'document.querySelector({{ selector }}).focus()',
+      selector=self._SEARCH_BOX_SELECTOR,
+    )
     action_runner.Wait(2)
 
     # Submit search query.
@@ -536,6 +577,7 @@ class GoogleIndiaDesktopStory2021(_ArticleBrowsingStory):
     6. Scroll the search result page.
 
   """
+
   NAME = 'browse:search:google_india:2021'
   URL = 'https://www.google.co.in/search?q=%E0%A4%AB%E0%A5%82%E0%A4%B2&hl=hi'
   _SEARCH_BOX_SELECTOR = 'input[name="q"]'
@@ -548,10 +590,11 @@ class GoogleIndiaDesktopStory2021(_ArticleBrowsingStory):
     # Refine search query in the search box.
     action_runner.WaitForElement(self._SEARCH_BOX_SELECTOR)
     action_runner.ExecuteJavaScript(
-        'document.querySelector({{ selector }}).select()',
-        selector=self._SEARCH_BOX_SELECTOR)
+      'document.querySelector({{ selector }}).select()',
+      selector=self._SEARCH_BOX_SELECTOR,
+    )
     action_runner.Wait(1)
-    action_runner.EnterText(u'वितरण', character_delay_ms=250)
+    action_runner.EnterText('वितरण', character_delay_ms=250)
     action_runner.Wait(2)
     action_runner.ClickElement(selector=self._SEARCH_BUTTON_SELECTOR)
 
@@ -592,7 +635,6 @@ class _MediaBrowsingStory(_BrowsingStory):
       if self.INCREMENT_INDEX_AFTER_EACH_ITEM:
         index += 1
 
-
   def _ViewMediaItem(self, action_runner, index):
     del index  # Unused.
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
@@ -611,8 +653,10 @@ class ImgurMobileStory2019(_MediaBrowsingStory):
     # Accept the cookies
     accept_button = ".qc-cmp-button"
     item_selector = js_template.Render(
-       'document.querySelectorAll({{ selector }})[{{ index }}]',
-       selector=accept_button, index=1)
+      'document.querySelectorAll({{ selector }})[{{ index }}]',
+      selector=accept_button,
+      index=1,
+    )
     action_runner.WaitForElement(element_function=item_selector)
     action_runner.ClickElement(element_function=item_selector)
     # To simulate user looking at image
@@ -624,15 +668,20 @@ class ImgurMobileStory2019(_MediaBrowsingStory):
     accepted_continue = False
     for _ in range(15):
       result = action_runner.EvaluateJavaScript(
-          'document.querySelectorAll(".Button-tertiary").length')
+        'document.querySelectorAll(".Button-tertiary").length'
+      )
       if result and not accepted_continue:
         accept_button = ".Button-tertiary"
         item_selector = js_template.Render(
-           'document.querySelectorAll({{ selector }})[{{ index }}]',
-           selector=accept_button, index=0)
-        action_runner.ScrollPageToElement(element_function=item_selector,
-                                          speed_in_pixels_per_second=400,
-                                          container_selector=None)
+          'document.querySelectorAll({{ selector }})[{{ index }}]',
+          selector=accept_button,
+          index=0,
+        )
+        action_runner.ScrollPageToElement(
+          element_function=item_selector,
+          speed_in_pixels_per_second=400,
+          container_selector=None,
+        )
         action_runner.ClickElement(element_function=item_selector)
         accepted_continue = True
 
@@ -658,7 +707,9 @@ class TikTokMobileStory2021(_BrowsingStory):
 
   _TIME_TO_WAIT_BEFORE_STARTING_IN_SECONDS = 2
   _TIME_TO_WAIT_BETWEEN_VIDEOS = 1
-  _ACCEPT_ALL_SELECTOR = 'div[class$=" cookie-banner"]>div[class$=" button-wrapper"]>button'
+  _ACCEPT_ALL_SELECTOR = (
+    'div[class$=" cookie-banner"]>div[class$=" button-wrapper"]>button'
+  )
 
   def _DidLoadDocument(self, action_runner):
     # Accept all cookies
@@ -670,8 +721,9 @@ class TikTokMobileStory2021(_BrowsingStory):
     # swipe gestures.
     for direction in ['down', 'up', 'down']:
       for _ in range(0, 3):
-        scroll_dist = action_runner.EvaluateJavaScript(
-            'window.innerHeight') * 0.8
+        scroll_dist = (
+          action_runner.EvaluateJavaScript('window.innerHeight') * 0.8
+        )
         action_runner.ScrollPage(distance=scroll_dist, direction=direction)
         action_runner.Wait(self._TIME_TO_WAIT_BETWEEN_VIDEOS)
 
@@ -680,6 +732,7 @@ class YouTubeMobileStory2019(_MediaBrowsingStory):
   """Load a typical YouTube video then navigate to a next few videos. Stop and
   watch each video for few seconds.
   """
+
   NAME = 'browse:media:youtube:2019'
   URL = 'https://m.youtube.com/watch?v=TcMBFSGVi1c&autoplay=false'
   ITEM_SELECTOR = '.compact-media-item > a'
@@ -688,8 +741,9 @@ class YouTubeMobileStory2019(_MediaBrowsingStory):
   ITEM_SELECTOR_INDEX = 3
   ITEMS_TO_VISIT = 8
   TAGS = [
-      story_tags.JAVASCRIPT_HEAVY, story_tags.EMERGING_MARKET,
-      story_tags.YEAR_2019
+    story_tags.JAVASCRIPT_HEAVY,
+    story_tags.EMERGING_MARKET,
+    story_tags.YEAR_2019,
   ]
 
 
@@ -697,9 +751,12 @@ class YouTubeDesktopStory2019(_MediaBrowsingStory):
   """Load a typical YouTube video then navigate to a next few videos. Stop and
   watch each video for a few seconds.
   """
+
   NAME = 'browse:media:youtube:2019'
   URL = 'https://www.youtube.com/watch?v=QGfhS1hfTWw&autoplay=0'
-  ITEM_SELECTOR = 'ytd-compact-video-renderer.ytd-watch-next-secondary-results-renderer a'
+  ITEM_SELECTOR = (
+    'ytd-compact-video-renderer.ytd-watch-next-secondary-results-renderer a'
+  )
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   IS_SINGLE_PAGE_APP = True
   # A longer view time allows videos to load and play.
@@ -714,6 +771,7 @@ class PhotoshopDesktopStory2021(_MediaBrowsingStory):
   """Photoshop desktop story,
   Measure the time it takes to open a shared Photoshop file.
   """
+
   NAME = 'browse:tools:photoshop:2021'
   URL = 'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
@@ -757,13 +815,15 @@ class PhotoshopDesktopStory2021(_MediaBrowsingStory):
   '''
 
   def __init__(self, story_set, take_memory_measurement):
-    super(PhotoshopDesktopStory2021, self).__init__(story_set,
-                                                    take_memory_measurement)
+    super(PhotoshopDesktopStory2021, self).__init__(
+      story_set, take_memory_measurement
+    )
     self.script_to_evaluate_on_commit = js_template.Render(
-        '''{{@events_reported_by_page}}
+      '''{{@events_reported_by_page}}
         {{@performance_mark}}''',
-        events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
-        performance_mark=self.PERFORMANCE_MARK_PATCH)
+      events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
+      performance_mark=self.PERFORMANCE_MARK_PATCH,
+    )
 
   def _DidLoadDocument(self, action_runner):
     action_runner.WaitForJavaScriptCondition(self.FINISHED_EVENT)
@@ -776,6 +836,7 @@ class PhotoshopWarmStartupDesktopStory2021(_MediaBrowsingStory):
   to do the actual measurement. The story then measures the time it takes to
   open a shared Photoshop file.
   """
+
   NAME = 'browse:tools:photoshop_warm:2021'
   URL = 'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
@@ -828,16 +889,19 @@ class PhotoshopWarmStartupDesktopStory2021(_MediaBrowsingStory):
   '''
 
   def __init__(self, story_set, take_memory_measurement):
-    super(PhotoshopWarmStartupDesktopStory2021,
-          self).__init__(story_set, take_memory_measurement)
+    super(PhotoshopWarmStartupDesktopStory2021, self).__init__(
+      story_set, take_memory_measurement
+    )
     self.script_to_evaluate_on_commit = js_template.Render(
-        self.WARMUP_RUNS_SCRIPT)
+      self.WARMUP_RUNS_SCRIPT
+    )
 
   def _DidLoadDocument(self, action_runner):
     action_runner.Wait(2)
     # The first navigation to photoshop initializes caching.
     action_runner.WaitForJavaScriptCondition(
-        'window.__telemetry_first_load_finished')
+      'window.__telemetry_first_load_finished'
+    )
     # Navigate to a different page to start a new renderer process. The
     # original process stores the wasm module of photoshop in an in-process
     # cache.
@@ -847,11 +911,13 @@ class PhotoshopWarmStartupDesktopStory2021(_MediaBrowsingStory):
     # The second navigation to photoshop stores the compiled wasm module in the
     # cache.
     action_runner.Navigate(
-        'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029',
-        warmup_script)
+      'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029',
+      warmup_script,
+    )
     action_runner.Wait(2)
     action_runner.WaitForJavaScriptCondition(
-        'window.__telemetry_first_load_finished')
+      'window.__telemetry_first_load_finished'
+    )
     # Wait for the optimizing compiler to finish compilation and to write the
     # compiled module into the cache.
     action_runner.Wait(30)
@@ -859,15 +925,17 @@ class PhotoshopWarmStartupDesktopStory2021(_MediaBrowsingStory):
     action_runner.Navigate('https://www.google.com/')
     action_runner.Wait(1)
     measurement_script = js_template.Render(
-        '''{{@events_reported_by_page}}
+      '''{{@events_reported_by_page}}
         {{@performance_mark}}''',
-        events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
-        performance_mark=self.PERFORMANCE_MARK_PATCH)
+      events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
+      performance_mark=self.PERFORMANCE_MARK_PATCH,
+    )
     # The third navigation loads photoshop from the cache. This is the page
     # load we want to measure.
     action_runner.Navigate(
-        'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029',
-        measurement_script)
+      'https://photoshop.adobe.com/id/urn:aaid:sc:EU:1856a1e7-f397-4616-b399-9cd3b3d8c029',
+      measurement_script,
+    )
     action_runner.Wait(2)
     action_runner.WaitForJavaScriptCondition(self.FINISHED_EVENT)
 
@@ -876,17 +944,21 @@ class AutoCADDesktopStory2021(_MediaBrowsingStory):
   """AutoCAD desktop story,
   TODO: add a description here.
   """
+
   NAME = 'browse:tools:autocad:2021'
   URL = 'https://web.autocad.com/?user=wasm-benchmark'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [
-      story_tags.YEAR_2021, story_tags.WEBASSEMBLY, story_tags.WEBGL,
-      story_tags.KEYBOARD_INPUT
+    story_tags.YEAR_2021,
+    story_tags.WEBASSEMBLY,
+    story_tags.WEBGL,
+    story_tags.KEYBOARD_INPUT,
   ]
 
   def __init__(self, story_set, take_memory_measurement):
-    super(AutoCADDesktopStory2021, self).__init__(story_set,
-                                                  take_memory_measurement)
+    super(AutoCADDesktopStory2021, self).__init__(
+      story_set, take_memory_measurement
+    )
 
   def _Login(self, action_runner):
     autocad_login.LoginWithDesktopSite(action_runner, 'autocad')
@@ -917,6 +989,7 @@ class YouTubeTVDesktopStory2019(_MediaBrowsingStory):
   """Load a typical YouTube TV video then navigate to a next few videos. Stop
   and watch each video for a few seconds.
   """
+
   NAME = 'browse:media:youtubetv:2019'
   URL = 'https://www.youtube.com/tv#/watch/ads/control?v=PxrnoGyBw4E&resume'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
@@ -939,7 +1012,7 @@ class YouTubeTVDesktopStory2019(_MediaBrowsingStory):
 
   def GotoNextVideo(self, action_runner):
     forward_button_selector = '.skip-forward-button'
-    action_runner.PressKey('ArrowDown')   # Open the menu.
+    action_runner.PressKey('ArrowDown')  # Open the menu.
     action_runner.WaitForElement(selector=forward_button_selector)
     action_runner.MouseClick(selector=forward_button_selector)
     self.WaitIfRecording(action_runner)
@@ -989,18 +1062,23 @@ class YouTubeTVDesktopStory2019(_MediaBrowsingStory):
   # this flag explicitly for this story.
   def __init__(self, story_set, take_memory_measurement):
     super(YouTubeTVDesktopStory2019, self).__init__(
-        story_set, take_memory_measurement,
-        extra_browser_args=['--js-flags="--jitless"'])
+      story_set,
+      take_memory_measurement,
+      extra_browser_args=['--js-flags="--jitless"'],
+    )
 
 
 class YouTubeTVDesktopWatchStory2020(_MediaBrowsingStory):
   """Load a typical YouTube TV video then navigate to a next few videos. Stop
   and watch each video for a few seconds.
   """
+
   NAME = 'browse:media:youtubetv_watch:2020'
-  URL = ('https://www.youtube.com/tv?'
-         'env_adsUrl=http%3A%2F%2Fvastsynthesizer.appspot.com'
-         '%2Fyshi_trv_instream_10s#/watch?v=Ylo257Av-qQ')
+  URL = (
+    'https://www.youtube.com/tv?'
+    'env_adsUrl=http%3A%2F%2Fvastsynthesizer.appspot.com'
+    '%2Fyshi_trv_instream_10s#/watch?v=Ylo257Av-qQ'
+  )
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [story_tags.YEAR_2020]
 
@@ -1043,19 +1121,23 @@ class YouTubeTVDesktopWatchStory2020(_MediaBrowsingStory):
   # benchmark that enables this flag. We take the pragmatic solution and set
   # this flag explicitly for this story.
   def __init__(self, story_set, take_memory_measurement):
-    super(YouTubeTVDesktopWatchStory2020,
-          self).__init__(story_set,
-                         take_memory_measurement,
-                         extra_browser_args=['--js-flags="--jitless"'])
+    super(YouTubeTVDesktopWatchStory2020, self).__init__(
+      story_set,
+      take_memory_measurement,
+      extra_browser_args=['--js-flags="--jitless"'],
+    )
 
 
 class FacebookPhotosMobileStory2019(_MediaBrowsingStory):
   """Load a photo page from Rihanna's facebook page then navigate a few next
   photos.
   """
+
   NAME = 'browse:media:facebook_photos:2019'
   URL = (
-      'https://m.facebook.com/rihanna/photos/a.10152251658271676/10156761246686676/?type=3&source=54')
+    'https://m.facebook.com/rihanna/photos/a.10152251658271676/'
+    '10156761246686676/?type=3&source=54'
+  )
   ITEM_SELECTOR = '._57-r.touchable'
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   IS_SINGLE_PAGE_APP = True
@@ -1082,7 +1164,6 @@ class TumblrDesktopStory2018(_MediaBrowsingStory):
     action_runner.WaitForElement(selector='#tumblr_lightbox')
     action_runner.MouseClick(selector='#tumblr_lightbox')
     action_runner.Wait(1)  # To make browsing more realistic.
-
 
 
 class PinterestDesktopStory2018(_MediaBrowsingStory):
@@ -1115,9 +1196,11 @@ class PinterestDesktopStory2018(_MediaBrowsingStory):
         action_runner.Wait(2)
       action_runner.Wait(2.5)
       action_runner.WaitForElement(
-                  selector='div[data-test-id=BoardPickerSaveButton]')
+        selector='div[data-test-id=BoardPickerSaveButton]'
+      )
       action_runner.ClickElement(
-                  selector='div[data-test-id=BoardPickerSaveButton]')
+        selector='div[data-test-id=BoardPickerSaveButton]'
+      )
       action_runner.Wait(1.5)
     action_runner.Wait(1)
     if not self.SKIP_LOGIN:
@@ -1129,10 +1212,12 @@ class PinterestDesktopStory2018(_MediaBrowsingStory):
     if not self.SKIP_LOGIN:
       action_runner.Wait(2)
 
+
 class GooglePlayStoreMobileStory(_MediaBrowsingStory):
-  """ Navigate to the movies page of Google Play Store, scroll to the bottom,
+  """Navigate to the movies page of Google Play Store, scroll to the bottom,
   and click "see more" of a middle category (last before second scroll).
   """
+
   NAME = 'browse:media:googleplaystore:2019'
   URL = 'https://play.google.com/store/movies'
   ITEM_SELECTOR = ''
@@ -1140,8 +1225,9 @@ class GooglePlayStoreMobileStory(_MediaBrowsingStory):
   IS_SINGLE_PAGE_APP = True
   TAGS = [story_tags.EMERGING_MARKET, story_tags.YEAR_2019, story_tags.IMAGES]
   # intends to select the last category of movies and its "see more" button
-  _SEE_MORE_SELECTOR = ('div[class*="cluster-container"]:last-of-type '
-                        'a[class*="see-more"]')
+  _SEE_MORE_SELECTOR = (
+    'div[class*="cluster-container"]:last-of-type a[class*="see-more"]'
+  )
 
   def _DidLoadDocument(self, action_runner):
     action_runner.ScrollPage()
@@ -1154,9 +1240,10 @@ class GooglePlayStoreMobileStory(_MediaBrowsingStory):
 
 
 class GooglePlayStoreDesktopStory(_MediaBrowsingStory):
-  """ Navigate to the movies page of Google Play Store, scroll to the bottom,
+  """Navigate to the movies page of Google Play Store, scroll to the bottom,
   and click "see more" of a middle category (last before second scroll).
   """
+
   NAME = 'browse:media:googleplaystore:2021'
   URL = 'https://play.google.com/store/movies'
   ITEM_SELECTOR = ''
@@ -1171,13 +1258,17 @@ class GooglePlayStoreDesktopStory(_MediaBrowsingStory):
     action_runner.Wait(2)
     action_runner.ScrollPage()
 
-  def __init__(self, story_set, take_memory_measurement,
-               extra_browser_args=None, name_suffix=''):
+  def __init__(
+    self,
+    story_set,
+    take_memory_measurement,
+    extra_browser_args=None,
+    name_suffix='',
+  ):
     self.NAME = self.NAME + name_suffix
-    super(GooglePlayStoreDesktopStory, self).__init__(story_set,
-      take_memory_measurement,
-      extra_browser_args=extra_browser_args)
-
+    super(GooglePlayStoreDesktopStory, self).__init__(
+      story_set, take_memory_measurement, extra_browser_args=extra_browser_args
+    )
 
 
 ##############################################################################
@@ -1277,42 +1368,49 @@ class GoogleMapsMobileStory2019(system_health_story.SystemHealthStory):
   This story searches for nearby restaurants on google maps website and finds
   directions to a chosen restaurant from search results.
   """
+
   NAME = 'browse:tools:maps:2019'
   URL = 'https://maps.google.com/maps?force=pwa&source=mlpwa'
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   TAGS = [
-      story_tags.HEALTH_CHECK, story_tags.EMERGING_MARKET, story_tags.YEAR_2019
+    story_tags.HEALTH_CHECK,
+    story_tags.EMERGING_MARKET,
+    story_tags.YEAR_2019,
   ]
 
   _MAPS_SEARCH_BOX_SELECTOR = '.ml-searchbox-pwa-textarea'
   _MAPS_SEARCH_BOX_FORM = '[id="ml-searchboxform"]'
   _RESTAURANTS_LOADED = '.ml-panes-categorical-bottom-bar button'
   _RESTAURANTS_LINK = '.ml-entity-list-item-info'
-  _DIRECTIONS_LINK = ('.ml-panes-entity-bottom-bar.'
-                      'ml-panes-entity-bottom-bar-expanded '
-                      'button[class$="last"]')
-  _DIRECTIONS_LOADED = ('.ml-panes-directions-bottom-bar.'
-                        'ml-panes-directions-bottom-bar-collapsed '
-                        'button[class$="last"]')
+  _DIRECTIONS_LINK = (
+    '.ml-panes-entity-bottom-bar.'
+    'ml-panes-entity-bottom-bar-expanded '
+    'button[class$="last"]'
+  )
+  _DIRECTIONS_LOADED = (
+    '.ml-panes-directions-bottom-bar.'
+    'ml-panes-directions-bottom-bar-collapsed '
+    'button[class$="last"]'
+  )
   _MAP_LAYER = '.ml-map'
 
   def _DidLoadDocument(self, action_runner):
     # Submit search query.
     self._ClickLink(self._MAPS_SEARCH_BOX_SELECTOR, action_runner)
     action_runner.WaitForElement(selector=self._MAPS_SEARCH_BOX_FORM)
-    action_runner.Wait(1) # Waiting to type
+    action_runner.Wait(1)  # Waiting to type
     action_runner.EnterText('restaurants near me')
     action_runner.PressKey('Return')
     action_runner.WaitForElement(selector=self._RESTAURANTS_LOADED)
     action_runner.WaitForNetworkQuiescence()
-    action_runner.Wait(4) # User looking at restaurants
+    action_runner.Wait(4)  # User looking at restaurants
 
     # Open the restaurant list and select the first.
     self._ClickLink(self._RESTAURANTS_LOADED, action_runner)
     action_runner.WaitForElement(selector=self._RESTAURANTS_LINK)
-    action_runner.Wait(3) # User reads about restaurant
+    action_runner.Wait(3)  # User reads about restaurant
     self._ClickLink(self._RESTAURANTS_LINK, action_runner)
-    action_runner.Wait(1) # Reading description
+    action_runner.Wait(1)  # Reading description
 
     # Open directions to the restaurant from Google.
     self._ClickLink(self._DIRECTIONS_LINK, action_runner)
@@ -1321,7 +1419,7 @@ class GoogleMapsMobileStory2019(system_health_story.SystemHealthStory):
     action_runner.PressKey('Return')
     action_runner.WaitForElement(selector=self._DIRECTIONS_LOADED)
     action_runner.WaitForNetworkQuiescence()
-    action_runner.Wait(2) # Seeing direction
+    action_runner.Wait(2)  # Seeing direction
 
   def _ClickLink(self, selector, action_runner):
     action_runner.WaitForElement(selector=selector)
@@ -1337,6 +1435,7 @@ class GoogleMapsStory2019(_BrowsingStory):
     _ Scroll the map horizontally and vertically.
     _ Pick a restaurant and ask for directions.
   """
+
   # When recording this story:
   # Force tactile using this: http://google.com/maps?force=tt
   # Force webgl using this: http://google.com/maps?force=webgl
@@ -1348,8 +1447,9 @@ class GoogleMapsStory2019(_BrowsingStory):
   _MAPS_UPDATE_RESULTS_SELECTOR = '#section-query-on-pan-checkbox-id'
   _MAPS_ZOOM_IN_SELECTOR = '#widget-zoom-in'
   _MAPS_ZOOM_OUT_SELECTOR = '#widget-zoom-out'
-  _RESTAURANTS_LOADED = ('[class="searchbox searchbox-shadow noprint '
-                         'clear-button-shown"]')
+  _RESTAURANTS_LOADED = (
+    '[class="searchbox searchbox-shadow noprint clear-button-shown"]'
+  )
   _RESTAURANT_LINK = '[data-result-index="1"]'
   _DIRECTIONS_LINK = '.section-action-chip-button[data-value=Directions]'
   _DIRECTIONS_FROM_BOX = '[class="tactile-searchbox-input"]'
@@ -1372,8 +1472,7 @@ class GoogleMapsStory2019(_BrowsingStory):
           != null)
     '''
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
-  TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.WEBGL,
-          story_tags.YEAR_2019]
+  TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.WEBGL, story_tags.YEAR_2019]
 
   def _DidLoadDocument(self, action_runner):
     # Click on the search box.
@@ -1393,28 +1492,34 @@ class GoogleMapsStory2019(_BrowsingStory):
 
     # ZoomIn two times.
     prev_restaurant_hash = action_runner.EvaluateJavaScript(
-        self._GET_RESTAURANT_RESPONSE_HASH,
-        restaurant_link=self._RESTAURANT_LINK)
+      self._GET_RESTAURANT_RESPONSE_HASH, restaurant_link=self._RESTAURANT_LINK
+    )
     action_runner.ClickElement(selector=self._MAPS_ZOOM_IN_SELECTOR)
     action_runner.Wait(0.5)
     action_runner.ClickElement(selector=self._MAPS_ZOOM_IN_SELECTOR)
     action_runner.Wait(0.5)
     action_runner.ClickElement(selector=self._MAPS_ZOOM_IN_SELECTOR)
     action_runner.WaitForJavaScriptCondition(
-        self._CHECK_RESTAURANTS_UPDATED, restaurant_link=self._RESTAURANT_LINK,
-        old_restaurant=prev_restaurant_hash, timeout=90)
+      self._CHECK_RESTAURANTS_UPDATED,
+      restaurant_link=self._RESTAURANT_LINK,
+      old_restaurant=prev_restaurant_hash,
+      timeout=90,
+    )
     # This wait is required to fetch the data for all the tiles in the map.
     action_runner.Wait(1)
 
     prev_restaurant_hash = action_runner.EvaluateJavaScript(
-        self._GET_RESTAURANT_RESPONSE_HASH,
-        restaurant_link=self._RESTAURANT_LINK)
+      self._GET_RESTAURANT_RESPONSE_HASH, restaurant_link=self._RESTAURANT_LINK
+    )
     action_runner.ClickElement(selector=self._MAPS_ZOOM_OUT_SELECTOR)
     action_runner.Wait(0.5)
     action_runner.ClickElement(selector=self._MAPS_ZOOM_OUT_SELECTOR)
     action_runner.WaitForJavaScriptCondition(
-        self._CHECK_RESTAURANTS_UPDATED, restaurant_link=self._RESTAURANT_LINK,
-        old_restaurant=prev_restaurant_hash, timeout=90)
+      self._CHECK_RESTAURANTS_UPDATED,
+      restaurant_link=self._RESTAURANT_LINK,
+      old_restaurant=prev_restaurant_hash,
+      timeout=90,
+    )
     # This wait is required to fetch the data for all the tiles in the map.
     action_runner.Wait(1)
 
@@ -1423,24 +1528,40 @@ class GoogleMapsStory2019(_BrowsingStory):
     # well. After recording reset it back to the original value to have a more
     # realistic scroll.
     prev_restaurant_hash = action_runner.EvaluateJavaScript(
-        self._GET_RESTAURANT_RESPONSE_HASH,
-        restaurant_link=self._RESTAURANT_LINK)
+      self._GET_RESTAURANT_RESPONSE_HASH, restaurant_link=self._RESTAURANT_LINK
+    )
     action_runner.RepeatableBrowserDrivenScroll(
-        x_scroll_distance_ratio=0.0, y_scroll_distance_ratio=0.5,
-        repeat_count=2, speed=500, timeout=120, repeat_delay_ms=2000)
+      x_scroll_distance_ratio=0.0,
+      y_scroll_distance_ratio=0.5,
+      repeat_count=2,
+      speed=500,
+      timeout=120,
+      repeat_delay_ms=2000,
+    )
     action_runner.WaitForJavaScriptCondition(
-        self._CHECK_RESTAURANTS_UPDATED, restaurant_link=self._RESTAURANT_LINK,
-        old_restaurant=prev_restaurant_hash, timeout=90)
+      self._CHECK_RESTAURANTS_UPDATED,
+      restaurant_link=self._RESTAURANT_LINK,
+      old_restaurant=prev_restaurant_hash,
+      timeout=90,
+    )
 
     prev_restaurant_hash = action_runner.EvaluateJavaScript(
-        self._GET_RESTAURANT_RESPONSE_HASH,
-        restaurant_link=self._RESTAURANT_LINK)
+      self._GET_RESTAURANT_RESPONSE_HASH, restaurant_link=self._RESTAURANT_LINK
+    )
     action_runner.RepeatableBrowserDrivenScroll(
-        x_scroll_distance_ratio=0.5, y_scroll_distance_ratio=0,
-        repeat_count=2, speed=500, timeout=120, repeat_delay_ms=2000)
+      x_scroll_distance_ratio=0.5,
+      y_scroll_distance_ratio=0,
+      repeat_count=2,
+      speed=500,
+      timeout=120,
+      repeat_delay_ms=2000,
+    )
     action_runner.WaitForJavaScriptCondition(
-        self._CHECK_RESTAURANTS_UPDATED, restaurant_link=self._RESTAURANT_LINK,
-        old_restaurant=prev_restaurant_hash, timeout=90)
+      self._CHECK_RESTAURANTS_UPDATED,
+      restaurant_link=self._RESTAURANT_LINK,
+      old_restaurant=prev_restaurant_hash,
+      timeout=90,
+    )
 
     # To make the recording more realistic.
     action_runner.Wait(1)
@@ -1456,7 +1577,7 @@ class GoogleMapsStory2019(_BrowsingStory):
     action_runner.Wait(1)
 
     # Cycle trough the travel modes.
-    for travel_mode in [0,1,2,3,4,6]:
+    for travel_mode in [0, 1, 2, 3, 4, 6]:
       selector = 'div[data-travel_mode="%s"]' % travel_mode
       action_runner.WaitForElement(selector=selector)
       action_runner.ClickElement(selector=selector)
@@ -1472,6 +1593,7 @@ class _GmailBrowsingStory(system_health_story.SystemHealthStory):
   Adds common functionality for re-mapping + waiting on performance
   mark + measure data.
   """
+
   SKIP_LOGIN = False
 
   USE_LOGINURL = False
@@ -1506,20 +1628,23 @@ class _GmailBrowsingStory(system_health_story.SystemHealthStory):
     })();
   '''
 
-  def __init__(self, story_set, take_memory_measurement,
-               events_and_measures_reported):
-    super(_GmailBrowsingStory,
-          self).__init__(story_set, take_memory_measurement,
-                         '--allow-browser-signin=false')
+  def __init__(
+    self, story_set, take_memory_measurement, events_and_measures_reported
+  ):
+    super(_GmailBrowsingStory, self).__init__(
+      story_set, take_memory_measurement, '--allow-browser-signin=false'
+    )
     self.script_to_evaluate_on_commit = js_template.Render(
-        '''{{@events_and_measures_reported_by_page}}
+      '''{{@events_and_measures_reported_by_page}}
         {{@performance_mark_and_measure}}''',
-        events_and_measures_reported_by_page=events_and_measures_reported,
-        performance_mark_and_measure=self.PERFOMANCE_MARK_AND_MEASURE)
+      events_and_measures_reported_by_page=events_and_measures_reported,
+      performance_mark_and_measure=self.PERFOMANCE_MARK_AND_MEASURE,
+    )
 
   def _Login(self, action_runner):
     if self.USE_LOGINURL or self.wpr_mode in [
-        wpr_modes.WPR_OFF, wpr_modes.WPR_RECORD
+      wpr_modes.WPR_OFF,
+      wpr_modes.WPR_RECORD,
     ]:
       google_login.LoginWithLoginUrl(action_runner, self.URL)
     else:
@@ -1533,7 +1658,8 @@ class _GmailBrowsingStory(system_health_story.SystemHealthStory):
       # to http://mail.google.com.
       action_runner.tab.WaitForDocumentReadyStateToBeComplete()
       action_runner.Navigate(
-          'https://mail.google.com/mail/mu/mp/872/trigger_redirection_loop')
+        'https://mail.google.com/mail/mu/mp/872/trigger_redirection_loop'
+      )
       action_runner.tab.WaitForDocumentReadyStateToBeComplete()
 
 
@@ -1571,16 +1697,18 @@ class GmailLabelClickStory2020(_GmailBrowsingStory):
   '''
 
   def __init__(self, story_set, take_memory_measurement):
-    super(GmailLabelClickStory2020,
-          self).__init__(story_set, take_memory_measurement,
-                         self.EVENTS_AND_MEASURES_REPORTED_BY_PAGE)
+    super(GmailLabelClickStory2020, self).__init__(
+      story_set,
+      take_memory_measurement,
+      self.EVENTS_AND_MEASURES_REPORTED_BY_PAGE,
+    )
 
   def _DidLoadDocument(self, action_runner):
     action_runner.Wait(1)
     action_runner.EvaluateJavaScript(
-        "document.evaluate(\"//span[text()='More']\", "
-        "document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
-        ".singleNodeValue.click();"
+      "document.evaluate(\"//span[text()='More']\", "
+      "document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
+      ".singleNodeValue.click();"
     )
     action_runner.WaitForElement(selector=self._IMPORTANT_SELECTOR)
     action_runner.ClickElement(selector=self._IMPORTANT_SELECTOR)
@@ -1622,15 +1750,18 @@ class GmailOpenConversationStory2020(_GmailBrowsingStory):
   '''
 
   def __init__(self, story_set, take_memory_measurement):
-    super(GmailOpenConversationStory2020,
-          self).__init__(story_set, take_memory_measurement,
-                         self.EVENTS_AND_MEASURES_REPORTED_BY_PAGE)
+    super(GmailOpenConversationStory2020, self).__init__(
+      story_set,
+      take_memory_measurement,
+      self.EVENTS_AND_MEASURES_REPORTED_BY_PAGE,
+    )
 
   def _DidLoadDocument(self, action_runner):
     action_runner.Wait(1)
     action_runner.ClickElement(selector=self._CONV_SELECTOR)
     action_runner.WaitForJavaScriptCondition(self.OPEN_CONVERSATION_BEGIN_EVENT)
     action_runner.WaitForJavaScriptCondition(self.OPEN_CONVERSATION_END_EVENT)
+
 
 class GmailSearchStory2020(_GmailBrowsingStory):
   NAME = 'browse:tools:gmail-search:2020'
@@ -1666,19 +1797,23 @@ class GmailSearchStory2020(_GmailBrowsingStory):
   '''
 
   def __init__(self, story_set, take_memory_measurement):
-    super(GmailSearchStory2020,
-          self).__init__(story_set, take_memory_measurement,
-                         self.EVENTS_AND_MEASURES_REPORTED_BY_PAGE)
+    super(GmailSearchStory2020, self).__init__(
+      story_set,
+      take_memory_measurement,
+      self.EVENTS_AND_MEASURES_REPORTED_BY_PAGE,
+    )
 
   def _DidLoadDocument(self, action_runner):
     action_runner.Wait(1)
     action_runner.ExecuteJavaScript(
-        'document.querySelector({{ selector }}).focus()',
-        selector=self._SEARCH_SELECTOR)
+      'document.querySelector({{ selector }}).focus()',
+      selector=self._SEARCH_SELECTOR,
+    )
     action_runner.EnterText('deals')
     action_runner.PressKey('Return')
     action_runner.WaitForJavaScriptCondition(self.SEARCH_BEGIN_EVENT)
     action_runner.WaitForJavaScriptCondition(self.SEARCH_END_EVENT)
+
 
 class GmailComposeStory2020(_GmailBrowsingStory):
   NAME = 'browse:tools:gmail-compose:2020'
@@ -1712,20 +1847,24 @@ class GmailComposeStory2020(_GmailBrowsingStory):
   '''
 
   def __init__(self, story_set, take_memory_measurement):
-    super(GmailComposeStory2020,
-          self).__init__(story_set, take_memory_measurement,
-                         self.EVENTS_AND_MEASURES_REPORTED_BY_PAGE)
+    super(GmailComposeStory2020, self).__init__(
+      story_set,
+      take_memory_measurement,
+      self.EVENTS_AND_MEASURES_REPORTED_BY_PAGE,
+    )
 
   def _DidLoadDocument(self, action_runner):
     action_runner.Wait(1)
     action_runner.EvaluateJavaScript(
-        "document.evaluate(\"//div[text()='Compose']\", document, "
-        "null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
-        ".singleNodeValue.focus();")
+      "document.evaluate(\"//div[text()='Compose']\", document, "
+      "null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
+      ".singleNodeValue.focus();"
+    )
     action_runner.PressKey('Return')
 
     action_runner.WaitForJavaScriptCondition(self.COMPOSE_BEGIN_EVENT)
     action_runner.WaitForJavaScriptCondition(self.COMPOSE_END_EVENT)
+
 
 ##############################################################################
 # Google sheets browsing story.
@@ -1734,12 +1873,16 @@ class GmailComposeStory2020(_GmailBrowsingStory):
 
 class GoogleSheetsDesktopStory(system_health_story.SystemHealthStory):
   NAME = 'browse:tools:sheets:2019'
-  URL = ('https://docs.google.com/spreadsheets/d/' +
-         '16jfsJs14QrWKhsbxpdJXgoYumxNpnDt08DTK82Puc2A/' +
-         'edit#gid=896027318&range=C:C')
+  URL = (
+    'https://docs.google.com/spreadsheets/d/'
+    + '16jfsJs14QrWKhsbxpdJXgoYumxNpnDt08DTK82Puc2A/'
+    + 'edit#gid=896027318&range=C:C'
+  )
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [
-      story_tags.HEALTH_CHECK, story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2019
+    story_tags.HEALTH_CHECK,
+    story_tags.JAVASCRIPT_HEAVY,
+    story_tags.YEAR_2019,
   ]
 
   # This map translates page-specific event names to event names needed for
@@ -1811,19 +1954,21 @@ class GoogleSheetsDesktopStory(system_health_story.SystemHealthStory):
   '''
 
   def __init__(self, story_set, take_memory_measurement):
-    super(GoogleSheetsDesktopStory, self).__init__(story_set,
-                                                   take_memory_measurement)
+    super(GoogleSheetsDesktopStory, self).__init__(
+      story_set, take_memory_measurement
+    )
     self.script_to_evaluate_on_commit = js_template.Render(
-        '''{{@events_reported_by_page}}
+      '''{{@events_reported_by_page}}
         {{@performance_mark}}
         document.addEventListener('readystatechange', event => {
           if (event.target.readyState === 'interactive') {
             {{@deterministic_session}}
           }
         });''',
-        events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
-        performance_mark=self.PERFOMANCE_MARK,
-        deterministic_session=self.DETERMINISITIC_SESSION)
+      events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
+      performance_mark=self.PERFOMANCE_MARK,
+      deterministic_session=self.DETERMINISITIC_SESSION,
+    )
 
   def _DidLoadDocument(self, action_runner):
     # 1. Wait until the spreadsheet loads.
@@ -1851,6 +1996,7 @@ class GoogleDocsDesktopScrollingStory(system_health_story.SystemHealthStory):
     _ Wait for UI to become available
     _ Scroll through the document
   """
+
   NAME = 'browse:tools:docs_scrolling'
   # Test document. safe=true forces synchronous layout which helps determinism
   # pylint: disable=line-too-long
@@ -1897,12 +2043,14 @@ class GoogleDocsDesktopScrollingStory(system_health_story.SystemHealthStory):
 
   def __init__(self, story_set, take_memory_measurement):
     super(GoogleDocsDesktopScrollingStory, self).__init__(
-        story_set, take_memory_measurement)
+      story_set, take_memory_measurement
+    )
     self.script_to_evaluate_on_commit = js_template.Render(
-        '''{{@events_reported_by_page}}
+      '''{{@events_reported_by_page}}
         {{@performance_mark}}''',
-        events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
-        performance_mark=self.PERFORMANCE_MARK_PATCH)
+      events_reported_by_page=self.EVENTS_REPORTED_BY_PAGE,
+      performance_mark=self.PERFORMANCE_MARK_PATCH,
+    )
 
   def _DidLoadDocument(self, action_runner):
     # Wait for load.
@@ -1911,11 +2059,13 @@ class GoogleDocsDesktopScrollingStory(system_health_story.SystemHealthStory):
     action_runner.EvaluateJavaScript(self.CLEAR_EVENTS)
     # Scroll through the document.
     action_runner.RepeatableBrowserDrivenScroll(
-        x_scroll_distance_ratio=0.0,
-        y_scroll_distance_ratio=1,
-        repeat_count=6,
-        speed=800,
-        timeout=120)
+      x_scroll_distance_ratio=0.0,
+      y_scroll_distance_ratio=1,
+      repeat_count=6,
+      speed=800,
+      timeout=120,
+    )
+
 
 ##############################################################################
 # Browsing stories with infinite scrolling
@@ -1930,30 +2080,31 @@ class _InfiniteScrollStory(system_health_story.SystemHealthStory):
   MAX_SCROLL_RETRIES = 3
   TIME_TO_WAIT_BEFORE_STARTING_IN_SECONDS = 5
 
-  def __init__(self,
-               story_set,
-               take_memory_measurement,
-               extra_browser_args=None):
-    super(_InfiniteScrollStory,
-          self).__init__(story_set,
-                         take_memory_measurement,
-                         extra_browser_args=extra_browser_args)
-    self.script_to_evaluate_on_commit = '''
+  def __init__(
+    self, story_set, take_memory_measurement, extra_browser_args=None
+  ):
+    super(_InfiniteScrollStory, self).__init__(
+      story_set, take_memory_measurement, extra_browser_args=extra_browser_args
+    )
+    self.script_to_evaluate_on_commit = (
+      '''
         window.WebSocket = undefined;
         window.Worker = undefined;
-        window.performance = undefined;''' + override_online.ALWAYS_ONLINE
+        window.performance = undefined;'''
+      + override_online.ALWAYS_ONLINE
+    )
 
   def _DidLoadDocument(self, action_runner):
     action_runner.WaitForJavaScriptCondition(
       'document.body != null && '
       'document.body.scrollHeight > window.innerHeight && '
-      '!document.body.addEventListener("touchstart", function() {})')
+      '!document.body.addEventListener("touchstart", function() {})'
+    )
     action_runner.Wait(self.TIME_TO_WAIT_BEFORE_STARTING_IN_SECONDS)
     self._Scroll(action_runner, self.SCROLL_DISTANCE, self.SCROLL_STEP)
 
-
   def _Scroll(self, action_runner, distance, step_size):
-    """ This function scrolls the webpage by the given scroll distance in
+    """This function scrolls the webpage by the given scroll distance in
     multiple steps, where each step (except the last one) has the given size.
 
     If scrolling gets stuck, the function waits for the page's scroll height to
@@ -1963,28 +2114,34 @@ class _InfiniteScrollStory(system_health_story.SystemHealthStory):
     # Scroll until the window.scrollY is within 1 pixel of the target distance.
     while remaining > 1:
       last_scroll_height = action_runner.EvaluateJavaScript(
-          'document.body.scrollHeight')
+        'document.body.scrollHeight'
+      )
       action_runner.ScrollPage(distance=min(remaining, step_size) + 1)
-      new_remaining = (distance -
-          action_runner.EvaluateJavaScript('window.scrollY'))
+      new_remaining = distance - action_runner.EvaluateJavaScript(
+        'window.scrollY'
+      )
       if remaining <= new_remaining:
         # If the page contains an element with a scrollbar, then the synthetic
         # gesture generated by action_runner.ScrollPage might have scrolled that
         # element instead of the page. Retry scrolling at different place.
         # See https://crbug.com/884183.
-        action_runner.ScrollPage(distance=min(remaining, step_size) + 1,
-                                 left_start_ratio=0.01,
-                                 top_start_ratio=0.01)
-        new_remaining = (distance -
-            action_runner.EvaluateJavaScript('window.scrollY'))
+        action_runner.ScrollPage(
+          distance=min(remaining, step_size) + 1,
+          left_start_ratio=0.01,
+          top_start_ratio=0.01,
+        )
+        new_remaining = distance - action_runner.EvaluateJavaScript(
+          'window.scrollY'
+        )
 
       if remaining <= new_remaining:
         # Scrolling is stuck. This can happen if the page is loading
         # resources. Wait for the page's scrollheight to expand and retry
         # scrolling.
         action_runner.WaitForJavaScriptCondition(
-            'document.body.scrollHeight > {{ last_scroll_height }} ',
-            last_scroll_height=last_scroll_height)
+          'document.body.scrollHeight > {{ last_scroll_height }} ',
+          last_scroll_height=last_scroll_height,
+        )
       else:
         remaining = new_remaining
 
@@ -2040,7 +2197,9 @@ class PinterestMobileStory2021(_InfiniteScrollStory):
   URL = 'https://www.pinterest.co.uk'
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   TAGS = [
-      story_tags.HEALTH_CHECK, story_tags.INFINITE_SCROLL, story_tags.YEAR_2021
+    story_tags.HEALTH_CHECK,
+    story_tags.INFINITE_SCROLL,
+    story_tags.YEAR_2021,
   ]
   # TODO(crbug.com/40584277): Story breaks if login is skipped during replay.
   SKIP_LOGIN = False
@@ -2054,8 +2213,10 @@ class TumblrStory2018(_InfiniteScrollStory):
   URL = 'https://techcrunch.tumblr.com/'
   SCROLL_DISTANCE = 20000
   TAGS = [
-      story_tags.HEALTH_CHECK, story_tags.INFINITE_SCROLL,
-      story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2018
+    story_tags.HEALTH_CHECK,
+    story_tags.INFINITE_SCROLL,
+    story_tags.JAVASCRIPT_HEAVY,
+    story_tags.YEAR_2018,
   ]
 
   def __init__(self, story_set, take_memory_measurement):
@@ -2067,6 +2228,7 @@ class TumblrStory2018(_InfiniteScrollStory):
     # Without this page reload the mobile version does not correctly
     # go to the https://techcrunch.tumblr.com
     action_runner.ReloadPage()
+
 
 class TwitterScrollDesktopStory2018(_InfiniteScrollStory):
   NAME = 'browse:social:twitter_infinite_scroll:2018'

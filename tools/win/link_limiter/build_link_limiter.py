@@ -24,10 +24,12 @@ def run_with_vsvars(cmd, tmpdir=None):
             print(r'cd %s' % tmpdir, file=f)
         print(cmd, file=f)
     try:
-        p = subprocess.Popen([filename],
-                             shell=True,
-                             stdout=subprocess.PIPE,
-                             universal_newlines=True)
+        p = subprocess.Popen(
+            [filename],
+            shell=True,
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+        )
         out, _ = p.communicate()
         return p.returncode, out
     finally:
@@ -38,7 +40,7 @@ def get_vc_dir():
     _, out = run_with_vsvars('echo VCINSTALLDIR=%VCINSTALLDIR%')
     for line in out.splitlines():  # pylint: disable-msg=E1103
         if line.startswith('VCINSTALLDIR='):
-            return line[len('VCINSTALLDIR='):]
+            return line[len('VCINSTALLDIR=') :]
     return None
 
 
@@ -52,8 +54,10 @@ def build(infile):
         print('Building %s...' % outfile)
         rc, out = run_with_vsvars(
             'cl /nologo /Ox /Zi /W4 /WX /D_UNICODE /DUNICODE'
-            ' /D_CRT_SECURE_NO_WARNINGS /EHsc %s /link /out:%s' %
-            (os.path.join('..', infile), outfile), BUILD_DIR)
+            ' /D_CRT_SECURE_NO_WARNINGS /EHsc %s /link /out:%s'
+            % (os.path.join('..', infile), outfile),
+            BUILD_DIR,
+        )
         if rc:
             print(out)
             print('Failed to build %s' % outfile)
@@ -80,8 +84,12 @@ def main():
         if not vcdir:
             print('Could not get VCINSTALLDIR. Run vsvars32.bat?')
             return 1
-        os.environ['PATH'] += (';' + os.path.join(vcdir, 'bin') + ';' +
-                               os.path.join(vcdir, r'..\Common7\IDE'))
+        os.environ['PATH'] += (
+            ';'
+            + os.path.join(vcdir, 'bin')
+            + ';'
+            + os.path.join(vcdir, r'..\Common7\IDE')
+        )
 
     # Verify that we can find link.exe.
     link = os.path.join(vcdir, 'bin', 'link.exe')
@@ -93,8 +101,10 @@ def main():
     for shim_exe in ('lib.exe', 'link.exe'):
         newpath = '%s__LIMITER.exe' % shim_exe
         shutil.copyfile(exe_name, newpath)
-        print('%s shim built. Use with msbuild like: "/p:LinkToolExe=%s"' \
-            % (shim_exe, os.path.abspath(newpath)))
+        print(
+            '%s shim built. Use with msbuild like: "/p:LinkToolExe=%s"'
+            % (shim_exe, os.path.abspath(newpath))
+        )
 
     return 0
 

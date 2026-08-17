@@ -36,11 +36,14 @@ class BaseProtoStyleGenerator(BaseGenerator):
             proto_ctx = ctx[PROTO_CTX_KEY]
             field_name = proto_ctx['field_name']
             field_id = proto_ctx['field_id']
-            if field_name in field_id_map and field_id_map.get(
-                    field_name) != field_id:
+            if (
+                field_name in field_id_map
+                and field_id_map.get(field_name) != field_id
+            ):
                 raise Exception(
-                    'Proto field "%s" declared > 1 times with differing ids' %
-                    field_name)
+                    'Proto field "%s" declared > 1 times with differing ids'
+                    % field_name
+                )
             field_id_map[field_name] = field_id
             field = {'name': field_name, 'id': field_id, 'values': []}
             if field_name not in field_value_map:
@@ -58,17 +61,19 @@ class BaseProtoStyleGenerator(BaseGenerator):
                 'mode_values': {
                     Modes.LIGHT: color_model.ResolveToRGBA(name, Modes.LIGHT),
                     Modes.DARK: color_model.ResolveToRGBA(name, Modes.DARK),
-                }
+                },
             }
             field_value_map[
-                self.model.variable_map[name].context[PROTO_CTX_KEY]
-                ['field_name']].append(color_item)
+                self.model.variable_map[name].context[PROTO_CTX_KEY][
+                    'field_name'
+                ]
+            ].append(color_item)
 
         return field_list
 
     def _ProtoColor(self, c):
         '''Returns the proto color representation of |c|'''
-        assert (isinstance(c, Color))
+        assert isinstance(c, Color)
 
         def AlphaToInt(alpha):
             return int(alpha * 255)
@@ -82,8 +87,9 @@ class ProtoStyleGenerator(BaseProtoStyleGenerator):
         return 'proto'
 
     def Render(self):
-        return self.ApplyTemplate(self, 'templates/proto_generator.tmpl',
-                                  self.GetParameters())
+        return self.ApplyTemplate(
+            self, 'templates/proto_generator.tmpl', self.GetParameters()
+        )
 
 
 class ProtoJSONStyleGenerator(BaseProtoStyleGenerator):
@@ -92,5 +98,6 @@ class ProtoJSONStyleGenerator(BaseProtoStyleGenerator):
         return 'protojson'
 
     def Render(self):
-        return self.ApplyTemplate(self, 'templates/proto_json_generator.tmpl',
-                                  self.GetParameters())
+        return self.ApplyTemplate(
+            self, 'templates/proto_json_generator.tmpl', self.GetParameters()
+        )

@@ -33,37 +33,39 @@ def AppendJSFlags(options, js_flags):
   for extra_arg in options.extra_browser_args:
     if extra_arg.startswith(_JS_FLAGS_SWITCH):
       # Find and remove the set of existing js_flags.
-      existing_js_flags = extra_arg[len(_JS_FLAGS_SWITCH):]
+      existing_js_flags = extra_arg[len(_JS_FLAGS_SWITCH) :]
       options.RemoveExtraBrowserArg(extra_arg)
       break
 
-  options.AppendExtraBrowserArgs([
+  options.AppendExtraBrowserArgs(
+    [
       # Add a new --js-flags which includes previous flags.
-      '%s%s %s' %  (_JS_FLAGS_SWITCH, js_flags, existing_js_flags)
-  ])
+      '%s%s %s' % (_JS_FLAGS_SWITCH, js_flags, existing_js_flags)
+    ]
+  )
 
 
 def AugmentOptionsForV8Metrics(options, enable_runtime_call_stats=True):
   categories = [
-      # Disable all categories by default.
-      '-*',
-      # Memory categories.
-      'disabled-by-default-memory-infra',
-      'toplevel',
-      # V8 categories.
-      'cppgc',
-      'disabled-by-default-cppgc',
-      'disabled-by-default-v8.gc',
-      'v8',
-      'v8.memory',
-      'v8.wasm',
-      'v8.console',
-      'webkit.console',
-      # Blink categories.
-      'blink.resource',
-      'partition_alloc',
-      # Needed for the metric reported by page.
-      'blink.user_timing'
+    # Disable all categories by default.
+    '-*',
+    # Memory categories.
+    'disabled-by-default-memory-infra',
+    'toplevel',
+    # V8 categories.
+    'cppgc',
+    'disabled-by-default-cppgc',
+    'disabled-by-default-v8.gc',
+    'v8',
+    'v8.memory',
+    'v8.wasm',
+    'v8.console',
+    'webkit.console',
+    # Blink categories.
+    'blink.resource',
+    'partition_alloc',
+    # Needed for the metric reported by page.
+    'blink.user_timing',
   ]
 
   options.ExtendTraceCategoryFilter(categories)
@@ -85,13 +87,13 @@ def AugmentOptionsForV8Metrics(options, enable_runtime_call_stats=True):
     options.config.chrome_trace_config.SetTraceBufferSizeInKb(400 * 1024)
 
   metrics = [
-      'blinkResourceMetric',
-      'consoleErrorMetric',
-      'expectedQueueingTimeMetric',
-      'gcMetric',
-      'memoryMetric',
-      'reportedByPageMetric',
-      'wasmMetric',
+    'blinkResourceMetric',
+    'consoleErrorMetric',
+    'expectedQueueingTimeMetric',
+    'gcMetric',
+    'memoryMetric',
+    'reportedByPageMetric',
+    'wasmMetric',
   ]
   options.ExtendTimelineBasedMetric(metrics)
   if enable_runtime_call_stats:
@@ -111,5 +113,6 @@ class V8PerfMixin(object):
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs(
-        '--enable-blink-features=BlinkRuntimeCallStats')
+      '--enable-blink-features=BlinkRuntimeCallStats'
+    )
     options.AppendExtraBrowserArgs(['--disable-popup-blocking'])

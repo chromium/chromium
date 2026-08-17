@@ -15,6 +15,7 @@ import sys
 
 class StoringLogger(logging.Logger):
   """A logger that stores messages that are not logged."""
+
   _storage = []
 
   @classmethod
@@ -40,6 +41,7 @@ logging.setLoggerClass(StoringLogger)
 basic_logger = logging.getLogger('basic_logger')
 basic_logger.addHandler(logging.StreamHandler(sys.stdout))
 basic_logger.propagate = False
+
 
 class PassthroughAdapter:
   """Doesn't filter anything, just logs everything from the recipe run."""
@@ -73,11 +75,12 @@ class LegacyOutputAdapter:
     self._trigger_link_re = re.compile(r'.+@(https://.+)@@@$')
     self._ninja_status_re = re.compile(r'\[(\d+)\/(\d+)\]')
     self._collect_wait_re = re.compile(
-        r'.+prpc call (.+) swarming.v2.Tasks.ListTaskStates, stdin: '
-        r'(\{"task_id": .+\})$'
+      r'.+prpc call (.+) swarming.v2.Tasks.ListTaskStates, stdin: '
+      r'(\{"task_id": .+\})$'
     )
     self._result_links_re = re.compile(
-        r'@@@STEP_LINK@shard (#\d+) test results@(https://[^@]+)@@@')
+      r'@@@STEP_LINK@shard (#\d+) test results@(https://[^@]+)@@@'
+    )
 
     self._current_proccess_fn = self._StepNameProcessLine
     # The first match is used. This allows us to filter parent steps while still
@@ -85,43 +88,43 @@ class LegacyOutputAdapter:
     # _StepNameProcessLine will be used which prints the step name and it's
     # stdout
     self._step_to_processors = {
-        'compile': self._ProcessCompileLine,
-        'reclient compile': self._ProcessCompileLine,
-        'test_pre_run.[trigger] ': self._ProcessTriggerLine,
-        'collect tasks.wait for tasks': self._ProcessCollectLine,
-        'download compilation outputs': self._PrintOnlyStepName,
+      'compile': self._ProcessCompileLine,
+      'reclient compile': self._ProcessCompileLine,
+      'test_pre_run.[trigger] ': self._ProcessTriggerLine,
+      'collect tasks.wait for tasks': self._ProcessCollectLine,
+      'download compilation outputs': self._PrintOnlyStepName,
     }
     # The first match is used. This allows us to filter parent steps while still
     # printing child steps by adding the child step name first. By default INFO
     # will be used which prints in non-verbose mode (i.e. no -v flag)
     self._step_to_log_level = {
-        'lookup_builder_gn_args': logging.DEBUG,
-        'git rev-parse': logging.DEBUG,
-        'git diff to instrument': logging.DEBUG,
-        'save paths of affected files': logging.DEBUG,
-        'preprocess for reclient.start reproxy via bootstrap': logging.INFO,
-        'preprocess for reclient': logging.DEBUG,
-        'process clang crashes': logging.DEBUG,
-        'compile confirm no-op': logging.DEBUG,
-        'postprocess for reclient': logging.DEBUG,
-        'setup_build': logging.DEBUG,
-        'get compile targets for scripts': logging.DEBUG,
-        'lookup GN args': logging.DEBUG,
-        'install infra/tools/luci/isolate': logging.DEBUG,
-        'find command lines': logging.DEBUG,
-        'test_pre_run.install infra/tools/luci/swarming': logging.DEBUG,
-        'isolate tests': logging.DEBUG,
-        'read GN args': logging.DEBUG,
-        'test_pre_run.[trigger] ': logging.INFO,
-        'test_pre_run.': logging.DEBUG,
-        'collect tasks.wait for tasks': logging.INFO,
-        'collect tasks': logging.DEBUG,
-        '$debug - all results': logging.DEBUG,
-        'Test statistics': logging.DEBUG,
-        'read gclient': logging.DEBUG,
-        'write output_properties_file': logging.DEBUG,
-        'prepare skylab tests.': logging.DEBUG,
-        'update invocation instructions': logging.DEBUG,
+      'lookup_builder_gn_args': logging.DEBUG,
+      'git rev-parse': logging.DEBUG,
+      'git diff to instrument': logging.DEBUG,
+      'save paths of affected files': logging.DEBUG,
+      'preprocess for reclient.start reproxy via bootstrap': logging.INFO,
+      'preprocess for reclient': logging.DEBUG,
+      'process clang crashes': logging.DEBUG,
+      'compile confirm no-op': logging.DEBUG,
+      'postprocess for reclient': logging.DEBUG,
+      'setup_build': logging.DEBUG,
+      'get compile targets for scripts': logging.DEBUG,
+      'lookup GN args': logging.DEBUG,
+      'install infra/tools/luci/isolate': logging.DEBUG,
+      'find command lines': logging.DEBUG,
+      'test_pre_run.install infra/tools/luci/swarming': logging.DEBUG,
+      'isolate tests': logging.DEBUG,
+      'read GN args': logging.DEBUG,
+      'test_pre_run.[trigger] ': logging.INFO,
+      'test_pre_run.': logging.DEBUG,
+      'collect tasks.wait for tasks': logging.INFO,
+      'collect tasks': logging.DEBUG,
+      '$debug - all results': logging.DEBUG,
+      'Test statistics': logging.DEBUG,
+      'read gclient': logging.DEBUG,
+      'write output_properties_file': logging.DEBUG,
+      'prepare skylab tests.': logging.DEBUG,
+      'update invocation instructions': logging.DEBUG,
     }
     # Setup logger for printing to the same line if we're in a terminal
     self._single_line_logger = None
@@ -154,14 +157,15 @@ class LegacyOutputAdapter:
     self._default_logger.propagate = False
 
   def _PrintCurrentStepName(self, log_level):
-    self._default_logger.log(log_level, '\n[cyan]Running: %s[/]',
-                             self._current_step_name)
+    self._default_logger.log(
+      log_level, '\n[cyan]Running: %s[/]', self._current_step_name
+    )
 
   def _StdoutProcessLine(self, line):
     # Pass through any non-engine or utr-log text.
     if line.startswith(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):
       # '-3' corresponds to the trailing @@@ on every sub-log line.
-      line = line[len(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):-3]
+      line = line[len(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@') : -3]
     if line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
       return
     is_urlish = re.match(r'^http[s]?://\S+$', line)
@@ -184,7 +188,7 @@ class LegacyOutputAdapter:
     # Store unprinted stdout/stderr for if the line fails
     if line.startswith(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):
       # '-3' corresponds to the trailing @@@ on every sub-log line.
-      line = line[len(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):-3]
+      line = line[len(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@') : -3]
     if not line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
       self._last_step_lines.append(line)
 
@@ -192,17 +196,20 @@ class LegacyOutputAdapter:
     if line.startswith(self.SEED_STEP_TEXT + self.TRIGGER_STEP_PREFIX):
       # The step names for tests don't have any identifying keywords so the
       # result step parsers need to be installed at trigger time
-      test_name = line[len(self.SEED_STEP_TEXT +
-                           self.TRIGGER_STEP_PREFIX):line.index(' (') if ' (' in
-                       line else -len(self.ANNOTATOR_PREFIX_SUFIX)]
+      test_name = line[
+        len(self.SEED_STEP_TEXT + self.TRIGGER_STEP_PREFIX) : line.index(' (')
+        if ' (' in line
+        else -len(self.ANNOTATOR_PREFIX_SUFIX)
+      ]
       self._step_to_processors[test_name] = self._ProcessResult
       self._step_to_log_level[test_name] = logging.DEBUG
     elif line.startswith(self.TRIGGER_LINK_TEXT):
       matches = self._trigger_link_re.match(line)
       if matches:
-        task_name = self._current_step_name[len(self.TRIGGER_STEP_PREFIX):]
-        basic_logger.log(self._current_log_level,
-                         f'Triggered {task_name}: ' + matches[1])
+        task_name = self._current_step_name[len(self.TRIGGER_STEP_PREFIX) :]
+        basic_logger.log(
+          self._current_log_level, f'Triggered {task_name}: ' + matches[1]
+        )
     else:
       self._StdoutProcessLine(line)
 
@@ -235,29 +242,36 @@ class LegacyOutputAdapter:
       task_ids = json.loads(matches[2])['task_id']
       self._dot_count = (self._dot_count % 5) + 1
       self._single_line_logger.log(
-          self._current_log_level,
-          f'\33[2K\rStill waiting on: {len(task_ids)} shard(s)' +
-          '.' * self._dot_count)
+        self._current_log_level,
+        f'\33[2K\rStill waiting on: {len(task_ids)} shard(s)'
+        + '.' * self._dot_count,
+      )
       return
     if line == self.STEP_CLOSED_TEXT and self._single_line_logger:
-      self._single_line_logger.log(self._current_log_level,
-                                   '\33[2K\rStill waiting on: 0 shard(s)...')
+      self._single_line_logger.log(
+        self._current_log_level, '\33[2K\rStill waiting on: 0 shard(s)...'
+      )
       basic_logger.log(self._current_log_level, '')
 
   def _ProcessResult(self, line):
     matches = self._result_links_re.match(line)
     if matches:
-      basic_logger.log(self._current_log_level,
-                       'Test results for %s shard %s: %s',
-                       self._current_step_name, matches[1], matches[2])
+      basic_logger.log(
+        self._current_log_level,
+        'Test results for %s shard %s: %s',
+        self._current_step_name,
+        matches[1],
+        matches[2],
+      )
 
   def ProcessLine(self, line):
     # If we're in a new step see if it needs to be parsed differently
     if line.startswith(self.SEED_STEP_TEXT):
       # Clear the stored step
       StoringLogger.clear_step()
-      self._current_step_name = line[len(self.SEED_STEP_TEXT
-                                         ):-len(self.ANNOTATOR_PREFIX_SUFIX)]
+      self._current_step_name = line[
+        len(self.SEED_STEP_TEXT) : -len(self.ANNOTATOR_PREFIX_SUFIX)
+      ]
       self._current_proccess_fn = self._get_processor(self._current_step_name)
       self._current_log_level = self._get_log_level(self._current_step_name)
       self._last_log_level = self._current_log_level
@@ -266,8 +280,7 @@ class LegacyOutputAdapter:
       self._current_proccess_fn(line)
       self._last_line = line
       cols = self._terminal_columns if self._terminal_columns > 0 else 80
-      self._last_line_teriminal_lines = int(
-          (len(line) - 1) / cols) + 1
+      self._last_line_teriminal_lines = int((len(line) - 1) / cols) + 1
     if line.startswith(self.STEP_CLOSED_TEXT):
       # Text outside of steps will use the last processor otherwise
       self._current_log_level = logging.DEBUG

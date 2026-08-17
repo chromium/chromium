@@ -11,16 +11,19 @@ class ToughTextureUploadPage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
   TAGS = [story_tags.TOUGH_TEXTURE_UPLOAD]
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class=shared_page_state.SharedPageState,
-               name_suffix="",
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class=shared_page_state.SharedPageState,
+    name_suffix="",
+    extra_browser_args=None,
+  ):
     super(ToughTextureUploadPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+    )
 
   def RunPageInteractions(self, action_runner):
     with action_runner.CreateInteraction('Animation'):
@@ -56,6 +59,4 @@ class LargeTextureUploadsPage(ToughTextureUploadPage):
 class ExtraLargeTextureUploadsPage(ToughTextureUploadPage):
   BASE_NAME = 'extra_large_texture_uploads'
   URL = 'file://../tough_texture_upload_cases/extra_large_texture_uploads.html'
-  TAGS = ToughTextureUploadPage.TAGS + [
-    story_tags.REPRESENTATIVE_MOBILE
-  ]
+  TAGS = ToughTextureUploadPage.TAGS + [story_tags.REPRESENTATIVE_MOBILE]

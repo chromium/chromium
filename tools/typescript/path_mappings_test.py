@@ -15,7 +15,6 @@ _CWD = os.getcwd()
 
 
 class PathMappingsTest(unittest.TestCase):
-
   def setUp(self):
     self._out_folder = None
     self._additional_flags = []
@@ -25,9 +24,11 @@ class PathMappingsTest(unittest.TestCase):
       shutil.rmtree(self._out_folder)
 
   def _build_path_map(self):
-    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
-                           'test_mappings')
-    path_mappings.main([
+    gen_dir = os.path.join(
+      self._out_folder, 'tools', 'typescript', 'tests', 'test_mappings'
+    )
+    path_mappings.main(
+      [
         '--root_gen_dir',
         os.path.relpath(self._out_folder, gen_dir),
         '--root_src_dir',
@@ -44,14 +45,17 @@ class PathMappingsTest(unittest.TestCase):
         '--output_suffix',
         'test_mappings',
         '--pretty_print',
-    ] + self._additional_flags)
+      ]
+      + self._additional_flags
+    )
     return gen_dir
 
   def _assert_output(self, gen_dir, expected_file):
     output_file = 'path_mappings_test_mappings.json'
     self.assertTrue(os.path.exists(os.path.join(gen_dir, output_file)))
-    expectations_dir = os.path.join(_HERE_DIR, 'tests', 'expected',
-                                    'path_mappings')
+    expectations_dir = os.path.join(
+      _HERE_DIR, 'tests', 'expected', 'path_mappings'
+    )
 
     def _read_file(parent_dir, file_name):
       file_path = os.path.join(parent_dir, file_name)
@@ -84,6 +88,7 @@ class PathMappingsTest(unittest.TestCase):
     self._out_folder = tempfile.mkdtemp(dir=_CWD)
     gen_dir = self._build_path_map()
     self._assert_output(gen_dir, 'trusted_only_mappings_expected.json')
+
 
 if __name__ == '__main__':
   unittest.main()

@@ -32,9 +32,10 @@ class ResultMergerTest(unittest.TestCase):
     with self.assertRaises(results_merger.MergeException) as c:
       results_merger.merge_test_results([result])
     self.assertTrue(
-        'Unsupported version' in str(c.exception),
-        'Version check failure message is not in exception. Exception: %s' %
-        c.exception)
+      'Unsupported version' in str(c.exception),
+      'Version check failure message is not in exception. Exception: %s'
+      % c.exception,
+    )
 
   def test_json_required_field_check_exception(self):
     json_string = '{"seconds_since_epoch": 1.0, "version": 3}'
@@ -42,9 +43,10 @@ class ResultMergerTest(unittest.TestCase):
     with self.assertRaises(results_merger.MergeException) as c:
       results_merger.merge_test_results([result])
     self.assertTrue(
-        'Invalid json test results' in str(c.exception),
-        'Required key check failure message is not in exception. Exception: %s'
-        % c.exception)
+      'Invalid json test results' in str(c.exception),
+      'Required key check failure message is not in exception. Exception: %s'
+      % c.exception,
+    )
 
   def test_json_merge_tests(self):
     result_1 = json.loads(self.sample_json_string)
@@ -91,7 +93,8 @@ class ResultMergerTest(unittest.TestCase):
     }
     ''')
     merged_results = results_merger.merge_test_results(
-        [result_1, result_2, result_3])
+      [result_1, result_2, result_3]
+    )
     self.assertEqual(len(merged_results['tests']), 3)
     self.assertEqual(len(merged_results['tests']['Benchmark-1']), 3)
     self.assertEqual(len(merged_results['tests']['Benchmark-2']), 2)
@@ -121,9 +124,9 @@ class ResultMergerTest(unittest.TestCase):
     with self.assertRaises(results_merger.MergeException) as c:
       results_merger.merge_test_results([result_1, result_2])
     self.assertTrue(
-        'not mergable' in str(c.exception),
-        'Merge failure message is not in exception. Exception: %s' %
-        c.exception)
+      'not mergable' in str(c.exception),
+      'Merge failure message is not in exception. Exception: %s' % c.exception,
+    )
 
   def test_json_merge_interrupted(self):
     result_1 = json.loads(self.sample_json_string)
@@ -215,34 +218,50 @@ class ResultMergerTest(unittest.TestCase):
         }
       }
       ''')
-    merged_results = results_merger.merge_test_results([result_1, result_2],
-                                                       True)
+    merged_results = results_merger.merge_test_results(
+      [result_1, result_2], True
+    )
     self.assertEqual(len(merged_results['tests']), 1)
     self.assertEqual(len(merged_results['tests']['Benchmark-1']), 1)
     self.assertIn(
-        'FAIL',
-        merged_results['tests']['Benchmark-1']['Story-1']['actual'].split())
+      'FAIL',
+      merged_results['tests']['Benchmark-1']['Story-1']['actual'].split(),
+    )
     self.assertIn(
-        'PASS',
-        merged_results['tests']['Benchmark-1']['Story-1']['actual'].split())
+      'PASS',
+      merged_results['tests']['Benchmark-1']['Story-1']['actual'].split(),
+    )
     self.assertEqual(
-        4,
-        len(merged_results['tests']['Benchmark-1']['Story-1']['artifacts']
-            ['logs.txt']))
+      4,
+      len(
+        merged_results['tests']['Benchmark-1']['Story-1']['artifacts'][
+          'logs.txt'
+        ]
+      ),
+    )
     self.assertEqual(
-        2,
-        len(merged_results['tests']['Benchmark-1']['Story-1']['artifacts']
-            ['trace.html']))
+      2,
+      len(
+        merged_results['tests']['Benchmark-1']['Story-1']['artifacts'][
+          'trace.html'
+        ]
+      ),
+    )
     self.assertEqual(
-        1,
-        len(merged_results['tests']['Benchmark-1']['Story-1']['artifacts']
-            ['screenshot.png']))
+      1,
+      len(
+        merged_results['tests']['Benchmark-1']['Story-1']['artifacts'][
+          'screenshot.png'
+        ]
+      ),
+    )
     self.assertEqual(
-        4, len(merged_results['tests']['Benchmark-1']['Story-1']['times']))
+      4, len(merged_results['tests']['Benchmark-1']['Story-1']['times'])
+    )
     self.assertNotIn('shard', merged_results['tests']['Benchmark-1']['Story-1'])
     self.assertEqual(
-        True,
-        merged_results['tests']['Benchmark-1']['Story-1']['is_unexpected'])
+      True, merged_results['tests']['Benchmark-1']['Story-1']['is_unexpected']
+    )
 
   def test_json_merge_tests_cross_device_actual_pass(self):
     result_1 = json.loads(self.sample_json_string)
@@ -269,14 +288,15 @@ class ResultMergerTest(unittest.TestCase):
         }
       }
       ''')
-    merged_results = results_merger.merge_test_results([result_1, result_2],
-                                                       True)
+    merged_results = results_merger.merge_test_results(
+      [result_1, result_2], True
+    )
     self.assertEqual(
-        'PASS PASS',
-        merged_results['tests']['Benchmark-1']['Story-1']['actual'])
+      'PASS PASS', merged_results['tests']['Benchmark-1']['Story-1']['actual']
+    )
     self.assertEqual(
-        False,
-        merged_results['tests']['Benchmark-1']['Story-1']['is_unexpected'])
+      False, merged_results['tests']['Benchmark-1']['Story-1']['is_unexpected']
+    )
 
   def test_json_merge_tests_cross_device_actual_fail(self):
     result_1 = json.loads(self.sample_json_string)
@@ -303,15 +323,18 @@ class ResultMergerTest(unittest.TestCase):
           }
         }
         ''')
-    merged_results = results_merger.merge_test_results([result_1, result_2],
-                                                       True)
-    self.assertIn('PASS',
-                  merged_results['tests']['Benchmark-1']['Story-1']['actual'])
-    self.assertIn('FAIL',
-                  merged_results['tests']['Benchmark-1']['Story-1']['actual'])
+    merged_results = results_merger.merge_test_results(
+      [result_1, result_2], True
+    )
+    self.assertIn(
+      'PASS', merged_results['tests']['Benchmark-1']['Story-1']['actual']
+    )
+    self.assertIn(
+      'FAIL', merged_results['tests']['Benchmark-1']['Story-1']['actual']
+    )
     self.assertEqual(
-        True,
-        merged_results['tests']['Benchmark-1']['Story-1']['is_unexpected'])
+      True, merged_results['tests']['Benchmark-1']['Story-1']['is_unexpected']
+    )
 
   def test_json_merge_tests_cross_device_artifacts(self):
     result_1 = json.loads(self.sample_json_string)
@@ -349,16 +372,25 @@ class ResultMergerTest(unittest.TestCase):
           }
         }
         ''')
-    merged_results = results_merger.merge_test_results([result_1, result_2],
-                                                       True)
+    merged_results = results_merger.merge_test_results(
+      [result_1, result_2], True
+    )
     self.assertEqual(
-        2,
-        len(merged_results['tests']['Benchmark-1']['Story-1']['artifacts']
-            ['logs.txt']))
+      2,
+      len(
+        merged_results['tests']['Benchmark-1']['Story-1']['artifacts'][
+          'logs.txt'
+        ]
+      ),
+    )
     self.assertEqual(
-        1,
-        len(merged_results['tests']['Benchmark-1']['Story-1']['artifacts']
-            ['trace.html']))
+      1,
+      len(
+        merged_results['tests']['Benchmark-1']['Story-1']['artifacts'][
+          'trace.html'
+        ]
+      ),
+    )
 
   def test_json_merge_tests_cross_device_artifacts_missing(self):
     result_1 = json.loads(self.sample_json_string)
@@ -391,16 +423,25 @@ class ResultMergerTest(unittest.TestCase):
           }
         }
         ''')
-    merged_results = results_merger.merge_test_results([result_1, result_2],
-                                                       True)
+    merged_results = results_merger.merge_test_results(
+      [result_1, result_2], True
+    )
     self.assertEqual(
-        1,
-        len(merged_results['tests']['Benchmark-1']['Story-1']['artifacts']
-            ['logs.txt']))
+      1,
+      len(
+        merged_results['tests']['Benchmark-1']['Story-1']['artifacts'][
+          'logs.txt'
+        ]
+      ),
+    )
     self.assertEqual(
-        1,
-        len(merged_results['tests']['Benchmark-1']['Story-1']['artifacts']
-            ['trace.html']))
+      1,
+      len(
+        merged_results['tests']['Benchmark-1']['Story-1']['artifacts'][
+          'trace.html'
+        ]
+      ),
+    )
 
   def test_json_merge_tests_cross_device_times(self):
     result_1 = json.loads(self.sample_json_string)
@@ -429,12 +470,15 @@ class ResultMergerTest(unittest.TestCase):
           }
         }
         ''')
-    merged_results = results_merger.merge_test_results([result_1, result_2],
-                                                       True)
+    merged_results = results_merger.merge_test_results(
+      [result_1, result_2], True
+    )
     self.assertEqual(
-        5, len(merged_results['tests']['Benchmark-1']['Story-1']['times']))
-    self.assertEqual(10.0,
-                     merged_results['tests']['Benchmark-1']['Story-1']['time'])
+      5, len(merged_results['tests']['Benchmark-1']['Story-1']['times'])
+    )
+    self.assertEqual(
+      10.0, merged_results['tests']['Benchmark-1']['Story-1']['time']
+    )
 
   def test_json_merge_tests_cross_device_times_missing(self):
     result_1 = json.loads(self.sample_json_string)
@@ -461,12 +505,15 @@ class ResultMergerTest(unittest.TestCase):
           }
         }
         ''')
-    merged_results = results_merger.merge_test_results([result_1, result_2],
-                                                       True)
+    merged_results = results_merger.merge_test_results(
+      [result_1, result_2], True
+    )
     self.assertEqual(
-        2, len(merged_results['tests']['Benchmark-1']['Story-1']['times']))
-    self.assertEqual(20.0,
-                     merged_results['tests']['Benchmark-1']['Story-1']['time'])
+      2, len(merged_results['tests']['Benchmark-1']['Story-1']['times'])
+    )
+    self.assertEqual(
+      20.0, merged_results['tests']['Benchmark-1']['Story-1']['time']
+    )
 
 
 if __name__ == '__main__':

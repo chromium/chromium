@@ -2,25 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-''' Utility functions and objects for logging.
-'''
+'''Utility functions and objects for logging.'''
 
 import logging
 import sys
 
+
 class StdoutStderrHandler(logging.Handler):
-  ''' Subclass of logging.Handler which outputs to either stdout or stderr
+  '''Subclass of logging.Handler which outputs to either stdout or stderr
   based on a threshold level.
   '''
 
   def __init__(self, threshold=logging.WARNING, err=sys.stderr, out=sys.stdout):
-    ''' Args:
-          threshold: below this logging level messages are sent to stdout,
-            otherwise they are sent to stderr
-          err: a stream object that error messages are sent to, defaults to
-            sys.stderr
-          out: a stream object that non-error messages are sent to, defaults to
-            sys.stdout
+    '''Args:
+    threshold: below this logging level messages are sent to stdout,
+      otherwise they are sent to stderr
+    err: a stream object that error messages are sent to, defaults to
+      sys.stderr
+    out: a stream object that non-error messages are sent to, defaults to
+      sys.stdout
     '''
     logging.Handler.__init__(self)
     self._err = logging.StreamHandler(err)
@@ -59,9 +59,11 @@ class StdoutStderrHandler(logging.Handler):
 FORMAT = "%(asctime)s %(filename)s [%(levelname)s] %(message)s"
 DATEFMT = "%H:%M:%S"
 
-def config_root(level=logging.INFO, threshold=logging.WARNING, format=FORMAT,
-         datefmt=DATEFMT):
-  ''' Configure the root logger to use a StdoutStderrHandler and some default
+
+def config_root(
+  level=logging.INFO, threshold=logging.WARNING, format=FORMAT, datefmt=DATEFMT
+):
+  '''Configure the root logger to use a StdoutStderrHandler and some default
   formatting.
     Args:
       level: messages below this level are ignored

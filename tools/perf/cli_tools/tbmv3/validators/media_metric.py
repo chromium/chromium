@@ -15,59 +15,63 @@ def CompareHistograms(test_ctx):
   v3_histograms = test_ctx.RunTBMv3(v3_metric)
 
   simple_config = {
-      'v2_metric': v2_metric,
-      'v3_metric': v3_metric,
-      # 1 microsecond precision - default for ms unit histograms.
-      'float_precision': 1e-3,
-      'histogram_mappings': {
-          # mappings are 'v2_histogram: 'v3_histogram'.
-          'time_to_video_play': 'media::time_to_video_play',
-          'time_to_audio_play': 'media::time_to_audio_play',
-          # Dropped frame count is broken in the TBMv2 metric.
-          # 'dropped_frame_count': 'media::dropped_frame_count',
-          'buffering_time': 'media::buffering_time',
-          # Roughness is reported as double in the v3 metric, but as int in v2.
-          'roughness': ('media::roughness', 1),
-          'freezing': 'media::freezing'
-      },
+    'v2_metric': v2_metric,
+    'v3_metric': v3_metric,
+    # 1 microsecond precision - default for ms unit histograms.
+    'float_precision': 1e-3,
+    'histogram_mappings': {
+      # mappings are 'v2_histogram: 'v3_histogram'.
+      'time_to_video_play': 'media::time_to_video_play',
+      'time_to_audio_play': 'media::time_to_audio_play',
+      # Dropped frame count is broken in the TBMv2 metric.
+      # 'dropped_frame_count': 'media::dropped_frame_count',
+      'buffering_time': 'media::buffering_time',
+      # Roughness is reported as double in the v3 metric, but as int in v2.
+      'roughness': ('media::roughness', 1),
+      'freezing': 'media::freezing',
+    },
   }
 
-  simple_validator.CompareSimpleHistograms(test_ctx, simple_config,
-                                           v2_histograms, v3_histograms)
+  simple_validator.CompareSimpleHistograms(
+    test_ctx, simple_config, v2_histograms, v3_histograms
+  )
 
   # seek time histograms are merged.
   seek_time_histograms = [
-      # v3 histogram => set of v2 histograms that are merged into it.
-      ['media::seek_time', ['seek_time_0_5', 'seek_time_9']],
-      [
-          'media::pipeline_seek_time',
-          ['pipeline_seek_time_0_5', 'pipeline_seek_time_9']
-      ],
+    # v3 histogram => set of v2 histograms that are merged into it.
+    ['media::seek_time', ['seek_time_0_5', 'seek_time_9']],
+    [
+      'media::pipeline_seek_time',
+      ['pipeline_seek_time_0_5', 'pipeline_seek_time_9'],
+    ],
   ]
 
   for entry in seek_time_histograms:
     v3_hist_name = entry[0]
-    v3_hist = simple_validator.OptionalGetHistogram(v3_histograms, v3_hist_name,
-                                                    v3_metric, 'v3')
+    v3_hist = simple_validator.OptionalGetHistogram(
+      v3_histograms, v3_hist_name, v3_metric, 'v3'
+    )
 
     v2_hists = []
     for v2_hist_name in entry[1]:
-      v2_hist = simple_validator.OptionalGetHistogram(v2_histograms,
-                                                      v2_hist_name, v2_metric,
-                                                      'v2')
+      v2_hist = simple_validator.OptionalGetHistogram(
+        v2_histograms, v2_hist_name, v2_metric, 'v2'
+      )
       if v2_hist is None:
         continue
       v2_hists += [v2_hist]
 
     if v3_hist is None:
       if len(v2_hists) > 0:
-        raise Exception('Expected a %s v3 histogram, but none exists' %
-                        (v3_hist_name))
+        raise Exception(
+          'Expected a %s v3 histogram, but none exists' % (v3_hist_name)
+        )
       continue
 
     if len(v2_hists) == 0:
-      raise Exception('Have a %s v3 histogram but no matching v2 ones' %
-                      (v3_hist_name))
+      raise Exception(
+        'Have a %s v3 histogram but no matching v2 ones' % (v3_hist_name)
+      )
 
     v2_samples = []
     for v2_hist in v2_hists:
@@ -78,6 +82,6 @@ def CompareHistograms(test_ctx):
     v2_samples.sort()
     v3_samples.sort()
     for v2_sample, v3_sample in zip(v2_samples, v3_samples):
-      test_ctx.assertAlmostEqual(v2_sample,
-                                 v3_sample,
-                                 delta=simple_config['float_precision'])
+      test_ctx.assertAlmostEqual(
+        v2_sample, v3_sample, delta=simple_config['float_precision']
+      )

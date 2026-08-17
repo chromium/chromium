@@ -13,34 +13,49 @@ import shutil
 import subprocess
 import sys
 
-from build_rust import (CARGO_HOME_DIR, CIPD_DOWNLOAD_URL, FetchBetaPackage,
-                        InstallBetaPackage, RustTargetTriple,
-                        RUST_HOST_LLVM_INSTALL_DIR)
-from update_rust import (RUST_TOOLCHAIN_OUT_DIR, THIRD_PARTY_DIR)
+from build_rust import (
+    CARGO_HOME_DIR,
+    CIPD_DOWNLOAD_URL,
+    FetchBetaPackage,
+    InstallBetaPackage,
+    RustTargetTriple,
+    RUST_HOST_LLVM_INSTALL_DIR,
+)
+from update_rust import RUST_TOOLCHAIN_OUT_DIR, THIRD_PARTY_DIR
 
 # Get variables and helpers from Clang update script
 sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
-                 'scripts'))
+    os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), '..', 'clang', 'scripts'
+    )
+)
 
-from build import (CheckoutGitRepo, DownloadAndUnpack, LLVM_BUILD_TOOLS_DIR,
-                   DownloadDebianSysroot, RunCommand)
-from update import (RmTree)
+from build import (
+    CheckoutGitRepo,
+    DownloadAndUnpack,
+    LLVM_BUILD_TOOLS_DIR,
+    DownloadDebianSysroot,
+    RunCommand,
+)
+from update import RmTree
 
 # The git hash to use.  See https://github.com/rust-lang/rust-bindgen/tags.
 # The current hash below corresponds to 0.72.1
 BINDGEN_GIT_VERSION = 'd874de8d646d9b8a3e7ba2db2bcd52f2fba8f1f5'
-BINDGEN_GIT_REPO = ('https://chromium.googlesource.com/external/' +
-                    'github.com/rust-lang/rust-bindgen')
+BINDGEN_GIT_REPO = (
+    'https://chromium.googlesource.com/external/'
+    + 'github.com/rust-lang/rust-bindgen'
+)
 
-BINDGEN_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain-intermediate',
-                               'bindgen-src')
-BINDGEN_HOST_BUILD_DIR = os.path.join(THIRD_PARTY_DIR,
-                                      'rust-toolchain-intermediate',
-                                      'bindgen-host-build')
-BINDGEN_CROSS_TARGET_BUILD_DIR = os.path.join(THIRD_PARTY_DIR,
-                                              'rust-toolchain-intermediate',
-                                              'bindgen-target-build')
+BINDGEN_SRC_DIR = os.path.join(
+    THIRD_PARTY_DIR, 'rust-toolchain-intermediate', 'bindgen-src'
+)
+BINDGEN_HOST_BUILD_DIR = os.path.join(
+    THIRD_PARTY_DIR, 'rust-toolchain-intermediate', 'bindgen-host-build'
+)
+BINDGEN_CROSS_TARGET_BUILD_DIR = os.path.join(
+    THIRD_PARTY_DIR, 'rust-toolchain-intermediate', 'bindgen-target-build'
+)
 
 NCURSESW_CIPD_LINUX_AMD_PATH = 'infra/3pp/static_libs/ncursesw/linux-amd64'
 NCURSESW_CIPD_LINUX_AMD_VERSION = '6.0.chromium.1'
@@ -55,14 +70,17 @@ EXCLUDED_TESTS = [
     'header_constified_enum_module_overflow_hpp',
     'header_issue_544_stylo_creduce_2_hpp',
     'header_nsbasehashtable_hpp',
-    'header_typedef_pointer_overlap_h'
+    'header_typedef_pointer_overlap_h',
 ]
+
 
 def FetchNcurseswLibrary():
     assert sys.platform.startswith('linux')
     ncursesw_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'ncursesw')
-    ncursesw_url = (f'{CIPD_DOWNLOAD_URL}/{NCURSESW_CIPD_LINUX_AMD_PATH}'
-                    f'/+/version:2@{NCURSESW_CIPD_LINUX_AMD_VERSION}')
+    ncursesw_url = (
+        f'{CIPD_DOWNLOAD_URL}/{NCURSESW_CIPD_LINUX_AMD_PATH}'
+        f'/+/version:2@{NCURSESW_CIPD_LINUX_AMD_VERSION}'
+    )
 
     if os.path.exists(ncursesw_dir):
         RmTree(ncursesw_dir)
@@ -87,24 +105,30 @@ def RunCargo(cargo_args):
     cargo_bin = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', f'cargo{EXE}')
     rustc_bin = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', f'rustc{EXE}')
     if not os.path.exists(cargo_bin):
-        print(f'Missing cargo at {cargo_bin}. This '
-              f'script expects to be run after build_rust.py is run as '
-              f'the build_rust.py script builds cargo that is needed here.')
+        print(
+            f'Missing cargo at {cargo_bin}. This '
+            f'script expects to be run after build_rust.py is run as '
+            f'the build_rust.py script builds cargo that is needed here.'
+        )
         sys.exit(1)
     if not os.path.exists(rustc_bin):
-        print(f'Missing rustc at {rustc_bin}. This '
-              f'script expects to be run after build_rust.py is run as '
-              f'the build_rust.py script builds rustc that is needed here.')
+        print(
+            f'Missing rustc at {rustc_bin}. This '
+            f'script expects to be run after build_rust.py is run as '
+            f'the build_rust.py script builds rustc that is needed here.'
+        )
         sys.exit(1)
 
     clang_bins_dir = os.path.join(RUST_HOST_LLVM_INSTALL_DIR, 'bin')
     llvm_dir = RUST_HOST_LLVM_INSTALL_DIR
 
     if not os.path.exists(os.path.join(llvm_dir, 'bin', f'llvm-config{EXE}')):
-        print(f'Missing llvm-config in {llvm_dir}. This '
-              f'script expects to be run after build_rust.py is run as '
-              f'the build_rust.py script produces the LLVM libraries that '
-              f'are needed here.')
+        print(
+            f'Missing llvm-config in {llvm_dir}. This '
+            f'script expects to be run after build_rust.py is run as '
+            f'the build_rust.py script produces the LLVM libraries that '
+            f'are needed here.'
+        )
         sys.exit(1)
 
     env = collections.defaultdict(str, os.environ)
@@ -158,8 +182,9 @@ def RunCargo(cargo_args):
         # The system/xcode compiler would find system SDK correctly, but
         # the Clang we've built does not. See
         # https://github.com/llvm/llvm-project/issues/45225
-        sdk_path = subprocess.check_output(['xcrun', '--show-sdk-path'],
-                                           text=True).rstrip()
+        sdk_path = subprocess.check_output(
+            ['xcrun', '--show-sdk-path'], text=True
+        ).rstrip()
         env['CFLAGS'] += f' -isysroot {sdk_path}'
         env['CXXFLAGS'] += f' -isysroot {sdk_path}'
         env['LDFLAGS'] += f' -isysroot {sdk_path}'
@@ -177,15 +202,17 @@ def main():
     parser.add_argument(
         '--skip-checkout',
         action='store_true',
-        help='skip downloading the git repo. Useful for trying local changes')
-    parser.add_argument('--skip-test',
-                        action='store_true',
-                        help='skip running tests')
+        help='skip downloading the git repo. Useful for trying local changes',
+    )
+    parser.add_argument(
+        '--skip-test', action='store_true', help='skip running tests'
+    )
     args, rest = parser.parse_known_args()
 
     if not args.skip_checkout:
-        CheckoutGitRepo("bindgen", BINDGEN_GIT_REPO, BINDGEN_GIT_VERSION,
-                        BINDGEN_SRC_DIR)
+        CheckoutGitRepo(
+            "bindgen", BINDGEN_GIT_REPO, BINDGEN_GIT_VERSION, BINDGEN_SRC_DIR
+        )
 
     build_dir = BINDGEN_HOST_BUILD_DIR
     if os.path.exists(build_dir):
@@ -204,10 +231,14 @@ def main():
     cachedir_tag.parent.mkdir(exist_ok=True, parents=True)
     cachedir_tag.write_bytes(
         b"Signature: 8a477f597d28d172789f06886806bc55\n"
-        b"# Written by build_bindgen.py to make `cargo clean` happy.\n")
-    RunCargo([
-        'clean',
-    ] + cargo_shared_args)
+        b"# Written by build_bindgen.py to make `cargo clean` happy.\n"
+    )
+    RunCargo(
+        [
+            'clean',
+        ]
+        + cargo_shared_args
+    )
     static_feature = ",static" if ('windows' not in RustTargetTriple()) else ""
     cargo_args = [
         'build',
@@ -225,14 +256,19 @@ def main():
 
     llvm_dir = RUST_HOST_LLVM_INSTALL_DIR
     shutil.copy(
-        os.path.join(build_dir, RustTargetTriple(), 'release',
-                     f'bindgen{EXE}'), os.path.join(install_dir, 'bin'))
+        os.path.join(build_dir, RustTargetTriple(), 'release', f'bindgen{EXE}'),
+        os.path.join(install_dir, 'bin'),
+    )
     if sys.platform == 'win32':
-        shutil.copy(os.path.join(llvm_dir, 'bin', f'libclang.dll'),
-                    os.path.join(install_dir, 'bin'))
+        shutil.copy(
+            os.path.join(llvm_dir, 'bin', f'libclang.dll'),
+            os.path.join(install_dir, 'bin'),
+        )
     elif sys.platform == 'darwin':
-        shutil.copy(os.path.join(llvm_dir, 'lib', f'libclang.dylib'),
-                    os.path.join(install_dir, 'lib'))
+        shutil.copy(
+            os.path.join(llvm_dir, 'lib', f'libclang.dylib'),
+            os.path.join(install_dir, 'lib'),
+        )
     else:
         # Can't replace symlinks so remove existing ones.
         for filename in os.listdir(os.path.join(install_dir, 'lib')):
@@ -240,9 +276,11 @@ def main():
                 os.remove(os.path.join(install_dir, 'lib', filename))
         for filename in os.listdir(os.path.join(llvm_dir, 'lib')):
             if filename.startswith('libclang.so'):
-                shutil.copy(os.path.join(llvm_dir, 'lib', filename),
-                            os.path.join(install_dir, 'lib'),
-                            follow_symlinks=False)
+                shutil.copy(
+                    os.path.join(llvm_dir, 'lib', filename),
+                    os.path.join(install_dir, 'lib'),
+                    follow_symlinks=False,
+                )
 
     if not args.skip_test:
         test_args = ['test', '--lib', '--bins', '--tests']

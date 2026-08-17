@@ -4,7 +4,13 @@
 
 import re
 import collections
-from style_variable_generator.color import ColorRGB, ParseColor, ColorBlend, ColorRGBVar, ColorVar
+from style_variable_generator.color import (
+    ColorRGB,
+    ParseColor,
+    ColorBlend,
+    ColorRGBVar,
+    ColorVar,
+)
 from style_variable_generator.opacity import Opacity
 from abc import ABC, abstractmethod
 
@@ -39,17 +45,18 @@ class VariableType:
 
 class StyleVariable(object):
     '''An intermediate representation of a single variable that the generator
-       knows about.
+    knows about.
 
-       Some JSON entries will generate multiple StyleVariables (e.g when
-       generate_per_mode is true), and different Generators may create multiple
-       per-platform variables (e.g CSS generates an var and var-rgb).
+    Some JSON entries will generate multiple StyleVariables (e.g when
+    generate_per_mode is true), and different Generators may create multiple
+    per-platform variables (e.g CSS generates an var and var-rgb).
     '''
 
     def __init__(self, variable_type, name, json_value, context):
         if not re.match(r'^[a-z0-9_\.\-]+$', name):
-            raise ValueError(name + ' is not a valid variable name ' +
-                             '(lower case, 0-9, _)')
+            raise ValueError(
+                name + ' is not a valid variable name ' + '(lower case, 0-9, _)'
+            )
         self.variable_type = variable_type
         self.name = name
         self.json_value = json_value
@@ -95,11 +102,14 @@ class ModeKeyedModel(collections.OrderedDict, Submodel):
                 value = self._CreateValue(value_obj[mode])
                 if mode == 'default':
                     mode = Modes.DEFAULT
-                assert mode in Modes.ALL, f"Invalid mode '{mode}' used in' \
+                assert mode in Modes.ALL, (
+                    f"Invalid mode '{mode}' used in' \
                     'definition for '{name}'"
+                )
 
-                assert mode not in self[
-                    name], f"{mode} mode for '{name}' defined multiple times"
+                assert mode not in self[name], (
+                    f"{mode} mode for '{name}' defined multiple times"
+                )
                 self[name][mode] = value
         else:
             self[name][Modes.DEFAULT] = self._CreateValue(value_obj)
@@ -137,7 +147,7 @@ class ModeKeyedModel(collections.OrderedDict, Submodel):
 
 class OpacityModel(ModeKeyedModel):
     '''A dictionary of opacity names to their values in each mode.
-       e.g OpacityModel['disabled_opacity'][Modes.LIGHT] = Opacity(...)
+    e.g OpacityModel['disabled_opacity'][Modes.LIGHT] = Opacity(...)
     '''
 
     def __init__(self):
@@ -161,7 +171,7 @@ class OpacityModel(ModeKeyedModel):
 
 class ColorModel(ModeKeyedModel):
     '''A dictionary of color names to their values in each mode.
-       e.g ColorModel['blue'][Modes.LIGHT] = Color(...)
+    e.g ColorModel['blue'][Modes.LIGHT] = Color(...)
     '''
 
     def __init__(self, opacity_model):
@@ -192,19 +202,25 @@ class ColorModel(ModeKeyedModel):
         if generate_per_mode or generate_inverted:
             for mode, value in value_obj.items():
                 per_mode_name = name + '_' + mode
-                added += ModeKeyedModel.Add(self, per_mode_name, value,
-                                            generated_context)
+                added += ModeKeyedModel.Add(
+                    self, per_mode_name, value, generated_context
+                )
                 value_obj[mode] = '$' + per_mode_name
         if generate_inverted:
             if Modes.LIGHT not in value_obj or Modes.DARK not in value_obj:
                 raise ValueError(
                     'generate_inverted requires both dark and light modes to be'
-                    ' set')
+                    ' set'
+                )
             added += ModeKeyedModel.Add(
-                self, name + '_inverted', {
+                self,
+                name + '_inverted',
+                {
                     Modes.LIGHT: '$' + name + '_dark',
-                    Modes.DARK: '$' + name + '_light'
-                }, generated_context)
+                    Modes.DARK: '$' + name + '_light',
+                },
+                generated_context,
+            )
 
         added += ModeKeyedModel.Add(self, name, value_obj, context)
         return added
@@ -217,8 +233,9 @@ class ColorModel(ModeKeyedModel):
     def ResolveToHexString(self, name, mode):
         color = self._ResolveColorToRGBA(self.Resolve(name, mode), mode)
         opacity = int(float(repr(color.opacity)) * 255)
-        return '#{:02x}{:02x}{:02x}{:02x}'.format(color.r, color.g, color.b,
-                                                  opacity)
+        return '#{:02x}{:02x}{:02x}{:02x}'.format(
+            color.r, color.g, color.b, opacity
+        )
 
     # Returns a Color that is the final RGBA value for |color| in |mode|.
     def _ResolveColorToRGBA(self, color, mode):
@@ -226,8 +243,9 @@ class ColorModel(ModeKeyedModel):
             return self.ResolveToRGBA(color.var, mode)
 
         if isinstance(color, ColorBlend) and len(color.blended_colors) == 2:
-            return self._BlendColors(color.blended_colors[0],
-                                     color.blended_colors[1], mode)
+            return self._BlendColors(
+                color.blended_colors[0], color.blended_colors[1], mode
+            )
 
         result = ColorRGB()
         assert color.opacity
@@ -247,9 +265,9 @@ class ColorModel(ModeKeyedModel):
         for name, value in self.items():
             for mode, color in value.items():
                 context = self.variable_map[name].context
-                should_preblend = context.get('CSS',
-                                              {}).get('preblend',
-                                                      default_preblend)
+                should_preblend = context.get('CSS', {}).get(
+                    'preblend', default_preblend
+                )
                 if isinstance(color, ColorBlend) and should_preblend:
                     assert len(color.blended_colors) == 2
                     if name not in temp_model:
@@ -265,21 +283,32 @@ class ColorModel(ModeKeyedModel):
     def _BlendColors(self, color_a, color_b, mode):
         # TODO(b/206887565): Check for circular references.
         color_a_res = self._ResolveColorToRGBA(color_a, mode)
-        (alpha_a, r_a, g_a, b_a) = (color_a_res.opacity.a, color_a_res.r,
-                                    color_a_res.g, color_a_res.b)
+        (alpha_a, r_a, g_a, b_a) = (
+            color_a_res.opacity.a,
+            color_a_res.r,
+            color_a_res.g,
+            color_a_res.b,
+        )
         color_b_res = self._ResolveColorToRGBA(color_b, mode)
-        (alpha_b, r_b, g_b, b_b) = (color_b_res.opacity.a, color_b_res.r,
-                                    color_b_res.g, color_b_res.b)
+        (alpha_b, r_b, g_b, b_b) = (
+            color_b_res.opacity.a,
+            color_b_res.r,
+            color_b_res.g,
+            color_b_res.b,
+        )
 
         # Blend using the formula for "A over B" from
         # https://wikipedia.org/wiki/Alpha_compositing.
         alpha_out = alpha_a + (alpha_b * (1 - alpha_a))
         r_out = round(
-            (r_a * alpha_a + r_b * alpha_b * (1 - alpha_a)) / alpha_out)
+            (r_a * alpha_a + r_b * alpha_b * (1 - alpha_a)) / alpha_out
+        )
         g_out = round(
-            (g_a * alpha_a + g_b * alpha_b * (1 - alpha_a)) / alpha_out)
+            (g_a * alpha_a + g_b * alpha_b * (1 - alpha_a)) / alpha_out
+        )
         b_out = round(
-            (b_a * alpha_a + b_b * alpha_b * (1 - alpha_a)) / alpha_out)
+            (b_a * alpha_a + b_b * alpha_b * (1 - alpha_a)) / alpha_out
+        )
 
         return ColorRGB((r_out, g_out, b_out), Opacity(alpha_out))
 
@@ -318,8 +347,7 @@ class NamespacedColorModel(ColorModel):
 class LegacyMappingsModel(ColorModel):
     def Add(self, name, value_obj, context):
         if isinstance(value_obj, dict):
-            raise ValueError(
-                'Legacy mappings can only be singular references.')
+            raise ValueError('Legacy mappings can only be singular references.')
         return super().Add(name, value_obj, context)
 
 
@@ -355,20 +383,19 @@ class Model(object):
         def CheckFontFamily(name, value_obj, context):
             assert name.startswith('font_family_')
 
-        self.font_families = NamespacedModel(VariableType.FONT_FAMILY,
-                                             CheckFontFamily)
+        self.font_families = NamespacedModel(
+            VariableType.FONT_FAMILY, CheckFontFamily
+        )
         self.submodels[VariableType.FONT_FAMILY] = self.font_families
 
         def CheckFontFace(name, value_obj, context):
             assert name.startswith('face_')
 
-        self.font_faces = NamespacedModel(VariableType.FONT_FACE,
-                                          CheckFontFace)
+        self.font_faces = NamespacedModel(VariableType.FONT_FACE, CheckFontFace)
         self.submodels[VariableType.FONT_FACE] = self.font_faces
 
     def Add(self, variable_type, name, value_obj, context):
-        '''Adds a new variable to the submodel for |variable_type|.
-        '''
+        '''Adds a new variable to the submodel for |variable_type|.'''
         try:
             added = self.submodels[variable_type].Add(name, value_obj, context)
         except ValueError as err:
@@ -381,10 +408,9 @@ class Model(object):
                 raise ValueError('Variable name "%s" is reused' % name)
             self.variable_map[var.name] = var
 
-
     def PostProcess(self, default_preblend=True):
         '''Called after all variables have been added to perform operations that
-           require a complete worldview.
+        require a complete worldview.
         '''
 
         # Resolve blended colors after all the files are added because some
@@ -403,23 +429,24 @@ class Model(object):
             if name == referrer:
                 raise ValueError("{0} refers to itself".format(name))
             if name not in color_names:
-                raise ValueError("Cannot find color %s referenced by %s" %
-                                 (name, referrer))
+                raise ValueError(
+                    "Cannot find color %s referenced by %s" % (name, referrer)
+                )
 
         def CheckOpacityReference(name, referrer):
             if name == referrer:
                 raise ValueError("{0} refers to itself".format(name))
             if name not in opacity_names:
-                raise ValueError("Cannot find opacity %s referenced by %s" %
-                                 (name, referrer))
+                raise ValueError(
+                    "Cannot find opacity %s referenced by %s" % (name, referrer)
+                )
 
         def CheckColor(color, name):
             if isinstance(color, ColorVar):
                 CheckColorReference(color.var, name)
             if isinstance(color, ColorRGBVar):
                 CheckColorReference(color.ToVar(), name)
-            if isinstance(color,
-                          (ColorRGB, ColorRGBVar)) and color.opacity.var:
+            if isinstance(color, (ColorRGB, ColorRGBVar)) and color.opacity.var:
                 CheckOpacityReference(color.opacity.var, name)
             if isinstance(color, ColorBlend):
                 assert len(color.blended_colors) == 2
@@ -433,13 +460,14 @@ class Model(object):
         for name, mode_values in colors.items():
             for suffix in RESERVED_SUFFIXES:
                 if not self.variable_map[name].context.get(
-                        'generated') and name.endswith(suffix):
+                    'generated'
+                ) and name.endswith(suffix):
                     raise ValueError(
-                        'Variable name "%s" uses a reserved suffix: %s' %
-                        (name, suffix))
+                        'Variable name "%s" uses a reserved suffix: %s'
+                        % (name, suffix)
+                    )
             if Modes.DEFAULT not in mode_values:
-                raise ValueError("Color %s not defined for default mode" %
-                                 name)
+                raise ValueError("Color %s not defined for default mode" % name)
 
             for mode, color in mode_values.items():
                 CheckColor(color, name)

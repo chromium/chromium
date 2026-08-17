@@ -42,8 +42,9 @@ class ProcessOptionsTestCase(unittest.TestCase):
     mock_os.path.expanduser.side_effect = expanduser
     mock_os.path.dirname.side_effect = posixpath.dirname
     mock_os.path.join.side_effect = posixpath.join
-    mock.patch(module('_DefaultOutputDir'),
-               return_value='/path/to/output_dir').start()
+    mock.patch(
+      module('_DefaultOutputDir'), return_value='/path/to/output_dir'
+    ).start()
 
   def tearDown(self):
     mock.patch.stopall()
@@ -74,20 +75,25 @@ class TestProcessOptions(ProcessOptionsTestCase):
 
   @mock.patch(module('datetime'))
   def testIntermediateDir_default(self, mock_datetime):
-    mock_datetime.datetime.utcnow.return_value = (
-        datetime.datetime(2015, 10, 21, 7, 28))
+    mock_datetime.datetime.utcnow.return_value = datetime.datetime(
+      2015, 10, 21, 7, 28
+    )
     options = self.ParseArgs(['--output-dir', '/output'])
-    self.assertEqual(options.intermediate_dir,
-                     '/output/artifacts/run_20151021T072800Z')
+    self.assertEqual(
+      options.intermediate_dir, '/output/artifacts/run_20151021T072800Z'
+    )
 
   @mock.patch(module('datetime'))
   def testIntermediateDir_withResultsLabel(self, mock_datetime):
-    mock_datetime.datetime.utcnow.return_value = (
-        datetime.datetime(2015, 10, 21, 7, 28))
+    mock_datetime.datetime.utcnow.return_value = datetime.datetime(
+      2015, 10, 21, 7, 28
+    )
     options = self.ParseArgs(
-        ['--output-dir', '/output', '--results-label', 'test my feature'])
-    self.assertEqual(options.intermediate_dir,
-                     '/output/artifacts/run_20151021T072800Z')
+      ['--output-dir', '/output', '--results-label', 'test my feature']
+    )
+    self.assertEqual(
+      options.intermediate_dir, '/output/artifacts/run_20151021T072800Z'
+    )
 
   def testUploadBucket_noUploadResults(self):
     options = self.ParseArgs([])
@@ -105,16 +111,18 @@ class TestProcessOptions(ProcessOptionsTestCase):
   def testUploadBucket_uploadResultsToBucket(self, mock_storage):
     mock_storage.BUCKET_ALIASES = {'output': 'default-bucket'}
     options = self.ParseArgs(
-        ['--upload-results', '--upload-bucket', 'my_bucket'])
+      ['--upload-results', '--upload-bucket', 'my_bucket']
+    )
     self.assertTrue(options.upload_results)
     self.assertEqual(options.upload_bucket, 'my_bucket')
 
   @mock.patch(module('cloud_storage'))
   def testUploadBucket_uploadResultsToAlias(self, mock_storage):
     mock_storage.BUCKET_ALIASES = {
-        'output': 'default-bucket', 'special': 'some-special-bucket'}
-    options = self.ParseArgs(
-        ['--upload-results', '--upload-bucket', 'special'])
+      'output': 'default-bucket',
+      'special': 'some-special-bucket',
+    }
+    options = self.ParseArgs(['--upload-results', '--upload-bucket', 'special'])
     self.assertTrue(options.upload_results)
     self.assertEqual(options.upload_bucket, 'some-special-bucket')
 
@@ -128,8 +136,17 @@ class TestProcessOptions(ProcessOptionsTestCase):
 
   def testNoDuplicateOutputFormats(self):
     options = self.ParseArgs(
-        ['--output-format', 'html', '--output-format', 'csv',
-         '--output-format', 'html', '--output-format', 'csv'])
+      [
+        '--output-format',
+        'html',
+        '--output-format',
+        'csv',
+        '--output-format',
+        'html',
+        '--output-format',
+        'csv',
+      ]
+    )
     self.assertEqual(options.output_formats, ['csv', 'html'])
 
 
@@ -148,8 +165,8 @@ class StandaloneTestProcessOptions(ProcessOptionsTestCase):
 
   def testSuccessful(self):
     options = self.ParseArgs(
-        ['--output-format', 'json-test-results',
-         '--intermediate-dir', 'some_dir'])
+      ['--output-format', 'json-test-results', '--intermediate-dir', 'some_dir']
+    )
     self.assertEqual(options.output_formats, ['json-test-results'])
     self.assertEqual(options.intermediate_dir, '/path/to/curdir/some_dir')
     self.assertEqual(options.output_dir, '/path/to/output_dir')

@@ -25,23 +25,21 @@ core.path_util.AddTelemetryToPath()
 DEFAULT_STORY_DURATION = 10
 
 
-def generate_sharding_map(benchmarks_to_shard,
-                          timing_data,
-                          num_shards,
-                          debug,
-                          repeat_config=None):
+def generate_sharding_map(
+  benchmarks_to_shard, timing_data, num_shards, debug, repeat_config=None
+):
   """Generate sharding map.
 
-    Args:
-      benchmarks_to_shard: a list of bot_platforms.BenchmarkConfig and
-      ExecutableConfig objects.
-      timing_data: The timing data in json with 'name' and 'duration'
-      num_shards: the total number of shards
-      debug: if true, print out full list of stories of each shard in shard map.
-      repeat_config: dict of the tests which need to repeat on multiple
-      shards.
-    Return:
-      The shard map.
+  Args:
+    benchmarks_to_shard: a list of bot_platforms.BenchmarkConfig and
+    ExecutableConfig objects.
+    timing_data: The timing data in json with 'name' and 'duration'
+    num_shards: the total number of shards
+    debug: if true, print out full list of stories of each shard in shard map.
+    repeat_config: dict of the tests which need to repeat on multiple
+    shards.
+  Return:
+    The shard map.
   """
   # Now we have three ways to run the tests:
   # - Run the benchmark once;
@@ -85,15 +83,17 @@ def generate_sharding_map(benchmarks_to_shard,
   # A timing list of tuples of (benchmarkname/story_name, story_duration),
   # where stories are ordered as in the benchmarks.
   benchmarks_to_run_once = [
-      b for b in benchmarks_to_shard if b.name not in benchmarks_to_repeat
+    b for b in benchmarks_to_shard if b.name not in benchmarks_to_repeat
   ]
-  one_time_story_timing_list = _gather_timing_data(benchmarks_to_run_once,
-                                                   timing_data, True)
+  one_time_story_timing_list = _gather_timing_data(
+    benchmarks_to_run_once, timing_data, True
+  )
 
   repeated_benchmark_to_timing_list = {}
   for b in benchmarks_to_repeat:
-    timing_list = _gather_timing_data([benchmark_name_to_config[b]],
-                                      timing_data, True)
+    timing_list = _gather_timing_data(
+      [benchmark_name_to_config[b]], timing_data, True
+    )
     repeated_benchmark_to_timing_list[b] = timing_list
 
   repeated_story_timing_list = {}
@@ -105,8 +105,9 @@ def generate_sharding_map(benchmarks_to_shard,
   total_time = sum(t for _, t in one_time_story_timing_list)
   total_story = len(one_time_story_timing_list)
   for benchmark, timing_list in repeated_benchmark_to_timing_list.items():
-    total_time += sum(t * benchmarks_to_repeat[benchmark]
-                      for s, t in timing_list)
+    total_time += sum(
+      t * benchmarks_to_repeat[benchmark] for s, t in timing_list
+    )
     total_story += len(timing_list) * benchmarks_to_repeat[benchmark]
   for story, time in repeated_story_timing_list.items():
     total_time += time * (stories_to_repeat[story] - 1)
@@ -115,7 +116,7 @@ def generate_sharding_map(benchmarks_to_shard,
 
   sharding_map = collections.OrderedDict()
   num_stories = total_story
-  min_shard_time = 0x7fffffff  # maxint
+  min_shard_time = 0x7FFFFFFF  # maxint
   min_shard_index = None
   max_shard_time = 0
   max_shard_index = None
@@ -134,7 +135,7 @@ def generate_sharding_map(benchmarks_to_shard,
   # For efficient removal of story timing list's elements & to keep the
   # ordering of benchmark alphabetically sorted in the shards' assignment, we
   # reverse the |story_timing_list|.
-  #TODO(crbug.com/40175917): fix extra story repeat
+  # TODO(crbug.com/40175917): fix extra story repeat
   for i in range(num_shards):
     if len(repeating_benchmark_timing_list) == 0:
       for benchmark, timing_list in repeated_benchmark_to_timing_list.items():
@@ -187,25 +188,40 @@ def generate_sharding_map(benchmarks_to_shard,
         _, next_duration = repeating_benchmark_timing_list[-1]
       else:
         _, next_duration = one_time_story_timing_list[-1]
-      if (abs(shard_time + next_duration - expected_shard_time) >
-          abs(shard_time - expected_shard_time)) and i != num_shards - 1:
+      if (
+        abs(shard_time + next_duration - expected_shard_time)
+        > abs(shard_time - expected_shard_time)
+      ) and i != num_shards - 1:
         # it is not the last shard and we should not add the next story
         break
-    _add_benchmarks_to_shard(sharding_map, i, stories_in_shard,
-                             stories_by_benchmark, benchmark_name_to_config)
+    _add_benchmarks_to_shard(
+      sharding_map,
+      i,
+      stories_in_shard,
+      stories_by_benchmark,
+      benchmark_name_to_config,
+    )
 
     sharding_map_benchmarks = sharding_map[str(i)].get(
-        'benchmarks', collections.OrderedDict())
+      'benchmarks', collections.OrderedDict()
+    )
     benchmark_sections = collections.OrderedDict()
     for benchmark, config in sharding_map_benchmarks.items():
       if 'sections' in config:
-        section_list = [(s.get('begin', 0),
-                         s.get('end', len(stories_by_benchmark[benchmark])))
-                        for s in config['sections']]
+        section_list = [
+          (
+            s.get('begin', 0),
+            s.get('end', len(stories_by_benchmark[benchmark])),
+          )
+          for s in config['sections']
+        ]
       else:
-        section_list = [(config.get('begin', 0),
-                         config.get('end',
-                                    len(stories_by_benchmark[benchmark])))]
+        section_list = [
+          (
+            config.get('begin', 0),
+            config.get('end', len(stories_by_benchmark[benchmark])),
+          )
+        ]
       benchmark_sections[benchmark] = section_list
 
     for pre_allocated_story in pre_allocated_stories:
@@ -223,8 +239,11 @@ def generate_sharding_map(benchmarks_to_shard,
       sections_config = []
       if len(merged_sections) == 1:
         begin = merged_sections[0][0] if merged_sections[0][0] != 0 else None
-        end = merged_sections[0][1] if merged_sections[0][1] != len(
-            stories_by_benchmark[benchmark]) else None
+        end = (
+          merged_sections[0][1]
+          if merged_sections[0][1] != len(stories_by_benchmark[benchmark])
+          else None
+        )
         benchmark_config = {}
         if begin:
           benchmark_config['begin'] = begin
@@ -234,7 +253,7 @@ def generate_sharding_map(benchmarks_to_shard,
         for section in merged_sections:
           sections_config.append({'begin': section[0], 'end': section[1]})
         benchmark_config = {
-            'sections': sections_config,
+          'sections': sections_config,
         }
 
       benchmark_config['abridged'] = benchmark_src_config.abridged
@@ -259,13 +278,15 @@ def generate_sharding_map(benchmarks_to_shard,
     predicted_shard_timings.append((shard_name, shard_time))
     debug_timing[shard_name]['expected_total_time'] = shard_time
 
-  sharding_map['extra_infos'] = collections.OrderedDict([
+  sharding_map['extra_infos'] = collections.OrderedDict(
+    [
       ('num_stories', num_stories),
       ('predicted_min_shard_time', min_shard_time),
       ('predicted_min_shard_index', min_shard_index),
       ('predicted_max_shard_time', max_shard_time),
       ('predicted_max_shard_index', max_shard_index),
-  ])
+    ]
+  )
 
   if debug:
     sharding_map['extra_infos'].update(debug_timing)
@@ -274,8 +295,13 @@ def generate_sharding_map(benchmarks_to_shard,
   return sharding_map
 
 
-def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
-    all_stories, benchmark_name_to_config):
+def _add_benchmarks_to_shard(
+  sharding_map,
+  shard_index,
+  stories_in_shard,
+  all_stories,
+  benchmark_name_to_config,
+):
   benchmarks = collections.OrderedDict()
   for story in stories_in_shard:
     (b, story) = story.split('/', 1)
@@ -291,8 +317,8 @@ def _add_benchmarks_to_shard(sharding_map, shard_index, stories_in_shard,
     config = benchmark_name_to_config[b]
     if isinstance(config, core.bot_platforms.CrossbenchConfig):
       crossbench_in_shard[b] = {
-          'crossbench_name': config.crossbench_name,
-          'arguments': config.flags,
+        'crossbench_name': config.crossbench_name,
+        'arguments': config.flags,
       }
       first_story = all_stories[b].index(benchmarks[b][0])
       last_story = all_stories[b].index(benchmarks[b][-1]) + 1
@@ -345,10 +371,10 @@ def _gather_timing_data(benchmarks_to_shard, timing_data, repeat):
   return timing_data_list
 
 
-def test_sharding_map(
-    sharding_map, benchmarks_to_shard, test_timing_data):
+def test_sharding_map(sharding_map, benchmarks_to_shard, test_timing_data):
   story_timing_list = _gather_timing_data(
-      benchmarks_to_shard, test_timing_data, False)
+    benchmarks_to_shard, test_timing_data, False
+  )
 
   story_timing_dict = dict(story_timing_list)
 
@@ -370,7 +396,7 @@ def test_sharding_map(
       if 'end' in benchmark:
         end = benchmark['end']
       benchmark_timing = 0
-      for story in all_stories[benchmark_name][begin : end]:
+      for story in all_stories[benchmark_name][begin:end]:
         story_timing = story_timing_dict[benchmark_name + '/' + story]
         results[shard][benchmark_name + '/' + story] = str(story_timing)
         benchmark_timing += story_timing

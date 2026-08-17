@@ -13,6 +13,7 @@ import xml.etree.ElementTree as ET
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 from core import path_util
+
 path_util.AddPyUtilsToPath()
 path_util.AddTracingToPath()
 
@@ -52,8 +53,8 @@ def ExportProfiles(device_xmls, sql_path):
   sql_values = []
   for device, xml_path in device_xmls:
     sql_values += [
-        '("%s", %s, %s, %s, %s)' % ((device, ) + v)
-        for v in ExtractValues(xml_path)
+      '("%s", %s, %s, %s, %s)' % ((device,) + v)
+      for v in ExtractValues(xml_path)
     ]
 
   with open(sql_path, 'w') as sql_file:
@@ -65,12 +66,13 @@ def ExportProfiles(device_xmls, sql_path):
 def main(args):
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--device-xml',
-      nargs=2,
-      metavar=('DEVICE', 'XML_FILE'),
-      action='append',
-      help='Device name and path to the XML file with the device '
-      'power profile. Can be used multiple times.')
+    '--device-xml',
+    nargs=2,
+    metavar=('DEVICE', 'XML_FILE'),
+    action='append',
+    help='Device name and path to the XML file with the device '
+    'power profile. Can be used multiple times.',
+  )
 
   args = parser.parse_args(args)
 
@@ -79,7 +81,8 @@ def main(args):
     ExportProfiles(args.device_xml, sql_path)
     version = datetime.datetime.now().strftime('%Y%m%dT%H%M%S')
     binary_deps_manager.UploadAndSwitchDataFile(
-        trace_processor.POWER_PROFILE_SQL, sql_path, version)
+      trace_processor.POWER_PROFILE_SQL, sql_path, version
+    )
 
 
 if __name__ == '__main__':

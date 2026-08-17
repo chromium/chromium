@@ -21,16 +21,18 @@ ANNOTATIONS_XML_PATH = 'tools/traffic_annotation/summary/annotations.xml'
 
 if __name__ == '__main__':
   args_parser = argparse.ArgumentParser(
-      description='Reads annotations.xml and outputs a mapping of unique IDs '
-      'to their hashes.',
-      prog='hashes.py')
+    description='Reads annotations.xml and outputs a mapping of unique IDs '
+    'to their hashes.',
+    prog='hashes.py',
+  )
   args_parser.add_argument(
-      'annotations_file',
-      nargs='?',
-      default=SRC_DIR / ANNOTATIONS_XML_PATH,
-      type=Path,
-      help='Optional path to a summary file containing all annotations. '
-      'Defaults to {}.'.format(ANNOTATIONS_XML_PATH))
+    'annotations_file',
+    nargs='?',
+    default=SRC_DIR / ANNOTATIONS_XML_PATH,
+    type=Path,
+    help='Optional path to a summary file containing all annotations. '
+    'Defaults to {}.'.format(ANNOTATIONS_XML_PATH),
+  )
 
   args = args_parser.parse_args()
 

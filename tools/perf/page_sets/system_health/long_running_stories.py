@@ -15,6 +15,7 @@ STEPS = IDLE_TIME_IN_SECONDS // SAMPLING_INTERVAL_IN_SECONDS
 
 class _LongRunningStory(system_health_story.SystemHealthStory):
   """Abstract base class for long running stories."""
+
   ABSTRACT_STORY = True
   BACKGROUND = False
 
@@ -32,10 +33,14 @@ class _LongRunningStory(system_health_story.SystemHealthStory):
   @classmethod
   def GenerateStoryDescription(cls):
     if cls.BACKGROUND:
-      return ('Load %s then open a new blank tab and let the loaded page stay '
-              'in background for %s seconds.' % (cls.URL, IDLE_TIME_IN_SECONDS))
-    return ('Load %s then let it stay in foreground for %s seconds.' %
-            (cls.URL, IDLE_TIME_IN_SECONDS))
+      return (
+        'Load %s then open a new blank tab and let the loaded page stay '
+        'in background for %s seconds.' % (cls.URL, IDLE_TIME_IN_SECONDS)
+      )
+    return 'Load %s then let it stay in foreground for %s seconds.' % (
+      cls.URL,
+      IDLE_TIME_IN_SECONDS,
+    )
 
   def WillStartTracing(self, chrome_trace_config):
     # Long running stories generate large traces, so use a large tracing buffer
@@ -43,10 +48,10 @@ class _LongRunningStory(system_health_story.SystemHealthStory):
     chrome_trace_config.SetTraceBufferSizeInKb(350 * 1024)
 
 
-
 ##############################################################################
 # Long running Gmail stories.
 ##############################################################################
+
 
 # TODO(rnephew): Merge _Login() and _DidLoadDocument() with methods in
 # loading_stories.
@@ -64,8 +69,10 @@ class _LongRunningGmailBase(_LongRunningStory):
     # redirection loop. Afterwards, we can safely navigate to
     # https://mail.google.com.
     action_runner.Navigate(
-        'https://mail.google.com/mail/mu/mp/872/trigger_redirection_loop')
+      'https://mail.google.com/mail/mu/mp/872/trigger_redirection_loop'
+    )
     action_runner.tab.WaitForDocumentReadyStateToBeComplete()
+
 
 class _LongRunningGmailMobileBase(_LongRunningGmailBase):
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
@@ -75,12 +82,15 @@ class _LongRunningGmailMobileBase(_LongRunningGmailBase):
   def _DidLoadDocument(self, action_runner):
     # Close the "Get Inbox by Gmail" interstitial.
     action_runner.WaitForJavaScriptCondition(
-        'document.querySelector("#isppromo a") !== null')
+      'document.querySelector("#isppromo a") !== null'
+    )
     action_runner.ExecuteJavaScript(
-        'document.querySelector("#isppromo a").click()')
+      'document.querySelector("#isppromo a").click()'
+    )
     # Wait until the UI loads.
     action_runner.WaitForJavaScriptCondition(
-        'document.getElementById("apploadingdiv").style.height === "0px"')
+      'document.getElementById("apploadingdiv").style.height === "0px"'
+    )
 
 
 class _LongRunningGmailDesktopBase(_LongRunningGmailBase):
@@ -89,7 +99,8 @@ class _LongRunningGmailDesktopBase(_LongRunningGmailBase):
   def _DidLoadDocument(self, action_runner):
     # Wait until the UI loads.
     action_runner.WaitForJavaScriptCondition(
-        'document.getElementById("loading").style.display === "none"')
+      'document.getElementById("loading").style.display === "none"'
+    )
 
 
 class LongRunningGmailMobileForegroundStory(_LongRunningGmailMobileBase):

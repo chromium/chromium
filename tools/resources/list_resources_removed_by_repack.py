@@ -25,11 +25,11 @@ developers will notice and fix their .grd files.
 
 
 def GetResourceIdsFromRepackMessage(in_data):
-  """Returns sorted set of resource ids that are not used from in_data.
-  """
+  """Returns sorted set of resource ids that are not used from in_data."""
   unused_resources = set()
   unused_pattern = re.compile(
-      'RePackFromDataPackStrings Removed Key: (?P<resource_id>[0-9]+)')
+    'RePackFromDataPackStrings Removed Key: (?P<resource_id>[0-9]+)'
+  )
   for line in in_data:
     match = unused_pattern.match(line)
     if match:
@@ -69,8 +69,9 @@ def Main():
     data_files.extend([os.path.join(root, header) for header in header_files])
 
   resource_id_to_name_file_map = {}
-  resource_pattern = re.compile('#define (?P<resource_name>[A-Z0-9_]+).* '
-                                '(?P<resource_id>[0-9]+)$')
+  resource_pattern = re.compile(
+    '#define (?P<resource_name>[A-Z0-9_]+).* (?P<resource_id>[0-9]+)$'
+  )
   for f in data_files:
     data = open(f).read()
     for line in data.splitlines():

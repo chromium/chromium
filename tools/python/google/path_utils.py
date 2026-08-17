@@ -6,17 +6,20 @@
 
 # TODO(pamg): Have the buildbot use these, too.
 
-
 import errno
 import os
 import sys
 
-class PathNotFound(Exception): pass
+
+class PathNotFound(Exception):
+  pass
+
 
 def ScriptDir():
   """Get the full path to the directory containing the current script."""
   script_filename = os.path.abspath(sys.argv[0])
   return os.path.dirname(script_filename)
+
 
 def FindAncestor(start_dir, ancestor):
   """Finds an ancestor dir in a path.
@@ -35,6 +38,7 @@ def FindAncestor(start_dir, ancestor):
     path = parent
   raise PathNotFound("Unable to find ancestor %s in %s" % (ancestor, start_dir))
 
+
 def FindUpwardParent(start_dir, *desired_list):
   """Finds the desired object's parent, searching upward from the start_dir.
 
@@ -51,14 +55,15 @@ def FindUpwardParent(start_dir, *desired_list):
     last_dir = cur_dir
     cur_dir = os.path.dirname(cur_dir)
     if last_dir == cur_dir:
-      raise PathNotFound('Unable to find %s above %s' %
-                         (desired_path, start_dir))
+      raise PathNotFound(
+        'Unable to find %s above %s' % (desired_path, start_dir)
+      )
     found_path = os.path.join(cur_dir, desired_path)
   # Strip the entire original desired path from the end of the one found
   # and remove a trailing path separator, if present.
-  found_path = found_path[:len(found_path) - len(desired_path)]
+  found_path = found_path[: len(found_path) - len(desired_path)]
   if found_path.endswith(os.sep):
-    found_path = found_path[:len(found_path) - 1]
+    found_path = found_path[: len(found_path) - 1]
   return found_path
 
 

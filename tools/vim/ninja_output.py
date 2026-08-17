@@ -29,15 +29,19 @@ def GetNinjaOutputDirectory(chrome_root):
   """
 
   output_dirs = []
-  if ('CHROMIUM_OUT_DIR' in os.environ and
-      os.path.isdir(os.path.join(chrome_root, os.environ['CHROMIUM_OUT_DIR']))):
+  if 'CHROMIUM_OUT_DIR' in os.environ and os.path.isdir(
+    os.path.join(chrome_root, os.environ['CHROMIUM_OUT_DIR'])
+  ):
     output_dirs = [os.environ['CHROMIUM_OUT_DIR']]
   if not output_dirs:
     generator_flags = os.getenv('GYP_GENERATOR_FLAGS', '').split(' ')
     for flag in generator_flags:
       name_value = flag.split('=', 1)
-      if (len(name_value) == 2 and name_value[0] == 'output_dir' and
-          os.path.isdir(os.path.join(chrome_root, name_value[1]))):
+      if (
+        len(name_value) == 2
+        and name_value[0] == 'output_dir'
+        and os.path.isdir(os.path.join(chrome_root, name_value[1]))
+      ):
         output_dirs = [name_value[1]]
   if not output_dirs:
     for f in os.listdir(chrome_root):

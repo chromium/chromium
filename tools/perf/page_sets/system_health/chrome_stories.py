@@ -6,11 +6,12 @@ from page_sets.system_health import platforms
 from page_sets.system_health import story_tags
 from page_sets.system_health import system_health_story
 
-from devil.android.sdk import keyevent # pylint: disable=import-error
+from devil.android.sdk import keyevent  # pylint: disable=import-error
 
 
 class BlankAboutBlankStory(system_health_story.SystemHealthStory):
   """Story that loads the about:blank page."""
+
   NAME = 'load:chrome:blank'
   URL = 'about:blank'
   TAGS = [story_tags.YEAR_2016]
@@ -19,7 +20,7 @@ class BlankAboutBlankStory(system_health_story.SystemHealthStory):
     # Request a RAF and wait for it to be processed to ensure that the metric
     # Startup.FirstWebContents.NonEmptyPaint3 is recorded.
     action_runner.ExecuteJavaScript(
-        """
+      """
         window.__hasRunRAF = false;
         requestAnimationFrame(function() {
           window.__hasRunRAF = true;
@@ -35,6 +36,7 @@ class SearchOmniboxStory2019(system_health_story.SystemHealthStory):
   Loads a website and enters a search query on omnibox and navigates to default
   search provider (google).
   """
+
   NAME = 'browse:chrome:omnibox:2019'
   URL = 'https://www.google.co.in'
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
@@ -48,9 +50,9 @@ class SearchOmniboxStory2019(system_health_story.SystemHealthStory):
     app_ui.WaitForUiNode(resource_id='url_bar')
     url_bar = app_ui.GetUiNode(resource_id='url_bar')
     url_bar.Tap()
-    action_runner.Wait(1) # user wait before typing
+    action_runner.Wait(1)  # user wait before typing
     platform.android_action_runner.InputText('drake')
-    action_runner.Wait(0.5) # user wait after typing
+    action_runner.Wait(0.5)  # user wait after typing
     platform.android_action_runner.InputKeyEvent(keyevent.KEYCODE_ENTER)
 
     action_runner.WaitForNavigate()
@@ -65,13 +67,16 @@ class MobileNewTabPageStory2019(system_health_story.SystemHealthStory):
    - read results
    - navigates back to new tab page
   """
+
   NAME = 'browse:chrome:newtab:2019'
   URL = 'chrome://newtab'
-  _SEARCH_TEXTS = ['does google know everything',
-                   'most famous paintings',
-                   'current weather',
-                   'best movies 2019',
-                   'how to tie a tie']
+  _SEARCH_TEXTS = [
+    'does google know everything',
+    'most famous paintings',
+    'current weather',
+    'best movies 2019',
+    'how to tie a tie',
+  ]
 
   SUPPORTED_PLATFORMS = platforms.MOBILE_ONLY
   TAGS = [story_tags.EMERGING_MARKET, story_tags.YEAR_2019]
@@ -86,7 +91,7 @@ class MobileNewTabPageStory2019(system_health_story.SystemHealthStory):
       platform.android_action_runner.InputText(keyword)
       platform.android_action_runner.InputKeyEvent(keyevent.KEYCODE_ENTER)
       action_runner.WaitForNavigate()
-      action_runner.Wait(1.5) # Read results
+      action_runner.Wait(1.5)  # Read results
       action_runner.ScrollPage(use_touch=True)
       action_runner.NavigateBack()
       action_runner.WaitForNavigate()

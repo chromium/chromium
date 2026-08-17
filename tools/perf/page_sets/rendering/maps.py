@@ -8,7 +8,10 @@ from page_sets.rendering import rendering_story
 from page_sets.rendering import story_tags
 
 # pylint: disable=line-too-long
-_MAPS_PERF_TEST_DIR = os.path.join(os.path.dirname(__file__), '../maps_perf_test')
+_MAPS_PERF_TEST_DIR = os.path.join(
+  os.path.dirname(__file__), '../maps_perf_test'
+)
+
 
 class MapsPage(rendering_story.RenderingStory):
   """Google Maps benchmarks and pixel tests.
@@ -23,21 +26,25 @@ class MapsPage(rendering_story.RenderingStory):
   <path to depot_tools>/upload_to_google_storage.py \
       maps_perf_test/load_dataset --bucket=chromium-telemetry
 """
+
   BASE_NAME = 'maps_perf_test'
   URL = 'file://performance.html'
   TAGS = [story_tags.REQUIRED_WEBGL, story_tags.MAPS]
 
-  def __init__(self,
-               page_set,
-               shared_page_state_class,
-               name_suffix='',
-               extra_browser_args=None):
+  def __init__(
+    self,
+    page_set,
+    shared_page_state_class,
+    name_suffix='',
+    extra_browser_args=None,
+  ):
     super(MapsPage, self).__init__(
-        page_set=page_set,
-        shared_page_state_class=shared_page_state_class,
-        name_suffix=name_suffix,
-        extra_browser_args=extra_browser_args,
-        base_dir=_MAPS_PERF_TEST_DIR)
+      page_set=page_set,
+      shared_page_state_class=shared_page_state_class,
+      name_suffix=name_suffix,
+      extra_browser_args=extra_browser_args,
+      base_dir=_MAPS_PERF_TEST_DIR,
+    )
 
   @property
   def skipped_gpus(self):

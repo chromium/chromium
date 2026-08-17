@@ -23,9 +23,11 @@ Example implementation:
       // want on top of any javascript metrics
       // implemented in your stories
 """
+
 from core import perf_benchmark
 
 from measurements import dual_metric_measurement
+
 
 class _PressBenchmark(perf_benchmark.PerfBenchmark):
   test = dual_metric_measurement.DualMetricMeasurement

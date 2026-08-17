@@ -55,6 +55,7 @@ class OrderfileStorySet(story.StorySet):
   The run set specified in the constructor splits the stories into training and
   testing sets (or debugging, see the code for details).
   """
+
   # Run set names.
   TRAINING = 'training'
   TESTING = 'testing'
@@ -62,7 +63,8 @@ class OrderfileStorySet(story.StorySet):
 
   _PLATFORM = 'mobile'
 
-  _BLOCKLIST = set([
+  _BLOCKLIST = set(
+    [
       # 0% success rate on arm (measured 2024 June).
       'browse:chrome:newtab:2019',
       # 0% success rate on arm (measured 2024 June).
@@ -79,7 +81,8 @@ class OrderfileStorySet(story.StorySet):
       'long_running:tools:gmail-background',
       # Carried over from previous blocklist.
       'long_running:tools:gmail-foreground',
-  ])
+    ]
+  )
 
   # The random seed used for reproducible runs.
   SEED = 8675309
@@ -94,9 +97,14 @@ class OrderfileStorySet(story.StorySet):
   # should change as well.
   NUM_VARIATION_BENCHMARKS = 3
 
-  def __init__(self, run_set, num_training=DEFAULT_TRAINING,
-               num_testing=DEFAULT_TESTING, num_variations=DEFAULT_VARIATIONS,
-               test_variation=0):
+  def __init__(
+    self,
+    run_set,
+    num_training=DEFAULT_TRAINING,
+    num_testing=DEFAULT_TESTING,
+    num_variations=DEFAULT_VARIATIONS,
+    test_variation=0,
+  ):
     """Create an orderfile training or testing benchmark set.
 
     Args:
@@ -107,12 +115,15 @@ class OrderfileStorySet(story.StorySet):
       test_variation: the test set variation to use.
     """
     super(OrderfileStorySet, self).__init__(
-        archive_data_file=('../../page_sets/data/system_health_%s.json' %
-                           self._PLATFORM),
-        cloud_storage_bucket=story.PARTNER_BUCKET)
+      archive_data_file=(
+        '../../page_sets/data/system_health_%s.json' % self._PLATFORM
+      ),
+      cloud_storage_bucket=story.PARTNER_BUCKET,
+    )
 
     assert self._PLATFORM in platforms.ALL_PLATFORMS, '{} not in {}'.format(
-        self._PLATFORM, str(platforms.ALL_PLATFORMS))
+      self._PLATFORM, str(platforms.ALL_PLATFORMS)
+    )
     assert run_set in (self.TRAINING, self.TESTING, self.DEBUGGING)
     assert 0 <= test_variation < num_variations
 
@@ -131,32 +142,42 @@ class OrderfileStorySet(story.StorySet):
 
   def RunSetStories(self):
     possible_stories = [
-        s for s in system_health_stories.IterAllSystemHealthStoryClasses()
-        if (s.NAME not in self._BLOCKLIST and not s.ABSTRACT_STORY
-            and self._PLATFORM in s.SUPPORTED_PLATFORMS)
+      s
+      for s in system_health_stories.IterAllSystemHealthStoryClasses()
+      if (
+        s.NAME not in self._BLOCKLIST
+        and not s.ABSTRACT_STORY
+        and self._PLATFORM in s.SUPPORTED_PLATFORMS
+      )
     ]
-    assert (self._num_training + self._num_variations * self._num_testing
-            <= len(possible_stories)), \
-        'We only have {} stories to work with, but want {} + {}*{}'.format(
-            len(possible_stories), self._num_training, self._num_variations,
-            self._num_testing)
+    assert self._num_training + self._num_variations * self._num_testing <= len(
+      possible_stories
+    ), 'We only have {} stories to work with, but want {} + {}*{}'.format(
+      len(possible_stories),
+      self._num_training,
+      self._num_variations,
+      self._num_testing,
+    )
 
     if self._run_set == self.DEBUGGING:
       return random.sample(possible_stories, 3)
 
     random.shuffle(possible_stories)
     if self._run_set == self.TRAINING:
-      return possible_stories[:self._num_training]
+      return possible_stories[: self._num_training]
     if self._run_set == self.TESTING:
       return possible_stories[
-          (self._num_training + self._test_variation * self._num_testing):
-          (self._num_training + (self._test_variation + 1) * self._num_testing)]
+        (self._num_training + self._test_variation * self._num_testing) : (
+          self._num_training + (self._test_variation + 1) * self._num_testing
+        )
+      ]
     assert False, 'Bad run set {}'.format(self._run_set)
     return None
 
 
 class _OrderfileBenchmark(system_health.MobileMemorySystemHealth):
   """Base benchmark for orderfile generation."""
+
   STORY_RUN_SET = None  # Must be set in subclasses.
 
   def CreateStorySet(self, options):
@@ -189,27 +210,32 @@ class OrderfileTesting(_OrderfileBenchmark):
 
 class _OrderfileVariation(system_health.MobileMemorySystemHealth):
   """Orderfile generation with test set variations."""
-  STORY_RUN_SET = None   # Must be set in all subclasses.
-  TEST_VARIATION = 0     # Can be overridden testing subclasses.
+
+  STORY_RUN_SET = None  # Must be set in all subclasses.
+  TEST_VARIATION = 0  # Can be overridden testing subclasses.
 
   options = {'pageset_repeat': 7}
 
   def CreateStorySet(self, options):
     return OrderfileStorySet(
-        run_set=self.STORY_RUN_SET,
-        num_training=25, num_testing=8,
-        num_variations=OrderfileStorySet.NUM_VARIATION_BENCHMARKS,
-        test_variation=self.TEST_VARIATION)
+      run_set=self.STORY_RUN_SET,
+      num_training=25,
+      num_testing=8,
+      num_variations=OrderfileStorySet.NUM_VARIATION_BENCHMARKS,
+      test_variation=self.TEST_VARIATION,
+    )
 
   @classmethod
   def Name(cls):
     if cls.STORY_RUN_SET == OrderfileStorySet.TESTING:
       return 'orderfile_generation.variation.testing{}'.format(
-          cls.TEST_VARIATION)
+        cls.TEST_VARIATION
+      )
     if cls.STORY_RUN_SET == OrderfileStorySet.TRAINING:
       return 'orderfile_generation.variation.training'
     assert False, 'Bad STORY_RUN_SET {}'.format(cls.STORY_RUN_SET)
     return None
+
 
 # pylint: disable=R0901
 @benchmark.Owner(emails=['mattcary@chromium.org'])
@@ -242,6 +268,7 @@ class OrderfileVariationTesting2(_OrderfileVariation):
 @benchmark.Owner(emails=['mattcary@chromium.org'])
 class OrderfileDebugging(_OrderfileBenchmark):
   """A very short benchmark for debugging metrics collection."""
+
   STORY_RUN_SET = OrderfileStorySet.DEBUGGING
 
   options = {'pageset_repeat': 1}
@@ -250,39 +277,46 @@ class OrderfileDebugging(_OrderfileBenchmark):
   def Name(cls):
     return 'orderfile_generation.debugging'
 
+
 @benchmark.Owner(emails=['mattcary@chromium.org'])
 class OrderfileMemory(system_health.MobileMemorySystemHealth):
   """Benchmark for native code memory footprint evaluation."""
+
   class OrderfileMemoryStorySet(story.StorySet):
     _STORY_SET = set(['browse:news:cnn:2021', 'browse:social:facebook:2019'])
 
     def __init__(self, platform, take_memory_measurement=True):
       super(OrderfileMemory.OrderfileMemoryStorySet, self).__init__(
-          archive_data_file=('../../page_sets/data/system_health_%s.json' %
-                             platform),
-          cloud_storage_bucket=story.PARTNER_BUCKET)
+        archive_data_file=(
+          '../../page_sets/data/system_health_%s.json' % platform
+        ),
+        cloud_storage_bucket=story.PARTNER_BUCKET,
+      )
 
       assert platform in platforms.ALL_PLATFORMS
       for story_cls in system_health_stories.IterAllSystemHealthStoryClasses():
-        if (story_cls.ABSTRACT_STORY
-            or platform not in story_cls.SUPPORTED_PLATFORMS
-            or story_cls.NAME not in self._STORY_SET):
+        if (
+          story_cls.ABSTRACT_STORY
+          or platform not in story_cls.SUPPORTED_PLATFORMS
+          or story_cls.NAME not in self._STORY_SET
+        ):
           continue
         self.AddStory(story_cls(self, take_memory_measurement))
-
 
   def CreateStorySet(self, options):
     return self.OrderfileMemoryStorySet(platform=self.PLATFORM)
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
-        filter_string='-*,disabled-by-default-memory-infra')
+      filter_string='-*,disabled-by-default-memory-infra'
+    )
     options = timeline_based_measurement.Options(cat_filter)
     # options.config.enable_android_graphics_memtrack = True
     options.SetTimelineBasedMetrics(['nativeCodeResidentMemoryMetric'])
     # Setting an empty memory dump config disables periodic dumps.
     options.config.chrome_trace_config.SetMemoryDumpConfig(
-        chrome_trace_config.MemoryDumpConfig())
+      chrome_trace_config.MemoryDumpConfig()
+    )
     return options
 
   @classmethod
@@ -291,8 +325,9 @@ class OrderfileMemory(system_health.MobileMemorySystemHealth):
 
 
 @benchmark.Owner(emails=['rasikan@google.com'])
-class OrderfileWebViewStartup(system_health.WebviewStartupSystemHealthBenchmark
-                              ):
+class OrderfileWebViewStartup(
+  system_health.WebviewStartupSystemHealthBenchmark
+):
   """Benchmark for orderfile generation with WebView startup profiles.
 
   We need this class to wrap the system_health.webview_startup benchmark so
@@ -307,11 +342,13 @@ class OrderfileWebViewStartup(system_health.WebviewStartupSystemHealthBenchmark
 
   def CreateStorySet(self, options):
     return system_health_stories.SystemHealthBlankStorySet(
-        take_memory_measurement=True)
+      take_memory_measurement=True
+    )
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
-        filter_string='-*,disabled-by-default-memory-infra')
+      filter_string='-*,disabled-by-default-memory-infra'
+    )
     options = timeline_based_measurement.Options(cat_filter)
     return options
 
@@ -323,6 +360,7 @@ class OrderfileWebViewStartup(system_health.WebviewStartupSystemHealthBenchmark
 @benchmark.Owner(emails=['rasikan@google.com'])
 class OrderfileWebViewDebugging(OrderfileWebViewStartup):
   """A very short benchmark for debugging metrics collection."""
+
   options = {'pageset_repeat': 1}
 
   @classmethod

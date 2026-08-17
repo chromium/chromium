@@ -24,8 +24,7 @@ else:
     vs_version = vs_toolchain.GetVisualStudioVersion()
     vs_path = vs_toolchain.DetectVisualStudioPath()
     if vs_version in ['2022', '2026']:
-        script_path = os.path.join(vs_path,
-                                   r'VC\Auxiliary\Build\vcvarsall.bat')
+        script_path = os.path.join(vs_path, r'VC\Auxiliary\Build\vcvarsall.bat')
         print('"%s" amd64' % script_path)
     else:
         raise Exception('Unsupported VS version %s' % vs_version)

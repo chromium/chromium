@@ -32,11 +32,20 @@ def MangleModuleIfNeeded(module_id):
   if len(module_id) < 32:
     return module_id.ljust(32, '0').upper()
 
-  return ''.join([
-      module_id[6:8], module_id[4:6], module_id[2:4], module_id[0:2],
-      module_id[10:12], module_id[8:10], module_id[14:16], module_id[12:14],
-      module_id[16:32], '0'
-  ]).upper()
+  return ''.join(
+    [
+      module_id[6:8],
+      module_id[4:6],
+      module_id[2:4],
+      module_id[0:2],
+      module_id[10:12],
+      module_id[8:10],
+      module_id[14:16],
+      module_id[12:14],
+      module_id[16:32],
+      '0',
+    ]
+  ).upper()
 
 
 def FindMatchingModule(symbol_root_dir, dump_syms_path, module_id):
@@ -60,13 +69,14 @@ def FindMatchingModule(symbol_root_dir, dump_syms_path, module_id):
     for file_iter in os.listdir(root_path):
       input_file_path = os.path.join(root_path, file_iter)
       if not os.path.isfile(
-          input_file_path) or not breakpad_file_extractor.IsValidBinaryPath(
-              input_file_path):
+        input_file_path
+      ) or not breakpad_file_extractor.IsValidBinaryPath(input_file_path):
         continue
 
       logger.debug('Checking for match with %s', input_file_path)
       if not breakpad_file_extractor.IsModuleNeededForSymbolization(
-          dump_syms_path, modules, input_file_path):
+        dump_syms_path, modules, input_file_path
+      ):
         continue
 
       logger.info('Found module path %s', input_file_path)

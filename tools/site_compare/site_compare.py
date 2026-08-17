@@ -16,27 +16,36 @@ from __future__ import print_function
 # This line is necessary to work around a QEMU bug
 import _imaging
 
-import os            # Functions for walking the directory tree
-import types         # Runtime type-checking
+import os  # Functions for walking the directory tree
+import types  # Runtime type-checking
 
 import command_line  # command-line parsing
-import drivers       # Functions for driving keyboard/mouse/windows, OS-specific
-import operators     # Functions that, given two bitmaps as input, produce
-                     # output depending on the performance of an operation
-import scrapers      # Functions that know how to capture a render from
-                     # particular browsers
+import drivers  # Functions for driving keyboard/mouse/windows, OS-specific
+import operators  # Functions that, given two bitmaps as input, produce
+
+# output depending on the performance of an operation
+import scrapers  # Functions that know how to capture a render from
+# particular browsers
 
 import commands.compare2  # compare one page in two versions of same browser
-import commands.maskmaker # generate a mask based on repeated scrapes
-import commands.measure   # measure length of time a page takes to load
-import commands.scrape    # scrape a URL or series of URLs to a bitmap
+import commands.maskmaker  # generate a mask based on repeated scrapes
+import commands.measure  # measure length of time a page takes to load
+import commands.scrape  # scrape a URL or series of URLs to a bitmap
 
 # The timeload command is obsolete (too flaky); it may be reinstated
 # later but for now it's been superceded by "measure"
 # import commands.timeload  # measure length of time a page takes to load
 
-def Scrape(browsers, urls, window_size=(1024, 768),
-           window_pos=(0, 0), timeout=20, save_path=None, **kwargs):
+
+def Scrape(
+  browsers,
+  urls,
+  window_size=(1024, 768),
+  window_pos=(0, 0),
+  timeout=20,
+  save_path=None,
+  **kwargs,
+):
   """Invoke one or more browsers over one or more URLs, scraping renders.
 
   Args:
@@ -57,7 +66,8 @@ def Scrape(browsers, urls, window_size=(1024, 768),
   per-browser-per-URL basis
   """
 
-  if type(browsers) in types.StringTypes: browsers = [browsers]
+  if type(browsers) in types.StringTypes:
+    browsers = [browsers]
 
   if save_path is None:
     # default save path is "scrapes" off the current root
@@ -65,7 +75,8 @@ def Scrape(browsers, urls, window_size=(1024, 768),
 
   for browser in browsers:
     # Browsers should be tuples of (browser, version)
-    if type(browser) in types.StringTypes: browser = (browser, None)
+    if type(browser) in types.StringTypes:
+      browser = (browser, None)
     scraper = scrapers.GetScraper(browser)
 
     full_path = os.path.join(save_path, browser[0], scraper.version)
@@ -100,9 +111,12 @@ def Compare(base, compare, ops, root_path=None, out_path=None):
   if out_path is None:
     out_path = os.path.join(os.path.split(__file__)[0], "Compares")
 
-  if type(base) in types.StringTypes: base = (base, None)
-  if type(compare) in types.StringTypes: compare = (compare, None)
-  if type(ops) in types.StringTypes: ops = [ops]
+  if type(base) in types.StringTypes:
+    base = (base, None)
+  if type(compare) in types.StringTypes:
+    compare = (compare, None)
+  if type(ops) in types.StringTypes:
+    ops = [ops]
 
   base_dir = os.path.join(root_path, base[0])
   compare_dir = os.path.join(root_path, compare[0])
@@ -123,8 +137,12 @@ def Compare(base, compare, ops, root_path=None, out_path=None):
   # robust enough. Change this after deciding exactly what we want to
   # change it to.
   out_file = open(os.path.join(out_path, "log.txt"), "w")
-  description_string = ("Comparing %s %s to %s %s" %
-                        (base[0], base[1], compare[0], compare[1]))
+  description_string = "Comparing %s %s to %s %s" % (
+    base[0],
+    base[1],
+    compare[0],
+    compare[1],
+  )
   out_file.write(description_string)
   print(description_string)
 
@@ -143,7 +161,8 @@ def Compare(base, compare, ops, root_path=None, out_path=None):
     compare_filename = os.path.join(compare_dir, filename)
 
     for op in ops:
-      if type(op) in types.StringTypes: op = (op, None)
+      if type(op) in types.StringTypes:
+        op = (op, None)
 
       module = operators.GetOperator(op[0])
 

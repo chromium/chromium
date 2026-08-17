@@ -19,10 +19,12 @@ def _RunCommand(args):
   if not gcloud_path:
     raise RuntimeError("gcloud executable not found in PATH.")
   try:
-    result = subprocess.run([gcloud_path, 'storage'] + args,
-                            capture_output=True,
-                            text=True,
-                            check=True)
+    result = subprocess.run(
+      [gcloud_path, 'storage'] + args,
+      capture_output=True,
+      text=True,
+      check=True,
+    )
     return result.stdout
   except subprocess.CalledProcessError as e:
     raise RuntimeError(e.stderr)
@@ -58,8 +60,9 @@ def ListFiles(bucket, path='', sort_by='name'):
 
   # Filter out directories and the summary line.
   file_infos = [
-      line.split(None, 2) for line in stdout.splitlines() if len(line) > 0
-      and not line.startswith("TOTAL") and not line.endswith('/')
+    line.split(None, 2)
+    for line in stdout.splitlines()
+    if len(line) > 0 and not line.startswith("TOTAL") and not line.endswith('/')
   ]
 
   # The first field in the info is size, the second is time, the third is name.
@@ -72,7 +75,7 @@ def ListFiles(bucket, path='', sort_by='name'):
   else:
     raise ValueError("Wrong sort_by value: %s" % sort_by)
 
-  return [url[len(bucket_prefix):] for _, _, url in file_infos]
+  return [url[len(bucket_prefix) :] for _, _, url in file_infos]
 
 
 def Insert(bucket, remote_path, local_path, publicly_readable):

@@ -5,9 +5,10 @@ from page_sets.login_helpers import login_utils
 
 
 def LoginWithMobileSite(
-    action_runner,
-    credential='facebooktest', # Recommended testing account.
-    credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH):
+  action_runner,
+  credential='facebooktest',  # Recommended testing account.
+  credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH,
+):
   """Logs in into mobile Facebook account.
 
   This function navigates the tab into Facebook's login page and logs in a user
@@ -28,10 +29,12 @@ def LoginWithMobileSite(
     for a detailed list of possible exceptions.
   """
   account_name, password = login_utils.GetAccountNameAndPassword(
-      credential, credentials_path=credentials_path)
+    credential, credentials_path=credentials_path
+  )
 
   action_runner.Navigate(
-       'https://m.facebook.com/login?continue=https%3A%2F%2Fm.facebook.com')
+    'https://m.facebook.com/login?continue=https%3A%2F%2Fm.facebook.com'
+  )
   login_utils.InputWithSelector(action_runner, account_name, '[name=email]')
   login_utils.InputWithSelector(action_runner, password, '[name=pass]')
   action_runner.ClickElement(selector='[name=login]')
@@ -41,10 +44,13 @@ def LoginWithMobileSite(
 
 
 def LoginWithDesktopSite(
-    action_runner, credential,
-    credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH):
+  action_runner,
+  credential,
+  credentials_path=login_utils.DEFAULT_CREDENTIAL_PATH,
+):
   account_name, password = login_utils.GetAccountNameAndPassword(
-      credential, credentials_path=credentials_path)
+    credential, credentials_path=credentials_path
+  )
 
   action_runner.Navigate('https://facebook.com/login')
   login_utils.InputWithSelector(action_runner, account_name, '[name=email]')

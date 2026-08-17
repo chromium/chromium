@@ -49,21 +49,25 @@ def FindChildWindows(hwnd, path):
     # check_values is now a list with the first element being
     # the window class, the second being the window caption.
     # If the class is absent (or wildcarded) set it to None
-    if check_values[0] == "*" or not check_values[0]: check_values[0] = None
+    if check_values[0] == "*" or not check_values[0]:
+      check_values[0] = None
 
     # If the window caption is also absent, force it to None as well
-    if len(check_values) == 1: check_values.append(None)
+    if len(check_values) == 1:
+      check_values.append(None)
 
     # Loop through the list of windows to check
     for window_check in windows_to_check:
       window_found = None
       while window_found != 0:  # lint complains, but 0 != None
-        if window_found is None: window_found = 0
+        if window_found is None:
+          window_found = 0
         try:
           # Look for the next sibling (or first sibling if window_found is 0)
           # of window_check with the specified caption and/or class
           window_found = win32gui.FindWindowEx(
-            window_check, window_found, check_values[0], check_values[1])
+            window_check, window_found, check_values[0], check_values[1]
+          )
         except pywintypes.error, e:
           # FindWindowEx() raises error 2 if not found
           if e[0] == 2:
@@ -72,7 +76,8 @@ def FindChildWindows(hwnd, path):
             raise e
 
         # If FindWindowEx struck gold, add to our list of windows found
-        if window_found: windows_found.append(window_found)
+        if window_found:
+          windows_found.append(window_found)
 
     # The windows we found become the windows to check for the next segment
     windows_to_check = windows_found
@@ -111,11 +116,12 @@ def ScrapeWindow(hwnd, rect=None):
   SetForegroundWindow(hwnd)
 
   # If no rectangle was specified, use the fill client rectangle
-  if not rect: rect = win32gui.GetClientRect(hwnd)
+  if not rect:
+    rect = win32gui.GetClientRect(hwnd)
 
-  upper_left  = win32gui.ClientToScreen(hwnd, (rect[0], rect[1]))
+  upper_left = win32gui.ClientToScreen(hwnd, (rect[0], rect[1]))
   lower_right = win32gui.ClientToScreen(hwnd, (rect[2], rect[3]))
-  rect = upper_left+lower_right
+  rect = upper_left + lower_right
 
   return PIL.ImageGrab.grab(rect)
 
@@ -125,7 +131,7 @@ def SetForegroundWindow(hwnd):
   win32gui.SetForegroundWindow(hwnd)
 
 
-def InvokeAndWait(path, cmdline="", timeout=10, tick=1.):
+def InvokeAndWait(path, cmdline="", timeout=10, tick=1.0):
   """Invoke an application and wait for it to bring up a window.
 
   Args:
@@ -145,8 +151,8 @@ def InvokeAndWait(path, cmdline="", timeout=10, tick=1.):
       pid = win32process.GetWindowThreadProcessId(hwnd)[1]
       if pid == ret[0]:
         ret[1] = hwnd
-        return 0    # 0 means stop enumeration
-    return 1        # 1 means continue enumeration
+        return 0  # 0 means stop enumeration
+    return 1  # 1 means continue enumeration
 
   # We don't need to change anything about the startupinfo structure
   # (the default is quite sufficient) but we need to create it just the
@@ -154,15 +160,16 @@ def InvokeAndWait(path, cmdline="", timeout=10, tick=1.):
   sinfo = win32process.STARTUPINFO()
 
   proc = win32process.CreateProcess(
-    path,                # path to new process's executable
-    cmdline,             # application's command line
-    None,                # process security attributes (default)
-    None,                # thread security attributes (default)
-    False,               # inherit parent's handles
-    0,                   # creation flags
-    None,                # environment variables
-    None,                # directory
-    sinfo)               # default startup info
+    path,  # path to new process's executable
+    cmdline,  # application's command line
+    None,  # process security attributes (default)
+    None,  # thread security attributes (default)
+    False,  # inherit parent's handles
+    0,  # creation flags
+    None,  # environment variables
+    None,  # directory
+    sinfo,
+  )  # default startup info
 
   # Create process returns (prochandle, pid, threadhandle, tid). At
   # some point we may care about the other members, but for now, all
@@ -175,7 +182,7 @@ def InvokeAndWait(path, cmdline="", timeout=10, tick=1.):
   # parameter to hold the found window ID
   ret = [pid, None]
 
-  tries_until_timeout = timeout/tick
+  tries_until_timeout = timeout / tick
   num_tries = 0
 
   # Enumerate top-level windows, look for one with our PID
@@ -185,7 +192,8 @@ def InvokeAndWait(path, cmdline="", timeout=10, tick=1.):
     except pywintypes.error, e:
       # error 0 isn't an error, it just meant the enumeration was
       # terminated early
-      if e[0]: raise e
+      if e[0]:
+        raise e
 
     time.sleep(tick)
     num_tries += 1
@@ -211,8 +219,9 @@ def WaitForProcessExit(proc, timeout=None):
     # convert sec to msec
     timeout *= 1000
 
-  return (win32event.WaitForSingleObject(proc, timeout) ==
-          win32event.WAIT_OBJECT_0)
+  return (
+    win32event.WaitForSingleObject(proc, timeout) == win32event.WAIT_OBJECT_0
+  )
 
 
 def WaitForThrobber(hwnd, rect=None, timeout=20, tick=0.1, done=10):
@@ -228,15 +237,15 @@ def WaitForThrobber(hwnd, rect=None, timeout=20, tick=0.1, done=10):
   Returns:
     Number of seconds waited, -1 if timed out
   """
-  if not rect: rect = win32gui.GetClientRect(hwnd)
+  if not rect:
+    rect = win32gui.GetClientRect(hwnd)
 
   # last_throbber will hold the results of the preceding scrape;
   # we'll compare it against the current scrape to see if we're throbbing
   last_throbber = ScrapeWindow(hwnd, rect)
   start_clock = time.clock()
   timeout_clock = start_clock + timeout
-  last_changed_clock = start_clock;
-
+  last_changed_clock = start_clock
   while time.clock() < timeout_clock:
     time.sleep(tick)
 
@@ -268,21 +277,26 @@ def MoveAndSizeWindow(wnd, position=None, size=None, child=None):
   """
   rect = win32gui.GetWindowRect(wnd)
 
-  if position is None: position = (rect[0], rect[1])
+  if position is None:
+    position = (rect[0], rect[1])
   if size is None:
-    size = (rect[2]-rect[0], rect[3]-rect[1])
+    size = (rect[2] - rect[0], rect[3] - rect[1])
   elif child is not None:
     child_rect = win32gui.GetWindowRect(child)
-    slop = (rect[2]-rect[0]-child_rect[2]+child_rect[0],
-            rect[3]-rect[1]-child_rect[3]+child_rect[1])
-    size = (size[0]+slop[0], size[1]+slop[1])
+    slop = (
+      rect[2] - rect[0] - child_rect[2] + child_rect[0],
+      rect[3] - rect[1] - child_rect[3] + child_rect[1],
+    )
+    size = (size[0] + slop[0], size[1] + slop[1])
 
-  win32gui.MoveWindow(wnd,          # window to move
-                      position[0],  # new x coord
-                      position[1],  # new y coord
-                      size[0],      # new width
-                      size[1],      # new height
-                      True)         # repaint?
+  win32gui.MoveWindow(
+    wnd,  # window to move
+    position[0],  # new x coord
+    position[1],  # new y coord
+    size[0],  # new width
+    size[1],  # new height
+    True,
+  )  # repaint?
 
 
 def EndProcess(proc, code=0):
@@ -317,9 +331,12 @@ def URLtoFilename(url, path=None, extension=None):
   """
   trans = string.maketrans(r'\/:*?"<>|', '_________')
 
-  if path is None: path = ""
-  if extension is None: extension = ""
-  if len(path) > 0 and path[-1] != '\\': path += '\\'
+  if path is None:
+    path = ""
+  if extension is None:
+    extension = ""
+  if len(path) > 0 and path[-1] != '\\':
+    path += '\\'
   url = url.translate(trans)
   return "%s%s%s" % (path, url, extension)
 
@@ -336,7 +353,8 @@ def PreparePath(path):
   try:
     os.makedirs(path)
   except OSError, e:
-    if e[0] != 17: raise e   # error 17: path already exists
+    if e[0] != 17:
+      raise e  # error 17: path already exists
 
 
 def main():
@@ -345,11 +363,13 @@ def main():
 
   # Hardcode IE's location for the purpose of this test
   (proc, wnd) = InvokeAndWait(
-    r"c:\program files\internet explorer\iexplore.exe")
+    r"c:\program files\internet explorer\iexplore.exe"
+  )
 
   # Find the browser pane in the IE window
   browser = FindChildWindow(
-    wnd, "TabWindowClass/Shell DocObject View/Internet Explorer_Server")
+    wnd, "TabWindowClass/Shell DocObject View/Internet Explorer_Server"
+  )
 
   # Move and size the window
   MoveAndSizeWindow(wnd, (0, 0), (1024, 768), browser)

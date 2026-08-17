@@ -61,8 +61,10 @@ def Scrape(urls, outdir, size, pos, timeout, kwargs):
   Returns:
     None if success, else an error string
   """
-  if "path" in kwargs and kwargs["path"]: path = kwargs["path"]
-  else: path = DEFAULT_PATH
+  if "path" in kwargs and kwargs["path"]:
+    path = kwargs["path"]
+  else:
+    path = DEFAULT_PATH
 
   (wnd, proc, address_bar, render_pane) = InvokeBrowser(path)
 
@@ -70,7 +72,8 @@ def Scrape(urls, outdir, size, pos, timeout, kwargs):
   windowing.MoveAndSizeWindow(wnd, pos, size, render_pane)
 
   # Visit each URL we're given
-  if type(urls) in types.StringTypes: urls = [urls]
+  if type(urls) in types.StringTypes:
+    urls = [urls]
 
   timedout = False
 
@@ -127,12 +130,15 @@ def Time(urls, size, timeout, kwargs):
   Returns:
     A list of tuples (url, time). "time" can be "crashed" or "timeout"
   """
-  if "path" in kwargs and kwargs["path"]: path = kwargs["path"]
-  else: path = DEFAULT_PATH
+  if "path" in kwargs and kwargs["path"]:
+    path = kwargs["path"]
+  else:
+    path = DEFAULT_PATH
   proc = None
 
   # Visit each URL we're given
-  if type(urls) in types.StringTypes: urls = [urls]
+  if type(urls) in types.StringTypes:
+    urls = [urls]
 
   ret = []
   for url in urls:
@@ -142,7 +148,7 @@ def Time(urls, size, timeout, kwargs):
         (wnd, proc, address_bar, render_pane) = InvokeBrowser(path)
 
         # Resize and reposition the frame
-        windowing.MoveAndSizeWindow(wnd, (0,0), size, render_pane)
+        windowing.MoveAndSizeWindow(wnd, (0, 0), size, render_pane)
 
       # Double-click in the address bar, type the name, and press Enter
       mouse.ClickInWindow(address_bar)
@@ -170,7 +176,7 @@ def Time(urls, size, timeout, kwargs):
       proc = None
       load_time = "crashed"
 
-    ret.append( (url, load_time) )
+    ret.append((url, load_time))
 
   if proc:
     windowing.SetForegroundWindow(wnd)
@@ -187,11 +193,12 @@ def main():
   windowing.PreparePath(path)
 
   # Scrape three sites and save the results
-  Scrape([
-    "http://www.microsoft.com",
-    "http://www.google.com",
-    "http://www.sun.com"],
-         path, (1024, 768), (0, 0))
+  Scrape(
+    ["http://www.microsoft.com", "http://www.google.com", "http://www.sun.com"],
+    path,
+    (1024, 768),
+    (0, 0),
+  )
   return 0
 
 

@@ -12,7 +12,7 @@ class Opacity:
     This opacity can be of the following formats:
     - 0.5
     - $named_opacity
-      '''
+    '''
 
     def __init__(self, value=None):
         self.var = None
@@ -34,8 +34,11 @@ class Opacity:
             raise ValueError('Alpha expected to be between 0 and 1')
 
     def GetReadableStr(self):
-        return 'var(--%s)' % self.var if self.var else '%g%%' % (
-            float(self.a) * 100)
+        return (
+            'var(--%s)' % self.var
+            if self.var
+            else '%g%%' % (float(self.a) * 100)
+        )
 
     def __repr__(self):
         return 'var(--%s)' % self.var if self.var else '%g' % self.a

@@ -9,8 +9,8 @@ from core.results_processor.formatters import json3_output
 
 
 FORMATTERS = {
-    'json-test-results': json3_output,
-    'histograms': histograms_output,
-    'html': html_output,
-    'csv': csv_output,
+  'json-test-results': json3_output,
+  'histograms': histograms_output,
+  'html': html_output,
+  'csv': csv_output,
 }

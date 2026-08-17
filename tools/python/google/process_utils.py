@@ -10,7 +10,9 @@ import os
 import subprocess
 import sys
 
-class CommandNotFound(Exception): pass
+
+class CommandNotFound(Exception):
+  pass
 
 
 TASKKILL = os.path.join(os.environ['WINDIR'], 'system32', 'taskkill.exe')
@@ -19,6 +21,7 @@ TASKKILL_PROCESS_NOT_FOUND_ERR = 128
 # in the path.
 PSKILL = 'pskill.exe'
 PSKILL_PROCESS_NOT_FOUND_ERR = -1
+
 
 def KillAll(executables):
   """Tries to kill all copies of each process in the processes list.  Returns
@@ -39,8 +42,10 @@ def KillAll(executables):
       result = new_error
   return result
 
-def RunCommandFull(command, verbose=True, collect_output=False,
-                   print_output=True):
+
+def RunCommandFull(
+  command, verbose=True, collect_output=False, print_output=True
+):
   """Runs the command list.
 
   Prints the given command (which should be a list of one or more strings).
@@ -65,8 +70,8 @@ def RunCommandFull(command, verbose=True, collect_output=False,
     CommandNotFound if the command executable could not be found.
   """
   print(
-      '\n' + subprocess.list2cmdline(command).replace('\\', '/') + '\n',
-      end=' ')
+    '\n' + subprocess.list2cmdline(command).replace('\\', '/') + '\n', end=' '
+  )
 
   if verbose:
     out = subprocess.PIPE
@@ -116,6 +121,7 @@ def RunCommandFull(command, verbose=True, collect_output=False,
     out.close()
   return (proc.returncode, output)
 
+
 def RunCommand(command, verbose=True):
   """Runs the command list, printing its output and returning its exit status.
 
@@ -137,8 +143,10 @@ def RunCommand(command, verbose=True):
   """
   return RunCommandFull(command, verbose)[0]
 
-def RunCommandsInParallel(commands, verbose=True, collect_output=False,
-                          print_output=True):
+
+def RunCommandsInParallel(
+  commands, verbose=True, collect_output=False, print_output=True
+):
   """Runs a list of commands in parallel, waits for all commands to terminate
   and returns their status. If specified, the ouput of commands can be
   returned and/or printed.
@@ -167,8 +175,8 @@ def RunCommandsInParallel(commands, verbose=True, collect_output=False,
 
   for command in commands:
     print(
-        '\n' + subprocess.list2cmdline(command).replace('\\', '/') + '\n',
-        end=' ')
+      '\n' + subprocess.list2cmdline(command).replace('\\', '/') + '\n', end=' '
+    )
 
   if verbose:
     out = subprocess.PIPE

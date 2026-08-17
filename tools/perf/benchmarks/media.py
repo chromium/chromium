@@ -38,7 +38,8 @@ class _MediaBenchmark(perf_benchmark.PerfBenchmark):
 
     # Setting an empty memory dump config disables periodic dumps.
     options.config.chrome_trace_config.SetMemoryDumpConfig(
-        chrome_trace_config.MemoryDumpConfig())
+      chrome_trace_config.MemoryDumpConfig()
+    )
 
     # Note that memoryMetric is added using GetExtraTracingMetrics() for
     # certain stories.
@@ -51,11 +52,17 @@ class _MediaBenchmark(perf_benchmark.PerfBenchmark):
     options.AppendExtraBrowserArgs('--disable-features=BackForwardCache')
 
 
-@benchmark.Info(emails=['dalecurtis@chromium.org'],
-                component='Internals>Media',
-                documentation_url='https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md')  # pylint: disable=line-too-long
+@benchmark.Info(
+  emails=['dalecurtis@chromium.org'],
+  component='Internals>Media',
+  documentation_url=(
+    'https://chromium.googlesource.com/chromium/src/+/main/docs/speed/'
+    'benchmark/harnesses/media.md'
+  ),
+)
 class MediaDesktop(_MediaBenchmark):
   """Obtains media performance for key user scenarios on desktop."""
+
   # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
   # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
@@ -70,21 +77,29 @@ class MediaDesktop(_MediaBenchmark):
 
 
 # If any story is failing on svelte, please only disable on svelte.
-@benchmark.Info(emails=['dalecurtis@chromium.org'],
-                component='Internals>Media',
-                documentation_url='https://chromium.googlesource.com/chromium/src/+/main/docs/speed/benchmark/harnesses/media.md')  # pylint: disable=line-too-long
+@benchmark.Info(
+  emails=['dalecurtis@chromium.org'],
+  component='Internals>Media',
+  documentation_url=(
+    'https://chromium.googlesource.com/chromium/src/+/main/docs/speed/'
+    'benchmark/harnesses/media.md'
+  ),
+)
 class MediaMobile(_MediaBenchmark):
   """Obtains media performance for key user scenarios on mobile devices."""
 
   # TODO(johnchen): Remove either the SUPPORTED_PLATFORMS or
   # SUPPORTED_PLATFORMS_TAGS lists. Only one is necessary.
   SUPPORTED_PLATFORM_TAGS = [
-      platforms.ANDROID_NOT_WEBVIEW, platforms.FUCHSIA_ASTRO,
-      platforms.FUCHSIA_SHERLOCK
+    platforms.ANDROID_NOT_WEBVIEW,
+    platforms.FUCHSIA_ASTRO,
+    platforms.FUCHSIA_SHERLOCK,
   ]
   SUPPORTED_PLATFORMS = [
-      story.expectations.ANDROID_NOT_WEBVIEW, story.expectations.FUCHSIA_ASTRO,
-      story.expectations.FUCHSIA_SHERLOCK, story.expectations.FUCHSIA_NELSON
+    story.expectations.ANDROID_NOT_WEBVIEW,
+    story.expectations.FUCHSIA_ASTRO,
+    story.expectations.FUCHSIA_SHERLOCK,
+    story.expectations.FUCHSIA_NELSON,
   ]
 
   def CreateStorySet(self, options):
@@ -100,8 +115,10 @@ class MediaMobile(_MediaBenchmark):
     # of media: it requires a user gesture event to start a video.
     # The following option works around that.
     options.AppendExtraBrowserArgs(
-        ['--autoplay-policy=no-user-gesture-required'])
+      ['--autoplay-policy=no-user-gesture-required']
+    )
     # Force online state for the offline indicator so it doesn't show and affect
     # the benchmarks on bots, which are offline by default.
     options.AppendExtraBrowserArgs(
-        '--force-online-connection-state-for-indicator')
+      '--force-online-connection-state-for-indicator'
+    )

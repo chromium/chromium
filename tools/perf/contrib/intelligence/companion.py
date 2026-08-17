@@ -13,11 +13,13 @@ import page_sets
 @benchmark.Info(
     emails=['mgeorgaklis@google.com'],
     component='UI>Browser',
-    documentation_url=
-    'https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/side_panel/companion/'
+    documentation_url=(
+        'https://source.chromium.org/chromium/chromium/src/+/main:'
+        'chrome/browser/ui/views/side_panel/companion/'),
 )
 class Companion(perf_benchmark.PerfBenchmark):
   """Companion Benchmark."""
+
   PLATFORM = 'desktop'
   SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
@@ -33,8 +35,8 @@ class Companion(perf_benchmark.PerfBenchmark):
     # Enable companion-specific logging.
     options.AppendExtraBrowserArgs('--enable-stats-collection-bindings')
     options.AppendExtraBrowserArgs(
-        '--enable-features=ui-debug-tools-enable-synthetic-events,SidePanelCompanion'
-    )
+        '--enable-features=ui-debug-tools-enable-synthetic-events,'
+        'SidePanelCompanion')
     options.AppendExtraBrowserArgs(
         '--disable-checking-companion-user-permissions')
     options.AppendExtraBrowserArgs('--disable-features=SideSearch')

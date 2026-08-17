@@ -9,13 +9,17 @@ from telemetry import story
 
 class WebWorkerStory(page.Page):
   """This story creates 1000 web workers one after another."""
+
   NAME = 'WebWorker'
   URL = 'file://web_workers/index.html?auto=1&workers=1000'
 
   def __init__(self, page_set, shared_page_state_class, measure_memory):
     super(WebWorkerStory, self).__init__(
-        url=self.URL, page_set=page_set, name=self.NAME,
-        shared_page_state_class=shared_page_state_class)
+      url=self.URL,
+      page_set=page_set,
+      name=self.NAME,
+      shared_page_state_class=shared_page_state_class,
+    )
     self.measure_memory = measure_memory
 
   def RunPageInteractions(self, action_runner):
@@ -25,8 +29,10 @@ class WebWorkerStory(page.Page):
 
 
 class WebWorkerStorySet(story.StorySet):
-  def __init__(self, shared_state = shared_page_state.SharedPageState,
-               measure_memory=False):
+  def __init__(
+    self, shared_state=shared_page_state.SharedPageState, measure_memory=False
+  ):
     super(WebWorkerStorySet, self).__init__(
-        cloud_storage_bucket=story.PUBLIC_BUCKET)
+      cloud_storage_bucket=story.PUBLIC_BUCKET
+    )
     self.AddStory(WebWorkerStory(self, shared_state, measure_memory))

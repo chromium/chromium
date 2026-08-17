@@ -20,8 +20,9 @@ class ResourceCheckerTest(unittest.TestCase):
   def setUp(self):
     super(ResourceCheckerTest, self).setUp()
 
-    self.checker = resource_checker.ResourceChecker(MockInputApi(),
-                                                    MockOutputApi())
+    self.checker = resource_checker.ResourceChecker(
+      MockInputApi(), MockOutputApi()
+    )
 
   def ShouldPassDeprecatedMojoBindingCheck(self, line):
     error = self.checker.DeprecatedMojoBindingsCheck(1, line)
@@ -49,8 +50,11 @@ class ResourceCheckerTest(unittest.TestCase):
       self.ShouldFailDeprecatedMojoBindingCheck(line)
 
   def ShouldPassDisallowIncludeCheck(self, line):
-    self.assertEqual('', self.checker.DisallowIncludeCheck('msg', 1, line),
-                     'Should not be flagged as error')
+    self.assertEqual(
+      '',
+      self.checker.DisallowIncludeCheck('msg', 1, line),
+      'Should not be flagged as error',
+    )
 
   def ShouldFailDisallowIncludeCheck(self, line):
     error = self.checker.DisallowIncludeCheck('msg', 1, line)
@@ -77,34 +81,36 @@ class ResourceCheckerTest(unittest.TestCase):
   def ShouldFailSelfClosingIncludeCheck(self, line):
     """Checks that the '</include>' checker flags |line| as a style error."""
     error = self.checker.SelfClosingIncludeCheck(1, line)
-    self.assertNotEqual('', error,
-        'Should be flagged as style error: ' + line)
+    self.assertNotEqual('', error, 'Should be flagged as style error: ' + line)
     highlight = test_util.GetHighlight(line, error).strip()
     self.assertTrue('include' in highlight and highlight[0] == '<')
 
   def ShouldPassSelfClosingIncludeCheck(self, line):
     """Checks that the '</include>' checker doesn't flag |line| as an error."""
-    self.assertEqual('', self.checker.SelfClosingIncludeCheck(1, line),
-        'Should not be flagged as style error: ' + line)
+    self.assertEqual(
+      '',
+      self.checker.SelfClosingIncludeCheck(1, line),
+      'Should not be flagged as style error: ' + line,
+    )
 
   def testIncludeFails(self):
     lines = [
-        "</include>   ",
-        "    </include>",
-        "    </include>   ",
-        '  <include src="blah.js" />   ',
-        '<include src="blee.js"/>',
+      "</include>   ",
+      "    </include>",
+      "    </include>   ",
+      '  <include src="blah.js" />   ',
+      '<include src="blee.js"/>',
     ]
     for line in lines:
       self.ShouldFailSelfClosingIncludeCheck(line)
 
   def testIncludePasses(self):
     lines = [
-        '<include src="assert.js">',
-        "<include src='../../assert.js'>",
-        "<i>include src='blah'</i>",
-        "</i>nclude",
-        "</i>include",
+      '<include src="assert.js">',
+      "<include src='../../assert.js'>",
+      "<i>include src='blah'</i>",
+      "</i>nclude",
+      "</i>include",
     ]
     for line in lines:
       self.ShouldPassSelfClosingIncludeCheck(line)

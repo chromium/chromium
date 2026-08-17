@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-#===- lib/asan/scripts/asan_symbolize.py -----------------------------------===#
+# ===- lib/asan/scripts/asan_symbolize.py -----------------------------------===#
 #
 # Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 # See https://llvm.org/LICENSE.txt for license information.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 #
-#===------------------------------------------------------------------------===#
+# ===------------------------------------------------------------------------===#
 """
 Example of use:
   asan_symbolize.py -c "$HOME/opt/cross/bin/arm-linux-gnueabi-" -s "$HOME/SymbolFiles" < asan.log
@@ -19,6 +19,7 @@ symbols only accessible via a remote service) without having to modify the
 script itself.
 
 """
+
 import argparse
 import bisect
 import errno
@@ -38,6 +39,7 @@ logfile = sys.stdin
 allow_system_symbolizer = True
 force_system_symbolizer = False
 
+
 # FIXME: merge the code that calls fix_filename().
 def fix_filename(file_name):
   if fix_filename_patterns:
@@ -47,10 +49,25 @@ def fix_filename(file_name):
   file_name = re.sub('.*crtstuff.c:0', '???:0', file_name)
   return file_name
 
+
 def is_valid_arch(s):
-  return s in ["i386", "x86_64", "x86_64h", "arm", "armv6", "armv7", "armv7s",
-               "armv7k", "arm64", "powerpc64", "powerpc64le", "s390x", "s390",
-               "riscv64"]
+  return s in [
+    "i386",
+    "x86_64",
+    "x86_64h",
+    "arm",
+    "armv6",
+    "armv7",
+    "armv7s",
+    "armv7k",
+    "arm64",
+    "powerpc64",
+    "powerpc64le",
+    "s390x",
+    "s390",
+    "riscv64",
+  ]
+
 
 def guess_arch(addr):
   # Guess which arch we're running. 10 = len('0x') + 8 hex digits.
@@ -58,6 +75,7 @@ def guess_arch(addr):
     return 'x86_64'
   else:
     return 'i386'
+
 
 class Symbolizer(object):
   def __init__(self):
@@ -89,20 +107,25 @@ class LLVMSymbolizer(Symbolizer):
     self.pipe = self.open_llvm_symbolizer()
 
   def open_llvm_symbolizer(self):
-    cmd = [self.symbolizer_path,
-           ('--demangle' if demangle else '--no-demangle'),
-           '--functions=linkage',
-           '--inlines',
-           '--default-arch=%s' % self.default_arch]
+    cmd = [
+      self.symbolizer_path,
+      ('--demangle' if demangle else '--no-demangle'),
+      '--functions=linkage',
+      '--inlines',
+      '--default-arch=%s' % self.default_arch,
+    ]
     if self.system == 'Darwin':
       for hint in self.dsym_hints:
         cmd.append('--dsym-hint=%s' % hint)
     logging.debug(' '.join(cmd))
     try:
-      result = subprocess.Popen(cmd, stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE,
-                                bufsize=0,
-                                universal_newlines=True)
+      result = subprocess.Popen(
+        cmd,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        bufsize=0,
+        universal_newlines=True,
+      )
     except OSError:
       result = None
     return result
@@ -122,11 +145,9 @@ class LLVMSymbolizer(Symbolizer):
           break
         file_name = self.pipe.stdout.readline().rstrip()
         file_name = fix_filename(file_name)
-        if (not function_name.startswith('??') or
-            not file_name.startswith('??')):
+        if not function_name.startswith('??') or not file_name.startswith('??'):
           # Append only non-trivial frames.
-          result.append('%s in %s %s' % (addr, function_name,
-                                         file_name))
+          result.append('%s in %s %s' % (addr, function_name, file_name))
     except Exception:
       result = []
     if not result:
@@ -161,10 +182,13 @@ class Addr2LineSymbolizer(Symbolizer):
       cmd += ['--demangle']
     cmd += ['-e', self.binary]
     logging.debug(' '.join(cmd))
-    return subprocess.Popen(cmd,
-                            stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                            bufsize=0,
-                            universal_newlines=True)
+    return subprocess.Popen(
+      cmd,
+      stdin=subprocess.PIPE,
+      stdout=subprocess.PIPE,
+      bufsize=0,
+      universal_newlines=True,
+    )
 
   def symbolize(self, addr, binary, offset):
     """Overrides Symbolizer.symbolize."""
@@ -208,24 +232,37 @@ class Addr2LineSymbolizer(Symbolizer):
       # EPIPE happens if addr2line exits early (which some implementations do
       # if an invalid file is passed).
       if e.errno == errno.EPIPE:
-        logging.debug("addr2line exited early (broken pipe), returncode=%d" % self.pipe.poll())
+        logging.debug(
+          "addr2line exited early (broken pipe), returncode=%d"
+          % self.pipe.poll()
+        )
       else:
-        logging.debug("unexpected I/O exception communicating with addr2line", exc_info=e)
+        logging.debug(
+          "unexpected I/O exception communicating with addr2line", exc_info=e
+        )
       lines.append(('??', '??:0'))
     except Exception as e:
-      logging.debug("got unknown exception communicating with addr2line", exc_info=e)
+      logging.debug(
+        "got unknown exception communicating with addr2line", exc_info=e
+      )
       lines.append(('??', '??:0'))
-    return ['%s in %s %s' % (addr, function, fix_filename(file)) for (function, file) in lines]
+    return [
+      '%s in %s %s' % (addr, function, fix_filename(file))
+      for (function, file) in lines
+    ]
+
 
 class UnbufferedLineConverter(object):
   """
   Wrap a child process that responds to each line of input with one line of
   output.  Uses pty to trick the child into providing unbuffered output.
   """
+
   def __init__(self, args, close_stderr=False):
     # Local imports so that the script can start on Windows.
     import pty
     import termios
+
     pid, fd = pty.fork()
     if pid == 0:
       # We're the child. Transfer control to command.
@@ -361,10 +398,12 @@ class BreakpadSymbolizer(Symbolizer):
         addr = int(fragments[0], 16)
         self.address_list.append(addr)
         # Tuple of symbol address, size, line, file number.
-        self.addresses[addr] = (cur_function_addr,
-                                int(fragments[1], 16),
-                                int(fragments[2]),
-                                int(fragments[3]))
+        self.addresses[addr] = (
+          cur_function_addr,
+          int(fragments[1], 16),
+          int(fragments[2]),
+          int(fragments[3]),
+        )
     self.address_list.sort()
 
   def get_sym_file_line(self, addr):
@@ -391,8 +430,7 @@ class BreakpadSymbolizer(Symbolizer):
     res = self.get_sym_file_line(int(offset, 16))
     if res:
       function_name, file_name, line_no = res
-      result = ['%s in %s %s:%d' % (
-          addr, function_name, file_name, line_no)]
+      result = ['%s in %s %s:%d' % (addr, function_name, file_name, line_no)]
       print(result)
       return result
     else:
@@ -411,14 +449,16 @@ class SymbolizationLoop(object):
       # E.g. in Chrome several binaries may share a single .dSYM.
       self.dsym_hint_producer = dsym_hint_producer
       self.system = os.uname()[0]
-      if self.system not in ['Linux', 'Darwin', 'FreeBSD', 'NetBSD','SunOS']:
+      if self.system not in ['Linux', 'Darwin', 'FreeBSD', 'NetBSD', 'SunOS']:
         raise Exception('Unknown system')
       self.llvm_symbolizers = {}
       self.last_llvm_symbolizer = None
       self.dsym_hints = set([])
       self.frame_no = 0
       self.process_line = self.process_line_posix
-      self.using_module_map = plugin_proxy.has_plugin(ModuleMapPlugIn.get_name())
+      self.using_module_map = plugin_proxy.has_plugin(
+        ModuleMapPlugIn.get_name()
+      )
 
   def symbolize_address(self, addr, binary, offset, arch):
     # On non-Darwin (i.e. on platforms without .dSYM debug info) always use
@@ -441,17 +481,19 @@ class SymbolizationLoop(object):
           use_new_symbolizer = bool(dsym_hints_for_binary - self.dsym_hints)
           self.dsym_hints |= dsym_hints_for_binary
         if self.last_llvm_symbolizer and not use_new_symbolizer:
-            self.llvm_symbolizers[binary] = self.last_llvm_symbolizer
+          self.llvm_symbolizers[binary] = self.last_llvm_symbolizer
         else:
           self.last_llvm_symbolizer = LLVMSymbolizerFactory(
-              self.system, arch, self.dsym_hints)
+            self.system, arch, self.dsym_hints
+          )
           self.llvm_symbolizers[binary] = self.last_llvm_symbolizer
       # Use the chain of symbolizers:
       # Breakpad symbolizer -> LLVM symbolizer -> addr2line/atos
       # (fall back to next symbolizer if the previous one fails).
       if not binary in symbolizers:
         symbolizers[binary] = ChainSymbolizer(
-            [BreakpadSymbolizerFactory(binary), self.llvm_symbolizers[binary]])
+          [BreakpadSymbolizerFactory(binary), self.llvm_symbolizers[binary]]
+        )
       result = symbolizers[binary].symbolize(addr, binary, offset)
     else:
       symbolizers[binary] = ChainSymbolizer([])
@@ -460,7 +502,8 @@ class SymbolizationLoop(object):
         raise Exception('Failed to launch or use llvm-symbolizer.')
       # Initialize system symbolizer only if other symbolizers failed.
       symbolizers[binary].append_symbolizer(
-          SystemSymbolizerFactory(self.system, addr, binary, arch))
+        SystemSymbolizerFactory(self.system, addr, binary, arch)
+      )
       result = symbolizers[binary].symbolize(addr, binary, offset)
     # The system symbolizer must produce some result.
     assert result
@@ -475,7 +518,9 @@ class SymbolizationLoop(object):
       assert inc_frame_counter
       result = []
       for symbolized_frame in symbolized_lines:
-        result.append('    #%s %s' % (str(self.frame_no), symbolized_frame.rstrip()))
+        result.append(
+          '    #%s %s' % (str(self.frame_no), symbolized_frame.rstrip())
+        )
         self.frame_no += 1
       return result
 
@@ -499,8 +544,7 @@ class SymbolizationLoop(object):
     # NOTE: We have to very liberal with symbol
     # names in the regex because it could be an
     # Objective-C or C++ demangled name.
-    stack_trace_line_format = (
-        '^((?:CRASH LOG:)? *#([0-9]+) *)(0x[0-9a-f]+) *(?:in *.+)? *\((.*)\+(0x[0-9a-f]+)\)')
+    stack_trace_line_format = '^((?:CRASH LOG:)? *#([0-9]+) *)(0x[0-9a-f]+) *(?:in *.+)? *\((.*)\+(0x[0-9a-f]+)\)'
     match = re.match(stack_trace_line_format, line)
     if not match:
       logging.debug('Line "{}" does not match regex'.format(line))
@@ -519,7 +563,7 @@ class SymbolizationLoop(object):
     # Arch can be embedded in the filename, e.g.: "libabc.dylib:x86_64h"
     colon_pos = binary.rfind(":")
     if colon_pos != -1:
-      maybe_arch = binary[colon_pos+1:]
+      maybe_arch = binary[colon_pos + 1 :]
       if is_valid_arch(maybe_arch):
         arch = maybe_arch
         binary = binary[0:colon_pos]
@@ -537,30 +581,36 @@ class SymbolizationLoop(object):
     symbolized_line = self.symbolize_address(addr, binary, offset, arch)
     if not symbolized_line:
       if original_binary != binary:
-        symbolized_line = self.symbolize_address(addr, original_binary, offset, arch)
+        symbolized_line = self.symbolize_address(
+          addr, original_binary, offset, arch
+        )
     return self.get_symbolized_lines(symbolized_line)
+
 
 class AsanSymbolizerPlugInProxy(object):
   """
-    Serves several purposes:
-    - Manages the lifetime of plugins (must be used a `with` statement).
-    - Provides interface for calling into plugins from within this script.
+  Serves several purposes:
+  - Manages the lifetime of plugins (must be used a `with` statement).
+  - Provides interface for calling into plugins from within this script.
   """
+
   def __init__(self):
-    self._plugins = [ ]
+    self._plugins = []
     self._plugin_names = set()
 
   def _load_plugin_from_file_impl_py_gt_2(self, file_path, globals_space):
-      with open(file_path, 'r') as f:
-        exec(f.read(), globals_space, None)
+    with open(file_path, 'r') as f:
+      exec(f.read(), globals_space, None)
 
   def load_plugin_from_file(self, file_path):
     logging.info('Loading plugins from "{}"'.format(file_path))
     globals_space = dict(globals())
+
     # Provide function to register plugins
     def register_plugin(plugin):
       logging.info('Registering plugin %s', plugin.get_name())
       self.add_plugin(plugin)
+
     globals_space['register_plugin'] = register_plugin
     if sys.version_info.major < 3:
       execfile(file_path, globals_space, None)
@@ -584,8 +634,8 @@ class AsanSymbolizerPlugInProxy(object):
 
   def has_plugin(self, name):
     """
-      Returns true iff the plugin name is currently
-      being managed by AsanSymbolizerPlugInProxy.
+    Returns true iff the plugin name is currently
+    being managed by AsanSymbolizerPlugInProxy.
     """
     return name in self._plugin_names
 
@@ -614,7 +664,7 @@ class AsanSymbolizerPlugInProxy(object):
 
   def _filter_single_value(self, function_name, input_value):
     """
-      Helper for filter style plugin functions.
+    Helper for filter style plugin functions.
     """
     new_value = input_value
     for plugin in self._plugins:
@@ -626,33 +676,35 @@ class AsanSymbolizerPlugInProxy(object):
 
   def filter_binary_path(self, binary_path):
     """
-      Consult available plugins to filter the path to a binary
-      to make it suitable for symbolication.
+    Consult available plugins to filter the path to a binary
+    to make it suitable for symbolication.
 
-      Returns `None` if symbolication should not be attempted for this
-      binary.
+    Returns `None` if symbolication should not be attempted for this
+    binary.
     """
     return self._filter_single_value('filter_binary_path', binary_path)
 
   def filter_module_desc(self, module_desc):
     """
-      Consult available plugins to determine the module
-      description suitable for symbolication.
+    Consult available plugins to determine the module
+    description suitable for symbolication.
 
-      Returns `None` if symbolication should not be attempted for this module.
+    Returns `None` if symbolication should not be attempted for this module.
     """
     assert isinstance(module_desc, ModuleDesc)
     return self._filter_single_value('filter_module_desc', module_desc)
 
+
 class AsanSymbolizerPlugIn(object):
   """
-    This is the interface the `asan_symbolize.py` code uses to talk
-    to plugins.
+  This is the interface the `asan_symbolize.py` code uses to talk
+  to plugins.
   """
+
   @classmethod
   def get_name(cls):
     """
-      Returns the name of the plugin.
+    Returns the name of the plugin.
     """
     return cls.__name__
 
@@ -662,52 +714,53 @@ class AsanSymbolizerPlugIn(object):
 
   def register_cmdline_args(self, parser):
     """
-      Hook for registering command line arguments to be
-      consumed in `process_cmdline_args()`.
+    Hook for registering command line arguments to be
+    consumed in `process_cmdline_args()`.
 
-      `parser` - Instance of `argparse.ArgumentParser`.
+    `parser` - Instance of `argparse.ArgumentParser`.
     """
     pass
 
   def process_cmdline_args(self, pargs):
     """
-      Hook for handling parsed arguments. Implementations
-      should not modify `pargs`.
+    Hook for handling parsed arguments. Implementations
+    should not modify `pargs`.
 
-      `pargs` - Instance of `argparse.Namespace` containing
-      parsed command line arguments.
+    `pargs` - Instance of `argparse.Namespace` containing
+    parsed command line arguments.
 
-      Return `True` if plug-in should be used, otherwise
-      return `False`.
+    Return `True` if plug-in should be used, otherwise
+    return `False`.
     """
     return True
 
   def destroy(self):
     """
-      Hook called when a plugin is about to be destroyed.
-      Implementations should free any allocated resources here.
+    Hook called when a plugin is about to be destroyed.
+    Implementations should free any allocated resources here.
     """
     pass
 
   # Symbolization hooks
   def filter_binary_path(self, binary_path):
     """
-      Given a binary path return a binary path suitable for symbolication.
+    Given a binary path return a binary path suitable for symbolication.
 
-      Implementations should return `None` if symbolication of this binary
-      should be skipped.
+    Implementations should return `None` if symbolication of this binary
+    should be skipped.
     """
     return binary_path
 
   def filter_module_desc(self, module_desc):
     """
-      Given a ModuleDesc object (`module_desc`) return
-      a ModuleDesc suitable for symbolication.
+    Given a ModuleDesc object (`module_desc`) return
+    a ModuleDesc suitable for symbolication.
 
-      Implementations should return `None` if symbolication of this binary
-      should be skipped.
+    Implementations should return `None` if symbolication of this binary
+    should be skipped.
     """
     return module_desc
+
 
 class ModuleDesc(object):
   def __init__(self, name, arch, start_addr, end_addr, module_path, uuid):
@@ -729,8 +782,12 @@ class ModuleDesc(object):
       arch=self.arch,
       start_addr=self.start_addr,
       end_addr=self.end_addr,
-      module_path=self.module_path if self.module_path == self.module_path_for_symbolization else '{} ({})'.format(self.module_path_for_symbolization, self.module_path),
-      uuid=self.uuid
+      module_path=self.module_path
+      if self.module_path == self.module_path_for_symbolization
+      else '{} ({})'.format(
+        self.module_path_for_symbolization, self.module_path
+      ),
+      uuid=self.uuid,
     )
 
   def is_valid(self):
@@ -758,11 +815,14 @@ class ModuleDesc(object):
       return False
     return True
 
+
 class GetUUIDFromBinaryException(Exception):
   def __init__(self, msg):
     super(GetUUIDFromBinaryException, self).__init__(msg)
 
+
 _get_uuid_from_binary_cache = dict()
+
 
 def get_uuid_from_binary(path_to_binary, arch=None):
   cache_key = (path_to_binary, arch)
@@ -770,8 +830,10 @@ def get_uuid_from_binary(path_to_binary, arch=None):
   if cached_value:
     return cached_value
   if not os.path.exists(path_to_binary):
-    raise GetUUIDFromBinaryException('Binary "{}" does not exist'.format(path_to_binary))
-  cmd = [ '/usr/bin/otool', '-l']
+    raise GetUUIDFromBinaryException(
+      'Binary "{}" does not exist'.format(path_to_binary)
+    )
+  cmd = ['/usr/bin/otool', '-l']
   if arch:
     cmd.extend(['-arch', arch])
   cmd.append(path_to_binary)
@@ -792,20 +854,27 @@ def get_uuid_from_binary(path_to_binary, arch=None):
     stripped_line = line.strip()
     if not stripped_line.startswith('cmd LC_UUID'):
       continue
-    uuid_line = lines[index+2].strip()
+    uuid_line = lines[index + 2].strip()
     if not uuid_line.startswith('uuid'):
-      raise GetUUIDFromBinaryException('Malformed output: "{}"'.format(uuid_line))
+      raise GetUUIDFromBinaryException(
+        'Malformed output: "{}"'.format(uuid_line)
+      )
     split_uuid_line = uuid_line.split()
     uuid = split_uuid_line[1]
     break
   if uuid is None:
-    logging.error('Failed to retrieve UUID from binary {}'.format(path_to_binary))
+    logging.error(
+      'Failed to retrieve UUID from binary {}'.format(path_to_binary)
+    )
     logging.error('otool output was:\n{}'.format(output_str))
-    raise GetUUIDFromBinaryException('Failed to retrieve UUID from binary "{}"'.format(path_to_binary))
+    raise GetUUIDFromBinaryException(
+      'Failed to retrieve UUID from binary "{}"'.format(path_to_binary)
+    )
   else:
     # Update cache
     _get_uuid_from_binary_cache[cache_key] = uuid
   return uuid
+
 
 class ModuleMap(object):
   def __init__(self):
@@ -821,7 +890,9 @@ class ModuleMap(object):
 
   def __str__(self):
     s = '{} modules:\n'.format(self.num_modules)
-    for module_desc in sorted(self._module_name_to_description_map.values(), key=lambda v: v.start_addr):
+    for module_desc in sorted(
+      self._module_name_to_description_map.values(), key=lambda v: v.start_addr
+    ):
       s += str(module_desc) + '\n'
     return s
 
@@ -833,7 +904,9 @@ class ModuleMap(object):
   def modules(self):
     return set(self._module_name_to_description_map.values())
 
-  def get_module_path_for_symbolication(self, module_name, proxy, validate_uuid):
+  def get_module_path_for_symbolication(
+    self, module_name, proxy, validate_uuid
+  ):
     module_desc = self.find_module_by_name(module_name)
     if module_desc is None:
       return None
@@ -843,18 +916,30 @@ class ModuleMap(object):
     if module_desc is None:
       return None
     if validate_uuid:
-      logging.debug('Validating UUID of {}'.format(module_desc.module_path_for_symbolization))
+      logging.debug(
+        'Validating UUID of {}'.format(
+          module_desc.module_path_for_symbolization
+        )
+      )
       try:
-        uuid = get_uuid_from_binary(module_desc.module_path_for_symbolization, arch = module_desc.arch)
+        uuid = get_uuid_from_binary(
+          module_desc.module_path_for_symbolization, arch=module_desc.arch
+        )
         if uuid != module_desc.uuid:
-          logging.warning("Detected UUID mismatch {} != {}".format(uuid, module_desc.uuid))
+          logging.warning(
+            "Detected UUID mismatch {} != {}".format(uuid, module_desc.uuid)
+          )
           # UUIDs don't match. Tell client to not symbolize this.
           return None
       except GetUUIDFromBinaryException as e:
         logging.error('Failed to get binary from UUID: %s', str(e))
         return None
     else:
-      logging.warning('Skipping validation of UUID of {}'.format(module_desc.module_path_for_symbolization))
+      logging.warning(
+        'Skipping validation of UUID of {}'.format(
+          module_desc.module_path_for_symbolization
+        )
+      )
     return module_desc.module_path_for_symbolization
 
   @staticmethod
@@ -874,7 +959,7 @@ class ModuleMap(object):
         hex_regex('end_addr'),
         module_path_regex,
         arch_regex,
-        uuid_regex
+        uuid_regex,
       )
       matcher = re.compile(line_regex)
       line_num = 0
@@ -902,27 +987,32 @@ class ModuleMap(object):
           start_addr=start_addr,
           end_addr=end_addr,
           module_path=module_path,
-          uuid=uuid
+          uuid=uuid,
         )
         mm.add_module(module_desc)
       if mm is not None:
-        logging.debug('Loaded Module map from "{}":\n{}'.format(
-          f.name,
-          str(mm))
+        logging.debug(
+          'Loaded Module map from "{}":\n{}'.format(f.name, str(mm))
         )
       return mm
 
+
 class SysRootFilterPlugIn(AsanSymbolizerPlugIn):
   """
-    Simple plug-in to add sys root prefix to all binary paths
-    used for symbolication.
+  Simple plug-in to add sys root prefix to all binary paths
+  used for symbolication.
   """
+
   def __init__(self):
     self.sysroot_path = ""
 
   def register_cmdline_args(self, parser):
-    parser.add_argument('-s', dest='sys_root', metavar='SYSROOT',
-                      help='set path to sysroot for sanitized binaries')
+    parser.add_argument(
+      '-s',
+      dest='sys_root',
+      metavar='SYSROOT',
+      help='set path to sysroot for sanitized binaries',
+    )
 
   def process_cmdline_args(self, pargs):
     if pargs.sys_root is None:
@@ -934,18 +1024,24 @@ class SysRootFilterPlugIn(AsanSymbolizerPlugIn):
   def filter_binary_path(self, path):
     return self.sysroot_path + path
 
+
 class ModuleMapPlugIn(AsanSymbolizerPlugIn):
   def __init__(self):
     self._module_map = None
     self._uuid_validation = True
+
   def register_cmdline_args(self, parser):
-    parser.add_argument('--module-map',
-                        help='Path to text file containing module map'
-                        'output. See print_module_map ASan option.')
-    parser.add_argument('--skip-uuid-validation',
-                        default=False,
-                        action='store_true',
-                        help='Skips validating UUID of modules using otool.')
+    parser.add_argument(
+      '--module-map',
+      help='Path to text file containing module map'
+      'output. See print_module_map ASan option.',
+    )
+    parser.add_argument(
+      '--skip-uuid-validation',
+      default=False,
+      action='store_true',
+      help='Skips validating UUID of modules using otool.',
+    )
 
   def process_cmdline_args(self, pargs):
     if not pargs.module_map:
@@ -966,21 +1062,23 @@ class ModuleMapPlugIn(AsanSymbolizerPlugIn):
     else:
       module_name = binary_path
     return self._module_map.get_module_path_for_symbolication(
-      module_name,
-      self.proxy,
-      self._uuid_validation
+      module_name, self.proxy, self._uuid_validation
     )
 
+
 def add_logging_args(parser):
-  parser.add_argument('--log-dest',
+  parser.add_argument(
+    '--log-dest',
     default=None,
     help='Destination path for script logging (default stderr).',
   )
-  parser.add_argument('--log-level',
+  parser.add_argument(
+    '--log-level',
     choices=['debug', 'info', 'warning', 'error', 'critical'],
     default='info',
-    help='Log level for script (default: %(default)s).'
+    help='Log level for script (default: %(default)s).',
   )
+
 
 def setup_logging():
   # Set up a parser just for parsing the logging arguments.
@@ -992,31 +1090,34 @@ def setup_logging():
 
   log_level = getattr(logging, pargs.log_level.upper())
   if log_level == logging.DEBUG:
-    log_format = '%(levelname)s: [%(funcName)s() %(filename)s:%(lineno)d] %(message)s'
+    log_format = (
+      '%(levelname)s: [%(funcName)s() %(filename)s:%(lineno)d] %(message)s'
+    )
   else:
     log_format = '%(levelname)s: %(message)s'
-  basic_config = {
-    'level': log_level,
-    'format': log_format
-  }
+  basic_config = {'level': log_level, 'format': log_format}
   log_dest = pargs.log_dest
   if log_dest:
     basic_config['filename'] = log_dest
   logging.basicConfig(**basic_config)
-  logging.debug('Logging level set to "{}" and directing output to "{}"'.format(
-    pargs.log_level,
-    'stderr' if log_dest is None else log_dest)
+  logging.debug(
+    'Logging level set to "{}" and directing output to "{}"'.format(
+      pargs.log_level, 'stderr' if log_dest is None else log_dest
+    )
   )
   return unparsed_args
 
+
 def add_load_plugin_args(parser):
-  parser.add_argument('-p', '--plugins',
-    help='Load plug-in', nargs='+', default=[])
+  parser.add_argument(
+    '-p', '--plugins', help='Load plug-in', nargs='+', default=[]
+  )
+
 
 def setup_plugins(plugin_proxy, args):
   parser = argparse.ArgumentParser(add_help=False)
   add_load_plugin_args(parser)
-  pargs , unparsed_args = parser.parse_known_args()
+  pargs, unparsed_args = parser.parse_known_args()
   for plugin_path in pargs.plugins:
     plugin_proxy.load_plugin_from_file(plugin_path)
   # Add built-in plugins.
@@ -1024,25 +1125,39 @@ def setup_plugins(plugin_proxy, args):
   plugin_proxy.add_plugin(SysRootFilterPlugIn())
   return unparsed_args
 
+
 if __name__ == '__main__':
   remaining_args = setup_logging()
   with AsanSymbolizerPlugInProxy() as plugin_proxy:
     remaining_args = setup_plugins(plugin_proxy, remaining_args)
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description='ASan symbolization script',
-        epilog=__doc__)
-    parser.add_argument('path_to_cut', nargs='*',
-                        help='pattern to be cut from the result file path ')
-    parser.add_argument('-d','--demangle', action='store_true',
-                        help='demangle function names')
-    parser.add_argument('-c', metavar='CROSS_COMPILE',
-                        help='set prefix for binutils')
-    parser.add_argument('-l','--logfile', default=sys.stdin,
-                        type=argparse.FileType('r'),
-                        help='set log file name to parse, default is stdin')
-    parser.add_argument('--force-system-symbolizer', action='store_true',
-                        help='don\'t use llvm-symbolizer')
+      formatter_class=argparse.RawDescriptionHelpFormatter,
+      description='ASan symbolization script',
+      epilog=__doc__,
+    )
+    parser.add_argument(
+      'path_to_cut',
+      nargs='*',
+      help='pattern to be cut from the result file path ',
+    )
+    parser.add_argument(
+      '-d', '--demangle', action='store_true', help='demangle function names'
+    )
+    parser.add_argument(
+      '-c', metavar='CROSS_COMPILE', help='set prefix for binutils'
+    )
+    parser.add_argument(
+      '-l',
+      '--logfile',
+      default=sys.stdin,
+      type=argparse.FileType('r'),
+      help='set log file name to parse, default is stdin',
+    )
+    parser.add_argument(
+      '--force-system-symbolizer',
+      action='store_true',
+      help='don\'t use llvm-symbolizer',
+    )
     # Add logging arguments so that `--help` shows them.
     add_logging_args(parser)
     # Add load plugin arguments so that `--help` shows them.
@@ -1063,6 +1178,6 @@ if __name__ == '__main__':
     if args.force_system_symbolizer:
       force_system_symbolizer = True
     if force_system_symbolizer:
-      assert(allow_system_symbolizer)
+      assert allow_system_symbolizer
     loop = SymbolizationLoop(plugin_proxy)
     loop.process_logfile()
