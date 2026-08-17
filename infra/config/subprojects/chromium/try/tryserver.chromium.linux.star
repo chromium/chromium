@@ -1125,6 +1125,7 @@ gpu.try_.linux_optional_builder(
                         "Only automatically added to CLs that touch GPU-related files."),
     mirrors = [
         "ci/GPU FYI Linux Builder",
+        "ci/Linux FYI Release (AMD RX 5500 XT)",
         "ci/Linux FYI Release (Intel UHD 630)",
         "ci/Linux FYI Release (NVIDIA)",
     ],

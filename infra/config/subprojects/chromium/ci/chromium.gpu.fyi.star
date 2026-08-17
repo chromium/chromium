@@ -1832,6 +1832,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Linux FYI Release (AMD RX 5500 XT)",
+    branch_selector = branches.selector.LINUX_BRANCHES,
     description_html = "Runs release GPU tests on stable Linux/AMD RX 5500 XT configs",
     parent = "GPU FYI Linux Builder",
     builder_spec = gpu_fyi_thin_tester_builder_spec(

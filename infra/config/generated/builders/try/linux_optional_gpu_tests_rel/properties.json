@@ -32,6 +32,36 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Linux FYI Release (AMD RX 5500 XT)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Linux Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true,
+              "use_test_trigger_cas": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Linux FYI Release (Intel UHD 630)",
               "project": "chromium"
             },
@@ -99,6 +129,11 @@
         }
       ],
       "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "Linux FYI Release (AMD RX 5500 XT)",
+          "project": "chromium"
+        },
         {
           "bucket": "ci",
           "builder": "Linux FYI Release (Intel UHD 630)",
