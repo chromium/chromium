@@ -33,7 +33,7 @@ bool IsValidAvailabilityInt(int in_value) {
 // invalid.
 // It is a common mistake that admins allow sites with * as a wildcard
 // in the hostname although it has no effect on the domain and subdomains. Two
-// example for such a common mistake are: 1- *.android.com 2- developer.*.com
+// examples for such a common mistake are: 1- *.android.com 2- developer.*.com
 // which allow neither android.com nor developer.android.com
 bool ValidateHost(const std::string& host) {
   return host == "*" || host.find('*') == std::string::npos;
