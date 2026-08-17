@@ -471,6 +471,33 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWhileInvokeInProgress) {
   EXPECT_EQ(error_future2.Get(), GlicInvokeError::kInvokeInProgress);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeSupersedesInProgress) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  base::test::TestFuture<GlicInvokeError> error_future1;
+  GlicInvokeOptions options1(glic::Target(*tab),
+                             mojom::InvocationSource::kOsButton);
+  options1.on_error = error_future1.GetCallback();
+
+  coordinator().Invoke(std::move(options1));
+
+  base::test::TestFuture<void> success_future2;
+  GlicInvokeOptions options2(glic::Target(*tab),
+                             mojom::InvocationSource::kOsButton);
+  options2.supersede_if_in_progress = true;
+  options2.on_success = success_future2.GetCallback();
+
+  // Try to invoke again while the first one is still in progress for the same
+  // instance, but this time specify that it should supersede the first.
+  coordinator().Invoke(std::move(options2));
+
+  // The first invoke should fail synchronously.
+  EXPECT_EQ(error_future1.Get(), GlicInvokeError::kSuperseded);
+
+  // The second invoke should succeed.
+  EXPECT_TRUE(success_future2.Wait());
+}
+
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeTimeoutBehaviors) {
   // 1. Test custom short timeout
   base::test::TestFuture<GlicInvokeError> short_error_future;
