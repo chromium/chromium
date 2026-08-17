@@ -357,6 +357,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.BookmarkBar.TriState.Toggled{Origin}"
+    enum="BookmarkBarVisibilityState" expires_after="2027-02-15">
+  <owner>mschillaci@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Emitted when users change the bookmarks bar visibility state setting using
+    {Origin}. Emits the new BookmarkBarVisibilityState chosen by the user.
+  </summary>
+  <token key="Origin">
+    <variant name="AppearanceSettings"
+        summary="the Appearance Settings page toggle"/>
+    <variant name="AppMenu" summary="the App (3-dot) menu"/>
+    <variant name="ContextMenu"
+        summary="the bookmark bar context menu visibility submenu"/>
+    <variant name="Keyboard" summary="the keyboard shortcut Ctrl+Shift+B"/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.BookmarkBar.TriState.VisibilityStateChangeOrigin"
+    enum="BookmarkBarSettingChangeOrigin" expires_after="2027-02-15">
+  <owner>mschillaci@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Emitted whenever the bookmarks bar visibility state setting is changed.
+    Emits the BookmarkBarSettingChangeOrigin (e.g. keyboard shortcut, appearance
+    settings, context menu, or app menu) that triggered the change.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.BookmarksBar.DragDropType"
     enum="BookmarkBarDragDropType" expires_after="2027-02-07">
   <owner>dfried@chromium.org</owner>

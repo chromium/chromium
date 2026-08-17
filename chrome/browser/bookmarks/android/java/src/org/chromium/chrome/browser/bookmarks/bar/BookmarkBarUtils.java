@@ -101,6 +101,7 @@ public class BookmarkBarUtils {
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkBarShownReason)
 
+    // LINT.IfChange(BookmarkBarSettingChangeOrigin)
     /**
      * Enum that defines the possible origins from which the bookmark bar visibility setting can be
      * changed.
@@ -120,10 +121,24 @@ public class BookmarkBarUtils {
         int NUM_ENTRIES = 4;
     }
 
-    // Histogram names:
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarkBarSettingChangeOrigin)
+
+    // [v1] Histogram names:
     public static final String TOGGLED_IN_SETTINGS = "Bookmarks.BookmarkBar.ToggledInSettings";
     public static final String TOGGLED_BY_KEYBOARD_SHORTCUT =
             "Bookmarks.BookmarkBar.ToggledByKeyboardShortcut";
+
+    // [v2] Histogram names:
+    public static final String TOGGLED_KEYBOARD = "Bookmarks.BookmarkBar.TriState.ToggledKeyboard";
+    public static final String TOGGLED_APPEARANCE_SETTINGS =
+            "Bookmarks.BookmarkBar.TriState.ToggledAppearanceSettings";
+    public static final String TOGGLED_CONTEXT_MENU =
+            "Bookmarks.BookmarkBar.TriState.ToggledContextMenu";
+    public static final String TOGGLED_APP_MENU = "Bookmarks.BookmarkBar.TriState.ToggledAppMenu";
+    public static final String VISIBILITY_STATE_CHANGE_ORIGIN =
+            "Bookmarks.BookmarkBar.TriState.VisibilityStateChangeOrigin";
+
+    // Common histogram names:
     public static final String BOOKMARK_BAR_CLICK = "Bookmarks.BookmarkBar.Click";
     public static final String BOOKMARK_BAR_SHOWN_ON_START_UP =
             "Bookmarks.BookmarkBar.Android.ShownOnStartUp";
@@ -599,7 +614,7 @@ public class BookmarkBarUtils {
             Profile profile,
             @BookmarkBarVisibilityState int state,
             @BookmarkBarSettingChangeOrigin int origin) {
-        // TODO(crbug.com/543113459): Add metrics for new tri-state setting.
+        recordBookmarkBarVisibilityStateToggled(state, origin);
         getPrefService(profile).setInteger(Pref.BOOKMARK_BAR_VISIBILITY_STATE, state);
     }
 
@@ -759,7 +774,7 @@ public class BookmarkBarUtils {
      */
     public static void setDevicePrefBookmarkBarVisibilityState(
             @BookmarkBarVisibilityState int state, @BookmarkBarSettingChangeOrigin int origin) {
-        // TODO(crbug.com/543113459): Add metrics for new tri-state setting.
+        recordBookmarkBarVisibilityStateToggled(state, origin);
         ContextUtils.getAppSharedPreferences()
                 .edit()
                 .putInt(BookmarkBarConstants.BOOKMARK_BAR_BOOKMARK_BAR_VISIBILITY_STATE, state)
@@ -786,6 +801,32 @@ public class BookmarkBarUtils {
     // ---------------------------------------------------------------------------------------------
 
     // Histogram recording methods.
+
+    private static void recordBookmarkBarVisibilityStateToggled(
+            @BookmarkBarVisibilityState int state, @BookmarkBarSettingChangeOrigin int origin) {
+        RecordHistogram.recordEnumeratedHistogram(
+                VISIBILITY_STATE_CHANGE_ORIGIN, origin, BookmarkBarSettingChangeOrigin.NUM_ENTRIES);
+        switch (origin) {
+            case BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT:
+                RecordHistogram.recordEnumeratedHistogram(
+                        TOGGLED_KEYBOARD, state, BookmarkBarVisibilityState.MAX_VALUE + 1);
+                break;
+            case BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS:
+                RecordHistogram.recordEnumeratedHistogram(
+                        TOGGLED_APPEARANCE_SETTINGS,
+                        state,
+                        BookmarkBarVisibilityState.MAX_VALUE + 1);
+                break;
+            case BookmarkBarSettingChangeOrigin.BOOKMARK_BAR_CONTEXT_MENU:
+                RecordHistogram.recordEnumeratedHistogram(
+                        TOGGLED_CONTEXT_MENU, state, BookmarkBarVisibilityState.MAX_VALUE + 1);
+                break;
+            case BookmarkBarSettingChangeOrigin.APP_MENU:
+                RecordHistogram.recordEnumeratedHistogram(
+                        TOGGLED_APP_MENU, state, BookmarkBarVisibilityState.MAX_VALUE + 1);
+                break;
+        }
+    }
 
     public static void recordClick(@BookmarkBarClickType int clickType) {
         RecordHistogram.recordEnumeratedHistogram(

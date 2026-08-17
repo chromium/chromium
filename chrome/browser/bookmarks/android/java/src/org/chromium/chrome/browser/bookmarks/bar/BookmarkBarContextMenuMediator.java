@@ -509,22 +509,16 @@ class BookmarkBarContextMenuMediator {
     }
 
     private void alwaysHide() {
-        // TODO(crbug.com/542276874): Record metrics for context menu visibility toggles (e.g.
-        // Always Show, Always Hide) once NTP tri-state feature options are finalized.
         mContextMenuDelegate.setBookmarksBarVisibilityToAlwaysHide();
         mDismissRunnable.run();
     }
 
     private void alwaysShow() {
-        // TODO(crbug.com/542276874): Record metrics for context menu visibility toggles (e.g.
-        // Always Show, Always Hide) once NTP tri-state feature options are finalized.
         mContextMenuDelegate.setBookmarksBarVisibilityToAlwaysShow();
         mDismissRunnable.run();
     }
 
     private void onlyShowOnNTP() {
-        // TODO(crbug.com/542276874): Record metrics for context menu visibility toggles (e.g.
-        // Always Show, Always Hide) once NTP tri-state feature options are finalized.
         mContextMenuDelegate.setBookmarksBarVisibilityToOnlyShowOnNTP();
         mDismissRunnable.run();
     }

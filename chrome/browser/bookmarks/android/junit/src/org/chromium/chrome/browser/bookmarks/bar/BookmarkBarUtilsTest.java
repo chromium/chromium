@@ -807,32 +807,92 @@ public class BookmarkBarUtilsTest {
     @Features.EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testMetrics_SetUserPrefsBookmarkBarVisibilityState() {
         mOverrideContextRule.setIsDesktop(true);
-        // TODO(crbug.com/543113459): Add metrics testing once added to Utils.
 
+        // 1. KEYBOARD_SHORTCUT -> ALWAYS_SHOW
+        var watcher1 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_CHANGE_ORIGIN,
+                                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT)
+                        .expectIntRecord(
+                                BookmarkBarUtils.TOGGLED_KEYBOARD,
+                                BookmarkBarVisibilityState.ALWAYS_SHOW)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APPEARANCE_SETTINGS)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_CONTEXT_MENU)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APP_MENU)
+                        .build();
         BookmarkBarUtils.setUserPrefsBookmarkBarVisibilityState(
                 mProfile,
                 BookmarkBarVisibilityState.ALWAYS_SHOW,
                 BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
+        watcher1.assertExpected();
         verify(mPrefService)
                 .setInteger(
                         Pref.BOOKMARK_BAR_VISIBILITY_STATE, BookmarkBarVisibilityState.ALWAYS_SHOW);
 
+        // 2. APPEARANCE_SETTINGS -> ONLY_SHOW_ON_NTP
+        var watcher2 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_CHANGE_ORIGIN,
+                                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS)
+                        .expectIntRecord(
+                                BookmarkBarUtils.TOGGLED_APPEARANCE_SETTINGS,
+                                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_KEYBOARD)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_CONTEXT_MENU)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APP_MENU)
+                        .build();
         BookmarkBarUtils.setUserPrefsBookmarkBarVisibilityState(
                 mProfile,
                 BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
+        watcher2.assertExpected();
         verify(mPrefService)
                 .setInteger(
                         Pref.BOOKMARK_BAR_VISIBILITY_STATE,
                         BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP);
 
+        // 3. BOOKMARK_BAR_CONTEXT_MENU -> ALWAYS_HIDE
+        var watcher3 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_CHANGE_ORIGIN,
+                                BookmarkBarSettingChangeOrigin.BOOKMARK_BAR_CONTEXT_MENU)
+                        .expectIntRecord(
+                                BookmarkBarUtils.TOGGLED_CONTEXT_MENU,
+                                BookmarkBarVisibilityState.ALWAYS_HIDE)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_KEYBOARD)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APPEARANCE_SETTINGS)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APP_MENU)
+                        .build();
         BookmarkBarUtils.setUserPrefsBookmarkBarVisibilityState(
                 mProfile,
                 BookmarkBarVisibilityState.ALWAYS_HIDE,
-                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
+                BookmarkBarSettingChangeOrigin.BOOKMARK_BAR_CONTEXT_MENU);
+        watcher3.assertExpected();
         verify(mPrefService)
                 .setInteger(
                         Pref.BOOKMARK_BAR_VISIBILITY_STATE, BookmarkBarVisibilityState.ALWAYS_HIDE);
+
+        // 4. APP_MENU -> ALWAYS_SHOW
+        var watcher4 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_CHANGE_ORIGIN,
+                                BookmarkBarSettingChangeOrigin.APP_MENU)
+                        .expectIntRecord(
+                                BookmarkBarUtils.TOGGLED_APP_MENU,
+                                BookmarkBarVisibilityState.ALWAYS_SHOW)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_KEYBOARD)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APPEARANCE_SETTINGS)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_CONTEXT_MENU)
+                        .build();
+        BookmarkBarUtils.setUserPrefsBookmarkBarVisibilityState(
+                mProfile,
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarSettingChangeOrigin.APP_MENU);
+        watcher4.assertExpected();
     }
 
     @Test
@@ -840,27 +900,88 @@ public class BookmarkBarUtilsTest {
     @Features.EnableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
     public void testMetrics_SetDevicePrefBookmarkBarVisibilityState() {
         mOverrideContextRule.setIsDesktop(false);
-        // TODO(crbug.com/543113459): Add metrics testing once added to Utils.
 
+        // 1. KEYBOARD_SHORTCUT -> ALWAYS_SHOW
+        var watcher1 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_CHANGE_ORIGIN,
+                                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT)
+                        .expectIntRecord(
+                                BookmarkBarUtils.TOGGLED_KEYBOARD,
+                                BookmarkBarVisibilityState.ALWAYS_SHOW)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APPEARANCE_SETTINGS)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_CONTEXT_MENU)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APP_MENU)
+                        .build();
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
                 BookmarkBarVisibilityState.ALWAYS_SHOW,
                 BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
+        watcher1.assertExpected();
         assertEquals(
                 BookmarkBarVisibilityState.ALWAYS_SHOW,
                 BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
 
+        // 2. APPEARANCE_SETTINGS -> ONLY_SHOW_ON_NTP
+        var watcher2 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_CHANGE_ORIGIN,
+                                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS)
+                        .expectIntRecord(
+                                BookmarkBarUtils.TOGGLED_APPEARANCE_SETTINGS,
+                                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_KEYBOARD)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_CONTEXT_MENU)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APP_MENU)
+                        .build();
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
                 BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
-                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
+                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
+        watcher2.assertExpected();
         assertEquals(
                 BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
                 BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
 
+        // 3. BOOKMARK_BAR_CONTEXT_MENU -> ALWAYS_HIDE
+        var watcher3 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_CHANGE_ORIGIN,
+                                BookmarkBarSettingChangeOrigin.BOOKMARK_BAR_CONTEXT_MENU)
+                        .expectIntRecord(
+                                BookmarkBarUtils.TOGGLED_CONTEXT_MENU,
+                                BookmarkBarVisibilityState.ALWAYS_HIDE)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_KEYBOARD)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APPEARANCE_SETTINGS)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APP_MENU)
+                        .build();
         BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
                 BookmarkBarVisibilityState.ALWAYS_HIDE,
-                BookmarkBarSettingChangeOrigin.KEYBOARD_SHORTCUT);
+                BookmarkBarSettingChangeOrigin.BOOKMARK_BAR_CONTEXT_MENU);
+        watcher3.assertExpected();
         assertEquals(
                 BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+
+        // 4. APP_MENU -> ALWAYS_SHOW
+        var watcher4 =
+                newBuilder()
+                        .expectIntRecord(
+                                BookmarkBarUtils.VISIBILITY_STATE_CHANGE_ORIGIN,
+                                BookmarkBarSettingChangeOrigin.APP_MENU)
+                        .expectIntRecord(
+                                BookmarkBarUtils.TOGGLED_APP_MENU,
+                                BookmarkBarVisibilityState.ALWAYS_SHOW)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_KEYBOARD)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_APPEARANCE_SETTINGS)
+                        .expectNoRecords(BookmarkBarUtils.TOGGLED_CONTEXT_MENU)
+                        .build();
+        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                BookmarkBarVisibilityState.ALWAYS_SHOW, BookmarkBarSettingChangeOrigin.APP_MENU);
+        watcher4.assertExpected();
+        assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
                 BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
     }
 

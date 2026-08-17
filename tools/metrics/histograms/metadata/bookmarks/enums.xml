@@ -70,6 +70,17 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Reorder subfolder in folder"/>
 </enum>
 
+<!-- LINT.IfChange(BookmarkBarSettingChangeOrigin) -->
+
+<enum name="BookmarkBarSettingChangeOrigin">
+  <int value="0" label="Keyboard shortcut"/>
+  <int value="1" label="Appearance settings"/>
+  <int value="2" label="Bookmark bar context menu"/>
+  <int value="3" label="App menu"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java:BookmarkBarSettingChangeOrigin) -->
+
 <!-- LINT.IfChange(BookmarkBarShownReason)-->
 
 <enum name="BookmarkBarShownReason">
@@ -85,6 +96,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/bookmarks/android/java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java:BookmarkBarShownReason) -->
+
+<!-- LINT.IfChange(BookmarkBarVisibilityState) -->
+
+<enum name="BookmarkBarVisibilityState">
+  <int value="0" label="Always show"/>
+  <int value="1" label="Only show on new tab page"/>
+  <int value="2" label="Always hide"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_bar_visibility_state.h:BookmarkBarVisibilityState) -->
 
 <enum name="BookmarkEditSource">
   <int value="0" label="Edited by a user"/>
