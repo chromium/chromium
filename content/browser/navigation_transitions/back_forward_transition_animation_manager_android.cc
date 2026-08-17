@@ -4,9 +4,6 @@
 
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 
-#include <jni.h>
-
-#include "base/android/jni_android.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot.h"
@@ -30,12 +27,6 @@ using AnimationStage = BackForwardTransitionAnimationManager::AnimationStage;
 using SwipeEdge = ui::BackGestureEventSwipeEdge;
 using AnimationAbortReason =
     BackForwardTransitionAnimator::AnimationAbortReason;
-
-void ThrowJavaException(const std::string& message) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  jclass exception_class = env->FindClass("java/lang/IllegalStateException");
-  env->ThrowNew(exception_class, message.c_str());
-}
 
 }  // namespace
 
@@ -78,31 +69,13 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
       navigation_direction == NavigationDirection::kForward
           ? navigation_controller_->GetIndexForGoForward()
           : navigation_controller_->GetIndexForGoBack();
-  if (!index.has_value()) {
-    SCOPED_CRASH_KEY_NUMBER("bft", "destination_entry_id",
-                            destination_entry_id_.value());
-    ThrowJavaException(
-        "BackForwardTransitionAnimationManagerAndroid::OnGestureStarted: "
-        "destination entry index not found");
-    // TODO(crbug.com/530682179): The embedder should only delegate the
-    // history navigation task to this manager if there is a destination
-    // entry.
-    // Make it a CHECK once we have figured the root cause for this call.
-    return;
-  }
+  CHECK(index.has_value())
+      << "The embedder should only delegate the history navigation task to "
+         "this manager if there is a destination entry.";
   auto* destination_entry = navigation_controller_->GetEntryAtIndex(*index);
-  if (!destination_entry) {
-    SCOPED_CRASH_KEY_NUMBER("bft", "destination_entry_id",
-                            destination_entry_id_.value());
-    ThrowJavaException(
-        "BackForwardTransitionAnimationManagerAndroid::OnGestureStarted: "
-        "null destination entry");
-    // TODO(crbug.com/530682179): The embedder should only delegate the
-    // history navigation task to this manager if there is a destination
-    // entry.
-    // Make it a CHECK once we have figured the root cause for this call.
-    return;
-  }
+  CHECK(destination_entry)
+      << "The embedder should only delegate the history navigation task to "
+         "this manager if there is a destination entry.";
 
   // Each previous gesture should finished with `OnGestureCancelled()` or
   // `OnGestureInvoked()`. In both cases we reset `destination_entry_id_` to
@@ -146,15 +119,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureProgressed(
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureCancelled() {
-  if (destination_entry_id_ == NavigationTransitionData::kInvalidId) {
-    ThrowJavaException(
-        "BackForwardTransitionAnimationManagerAndroid::OnGestureCancelled: "
-        "no active destination");
-    // TODO(crbug.com/530682179): The caller should ensure this is not called
-    // unless there is an active transition. Make it a CHECK once we have
-    // figured the root cause for this call.
-    return;
-  }
+  CHECK_NE(destination_entry_id_, NavigationTransitionData::kInvalidId);
   if (animator_) {
     animator_->OnGestureCancelled();
     MaybeDestroyAnimator();
@@ -163,12 +128,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureCancelled() {
 }
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureInvoked() {
-  if (destination_entry_id_ == NavigationTransitionData::kInvalidId) {
-    // TODO(crbug.com/530682179): The caller should ensure this is not called
-    // unless there is an active transition. Make it a CHECK once we have
-    // figured the root cause for this call.
-    return;
-  }
+  CHECK_NE(destination_entry_id_, NavigationTransitionData::kInvalidId);
   if (animator_) {
     animator_->OnGestureInvoked();
     MaybeDestroyAnimator();
