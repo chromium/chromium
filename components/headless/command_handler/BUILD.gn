@@ -7,6 +7,10 @@ import("//tools/grit/repack.gni")
 
 grit("headless_command_resources") {
   source = "headless_command.grd"
+  inputs = [
+    "headless_command.html",
+    "headless_command.js",
+  ]
   outputs = [
     "grit/headless_command_resources.h",
     "$root_gen_dir/components/headless/command_handler/headless_command_resources.pak",

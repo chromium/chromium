@@ -48,4 +48,7 @@ generate_jni("jni_headers") {
 
 java_strings_grd("javascript_dialogs_strings_grd") {
   grd_file = "javascript_dialogs_android_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "translations/javascript_dialogs_android_strings_{{source_name_part}}.xtb" ])
 }

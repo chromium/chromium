@@ -198,6 +198,10 @@ android_resources("java_resources") {
 
 java_strings_grd("java_strings_grd") {
   grd_file = "java/strings/android_chrome_media_router_strings.grd"
+  inputs = process_file_template(
+          xtb_locales,
+          [ "java/strings/translations/android_chrome_media_router_strings_{{source_name_part}}.xtb" ])
+
   outputs = [ "values/android_chrome_media_router_strings.xml" ] + process_file_template(
                 android_bundle_locales_as_resources,
                 [ "values-{{source_name_part}}/android_chrome_media_router_strings.xml" ])
