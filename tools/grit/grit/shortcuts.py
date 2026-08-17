@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Stuff to prevent conflicting shortcuts.
-'''
-
+'''Stuff to prevent conflicting shortcuts.'''
 
 import re
 
@@ -34,7 +32,7 @@ class ShortcutGroup:
         return
 
     self.cliques.append(c)
-    for (lang, msg) in c.clique.items():
+    for lang, msg in c.clique.items():
       if lang not in self.keys_by_lang:
         self.keys_by_lang[lang] = {}
       keymap = self.keys_by_lang[lang]
@@ -52,8 +50,8 @@ class ShortcutGroup:
     # For any language that has more than one occurrence of any shortcut,
     # make a list of the conflicting shortcuts.
     problem_langs = {}
-    for (lang, keys) in self.keys_by_lang.items():
-      for (key, count) in keys.items():
+    for lang, keys in self.keys_by_lang.items():
+      for key, count in keys.items():
         if count > 1:
           if lang not in problem_langs:
             problem_langs[lang] = []
@@ -61,9 +59,10 @@ class ShortcutGroup:
 
     warnings = []
     if len(problem_langs):
-      warnings.append("WARNING - duplicate keys exist in shortcut group %s" %
-                      self.name)
-      for (lang,keys) in problem_langs.items():
+      warnings.append(
+        "WARNING - duplicate keys exist in shortcut group %s" % self.name
+      )
+      for lang, keys in problem_langs.items():
         warnings.append("  %6s duplicates: %s" % (lang, ', '.join(keys)))
     return warnings
 

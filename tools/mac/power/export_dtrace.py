@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import typing
+
 """This module contains the utilities necessary to read Dtrace result files and
 convert them to another format for flamegraph generation, like pprof profiles.
 """
@@ -21,18 +22,24 @@ try:
     from protos.third_party.pprof import profile_pb2
 except ImportError:
     import subprocess
+
     script_dir = os.path.dirname(os.path.abspath(__file__))
     try:
-        subprocess.check_call([
-            'protoc', '--python_out=protos/third_party/pprof',
-            '--proto_path=protos/third_party/pprof/src',
-            'protos/third_party/pprof/src/profile.proto'
-        ],
-                              cwd=script_dir)
+        subprocess.check_call(
+            [
+                'protoc',
+                '--python_out=protos/third_party/pprof',
+                '--proto_path=protos/third_party/pprof/src',
+                'protos/third_party/pprof/src/profile.proto',
+            ],
+            cwd=script_dir,
+        )
         from protos.third_party.pprof import profile_pb2
     except FileNotFoundError:
-        logging.error("protoc not found. Please install protobuf compiler "
-                      "(e.g. 'brew install protobuf').")
+        logging.error(
+            "protoc not found. Please install protobuf compiler "
+            "(e.g. 'brew install protobuf')."
+        )
         sys.exit(1)
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to compile profile.proto: {e}")
@@ -103,19 +110,24 @@ class ProfileBuilder:
         See protos/third_party/pprof/src/profile.proto for more details.
         """
 
-        assert (len(self._profile.sample) == 0)
+        assert len(self._profile.sample) == 0
         sample_type = self._profile.sample_type.add()
         sample_type.type = self.GetStringId(type)
         sample_type.unit = self.GetStringId(unit)
 
-    def AddSample(self, locations: typing.List[int], values: typing.List[int],
-                  signature: str):
+    def AddSample(
+        self,
+        locations: typing.List[int],
+        values: typing.List[int],
+        signature: str,
+    ):
         """
-    Adds a sample in the profile, constructed from a list of locations
-    representing the stack, and a list of values for that stack (as many values
-    as sample types described by this profile).
-    """
-        assert (len(self._profile.sample_type) == len(values))
+        Adds a sample in the profile, constructed from a list of locations
+        representing the stack, and a list of values for that stack (as many
+        values
+        as sample types described by this profile).
+        """
+        assert len(self._profile.sample_type) == len(values)
         sample = self._profile.sample.add()
         for value in values:
             sample.value.append(value)
@@ -132,18 +144,18 @@ class ProfileBuilder:
 class DTraceParser:
     """Parses and merges chromium Dtrace profiles.
 
-  Typical usage example:
+    Typical usage example:
 
-  parser = DTraceParser()
-  parser.ParseDir('./samples/')
-  parser.ExportToPprof(builder)
-  """
+    parser = DTraceParser()
+    parser.ParseDir('./samples/')
+    parser.ExportToPprof(builder)
+    """
 
     def __init__(self, sample_type: str = 'cpu_time'):
         """
-    Args:
-      output_filename: The path of the file in which results are written.
-    """
+        Args:
+          output_filename: The path of the file in which results are written.
+        """
         self._stack_weights = defaultdict(int)
         self._signatures = defaultdict(str)
         self._stack_frames = {}
@@ -151,9 +163,8 @@ class DTraceParser:
         self._post_processing_applied = False
 
     def ParseFile(self, stack_file: typing.TextIO):
-        """Parses dtrace `stack_file` and adds the data to this profile.
-        """
-        assert (self._post_processing_applied == False)
+        """Parses dtrace `stack_file` and adds the data to this profile."""
+        assert self._post_processing_applied == False
         stack_frames = []
         for line, next_line in pairwise(stack_file):
             line_content = line.strip()
@@ -164,7 +175,8 @@ class DTraceParser:
             if next_line.strip():
                 # Matches lines like: "0x17e018987e" or "+0x17e018987e"
                 if line_content.startswith("0x") or line_content.startswith(
-                        "+0x"):
+                    "+0x"
+                ):
                     function = line_content
                     module = "unsymbolized module"
                 else:
@@ -179,10 +191,12 @@ class DTraceParser:
                 if len(stack_frames) == 0:
                     continue
                 weight = int(line_content)
-                stack_string = ";".join([
-                    f'{module}`{function}' for (module,
-                                                function) in stack_frames
-                ])
+                stack_string = ";".join(
+                    [
+                        f'{module}`{function}'
+                        for (module, function) in stack_frames
+                    ]
+                )
                 self._stack_weights[stack_string] += weight
                 self._stack_frames[stack_string] = stack_frames
                 stack_frames = []
@@ -211,9 +225,10 @@ class DTraceParser:
                 if stack_filename_regex.match(stack_filename):
                     logging.info(f"Processing {stack_filename} ...")
                     with open(
-                            os.path.join(root, stack_filename),
-                            newline='',
-                            encoding="ISO-8859-1") as stack_file:
+                        os.path.join(root, stack_filename),
+                        newline='',
+                        encoding="ISO-8859-1",
+                    ) as stack_file:
                         self.ParseFile(stack_file)
 
         if not self._stack_frames:
@@ -230,9 +245,10 @@ class DTraceParser:
             weight = self._stack_weights[key]
             signature = self._signatures[key]
             sample_locations = []
-            for (module, function) in frames:
+            for module, function in frames:
                 sample_locations.append(
-                    profile_builder.GetSymbolLocation(function, module))
+                    profile_builder.GetSymbolLocation(function, module)
+                )
             profile_builder.AddSample(sample_locations, [weight], signature)
 
     def ConvertToCollapse(self, output_filename: str):
@@ -249,13 +265,15 @@ class DTraceParser:
         """
         os.makedirs(
             f"{os.path.dirname(os.path.abspath(output_filename))}",
-            exist_ok=True)
+            exist_ok=True,
+        )
 
         with open(output_filename, 'w') as f:
             for key in self._stack_frames:
                 frames = self._stack_frames[key]
                 frames_string = ';'.join(
-                    [function for (module, function) in reversed(frames)])
+                    [function for (module, function) in reversed(frames)]
+                )
                 weight = self._stack_weights[key]
                 # Reform the line in stacked format and write it out.
                 f.write(f"{frames_string} {weight}\n")
@@ -272,21 +290,23 @@ class DTraceParser:
         for sample in samples:
             stack_frames = sample['frames']
             stack_string = ";".join(
-                [f'{module}`{function}' for (module, function) in stack_frames])
+                [f'{module}`{function}' for (module, function) in stack_frames]
+            )
             self._stack_frames[stack_string] = stack_frames
             self._stack_weights[stack_string] += sample['weight']
 
     def ApplySignatures(self, stack: typing.List[typing.Tuple[str, str]]):
-        """Matches and return known signatures to given stackframe.
-        """
+        """Matches and return known signatures to given stackframe."""
         if len(stack) >= 512:
             return '_OVERFLOWED_'
         for module, function in stack:
-            if function.startswith('safe_browsing::(anonymous namespace)::'
-                                   'PlaybackOnBackgroundThread'):
+            if function.startswith(
+                'safe_browsing::(anonymous namespace)::'
+                'PlaybackOnBackgroundThread'
+            ):
                 return 'safe_browsing:VisualSignatures'
             if function.startswith(
-                    'safe_browsing::(anonymous namespace)::OnModelInputCreated'
+                'safe_browsing::(anonymous namespace)::OnModelInputCreated'
             ):
                 return 'safe_browsing:VisualSignatures'
             if function.startswith('ParkableStringImpl::CompressInBackground'):
@@ -309,33 +329,39 @@ class DTraceParser:
         for key in self._stack_frames:
             # Signatures are always added since they are non destructive.
             self._signatures[key] = self.ApplySignatures(
-                self._stack_frames[key])
+                self._stack_frames[key]
+            )
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description='Export DTrace stack files into another format.')
+        description='Export DTrace stack files into another format.'
+    )
     parser.add_argument(
         "--data_dir",
         help="Top level directory that contains DTrace stacks. "
         "The directory will be fully walked to find stacks "
         "and metadata.json files",
-        required=True)
+        required=True,
+    )
     parser.add_argument(
-        "--output", help="The file to write the collapsed stacks into.")
+        "--output", help="The file to write the collapsed stacks into."
+    )
     parser.add_argument(
         '--unit',
         dest='unit',
         choices=["cpu_samples", "wakeups"],
         default="cpu_samples",
-        help="The unit of counts acquired with DTrace")
+        help="The unit of counts acquired with DTrace",
+    )
     parser.add_argument(
         '--format',
         dest='format',
         action='store',
         choices=["pprof", "collapsed"],
         default="pprof",
-        help="Output format to generate.")
+        help="Output format to generate.",
+    )
     args = parser.parse_args()
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
 
@@ -367,7 +393,8 @@ if __name__ == "__main__":
             output_file.write(profile_builder.SerializeToString())
     else:
         if output_filename is None:
-            output_filename = os.path.join(data_dir,
-                                           f"profile_{args.unit}.collapsed")
+            output_filename = os.path.join(
+                data_dir, f"profile_{args.unit}.collapsed"
+            )
         parser.ConvertToCollapse(output_filename)
     logging.info(f'Outputing profile in {os.path.abspath(output_filename)}')

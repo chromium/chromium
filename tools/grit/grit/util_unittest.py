@@ -3,12 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Unit test that checks some of util functions.
-'''
-
+'''Unit test that checks some of util functions.'''
 
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -18,29 +17,32 @@ from grit import util
 
 
 class UtilUnittest(unittest.TestCase):
-  ''' Tests functions from util
-  '''
+  '''Tests functions from util'''
 
   def testNewClassInstance(self):
     # Test short class name with no fully qualified package name
     # Should fail, it is not supported by the function now (as documented)
-    cls = util.NewClassInstance('grit.util.TestClassToLoad',
-                                TestBaseClassToLoad)
+    cls = util.NewClassInstance(
+      'grit.util.TestClassToLoad', TestBaseClassToLoad
+    )
     self.assertTrue(cls == None)
 
     # Test non existent class name
-    cls = util.NewClassInstance('grit.util_unittest.NotExistingClass',
-                                TestBaseClassToLoad)
+    cls = util.NewClassInstance(
+      'grit.util_unittest.NotExistingClass', TestBaseClassToLoad
+    )
     self.assertTrue(cls == None)
 
     # Test valid class name and valid base class
-    cls = util.NewClassInstance('grit.util_unittest.TestClassToLoad',
-                                TestBaseClassToLoad)
+    cls = util.NewClassInstance(
+      'grit.util_unittest.TestClassToLoad', TestBaseClassToLoad
+    )
     self.assertTrue(isinstance(cls, TestBaseClassToLoad))
 
     # Test valid class name with wrong hierarchy
-    cls = util.NewClassInstance('grit.util_unittest.TestClassNoBase',
-                                TestBaseClassToLoad)
+    cls = util.NewClassInstance(
+      'grit.util_unittest.TestClassNoBase', TestBaseClassToLoad
+    )
     self.assertTrue(cls == None)
 
   def testCanonicalLanguage(self):
@@ -57,10 +59,10 @@ class UtilUnittest(unittest.TestCase):
     self.assertTrue(util.UnescapeHtml('&#xABcd;') == chr(43981))
 
   def testRelativePath(self):
-    """ Verify that MakeRelativePath works in some tricky cases."""
+    """Verify that MakeRelativePath works in some tricky cases."""
 
     def TestRelativePathCombinations(base_path, other_path, expected_result):
-      """ Verify that the relative path function works for
+      """Verify that the relative path function works for
       the given paths regardless of whether or not they end with
       a trailing slash."""
       for path1 in [base_path, base_path + os.path.sep]:
@@ -84,7 +86,7 @@ class UtilUnittest(unittest.TestCase):
         f.write(data)
       self.assertEqual(util.ReadFile('testfile', encoding), expected_result)
 
-    test_std_newline = b'\xEF\xBB\xBFabc\ndef'  # EF BB BF is UTF-8 BOM
+    test_std_newline = b'\xef\xbb\xbfabc\ndef'  # EF BB BF is UTF-8 BOM
     newlines = [b'\n', b'\r\n', b'\r']
 
     with util.TempDir({}) as tmp_dir:
@@ -104,8 +106,10 @@ class UtilUnittest(unittest.TestCase):
 class TestBaseClassToLoad:
   pass
 
+
 class TestClassToLoad(TestBaseClassToLoad):
   pass
+
 
 class TestClassNoBase:
   pass

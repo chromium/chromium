@@ -39,12 +39,15 @@ class CppTypeGenerator(object):
     self._namespace_resolver = namespace_resolver
 
   def GetOptionalReturnType(self, typename, support_errors=False):
-    """ Composes a C++ return type to be used as a return value. Wraps the
+    """Composes a C++ return type to be used as a return value. Wraps the
     typename in an optional, for the regular case, or uses a base::expected for
     when it should support string errors.
     """
-    return (('base::expected<{typename}, std::u16string>' if support_errors else
-             'std::optional<{typename}>').format(typename=typename))
+    return (
+      'base::expected<{typename}, std::u16string>'
+      if support_errors
+      else 'std::optional<{typename}>'
+    ).format(typename=typename)
 
   def GetEnumNoneValue(self, type_, full_name=True):
     """Gets the enum value in the given model. Property indicating no value has
@@ -127,9 +130,9 @@ class CppTypeGenerator(object):
       prefix = '{classname}::'.format(classname=classname)
     # We kCamelCase the string, also removing any _ from the name, to allow
     # SHOUTY_CASE keys to be kCamelCase as well.
-    return '{prefix}k{name}'.format(prefix=prefix,
-                                    name=self.FormatStringForEnumValue(
-                                        enum_value.name))
+    return '{prefix}k{name}'.format(
+      prefix=prefix, name=self.FormatStringForEnumValue(enum_value.name)
+    )
 
   def GetCppType(self, type_, is_optional=False):
     """Translates a model.Property or model.Type into its C++ type.
@@ -157,14 +160,18 @@ class CppTypeGenerator(object):
       cpp_type = 'double'
     elif type_.property_type == PropertyType.STRING:
       cpp_type = 'std::string'
-    elif type_.property_type in (PropertyType.ENUM, PropertyType.OBJECT,
-                                 PropertyType.CHOICES):
+    elif type_.property_type in (
+      PropertyType.ENUM,
+      PropertyType.OBJECT,
+      PropertyType.CHOICES,
+    ):
       if self._default_namespace is type_.namespace:
         cpp_type = cpp_util.Classname(type_.name)
       else:
         cpp_namespace = cpp_util.GetCppNamespace(
-            type_.namespace.environment.namespace_pattern,
-            type_.namespace.unix_name)
+          type_.namespace.environment.namespace_pattern,
+          type_.namespace.unix_name,
+        )
         cpp_type = '%s::%s' % (cpp_namespace, cpp_util.Classname(type_.name))
     elif type_.property_type == PropertyType.ANY:
       cpp_type = 'base::Value'
@@ -201,26 +208,36 @@ class CppTypeGenerator(object):
     return cpp_type
 
   def IsCopyable(self, type_):
-    return not (self.FollowRef(type_).property_type
-                in (PropertyType.ANY, PropertyType.ARRAY, PropertyType.OBJECT,
-                    PropertyType.CHOICES))
+    return not (
+      self.FollowRef(type_).property_type
+      in (
+        PropertyType.ANY,
+        PropertyType.ARRAY,
+        PropertyType.OBJECT,
+        PropertyType.CHOICES,
+      )
+    )
 
   def GenerateForwardDeclarations(self):
-    """Returns the forward declarations for self._default_namespace.
-    """
+    """Returns the forward declarations for self._default_namespace."""
     c = Code()
     for namespace, deps in self._NamespaceTypeDependencies().items():
       filtered_deps = [
-          dep for dep in deps
-          # Add more ways to forward declare things as necessary.
-          if (not dep.hard and dep.type_.property_type in (PropertyType.CHOICES,
-                                                           PropertyType.OBJECT))
+        dep
+        for dep in deps
+        # Add more ways to forward declare things as necessary.
+        if (
+          not dep.hard
+          and dep.type_.property_type
+          in (PropertyType.CHOICES, PropertyType.OBJECT)
+        )
       ]
       if not filtered_deps:
         continue
 
       cpp_namespace = cpp_util.GetCppNamespace(
-          namespace.environment.namespace_pattern, namespace.unix_name)
+        namespace.environment.namespace_pattern, namespace.unix_name
+      )
       c.Concat(cpp_util.OpenNamespace(cpp_namespace))
       for dep in filtered_deps:
         c.Append('struct %s;' % dep.type_.name)
@@ -228,15 +245,15 @@ class CppTypeGenerator(object):
     return c
 
   def GenerateIncludes(self, include_soft=False, generate_error_messages=False):
-    """Returns the #include lines for self._default_namespace.
-    """
+    """Returns the #include lines for self._default_namespace."""
     c = Code()
 
     # The inclusion of the std::string_view header is dependent on either the
     # presence of enums, or manifest keys.
-    include_string_view = (self._default_namespace.manifest_keys or any(
-        type_.property_type is PropertyType.ENUM
-        for type_ in self._default_namespace.types.values()))
+    include_string_view = self._default_namespace.manifest_keys or any(
+      type_.property_type is PropertyType.ENUM
+      for type_ in self._default_namespace.types.values()
+    )
 
     if include_string_view:
       c.Append('#include <string_view>')
@@ -244,10 +261,13 @@ class CppTypeGenerator(object):
     # The header for `base::expected` should be included whenever error messages
     # are supposed to be returned, which only occurs with object, choices, or
     # functions.
-    if (generate_error_messages
-        and (len(self._default_namespace.functions.values()) or any(
-            type_.property_type in [PropertyType.OBJECT, PropertyType.CHOICES]
-            for type_ in self._default_namespace.types.values()))):
+    if generate_error_messages and (
+      len(self._default_namespace.functions.values())
+      or any(
+        type_.property_type in [PropertyType.OBJECT, PropertyType.CHOICES]
+        for type_ in self._default_namespace.types.values()
+      )
+    ):
       c.Append('#include "base/types/expected.h"')
 
     # Note: It's possible that there are multiple dependencies from the same
@@ -266,11 +286,14 @@ class CppTypeGenerator(object):
     """Finds the model.Type with name |qualified_name|. If it's not from
     |self._default_namespace| then it needs to be qualified.
     """
-    namespace = self._namespace_resolver.ResolveType(full_name,
-                                                     self._default_namespace)
+    namespace = self._namespace_resolver.ResolveType(
+      full_name, self._default_namespace
+    )
     if namespace is None:
-      raise KeyError('Cannot resolve type %s. Maybe it needs a prefix '
-                     'if it comes from another namespace?' % full_name)
+      raise KeyError(
+        'Cannot resolve type %s. Maybe it needs a prefix '
+        'if it comes from another namespace?' % full_name
+      )
     return namespace.types[schema_util.StripNamespace(full_name)]
 
   def FollowRef(self, type_):
@@ -291,20 +314,24 @@ class CppTypeGenerator(object):
     dependencies = set()
     for function in self._default_namespace.functions.values():
       for param in function.params:
-        dependencies |= self._TypeDependencies(param.type_,
-                                               hard=not param.optional)
+        dependencies |= self._TypeDependencies(
+          param.type_, hard=not param.optional
+        )
       if function.returns_async:
         for param in function.returns_async.params:
-          dependencies |= self._TypeDependencies(param.type_,
-                                                 hard=not param.optional)
+          dependencies |= self._TypeDependencies(
+            param.type_, hard=not param.optional
+          )
     for type_ in self._default_namespace.types.values():
       for prop in type_.properties.values():
-        dependencies |= self._TypeDependencies(prop.type_,
-                                               hard=not prop.optional)
+        dependencies |= self._TypeDependencies(
+          prop.type_, hard=not prop.optional
+        )
     for event in self._default_namespace.events.values():
       for param in event.params:
-        dependencies |= self._TypeDependencies(param.type_,
-                                               hard=not param.optional)
+        dependencies |= self._TypeDependencies(
+          param.type_, hard=not param.optional
+        )
 
     # Make sure that the dependencies are returned in alphabetical order.
     dependency_namespaces = OrderedDict()
@@ -319,16 +346,16 @@ class CppTypeGenerator(object):
     return dependency_namespaces
 
   def _TypeDependencies(self, type_, hard=False):
-    """Gets all the type dependencies of a property.
-    """
+    """Gets all the type dependencies of a property."""
     deps = set()
     if type_.property_type == PropertyType.REF:
       underlying_type = self._FindType(type_.ref_type)
       # Enums from other namespaces are always hard dependencies, since
       # optional enums are represented via the _NONE value instead of a
       # pointer.
-      dep_is_hard = (True if underlying_type.property_type == PropertyType.ENUM
-                     else hard)
+      dep_is_hard = (
+        True if underlying_type.property_type == PropertyType.ENUM else hard
+      )
       deps.add(_TypeDependency(underlying_type, hard=dep_is_hard))
     elif type_.property_type == PropertyType.ARRAY:
       # Types in containers are hard dependencies because they are stored
@@ -343,8 +370,7 @@ class CppTypeGenerator(object):
     return deps
 
   def GeneratePropertyValues(self, prop, line, nodoc=False):
-    """Generates the Code to display all value-containing properties.
-    """
+    """Generates the Code to display all value-containing properties."""
     c = Code()
     if not nodoc:
       c.Comment(prop.description)
@@ -363,9 +389,9 @@ class CppTypeGenerator(object):
       has_child_code = False
       c.Sblock('namespace %s {' % prop.name)
       for child_property in prop.type_.properties.values():
-        child_code = self.GeneratePropertyValues(child_property,
-                                                 line,
-                                                 nodoc=nodoc)
+        child_code = self.GeneratePropertyValues(
+          child_property, line, nodoc=nodoc
+        )
         if child_code:
           has_child_code = True
           c.Concat(child_code)

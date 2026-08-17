@@ -16,12 +16,14 @@ class Code(object):
     self._comment_length = comment_length
     self._line_prefixes = []
 
-  def Append(self,
-             line='',
-             substitute=True,
-             indent_level=None,
-             new_line=True,
-             strip_right=True):
+  def Append(
+    self,
+    line='',
+    substitute=True,
+    indent_level=None,
+    new_line=True,
+    strip_right=True,
+  ):
     """Appends a line of code at the current indent level or just a newline if
     line is not specified.
 
@@ -33,8 +35,9 @@ class Code(object):
     """
 
     if line:
-      prefix = indent_level * ' ' if indent_level else ''.join(
-          self._line_prefixes)
+      prefix = (
+        indent_level * ' ' if indent_level else ''.join(self._line_prefixes)
+      )
     else:
       prefix = ''
 
@@ -48,8 +51,7 @@ class Code(object):
     return self
 
   def IsEmpty(self):
-    """Returns True if the Code object is empty.
-    """
+    """Returns True if the Code object is empty."""
     return not bool(self._code)
 
   def Concat(self, obj, new_line=True):
@@ -106,18 +108,16 @@ class Code(object):
     line if not given).
     """
     # TODO(calamity): Decide if type checking is necessary
-    #if not isinstance(line, basestring):
+    # if not isinstance(line, basestring):
     #  raise TypeError
     self._line_prefixes.pop()
     if line is not None:
       self.Append(line)
     return self
 
-  def Comment(self,
-              comment,
-              comment_prefix='// ',
-              wrap_indent=0,
-              new_line=True):
+  def Comment(
+    self, comment, comment_prefix='// ', wrap_indent=0, new_line=True
+  ):
     """Adds the given string as a comment.
 
     Will split the comment if it's too long. Use mainly for variable length
@@ -137,7 +137,7 @@ class Code(object):
       last_space = comment.rfind(' ', 0, max_len + 1)
       if last_space != -1:
         line = comment[0:last_space]
-        comment = comment[last_space + 1:]
+        comment = comment[last_space + 1 :]
       else:
         # If the line can't be split, then don't try.  The comments might be
         # important (e.g. JSDoc) where splitting it breaks things.
@@ -149,14 +149,21 @@ class Code(object):
     if not new_line and self._code:
       max_len = self._comment_length - len(self._code[-1].value)
     else:
-      max_len = (self._comment_length - len(''.join(self._line_prefixes)) -
-                 len(comment_prefix))
+      max_len = (
+        self._comment_length
+        - len(''.join(self._line_prefixes))
+        - len(comment_prefix)
+      )
     line, comment = trim_comment(comment, max_len)
     self.Append(comment_prefix + line, substitute=False, new_line=new_line)
 
     # Any subsequent lines be subject to the wrap indent.
-    max_len = (self._comment_length - len(''.join(self._line_prefixes)) -
-               len(comment_prefix) - wrap_indent)
+    max_len = (
+      self._comment_length
+      - len(''.join(self._line_prefixes))
+      - len(comment_prefix)
+      - wrap_indent
+    )
     assert max_len > 1
     while len(comment):
       line, comment = trim_comment(comment, max_len)
@@ -180,29 +187,28 @@ class Code(object):
         # Only need to check %s because arg is a dict and python will allow
         # '%s %(named)s' but just about nothing else
         if '%s' in self._code[i].value or '%r' in self._code[i].value:
-          raise TypeError('"%s" or "%r" found in substitution. '
-                          'Named arguments only. Use "%" to escape')
+          raise TypeError(
+            '"%s" or "%r" found in substitution. '
+            'Named arguments only. Use "%" to escape'
+          )
         self._code[i].value = line.value % d
         self._code[i].substitute = False
     return self
 
   def TrimTrailingNewlines(self):
-    """Removes any trailing empty Line objects.
-    """
+    """Removes any trailing empty Line objects."""
     while self._code:
       if self._code[-1].value != '':
         return
       self._code = self._code[:-1]
 
   def Render(self):
-    """Renders Code as a string.
-    """
+    """Renders Code as a string."""
     return '\n'.join([l.value for l in self._code])
 
 
 class Line(object):
-  """A line of code.
-  """
+  """A line of code."""
 
   def __init__(self, value, substitute=True):
     self.value = value

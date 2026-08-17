@@ -19,17 +19,19 @@ def _hermetic_date_time(timestamp=None):
   if not timestamp:
     return (2001, 1, 1, 0, 0, 0)
   utc_time = time.gmtime(timestamp)
-  return (utc_time.tm_year, utc_time.tm_mon, utc_time.tm_mday, utc_time.tm_hour,
-          utc_time.tm_min, utc_time.tm_sec)
+  return (
+    utc_time.tm_year,
+    utc_time.tm_mon,
+    utc_time.tm_mday,
+    utc_time.tm_hour,
+    utc_time.tm_min,
+    utc_time.tm_sec,
+  )
 
 
-def add_to_zip_hermetic(zip_file,
-                        zip_path,
-                        *,
-                        src_path=None,
-                        data=None,
-                        compress=None,
-                        timestamp=None):
+def add_to_zip_hermetic(
+  zip_file, zip_path, *, src_path=None, data=None, compress=None, timestamp=None
+):
   """Adds a file to the given ZipFile with a hard-coded modified time.
 
   Args:
@@ -42,7 +44,8 @@ def add_to_zip_hermetic(zip_file,
     timestamp: The last modification date and time for the archive member.
   """
   assert (src_path is None) != (data is None), (
-      '|src_path| and |data| are mutually exclusive.')
+    '|src_path| and |data| are mutually exclusive.'
+  )
   if isinstance(zip_path, zipfile.ZipInfo):
     zipinfo = zip_path
     zip_path = zipinfo.filename
@@ -58,9 +61,11 @@ def add_to_zip_hermetic(zip_file,
   assert not posixpath.isabs(zip_path), 'Absolute zip path: ' + zip_path
   assert not zip_path.startswith('..'), 'Should not start with ..: ' + zip_path
   assert posixpath.normpath(zip_path) == zip_path, (
-      f'Non-canonical zip_path: {zip_path} vs: {posixpath.normpath(zip_path)}')
+    f'Non-canonical zip_path: {zip_path} vs: {posixpath.normpath(zip_path)}'
+  )
   assert zip_path not in zip_file.namelist(), (
-      'Tried to add a duplicate zip entry: ' + zip_path)
+    'Tried to add a duplicate zip entry: ' + zip_path
+  )
 
   if src_path:
     with open(src_path, 'rb') as f:
@@ -79,14 +84,16 @@ def add_to_zip_hermetic(zip_file,
   zip_file.writestr(zipinfo, data, compress_type)
 
 
-def add_files_to_zip(inputs,
-                     output,
-                     *,
-                     base_dir=None,
-                     path_transform=None,
-                     compress=None,
-                     zip_prefix_path=None,
-                     timestamp=None):
+def add_files_to_zip(
+  inputs,
+  output,
+  *,
+  base_dir=None,
+  path_transform=None,
+  compress=None,
+  zip_prefix_path=None,
+  timestamp=None,
+):
   """Creates a zip file from a list of files.
 
   Args:
@@ -127,11 +134,13 @@ def add_files_to_zip(inputs,
         zip_path = path_transform(zip_path)
         if zip_path is None:
           continue
-      add_to_zip_hermetic(out_zip,
-                          zip_path,
-                          src_path=fs_path,
-                          compress=compress,
-                          timestamp=timestamp)
+      add_to_zip_hermetic(
+        out_zip,
+        zip_path,
+        src_path=fs_path,
+        compress=compress,
+        timestamp=timestamp,
+      )
   finally:
     if output is not out_zip:
       out_zip.close()

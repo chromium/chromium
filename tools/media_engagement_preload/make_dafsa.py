@@ -217,6 +217,7 @@ def to_dafsa(words):
   """
   if not words:
     raise InputError('The origin list must not be empty')
+
   def ToNodes(word):
     """Split words into characters"""
     if not 0x1F < ord(word[0]) < 0x80:
@@ -224,6 +225,7 @@ def to_dafsa(words):
     if len(word) == 1:
       return chr(ord(word[0]) & 0x0F), [None]
     return word[0], [ToNodes(word[1:])]
+
   return [ToNodes(word) for word in words]
 
 
@@ -265,8 +267,8 @@ def join_labels(dafsa):
   """Generates a new DAFSA where internal nodes are merged if there is a one to
   one connection.
   """
-  parentcount = { id(None): 2 }
-  nodemap = { id(None): None }
+  parentcount = {id(None): 2}
+  nodemap = {id(None): None}
 
   def count_parents(node):
     """Count incoming references"""
@@ -297,7 +299,7 @@ def join_suffixes(dafsa):
   """Generates a new DAFSA where nodes that represent the same word lists
   towards the sink are merged.
   """
-  nodemap = { frozenset(('',)): None }
+  nodemap = {frozenset(('',)): None}
 
   def join(node):
     """Returns a macthing node. A new node is created if no matching node
@@ -354,7 +356,7 @@ def encode_links(children, offsets, current):
     return []
   guess = 3 * len(children)
   assert children
-  children = sorted(children, key = lambda x: -offsets[id(x)])
+  children = sorted(children, key=lambda x: -offsets[id(x)])
   while True:
     offset = current + guess
     buf = []
@@ -382,7 +384,7 @@ def encode_links(children, offsets, current):
       break
     guess = len(buf)
   # Set most significant bit to mark end of links in this node.
-  buf[last] |= (1 << 7)
+  buf[last] |= 1 << 7
   buf.reverse()
   return buf
 
@@ -399,11 +401,10 @@ def encode_prefix(label):
 
 
 def encode_label(label):
-  """Encodes a node label as a list of bytes with a trailing high byte >0x80.
-  """
+  """Encodes a node label as a list of bytes with a trailing high byte >0x80."""
   buf = encode_prefix(label)
   # Set most significant bit to mark end of label in this node.
-  buf[0] |= (1 << 7)
+  buf[0] |= 1 << 7
   return buf
 
 
@@ -413,8 +414,11 @@ def encode(dafsa):
   offsets = {}
 
   for node in reversed(top_sort(dafsa)):
-    if (len(node[1]) == 1 and node[1][0] and
-        (offsets[id(node[1][0])] == len(output))):
+    if (
+      len(node[1]) == 1
+      and node[1][0]
+      and (offsets[id(node[1][0])] == len(output))
+    ):
       output.extend(encode_prefix(node[0]))
     else:
       output.extend(encode_links(node[1], offsets, len(output)))
@@ -448,8 +452,9 @@ def parse_json(infile):
       # only. The HTTP+HTTPS value is numerically higher than HTTPS only so it
       # will take priority.
       netlocs[parsed.netloc] = max(
-          netlocs.get(parsed.netloc, HTTPS_ONLY),
-          HTTP_AND_HTTPS if parsed.scheme == 'http' else HTTPS_ONLY)
+        netlocs.get(parsed.netloc, HTTPS_ONLY),
+        HTTP_AND_HTTPS if parsed.scheme == 'http' else HTTPS_ONLY,
+      )
 
     # Join the numerical values to the netlocs.
     output = []
@@ -458,6 +463,7 @@ def parse_json(infile):
     return output
   except ValueError:
     raise InputError('Failed to parse JSON.')
+
 
 def main():
   if len(sys.argv) != 4:

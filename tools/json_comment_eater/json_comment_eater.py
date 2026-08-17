@@ -23,21 +23,23 @@ def _FindNextToken(string, tokens, start):
   '''
   for index, item in enumerate(string, start):
     for k in tokens:
-      if (string[index:index + len(k)] == k):
+      if string[index : index + len(k)] == k:
         return (index, k)
 
   return (-1, None)
+
 
 def _ReadString(input, start, output):
   output.append('"')
   start_range, end_range = (start, input.find('"', start))
   # \" escapes the ", \\" doesn't, \\\" does, etc.
-  while (end_range != -1 and
-         _Rcount(input[start_range:end_range], '\\') % 2 == 1):
+  while (
+    end_range != -1 and _Rcount(input[start_range:end_range], '\\') % 2 == 1
+  ):
     start_range, end_range = (end_range, input.find('"', end_range + 1))
   if end_range == -1:
     return start_range + 1
-  output.append(input[start:end_range + 1])
+  output.append(input[start : end_range + 1])
   return end_range + 1
 
 
@@ -49,12 +51,14 @@ def _ReadComment(input, start, output):
   output.append(eol_token)
   return eol_token_index + len(eol_token)
 
+
 def _ReadMultilineComment(input, start, output):
   end_tokens = ('*/',)
   end_token_index, end_token = _FindNextToken(input, end_tokens, start)
   if end_token is None:
     raise Exception("Multiline comment end token (*/) not found")
   return end_token_index + len(end_token)
+
 
 def Nom(input):
   token_actions = {
@@ -75,4 +79,4 @@ def Nom(input):
 
 
 if __name__ == '__main__':
-    sys.stdout.write(Nom(sys.stdin.read()))
+  sys.stdout.write(Nom(sys.stdin.read()))

@@ -12,6 +12,7 @@ from idl_option import GetOption
 from idl_visitor import IDLVisitor
 from idl_release import IDLReleaseMap
 
+
 #
 # IDLLabelResolver
 #
@@ -53,6 +54,7 @@ class IDLLabelResolver(IDLVisitor):
 #
 class IDLNamespaceVersionResolver(IDLVisitor):
   NamespaceSet = set(['AST', 'Callspec', 'Interface', 'Member', 'Struct'])
+
   #
   # When we arrive at a node we must assign it a namespace and if the
   # node is named, then place it in the appropriate namespace.
@@ -130,6 +132,7 @@ class IDLFileTypeResolver(IDLVisitor):
     else:
       node.typelist = None
     return filenode
+
 
 #
 # IDLReleaseResolver

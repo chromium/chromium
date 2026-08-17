@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """Pseudolocale translations for chrome."""
 
-
 import re
 import string
 
@@ -11,54 +10,62 @@ from collections import namedtuple
 from grit import tclib
 
 ACCENTED_STRINGS = {
-    '!': '\u00a1',
-    '$': '\u20ac',
-    '?': '\u00bf',
-    'A': '\u00c5',
-    'C': '\u00c7',
-    'D': '\u00d0',
-    'E': '\u00c9',
-    'G': '\u011c',
-    'H': '\u0124',
-    'I': '\u00ce',
-    'J': '\u0134',
-    'K': '\u0136',
-    'L': '\u013b',
-    'N': '\u00d1',
-    'O': '\u00d6',
-    'P': '\u00de',
-    'R': '\u00ae',
-    'S': '\u0160',
-    'T': '\u0162',
-    'U': '\u00db',
-    'W': '\u0174',
-    'Y': '\u00dd',
-    'Z': '\u017d',
-    'a': '\u00e5',
-    'c': '\u00e7',
-    'd': '\u00f0',
-    'e': '\u00e9',
-    'f': '\u0192',
-    'g': '\u011d',
-    'h': '\u0125',
-    'i': '\u00ee',
-    'j': '\u0135',
-    'k': '\u0137',
-    'l': '\u013c',
-    'n': '\u00f1',
-    'o': '\u00f6',
-    'p': '\u00fe',
-    's': '\u0161',
-    't': '\u0163',
-    'u': '\u00fb',
-    'w': '\u0175',
-    'y': '\u00fd',
-    'z': '\u017e',
+  '!': '\u00a1',
+  '$': '\u20ac',
+  '?': '\u00bf',
+  'A': '\u00c5',
+  'C': '\u00c7',
+  'D': '\u00d0',
+  'E': '\u00c9',
+  'G': '\u011c',
+  'H': '\u0124',
+  'I': '\u00ce',
+  'J': '\u0134',
+  'K': '\u0136',
+  'L': '\u013b',
+  'N': '\u00d1',
+  'O': '\u00d6',
+  'P': '\u00de',
+  'R': '\u00ae',
+  'S': '\u0160',
+  'T': '\u0162',
+  'U': '\u00db',
+  'W': '\u0174',
+  'Y': '\u00dd',
+  'Z': '\u017d',
+  'a': '\u00e5',
+  'c': '\u00e7',
+  'd': '\u00f0',
+  'e': '\u00e9',
+  'f': '\u0192',
+  'g': '\u011d',
+  'h': '\u0125',
+  'i': '\u00ee',
+  'j': '\u0135',
+  'k': '\u0137',
+  'l': '\u013c',
+  'n': '\u00f1',
+  'o': '\u00f6',
+  'p': '\u00fe',
+  's': '\u0161',
+  't': '\u0163',
+  'u': '\u00fb',
+  'w': '\u0175',
+  'y': '\u00fd',
+  'z': '\u017e',
 }
 
 NUMBERS = [
-    '- one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
-    'ten'
+  '- one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten',
 ]
 PLACEHOLDER_STRING = '{PLACEHOLDER_VARIABLE}'
 ALPHABETIC_RUN = re.compile(r'([^\W0-9_]+)')
@@ -103,11 +110,15 @@ class Node:
   def __repr__(self):
     # For debugging
     if self.children:
-      child_lines = '\n'.join('  ' + line for node in self.children
-                              for line in repr(node).split('\n'))
-      return '%s[before=%s, after=%s\n%s\n]' % (self.__class__.__name__,
-                                                repr(self.text), repr(
-                                                    self.after), child_lines)
+      child_lines = '\n'.join(
+        '  ' + line for node in self.children for line in repr(node).split('\n')
+      )
+      return '%s[before=%s, after=%s\n%s\n]' % (
+        self.__class__.__name__,
+        repr(self.text),
+        repr(self.after),
+        child_lines,
+      )
     else:
       return '%s %s' % (self.__class__.__name__, repr(self.text))
 
@@ -115,7 +126,7 @@ class Node:
   def _MatchPattern(cls, text):
     match = cls.pattern.match(text)
     if match is not None:
-      return cls(match.group(0)), text[len(match.group(0)):]
+      return cls(match.group(0)), text[len(match.group(0)) :]
     return None, text
 
   @classmethod
@@ -145,16 +156,19 @@ class HtmlTag(Node):
   script, style, xmp or listing.  If any of those appear in messages,
   something is wrong.
   """
+
   pattern = re.compile(
-      r'^</?[a-z]\w*'  # beginning of tag
-      r'(?:\s+\w+(?:\s*=\s*'  # attribute start
-      r'(?:[^\s"\'>]+|"[^\"]*"|\'[^\']*\'))?'  # attribute value
-      r')*\s*/?>',
-      re.S | re.I)
+    r'^</?[a-z]\w*'  # beginning of tag
+    r'(?:\s+\w+(?:\s*=\s*'  # attribute start
+    r'(?:[^\s"\'>]+|"[^\"]*"|\'[^\']*\'))?'  # attribute value
+    r')*\s*/?>',
+    re.S | re.I,
+  )
 
 
 class RawText(Node):
   """RawText represents regular text able to be translated."""
+
   # Raw text can have a < or $ in it, but only at the very start.
   # This guarantees that it's already tried and failed to match an HTML tag
   # and variable.
@@ -171,6 +185,7 @@ class BasicVariable(Node):
   """Represents a variable. Usually used inside a plural option, but has been
   overloaded to store placeholders as well.
   """
+
   pattern = re.compile(r'^\$?{[a-zA-Z0-9_]+}')
 
   def GetNumWords(self):
@@ -181,6 +196,7 @@ class PluralOption(Node):
   """Represents a single option for a plural selection.
   eg. =1 {singular option here}
   """
+
   pattern = re.compile(r'^(=[0-9]+|other)\s*{')
   after = '}\n'
 
@@ -190,8 +206,9 @@ class PluralOption(Node):
     assert node is not None, text
     child, text = NodeSequence.Parse(text)
     assert child is not None, text
-    node.children = child.children if isinstance(child,
-                                                 NodeSequence) else [child]
+    node.children = (
+      child.children if isinstance(child, NodeSequence) else [child]
+    )
 
     assert text.startswith('}')
     return node, text[1:]
@@ -201,8 +218,8 @@ class Plural(Node):
   """Represents a set of options for plurals.
   eg. {VARIABLE, plural, =1 {singular} other {plural}}
   """
-  pattern = re.compile(r'^{[A-Za-z0-9_]+,\s*plural,\s*(offset:\d+\s*)?',
-                            re.S)
+
+  pattern = re.compile(r'^{[A-Za-z0-9_]+,\s*plural,\s*(offset:\d+\s*)?', re.S)
   after = '}'
 
   @classmethod
@@ -226,6 +243,7 @@ class Plural(Node):
 class NodeSequence(Node):
   """Represents a series of nodes.
   eg. hello {VAR} -> NodeSequence([RawText('Hello'), BasicVariable('{VAR}'])"""
+
   child_types = [HtmlTag, BasicVariable, Plural, RawText]
 
   def __init__(self, children):
@@ -281,7 +299,7 @@ def ToTranslation(tree, placeholders):
     index = text.find(PLACEHOLDER_STRING)
     if index > 0:
       transl.AppendText(text[:index])
-    text = text[index + len(PLACEHOLDER_STRING):]
+    text = text[index + len(PLACEHOLDER_STRING) :]
     transl.AppendPlaceholder(placeholder)
   if text:
     transl.AppendText(text)
@@ -301,11 +319,13 @@ def PseudoLongStringMessage(message):
   tree, placeholders = BuildTreeFromMessage(message)
   # This will change after the transformation, so do it early.
   n_words = tree.GetNumWords()
-  tree.Transform(lambda x: ''.join(
-      ACCENTED_STRINGS.get(letter, letter) for letter in x))
+  tree.Transform(
+    lambda x: ''.join(ACCENTED_STRINGS.get(letter, letter) for letter in x)
+  )
   transl = ToTranslation(tree, placeholders)
-  transl.AppendText(' ' + ' '.join(NUMBERS[i % len(NUMBERS)]
-                                   for i in range(n_words)))
+  transl.AppendText(
+    ' ' + ' '.join(NUMBERS[i % len(NUMBERS)] for i in range(n_words))
+  )
 
   return transl
 
@@ -320,6 +340,7 @@ def PseudoRTLMessage(message):
     tclib.Translation()
   """
   tree, placeholders = BuildTreeFromMessage(message)
-  tree.Transform(lambda text: ALPHABETIC_RUN.sub(
-      lambda run: RLO + run.group() + PDF, text))
+  tree.Transform(
+    lambda text: ALPHABETIC_RUN.sub(lambda run: RLO + run.group() + PDF, text)
+  )
   return ToTranslation(tree, placeholders)

@@ -8,7 +8,6 @@
 # GRD samples exceed the 80 character limit.
 # pylint: disable-msg=C6310
 
-
 import os
 import sys
 import unittest
@@ -118,20 +117,30 @@ class RcHeaderFormatterUnittest(unittest.TestCase):
 
     # Using the default settings.
     output = rc_header.FormatDefines(grd)
-    self.assertEqual(('#define IDR_LOGO 300\n'
-                      '#define IDS_GREETING 10000\n'
-                      '#define IDS_BONGO 10001\n'), ''.join(output))
+    self.assertEqual(
+      (
+        '#define IDR_LOGO 300\n'
+        '#define IDS_GREETING 10000\n'
+        '#define IDS_BONGO 10001\n'
+      ),
+      ''.join(output),
+    )
 
     # Using resource allowlist support.
     grd.SetAllowlistSupportEnabled(True)
     output = rc_header.FormatDefines(grd)
-    self.assertEqual(('#define IDR_LOGO '
-                      '(::ui::AllowlistedResource<300>(), 300)\n'
-                      '#define IDS_GREETING '
-                      '(::ui::AllowlistedResource<10000>(), 10000)\n'
-                      '#define IDS_BONGO '
-                      '(::ui::AllowlistedResource<10001>(), 10001)\n'),
-                     ''.join(output))
+    self.assertEqual(
+      (
+        '#define IDR_LOGO '
+        '(::ui::AllowlistedResource<300>(), 300)\n'
+        '#define IDS_GREETING '
+        '(::ui::AllowlistedResource<10000>(), 10000)\n'
+        '#define IDS_BONGO '
+        '(::ui::AllowlistedResource<10001>(), 10001)\n'
+      ),
+      ''.join(output),
+    )
+
 
 if __name__ == '__main__':
   unittest.main()

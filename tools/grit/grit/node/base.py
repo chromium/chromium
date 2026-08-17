@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Base types for nodes in a GRIT resource tree.
-'''
+'''Base types for nodes in a GRIT resource tree.'''
 
 import ast
 import os
@@ -23,7 +22,7 @@ class Node:
   '''An item in the tree that has children.'''
 
   # Valid content types that can be returned by _ContentType()
-  _CONTENT_TYPE_NONE = 0   # No CDATA content but may have children
+  _CONTENT_TYPE_NONE = 0  # No CDATA content but may have children
   _CONTENT_TYPE_CDATA = 1  # Only CDATA, no children.
   _CONTENT_TYPE_MIXED = 2  # CDATA and children, possibly intermingled
 
@@ -45,15 +44,15 @@ class Node:
   eval_expr_cache = {}
 
   def __init__(self):
-    self.children = []        # A list of child elements
-    self.mixed_content = []   # A list of u'' and/or child elements (this
+    self.children = []  # A list of child elements
+    self.mixed_content = []  # A list of u'' and/or child elements (this
     # duplicates 'children' but
     # is needed to preserve markup-type content).
-    self.name = ''           # The name of this element
-    self.attrs = {}           # The set of attributes (keys to values)
-    self.parent = None        # Our parent unless we are the root element.
-    self.uberclique = None    # Allows overriding uberclique for parts of tree
-    self.source = None        # File that this node was parsed from
+    self.name = ''  # The name of this element
+    self.attrs = {}  # The set of attributes (keys to values)
+    self.parent = None  # Our parent unless we are the root element.
+    self.uberclique = None  # Allows overriding uberclique for parts of tree
+    self.source = None  # File that this node was parsed from
     self.translate_genders = False  # Translate into multiple per-gender files.
 
   # This context handler allows you to write "with node:" and get a
@@ -97,16 +96,16 @@ class Node:
     return curr
 
     # TODO(joi) Use this (currently untested) optimization?:
-    #if hasattr(self, '_root'):
+    # if hasattr(self, '_root'):
     #  return self._root
-    #curr = self
-    #while curr.parent and not hasattr(curr, '_root'):
+    # curr = self
+    # while curr.parent and not hasattr(curr, '_root'):
     #  curr = curr.parent
-    #if curr.parent:
+    # if curr.parent:
     #  self._root = curr._root
-    #else:
+    # else:
     #  self._root = curr
-    #return self._root
+    # return self._root
 
   def StartParsing(self, name, parent):
     '''Called at the start of parsing.
@@ -124,8 +123,10 @@ class Node:
     '''Adds a child to the list of children of this node, if it is a valid
     child for the node.'''
     assert isinstance(child, Node)
-    if (not self._IsValidChild(child) or
-        self._ContentType() == self._CONTENT_TYPE_CDATA):
+    if (
+      not self._IsValidChild(child)
+      or self._ContentType() == self._CONTENT_TYPE_CDATA
+    ):
       explanation = 'invalid child %s for parent %s' % (str(child), self.name)
       raise exception.UnexpectedChild(explanation)
     self.children.append(child)
@@ -180,8 +181,9 @@ class Node:
     if self._IsValidAttribute(attrib, value):
       self.attrs[attrib] = value
     else:
-      raise exception.UnexpectedAttribute("'%s' in file '%s'" %
-                                          (attrib, self.source))
+      raise exception.UnexpectedAttribute(
+        "'%s' in file '%s'" % (attrib, self.source)
+      )
 
   def EndParsing(self):
     '''Called at the end of parsing.'''
@@ -190,30 +192,32 @@ class Node:
     if len(self.mixed_content):
       if isinstance(self.mixed_content[0], str):
         # Remove leading and trailing chunks of pure whitespace.
-        while (len(self.mixed_content)
-               and isinstance(self.mixed_content[0], str)
-               and self.mixed_content[0].strip() == ''):
+        while (
+          len(self.mixed_content)
+          and isinstance(self.mixed_content[0], str)
+          and self.mixed_content[0].strip() == ''
+        ):
           self.mixed_content = self.mixed_content[1:]
         # Strip leading and trailing whitespace from mixed content chunks
         # at front and back.
-        if (len(self.mixed_content) and isinstance(self.mixed_content[0], str)):
+        if len(self.mixed_content) and isinstance(self.mixed_content[0], str):
           self.mixed_content[0] = self.mixed_content[0].lstrip()
         # Remove leading and trailing ''' (used to demarcate whitespace)
-        if (len(self.mixed_content) and isinstance(self.mixed_content[0], str)):
+        if len(self.mixed_content) and isinstance(self.mixed_content[0], str):
           if self.mixed_content[0].startswith("'''"):
             self.mixed_content[0] = self.mixed_content[0][3:]
     if len(self.mixed_content):
       if isinstance(self.mixed_content[-1], str):
         # Same stuff all over again for the tail end.
-        while (len(self.mixed_content)
-               and isinstance(self.mixed_content[-1], str)
-               and self.mixed_content[-1].strip() == ''):
+        while (
+          len(self.mixed_content)
+          and isinstance(self.mixed_content[-1], str)
+          and self.mixed_content[-1].strip() == ''
+        ):
           self.mixed_content = self.mixed_content[:-1]
-        if (len(self.mixed_content)
-            and isinstance(self.mixed_content[-1], str)):
+        if len(self.mixed_content) and isinstance(self.mixed_content[-1], str):
           self.mixed_content[-1] = self.mixed_content[-1].rstrip()
-        if (len(self.mixed_content)
-            and isinstance(self.mixed_content[-1], str)):
+        if len(self.mixed_content) and isinstance(self.mixed_content[-1], str):
           if self.mixed_content[-1].endswith("'''"):
             self.mixed_content[-1] = self.mixed_content[-1][:-3]
 
@@ -246,8 +250,9 @@ class Node:
     # files should not be included in the final build.
     if self.attrs.get('file'):
       assert not self.attrs.get('file').endswith('.ts'), (
-          'TypeScript files should not be added to Grit: Found \'%s\'' %
-          self.attrs.get('file'))
+        'TypeScript files should not be added to Grit: Found \'%s\''
+        % self.attrs.get('file')
+      )
 
   def GetCdata(self):
     '''Returns all CDATA of this element, concatenated into a single
@@ -263,7 +268,7 @@ class Node:
   # Some Python 2 glue.
   __unicode__ = __str__
 
-  def FormatXml(self, indent = '', one_line = False):
+  def FormatXml(self, indent='', one_line=False):
     '''Returns this node and all nodes below it as an XML
     element in a Unicode string.  This differs from __unicode__ in that it does
     not include the <?xml> stuff at the top of the string.  If one_line is true,
@@ -272,8 +277,9 @@ class Node:
     '''
     assert isinstance(indent, str)
 
-    content_one_line = (one_line or
-                        self._ContentType() == self._CONTENT_TYPE_MIXED)
+    content_one_line = (
+      one_line or self._ContentType() == self._CONTENT_TYPE_MIXED
+    )
     inside_content = self.ContentsAsXml(indent, content_one_line)
 
     # Then the attributes for this node.
@@ -287,18 +293,26 @@ class Node:
     # Finally build the XML for our node and return it
     if len(inside_content) > 0:
       if one_line:
-        return '<%s%s>%s</%s>' % (self.name, attribs, inside_content,
-                                   self.name)
+        return '<%s%s>%s</%s>' % (self.name, attribs, inside_content, self.name)
       elif content_one_line:
         return '%s<%s%s>\n%s  %s\n%s</%s>' % (
-          indent, self.name, attribs,
-          indent, inside_content,
-          indent, self.name)
+          indent,
+          self.name,
+          attribs,
+          indent,
+          inside_content,
+          indent,
+          self.name,
+        )
       else:
         return '%s<%s%s>\n%s\n%s</%s>' % (
-          indent, self.name, attribs,
+          indent,
+          self.name,
+          attribs,
           inside_content,
-          indent, self.name)
+          indent,
+          self.name,
+        )
     else:
       return '%s<%s%s />' % (indent, self.name, attribs)
 
@@ -331,7 +345,7 @@ class Node:
 
     # If the last item is a string (not a node) and ends with whitespace,
     # we need to add the ''' delimiter.
-    if (isinstance(last_item, str) and last_item.rstrip() != last_item):
+    if isinstance(last_item, str) and last_item.rstrip() != last_item:
       inside_parts[-1] = inside_parts[-1] + "'''"
 
     return ''.join(inside_parts)
@@ -356,8 +370,9 @@ class Node:
     '''Returns true if 'name' is the name of a valid attribute of this element
     and 'value' is a valid value for that attribute.  Overriden by
     subclasses unless they have only mandatory attributes.'''
-    return (name in self.MandatoryAttributes() or
-            name in self.DefaultAttributes())
+    return (
+      name in self.MandatoryAttributes() or name in self.DefaultAttributes()
+    )
 
   def _ContentType(self):
     '''Returns the type of content this element can have.  Overridden by
@@ -398,8 +413,11 @@ class Node:
     Return:
       'resource'
     '''
-    return util.normpath(os.path.join(self.GetRoot().GetBaseDir(),
-                                      os.path.expandvars(path_from_basedir)))
+    return util.normpath(
+      os.path.join(
+        self.GetRoot().GetBaseDir(), os.path.expandvars(path_from_basedir)
+      )
+    )
 
   def GetInputPath(self):
     '''Returns a path, relative to the base directory set for the grd file,
@@ -462,8 +480,7 @@ class Node:
     return [child for child in self if isinstance(child, type)]
 
   def GetTextualIds(self):
-    '''Returns a list of the textual ids of this node.
-    '''
+    '''Returns a list of the textual ids of this node.'''
     if 'name' in self.attrs:
       return [self.attrs['name']]
     return []
@@ -477,8 +494,11 @@ class Node:
     else:
       # Get a list of all variable and method names used in the expression.
       syntax_tree = ast.parse(expr, mode='eval')
-      variables_in_expr = [node.id for node in ast.walk(syntax_tree) if
-          isinstance(node, ast.Name) and node.id not in ('True', 'False')]
+      variables_in_expr = [
+        node.id
+        for node in ast.walk(syntax_tree)
+        if isinstance(node, ast.Name) and node.id not in ('True', 'False')
+      ]
       code = compile(syntax_tree, filename='<string>', mode='eval')
       cls.eval_expr_cache[expr] = code, variables_in_expr
 
@@ -507,17 +527,23 @@ class Node:
       elif name == 'is_bsd':
         value = 'bsd' in target_platform
       elif name == 'is_posix':
-        value = (target_platform in ('linux', 'darwin', 'sunos5', 'android',
-                                     'ios', 'chromeos')
-                 or 'bsd' in target_platform)
+        value = (
+          target_platform
+          in ('linux', 'darwin', 'sunos5', 'android', 'ios', 'chromeos')
+          or 'bsd' in target_platform
+        )
 
       elif name == 'pp_ifdef':
+
         def pp_ifdef(symbol):
           return symbol in defs
+
         value = pp_ifdef
       elif name == 'pp_if':
+
         def pp_if(symbol):
           return defs.get(symbol, False)
+
         value = pp_if
 
       elif name in defs:
@@ -557,11 +583,10 @@ class Node:
     defs = getattr(root, 'defines', {})
     target_platform = getattr(root, 'target_platform', '')
     extra_variables = {
-        'lang': lang,
-        'context': context,
+      'lang': lang,
+      'context': context,
     }
-    return Node.EvaluateExpression(
-        expr, defs, target_platform, extra_variables)
+    return Node.EvaluateExpression(expr, defs, target_platform, extra_variables)
 
   def OnlyTheseTranslations(self, languages):
     '''Turns off loading of translations for languages not in the provided list.
@@ -570,9 +595,11 @@ class Node:
       languages: ['fr', 'zh_cn']
     '''
     for node in self:
-      if (hasattr(node, 'IsTranslation') and
-          node.IsTranslation() and
-          node.GetLang() not in languages):
+      if (
+        hasattr(node, 'IsTranslation')
+        and node.IsTranslation()
+        and node.GetLang() not in languages
+      ):
         node.DisableLoading()
 
   def FindBooleanAttribute(self, attr, default, skip_self):
@@ -588,7 +615,7 @@ class Node:
     while p:
       value = p.attrs.get(attr, 'default').lower()
       if value != 'default':
-        return (value == 'true')
+        return value == 'true'
       p = p.parent
     return default
 
@@ -597,16 +624,18 @@ class Node:
     is true by default, unless this node is within a <release> node that has
     the allow_pseudo attribute set to false.
     '''
-    return self.FindBooleanAttribute('allow_pseudo',
-                                     default=True, skip_self=True)
+    return self.FindBooleanAttribute(
+      'allow_pseudo', default=True, skip_self=True
+    )
 
   def ShouldFallbackToEnglish(self):
     '''Returns true iff this node should fall back to English when
     pseudotranslations are disabled and no translation is available for a
     given message.
     '''
-    return self.FindBooleanAttribute('fallback_to_english',
-                                     default=False, skip_self=True)
+    return self.FindBooleanAttribute(
+      'fallback_to_english', default=False, skip_self=True
+    )
 
   def AllowlistMarkedAsSkip(self):
     '''Returns true if the node is marked to be skipped in the output by a
@@ -615,8 +644,7 @@ class Node:
     return self._allowlist_marked_as_skip
 
   def SetAllowlistMarkedAsSkip(self, mark_skipped):
-    '''Sets AllowlistMarkedAsSkip.
-    '''
+    '''Sets AllowlistMarkedAsSkip.'''
     self._allowlist_marked_as_skip = mark_skipped
 
   def ExpandVariables(self):
@@ -639,15 +667,16 @@ class Node:
 
     compress = self.attrs.get('compress')
     assert not (
-        compress != 'default' and compress != 'false' and
-        self.attrs.get('file').endswith(self._COMPRESS_DISALLOWED_EXTENSIONS)
+      compress != 'default'
+      and compress != 'false'
+      and self.attrs.get('file').endswith(self._COMPRESS_DISALLOWED_EXTENSIONS)
     ), 'Disallowed |compress| attribute found for %s' % self.attrs.get('name')
 
     # Compress JS, HTML, CSS and SVG files by default (gzip), unless |compress|
     # is explicitly specified.
-    compress_by_default = (compress == 'default'
-                           and self.attrs.get('file').endswith(
-                               self._COMPRESS_BY_DEFAULT_EXTENSIONS))
+    compress_by_default = compress == 'default' and self.attrs.get(
+      'file'
+    ).endswith(self._COMPRESS_BY_DEFAULT_EXTENSIONS)
 
     if compress == 'gzip' or compress_by_default:
       return grit.format.gzip_string.GzipString(data)
@@ -662,9 +691,11 @@ class Node:
       # truncated to 6 bytes, little-endian. size_bytes is 8 bytes,
       # need to truncate further to 6.
       formatter = b'%ds %dx %ds' % (6, 2, len(size_bytes) - 8)
-      return (constants.BROTLI_CONST +
-             b''.join(struct.unpack(formatter, size_bytes)) +
-             data)
+      return (
+        constants.BROTLI_CONST
+        + b''.join(struct.unpack(formatter, size_bytes))
+        + data
+      )
 
     if compress == 'false' or compress == 'default':
       return data
@@ -684,5 +715,6 @@ class Node:
 
 class ContentNode(Node):
   '''Convenience baseclass for nodes that can have content.'''
+
   def _ContentType(self):
     return self._CONTENT_TYPE_MIXED

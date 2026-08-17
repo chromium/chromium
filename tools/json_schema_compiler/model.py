@@ -10,8 +10,7 @@ from memoize import memoize
 
 def _IsTypeFromManifestKeys(namespace, typename, fallback):
   # type(Namespace, str, bool) -> bool
-  """Computes whether 'from_manifest_keys' is true for the given type.
-  """
+  """Computes whether 'from_manifest_keys' is true for the given type."""
   if typename in namespace._manifest_referenced_types:
     return True
 
@@ -19,14 +18,14 @@ def _IsTypeFromManifestKeys(namespace, typename, fallback):
 
 
 class ParseException(Exception):
-  """Thrown when data in the model is invalid.
-  """
+  """Thrown when data in the model is invalid."""
 
   def __init__(self, parent, message):
     hierarchy = _GetModelHierarchy(parent)
     hierarchy.append(message)
-    Exception.__init__(self,
-                       'Model parse exception at:\n' + '\n'.join(hierarchy))
+    Exception.__init__(
+      self, 'Model parse exception at:\n' + '\n'.join(hierarchy)
+    )
 
 
 class Model(object):
@@ -39,17 +38,16 @@ class Model(object):
   def __init__(self):
     self.namespaces = {}
 
-  def AddNamespace(self,
-                   json,
-                   source_file,
-                   include_compiler_options=False,
-                   environment=None):
-    """Add a namespace's json to the model and returns the namespace.
-    """
-    namespace = Namespace(json,
-                          source_file,
-                          include_compiler_options=include_compiler_options,
-                          environment=environment)
+  def AddNamespace(
+    self, json, source_file, include_compiler_options=False, environment=None
+  ):
+    """Add a namespace's json to the model and returns the namespace."""
+    namespace = Namespace(
+      json,
+      source_file,
+      include_compiler_options=include_compiler_options,
+      environment=environment,
+    )
     self.namespaces[namespace.name] = namespace
     return namespace
 
@@ -76,16 +74,16 @@ class Namespace(object):
   - |manifest_keys| is a Type representing the manifest keys for this namespace.
   """
 
-  def __init__(self,
-               json,
-               source_file,
-               include_compiler_options=False,
-               environment=None):
+  def __init__(
+    self, json, source_file, include_compiler_options=False, environment=None
+  ):
     self.name = json['namespace']
     if 'description' not in json:
       # TODO(kalman): Go back to throwing an error here.
-      print('%s must have a "description" field. This will appear '
-            'on the API summary page.' % self.name)
+      print(
+        '%s must have a "description" field. This will appear '
+        'on the API summary page.' % self.name
+      )
       json['description'] = ''
     self.description = json['description']
     self.nodoc = _GetTypedProperty(self, json, 'nodoc', bool, False)
@@ -130,13 +128,13 @@ class Origin(object):
   |from_client| and |from_json| would be True.
   """
 
-  def __init__(self,
-               from_client=False,
-               from_json=False,
-               from_manifest_keys=False):
+  def __init__(
+    self, from_client=False, from_json=False, from_manifest_keys=False
+  ):
     if not from_client and not from_json and not from_manifest_keys:
       raise ValueError(
-          'One of (from_client, from_json, from_manifest_keys) must be true')
+        'One of (from_client, from_json, from_manifest_keys) must be true'
+      )
     self.from_client = from_client
     self.from_json = from_json
     self.from_manifest_keys = from_manifest_keys
@@ -165,8 +163,9 @@ class Type(object):
 
     # The typename "ManifestKeys" is reserved.
     if name == 'ManifestKeys':
-      assert parent == namespace and input_origin.from_manifest_keys, \
-          'ManifestKeys type is reserved'
+      assert parent == namespace and input_origin.from_manifest_keys, (
+        'ManifestKeys type is reserved'
+      )
 
     self.namespace = namespace
     self.simple_name = _StripNamespace(self.name, namespace)
@@ -178,9 +177,10 @@ class Type(object):
     # We need to do this to ensure types reference by manifest types have the
     # correct value for |origin.from_manifest_keys|.
     self.origin = Origin(
-        input_origin.from_client, input_origin.from_json,
-        _IsTypeFromManifestKeys(namespace, name,
-                                input_origin.from_manifest_keys))
+      input_origin.from_client,
+      input_origin.from_json,
+      _IsTypeFromManifestKeys(namespace, name, input_origin.from_manifest_keys),
+    )
 
     self.parent = parent
     self.instance_of = json.get('isInstanceOf', None)
@@ -194,8 +194,9 @@ class Type(object):
     json_type = json.get('type', None)
     if json_type == 'array':
       self.property_type = PropertyType.ARRAY
-      self.item_type = Type(self, '%sType' % name, json['items'], namespace,
-                            self.origin)
+      self.item_type = Type(
+        self, '%sType' % name, json['items'], namespace, self.origin
+      )
     elif '$ref' in json:
       self.property_type = PropertyType.REF
       self.ref_type = json['$ref']
@@ -208,12 +209,13 @@ class Type(object):
     elif 'enum' in json and json_type == 'string':
       if not isinstance(parent, Namespace):
         raise ParseException(
-            self,
-            'Inline enum "%s" found in namespace "%s". These are not allowed. '
-            'See crbug.com/472279' % (name, namespace.name))
+          self,
+          'Inline enum "%s" found in namespace "%s". These are not allowed. '
+          'See crbug.com/472279' % (name, namespace.name),
+        )
       self.property_type = PropertyType.ENUM
       self.enum_values = [
-          EnumValue(self, value, namespace) for value in json['enum']
+        EnumValue(self, value, namespace) for value in json['enum']
       ]
     elif json_type == 'any':
       self.property_type = PropertyType.ANY
@@ -223,7 +225,7 @@ class Type(object):
       self.property_type = PropertyType.BOOLEAN
     elif json_type == 'integer':
       self.property_type = PropertyType.INTEGER
-    elif (json_type == 'double' or json_type == 'number'):
+    elif json_type == 'double' or json_type == 'number':
       self.property_type = PropertyType.DOUBLE
     elif json_type == 'string':
       self.property_type = PropertyType.STRING
@@ -240,21 +242,34 @@ class Type(object):
         return None
 
       self.choices = [
-          Type(self,
-               generate_type_name(choice) or 'choice%s' % i, choice, namespace,
-               self.origin) for i, choice in enumerate(json['choices'])
+        Type(
+          self,
+          generate_type_name(choice) or 'choice%s' % i,
+          choice,
+          namespace,
+          self.origin,
+        )
+        for i, choice in enumerate(json['choices'])
       ]
     elif json_type == 'object':
-      if not ('isInstanceOf' in json or 'properties' in json
-              or 'additionalProperties' in json or 'functions' in json
-              or 'events' in json):
+      if not (
+        'isInstanceOf' in json
+        or 'properties' in json
+        or 'additionalProperties' in json
+        or 'functions' in json
+        or 'events' in json
+      ):
         raise ParseException(self, name + " has no properties or functions")
       self.property_type = PropertyType.OBJECT
       additional_properties_json = json.get('additionalProperties', None)
       if additional_properties_json is not None:
-        self.additional_properties = Type(self, 'additionalProperties',
-                                          additional_properties_json, namespace,
-                                          self.origin)
+        self.additional_properties = Type(
+          self,
+          'additionalProperties',
+          additional_properties_json,
+          namespace,
+          self.origin,
+        )
       else:
         self.additional_properties = None
     elif json_type == 'function':
@@ -262,14 +277,15 @@ class Type(object):
       # Sometimes we might have an unnamed function, e.g. if it's a property
       # of an object. Use the name of the property in that case.
       function_name = json.get('name', name)
-      self.function = Function(self, function_name, json, namespace,
-                               self.origin)
+      self.function = Function(
+        self, function_name, json, namespace, self.origin
+      )
     else:
       raise ParseException(self, 'Unsupported JSON type %s' % json_type)
 
   def IsRootManifestKeyType(self):
     # type: () -> boolean
-    ''' Returns true if this type corresponds to the top level ManifestKeys
+    '''Returns true if this type corresponds to the top level ManifestKeys
     type.
     '''
     return self.name == 'ManifestKeys'
@@ -318,28 +334,31 @@ class Function(object):
       return Property(self, p['name'], p, namespace, origin)
 
     self.filters = [
-        GeneratePropertyFromParam(filter_instance)
-        for filter_instance in json.get('filters', [])
+      GeneratePropertyFromParam(filter_instance)
+      for filter_instance in json.get('filters', [])
     ]
 
     # Any asynchronous return should be defined using the returns_async field.
     returns_async = json.get('returns_async', None)
     if returns_async:
       self.returns_async = ReturnsAsync(
-          self,
-          returns_async,
-          namespace,
-          Origin(from_client=True),
+        self,
+        returns_async,
+        namespace,
+        Origin(from_client=True),
       )
       # TODO(crbug.com/40154924): Returning a synchronous value is
       # incompatible with returning a promise. There are APIs that specify this,
       # though, so we make sure they have specified does_not_support_promises if
       # they do.
-      if (json.get('returns') is not None
-          and self.returns_async.can_return_promise):
+      if (
+        json.get('returns') is not None
+        and self.returns_async.can_return_promise
+      ):
         raise ValueError(
-            'Cannot specify both returns and returns_async on a function '
-            'which supports promies: %s.%s' % (namespace.name, name))
+          'Cannot specify both returns and returns_async on a function '
+          'which supports promies: %s.%s' % (namespace.name, name)
+        )
 
     params = json.get('parameters', [])
     for i, param in enumerate(params):
@@ -347,8 +366,9 @@ class Function(object):
 
     self.returns = None
     if 'returns' in json:
-      self.returns = Type(self, '%sReturnType' % name, json['returns'],
-                          namespace, origin)
+      self.returns = Type(
+        self, '%sReturnType' % name, json['returns'], namespace, origin
+      )
 
 
 class ReturnsAsync(object):
@@ -379,28 +399,32 @@ class ReturnsAsync(object):
     self.nocompile = json.get('nocompile')
     self.parent = parent
     self.can_return_promise = json.get('does_not_support_promises') is None
-    if (self.can_return_promise):
+    if self.can_return_promise:
       self.optional = True
     else:
       self.optional = _GetWithDefaultChecked(parent, json, 'optional', False)
 
     if json.get('returns') is not None:
       raise ValueError(
-          'Cannot return a value from an asynchronous return: %s.%s in %s' %
-          (namespace.name, parent.name, namespace.source_file))
+        'Cannot return a value from an asynchronous return: %s.%s in %s'
+        % (namespace.name, parent.name, namespace.source_file)
+      )
     if json.get('deprecated') is not None:
       raise ValueError(
-          'Cannot specify deprecated on an asynchronous return: %s.%s in %s' %
-          (namespace.name, parent.name, namespace.source_file))
+        'Cannot specify deprecated on an asynchronous return: %s.%s in %s'
+        % (namespace.name, parent.name, namespace.source_file)
+      )
     if json.get('parameters') is None:
       raise ValueError(
-          'parameters key not specified on returns_async: %s.%s in %s' %
-          (namespace.name, parent.name, namespace.source_file))
+        'parameters key not specified on returns_async: %s.%s in %s'
+        % (namespace.name, parent.name, namespace.source_file)
+      )
     if len(json.get('parameters')) > 1 and self.can_return_promise:
       raise ValueError(
-          'Only a single parameter can be specific on a returns_async which'
-          ' supports promises: %s.%s in %s' %
-          (namespace.name, parent.name, namespace.source_file))
+        'Only a single parameter can be specific on a returns_async which'
+        ' supports promises: %s.%s in %s'
+        % (namespace.name, parent.name, namespace.source_file)
+      )
 
     def GeneratePropertyFromParam(p):
       return Property(self, p['name'], p, namespace, origin)
@@ -425,8 +449,7 @@ class Property(object):
   """
 
   def __init__(self, parent, name, json, namespace, origin):
-    """Creates a Property from JSON.
-    """
+    """Creates a Property from JSON."""
     self.parent = parent
     self.name = name
     self._unix_name = UnixName(self.name)
@@ -440,10 +463,12 @@ class Property(object):
     self.nodoc = _GetTypedProperty(self, json, 'nodoc', bool, False)
 
     # HACK: only support very specific value types.
-    is_allowed_value = ('$ref' not in json
-                        and ('type' not in json or json['type'] == 'integer'
-                             or json['type'] == 'number'
-                             or json['type'] == 'string'))
+    is_allowed_value = '$ref' not in json and (
+      'type' not in json
+      or json['type'] == 'integer'
+      or json['type'] == 'number'
+      or json['type'] == 'string'
+    )
 
     self.value = None
     if 'value' in json and is_allowed_value:
@@ -460,14 +485,14 @@ class Property(object):
         else:
           # TODO(kalman): support more types as necessary.
           raise ParseException(
-              parent,
-              '"%s" is not a supported type for "value"' % type(self.value))
+            parent,
+            '"%s" is not a supported type for "value"' % type(self.value),
+          )
 
     self.type_ = Type(parent, name, json, namespace, origin)
 
   def GetUnixName(self):
-    """Gets the property's unix_name. Raises AttributeError if not set.
-    """
+    """Gets the property's unix_name. Raises AttributeError if not set."""
     if not self._unix_name:
       raise AttributeError('No unix_name set on %s' % self.name)
     self._unix_name_used = True
@@ -480,9 +505,10 @@ class Property(object):
     if unix_name == self._unix_name:
       return
     if self._unix_name_used:
-      raise AttributeError('Cannot set the unix_name on %s; '
-                           'it is already used elsewhere as %s' %
-                           (self.name, self._unix_name))
+      raise AttributeError(
+        'Cannot set the unix_name on %s; '
+        'it is already used elsewhere as %s' % (self.name, self._unix_name)
+      )
     self._unix_name = unix_name
 
   unix_name = property(GetUnixName, SetUnixName)
@@ -511,7 +537,7 @@ class EnumValue(object):
 
     # Using empty string values as enum key is only allowed in a few namespaces,
     # as an exception to the rule, and we should not add more.
-    if (not self.name and namespace.name not in ['enums', 'webstorePrivate']):
+    if not self.name and namespace.name not in ['enums', 'webstorePrivate']:
       raise ValueError('Enum value cannot be an empty string')
 
   def CamelName(self):
@@ -525,8 +551,7 @@ class _Enum(object):
 
   @staticmethod
   def GetAll(cls):
-    """Yields all _Enum objects declared in |cls|.
-    """
+    """Yields all _Enum objects declared in |cls|."""
     for prop_key in dir(cls):
       prop_value = getattr(cls, prop_key)
       if isinstance(prop_value, _Enum):
@@ -552,7 +577,6 @@ class _Enum(object):
 
 
 class _PropertyTypeInfo(_Enum):
-
   def __init__(self, is_fundamental, name):
     _Enum.__init__(self, name)
     self.is_fundamental = is_fundamental
@@ -562,8 +586,8 @@ class _PropertyTypeInfo(_Enum):
 
 
 class PropertyType(object):
-  """Enum of different types of properties/parameters.
-  """
+  """Enum of different types of properties/parameters."""
+
   ANY = _PropertyTypeInfo(False, "any")
   ARRAY = _PropertyTypeInfo(False, "array")
   BINARY = _PropertyTypeInfo(False, "binary")
@@ -580,115 +604,113 @@ class PropertyType(object):
 
 
 def IsCPlusPlusKeyword(name):
-  """Returns true if `name` is a C++ reserved keyword.
-  """
+  """Returns true if `name` is a C++ reserved keyword."""
   # Obtained from https://en.cppreference.com/w/cpp/keyword.
   keywords = {
-      "alignas",
-      "alignof",
-      "and",
-      "and_eq",
-      "asm",
-      "atomic_cancel",
-      "atomic_commit",
-      "atomic_noexcept",
-      "auto",
-      "bitand",
-      "bitor",
-      "bool",
-      "break",
-      "case",
-      "catch",
-      "char",
-      "char8_t",
-      "char16_t",
-      "char32_t",
-      "class",
-      "compl",
-      "concept",
-      "const",
-      "consteval",
-      "constexpr",
-      "constinit",
-      "const_cast",
-      "continue",
-      "co_await",
-      "co_return",
-      "co_yield",
-      "decltype",
-      "default",
-      "delete",
-      "do",
-      "double",
-      "dynamic_cast",
-      "else",
-      "enum",
-      "explicit",
-      "export",
-      "extern",
-      "false",
-      "float",
-      "for",
-      "friend",
-      "goto",
-      "if",
-      "inline",
-      "int",
-      "long",
-      "mutable",
-      "namespace",
-      "new",
-      "noexcept",
-      "not",
-      "not_eq",
-      "nullptr",
-      "operator",
-      "or",
-      "or_eq",
-      "private",
-      "protected",
-      "public",
-      "reflexpr",
-      "register",
-      "reinterpret_cast",
-      "requires",
-      "return",
-      "short",
-      "signed",
-      "sizeof",
-      "static",
-      "static_assert",
-      "static_cast",
-      "struct",
-      "switch",
-      "synchronized",
-      "template",
-      "this",
-      "thread_local",
-      "throw",
-      "true",
-      "try",
-      "typedef",
-      "typeid",
-      "typename",
-      "union",
-      "unsigned",
-      "using",
-      "virtual",
-      "void",
-      "volatile",
-      "wchar_t",
-      "while",
-      "xor",
-      "xor_eq",
+    "alignas",
+    "alignof",
+    "and",
+    "and_eq",
+    "asm",
+    "atomic_cancel",
+    "atomic_commit",
+    "atomic_noexcept",
+    "auto",
+    "bitand",
+    "bitor",
+    "bool",
+    "break",
+    "case",
+    "catch",
+    "char",
+    "char8_t",
+    "char16_t",
+    "char32_t",
+    "class",
+    "compl",
+    "concept",
+    "const",
+    "consteval",
+    "constexpr",
+    "constinit",
+    "const_cast",
+    "continue",
+    "co_await",
+    "co_return",
+    "co_yield",
+    "decltype",
+    "default",
+    "delete",
+    "do",
+    "double",
+    "dynamic_cast",
+    "else",
+    "enum",
+    "explicit",
+    "export",
+    "extern",
+    "false",
+    "float",
+    "for",
+    "friend",
+    "goto",
+    "if",
+    "inline",
+    "int",
+    "long",
+    "mutable",
+    "namespace",
+    "new",
+    "noexcept",
+    "not",
+    "not_eq",
+    "nullptr",
+    "operator",
+    "or",
+    "or_eq",
+    "private",
+    "protected",
+    "public",
+    "reflexpr",
+    "register",
+    "reinterpret_cast",
+    "requires",
+    "return",
+    "short",
+    "signed",
+    "sizeof",
+    "static",
+    "static_assert",
+    "static_cast",
+    "struct",
+    "switch",
+    "synchronized",
+    "template",
+    "this",
+    "thread_local",
+    "throw",
+    "true",
+    "try",
+    "typedef",
+    "typeid",
+    "typename",
+    "union",
+    "unsigned",
+    "using",
+    "virtual",
+    "void",
+    "volatile",
+    "wchar_t",
+    "while",
+    "xor",
+    "xor_eq",
   }
   return name in keywords
 
 
 @memoize
 def UnixName(name):
-  '''Returns the unix_style name for a given lowerCamelCase string.
-  '''
+  '''Returns the unix_style name for a given lowerCamelCase string.'''
   # Append an extra underscore to the |name|'s end if it's a reserved C++
   # keyword in order to avoid compilation errors in generated code.
   # Note: In some cases, this is overly greedy, because the unix name is
@@ -701,7 +723,7 @@ def UnixName(name):
   # Prepend an extra underscore to the |name|'s start if it doesn't start with a
   # letter or underscore to ensure the generated unix name follows C++
   # identifier rules.
-  assert (name)
+  assert name
   if name[0].isdigit():
     name = '_' + name
 
@@ -725,7 +747,7 @@ def UnixName(name):
 
 @memoize
 def CamelName(snake):
-  ''' Converts a snake_cased_string to a camelCasedOne. '''
+  '''Converts a snake_cased_string to a camelCasedOne.'''
   pieces = snake.split('_')
   camel = []
   for i, piece in enumerate(pieces):
@@ -738,7 +760,7 @@ def CamelName(snake):
 
 def _StripNamespace(name, namespace):
   if name.startswith(namespace.name + '.'):
-    return name[len(namespace.name + '.'):]
+    return name[len(namespace.name + '.') :]
   return name
 
 
@@ -755,10 +777,10 @@ def _GetModelHierarchy(entity):
 
 
 def _GetTypes(parent, json, namespace, origin):
-  """Creates Type objects extracted from |json|.
-  """
-  assert hasattr(namespace, 'manifest_keys'), \
+  """Creates Type objects extracted from |json|."""
+  assert hasattr(namespace, 'manifest_keys'), (
     'Types should be parsed after parsing manifest keys.'
+  )
 
   types = OrderedDict()
   for type_json in json.get('types', []):
@@ -768,30 +790,37 @@ def _GetTypes(parent, json, namespace, origin):
 
 
 def _GetFunctions(parent, json, namespace):
-  """Creates Function objects extracted from |json|.
-  """
+  """Creates Function objects extracted from |json|."""
   functions = OrderedDict()
   for function_json in json.get('functions', []):
-    function = Function(parent, function_json['name'], function_json, namespace,
-                        Origin(from_json=True))
+    function = Function(
+      parent,
+      function_json['name'],
+      function_json,
+      namespace,
+      Origin(from_json=True),
+    )
     functions[function.name] = function
   return functions
 
 
 def _GetEvents(parent, json, namespace):
-  """Creates Function objects generated from the events in |json|.
-  """
+  """Creates Function objects generated from the events in |json|."""
   events = OrderedDict()
   for event_json in json.get('events', []):
-    event = Function(parent, event_json['name'], event_json, namespace,
-                     Origin(from_client=True))
+    event = Function(
+      parent,
+      event_json['name'],
+      event_json,
+      namespace,
+      Origin(from_client=True),
+    )
     events[event.name] = event
   return events
 
 
 def _GetProperties(parent, json, namespace, origin):
-  """Generates Property objects extracted from |json|.
-  """
+  """Generates Property objects extracted from |json|."""
   properties = OrderedDict()
   for name, property_json in json.get('properties', {}).items():
     properties[name] = Property(parent, name, property_json, namespace, origin)
@@ -808,13 +837,18 @@ def _GetManifestKeysType(self, json):
 
   # Create a dummy object to parse "manifest_keys" as a type.
   manifest_keys_type = {
-      'type': 'object',
-      'properties': json['manifest_keys'],
+    'type': 'object',
+    'properties': json['manifest_keys'],
   }
 
   # Create a Type instance for the manifest keys object.
-  manifest_type = Type(self, 'ManifestKeys', manifest_keys_type, self,
-                       Origin(from_manifest_keys=True))
+  manifest_type = Type(
+    self,
+    'ManifestKeys',
+    manifest_keys_type,
+    self,
+    Origin(from_manifest_keys=True),
+  )
 
   # Enforce that all the top-level manifest keys are optional.
   for name, item in manifest_type.properties.items():
@@ -827,21 +861,22 @@ def _GetManifestKeysType(self, json):
 def _GetWithDefaultChecked(self, json, key, default):
   if json.get(key) == default:
     raise ParseException(
-        self, 'The attribute "%s" is specified as "%s", but this is the '
-        'default value if the attribute is not included. It should be removed.'
-        % (key, default))
+      self,
+      'The attribute "%s" is specified as "%s", but this is the '
+      'default value if the attribute is not included. It should be removed.'
+      % (key, default),
+    )
   return json.get(key, default)
 
 
 class _PlatformInfo(_Enum):
-
   def __init__(self, name):
     _Enum.__init__(self, name)
 
 
 class Platforms(object):
-  """Enum of the possible platforms.
-  """
+  """Enum of the possible platforms."""
+
   CHROMEOS = _PlatformInfo("chromeos")
   DESKTOP_ANDROID = _PlatformInfo("desktop_android")
   LINUX = _PlatformInfo("linux")
@@ -872,6 +907,8 @@ def _GetTypedProperty(parent, json, name, expected_type, default):
   value = json.get(name, default)
   if not isinstance(value, expected_type):
     raise ParseException(
-        parent, 'The attribute "%s" must be specified as %s, but was '
-        'speficied as %s.' % (name, type(expected_type()), type(value)))
+      parent,
+      'The attribute "%s" must be specified as %s, but was '
+      'speficied as %s.' % (name, type(expected_type()), type(value)),
+    )
   return value

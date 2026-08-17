@@ -35,8 +35,9 @@ def gen_locale(locale_tuple):  # type: (tuple) -> str
     # We assume that all locale codes have only letters, numbers and hyphens.
     assert code.replace('-', '').isalnum(), code
     # clang-format enforces a four-space indent for initializer lists.
-    return '    IMPL_LANGUAGECODE_TAG_NAME("{code}", {name})'.format(code=code,
-                                                                     name=name)
+    return '    IMPL_LANGUAGECODE_TAG_NAME("{code}", {name})'.format(
+        code=code, name=name
+    )
 
 
 def gen_locales(locales):  # type: (list) -> str
@@ -251,6 +252,7 @@ _ALL_LOCALES = [
 
 def main():  # type: () -> None
     import doctest
+
     doctest.testmod()
 
     if len(sys.argv) < 2:

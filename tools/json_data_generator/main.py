@@ -10,20 +10,24 @@ import sys
 sys.path += [os.path.dirname(os.path.dirname(__file__))]
 
 from json_data_generator.generator import JSONDataGenerator
-from json_data_generator.util import (GetFileNameWithoutExtensionFromPath,
-                                      JoinPath)
+from json_data_generator.util import (
+    GetFileNameWithoutExtensionFromPath,
+    JoinPath,
+)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Generate data from JSON5 file.')
+        description='Generate data from JSON5 file.'
+    )
 
-    parser.add_argument('--templates',
-                        nargs='+',
-                        help="Jinja template files (*.jinja)")
+    parser.add_argument(
+        '--templates', nargs='+', help="Jinja template files (*.jinja)"
+    )
     parser.add_argument(
         '--template-helper',
-        help='additional python file to provide custom Jinja globals/filters')
+        help='additional python file to provide custom Jinja globals/filters',
+    )
     parser.add_argument('--out-dir', help='directory to write output to')
     parser.add_argument('--sources', nargs='+', help='source json5 data files')
 
@@ -37,11 +41,13 @@ def main():
 
     for template_path in args.templates:
         out_file_path = JoinPath(
-            args.out_dir, GetFileNameWithoutExtensionFromPath(template_path))
+            args.out_dir, GetFileNameWithoutExtensionFromPath(template_path)
+        )
 
         with open(out_file_path, 'w') as f:
             f.write(
-                generator.RenderTemplate(template_path, args.template_helper))
+                generator.RenderTemplate(template_path, args.template_helper)
+            )
 
     return 0
 

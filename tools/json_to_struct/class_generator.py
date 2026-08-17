@@ -29,7 +29,7 @@ def _GenerateConstructorParams(fields, indent):
 def _GenerateConstructorBody(fields, indent):
   lines = []
   for field in fields:
-    field_name = field[field.find(' ') + 1:]
+    field_name = field[field.find(' ') + 1 :]
     lines.append('%sthis.%s = %s;' % (indent, field_name, field_name))
   return '\n'.join(lines)
 
@@ -79,13 +79,16 @@ def GenerateInnerClasses(type_name, schema):
   for field_info in schema:
     if field_info['type'] == 'struct':
       lines.insert(
-          0, GenerateInnerClasses(field_info['type_name'],
-                                  field_info['fields']))
-    elif (field_info['type'] == 'array'
-          and field_info['contents']['type'] == 'struct'):
+        0, GenerateInnerClasses(field_info['type_name'], field_info['fields'])
+      )
+    elif (
+      field_info['type'] == 'array'
+      and field_info['contents']['type'] == 'struct'
+    ):
       contents = field_info['contents']
       lines.insert(
-          0, GenerateInnerClasses(contents['type_name'], contents['fields']))
+        0, GenerateInnerClasses(contents['type_name'], contents['fields'])
+      )
 
     class_fields.append(GenerateField(field_info))
 

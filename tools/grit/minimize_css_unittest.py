@@ -9,7 +9,6 @@ import minimize_css
 
 
 class CSSMinimizerTest(unittest.TestCase):
-
   def test_simple(self):
     source = """
             div {
@@ -27,9 +26,10 @@ class CSSMinimizerTest(unittest.TestCase):
         """
     minimized = minimize_css.CSSMinimizer.minimize_css(source)
     self.assertEqual(
-        minimized,
-        # pylint: disable=line-too-long
-        """input[type="search" i]::-webkit-textfield-decoration-container{direction: ltr}""")
+      minimized,
+      # pylint: disable=line-too-long
+      """input[type="search" i]::-webkit-textfield-decoration-container{direction: ltr}""",
+    )
 
   def test_strip_comment(self):
     source = """
@@ -53,6 +53,8 @@ class CSSMinimizerTest(unittest.TestCase):
     self.assertEqual(minimized, source)
 
   def test_escape_string(self):
-    source = """content: " <a onclick=\\\"javascript:  alert  ( 'foobar' ); \\\">";"""
+    source = (
+      """content: " <a onclick=\\\"javascript:  alert  ( 'foobar' ); \\\">";"""
+    )
     minimized = minimize_css.CSSMinimizer.minimize_css(source)
     self.assertEqual(minimized, source)

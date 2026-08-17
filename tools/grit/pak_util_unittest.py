@@ -18,9 +18,11 @@ class PackUtilTest(unittest.TestCase):
     old_argv = sys.argv
     grit_root_dir = os.path.abspath(os.path.dirname(__file__))
     sys.argv = [
-        'pak_util_unittest.py', 'extract',
-        os.path.join(grit_root_dir, 'grit/testdata/resources.pak'), '-o',
-        tempdir
+      'pak_util_unittest.py',
+      'extract',
+      os.path.join(grit_root_dir, 'grit/testdata/resources.pak'),
+      '-o',
+      tempdir,
     ]
     pak_util.main()
     sys.argv = old_argv

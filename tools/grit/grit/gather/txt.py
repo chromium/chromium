@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Supports making amessage from a text file.
-'''
-
+'''Supports making amessage from a text file.'''
 
 from grit.gather import interface
 from grit import constants
@@ -31,8 +29,16 @@ class TxtFile(interface.GathererBase):
     '''Returns the MessageClique objects for all translateable portions.'''
     return [self.clique_]
 
-  def Translate(self, lang, pseudo_if_not_available=True,
-                skeleton_gatherer=None, fallback_to_english=False):
+  def Translate(
+    self,
+    lang,
+    pseudo_if_not_available=True,
+    skeleton_gatherer=None,
+    fallback_to_english=False,
+  ):
     return self.clique_.MessageForLanguageAndGender(
-        lang, constants.DEFAULT_GENDER, pseudo_if_not_available,
-        fallback_to_english).GetRealContent()
+      lang,
+      constants.DEFAULT_GENDER,
+      pseudo_if_not_available,
+      fallback_to_english,
+    ).GetRealContent()

@@ -64,7 +64,6 @@ to, and generates an updated version of the resource_ids file while preserving
 structure elements 1-3 stated above.
 """
 
-
 import argparse
 import collections
 import os
@@ -98,7 +97,7 @@ def _MultiReplace(data, repl):
   """
   res = []
   prev = 0
-  for (lo, hi, s) in sorted(repl):
+  for lo, hi, s in sorted(repl):
     if prev < lo:
       res.append(data[prev:lo])
     res.append(s)
@@ -141,40 +140,41 @@ def _ParseArguments(raw_args):
 
 class UpdateResourceIds(interface.Tool):
   """Updates all start IDs in an resource_ids file by reading all GRD files it
-refers to, estimating the number of required IDs of each type, then rewrites
-start IDs while preserving structure.
+  refers to, estimating the number of required IDs of each type, then rewrites
+  start IDs while preserving structure.
 
-Usage: grit update_resource_ids [--parse|-p] [--read-grd|-r] [--tokenize|-t]
-                                [--naive] [--fake] [-o OUTPUT_FILE]
-                                [--analyze-inputs] [--depfile DEPFILE]
-                                [--add-header] RESOURCE_IDS_FILE
+  Usage: grit update_resource_ids [--parse|-p] [--read-grd|-r] [--tokenize|-t]
+                                  [--naive] [--fake] [-o OUTPUT_FILE]
+                                  [--analyze-inputs] [--depfile DEPFILE]
+                                  [--add-header] RESOURCE_IDS_FILE
 
-RESOURCE_IDS_FILE is the path of the input resource_ids file.
+  RESOURCE_IDS_FILE is the path of the input resource_ids file.
 
-The -o option redirects output (default stdout) to OUPTUT_FILE, which can also
-be RESOURCE_IDS_FILE.
+  The -o option redirects output (default stdout) to OUPTUT_FILE, which can also
+  be RESOURCE_IDS_FILE.
 
-Other options:
+  Other options:
 
-  -E NAME=VALUE     Sets environment variable NAME to VALUE (within grit).
+    -E NAME=VALUE     Sets environment variable NAME to VALUE (within grit).
 
-  --count|-c        Parses RESOURCE_IDS_FILE, reads the GRD files, and prints
-                    required sizes.
+    --count|-c        Parses RESOURCE_IDS_FILE, reads the GRD files, and prints
+                      required sizes.
 
-  --fake            For testing: Skips reading GRD files, and assigns 10 as the
-                    usage of every tag.
+    --fake            For testing: Skips reading GRD files, and assigns 10
+                      as the
+                      usage of every tag.
 
-  --naive           Use naive coarse assigner.
+    --naive           Use naive coarse assigner.
 
-  --parse|-p        Parses RESOURCE_IDS_FILE and dumps its nodes to console.
+    --parse|-p        Parses RESOURCE_IDS_FILE and dumps its nodes to console.
 
-  --tokenize|-t     Tokenizes RESOURCE_IDS_FILE and reprints it as syntax-
-                    highlighted output.
+    --tokenize|-t     Tokenizes RESOURCE_IDS_FILE and reprints it as syntax-
+                      highlighted output.
 
-  --depfile=DEPFILE Write out a depfile for ninja to know about dependencies.
-  --analyze-inputs  Writes dependencies to stdout.
-  --add-header      Adds a "THIS FILE IS GENERATED" header to the output.
-"""
+    --depfile=DEPFILE Write out a depfile for ninja to know about dependencies.
+    --analyze-inputs  Writes dependencies to stdout.
+    --add-header      Adds a "THIS FILE IS GENERATED" header to the output.
+  """
 
   def __init(self):
     super().__init__()
@@ -185,15 +185,15 @@ Other options:
   def _DumpTokens(self, data, tok_gen):
     # Reprint |data| with syntax highlight.
     color_map = {
-        '#': common.Color.GRAY,
-        'S': common.Color.CYAN,
-        '0': common.Color.RED,
-        '{': common.Color.YELLOW,
-        '}': common.Color.YELLOW,
-        '[': common.Color.GREEN,
-        ']': common.Color.GREEN,
-        ':': common.Color.MAGENTA,
-        ',': common.Color.MAGENTA,
+      '#': common.Color.GRAY,
+      'S': common.Color.CYAN,
+      '0': common.Color.RED,
+      '{': common.Color.YELLOW,
+      '}': common.Color.YELLOW,
+      '[': common.Color.GREEN,
+      ']': common.Color.GREEN,
+      ':': common.Color.MAGENTA,
+      ',': common.Color.MAGENTA,
     }
     for t, lo, hi in tok_gen:
       c = color_map.get(t, common.Color.NONE)
@@ -229,8 +229,9 @@ Other options:
 
     src_dir = os.path.normpath(os.path.join(file_dir, root_obj['SRCDIR'].val))
     seen_files = set()
-    usage_gen = reader.GenerateResourceUsages(item_list, args.input, src_dir,
-                                              args.fake, seen_files)
+    usage_gen = reader.GenerateResourceUsages(
+      item_list, args.input, src_dir, args.fake, seen_files
+    )
     if args.count:
       return self._DumpResourceCounts(usage_gen)
     for item, tag_name_to_usage in usage_gen:
@@ -250,13 +251,14 @@ Other options:
       # Windows uses backslashes in paths, which can cause issues when running
       # the generated file on Linux. Force forward slashes.
       new_srcdir = new_srcdir.replace('\\', '/')
-      repl.append((root_obj['SRCDIR'].lo, root_obj['SRCDIR'].hi,
-                   repr(new_srcdir)))
+      repl.append(
+        (root_obj['SRCDIR'].lo, root_obj['SRCDIR'].hi, repr(new_srcdir))
+      )
       # Make the input relative to src_dir (the source root), not new_srcdir
       # (the output dir), which would bake the absolute checkout path in.
-      rel_input_dir = os.path.join('$SRCDIR',
-                                   os.path.relpath(rel_input_dir,
-                                                   src_dir)).replace('\\', '/')
+      rel_input_dir = os.path.join(
+        '$SRCDIR', os.path.relpath(rel_input_dir, src_dir)
+      ).replace('\\', '/')
 
     new_data = _MultiReplace(data, repl)
     if args.add_header:

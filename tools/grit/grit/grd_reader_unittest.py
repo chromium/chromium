@@ -58,7 +58,6 @@ class GrdReaderUnittest(unittest.TestCase):
     self.assertEqual(expected_output, output)
     self.assertTrue(tree.GetNodeById('IDS_GREETING'))
 
-
   def testStopAfter(self):
     input = '''<?xml version="1.0" encoding="UTF-8"?>
 <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
@@ -95,12 +94,15 @@ class GrdReaderUnittest(unittest.TestCase):
     tree = grd_reader.Parse(pseudo_file, '.')
 
     greeting = tree.GetNodeById('IDS_GREETING')
-    self.assertTrue(greeting.GetCliques()[0].GetMessage().GetRealContent() ==
-                    'This is a very long line with no linebreaks yes yes it '
-                    'stretches on and on and on!')
+    self.assertTrue(
+      greeting.GetCliques()[0].GetMessage().GetRealContent()
+      == 'This is a very long line with no linebreaks yes yes it '
+      'stretches on and on and on!'
+    )
 
   def doTestAssignFirstIds(self, first_ids_path):
-    input = '''<?xml version="1.0" encoding="UTF-8"?>
+    input = (
+      '''<?xml version="1.0" encoding="UTF-8"?>
 <grit latest_public_release="2" source_lang_id="en-US" current_release="3"
       base_dir="." first_ids_file="%s">
   <release seq="3">
@@ -110,18 +112,24 @@ class GrdReaderUnittest(unittest.TestCase):
       </message>
     </messages>
   </release>
-</grit>''' % first_ids_path
+</grit>'''
+      % first_ids_path
+    )
     pseudo_file = io.StringIO(input)
-    grit_root_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                                 '..')
+    grit_root_dir = os.path.join(
+      os.path.abspath(os.path.dirname(__file__)), '..'
+    )
     fake_input_path = os.path.join(
-        grit_root_dir, "grit/testdata/chrome/app/generated_resources.grd")
+      grit_root_dir, "grit/testdata/chrome/app/generated_resources.grd"
+    )
     root = grd_reader.Parse(pseudo_file, os.path.split(fake_input_path)[0])
     root.AssignFirstIds(fake_input_path, {})
     messages_node = root.children[0].children[0]
     self.assertTrue(isinstance(messages_node, empty.MessagesNode))
-    self.assertTrue(messages_node.attrs["first_id"] !=
-        empty.MessagesNode().DefaultAttributes()["first_id"])
+    self.assertTrue(
+      messages_node.attrs["first_id"]
+      != empty.MessagesNode().DefaultAttributes()["first_id"]
+    )
 
   def testAssignFirstIds(self):
     self.doTestAssignFirstIds("../../tools/grit/resource_ids")
@@ -149,8 +157,9 @@ class GrdReaderUnittest(unittest.TestCase):
   </release>
 </grit>'''
     pseudo_file = io.StringIO(input)
-    grit_root_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                                 '..')
+    grit_root_dir = os.path.join(
+      os.path.abspath(os.path.dirname(__file__)), '..'
+    )
     fake_input_path = os.path.join(grit_root_dir, "grit/testdata/test.grd")
 
     root = grd_reader.Parse(pseudo_file, os.path.split(fake_input_path)[0])
@@ -218,7 +227,8 @@ class GrdReaderUnittest(unittest.TestCase):
         </grit-part>'''
     tmp_dir = util.TempDir({'arbitrary_path.grp': arbitrary_path_grd})
     arbitrary_path_grd_file = tmp_dir.GetPath('arbitrary_path.grp')
-    top_grd = '''\
+    top_grd = (
+      '''\
         <grit latest_public_release="2" current_release="3">
           <release seq="3">
             <messages>
@@ -229,7 +239,9 @@ class GrdReaderUnittest(unittest.TestCase):
               <part file="%s" />
             </messages>
           </release>
-        </grit>''' % arbitrary_path_grd_file
+        </grit>'''
+      % arbitrary_path_grd_file
+    )
     sub_grd = '''\
         <grit-part>
           <message name="IDS_TEST2" desc="test2">test2</message>
@@ -240,7 +252,8 @@ class GrdReaderUnittest(unittest.TestCase):
         <grit-part>
           <message name="IDS_TEST4" desc="test4">test4</message>
         </grit-part>'''
-    expected_output = '''\
+    expected_output = (
+      '''\
         <grit current_release="3" latest_public_release="2">
           <release seq="3">
             <messages>
@@ -267,10 +280,13 @@ class GrdReaderUnittest(unittest.TestCase):
               </part>
             </messages>
           </release>
-        </grit>''' % arbitrary_path_grd_file
+        </grit>'''
+      % arbitrary_path_grd_file
+    )
 
-    with util.TempDir({'sub.grp': sub_grd,
-                       'subsub.grp': subsub_grd}) as tmp_sub_dir:
+    with util.TempDir(
+      {'sub.grp': sub_grd, 'subsub.grp': subsub_grd}
+    ) as tmp_sub_dir:
       output = grd_reader.Parse(io.StringIO(top_grd), tmp_sub_dir.GetPath())
       correct_sources = {
         'IDS_TEST': None,
@@ -296,18 +312,20 @@ class GrdReaderUnittest(unittest.TestCase):
       </grit>'''
 
     part_failures = [
-        (exception.UnexpectedContent, '<part file="x">fnord</part>'),
-        (exception.UnexpectedChild,
-         '<part file="x"><output filename="x" type="y" /></part>'),
-        (exception.FileNotFound, '<part file="yet_created_x" />'),
+      (exception.UnexpectedContent, '<part file="x">fnord</part>'),
+      (
+        exception.UnexpectedChild,
+        '<part file="x"><output filename="x" type="y" /></part>',
+      ),
+      (exception.FileNotFound, '<part file="yet_created_x" />'),
     ]
     for raises, data in part_failures:
       data = io.StringIO(template % data)
       self.assertRaises(raises, grd_reader.Parse, data, '.')
 
     gritpart_failures = [
-        (exception.UnexpectedAttribute, '<grit-part file="xyz"></grit-part>'),
-        (exception.MissingElement, '<output filename="x" type="y" />'),
+      (exception.UnexpectedAttribute, '<grit-part file="xyz"></grit-part>'),
+      (exception.MissingElement, '<output filename="x" type="y" />'),
     ]
     for raises, data in gritpart_failures:
       top_grd = io.StringIO(template % '<part file="bad.grp" />')
@@ -317,7 +335,8 @@ class GrdReaderUnittest(unittest.TestCase):
   def testEarlyEnoughPlatformSpecification(self):
     # This is a regression test for issue
     # https://code.google.com/p/grit-i18n/issues/detail?id=23
-    grd_text = '''<?xml version="1.0" encoding="UTF-8"?>
+    grd_text = (
+      '''<?xml version="1.0" encoding="UTF-8"?>
       <grit latest_public_release="1" current_release="1">
         <release seq="1">
           <messages>
@@ -332,11 +351,13 @@ class GrdReaderUnittest(unittest.TestCase):
             </if>
           </messages>
         </release>
-      </grit>''' % sys.platform
+      </grit>'''
+      % sys.platform
+    )
     with util.TempDir({}) as temp_dir:
-      grd_reader.Parse(io.StringIO(grd_text),
-                       temp_dir.GetPath(),
-                       target_platform='android')
+      grd_reader.Parse(
+        io.StringIO(grd_text), temp_dir.GetPath(), target_platform='android'
+      )
 
   def testSkipValidationChecks(self):
     input = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -362,7 +383,8 @@ class GrdReaderUnittest(unittest.TestCase):
       pseudo_file = io.StringIO(input)
       grd_reader.Parse(pseudo_file, '.')
     self.assertTrue(
-        str(cm.exception).startswith('A duplicate key attribute was found.'))
+      str(cm.exception).startswith('A duplicate key attribute was found.')
+    )
 
 
 if __name__ == '__main__':

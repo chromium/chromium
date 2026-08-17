@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" Visitor Object for traversing AST """
+"""Visitor Object for traversing AST"""
 
 #
 # IDLVisitor
@@ -17,6 +17,7 @@
 # the exact value that was return from the original arrive.
 #
 
+
 class IDLVisitor(object):
   def __init__(self):
     pass
@@ -26,7 +27,8 @@ class IDLVisitor(object):
     return True
 
   def Visit(self, node, data):
-    if not self.VisitFilter(node, data): return None
+    if not self.VisitFilter(node, data):
+      return None
 
     childdata = []
     newdata = self.Arrive(node, data)

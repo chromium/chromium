@@ -23,8 +23,9 @@ class TxtUnittest(unittest.TestCase):
     gatherer.Parse()
     self.assertTrue(gatherer.GetText() == input.getvalue())
     self.assertTrue(len(gatherer.GetCliques()) == 1)
-    self.assertTrue(gatherer.GetCliques()[0].GetMessage().GetRealContent() ==
-                    input.getvalue())
+    self.assertTrue(
+      gatherer.GetCliques()[0].GetMessage().GetRealContent() == input.getvalue()
+    )
 
 
 if __name__ == '__main__':

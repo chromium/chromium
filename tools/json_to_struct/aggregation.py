@@ -8,6 +8,7 @@ from typing import Optional
 
 class AggregationKind(Enum):
   """Allowed aggregation types for data that uses "aggregate" declaration."""
+
   NONE = "none"
   ARRAY = "array"
   MAP = "map"
@@ -16,6 +17,7 @@ class AggregationKind(Enum):
 @dataclass
 class AggregationDetails:
   """Aggregation rules, if specified by the processed JSON file."""
+
   kind: AggregationKind
   name: Optional[str]
   export_items: bool
@@ -102,19 +104,20 @@ def GetAggregationDetails(description) -> AggregationDetails:
   return AggregationDetails(kind, name, export_items, elements, map_key_type)
 
 
-def GenerateCCAggregation(type_name: str,
-                          aggregation: AggregationDetails) -> Optional[str]:
+def GenerateCCAggregation(
+  type_name: str, aggregation: AggregationDetails
+) -> Optional[str]:
   """
-    Generates C++ aggregation code based on the aggregation kind.
+  Generates C++ aggregation code based on the aggregation kind.
 
-    Parameters:
-        type_name (str): The type name to be used in the aggregation.
-        aggregation (AggregationDetails): The aggregation details.
+  Parameters:
+      type_name (str): The type name to be used in the aggregation.
+      aggregation (AggregationDetails): The aggregation details.
 
-    Returns:
-        Optional[str]: The generated C++ aggregation code if applicable,
-        otherwise None.
-    """
+  Returns:
+      Optional[str]: The generated C++ aggregation code if applicable,
+      otherwise None.
+  """
   if aggregation.kind == AggregationKind.ARRAY:
     return _GenerateCCArray(type_name, aggregation)
 
@@ -126,15 +129,15 @@ def GenerateCCAggregation(type_name: str,
 
 def _GenerateCCArray(type_name: str, aggregation: AggregationDetails) -> str:
   """
-    Generates C++ code for an array aggregation.
+  Generates C++ code for an array aggregation.
 
-    Parameters:
-        type_name (str): The type name to be used in the aggregation.
-        aggregation (AggregationDetails): The aggregation details.
+  Parameters:
+      type_name (str): The type name to be used in the aggregation.
+      aggregation (AggregationDetails): The aggregation details.
 
-    Returns:
-        str: The generated C++ array aggregation code.
-    """
+  Returns:
+      str: The generated C++ array aggregation code.
+  """
   res = '\nconst '
   res += f'std::array<raw_ptr<const {type_name}>, {len(aggregation.elements)}> '
   res += f'{aggregation.name} '
@@ -148,15 +151,15 @@ def _GenerateCCArray(type_name: str, aggregation: AggregationDetails) -> str:
 
 def _GenerateCCMap(type_name: str, aggregation: AggregationDetails) -> str:
   """
-    Generates C++ code for a map aggregation.
+  Generates C++ code for a map aggregation.
 
-    Parameters:
-        type_name (str): The type name to be used in the aggregation.
-        aggregation (AggregationDetails): The aggregation details.
+  Parameters:
+      type_name (str): The type name to be used in the aggregation.
+      aggregation (AggregationDetails): The aggregation details.
 
-    Returns:
-        str: The generated C++ map aggregation code.
-    """
+  Returns:
+      str: The generated C++ map aggregation code.
+  """
   key_type = aggregation.map_key_type
 
   res = '\nconst '
@@ -167,25 +170,26 @@ def _GenerateCCMap(type_name: str, aggregation: AggregationDetails) -> str:
   res += f'    base::MakeFixedFlatMap<{key_type}, raw_ptr<const {type_name}>>'
 
   res += '({\n'
-  for (alias_name, element_name) in aggregation.GetSortedMapElements():
+  for alias_name, element_name in aggregation.GetSortedMapElements():
     res += f'  {{{key_type}("{alias_name}"), &{element_name}}},\n'
   res += '});\n'
   return res
 
 
-def GenerateHHAggregation(type_name: str,
-                          aggregation: AggregationDetails) -> Optional[str]:
+def GenerateHHAggregation(
+  type_name: str, aggregation: AggregationDetails
+) -> Optional[str]:
   """
-    Generates header file aggregation code based on the aggregation kind.
+  Generates header file aggregation code based on the aggregation kind.
 
-    Parameters:
-        type_name (str): The type name to be used in the aggregation.
-        aggregation (AggregationDetails): The aggregation details.
+  Parameters:
+      type_name (str): The type name to be used in the aggregation.
+      aggregation (AggregationDetails): The aggregation details.
 
-    Returns:
-        Optional[str]: The generated header file aggregation code if
-        applicable, otherwise None.
-    """
+  Returns:
+      Optional[str]: The generated header file aggregation code if
+      applicable, otherwise None.
+  """
   if aggregation.kind == AggregationKind.ARRAY:
     return _GenerateHHArray(type_name, aggregation)
 
@@ -197,15 +201,15 @@ def GenerateHHAggregation(type_name: str,
 
 def _GenerateHHArray(type_name: str, aggregation: AggregationDetails) -> str:
   """
-    Generates header file code for an array aggregation.
+  Generates header file code for an array aggregation.
 
-    Parameters:
-        type_name (str): The type name to be used in the aggregation.
-        aggregation (AggregationDetails): The aggregation details.
+  Parameters:
+      type_name (str): The type name to be used in the aggregation.
+      aggregation (AggregationDetails): The aggregation details.
 
-    Returns:
-        str: The generated header file array aggregation declaration.
-    """
+  Returns:
+      str: The generated header file array aggregation declaration.
+  """
   res = '\nextern const '
   res += f'std::array<raw_ptr<const {type_name}>, {len(aggregation.elements)}> '
   res += f'{aggregation.name};\n'
@@ -214,15 +218,15 @@ def _GenerateHHArray(type_name: str, aggregation: AggregationDetails) -> str:
 
 def _GenerateHHMap(type_name: str, aggregation: AggregationDetails) -> str:
   """
-    Generates header file code for a map aggregation.
+  Generates header file code for a map aggregation.
 
-    Parameters:
-        type_name (str): The type name to be used in the aggregation.
-        aggregation (AggregationDetails): The aggregation details.
+  Parameters:
+      type_name (str): The type name to be used in the aggregation.
+      aggregation (AggregationDetails): The aggregation details.
 
-    Returns:
-        str: The generated header file map aggregation declaration.
-    """
+  Returns:
+      str: The generated header file map aggregation declaration.
+  """
   res = '\nextern const '
   res += f'base::fixed_flat_map<{aggregation.map_key_type}, '
   res += f'raw_ptr<const {type_name}>, '

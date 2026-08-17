@@ -20,8 +20,9 @@ import grit.extern.tclib
 
 class TclibUnittest(unittest.TestCase):
   def testInit(self):
-    msg = tclib.Message(text='Hello Earthlings',
-                        description='Greetings\n\t      message')
+    msg = tclib.Message(
+      text='Hello Earthlings', description='Greetings\n\t      message'
+    )
     self.assertEqual(msg.GetPresentableContent(), 'Hello Earthlings')
     self.assertTrue(isinstance(msg.GetPresentableContent(), str))
     self.assertEqual(msg.GetDescription(), 'Greetings message')
@@ -54,13 +55,17 @@ class TclibUnittest(unittest.TestCase):
     inheriting from the translation console's Translation object
     instead of only owning an instance of it.
     '''
-    msg = tclib.Message(text="BLA1\r\nFrom: BLA2 \u00fe BLA3",
-                        placeholders=[
-                          tclib.Placeholder('BLA1', '%s', '%s'),
-                          tclib.Placeholder('BLA2', '%s', '%s'),
-                          tclib.Placeholder('BLA3', '%s', '%s')])
-    transl = tclib.Translation(text=msg.GetPresentableContent(),
-                               placeholders=msg.GetPlaceholders())
+    msg = tclib.Message(
+      text="BLA1\r\nFrom: BLA2 \u00fe BLA3",
+      placeholders=[
+        tclib.Placeholder('BLA1', '%s', '%s'),
+        tclib.Placeholder('BLA2', '%s', '%s'),
+        tclib.Placeholder('BLA3', '%s', '%s'),
+      ],
+    )
+    transl = tclib.Translation(
+      text=msg.GetPresentableContent(), placeholders=msg.GetPlaceholders()
+    )
     content = transl.GetContent()
     self.assertTrue(isinstance(content[3], str))
 
@@ -151,7 +156,8 @@ class TclibUnittest(unittest.TestCase):
       'disabling the \'Index note history\' option.  If it crashes before,\r\n'
       'you can get to the preferences, add the following line to your \r\n'
       'notes.ini file:\r\n'
-      'GDSNoIndexHistory=1\r\n')
+      'GDSNoIndexHistory=1\r\n'
+    )
     self.assertEqual(id, '7660964495923572726')
 
   def testPlaceholderNameChecking(self):
@@ -169,8 +175,11 @@ class TclibUnittest(unittest.TestCase):
       msg = tclib.Message(text=text, placeholders=phs)
       self.assertTrue(msg.GetRealContent() == '1 2 3 4 5 6 7 8 9 10')
     except:
-      self.fail('tclib.Message() should handle placeholders that are '
-                'substrings of each other')
+      self.fail(
+        'tclib.Message() should handle placeholders that are '
+        'substrings of each other'
+      )
+
 
 if __name__ == '__main__':
   unittest.main()

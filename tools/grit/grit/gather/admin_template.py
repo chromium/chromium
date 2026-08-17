@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Gatherer for administrative template files.
-'''
-
+'''Gatherer for administrative template files.'''
 
 import re
 
@@ -14,6 +12,7 @@ from grit import exception
 
 class MalformedAdminTemplateException(exception.Base):
   '''This file doesn't look like a .adm file to me.'''
+
   pass
 
 
@@ -28,13 +27,13 @@ class AdmGatherer(regexp.RegexpGatherer):
 
   # Finds the strings section as the group named 'strings'
   _STRINGS_SECTION = re.compile(
-      r'(?P<first_part>.+^\[strings\])(?P<strings>.+)\Z',
-      re.MULTILINE | re.DOTALL)
+    r'(?P<first_part>.+^\[strings\])(?P<strings>.+)\Z', re.MULTILINE | re.DOTALL
+  )
 
   # Finds the translateable sections from within the [strings] section.
   _TRANSLATEABLES = re.compile(
-      r'^\s*[A-Za-z0-9_]+\s*=\s*"(?P<text>.+)"\s*$',
-      re.MULTILINE)
+    r'^\s*[A-Za-z0-9_]+\s*=\s*"(?P<text>.+)"\s*$', re.MULTILINE
+  )
 
   def Escape(self, text):
     return text.replace('\n', '\\n')

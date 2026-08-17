@@ -8,7 +8,8 @@ CHECK_FILES = [r'^.+_test\.py$']
 
 def _RunTests(input_api, output_api):
   return input_api.canned_checks.RunUnitTestsInDirectory(
-      input_api, output_api, '.', files_to_check=CHECK_FILES)
+    input_api, output_api, '.', files_to_check=CHECK_FILES
+  )
 
 
 def CheckChangeOnUpload(input_api, output_api):

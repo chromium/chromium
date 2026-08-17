@@ -104,7 +104,8 @@ namespace fakeApi {
 """
 
 # The output we expect from our fake idl file.
-fake_idl_expected = """// Copyright %s The Chromium Authors
+fake_idl_expected = (
+  """// Copyright %s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -239,7 +240,9 @@ chrome.fakeApi.multipleOptionalParams = function(param1, param2, obj, optionalSo
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/fakeApi#event-onTrapDetected
  */
-chrome.fakeApi.onTrapDetected;""" % datetime.now().year
+chrome.fakeApi.onTrapDetected;"""
+  % datetime.now().year
+)
 
 # A subset of fake_idl. The key difference is that the namespace is private,
 # which means that @see links shouldn't be generated.
@@ -268,7 +271,8 @@ namespace fakeApiPrivate {
 };
 """
 
-fake_private_idl_expected = """// Copyright %s The Chromium Authors
+fake_private_idl_expected = (
+  """// Copyright %s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -308,7 +312,9 @@ chrome.fakeApiPrivate.Bar;
  * Fired when we realize it's a trap!
  * @type {!ChromeEvent}
  */
-chrome.fakeApiPrivate.onTrapDetected;""" % datetime.now().year
+chrome.fakeApiPrivate.onTrapDetected;"""
+  % datetime.now().year
+)
 
 fake_json = """// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -489,16 +495,19 @@ chrome.fakeJson.funcWithInlineObj = function(inlineObj, callback) {};
  * @see https://developer.chrome.com/extensions/fakeJson#method-funcWithReturnsAsync
  */
 chrome.fakeJson.funcWithReturnsAsync = function(someNumber, callback) {};""" % (
-    datetime.now().year)
+  datetime.now().year
+)
 # pylint: enable=line-too-long
 
 
 class JsExternGeneratorTest(unittest.TestCase):
-
   def _GetNamespace(self, fake_content, filename, is_idl):
     """Returns a namespace object for the given content"""
-    api_def = (idl_schema.Process(fake_content, filename)
-               if is_idl else json_parse.Parse(fake_content))
+    api_def = (
+      idl_schema.Process(fake_content, filename)
+      if is_idl
+      else json_parse.Parse(fake_content)
+    )
     m = model.Model()
     return m.AddNamespace(api_def[0], filename)
 
@@ -507,19 +516,24 @@ class JsExternGeneratorTest(unittest.TestCase):
 
   def testBasic(self):
     namespace = self._GetNamespace(fake_idl, 'fake_api.idl', True)
-    self.assertMultiLineEqual(fake_idl_expected,
-                              JsExternsGenerator().Generate(namespace).Render())
+    self.assertMultiLineEqual(
+      fake_idl_expected, JsExternsGenerator().Generate(namespace).Render()
+    )
 
   def testPrivate(self):
-    namespace = self._GetNamespace(fake_private_idl, 'fake_api_private.idl',
-                                   True)
-    self.assertMultiLineEqual(fake_private_idl_expected,
-                              JsExternsGenerator().Generate(namespace).Render())
+    namespace = self._GetNamespace(
+      fake_private_idl, 'fake_api_private.idl', True
+    )
+    self.assertMultiLineEqual(
+      fake_private_idl_expected,
+      JsExternsGenerator().Generate(namespace).Render(),
+    )
 
   def testJsonWithInlineObjectsAndAsyncReturn(self):
     namespace = self._GetNamespace(fake_json, 'fake_api.json', False)
-    self.assertMultiLineEqual(fake_json_expected,
-                              JsExternsGenerator().Generate(namespace).Render())
+    self.assertMultiLineEqual(
+      fake_json_expected, JsExternsGenerator().Generate(namespace).Render()
+    )
 
 
 if __name__ == '__main__':

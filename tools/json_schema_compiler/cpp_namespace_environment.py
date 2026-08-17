@@ -4,6 +4,5 @@
 
 
 class CppNamespaceEnvironment(object):
-
   def __init__(self, namespace_pattern):
     self.namespace_pattern = namespace_pattern

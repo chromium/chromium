@@ -16,6 +16,7 @@ if __name__ == '__main__':
 from grit import util
 import grit.grit_runner
 
+
 class OptionArgsUnittest(unittest.TestCase):
   def setUp(self):
     self.buf = io.StringIO()
@@ -26,9 +27,16 @@ class OptionArgsUnittest(unittest.TestCase):
     sys.stdout = self.old_stdout
 
   def testSimple(self):
-    grit.grit_runner.Main(['-i',
-                           util.PathFromRoot('grit/testdata/simple-input.xml'),
-                           'test', 'bla', 'voff', 'ga'])
+    grit.grit_runner.Main(
+      [
+        '-i',
+        util.PathFromRoot('grit/testdata/simple-input.xml'),
+        'test',
+        'bla',
+        'voff',
+        'ga',
+      ]
+    )
     output = self.buf.getvalue()
     self.assertTrue(output.count("'test'") == 0)  # tool name doesn't occur
     self.assertTrue(output.count('bla'))

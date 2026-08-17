@@ -24,16 +24,18 @@ This tool is only available to Googlers (see go/bugged for install instructions)
 
 def _search_bugs(query: str | None):
   args = [
-      'bugged', 'search', '--error-if-not-found=true',
-      '--columns=issue,reporter,assignee,status,summary'
+    'bugged',
+    'search',
+    '--error-if-not-found=true',
+    '--columns=issue,reporter,assignee,status,summary',
   ]
   if query:
     args.append(query)
   ps = util.run_command(
-      args,
-      stdout=subprocess.PIPE,
-      check=False,
-      text=True,
+    args,
+    stdout=subprocess.PIPE,
+    check=False,
+    text=True,
   )
   if ps.returncode == 5:  # No results found
     print('No results found. Try another query?')
@@ -45,8 +47,8 @@ def _search_bugs(query: str | None):
   # The first column is the bug number. We need this internally, but don't want
   # to show it to the user.
   lines = [
-      re.split(r'\s+', line, maxsplit=1)
-      for line in ps.stdout.rstrip().split('\n')
+    re.split(r'\s+', line, maxsplit=1)
+    for line in ps.stdout.rstrip().split('\n')
   ]
   print(f'#  {lines[0][1]}')
   issues = {}
@@ -77,27 +79,27 @@ def _search_bugs(query: str | None):
 
 def _add_handler(args, revs: str):
   direct = {
-      x['change_id']
-      for x in util.jj_log(
-          revisions=f'{revs}',
-          templates={
-              'change_id': 'change_id',
-          },
-          ignore_working_copy=True,
-      )
+    x['change_id']
+    for x in util.jj_log(
+      revisions=f'{revs}',
+      templates={
+        'change_id': 'change_id',
+      },
+      ignore_working_copy=True,
+    )
   }
 
   ancestors = util.jj_log(
-      revisions=f'mutable()::({revs})',
-      templates={
-          'change_id': 'change_id',
-          'parents': util.MUTABLE_PARENTS,
-          'trailers': 'trailers',
-          'desc': 'description',
-          'bugs': _FIND_TRAILER.format('bug'),
-          'fixed': _FIND_TRAILER.format('fixed'),
-      },
-      ignore_working_copy=True,
+    revisions=f'mutable()::({revs})',
+    templates={
+      'change_id': 'change_id',
+      'parents': util.MUTABLE_PARENTS,
+      'trailers': 'trailers',
+      'desc': 'description',
+      'bugs': _FIND_TRAILER.format('bug'),
+      'fixed': _FIND_TRAILER.format('fixed'),
+    },
+    ignore_working_copy=True,
   )
 
   revs = {rev['change_id']: rev for rev in ancestors}
@@ -143,9 +145,9 @@ def _add_handler(args, revs: str):
     # We may not need to add bugs, especially in the case of inherit.
     if bugs_to_add:
       util.add_trailers(
-          rev=rev,
-          trailers={tag: [','.join(bugs_to_add)]},
-          commit=True,
+        rev=rev,
+        trailers={tag: [','.join(bugs_to_add)]},
+        commit=True,
       )
 
 
@@ -159,11 +161,11 @@ def main(args):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--verbosity',
-      help='Verbosity of logging',
-      default='INFO',
-      choices=logging.getLevelNamesMapping().keys(),
-      type=lambda x: x.upper(),
+    '--verbosity',
+    help='Verbosity of logging',
+    default='INFO',
+    choices=logging.getLevelNamesMapping().keys(),
+    type=lambda x: x.upper(),
   )
 
   subparsers = parser.add_subparsers(required=True)
@@ -171,37 +173,37 @@ if __name__ == '__main__':
   parser_add = subparsers.add_parser('add')
   parser_add.set_defaults(func=_add_handler)
   parser_add.add_argument(
-      '-r',
-      '--revision',
-      help='The revisions to add the bug to',
-      action='append',
-      required=True,
+    '-r',
+    '--revision',
+    help='The revisions to add the bug to',
+    action='append',
+    required=True,
   )
   parser_add.add_argument(
-      '-f',
-      '--fixed',
-      help='Mark the revision as fixing the bug',
-      action='store_true',
+    '-f',
+    '--fixed',
+    help='Mark the revision as fixing the bug',
+    action='store_true',
   )
   parser_add.add_argument(
-      '-i',
-      '--inherit',
-      help='Inherit the bug from parent commits. Bugs are not transitively ' +
-      'inherited unless the parent is also part of -r',
-      action='store_true',
+    '-i',
+    '--inherit',
+    help='Inherit the bug from parent commits. Bugs are not transitively '
+    + 'inherited unless the parent is also part of -r',
+    action='store_true',
   )
   parser_add.add_argument(
-      '-b',
-      '--bug',
-      help='The bug to add to the revisions',
-      action='append',
-      default=[],
+    '-b',
+    '--bug',
+    help='The bug to add to the revisions',
+    action='append',
+    default=[],
   )
   parser_add.add_argument(
-      '-q',
-      '--query',
-      help='Query to use when searching for a bug in issue tracker',
-      default=None,
+    '-q',
+    '--query',
+    help='Query to use when searching for a bug in issue tracker',
+    default=None,
   )
 
   main(parser.parse_args())

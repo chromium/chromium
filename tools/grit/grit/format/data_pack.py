@@ -26,8 +26,9 @@ PACK_FILE_VERSION = 5
 BINARY, UTF8, UTF16 = range(3)
 
 
-GrdInfoItem = collections.namedtuple('GrdInfoItem',
-                                     ['textual_id', 'id', 'path'])
+GrdInfoItem = collections.namedtuple(
+  'GrdInfoItem', ['textual_id', 'id', 'path']
+)
 
 
 class WrongFileVersion(Exception):
@@ -89,14 +90,17 @@ def _FormatInternal(root, lang, gender):
   root.info = []
   for node in root.ActiveDescendants():
     with node:
-      if isinstance(node, (include.IncludeNode, message.MessageNode,
-                           structure.StructureNode)):
+      if isinstance(
+        node,
+        (include.IncludeNode, message.MessageNode, structure.StructureNode),
+      ):
         value = _GetGenderDedupedValue(node, lang, gender)
         if value is not None:
           resource_id = id_map[node.GetTextualIds()[0]]
           data[resource_id] = value
-          root.info.append('{},{},{}'.format(
-              node.attrs.get('name'), resource_id, node.source))
+          root.info.append(
+            '{},{},{}'.format(node.attrs.get('name'), resource_id, node.source)
+          )
   return data
 
 
@@ -114,8 +118,9 @@ def _GetGenderDedupedValue(node, lang, gender):
   if gender == constants.DEFAULT_GENDER or value is None:
     return value
 
-  default_value = node.GetDataPackValue(lang, constants.DEFAULT_GENDER,
-                                        util.BINARY)
+  default_value = node.GetDataPackValue(
+    lang, constants.DEFAULT_GENDER, util.BINARY
+  )
   assert default_value is not None
   if value != default_value:
     return value
@@ -143,9 +148,10 @@ def ReadDataPackFromString(data):
 
   resources = {}
   kIndexEntrySize = 2 + 4  # Each entry is a uint16 and a uint32.
+
   def entry_at_index(idx):
     offset = header_size + idx * kIndexEntrySize
-    return struct.unpack('<HI', data[offset:offset + kIndexEntrySize])
+    return struct.unpack('<HI', data[offset : offset + kIndexEntrySize])
 
   prev_resource_id, prev_offset = entry_at_index(0)
   for i in range(1, resource_count + 1):
@@ -156,9 +162,10 @@ def ReadDataPackFromString(data):
   id_table_size = (resource_count + 1) * kIndexEntrySize
   # Read the alias table.
   kAliasEntrySize = 2 + 2  # uint16, uint16
+
   def alias_at_index(idx):
     offset = header_size + id_table_size + idx * kAliasEntrySize
-    return struct.unpack('<HH', data[offset:offset + kAliasEntrySize])
+    return struct.unpack('<HH', data[offset : offset + kAliasEntrySize])
 
   aliases = {}
   for i in range(alias_count):
@@ -169,10 +176,14 @@ def ReadDataPackFromString(data):
 
   alias_table_size = kAliasEntrySize * alias_count
   sizes = DataPackSizes(
-      header_size, id_table_size, alias_table_size,
-      len(data) - header_size - id_table_size - alias_table_size)
+    header_size,
+    id_table_size,
+    alias_table_size,
+    len(data) - header_size - id_table_size - alias_table_size,
+  )
   assert sizes.total == len(data), 'original={} computed={}'.format(
-      len(data), sizes.total)
+    len(data), sizes.total
+  )
   return DataPackContents(resources, encoding, version, aliases, sizes)
 
 
@@ -185,14 +196,18 @@ def WriteDataPackToString(resources, encoding):
   # Use reversed() so that for duplicates lower IDs clobber higher ones.
   id_by_data = {resources[k]: k for k in reversed(resource_ids)}
   # Map of resource_id -> resource_id, where value < key.
-  alias_map = {k: id_by_data[v] for k, v in resources.items()
-               if id_by_data[v] != k}
+  alias_map = {
+    k: id_by_data[v] for k, v in resources.items() if id_by_data[v] != k
+  }
 
   # Write file header.
   resource_count = len(resources) - len(alias_map)
   # Padding bytes added for alignment.
-  ret.append(struct.pack('<IBxxxHH', PACK_FILE_VERSION, encoding,
-                         resource_count, len(alias_map)))
+  ret.append(
+    struct.pack(
+      '<IBxxxHH', PACK_FILE_VERSION, encoding, resource_count, len(alias_map)
+    )
+  )
   HEADER_LENGTH = 4 + 4 + 2 + 2
 
   # Each main table entry is: uint16 + uint32 (and an extra entry at the end).
@@ -245,11 +260,13 @@ def ReadGrdInfo(grd_file):
   return info_dict
 
 
-def RePack(output_file,
-           input_files,
-           allowlist_file=None,
-           suppress_removed_key_output=False,
-           output_info_filepath=None):
+def RePack(
+  output_file,
+  input_files,
+  allowlist_file=None,
+  suppress_removed_key_output=False,
+  output_info_filepath=None,
+):
   """Write a new data pack file by combining input pack files.
 
   Args:
@@ -275,8 +292,9 @@ def RePack(output_file,
       raise Exception('Allowlist file should not be empty')
     allowlist = {int(x) for x in lines}
   inputs = [(p.resources, p.encoding) for p in input_data_packs]
-  resources, encoding = RePackFromDataPackStrings(inputs, allowlist,
-                                                  suppress_removed_key_output)
+  resources, encoding = RePackFromDataPackStrings(
+    inputs, allowlist, suppress_removed_key_output
+  )
   WriteDataPack(resources, output_file, encoding)
   if output_info_filepath is None:
     output_info_filepath = output_file + '.info'
@@ -286,9 +304,9 @@ def RePack(output_file,
         output_info_file.writelines(info_file.readlines())
 
 
-def RePackFromDataPackStrings(inputs,
-                              allowlist,
-                              suppress_removed_key_output=False):
+def RePackFromDataPackStrings(
+  inputs, allowlist, suppress_removed_key_output=False
+):
   """Combines all inputs into one.
 
   Args:
@@ -311,24 +329,31 @@ def RePackFromDataPackStrings(inputs,
     duplicate_keys = set(input_resources.keys()) & set(resources.keys())
     if duplicate_keys:
       raise KeyError(
-          'Duplicate resource IDs: ' + str(list(duplicate_keys)) + '. '
-          'This is likely because the reserved ID ranges defined in ' +
-          'tools/gritsettings/resource_ids.spec have been exhausted.')
+        'Duplicate resource IDs: ' + str(list(duplicate_keys)) + '. '
+        'This is likely because the reserved ID ranges defined in '
+        + 'tools/gritsettings/resource_ids.spec have been exhausted.'
+      )
 
     # Make sure encoding is consistent.
     if encoding in (None, BINARY):
       encoding = input_encoding
     elif input_encoding not in (BINARY, encoding):
-      raise KeyError('Inconsistent encodings: ' + str(encoding) +
-                     ' vs ' + str(input_encoding))
+      raise KeyError(
+        'Inconsistent encodings: '
+        + str(encoding)
+        + ' vs '
+        + str(input_encoding)
+      )
 
     if allowlist:
-      allowlisted_resources = {key: input_resources[key]
-                                    for key in input_resources.keys()
-                                    if key in allowlist}
+      allowlisted_resources = {
+        key: input_resources[key]
+        for key in input_resources.keys()
+        if key in allowlist
+      }
       resources.update(allowlisted_resources)
       removed_keys = [
-          key for key in input_resources.keys() if key not in allowlist
+        key for key in input_resources.keys() if key not in allowlist
       ]
       if not suppress_removed_key_output:
         for key in removed_keys:

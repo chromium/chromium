@@ -27,6 +27,7 @@ from grit.extern import FP
 # The public interface
 # --------------------
 
+
 # Generate message id from message text and meaning string (optional),
 # both in utf-8 encoding
 #
@@ -40,26 +41,30 @@ def GenerateMessageId(message, meaning=''):
     else:
       fp = fp2 + (fp << 1)
   # To avoid negative ids we strip the high-order bit
-  return str(fp & 0x7fffffffffffffff)
+  return str(fp & 0x7FFFFFFFFFFFFFFF)
+
 
 # -------------------------------------------------------------------------
 # The MessageTranslationError class is used to signal tclib-specific errors.
 
 
 class MessageTranslationError(Exception):
-
-  def __init__(self, args = ''):
+  def __init__(self, args=''):
     self.args = args
 
 
 # -----------------------------------------------------------
 # The Placeholder class represents a placeholder in a message.
 
+
 class Placeholder:
   # String representation
   def __str__(self):
-    return '%s, "%s", "%s"' % \
-           (self.__presentation, self.__original, self.__example)
+    return '%s, "%s", "%s"' % (
+      self.__presentation,
+      self.__original,
+      self.__example,
+    )
 
   # Getters
   def GetOriginal(self):
@@ -82,15 +87,18 @@ class Placeholder:
   # ignore_trailing_spaces parameter is used to ignore
   # trailing spaces during equivalence comparison.
   #
-  def EqualTo(self, other, strict = 1, ignore_trailing_spaces = 1):
+  def EqualTo(self, other, strict=1, ignore_trailing_spaces=1):
     if type(other) is not Placeholder:
       return 0
-    if StringEquals(self.__presentation, other.__presentation,
-                    ignore_trailing_spaces):
-      if not strict or (StringEquals(self.__original, other.__original,
-                                     ignore_trailing_spaces)  and
-                        StringEquals(self.__example, other.__example,
-                                     ignore_trailing_spaces)):
+    if StringEquals(
+      self.__presentation, other.__presentation, ignore_trailing_spaces
+    ):
+      if not strict or (
+        StringEquals(self.__original, other.__original, ignore_trailing_spaces)
+        and StringEquals(
+          self.__example, other.__example, ignore_trailing_spaces
+        )
+      ):
         return 1
     return 0
 
@@ -98,6 +106,7 @@ class Placeholder:
 # -----------------------------------------------------------------
 # BaseMessage is the common parent class of Message and Translation.
 # It is not meant for direct use.
+
 
 class BaseMessage:
   # Three types of message construction is supported. If the message text is a
@@ -123,16 +132,19 @@ class BaseMessage:
   # Append a placeholder to the message
   def AppendPlaceholder(self, placeholder):
     if not isinstance(placeholder, Placeholder):
-      raise MessageTranslationError("Invalid message placeholder %s in "
-                                    "message %s" % (placeholder, self.GetId()))
+      raise MessageTranslationError(
+        "Invalid message placeholder %s in "
+        "message %s" % (placeholder, self.GetId())
+      )
     # Are there other placeholders with the same presentation?
     # If so, they need to be the same.
     for other in self.GetPlaceholders():
       if placeholder.GetPresentation() == other.GetPresentation():
         if not placeholder.EqualTo(other):
           raise MessageTranslationError(
-              "Conflicting declarations of %s within message" %
-              placeholder.GetPresentation())
+            "Conflicting declarations of %s within message"
+            % placeholder.GetPresentation()
+          )
     # update placeholder list
     dup = 0
     for item in self.__content:
@@ -153,13 +165,13 @@ class BaseMessage:
       s0 = self.__content[0]
       if not isinstance(s0, Placeholder):
         s = s0.lstrip()
-        leading = s0[:-len(s)]
+        leading = s0[: -len(s)]
         self.__content[0] = s
 
       s0 = self.__content[-1]
       if not isinstance(s0, Placeholder):
         s = s0.rstrip()
-        trailing = s0[len(s):]
+        trailing = s0[len(s) :]
         self.__content[-1] = s
     return leading, trailing
 
@@ -198,7 +210,7 @@ class BaseMessage:
   # Return the "original" version of this message, doing %-escaping
   # properly.  If source_msg is specified, the placeholder original
   # information inside source_msg will be used instead.
-  def GetOriginalContent(self, source_msg = None):
+  def GetOriginalContent(self, source_msg=None):
     original_content = ""
     for item in self.__content:
       if isinstance(item, Placeholder):
@@ -206,8 +218,9 @@ class BaseMessage:
           ph = source_msg.GetPlaceholder(item.GetPresentation())
           if not ph:
             raise MessageTranslationError(
-                "Placeholder %s doesn't exist in message: %s" %
-                (item.GetPresentation(), source_msg))
+              "Placeholder %s doesn't exist in message: %s"
+              % (item.GetPresentation(), source_msg)
+            )
           original_content += ph.GetOriginal()
         else:
           original_content += item.GetOriginal()
@@ -232,8 +245,9 @@ class BaseMessage:
   # Return a placeholder in this message
   def GetPlaceholder(self, presentation):
     for item in self.__content:
-      if (isinstance(item, Placeholder) and
-          item.GetPresentation() == presentation):
+      if (
+        isinstance(item, Placeholder) and item.GetPresentation() == presentation
+      ):
         return item
     return None
 
@@ -250,7 +264,7 @@ class BaseMessage:
     return self.__sources
 
   # Return this message's sources as a string
-  def GetSourcesAsText(self, delimiter = "; "):
+  def GetSourcesAsText(self, delimiter="; "):
     return delimiter.join(self.__sources)
 
   # Set the obsolete flag for a message (internal use only)
@@ -301,30 +315,36 @@ class BaseMessage:
       for pos in FindOverlapping(presentation, ph.GetPresentation()):
         # message contains the same text as a placeholder presentation
         other_ph = phs.get(pos)
-        if ((not other_ph
-             and not IsSubstringInPlaceholder(pos, len(ph.GetPresentation()), phs))
-            or
-            (other_ph and len(other_ph.GetPresentation()) < len(ph.GetPresentation()))):
-          return  "message contains placeholder name '%s':\n%s" % (
-            ph.GetPresentation(), presentation)
+        if (
+          not other_ph
+          and not IsSubstringInPlaceholder(pos, len(ph.GetPresentation()), phs)
+        ) or (
+          other_ph
+          and len(other_ph.GetPresentation()) < len(ph.GetPresentation())
+        ):
+          return "message contains placeholder name '%s':\n%s" % (
+            ph.GetPresentation(),
+            presentation,
+          )
     return None
-
 
   def __CopyTo(self, other):
     """
     Returns a copy of this BaseMessage.
     """
-    assert isinstance(other,  self.__class__) or isinstance(self, other.__class__)
+    assert isinstance(other, self.__class__) or isinstance(
+      self, other.__class__
+    )
     other.__source_encoding = self.__source_encoding
-    other.__content         = self.__content[:]
-    other.__description     = self.__description
-    other.__id              = self.__id
-    other.__num_instances   = self.__num_instances
-    other.__obsolete        = self.__obsolete
-    other.__name            = self.__name
-    other.__placeholders    = self.__placeholders[:]
+    other.__content = self.__content[:]
+    other.__description = self.__description
+    other.__id = self.__id
+    other.__num_instances = self.__num_instances
+    other.__obsolete = self.__obsolete
+    other.__name = self.__name
+    other.__placeholders = self.__placeholders[:]
     other.__sequence_number = self.__sequence_number
-    other.__sources         = self.__sources[:]
+    other.__sources = self.__sources[:]
 
     return other
 
@@ -335,15 +355,28 @@ class BaseMessage:
         return True
     return False
 
+
 # --------------------------------------------------------
 # The Message class represents original (English) messages
 
+
 class Message(BaseMessage):
   # See BaseMessage constructor
-  def __init__(self, source_encoding, text=None, id=None,
-               description=None, meaning="", placeholders=None,
-               source=None, sequence_number=0, clone_from=None,
-               time_created=0, name=None, is_hidden = 0):
+  def __init__(
+    self,
+    source_encoding,
+    text=None,
+    id=None,
+    description=None,
+    meaning="",
+    placeholders=None,
+    source=None,
+    sequence_number=0,
+    clone_from=None,
+    time_created=0,
+    name=None,
+    is_hidden=0,
+  ):
 
     if clone_from is not None:
       BaseMessage.__init__(self, None, clone_from=clone_from)
@@ -352,19 +385,34 @@ class Message(BaseMessage):
       self.__is_hidden = clone_from.__is_hidden
       return
 
-    BaseMessage.__init__(self, source_encoding, text, id, description,
-                         placeholders, source, sequence_number,
-                         name=name)
+    BaseMessage.__init__(
+      self,
+      source_encoding,
+      text,
+      id,
+      description,
+      placeholders,
+      source,
+      sequence_number,
+      name=name,
+    )
     self.__meaning = meaning
     self.__time_created = time_created
     self.SetIsHidden(is_hidden)
 
   # String representation
   def __str__(self):
-    s = 'source: %s, id: %s, content: "%s", meaning: "%s", ' \
-        'description: "%s"' % \
-        (self.GetSourcesAsText(), self.GetId(), self.GetPresentableContent(),
-         self.__meaning, self.GetDescription())
+    s = (
+      'source: %s, id: %s, content: "%s", meaning: "%s", '
+      'description: "%s"'
+      % (
+        self.GetSourcesAsText(),
+        self.GetId(),
+        self.GetPresentableContent(),
+        self.__meaning,
+        self.GetDescription(),
+      )
+    )
     if self.GetName() is not None:
       s += ', name: "%s"' % self.GetName()
     placeholders = self.GetPlaceholders()
@@ -381,20 +429,19 @@ class Message(BaseMessage):
       s0 = content[0]
       if not isinstance(s0, Placeholder):
         s = s0.lstrip()
-        leading = s0[:-len(s)]
+        leading = s0[: -len(s)]
         content[0] = s
 
       s0 = content[-1]
       if not isinstance(s0, Placeholder):
         s = s0.rstrip()
-        trailing = s0[len(s):]
+        trailing = s0[len(s) :]
         content[-1] = s
     return leading, trailing
 
   # Generate an id by hashing message content
   def GenerateId(self):
-    self.SetId(GenerateMessageId(self.GetPresentableContent(),
-                                 self.__meaning))
+    self.SetId(GenerateMessageId(self.GetPresentableContent(), self.__meaning))
     return self.GetId()
 
   def GetMeaning(self):
@@ -404,7 +451,7 @@ class Message(BaseMessage):
     return self.__time_created
 
   # Equality operator
-  def EqualTo(self, other, strict = 1):
+  def EqualTo(self, other, strict=1):
     # Check id, meaning, content
     if self.GetId() != other.GetId():
       return 0
@@ -413,10 +460,12 @@ class Message(BaseMessage):
     if self.GetPresentableContent() != other.GetPresentableContent():
       return 0
     # Check descriptions if comparison is strict
-    if (strict and
-        self.GetDescription() is not None and
-        other.GetDescription() is not None and
-        self.GetDescription() != other.GetDescription()):
+    if (
+      strict
+      and self.GetDescription() is not None
+      and other.GetDescription() is not None
+      and self.GetDescription() != other.GetDescription()
+    ):
       return 0
     # Check placeholders
     ph1 = self.GetPlaceholders()
@@ -450,28 +499,51 @@ class Message(BaseMessage):
     """Returns 1 if this message is hidden, and 0 otherwise."""
     return self.__is_hidden
 
+
 # ----------------------------------------------------
 # The Translation class represents translated messages
 
+
 class Translation(BaseMessage):
   # See BaseMessage constructor
-  def __init__(self, source_encoding, text=None, id=None,
-               description=None, placeholders=None, source=None,
-               sequence_number=0, clone_from=None, ignore_ph_errors=0,
-               name=None):
+  def __init__(
+    self,
+    source_encoding,
+    text=None,
+    id=None,
+    description=None,
+    placeholders=None,
+    source=None,
+    sequence_number=0,
+    clone_from=None,
+    ignore_ph_errors=0,
+    name=None,
+  ):
     if clone_from is not None:
       BaseMessage.__init__(self, None, clone_from=clone_from)
       return
 
-    BaseMessage.__init__(self, source_encoding, text, id, description,
-                         placeholders, source, sequence_number,
-                         ignore_ph_errors=ignore_ph_errors, name=name)
+    BaseMessage.__init__(
+      self,
+      source_encoding,
+      text,
+      id,
+      description,
+      placeholders,
+      source,
+      sequence_number,
+      ignore_ph_errors=ignore_ph_errors,
+      name=name,
+    )
 
   # String representation
   def __str__(self):
-    s = 'source: %s, id: %s, content: "%s", description: "%s"' % \
-        (self.GetSourcesAsText(), self.GetId(), self.GetPresentableContent(),
-         self.GetDescription());
+    s = 'source: %s, id: %s, content: "%s", description: "%s"' % (
+      self.GetSourcesAsText(),
+      self.GetId(),
+      self.GetPresentableContent(),
+      self.GetDescription(),
+    )
     placeholders = self.GetPlaceholders()
     for i in range(len(placeholders)):
       s += ", placeholder[%d]: %s" % (i, placeholders[i])

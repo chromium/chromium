@@ -7,9 +7,9 @@
 GRIT tools.
 """
 
-
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
@@ -33,37 +33,48 @@ import grit.tool.unit
 import grit.tool.update_resource_ids
 import grit.tool.xmb
 
+
 # Tool info factories; these import only within each factory to avoid
 # importing most of the GRIT code until required.
 def ToolFactoryBuild():
   return grit.tool.build.RcBuilder()
 
+
 def ToolFactoryBuildInfo():
   return grit.tool.buildinfo.DetermineBuildInfo()
+
 
 def ToolFactoryCount():
   return grit.tool.count.CountMessage()
 
+
 def ToolFactoryDiffStructures():
   return grit.tool.diff_structures.DiffStructures()
+
 
 def ToolFactoryMenuTranslationsFromParts():
   return grit.tool.menu_from_parts.MenuTranslationsFromParts()
 
+
 def ToolFactoryNewGrd():
   return grit.tool.newgrd.NewGrd()
+
 
 def ToolFactoryResizeDialog():
   return grit.tool.resize.ResizeDialog()
 
+
 def ToolFactoryRc2Grd():
   return grit.tool.rc2grd.Rc2Grd()
+
 
 def ToolFactoryTest():
   return grit.tool.test.TestTool()
 
+
 def ToolFactoryTranslationToTc():
   return grit.tool.transl2tc.TranslationToTc()
+
 
 def ToolFactoryUnit():
   return grit.tool.unit.UnitTestTool()
@@ -76,8 +87,10 @@ def ToolFactoryUpdateResourceIds():
 def ToolFactoryXmb():
   return grit.tool.xmb.OutputXmb()
 
+
 def ToolAndroid2Grd():
   return grit.tool.android2grd.Android2Grd()
+
 
 # Keys for the following map
 _FACTORY = 1
@@ -87,84 +100,44 @@ _HIDDEN = 3  # optional key - presence indicates tool is hidden
 # Maps tool names to the tool's module.  Done as a list of (key, value) tuples
 # instead of a map to preserve ordering.
 _TOOLS = [
-    ['android2grd', {
-        _FACTORY: ToolAndroid2Grd,
-        _REQUIRES_INPUT: False
-    }],
-    ['build', {
-        _FACTORY: ToolFactoryBuild,
-        _REQUIRES_INPUT: True
-    }],
-    ['buildinfo', {
-        _FACTORY: ToolFactoryBuildInfo,
-        _REQUIRES_INPUT: True
-    }],
-    ['count', {
-        _FACTORY: ToolFactoryCount,
-        _REQUIRES_INPUT: True
-    }],
-    [
-        'menufromparts',
-        {
-            _FACTORY: ToolFactoryMenuTranslationsFromParts,
-            _REQUIRES_INPUT: True,
-            _HIDDEN: True
-        }
-    ],
-    ['newgrd', {
-        _FACTORY: ToolFactoryNewGrd,
-        _REQUIRES_INPUT: False
-    }],
-    ['rc2grd', {
-        _FACTORY: ToolFactoryRc2Grd,
-        _REQUIRES_INPUT: False
-    }],
-    ['resize', {
-        _FACTORY: ToolFactoryResizeDialog,
-        _REQUIRES_INPUT: True
-    }],
-    ['sdiff', {
-        _FACTORY: ToolFactoryDiffStructures,
-        _REQUIRES_INPUT: False
-    }],
-    ['test', {
-        _FACTORY: ToolFactoryTest,
-        _REQUIRES_INPUT: True,
-        _HIDDEN: True
-    }],
-    [
-        'transl2tc',
-        {
-            _FACTORY: ToolFactoryTranslationToTc,
-            _REQUIRES_INPUT: False
-        }
-    ],
-    ['unit', {
-        _FACTORY: ToolFactoryUnit,
-        _REQUIRES_INPUT: False
-    }],
-    [
-        'update_resource_ids',
-        {
-            _FACTORY: ToolFactoryUpdateResourceIds,
-            _REQUIRES_INPUT: False
-        }
-    ],
-    ['xmb', {
-        _FACTORY: ToolFactoryXmb,
-        _REQUIRES_INPUT: True
-    }],
+  ['android2grd', {_FACTORY: ToolAndroid2Grd, _REQUIRES_INPUT: False}],
+  ['build', {_FACTORY: ToolFactoryBuild, _REQUIRES_INPUT: True}],
+  ['buildinfo', {_FACTORY: ToolFactoryBuildInfo, _REQUIRES_INPUT: True}],
+  ['count', {_FACTORY: ToolFactoryCount, _REQUIRES_INPUT: True}],
+  [
+    'menufromparts',
+    {
+      _FACTORY: ToolFactoryMenuTranslationsFromParts,
+      _REQUIRES_INPUT: True,
+      _HIDDEN: True,
+    },
+  ],
+  ['newgrd', {_FACTORY: ToolFactoryNewGrd, _REQUIRES_INPUT: False}],
+  ['rc2grd', {_FACTORY: ToolFactoryRc2Grd, _REQUIRES_INPUT: False}],
+  ['resize', {_FACTORY: ToolFactoryResizeDialog, _REQUIRES_INPUT: True}],
+  ['sdiff', {_FACTORY: ToolFactoryDiffStructures, _REQUIRES_INPUT: False}],
+  ['test', {_FACTORY: ToolFactoryTest, _REQUIRES_INPUT: True, _HIDDEN: True}],
+  ['transl2tc', {_FACTORY: ToolFactoryTranslationToTc, _REQUIRES_INPUT: False}],
+  ['unit', {_FACTORY: ToolFactoryUnit, _REQUIRES_INPUT: False}],
+  [
+    'update_resource_ids',
+    {_FACTORY: ToolFactoryUpdateResourceIds, _REQUIRES_INPUT: False},
+  ],
+  ['xmb', {_FACTORY: ToolFactoryXmb, _REQUIRES_INPUT: True}],
 ]
 
 
 def PrintUsage():
   tool_list = ''
-  for (tool, info) in _TOOLS:
+  for tool, info in _TOOLS:
     if not _HIDDEN in info:
       tool_list += '    %-12s %s\n' % (
-          tool, info[_FACTORY]().ShortDescription())
+        tool,
+        info[_FACTORY]().ShortDescription(),
+      )
 
-  print("""GRIT - the Google Resource and Internationalization Tool
+  print(
+    """GRIT - the Google Resource and Internationalization Tool
 
 Usage: grit [GLOBALOPTIONS] TOOL [args to tool]
 
@@ -192,7 +165,9 @@ Tools:
 %s
   For more information on how to use a particular tool, and the specific
   arguments you can send to that tool, execute 'grit help TOOL'
-""" % (tool_list))
+"""
+    % (tool_list)
+  )
 
 
 class Options:
@@ -209,9 +184,11 @@ class Options:
   def ReadOptions(self, args):
     """Reads options from the start of args and returns the remainder."""
     (opts, args) = getopt.getopt(args, 'vxi:p:h:', ('help',))
-    for (key, val) in opts:
-      if key == '-h': self.hash = val
-      elif key == '-i': self.input = val
+    for key, val in opts:
+      if key == '-h':
+        self.hash = val
+      elif key == '-i':
+        self.input = val
       elif key == '-v':
         self.verbose = True
         util.verbose = True
@@ -220,7 +197,8 @@ class Options:
         util.verbose = True
         self.extra_verbose = True
         util.extra_verbose = True
-      elif key == '-p': self.profile_dest = val
+      elif key == '-p':
+        self.profile_dest = val
       elif key == '--help':
         PrintUsage()
         sys.exit(0)
@@ -234,8 +212,7 @@ class Options:
     return args
 
   def __repr__(self):
-    return '(verbose: %d, input: %s)' % (
-        self.verbose, self.input)
+    return '(verbose: %d, input: %s)' % (self.verbose, self.input)
 
 
 def _GetToolInfo(tool):
@@ -278,8 +255,9 @@ def Main(args=None):
         print("No such tool.  Try running 'grit help' for a list of tools.")
         return 2
 
-      print("Help for 'grit %s' (for general help, run 'grit help'):\n" %
-            (tool,))
+      print(
+        "Help for 'grit %s' (for general help, run 'grit help'):\n" % (tool,)
+      )
       _GetToolInfo(tool)[_FACTORY]().ShowUsage()
       return 0
   if not _GetToolInfo(tool):
@@ -290,14 +268,16 @@ def Main(args=None):
     if _GetToolInfo(tool)[_REQUIRES_INPUT]:
       os.stat(options.input)
   except OSError:
-    print('Input file %s not found.\n'
-          'To specify a different input file:\n'
-          '  1. Use the GRIT_INPUT environment variable.\n'
-          '  2. Use the -i command-line option.  This overrides '
-          'GRIT_INPUT.\n'
-          '  3. Specify neither GRIT_INPUT or -i and GRIT will try to load '
-          "'resource.grd'\n"
-          '     from the current directory.' % options.input)
+    print(
+      'Input file %s not found.\n'
+      'To specify a different input file:\n'
+      '  1. Use the GRIT_INPUT environment variable.\n'
+      '  2. Use the -i command-line option.  This overrides '
+      'GRIT_INPUT.\n'
+      '  3. Specify neither GRIT_INPUT or -i and GRIT will try to load '
+      "'resource.grd'\n"
+      '     from the current directory.' % options.input
+    )
     return 2
 
   if options.hash:
@@ -307,6 +287,7 @@ def Main(args=None):
     toolobject = _GetToolInfo(tool)[_FACTORY]()
     if options.profile_dest:
       import hotshot
+
       prof = hotshot.Profile(options.profile_dest)
       return prof.runcall(toolobject.Run, options, args[1:])
     else:
@@ -319,10 +300,13 @@ def Main(args=None):
 
 if __name__ == '__main__':
   sys.path.append(
-      os.path.join(
-          os.path.dirname(
-              os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-          'diagnosis'))
+    os.path.join(
+      os.path.dirname(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+      ),
+      'diagnosis',
+    )
+  )
   try:
     sys.exit(Main(sys.argv[1:]))
   except ImportError:

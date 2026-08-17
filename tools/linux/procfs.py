@@ -30,52 +30,55 @@ _LOGGER.addHandler(_NullHandler())
 
 class ProcStat:
   """Reads and stores information in /proc/pid/stat."""
+
   _PATTERN = re.compile(
-      r'^'
-      '(?P<PID>-?[0-9]+) '
-      r'\((?P<COMM>.+)\) '
-      '(?P<STATE>[RSDZTW]) '
-      '(?P<PPID>-?[0-9]+) '
-      '(?P<PGRP>-?[0-9]+) '
-      '(?P<SESSION>-?[0-9]+) '
-      '(?P<TTY_NR>-?[0-9]+) '
-      '(?P<TPGID>-?[0-9]+) '
-      '(?P<FLAGS>[0-9]+) '
-      '(?P<MINFIT>[0-9]+) '
-      '(?P<CMINFIT>[0-9]+) '
-      '(?P<MAJFIT>[0-9]+) '
-      '(?P<CMAJFIT>[0-9]+) '
-      '(?P<UTIME>[0-9]+) '
-      '(?P<STIME>[0-9]+) '
-      '(?P<CUTIME>[0-9]+) '
-      '(?P<CSTIME>[0-9]+) '
-      '(?P<PRIORITY>[0-9]+) '
-      '(?P<NICE>[0-9]+) '
-      '(?P<NUM_THREADS>[0-9]+) '
-      '(?P<ITREALVALUE>[0-9]+) '
-      '(?P<STARTTIME>[0-9]+) '
-      '(?P<VSIZE>[0-9]+) '
-      '(?P<RSS>[0-9]+) '
-      '(?P<RSSLIM>[0-9]+) '
-      '(?P<STARTCODE>[0-9]+) '
-      '(?P<ENDCODE>[0-9]+) '
-      '(?P<STARTSTACK>[0-9]+) '
-      '(?P<KSTKESP>[0-9]+) '
-      '(?P<KSTKEIP>[0-9]+) '
-      '(?P<SIGNAL>[0-9]+) '
-      '(?P<BLOCKED>[0-9]+) '
-      '(?P<SIGIGNORE>[0-9]+) '
-      '(?P<SIGCATCH>[0-9]+) '
-      '(?P<WCHAN>[0-9]+) '
-      '(?P<NSWAP>[0-9]+) '
-      '(?P<CNSWAP>[0-9]+) '
-      '(?P<EXIT_SIGNAL>[0-9]+) '
-      '(?P<PROCESSOR>[0-9]+) '
-      '(?P<RT_PRIORITY>[0-9]+) '
-      '(?P<POLICY>[0-9]+) '
-      '(?P<DELAYACCT_BLKIO_TICKS>[0-9]+) '
-      '(?P<GUEST_TIME>[0-9]+) '
-      '(?P<CGUEST_TIME>[0-9]+)', re.IGNORECASE)
+    r'^'
+    '(?P<PID>-?[0-9]+) '
+    r'\((?P<COMM>.+)\) '
+    '(?P<STATE>[RSDZTW]) '
+    '(?P<PPID>-?[0-9]+) '
+    '(?P<PGRP>-?[0-9]+) '
+    '(?P<SESSION>-?[0-9]+) '
+    '(?P<TTY_NR>-?[0-9]+) '
+    '(?P<TPGID>-?[0-9]+) '
+    '(?P<FLAGS>[0-9]+) '
+    '(?P<MINFIT>[0-9]+) '
+    '(?P<CMINFIT>[0-9]+) '
+    '(?P<MAJFIT>[0-9]+) '
+    '(?P<CMAJFIT>[0-9]+) '
+    '(?P<UTIME>[0-9]+) '
+    '(?P<STIME>[0-9]+) '
+    '(?P<CUTIME>[0-9]+) '
+    '(?P<CSTIME>[0-9]+) '
+    '(?P<PRIORITY>[0-9]+) '
+    '(?P<NICE>[0-9]+) '
+    '(?P<NUM_THREADS>[0-9]+) '
+    '(?P<ITREALVALUE>[0-9]+) '
+    '(?P<STARTTIME>[0-9]+) '
+    '(?P<VSIZE>[0-9]+) '
+    '(?P<RSS>[0-9]+) '
+    '(?P<RSSLIM>[0-9]+) '
+    '(?P<STARTCODE>[0-9]+) '
+    '(?P<ENDCODE>[0-9]+) '
+    '(?P<STARTSTACK>[0-9]+) '
+    '(?P<KSTKESP>[0-9]+) '
+    '(?P<KSTKEIP>[0-9]+) '
+    '(?P<SIGNAL>[0-9]+) '
+    '(?P<BLOCKED>[0-9]+) '
+    '(?P<SIGIGNORE>[0-9]+) '
+    '(?P<SIGCATCH>[0-9]+) '
+    '(?P<WCHAN>[0-9]+) '
+    '(?P<NSWAP>[0-9]+) '
+    '(?P<CNSWAP>[0-9]+) '
+    '(?P<EXIT_SIGNAL>[0-9]+) '
+    '(?P<PROCESSOR>[0-9]+) '
+    '(?P<RT_PRIORITY>[0-9]+) '
+    '(?P<POLICY>[0-9]+) '
+    '(?P<DELAYACCT_BLKIO_TICKS>[0-9]+) '
+    '(?P<GUEST_TIME>[0-9]+) '
+    '(?P<CGUEST_TIME>[0-9]+)',
+    re.IGNORECASE,
+  )
 
   def __init__(self, raw, pid, vsize, rss):
     self._raw = raw
@@ -87,10 +90,12 @@ class ProcStat:
   def load_file(stat_f):
     raw = stat_f.readlines()
     stat = ProcStat._PATTERN.match(raw[0])
-    return ProcStat(raw,
-                    stat.groupdict().get('PID'),
-                    stat.groupdict().get('VSIZE'),
-                    stat.groupdict().get('RSS'))
+    return ProcStat(
+      raw,
+      stat.groupdict().get('PID'),
+      stat.groupdict().get('VSIZE'),
+      stat.groupdict().get('RSS'),
+    )
 
   @staticmethod
   def load(pid):
@@ -119,14 +124,18 @@ class ProcStat:
 
 class ProcStatm:
   """Reads and stores information in /proc/pid/statm."""
-  _PATTERN = re.compile(r'^'
-                        '(?P<SIZE>[0-9]+) '
-                        '(?P<RESIDENT>[0-9]+) '
-                        '(?P<SHARE>[0-9]+) '
-                        '(?P<TEXT>[0-9]+) '
-                        '(?P<LIB>[0-9]+) '
-                        '(?P<DATA>[0-9]+) '
-                        '(?P<DT>[0-9]+)', re.IGNORECASE)
+
+  _PATTERN = re.compile(
+    r'^'
+    '(?P<SIZE>[0-9]+) '
+    '(?P<RESIDENT>[0-9]+) '
+    '(?P<SHARE>[0-9]+) '
+    '(?P<TEXT>[0-9]+) '
+    '(?P<LIB>[0-9]+) '
+    '(?P<DATA>[0-9]+) '
+    '(?P<DT>[0-9]+)',
+    re.IGNORECASE,
+  )
 
   def __init__(self, raw, size, resident, share, text, lib, data, dt):
     self._raw = raw
@@ -145,14 +154,16 @@ class ProcStatm:
     except (IOError, OSError):
       return None
     statm = ProcStatm._PATTERN.match(raw[0])
-    return ProcStatm(raw,
-                     statm.groupdict().get('SIZE'),
-                     statm.groupdict().get('RESIDENT'),
-                     statm.groupdict().get('SHARE'),
-                     statm.groupdict().get('TEXT'),
-                     statm.groupdict().get('LIB'),
-                     statm.groupdict().get('DATA'),
-                     statm.groupdict().get('DT'))
+    return ProcStatm(
+      raw,
+      statm.groupdict().get('SIZE'),
+      statm.groupdict().get('RESIDENT'),
+      statm.groupdict().get('SHARE'),
+      statm.groupdict().get('TEXT'),
+      statm.groupdict().get('LIB'),
+      statm.groupdict().get('DATA'),
+      statm.groupdict().get('DT'),
+    )
 
   @staticmethod
   def load(pid):
@@ -197,6 +208,7 @@ class ProcStatm:
 
 class ProcStatus:
   """Reads and stores information in /proc/pid/status."""
+
   _PATTERN = re.compile(r'^(?P<NAME>[A-Za-z0-9_]+):\s+(?P<VALUE>.*)')
 
   def __init__(self, raw, dct):
@@ -275,8 +287,19 @@ class ProcMapsEntry:
   """A class representing one line in /proc/pid/maps."""
 
   def __init__(
-      self, begin, end, readable, writable, executable, private, offset,
-      major, minor, inode, name):
+    self,
+    begin,
+    end,
+    readable,
+    writable,
+    executable,
+    private,
+    offset,
+    major,
+    minor,
+    inode,
+    name,
+  ):
     self.begin = begin
     self.end = end
     self.readable = readable
@@ -291,17 +314,17 @@ class ProcMapsEntry:
 
   def as_dict(self):
     return {
-        'begin': self.begin,
-        'end': self.end,
-        'readable': self.readable,
-        'writable': self.writable,
-        'executable': self.executable,
-        'private': self.private,
-        'offset': self.offset,
-        'major': self.major,
-        'minor': self.minor,
-        'inode': self.inode,
-        'name': self.name,
+      'begin': self.begin,
+      'end': self.end,
+      'readable': self.readable,
+      'writable': self.writable,
+      'executable': self.executable,
+      'private': self.private,
+      'offset': self.offset,
+      'major': self.major,
+      'minor': self.minor,
+      'inode': self.inode,
+      'name': self.name,
     }
 
 
@@ -309,11 +332,14 @@ class ProcMaps:
   """Reads and stores information in /proc/pid/maps."""
 
   MAPS_PATTERN = re.compile(
-      r'^([a-f0-9]+)-([a-f0-9]+)\s+(.)(.)(.)(.)\s+([a-f0-9]+)\s+(\S+):(\S+)\s+'
-      r'(\d+)\s*(.*)$', re.IGNORECASE)
+    r'^([a-f0-9]+)-([a-f0-9]+)\s+(.)(.)(.)(.)\s+([a-f0-9]+)\s+(\S+):(\S+)\s+'
+    r'(\d+)\s*(.*)$',
+    re.IGNORECASE,
+  )
 
   EXECUTABLE_PATTERN = re.compile(
-      r'\S+\.(so|dll|dylib|bundle)((\.\d+)+\w*(\.\d+){0,3})?')
+    r'\S+\.(so|dll|dylib|bundle)((\.\d+)+\w*(\.\d+){0,3})?'
+  )
 
   def __init__(self):
     self._sorted_indexes = []
@@ -361,18 +387,18 @@ class ProcMaps:
     matched = ProcMaps.MAPS_PATTERN.match(line)
     if matched:
       return ProcMapsEntry(  # pylint: disable=W0212
-          int(matched.group(1), 16),  # begin
-          int(matched.group(2), 16),  # end
-          matched.group(3),           # readable
-          matched.group(4),           # writable
-          matched.group(5),           # executable
-          matched.group(6),           # private
-          int(matched.group(7), 16),  # offset
-          matched.group(8),           # major
-          matched.group(9),           # minor
-          int(matched.group(10), 10), # inode
-          matched.group(11)           # name
-          )
+        int(matched.group(1), 16),  # begin
+        int(matched.group(2), 16),  # end
+        matched.group(3),  # readable
+        matched.group(4),  # writable
+        matched.group(5),  # executable
+        matched.group(6),  # private
+        int(matched.group(7), 16),  # offset
+        matched.group(8),  # major
+        matched.group(9),  # minor
+        int(matched.group(10), 10),  # inode
+        matched.group(11),  # name
+      )
     return None
 
   @staticmethod
@@ -385,8 +411,9 @@ class ProcMaps:
 
   @staticmethod
   def executable_and_constants(entry):
-    return ((entry.writable == '-' and entry.executable == '-') or
-            entry.executable == 'x')
+    return (
+      entry.writable == '-' and entry.executable == '-'
+    ) or entry.executable == 'x'
 
   def _append_entry(self, entry):
     if self._sorted_indexes and self._sorted_indexes[-1] > entry.begin:
@@ -397,6 +424,7 @@ class ProcMaps:
 
 class ProcSmaps:
   """Reads and stores information in /proc/pid/smaps."""
+
   _SMAPS_PATTERN = re.compile(r'^(?P<NAME>[A-Za-z0-9_]+):\s+(?P<VALUE>.*)')
 
   class VMA:
@@ -415,7 +443,7 @@ class ProcSmaps:
         'Shared_Clean': '_shared_clean',
         'KernelPageSize': '_kernel_page_size',
         'MMUPageSize': '_mmu_page_size',
-        }
+      }
       if name in dct:
         self.__setattr__(dct[name], value)
 
@@ -519,6 +547,7 @@ class ProcPagemap:
   It picks up virtual addresses to read based on ProcMaps (/proc/pid/maps).
   See https://www.kernel.org/doc/Documentation/vm/pagemap.txt for details.
   """
+
   _BYTES_PER_PAGEMAP_VALUE = 8
   _BYTES_PER_OS_PAGE = 4096
   _VIRTUAL_TO_PAGEMAP_OFFSET = _BYTES_PER_OS_PAGE / _BYTES_PER_PAGEMAP_VALUE
@@ -570,7 +599,8 @@ class ProcPagemap:
 
     try:
       pagemap_fd = os.open(
-          os.path.join('/proc', str(pid), 'pagemap'), os.O_RDONLY)
+        os.path.join('/proc', str(pid), 'pagemap'), os.O_RDONLY
+      )
     except (IOError, OSError):
       return None
     for vma in maps:
@@ -588,7 +618,8 @@ class ProcPagemap:
       if len(buf) < chunk_size:
         _LOGGER.warn('Failed to read pagemap at 0x%x in %d.' % (vma.begin, pid))
       pagemap_values = struct.unpack(
-          '=%dQ' % (len(buf) / ProcPagemap._BYTES_PER_PAGEMAP_VALUE), buf)
+        '=%dQ' % (len(buf) / ProcPagemap._BYTES_PER_PAGEMAP_VALUE), buf
+      )
       for pagemap_value in pagemap_values:
         vsize += ProcPagemap._BYTES_PER_OS_PAGE
         if pagemap_value & ProcPagemap._MASK_PRESENT:
@@ -610,8 +641,9 @@ class ProcPagemap:
     except OSError:
       return None
 
-    return ProcPagemap(total_vsize, total_present, total_swapped,
-                       vma_internals, in_process_dup)
+    return ProcPagemap(
+      total_vsize, total_present, total_swapped, vma_internals, in_process_dup
+    )
 
   @staticmethod
   def _offset(virtual_address):
@@ -636,6 +668,7 @@ class ProcPagemap:
 
 class _ProcessMemory:
   """Aggregates process memory information from /proc for manual testing."""
+
   def __init__(self, pid):
     self._pid = pid
     self._maps = None
@@ -711,8 +744,9 @@ def main(argv):
   _LOGGER.setLevel(logging.WARNING)
   handler = logging.StreamHandler()
   handler.setLevel(logging.WARNING)
-  handler.setFormatter(logging.Formatter(
-      '%(asctime)s:%(name)s:%(levelname)s:%(message)s'))
+  handler.setFormatter(
+    logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
+  )
   _LOGGER.addHandler(handler)
 
   pids = []
@@ -733,14 +767,18 @@ def main(argv):
 
     print('   stat: %d' % procs[pid].stat.vsize)
     print('  statm: %d' % (procs[pid].statm.size * 4096))
-    print(' status: %d (Peak:%d)' % (procs[pid].status.vm_size * 1024,
-                                     procs[pid].status.vm_peak * 1024))
+    print(
+      ' status: %d (Peak:%d)'
+      % (procs[pid].status.vm_size * 1024, procs[pid].status.vm_peak * 1024)
+    )
     print('  smaps: %d' % (procs[pid].smaps.size * 1024))
     print('pagemap: %d' % procs[pid].pagemap.vsize)
     print('   stat: %d' % (procs[pid].stat.rss * 4096))
     print('  statm: %d' % (procs[pid].statm.resident * 4096))
-    print(' status: %d (Peak:%d)' % (procs[pid].status.vm_rss * 1024,
-                                     procs[pid].status.vm_hwm * 1024))
+    print(
+      ' status: %d (Peak:%d)'
+      % (procs[pid].status.vm_rss * 1024, procs[pid].status.vm_hwm * 1024)
+    )
     print('  smaps: %d' % (procs[pid].smaps.rss * 1024))
     print('pagemap: %d' % procs[pid].pagemap.present)
 

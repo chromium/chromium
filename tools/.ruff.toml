@@ -1,0 +1,12 @@
+line-length = 80
+indent-width = 2
+
+# tools/metrics enforces its own single-quote style and custom presubmit
+# validations (see tools/metrics/PRESUBMIT.py). Excluded from top-level Ruff
+# formatting.
+exclude = [
+  "metrics",
+]
+
+[format]
+quote-style = "preserve"

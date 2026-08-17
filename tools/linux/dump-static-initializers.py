@@ -19,8 +19,13 @@ import subprocess
 import sys
 
 _TOOLCHAIN_PREFIX = str(
-    pathlib.Path(__file__).parents[2] / 'third_party' / 'llvm-build' /
-    'Release+Asserts' / 'bin' / 'llvm-')
+  pathlib.Path(__file__).parents[2]
+  / 'third_party'
+  / 'llvm-build'
+  / 'Release+Asserts'
+  / 'bin'
+  / 'llvm-'
+)
 
 # It is too slow to dump disassembly for a lot of symbols.
 _MAX_DISASSEMBLY_SYMBOLS = 10
@@ -30,7 +35,8 @@ def _ParseNm(binary, addresses):
   # Example output:
   # 000000000de66bd0 0000000000000026 t _GLOBAL__sub_I_add.cc
   output = subprocess.check_output(
-      [_TOOLCHAIN_PREFIX + 'nm', '--print-size', binary], encoding='utf8')
+    [_TOOLCHAIN_PREFIX + 'nm', '--print-size', binary], encoding='utf8'
+  )
   addresses = set(addresses)
   ret = {}
   for line in output.splitlines():
@@ -45,13 +51,13 @@ def _ParseNm(binary, addresses):
 
 def _Disassemble(binary, start, end):
   cmd = [
-      _TOOLCHAIN_PREFIX + 'objdump',
-      binary,
-      '--disassemble',
-      '--source',
-      '--demangle',
-      '--start-address=0x%x' % start,
-      '--stop-address=0x%x' % end,
+    _TOOLCHAIN_PREFIX + 'objdump',
+    binary,
+    '--disassemble',
+    '--source',
+    '--demangle',
+    '--start-address=0x%x' % start,
+    '--stop-address=0x%x' % end,
   ]
   stdout = subprocess.check_output(cmd, encoding='utf8')
   all_lines = stdout.splitlines(keepends=True)
@@ -61,7 +67,7 @@ def _Disassemble(binary, start, end):
     ret = ['Showing source lines that appear in the symbol (via objdump).\n']
   else:
     ret = [
-        'Symbol missing source lines. Showing raw disassembly (via objdump).\n'
+      'Symbol missing source lines. Showing raw disassembly (via objdump).\n'
     ]
   lines = source_lines or all_lines
   if len(lines) > 10:
@@ -144,8 +150,9 @@ def _ResolveRelativeAddresses(binary, address_tuples):
         relocations_dict = _DumpRelativeRelocations(binary)
       address = relocations_dict.get(init_address)
       if address is None:
-        raise Exception('Failed to resolve relocation for address: ' +
-                        hex(init_address))
+        raise Exception(
+          'Failed to resolve relocation for address: ' + hex(init_address)
+        )
     ret.append(address)
   return ret
 
@@ -161,8 +168,11 @@ def _SymbolizeAddresses(binary, addresses):
   if not addresses:
     return ret
   cmd = [
-      _TOOLCHAIN_PREFIX + 'symbolizer', '-e', binary, '--functions',
-      '--output-style=JSON'
+    _TOOLCHAIN_PREFIX + 'symbolizer',
+    '-e',
+    binary,
+    '--functions',
+    '--output-style=JSON',
   ] + [hex(a) for a in addresses]
   output = subprocess.check_output(cmd, encoding='utf8')
   for main_entry in json.loads(output):
@@ -183,9 +193,9 @@ def _SymbolizeAddresses(binary, addresses):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--json',
-                      action='store_true',
-                      help='Output in JSON format')
+  parser.add_argument(
+    '--json', action='store_true', help='Output in JSON format'
+  )
   parser.add_argument('binary', help='The non-stripped binary to analyze.')
   args = parser.parse_args()
 
@@ -195,8 +205,9 @@ def main():
 
   skip_disassembly = len(addresses) > _MAX_DISASSEMBLY_SYMBOLS
   if skip_disassembly:
-    sys.stderr.write('Not collection disassembly due to the large number of '
-                     'results.\n')
+    sys.stderr.write(
+      'Not collection disassembly due to the large number of results.\n'
+    )
   else:
     size_by_address = _ParseNm(args.binary, addresses)
 
@@ -208,16 +219,20 @@ def main():
     else:
       size = size_by_address.get(address, 0)
       if size == 0:
-        disassembly = ('Not showing disassembly because of unknown symbol size '
-                       '(assembly symbols sometimes omit size).\n')
+        disassembly = (
+          'Not showing disassembly because of unknown symbol size '
+          '(assembly symbols sometimes omit size).\n'
+        )
       else:
         disassembly = _Disassemble(args.binary, address, address + size)
-    entries.append({
+    entries.append(
+      {
         'address': address,
         'disassembly': disassembly,
         'filename': filename,
         'symbol_name': symbol_name,
-    })
+      }
+    )
 
   if args.json:
     print(json.dumps({'entries': entries}))

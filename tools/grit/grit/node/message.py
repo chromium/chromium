@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Handling of the <message> element.
-'''
+'''Handling of the <message> element.'''
 
 import re
 
@@ -20,15 +19,18 @@ _ELLIPSIS_PATTERN = re.compile(r'(?<!\.)\.\.\.(?=$|\s)')
 _ELLIPSIS_SYMBOL = '\u2026'  # Ellipsis
 
 # Finds whitespace at the start and end of a string which can be multiline.
-_WHITESPACE = re.compile(r'(?P<start>\s*)(?P<body>.+?)(?P<end>\s*)\Z',
-                              re.DOTALL | re.MULTILINE)
+_WHITESPACE = re.compile(
+  r'(?P<start>\s*)(?P<body>.+?)(?P<end>\s*)\Z', re.DOTALL | re.MULTILINE
+)
 
 # <ph> placeholder elements should contain the special character formatters
 # used to format <ph> element content.
 # Android format.
-_ANDROID_FORMAT = (r'%[1-9]+\$'
-                   r'([-#+ 0,(]*)([0-9]+)?(\.[0-9]+)?'
-                   r'([bBhHsScCdoxXeEfgGaAtT%n])')
+_ANDROID_FORMAT = (
+  r'%[1-9]+\$'
+  r'([-#+ 0,(]*)([0-9]+)?(\.[0-9]+)?'
+  r'([bBhHsScCdoxXeEfgGaAtT%n])'
+)
 # Chrome l10n format.
 _CHROME_FORMAT = r'\$+\d'
 # Windows EWT numeric and GRIT %s %d formats.
@@ -36,11 +38,15 @@ _OTHER_FORMAT = r'%[0-9sd]'
 
 # Finds formatters that must be in a placeholder (<ph>) element.
 _FORMATTERS = re.compile(
-    '(%s)|(%s)|(%s)' % (_ANDROID_FORMAT, _CHROME_FORMAT, _OTHER_FORMAT))
-_BAD_PLACEHOLDER_MSG = ('ERROR: Placeholder formatter found outside of <ph> '
-                        'tag in message "%s" in %s.')
-_INVALID_PH_CHAR_MSG = ('ERROR: Invalid format characters found in message '
-                        '"%s" <ph> tag in %s.')
+  '(%s)|(%s)|(%s)' % (_ANDROID_FORMAT, _CHROME_FORMAT, _OTHER_FORMAT)
+)
+_BAD_PLACEHOLDER_MSG = (
+  'ERROR: Placeholder formatter found outside of <ph> '
+  'tag in message "%s" in %s.'
+)
+_INVALID_PH_CHAR_MSG = (
+  'ERROR: Invalid format characters found in message "%s" <ph> tag in %s.'
+)
 
 # Finds HTML tag tokens.
 _HTMLTOKEN = re.compile(r'<[/]?[a-z][a-z0-9]*[^>]*>', re.I)
@@ -86,20 +92,30 @@ class MessageNode(base.ContentNode):
 
   def _IsValidAttribute(self, name, value):
     if name not in [
-        'name', 'offset', 'translateable', 'desc', 'meaning',
-        'internal_comment', 'shortcut_groups', 'custom_type', 'validation_expr',
-        'use_name_for_id', 'sub_variable', 'formatter_data',
-        'is_accessibility_with_no_ui'
+      'name',
+      'offset',
+      'translateable',
+      'desc',
+      'meaning',
+      'internal_comment',
+      'shortcut_groups',
+      'custom_type',
+      'validation_expr',
+      'use_name_for_id',
+      'sub_variable',
+      'formatter_data',
+      'is_accessibility_with_no_ui',
     ]:
       return False
-    if (name in ('translateable', 'sub_variable') and
-        value not in ['true', 'false']):
+    if name in ('translateable', 'sub_variable') and value not in [
+      'true',
+      'false',
+    ]:
       return False
     return True
 
   def SetReplaceEllipsis(self, value):
-    r'''Sets whether to replace ... with \u2026.
-    '''
+    r'''Sets whether to replace ... with \u2026.'''
     self._replace_ellipsis = value
 
   def MandatoryAttributes(self):
@@ -107,17 +123,17 @@ class MessageNode(base.ContentNode):
 
   def DefaultAttributes(self):
     return {
-        'custom_type': '',
-        'desc': '',
-        'formatter_data': '',
-        'internal_comment': '',
-        'is_accessibility_with_no_ui': 'false',
-        'meaning': '',
-        'shortcut_groups': '',
-        'sub_variable': 'false',
-        'translateable': 'true',
-        'use_name_for_id': 'false',
-        'validation_expr': '',
+      'custom_type': '',
+      'desc': '',
+      'formatter_data': '',
+      'internal_comment': '',
+      'is_accessibility_with_no_ui': 'false',
+      'meaning': '',
+      'shortcut_groups': '',
+      'sub_variable': 'false',
+      'translateable': 'true',
+      'use_name_for_id': 'false',
+      'validation_expr': '',
     }
 
   def HandleAttribute(self, attrib, value):
@@ -144,8 +160,10 @@ class MessageNode(base.ContentNode):
     # to take care of the case where the first parent is an <if> node
     grouping_parent = self.parent
     import grit.node.empty
-    while grouping_parent and not isinstance(grouping_parent,
-                                             grit.node.empty.GroupingNode):
+
+    while grouping_parent and not isinstance(
+      grouping_parent, grit.node.empty.GroupingNode
+    ):
       grouping_parent = grouping_parent.parent
 
     assert 'first_id' in grouping_parent.attrs
@@ -198,7 +216,7 @@ class MessageNode(base.ContentNode):
           cdata = cdata.replace(match.group(0), '')
         # Fail if <ph> special chars remain in cdata.
         if re.search(r'[%\$]', cdata):
-          message_id = self.attrs['name'] + ' ' + original;
+          message_id = self.attrs['name'] + ' ' + original
           print(_INVALID_PH_CHAR_MSG % (message_id, self.source))
           raise exception.InvalidCharactersInsidePhNode
 
@@ -221,10 +239,13 @@ class MessageNode(base.ContentNode):
     assigned_id = None
     if self.attrs['use_name_for_id'] == 'true':
       assigned_id = self.attrs['name']
-    message = tclib.Message(text=text, placeholders=placeholders,
-                            description=description_or_id,
-                            meaning=self.attrs['meaning'],
-                            assigned_id=assigned_id)
+    message = tclib.Message(
+      text=text,
+      placeholders=placeholders,
+      description=description_or_id,
+      meaning=self.attrs['meaning'],
+      assigned_id=assigned_id,
+    )
     self.InstallMessage(message)
 
   def InstallMessage(self, message):
@@ -237,11 +258,13 @@ class MessageNode(base.ContentNode):
     for group in self.shortcut_groups_:
       self.clique.AddToShortcutGroup(group)
     if self.attrs['custom_type'] != '':
-      self.clique.SetCustomType(util.NewClassInstance(self.attrs['custom_type'],
-                                                      clique.CustomType))
+      self.clique.SetCustomType(
+        util.NewClassInstance(self.attrs['custom_type'], clique.CustomType)
+      )
     elif self.attrs['validation_expr'] != '':
       self.clique.SetCustomType(
-        clique.OneOffCustomType(self.attrs['validation_expr']))
+        clique.OneOffCustomType(self.attrs['validation_expr'])
+      )
 
   def SubstituteMessages(self, substituter):
     '''Applies substitution to this message.
@@ -257,18 +280,17 @@ class MessageNode(base.ContentNode):
     return [self.clique] if self.clique else []
 
   def Translate(self, lang, gender):
-    '''Returns a translated version of this message.
-    '''
+    '''Returns a translated version of this message.'''
     assert self.clique
     msg = self.clique.MessageForLanguageAndGender(
-        lang, gender, self.PseudoIsAllowed(),
-        self.ShouldFallbackToEnglish()).GetRealContent()
+      lang, gender, self.PseudoIsAllowed(), self.ShouldFallbackToEnglish()
+    ).GetRealContent()
     # Optimization: Avoid the overhead of regular expression substitution if the
     # string clearly does not contain the target '...'.
     if self._replace_ellipsis and '...' in msg:
       msg = _ELLIPSIS_PATTERN.sub(_ELLIPSIS_SYMBOL, msg)
     # Always remove all byte order marks (\uFEFF) https://crbug.com/1033305
-    msg = msg.replace('\uFEFF','')
+    msg = msg.replace('\ufeff', '')
     return msg.replace('[GRITLANGCODE]', lang)
 
   def NameOrOffset(self):
@@ -355,4 +377,5 @@ class PhNode(base.ContentNode):
 
 class ExNode(base.ContentNode):
   '''An <ex> element.'''
+
   pass

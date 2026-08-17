@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Fast and efficient parser for XTB files.
-'''
-
+'''Fast and efficient parser for XTB files.'''
 
 import re
 import sys
@@ -16,8 +14,11 @@ from grit import constants
 
 
 GRAMMATICAL_GENDER_RE = re.compile(
-    (r'^\s*variants\s*{\s*grammatical_gender_variant\s*{\s*'
-     r'grammatical_gender_case:\s*(\w+)\s*}\s*}\s*$'))
+  (
+    r'^\s*variants\s*{\s*grammatical_gender_variant\s*{\s*'
+    r'grammatical_gender_case:\s*(\w+)\s*}\s*}\s*$'
+  )
+)
 
 
 class XtbContentHandler(xml.sax.handler.ContentHandler):
@@ -60,7 +61,8 @@ class XtbContentHandler(xml.sax.handler.ContentHandler):
   def startElement(self, name, attrs):
     if name == 'translation':
       assert self.current_id == 0 and len(self.current_structure) == 0, (
-              "Didn't expect a <translation> element here.")
+        "Didn't expect a <translation> element here."
+      )
       self.current_id = attrs.getValue('id')
     elif name == 'ph':
       assert self.current_id != 0, "Didn't expect a <ph> element here."
@@ -82,8 +84,10 @@ class XtbContentHandler(xml.sax.handler.ContentHandler):
       assert self.current_id != 0
 
       defs = self.defines
+
       def pp_ifdef(define):
         return define in defs
+
       def pp_if(define):
         return define in defs and defs[define]
 
@@ -92,7 +96,8 @@ class XtbContentHandler(xml.sax.handler.ContentHandler):
       should_run_callback = True
       if self.if_expr:
         should_run_callback = grit.node.base.Node.EvaluateExpression(
-            self.if_expr, self.defines, self.target_platform)
+          self.if_expr, self.defines, self.target_platform
+        )
       if should_run_callback:
         self.callback(self.current_id, self.current_structure)
 
@@ -139,8 +144,9 @@ class XtbErrorHandler(xml.sax.handler.ErrorHandler):
     pass
 
 
-def Parse(xtb_file, callback_function, defs=None, debug=False,
-          target_platform=None):
+def Parse(
+  xtb_file, callback_function, defs=None, debug=False, target_platform=None
+):
   '''Parse xtb_file, making a call to callback_function for every translation
   in the XTB file.
 
@@ -167,8 +173,12 @@ def Parse(xtb_file, callback_function, defs=None, debug=False,
   front_of_file = xtb_file.read(1024)
   xtb_file.seek(front_of_file.find(b'<translationbundle'))
 
-  handler = XtbContentHandler(callback=callback_function, defs=defs,
-                              debug=debug, target_platform=target_platform)
+  handler = XtbContentHandler(
+    callback=callback_function,
+    defs=defs,
+    debug=debug,
+    target_platform=target_platform,
+  )
   xml.sax.parse(xtb_file, handler)
   assert handler.language != ''
   return handler.language

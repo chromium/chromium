@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" Lexer for Web IDL
+"""Lexer for Web IDL
 
 The lexer uses the PLY library to build a tokenizer which understands
 Web IDL tokens.
@@ -37,76 +37,74 @@ class IDLLexer(object):
   # of valid token types.
   tokens = [
     # Data types
-      'float',
-      'integer',
-      'string',
-
+    'float',
+    'integer',
+    'string',
     # Symbol and keywords types
-      'SPECIAL_COMMENT',
-      'identifier',
-
+    'SPECIAL_COMMENT',
+    'identifier',
     # MultiChar operators
-      'ELLIPSIS',
+    'ELLIPSIS',
   ]
 
   # 'keywords' is a map of string to token type.  All tokens matching
   # KEYWORD_OR_SYMBOL are matched against keywords dictionary, to determine
   # if the token is actually a keyword.
   keywords = {
-      'any': 'ANY',
-      'async': 'ASYNC',
-      'async_iterable': 'ASYNC_ITERABLE',
-      'attribute': 'ATTRIBUTE',
-      'bigint': 'BIGINT',
-      'boolean': 'BOOLEAN',
-      'byte': 'BYTE',
-      'ByteString': 'BYTESTRING',
-      'callback': 'CALLBACK',
-      'const': 'CONST',
-      'constructor': 'CONSTRUCTOR',
-      'deleter': 'DELETER',
-      'dictionary': 'DICTIONARY',
-      'DOMString': 'DOMSTRING',
-      'double': 'DOUBLE',
-      'enum': 'ENUM',
-      'false': 'FALSE',
-      'float': 'FLOAT',
-      'FrozenArray': 'FROZENARRAY',
-      'getter': 'GETTER',
-      'includes': 'INCLUDES',
-      'Infinity': 'INFINITY',
-      'inherit': 'INHERIT',
-      'interface': 'INTERFACE',
-      'iterable': 'ITERABLE',
-      'long': 'LONG',
-      'maplike': 'MAPLIKE',
-      'mixin': 'MIXIN',
-      'namespace': 'NAMESPACE',
-      'NaN': 'NAN',
-      'null': 'NULL',
-      'object': 'OBJECT',
-      'ObservableArray': 'OBSERVABLEARRAY',
-      'octet': 'OCTET',
-      'optional': 'OPTIONAL',
-      'or': 'OR',
-      'partial': 'PARTIAL',
-      'Promise': 'PROMISE',
-      'readonly': 'READONLY',
-      'record': 'RECORD',
-      'required': 'REQUIRED',
-      'sequence': 'SEQUENCE',
-      'setlike': 'SETLIKE',
-      'setter': 'SETTER',
-      'short': 'SHORT',
-      'static': 'STATIC',
-      'stringifier': 'STRINGIFIER',
-      'true': 'TRUE',
-      'typedef': 'TYPEDEF',
-      'undefined': 'UNDEFINED',
-      'unrestricted': 'UNRESTRICTED',
-      'unsigned': 'UNSIGNED',
-      'USVString': 'USVSTRING',
-      'void': 'VOID'
+    'any': 'ANY',
+    'async': 'ASYNC',
+    'async_iterable': 'ASYNC_ITERABLE',
+    'attribute': 'ATTRIBUTE',
+    'bigint': 'BIGINT',
+    'boolean': 'BOOLEAN',
+    'byte': 'BYTE',
+    'ByteString': 'BYTESTRING',
+    'callback': 'CALLBACK',
+    'const': 'CONST',
+    'constructor': 'CONSTRUCTOR',
+    'deleter': 'DELETER',
+    'dictionary': 'DICTIONARY',
+    'DOMString': 'DOMSTRING',
+    'double': 'DOUBLE',
+    'enum': 'ENUM',
+    'false': 'FALSE',
+    'float': 'FLOAT',
+    'FrozenArray': 'FROZENARRAY',
+    'getter': 'GETTER',
+    'includes': 'INCLUDES',
+    'Infinity': 'INFINITY',
+    'inherit': 'INHERIT',
+    'interface': 'INTERFACE',
+    'iterable': 'ITERABLE',
+    'long': 'LONG',
+    'maplike': 'MAPLIKE',
+    'mixin': 'MIXIN',
+    'namespace': 'NAMESPACE',
+    'NaN': 'NAN',
+    'null': 'NULL',
+    'object': 'OBJECT',
+    'ObservableArray': 'OBSERVABLEARRAY',
+    'octet': 'OCTET',
+    'optional': 'OPTIONAL',
+    'or': 'OR',
+    'partial': 'PARTIAL',
+    'Promise': 'PROMISE',
+    'readonly': 'READONLY',
+    'record': 'RECORD',
+    'required': 'REQUIRED',
+    'sequence': 'SEQUENCE',
+    'setlike': 'SETLIKE',
+    'setter': 'SETTER',
+    'short': 'SHORT',
+    'static': 'STATIC',
+    'stringifier': 'STRINGIFIER',
+    'true': 'TRUE',
+    'typedef': 'TYPEDEF',
+    'undefined': 'UNDEFINED',
+    'unrestricted': 'UNRESTRICTED',
+    'unsigned': 'UNSIGNED',
+    'USVString': 'USVSTRING',
+    'void': 'VOID',
   }
 
   # Token definitions
@@ -131,7 +129,6 @@ class IDLLexer(object):
   def t_integer(self, t):
     r'-?([1-9][0-9]*|0[Xx][0-9A-Fa-f]+|0[0-7]*)'
     return t
-
 
   # A line ending '\n', we use this to increment the line number
   def t_LINE_END(self, t):
@@ -192,7 +189,6 @@ class IDLLexer(object):
     sys.stderr.write(out + '\n')
     self._lex_errors += 1
 
-
   def AddLines(self, count):
     # Set the lexer position for the beginning of the next line.  In the case
     # of multiple lines, tokens can not exist on any of the lines except the
@@ -218,8 +214,9 @@ class IDLLexer(object):
 
   def ErrorMessage(self, line, pos, msg):
     return "\n%s\n%s" % (
-        self.FileLineMsg(line, msg),
-        self.SourceLine(line, pos))
+      self.FileLineMsg(line, msg),
+      self.SourceLine(line, pos),
+    )
 
   @property
   def lineno(self):
@@ -236,18 +233,17 @@ class IDLLexer(object):
       return None
     return self._lexobj.lexpos
 
-#
-# Tokenizer
-#
-# The token function returns the next token provided by IDLLexer for matching
-# against the leaf paterns.
-#
+  #
+  # Tokenizer
+  #
+  # The token function returns the next token provided by IDLLexer for matching
+  # against the leaf paterns.
+  #
   def token(self):
     tok = self.Lexer().token()
     if tok:
       self.last = tok
     return tok
-
 
   def GetTokens(self):
     outlist = []

@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Adaptation of the extern.tclib classes for our needs.
-'''
-
+'''Adaptation of the extern.tclib classes for our needs.'''
 
 import functools
 import re
@@ -21,13 +19,13 @@ _FOLD_WHITESPACE = re.compile(r'\s+')
 # Caches compiled regexp used to split tags in BaseMessage.__init__()
 _RE_CACHE = {}
 
+
 def Identity(i):
   return i
 
 
 class BaseMessage:
-  '''Base class with methods shared by Message and Translation.
-  '''
+  '''Base class with methods shared by Message and Translation.'''
 
   def __init__(self, text='', placeholders=[], description='', meaning=''):
     self.parts = []
@@ -50,10 +48,13 @@ class BaseMessage:
         # substrings of the longer tag.
         # E.g. "EXAMPLE_FOO_NAME" must be matched before "EXAMPLE_FOO",
         # otherwise "EXAMPLE_FOO" splits "EXAMPLE_FOO_NAME" too.
-        tags = sorted(tag_map.keys(),
-                      key=functools.cmp_to_key(
-                          lambda x, y: len(x) - len(y) or ((x > y) - (x < y))),
-                      reverse=True)
+        tags = sorted(
+          tag_map.keys(),
+          key=functools.cmp_to_key(
+            lambda x, y: len(x) - len(y) or ((x > y) - (x < y))
+          ),
+          reverse=True,
+        )
         tag_re = '(' + '|'.join(tags) + ')'
 
         # This caching improves the time to build
@@ -66,10 +67,10 @@ class BaseMessage:
         chunked_text = compiled_re.split(text)
 
         for chunk in chunked_text:
-          if chunk: # ignore empty chunk
+          if chunk:  # ignore empty chunk
             if chunk in tag_map:
               self.AppendPlaceholder(tag_map[chunk][0])
-              tag_map[chunk][1] += 1 # increase placeholder use count
+              tag_map[chunk][1] += 1  # increase placeholder use count
             else:
               self.AppendText(chunk)
         for key in tag_map:
@@ -103,12 +104,20 @@ class BaseMessage:
     dup = False
     for other in self.GetPlaceholders():
       if other.presentation == placeholder.presentation:
-        if (other.original != placeholder.original
-            or other.example != placeholder.example):
-          error = ("Conflicting declarations of %s within message. Originals" +
-                   " are [%s], [%s]. Example are [%s], [%s]") % (
-                       placeholder.GetPresentation(), other.original,
-                       placeholder.original, other.example, placeholder.example)
+        if (
+          other.original != placeholder.original
+          or other.example != placeholder.example
+        ):
+          error = (
+            "Conflicting declarations of %s within message. Originals"
+            + " are [%s], [%s]. Example are [%s], [%s]"
+          ) % (
+            placeholder.GetPresentation(),
+            other.original,
+            placeholder.original,
+            other.example,
+            placeholder.example,
+          )
           raise Exception(error)
         dup = True
 
@@ -148,8 +157,9 @@ class BaseMessage:
     return self.id
 
   def GenerateId(self):
-    return grit.extern.tclib.GenerateMessageId(self.GetPresentableContent(),
-                                               self.meaning)
+    return grit.extern.tclib.GenerateMessageId(
+      self.GetPresentableContent(), self.meaning
+    )
 
   def GetPlaceholders(self):
     return self.placeholders
@@ -162,7 +172,8 @@ class BaseMessage:
         ph = grit.extern.tclib.Placeholder(
           part.presentation.encode('utf-8'),
           part.original.encode('utf-8'),
-          part.example.encode('utf-8'))
+          part.example.encode('utf-8'),
+        )
         try:
           msg.AppendPlaceholder(ph)
         except:
@@ -174,8 +185,9 @@ class BaseMessage:
 class Message(BaseMessage):
   '''A message.'''
 
-  def __init__(self, text='', placeholders=[], description='', meaning='',
-               assigned_id=None):
+  def __init__(
+    self, text='', placeholders=[], description='', meaning='', assigned_id=None
+  ):
     super().__init__(text, placeholders, description, meaning)
     self.assigned_id = assigned_id
 
@@ -199,7 +211,9 @@ class Message(BaseMessage):
 class Translation(BaseMessage):
   '''A translation.'''
 
-  def __init__(self, text='', id='', placeholders=[], description='', meaning=''):
+  def __init__(
+    self, text='', id='', placeholders=[], description='', meaning=''
+  ):
     super().__init__(text, placeholders, description, meaning)
     self.id = id
 
@@ -211,15 +225,13 @@ class Translation(BaseMessage):
     self.id = id
 
   def ToTclibMessage(self):
-    msg = grit.extern.tclib.Message(
-      'utf-8', id=self.id, meaning=self.meaning)
+    msg = grit.extern.tclib.Message('utf-8', id=self.id, meaning=self.meaning)
     self.FillTclibBaseMessage(msg)
     return msg
 
 
 class Placeholder(grit.extern.tclib.Placeholder):
-  '''Modifies constructor to accept a Unicode string
-  '''
+  '''Modifies constructor to accept a Unicode string'''
 
   # Must match placeholder presentation names
   _NAME_RE = re.compile('^[A-Za-z0-9_]+$')

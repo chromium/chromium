@@ -9,7 +9,6 @@ input to grit via the -p option. This is meant to be run manually every once in
 a while and its output checked in. See tools/gritsettings/README.md for details.
 """
 
-
 import os
 import re
 import sys
@@ -108,7 +107,8 @@ def _ReadOriginalResourceIds(out_dir):
   for root, dirnames, filenames in os.walk(out_dir + '/gen'):
     for filename in filenames:
       if filename.endswith(
-          ('_resources.h', '_settings.h', '_strings.h', '_synonyms.h')):
+        ('_resources.h', '_settings.h', '_strings.h', '_synonyms.h')
+      ):
         with open(os.path.join(root, filename)) as f:
           ReadResourceIdsFromFile(f, original_resources)
   return original_resources
@@ -126,8 +126,9 @@ def _GeneratePredeterminedIdsFile(ordered_resources_file, out_dir):
   """
   original_resources = _ReadOriginalResourceIds(out_dir)
   ordered_resource_ids = _ReadOrderedResourceIds(ordered_resources_file)
-  output_resource_map = GenerateResourceMapping(original_resources,
-                                                ordered_resource_ids)
+  output_resource_map = GenerateResourceMapping(
+    original_resources, ordered_resource_ids
+  )
   for res_id in sorted(output_resource_map.keys()):
     print(output_resource_map[res_id], res_id)
 

@@ -46,7 +46,7 @@ def _GetTestList(path_to_binary):
   for line in input_lines:
     if len(line) > 1:
       if '#' in line:
-        line = line[:line.find('#')]
+        line = line[: line.find('#')]
       if line[0] == ' ':
         # Indented means a test in previous case.
         test_set.add(case_name + line.strip())
@@ -60,9 +60,15 @@ def _GetTestList(path_to_binary):
 def _CheckForFailure(data):
   test_binary, pair0, pair1 = data
   p = subprocess.Popen(
-      [test_binary, '--gtest_repeat=5', '--gtest_shuffle',
-       '--gtest_filter=' + pair0 + ':' + pair1],
-      stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    [
+      test_binary,
+      '--gtest_repeat=5',
+      '--gtest_shuffle',
+      '--gtest_filter=' + pair0 + ':' + pair1,
+    ],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+  )
   out, _ = p.communicate()
   if p.returncode != 0:
     return (pair0, pair1, out)
@@ -70,8 +76,8 @@ def _CheckForFailure(data):
 
 
 def _PrintStatus(i, total, failed):
-  status = '%d of %d tested (%d failures)' % (i+1, total, failed)
-  print('\r%s%s' % (status, '\x1B[K'), end=' ')
+  status = '%d of %d tested (%d failures)' % (i + 1, total, failed)
+  print('\r%s%s' % (status, '\x1b[K'), end=' ')
   sys.stdout.flush()
 
 
@@ -86,11 +92,14 @@ def main():
   failed = []
   pool = multiprocessing.Pool()
   total_count = len(permuted)
-  for i, result in enumerate(pool.imap_unordered(
-      _CheckForFailure, permuted, 1)):
+  for i, result in enumerate(
+    pool.imap_unordered(_CheckForFailure, permuted, 1)
+  ):
     if result:
-      print('\n--gtest_filter=%s:%s failed\n\n%s\n\n' % (result[0], result[1],
-                                                         result[2]))
+      print(
+        '\n--gtest_filter=%s:%s failed\n\n%s\n\n'
+        % (result[0], result[1], result[2])
+      )
       failed.append(result)
     _PrintStatus(i, total_count, len(failed))
 

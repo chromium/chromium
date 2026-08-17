@@ -51,40 +51,42 @@ USAGE_RESTRICTION = ["", "subset"]
 
 # Chrome public key, used by default to validate signatures
 #  - Copied from chrome/common/origin_trials/chrome_origin_trial_policy.cc
-CHROME_PUBLIC_KEY = bytes([
-    0x7c,
-    0xc4,
-    0xb8,
-    0x9a,
+CHROME_PUBLIC_KEY = bytes(
+  [
+    0x7C,
+    0xC4,
+    0xB8,
+    0x9A,
     0x93,
-    0xba,
-    0x6e,
-    0xe2,
-    0xd0,
-    0xfd,
+    0xBA,
+    0x6E,
+    0xE2,
+    0xD0,
+    0xFD,
     0x03,
-    0x1d,
-    0xfb,
+    0x1D,
+    0xFB,
     0x32,
     0x66,
-    0xc7,
-    0x3b,
+    0xC7,
+    0x3B,
     0x72,
-    0xfd,
+    0xFD,
     0x54,
-    0x3a,
+    0x3A,
     0x07,
     0x51,
     0x14,
     0x66,
-    0xaa,
+    0xAA,
     0x02,
     0x53,
-    0x4e,
+    0x4E,
     0x33,
-    0xa1,
+    0xA1,
     0x15,
-])
+  ]
+)
 
 # Default key file, relative to script_dir.
 DEFAULT_KEY_FILE = 'eftest.key'
@@ -97,24 +99,30 @@ class OverrideKeyFileAction(argparse.Action):
 
 
 def main():
-  parser = argparse.ArgumentParser(
-      description="Inspect origin trial tokens")
-  parser.add_argument("token",
-                      help="Token to be checked (must be Base64 encoded)")
+  parser = argparse.ArgumentParser(description="Inspect origin trial tokens")
+  parser.add_argument(
+    "token", help="Token to be checked (must be Base64 encoded)"
+  )
 
   key_group = parser.add_mutually_exclusive_group()
-  key_group.add_argument("--use-chrome-key",
-                         help="Validate token using the real Chrome public key",
-                         dest="use_chrome_key",
-                         action="store_true")
-  key_group.add_argument("--use-test-key",
-                         help="Validate token using the eftest.key",
-                         dest="use_chrome_key",
-                         action="store_false")
-  key_group.add_argument("--key-file",
-                         help="Ed25519 private key file to validate the token",
-                         dest="key_file",
-                         action=OverrideKeyFileAction)
+  key_group.add_argument(
+    "--use-chrome-key",
+    help="Validate token using the real Chrome public key",
+    dest="use_chrome_key",
+    action="store_true",
+  )
+  key_group.add_argument(
+    "--use-test-key",
+    help="Validate token using the eftest.key",
+    dest="use_chrome_key",
+    action="store_false",
+  )
+  key_group.add_argument(
+    "--key-file",
+    help="Ed25519 private key file to validate the token",
+    dest="key_file",
+    action=OverrideKeyFileAction,
+  )
   parser.set_defaults(use_chrome_key=False)
 
   args = parser.parse_args()
@@ -123,10 +131,10 @@ def main():
   # key file provided on command line.
   public_key = None
   private_key_file = None
-  if (args.use_chrome_key is None):
+  if args.use_chrome_key is None:
     private_key_file = args.key_file
   else:
-    if (args.use_chrome_key):
+    if args.use_chrome_key:
       public_key = CHROME_PUBLIC_KEY
     else:
       # Use the test key, relative to this script.
@@ -147,8 +155,10 @@ def main():
     # Validate that the key file read was a proper Ed25519 key -- running the
     # publickey method on the first half of the key should return the second
     # half.
-    if (len(private_key) < 64 or
-      ed25519.publickey(private_key[:32]) != private_key[32:]):
+    if (
+      len(private_key) < 64
+      or ed25519.publickey(private_key[:32]) != private_key[32:]
+    ):
       print("Unable to use the specified private key file.")
       sys.exit(1)
 
@@ -160,40 +170,43 @@ def main():
     print("Error decoding the token (%s)" % exc)
     sys.exit(1)
 
-
   # Only version 2 and version 3 currently supported.
-  if (len(token_contents) < (VERSION_OFFSET + VERSION_SIZE)):
+  if len(token_contents) < (VERSION_OFFSET + VERSION_SIZE):
     print("Token is malformed - too short.")
     sys.exit(1)
 
-  version = token_contents[VERSION_OFFSET:(VERSION_OFFSET + VERSION_SIZE)]
+  version = token_contents[VERSION_OFFSET : (VERSION_OFFSET + VERSION_SIZE)]
   # Convert the version string to a number
   version_number = 0
   for x in version:
     version_number <<= 8
     version_number += x
-  if (version not in (VERSION2, VERSION3)):
+  if version not in (VERSION2, VERSION3):
     print("Token has wrong version: %d" % version_number)
     sys.exit(1)
 
   # Token must be large enough to contain a version, signature, and payload
   # length.
   minimum_token_length = PAYLOAD_LENGTH_OFFSET + PAYLOAD_LENGTH_SIZE
-  if (len(token_contents) < minimum_token_length):
-    print("Token is malformed - too short: %d bytes, minimum is %d" % \
-      (len(token_contents), minimum_token_length))
+  if len(token_contents) < minimum_token_length:
+    print(
+      "Token is malformed - too short: %d bytes, minimum is %d"
+      % (len(token_contents), minimum_token_length)
+    )
     sys.exit(1)
 
   # Extract the length of the signed data (Big-endian).
   # (unpack returns a tuple).
-  payload_length = struct.unpack_from(">I", token_contents,
-                                      PAYLOAD_LENGTH_OFFSET)[0]
+  payload_length = struct.unpack_from(
+    ">I", token_contents, PAYLOAD_LENGTH_OFFSET
+  )[0]
 
   # Validate that the stated length matches the actual payload length.
   actual_payload_length = len(token_contents) - PAYLOAD_OFFSET
-  if (payload_length != actual_payload_length):
-    print("Token is %d bytes, expected %d" % (actual_payload_length,
-                                              payload_length))
+  if payload_length != actual_payload_length:
+    print(
+      "Token is %d bytes, expected %d" % (actual_payload_length, payload_length)
+    )
     sys.exit(1)
 
   # Extract the version-specific contents of the token.
@@ -240,16 +253,17 @@ def main():
   # Extract the optional fields
   is_subdomain = token_data.get("isSubdomain")
   is_third_party = token_data.get("isThirdParty")
-  if (is_third_party is not None and version != VERSION3):
+  if is_third_party is not None and version != VERSION3:
     print("The isThirdParty field can only be be set in Version 3 token.")
     sys.exit(1)
 
   usage_restriction = token_data.get("usage")
-  if (usage_restriction is not None and version != VERSION3):
+  if usage_restriction is not None and version != VERSION3:
     print("The usage field can only be be set in Version 3 token.")
     sys.exit(1)
-  if (usage_restriction is not None
-      and usage_restriction not in USAGE_RESTRICTION):
+  if (
+    usage_restriction is not None and usage_restriction not in USAGE_RESTRICTION
+  ):
     print("Only empty string and \"subset\" are supported in the usage field.")
     sys.exit(1)
 
@@ -258,7 +272,7 @@ def main():
   print(" Version: %s" % version_number)
   print(" Origin: %s" % origin)
   print(" Is Subdomain: %s" % is_subdomain)
-  if (version == VERSION3):
+  if version == VERSION3:
     print(" Is Third Party: %s" % is_third_party)
     print(" Usage Restriction: %s" % usage_restriction)
   print(" Feature: %s" % trial_name)
@@ -267,6 +281,7 @@ def main():
   b64_signature = base64.b64encode(signature).decode("ascii")
   print(" Signature (Base64): %s" % b64_signature)
   print()
+
 
 if __name__ == "__main__":
   main()

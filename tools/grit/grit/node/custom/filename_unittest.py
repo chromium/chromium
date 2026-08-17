@@ -5,9 +5,9 @@
 
 '''Unit tests for grit.node.custom.filename'''
 
-
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../../..'))
 
@@ -19,7 +19,6 @@ from grit import tclib
 
 
 class WindowsFilenameUnittest(unittest.TestCase):
-
   def testValidate(self):
     factory = clique.UberClique()
     msg = tclib.Message(text='Bingo bongo')
@@ -28,8 +27,11 @@ class WindowsFilenameUnittest(unittest.TestCase):
     translation = tclib.Translation(id=msg.GetId(), text='Bilingo bolongo:')
     c.AddTranslation(translation, 'fr', constants.DEFAULT_GENDER)
     self.assertTrue(
-        c.MessageForLanguageAndGender('fr', constants.DEFAULT_GENDER).
-        GetRealContent() == 'Bilingo bolongo ')
+      c.MessageForLanguageAndGender(
+        'fr', constants.DEFAULT_GENDER
+      ).GetRealContent()
+      == 'Bilingo bolongo '
+    )
 
 
 if __name__ == '__main__':

@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Support for gathering resources from RC files.
-'''
-
+'''Support for gathering resources from RC files.'''
 
 import re
 
@@ -26,16 +24,15 @@ _NEED_ESCAPE = re.compile(r'"|\n|\t|\\|\&nbsp\;')
 
 # How to escape certain characters
 _ESCAPE_CHARS = {
-  '"' : '""',
-  '\n' : '\\n',
-  '\t' : '\\t',
-  '\\' : '\\\\',
-  '&nbsp;' : ' '
+  '"': '""',
+  '\n': '\\n',
+  '\t': '\\t',
+  '\\': '\\\\',
+  '&nbsp;': ' ',
 }
 
 # How to unescape certain strings
 _UNESCAPE_CHARS = {value: key for key, value in _ESCAPE_CHARS.items()}
-
 
 
 class Section(regexp.RegexpGatherer):
@@ -45,15 +42,19 @@ class Section(regexp.RegexpGatherer):
   def Escape(text):
     '''Returns a version of 'text' with characters escaped that need to be
     for inclusion in a resource section.'''
+
     def Replace(match):
       return _ESCAPE_CHARS[match.group()]
+
     return _NEED_ESCAPE.sub(Replace, text)
 
   @staticmethod
   def UnEscape(text):
     '''Returns a version of 'text' with escaped characters unescaped.'''
+
     def Replace(match):
       return _UNESCAPE_CHARS[match.group()]
+
     return _NEED_UNESCAPE.sub(Replace, text)
 
   def _RegExpParse(self, rexp, text_to_parse):
@@ -88,7 +89,9 @@ class Section(regexp.RegexpGatherer):
         break
 
     if len(out) == 0:
-      raise exception.SectionNotFound('%s in file %s' % (self.extkey, self.rc_file))
+      raise exception.SectionNotFound(
+        '%s in file %s' % (self.extkey, self.rc_file)
+      )
 
     self.text_ = out.strip()
 
@@ -117,7 +120,8 @@ class Dialog(Section):
   # group in alphabetical order. We also assume that there cannot be
   # more than one description per regular expression match.
   # If that's not the case some descriptions will be clobbered.
-  dialog_re_ = re.compile(r'''
+  dialog_re_ = re.compile(
+    r'''
     # The dialog's ID in the first line
     (?P<id1>[A-Z0-9_]+)\s+DIALOG(EX)?
     |
@@ -140,7 +144,9 @@ class Dialog(Section):
     |
     # Lines for controls that have only an ID and then just numbers
     \s+[A-Z]+\s+(?P<id4>[A-Z0-9_]*[A-Z][A-Z0-9_]*)\s*,
-    ''', re.MULTILINE | re.VERBOSE)
+    ''',
+    re.MULTILINE | re.VERBOSE,
+  )
 
   def Parse(self):
     '''Knows how to parse dialog resource sections.'''
@@ -183,7 +189,8 @@ class Menu(Section):
 
   # A dandy regexp to suck all the IDs and translateables out of a menu
   # resource
-  menu_re_ = re.compile(r'''
+  menu_re_ = re.compile(
+    r'''
     # Match the MENU ID on the first line
     ^(?P<id1>[A-Z0-9_]+)\s+MENU
     |
@@ -192,7 +199,9 @@ class Menu(Section):
     |
     # Match the caption & ID of a MENUITEM
     MENUITEM\s+"(?P<text2>.*?([^"]|""))"\s*,\s*(?P<id2>[A-Z0-9_]+)
-    ''', re.MULTILINE | re.VERBOSE)
+    ''',
+    re.MULTILINE | re.VERBOSE,
+  )
 
   def Parse(self):
     '''Knows how to parse menu resource sections.  Because it is important that
@@ -201,7 +210,9 @@ class Menu(Section):
     return a single message per menu item.  we also add an automatic description
     with instructions for the translators.'''
     self.ReadSection()
-    self.single_message_ = tclib.Message(description=self.MENU_MESSAGE_DESCRIPTION)
+    self.single_message_ = tclib.Message(
+      description=self.MENU_MESSAGE_DESCRIPTION
+    )
     self._RegExpParse(self.menu_re_, self.text_)
 
 
@@ -247,7 +258,8 @@ class Version(Section):
   # In addition to the above fields, VALUE fields named "Comments" and
   # "LegalTrademarks" may also be translateable.
 
-  version_re_ = re.compile(r'''
+  version_re_ = re.compile(
+    r'''
     # Match the ID on the first line
     ^(?P<id1>[A-Z0-9_]+)\s+VERSIONINFO
     |
@@ -257,7 +269,9 @@ class Version(Section):
       CompanyName|FileDescription|LegalCopyright|
       ProductName|Comments|LegalTrademarks
     )",\s+"(?P<text1>.*?([^"]|""))"\s
-    ''', re.MULTILINE | re.VERBOSE)
+    ''',
+    re.MULTILINE | re.VERBOSE,
+  )
 
   def Parse(self):
     '''Knows how to parse VERSIONINFO resource sections.'''
@@ -275,13 +289,15 @@ class RCData(Section):
   #
   # IDR_BLAH        RCDATA      { 1, 2, 3, 4 }
 
-  dialog_re_ = re.compile(r'''
+  dialog_re_ = re.compile(
+    r'''
     ^(?P<id1>[A-Z0-9_]+)\s+RCDATA\s+(DISCARDABLE)?\s+\{.*?\}
-    ''', re.MULTILINE | re.VERBOSE | re.DOTALL)
+    ''',
+    re.MULTILINE | re.VERBOSE | re.DOTALL,
+  )
 
   def Parse(self):
-    '''Implementation for resource types w/braces (not BEGIN/END)
-    '''
+    '''Implementation for resource types w/braces (not BEGIN/END)'''
     rc_text = self._LoadInputFile()
 
     out = ''
@@ -299,12 +315,15 @@ class RCData(Section):
         openbrace_count += line.count('{')
         begin_count += line.count('{')
         begin_count -= line.count('}')
-      if ((begin_count_was == 1 and begin_count == 0) or
-         (openbrace_count > 0 and begin_count == 0)):
+      if (begin_count_was == 1 and begin_count == 0) or (
+        openbrace_count > 0 and begin_count == 0
+      ):
         break
 
     if len(out) == 0:
-      raise exception.SectionNotFound('%s in file %s' % (self.extkey, self.rc_file))
+      raise exception.SectionNotFound(
+        '%s in file %s' % (self.extkey, self.rc_file)
+      )
 
     self.text_ = out
 
@@ -312,8 +331,7 @@ class RCData(Section):
 
 
 class Accelerators(Section):
-  '''An ACCELERATORS table.
-  '''
+  '''An ACCELERATORS table.'''
 
   # A typical ACCELERATORS section looks like this:
   #
@@ -324,7 +342,8 @@ class Accelerators(Section):
   #   VK_INSERT,      ID_ACCELERATOR32772,    VIRTKEY, CONTROL, NOINVERT
   # END
 
-  accelerators_re_ = re.compile(r'''
+  accelerators_re_ = re.compile(
+    r'''
     # Match the ID on the first line
     ^(?P<id1>[A-Z0-9_]+)\s+ACCELERATORS\s+
     |
@@ -333,7 +352,9 @@ class Accelerators(Section):
     |
     # Match accelerators specified as e.g. "^C"
     \s+"[^"]*",\s+(?P<id3>[A-Z0-9_]+)\s*,
-    ''', re.MULTILINE | re.VERBOSE)
+    ''',
+    re.MULTILINE | re.VERBOSE,
+  )
 
   def Parse(self):
     '''Knows how to parse ACCELERATORS resource sections.'''

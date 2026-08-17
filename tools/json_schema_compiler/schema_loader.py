@@ -35,8 +35,10 @@ class SchemaLoader(object):
       # change them all to use '.idl' and remove the old code path.
       api_defs = web_idl_schema.Load(schema_path)
     else:
-      sys.exit('Did not recognize file extension %s for schema %s' %
-               (schema_extension, schema))
+      sys.exit(
+        'Did not recognize file extension %s for schema %s'
+        % (schema_extension, schema)
+      )
 
     # TODO(devlin): This returns a list. Does it need to? Is it ever > 1?
     return api_defs

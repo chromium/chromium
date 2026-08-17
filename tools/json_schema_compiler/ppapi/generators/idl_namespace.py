@@ -68,7 +68,7 @@ class IDLNamespace(object):
 
   def AddNode(self, node):
     name = node.GetName()
-    verlist = self._name_to_releases.setdefault(name,IDLReleaseList())
+    verlist = self._name_to_releases.setdefault(name, IDLReleaseList())
     if GetOption('namespace_debug'):
       print("Adding to namespace: %s" % node)
     return verlist.AddNode(node)
@@ -77,6 +77,7 @@ class IDLNamespace(object):
 #
 # Testing Code
 #
+
 
 #
 # MockNode
@@ -90,11 +91,7 @@ class MockNode(IDLRelease):
     self.rmax = rmax
     self.errors = []
     self.warns = []
-    self.properties = {
-        'NAME': name,
-        'release': rmin,
-        'deprecate' : rmax
-        }
+    self.properties = {'NAME': name, 'release': rmin, 'deprecate': rmax}
 
   def __str__(self):
     return '%s (%s : %s)' % (self.name, self.rmin, self.rmax)
@@ -115,7 +112,10 @@ class MockNode(IDLRelease):
   def GetProperty(self, name):
     return self.properties.get(name, None)
 
+
 errors = 0
+
+
 #
 # DumpFailure
 #
@@ -133,11 +133,13 @@ def DumpFailure(namespace, node, msg):
   print('******************************\n')
   errors += 1
 
+
 # Add expecting no errors or warnings
 def AddOkay(namespace, node):
   okay = namespace.AddNode(node)
   if not okay or node.errors or node.warns:
     DumpFailure(namespace, node, 'Expected success')
+
 
 # Add expecting a specific warning
 def AddWarn(namespace, node, msg):
@@ -146,6 +148,7 @@ def AddWarn(namespace, node, msg):
     DumpFailure(namespace, node, 'Expected warnings')
   if msg not in node.warns:
     DumpFailure(namespace, node, 'Expected warning: %s' % msg)
+
 
 # Add expecting a specific error any any number of warnings
 def AddError(namespace, node, msg):
@@ -156,26 +159,36 @@ def AddError(namespace, node, msg):
     DumpFailure(namespace, node, 'Expected error: %s' % msg)
     print(">>%s<<\n>>%s<<\n" % (node.errors[0], msg))
 
+
 # Verify that a FindRelease call on the namespace returns the expected node.
 def VerifyFindOne(namespace, name, release, node):
   global errors
-  if (namespace.FindRelease(name, release) != node):
+  if namespace.FindRelease(name, release) != node:
     print("Failed to find %s as release %f of %s" % (node, release, name))
     namespace.Dump()
     print("\n")
     errors += 1
 
+
 # Verify that a FindRage call on the namespace returns a set of expected nodes.
 def VerifyFindAll(namespace, name, rmin, rmax, nodes):
   global errors
   out = namespace.FindRange(name, rmin, rmax)
-  if (out != nodes):
-    print("Found [%s] instead of[%s] for releases %f to %f of %s" % (' '.join([
-        str(x) for x in out
-    ]), ' '.join([str(x) for x in nodes]), rmin, rmax, name))
+  if out != nodes:
+    print(
+      "Found [%s] instead of[%s] for releases %f to %f of %s"
+      % (
+        ' '.join([str(x) for x in out]),
+        ' '.join([str(x) for x in nodes]),
+        rmin,
+        rmax,
+        name,
+      )
+    )
     namespace.Dump()
     print("\n")
     errors += 1
+
 
 def Main(args):
   global errors
@@ -195,14 +208,16 @@ def Main(args):
   AddOkay(namespace, Foo1X)
   AddOkay(namespace, Foo3X)
   # Verify we fail to add a node between undeprecated releases
-  AddError(namespace, Foo2X,
-           'Overlap in releases: 3.0 vs 2.0 when adding foo (2.0 : None)')
+  AddError(
+    namespace,
+    Foo2X,
+    'Overlap in releases: 3.0 vs 2.0 when adding foo (2.0 : None)',
+  )
 
   BarXX = MockNode('bar', None, None)
   Bar12 = MockNode('bar', 1.0, 2.0)
   Bar23 = MockNode('bar', 2.0, 3.0)
   Bar34 = MockNode('bar', 3.0, 4.0)
-
 
   # Verify we succeed with fully qualified releases
   namespace = IDLNamespace(namespace)

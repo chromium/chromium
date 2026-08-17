@@ -17,8 +17,9 @@ import utils
 import browsers
 
 
-def GetTemplateFileForBrowser(browser_driver: browsers.BrowserDriver,
-                              template_file: str) -> str:
+def GetTemplateFileForBrowser(
+    browser_driver: browsers.BrowserDriver, template_file: str
+) -> str:
     if browser_driver.name == "safari":
         return f"safari_{template_file}"
     else:
@@ -27,8 +28,8 @@ def GetTemplateFileForBrowser(browser_driver: browsers.BrowserDriver,
 
 class ScenarioOSADriver(abc.ABC):
     """Base Class encapsulating OSA script driving a scenario, with setup
-       and tear down.
-  """
+    and tear down.
+    """
 
     def __init__(self, scenario_name, duration: datetime.timedelta):
         self.name = scenario_name
@@ -38,8 +39,7 @@ class ScenarioOSADriver(abc.ABC):
         self.tag = ""
 
     def Launch(self):
-        """Starts the driver script.
-    """
+        """Starts the driver script."""
         app_info = NSBundle.mainBundle().infoDictionary()
         # Suppress macOS dock icon pop up/bounce.
         app_info["LSBackgroundOnly"] = "1"
@@ -57,19 +57,19 @@ class ScenarioOSADriver(abc.ABC):
         assert self.osa_script is not None
         logging.debug(f"Starting scenario {self.name}")
         self.script_process = subprocess.Popen(
-            ['osascript', self.osa_script.name])
+            ['osascript', self.osa_script.name]
+        )
 
     def Wait(self):
-        """Waits for the script to complete.
-    """
+        """Waits for the script to complete."""
         assert self.script_process is not None, "Driver wasn't launched."
         logging.debug(f"Waiting for scenario {self.name}")
         self.script_process.wait()
 
     def TearDown(self):
         """Terminates the script if currently running and ensures processes
-       are cleaned up.
-    """
+        are cleaned up.
+        """
         logging.debug(f"Tearing down scenario {self.name}")
         if self.script_process:
             utils.TerminateProcess(self.script_process)
@@ -77,27 +77,26 @@ class ScenarioOSADriver(abc.ABC):
 
     @abc.abstractmethod
     def Summary(self):
-        """Returns a dictionary describing the scenarios parameters.
-    """
+        """Returns a dictionary describing the scenarios parameters."""
         pass
 
     def CycleDuration(self) -> datetime.timedelta:
         """Returns the duration of a cycle in the scenario. Not all
-     scenario have a notion of cycles. For those which don't a
-     cycle is defined as the duration of the whole scenario"""
+        scenario have a notion of cycles. For those which don't a
+        cycle is defined as the duration of the whole scenario"""
         return self.duration
 
     def IsRunning(self) -> bool:
-        """Returns true if the script is currently running.
-    """
+        """Returns true if the script is currently running."""
         return self.script_process.poll() is None
 
     def _CompileTemplate(self, template_file: str, extra_args: typing.Dict):
         """Compiles script `template_file`, feeding `extra_args` to a temp
-       file.
-    """
+        file.
+        """
         loader = jinja2.FileSystemLoader(
-            os.path.join(os.path.dirname(__file__), "driver_scripts_templates"))
+            os.path.join(os.path.dirname(__file__), "driver_scripts_templates")
+        )
         env = jinja2.Environment(loader=loader)
         template = env.get_template(template_file)
         self.osa_script = tempfile.NamedTemporaryFile('w+t')
@@ -106,17 +105,19 @@ class ScenarioOSADriver(abc.ABC):
         self._args = extra_args
 
     def Summary(self):
-        """Returns a dictionary describing the scenarios parameters.
-    """
+        """Returns a dictionary describing the scenarios parameters."""
         return {'name': self.name, 'tag': self.tag, **self._args}
 
 
 class ScenarioWithBrowserOSADriver(ScenarioOSADriver):
-    """Specialisation for OSA script that runs with a browser.
-  """
+    """Specialisation for OSA script that runs with a browser."""
 
-    def __init__(self, scenario_name, browser_driver: browsers.BrowserDriver,
-                 duration: datetime.timedelta):
+    def __init__(
+        self,
+        scenario_name,
+        browser_driver: browsers.BrowserDriver,
+        duration: datetime.timedelta,
+    ):
         super().__init__(f"{browser_driver.name}_{scenario_name}", duration)
         self.browser = browser_driver
 
@@ -129,56 +130,65 @@ class ScenarioWithBrowserOSADriver(ScenarioOSADriver):
         self.browser.TearDown()
 
     def Summary(self):
-        """Returns a dictionary describing the scenarios parameters.
-    """
+        """Returns a dictionary describing the scenarios parameters."""
         return {**super().Summary(), 'browser': self.browser.Summary()}
 
     def _CompileTemplate(self, template_file, extra_args: typing.Dict):
-        return super()._CompileTemplate(template_file, {
-            "browser": self.browser.process_name,
-            **extra_args
-        })
+        return super()._CompileTemplate(
+            template_file, {"browser": self.browser.process_name, **extra_args}
+        )
 
 
 class IdleScenario(ScenarioOSADriver):
-    """Scenario that lets the system idle.
-  """
+    """Scenario that lets the system idle."""
 
     def __init__(self, duration: datetime.timedelta, scenario_name="idle"):
         super().__init__(scenario_name, duration)
-        self._CompileTemplate("idle", {
-            "delay": duration.total_seconds(),
-        })
+        self._CompileTemplate(
+            "idle",
+            {
+                "delay": duration.total_seconds(),
+            },
+        )
 
 
 class IdleOnSiteScenario(ScenarioWithBrowserOSADriver):
-    """Scenario that lets a browser idle on a web page.
-  """
+    """Scenario that lets a browser idle on a web page."""
 
-    def __init__(self, browser_driver: browsers.BrowserDriver,
-                 duration: datetime.timedelta, site_url: str, scenario_name,
-                 send_full_screen_key):
+    def __init__(
+        self,
+        browser_driver: browsers.BrowserDriver,
+        duration: datetime.timedelta,
+        site_url: str,
+        scenario_name,
+        send_full_screen_key,
+    ):
         super().__init__(scenario_name, browser_driver, duration)
         self._CompileTemplate(
-            GetTemplateFileForBrowser(browser_driver, "idle_on_site"), {
+            GetTemplateFileForBrowser(browser_driver, "idle_on_site"),
+            {
                 "idle_site": site_url,
                 "delay": duration.total_seconds(),
                 "send_full_screen_key": send_full_screen_key,
-            })
+            },
+        )
 
     @staticmethod
-    def Wiki(browser_driver: browsers.BrowserDriver,
-             duration: datetime.timedelta):
+    def Wiki(
+        browser_driver: browsers.BrowserDriver, duration: datetime.timedelta
+    ):
         return IdleOnSiteScenario(
             browser_driver,
             duration,
             "http://www.wikipedia.com/wiki/Alessandro_Volta",
             "idle_on_wiki",
-            send_full_screen_key=False)
+            send_full_screen_key=False,
+        )
 
     @staticmethod
-    def Youtube(browser_driver: browsers.BrowserDriver,
-                duration: datetime.timedelta):
+    def Youtube(
+        browser_driver: browsers.BrowserDriver, duration: datetime.timedelta
+    ):
         return IdleOnSiteScenario(
             browser_driver,
             duration,
@@ -186,50 +196,65 @@ class IdleOnSiteScenario(ScenarioWithBrowserOSADriver):
             # Set to always start at time 1, no matter the progress previously.
             "https://www.youtube.com/watch?v=rV_ERKtNyNA?t=1",
             "idle_on_youtube",
-            send_full_screen_key=True)
+            send_full_screen_key=True,
+        )
 
     @staticmethod
-    def Netflix(browser_driver: browsers.BrowserDriver,
-                duration: datetime.timedelta):
+    def Netflix(
+        browser_driver: browsers.BrowserDriver, duration: datetime.timedelta
+    ):
         return IdleOnSiteScenario(
             browser_driver,
             duration,
             # A movie that lasts long enough. Set to always restart at time 0.
             "https://www.netflix.com/watch/81198930?t=0",
             "idle_on_netflix",
-            send_full_screen_key=True)
+            send_full_screen_key=True,
+        )
 
 
 class ZeroWindowScenario(ScenarioWithBrowserOSADriver):
-    """Scenario that lets a browser idle with no window.
-  """
+    """Scenario that lets a browser idle with no window."""
 
-    def __init__(self,
-                 browser_driver: browsers.BrowserDriver,
-                 duration: datetime.timedelta,
-                 scenario_name="zero_window"):
+    def __init__(
+        self,
+        browser_driver: browsers.BrowserDriver,
+        duration: datetime.timedelta,
+        scenario_name="zero_window",
+    ):
         super().__init__(scenario_name, browser_driver, duration)
         self._CompileTemplate(
-            GetTemplateFileForBrowser(browser_driver, "zero_window"), {
+            GetTemplateFileForBrowser(browser_driver, "zero_window"),
+            {
                 "delay": duration.total_seconds(),
-            })
+            },
+        )
 
 
 class NavigationScenario(ScenarioWithBrowserOSADriver):
-    """Scenario that has a browser navigating on web pages in a loop.
-  """
+    """Scenario that has a browser navigating on web pages in a loop."""
 
-    def __init__(self, browser_driver: browsers.BrowserDriver,
-                 navigation_duration: datetime.timedelta,
-                 navigation_cycles: int, sites, scenario_name):
-        super().__init__(scenario_name, browser_driver,
-                         navigation_duration * navigation_cycles * len(sites))
+    def __init__(
+        self,
+        browser_driver: browsers.BrowserDriver,
+        navigation_duration: datetime.timedelta,
+        navigation_cycles: int,
+        sites,
+        scenario_name,
+    ):
+        super().__init__(
+            scenario_name,
+            browser_driver,
+            navigation_duration * navigation_cycles * len(sites),
+        )
         self._CompileTemplate(
-            GetTemplateFileForBrowser(browser_driver, "navigation"), {
+            GetTemplateFileForBrowser(browser_driver, "navigation"),
+            {
                 "per_navigation_delay": navigation_duration.total_seconds(),
                 "navigation_cycles": navigation_cycles,
-                "sites": ",".join([f'"{site}"' for site in sites])
-            })
+                "sites": ",".join([f'"{site}"' for site in sites]),
+            },
+        )
 
         self.cycle_duration = len(sites) * navigation_duration
 
@@ -238,59 +263,63 @@ class NavigationScenario(ScenarioWithBrowserOSADriver):
 
 
 class MeetScenario(ScenarioWithBrowserOSADriver):
-    """Scenario that has the browser join a Google Meet room.
-  """
+    """Scenario that has the browser join a Google Meet room."""
 
-    def __init__(self,
-                 browser_driver: browsers.BrowserDriver,
-                 duration: datetime.timedelta,
-                 meeting_id: int,
-                 scenario_name="meet"):
+    def __init__(
+        self,
+        browser_driver: browsers.BrowserDriver,
+        duration: datetime.timedelta,
+        meeting_id: int,
+        scenario_name="meet",
+    ):
         super().__init__(scenario_name, browser_driver, duration)
         self._CompileTemplate(
-            GetTemplateFileForBrowser(browser_driver, "meet"), {
-                "delay": duration.total_seconds(),
-                "meeting_id": meeting_id
-            })
+            GetTemplateFileForBrowser(browser_driver, "meet"),
+            {"delay": duration.total_seconds(), "meeting_id": meeting_id},
+        )
 
 
-def MakeScenarioDriver(scenario_name,
-                       browser_driver: browsers.BrowserDriver,
-                       meet_meeting_id=None) -> ScenarioOSADriver:
+def MakeScenarioDriver(
+    scenario_name, browser_driver: browsers.BrowserDriver, meet_meeting_id=None
+) -> ScenarioOSADriver:
     """Creates scenario driver by name.
 
-  Args:
-    scenario_name: Identifier for the scenario to create. Supported scenarios
-      are: meet, idle_on_wiki, idle_on_youtube, idle_on_netflix,
-      navigation_top_sites,navigation_heavy_sites, zero_window and idle.
-    browser_driver: Browser the scenario is created with.
-    meet_meeting_id: Optional meeting id used for meet scenario.
-  """
+    Args:
+      scenario_name: Identifier for the scenario to create. Supported scenarios
+        are: meet, idle_on_wiki, idle_on_youtube, idle_on_netflix,
+        navigation_top_sites,navigation_heavy_sites, zero_window and idle.
+      browser_driver: Browser the scenario is created with.
+      meet_meeting_id: Optional meeting id used for meet scenario.
+    """
 
     if "idle" == scenario_name:
         return IdleScenario(datetime.timedelta(minutes=60))
     if not browser_driver:
         return None
     if "prep" == scenario_name:
-        return IdleOnSiteScenario.Wiki(browser_driver,
-                                       datetime.timedelta(minutes=1))
+        return IdleOnSiteScenario.Wiki(
+            browser_driver, datetime.timedelta(minutes=1)
+        )
     if "meet" == scenario_name:
         return MeetScenario(
             browser_driver,
             datetime.timedelta(minutes=60),
-            meeting_id=meet_meeting_id)
+            meeting_id=meet_meeting_id,
+        )
     if "idle_on_wiki" == scenario_name:
-        return IdleOnSiteScenario.Wiki(browser_driver,
-                                       datetime.timedelta(minutes=60))
+        return IdleOnSiteScenario.Wiki(
+            browser_driver, datetime.timedelta(minutes=60)
+        )
     if "idle_on_youtube" == scenario_name:
-        return IdleOnSiteScenario.Youtube(browser_driver,
-                                          datetime.timedelta(minutes=60))
+        return IdleOnSiteScenario.Youtube(
+            browser_driver, datetime.timedelta(minutes=60)
+        )
     if "idle_on_netflix" == scenario_name:
-        return IdleOnSiteScenario.Netflix(browser_driver,
-                                          datetime.timedelta(minutes=60))
+        return IdleOnSiteScenario.Netflix(
+            browser_driver, datetime.timedelta(minutes=60)
+        )
 
     if scenario_name.startswith("navigation"):
-
         if "navigation_top_sites" == scenario_name:
             NAVIGATED_SITES = [
                 "https://amazon.com",
@@ -299,7 +328,7 @@ def MakeScenarioDriver(scenario_name,
                 "https://www.google.com/search?q=computers",
                 "https://www.youtube.com",
                 "https://www.youtube.com/results?search_query=computers",
-                "https://docs.google.com/document/d/1Ll-8Nvo6JlhzKEttst8GHWCc7_A8Hluy2fX99cy4Sfg/edit?usp=sharing"
+                "https://docs.google.com/document/d/1Ll-8Nvo6JlhzKEttst8GHWCc7_A8Hluy2fX99cy4Sfg/edit?usp=sharing",
             ]
         elif "navigation_heavy_sites" == scenario_name:
             NAVIGATED_SITES = [
@@ -308,7 +337,7 @@ def MakeScenarioDriver(scenario_name,
                 "https://www.macys.com/",
                 "https://fr.airbnb.ca/s/Montr%C3%A9al/homes?place_id=ChIJDbdkHFQayUwR7-8fITgxTmU&query=Montr%C3%A9al&refinement_paths%5B%5D=%2Fhomes&tab_id=home_tab",
                 "https://www.homedepot.ca/search?q=computer#!q=computer",
-                "https://polygon.com"
+                "https://polygon.com",
             ]
         else:
             # For navigation scenarios that are not predefined a list is needed.
@@ -319,21 +348,26 @@ def MakeScenarioDriver(scenario_name,
                         NAVIGATED_SITES.append(site.replace("\n", ""))
             else:
                 raise ValueError(
-                    "Use predefined navigation scenarios or create sites.txt")
+                    "Use predefined navigation scenarios or create sites.txt"
+                )
 
         # Aim for a benchmark that lasts up to 1 hour.
         navigation_duration_in_seconds = 15
         navigation_cycles = (
-            6 * 60) / len(NAVIGATED_SITES) / navigation_duration_in_seconds
+            (6 * 60) / len(NAVIGATED_SITES) / navigation_duration_in_seconds
+        )
 
         return NavigationScenario(
             browser_driver,
             navigation_duration=datetime.timedelta(
-                seconds=navigation_duration_in_seconds),
+                seconds=navigation_duration_in_seconds
+            ),
             navigation_cycles=navigation_cycles,
             sites=NAVIGATED_SITES,
-            scenario_name=scenario_name)
+            scenario_name=scenario_name,
+        )
     if "zero_window" == scenario_name:
-        return ZeroWindowScenario(browser_driver,
-                                  datetime.timedelta(minutes=60))
+        return ZeroWindowScenario(
+            browser_driver, datetime.timedelta(minutes=60)
+        )
     return None

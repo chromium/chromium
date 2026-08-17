@@ -29,25 +29,39 @@ import sys
 
 
 # List of C++-like source file extensions.
-_CPP_EXTENSIONS = ('h', 'hh', 'hpp', 'c', 'cc', 'cpp', 'cxx', 'mm',)
+_CPP_EXTENSIONS = (
+  'h',
+  'hh',
+  'hpp',
+  'c',
+  'cc',
+  'cpp',
+  'cxx',
+  'mm',
+)
 # List of build file extensions.
-_BUILD_EXTENSIONS = ('gyp', 'gypi', 'gn',)
+_BUILD_EXTENSIONS = (
+  'gyp',
+  'gypi',
+  'gn',
+)
 
 
 def GitShell(args, ignore_return=False):
   """A shell invocation suitable for communicating with git. Returns
   output as list of lines, raises exception on error.
   """
-  job = subprocess.Popen(args,
-                         shell=True,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT,
-                         text=True)
+  job = subprocess.Popen(
+    args,
+    shell=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    text=True,
+  )
   (out, err) = job.communicate()
   if job.returncode != 0 and not ignore_return:
     print(out)
-    raise Exception("Error %d running command %s" % (
-        job.returncode, args))
+    raise Exception("Error %d running command %s" % (job.returncode, args))
   return out.split('\n')
 
 
@@ -89,22 +103,46 @@ def ForAllTouchedFiles(branch_name, extensions, token, command):
 
 def main():
   parser = optparse.OptionParser(usage=__doc__)
-  parser.add_option('-x', '--extensions', default='', dest='extensions',
-                    help='Limits to files with given extensions '
-                    '(comma-separated).')
-  parser.add_option('-c', '--cpp', default=False, action='store_true',
-                    dest='cpp_only',
-                    help='Runs your command only on C++-like source files.')
+  parser.add_option(
+    '-x',
+    '--extensions',
+    default='',
+    dest='extensions',
+    help='Limits to files with given extensions (comma-separated).',
+  )
+  parser.add_option(
+    '-c',
+    '--cpp',
+    default=False,
+    action='store_true',
+    dest='cpp_only',
+    help='Runs your command only on C++-like source files.',
+  )
   # -g stands for GYP and GN.
-  parser.add_option('-g', '--build', default=False, action='store_true',
-                    dest='build_only',
-                    help='Runs your command only on build files.')
-  parser.add_option('-t', '--token', default='[[FILENAME]]', dest='token',
-                    help='Sets the token to be replaced for each file '
-                    'in your command (default [[FILENAME]]).')
-  parser.add_option('-b', '--branch', default='origin/master', dest='branch',
-                    help='Sets what to diff to (default origin/master). Set '
-                    'to empty to diff workspace against HEAD.')
+  parser.add_option(
+    '-g',
+    '--build',
+    default=False,
+    action='store_true',
+    dest='build_only',
+    help='Runs your command only on build files.',
+  )
+  parser.add_option(
+    '-t',
+    '--token',
+    default='[[FILENAME]]',
+    dest='token',
+    help='Sets the token to be replaced for each file '
+    'in your command (default [[FILENAME]]).',
+  )
+  parser.add_option(
+    '-b',
+    '--branch',
+    default='origin/master',
+    dest='branch',
+    help='Sets what to diff to (default origin/master). Set '
+    'to empty to diff workspace against HEAD.',
+  )
   opts, args = parser.parse_args()
 
   if not args:

@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''The 'grit resize' tool.
-'''
-
+'''The 'grit resize' tool.'''
 
 import getopt
 import os
@@ -113,58 +111,67 @@ HEADER_TEMPLATE = '''\
 
 class ResizeDialog(interface.Tool):
   '''Generates an RC file, header and Visual Studio project that you can use
-with Visual Studio's GUI resource editor to modify the layout of dialogs for
-the language of your choice.  You then use the RC file, after you resize the
-dialog, for the language or languages of your choice, using the <skeleton> child
-of the <structure> node for the dialog.  The translateable bits of the dialog
-will be ignored when you use the <skeleton> node (GRIT will instead use the
-translateable bits from the original dialog) but the layout changes you make
-will be used.  Note that your layout changes must preserve the order of the
-translateable elements in the RC file.
+  with Visual Studio's GUI resource editor to modify the layout of dialogs for
+  the language of your choice.  You then use the RC file, after you resize the
+  dialog, for the language or languages of your choice, using the <skeleton>
+  child
+  of the <structure> node for the dialog.  The translateable bits of the dialog
+  will be ignored when you use the <skeleton> node (GRIT will instead use the
+  translateable bits from the original dialog) but the layout changes you make
+  will be used.  Note that your layout changes must preserve the order of the
+  translateable elements in the RC file.
 
-Usage: grit resize [-f BASEFOLDER] [-l LANG] [-e RCENCODING] DIALOGID*
+  Usage: grit resize [-f BASEFOLDER] [-l LANG] [-e RCENCODING] DIALOGID*
 
-Arguments:
-  DIALOGID        The 'name' attribute of a dialog to output for resizing.  Zero
-                  or more of these parameters can be used.  If none are
-                  specified, all dialogs from the input .grd file are output.
+  Arguments:
+    DIALOGID        The 'name' attribute of a dialog to output for resizing.
+    Zero
+                    or more of these parameters can be used.  If none are
+                    specified, all dialogs from the input .grd file are output.
 
-Options:
+  Options:
 
-  -f BASEFOLDER   The project will be created in a subfolder of BASEFOLDER.
-                  The name of the subfolder will be the first DIALOGID you
-                  specify.  Defaults to '.'
+    -f BASEFOLDER   The project will be created in a subfolder of BASEFOLDER.
+                    The name of the subfolder will be the first DIALOGID you
+                    specify.  Defaults to '.'
 
-  -l LANG         Specifies that the RC file should contain a dialog translated
-                  into the language LANG.  The default is a cp1252-representable
-                  pseudotranslation, because Visual Studio's GUI RC editor only
-                  supports single-byte encodings.
+    -l LANG         Specifies that the RC file should contain a dialog
+    translated
+                    into the language LANG.  The default is a
+                    cp1252-representable
+                    pseudotranslation, because Visual Studio's GUI RC editor
+                    only
+                    supports single-byte encodings.
 
-  -c CODEPAGE     Code page number to indicate to the RC compiler the encoding
-                  of the RC file, default is something reasonable for the
-                  language you selected (but this does not work for every single
-                  language).  See details on codepages below.  NOTE that you do
-                  not need to specify the codepage unless the tool complains
-                  that it's not sure which codepage to use.  See the following
-                  page for codepage numbers supported by Windows:
-                  http://www.microsoft.com/globaldev/reference/wincp.mspx
+    -c CODEPAGE     Code page number to indicate to the RC compiler the encoding
+                    of the RC file, default is something reasonable for the
+                    language you selected (but this does not work for every
+                    single
+                    language).  See details on codepages below.  NOTE that you
+                    do
+                    not need to specify the codepage unless the tool complains
+                    that it's not sure which codepage to use.  See the following
+                    page for codepage numbers supported by Windows:
+                    http://www.microsoft.com/globaldev/reference/wincp.mspx
 
-  -D NAME[=VAL]   Specify a C-preprocessor-like define NAME with optional
-                  value VAL (defaults to 1) which will be used to control
-                  conditional inclusion of resources.
+    -D NAME[=VAL]   Specify a C-preprocessor-like define NAME with optional
+                    value VAL (defaults to 1) which will be used to control
+                    conditional inclusion of resources.
 
 
-IMPORTANT NOTE:  For now, the tool outputs a UTF-8 encoded file for any language
-that can not be represented in cp1252 (i.e. anything other than Western
-European languages).  You will need to open this file in a text editor and
-save it using the codepage indicated in the #pragma code_page(XXXX) command
-near the top of the file, before you open it in Visual Studio.
+  IMPORTANT NOTE:  For now, the tool outputs a UTF-8 encoded file for any
+  language
+  that can not be represented in cp1252 (i.e. anything other than Western
+  European languages).  You will need to open this file in a text editor and
+  save it using the codepage indicated in the #pragma code_page(XXXX) command
+  near the top of the file, before you open it in Visual Studio.
 
-'''
+  '''
 
   # TODO(joi) It would be cool to have this tool note the Perforce revision
   # of the original RC file somewhere, such that the <skeleton> node could warn
-  # if the original RC file gets updated without the skeleton file being updated.
+  # if the original RC file gets updated without the skeleton file being
+  # updated.
 
   # TODO(joi) Would be cool to have option to add the files to Perforce
 
@@ -176,8 +183,7 @@ near the top of the file, before you open it in Visual Studio.
     self.codepage_number_specified_explicitly = False
 
   def SetLanguage(self, lang):
-    '''Sets the language code to output things in.
-    '''
+    '''Sets the language code to output things in.'''
     self.lang = lang
     if not self.codepage_number_specified_explicitly:
       self.codepage_number = util.LanguageToCodepage(lang)
@@ -252,7 +258,7 @@ near the top of the file, before you open it in Visual Studio.
     # Create the .vcproj file
     project_text = PROJECT_TEMPLATE.replace(
       '[[PROJECT_GUID]]', str(pythoncom.CreateGuid())
-      ).replace('[[DIALOG_NAME]]', project_name)
+    ).replace('[[DIALOG_NAME]]', project_name)
     fname = os.path.join(dir_path, '%s.vcproj' % project_name)
     self.WriteFile(fname, project_text)
     print("Wrote %s" % fname)
@@ -264,8 +270,7 @@ near the top of the file, before you open it in Visual Studio.
     for node in grd.ActiveDescendants():
       if isinstance(node, include.IncludeNode):
         include_items.append(rc.FormatInclude(node, self.lang, '.'))
-    rc_text = RC_TEMPLATE.replace('[[CODEPAGE_NUM]]',
-                                  str(self.codepage_number))
+    rc_text = RC_TEMPLATE.replace('[[CODEPAGE_NUM]]', str(self.codepage_number))
     rc_text = rc_text.replace('[[INCLUDES]]', ''.join(include_items))
 
     # Then output the dialogs we have been asked to output.

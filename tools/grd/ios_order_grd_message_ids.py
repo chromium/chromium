@@ -17,10 +17,9 @@ from pathlib import Path
 
 SRC_DIR = Path(__file__).parents[2]
 IOS_GRD_FILES = [
-    os.path.join(SRC_DIR, "ios/chrome/app/strings/ios_strings.grd"),
-    os.path.join(SRC_DIR, "ios/chrome/app/strings/ios_chromium_strings.grd"),
-    os.path.join(SRC_DIR,
-                 "ios/chrome/app/strings/ios_google_chrome_strings.grd")
+  os.path.join(SRC_DIR, "ios/chrome/app/strings/ios_strings.grd"),
+  os.path.join(SRC_DIR, "ios/chrome/app/strings/ios_chromium_strings.grd"),
+  os.path.join(SRC_DIR, "ios/chrome/app/strings/ios_google_chrome_strings.grd"),
 ]
 
 

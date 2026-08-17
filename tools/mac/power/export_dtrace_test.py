@@ -7,7 +7,6 @@ from export_dtrace import DTraceParser
 
 
 class DTraceReadTest(unittest.TestCase):
-
     def testEmpty(self):
         """Tests that a directory with no valid stacks triggers a failure."""
 
@@ -20,49 +19,73 @@ class DTraceReadTest(unittest.TestCase):
 
         collapser = DTraceParser()
         collapser.ParseDir('./test_data/valid/')
-        self.assertEqual(collapser.GetSamplesListForTesting(), [{
-            'frames': [('fake_module', 'baz'), ('fake_module', 'bar'),
-                       ('fake_module', 'foo')],
-            'weight': 12
-        }])
+        self.assertEqual(
+            collapser.GetSamplesListForTesting(),
+            [
+                {
+                    'frames': [
+                        ('fake_module', 'baz'),
+                        ('fake_module', 'bar'),
+                        ('fake_module', 'foo'),
+                    ],
+                    'weight': 12,
+                }
+            ],
+        )
 
     def testRepeatedFunction(self):
         """Tests accumulation of samples of the same function over files."""
 
         collapser = DTraceParser()
         collapser.ParseDir('./test_data/repeated/')
-        self.assertEqual(collapser.GetSamplesListForTesting(), [{
-            'frames': [('fake_module', 'baz'), ('fake_module', 'bar'),
-                       ('fake_module', 'foo')],
-            'weight': 24
-        }])
+        self.assertEqual(
+            collapser.GetSamplesListForTesting(),
+            [
+                {
+                    'frames': [
+                        ('fake_module', 'baz'),
+                        ('fake_module', 'bar'),
+                        ('fake_module', 'foo'),
+                    ],
+                    'weight': 24,
+                }
+            ],
+        )
 
     def testUnsymbolized(self):
-        """Tests that absolute addresses are parsed as unsymbolized frames.
-    """
+        """Tests that absolute addresses are parsed as unsymbolized frames."""
 
         collapser = DTraceParser()
         collapser.ParseDir('./test_data/absolute_offset/')
-        self.assertEqual(collapser.GetSamplesListForTesting(), [{
-            'frames': [
-                ('unsymbolized module', '0x21'),
-                ('unsymbolized module', '+0x85'),
-                ('unsymbolized module', '0x37'),
+        self.assertEqual(
+            collapser.GetSamplesListForTesting(),
+            [
+                {
+                    'frames': [
+                        ('unsymbolized module', '0x21'),
+                        ('unsymbolized module', '+0x85'),
+                        ('unsymbolized module', '0x37'),
+                    ],
+                    'weight': 12,
+                }
             ],
-            'weight': 12
-        }])
+        )
 
 
 class StackCollapseTest(unittest.TestCase):
-
     def testDoublePostProcessStackSamplesFails(self):
         """Tests calling post_process_samples() twice triggers a failure."""
 
-        samples = [{
-            'frames': [('fake_module', 'foo'), ('fake_module', 'bar'),
-                       ('fake_module', 'baz')],
-            'weight': 24
-        }]
+        samples = [
+            {
+                'frames': [
+                    ('fake_module', 'foo'),
+                    ('fake_module', 'bar'),
+                    ('fake_module', 'baz'),
+                ],
+                'weight': 24,
+            }
+        ]
         stack_collapser = DTraceParser()
         stack_collapser.AddSamplesForTesting(samples)
 

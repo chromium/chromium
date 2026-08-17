@@ -35,15 +35,17 @@ def list_template(expr: str) -> str:
 
 
 MUTABLE_PARENTS = list_template(
-    'parents.filter(|c| !c.immutable()).map(|p| p.change_id())')
+  'parents.filter(|c| !c.immutable()).map(|p| p.change_id())'
+)
 
 IMMUTABLE_PARENTS = list_template(
-    'parents.filter(|p| p.immutable()).map(|p| p.commit_id())')
+  'parents.filter(|p| p.immutable()).map(|p| p.commit_id())'
+)
 
 
-def run_command(args: list[str],
-                check=True,
-                **kwargs) -> subprocess.CompletedProcess:
+def run_command(
+  args: list[str], check=True, **kwargs
+) -> subprocess.CompletedProcess:
   # Resolve the binary path, or in the case of Windows, the batch script path,
   # including the .bat extension.
   resolved = shutil.which(args[0])
@@ -59,17 +61,18 @@ def run_command(args: list[str],
   return ps
 
 
-def run_jj(args: list[str],
-           ignore_working_copy=False,
-           **kwargs) -> subprocess.CompletedProcess:
+def run_jj(
+  args: list[str], ignore_working_copy=False, **kwargs
+) -> subprocess.CompletedProcess:
   prefix = ['jj', '--no-pager']
   if ignore_working_copy:
     prefix.append('--ignore-working-copy')
   return run_command(prefix + args, **kwargs)
 
 
-def _log(args: list[str], templates: dict[str, str],
-         **kwargs) -> list[dict[str, str]]:
+def _log(
+  args: list[str], templates: dict[str, str], **kwargs
+) -> list[dict[str, str]]:
   """Log acts akin to a database query on a table.
 
   The user will provide templates such as {
@@ -92,32 +95,34 @@ def _log(args: list[str], templates: dict[str, str],
   template += f' ++ "{_NEWLINE}"'
 
   stdout = run_jj(
-      [*args, '--no-graph', '-T', template],
-      stdout=subprocess.PIPE,
-      text=True,
-      **kwargs,
+    [*args, '--no-graph', '-T', template],
+    stdout=subprocess.PIPE,
+    text=True,
+    **kwargs,
   ).stdout
 
   def _parse_field(value: str):
     # Fields starting with _LIST are list-valued and split into list[str].
     if value.startswith(_LIST):
-      rest = value[len(_LIST):]
+      rest = value[len(_LIST) :]
       return rest.split(_LIST) if rest else []
 
     # Everything else is a str.
     return value
 
   # Now we parse our CSV file.
-  return [{
+  return [
+    {
       field: _parse_field(value)
       for field, value in zip(fields, change.split(_COMMA))
-  } for change in stdout.rstrip(_NEWLINE).split(_NEWLINE)]
+    }
+    for change in stdout.rstrip(_NEWLINE).split(_NEWLINE)
+  ]
 
 
-def jj_log(*,
-           templates: dict[str, str],
-           revisions='@',
-           **kwargs) -> list[dict[str, str]]:
+def jj_log(
+  *, templates: dict[str, str], revisions='@', **kwargs
+) -> list[dict[str, str]]:
   """Retrieves information about jj revisions.
 
   See _log for details."""
@@ -151,8 +156,9 @@ def join_revsets(revs: list[str]):
     return ' | '.join(f'({r})' for r in revs)
 
 
-def add_trailers(rev: dict[str, str], trailers: dict[str, list[str]],
-                 commit: bool) -> str:
+def add_trailers(
+  rev: dict[str, str], trailers: dict[str, list[str]], commit: bool
+) -> str:
   old_desc = rev['desc'].rstrip()
   old_trailers = rev['trailers'].rstrip()
   assert old_desc.endswith(old_trailers)
@@ -172,8 +178,8 @@ def add_trailers(rev: dict[str, str], trailers: dict[str, list[str]],
 
   if commit:
     run_jj(
-        ['describe', '-m', new_desc, '-r', rev['change_id']],
-        ignore_working_copy=True,
+      ['describe', '-m', new_desc, '-r', rev['change_id']],
+      ignore_working_copy=True,
     )
   return new_desc
 
@@ -181,16 +187,16 @@ def add_trailers(rev: dict[str, str], trailers: dict[str, list[str]],
 def percent_encode_for_git_ref(original: str) -> str:
   """Pulled from the PercentEncodeForGitRef function in gerrit_util.py.
 
-    Applies percent-encoding for strings sent to Gerrit via git ref metadata.
+  Applies percent-encoding for strings sent to Gerrit via git ref metadata.
 
-    The encoding used is based on but stricter than URL encoding (Section 2.1 of
-    RFC 3986). The only non-escaped characters are alphanumerics, and 'SPACE'
-    (U+0020) can be represented as 'LOW LINE' (U+005F) or 'PLUS SIGN' (U+002B).
+  The encoding used is based on but stricter than URL encoding (Section 2.1 of
+  RFC 3986). The only non-escaped characters are alphanumerics, and 'SPACE'
+  (U+0020) can be represented as 'LOW LINE' (U+005F) or 'PLUS SIGN' (U+002B).
 
-    For more information, see the Gerrit docs here:
+  For more information, see the Gerrit docs here:
 
-    https://gerrit-review.googlesource.com/Documentation/user-upload.html#message
-    """
+  https://gerrit-review.googlesource.com/Documentation/user-upload.html#message
+  """
   safe = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 '
   encoded = ''.join(c if c in safe else '%%%02X' % ord(c) for c in original)
 

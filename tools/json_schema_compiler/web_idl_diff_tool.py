@@ -32,14 +32,16 @@ def LoadAndReturnUnifiedDiff(file_one: str, file_two: str) -> str:
     SchemaLoader in the unified_diff format. May be an empty string if there is
     no difference detected.
   """
-  root = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir,
-                      os.pardir)
+  root = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), os.pardir, os.pardir
+  )
   schema_one = SchemaLoader(root).LoadSchema(file_one)
   schema_two = SchemaLoader(root).LoadSchema(file_two)
 
   difference = unified_diff(
-      json.dumps(schema_one, indent=2, sort_keys=True).splitlines(),
-      json.dumps(schema_two, indent=2, sort_keys=True).splitlines())
+    json.dumps(schema_one, indent=2, sort_keys=True).splitlines(),
+    json.dumps(schema_two, indent=2, sort_keys=True).splitlines(),
+  )
 
   diff_list = list(difference)
   if not diff_list:
@@ -51,9 +53,10 @@ if __name__ == "__main__":
   args = sys.argv[1:]
   if len(args) != 2:
     raise Exception(
-        'Must be called with two parameters, each a file path to an API schema'
-        ' file you want to compare the differences between after they are both'
-        ' parsed and processed.')
+      'Must be called with two parameters, each a file path to an API schema'
+      ' file you want to compare the differences between after they are both'
+      ' parsed and processed.'
+    )
 
   diff = LoadAndReturnUnifiedDiff(args[0], args[1])
   if diff:

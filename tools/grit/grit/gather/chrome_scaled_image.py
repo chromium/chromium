@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Gatherer for <structure type="chrome_scaled_image">.
-'''
-
+'''Gatherer for <structure type="chrome_scaled_image">.'''
 
 import os
 import re
@@ -40,7 +38,8 @@ _SPECIAL_CHUNKS = frozenset(b'csCl npTc'.split())
 
 '''Any ancillary chunk not in this list is deleted from the PNG.'''
 _ANCILLARY_CHUNKS_TO_LEAVE = frozenset(
-    b'bKGD cHRM gAMA iCCP pHYs sBIT sRGB tRNS acTL fcTL fdAT'.split())
+  b'bKGD cHRM gAMA iCCP pHYs sBIT sRGB tRNS acTL fcTL fdAT'.split()
+)
 
 
 def _MoveSpecialChunksToFront(data):
@@ -69,13 +68,12 @@ def _ChunkifyPNG(data):
   while pos != len(data):
     length = 12 + struct.unpack_from('>I', data, pos)[0]
     assert 12 <= length <= len(data) - pos
-    yield data[pos:pos+length]
+    yield data[pos : pos + length]
     pos += length
 
 
 def _MakeBraceGlob(strings):
-  '''Given ['foo', 'bar'], return '{foo,bar}', for error reporting.
-  '''
+  '''Given ['foo', 'bar'], return '{foo,bar}', for error reporting.'''
   if len(strings) == 1:
     return strings[0]
   else:
@@ -95,8 +93,9 @@ class ChromeScaledImage(interface.GathererBase):
     match = self.split_context_re_.match(output_context)
     if not match:
       raise exception.MissingMandatoryAttribute(
-          'All <output> nodes must have an appropriate context attribute'
-          ' (e.g. context="touch_200_percent")')
+        'All <output> nodes must have an appropriate context attribute'
+        ' (e.g. context="touch_200_percent")'
+      )
     req_layout, req_scale = match.group(1), int(match.group(2))
 
     layouts = [req_layout]
@@ -106,7 +105,8 @@ class ChromeScaledImage(interface.GathererBase):
 
     scales = [req_scale]
     try_low_res = self.grd_node.FindBooleanAttribute(
-        'fallback_to_low_resolution', default=False, skip_self=False)
+      'fallback_to_low_resolution', default=False, skip_self=False
+    )
     if try_low_res and 100 not in scales:
       scales.append(100)
 
@@ -125,10 +125,13 @@ class ChromeScaledImage(interface.GathererBase):
 
     # The file was found in neither the specified context nor the default
     # context, so raise an exception.
-    dir = "%s_%s_percent" % (_MakeBraceGlob(layouts),
-                             _MakeBraceGlob([str(x) for x in scales]))
+    dir = "%s_%s_percent" % (
+      _MakeBraceGlob(layouts),
+      _MakeBraceGlob([str(x) for x in scales]),
+    )
     raise exception.FileNotFound(
-        'Tried ' + self.grd_node.ToRealPath(os.path.join(dir, self.rc_file)))
+      'Tried ' + self.grd_node.ToRealPath(os.path.join(dir, self.rc_file))
+    )
 
   def GetInputPath(self):
     path, scale, req_scale = self._FindInputFile()

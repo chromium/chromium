@@ -19,7 +19,8 @@ import subprocess
 import sys
 
 sys.path.append(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, 'build'))
+  os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, 'build')
+)
 import action_helpers
 
 
@@ -35,12 +36,12 @@ def main():
   args = parser.parse_args()
 
   compiler_args = [
-      args.compiler,
+    args.compiler,
   ]
   compiler_args += args.compiler_options
   compiler_args += [
-      '-c',
-      args.source_path,
+    '-c',
+    args.source_path,
   ]
 
   result = subprocess.run(compiler_args, stdout=subprocess.PIPE)
@@ -58,11 +59,11 @@ def main():
       # Chrome build assumes the prefix is fixed.
       INCLUDE_PREFIX = 'Note: including file: '
       includes = map(
-          lambda x: os.path.relpath(x[len(INCLUDE_PREFIX):].strip()),
-          filter(
-              lambda x: x.startswith(INCLUDE_PREFIX),
-              result.stdout.decode('utf-8').splitlines(),
-          ),
+        lambda x: os.path.relpath(x[len(INCLUDE_PREFIX) :].strip()),
+        filter(
+          lambda x: x.startswith(INCLUDE_PREFIX),
+          result.stdout.decode('utf-8').splitlines(),
+        ),
       )
 
       action_helpers.write_depfile(args.depfile_path, args.obj_path, includes)

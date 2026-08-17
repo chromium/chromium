@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Handling of the <include> element.
-"""
-
+"""Handling of the <include> element."""
 
 import os
 
@@ -13,6 +11,7 @@ import grit.format.html_inline
 import grit.format.rc
 from grit.format import minifier
 from grit.node import base
+
 
 class IncludeNode(base.Node):
   """An <include> element."""
@@ -31,13 +30,16 @@ class IncludeNode(base.Node):
     return False
 
   def _GetFlattenedData(
-      self, allow_external_script=False, preprocess_only=False):
+    self, allow_external_script=False, preprocess_only=False
+  ):
     if not self._flattened_data:
       filename = self.ToRealPath(self.GetInputPath())
-      self._flattened_data = (
-          grit.format.html_inline.InlineToString(filename, self,
-              preprocess_only=preprocess_only,
-              allow_external_script=allow_external_script))
+      self._flattened_data = grit.format.html_inline.InlineToString(
+        filename,
+        self,
+        preprocess_only=preprocess_only,
+        allow_external_script=allow_external_script,
+      )
     return self._flattened_data.encode('utf-8')
 
   def MandatoryAttributes(self):
@@ -45,30 +47,30 @@ class IncludeNode(base.Node):
 
   def DefaultAttributes(self):
     """Attributes:
-       translateable:         False if the node has contents that should not be
-                              translated.
-       resource_path:         If provided, is used to populate the |path|
-                              property of the generated ResourcePath struct.
-       preprocess:            Takes the same code path as flattenhtml, but it
-                              disables any  processing/inlining outside of <if>
-                              and <include>.
-       compress:              The format to compress the data with, e.g. 'gzip'
-                              or 'false' if data should not be compressed.
-       skip_in_resource_map:  If true, do not add to the resource map.
+    translateable:         False if the node has contents that should not be
+                           translated.
+    resource_path:         If provided, is used to populate the |path|
+                           property of the generated ResourcePath struct.
+    preprocess:            Takes the same code path as flattenhtml, but it
+                           disables any  processing/inlining outside of <if>
+                           and <include>.
+    compress:              The format to compress the data with, e.g. 'gzip'
+                           or 'false' if data should not be compressed.
+    skip_in_resource_map:  If true, do not add to the resource map.
     """
     return {
-        'translateable': 'true',
-        'generateid': 'true',
-        'filenameonly': 'false',
-        'mkoutput': 'false',
-        'preprocess': 'false',
-        'flattenhtml': 'false',
-        'compress': 'default',
-        'allowexternalscript': 'false',
-        'relativepath': 'false',
-        'use_base_dir': 'true',
-        'skip_in_resource_map': 'false',
-        'resource_path': '',
+      'translateable': 'true',
+      'generateid': 'true',
+      'filenameonly': 'false',
+      'mkoutput': 'false',
+      'preprocess': 'false',
+      'flattenhtml': 'false',
+      'compress': 'default',
+      'allowexternalscript': 'false',
+      'relativepath': 'false',
+      'use_base_dir': 'true',
+      'skip_in_resource_map': 'false',
+      'resource_path': '',
     }
 
   def GetInputPath(self):
@@ -120,8 +122,9 @@ class IncludeNode(base.Node):
     """Rewrite file references to be base64 encoded data URLs.  The new file
     will be written to output_dir and the name of the new file is returned."""
     filename = self.ToRealPath(self.GetInputPath())
-    flat_filename = os.path.join(output_dir,
-        self.attrs['name'] + '_' + os.path.basename(filename))
+    flat_filename = os.path.join(
+      output_dir, self.attrs['name'] + '_' + os.path.basename(filename)
+    )
 
     if self._last_flat_filename == flat_filename:
       return
@@ -136,17 +139,26 @@ class IncludeNode(base.Node):
     """Returns a set of all filenames inlined by this file."""
     allow_external_script = self.attrs['allowexternalscript'] == 'true'
     return grit.format.html_inline.GetResourceFilenames(
-         self.ToRealPath(self.GetInputPath()),
-         self,
-         allow_external_script=allow_external_script)
+      self.ToRealPath(self.GetInputPath()),
+      self,
+      allow_external_script=allow_external_script,
+    )
 
   def IsResourceMapSource(self):
     skip = self.attrs.get('skip_in_resource_map', 'false') == 'true'
     return not skip
 
   @staticmethod
-  def Construct(parent, name, type, file, translateable=True,
-                filenameonly=False, mkoutput=False, relativepath=False):
+  def Construct(
+    parent,
+    name,
+    type,
+    file,
+    translateable=True,
+    filenameonly=False,
+    mkoutput=False,
+    relativepath=False,
+  ):
     """Creates a new node which is a child of 'parent', with attributes set
     by parameters of the same name.
     """

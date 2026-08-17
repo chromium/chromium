@@ -100,31 +100,38 @@ def OriginFromArg(arg):
     raise argparse.ArgumentTypeError("%s is not a hostname or a URL" % arg)
   # HTTPS or HTTP only
   if origin.scheme not in ("https", "http", "chrome-extension"):
-    raise argparse.ArgumentTypeError("%s does not use a recognized URL scheme" %
-                                     arg)
+    raise argparse.ArgumentTypeError(
+      "%s does not use a recognized URL scheme" % arg
+    )
   # Is it a valid extension origin?
   if origin.scheme == "chrome-extension":
-    if (IsExtensionId(origin.hostname) and not origin.port
-        and not origin.username and not origin.password):
+    if (
+      IsExtensionId(origin.hostname)
+      and not origin.port
+      and not origin.username
+      and not origin.password
+    ):
       return "chrome-extension://{0}".format(origin.hostname)
     raise argparse.ArgumentTypeError("%s is not a valid extension origin" % arg)
   # Add default port if it is not specified
   try:
     port = origin.port
   except ValueError as e:
-    raise argparse.ArgumentTypeError("%s is not a hostname or a URL" %
-                                     arg) from e
+    raise argparse.ArgumentTypeError(
+      "%s is not a hostname or a URL" % arg
+    ) from e
   if not port:
     port = {"https": 443, "http": 80}[origin.scheme]
   # Strip any extra components and return the origin URL:
   return "{0}://{1}:{2}".format(origin.scheme, origin.hostname, port)
+
 
 def ExpiryFromArgs(args):
   expiry: int
   if args.expire_timestamp:
     expiry = int(args.expire_timestamp)
   else:
-    expiry = (int(time.time()) + (int(args.expire_days) * 86400))
+    expiry = int(time.time()) + (int(args.expire_days) * 86400)
 
   if expiry > 2**31 - 1:
     # The maximum expiry timestamp is bound by the maximum value of a signed
@@ -133,15 +140,22 @@ def ExpiryFromArgs(args):
     # will raise this error, so add support for a larger range of values
     # before then.
     raise argparse.ArgumentTypeError(
-        "%d (%s UTC) is beyond the range of supported expiries" %
-        (expiry, datetime.utcfromtimestamp(expiry)))
+      "%d (%s UTC) is beyond the range of supported expiries"
+      % (expiry, datetime.utcfromtimestamp(expiry))
+    )
   return expiry
 
-def GenerateTokenData(version, origin, is_subdomain, is_third_party,
-                      usage_restriction, feature_name, expiry):
-  data = {"origin": origin,
-          "feature": feature_name,
-          "expiry": expiry}
+
+def GenerateTokenData(
+  version,
+  origin,
+  is_subdomain,
+  is_third_party,
+  usage_restriction,
+  feature_name,
+  expiry,
+):
+  data = {"origin": origin, "feature": feature_name, "expiry": expiry}
   if is_subdomain is not None:
     data["isSubdomain"] = is_subdomain
   # Only version 3 token supports fields: is_third_party, usage.
@@ -151,8 +165,9 @@ def GenerateTokenData(version, origin, is_subdomain, is_third_party,
     data["usage"] = usage_restriction
   return json.dumps(data).encode('utf-8')
 
+
 def GenerateDataToSign(version, data):
-  return version + struct.pack(">I",len(data)) + data
+  return version + struct.pack(">I", len(data)) + data
 
 
 def Sign(private_key, data):
@@ -160,75 +175,96 @@ def Sign(private_key, data):
 
 
 def FormatToken(version, signature, data):
-  return base64.b64encode(version + signature + struct.pack(">I", len(data)) +
-                          data).decode("ascii")
+  return base64.b64encode(
+    version + signature + struct.pack(">I", len(data)) + data
+  ).decode("ascii")
 
 
 def ParseArgs():
   default_key_file_absolute = os.path.join(script_dir, DEFAULT_KEY_FILE)
 
   parser = argparse.ArgumentParser(
-      description="Generate tokens for enabling experimental features")
-  parser.add_argument("--version",
-                      help="Token version to use. Currently only version 2 "
-                      "and version 3 are supported.",
-                      default='3',
-                      type=VersionFromArg)
-  parser.add_argument("origin",
-                      help="Origin for which to enable the feature. This can "
-                           "be either a hostname (default scheme HTTPS, "
-                           "default port 443) or a URL.",
-                      type=OriginFromArg)
-  parser.add_argument("trial_name",
-                      help="Feature to enable. The current list of "
-                           "experimental feature trials can be found in "
-                           "RuntimeFeatures.in")
-  parser.add_argument("--key-file",
-                      help="Ed25519 private key file to sign the token with",
-                      default=default_key_file_absolute)
+    description="Generate tokens for enabling experimental features"
+  )
+  parser.add_argument(
+    "--version",
+    help="Token version to use. Currently only version 2 "
+    "and version 3 are supported.",
+    default='3',
+    type=VersionFromArg,
+  )
+  parser.add_argument(
+    "origin",
+    help="Origin for which to enable the feature. This can "
+    "be either a hostname (default scheme HTTPS, "
+    "default port 443) or a URL.",
+    type=OriginFromArg,
+  )
+  parser.add_argument(
+    "trial_name",
+    help="Feature to enable. The current list of "
+    "experimental feature trials can be found in "
+    "RuntimeFeatures.in",
+  )
+  parser.add_argument(
+    "--key-file",
+    help="Ed25519 private key file to sign the token with",
+    default=default_key_file_absolute,
+  )
 
   subdomain_group = parser.add_mutually_exclusive_group()
-  subdomain_group.add_argument("--is-subdomain",
-                               help="Token will enable the feature for all "
-                                    "subdomains that match the origin",
-                               dest="is_subdomain",
-                               action="store_true")
-  subdomain_group.add_argument("--no-subdomain",
-                               help="Token will only match the specified "
-                                    "origin (default behavior)",
-                               dest="is_subdomain",
-                               action="store_false")
+  subdomain_group.add_argument(
+    "--is-subdomain",
+    help="Token will enable the feature for all "
+    "subdomains that match the origin",
+    dest="is_subdomain",
+    action="store_true",
+  )
+  subdomain_group.add_argument(
+    "--no-subdomain",
+    help="Token will only match the specified origin (default behavior)",
+    dest="is_subdomain",
+    action="store_false",
+  )
   parser.set_defaults(is_subdomain=None)
 
   third_party_group = parser.add_mutually_exclusive_group()
   third_party_group.add_argument(
-      "--is-third-party",
-      help="Token will enable the feature for third "
-      "party origins. This option is only available for token version 3",
-      dest="is_third_party",
-      action="store_true")
+    "--is-third-party",
+    help="Token will enable the feature for third "
+    "party origins. This option is only available for token version 3",
+    dest="is_third_party",
+    action="store_true",
+  )
   third_party_group.add_argument(
-      "--no-third-party",
-      help="Token will only match first party origin. This option is only "
-      "available for token version 3",
-      dest="is_third_party",
-      action="store_false")
+    "--no-third-party",
+    help="Token will only match first party origin. This option is only "
+    "available for token version 3",
+    dest="is_third_party",
+    action="store_false",
+  )
   parser.set_defaults(is_third_party=None)
 
-  parser.add_argument("--usage-restriction",
-                      help="Alternative token usage resctriction. This option "
-                      "is only available for token version 3. Currently only "
-                      "subset exclusion is supported.")
+  parser.add_argument(
+    "--usage-restriction",
+    help="Alternative token usage resctriction. This option "
+    "is only available for token version 3. Currently only "
+    "subset exclusion is supported.",
+  )
 
   expiry_group = parser.add_mutually_exclusive_group()
-  expiry_group.add_argument("--expire-days",
-                            help="Days from now when the token should expire",
-                            type=int,
-                            default=42)
-  expiry_group.add_argument("--expire-timestamp",
-                            help="Exact time (seconds since 1970-01-01 "
-                                 "00:00:00 UTC) when the token should expire",
-                            type=int)
+  expiry_group.add_argument(
+    "--expire-days",
+    help="Days from now when the token should expire",
+    type=int,
+    default=42,
+  )
+  expiry_group.add_argument(
+    "--expire-timestamp",
+    help="Exact time (seconds since 1970-01-01 "
+    "00:00:00 UTC) when the token should expire",
+    type=int,
+  )
 
   return parser.parse_args()
 
@@ -245,31 +281,40 @@ def GenerateTokenAndSignature():
   # Validate that the key file read was a proper Ed25519 key -- running the
   # publickey method on the first half of the key should return the second
   # half.
-  if (len(private_key) < 64 or
-    ed25519.publickey(private_key[:32]) != private_key[32:]):
+  if (
+    len(private_key) < 64
+    or ed25519.publickey(private_key[:32]) != private_key[32:]
+  ):
     print("Unable to use the specified private key file.")
     sys.exit(1)
 
-  if (not version_int):
+  if not version_int:
     print("Invalid token version. Only version 2 and 3 are supported.")
     sys.exit(1)
 
-  if (args.is_third_party is not None and version_int != 3):
+  if args.is_third_party is not None and version_int != 3:
     print("Only version 3 token supports is_third_party flag.")
     sys.exit(1)
 
-  if (args.usage_restriction is not None):
-    if (version_int != 3):
+  if args.usage_restriction is not None:
+    if version_int != 3:
       print("Only version 3 token supports alternative usage restriction.")
       sys.exit(1)
-    if (args.usage_restriction not in USAGE_RESTRICTION):
+    if args.usage_restriction not in USAGE_RESTRICTION:
       print(
-          "Only empty string and \"subset\" are supported in alternative usage "
-          "restriction.")
+        "Only empty string and \"subset\" are supported in alternative usage "
+        "restriction."
+      )
       sys.exit(1)
-  token_data = GenerateTokenData(version_int, args.origin, args.is_subdomain,
-                                 args.is_third_party, args.usage_restriction,
-                                 args.trial_name, expiry)
+  token_data = GenerateTokenData(
+    version_int,
+    args.origin,
+    args.is_subdomain,
+    args.is_third_party,
+    args.usage_restriction,
+    args.trial_name,
+    expiry,
+  )
   data_to_sign = GenerateDataToSign(version_bytes, token_data)
   signature = Sign(private_key, data_to_sign)
 
@@ -281,9 +326,15 @@ def GenerateTokenAndSignature():
     print("(The original error was: %s)" % exc)
     sys.exit(1)
 
-  token_data = GenerateTokenData(version_int, args.origin, args.is_subdomain,
-                                 args.is_third_party, args.usage_restriction,
-                                 args.trial_name, expiry)
+  token_data = GenerateTokenData(
+    version_int,
+    args.origin,
+    args.is_subdomain,
+    args.is_third_party,
+    args.usage_restriction,
+    args.trial_name,
+    expiry,
+  )
   data_to_sign = GenerateDataToSign(version_bytes, token_data)
   signature = Sign(private_key, data_to_sign)
   return args, token_data, signature, expiry

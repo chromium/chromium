@@ -5,7 +5,6 @@
 """Formats as a .json file that can be used to localize Google Chrome
 extensions."""
 
-
 from json import JSONEncoder
 
 from grit import constants
@@ -15,8 +14,10 @@ from grit.node import message
 def Format(root, lang='en', gender=None, output_dir='.'):
   """Format the messages as JSON."""
 
-  assert gender is None, "chrome_message_json doesn't support gender " \
-      f"translations, yet Format() was called with gender {gender}"
+  assert gender is None, (
+    "chrome_message_json doesn't support gender "
+    f"translations, yet Format() was called with gender {gender}"
+  )
 
   yield '{'
 
@@ -31,16 +32,22 @@ def Format(root, lang='en', gender=None, output_dir='.'):
         id = id[4:]
 
       translation_missing = not child.GetCliques()[0].HasTranslation(
-          lang, constants.DEFAULT_GENDER)
-      if (child.ShouldFallbackToEnglish() and translation_missing
-          and lang not in constants.PSEUDOLOCALES):
+        lang, constants.DEFAULT_GENDER
+      )
+      if (
+        child.ShouldFallbackToEnglish()
+        and translation_missing
+        and lang not in constants.PSEUDOLOCALES
+      ):
         # Skip the string if it's not translated. Chrome will fallback
         # to English automatically.
         continue
 
       loc_message = encoder.encode(
-          child.ws_at_start + child.Translate(lang, constants.DEFAULT_GENDER) +
-          child.ws_at_end)
+        child.ws_at_start
+        + child.Translate(lang, constants.DEFAULT_GENDER)
+        + child.ws_at_end
+      )
 
       # Replace $n place-holders with $n$ and add an appropriate "placeholders"
       # entry. Note that chrome.i18n.getMessage only supports 9 placeholders:

@@ -9,61 +9,37 @@ import unittest
 
 
 class CompilerUnittest(unittest.TestCase):
-
   def testNocompile(self):
-    compiled = [{
+    compiled = [
+      {
         "namespace": "compile",
         "description": "The compile API.",
         "functions": [],
-        "types": {}
-    }, {
+        "types": {},
+      },
+      {
         "namespace": "functions",
         "description": "The functions API.",
-        "functions": [{
-            "id": "two"
-        }, {
-            "id": "four"
-        }],
-        "types": {
-            "one": {
-                "key": "value"
-            }
-        }
-    }, {
+        "functions": [{"id": "two"}, {"id": "four"}],
+        "types": {"one": {"key": "value"}},
+      },
+      {
         "namespace": "types",
         "description": "The types API.",
-        "functions": [{
-            "id": "one"
-        }],
-        "types": {
-            "two": {
-                "key": "value"
-            },
-            "four": {
-                "key": "value"
-            }
-        }
-    }, {
+        "functions": [{"id": "one"}],
+        "types": {"two": {"key": "value"}, "four": {"key": "value"}},
+      },
+      {
         "namespace": "nested",
         "description": "The nested API.",
         "properties": {
-            "sync": {
-                "functions": [{
-                    "id": "two"
-                }, {
-                    "id": "four"
-                }],
-                "types": {
-                    "two": {
-                        "key": "value"
-                    },
-                    "four": {
-                        "key": "value"
-                    }
-                }
-            }
-        }
-    }]
+          "sync": {
+            "functions": [{"id": "two"}, {"id": "four"}],
+            "types": {"two": {"key": "value"}, "four": {"key": "value"}},
+          }
+        },
+      },
+    ]
 
     schema = json_schema.CachedLoad('test/compiler_test.json')
     self.assertEqual(compiled, compiler.DeleteNodes(schema, 'nocompile'))
@@ -72,20 +48,15 @@ class CompilerUnittest(unittest.TestCase):
       return isinstance(value, dict) and not value.get('valid', True)
 
     expected = [{'one': {'test': 'test'}}, {'valid': True}, {}]
-    given = [{
-        'one': {
-            'test': 'test'
-        },
-        'two': {
-            'valid': False
-        }
-    }, {
-        'valid': True
-    }, {}, {
-        'valid': False
-    }]
-    self.assertEqual(expected, compiler.DeleteNodes(given,
-                                                    matcher=should_delete))
+    given = [
+      {'one': {'test': 'test'}, 'two': {'valid': False}},
+      {'valid': True},
+      {},
+      {'valid': False},
+    ]
+    self.assertEqual(
+      expected, compiler.DeleteNodes(given, matcher=should_delete)
+    )
 
 
 if __name__ == '__main__':

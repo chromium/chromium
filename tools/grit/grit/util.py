@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Utilities used by GRIT.
-'''
+'''Utilities used by GRIT.'''
 
 import codecs
 import html.entities
@@ -45,6 +44,7 @@ def Encode(message, encoding):
 # Matches all different types of linebreaks.
 LINEBREAKS = re.compile('\r\n|\n|\r')
 
+
 def MakeRelativePath(base_path, path_to_make_relative):
   """Returns a relative path such from the base_path to
   the path_to_make_relative.
@@ -68,7 +68,7 @@ def MakeRelativePath(base_path, path_to_make_relative):
       path_with_prefix: a path that starts with prefix_path
     """
     assert path_with_prefix.startswith(prefix_path)
-    path_without_prefix = path_with_prefix[len(prefix_path):]
+    path_without_prefix = path_with_prefix[len(prefix_path) :]
     normalized_path = os.path.normpath(path_without_prefix.strip(os.path.sep))
     if normalized_path == '.':
       normalized_path = ''
@@ -111,14 +111,14 @@ def MakeRelativePath(base_path, path_to_make_relative):
       index_sep = prefix.rfind(os.path.sep)
       # The use "index_sep + 1" because it includes the final sep
       # and it handles the case when the index_sep is -1 as well
-      prefix = prefix[:index_sep + 1]
+      prefix = prefix[: index_sep + 1]
       # At this point we backed up to a directory bound which is
       # common to all paths, so we can quit going through all of
       # the paths.
       break
     return prefix
 
-  prefix =  _GetCommonBaseDirectory(base_path, path_to_make_relative)
+  prefix = _GetCommonBaseDirectory(base_path, path_to_make_relative)
   # If the paths had no commonality at all, then return the absolute path
   # because it is the best that can be done.  If the path had to be relative
   # then eventually this absolute path will be discovered (when a build breaks)
@@ -143,6 +143,7 @@ KNOWN_SYSTEM_IDENTIFIERS = set()
 
 SYSTEM_IDENTIFIERS = None
 
+
 def SetupSystemIdentifiers(ids):
   '''Adds ids to a regexp of known system identifiers.
 
@@ -154,43 +155,85 @@ def SetupSystemIdentifiers(ids):
   KNOWN_SYSTEM_IDENTIFIERS.update(ids)
   global SYSTEM_IDENTIFIERS
   SYSTEM_IDENTIFIERS = re.compile(
-      ' | '.join([r'\b%s\b' % i for i in KNOWN_SYSTEM_IDENTIFIERS]),
-      re.VERBOSE)
+    ' | '.join([r'\b%s\b' % i for i in KNOWN_SYSTEM_IDENTIFIERS]), re.VERBOSE
+  )
 
 
 # Matches all of the resource IDs predefined by Windows.
-SetupSystemIdentifiers((
-    'IDOK', 'IDCANCEL', 'IDC_STATIC', 'IDYES', 'IDNO',
-    'ID_FILE_NEW', 'ID_FILE_OPEN', 'ID_FILE_CLOSE', 'ID_FILE_SAVE',
-    'ID_FILE_SAVE_AS', 'ID_FILE_PAGE_SETUP', 'ID_FILE_PRINT_SETUP',
-    'ID_FILE_PRINT', 'ID_FILE_PRINT_DIRECT', 'ID_FILE_PRINT_PREVIEW',
-    'ID_FILE_UPDATE', 'ID_FILE_SAVE_COPY_AS', 'ID_FILE_SEND_MAIL',
-    'ID_FILE_MRU_FIRST', 'ID_FILE_MRU_LAST',
-    'ID_EDIT_CLEAR', 'ID_EDIT_CLEAR_ALL', 'ID_EDIT_COPY',
-    'ID_EDIT_CUT', 'ID_EDIT_FIND', 'ID_EDIT_PASTE', 'ID_EDIT_PASTE_LINK',
-    'ID_EDIT_PASTE_SPECIAL', 'ID_EDIT_REPEAT', 'ID_EDIT_REPLACE',
-    'ID_EDIT_SELECT_ALL', 'ID_EDIT_UNDO', 'ID_EDIT_REDO',
-    'VS_VERSION_INFO', 'IDRETRY',
-    'ID_APP_ABOUT', 'ID_APP_EXIT',
-    'ID_NEXT_PANE', 'ID_PREV_PANE',
-    'ID_WINDOW_NEW', 'ID_WINDOW_ARRANGE', 'ID_WINDOW_CASCADE',
-    'ID_WINDOW_TILE_HORZ', 'ID_WINDOW_TILE_VERT', 'ID_WINDOW_SPLIT',
-    'ATL_IDS_SCSIZE', 'ATL_IDS_SCMOVE', 'ATL_IDS_SCMINIMIZE',
-    'ATL_IDS_SCMAXIMIZE', 'ATL_IDS_SCNEXTWINDOW', 'ATL_IDS_SCPREVWINDOW',
-    'ATL_IDS_SCCLOSE', 'ATL_IDS_SCRESTORE', 'ATL_IDS_SCTASKLIST',
-    'ATL_IDS_MDICHILD', 'ATL_IDS_IDLEMESSAGE', 'ATL_IDS_MRU_FILE' ))
+SetupSystemIdentifiers(
+  (
+    'IDOK',
+    'IDCANCEL',
+    'IDC_STATIC',
+    'IDYES',
+    'IDNO',
+    'ID_FILE_NEW',
+    'ID_FILE_OPEN',
+    'ID_FILE_CLOSE',
+    'ID_FILE_SAVE',
+    'ID_FILE_SAVE_AS',
+    'ID_FILE_PAGE_SETUP',
+    'ID_FILE_PRINT_SETUP',
+    'ID_FILE_PRINT',
+    'ID_FILE_PRINT_DIRECT',
+    'ID_FILE_PRINT_PREVIEW',
+    'ID_FILE_UPDATE',
+    'ID_FILE_SAVE_COPY_AS',
+    'ID_FILE_SEND_MAIL',
+    'ID_FILE_MRU_FIRST',
+    'ID_FILE_MRU_LAST',
+    'ID_EDIT_CLEAR',
+    'ID_EDIT_CLEAR_ALL',
+    'ID_EDIT_COPY',
+    'ID_EDIT_CUT',
+    'ID_EDIT_FIND',
+    'ID_EDIT_PASTE',
+    'ID_EDIT_PASTE_LINK',
+    'ID_EDIT_PASTE_SPECIAL',
+    'ID_EDIT_REPEAT',
+    'ID_EDIT_REPLACE',
+    'ID_EDIT_SELECT_ALL',
+    'ID_EDIT_UNDO',
+    'ID_EDIT_REDO',
+    'VS_VERSION_INFO',
+    'IDRETRY',
+    'ID_APP_ABOUT',
+    'ID_APP_EXIT',
+    'ID_NEXT_PANE',
+    'ID_PREV_PANE',
+    'ID_WINDOW_NEW',
+    'ID_WINDOW_ARRANGE',
+    'ID_WINDOW_CASCADE',
+    'ID_WINDOW_TILE_HORZ',
+    'ID_WINDOW_TILE_VERT',
+    'ID_WINDOW_SPLIT',
+    'ATL_IDS_SCSIZE',
+    'ATL_IDS_SCMOVE',
+    'ATL_IDS_SCMINIMIZE',
+    'ATL_IDS_SCMAXIMIZE',
+    'ATL_IDS_SCNEXTWINDOW',
+    'ATL_IDS_SCPREVWINDOW',
+    'ATL_IDS_SCCLOSE',
+    'ATL_IDS_SCRESTORE',
+    'ATL_IDS_SCTASKLIST',
+    'ATL_IDS_MDICHILD',
+    'ATL_IDS_IDLEMESSAGE',
+    'ATL_IDS_MRU_FILE',
+  )
+)
 
 
 # Matches character entities, whether specified by name, decimal or hex.
 _HTML_ENTITY = re.compile(
   '&(#(?P<decimal>[0-9]+)|#x(?P<hex>[a-fA-F0-9]+)|(?P<named>[a-z0-9]+));',
-  re.IGNORECASE)
+  re.IGNORECASE,
+)
 
 # Matches characters that should be HTML-escaped.  This is <, > and &, but only
 # if the & is not the start of an HTML character entity.
 _HTML_CHARS_TO_ESCAPE = re.compile(
-    '"|<|>|&(?!#[0-9]+|#x[0-9a-z]+|[a-z]+;)',
-    re.IGNORECASE | re.MULTILINE)
+  '"|<|>|&(?!#[0-9]+|#x[0-9a-z]+|[a-z]+;)', re.IGNORECASE | re.MULTILINE
+)
 
 
 def ReadFile(filename, encoding):
@@ -211,13 +254,13 @@ def ReadFile(filename, encoding):
     return f.read()
 
 
-def WrapOutputStream(stream, encoding = 'utf-8'):
+def WrapOutputStream(stream, encoding='utf-8'):
   '''Returns a stream that wraps the provided stream, making it write
   characters using the specified encoding.'''
   return codecs.getwriter(encoding)(stream)
 
 
-def ChangeStdoutEncoding(encoding = 'utf-8'):
+def ChangeStdoutEncoding(encoding='utf-8'):
   '''Changes STDOUT to print characters using the specified encoding.'''
   # If we're unittesting, don't reconfigure.
   if isinstance(sys.stdout, io.StringIO):
@@ -237,20 +280,28 @@ def ChangeStdoutEncoding(encoding = 'utf-8'):
     sys.stderr.reconfigure(encoding=encoding)
 
 
-def EscapeHtml(text, escape_quotes = False):
+def EscapeHtml(text, escape_quotes=False):
   '''Returns 'text' with <, > and & (and optionally ") escaped to named HTML
   entities.  Any existing named entity or HTML entity defined by decimal or
   hex code will be left untouched.  This is appropriate for escaping text for
   inclusion in HTML, but not for XML.
   '''
+
   def Replace(match):
-    if match.group() == '&': return '&amp;'
-    elif match.group() == '<': return '&lt;'
-    elif match.group() == '>': return '&gt;'
+    if match.group() == '&':
+      return '&amp;'
+    elif match.group() == '<':
+      return '&lt;'
+    elif match.group() == '>':
+      return '&gt;'
     elif match.group() == '"':
-      if escape_quotes: return '&quot;'
-      else: return match.group()
-    else: assert False
+      if escape_quotes:
+        return '&quot;'
+      else:
+        return match.group()
+    else:
+      assert False
+
   out = _HTML_CHARS_TO_ESCAPE.sub(Replace, text)
   return out
 
@@ -263,6 +314,7 @@ def UnescapeHtml(text, replace_nbsp=True):
   The only exception is that &nbsp; will not be escaped if 'replace_nbsp' is
   False.
   '''
+
   def Replace(match):
     groups = match.groupdict()
     if groups['hex']:
@@ -313,10 +365,12 @@ def FixupNamedParam(function, param_name, param_value):
   Return:
     callable
   '''
+
   def FixupClosure(*args, **kw):
     if not param_name in kw:
       kw[param_name] = param_value
     return function(*args, **kw)
+
   return FixupClosure
 
 
@@ -334,8 +388,9 @@ def PathFromRoot(path):
   return os.path.normpath(os.path.join(_root_dir, path))
 
 
-def ParseGrdForUnittest(body, base_dir=None, predetermined_ids_file=None,
-                        run_gatherers=False):
+def ParseGrdForUnittest(
+  body, base_dir=None, predetermined_ids_file=None, run_gatherers=False
+):
   '''Parse a skeleton .grd file and return it, for use in unit tests.
 
   Args:
@@ -343,13 +398,16 @@ def ParseGrdForUnittest(body, base_dir=None, predetermined_ids_file=None,
     base_dir: The base_dir attribute of the <grit> tag.
   '''
   from grit import grd_reader
+
   if isinstance(body, str):
     body = body.encode('utf-8')
   if base_dir is None:
     base_dir = PathFromRoot('.')
   lines = [b'<?xml version="1.0" encoding="UTF-8"?>']
-  lines.append(b'<grit latest_public_release="2" current_release="3" '
-               b'source_lang_id="en" base_dir="%s">' % base_dir.encode('utf-8'))
+  lines.append(
+    b'<grit latest_public_release="2" current_release="3" '
+    b'source_lang_id="en" base_dir="%s">' % base_dir.encode('utf-8')
+  )
   if b'<outputs>' in body:
     lines.append(body)
   else:
@@ -369,8 +427,9 @@ def ParseGrdForUnittest(body, base_dir=None, predetermined_ids_file=None,
 
 def StripBlankLinesAndComments(text):
   '''Strips blank lines and comments from C source code, for unit tests.'''
-  return '\n'.join(line for line in text.splitlines()
-                        if line and not line.startswith('//'))
+  return '\n'.join(
+    line for line in text.splitlines() if line and not line.startswith('//')
+  )
 
 
 def dirname(filename):
@@ -407,29 +466,29 @@ def CanonicalLanguage(code):
     code: 'zh-CN'
   '''
   parts = _LANGUAGE_SPLIT_RE.split(code)
-  code = [ parts[0] ]
+  code = [parts[0]]
   for part in parts[1:]:
     code.append(part.upper())
   return '-'.join(code)
 
 
 _LANG_TO_CODEPAGE = {
-  'en' : 1252,
-  'fr' : 1252,
-  'it' : 1252,
-  'de' : 1252,
-  'es' : 1252,
-  'nl' : 1252,
-  'sv' : 1252,
-  'no' : 1252,
-  'da' : 1252,
-  'fi' : 1252,
-  'pt-BR' : 1252,
-  'ru' : 1251,
-  'ja' : 932,
-  'zh-TW' : 950,
-  'zh-CN' : 936,
-  'ko' : 949,
+  'en': 1252,
+  'fr': 1252,
+  'it': 1252,
+  'de': 1252,
+  'es': 1252,
+  'nl': 1252,
+  'sv': 1252,
+  'no': 1252,
+  'da': 1252,
+  'fi': 1252,
+  'pt-BR': 1252,
+  'ru': 1251,
+  'ja': 932,
+  'zh-TW': 950,
+  'zh-CN': 936,
+  'ko': 949,
 }
 
 
@@ -452,6 +511,7 @@ def LanguageToCodepage(lang):
     print("Not sure which codepage to use for %s, assuming cp1252" % lang)
     return 1252
 
+
 def NewClassInstance(class_name, class_type):
   '''Returns an instance of the class specified in classname
 
@@ -468,7 +528,7 @@ def NewClassInstance(class_name, class_type):
   if lastdot >= 0:
     module_name = class_name[0:lastdot]
     if module_name:
-      class_name = class_name[lastdot+1:]
+      class_name = class_name[lastdot + 1 :]
       module = __import__(module_name, globals(), locals(), [''])
       if hasattr(module, class_name):
         class_ = getattr(module, class_name)
@@ -497,11 +557,14 @@ def BoolToString(bool):
 verbose = False
 extra_verbose = False
 
+
 def IsVerbose():
   return verbose
 
+
 def IsExtraVerbose():
   return extra_verbose
+
 
 def ParseDefine(define):
   '''Parses a define argument and returns the name and value.
@@ -522,8 +585,10 @@ def ParseDefine(define):
   val = True
   if len(parts) > 1:
     val = parts[1]
-  if val == "1" or val == "true": val = True
-  elif val == "0" or val == "false": val = False
+  if val == "1" or val == "true":
+    val = True
+  elif val == "0" or val == "false":
+    val = False
   return (name, val)
 
 
@@ -557,8 +622,10 @@ class Substituter:
       messages: a list of node.Message objects.
       lang: The translation language to use in substitutions.
     '''
-    subs = [(str(msg.attrs['name']),
-             msg.Translate(lang, constants.DEFAULT_GENDER)) for msg in messages]
+    subs = [
+      (str(msg.attrs['name']), msg.Translate(lang, constants.DEFAULT_GENDER))
+      for msg in messages
+    ]
     self.AddSubstitutions(dict(subs))
     self.dirty_ = True
 
@@ -623,6 +690,7 @@ class Substituter:
       A tclib.Message object, with substitutions done.
     '''
     from grit import tclib  # avoid circular import
+
     counts = {}
     text = msg.GetPresentableContent()
     placeholders = []
@@ -639,8 +707,12 @@ class Substituter:
       else:
         newtext += f
     if placeholders:
-      return tclib.Message(newtext, msg.GetPlaceholders() + placeholders,
-                           msg.GetDescription(), msg.GetMeaning())
+      return tclib.Message(
+        newtext,
+        msg.GetPlaceholders() + placeholders,
+        msg.GetDescription(),
+        msg.GetMeaning(),
+      )
     else:
       return msg
 
@@ -681,8 +753,10 @@ class TempDir:
   class _AsCurrentDirClass:
     def __init__(self, path):
       self.path = path
+
     def __enter__(self):
       self.oldpath = os.getcwd()
       os.chdir(self.path)
+
     def __exit__(self, *exc_info):
       os.chdir(self.oldpath)

@@ -92,10 +92,12 @@ def Walk(include_dirs, seen, filename, parent, indent):
       if include.startswith('"'):
         include = include[1:-1]
       total_bytes += Walk(
-        include_dirs, seen, include, resolved_filename, indent + 2)
+        include_dirs, seen, include, resolved_filename, indent + 2
+      )
     elif line.startswith('import '):
       total_bytes += Walk(
-        include_dirs, seen, line.split('"')[1], resolved_filename, indent + 2)
+        include_dirs, seen, line.split('"')[1], resolved_filename, indent + 2
+      )
   return total_bytes + len("".join(lines))
 
 

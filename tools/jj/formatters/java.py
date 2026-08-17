@@ -15,15 +15,16 @@ def main():
 
   script_dir = os.path.dirname(os.path.abspath(__file__))
   tool = os.path.abspath(
-      os.path.join(
-          script_dir,
-          "..",
-          "..",
-          "..",
-          "third_party",
-          "google-java-format",
-          "google-java-format",
-      ))
+    os.path.join(
+      script_dir,
+      "..",
+      "..",
+      "..",
+      "third_party",
+      "google-java-format",
+      "google-java-format",
+    )
+  )
   if not os.path.exists(tool):
     # If the tool doesn't exist, just pass stdin directly to stdout unchanged.
     sys.stdout.buffer.write(sys.stdin.buffer.read())
@@ -40,10 +41,9 @@ def main():
 
   # Format step
   format_cmd = base_cmd + line_args + ['-']
-  proc1 = subprocess.run(format_cmd,
-                         input=input_data,
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE)
+  proc1 = subprocess.run(
+    format_cmd, input=input_data, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+  )
 
   if proc1.returncode != 0:
     # If formatting fails, print stderr and exit with code.
@@ -58,10 +58,12 @@ def main():
   # so imports outside the line ranges would otherwise be ignored.
   if line_args:
     imports_cmd = base_cmd + ['--fix-imports-only', '-']
-    proc2 = subprocess.run(imports_cmd,
-                           input=formatted_data,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.PIPE)
+    proc2 = subprocess.run(
+      imports_cmd,
+      input=formatted_data,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+    )
     if proc2.returncode != 0:
       sys.stderr.buffer.write(proc2.stderr)
       sys.exit(proc2.returncode)

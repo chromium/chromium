@@ -38,10 +38,13 @@ import sys
 # of cmd.
 if sys.platform == 'win32':
   _git = os.path.normpath(
-      os.path.join(
-          subprocess.check_output('git bash -c "cd / && pwd -W"',
-                                  shell=True).decode('utf-8').strip(),
-          'bin\\git.exe'))
+    os.path.join(
+      subprocess.check_output('git bash -c "cd / && pwd -W"', shell=True)
+      .decode('utf-8')
+      .strip(),
+      'bin\\git.exe',
+    )
+  )
 else:
   _git = 'git'
 
@@ -71,9 +74,9 @@ def MultiFileFindReplace(original, replacement, file_globs):
   if sys.platform == 'win32':
     posix_ere_original = posix_ere_original.replace('"', '""')
   out, err = subprocess.Popen(
-      [_git, 'grep', '-E', '--name-only', posix_ere_original,
-       '--'] + file_globs,
-      stdout=subprocess.PIPE).communicate()
+    [_git, 'grep', '-E', '--name-only', posix_ere_original, '--'] + file_globs,
+    stdout=subprocess.PIPE,
+  ).communicate()
   referees = out.splitlines()
 
   for referee in referees:
@@ -81,8 +84,7 @@ def MultiFileFindReplace(original, replacement, file_globs):
       original_contents = f.read()
     contents = re.sub(original, replacement, original_contents)
     if contents == original_contents:
-      raise Exception('No change in file %s although matched in grep' %
-                      referee)
+      raise Exception('No change in file %s although matched in grep' % referee)
     with open(referee, mode='w', encoding='utf-8', newline='\n') as f:
       f.write(contents)
 
@@ -90,7 +92,8 @@ def MultiFileFindReplace(original, replacement, file_globs):
 
 
 def main():
-  parser = optparse.OptionParser(usage='''
+  parser = optparse.OptionParser(
+    usage='''
 (1) %prog <options> REGEXP REPLACEMENT
 REGEXP uses full Python regexp syntax. REPLACEMENT can use back-references.
 
@@ -103,32 +106,44 @@ REGEXP uses full Python regexp syntax. REPLACEMENT can use back-references.
 ]
 As shown above, [GLOBS] can be omitted for a given search-replace list, in which
 case the corresponding search-replace will use the globs specified on the
-command line.''')
-  parser.add_option('-d', action='store_true',
-                    dest='use_default_glob',
-                    help='Perform the change on C++ and Objective-C(++) source '
-                    'and header files.')
-  parser.add_option('-f', action='store_true',
-                    dest='force_unsafe_run',
-                    help='Perform the run even if there are uncommitted local '
-                    'changes.')
-  parser.add_option('-g', action='append',
-                    type='string',
-                    default=[],
-                    metavar="<glob>",
-                    dest='user_supplied_globs',
-                    help='Perform the change on the specified glob. Can be '
-                    'specified multiple times, in which case the globs are '
-                    'unioned.')
-  parser.add_option('-i', "--input_file",
-                    type='string',
-                    action='store',
-                    default='',
-                    metavar="<file>",
-                    dest='input_filename',
-                    help='Read arguments from <file> rather than the command '
-                    'line. NOTE: To be sure of regular expressions being '
-                    'interpreted correctly, use raw strings.')
+command line.'''
+  )
+  parser.add_option(
+    '-d',
+    action='store_true',
+    dest='use_default_glob',
+    help='Perform the change on C++ and Objective-C(++) source '
+    'and header files.',
+  )
+  parser.add_option(
+    '-f',
+    action='store_true',
+    dest='force_unsafe_run',
+    help='Perform the run even if there are uncommitted local changes.',
+  )
+  parser.add_option(
+    '-g',
+    action='append',
+    type='string',
+    default=[],
+    metavar="<glob>",
+    dest='user_supplied_globs',
+    help='Perform the change on the specified glob. Can be '
+    'specified multiple times, in which case the globs are '
+    'unioned.',
+  )
+  parser.add_option(
+    '-i',
+    "--input_file",
+    type='string',
+    action='store',
+    default='',
+    metavar="<file>",
+    dest='input_filename',
+    help='Read arguments from <file> rather than the command '
+    'line. NOTE: To be sure of regular expressions being '
+    'interpreted correctly, use raw strings.',
+  )
   opts, args = parser.parse_args()
   if opts.use_default_glob and opts.user_supplied_globs:
     print('"-d" and "-g" cannot be used together')
@@ -141,8 +156,9 @@ command line.''')
     return 1
 
   if not opts.force_unsafe_run:
-    out, err = subprocess.Popen([_git, 'status', '--porcelain'],
-                                stdout=subprocess.PIPE).communicate()
+    out, err = subprocess.Popen(
+      [_git, 'status', '--porcelain'], stdout=subprocess.PIPE
+    ).communicate()
     if out:
       print('ERROR: This tool does not print any confirmation prompts,')
       print('so you should only run it with a clean staging area and cache')
@@ -172,7 +188,7 @@ command line.''')
         task.append(global_file_globs)
     f.close()
 
-  for (original, replacement, file_globs) in search_replace_tasks:
+  for original, replacement, file_globs in search_replace_tasks:
     print('File globs:  %s' % file_globs)
     print('Original:    %s' % original)
     print('Replacement: %s' % replacement)

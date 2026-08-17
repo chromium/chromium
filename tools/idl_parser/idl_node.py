@@ -67,6 +67,7 @@ class IDLAttribute(object):
   def GetClass(self):
     return self._cls
 
+
 #
 # IDLNode
 #
@@ -77,31 +78,38 @@ class IDLAttribute(object):
 #
 class IDLNode(object):
   VERBOSE_PROPS = [
-      'PROD', 'NAME', 'VALUE', 'TYPE', 'ERRORS', 'WARNINGS', 'FILENAME',
-      'LINENO', 'POSITION'
+    'PROD',
+    'NAME',
+    'VALUE',
+    'TYPE',
+    'ERRORS',
+    'WARNINGS',
+    'FILENAME',
+    'LINENO',
+    'POSITION',
   ]
 
   def __init__(self, cls, filename, lineno, pos, children=None):
     self._cls = cls
     self._properties = {
-      'ERRORS' : [],
+      'ERRORS': [],
       'WARNINGS': [],
       'FILENAME': filename,
-      'LINENO' : lineno,
-      'POSITION' : pos,
+      'LINENO': lineno,
+      'POSITION': pos,
     }
 
     self._children = []
     self._parent = None
     self.AddChildren(children)
 
-#
-#
-#
-# Return a string representation of this node
+  #
+  #
+  #
+  # Return a string representation of this node
 
   def __str__(self):
-    name = self.GetProperty('NAME','')
+    name = self.GetProperty('NAME', '')
     value = self.GetProperty('VALUE')
     if value or value == '':
       return '%s(%s) = "%s"' % (self._cls, name, value)
@@ -145,7 +153,6 @@ class IDLNode(object):
     search.depth -= 1
     search.Exit(self)
 
-
   def Tree(self, filter_nodes=None, suppress_props=VERBOSE_PROPS):
     class DumpTreeSearch(IDLSearch):
       def __init__(self, props):
@@ -171,10 +178,10 @@ class IDLNode(object):
     self.Traverse(search, filter_nodes)
     return search.out
 
-#
-# Search related functions
-#
-# Check if node is of a given type
+  #
+  # Search related functions
+  #
+  # Check if node is of a given type
 
   def IsA(self, *typelist):
     if self._cls in typelist:
@@ -212,10 +219,9 @@ class IDLNode(object):
         continue
       raise RuntimeError('Adding child of type %s.\n' % type(child).__name__)
 
-
-#
-# Property Functions
-#
+  #
+  # Property Functions
+  #
   def SetProperty(self, name, val):
     self._properties[name] = val
 

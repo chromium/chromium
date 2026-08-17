@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Unit tests for the 'grit buildinfo' tool.
-"""
+"""Unit tests for the 'grit buildinfo' tool."""
 
 import io
 import os
@@ -43,6 +42,7 @@ class BuildInfoUnittest(unittest.TestCase):
         self.print_header = False
         self.verbose = False
         self.extra_verbose = False
+
     info_object.Run(DummyOpts(), [])
     output = self.buf.getvalue().replace('\\', '/')
     self.assertTrue(output.count(r'rc_all|sv_sidebar_loading.html'))
@@ -53,7 +53,8 @@ class BuildInfoUnittest(unittest.TestCase):
     self.assertTrue(output.count(r'input|../grit/testdata/pr.bmp'))
     self.assertTrue(output.count(r'input|../grit/testdata/pr2.bmp'))
     self.assertTrue(
-        output.count(r'input|../grit/testdata/sidebar_loading.html'))
+      output.count(r'input|../grit/testdata/sidebar_loading.html')
+    )
     self.assertTrue(output.count(r'input|../grit/testdata/transl.rc'))
     self.assertTrue(output.count(r'input|../grit/testdata/transl1.rc'))
 
@@ -67,20 +68,26 @@ class BuildInfoUnittest(unittest.TestCase):
         self.print_header = False
         self.verbose = False
         self.extra_verbose = False
+
     info_object.Run(DummyOpts(), ['-o', '../grit/testdata'])
     output = self.buf.getvalue().replace('\\', '/')
     self.assertTrue(
-        output.count(r'rc_all|../grit/testdata/sv_sidebar_loading.html'))
+      output.count(r'rc_all|../grit/testdata/sv_sidebar_loading.html')
+    )
     self.assertTrue(output.count(r'rc_header|../grit/testdata/resource.h'))
     self.assertTrue(
-        output.count(r'rc_all|../grit/testdata/en_generated_resources.rc'))
+      output.count(r'rc_all|../grit/testdata/en_generated_resources.rc')
+    )
     self.assertTrue(
-        output.count(r'rc_all|../grit/testdata/sv_generated_resources.rc'))
+      output.count(r'rc_all|../grit/testdata/sv_generated_resources.rc')
+    )
     self.assertTrue(output.count(r'input|../grit/testdata/substitute.xmb'))
-    self.assertEqual(0,
-        output.count(r'rc_all|../grit/testdata/sv_welcome_toast.html'))
+    self.assertEqual(
+      0, output.count(r'rc_all|../grit/testdata/sv_welcome_toast.html')
+    )
     self.assertTrue(
-        output.count(r'rc_all|../grit/testdata/en_welcome_toast.html'))
+      output.count(r'rc_all|../grit/testdata/en_welcome_toast.html')
+    )
 
 
 if __name__ == '__main__':

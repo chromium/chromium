@@ -2,8 +2,7 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Parses the output of vmmap to query IOSurface memory usage.
-"""
+"""Parses the output of vmmap to query IOSurface memory usage."""
 
 import argparse
 import collections
@@ -13,10 +12,20 @@ import re
 import subprocess
 import sys
 
-IOSurface = collections.namedtuple('IOSurface', [
-    'start', 'end', 'virtual', 'resident', 'dirty', 'swapped', 'width',
-    'height', 'size'
-])
+IOSurface = collections.namedtuple(
+  'IOSurface',
+  [
+    'start',
+    'end',
+    'virtual',
+    'resident',
+    'dirty',
+    'swapped',
+    'width',
+    'height',
+    'size',
+  ],
+)
 
 
 def _FormatSize(n: int):
@@ -31,11 +40,19 @@ def _FormatSize(n: int):
 
 
 def IOSurfaceToString(iosurface: IOSurface):
-  return ('%x-%x\tVirtual Size: %s\tResident: %s\tDirty: %s\tSwapped: %s'
-          '\tDimensions: %dx%d') % (
-              iosurface.start, iosurface.end, _FormatSize(iosurface.virtual),
-              _FormatSize(iosurface.resident), _FormatSize(iosurface.dirty),
-              _FormatSize(iosurface.swapped), iosurface.width, iosurface.height)
+  return (
+    '%x-%x\tVirtual Size: %s\tResident: %s\tDirty: %s\tSwapped: %s'
+    '\tDimensions: %dx%d'
+  ) % (
+    iosurface.start,
+    iosurface.end,
+    _FormatSize(iosurface.virtual),
+    _FormatSize(iosurface.resident),
+    _FormatSize(iosurface.dirty),
+    _FormatSize(iosurface.swapped),
+    iosurface.width,
+    iosurface.height,
+  )
 
 
 def ExecuteVmmap(pid: int) -> str:
@@ -78,26 +95,32 @@ def ParseIOSurface(contents: str, quiet=False) -> list:
     # Has an optional suffix, in which case it's a float
     _SIZE_RE = '[0-9\.KM]*'
     _SIZE_DECIMAL = '[0-9]*'
-    _RE = ('^IOSurface *'
-           '(?P<start>%(address)s)-(?P<end>%(address)s) *'
-           '\[ *(?P<virtual>%(size)s) *(?P<resident>%(size)s) '
-           '*(?P<dirty>%(size)s) *(?P<swapped>%(size)s)\]'
-           '.*SurfaceID: 0x[0-9a-f]* *'
-           '(?P<width>%(size_decimal)s)x(?P<height>%(size_decimal)s)'
-           ' *\([^\(]*\) *'
-           '(?P<size>%(size)s)') % {
-               'address': _ADDRESS_RE,
-               'size': _SIZE_RE,
-               'size_decimal': _SIZE_DECIMAL
-           }
+    _RE = (
+      '^IOSurface *'
+      '(?P<start>%(address)s)-(?P<end>%(address)s) *'
+      '\[ *(?P<virtual>%(size)s) *(?P<resident>%(size)s) '
+      '*(?P<dirty>%(size)s) *(?P<swapped>%(size)s)\]'
+      '.*SurfaceID: 0x[0-9a-f]* *'
+      '(?P<width>%(size_decimal)s)x(?P<height>%(size_decimal)s)'
+      ' *\([^\(]*\) *'
+      '(?P<size>%(size)s)'
+    ) % {
+      'address': _ADDRESS_RE,
+      'size': _SIZE_RE,
+      'size_decimal': _SIZE_DECIMAL,
+    }
     regexp = re.compile(_RE)
-    _SAMPLE_LINE = ('IOSurface                   2a7d38000-2aae10000    '
-                    '[ 48.8M     0K     0K  48.8M] rw-/rw- SM=SHM PURGE=N'
-                    '  SurfaceID: 0x5f  2440x5196 (BGRA) 48.8M')
+    _SAMPLE_LINE = (
+      'IOSurface                   2a7d38000-2aae10000    '
+      '[ 48.8M     0K     0K  48.8M] rw-/rw- SM=SHM PURGE=N'
+      '  SurfaceID: 0x5f  2440x5196 (BGRA) 48.8M'
+    )
     assert regexp.match(_SAMPLE_LINE)
-    _SAMPLE_LINE2 = ('IOSurface                   10c2d0000-10c2d4000    '
-                     '[   16K     0K     0K     0K] rw-/rw- SM=SHM PURGE=N'
-                     '  SurfaceID: 0x22e  19x19 (BGRA) 2560')
+    _SAMPLE_LINE2 = (
+      'IOSurface                   10c2d0000-10c2d4000    '
+      '[   16K     0K     0K     0K] rw-/rw- SM=SHM PURGE=N'
+      '  SurfaceID: 0x22e  19x19 (BGRA) 2560'
+    )
     assert regexp.match(_SAMPLE_LINE2)
 
     matches = regexp.match(line)
@@ -114,20 +137,21 @@ def ParseIOSurface(contents: str, quiet=False) -> list:
       height = int(matches.group('height'))
       size = _ParseSize(matches.group('size'))
 
-      io_surface = IOSurface(start, end, virtual, resident, dirty, swapped,
-                             width, height, size)
+      io_surface = IOSurface(
+        start, end, virtual, resident, dirty, swapped, width, height, size
+      )
       io_surfaces.append(io_surface)
   return io_surfaces
 
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--pid',
-                      help='PID of the process to get the maps of',
-                      type=int)
-  parser.add_argument('--filename',
-                      help='Path to existing output of vmmap',
-                      type=str)
+  parser.add_argument(
+    '--pid', help='PID of the process to get the maps of', type=int
+  )
+  parser.add_argument(
+    '--filename', help='Path to existing output of vmmap', type=str
+  )
   args = parser.parse_args()
 
   contents = None
@@ -154,12 +178,14 @@ def main():
   for io_surface in io_surfaces:
     print('\t' + IOSurfaceToString(io_surface))
 
-  lost_to_paging = sum(io_surface.virtual - io_surface.size
-                       for io_surface in io_surfaces)
+  lost_to_paging = sum(
+    io_surface.virtual - io_surface.size for io_surface in io_surfaces
+  )
   dirty = sum(io_surface.dirty for io_surface in io_surfaces)
   swapped = sum(io_surface.swapped for io_surface in io_surfaces)
-  print('\nMemory lost due to page rounding = %s' %
-        _PrettyPrint(lost_to_paging))
+  print(
+    '\nMemory lost due to page rounding = %s' % _PrettyPrint(lost_to_paging)
+  )
   print('Dirty Memory = %s' % _PrettyPrint(dirty))
   print('Swapped Memory = %s' % _PrettyPrint(swapped))
 

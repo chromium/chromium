@@ -21,12 +21,17 @@ from json_parse import OrderedDict
 
 # idl_parser expects to be able to import certain files in its directory,
 # so let's set things up the way it wants.
-_idl_generators_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                    'ppapi', 'generators')
+_idl_generators_path = os.path.join(
+  os.path.dirname(os.path.realpath(__file__)), 'ppapi', 'generators'
+)
 # The ppapi idl_parser also needs access to ply, which exists in //third_party,
 # so also put it onto the path.
-_ply_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir,
-                         os.pardir, 'third_party')
+_ply_path = os.path.join(
+  os.path.dirname(os.path.realpath(__file__)),
+  os.pardir,
+  os.pardir,
+  'third_party',
+)
 
 sys.path.insert(0, _idl_generators_path)
 sys.path.insert(0, _ply_path)
@@ -73,23 +78,26 @@ def ProcessComment(comment):
   parameter_starts = list(re.finditer(r' *\|([^|]*)\| *: *', comment))
 
   # Get the parent comment (everything before the first parameter comment.
-  first_parameter_location = (parameter_starts[0].start()
-                              if parameter_starts else len(comment))
-  parent_comment = (add_paragraphs(
-      comment[:first_parameter_location].strip()).replace('\n', ''))
+  first_parameter_location = (
+    parameter_starts[0].start() if parameter_starts else len(comment)
+  )
+  parent_comment = add_paragraphs(
+    comment[:first_parameter_location].strip()
+  ).replace('\n', '')
 
   params = OrderedDict()
-  for (cur_param, next_param) in itertools.zip_longest(parameter_starts,
-                                                       parameter_starts[1:]):
+  for cur_param, next_param in itertools.zip_longest(
+    parameter_starts, parameter_starts[1:]
+  ):
     param_name = cur_param.group(1)
 
     # A parameter's comment goes from the end of its introduction to the
     # beginning of the next parameter's introduction.
     param_comment_start = cur_param.end()
     param_comment_end = next_param.start() if next_param else len(comment)
-    params[param_name] = (add_paragraphs(
-        comment[param_comment_start:param_comment_end].strip()).replace(
-            '\n', ''))
+    params[param_name] = add_paragraphs(
+      comment[param_comment_start:param_comment_end].strip()
+    ).replace('\n', '')
 
   return (parent_comment, params)
 
@@ -110,10 +118,11 @@ class Callspec(object):
     return_type = None
     returns_async = None
     if self.node.GetProperty('TYPEREF') not in ('void', None):
-      return_type = Typeref(self.node.GetProperty('TYPEREF'), self.node.parent,
-                            {
-                                'name': self.node.GetName()
-                            }).process(callbacks)
+      return_type = Typeref(
+        self.node.GetProperty('TYPEREF'),
+        self.node.parent,
+        {'name': self.node.GetName()},
+      ).process(callbacks)
       # The IDL parser doesn't allow specifying return types as optional.
       # Instead we infer any object return values to be optional.
       # TODO(asargent): fix the IDL parser to support optional return types.
@@ -135,15 +144,19 @@ class Callspec(object):
     # trailingCallbackIsFunctionParameter extended attribute).
     # TODO(tjudkins): Once IDL definitions are changed to describe returning
     # promises, we can condition on that instead.
-    if (use_returns_async
-        and not self.node.GetProperty('trailingCallbackIsFunctionParameter')
-        and len(parameters) > 0 and parameters[-1].get('type') == 'function'):
+    if (
+      use_returns_async
+      and not self.node.GetProperty('trailingCallbackIsFunctionParameter')
+      and len(parameters) > 0
+      and parameters[-1].get('type') == 'function'
+    ):
       returns_async = parameters.pop()
       # The returns_async field is inherently a function, so doesn't need type
       # specified on it.
       returns_async.pop('type')
       does_not_support_promises = self.node.GetProperty(
-          'doesNotSupportPromises')
+        'doesNotSupportPromises'
+      )
       if does_not_support_promises is not None:
         returns_async['does_not_support_promises'] = True
       else:
@@ -153,12 +166,14 @@ class Callspec(object):
         returns_async.pop('optional', None)
 
         assert return_type is None, (
-            'Function "%s" cannot support promises and also have a '
-            'return value.' % self.node.GetName())
+          'Function "%s" cannot support promises and also have a '
+          'return value.' % self.node.GetName()
+        )
     else:
       assert not self.node.GetProperty('doesNotSupportPromises'), (
-          'Callspec "%s" does not need to specify [doesNotSupportPromises] if '
-          'it does not have a trailing callback' % self.node.GetName())
+        'Callspec "%s" does not need to specify [doesNotSupportPromises] if '
+        'it does not have a trailing callback' % self.node.GetName()
+      )
 
     return (self.node.GetName(), parameters, return_type, returns_async)
 
@@ -173,9 +188,9 @@ class Param(object):
     self.node = param_node
 
   def process(self, callbacks):
-    return Typeref(self.node.GetProperty('TYPEREF'), self.node, {
-        'name': self.node.GetName()
-    }).process(callbacks)
+    return Typeref(
+      self.node.GetProperty('TYPEREF'), self.node, {'name': self.node.GetName()}
+    ).process(callbacks)
 
 
 class Dictionary(object):
@@ -194,9 +209,9 @@ class Dictionary(object):
         k, v = Member(node).process(callbacks)
         properties[k] = v
     result = {
-        'id': self.node.GetName(),
-        'properties': properties,
-        'type': 'object'
+      'id': self.node.GetName(),
+      'properties': properties,
+      'type': 'object',
     }
     # If this has the `ignoreAdditionalProperties` extended attribute, copy it
     # into the resulting object with a value of True.
@@ -218,17 +233,19 @@ class Member(object):
   def __init__(self, member_node):
     self.node = member_node
 
-  def process(self,
-              callbacks,
-              functions_are_properties=False,
-              use_returns_async=False):
+  def process(
+    self, callbacks, functions_are_properties=False, use_returns_async=False
+  ):
     properties = OrderedDict()
     name = self.node.GetName()
     if self.node.GetProperty('deprecated'):
       properties['deprecated'] = self.node.GetProperty('deprecated')
 
     for property_name in [
-        'nodoc', 'nocompile', 'nodart', 'serializableFunction'
+      'nodoc',
+      'nocompile',
+      'nodart',
+      'serializableFunction',
     ]:
       if self.node.GetProperty(property_name):
         properties[property_name] = True
@@ -239,15 +256,18 @@ class Member(object):
     if self.node.GetProperty('platforms'):
       properties['platforms'] = list(self.node.GetProperty('platforms'))
 
-    for option_name, sanitizer in [('maxListeners', int),
-                                   ('supportsFilters', lambda s: s == 'true'),
-                                   ('supportsListeners', lambda s: s == 'true'),
-                                   ('supportsRules', lambda s: s == 'true')]:
+    for option_name, sanitizer in [
+      ('maxListeners', int),
+      ('supportsFilters', lambda s: s == 'true'),
+      ('supportsListeners', lambda s: s == 'true'),
+      ('supportsRules', lambda s: s == 'true'),
+    ]:
       if self.node.GetProperty(option_name):
         if 'options' not in properties:
           properties['options'] = {}
         properties['options'][option_name] = sanitizer(
-            self.node.GetProperty(option_name))
+          self.node.GetProperty(option_name)
+        )
     type_override = None
     parameter_comments = OrderedDict()
     for node in self.node.GetChildren():
@@ -256,7 +276,8 @@ class Member(object):
         properties['description'] = parent_comment
       elif node.cls == 'Callspec':
         name, parameters, return_type, returns_async = Callspec(
-            node, parameter_comments).process(use_returns_async, callbacks)
+          node, parameter_comments
+        ).process(use_returns_async, callbacks)
         if functions_are_properties:
           # If functions are treated as properties (which will happen if the
           # interface is named Properties) then this isn't a function, it's a
@@ -264,14 +285,17 @@ class Member(object):
           # property type is the return type. This is an egregious hack in lieu
           # of the IDL parser supporting 'const'.
           assert parameters == [], (
-              'Property "%s" must be no-argument functions '
-              'with a non-void return type' % name)
+            'Property "%s" must be no-argument functions '
+            'with a non-void return type' % name
+          )
           assert return_type is not None, (
-              'Property "%s" must be no-argument functions '
-              'with a non-void return type' % name)
+            'Property "%s" must be no-argument functions '
+            'with a non-void return type' % name
+          )
           assert 'type' in return_type, (
-              'Property return type "%s" from "%s" must specify a '
-              'fundamental IDL type.' % (pprint.pformat(return_type), name))
+            'Property return type "%s" from "%s" must specify a '
+            'fundamental IDL type.' % (pprint.pformat(return_type), name)
+          )
           type_override = return_type['type']
         else:
           type_override = 'function'
@@ -285,8 +309,9 @@ class Member(object):
     if type_override is not None:
       properties['type'] = type_override
     else:
-      properties = Typeref(self.node.GetProperty('TYPEREF'), self.node,
-                           properties).process(callbacks)
+      properties = Typeref(
+        self.node.GetProperty('TYPEREF'), self.node, properties
+      ).process(callbacks)
     value = self.node.GetProperty('value')
     if value is not None:
       # IDL always returns values as strings, so cast to their real type.
@@ -304,9 +329,10 @@ class Member(object):
       return float(string_value)
     # Add more as necessary.
     assert json_type == 'string', (
-        'No rule exists to cast JSON Schema type "%s" to its equivalent '
-        'Python type for value "%s". You must add a new rule here.' %
-        (json_type, string_value))
+      'No rule exists to cast JSON Schema type "%s" to its equivalent '
+      'Python type for value "%s". You must add a new rule here.'
+      % (json_type, string_value)
+    )
     return string_value
 
 
@@ -368,9 +394,11 @@ class Typeref(object):
         properties['isInstanceOf'] = instance_of
     elif self.parent.GetPropertyLocal('Union'):
       properties['choices'] = [
-          Typeref(node.GetProperty('TYPEREF'), node,
-                  OrderedDict()).process(callbacks)
-          for node in self.parent.GetChildren() if node.cls == 'Option'
+        Typeref(node.GetProperty('TYPEREF'), node, OrderedDict()).process(
+          callbacks
+        )
+        for node in self.parent.GetChildren()
+        if node.cls == 'Option'
       ]
     elif self.typeref is None:
       properties['type'] = 'function'
@@ -417,10 +445,10 @@ class Enum(object):
       else:
         sys.exit('Did not process %s %s' % (node.cls, node))
     result = {
-        'id': self.node.GetName(),
-        'description': self.description,
-        'type': 'string',
-        'enum': enum
+      'id': self.node.GetName(),
+      'description': self.description,
+      'type': 'string',
+      'enum': enum,
     }
     if self.node.GetProperty('nodoc'):
       result['nodoc'] = True
@@ -435,13 +463,15 @@ class Namespace(object):
   dictionary that the JSON schema compiler expects to see.
   '''
 
-  def __init__(self,
-               namespace_node,
-               description,
-               nodoc=False,
-               platforms=None,
-               compiler_options=None,
-               deprecated=None):
+  def __init__(
+    self,
+    namespace_node,
+    description,
+    nodoc=False,
+    platforms=None,
+    compiler_options=None,
+    deprecated=None,
+  ):
     self.namespace = namespace_node
     self.nodoc = nodoc
     self.platforms = platforms
@@ -458,8 +488,9 @@ class Namespace(object):
   def process(self):
     for node in self.namespace.GetChildren():
       if node.cls == 'Dictionary' and node.GetName() == 'ManifestKeys':
-        self.manifest_keys = Dictionary(node).process(
-            self.callbacks)['properties']
+        self.manifest_keys = Dictionary(node).process(self.callbacks)[
+          'properties'
+        ]
       elif node.cls == 'Dictionary':
         self.types.append(Dictionary(node).process(self.callbacks))
       elif node.cls == 'Callback':
@@ -471,13 +502,15 @@ class Namespace(object):
         self.events = self.process_interface(node)
       elif node.cls == 'Interface' and node.GetName() == 'Properties':
         properties_as_list = self.process_interface(
-            node, functions_are_properties=True)
+          node, functions_are_properties=True
+        )
         for prop in properties_as_list:
           # Properties are given as key-value pairs, but IDL will parse
           # it as a list. Convert back to key-value pairs.
           prop_name = prop.pop('name')
           assert not prop_name in self.properties, (
-              'Property "%s" cannot be specified more than once.' % prop_name)
+            'Property "%s" cannot be specified more than once.' % prop_name
+          )
           self.properties[prop_name] = prop
       elif node.cls == 'Enum':
         self.types.append(Enum(node).process())
@@ -485,17 +518,17 @@ class Namespace(object):
         sys.exit('Did not process %s %s' % (node.cls, node))
     compiler_options = self.compiler_options or {}
     return {
-        'namespace': self.namespace.GetName(),
-        'description': self.description,
-        'nodoc': self.nodoc,
-        'types': self.types,
-        'functions': self.functions,
-        'properties': self.properties,
-        'manifest_keys': self.manifest_keys,
-        'events': self.events,
-        'platforms': self.platforms,
-        'compiler_options': compiler_options,
-        'deprecated': self.deprecated,
+      'namespace': self.namespace.GetName(),
+      'description': self.description,
+      'nodoc': self.nodoc,
+      'types': self.types,
+      'functions': self.functions,
+      'properties': self.properties,
+      'manifest_keys': self.manifest_keys,
+      'events': self.events,
+      'platforms': self.platforms,
+      'compiler_options': compiler_options,
+      'deprecated': self.deprecated,
     }
 
   def process_interface(self, node, functions_are_properties=False):
@@ -510,9 +543,10 @@ class Namespace(object):
     for member in node.GetChildren():
       if member.cls == 'Member':
         _, properties = Member(member).process(
-            self.callbacks,
-            functions_are_properties=functions_are_properties,
-            use_returns_async=use_returns_async)
+          self.callbacks,
+          functions_are_properties=functions_are_properties,
+          use_returns_async=use_returns_async,
+        )
         members.append(properties)
     return members
 
@@ -537,15 +571,19 @@ class IDLSchema(object):
       if node.cls == 'Namespace':
         if not description:
           # TODO(kalman): Go back to throwing an error here.
-          print('%s must have a namespace-level comment. This will '
-                'appear on the API summary page.' % node.GetName())
+          print(
+            '%s must have a namespace-level comment. This will '
+            'appear on the API summary page.' % node.GetName()
+          )
           description = ''
-        namespace = Namespace(node,
-                              description,
-                              nodoc,
-                              platforms=platforms,
-                              compiler_options=compiler_options or None,
-                              deprecated=deprecated)
+        namespace = Namespace(
+          node,
+          description,
+          nodoc,
+          platforms=platforms,
+          compiler_options=compiler_options or None,
+          deprecated=deprecated,
+        )
         namespaces.append(namespace.process())
         nodoc = False
         platforms = None
@@ -610,8 +648,9 @@ def Main():
     for i, char in enumerate(contents):
       if not char.isascii():
         raise Exception(
-            'Non-ascii character "%s" (ord %d) found at offset %d.' %
-            (char, ord(char), i))
+          'Non-ascii character "%s" (ord %d) found at offset %d.'
+          % (char, ord(char), i)
+        )
     idl = idl_parser.IDLParser().ParseData(contents, '<stdin>')
     schema = IDLSchema(idl).process()
     print(json.dumps(schema, indent=2))

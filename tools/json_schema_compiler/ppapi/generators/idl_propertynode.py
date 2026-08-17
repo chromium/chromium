@@ -3,11 +3,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" Hierarchical property system for IDL AST """
+"""Hierarchical property system for IDL AST"""
+
 import re
 import sys
 
 from idl_log import ErrOut, InfoOut, WarnOut
+
 
 #
 # IDLPropertyNode
@@ -48,9 +50,11 @@ class IDLPropertyNode(object):
   def GetPropertyList(self):
     return self.property_map.keys()
 
+
 #
 # Testing functions
 #
+
 
 # Build a property node, setting the properties including a name, and
 # associate the children with this new node.
@@ -69,12 +73,14 @@ def BuildNode(name, props, children=None, parents=None):
       node.AddParent(parent)
   return node
 
+
 def ExpectProp(node, name, val):
   found = node.GetProperty(name)
   if found != val:
     ErrOut.Log('Got property %s expecting %s' % (found, val))
     return 1
   return 0
+
 
 #
 # Verify property inheritance
@@ -105,7 +111,7 @@ def Main():
 
   if errors:
     ErrOut.Log('IDLNode failed with %d errors.' % errors)
-    return  -1
+    return -1
   return 0
 
 

@@ -6,8 +6,8 @@
 import re
 import sys
 
-class CSSMinimizer:
 
+class CSSMinimizer:
   INITIAL = 0
   MAYBE_COMMENT_START = 1
   INSIDE_COMMENT = 2
@@ -94,12 +94,14 @@ class CSSMinimizer:
     minimizer = CSSMinimizer()
     return minimizer.parse(content)
 
+
 def main():
   result = ''
   try:
     result = CSSMinimizer.minimize_css(sys.stdin.read())
   finally:
     print(result)
+
 
 if __name__ == '__main__':
   main()

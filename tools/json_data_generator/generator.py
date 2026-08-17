@@ -9,14 +9,18 @@ import re
 import sys
 from typing import Dict, List
 
-from json_data_generator.util import (GetDirNameFromPath, GetFileNameFromPath,
-                                      GetFileNameWithoutExtensionFromPath,
-                                      JoinPath)
+from json_data_generator.util import (
+    GetDirNameFromPath,
+    GetFileNameFromPath,
+    GetFileNameWithoutExtensionFromPath,
+    JoinPath,
+)
 
 _FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 
-_JSON5_PATH = os.path.join(_FILE_PATH, os.pardir, os.pardir, 'third_party',
-                           'pyjson5', 'src')
+_JSON5_PATH = os.path.join(
+    _FILE_PATH, os.pardir, os.pardir, 'third_party', 'pyjson5', 'src'
+)
 sys.path.insert(1, _JSON5_PATH)
 import json5
 
@@ -49,15 +53,17 @@ class JSONDataGenerator(object):
         Every json file is added to |self.model| with the original file
         name as the key.
         '''
-        data = json5.loads(json_string,
-                           object_pairs_hook=collections.OrderedDict)
+        data = json5.loads(
+            json_string, object_pairs_hook=collections.OrderedDict
+        )
         # Use the json file name as the key of the loaded json data.
         key = GetFileNameWithoutExtensionFromPath(json_path)
         self.model[key] = data
 
     def GetGlobals(self, template_path: str):
         file_name_without_ext = GetFileNameWithoutExtensionFromPath(
-            template_path)
+            template_path
+        )
         out_file_path = JoinPath(self.out_dir, file_name_without_ext)
         return {
             'model': self.model,
@@ -70,23 +76,27 @@ class JSONDataGenerator(object):
             'to_header_guard': self._ToHeaderGuard,
         }
 
-    def RenderTemplate(self,
-                       path_to_template: str,
-                       path_to_template_helper: str = None):
+    def RenderTemplate(
+        self, path_to_template: str, path_to_template_helper: str = None
+    ):
         template_dir = GetDirNameFromPath(path_to_template)
         template_name = GetFileNameFromPath(path_to_template)
         jinja_env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(template_dir),
-            keep_trailing_newline=True)
+            keep_trailing_newline=True,
+        )
         jinja_env.globals.update(self.GetGlobals(path_to_template))
         jinja_env.filters.update(self.GetFilters())
         if path_to_template_helper:
             template_helper_module = self._LoadTemplateHelper(
-                path_to_template_helper)
+                path_to_template_helper
+            )
             jinja_env.globals.update(
-                template_helper_module.get_custom_globals(self.model))
+                template_helper_module.get_custom_globals(self.model)
+            )
             jinja_env.filters.update(
-                template_helper_module.get_custom_filters(self.model))
+                template_helper_module.get_custom_filters(self.model)
+            )
         template = jinja_env.get_template(template_name)
         return template.render()
 
@@ -95,7 +105,8 @@ class JSONDataGenerator(object):
         try:
             sys.path.append(template_helper_dir)
             spec = importlib.util.spec_from_file_location(
-                path_to_template_helper, path_to_template_helper)
+                path_to_template_helper, path_to_template_helper
+            )
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             return module

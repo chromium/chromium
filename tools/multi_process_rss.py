@@ -111,7 +111,7 @@ def count_statm(pids):
       continue
     resident += statm.resident
     shared += statm.share
-    private += (statm.resident - statm.share)
+    private += statm.resident - statm.share
 
   return (resident, shared, private)
 
@@ -119,8 +119,9 @@ def count_statm(pids):
 def main(argv):
   logging_handler = logging.StreamHandler()
   logging_handler.setLevel(logging.WARNING)
-  logging_handler.setFormatter(logging.Formatter(
-      '%(asctime)s:%(name)s:%(levelname)s:%(message)s'))
+  logging_handler.setFormatter(
+    logging.Formatter('%(asctime)s:%(name)s:%(levelname)s:%(message)s')
+  )
 
   _LOGGER.setLevel(logging.WARNING)
   _LOGGER.addHandler(logging_handler)

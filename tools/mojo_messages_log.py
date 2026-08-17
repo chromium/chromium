@@ -7,8 +7,8 @@ import os
 import sys
 from collections import defaultdict
 
-DESCRIPTION = \
-'''This script takes in a Chromium trace file and extracts info about Mojo
+DESCRIPTION = '''This script takes in a Chromium trace file and extracts info
+about Mojo
 messages that were sent/received.
 
 Trace files can be created using chrome://tracing or from passing
@@ -20,8 +20,7 @@ the executable generating the trace file is built with the
 `extended_tracing_enabled = true` gn arg.
 '''
 
-PERFETTO_NOT_FOUND_HELP_TEXT = \
-'''Error: perfetto module not found.
+PERFETTO_NOT_FOUND_HELP_TEXT = '''Error: perfetto module not found.
 
 This script requires the perfetto Python module. To install it, use something
 like `pip install perfetto`, or for Googlers on gLinux use the following (in a
@@ -43,8 +42,7 @@ python3 -m venv venv
 # associated with them but I'm not sure how to access it. With the former we
 # could figure out the sender of a message, but without the message ID the
 # events aren't very helpful.
-MOJO_EVENTS_QUERY = \
-'''INCLUDE PERFETTO MODULE slices.with_context;
+MOJO_EVENTS_QUERY = '''INCLUDE PERFETTO MODULE slices.with_context;
 SELECT
   (ts - (SELECT start_ts FROM trace_bounds)) / 1000000000.0 AS ts_delta,
   process_name,
@@ -90,18 +88,20 @@ def process_mojo_msg_info(extra, spacing=2):
   # The parameters exist as a single comma separated line, so break it into
   # separate lines. Each if statement block here corresponds to a WHERE
   # condition in the SQL query.
-  if (event_category == 'mojom' and event_name.startswith("Send ")) or \
-     (event_category == 'mojom' and event_name.startswith("Call ")):
+  if (event_category == 'mojom' and event_name.startswith("Send ")) or (
+    event_category == 'mojom' and event_name.startswith("Call ")
+  ):
     if parameters is None:
       # The call has no parameters
       parameters = []
     else:
-      assert (parameters.startswith('debug.'))
+      assert parameters.startswith('debug.')
       parameters = parameters.replace('debug.', '', 1)
       parameters = parameters.split(',debug.')
 
-  elif (event_category == 'toplevel' and event_name.startswith("Receive ")) or \
-       (event_category == 'toplevel' and event_name == "Closed mojo endpoint"):
+  elif (event_category == 'toplevel' and event_name.startswith("Receive ")) or (
+    event_category == 'toplevel' and event_name == "Closed mojo endpoint"
+  ):
     if parameters is None:
       parameters = []
     elif parameters.startswith('chrome_mojo_event_info.'):
@@ -109,7 +109,7 @@ def process_mojo_msg_info(extra, spacing=2):
       parameters = parameters.split(',chrome_mojo_event_info.')
       parameters = ['chrome_mojo_event_info.' + x for x in parameters]
     else:
-      assert (parameters.startswith('args.'))
+      assert parameters.startswith('args.')
       parameters = parameters.replace('args.', '', 1)
       parameters = parameters.split(',args.')
 
@@ -158,11 +158,14 @@ except ModuleNotFoundError:
 
 def main():
   import argparse
+
   parser = argparse.ArgumentParser(
-      formatter_class=argparse.RawDescriptionHelpFormatter,
-      description=DESCRIPTION)
-  parser.add_argument('tracefile',
-                      type=lambda path: is_valid_path(parser, path))
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+    description=DESCRIPTION,
+  )
+  parser.add_argument(
+    'tracefile', type=lambda path: is_valid_path(parser, path)
+  )
   parser.add_argument('--summary', action="store_true")
   args = parser.parse_args()
 

@@ -56,10 +56,16 @@ def _process_file(file):
     if len(eof) != 0:
         raise FormatError(file, '\'IEND\' chunk not at end')
 
-    ihdr = chunks[b'IHDR'][_CHUNK_HEADER_STRUCT.size:-_CHUNK_CRC_STRUCT.size]
-    (ihdr_width, ihdr_height, ihdr_bit_depth, ihdr_color_type,
-     ihdr_compression_method, ihdr_filter_method,
-     ihdr_interlace_method) = struct.unpack('>2I5b', ihdr)
+    ihdr = chunks[b'IHDR'][_CHUNK_HEADER_STRUCT.size : -_CHUNK_CRC_STRUCT.size]
+    (
+        ihdr_width,
+        ihdr_height,
+        ihdr_bit_depth,
+        ihdr_color_type,
+        ihdr_compression_method,
+        ihdr_filter_method,
+        ihdr_interlace_method,
+    ) = struct.unpack('>2I5b', ihdr)
 
     # There are five different color types: 0, 2, 3, 4, and 6.
     if ihdr_color_type not in (0, 2, 3, 4, 6):
@@ -96,10 +102,14 @@ def _process_file(file):
         srgb_chunk_data = struct.pack('>b', 0)  # Perceptual
         srgb_chunk_length = struct.pack('>I', len(srgb_chunk_data))
         srgb_chunk_crc = struct.pack(
-            '>I', binascii.crc32(srgb_chunk_type + srgb_chunk_data))
+            '>I', binascii.crc32(srgb_chunk_type + srgb_chunk_data)
+        )
         chunks[b'sRGB'] = (
-            srgb_chunk_length + srgb_chunk_type + srgb_chunk_data +
-            srgb_chunk_crc)
+            srgb_chunk_length
+            + srgb_chunk_type
+            + srgb_chunk_data
+            + srgb_chunk_crc
+        )
 
     file.seek(len(_PNG_MAGIC), os.SEEK_SET)
 

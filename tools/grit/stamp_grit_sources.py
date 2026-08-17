@@ -16,11 +16,15 @@
 import os
 import sys
 
+
 def GritSourceFiles(grit_root_dir):
   files = []
   for root, _, filenames in os.walk(grit_root_dir):
-    grit_src = [os.path.join(root, f) for f in filenames
-                if f.endswith('.py') and not f.endswith('_unittest.py')]
+    grit_src = [
+      os.path.join(root, f)
+      for f in filenames
+      if f.endswith('.py') and not f.endswith('_unittest.py')
+    ]
     files.extend(grit_src)
   files = [f.replace('\\', '/') for f in files]
   return sorted(files)

@@ -15,12 +15,14 @@ if __name__ == '__main__':
 
 from grit.format import gen_predetermined_ids
 
+
 class GenPredeterminedIdsUnittest(unittest.TestCase):
   def testGenerateResourceMapping(self):
     original_resources = {200: 'A', 201: 'B', 300: 'C', 350: 'D', 370: 'E'}
     ordered_resource_ids = [300, 201, 370]
     mapping = gen_predetermined_ids.GenerateResourceMapping(
-        original_resources, ordered_resource_ids)
+      original_resources, ordered_resource_ids
+    )
     self.assertEqual({101: 'C', 102: 'B', 103: 'E'}, mapping)
 
   def testReadResourceIdsFromFile(self):
@@ -36,11 +38,14 @@ class GenPredeterminedIdsUnittest(unittest.TestCase):
     resources = {}
     gen_predetermined_ids.ReadResourceIdsFromFile(f, resources)
     self.assertEqual(
-        {
-            12500: 'IDS_BOOKMARKS_NO_ITEMS',
-            12501: 'IDS_BOOKMARK_BAR_IMPORT_LINK',
-            12502: 'IDS_BOOKMARK_X'
-        }, resources)
+      {
+        12500: 'IDS_BOOKMARKS_NO_ITEMS',
+        12501: 'IDS_BOOKMARK_BAR_IMPORT_LINK',
+        12502: 'IDS_BOOKMARK_X',
+      },
+      resources,
+    )
+
 
 if __name__ == '__main__':
   unittest.main()

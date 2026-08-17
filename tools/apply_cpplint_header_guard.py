@@ -20,12 +20,14 @@ import sys
 IFNDEF_MSG = '  (cpplint) #ifndef header guard has wrong style, please use'
 ENDIF_MSG_START = '  (cpplint) #endif line should be "'
 ENDIF_MSG_END = '"  [build/header_guard] [5]'
-NO_GUARD_MSG = '  (cpplint) No #ifndef header guard found, suggested CPP variable is'
+NO_GUARD_MSG = (
+  '  (cpplint) No #ifndef header guard found, suggested CPP variable is'
+)
 
 
 def process_cpplint_recommendations(cpplint_data):
   root = sys.argv[1] if len(sys.argv) > 1 else ''
-  root = "_".join(root.upper().strip(r'[/]+').split('/'))+"_"
+  root = "_".join(root.upper().strip(r'[/]+').split('/')) + "_"
   for entry in cpplint_data:
     entry = entry.split(':')
     # The length of the entry may be less than 3,
@@ -57,15 +59,16 @@ def process_cpplint_recommendations(cpplint_data):
 
       with open(header, 'rb') as f:
         content = f.readlines()
-      endif = msg[len(ENDIF_MSG_START):-len(ENDIF_MSG_END)]
+      endif = msg[len(ENDIF_MSG_START) : -len(ENDIF_MSG_END)]
       endif = endif.replace(root, '') if len(root) > 1 else endif
       content[index] = ('%s\n' % endif).encode('utf-8')
     elif msg == NO_GUARD_MSG:
       assert index == -1
       continue
     else:
-      raise Exception('Unknown cpplint message: %s for %s:%s' %
-                      (msg, header, line))
+      raise Exception(
+        'Unknown cpplint message: %s for %s:%s' % (msg, header, line)
+      )
 
     with open(header, 'wb') as f:
       f.writelines(content)

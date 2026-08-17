@@ -53,8 +53,9 @@ UPLOAD_DISABLE_TS = datetime.datetime(2014, 10, 1)
 
 # URL to POST json with results to.
 MOTHERSHIP_URL = (
-    'https://chromium-git-access.appspot.com/'
-    'git_access/api/v1/reports/access_check')
+  'https://chromium-git-access.appspot.com/'
+  'git_access/api/v1/reports/access_check'
+)
 
 # Repository to push test commits to.
 TEST_REPO_URL = 'https://chromium.googlesource.com/a/playground/access_test'
@@ -111,7 +112,8 @@ def read_git_config(prop):
   """
   try:
     proc = subprocess.Popen(
-        [GIT_EXE, 'config', prop], stdout=subprocess.PIPE, cwd=REPO_ROOT)
+      [GIT_EXE, 'config', prop], stdout=subprocess.PIPE, cwd=REPO_ROOT
+    )
     out, _ = proc.communicate()
     return out.strip().decode('utf-8')
   except OSError as exc:
@@ -156,7 +158,7 @@ def read_gclient_solution():
   try:
     env = {}
     execfile(GCLIENT_CONFIG, env, env)
-    for sol in (env.get('solutions') or []):
+    for sol in env.get('solutions') or []:
       if sol.get('name') == 'src':
         return sol.get('url'), sol.get('deps_file'), sol.get('managed')
     return None, None, None
@@ -190,8 +192,9 @@ def scan_configuration():
   # On Windows HOME should be set.
   if 'HOME' in os.environ:
     netrc_path = os.path.join(
-        os.environ['HOME'],
-        '_netrc' if sys.platform.startswith('win') else '.netrc')
+      os.environ['HOME'],
+      '_netrc' if sys.platform.startswith('win') else '.netrc',
+    )
   else:
     netrc_path = None
 
@@ -222,10 +225,12 @@ def scan_configuration():
     'git_user_email': read_git_config('user.email') if is_git else '',
     'git_user_name': read_git_config('user.name') if is_git else '',
     'git_insteadof': read_git_insteadof('chromium.googlesource.com'),
-    'chromium_netrc_email':
-        read_netrc_user(netrc_obj, 'chromium.googlesource.com'),
-    'chrome_internal_netrc_email':
-        read_netrc_user(netrc_obj, 'chrome-internal.googlesource.com'),
+    'chromium_netrc_email': read_netrc_user(
+      netrc_obj, 'chromium.googlesource.com'
+    ),
+    'chrome_internal_netrc_email': read_netrc_user(
+      netrc_obj, 'chrome-internal.googlesource.com'
+    ),
     'gclient_deps': gclient_deps,
     'gclient_managed': gclient_managed,
     'gclient_url': gclient_url,
@@ -286,10 +291,8 @@ class Runner(object):
     retcode = -1
     try:
       proc = subprocess.Popen(
-          cmd,
-          stdout=subprocess.PIPE,
-          stderr=subprocess.STDOUT,
-          cwd=self.cwd)
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, cwd=self.cwd
+      )
       out, _ = proc.communicate()
       out = out.strip()
       retcode = proc.returncode
@@ -316,12 +319,13 @@ def check_git_config(conf, report_url, verbose):
   # Don't even try to push if netrc is not configured.
   if not conf['chromium_netrc_email']:
     return upload_report(
-        conf,
-        report_url,
-        verbose,
-        push_works=False,
-        push_log='',
-        push_duration_ms=0)
+      conf,
+      report_url,
+      verbose,
+      push_works=False,
+      push_log='',
+      push_duration_ms=0,
+    )
 
   # Ref to push to, each user has its own ref.
   ref = 'refs/push-test/%s' % conf['chromium_netrc_email']
@@ -349,7 +353,8 @@ def check_git_config(conf, report_url, verbose):
         attempt += 1
         logging.info('Pushing to %s %s', TEST_REPO_URL, ref)
         ret = runner.run(
-            [GIT_EXE, 'push', TEST_REPO_URL, 'HEAD:%s' % ref, '-f'])
+          [GIT_EXE, 'push', TEST_REPO_URL, 'HEAD:%s' % ref, '-f']
+        )
         if not ret:
           push_works = True
           break
@@ -364,15 +369,17 @@ def check_git_config(conf, report_url, verbose):
     logging.warning('Git push works!')
   else:
     logging.warning(
-        'Git push doesn\'t work, which is fine if you are not a committer.')
+      'Git push doesn\'t work, which is fine if you are not a committer.'
+    )
 
   uploaded = upload_report(
-      conf,
-      report_url,
-      verbose,
-      push_works=push_works,
-      push_log='\n'.join(runner.log),
-      push_duration_ms=int((time.time() - started) * 1000))
+    conf,
+    report_url,
+    verbose,
+    push_works=push_works,
+    push_log='\n'.join(runner.log),
+    push_duration_ms=int((time.time() - started) * 1000),
+  )
   return uploaded and not flake
 
 
@@ -408,25 +415,34 @@ def check_gclient_config(conf):
   # Show smaller (additional) warning about managed workflow.
   if current['managed']:
     print('-' * 80)
-    print('You are using managed gclient mode with git, which was deprecated '
-          'on 8/22/13:')
-    print('https://groups.google.com/a/chromium.org/'
-          'forum/#!topic/chromium-dev/n9N5N3JL2_U')
-    print()
-    print('It is strongly advised to switch to unmanaged mode. For more '
-          'information about managed mode and reasons for its deprecation see:')
     print(
-        'http://www.chromium.org/developers/how-tos/get-the-code/gclient-managed-mode'
+      'You are using managed gclient mode with git, which was deprecated '
+      'on 8/22/13:'
+    )
+    print(
+      'https://groups.google.com/a/chromium.org/'
+      'forum/#!topic/chromium-dev/n9N5N3JL2_U'
     )
     print()
-    print('There\'s also a large suite of tools to assist managing git '
-          'checkouts.\nSee \'man depot_tools\' (or read '
-          'depot_tools/man/html/depot_tools.html).')
+    print(
+      'It is strongly advised to switch to unmanaged mode. For more '
+      'information about managed mode and reasons for its deprecation see:'
+    )
+    print(
+      'http://www.chromium.org/developers/how-tos/get-the-code/gclient-managed-mode'
+    )
+    print()
+    print(
+      'There\'s also a large suite of tools to assist managing git '
+      'checkouts.\nSee \'man depot_tools\' (or read '
+      'depot_tools/man/html/depot_tools.html).'
+    )
     print('-' * 80)
 
 
 def upload_report(
-    conf, report_url, verbose, push_works, push_log, push_duration_ms):
+  conf, report_url, verbose, push_works, push_log, push_duration_ms
+):
   """Posts report to the server, returns True if server accepted it.
 
   Uploads the report only if script is running in Google corp network. Otherwise
@@ -434,9 +450,8 @@ def upload_report(
   """
   report = conf.copy()
   report.update(
-      push_works=push_works,
-      push_log=push_log,
-      push_duration_ms=push_duration_ms)
+    push_works=push_works, push_log=push_log, push_duration_ms=push_duration_ms
+  )
 
   as_bytes = json.dumps({'access_check': report}, indent=2, sort_keys=True)
   if verbose:
@@ -446,15 +461,17 @@ def upload_report(
   # Do not upload it outside of corp or if server side is already disabled.
   if not is_in_google_corp() or datetime.datetime.now() > UPLOAD_DISABLE_TS:
     if verbose:
-      print (
-          'You can send the above report to chrome-git-migration@google.com '
-          'if you need help to set up you committer git account.')
+      print(
+        'You can send the above report to chrome-git-migration@google.com '
+        'if you need help to set up you committer git account.'
+      )
     return True
 
   req = urllib2.Request(
-      url=report_url,
-      data=as_bytes,
-      headers={'Content-Type': 'application/json; charset=utf-8'})
+    url=report_url,
+    data=as_bytes,
+    headers={'Content-Type': 'application/json; charset=utf-8'},
+  )
 
   attempt = 0
   success = False
@@ -462,8 +479,9 @@ def upload_report(
     attempt += 1
     try:
       logging.warning(
-          'Attempting to upload the report to %s...',
-          urlparse.urlparse(report_url).netloc)
+        'Attempting to upload the report to %s...',
+        urlparse.urlparse(report_url).netloc,
+      )
       resp = urllib2.urlopen(req, timeout=5)
       report_id = None
       try:
@@ -480,23 +498,21 @@ def upload_report(
 def main(args):
   parser = optparse.OptionParser(description=sys.modules[__name__].__doc__)
   parser.add_option(
-      '--running-as-hook',
-      action='store_true',
-      help='Set when invoked from gclient hook')
+    '--running-as-hook',
+    action='store_true',
+    help='Set when invoked from gclient hook',
+  )
   parser.add_option(
-      '--report-url',
-      default=MOTHERSHIP_URL,
-      help='URL to submit the report to')
-  parser.add_option(
-      '--verbose',
-      action='store_true',
-      help='More logging')
+    '--report-url', default=MOTHERSHIP_URL, help='URL to submit the report to'
+  )
+  parser.add_option('--verbose', action='store_true', help='More logging')
   options, args = parser.parse_args()
   if args:
     parser.error('Unknown argument %s' % args)
   logging.basicConfig(
-      format='%(message)s',
-      level=logging.INFO if options.verbose else logging.WARN)
+    format='%(message)s',
+    level=logging.INFO if options.verbose else logging.WARN,
+  )
 
   # When invoked not as a hook, always run the check.
   if not options.running_as_hook:

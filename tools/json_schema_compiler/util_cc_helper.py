@@ -14,10 +14,10 @@ class UtilCCHelper(object):
     self._type_manager = type_manager
 
   def PopulateArrayFromListFunction(self, optional):
-    """Returns the function to turn a list into a vector.
-    """
-    populate_list_fn = ('PopulateOptionalArrayFromList'
-                        if optional else 'PopulateArrayFromList')
+    """Returns the function to turn a list into a vector."""
+    populate_list_fn = (
+      'PopulateOptionalArrayFromList' if optional else 'PopulateArrayFromList'
+    )
     return ('%s::%s') % (_API_UTIL_NAMESPACE, populate_list_fn)
 
   def CreateValueFromArray(self, src):
@@ -28,10 +28,12 @@ class UtilCCHelper(object):
     return '%s::CreateValueFromArray(%s)' % (_API_UTIL_NAMESPACE, src)
 
   def AppendToContainer(self, container, value):
-    """Appends |value| to |container|.
-    """
-    return '%s::AppendToContainer(%s, %s);' % (_API_UTIL_NAMESPACE, container,
-                                               value)
+    """Appends |value| to |container|."""
+    return '%s::AppendToContainer(%s, %s);' % (
+      _API_UTIL_NAMESPACE,
+      container,
+      value,
+    )
 
   def GetIncludePath(self):
     return '#include "tools/json_schema_compiler/util.h"'

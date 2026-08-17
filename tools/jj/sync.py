@@ -14,18 +14,19 @@ from util import run_jj
 
 def _fetch(shallow: bool) -> None:
   # Specify git dir explicitly in case we're in a JJ workspace.
-  git_dir = run_jj(['git', 'root'],
-                   ignore_working_copy=True,
-                   stdout=subprocess.PIPE,
-                   text=True).stdout.strip()
+  git_dir = run_jj(
+    ['git', 'root'], ignore_working_copy=True, stdout=subprocess.PIPE, text=True
+  ).stdout.strip()
   args = ['git', f'--git-dir={git_dir}', 'fetch', 'origin', 'main']
   if shallow:
     # Do something similar to a shallow clone with depth 2
     # For rationale, see:
     # https://stackoverflow.com/questions/66431436/pushing-to-github-after-a-shallow-clone-is-horribly-slow
-    history_limit = jj_log(revisions='parents(fork_point(parents(mutable())))',
-                           templates={'commit_id': 'commit_id'},
-                           ignore_working_copy=True)
+    history_limit = jj_log(
+      revisions='parents(fork_point(parents(mutable())))',
+      templates={'commit_id': 'commit_id'},
+      ignore_working_copy=True,
+    )
     assert len(history_limit) == 1
     history_limit = history_limit[0]['commit_id']
     args.append(f'--shallow-exclude={history_limit}')
@@ -62,32 +63,36 @@ def main(args):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--verbosity',
-      help='Verbosity of logging',
-      default='INFO',
-      choices=logging.getLevelNamesMapping().keys(),
-      type=lambda x: x.upper(),
+    '--verbosity',
+    help='Verbosity of logging',
+    default='INFO',
+    choices=logging.getLevelNamesMapping().keys(),
+    type=lambda x: x.upper(),
   )
 
   parser.add_argument(
-      '-a',
-      '--all',
-      help='Rebases all local changes onto head',
-      action='store_true',
+    '-a',
+    '--all',
+    help='Rebases all local changes onto head',
+    action='store_true',
   )
 
-  parser.add_argument('-r',
-                      '--revision',
-                      metavar='REVSETS',
-                      help='Revisions to rebase onto head',
-                      type=str)
+  parser.add_argument(
+    '-r',
+    '--revision',
+    metavar='REVSETS',
+    help='Revisions to rebase onto head',
+    type=str,
+  )
 
   parser.add_argument(
-      '-s',
-      '--shallow',
-      help=
-      'Garbage-collects all commits before the common ancestor of all mutable commits',
-      action='store_true',
+    '-s',
+    '--shallow',
+    help=(
+        'Garbage-collects all commits before the common ancestor of all'
+        ' mutable commits'
+    ),
+    action='store_true',
   )
 
   main(parser.parse_args())

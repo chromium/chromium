@@ -5,9 +5,9 @@
 
 '''Unit tests for grit.tool.rc2grd'''
 
-
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -27,15 +27,20 @@ class Rc2GrdUnittest(unittest.TestCase):
     tool = rc2grd.Rc2Grd()
     original = "Hello %s, how are you? I'm $1 years old!"
     msg = tool.Placeholderize(original)
-    self.assertTrue(msg.GetPresentableContent() == "Hello TODO_0001, how are you? I'm TODO_0002 years old!")
+    self.assertTrue(
+      msg.GetPresentableContent()
+      == "Hello TODO_0001, how are you? I'm TODO_0002 years old!"
+    )
     self.assertTrue(msg.GetRealContent() == original)
 
   def testHtmlPlaceholderize(self):
     tool = rc2grd.Rc2Grd()
     original = "Hello <b>[USERNAME]</b>, how are you? I'm [AGE] years old!"
     msg = tool.Placeholderize(original)
-    self.assertTrue(msg.GetPresentableContent() ==
-                    "Hello BEGIN_BOLDX_USERNAME_XEND_BOLD, how are you? I'm X_AGE_X years old!")
+    self.assertTrue(
+      msg.GetPresentableContent()
+      == "Hello BEGIN_BOLDX_USERNAME_XEND_BOLD, how are you? I'm X_AGE_X years old!"
+    )
     self.assertTrue(msg.GetRealContent() == original)
 
   def testMenuWithoutWhitespaceRegression(self):
@@ -70,8 +75,10 @@ END
     class DummyNode(base.Node):
       def AddChild(self, item):
         self.node = item
+
       verbose = False
       extra_verbose = False
+
     tool.not_localizable_re = re.compile('')
     tool.o = DummyNode()
 
@@ -84,17 +91,20 @@ END
     self.assertTrue(tool.o.node.attrs['translateable'] == 'false')
 
   def testRoleModel(self):
-    rc_text = ('STRINGTABLE\n'
-               'BEGIN\n'
-               '  // This should not show up\n'
-               '  IDS_BINGO "Hello %s, how are you?"\n'
-               '  // The first description\n'
-               '  IDS_BONGO "Hello %s, my name is %s, and yours?"\n'
-               '  IDS_PROGRAMS_SHUTDOWN_TEXT      "Google Desktop Search needs to close the following programs:\\n\\n$1\\nThe installation will not proceed if you choose to cancel."\n'
-               'END\n')
+    rc_text = (
+      'STRINGTABLE\n'
+      'BEGIN\n'
+      '  // This should not show up\n'
+      '  IDS_BINGO "Hello %s, how are you?"\n'
+      '  // The first description\n'
+      '  IDS_BONGO "Hello %s, my name is %s, and yours?"\n'
+      '  IDS_PROGRAMS_SHUTDOWN_TEXT      "Google Desktop Search needs to close the following programs:\\n\\n$1\\nThe installation will not proceed if you choose to cancel."\n'
+      'END\n'
+    )
     tool = rc2grd.Rc2Grd()
-    tool.role_model = grd_reader.Parse(StringIO(
-      '''<?xml version="1.0" encoding="UTF-8"?>
+    tool.role_model = grd_reader.Parse(
+      StringIO(
+        '''<?xml version="1.0" encoding="UTF-8"?>
       <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
         <release seq="3">
           <messages>
@@ -112,47 +122,69 @@ The installation will not proceed if you choose to cancel.
             </message>
           </messages>
         </release>
-      </grit>'''), dir='.')
+      </grit>'''
+      ),
+      dir='.',
+    )
 
     # test rig
     class DummyOpts:
       verbose = False
       extra_verbose = False
+
     tool.o = DummyOpts()
     result = tool.Process(rc_text, '.\resource.rc')
     self.assertTrue(
-      result.children[2].children[2].children[0].attrs['desc'] == '')
+      result.children[2].children[2].children[0].attrs['desc'] == ''
+    )
     self.assertTrue(
-      result.children[2].children[2].children[0].children[0].attrs['name'] == 'USERNAME')
+      result.children[2].children[2].children[0].children[0].attrs['name']
+      == 'USERNAME'
+    )
     self.assertTrue(
-      result.children[2].children[2].children[1].attrs['desc'] == 'The other description')
+      result.children[2].children[2].children[1].attrs['desc']
+      == 'The other description'
+    )
     self.assertTrue(
-      result.children[2].children[2].children[1].attrs['meaning'] == '')
+      result.children[2].children[2].children[1].attrs['meaning'] == ''
+    )
     self.assertTrue(
-      result.children[2].children[2].children[1].children[0].attrs['name'] == 'USERNAME')
+      result.children[2].children[2].children[1].children[0].attrs['name']
+      == 'USERNAME'
+    )
     self.assertTrue(
-      result.children[2].children[2].children[1].children[1].attrs['name'] == 'ADMINNAME')
+      result.children[2].children[2].children[1].children[1].attrs['name']
+      == 'ADMINNAME'
+    )
     self.assertTrue(
-      result.children[2].children[2].children[2].children[0].attrs['name'] == 'LIST_OF_PROGRAMS')
+      result.children[2].children[2].children[2].children[0].attrs['name']
+      == 'LIST_OF_PROGRAMS'
+    )
 
   def testRunOutput(self):
     """Verify basic correct Run behavior."""
     tool = rc2grd.Rc2Grd()
+
     class DummyOpts:
       verbose = False
       extra_verbose = False
+
     with util.TempDir({}) as output_dir:
       rcfile = os.path.join(output_dir.GetPath(), 'foo.rc')
       open(rcfile, 'w').close()
       self.assertIsNone(tool.Run(DummyOpts(), [rcfile]))
-      self.assertTrue(os.path.exists(os.path.join(output_dir.GetPath(), 'foo.grd')))
+      self.assertTrue(
+        os.path.exists(os.path.join(output_dir.GetPath(), 'foo.grd'))
+      )
 
   def testMissingOutput(self):
     """Verify failure with no args."""
     tool = rc2grd.Rc2Grd()
+
     class DummyOpts:
       verbose = False
       extra_verbose = False
+
     ret = tool.Run(DummyOpts(), [])
     self.assertIsNotNone(ret)
     self.assertGreater(ret, 0)

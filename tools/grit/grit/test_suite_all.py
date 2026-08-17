@@ -5,13 +5,14 @@
 
 '''Unit test suite that collects all test cases for GRIT.'''
 
-
 import os
 import sys
 
 CUR_DIR = os.path.dirname(__file__)
 SRC_DIR = os.path.normpath(os.path.join(CUR_DIR, '..', '..', '..'))
-sys.path.insert(0, os.path.join(SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ'))
+sys.path.insert(
+  0, os.path.join(SRC_DIR, 'third_party', 'catapult', 'third_party', 'typ')
+)
 
 import typ
 
@@ -21,8 +22,11 @@ def main(args):
   # Using os.fork() within the typ test runner causes conflicts with its
   # own multiprocessing and exception handling mechanisms.
   os.environ['GRIT_DISABLE_MULTIPROCESSING'] = '1'
-  return typ.main(top_level_dirs=[os.path.join(CUR_DIR, '..')],
-                  skip=['grit.pseudo_unittest.*'])
+  return typ.main(
+    top_level_dirs=[os.path.join(CUR_DIR, '..')],
+    skip=['grit.pseudo_unittest.*'],
+  )
+
 
 if __name__ == '__main__':
   sys.exit(main(sys.argv[1:]))

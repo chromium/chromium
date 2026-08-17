@@ -5,11 +5,11 @@
 
 '''Unit tests for grit.format.gzip_string'''
 
-
 import gzip
 import io
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -19,13 +19,9 @@ from grit.format import gzip_string
 
 
 class FormatGzipStringUnittest(unittest.TestCase):
-
   def testGzipString(self):
     header_begin = b'\x1f\x8b'  # gzip first two bytes
-    input = (b'TEST STRING STARTING NOW'
-             b'continuing'
-             b'<even more>'
-             b'<finished NOW>')
+    input = b'TEST STRING STARTING NOWcontinuing<even more><finished NOW>'
 
     compressed = gzip_string.GzipString(input)
     self.assertTrue(header_begin == compressed[:2])

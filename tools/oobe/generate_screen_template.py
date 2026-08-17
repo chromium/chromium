@@ -35,8 +35,9 @@ import subprocess
 import sys
 
 # Configure logging with timestamp and log level.
-logging.basicConfig(level=logging.INFO,
-                    format="[%(asctime)s:%(levelname)s] %(message)s")
+logging.basicConfig(
+  level=logging.INFO, format="[%(asctime)s:%(levelname)s] %(message)s"
+)
 
 if __name__ == '__main__':
   # Need to add directories with other scripts to the PATH variable to be able
@@ -51,8 +52,9 @@ def GetGitRoot() -> str:
   Returns:
     An absolute path to the repository root in utf-8.
   """
-  job = subprocess.Popen(['git', 'rev-parse', '--show-toplevel'],
-                         stdout=subprocess.PIPE)
+  job = subprocess.Popen(
+    ['git', 'rev-parse', '--show-toplevel'], stdout=subprocess.PIPE
+  )
   out, err = job.communicate()
   if job.returncode != 0:
     logging.error('Error getting a git root: %s', err.decode('utf-8'))
@@ -61,14 +63,18 @@ def GetGitRoot() -> str:
 
 
 GIT_ROOT = GetGitRoot()
-SCREEN_GN_FILE_PATH = os.path.join(GIT_ROOT,
-                                   'chrome/browser/ash/login/screens/BUILD.gn')
+SCREEN_GN_FILE_PATH = os.path.join(
+  GIT_ROOT, 'chrome/browser/ash/login/screens/BUILD.gn'
+)
 HANDLER_GN_FILE_PATH = os.path.join(
-    GIT_ROOT, 'chrome/browser/ui/webui/ash/login/BUILD.gn')
+  GIT_ROOT, 'chrome/browser/ui/webui/ash/login/BUILD.gn'
+)
 WEBVIEW_TS_LIBRARY_GN_FILE_PATH = os.path.join(
-    GIT_ROOT, 'chrome/browser/resources/chromeos/login/screens/common/BUILD.gn')
+  GIT_ROOT, 'chrome/browser/resources/chromeos/login/screens/common/BUILD.gn'
+)
 WEBVIEW_GN_FILE_PATH = os.path.join(
-    GIT_ROOT, 'chrome/browser/resources/chromeos/login/BUILD.gn')
+  GIT_ROOT, 'chrome/browser/resources/chromeos/login/BUILD.gn'
+)
 
 
 def IsCamelCase(screen_name: str) -> bool:
@@ -97,8 +103,9 @@ def GetScreenNameWords(screen_name: str) -> list[str]:
     An array of strings that represent logical lexems in a given camel case
     screen name.
   """
-  return re.sub('([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1',
-                                                screen_name)).split()
+  return re.sub(
+    '([A-Z][a-z]+)', r' \1', re.sub('([A-Z]+)', r' \1', screen_name)
+  ).split()
 
 
 def FindAndReplace(name_words: list[str], file_path: str):
@@ -113,24 +120,26 @@ def FindAndReplace(name_words: list[str], file_path: str):
     file_path: An absolute path to a file.
   """
   rules = [
-      # Update placeholder class camel case name to the corresponding new
-      # screen's name. E.g. `class PlaceholderScreen`` will become
-      # `class MyNewScreen`.`
-      lambda content: re.sub('Placeholder', ''.join(name_words), content),
-
-      # Update include guards.
-      lambda content: re.sub('PLACEHOLDER', '_'.join(
-          word.upper() for word in name_words), content),
-
-      # Update include paths for both screen and handler. This simple substitute
-      # should be sufficient because new CPP files will be in the same folder
-      # with their copies.
-      lambda content: re.sub('placeholder_screen', ('_'.join(
-          word.lower() for word in name_words) + '_screen'), content),
-
-      # Update screen id inside the handler and element id inside the TS file.
-      lambda content: re.sub('placeholder', '-'.join(
-          word.lower() for word in name_words), content)
+    # Update placeholder class camel case name to the corresponding new
+    # screen's name. E.g. `class PlaceholderScreen`` will become
+    # `class MyNewScreen`.`
+    lambda content: re.sub('Placeholder', ''.join(name_words), content),
+    # Update include guards.
+    lambda content: re.sub(
+      'PLACEHOLDER', '_'.join(word.upper() for word in name_words), content
+    ),
+    # Update include paths for both screen and handler. This simple substitute
+    # should be sufficient because new CPP files will be in the same folder
+    # with their copies.
+    lambda content: re.sub(
+      'placeholder_screen',
+      ('_'.join(word.lower() for word in name_words) + '_screen'),
+      content,
+    ),
+    # Update screen id inside the handler and element id inside the TS file.
+    lambda content: re.sub(
+      'placeholder', '-'.join(word.lower() for word in name_words), content
+    ),
   ]
 
   with open(file_path, encoding='utf-8') as f:
@@ -164,8 +173,9 @@ def UpdateGnFile(name_words: list[str], gn_file_path: str):
     is_cpp_include = re.search(r'placeholder_screen.*\.h', line)
     is_ts_include = re.search(r'placeholder.ts', line)
     if is_cpp_include or is_ts_include:
-      new_file = re.sub('placeholder',
-                        '_'.join(word.lower() for word in name_words), line)
+      new_file = re.sub(
+        'placeholder', '_'.join(word.lower() for word in name_words), line
+      )
       if is_cpp_include:
         result.append(re.sub('\.h', '.cc', new_file))
       result.append(new_file)
@@ -192,9 +202,10 @@ def FindPlacholderFilesPaths(globs: list[str]) -> list[str]:
     Exception if subprocess failed.
   """
   job = subprocess.Popen(
-      ['git', 'grep', '-E', '--name-only', 'PlaceholderScreen', '--'] + globs,
-      stdout=subprocess.PIPE,
-      cwd=GIT_ROOT)
+    ['git', 'grep', '-E', '--name-only', 'PlaceholderScreen', '--'] + globs,
+    stdout=subprocess.PIPE,
+    cwd=GIT_ROOT,
+  )
   out, err = job.communicate()
   if job.returncode != 0:
     raise Exception(f'Error executing git grep: {err.decode("utf-8")}')
@@ -237,13 +248,14 @@ def GenerateCppFiles(name_words: list[str]):
   """
   cpp_globs = ['*.cc', '*.h']
   paths = FindPlacholderFilesPaths(cpp_globs)
-  assert (
-      len(paths) == 4
-  ), 'There should be only 4 CPP files to copy (screen/handler .h and .cc)'
+  assert len(paths) == 4, (
+    'There should be only 4 CPP files to copy (screen/handler .h and .cc)'
+  )
 
   for path in paths:
-    new_file_path = re.sub('placeholder',
-                           '_'.join(s.lower() for s in name_words), path)
+    new_file_path = re.sub(
+      'placeholder', '_'.join(s.lower() for s in name_words), path
+    )
 
     CopyPlaceholderFile(path, new_file_path)
 
@@ -272,15 +284,16 @@ def GenerateWebviewFiles(name_words: list[str]):
   webview_globs = ['*.ts']
   paths = FindPlacholderFilesPaths(webview_globs)
 
-  assert (len(paths) == 1), 'Only 1 TS file should be found'
+  assert len(paths) == 1, 'Only 1 TS file should be found'
 
   # HTML file doesn't contain any words that could be used verify it's
   # correctness, so we can generate it's path from the corresponding TS file.
   paths.append(re.sub(r'\.ts', '.html', paths[0]))
 
   for path in paths:
-    new_file_path = re.sub('placeholder',
-                           '_'.join(s.lower() for s in name_words), path)
+    new_file_path = re.sub(
+      'placeholder', '_'.join(s.lower() for s in name_words), path
+    )
 
     CopyPlaceholderFile(path, new_file_path)
 
@@ -309,15 +322,18 @@ def GenerateScreen(name_words: list[str], no_webview: bool):
 
 def main():
   parser = argparse.ArgumentParser(
-      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+  )
   parser.add_argument(
-      'name',
-      help="""Name of a new screen. Expected to be in the camel case
-      (e.g. MarketingOptIn). No "Screen" suffix is needed.""")
+    'name',
+    help="""Name of a new screen. Expected to be in the camel case
+      (e.g. MarketingOptIn). No "Screen" suffix is needed.""",
+  )
   parser.add_argument(
-      '--no-webview',
-      help='Indicates whether user wants to skip creation of TS/HTML files.',
-      action='store_true')
+    '--no-webview',
+    help='Indicates whether user wants to skip creation of TS/HTML files.',
+    action='store_true',
+  )
 
   options = parser.parse_args()
   if not IsCamelCase(options.name):
@@ -327,7 +343,8 @@ def main():
   screen_name_words = GetScreenNameWords(options.name)
   if screen_name_words[-1].lower() == 'screen':
     logging.error(
-        '"Screen" suffix is not needed, it will be added automatically')
+      '"Screen" suffix is not needed, it will be added automatically'
+    )
     parser.print_help()
     return 1
 

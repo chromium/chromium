@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''A baseclass for simple gatherers based on regular expressions.
-'''
-
+'''A baseclass for simple gatherers based on regular expressions.'''
 
 from grit.gather import skeleton_gatherer
 
@@ -15,16 +13,16 @@ class RegexpGatherer(skeleton_gatherer.SkeletonGatherer):
   '''
 
   DescriptionMapping_ = {
-      'CAPTION' : 'This is a caption for a dialog',
-      'CHECKBOX' : 'This is a label for a checkbox',
-      'CONTROL': 'This is the text on a control',
-      'CTEXT': 'This is a label for a control',
-      'DEFPUSHBUTTON': 'This is a button definition',
-      'GROUPBOX': 'This is a label for a grouping',
-      'ICON': 'This is a label for an icon',
-      'LTEXT': 'This is the text for a label',
-      'PUSHBUTTON': 'This is the text for a button',
-    }
+    'CAPTION': 'This is a caption for a dialog',
+    'CHECKBOX': 'This is a label for a checkbox',
+    'CONTROL': 'This is the text on a control',
+    'CTEXT': 'This is a label for a control',
+    'DEFPUSHBUTTON': 'This is a button definition',
+    'GROUPBOX': 'This is a label for a grouping',
+    'ICON': 'This is a label for an icon',
+    'LTEXT': 'This is the text for a label',
+    'PUSHBUTTON': 'This is the text for a button',
+  }
 
   # Contextualization elements. Used for adding additional information
   # to the message bundle description string from RC files.
@@ -36,7 +34,7 @@ class RegexpGatherer(skeleton_gatherer.SkeletonGatherer):
     if self.single_message_:
       self.single_message_.SetDescription(description)
     else:
-      if (self.translatable_chunk_):
+      if self.translatable_chunk_:
         message = self.skeleton_[len(self.skeleton_) - 1].GetMessage()
         message.SetDescription(description)
 
@@ -64,8 +62,11 @@ class RegexpGatherer(skeleton_gatherer.SkeletonGatherer):
           self._AddTextualId(groups[group])
         elif group.startswith('text') and groups[group]:
           self._AddNontranslateableChunk(
-            text_to_parse[chunk_start : match.start(group)])
-          chunk_start = match.end(group)  # Next chunk will start after the match
+            text_to_parse[chunk_start : match.start(group)]
+          )
+          chunk_start = match.end(
+            group
+          )  # Next chunk will start after the match
           self._AddTranslateableChunk(groups[group])
         elif group.startswith('type') and groups[group]:
           # Add the description to the skeleton_ list. This works because

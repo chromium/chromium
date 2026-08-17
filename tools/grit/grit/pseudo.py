@@ -34,23 +34,23 @@ PSEUDO_LANG = 'x-P-pseudo'
 # TODO(joi) For now using P instead of Qof, because of some bugs it used.  Find
 # a better solution, i.e. one that introduces a non-latin1 character into the
 # pseudotranslation.
-#_QOF = u'\u05e7'
+# _QOF = u'\u05e7'
 _QOF = 'P'
 
 # How we map each vowel.
 _VOWELS = {
-  'a' : '\u00e5',  # a with ring
-  'e' : '\u00e9',  # e acute
-  'i' : '\u00ef',  # i diaresis
-  'o' : '\u00f4',  # o circumflex
-  'u' : '\u00fc',  # u diaresis
-  'y' : '\u00fd',  # y acute
-  'A' : '\u00c5',  # A with ring
-  'E' : '\u00c9',  # E acute
-  'I' : '\u00cf',  # I diaresis
-  'O' : '\u00d4',  # O circumflex
-  'U' : '\u00dc',  # U diaresis
-  'Y' : '\u00dd',  # Y acute
+  'a': '\u00e5',  # a with ring
+  'e': '\u00e9',  # e acute
+  'i': '\u00ef',  # i diaresis
+  'o': '\u00f4',  # o circumflex
+  'u': '\u00fc',  # u diaresis
+  'y': '\u00fd',  # y acute
+  'A': '\u00c5',  # A with ring
+  'E': '\u00c9',  # E acute
+  'I': '\u00cf',  # I diaresis
+  'O': '\u00d4',  # O circumflex
+  'U': '\u00dc',  # U diaresis
+  'Y': '\u00dd',  # Y acute
 }
 _VOWELS_KEYS = set(_VOWELS.keys())
 
@@ -64,11 +64,12 @@ _PSUB_RE = re.compile("(%s)" % '|'.join(_VOWELS_KEYS | {'P'}))
 _existing_translations = {}
 
 
-def MapVowels(str, also_p = False):
+def MapVowels(str, also_p=False):
   '''Returns a copy of 'str' where characters that exist as keys in _VOWELS
   have been replaced with the corresponding value.  If also_p is true, this
   function will also change capital P characters into a Hebrew character Qof.
   '''
+
   def Repl(match):
     if match.group() == 'p':
       if also_p:
@@ -77,6 +78,7 @@ def MapVowels(str, also_p = False):
         return 'p'
     else:
       return _VOWELS[match.group()]
+
   return _PSUB_RE.sub(Repl, str)
 
 

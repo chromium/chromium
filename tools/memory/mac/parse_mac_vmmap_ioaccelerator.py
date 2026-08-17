@@ -39,8 +39,9 @@ def parse_vmmap_lines(lines):
   """
   sizes = []
   io_accelerator_re = re.compile(
-      r'\[\s*([0-9.a-zA-Z]+)\s+([0-9.a-zA-Z]+)\s+[0-9.a-zA-Z]+'
-      r'\s+([0-9.a-zA-Z]+)\]')
+    r'\[\s*([0-9.a-zA-Z]+)\s+([0-9.a-zA-Z]+)\s+[0-9.a-zA-Z]+'
+    r'\s+([0-9.a-zA-Z]+)\]'
+  )
   for line in lines:
     if 'IOAccelerator' in line:
       bracket_match = io_accelerator_re.search(line)
@@ -56,19 +57,22 @@ def parse_vmmap_lines(lines):
 
 
 def main():
-  logging.basicConfig(level=logging.INFO,
-                      stream=sys.stderr,
-                      format='%(message)s')
+  logging.basicConfig(
+    level=logging.INFO, stream=sys.stderr, format='%(message)s'
+  )
   parser = argparse.ArgumentParser(
-      description=
-      'Parse Mac vmmap output to group and count IOAccelerator allocations.')
+    description=(
+        'Parse Mac vmmap output to group and count IOAccelerator'
+        ' allocations.'
+    )
+  )
   group = parser.add_mutually_exclusive_group(required=True)
-  group.add_argument('--pid',
-                     type=int,
-                     help='PID of the process to call vmmap on.')
-  group.add_argument('--file',
-                     type=str,
-                     help='Path to a cached vmmap output file.')
+  group.add_argument(
+    '--pid', type=int, help='PID of the process to call vmmap on.'
+  )
+  group.add_argument(
+    '--file', type=str, help='Path to a cached vmmap output file.'
+  )
 
   args = parser.parse_args()
 
@@ -82,23 +86,26 @@ def main():
   elif args.pid:
     try:
       logging.info(f'Running vmmap on PID {args.pid}...')
-      output = subprocess.check_output(['vmmap', str(args.pid)],
-                                       stderr=subprocess.STDOUT)
+      output = subprocess.check_output(
+        ['vmmap', str(args.pid)], stderr=subprocess.STDOUT
+      )
       lines = output.decode('utf-8', errors='replace').splitlines()
     except subprocess.CalledProcessError as e:
-      logging.error('Error running vmmap: %s',
-                    e.output.decode('utf-8', errors='replace'))
+      logging.error(
+        'Error running vmmap: %s', e.output.decode('utf-8', errors='replace')
+      )
       sys.exit(1)
 
   sizes = parse_vmmap_lines(lines)
 
   if not sizes:
     logging.error(
-        'No active (resident or swapped) IOAccelerator regions found.')
+      'No active (resident or swapped) IOAccelerator regions found.'
+    )
     return
 
   print(f'Total IOAccelerator entries: {len(sizes)}')
-  print(f'Total memory size: {sum(sizes) / (1024*1024):.2f} MB')
+  print(f'Total memory size: {sum(sizes) / (1024 * 1024):.2f} MB')
   print('\nHistogram of total memory size per bucket:')
 
   counter = Counter(sizes)
@@ -112,8 +119,10 @@ def main():
 
     bar_len = int(60 * bucket_mem / max_bucket_mem) if max_bucket_mem > 0 else 0
     bar = '*' * bar_len
-    print(f'{size_kb:8.1f} KB | {count:4d} entries | {bucket_mem_mb:7.2f} MB '
-          f'| {bar}')
+    print(
+      f'{size_kb:8.1f} KB | {count:4d} entries | {bucket_mem_mb:7.2f} MB '
+      f'| {bar}'
+    )
 
 
 if __name__ == '__main__':

@@ -10,15 +10,19 @@ import sys
 import unittest
 
 if __name__ == '__main__':
-  logging.basicConfig(format='%(levelname)s: %(message)s',
-                      level=logging.WARNING)
+    logging.basicConfig(
+        format='%(levelname)s: %(message)s', level=logging.WARNING
+    )
 
-  suite = unittest.TestSuite()
-  loader = unittest.TestLoader()
-  suite.addTests(
-      loader.discover(start_dir=os.path.dirname(__file__), pattern='*_test.py'))
-  res = unittest.TextTestRunner(verbosity=2).run(suite)
-  if res.wasSuccessful():
-    sys.exit(0)
-  else:
-    sys.exit(1)
+    suite = unittest.TestSuite()
+    loader = unittest.TestLoader()
+    suite.addTests(
+        loader.discover(
+            start_dir=os.path.dirname(__file__), pattern='*_test.py'
+        )
+    )
+    res = unittest.TextTestRunner(verbosity=2).run(suite)
+    if res.wasSuccessful():
+        sys.exit(0)
+    else:
+        sys.exit(1)

@@ -17,7 +17,8 @@ import sys
 import time
 
 _SRC_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.path.pardir))
+  os.path.join(os.path.dirname(__file__), os.path.pardir)
+)
 sys.path.append(os.path.join(_SRC_ROOT, 'third_party', 'depot_tools'))
 import download_from_google_storage
 
@@ -29,8 +30,9 @@ import gn_helpers
 _PGO_DIR = os.path.join(_SRC_ROOT, 'chrome', 'build')
 
 # Absolute path to android-specific pgo files.
-_ANDROID_ARM64_PROFILE_DIR = os.path.join(_SRC_ROOT, 'chrome', 'android',
-                                          'orderfiles', 'arm64')
+_ANDROID_ARM64_PROFILE_DIR = os.path.join(
+  _SRC_ROOT, 'chrome', 'android', 'orderfiles', 'arm64'
+)
 
 # Absolute path to the directory that stores pgo profiles.
 _PGO_PROFILE_DIR = os.path.join(_PGO_DIR, 'pgo_profiles')
@@ -76,8 +78,10 @@ def _remove_unused_profiles(current_profile_name):
     p = os.path.join(_PGO_PROFILE_DIR, f)
     age = time.time() - os.path.getatime(p)
     if age > expiration_duration:
-      print('Removing profile %s as it hasn\'t been used in the past %d days' %
-            (p, days))
+      print(
+        'Removing profile %s as it hasn\'t been used in the past %d days'
+        % (p, days)
+      )
       os.remove(p)
 
 
@@ -100,6 +104,7 @@ def _update(args):
   with open(lock_file_path, 'a') as lock_file:
     try:
       import fcntl
+
       fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
     except OSError as e:
       raise RuntimeError(f'Failed to lock "{lock_file_path}": {e}') from e
@@ -114,7 +119,8 @@ def _update(args):
         return
 
       gsutil = download_from_google_storage.Gsutil(
-          download_from_google_storage.GSUTIL_DEFAULT_PATH)
+        download_from_google_storage.GSUTIL_DEFAULT_PATH
+      )
       gs_path = 'gs://' + args.gs_url_base.strip('/') + '/' + profile_name
       code = gsutil.call('cp', gs_path, profile_path)
       if code != 0:
@@ -124,6 +130,7 @@ def _update(args):
     finally:
       try:
         import fcntl
+
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
       except Exception:
         pass
@@ -144,29 +151,31 @@ def _get_profile_path(args):
     # By default on android for arm64 we use the PGO profile that is generated
     # at the same commit as the orderfile. See https://crbug.com/372686816 for
     # more context on why this is necessary.
-    profile_path = os.path.join(_ANDROID_ARM64_PROFILE_DIR,
-                                'pgo_profile.arm64.profdata')
+    profile_path = os.path.join(
+      _ANDROID_ARM64_PROFILE_DIR, 'pgo_profile.arm64.profdata'
+    )
   else:
-    profile_path = os.path.join(_PGO_PROFILE_DIR,
-                                _read_profile_name(args.target))
+    profile_path = os.path.join(
+      _PGO_PROFILE_DIR, _read_profile_name(args.target)
+    )
   if not os.path.isfile(profile_path):
     raise RuntimeError(
-        'requested profile "%s" doesn\'t exist, please make sure '
-        '"checkout_pgo_profiles" is set to True in the "custom_vars" section '
-        'of your .gclient file, e.g.: \n'
-        'solutions = [ \n'
-        '  { \n'
-        '    "name": "src", \n'
-        '    # ...  \n'
-        '    "custom_vars": { \n'
-        '      "checkout_pgo_profiles": True, \n'
-        '    }, \n'
-        '  }, \n'
-        '], \n'
-        'and then run "gclient runhooks" to download it. You can also simply '
-        'disable the PGO optimizations by setting |chrome_pgo_phase = 0| in '
-        'your GN arguments.'%
-        profile_path)
+      'requested profile "%s" doesn\'t exist, please make sure '
+      '"checkout_pgo_profiles" is set to True in the "custom_vars" section '
+      'of your .gclient file, e.g.: \n'
+      'solutions = [ \n'
+      '  { \n'
+      '    "name": "src", \n'
+      '    # ...  \n'
+      '    "custom_vars": { \n'
+      '      "checkout_pgo_profiles": True, \n'
+      '    }, \n'
+      '  }, \n'
+      '], \n'
+      'and then run "gclient runhooks" to download it. You can also simply '
+      'disable the PGO optimizations by setting |chrome_pgo_phase = 0| in '
+      'your GN arguments.' % profile_path
+    )
 
   _mark_profile_as_used(profile_path)
   print(gn_helpers.ToGNString(profile_path.rstrip(os.sep)))
@@ -174,32 +183,37 @@ def _get_profile_path(args):
 
 def main():
   parser = argparse.ArgumentParser(
-      description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+  )
   parser.add_argument(
-      '--target',
-      required=True,
-      choices=[
-          'win-arm64',
-          'win32',
-          'win64',
-          'mac',
-          'mac-arm',
-          'linux',
-          'android-arm32',
-          'android-arm64',
-          'android-desktop-arm64',
-          'android-desktop-x64',
-      ],
-      help='Identifier of a specific target platform + architecture.')
-  parser.add_argument('--override-filename',
-                      help='The filename to prefer instead of the sha1 file.')
+    '--target',
+    required=True,
+    choices=[
+      'win-arm64',
+      'win32',
+      'win64',
+      'mac',
+      'mac-arm',
+      'linux',
+      'android-arm32',
+      'android-arm64',
+      'android-desktop-arm64',
+      'android-desktop-x64',
+    ],
+    help='Identifier of a specific target platform + architecture.',
+  )
+  parser.add_argument(
+    '--override-filename',
+    help='The filename to prefer instead of the sha1 file.',
+  )
   subparsers = parser.add_subparsers()
 
   parser_update = subparsers.add_parser('update')
   parser_update.add_argument(
-      '--gs-url-base',
-      required=True,
-      help='The base GS URL to search for the profile.')
+    '--gs-url-base',
+    required=True,
+    help='The base GS URL to search for the profile.',
+  )
   parser_update.set_defaults(func=_update)
 
   parser_get_profile_path = subparsers.add_parser('get_profile_path')

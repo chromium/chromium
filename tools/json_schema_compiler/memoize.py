@@ -4,8 +4,7 @@
 
 
 def memoize(fn):
-  '''Decorates |fn| to memoize.
-  '''
+  '''Decorates |fn| to memoize.'''
   memory = {}
 
   def impl(*args, **optargs):

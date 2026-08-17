@@ -35,20 +35,24 @@ def _RunGitCommand(options, cmd_args, pipe_output=False):
   if not pipe_output:
     return subprocess.check_output(cmd, encoding='utf-8')
   else:
-    return subprocess.Popen(cmd, encoding='utf-8',
-                            stdout=subprocess.PIPE).stdout
+    return subprocess.Popen(
+      cmd, encoding='utf-8', stdout=subprocess.PIPE
+    ).stdout
 
 
 def _ValidAuthor(author):
-  return author.endswith(
-      ('@chromium.org', '@google.com')) and 'roller' not in author
+  return (
+    author.endswith(('@chromium.org', '@google.com')) and 'roller' not in author
+  )
 
 
 # Returns additions/deletions by a commit to a directory (and its descendants).
 def getEditsForDirectory(commit, directory):
   additions = deletions = 0
-  for commit_directory, (directory_additions, directory_deletions) \
-      in commit.dirs.items():
+  for commit_directory, (
+    directory_additions,
+    directory_deletions,
+  ) in commit.dirs.items():
     # check if commit_directory is same as or a descendant of directory
     if isSubDirectory(directory, commit_directory):
       additions += directory_additions
@@ -69,13 +73,17 @@ def _PropagateCommit(options, commit):
       directory = PurePath(directory).parent
   # loop over them and calculate the edits per directory
   for directory in touched_dirs:
-    author_commits, author_additions, author_deletions = \
-        DIRECTORY_AUTHORS[directory].get(commit.author, (0,0,0))
-    directory_additions, directory_deletions = \
-        getEditsForDirectory(commit, directory)
-    DIRECTORY_AUTHORS[directory][commit.author] = \
-        (author_commits + 1, author_additions + directory_additions,
-         author_deletions + directory_deletions)
+    author_commits, author_additions, author_deletions = DIRECTORY_AUTHORS[
+      directory
+    ].get(commit.author, (0, 0, 0))
+    directory_additions, directory_deletions = getEditsForDirectory(
+      commit, directory
+    )
+    DIRECTORY_AUTHORS[directory][commit.author] = (
+      author_commits + 1,
+      author_additions + directory_additions,
+      author_deletions + directory_deletions,
+    )
 
 
 # Checks if child_directory is same as or below parent_directory. For some
@@ -95,9 +103,10 @@ def _GetGitLogCmd(options):
   format_string = "%h,%ae,%cI"
   cmd_args = [
     'log',
-    '--since', date_limit.isoformat(),
+    '--since',
+    date_limit.isoformat(),
     '--numstat',
-    '--pretty=format:%s'%format_string,
+    '--pretty=format:%s' % format_string,
   ]
   # has to be last arg
   if options.subdirectory:
@@ -107,8 +116,9 @@ def _GetGitLogCmd(options):
 
 def _ParseCommitLine(line):
   commit_hash, author, commit_date = line.split(",")
-  return Commit(hash=commit_hash, author=author, commit_date=commit_date,
-                dirs={})
+  return Commit(
+    hash=commit_hash, author=author, commit_date=commit_date, dirs={}
+  )
 
 
 def _ParseFileStatsLine(current_commit, line):
@@ -132,29 +142,32 @@ def _ParseFileStatsLine(current_commit, line):
     dir_path = re.sub(r'\{[^=]* => ([^\}]*)\}', r'\1', dir_path)
     # remove possibly empty path parts.
     dir_path = dir_path.replace('//', '/')
-  commit_additions, commit_deletions = \
-      current_commit.dirs.get(dir_path, (0,0))
+  commit_additions, commit_deletions = current_commit.dirs.get(dir_path, (0, 0))
   current_commit.dirs[dir_path] = (
-      additions + commit_additions, deletions + commit_deletions)
+    additions + commit_additions,
+    deletions + commit_deletions,
+  )
   return True
 
 
 def processAllCommits(options):
   if not options.subdirectory and options.days_ago > 100:
-    print('git log for your query might take > 5 minutes, limit by a '
-          'subdirectory or reduce the number of days of history to low double '
-          'digits to make this faster. There is no progress indicator, it is '
-          'all waiting for single git log to finish.')
-  output_pipe = _RunGitCommand(options,
-                               _GetGitLogCmd(options),
-                               pipe_output=True)
+    print(
+      'git log for your query might take > 5 minutes, limit by a '
+      'subdirectory or reduce the number of days of history to low double '
+      'digits to make this faster. There is no progress indicator, it is '
+      'all waiting for single git log to finish.'
+    )
+  output_pipe = _RunGitCommand(
+    options, _GetGitLogCmd(options), pipe_output=True
+  )
   current_commit = None
   for line in iter(output_pipe.readline, ''):
     line = line.rstrip('\n')
     if current_commit is None:
       current_commit = _ParseCommitLine(line)
     else:
-      if line == '': # all commit details read
+      if line == '':  # all commit details read
         if _ValidAuthor(current_commit.author):
           _PropagateCommit(options, current_commit)
         current_commit = None
@@ -172,7 +185,8 @@ def processAllCommits(options):
 
 def _CountCommits(directory):
   return sum(
-      [count for (count, _a, _d) in DIRECTORY_AUTHORS[directory].values()])
+    [count for (count, _a, _d) in DIRECTORY_AUTHORS[directory].values()]
+  )
 
 
 def _GetOwnerLevel(options, author, directory):
@@ -226,7 +240,7 @@ def _ParseOwnersFile(options, filepath):
         noparent = True
       index = line.find('@chromium.org')
       if index > -1:
-        owners.add(line[:index + len('@chromium.org')])
+        owners.add(line[: index + len('@chromium.org')])
   return owners, noparent
 
 
@@ -248,26 +262,33 @@ def computeSuggestions(options):
     if _CountCommits(directory) < options.dir_commit_limit:
       continue
     # skip suggestions for directories outside the passed in directory
-    if (options.subdirectory
-        and not isSubDirectory(options.subdirectory, directory)):
+    if options.subdirectory and not isSubDirectory(
+      options.subdirectory, directory
+    ):
       continue
     # sort authors by descending number of commits
     sorted_authors = sorted(authors.items(), key=lambda entry: -entry[1][0])
     # keep only authors above the limit
-    suggestions = [(a,c) for a,c in sorted_authors if \
-                   a not in options.ignore_authors \
-                   and c[0] >= options.author_cl_limit]
+    suggestions = [
+      (a, c)
+      for a, c in sorted_authors
+      if a not in options.ignore_authors and c[0] >= options.author_cl_limit
+    ]
     directory_suggestions.append((directory, suggestions))
   return directory_suggestions
 
 
 def _PrintSettings(options):
-  print('Showing directories with at least ({}) commits in the last ({}) '
-        'days.'.format(options.dir_commit_limit, options.days_ago))
-  print('Showing top ({}) committers who have commited at least ({}) commits '
-        'to the directory in the last ({}) days.'.format(
-            options.max_suggestions, options.author_cl_limit,
-            options.days_ago))
+  print(
+    'Showing directories with at least ({}) commits in the last ({}) '
+    'days.'.format(options.dir_commit_limit, options.days_ago)
+  )
+  print(
+    'Showing top ({}) committers who have commited at least ({}) commits '
+    'to the directory in the last ({}) days.'.format(
+      options.max_suggestions, options.author_cl_limit, options.days_ago
+    )
+  )
   print('(owners+N) represents distance through OWNERS files for said owner\n')
 
 
@@ -275,18 +296,24 @@ def printSuggestions(options, directory_suggestions):
   print('\nCommit stats:')
   _PrintSettings(options)
   for directory, suggestions in directory_suggestions:
-    print('{}: {} commits in the last {} days'.format(
-        directory, _CountCommits(directory), options.days_ago))
+    print(
+      '{}: {} commits in the last {} days'.format(
+        directory, _CountCommits(directory), options.days_ago
+      )
+    )
     non_owner_suggestions = 0
     for author, (commit_count, additions, deletions) in suggestions:
       owner_level = _GetOwnerLevel(options, author, directory)
       if owner_level > -1:
         owner_string = ' (owner+{})'.format(owner_level)
       else:
-        non_owner_suggestions +=1
+        non_owner_suggestions += 1
         owner_string = ''
-      print('{}{}, commits: {}, additions:{}, deletions: {}'.format(
-          author, owner_string, commit_count, additions, deletions))
+      print(
+        '{}{}, commits: {}, additions:{}, deletions: {}'.format(
+          author, owner_string, commit_count, additions, deletions
+        )
+      )
       if non_owner_suggestions >= options.max_suggestions:
         break
     print()
@@ -306,8 +333,9 @@ def _IsCacheValid(options, metadata):
     return False
   if days_ago != options.days_ago:
     return False
-  if (cached_subdirectory is not None
-      and not isSubDirectory(cached_subdirectory, options.subdirectory)):
+  if cached_subdirectory is not None and not isSubDirectory(
+    cached_subdirectory, options.subdirectory
+  ):
     return False
   return True
 
@@ -332,6 +360,7 @@ def maybeRestoreProcessedCommits(options):
       print('Cache is stale or invalid, must rerun `git log`')
       return False
 
+
 def do(options):
   if options.skip_cache or not maybeRestoreProcessedCommits(options):
     processAllCommits(options)
@@ -342,29 +371,55 @@ def do(options):
 
 def main():
   parser = argparse.ArgumentParser(
-      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter
+  )
   parser.add_argument('repo_path')
-  parser.add_argument('--days-ago', type=int,
-                      help='Number of days of history to search through.',
-                      default=365, metavar='DAYS_AGO')
-  parser.add_argument('--subdirectory',
-                      help='Limit suggestions to this subdirectory', default='')
-  parser.add_argument('--ignore-authors',
-                      help='Ignore this comma separated list of authors')
-  parser.add_argument('--max-suggestions', type=int, help='Maximum number of '
-                      'suggested authors per directory.', default=5)
-  parser.add_argument('--author-cl-limit', type=int, help='Do not suggest '
-                      'authors who have commited less than this to the '
-                      'directory in the last DAYS_AGO days.', default=10)
-  parser.add_argument('--dir-commit-limit', type=int, help='Skip directories '
-                      'with less than this number of commits in the last '
-                      'DAYS_AGO days.', default=100)
-  parser.add_argument('--skip-cache', action='store_true',
-                      help='Do not read from cache.', default=False)
+  parser.add_argument(
+    '--days-ago',
+    type=int,
+    help='Number of days of history to search through.',
+    default=365,
+    metavar='DAYS_AGO',
+  )
+  parser.add_argument(
+    '--subdirectory', help='Limit suggestions to this subdirectory', default=''
+  )
+  parser.add_argument(
+    '--ignore-authors', help='Ignore this comma separated list of authors'
+  )
+  parser.add_argument(
+    '--max-suggestions',
+    type=int,
+    help='Maximum number of suggested authors per directory.',
+    default=5,
+  )
+  parser.add_argument(
+    '--author-cl-limit',
+    type=int,
+    help='Do not suggest '
+    'authors who have commited less than this to the '
+    'directory in the last DAYS_AGO days.',
+    default=10,
+  )
+  parser.add_argument(
+    '--dir-commit-limit',
+    type=int,
+    help='Skip directories '
+    'with less than this number of commits in the last '
+    'DAYS_AGO days.',
+    default=100,
+  )
+  parser.add_argument(
+    '--skip-cache',
+    action='store_true',
+    help='Do not read from cache.',
+    default=False,
+  )
   options = parser.parse_args()
   if options.ignore_authors:
     options.ignore_authors = set(
-        map(str.strip, options.ignore_authors.split(',')))
+      map(str.strip, options.ignore_authors.split(','))
+    )
   else:
     options.ignore_authors = set()
   do(options)

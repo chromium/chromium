@@ -14,14 +14,16 @@ from typing import Callable, DefaultDict, Tuple
 class SpdxWriter:
   """Accepts package metadata and outputs licensing info in SPDX format."""
 
-  def __init__(self,
-               root: str,
-               root_package_name: str,
-               root_license: str,
-               link_prefix: str,
-               doc_name: str = None,
-               doc_namespace: str = None,
-               read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8')):
+  def __init__(
+    self,
+    root: str,
+    root_package_name: str,
+    root_license: str,
+    link_prefix: str,
+    doc_name: str = None,
+    doc_namespace: str = None,
+    read_file=lambda x: pathlib.Path(x).read_text(encoding='utf-8'),
+  ):
     self.root_package = _Package(root_package_name, root_license)
     # Use dict to ensure no duplicate pkgs.
     # In >=py3.7 dicts are ordered by insertion.
@@ -47,8 +49,14 @@ class SpdxWriter:
 
   def write(self) -> str:
     """Writes out SPDX in JSON format."""
-    writer = _SPDXJSONWriter(self.root, self.root_package, self.link_prefix,
-                             self.doc_name, self.doc_namespace, self.read_file)
+    writer = _SPDXJSONWriter(
+      self.root,
+      self.root_package,
+      self.link_prefix,
+      self.doc_name,
+      self.doc_namespace,
+      self.read_file,
+    )
 
     for pkg in self.packages:
       writer.add_package(pkg)
@@ -59,6 +67,7 @@ class SpdxWriter:
 @dataclasses.dataclass(frozen=True)
 class _Package:
   """Stores needed data for a package to output SPDX."""
+
   name: str
   file: str
 
@@ -81,10 +90,10 @@ def _get_spdx_path(root: str, license_file_path: str) -> str:
   abs_root = os.path.abspath(root)
   if not abs_path.startswith(abs_root):
     raise ValueError(f'spdx root not valid. {abs_path} is not under {abs_root}')
-  return abs_path[len(abs_root):]
+  return abs_path[len(abs_root) :]
 
 
-class _SPDXJSONWriter():
+class _SPDXJSONWriter:
   """Writes SPDX data in JSON format.
 
   Produce SPDX JSON output adherring to this schema:
@@ -93,9 +102,15 @@ class _SPDXJSONWriter():
     https://github.com/spdx/spdx-spec/blob/development/v2.2.2/examples/SPDXJSONExample-v2.2.spdx.json
   """
 
-  def __init__(self, root: str, root_package: _Package, link_prefix: str,
-               doc_name: str, doc_namespace: str,
-               read_file: Callable[[str], str]):
+  def __init__(
+    self,
+    root: str,
+    root_package: _Package,
+    link_prefix: str,
+    doc_name: str,
+    doc_namespace: str,
+    read_file: Callable[[str], str],
+  ):
     self.root = root
     self.root_package_id = root_package.package_spdx_id
     self.link_prefix = link_prefix
@@ -103,19 +118,19 @@ class _SPDXJSONWriter():
     self.read_file = read_file
 
     self.content = {
-        # Actually 2.2.2, but only SPDX-N.M is needed.
-        'spdxVersion': 'SPDX-2.2',
-        'SPDXID': 'SPDXRef-DOCUMENT',
-        'name': doc_name,
-        'documentNamespace': doc_namespace,
-        'creationInfo': {
-            'creators': [f'Tool: {os.path.basename(__file__)}'],
-        },
-        'dataLicense': 'CC0-1.0',
-        'documentDescribes': [self.root_package_id],
-        'packages': [],
-        'hasExtractedLicensingInfos': [],
-        'relationships': [],
+      # Actually 2.2.2, but only SPDX-N.M is needed.
+      'spdxVersion': 'SPDX-2.2',
+      'SPDXID': 'SPDXRef-DOCUMENT',
+      'name': doc_name,
+      'documentNamespace': doc_namespace,
+      'creationInfo': {
+        'creators': [f'Tool: {os.path.basename(__file__)}'],
+      },
+      'dataLicense': 'CC0-1.0',
+      'documentDescribes': [self.root_package_id],
+      'packages': [],
+      'hasExtractedLicensingInfos': [],
+      'relationships': [],
     }
 
     # Used to dedup license files based on file path.
@@ -170,8 +185,9 @@ class _SPDXJSONWriter():
     if existing:
       return existing, False
 
-    license_id = self._get_dedup_id(pkg.license_spdx_id,
-                                    self.existing_license_ids)
+    license_id = self._get_dedup_id(
+      pkg.license_spdx_id, self.existing_license_ids
+    )
     self.existing_license_files[pkg.file] = license_id
     return license_id, True
 
@@ -180,18 +196,22 @@ class _SPDXJSONWriter():
     pkg_id = self._get_package_id(pkg)
     license_id, need_to_add_license = self._get_license_id(pkg)
 
-    self.content['packages'].append({
+    self.content['packages'].append(
+      {
         'SPDXID': pkg_id,
         'name': pkg.name,
         'licenseConcluded': license_id,
-    })
+      }
+    )
 
     if pkg.package_spdx_id != self.root_package_id:
-      self.content['relationships'].append({
+      self.content['relationships'].append(
+        {
           'spdxElementId': self.root_package_id,
           'relationshipType': 'CONTAINS',
           'relatedSpdxElement': pkg_id,
-      })
+        }
+      )
 
     if need_to_add_license:
       self._add_license_file(pkg, license_id)
@@ -200,14 +220,15 @@ class _SPDXJSONWriter():
     """Writes a license to the file (raw license text)."""
     spdx_path = _get_spdx_path(self.root, pkg.file)
     url = f'{self.link_prefix}{spdx_path.replace(os.sep, "/")}'
-    self.content['hasExtractedLicensingInfos'].append({
-        'name':
-        f'{pkg.name}',
-        'licenseId':
-        license_id,
-        'extractedText':
-        self.read_file(pkg.file),
-        'crossRefs': [{
+    self.content['hasExtractedLicensingInfos'].append(
+      {
+        'name': f'{pkg.name}',
+        'licenseId': license_id,
+        'extractedText': self.read_file(pkg.file),
+        'crossRefs': [
+          {
             'url': url,
-        }],
-    })
+          }
+        ],
+      }
+    )

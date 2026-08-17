@@ -40,25 +40,31 @@ class LicensesIntegrationTest(unittest.TestCase):
     shutil.copytree(_THIS_DIR / 'mock_root', cls._mock_root_dir)
 
     # Initialize git repository for public mock_root
-    subprocess.check_call(['git', 'init'],
-                          cwd=str(cls._mock_root_dir),
-                          stdout=subprocess.DEVNULL)
     subprocess.check_call(
-        ['git', 'remote', 'add', 'origin', 'https://chromium.googlesource.com'],
-        cwd=str(cls._mock_root_dir),
-        stdout=subprocess.DEVNULL)
+      ['git', 'init'], cwd=str(cls._mock_root_dir), stdout=subprocess.DEVNULL
+    )
+    subprocess.check_call(
+      ['git', 'remote', 'add', 'origin', 'https://chromium.googlesource.com'],
+      cwd=str(cls._mock_root_dir),
+      stdout=subprocess.DEVNULL,
+    )
 
     # Initialize git repository for internal clank folder
     clank_dir = cls._mock_root_dir / 'clank'
-    subprocess.check_call(['git', 'init'],
-                          cwd=str(clank_dir),
-                          stdout=subprocess.DEVNULL)
-    subprocess.check_call([
-        'git', 'remote', 'add', 'origin',
-        'https://chrome-internal.googlesource.com/clank/internal/apps.git'
-    ],
-                          cwd=str(clank_dir),
-                          stdout=subprocess.DEVNULL)
+    subprocess.check_call(
+      ['git', 'init'], cwd=str(clank_dir), stdout=subprocess.DEVNULL
+    )
+    subprocess.check_call(
+      [
+        'git',
+        'remote',
+        'add',
+        'origin',
+        'https://chrome-internal.googlesource.com/clank/internal/apps.git',
+      ],
+      cwd=str(clank_dir),
+      stdout=subprocess.DEVNULL,
+    )
 
     for root, _, files in os.walk(cls._mock_root_dir):
       for f in files:
@@ -70,11 +76,9 @@ class LicensesIntegrationTest(unittest.TestCase):
   def tearDownClass(cls):
     shutil.rmtree(cls._temp_dir)
 
-  def _run_test(self,
-                command,
-                gn_target=None,
-                use_depfile=False,
-                extra_args=None):
+  def _run_test(
+    self, command, gn_target=None, use_depfile=False, extra_args=None
+  ):
     """Runs a test and compares the output to a golden file."""
     if command in ('scan', 'list'):
       out_path = None
@@ -85,22 +89,22 @@ class LicensesIntegrationTest(unittest.TestCase):
     env = os.environ.copy()
 
     args = [
-        sys.executable,
-        str(_LICENSES_PY),
-        command,
-        '--scan-root',
-        str(self._mock_root_dir),
-        '--extra-third-party-dirs=["test_dir_invalid_metadata","extra_dir"]',
+      sys.executable,
+      str(_LICENSES_PY),
+      command,
+      '--scan-root',
+      str(self._mock_root_dir),
+      '--extra-third-party-dirs=["test_dir_invalid_metadata","extra_dir"]',
     ]
 
     if gn_target:
       # The gn binary is faked out.
       env['LICENSES_GN_PATH'] = str(_THIS_DIR / 'mock_gn.py')
       args += [
-          '--gn-target',
-          gn_target,
-          '--gn-out-dir',
-          str(self._temp_dir / 'out'),
+        '--gn-target',
+        gn_target,
+        '--gn-out-dir',
+        str(self._temp_dir / 'out'),
       ]
 
     if use_depfile:
@@ -114,11 +118,9 @@ class LicensesIntegrationTest(unittest.TestCase):
     if out_path:
       args.append(str(out_path))
 
-    result = subprocess.run(args,
-                            check=False,
-                            env=env,
-                            capture_output=True,
-                            encoding='utf-8')
+    result = subprocess.run(
+      args, check=False, env=env, capture_output=True, encoding='utf-8'
+    )
     output = f"""\
 exit code: {result.returncode}
 stdout:
@@ -168,14 +170,15 @@ stderr:
 
   def test_license_file_txt(self):
     self._run_test(
-        'license_file',
-        extra_args=['--format=spdx', '--spdx-root',
-                    str(self._mock_root_dir)])
+      'license_file',
+      extra_args=['--format=spdx', '--spdx-root', str(self._mock_root_dir)],
+    )
 
   def test_license_file_spdx(self):
     self._run_test(
-        'license_file',
-        extra_args=['--format=spdx', '--spdx-root=' + str(self._mock_root_dir)])
+      'license_file',
+      extra_args=['--format=spdx', '--spdx-root=' + str(self._mock_root_dir)],
+    )
 
   def test_license_file_csv(self):
     self._run_test('license_file', extra_args=['--format=csv'])

@@ -15,13 +15,12 @@ Change-Id: bar
 Bug: 123'''
 
 TRAILERS_DICT = {
-    'Change-Id': ['foo', 'bar'],
-    'Bug': ['123'],
+  'Change-Id': ['foo', 'bar'],
+  'Bug': ['123'],
 }
 
 
 class TestUtil(unittest.TestCase):
-
   def test_split_description_interprets_single_line_trailer_as_desc(self):
     want_desc = 'WIP: blah'
     desc, trailers = util.split_description(want_desc)
@@ -40,13 +39,15 @@ class TestUtil(unittest.TestCase):
 
   def test_split_description_text_and_trailers(self):
     desc, trailers = util.split_description(
-        f'{TWO_PARAGRAPHS}\n\n{TRAILERS_TEXT}')
+      f'{TWO_PARAGRAPHS}\n\n{TRAILERS_TEXT}'
+    )
     self.assertEqual(desc, TWO_PARAGRAPHS)
     self.assertEqual(trailers, TRAILERS_DICT)
 
   def test_split_description_mixed_trailers(self):
     desc, trailers = util.split_description(
-        f'{TWO_PARAGRAPHS}\n\nparagraph3\n{TRAILERS_TEXT}\nnon_trailer')
+      f'{TWO_PARAGRAPHS}\n\nparagraph3\n{TRAILERS_TEXT}\nnon_trailer'
+    )
     self.assertEqual(desc, TWO_PARAGRAPHS)
     self.assertEqual(trailers, TRAILERS_DICT)
 

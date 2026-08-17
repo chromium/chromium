@@ -95,10 +95,21 @@ import sys
 
 from yes_no import YesNo
 
-SUFFIXES = ['c', 'cc', 'cpp', 'h', 'mm', 'rc', 'rc.version', 'ico', 'def',
-            'release']
-SOURCE_PATTERN = re.compile(r'^\s+[\'"].*\.(%s)[\'"],$' %
-                            '|'.join([re.escape(x) for x in SUFFIXES]))
+SUFFIXES = [
+  'c',
+  'cc',
+  'cpp',
+  'h',
+  'mm',
+  'rc',
+  'rc.version',
+  'ico',
+  'def',
+  'release',
+]
+SOURCE_PATTERN = re.compile(
+  r'^\s+[\'"].*\.(%s)[\'"],$' % '|'.join([re.escape(x) for x in SUFFIXES])
+)
 COMMENT_PATTERN = re.compile(r'^\s+#')
 
 
@@ -172,9 +183,14 @@ def ProcessFile(filename, should_confirm):
 
 def main():
   parser = optparse.OptionParser(usage='%prog filename1 filename2 ...')
-  parser.add_option('-f', '--force', action='store_false', default=True,
-                    dest='should_confirm',
-                    help='Turn off confirmation prompt.')
+  parser.add_option(
+    '-f',
+    '--force',
+    action='store_false',
+    default=True,
+    dest='should_confirm',
+    help='Turn off confirmation prompt.',
+  )
   opts, filenames = parser.parse_args()
 
   if len(filenames) < 1:

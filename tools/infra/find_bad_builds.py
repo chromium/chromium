@@ -37,8 +37,9 @@ import git_utils
 
 def _find_builds(predicate):
   """Finds buildbucket builds which satisfy the given predicate."""
-  logging.debug('Query buildbucket with predicate: %s',
-                json.dumps(predicate, indent=2))
+  logging.debug(
+    'Query buildbucket with predicate: %s', json.dumps(predicate, indent=2)
+  )
   pred_json = json.dumps(predicate)
 
   bb_args = ['bb', 'ls', '-json', '-predicate', pred_json]
@@ -114,10 +115,11 @@ def _fetch_build_revision(bid):
   bid = bid.strip()
   try:
     output = subprocess.check_output(
-        ['bb', 'log', bid, 'bot_update', 'json.output'],
-        # If the build is missing, it dumps to stderr. We handle that, so don't
-        # print any errors.
-        stderr=subprocess.STDOUT)
+      ['bb', 'log', bid, 'bot_update', 'json.output'],
+      # If the build is missing, it dumps to stderr. We handle that, so don't
+      # print any errors.
+      stderr=subprocess.STDOUT,
+    )
   except subprocess.CalledProcessError:
     logging.warning('build %s is missing bot_update. Ignoring...' % bid)
     return None
@@ -130,7 +132,8 @@ def _fetch_build_revision(bid):
 
   src_manifest = contents['manifest']['src']
   assert src_manifest['repository'] == (
-      'https://chromium.googlesource.com/chromium/src.git')
+    'https://chromium.googlesource.com/chromium/src.git'
+  )
   rev = src_manifest['revision']
   logging.debug('build %s has revision %s', bid, rev)
   return rev
@@ -145,57 +148,69 @@ def _parse_args(raw_args):
   """Parses command line arguments."""
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument(
-      'good_revision',
-      help=
-      "A known good revision. Builds which start at revisions after this will"
-      " not be canceled. If this revision is the revert of an earlier revision,"
-      " that revision will be set to bad_revision. If this isn't a revert,"
-      " bad_revision is required.")
+    'good_revision',
+    help=(
+      'A known good revision. Builds which start at revisions after this will '
+      'not be canceled. If this revision is the revert of an earlier '
+      'revision, that revision will be set to bad_revision. If this isn\'t a '
+      'revert, bad_revision is required.'
+    ),
+  )
   parser.add_argument(
-      'bad_revision',
-      help=
-      "A known bad revision. This is usually automatically calculated from the"
-      " good revision (assuming it's a revert).")
+    'bad_revision',
+    help=(
+      'A known bad revision. This is usually automatically calculated from the '
+      'good revision (assuming it\'s a revert).'
+    ),
+  )
   parser.add_argument(
-      'max_running_time',
-      help='Only output builds which have been running for less time than this'
-      ' (in minutes).',
-      type=float)
+    'max_running_time',
+    help='Only output builds which have been running for less time than this'
+    ' (in minutes).',
+    type=float,
+  )
   parser.add_argument(
-      '--show_all_builds',
-      '-s',
-      action='store_true',
-      help='Show all builds, along with information for each build. Useful when'
-      ' manually inspecting the output of this tool.')
+    '--show_all_builds',
+    '-s',
+    action='store_true',
+    help='Show all builds, along with information for each build. Useful when'
+    ' manually inspecting the output of this tool.',
+  )
   # FIXME: This is imperfect in some scenarios. For example, if we want to
   # cancel all linux builds, we'd have to manually specify ~15 different
   # builders (at least). We should potentially allow for filtering based on
   # the swarming task dimensions.
   parser.add_argument(
-      '--builder',
-      '-b',
-      action='append',
-      help='Which builder should we find builds for. If not set, finds all'
-      ' builds in the given project/bucket. May be used multiple times. If'
-      ' multiple builders are specified, this script has to fetch all builds'
-      ' in the bucket, which is a bit slow. Specifying one builder is fast,'
-      ' however.')
-  parser.add_argument('--project',
-                      default='chromium',
-                      help='The buildbucket project to search for builds in.')
-  parser.add_argument('--bucket',
-                      default='try',
-                      help='The buildbucket bucket to search for builds in')
+    '--builder',
+    '-b',
+    action='append',
+    help='Which builder should we find builds for. If not set, finds all'
+    ' builds in the given project/bucket. May be used multiple times. If'
+    ' multiple builders are specified, this script has to fetch all builds'
+    ' in the bucket, which is a bit slow. Specifying one builder is fast,'
+    ' however.',
+  )
   parser.add_argument(
-      '--verbose',
-      '-v',
-      action='count',
-      default=0,
-      help=
-      'Use for more logging. Can use multiple times to increase logging level.')
+    '--project',
+    default='chromium',
+    help='The buildbucket project to search for builds in.',
+  )
+  parser.add_argument(
+    '--bucket',
+    default='try',
+    help='The buildbucket bucket to search for builds in',
+  )
+  parser.add_argument(
+    '--verbose',
+    '-v',
+    action='count',
+    default=0,
+    help='Use for more logging. Can use multiple times to increase logging level.',
+  )
   args = parser.parse_args(raw_args)
   args.max_running_time = datetime.timedelta(minutes=args.max_running_time)
   return args
+
 
 # FIXME: Add support for time based cancellations. This could be used for
 # issues which don't show up via chromium/src commits.
@@ -222,7 +237,8 @@ def main(raw_args, print_fn):
   # we'd want to do that exists.
 
   revisions_in_scope = set(
-      git_utils.get_revisions_between(bad_commit, good_commit) + [bad_commit])
+    git_utils.get_revisions_between(bad_commit, good_commit) + [bad_commit]
+  )
   revert_date = git_utils.get_commit_date(good_commit)
   orig_date = git_utils.get_commit_date(bad_commit)
   # Add 20 minutes to account for git replication delay. Sometimes gerrit
@@ -235,16 +251,16 @@ def main(raw_args, print_fn):
   logging.debug('Bad Commit: %s\t%s', bad_commit, orig_date)
 
   predicate = {
-      'builder': {
-          'bucket': args.bucket,
-          'project': args.project,
-      },
-      'createTime': {
-          # We already assumed UTC, so add it in the format buildbucket expects.
-          'startTime': orig_date.strftime('%Y-%m-%dT%H:%M:%S') + '+00:00',
-          'endTime': revert_date.strftime('%Y-%m-%dT%H:%M:%S') + '+00:00',
-      },
-      'status': 'STARTED',
+    'builder': {
+      'bucket': args.bucket,
+      'project': args.project,
+    },
+    'createTime': {
+      # We already assumed UTC, so add it in the format buildbucket expects.
+      'startTime': orig_date.strftime('%Y-%m-%dT%H:%M:%S') + '+00:00',
+      'endTime': revert_date.strftime('%Y-%m-%dT%H:%M:%S') + '+00:00',
+    },
+    'status': 'STARTED',
   }
 
   # If we have one builder, buildbucket can filter when we do the RPC. If we
@@ -262,10 +278,14 @@ def main(raw_args, print_fn):
   for rev in sorted(revisions_in_scope):
     logging.debug('  * %s', rev)
   results = p.map(
-      functools.partial(_assess_build,
-                        max_running_time=args.max_running_time,
-                        revisions_in_scope=revisions_in_scope,
-                        builders=args.builder), build_jsons)
+    functools.partial(
+      _assess_build,
+      max_running_time=args.max_running_time,
+      revisions_in_scope=revisions_in_scope,
+      builders=args.builder,
+    ),
+    build_jsons,
+  )
   if args.show_all_builds:
     rows = []
     header = ('Build ID', 'is_bad', 'running time (minutes)')
@@ -276,8 +296,10 @@ def main(raw_args, print_fn):
       running_time = _get_build_running_time(build).total_seconds() / 60.0
       rows.append((bid, is_bad_build, int(running_time)))
     for row in [header] + sorted(rows, key=lambda r: r[0]):
-      print_fn("%s | %s | %s" % tuple(
-          (str(itm).ljust(column_lens[i]) for i, itm in enumerate(row))))
+      print_fn(
+        "%s | %s | %s"
+        % tuple((str(itm).ljust(column_lens[i]) for i, itm in enumerate(row)))
+      )
       if row == header:
         print_fn('-' * sum(column_lens))
   else:

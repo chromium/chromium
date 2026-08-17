@@ -57,9 +57,9 @@ class NamespaceResolver(object):
         filepath = os.path.join(path, filename)
         if os.path.exists(os.path.join(self._root, filepath)):
           schema = SchemaLoader(self._root).LoadSchema(filepath)[0]
-          return Model().AddNamespace(schema,
-                                      filepath,
-                                      environment=cpp_namespace_environment)
+          return Model().AddNamespace(
+            schema, filepath, environment=cpp_namespace_environment
+          )
     return None
 
   def ResolveType(self, full_name, default_namespace):

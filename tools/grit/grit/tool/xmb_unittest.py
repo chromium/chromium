@@ -5,10 +5,10 @@
 
 '''Unit tests for 'grit xmb' tool.'''
 
-
 import io
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -25,7 +25,8 @@ from grit.tool import xmb
 class XmbUnittest(unittest.TestCase):
   def setUp(self):
     self.res_tree = grd_reader.Parse(
-        io.BytesIO('''<?xml version="1.0" encoding="UTF-8"?>
+      io.BytesIO(
+        '''<?xml version="1.0" encoding="UTF-8"?>
       <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
         <release seq="3">
           <includes>
@@ -42,14 +43,17 @@ class XmbUnittest(unittest.TestCase):
               Yibbee
             </message>
             <message name="IDS_UNICODE">
-              Ol\xe1, \u4eca\u65e5\u306f! \U0001F60A
+              Ol\xe1, \u4eca\u65e5\u306f! \U0001f60a
             </message>
           </messages>
           <structures>
             <structure type="dialog" name="IDD_SPACYBOX" encoding="utf-16" file="grit/testdata/klonk.rc" />
           </structures>
         </release>
-      </grit>'''.encode()), '.')
+      </grit>'''.encode()
+      ),
+      '.',
+    )
     self.xmb_file = io.BytesIO()
 
   def testNormalOutput(self):
@@ -57,11 +61,12 @@ class XmbUnittest(unittest.TestCase):
     output = self.xmb_file.getvalue().decode('utf-8')
     self.assertTrue(output.count('Joi'))
     self.assertTrue(output.count('Yibbee'))
-    self.assertTrue(output.count('Ol\xe1, \u4eca\u65e5\u306f! \U0001F60A'))
+    self.assertTrue(output.count('Ol\xe1, \u4eca\u65e5\u306f! \U0001f60a'))
 
   def testLimitList(self):
     limit_file = StringIO(
-      'IDS_BONGOBINGO\nIDS_DOES_NOT_EXIST\nIDS_ALSO_DOES_NOT_EXIST')
+      'IDS_BONGOBINGO\nIDS_DOES_NOT_EXIST\nIDS_ALSO_DOES_NOT_EXIST'
+    )
     xmb.OutputXmb().Process(self.res_tree, self.xmb_file, limit_file, False)
     output = self.xmb_file.getvalue().decode('utf-8')
     self.assertTrue(output.count('Yibbee'))
@@ -79,8 +84,10 @@ class XmbUnittest(unittest.TestCase):
         </release>
       </grit>''')
     tool = xmb.OutputXmb()
+
     class DummyOpts:
       extra_verbose = False
+
     tool.o = DummyOpts()
     tool.Process(self.res_tree, self.xmb_file, limit_file, True, dir='.')
     output = self.xmb_file.getvalue().decode('utf-8')
@@ -93,8 +100,9 @@ class XmbUnittest(unittest.TestCase):
     self.res_tree.RunGatherers()
     xmb.OutputXmb().Process(self.res_tree, self.xmb_file)
     output = self.xmb_file.getvalue().decode('utf-8')
-    self.assertTrue(output.count(
-        '<ph name="GOOD_1"><ex>excellent</ex>[GOOD]</ph>'))
+    self.assertTrue(
+      output.count('<ph name="GOOD_1"><ex>excellent</ex>[GOOD]</ph>')
+    )
 
   def testLeadingTrailingWhitespace(self):
     # Regression test for problems outputting messages with leading or
@@ -119,13 +127,14 @@ class XmbUnittest(unittest.TestCase):
             <message name="ID_FOO">''')
     # UTF-8 corresponding to to \U00110000
     # http://apps.timwhitlock.info/unicode/inspect/hex/110000
-    bad_xml.write(b'\xF4\x90\x80\x80')
+    bad_xml.write(b'\xf4\x90\x80\x80')
     bad_xml.write(b'''</message>
           </messages>
         </release>
       </grit>''')
     bad_xml.seek(0)
     self.assertRaises(xml.sax.SAXParseException, grd_reader.Parse, bad_xml, '.')
+
 
 if __name__ == '__main__':
   unittest.main()

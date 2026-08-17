@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" Lint for IDL """
+"""Lint for IDL"""
 
 import os
 import sys
@@ -22,6 +22,7 @@ Option('wname', 'Disable warning for inconsistent interface name.')
 Option('wnone', 'Disable all warnings.')
 Option('wparam', 'Disable warning for missing [in|out|inout] on param.')
 Option('wpass', 'Disable warning for mixed passByValue and returnByValue.')
+
 
 #
 # IDLLinter
@@ -88,9 +89,10 @@ class IDLLinter(IDLVisitor):
           warnings += 1
 
     if node.IsA('Param') and not node.GetProperty('wparam'):
-      found = False;
+      found = False
       for form in ['in', 'inout', 'out']:
-        if node.GetProperty(form): found = True
+        if node.GetProperty(form):
+          found = True
       if not found:
         node.Warning('Missing argument type: [in|out|inout]')
         warnings += 1
@@ -103,11 +105,13 @@ class IDLLinter(IDLVisitor):
       warnings += child
     return warnings
 
+
 def Lint(ast):
   options = ['wcomment', 'wenum', 'winline', 'wparam', 'wpass', 'wname']
   wnone = GetOption('wnone')
   for opt in options:
-    if wnone or GetOption(opt): ast.SetProperty(opt, True)
+    if wnone or GetOption(opt):
+      ast.SetProperty(opt, True)
 
   skipList = []
   for filenode in ast.GetListOf('File'):

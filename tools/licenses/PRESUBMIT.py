@@ -12,10 +12,11 @@ def CheckPythonTests(input_api, output_api):
   local_path = input_api.PresubmitLocalPath()
   path = lambda *p: input_api.os_path.join(local_path, *p)
   unit_tests = [
-      path('spdx_writer_test.py'),
-      path('tests', 'integration_test.py'),
+    path('spdx_writer_test.py'),
+    path('tests', 'integration_test.py'),
   ]
   return input_api.RunTests(
-      input_api.canned_checks.GetUnitTests(input_api,
-                                           output_api,
-                                           unit_tests=unit_tests))
+    input_api.canned_checks.GetUnitTests(
+      input_api, output_api, unit_tests=unit_tests
+    )
+  )

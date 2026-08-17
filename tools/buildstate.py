@@ -28,6 +28,7 @@ def main():
     # psutil handles short-lived ninja descendants poorly on Windows (it misses
     # most of them) so use wmic instead.
     import subprocess
+
     cmd = 'wmic process get Caption,ParentProcessId,ProcessId,CommandLine'
     lines = subprocess.check_output(cmd, universal_newlines=True).splitlines()
 
@@ -51,6 +52,7 @@ def main():
   else:
     # Portable process-collection code, but works badly on Windows.
     import psutil
+
     for proc in psutil.process_iter(['pid', 'ppid', 'name', 'cmdline']):
       try:
         cmdline = proc.cmdline()
@@ -59,7 +61,8 @@ def main():
       except psutil.AccessDenied:
         cmdline = "Access denied"
       processes.append(
-          (proc.name()[:], cmdline, int(proc.ppid()), int(proc.pid)))
+        (proc.name()[:], cmdline, int(proc.ppid()), int(proc.pid))
+      )
 
   # Scan the list of processes to find ninja.
   for process in processes:

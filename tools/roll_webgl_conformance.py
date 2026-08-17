@@ -15,36 +15,34 @@ import sys
 import time
 
 extra_trybots = [
-    {
-        "mastername": "luci.chromium.try",
-        "buildernames": ["win_optional_gpu_tests_rel"]
-    },
-    {
-        "mastername": "luci.chromium.try",
-        "buildernames": ["mac_optional_gpu_tests_rel"]
-    },
-    {
-        "mastername": "luci.chromium.try",
-        "buildernames": ["gpu-fyi-cq-mac-arm64"]
-    },
-    {
-        "mastername": "luci.chromium.try",
-        "buildernames": ["linux_optional_gpu_tests_rel"]
-    },
-    {
-        "mastername": "luci.chromium.try",
-        "buildernames": ["android_optional_gpu_tests_rel"]
-    },
-    {
-        "mastername": "luci.chromium.try",
-        "buildernames": ["gpu-fyi-cq-android-arm64"]
-    },
+  {
+    "mastername": "luci.chromium.try",
+    "buildernames": ["win_optional_gpu_tests_rel"],
+  },
+  {
+    "mastername": "luci.chromium.try",
+    "buildernames": ["mac_optional_gpu_tests_rel"],
+  },
+  {"mastername": "luci.chromium.try", "buildernames": ["gpu-fyi-cq-mac-arm64"]},
+  {
+    "mastername": "luci.chromium.try",
+    "buildernames": ["linux_optional_gpu_tests_rel"],
+  },
+  {
+    "mastername": "luci.chromium.try",
+    "buildernames": ["android_optional_gpu_tests_rel"],
+  },
+  {
+    "mastername": "luci.chromium.try",
+    "buildernames": ["gpu-fyi-cq-android-arm64"],
+  },
 ]
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 SRC_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
 sys.path.insert(0, os.path.join(SRC_DIR, 'build'))
 import find_depot_tools
+
 find_depot_tools.add_depot_tools_to_path()
 
 CHROMIUM_GIT_URL = 'https://chromium.googlesource.com/chromium/src.git'
@@ -57,10 +55,12 @@ TRYJOB_STATUS_SLEEP_SECONDS = 30
 IS_WIN = sys.platform.startswith('win')
 WEBGL_PATH = os.path.join('third_party', 'webgl', 'src')
 WEBGL_REVISION_TEXT_FILE = os.path.join(
-  'content', 'test', 'gpu', 'gpu_tests', 'webgl_conformance_revision.txt')
+  'content', 'test', 'gpu', 'gpu_tests', 'webgl_conformance_revision.txt'
+)
 
-CommitInfo = collections.namedtuple('CommitInfo', ['git_commit',
-                                                   'git_repo_url'])
+CommitInfo = collections.namedtuple(
+  'CommitInfo', ['git_commit', 'git_repo_url']
+)
 CLInfo = collections.namedtuple('CLInfo', ['issue', 'url', 'review_server'])
 
 
@@ -72,6 +72,7 @@ def _PosixPath(path):
   """Convert a possibly-Windows path to a posix-style path."""
   (_, path) = os.path.splitdrive(path)
   return path.replace(os.sep, '/')
+
 
 def _ParseGitCommitHash(description):
   for line in description.splitlines():
@@ -92,9 +93,9 @@ def _ParseDepsFile(filename):
 def _ParseDepsDict(deps_content):
   local_scope = {}
   global_scope = {
-      'Str': lambda arg: str(arg),
-      'Var': _VarLookup(local_scope),
-      'deps_os': {},
+    'Str': lambda arg: str(arg),
+    'Var': _VarLookup(local_scope),
+    'deps_os': {},
   }
   exec(deps_content, global_scope, local_scope)
   return local_scope
@@ -102,7 +103,7 @@ def _ParseDepsDict(deps_content):
 
 def _GenerateCLDescriptionCommand(webgl_current, webgl_new, bugs):
   def GetChangeString(current_hash, new_hash):
-    return '%s..%s' % (current_hash[0:7], new_hash[0:7]);
+    return '%s..%s' % (current_hash[0:7], new_hash[0:7])
 
   def GetChangeLogURL(git_repo_url, change_string):
     return '%s/+log/%s' % (git_repo_url, change_string)
@@ -113,10 +114,8 @@ def _GenerateCLDescriptionCommand(webgl_current, webgl_new, bugs):
       bug_str += str(bug) + ','
     return bug_str.rstrip(',')
 
-  change_str = GetChangeString(webgl_current.git_commit,
-                               webgl_new.git_commit)
-  changelog_url = GetChangeLogURL(webgl_current.git_repo_url,
-                                  change_str)
+  change_str = GetChangeString(webgl_current.git_commit, webgl_new.git_commit)
+  changelog_url = GetChangeLogURL(webgl_current.git_repo_url, change_str)
   if webgl_current.git_commit == webgl_new.git_commit:
     print('WARNING: WebGL repository is unchanged; proceeding with no-op roll')
 
@@ -128,22 +127,21 @@ def _GenerateCLDescriptionCommand(webgl_current, webgl_new, bugs):
       s += t['mastername'] + ':' + ','.join(t['buildernames'])
     return s
 
-  return ('Roll WebGL %s\n\n'
-          '%s\n\n'
-          '%s\n'
-          'Cq-Include-Trybots: %s\n') % (
-            change_str,
-            changelog_url,
-            GetBugString(bugs),
-            GetExtraTrybotString())
+  return ('Roll WebGL %s\n\n%s\n\n%s\nCq-Include-Trybots: %s\n') % (
+    change_str,
+    changelog_url,
+    GetBugString(bugs),
+    GetExtraTrybotString(),
+  )
 
 
 class AutoRoller(object):
   def __init__(self, chromium_src):
     self._chromium_src = chromium_src
 
-  def _RunCommand(self, command, working_dir=None, ignore_exit_code=False,
-                  extra_env=None):
+  def _RunCommand(
+    self, command, working_dir=None, ignore_exit_code=False, extra_env=None
+  ):
     """Runs a command and returns the stdout from that command.
 
     If the command fails (exit code != 0), the function will exit the process.
@@ -154,9 +152,15 @@ class AutoRoller(object):
     if extra_env:
       logging.debug('extra env: %s', extra_env)
       env.update(extra_env)
-    p = subprocess.Popen(command, stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE, shell=IS_WIN, env=env,
-                         cwd=working_dir, universal_newlines=True)
+    p = subprocess.Popen(
+      command,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.PIPE,
+      shell=IS_WIN,
+      env=env,
+      cwd=working_dir,
+      universal_newlines=True,
+    )
     output = p.stdout.read()
     p.wait()
     p.stdout.close()
@@ -172,9 +176,17 @@ class AutoRoller(object):
     self._RunCommand(['git', 'fetch', 'origin'], working_dir=working_dir)
     revision_range = git_hash or 'origin/main'
     ret = self._RunCommand(
-        ['git', '--no-pager', 'log', revision_range,
-         '--no-abbrev-commit', '--pretty=full', '-1'],
-        working_dir=working_dir)
+      [
+        'git',
+        '--no-pager',
+        'log',
+        revision_range,
+        '--no-abbrev-commit',
+        '--pretty=full',
+        '-1',
+      ],
+      working_dir=working_dir,
+    )
     parsed_hash = _ParseGitCommitHash(ret)
     logging.debug('parsed Git commit hash: %s', parsed_hash)
     return CommitInfo(parsed_hash, git_repo_url)
@@ -184,7 +196,7 @@ class AutoRoller(object):
     entry = deps_dict['deps'][_PosixPath('src/%s' % path_below_src)]
     at_index = entry.find('@')
     git_repo_url = entry[:at_index]
-    git_hash = entry[at_index + 1:]
+    git_hash = entry[at_index + 1 :]
     return self._GetCommitInfo(path_below_src, git_hash, git_repo_url)
 
   def _GetCLInfo(self):
@@ -206,11 +218,13 @@ class AutoRoller(object):
 
   def _GetCurrentBranchName(self):
     return self._RunCommand(
-        ['git', 'rev-parse', '--abbrev-ref', 'HEAD']).splitlines()[0]
+      ['git', 'rev-parse', '--abbrev-ref', 'HEAD']
+    ).splitlines()[0]
 
   def _IsTreeClean(self):
     lines = self._RunCommand(
-      ['git', 'status', '--porcelain', '-uno']).splitlines()
+      ['git', 'status', '--porcelain', '-uno']
+    ).splitlines()
     if len(lines) == 0:
       return True
 
@@ -222,15 +236,19 @@ class AutoRoller(object):
     # the WebGL Github repository.
     working_dir = os.path.join(self._chromium_src, path_below_src)
     lines = self._RunCommand(
-        ['git','log',
-            '%s..%s' % (webgl_current.git_commit, webgl_new.git_commit)],
-        working_dir=working_dir).split('\n')
+      [
+        'git',
+        'log',
+        '%s..%s' % (webgl_current.git_commit, webgl_new.git_commit),
+      ],
+      working_dir=working_dir,
+    ).split('\n')
     bugs = set()
     for line in lines:
       line = line.strip()
       bug_prefix = 'BUG='
       if line.startswith(bug_prefix):
-        bugs_strings = line[len(bug_prefix):].split(',')
+        bugs_strings = line[len(bug_prefix) :].split(',')
         for bug_string in bugs_strings:
           try:
             bugs.add(int(bug_string))
@@ -243,8 +261,11 @@ class AutoRoller(object):
   def _UpdateReadmeFile(self, readme_path, new_revision):
     readme = open(os.path.join(self._chromium_src, readme_path), 'r+')
     txt = readme.read()
-    m = re.sub(re.compile('.*^Revision\: ([0-9]*).*', re.MULTILINE),
-        ('Revision: %s' % new_revision), txt)
+    m = re.sub(
+      re.compile('.*^Revision\: ([0-9]*).*', re.MULTILINE),
+      ('Revision: %s' % new_revision),
+      txt,
+    )
     readme.seek(0)
     readme.write(m)
     readme.truncate()
@@ -294,13 +315,13 @@ class AutoRoller(object):
     else:
       bugs = self._GetBugList(WEBGL_PATH, webgl_current, webgl_latest)
       description = _GenerateCLDescriptionCommand(
-          webgl_current, webgl_latest, bugs)
+        webgl_current, webgl_latest, bugs
+      )
       logging.debug('Committing changes locally.')
       self._RunCommand(['git', 'add', '--update', '.'])
       self._RunCommand(['git', 'commit', '-m', description])
       logging.debug('Uploading changes...')
-      self._RunCommand(['git', 'cl', 'upload'],
-                       extra_env={'EDITOR': 'true'})
+      self._RunCommand(['git', 'cl', 'upload'], extra_env={'EDITOR': 'true'})
 
       if run_tryjobs:
         # Kick off tryjobs.
@@ -320,8 +341,9 @@ class AutoRoller(object):
     dep_name = _PosixPath(os.path.join('src', dep_relative_to_src))
     dep_revision = '%s@%s' % (dep_name, commit_info.git_commit)
     self._RunCommand(
-        ['gclient', 'setdep', '-r', dep_revision],
-        working_dir=os.path.dirname(deps_filename))
+      ['gclient', 'setdep', '-r', dep_revision],
+      working_dir=os.path.dirname(deps_filename),
+    )
     self._RunCommand(['gclient', 'sync'])
 
   def _UpdateWebGLRevTextFile(self, txt_filename, commit_info):
@@ -342,7 +364,6 @@ class AutoRoller(object):
     self._RunCommand(['gclient', 'sync'])
     self._RunCommand(['git', 'branch', '-D', ROLL_BRANCH_NAME])
     logging.debug('Deleted the local roll branch (%s)', ROLL_BRANCH_NAME)
-
 
   def _GetBranches(self):
     """Returns a tuple of active,branches.
@@ -381,24 +402,43 @@ class AutoRoller(object):
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Auto-generates a CL containing a WebGL conformance roll.')
-  parser.add_argument('--abort',
-    help=('Aborts a previously prepared roll. '
-          'Closes any associated issues and deletes the roll branches'),
-    action='store_true')
+    description='Auto-generates a CL containing a WebGL conformance roll.'
+  )
   parser.add_argument(
-      '--ignore-checks',
-      action='store_true',
-      default=False,
-      help=('Skips checks for being on the main branch, dirty workspaces and '
-            'the updating of the checkout. Will still delete and create local '
-            'Git branches.'))
-  parser.add_argument('--run-tryjobs', action='store_true', default=False,
-      help=('Start the dry-run tryjobs for the newly generated CL. Use this '
-            'when you have no need to make changes to the WebGL conformance '
-            'test expectations in the same CL and want to avoid.'))
-  parser.add_argument('-v', '--verbose', action='store_true', default=False,
-      help='Be extra verbose in printing of log messages.')
+    '--abort',
+    help=(
+      'Aborts a previously prepared roll. '
+      'Closes any associated issues and deletes the roll branches'
+    ),
+    action='store_true',
+  )
+  parser.add_argument(
+    '--ignore-checks',
+    action='store_true',
+    default=False,
+    help=(
+      'Skips checks for being on the main branch, dirty workspaces and '
+      'the updating of the checkout. Will still delete and create local '
+      'Git branches.'
+    ),
+  )
+  parser.add_argument(
+    '--run-tryjobs',
+    action='store_true',
+    default=False,
+    help=(
+      'Start the dry-run tryjobs for the newly generated CL. Use this '
+      'when you have no need to make changes to the WebGL conformance '
+      'test expectations in the same CL and want to avoid.'
+    ),
+  )
+  parser.add_argument(
+    '-v',
+    '--verbose',
+    action='store_true',
+    default=False,
+    help='Be extra verbose in printing of log messages.',
+  )
   args = parser.parse_args()
 
   if args.verbose:
@@ -411,6 +451,7 @@ def main():
     return autoroller.Abort()
   else:
     return autoroller.PrepareRoll(args.ignore_checks, args.run_tryjobs)
+
 
 if __name__ == '__main__':
   sys.exit(main())

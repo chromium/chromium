@@ -23,32 +23,39 @@ from grit.tool import build
 class AdmGathererUnittest(unittest.TestCase):
   def testParsingAndTranslating(self):
     pseudofile = io.StringIO(
-        'bingo bongo\n'
-        'ding dong\n'
-        '[strings] \n'
-        'whatcha="bingo bongo"\n'
-        'gotcha = "bingolabongola "the wise" fingulafongula" \n')
+      'bingo bongo\n'
+      'ding dong\n'
+      '[strings] \n'
+      'whatcha="bingo bongo"\n'
+      'gotcha = "bingolabongola "the wise" fingulafongula" \n'
+    )
     gatherer = admin_template.AdmGatherer(pseudofile)
     gatherer.Parse()
     self.assertTrue(len(gatherer.GetCliques()) == 2)
-    self.assertTrue(gatherer.GetCliques()[1].GetMessage().GetRealContent() ==
-                    'bingolabongola "the wise" fingulafongula')
+    self.assertTrue(
+      gatherer.GetCliques()[1].GetMessage().GetRealContent()
+      == 'bingolabongola "the wise" fingulafongula'
+    )
 
     translation = gatherer.Translate('en')
     self.assertTrue(translation == gatherer.GetText().strip())
 
   def testErrorHandling(self):
     pseudofile = io.StringIO(
-        'bingo bongo\n'
-        'ding dong\n'
-        'whatcha="bingo bongo"\n'
-        'gotcha = "bingolabongola "the wise" fingulafongula" \n')
+      'bingo bongo\n'
+      'ding dong\n'
+      'whatcha="bingo bongo"\n'
+      'gotcha = "bingolabongola "the wise" fingulafongula" \n'
+    )
     gatherer = admin_template.AdmGatherer(pseudofile)
-    self.assertRaises(admin_template.MalformedAdminTemplateException,
-                      gatherer.Parse)
+    self.assertRaises(
+      admin_template.MalformedAdminTemplateException, gatherer.Parse
+    )
 
   _TRANSLATABLES_FROM_FILE = (
-    'Google', 'Google Desktop', 'Preferences',
+    'Google',
+    'Google Desktop',
+    'Preferences',
     'Controls Google Desktop preferences',
     'Indexing and Capture Control',
     'Controls what files, web pages, and other content will be indexed by Google Desktop.',
@@ -71,7 +78,7 @@ class AdmGathererUnittest(unittest.TestCase):
 
   def MakeGrd(self):
     grd = grd_reader.Parse(
-        io.StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+      io.StringIO('''<?xml version="1.0" encoding="UTF-8"?>
       <grit latest_public_release="2" source_lang_id="en-US" current_release="3">
         <release seq="3">
           <structures>
@@ -84,7 +91,9 @@ class AdmGathererUnittest(unittest.TestCase):
         <outputs>
           <output filename="de_res.rc" type="rc_all" lang="de" />
         </outputs>
-      </grit>'''), util.PathFromRoot('grit/testdata'))
+      </grit>'''),
+      util.PathFromRoot('grit/testdata'),
+    )
     grd.SetOutputLanguage('en')
     grd.RunGatherers()
     return grd
@@ -108,6 +117,7 @@ class AdmGathererUnittest(unittest.TestCase):
       self.assertTrue(os.path.isfile(dirname.GetPath('de_README.txt')))
     finally:
       dirname.CleanUp()
+
 
 if __name__ == '__main__':
   unittest.main()

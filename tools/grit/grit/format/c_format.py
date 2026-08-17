@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Formats as a .C file for compilation.
-"""
+"""Formats as a .C file for compilation."""
 
 import codecs
 import os
@@ -28,15 +27,20 @@ def _FormatHeader(root, output_dir):
 
 // All strings are UTF-8
 """ % (resource_header)
+
+
 # end _FormatHeader() function
 
 
 def Format(root, lang='en', gender=None, output_dir='.'):
   """Outputs a C switch statement representing the string table."""
-  assert gender is None, "c_format doesn't support gender translations, yet " \
-      f"Format() was called with gender {gender}"
+  assert gender is None, (
+    "c_format doesn't support gender translations, yet "
+    f"Format() was called with gender {gender}"
+  )
 
   from grit.node import message
+
   assert isinstance(lang, str)
 
   yield _FormatHeader(root, output_dir)
@@ -65,8 +69,11 @@ def _HexToOct(match):
 def _FormatMessage(item, lang):
   """Format a single <message> element."""
 
-  message = item.ws_at_start + item.Translate(
-      lang, constants.DEFAULT_GENDER) + item.ws_at_end
+  message = (
+    item.ws_at_start
+    + item.Translate(lang, constants.DEFAULT_GENDER)
+    + item.ws_at_end
+  )
   # Output message with non-ascii chars escaped as octal numbers C's grammar
   # allows escaped hexadecimal numbers to be infinite, but octal is always of
   # the form \OOO.  Python 3 doesn't support string-escape, so we have to jump
@@ -84,7 +91,8 @@ def _FormatMessage(item, lang):
   hex_digits = r"((\\x)[0-9a-f]{2})+"
   two_digit_hex_num = re.compile(
     r"(?P<escaped_backslashes>%s)(?P<hex>%s)"
-    % (escaped_backslashes, hex_digits))
+    % (escaped_backslashes, hex_digits)
+  )
   message = two_digit_hex_num.sub(_HexToOct, message)
   # unescape \ (convert \\ back to \)
   message = message.replace('\\\\', '\\')

@@ -4,7 +4,6 @@
 
 """The 'grit android2grd' tool."""
 
-
 import getopt
 import os.path
 import re
@@ -33,60 +32,69 @@ _CHAR_LIMIT = re.compile(r'\[CHAR_LIMIT=(\d+)\]')
 # Finds String.Format() style format specifiers such as "%-5.2f".
 _FORMAT_SPECIFIER = re.compile(
   r'%'
-  r'([1-9][0-9]*\$|<)?'            # argument_index
-  r'([-#+ 0,(]*)'                  # flags
-  r'([0-9]+)?'                     # width
-  r'(\.[0-9]+)?'                   # precision
-  r'([bBhHsScCdoxXeEfgGaAtT%n])')  # conversion
+  r'([1-9][0-9]*\$|<)?'  # argument_index
+  r'([-#+ 0,(]*)'  # flags
+  r'([0-9]+)?'  # width
+  r'(\.[0-9]+)?'  # precision
+  r'([bBhHsScCdoxXeEfgGaAtT%n])'
+)  # conversion
 
 
 class Android2Grd(interface.Tool):
   """Tool for converting Android string.xml files into chrome Grd files.
 
-Usage: grit [global options] android2grd [OPTIONS] STRINGS_XML
+  Usage: grit [global options] android2grd [OPTIONS] STRINGS_XML
 
-The Android2Grd tool will convert an Android strings.xml file (whose path is
-specified by STRINGS_XML) and create a chrome style grd file containing the
-relevant information.
+  The Android2Grd tool will convert an Android strings.xml file (whose path is
+  specified by STRINGS_XML) and create a chrome style grd file containing the
+  relevant information.
 
-Because grd documents are much richer than strings.xml documents we supplement
-the information required by grds using OPTIONS with sensible defaults.
+  Because grd documents are much richer than strings.xml documents we supplement
+  the information required by grds using OPTIONS with sensible defaults.
 
-OPTIONS may be any of the following:
+  OPTIONS may be any of the following:
 
-    --name       FILENAME    Specify the base FILENAME. This should be without
-                             any file type suffix. By default
-                             "chrome_android_strings" will be used.
+      --name       FILENAME    Specify the base FILENAME. This should be without
+                               any file type suffix. By default
+                               "chrome_android_strings" will be used.
 
-    --languages  LANGUAGES   Comma separated list of ISO language codes (e.g.
-                             en-US, en-GB, ru, zh-CN). These codes will be used
-                             to determine the names of resource and translations
-                             files that will be declared by the output grd file.
+      --languages  LANGUAGES   Comma separated list of ISO language codes (e.g.
+                               en-US, en-GB, ru, zh-CN). These codes will be
+                               used
+                               to determine the names of resource and
+                               translations
+                               files that will be declared by the output grd
+                               file.
 
-    --grd-dir    GRD_DIR     Specify where the resultant grd file
-                             (FILENAME.grd) should be output. By default this
-                             will be the present working directory.
+      --grd-dir    GRD_DIR     Specify where the resultant grd file
+                               (FILENAME.grd) should be output. By default this
+                               will be the present working directory.
 
-    --header-dir HEADER_DIR  Specify the location of the directory where grit
-                             generated C++ headers (whose name will be
-                             FILENAME.h) will be placed. Use an empty string to
-                             disable rc generation. Default: empty.
+      --header-dir HEADER_DIR  Specify the location of the directory where grit
+                               generated C++ headers (whose name will be
+                               FILENAME.h) will be placed. Use an empty string
+                               to
+                               disable rc generation. Default: empty.
 
-    --rc-dir     RC_DIR      Specify the directory where resource files will
-                             be located relative to grit build's output
-                             directory. Use an empty string to disable rc
-                             generation. Default: empty.
+      --rc-dir     RC_DIR      Specify the directory where resource files will
+                               be located relative to grit build's output
+                               directory. Use an empty string to disable rc
+                               generation. Default: empty.
 
-    --xml-dir    XML_DIR     Specify where to place localized strings.xml files
-                             relative to grit build's output directory. For each
-                             language xx a values-xx/strings.xml file will be
-                             generated. Use an empty string to disable
-                             strings.xml generation. Default: '.'.
+      --xml-dir    XML_DIR     Specify where to place localized strings.xml
+      files
+                               relative to grit build's output directory. For
+                               each
+                               language xx a values-xx/strings.xml file will be
+                               generated. Use an empty string to disable
+                               strings.xml generation. Default: '.'.
 
-    --xtb-dir    XTB_DIR     Specify where the xtb files containing translations
-                             will be located relative to the grd file. Default:
-                             '.'.
-"""
+      --xtb-dir    XTB_DIR     Specify where the xtb files containing
+      translations
+                               will be located relative to the grd file.
+                               Default:
+                               '.'.
+  """
 
   _NAME_FLAG = 'name'
   _LANGUAGES_FLAG = 'languages'
@@ -118,15 +126,17 @@ OPTIONS may be any of the following:
   def ParseOptions(self, args):
     """Set this objects and return all non-option arguments."""
     flags = [
-        Android2Grd._NAME_FLAG,
-        Android2Grd._LANGUAGES_FLAG,
-        Android2Grd._GRD_DIR_FLAG,
-        Android2Grd._RC_DIR_FLAG,
-        Android2Grd._HEADER_DIR_FLAG,
-        Android2Grd._XTB_DIR_FLAG,
-        Android2Grd._XML_DIR_FLAG, ]
+      Android2Grd._NAME_FLAG,
+      Android2Grd._LANGUAGES_FLAG,
+      Android2Grd._GRD_DIR_FLAG,
+      Android2Grd._RC_DIR_FLAG,
+      Android2Grd._HEADER_DIR_FLAG,
+      Android2Grd._XTB_DIR_FLAG,
+      Android2Grd._XML_DIR_FLAG,
+    ]
     (opts, args) = getopt.getopt(
-        args, None, ['%s=' % o for o in flags] + ['help'])
+      args, None, ['%s=' % o for o in flags] + ['help']
+    )
 
     for key, val in opts:
       # Get rid of the preceding hypens.
@@ -161,8 +171,10 @@ OPTIONS may be any of the following:
     """
     args = self.ParseOptions(args)
     if len(args) != 1:
-      print('Tool requires one argument, the path to the Android '
-            'strings.xml resource file to be converted.')
+      print(
+        'Tool requires one argument, the path to the Android '
+        'strings.xml resource file to be converted.'
+      )
       return 2
     self.SetOptions(opts)
 
@@ -194,8 +206,9 @@ OPTIONS may be any of the following:
     """
 
     # Start with a basic skeleton for the .grd file.
-    root = grd_reader.Parse(StringIO(
-      '''<?xml version="1.0" encoding="UTF-8"?>
+    root = grd_reader.Parse(
+      StringIO(
+        '''<?xml version="1.0" encoding="UTF-8"?>
          <grit base_dir="." latest_public_release="0"
              current_release="1" source_lang_id="en">
            <outputs />
@@ -203,13 +216,18 @@ OPTIONS may be any of the following:
            <release seq="1">
              <messages fallback_to_english="true" />
            </release>
-         </grit>'''), dir='.')
+         </grit>'''
+      ),
+      dir='.',
+    )
     outputs = root.children[0]
     translations = root.children[1]
     messages = root.children[2].children[0]
-    assert (isinstance(messages, grit.node.empty.MessagesNode) and
-            isinstance(translations, grit.node.empty.TranslationsNode) and
-            isinstance(outputs, grit.node.empty.OutputsNode))
+    assert (
+      isinstance(messages, grit.node.empty.MessagesNode)
+      and isinstance(translations, grit.node.empty.TranslationsNode)
+      and isinstance(outputs, grit.node.empty.OutputsNode)
+    )
 
     if self.header_dir:
       cpp_header = self.__CreateCppHeaderOutputNode(outputs, self.header_dir)
@@ -254,8 +272,9 @@ OPTIONS may be any of the following:
           # care to handle whitespace transformations and escaped characters,
           # and coverting <xliff:g> placeholders into <ph> placeholders.
           msg = self.CreateTclibMessage(child)
-          msg_node = self.__CreateMessageNode(messages, grd_name, description,
-              msg, translatable)
+          msg_node = self.__CreateMessageNode(
+            messages, grd_name, description, msg, translatable
+          )
           messages.AddChild(msg_node)
           # Reset the description once a message has been parsed.
           description = ''
@@ -291,23 +310,30 @@ OPTIONS may be any of the following:
           placeholder_text = self.__FormatPlaceholderText(node)
           placeholder_example = node.getAttribute('example')
           if not placeholder_example:
-            print('Info: placeholder does not contain an example: %s' %
-                  node.toxml())
+            print(
+              'Info: placeholder does not contain an example: %s' % node.toxml()
+            )
             placeholder_example = placeholder_id.upper()
-          msg.AppendPlaceholder(tclib.Placeholder(placeholder_id,
-              placeholder_text, placeholder_example))
+          msg.AppendPlaceholder(
+            tclib.Placeholder(
+              placeholder_id, placeholder_text, placeholder_example
+            )
+          )
         else:
-          print('Warning: removing tag <%s> which must be inside a '
-                'placeholder: %s' % (node.tagName, node.toxml()))
+          print(
+            'Warning: removing tag <%s> which must be inside a '
+            'placeholder: %s' % (node.tagName, node.toxml())
+          )
           msg.AppendText(self.__FormatPlaceholderText(node))
 
       # Handle other nodes.
       elif node.nodeType != Node.COMMENT_NODE:
         assert False, 'Unknown node type: %s' % node.nodeType
 
-      is_last_node = (i == len(nodes) - 1)
-      if (current_text and
-          (is_last_node or nodes[i + 1].nodeType == Node.ELEMENT_NODE)):
+      is_last_node = i == len(nodes) - 1
+      if current_text and (
+        is_last_node or nodes[i + 1].nodeType == Node.ELEMENT_NODE
+      ):
         # For messages containing just text and comments (no xml tags) Android
         # strips leading and trailing whitespace.  We mimic that behavior.
         if not msg.GetContent() and is_last_node:
@@ -320,10 +346,10 @@ OPTIONS may be any of the following:
   def __FormatAndroidString(self, android_string, inside_placeholder=False):
     r"""Returns android_string formatted for a .grd file.
 
-      * Collapses consecutive whitespaces, except when inside double-quotes.
-      * Replaces \\, \n, \t, \", \' with \, newline, tab, ", '.
+    * Collapses consecutive whitespaces, except when inside double-quotes.
+    * Replaces \\, \n, \t, \", \' with \, newline, tab, ", '.
     """
-    backslash_map = {'\\' : '\\', 'n' : '\n', 't' : '\t', '"' : '"', "'" : "'"}
+    backslash_map = {'\\': '\\', 'n': '\n', 't': '\t', '"': '"', "'": "'"}
     is_quoted_section = False  # True when we're inside double quotes.
     is_backslash_sequence = False  # True after seeing an unescaped backslash.
     prev_char = ''
@@ -357,8 +383,10 @@ OPTIONS may be any of the following:
     if not inside_placeholder:
       format_specifier = _FORMAT_SPECIFIER.search(output)
       if format_specifier:
-        print('Warning: format specifiers are not inside a placeholder '
-              '<xliff:g/> tag: %s' % output)
+        print(
+          'Warning: format specifiers are not inside a placeholder '
+          '<xliff:g/> tag: %s' % output
+        )
 
     return output
 
@@ -372,8 +400,9 @@ OPTIONS may be any of the following:
         assert False, 'Unknown node type in ' + placeholder_node.toxml()
     return self.__FormatAndroidString(''.join(text), inside_placeholder=True)
 
-  def __CreateMessageNode(self, messages_node, grd_name, description, msg,
-                          translatable):
+  def __CreateMessageNode(
+    self, messages_node, grd_name, description, msg, translatable
+  ):
     """Creates and initializes a <message> element.
 
     Message elements correspond to Android <string> elements in that they
@@ -387,13 +416,17 @@ OPTIONS may be any of the following:
       char_limit = int(match.group(1))
       msg_content = msg.GetRealContent()
       if len(msg_content) > char_limit:
-        print('Warning: CHAR_LIMIT for %s is %d, but length is %d: %s' %
-              (grd_name, char_limit, len(msg_content), msg_content))
-    return message.MessageNode.Construct(parent=messages_node,
-                                         name=grd_name,
-                                         message=msg,
-                                         desc=description,
-                                         translateable=translatable)
+        print(
+          'Warning: CHAR_LIMIT for %s is %d, but length is %d: %s'
+          % (grd_name, char_limit, len(msg_content), msg_content)
+        )
+    return message.MessageNode.Construct(
+      parent=messages_node,
+      name=grd_name,
+      message=msg,
+      desc=description,
+      translateable=translatable,
+    )
 
   def __CreateFileNode(self, translations_node, lang):
     """Creates and initializes the <file> elements.
@@ -401,8 +434,9 @@ OPTIONS may be any of the following:
     File elements provide information on the location of translation files
     (xtbs)
     """
-    xtb_file = os.path.normpath(os.path.join(
-        self.xtb_dir, '%s_%s.xtb' % (self.name, lang)))
+    xtb_file = os.path.normpath(
+      os.path.join(self.xtb_dir, '%s_%s.xtb' % (self.name, lang))
+    )
     fnode = node_io.FileNode()
     fnode.StartParsing('file', translations_node)
     fnode.HandleAttribute('path', xtb_file)
@@ -456,8 +490,9 @@ OPTIONS may be any of the following:
       android_lang = lang_map.get(android_lang, android_lang)
       android_locale = android_lang + ('-r' + region if region else '')
     values = 'values-' + android_locale if android_locale != 'en' else 'values'
-    xml_path = os.path.normpath(os.path.join(
-        xml_res_dir, values, 'strings.xml'))
+    xml_path = os.path.normpath(
+      os.path.join(xml_res_dir, values, 'strings.xml')
+    )
 
     node = node_io.OutputNode()
     node.StartParsing('output', outputs_node)

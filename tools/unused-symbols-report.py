@@ -27,25 +27,35 @@ import subprocess
 import sys
 
 cppfilt_proc = None
+
+
 def Demangle(sym):
   """Demangle a C++ symbol by passing it through c++filt."""
   global cppfilt_proc
   if cppfilt_proc is None:
-    cppfilt_proc = subprocess.Popen(['c++filt'], stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE)
+    cppfilt_proc = subprocess.Popen(
+      ['c++filt'], stdin=subprocess.PIPE, stdout=subprocess.PIPE
+    )
   print(sym, file=cppfilt_proc.stdin)
   return cppfilt_proc.stdout.readline().strip()
 
 
 def Unyuck(sym):
   """Attempt to prettify a C++ symbol by some basic heuristics."""
-  sym = sym.replace('std::basic_string<char, std::char_traits<char>, '
-                    'std::allocator<char> >', 'std::string')
-  sym = sym.replace('std::basic_string<wchar_t, std::char_traits<wchar_t>, '
-                    'std::allocator<wchar_t> >', 'std::wstring')
   sym = sym.replace(
-      'std::basic_string<char16_t, std::char_traits<char16_t>, '
-      'std::allocator<char16_t> >', 'std::u16string')
+    'std::basic_string<char, std::char_traits<char>, std::allocator<char> >',
+    'std::string',
+  )
+  sym = sym.replace(
+    'std::basic_string<wchar_t, std::char_traits<wchar_t>, '
+    'std::allocator<wchar_t> >',
+    'std::wstring',
+  )
+  sym = sym.replace(
+    'std::basic_string<char16_t, std::char_traits<char16_t>, '
+    'std::allocator<char16_t> >',
+    'std::u16string',
+  )
   sym = re.sub(r', std::allocator<\S+\s+>', '', sym)
   return sym
 
@@ -151,21 +161,29 @@ def Output(iter):
 
 
 def main():
-  parser = optparse.OptionParser(usage='%prog [options] buildoutput\n\n' +
-                                 __doc__)
-  parser.add_option("--skip-paths", metavar="STR", default="third_party",
-                    help="skip paths matching STR [default=%default]")
-  parser.add_option("--only-paths", metavar="STR",
-                    help="only include paths matching STR [default=%default]")
+  parser = optparse.OptionParser(
+    usage='%prog [options] buildoutput\n\n' + __doc__
+  )
+  parser.add_option(
+    "--skip-paths",
+    metavar="STR",
+    default="third_party",
+    help="skip paths matching STR [default=%default]",
+  )
+  parser.add_option(
+    "--only-paths",
+    metavar="STR",
+    help="only include paths matching STR [default=%default]",
+  )
   opts, args = parser.parse_args()
 
   if len(args) < 1:
     parser.print_help()
     sys.exit(1)
 
-  iter = Parse(open(args[0]),
-               skip_paths=opts.skip_paths,
-               only_paths=opts.only_paths)
+  iter = Parse(
+    open(args[0]), skip_paths=opts.skip_paths, only_paths=opts.only_paths
+  )
   Output(iter)
 
 

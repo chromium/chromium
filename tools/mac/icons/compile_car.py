@@ -85,13 +85,15 @@ def _verify_actool_version() -> CompatibilityExpectations:
     output_dict = plistlib.loads(process)
 
     version = _split_version(
-        output_dict['com.apple.actool.version']['bundle-version'])
+        output_dict['com.apple.actool.version']['bundle-version']
+    )
 
     if version < _ACTOOL_26B4_VERSION:
         raise AssetCatalogException(
             f'actool is too old; it is version {_unsplit_version(version)} but '
             f'at least version {_unsplit_version(_ACTOOL_26B4_VERSION)} is '
-            'required. Install at least Xcode 26b4.')
+            'required. Install at least Xcode 26b4.'
+        )
 
     compatibility_expectations = CompatibilityExpectations()
 
@@ -102,14 +104,16 @@ def _verify_actool_version() -> CompatibilityExpectations:
             '⚠️  Compatibility warning: the active version of `actool` will '
             'not emit an\n`.icns` file. If an `.icns` file is required, use '
             'Xcode 26b4.',
-            file=sys.stderr)
+            file=sys.stderr,
+        )
         compatibility_expectations.icns_expected = False
     else:
         print(
             '⚠️  Compatibility warning: it is unknown if the active version '
             'of `actool`\nwill emit an `.icns` file. If an `.icns` file is '
             'required, use Xcode 26b4.',
-            file=sys.stderr)
+            file=sys.stderr,
+        )
         compatibility_expectations.icns_expected = None
 
     return compatibility_expectations
@@ -127,15 +131,20 @@ def _min_deployment_target() -> str:
     mac_sdk_path = src_root.joinpath('build', 'config', 'mac', 'mac_sdk.gni')
 
     with open(mac_sdk_path, 'r') as mac_sdk_file:
-        match, = re.finditer(
+        (match,) = re.finditer(
             r'^\s*mac_deployment_target\s*=\s*"(.*)"(?:\s*#.*)?$',
-            mac_sdk_file.read(), re.MULTILINE)
+            mac_sdk_file.read(),
+            re.MULTILINE,
+        )
         return match.group(1)
 
 
-def _process_path(path: pathlib.Path, min_deployment_target: str,
-                  compatibility_expectations: CompatibilityExpectations,
-                  verbose: bool) -> None:
+def _process_path(
+    path: pathlib.Path,
+    min_deployment_target: str,
+    compatibility_expectations: CompatibilityExpectations,
+    verbose: bool,
+) -> None:
     """Compiles a single `.xcassets` directory and `.icon` into a .car file.
 
     This function invokes `actool` to compile the given `.xcassets` directory
@@ -161,7 +170,8 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
         # The "tag" is the '_beta' etc channel indicator in the file name.
         if not path.suffix == '.xcassets':
             raise ValueError(
-                'Asset catalog filename must have .xcassets suffix')
+                'Asset catalog filename must have .xcassets suffix'
+            )
         name_parts = path.stem.split('_')
         if len(name_parts) > 2:
             raise ValueError('Asset catalog filename must have at most one _')
@@ -180,17 +190,14 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
             # The binary.
             'xcrun',
             'actool',
-
             # Output and error handling.
             '--output-format=xml1',
             '--notices',
             '--warnings',
             '--errors',
-
             # Platform.
             '--platform=macosx',
             '--target-device=mac',
-
             # Correctness. This command-line argument is undocumented. It forces
             # `actool` aka `ibtool` to use bundled versions of the asset catalog
             # frameworks so that it generates consistent results no matter what
@@ -198,7 +205,6 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
             # `actool`; see various copies of the `AssetCatalogCompiler.xcspec`
             # file found in various places inside the Xcode package.
             '--lightweight-asset-runtime-mode=enabled',
-
             # Correctness. The `--enable-icon-stack-fallback-generation`
             # command-line argument is undocumented. By default, if an `.icon`
             # file is provided to `actool`, then `actool` will ignore any
@@ -221,15 +227,12 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
             # https://mastodon.social/@vslavik/115016258774715162 .
             '--enable-icon-stack-fallback-generation=disabled',
             '--include-all-app-icons',
-
             # Target information.
             '--app-icon=AppIcon',
             f'--minimum-deployment-target={min_deployment_target}',
-
             # Where to place the outputs.
             f'--output-partial-info-plist={tmp_plist}',
             f'--compile={tmp_dir}',
-
             # What to compile.
             path,
             appicon_tmp_path,
@@ -238,7 +241,8 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
             print(f'  Invoking: {" ".join((str(item) for item in command))}')
 
         process = subprocess.Popen(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         output, stderr = process.communicate()
         output_dict = plistlib.loads(output)
 
@@ -246,11 +250,13 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
         if process.returncode != 0:
             failures['return code'] = f'{process.returncode}'
 
-        def collect_failures(output_dict: dict[str, typing.Any],
-                             output_dict_key: str,
-                             failures: dict[str, list],
-                             failures_key: str,
-                             filter=None) -> None:
+        def collect_failures(
+            output_dict: dict[str, typing.Any],
+            output_dict_key: str,
+            failures: dict[str, list],
+            failures_key: str,
+            filter=None,
+        ) -> None:
             value = output_dict.get(output_dict_key)
             if value is not None and filter is not None:
                 value = filter(value)
@@ -258,12 +264,18 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
                 return
             failures[failures_key] = value
 
-        collect_failures(output_dict, 'com.apple.actool.errors', failures,
-                         'errors')
-        collect_failures(output_dict, 'com.apple.actool.document.errors',
-                         failures, 'document errors')
-        collect_failures(output_dict, 'com.apple.actool.warnings', failures,
-                         'warnings')
+        collect_failures(
+            output_dict, 'com.apple.actool.errors', failures, 'errors'
+        )
+        collect_failures(
+            output_dict,
+            'com.apple.actool.document.errors',
+            failures,
+            'document errors',
+        )
+        collect_failures(
+            output_dict, 'com.apple.actool.warnings', failures, 'warnings'
+        )
         # Some warnings are expected, so swallow those. Raise all others.
         # TODO(avi): Remove the "ambiguous content" warning exception when
         # switching to `actool`-generated fallback bitmaps.
@@ -273,25 +285,40 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
         # trying to create it, as that error is expected.
         if compatibility_expectations.icns_expected:
             filter = lambda warnings: [
-                warning for warning in warnings
+                warning
+                for warning in warnings
                 if warning['type'] != 'Ambiguous Content'
             ]
         else:
             filter = lambda warnings: [
-                warning for warning in warnings
-                if warning['type'] != 'Ambiguous Content' and not (warning[
-                    'type'] == 'Unsupported Configuration' and warning[
-                        'message'].startswith(
-                            'Failed to generate flattened icon stack'))
+                warning
+                for warning in warnings
+                if warning['type'] != 'Ambiguous Content'
+                and not (
+                    warning['type'] == 'Unsupported Configuration'
+                    and warning['message'].startswith(
+                        'Failed to generate flattened icon stack'
+                    )
+                )
             ]
-        collect_failures(output_dict, 'com.apple.actool.document.warnings',
-                         failures, 'document warnings', filter)
+        collect_failures(
+            output_dict,
+            'com.apple.actool.document.warnings',
+            failures,
+            'document warnings',
+            filter,
+        )
         # Weirdly, actool classifies any missing input files as a "notice", so
         # fail upon any "notices".
-        collect_failures(output_dict, 'com.apple.actool.notices', failures,
-                         'notices')
-        collect_failures(output_dict, 'com.apple.actool.document.notices',
-                         failures, 'document notices')
+        collect_failures(
+            output_dict, 'com.apple.actool.notices', failures, 'notices'
+        )
+        collect_failures(
+            output_dict,
+            'com.apple.actool.document.notices',
+            failures,
+            'document notices',
+        )
 
         if failures:
             # stderr is usually ignorable spew, but include it in the exception
@@ -300,20 +327,23 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
             raise AssetCatalogException(f'actool failed; {failures}')
 
         compilation_results = output_dict.get(
-            'com.apple.actool.compilation-results')
+            'com.apple.actool.compilation-results'
+        )
         if compilation_results is None:
             raise AssetCatalogException('actool had no compilation results')
         output_files = compilation_results.get('output-files')
         if output_files is None:
             raise AssetCatalogException('actool had no output files')
         if compatibility_expectations.icns_expected is not None:
-            expected_file_count = (3 if compatibility_expectations.icns_expected
-                                   else 2)
+            expected_file_count = (
+                3 if compatibility_expectations.icns_expected else 2
+            )
             if len(output_files) != expected_file_count:
                 raise AssetCatalogException(
                     f'expected actool to output {expected_file_count} files, '
                     f'but it instead output {len(output_files)} files, namely '
-                    f'{output_files}')
+                    f'{output_files}'
+                )
 
         # Exactly three output files are expected; handle them each
         # appropriately.
@@ -327,7 +357,8 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
                 if compatibility_expectations.icns_expected is None:
                     print(
                         '⚠️ `.icns` file generated; FB19772616 addressed?',
-                        file=sys.stderr)
+                        file=sys.stderr,
+                    )
                 destination_path = source_dir.joinpath(f'app{name_tag}.icns')
                 if verbose:
                     print(f'  Copying output to: {destination_path}')
@@ -340,7 +371,8 @@ def _process_path(path: pathlib.Path, min_deployment_target: str,
                 shutil.copyfile(output_file, destination_path)
             else:
                 raise AssetCatalogException(
-                    f'Unexpected output file: {output_file}')
+                    f'Unexpected output file: {output_file}'
+                )
 
 
 def main(args: list[str]):
@@ -351,26 +383,33 @@ def main(args: list[str]):
         'paths',
         nargs='+',
         metavar='path',
-        help='the path to the .xcassets to process')
+        help='the path to the .xcassets to process',
+    )
     parser.add_argument(
         '-v',
         '--verbose',
         dest='verbose',
         action='store_true',
-        help='enable verbose output')
+        help='enable verbose output',
+    )
     parsed = parser.parse_args(args)
 
     min_deployment_target = _min_deployment_target()
     if parsed.verbose:
-        print('Determined the minimum deployment target to be '
-              f'{min_deployment_target}.')
+        print(
+            'Determined the minimum deployment target to be '
+            f'{min_deployment_target}.'
+        )
 
     for path in parsed.paths:
         if parsed.verbose:
             print(f'Processing: {path}')
         _process_path(
-            pathlib.Path(path), min_deployment_target,
-            compatibility_expectations, parsed.verbose)
+            pathlib.Path(path),
+            min_deployment_target,
+            compatibility_expectations,
+            parsed.verbose,
+        )
 
 
 if __name__ == '__main__':

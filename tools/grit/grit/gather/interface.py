@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Interface for all gatherers.
-'''
+'''Interface for all gatherers.'''
 
 import os.path
 
@@ -15,7 +14,9 @@ class GathererBase:
   '''Interface for all gatherer implementations.  Subclasses must implement
   all methods that raise NotImplemented.'''
 
-  def __init__(self, rc_file, extkey=None, encoding='cp1252', is_skeleton=False):
+  def __init__(
+    self, rc_file, extkey=None, encoding='cp1252', is_skeleton=False
+  ):
     '''Initializes the gatherer object's attributes, but does not attempt to
     read the input file.
 
@@ -64,8 +65,7 @@ class GathererBase:
     pass
 
   def SetGrdNode(self, node):
-    '''Sets the grd node on which this gatherer is running.
-    '''
+    '''Sets the grd node on which this gatherer is running.'''
     self.grd_node = node
 
   def SetUberClique(self, uberclique):
@@ -109,8 +109,13 @@ class GathererBase:
     """Returns a set of all filenames inlined by this gatherer."""
     return []
 
-  def Translate(self, lang, pseudo_if_not_available=True,
-                skeleton_gatherer=None, fallback_to_english=False):
+  def Translate(
+    self,
+    lang,
+    pseudo_if_not_available=True,
+    skeleton_gatherer=None,
+    fallback_to_english=False,
+  ):
     '''Returns the resource being gathered, with translateable portions filled
     with the translation for language 'lang'.
 

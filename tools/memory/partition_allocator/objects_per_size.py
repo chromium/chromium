@@ -46,12 +46,16 @@ def _ParseExecutable(build_directory: str) -> dict:
     {size: int -> [str]} List of all objects grouped by size.
   """
   try:
-    p = subprocess.Popen([
-        'pahole', '--show_private_classes', '-s',
-        os.path.join(build_directory, 'chrome')
-    ],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.DEVNULL)
+    p = subprocess.Popen(
+      [
+        'pahole',
+        '--show_private_classes',
+        '-s',
+        os.path.join(build_directory, 'chrome'),
+      ],
+      stdout=subprocess.PIPE,
+      stderr=subprocess.DEVNULL,
+    )
   except OSError as e:
     logging.error('Cannot execute pahole, is it installed? %s', e)
     sys.exit(1)
@@ -83,13 +87,13 @@ def _MapToBucketSizes(objects_per_size: dict, alignment: int) -> dict:
 
   Returns:
     {slot_size -> [str]}
- """
+  """
   sizes = _BucketSizes(alignment)
   size_objects = list(objects_per_size.items())
   size_objects.sort()
   result = collections.defaultdict(list)
   next_bucket_index = 0
-  for (size, objects) in size_objects:
+  for size, objects in size_objects:
     while next_bucket_index < len(sizes) and size > sizes[next_bucket_index]:
       next_bucket_index += 1
     if next_bucket_index >= len(sizes):
@@ -119,10 +123,9 @@ def _StoreCachedResults(data):
 def main():
   logging.basicConfig(level=logging.INFO)
   parser = argparse.ArgumentParser()
-  parser.add_argument('--build-directory',
-                      type=str,
-                      required=True,
-                      help='Build directory')
+  parser.add_argument(
+    '--build-directory', type=str, required=True, help='Build directory'
+  )
   parser.add_argument('--slot-size', type=int)
   parser.add_argument('--type', type=str)
   parser.add_argument('--store-cached-results', action='store_true')
@@ -155,8 +158,10 @@ def main():
       assert 'Type %s not found', args.type
     logging.info('Slot Size of %s = %d', args.type, size)
 
-  print('Bucket sizes: %s' %
-        ' '.join([str(x) for x in _BucketSizes(args.alignment)]))
+  print(
+    'Bucket sizes: %s'
+    % ' '.join([str(x) for x in _BucketSizes(args.alignment)])
+  )
   print('Objects in bucket %d' % size)
   for name in objects_per_size[size]:
     print('\t' + name)

@@ -48,25 +48,34 @@ def main():
   fields = sorted(fields)
 
   # Command line parsing fun begins!
-  usage = ('%prog [options]\n'
-           'Print out information about a particular Chrome channel.')
+  usage = (
+    '%prog [options]\nPrint out information about a particular Chrome channel.'
+  )
   parser = optparse.OptionParser(usage=usage)
 
-  parser.add_option('-o', '--os',
-                    choices=oses,
-                    default='win',
-                    help='The operating system of interest: %s '
-                         '[default: %%default]' % ', '.join(oses))
-  parser.add_option('-c', '--channel',
-                    choices=channels,
-                    default='stable',
-                    help='The channel of interest: %s '
-                         '[default: %%default]' % ', '.join(channels))
-  parser.add_option('-f', '--field',
-                    choices=fields,
-                    default='version',
-                    help='The field of interest: %s '
-                         '[default: %%default] ' % ', '.join(fields))
+  parser.add_option(
+    '-o',
+    '--os',
+    choices=oses,
+    default='win',
+    help='The operating system of interest: %s '
+    '[default: %%default]' % ', '.join(oses),
+  )
+  parser.add_option(
+    '-c',
+    '--channel',
+    choices=channels,
+    default='stable',
+    help='The channel of interest: %s '
+    '[default: %%default]' % ', '.join(channels),
+  )
+  parser.add_option(
+    '-f',
+    '--field',
+    choices=fields,
+    default='version',
+    help='The field of interest: %s [default: %%default] ' % ', '.join(fields),
+  )
   (opts, args) = parser.parse_args()
 
   # Print out requested data if available.
@@ -84,9 +93,12 @@ def main():
       print(version[opts.field])
       return 0
 
-  print('Error: unable to find %s for Chrome %s %s.' % (opts.field, opts.os,
-                                                        opts.channel))
+  print(
+    'Error: unable to find %s for Chrome %s %s.'
+    % (opts.field, opts.os, opts.channel)
+  )
   return 1
+
 
 if __name__ == '__main__':
   sys.exit(main())

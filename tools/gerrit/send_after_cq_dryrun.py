@@ -20,10 +20,9 @@ TIMEOUT_SECONDS = TIMEOUT_HOURS * 3600
 
 def run_command(args):
     """Runs a command and returns (stdout+stderr, returncode)."""
-    result = subprocess.run(args,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.STDOUT,
-                            text=True)
+    result = subprocess.run(
+        args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+    )
     return result.stdout.strip(), result.returncode
 
 
@@ -72,6 +71,7 @@ def get_issue_info():
 @dataclass
 class ParseResult:
     """Holds the summarized state of the try job results."""
+
     # Whether the monitoring should stop.
     finished: bool
     # A human-readable string summarizing the success/pending/failed counts.
@@ -83,16 +83,17 @@ class ParseResult:
 
 
 class ReviewMonitor:
-
-    def __init__(self,
-                 issue_id,
-                 issue_url,
-                 host,
-                 patchset,
-                 reviewers,
-                 dry_run=False,
-                 verbose=False,
-                 is_bg=False):
+    def __init__(
+        self,
+        issue_id,
+        issue_url,
+        host,
+        patchset,
+        reviewers,
+        dry_run=False,
+        verbose=False,
+        is_bg=False,
+    ):
         self.issue_id = issue_id
         self.issue_url = issue_url
         self.host = host
@@ -103,20 +104,29 @@ class ReviewMonitor:
         self.is_bg = is_bg
         self.gerrit_client = find_gerrit_client()
         if not self.gerrit_client:
-            print(f"❌ [CL {self.issue_id} PS {self.patchset}] "
-                  f"({self.issue_url})\n"
-                  "   Could not find gerrit_client.py in your PATH.")
+            print(
+                f"❌ [CL {self.issue_id} PS {self.patchset}] "
+                f"({self.issue_url})\n"
+                "   Could not find gerrit_client.py in your PATH."
+            )
             sys.exit(1)
 
     def get_try_results(self):
         cmd = [
-            'git', 'cl', 'try-results', '--issue', self.issue_id, '--json', '-'
+            'git',
+            'cl',
+            'try-results',
+            '--issue',
+            self.issue_id,
+            '--json',
+            '-',
         ]
         if self.patchset:
             cmd.extend(['--patchset', self.patchset])
 
         stdout, code = run_command(cmd)
-        if code != 0: return None
+        if code != 0:
+            return None
         try:
             return json.loads(stdout)
         except Exception:
@@ -129,10 +139,18 @@ class ReviewMonitor:
 
         try:
             cmd = [
-                'vpython3', self.gerrit_client, 'rawapi',
-                f'--host={self.host}', '--method', 'GET', '--path',
-                f'/changes/{self.issue_id}/?o=ALL_REVISIONS', '--json_file',
-                temp_path, '--accept_status', '200'
+                'vpython3',
+                self.gerrit_client,
+                'rawapi',
+                f'--host={self.host}',
+                '--method',
+                'GET',
+                '--path',
+                f'/changes/{self.issue_id}/?o=ALL_REVISIONS',
+                '--json_file',
+                temp_path,
+                '--accept_status',
+                '200',
             ]
             out, code = run_command(cmd)
             if code != 0:
@@ -144,7 +162,8 @@ class ReviewMonitor:
 
             revisions = data.get('revisions', {})
             patchsets = sorted(
-                [int(r.get('_number')) for r in revisions.values()])
+                [int(r.get('_number')) for r in revisions.values()]
+            )
         except Exception as e:
             print(f"❌ Failed to parse Gerrit response: {e}")
             return self.get_try_results()
@@ -155,8 +174,13 @@ class ReviewMonitor:
         all_results = []
         for ps in patchsets:
             cmd = [
-                'git', 'cl', 'try-results', '--issue', self.issue_id, '--json',
-                '-'
+                'git',
+                'cl',
+                'try-results',
+                '--issue',
+                self.issue_id,
+                '--json',
+                '-',
             ]
             cmd.extend(['--patchset', str(ps)])
             stdout, code = run_command(cmd)
@@ -174,10 +198,12 @@ class ReviewMonitor:
     def parse_results(self, results: list[dict]) -> ParseResult:
         """Parses the raw JSON results from git cl try-results."""
         if not results:
-            return ParseResult(finished=False,
-                               stats="Waiting for builds...",
-                               success=False,
-                               failed_builders=[])
+            return ParseResult(
+                finished=False,
+                stats="Waiting for builds...",
+                success=False,
+                failed_builders=[],
+            )
 
         # Group by builder to handle retries: keep only the latest result for
         # the newest patchset for each builder
@@ -207,9 +233,9 @@ class ReviewMonitor:
             if name not in builder_patchsets:
                 builder_patchsets[name] = {}
 
-            if (patchset not in builder_patchsets[name]
-                    or job.get('createTime', '')
-                    > builder_patchsets[name][patchset].get('createTime', '')):
+            if patchset not in builder_patchsets[name] or job.get(
+                'createTime', ''
+            ) > builder_patchsets[name][patchset].get('createTime', ''):
                 builder_patchsets[name][patchset] = job
 
         latest_jobs = {}
@@ -250,26 +276,28 @@ class ReviewMonitor:
                 else:
                     ignored.append(f"{name} (PS {ps})")
 
-        stats = (f"Success: {len(success)}/{total} | "
-                 f"Pending: {len(running)} | Failed: {len(failed)} | "
-                 f"Ignored: {len(ignored)}")
+        stats = (
+            f"Success: {len(success)}/{total} | "
+            f"Pending: {len(running)} | Failed: {len(failed)} | "
+            f"Ignored: {len(ignored)}"
+        )
 
         if running:
-            return ParseResult(finished=False,
-                               stats=stats,
-                               success=False,
-                               failed_builders=failed)
+            return ParseResult(
+                finished=False,
+                stats=stats,
+                success=False,
+                failed_builders=failed,
+            )
 
         if not failed and total > 0:
-            return ParseResult(finished=True,
-                               stats=stats,
-                               success=True,
-                               failed_builders=[])
+            return ParseResult(
+                finished=True, stats=stats, success=True, failed_builders=[]
+            )
 
-        return ParseResult(finished=True,
-                           stats=stats,
-                           success=False,
-                           failed_builders=failed)
+        return ParseResult(
+            finished=True, stats=stats, success=False, failed_builders=failed
+        )
 
     def _run_gerrit_command(self, cmd, ignorable_msgs=None):
         """Runs a gerrit_client command and handles success/failure."""
@@ -286,8 +314,10 @@ class ReviewMonitor:
 
         out, code = run_command(cmd)
         if code != 0 and not any(msg in out for msg in ignorable_msgs):
-            print(f"      ❌ [CL {self.issue_id} PS {self.patchset}] "
-                  f"({self.issue_url}) Failed: {out}")
+            print(
+                f"      ❌ [CL {self.issue_id} PS {self.patchset}] "
+                f"({self.issue_url}) Failed: {out}"
+            )
         else:
             print(f"      ✅ Success")
 
@@ -295,38 +325,62 @@ class ReviewMonitor:
         print(f"   Adding reviewer: {reviewer}")
         body = json.dumps({"reviewer": reviewer})
         cmd = [
-            'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
-            '--method', 'POST', '--path',
-            f'/changes/{self.issue_id}/reviewers', '--body', body,
-            '--accept_status', '200,204,409'
+            'vpython3',
+            self.gerrit_client,
+            'rawapi',
+            f'--host={self.host}',
+            '--method',
+            'POST',
+            '--path',
+            f'/changes/{self.issue_id}/reviewers',
+            '--body',
+            body,
+            '--accept_status',
+            '200,204,409',
         ]
         self._run_gerrit_command(cmd)
 
     def set_wip(self, message=None):
         print(f"   Setting CL {self.issue_id} to WIP...")
         cmd = [
-            'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
-            '--method', 'POST', '--path', f'/changes/{self.issue_id}/wip',
-            '--accept_status', '200,204,409'
+            'vpython3',
+            self.gerrit_client,
+            'rawapi',
+            f'--host={self.host}',
+            '--method',
+            'POST',
+            '--path',
+            f'/changes/{self.issue_id}/wip',
+            '--accept_status',
+            '200,204,409',
         ]
         if message:
             cmd.extend(['--body', json.dumps({"message": message})])
 
-        self._run_gerrit_command(cmd,
-                                 ignorable_msgs=["already work in progress"])
+        self._run_gerrit_command(
+            cmd, ignorable_msgs=["already work in progress"]
+        )
 
     def set_ready(self, message=None):
         print(f"   Setting CL {self.issue_id} to Ready for Review...")
         cmd = [
-            'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
-            '--method', 'POST', '--path', f'/changes/{self.issue_id}/ready',
-            '--accept_status', '200,204,409'
+            'vpython3',
+            self.gerrit_client,
+            'rawapi',
+            f'--host={self.host}',
+            '--method',
+            'POST',
+            '--path',
+            f'/changes/{self.issue_id}/ready',
+            '--accept_status',
+            '200,204,409',
         ]
         if message:
             cmd.extend(['--body', json.dumps({"message": message})])
 
-        self._run_gerrit_command(cmd,
-                                 ignorable_msgs=["already ready for review"])
+        self._run_gerrit_command(
+            cmd, ignorable_msgs=["already ready for review"]
+        )
 
     def get_cq_label(self):
         with tempfile.NamedTemporaryFile(delete=False) as f:
@@ -334,10 +388,18 @@ class ReviewMonitor:
 
         try:
             cmd = [
-                'vpython3', self.gerrit_client, 'rawapi',
-                f'--host={self.host}', '--method', 'GET', '--path',
-                f'/changes/{self.issue_id}/?o=LABELS', '--json_file',
-                temp_path, '--accept_status', '200'
+                'vpython3',
+                self.gerrit_client,
+                'rawapi',
+                f'--host={self.host}',
+                '--method',
+                'GET',
+                '--path',
+                f'/changes/{self.issue_id}/?o=LABELS',
+                '--json_file',
+                temp_path,
+                '--accept_status',
+                '200',
             ]
             out, code = run_command(cmd)
             if code != 0:
@@ -347,8 +409,10 @@ class ReviewMonitor:
                 data = json.load(f)
 
             cq = data.get('labels', {}).get('Commit-Queue', {})
-            if 'approved' in cq: return 2
-            if 'recommended' in cq: return 1
+            if 'approved' in cq:
+                return 2
+            if 'recommended' in cq:
+                return 1
 
             max_v = 0
             for approval in cq.get('all', []):
@@ -367,16 +431,26 @@ class ReviewMonitor:
             review_input["message"] = message
         body = json.dumps(review_input)
         cmd = [
-            'vpython3', self.gerrit_client, 'rawapi', f'--host={self.host}',
-            '--method', 'POST', '--path',
+            'vpython3',
+            self.gerrit_client,
+            'rawapi',
+            f'--host={self.host}',
+            '--method',
+            'POST',
+            '--path',
             f'/changes/{self.issue_id}/revisions/{self.patchset}/review',
-            '--body', body, '--accept_status', '200,204,409'
+            '--body',
+            body,
+            '--accept_status',
+            '200,204,409',
         ]
         self._run_gerrit_command(cmd)
 
     def monitor(self):
-        print(f"🚀 Monitoring CQ for CL {self.issue_id} "
-              f"(Patchset: {self.patchset})")
+        print(
+            f"🚀 Monitoring CQ for CL {self.issue_id} "
+            f"(Patchset: {self.patchset})"
+        )
         print(f"🔗 URL: {self.issue_url}")
         print(f"🌐 Host: {self.host}")
         print(f"📧 Target Reviewers: {', '.join(self.reviewers)}")
@@ -386,21 +460,26 @@ class ReviewMonitor:
 
         self.set_wip(
             message="Triggering and monitoring CQ dry run; will mark Ready "
-            "for Review upon success (automated via send_after_cq_dryrun.py).")
+            "for Review upon success (automated via send_after_cq_dryrun.py)."
+        )
 
         if self.get_cq_label() < 1:
-            self.trigger_dry_run(message="Triggering CQ dry run "
-                                 "(automated via send_after_cq_dryrun.py).")
+            self.trigger_dry_run(
+                message="Triggering CQ dry run "
+                "(automated via send_after_cq_dryrun.py)."
+            )
 
         start_time = time.time()
         try:
             while True:
                 elapsed_total_seconds = int(time.time() - start_time)
                 if elapsed_total_seconds > TIMEOUT_SECONDS:
-                    print(f"\n\n⏰ [CL {self.issue_id} PS {self.patchset}] "
-                          f"({self.issue_url})\n"
-                          f"   Timeout reached after {TIMEOUT_HOURS} "
-                          "hours. Stopping monitoring.")
+                    print(
+                        f"\n\n⏰ [CL {self.issue_id} PS {self.patchset}] "
+                        f"({self.issue_url})\n"
+                        f"   Timeout reached after {TIMEOUT_HOURS} "
+                        "hours. Stopping monitoring."
+                    )
                     sys.exit(1)
 
                 results = self.get_all_try_results()
@@ -412,17 +491,22 @@ class ReviewMonitor:
                     # Update the same line in terminal
                     sys.stdout.write(
                         f"\r[{elapsed}] {res.stats} | "
-                        f"{len(results) if results else 0} bots found...   ")
+                        f"{len(results) if results else 0} bots found...   "
+                    )
                     sys.stdout.flush()
                 else:
                     # Periodic log update
-                    print(f"[{elapsed}] {res.stats} | "
-                          f"{len(results) if results else 0} bots found...")
+                    print(
+                        f"[{elapsed}] {res.stats} | "
+                        f"{len(results) if results else 0} bots found..."
+                    )
 
                 if res.finished:
                     if res.success:
-                        msg = (f"CQ passed! Transitioning CL {self.issue_id} "
-                               "to Ready for Review...")
+                        msg = (
+                            f"CQ passed! Transitioning CL {self.issue_id} "
+                            "to Ready for Review..."
+                        )
                         print(f"\n\n✅ {msg}")
 
                         for r in self.reviewers:
@@ -430,7 +514,8 @@ class ReviewMonitor:
 
                         self.set_ready(
                             message="CQ dry run passed! Sending for review "
-                            "(automated via send_after_cq_dryrun.py).")
+                            "(automated via send_after_cq_dryrun.py)."
+                        )
                     else:
                         # If CQ failed, double check the label. If it's still
                         # active, it means CQ is retrying.
@@ -445,12 +530,15 @@ class ReviewMonitor:
                             else:
                                 print(
                                     f"[{elapsed}] {res.stats} | "
-                                    "CQ still active, waiting for retries...")
+                                    "CQ still active, waiting for retries..."
+                                )
                         else:
-                            msg = (f"[CL {self.issue_id} PS {self.patchset}] "
-                                   f"({self.issue_url}) "
-                                   f"CQ failed on: "
-                                   f"{', '.join(res.failed_builders)}")
+                            msg = (
+                                f"[CL {self.issue_id} PS {self.patchset}] "
+                                f"({self.issue_url}) "
+                                f"CQ failed on: "
+                                f"{', '.join(res.failed_builders)}"
+                            )
                             print(f"\n\n🛑 {msg}")
 
                 if res.finished:
@@ -494,45 +582,52 @@ def detach_process(issue_id, patchset):
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('reviewers',
-                        nargs='*',
-                        help='Reviewer emails or LDAPs')
-    parser.add_argument('--patchset',
-                        help='Manually specify patchset to monitor')
-    parser.add_argument('--dry-run',
-                        action='store_true',
-                        help='Test monitoring logic')
-    parser.add_argument('--verbose',
-                        action='store_true',
-                        help='Print internal commands')
-    parser.add_argument('--bg',
-                        action='store_true',
-                        help='Run monitoring in background and detach')
+    parser.add_argument('reviewers', nargs='*', help='Reviewer emails or LDAPs')
+    parser.add_argument(
+        '--patchset', help='Manually specify patchset to monitor'
+    )
+    parser.add_argument(
+        '--dry-run', action='store_true', help='Test monitoring logic'
+    )
+    parser.add_argument(
+        '--verbose', action='store_true', help='Print internal commands'
+    )
+    parser.add_argument(
+        '--bg',
+        action='store_true',
+        help='Run monitoring in background and detach',
+    )
     args = parser.parse_args()
 
     if not args.dry_run and not args.reviewers:
-        parser.error("the following arguments are required: reviewers "
-                     "(unless --dry-run is used)")
+        parser.error(
+            "the following arguments are required: reviewers "
+            "(unless --dry-run is used)"
+        )
 
     issue_id, issue_url, patchset, host = get_issue_info()
     target_patchset = args.patchset or patchset
     final_reviewers = [
-        r.strip() for r in re.split(r'[,\s]+', ' '.join(args.reviewers))
+        r.strip()
+        for r in re.split(r'[,\s]+', ' '.join(args.reviewers))
         if r.strip()
     ]
 
     if args.bg:
         detach_process(issue_id, target_patchset)
 
-    monitor = ReviewMonitor(issue_id=issue_id,
-                            issue_url=issue_url,
-                            host=host,
-                            patchset=target_patchset,
-                            reviewers=final_reviewers,
-                            dry_run=args.dry_run,
-                            verbose=args.verbose,
-                            is_bg=args.bg)
+    monitor = ReviewMonitor(
+        issue_id=issue_id,
+        issue_url=issue_url,
+        host=host,
+        patchset=target_patchset,
+        reviewers=final_reviewers,
+        dry_run=args.dry_run,
+        verbose=args.verbose,
+        is_bg=args.bg,
+    )
     monitor.monitor()
 
 

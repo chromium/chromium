@@ -52,12 +52,14 @@ try:
   import psutil
   from selenium import webdriver
 except ImportError:
-  print('Error importing required modules. Run with vpython3 instead of '
-        'python.')
+  print(
+    'Error importing required modules. Run with vpython3 instead of python.'
+  )
   sys.exit(1)
 
 DEFAULT_INTERVAL = 1
 EXIT_CODE_ERROR = 1
+
 
 # Splits list |positional_args| into two lists: |urls| and |chrome_args|, where
 # arguments starting with '-' are treated as chrome args, and the rest as URLs.
@@ -84,34 +86,46 @@ def ParseArgs():
                         Must be at end of command, following the options
                         terminator "--"'''
   parser = argparse.ArgumentParser(
-      epilog=additional_help_text,
-      usage=usage_text,
-      formatter_class=argparse.RawDescriptionHelpFormatter)
+    epilog=additional_help_text,
+    usage=usage_text,
+    formatter_class=argparse.RawDescriptionHelpFormatter,
+  )
   parser.add_argument(
-      'chrome_dir', help='Directory containing chrome.exe and chromedriver.exe')
-  parser.add_argument('num_navigations',
-                      type=int,
-                      help='Number of times to navigate through list of URLs')
-  parser.add_argument('--interval',
-                      '-i',
-                      type=int,
-                      help='Seconds to wait between navigations; default is 1')
-  parser.add_argument('--start_prompt',
-                      '-s',
-                      action='store_true',
-                      help='Wait for confirmation before starting navigation')
-  parser.add_argument('--exit_prompt',
-                      '-e',
-                      action='store_true',
-                      help='Wait for confirmation before exiting chrome.exe')
+    'chrome_dir', help='Directory containing chrome.exe and chromedriver.exe'
+  )
   parser.add_argument(
-      '--idlewakeups_dir',
-      help='Windows only; directory containing idlewakeups.exe, if using')
+    'num_navigations',
+    type=int,
+    help='Number of times to navigate through list of URLs',
+  )
   parser.add_argument(
-      'url',
-      nargs='+',
-      help='URL(s) to navigate, separated by spaces; must include scheme, '
-      'e.g., "https://"')
+    '--interval',
+    '-i',
+    type=int,
+    help='Seconds to wait between navigations; default is 1',
+  )
+  parser.add_argument(
+    '--start_prompt',
+    '-s',
+    action='store_true',
+    help='Wait for confirmation before starting navigation',
+  )
+  parser.add_argument(
+    '--exit_prompt',
+    '-e',
+    action='store_true',
+    help='Wait for confirmation before exiting chrome.exe',
+  )
+  parser.add_argument(
+    '--idlewakeups_dir',
+    help='Windows only; directory containing idlewakeups.exe, if using',
+  )
+  parser.add_argument(
+    'url',
+    nargs='+',
+    help='URL(s) to navigate, separated by spaces; must include scheme, '
+    'e.g., "https://"',
+  )
   args = parser.parse_args()
   args.url, chrome_args = ParsePositionalArgs(args.url)
   if not args.url:
@@ -120,8 +134,11 @@ def ParseArgs():
     exit(EXIT_CODE_ERROR)
   for url in args.url:
     if not urllib.parse.urlparse(url).scheme:
-      print(os.path.basename(__file__) +
-            ': error: URL is missing required scheme (e.g., "https://"): ' + url)
+      print(
+        os.path.basename(__file__)
+        + ': error: URL is missing required scheme (e.g., "https://"): '
+        + url
+      )
       exit(EXIT_CODE_ERROR)
   return [args, chrome_args]
 
@@ -139,11 +156,14 @@ def ExitIfNotFound(path, error_message=None):
 def main():
   # Parse arguments and check that file paths received are valid.
   args, chrome_args = ParseArgs()
-  ExitIfNotFound(os.path.join(args.chrome_dir, 'chrome.exe'),
-                 'Build target "chrome" to generate it first.')
+  ExitIfNotFound(
+    os.path.join(args.chrome_dir, 'chrome.exe'),
+    'Build target "chrome" to generate it first.',
+  )
   chromedriver_exe = os.path.join(args.chrome_dir, 'chromedriver.exe')
-  ExitIfNotFound(chromedriver_exe,
-                 'Build target "chromedriver" to generate it first.')
+  ExitIfNotFound(
+    chromedriver_exe, 'Build target "chromedriver" to generate it first.'
+  )
   if args.idlewakeups_dir:
     idlewakeups_exe = os.path.join(args.idlewakeups_dir, 'idlewakeups.exe')
     ExitIfNotFound(idlewakeups_exe)
@@ -154,8 +174,9 @@ def main():
   chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
   for arg in chrome_args:
     chrome_options.add_argument(arg)
-  driver = webdriver.Chrome(os.path.abspath(chromedriver_exe),
-                            options=chrome_options)
+  driver = webdriver.Chrome(
+    os.path.abspath(chromedriver_exe), options=chrome_options
+  )
 
   if args.start_prompt:
     driver.get(args.url[0])
@@ -165,17 +186,22 @@ def main():
   # IdleWakeups will monitor the browser process and its children. Other running
   # chrome.exe processes (i.e., those not launched by this script) are excluded.
   if args.idlewakeups_dir:
-    launched_processes = psutil.Process(
-        driver.service.process.pid).children(recursive=False)
+    launched_processes = psutil.Process(driver.service.process.pid).children(
+      recursive=False
+    )
     if not launched_processes:
       print('Error getting browser process ID for IdleWakeups.')
       exit()
     # Assume the first child process created by |driver| is the browser process.
-    idlewakeups = subprocess.Popen([
+    idlewakeups = subprocess.Popen(
+      [
         idlewakeups_exe,
-        str(launched_processes[0].pid), '--stop-on-exit', '--tabbed'
-    ],
-                                   stdout=subprocess.PIPE)
+        str(launched_processes[0].pid),
+        '--stop-on-exit',
+        '--tabbed',
+      ],
+      stdout=subprocess.PIPE,
+    )
 
   # Navigate through |args.url| list |args.num_navigations| times, then close
   # chrome.exe.

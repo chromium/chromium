@@ -5,9 +5,9 @@
 
 '''Unit tests for grit.tool.android2grd'''
 
-
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -23,63 +23,81 @@ from grit.tool import android2grd
 
 
 class Android2GrdUnittest(unittest.TestCase):
-
   def __Parse(self, xml_string):
     return xml.dom.minidom.parseString(xml_string).childNodes[0]
 
   def testCreateTclibMessage(self):
     tool = android2grd.Android2Grd()
-    msg = tool.CreateTclibMessage(self.__Parse(r'''
-        <string name="simple">A simple string</string>'''))
+    msg = tool.CreateTclibMessage(
+      self.__Parse(r'''
+        <string name="simple">A simple string</string>''')
+    )
     self.assertEqual(msg.GetRealContent(), 'A simple string')
-    msg = tool.CreateTclibMessage(self.__Parse(r'''
+    msg = tool.CreateTclibMessage(
+      self.__Parse(r'''
         <string name="outer_whitespace">
           Strip leading/trailing whitespace
-        </string>'''))
+        </string>''')
+    )
     self.assertEqual(msg.GetRealContent(), 'Strip leading/trailing whitespace')
-    msg = tool.CreateTclibMessage(self.__Parse(r'''
-        <string name="inner_whitespace">Fold  multiple   spaces</string>'''))
+    msg = tool.CreateTclibMessage(
+      self.__Parse(r'''
+        <string name="inner_whitespace">Fold  multiple   spaces</string>''')
+    )
     self.assertEqual(msg.GetRealContent(), 'Fold multiple spaces')
-    msg = tool.CreateTclibMessage(self.__Parse(r'''
-        <string name="escaped_spaces">Retain \n escaped\t spaces</string>'''))
+    msg = tool.CreateTclibMessage(
+      self.__Parse(r'''
+        <string name="escaped_spaces">Retain \n escaped\t spaces</string>''')
+    )
     self.assertEqual(msg.GetRealContent(), 'Retain \n escaped\t spaces')
-    msg = tool.CreateTclibMessage(self.__Parse(r'''
+    msg = tool.CreateTclibMessage(
+      self.__Parse(r'''
         <string name="quotes">   " Quotes  preserve
           whitespace"  but  only  for  "enclosed   elements  "
-        </string>'''))
-    self.assertEqual(msg.GetRealContent(), ''' Quotes  preserve
-          whitespace but only for enclosed   elements  ''')
-    msg = tool.CreateTclibMessage(self.__Parse(
+        </string>''')
+    )
+    self.assertEqual(
+      msg.GetRealContent(),
+      ''' Quotes  preserve
+          whitespace but only for enclosed   elements  ''',
+    )
+    msg = tool.CreateTclibMessage(
+      self.__Parse(
         r'''<string name="escaped_characters">Escaped characters: \"\'\\\t\n'''
-        '</string>'))
+        '</string>'
+      )
+    )
     self.assertEqual(msg.GetRealContent(), '''Escaped characters: "'\\\t\n''')
-    msg = tool.CreateTclibMessage(self.__Parse(
+    msg = tool.CreateTclibMessage(
+      self.__Parse(
         '<string xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" '
         'name="placeholders">'
         'Open <xliff:g id="FILENAME" example="internet.html">%s</xliff:g>?'
-        '</string>'))
+        '</string>'
+      )
+    )
     self.assertEqual(msg.GetRealContent(), 'Open %s?')
     self.assertEqual(len(msg.GetPlaceholders()), 1)
     self.assertEqual(msg.GetPlaceholders()[0].presentation, 'FILENAME')
     self.assertEqual(msg.GetPlaceholders()[0].original, '%s')
     self.assertEqual(msg.GetPlaceholders()[0].example, 'internet.html')
-    msg = tool.CreateTclibMessage(self.__Parse(r'''
+    msg = tool.CreateTclibMessage(
+      self.__Parse(r'''
         <string name="comment">Contains a <!-- ignore this --> comment
-        </string>'''))
+        </string>''')
+    )
     self.assertEqual(msg.GetRealContent(), 'Contains a comment')
 
   def testIsTranslatable(self):
     tool = android2grd.Android2Grd()
     string_el = self.__Parse('<string>Hi</string>')
     self.assertTrue(tool.IsTranslatable(string_el))
-    string_el = self.__Parse(
-        '<string translatable="true">Hi</string>')
+    string_el = self.__Parse('<string translatable="true">Hi</string>')
     self.assertTrue(tool.IsTranslatable(string_el))
-    string_el = self.__Parse(
-        '<string translatable="false">Hi</string>')
+    string_el = self.__Parse('<string translatable="false">Hi</string>')
     self.assertFalse(tool.IsTranslatable(string_el))
 
-  def __ParseAndroidXml(self, options = []):
+  def __ParseAndroidXml(self, options=[]):
     tool = android2grd.Android2Grd()
 
     tool.ParseOptions(options)
@@ -126,20 +144,29 @@ class Android2GrdUnittest(unittest.TestCase):
     files = grd.GetChildrenOfType(node_io.FileNode)
     us_file = [x for x in files if x.attrs['lang'] == 'en-US']
     self.assertTrue(us_file)
-    self.assertEqual(us_file[0].GetInputPath(),
-                     'chrome_android_strings_en-US.xtb')
+    self.assertEqual(
+      us_file[0].GetInputPath(), 'chrome_android_strings_en-US.xtb'
+    )
 
     id_file = [x for x in files if x.attrs['lang'] == 'id']
     self.assertTrue(id_file)
-    self.assertEqual(id_file[0].GetInputPath(),
-                     'chrome_android_strings_id.xtb')
+    self.assertEqual(id_file[0].GetInputPath(), 'chrome_android_strings_id.xtb')
 
   def testOutputs(self):
-    grd = self.__ParseAndroidXml(['--languages', 'en-US,ru,id',
-                                  '--rc-dir', 'rc/dir',
-                                  '--header-dir', 'header/dir',
-                                  '--xtb-dir', 'xtb/dir',
-                                  '--xml-dir', 'xml/dir'])
+    grd = self.__ParseAndroidXml(
+      [
+        '--languages',
+        'en-US,ru,id',
+        '--rc-dir',
+        'rc/dir',
+        '--header-dir',
+        'header/dir',
+        '--xtb-dir',
+        'xtb/dir',
+        '--xml-dir',
+        'xml/dir',
+      ]
+    )
 
     outputs = grd.GetChildrenOfType(node_io.OutputNode)
     self.assertEqual(len(outputs), 7)
@@ -154,26 +181,36 @@ class Android2GrdUnittest(unittest.TestCase):
 
     # The header node should have an "<emit>" child and the proper filename.
     self.assertTrue(header_outputs[0].GetChildrenOfType(node_io.EmitNode))
-    self.assertEqual(util.normpath(header_outputs[0].GetFilename()),
-                     util.normpath('header/dir/chrome_android_strings.h'))
+    self.assertEqual(
+      util.normpath(header_outputs[0].GetFilename()),
+      util.normpath('header/dir/chrome_android_strings.h'),
+    )
 
     id_rc = [x for x in rc_outputs if x.GetLanguage() == 'id']
     id_xml = [x for x in xml_outputs if x.GetLanguage() == 'id']
     self.assertTrue(id_rc)
     self.assertTrue(id_xml)
-    self.assertEqual(util.normpath(id_rc[0].GetFilename()),
-                     util.normpath('rc/dir/chrome_android_strings_id.rc'))
-    self.assertEqual(util.normpath(id_xml[0].GetFilename()),
-                     util.normpath('xml/dir/values-in/strings.xml'))
+    self.assertEqual(
+      util.normpath(id_rc[0].GetFilename()),
+      util.normpath('rc/dir/chrome_android_strings_id.rc'),
+    )
+    self.assertEqual(
+      util.normpath(id_xml[0].GetFilename()),
+      util.normpath('xml/dir/values-in/strings.xml'),
+    )
 
     us_rc = [x for x in rc_outputs if x.GetLanguage() == 'en-US']
     us_xml = [x for x in xml_outputs if x.GetLanguage() == 'en-US']
     self.assertTrue(us_rc)
     self.assertTrue(us_xml)
-    self.assertEqual(util.normpath(us_rc[0].GetFilename()),
-                     util.normpath('rc/dir/chrome_android_strings_en-US.rc'))
-    self.assertEqual(util.normpath(us_xml[0].GetFilename()),
-                     util.normpath('xml/dir/values-en-rUS/strings.xml'))
+    self.assertEqual(
+      util.normpath(us_rc[0].GetFilename()),
+      util.normpath('rc/dir/chrome_android_strings_en-US.rc'),
+    )
+    self.assertEqual(
+      util.normpath(us_xml[0].GetFilename()),
+      util.normpath('xml/dir/values-en-rUS/strings.xml'),
+    )
 
 
 if __name__ == '__main__':

@@ -77,18 +77,19 @@ LOG_FILE_NAME = 'ininja.logs'
 
 def get_changed_file_states():
   """
-    Uses git to find changed/untracked files and returns their mtimes.
-    This is a hybrid approach that is both fast and accurate. A change
-    is detected if the list of files changes or if any of their
-    modification times change.
-    """
+  Uses git to find changed/untracked files and returns their mtimes.
+  This is a hybrid approach that is both fast and accurate. A change
+  is detected if the list of files changes or if any of their
+  modification times change.
+  """
   try:
     result = subprocess.run(
-        ['git', 'status', '-z', '--porcelain', '--untracked-files=all'],
-        capture_output=True,
-        text=True,
-        encoding='utf-8',
-        check=True)
+      ['git', 'status', '-z', '--porcelain', '--untracked-files=all'],
+      capture_output=True,
+      text=True,
+      encoding='utf-8',
+      check=True,
+    )
   except (subprocess.CalledProcessError, FileNotFoundError) as e:
     print(f"Error running 'git status': {e}")
     print("Please ensure you are in a git repository.")
@@ -120,8 +121,8 @@ def get_changed_file_states():
 
 def run_ninja(ninja_args, log_path):
   """
-    Executes the autoninja command with the provided arguments and logs output.
-    """
+  Executes the autoninja command with the provided arguments and logs output.
+  """
   print("-> Kicking off ninja build...")
   command = ['autoninja'] + ninja_args
 
@@ -136,11 +137,13 @@ def run_ninja(ninja_args, log_path):
       log_file.write(start_message + '\n')
 
       # Use Popen to stream output in real-time.
-      process = subprocess.Popen(command,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.STDOUT,
-                                 text=True,
-                                 encoding='utf-8')
+      process = subprocess.Popen(
+        command,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        encoding='utf-8',
+      )
 
       for line in iter(process.stdout.readline, ''):
         print(line, end='')
@@ -158,8 +161,9 @@ def run_ninja(ninja_args, log_path):
     sys.exit(1)
 
   finish_time = int(time.time())
-  finish_message = (f"--- Build finished at {finish_time} "
-                    f"with exit code {return_code} ---")
+  finish_message = (
+    f"--- Build finished at {finish_time} with exit code {return_code} ---"
+  )
   print(finish_message)
 
   # Re-open in append mode to add the finish message.
@@ -188,8 +192,10 @@ def main():
       break
 
   if not ninja_args or output_dir is None:
-    print("Usage: ./tools/ininja/ininja.py -C <output_directory> "
-          "target1 target2 ...")
+    print(
+      "Usage: ./tools/ininja/ininja.py -C <output_directory> "
+      "target1 target2 ..."
+    )
     print("Example: ./tools/ininja/ininja.py -C out/default chrome")
     return
 
@@ -214,7 +220,7 @@ def main():
         print("\n-> Change detected.")
         run_ninja(ninja_args, log_path)
         print(
-            f"\n👀 Watching for file changes (polling every {POLL_INTERVAL}s)..."
+          f"\n👀 Watching for file changes (polling every {POLL_INTERVAL}s)..."
         )
         previous_states = current_states
 

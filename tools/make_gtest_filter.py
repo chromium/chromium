@@ -40,14 +40,14 @@ import sys
 
 # These regexes are not exhaustive, and should be updated as needed.
 _RX_CC = re.compile(
-    r'^(?:TYPED_)?(?:IN_PROC_BROWSER_)?TEST(_F|_P)?\(\s*(\w+)\s*'
-    r',\s*(\w+)\s*\)',
-    flags=re.DOTALL | re.M)
+  r'^(?:TYPED_)?(?:IN_PROC_BROWSER_)?TEST(_F|_P)?\(\s*(\w+)\s*'
+  r',\s*(\w+)\s*\)',
+  flags=re.DOTALL | re.M,
+)
 _RX_RS = re.compile(r'^\s*#\[gtest\(\s*(\w+)\s*,\s*(\w+)\s*\)\]', flags=re.M)
 
 
 class TrieNode:
-
   def __init__(self):
     # The number of strings which terminated on or underneath this node.
     self.num_strings = 0
@@ -61,10 +61,11 @@ def PascalCaseSplit(input_string):
   prev_char = ''
 
   for current_char in input_string:
-    is_boundary = prev_char != '' and \
-                  ((current_char.isupper() and prev_char.islower()) or \
-                   (current_char.isalpha() != prev_char.isalpha()) or \
-                   (current_char.isalnum() != prev_char.isalnum()))
+    is_boundary = prev_char != '' and (
+      (current_char.isupper() and prev_char.islower())
+      or (current_char.isalpha() != prev_char.isalpha())
+      or (current_char.isalnum() != prev_char.isalnum())
+    )
     prev_char = current_char
 
     if is_boundary:
@@ -108,14 +109,13 @@ def ComputeWildcardsFromTrie(trie, min_depth, min_cases):
 
   while len(to_process) > 0:
     cur_prefix, cur_trie, cur_depth = to_process.pop()
-    assert (cur_trie.num_strings != 0)
+    assert cur_trie.num_strings != 0
 
     if len(cur_trie.children) == 0:
       # No more children == we're at the end of a string.
       yield cur_prefix
 
-    elif (cur_depth == min_depth) and \
-         cur_trie.num_strings > min_cases:
+    elif (cur_depth == min_depth) and cur_trie.num_strings > min_cases:
       # Trim traversal of this path if the path is deep enough and there
       # are enough entries to warrant elision.
       yield cur_prefix + WILDCARD
@@ -150,8 +150,9 @@ def CompressWithWildcards(test_list, min_depth, min_cases):
   # of the cases.
   for suite in suite_tries.items():
     suite_name, cases_trie = suite
-    for case_wildcard in ComputeWildcardsFromTrie(cases_trie, min_depth, \
-            min_cases):
+    for case_wildcard in ComputeWildcardsFromTrie(
+      cases_trie, min_depth, min_cases
+    ):
       output.append("{}.{}".format(suite_name, case_wildcard))
 
   output.sort()
@@ -179,48 +180,56 @@ def GetFiltersForTests(tests, class_only):
   # match either regular tests or instantiated tests.
   if class_only:
     fixtures = set([t.split('.')[0] for t in tests])
-    return [c + '.*' for c in fixtures] + \
-          ['*/' + c + '.*/*' for c in fixtures] + \
-          ['*/' + c + '/*.*' for c in fixtures] + \
-          [c + '.*/*' for c in fixtures] + \
-          [c + '/*.*' for c in fixtures]
+    return (
+      [c + '.*' for c in fixtures]
+      + ['*/' + c + '.*/*' for c in fixtures]
+      + ['*/' + c + '/*.*' for c in fixtures]
+      + [c + '.*/*' for c in fixtures]
+      + [c + '/*.*' for c in fixtures]
+    )
   else:
     fixtures_and_tcs = [test.split('.', 1) for test in tests]
-    return [c for c in tests] + \
-        ['*/' + c + '/*' for c in tests] + \
-        [c + '/*' for c in tests] + \
-        [fixture + '/*.' + tc for fixture, tc in fixtures_and_tcs]
+    return (
+      [c for c in tests]
+      + ['*/' + c + '/*' for c in tests]
+      + [c + '/*' for c in tests]
+      + [fixture + '/*.' + tc for fixture, tc in fixtures_and_tcs]
+    )
 
 
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--input-format',
-      choices=['swarming_summary', 'test_launcher_summary', 'test_file'],
-      default='test_file')
-  parser.add_argument('--output-format',
-                      choices=['file', 'args'],
-                      default='args')
+    '--input-format',
+    choices=['swarming_summary', 'test_launcher_summary', 'test_file'],
+    default='test_file',
+  )
+  parser.add_argument(
+    '--output-format', choices=['file', 'args'], default='args'
+  )
   parser.add_argument('--wildcard-compress', action='store_true')
   parser.add_argument(
-      '--wildcard-min-depth',
-      type=int,
-      default=1,
-      help="Minimum number of terms in a case before a wildcard may be " +
-      "used, so that prefixes are not excessively broad.")
+    '--wildcard-min-depth',
+    type=int,
+    default=1,
+    help="Minimum number of terms in a case before a wildcard may be "
+    + "used, so that prefixes are not excessively broad.",
+  )
   parser.add_argument(
-      '--wildcard-min-cases',
-      type=int,
-      default=3,
-      help="Minimum number of cases in a filter before folding into a " +
-      "wildcard, so as to not create wildcards needlessly for small "
-      "numbers of similarly named test failures.")
+    '--wildcard-min-cases',
+    type=int,
+    default=3,
+    help="Minimum number of cases in a filter before folding into a "
+    + "wildcard, so as to not create wildcards needlessly for small "
+    "numbers of similarly named test failures.",
+  )
   parser.add_argument('--line', type=int)
   parser.add_argument('--class-only', action='store_true')
   parser.add_argument(
-      '--as-exclusions',
-      action='store_true',
-      help='Generate exclusion rules for test cases, instead of inclusions.')
+    '--as-exclusions',
+    action='store_true',
+    help='Generate exclusion rules for test cases, instead of inclusions.',
+  )
   args, left = parser.parse_known_args()
 
   test_filters = []
@@ -231,22 +240,24 @@ def main():
       test_filters.extend(json.loads('\n'.join(open(json_file, 'r'))))
 
     if args.wildcard_compress:
-      test_filters = CompressWithWildcards(test_filters,
-                                           args.wildcard_min_depth,
-                                           args.wildcard_min_cases)
+      test_filters = CompressWithWildcards(
+        test_filters, args.wildcard_min_depth, args.wildcard_min_cases
+      )
 
   elif args.input_format == 'test_launcher_summary':
     # Decode the JSON files separately and combine their contents.
     test_filters = []
     for json_file in left:
       test_filters.extend(
-          GetFailedTestsFromTestLauncherSummary(
-              json.loads('\n'.join(open(json_file, 'r')))))
+        GetFailedTestsFromTestLauncherSummary(
+          json.loads('\n'.join(open(json_file, 'r')))
+        )
+      )
 
     if args.wildcard_compress:
-      test_filters = CompressWithWildcards(test_filters,
-                                           args.wildcard_min_depth,
-                                           args.wildcard_min_cases)
+      test_filters = CompressWithWildcards(
+        test_filters, args.wildcard_min_depth, args.wildcard_min_cases
+      )
 
   else:
     file_input = fileinput.input(left)
@@ -256,8 +267,10 @@ def main():
       requested_line = args.line
       selected_lines = []
       for line in file_input:
-        if (fileinput.lineno() >= requested_line
-            and fileinput.lineno() <= requested_line + 1):
+        if (
+          fileinput.lineno() >= requested_line
+          and fileinput.lineno() <= requested_line + 1
+        ):
           selected_lines.append(line)
       txt = ''.join(selected_lines)
     else:
@@ -275,8 +288,9 @@ def main():
       tests.append(f'{fixture}.{test_name}')
 
     if args.wildcard_compress:
-      test_filters = CompressWithWildcards(tests, args.wildcard_min_depth,
-                                           args.wildcard_min_cases)
+      test_filters = CompressWithWildcards(
+        tests, args.wildcard_min_depth, args.wildcard_min_cases
+      )
     else:
       test_filters = GetFiltersForTests(tests, args.class_only)
 

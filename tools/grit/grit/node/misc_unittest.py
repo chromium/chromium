@@ -56,42 +56,50 @@ class GritNodeUnittest(unittest.TestCase):
   def testUniqueNameAttribute(self):
     try:
       restree = grd_reader.Parse(
-        util.PathFromRoot('grit/testdata/duplicate-name-input.xml'))
+        util.PathFromRoot('grit/testdata/duplicate-name-input.xml')
+      )
       self.fail('Expected parsing exception because of duplicate names.')
     except grit.exception.Parsing:
       pass  # Expected case
 
   def testReadFirstIdsFromFile(self):
-    test_resource_ids = os.path.join(os.path.dirname(__file__), '..',
-                                     'testdata', 'resource_ids')
+    test_resource_ids = os.path.join(
+      os.path.dirname(__file__), '..', 'testdata', 'resource_ids'
+    )
     base_dir = os.path.dirname(test_resource_ids)
 
     src_dir, id_dict = misc._ReadFirstIdsFromFile(
-        test_resource_ids,
-        {
-          'FOO': os.path.join(base_dir, 'bar'),
-          'SHARED_INTERMEDIATE_DIR': os.path.join(base_dir,
-                                                  'out/Release/obj/gen'),
-        })
+      test_resource_ids,
+      {
+        'FOO': os.path.join(base_dir, 'bar'),
+        'SHARED_INTERMEDIATE_DIR': os.path.join(
+          base_dir, 'out/Release/obj/gen'
+        ),
+      },
+    )
     self.assertEqual({}, id_dict.get('bar/file.grd', None))
-    self.assertEqual({},
-        id_dict.get('out/Release/obj/gen/devtools/devtools.grd', None))
+    self.assertEqual(
+      {}, id_dict.get('out/Release/obj/gen/devtools/devtools.grd', None)
+    )
 
     src_dir, id_dict = misc._ReadFirstIdsFromFile(
-        test_resource_ids,
-        {
-          'SHARED_INTERMEDIATE_DIR': '/outside/src_dir',
-        })
+      test_resource_ids,
+      {
+        'SHARED_INTERMEDIATE_DIR': '/outside/src_dir',
+      },
+    )
     # Windows adds a c:// prefix, which is why this is needed here.
     abs_path = os.path.abspath(
-        '/outside/src_dir/devtools/devtools.grd').replace('\\', '/')
+      '/outside/src_dir/devtools/devtools.grd'
+    ).replace('\\', '/')
     self.assertEqual({}, id_dict.get(abs_path, None))
 
   # Verifies that GetInputFiles() returns the correct list of files
   # corresponding to ChromeScaledImage nodes when assets are missing.
   def testGetInputFilesChromeScaledImage(self):
     chrome_html_path = util.PathFromRoot('grit/testdata/chrome_html.html')
-    xml = '''<?xml version="1.0" encoding="utf-8"?>
+    xml = (
+      '''<?xml version="1.0" encoding="utf-8"?>
       <grit latest_public_release="0" current_release="1">
         <outputs>
           <output filename="default.pak" type="data_package" context="default_100_percent" />
@@ -104,14 +112,22 @@ class GritNodeUnittest(unittest.TestCase):
             <structure type="chrome_html" name="HTML_FILE1" file="%s" flattenhtml="true" />
           </structures>
         </release>
-      </grit>''' % chrome_html_path
+      </grit>'''
+      % chrome_html_path
+    )
 
     grd = grd_reader.Parse(io.StringIO(xml), util.PathFromRoot('grit/testdata'))
-    expected = ['chrome_html.html', 'default_100_percent/a.png',
-                'default_100_percent/b.png', 'included_sample.html',
-                'special_100_percent/a.png']
-    actual = [os.path.relpath(path, util.PathFromRoot('grit/testdata')) for
-              path in grd.GetInputFiles()]
+    expected = [
+      'chrome_html.html',
+      'default_100_percent/a.png',
+      'default_100_percent/b.png',
+      'included_sample.html',
+      'special_100_percent/a.png',
+    ]
+    actual = [
+      os.path.relpath(path, util.PathFromRoot('grit/testdata'))
+      for path in grd.GetInputFiles()
+    ]
     # Convert path separator for Windows paths.
     actual = [path.replace('\\', '/') for path in actual]
     self.assertEqual(expected, actual)
@@ -120,7 +136,8 @@ class GritNodeUnittest(unittest.TestCase):
   # when files include other files.
   def testGetInputFilesFromIncludes(self):
     chrome_html_path = util.PathFromRoot('grit/testdata/chrome_html.html')
-    xml = '''<?xml version="1.0" encoding="utf-8"?>
+    xml = (
+      '''<?xml version="1.0" encoding="utf-8"?>
       <grit latest_public_release="0" current_release="1">
         <outputs>
           <output filename="default.pak" type="data_package" context="default_100_percent" />
@@ -132,12 +149,16 @@ class GritNodeUnittest(unittest.TestCase):
  allowexternalscript="true" type="BINDATA" />
           </includes>
         </release>
-      </grit>''' % chrome_html_path
+      </grit>'''
+      % chrome_html_path
+    )
 
     grd = grd_reader.Parse(io.StringIO(xml), util.PathFromRoot('grit/testdata'))
     expected = ['chrome_html.html', 'included_sample.html']
-    actual = [os.path.relpath(path, util.PathFromRoot('grit/testdata')) for
-              path in grd.GetInputFiles()]
+    actual = [
+      os.path.relpath(path, util.PathFromRoot('grit/testdata'))
+      for path in grd.GetInputFiles()
+    ]
     # Convert path separator for Windows paths.
     actual = [path.replace('\\', '/') for path in actual]
     self.assertEqual(expected, actual)
@@ -155,7 +176,8 @@ class GritNodeUnittest(unittest.TestCase):
     self.assertIn('#define IDS_A 2378\n#define IDS_B 2379', output)
 
   def testMaxIds(self):
-    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+    xml = (
+      '''<?xml version="1.0" encoding="UTF-8"?>
 <grit latest_public_release="2" source_lang_id="en-US" current_release="3"
       base_dir="." first_ids_file="%s">
   <release seq="3">
@@ -164,20 +186,26 @@ class GritNodeUnittest(unittest.TestCase):
       <message name="IDS_TEST2" desc="test2">test2</message>
     </messages>
   </release>
-</grit>''' % 'GRIT_DIR/grit/testdata/tools/grit/resource_ids_for_overflow_test'
+</grit>'''
+      % 'GRIT_DIR/grit/testdata/tools/grit/resource_ids_for_overflow_test'
+    )
     pseudo_file = io.StringIO(xml)
-    grit_root_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                                 '..', '..')
+    grit_root_dir = os.path.join(
+      os.path.abspath(os.path.dirname(__file__)), '..', '..'
+    )
     fake_input_path = os.path.join(
-        grit_root_dir, "grit/testdata/chrome/app/generated_resources.grd")
+      grit_root_dir, "grit/testdata/chrome/app/generated_resources.grd"
+    )
     root = grd_reader.Parse(pseudo_file, os.path.split(fake_input_path)[0])
     root.AssignFirstIds(fake_input_path, {})
     self.assertRaises(grit.exception.IdRangeOverflow, root.InitializeIds)
 
   def testExplicitFirstIdOverlaps(self):
     # second first_id will overlap preexisting range
-    self.assertRaises(grit.exception.IdRangeOverlap,
-                      util.ParseGrdForUnittest, '''
+    self.assertRaises(
+      grit.exception.IdRangeOverlap,
+      util.ParseGrdForUnittest,
+      '''
         <includes first_id="300" comment="bingo">
           <include type="gif" name="ID_LOGO" file="images/logo.gif" />
           <include type="gif" name="ID_LOGO2" file="images/logo2.gif" />
@@ -187,12 +215,15 @@ class GritNodeUnittest(unittest.TestCase):
             Hello <ph name="USERNAME">%s<ex>Joi</ex></ph>, how are you doing today?
           </message>
           <message name="IDS_SMURFGEBURF">Frubegfrums</message>
-        </messages>''')
+        </messages>''',
+    )
 
   def testImplicitOverlapsPreexisting(self):
     # second message in <messages> will overlap preexisting range
-    self.assertRaises(grit.exception.IdRangeOverlap,
-                      util.ParseGrdForUnittest, '''
+    self.assertRaises(
+      grit.exception.IdRangeOverlap,
+      util.ParseGrdForUnittest,
+      '''
         <includes first_id="301" comment="bingo">
           <include type="gif" name="ID_LOGO" file="images/logo.gif" />
           <include type="gif" name="ID_LOGO2" file="images/logo2.gif" />
@@ -202,11 +233,13 @@ class GritNodeUnittest(unittest.TestCase):
             Hello <ph name="USERNAME">%s<ex>Joi</ex></ph>, how are you doing today?
           </message>
           <message name="IDS_SMURFGEBURF">Frubegfrums</message>
-        </messages>''')
+        </messages>''',
+    )
 
   def testPredeterminedIds(self):
     with _MakeTempPredeterminedIdsFile('IDS_A 101\nIDS_B 102') as ids_file:
-      grd = util.ParseGrdForUnittest('''
+      grd = util.ParseGrdForUnittest(
+        '''
           <includes first_id="300" comment="bingo">
             <include type="gif" name="IDS_B" file="images/logo.gif" />
           </includes>
@@ -217,17 +250,22 @@ class GritNodeUnittest(unittest.TestCase):
             <message name="IDS_A">
               Bongo!
             </message>
-          </messages>''', predetermined_ids_file=ids_file)
+          </messages>''',
+        predetermined_ids_file=ids_file,
+      )
       output = rc_header.FormatDefines(grd)
-      self.assertEqual(('#define IDS_B 102\n'
-                        '#define IDS_GREETING 10000\n'
-                        '#define IDS_A 101\n'), ''.join(output))
+      self.assertEqual(
+        ('#define IDS_B 102\n#define IDS_GREETING 10000\n#define IDS_A 101\n'),
+        ''.join(output),
+      )
       os.remove(ids_file)
 
   def testPredeterminedIdsOverlap(self):
     with _MakeTempPredeterminedIdsFile('ID_LOGO 10000') as ids_file:
-      self.assertRaises(grit.exception.IdRangeOverlap,
-                        util.ParseGrdForUnittest, '''
+      self.assertRaises(
+        grit.exception.IdRangeOverlap,
+        util.ParseGrdForUnittest,
+        '''
           <includes first_id="300" comment="bingo">
             <include type="gif" name="ID_LOGO" file="images/logo.gif" />
           </includes>
@@ -238,13 +276,16 @@ class GritNodeUnittest(unittest.TestCase):
             <message name="IDS_BONGO">
               Bongo!
             </message>
-          </messages>''', predetermined_ids_file=ids_file)
+          </messages>''',
+        predetermined_ids_file=ids_file,
+      )
       os.remove(ids_file)
 
 
 class IfNodeUnittest(unittest.TestCase):
   def testIffyness(self):
-    grd = grd_reader.Parse(io.StringIO('''
+    grd = grd_reader.Parse(
+      io.StringIO('''
       <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
         <release seq="3">
           <messages>
@@ -269,7 +310,8 @@ class IfNodeUnittest(unittest.TestCase):
           </messages>
         </release>
       </grit>'''),
-                           dir='.')
+      dir='.',
+    )
 
     messages_node = grd.children[0].children[0]
     bingo_message = messages_node.children[0].children[0]
@@ -348,12 +390,16 @@ class IfNodeUnittest(unittest.TestCase):
             <else> </else>
           </if>
         </messages>''')
-    included = [msg.attrs['name'] for msg in grd.ActiveDescendants()
-                                  if msg.name == 'message']
+    included = [
+      msg.attrs['name']
+      for msg in grd.ActiveDescendants()
+      if msg.name == 'message'
+    ]
     self.assertEqual(['IDS_YES1', 'IDS_YES2', 'IDS_YES3', 'IDS_YES4'], included)
 
   def testIffynessWithOutputNodes(self):
-    grd = grd_reader.Parse(io.StringIO('''
+    grd = grd_reader.Parse(
+      io.StringIO('''
       <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
         <outputs>
           <output filename="uncond1.rc" type="rc_data" />
@@ -370,7 +416,8 @@ class IfNodeUnittest(unittest.TestCase):
           </output>
         </outputs>
       </grit>'''),
-                           dir='.')
+      dir='.',
+    )
 
     outputs_node = grd.children[0]
     uncond1_output = outputs_node.children[0]
@@ -388,24 +435,31 @@ class IfNodeUnittest(unittest.TestCase):
     grd.SetDefines({'hello': '1'})
     outputs = [output.GetFilename() for output in grd.GetOutputFiles()]
     self.assertEqual(
-        outputs,
-        ['uncond1.rc', 'only_fr.adm', 'only_fr.plist', 'doc.html',
-         'uncond2.adm', 'iftest.h'])
+      outputs,
+      [
+        'uncond1.rc',
+        'only_fr.adm',
+        'only_fr.plist',
+        'doc.html',
+        'uncond2.adm',
+        'iftest.h',
+      ],
+    )
 
     grd.SetOutputLanguage('ru')
     grd.SetDefines({'bingo': '2'})
     outputs = [output.GetFilename() for output in grd.GetOutputFiles()]
     self.assertEqual(
-        outputs,
-        ['uncond1.rc', 'doc.html', 'uncond2.adm', 'iftest.h'])
+      outputs, ['uncond1.rc', 'doc.html', 'uncond2.adm', 'iftest.h']
+    )
 
     grd.SetOutputLanguage('fr')
     grd.SetDefines({'hello': '1'})
     outputs = [output.GetFilename() for output in grd.GetOutputFiles()]
     self.assertEqual(
-        outputs,
-        ['uncond1.rc', 'only_fr.adm', 'only_fr.plist', 'uncond2.adm',
-         'iftest.h'])
+      outputs,
+      ['uncond1.rc', 'only_fr.adm', 'only_fr.plist', 'uncond2.adm', 'iftest.h'],
+    )
 
     grd.SetOutputLanguage('en')
     grd.SetDefines({'bingo': '1'})
@@ -418,7 +472,8 @@ class IfNodeUnittest(unittest.TestCase):
     self.assertNotEqual(outputs, ['uncond1.rc', 'uncond2.adm', 'iftest.h'])
 
   def testChildrenAccepted(self):
-    grd_reader.Parse(io.StringIO(r'''<?xml version="1.0"?>
+    grd_reader.Parse(
+      io.StringIO(r'''<?xml version="1.0"?>
       <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
         <release seq="3">
           <includes>
@@ -463,7 +518,8 @@ class IfNodeUnittest(unittest.TestCase):
           </if>
         </translations>
       </grit>'''),
-                     dir='.')
+      dir='.',
+    )
 
   def testIfBadChildrenNesting(self):
     # includes
@@ -568,7 +624,7 @@ class IfNodeUnittest(unittest.TestCase):
 class ReleaseNodeUnittest(unittest.TestCase):
   def testPseudoControl(self):
     grd = grd_reader.Parse(
-        io.StringIO('''<?xml version="1.0" encoding="UTF-8"?>
+      io.StringIO('''<?xml version="1.0" encoding="UTF-8"?>
       <grit latest_public_release="1" source_lang_id="en-US" current_release="2" base_dir=".">
         <release seq="1" allow_pseudo="false">
           <messages>
@@ -590,7 +646,9 @@ class ReleaseNodeUnittest(unittest.TestCase):
             <structure type="menu" name="IDC_KLONKMENU" encoding="utf-16" file="klonk.rc" />
           </structures>
         </release>
-      </grit>'''), util.PathFromRoot('grit/testdata'))
+      </grit>'''),
+      util.PathFromRoot('grit/testdata'),
+    )
     grd.SetOutputLanguage('en')
     grd.RunGatherers()
 

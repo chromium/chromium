@@ -26,18 +26,23 @@ Option('wgap', 'Ignore Release gap warning')
 #
 error = None
 warning = None
+
+
 def ReportReleaseError(msg):
   global error
   error = msg
+
 
 def ReportReleaseWarning(msg):
   global warning
   warning = msg
 
+
 def ReportClear():
   global error, warning
   error = None
   warning = None
+
 
 #
 # IDLRelease
@@ -47,6 +52,7 @@ def ReportClear():
 #
 # A vmin value of None indicates that the object begins at the earliest
 # available Release number.  The value of vmin is always inclusive.
+
 
 # A vmax value of None indicates that the object is never deprecated, so
 # it exists until it is overloaded or until the latest available Release.
@@ -84,10 +90,12 @@ class IDLRelease(object):
 
   # True, if Release falls within the interval [self.vmin, self.vmax)
   def InReleases(self, releases):
-    if not releases: return False
+    if not releases:
+      return False
 
     # Check last release first, since InRange does not match last item
-    if self.IsRelease(releases[-1]): return True
+    if self.IsRelease(releases[-1]):
+      return True
     if len(releases) > 1:
       return self.InRange(releases[0], releases[-1])
     return False
@@ -109,7 +117,7 @@ class IDLRelease(object):
       InfoOut.Log('%f to %f is in %s' % (rmin, rmax, self))
     return True
 
-  def GetMinMax(self, releases = None):
+  def GetMinMax(self, releases=None):
     if not releases:
       return self.rmin, self.rmax
 
@@ -170,26 +178,31 @@ class IDLReleaseList(object):
 
     # Check current releases in that namespace
     for cver in self._nodes:
-      if GetOption('release_debug'): InfoOut.Log('  Checking %s' % cver)
+      if GetOption('release_debug'):
+        InfoOut.Log('  Checking %s' % cver)
 
       # We should only be missing a 'release' tag for the first item.
       if not node.rmin:
-        node.Error('Missing release on overload of previous %s.' %
-                   cver.Location())
+        node.Error(
+          'Missing release on overload of previous %s.' % cver.Location()
+        )
         return False
 
       # If the node has no max, then set it to this one
       if not cver.rmax:
         cver.rmax = node.rmin
-        if GetOption('release_debug'): InfoOut.Log('  Update %s' % cver)
+        if GetOption('release_debug'):
+          InfoOut.Log('  Update %s' % cver)
 
       # if the max and min overlap, than's an error
       if cver.rmax > node.rmin:
         if node.rmax and cver.rmin >= node.rmax:
           node.Error('Declarations out of order.')
         else:
-          node.Error('Overlap in releases: %s vs %s when adding %s' %
-                     (cver.rmax, node.rmin, node))
+          node.Error(
+            'Overlap in releases: %s vs %s when adding %s'
+            % (cver.rmax, node.rmin, node)
+          )
         return False
       last = cver
 
@@ -202,9 +215,11 @@ class IDLReleaseList(object):
     # If we made it here, this new node must be the 'newest'
     # and does not overlap with anything previously added, so
     # we can add it to the end of the list.
-    if GetOption('release_debug'): InfoOut.Log('Done %s' % node)
+    if GetOption('release_debug'):
+      InfoOut.Log('Done %s' % node)
     self._nodes.append(node)
     return True
+
 
 #
 # IDLReleaseMap
@@ -245,6 +260,7 @@ class IDLReleaseMap(object):
   def GetChannel(self, release):
     return self.release_to_channel.get(release, None)
 
+
 #
 # Test Code
 #
@@ -256,7 +272,7 @@ def TestReleaseNode():
   assert FooXX.IsRelease('M13')
   assert FooXX.IsRelease('M14')
   assert FooXX.InRange('M13', 'M13A')
-  assert FooXX.InRange('M14','M15')
+  assert FooXX.InRange('M14', 'M15')
 
   assert not Foo1X.IsRelease('M13')
   assert Foo1X.IsRelease('M14')
@@ -331,9 +347,9 @@ def TestReleaseListOK():
   assert releases.FindRelease('M17') == Foo45
   assert releases.FindRelease('M18') == None
 
-  assert releases.FindRange('M13','M14') == [FooXX]
-  assert releases.FindRange('M13','M17') == [FooXX, Foo1X, Foo23]
-  assert releases.FindRange('M16','M17') == []
+  assert releases.FindRange('M13', 'M14') == [FooXX]
+  assert releases.FindRange('M13', 'M17') == [FooXX, Foo1X, Foo23]
+  assert releases.FindRange('M16', 'M17') == []
   assert releases.FindRange(None, None) == [FooXX, Foo1X, Foo23, Foo45]
 
   # Verify we can find the correct versions

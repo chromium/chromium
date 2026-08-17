@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Unit tests for grit.shortcuts
-'''
+'''Unit tests for grit.shortcuts'''
 
 import io
 import os
@@ -19,8 +18,8 @@ from grit import clique
 from grit import tclib
 from grit.gather import rc
 
-class ShortcutsUnittest(unittest.TestCase):
 
+class ShortcutsUnittest(unittest.TestCase):
   def setUp(self):
     self.uq = clique.UberClique()
 
@@ -44,7 +43,7 @@ class ShortcutsUnittest(unittest.TestCase):
 
   def testDialog(self):
     dlg = rc.Dialog(
-        io.StringIO('''\
+      io.StringIO('''\
 IDD_SIDEBAR_RSS_PANEL_PROPPAGE DIALOGEX 0, 0, 239, 221
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -69,7 +68,9 @@ BEGIN
                     IDC_STATIC,0,33,239,18
     PUSHBUTTON      "Add Recent &Clips (10)...",
                     IDC_SIDEBAR_RSS_ADD_RECENT_CLIPS,146,14,93,14
-END'''), 'IDD_SIDEBAR_RSS_PANEL_PROPPAGE')
+END'''),
+      'IDD_SIDEBAR_RSS_PANEL_PROPPAGE',
+    )
     dlg.SetUberClique(self.uq)
     dlg.Parse()
 

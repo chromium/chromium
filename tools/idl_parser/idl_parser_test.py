@@ -18,11 +18,11 @@ def ParseCommentTest(comment):
 
 
 class WebIDLParser(unittest.TestCase):
-
   def setUp(self):
     self.parser = IDLParser(IDLLexer(), mute_error=True)
     test_dir = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), 'test_parser'))
+      os.path.join(os.path.dirname(__file__), 'test_parser')
+    )
     self.filenames = glob.glob('%s/*_web.idl' % test_dir)
 
   def _TestNode(self, node, filepath):
@@ -30,9 +30,10 @@ class WebIDLParser(unittest.TestCase):
     for comment in comments:
       check, value = ParseCommentTest(comment.GetName())
       if check == 'ERROR':
-        msg = node.GetLogLine('Expecting\n\t%s\nbut found \n\t%s\n' % (
-            value, str(node)))
-        self.assertEqual(value, node.GetName() ,msg)
+        msg = node.GetLogLine(
+          'Expecting\n\t%s\nbut found \n\t%s\n' % (value, str(node))
+        )
+        self.assertEqual(value, node.GetName(), msg)
 
       if check == 'TREE':
         quick = '\n'.join(node.Tree())
@@ -45,15 +46,13 @@ class WebIDLParser(unittest.TestCase):
     for filename in self.filenames:
       filenode = ParseFile(self.parser, filename)
       children = filenode.GetChildren()
-      self.assertTrue(len(children) > 2, 'Expecting children in %s.' %
-          filename)
+      self.assertTrue(len(children) > 2, 'Expecting children in %s.' % filename)
 
       for node in filenode.GetChildren():
         self._TestNode(node, filename)
 
 
 class TestIncludes(unittest.TestCase):
-
   def setUp(self):
     self.parser = IDLParser(IDLLexer(), mute_error=True)
 
@@ -81,28 +80,24 @@ class TestIncludes(unittest.TestCase):
     node = self._ParseIncludes(idl_text)
     self.assertEqual('Error', node.GetClass())
     error_message = node.GetName()
-    self.assertEqual('Unexpected ";" after keyword "includes".',
-        error_message)
+    self.assertEqual('Unexpected ";" after keyword "includes".', error_message)
 
   def testUnexpectedIncludes(self):
     idl_text = 'includes C;'
     node = self._ParseIncludes(idl_text)
     self.assertEqual('Error', node.GetClass())
     error_message = node.GetName()
-    self.assertEqual('Unexpected includes.',
-        error_message)
+    self.assertEqual('Unexpected includes.', error_message)
 
   def testUnexpectedIncludesAfterBracket(self):
     idl_text = '[foo] includes B;'
     node = self._ParseIncludes(idl_text)
     self.assertEqual('Error', node.GetClass())
     error_message = node.GetName()
-    self.assertEqual('Unexpected keyword "includes" after "]".',
-        error_message)
+    self.assertEqual('Unexpected keyword "includes" after "]".', error_message)
 
 
 class TestEnums(unittest.TestCase):
-
   def setUp(self):
     self.parser = IDLParser(IDLLexer(), mute_error=True)
 
@@ -149,8 +144,9 @@ class TestEnums(unittest.TestCase):
     node = self._ParseEnums(idl_text)
     self.assertEqual('Error', node.GetClass())
     error_message = node.GetName()
-    self.assertEqual('Unexpected string "noodles" after string "rice".',
-        error_message)
+    self.assertEqual(
+      'Unexpected string "noodles" after string "rice".', error_message
+    )
 
   def testErrorExtraCommaBetweenIdentifiers(self):
     idl_text = 'enum ExtraComma {"rice","noodles",,"other"};'
@@ -164,16 +160,17 @@ class TestEnums(unittest.TestCase):
     node = self._ParseEnums(idl_text)
     self.assertEqual('Error', node.GetClass())
     error_message = node.GetName()
-    self.assertEqual('Unexpected keyword "interface" after "{".',
-        error_message)
+    self.assertEqual('Unexpected keyword "interface" after "{".', error_message)
 
   def testErrorUnexpectedIdentifier(self):
     idl_text = 'enum TestEnum {somename,"noodles","other"};'
     node = self._ParseEnums(idl_text)
     self.assertEqual('Error', node.GetClass())
     error_message = node.GetName()
-    self.assertEqual('Unexpected identifier "somename" after "{".',
-        error_message)
+    self.assertEqual(
+      'Unexpected identifier "somename" after "{".', error_message
+    )
+
 
 class TestExtendedAttribute(unittest.TestCase):
   def setUp(self):
@@ -195,7 +192,7 @@ class TestExtendedAttribute(unittest.TestCase):
     extended_attribute_text = '[Replacable]'
     attributes = self._ParseIdlWithExtendedAttributes(extended_attribute_text)
     self.assertEqual('ExtAttributes', attributes.GetClass())
-    self.assertEqual(1, len(attributes.GetChildren()) )
+    self.assertEqual(1, len(attributes.GetChildren()))
     attribute = attributes.GetChildren()[0]
     self.assertEqual('ExtAttribute', attribute.GetClass())
     self.assertEqual('Replacable', attribute.GetName())
@@ -223,7 +220,7 @@ class TestExtendedAttribute(unittest.TestCase):
     self.assertEqual(1, len(attributes.GetChildren()))
     attribute = attributes.GetChildren()[0]
     self.assertEqual('ExtAttribute', attribute.GetClass())
-    self.assertEqual('NamedConstructor',attribute.GetName())
+    self.assertEqual('NamedConstructor', attribute.GetName())
     self.assertEqual(1, len(attribute.GetChildren()))
     self.assertEqual('Call', attribute.GetChildren()[0].GetClass())
     self.assertEqual('Image', attribute.GetChildren()[0].GetName())
@@ -410,6 +407,7 @@ class TestDefaultValue(unittest.TestCase):
     default_value = argument.GetChildren()[1]
     self._CheckDefaultValue(default_value, 'NULL', 'NULL')
 
+
 class TestLineNumbers(unittest.TestCase):
   def setUp(self):
     self.parser = IDLParser(IDLLexer(), mute_error=True)
@@ -417,7 +415,7 @@ class TestLineNumbers(unittest.TestCase):
   def testTypedefLineNumbers(self):
     idl_text = '\n\ntypedef byte MyByte;'
     file_node = self.parser.ParseText(filename='', data=idl_text)
-    type_node = file_node.GetChildren()[0].GetChildren()[0];
+    type_node = file_node.GetChildren()[0].GetChildren()[0]
     self.assertEqual('Type', type_node.GetClass())
     self.assertEqual(3, type_node.GetProperty('LINENO'))
 

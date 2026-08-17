@@ -3,8 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Unittest for chrome_messages_json.py.
-"""
+"""Unittest for chrome_messages_json.py."""
 
 import io
 import json
@@ -19,8 +18,8 @@ from grit import grd_reader
 from grit import util
 from grit.tool import build
 
-class ChromeMessagesJsonFormatUnittest(unittest.TestCase):
 
+class ChromeMessagesJsonFormatUnittest(unittest.TestCase):
   # The default unittest diff limit is too low for our unittests.
   # Allow the framework to show the full diff output all the time.
   maxDiff = None
@@ -59,8 +58,9 @@ class ChromeMessagesJsonFormatUnittest(unittest.TestCase):
     """)
 
     buf = io.StringIO()
-    build.RcBuilder.ProcessNode(root, DummyOutput('chrome_messages_json', 'en'),
-                                buf)
+    build.RcBuilder.ProcessNode(
+      root, DummyOutput('chrome_messages_json', 'en'), buf
+    )
     output = buf.getvalue()
     test = """
 {
@@ -113,8 +113,9 @@ class ChromeMessagesJsonFormatUnittest(unittest.TestCase):
     """)
 
     buf = io.StringIO()
-    build.RcBuilder.ProcessNode(root, DummyOutput('chrome_messages_json', 'fr'),
-                                buf)
+    build.RcBuilder.ProcessNode(
+      root, DummyOutput('chrome_messages_json', 'fr'), buf
+    )
     output = buf.getvalue()
     test = """
 {
@@ -147,8 +148,9 @@ class ChromeMessagesJsonFormatUnittest(unittest.TestCase):
     """)
 
     buf = io.StringIO()
-    build.RcBuilder.ProcessNode(root, DummyOutput('chrome_messages_json', 'en'),
-                                buf)
+    build.RcBuilder.ProcessNode(
+      root, DummyOutput('chrome_messages_json', 'en'), buf
+    )
     output = buf.getvalue()
     test = """
 {
@@ -177,8 +179,9 @@ class ChromeMessagesJsonFormatUnittest(unittest.TestCase):
     root = grd_reader.Parse(io.StringIO(grd), dir=".")
 
     buf = io.StringIO()
-    build.RcBuilder.ProcessNode(root, DummyOutput('chrome_messages_json', 'fr'),
-                                buf)
+    build.RcBuilder.ProcessNode(
+      root, DummyOutput('chrome_messages_json', 'fr'), buf
+    )
     output = buf.getvalue()
     test = '{}'
     self.assertEqual(test, output)
@@ -193,16 +196,18 @@ class ChromeMessagesJsonFormatUnittest(unittest.TestCase):
     """)
 
     buf = io.StringIO()
-    build.RcBuilder.ProcessNode(root, DummyOutput('chrome_messages_json', 'en'),
-                                buf)
+    build.RcBuilder.ProcessNode(
+      root, DummyOutput('chrome_messages_json', 'en'), buf
+    )
     output = buf.getvalue()
-    test = ('{"IDS":{"message":"$1$test$2$","placeholders":'
-            '{"1":{"content":"$1"},"2":{"content":"$2"}}}}')
+    test = (
+      '{"IDS":{"message":"$1$test$2$","placeholders":'
+      '{"1":{"content":"$1"},"2":{"content":"$2"}}}}'
+    )
     self.assertEqual(test, output)
 
 
 class DummyOutput:
-
   def __init__(self, type, language):
     self.type = type
     self.language = language

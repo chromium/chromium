@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''The <structure> element.
-'''
-
+'''The <structure> element.'''
 
 import os
 import platform
@@ -27,18 +25,18 @@ import grit.format.rc
 
 # Type of the gatherer to use for each type attribute
 _GATHERERS = {
-  'accelerators'        : grit.gather.rc.Accelerators,
-  'admin_template'      : grit.gather.admin_template.AdmGatherer,
-  'chrome_html'         : grit.gather.chrome_html.ChromeHtml,
-  'chrome_scaled_image' : grit.gather.chrome_scaled_image.ChromeScaledImage,
-  'dialog'              : grit.gather.rc.Dialog,
-  'lottie'              : grit.gather.chrome_html.ChromeHtml,
-  'menu'                : grit.gather.rc.Menu,
-  'rcdata'              : grit.gather.rc.RCData,
-  'tr_html'             : grit.gather.tr_html.TrHtml,
-  'txt'                 : grit.gather.txt.TxtFile,
-  'version'             : grit.gather.rc.Version,
-  'policy_template_metafile' : grit.gather.policy_json.PolicyJson,
+  'accelerators': grit.gather.rc.Accelerators,
+  'admin_template': grit.gather.admin_template.AdmGatherer,
+  'chrome_html': grit.gather.chrome_html.ChromeHtml,
+  'chrome_scaled_image': grit.gather.chrome_scaled_image.ChromeScaledImage,
+  'dialog': grit.gather.rc.Dialog,
+  'lottie': grit.gather.chrome_html.ChromeHtml,
+  'menu': grit.gather.rc.Menu,
+  'rcdata': grit.gather.rc.RCData,
+  'tr_html': grit.gather.tr_html.TrHtml,
+  'txt': grit.gather.txt.TxtFile,
+  'version': grit.gather.rc.Version,
+  'policy_template_metafile': grit.gather.policy_json.PolicyJson,
 }
 
 
@@ -81,9 +79,9 @@ class StructureNode(base.Node):
     # Now that we have attributes and children, instantiate the gatherers.
     gathertype = _GATHERERS[self.attrs['type']]
 
-    self.gatherer = gathertype(self.attrs['file'],
-                               self.attrs['name'],
-                               self.attrs['encoding'])
+    self.gatherer = gathertype(
+      self.attrs['file'], self.attrs['name'], self.attrs['encoding']
+    )
     self.gatherer.SetGrdNode(self)
     self.gatherer.SetUberClique(self.UberClique())
     if hasattr(self.GetRoot(), 'defines'):
@@ -101,10 +99,12 @@ class StructureNode(base.Node):
     self.skeletons = {}  # Maps expressions to skeleton gatherers
     for child in self.children:
       assert isinstance(child, variant.SkeletonNode)
-      skel = gathertype(child.attrs['file'],
-                        self.attrs['name'],
-                        child.GetEncodingToUse(),
-                        is_skeleton=True)
+      skel = gathertype(
+        child.attrs['file'],
+        self.attrs['name'],
+        child.GetEncodingToUse(),
+        is_skeleton=True,
+      )
       skel.SetGrdNode(self)  # TODO(benrg): Or child? Only used for ToRealPath
       skel.SetUberClique(self.UberClique())
       if hasattr(self.GetRoot(), 'defines'):
@@ -118,31 +118,31 @@ class StructureNode(base.Node):
 
   def DefaultAttributes(self):
     return {
-        'encoding': 'cp1252',
-        'exclude_from_rc': 'false',
-        'line_end': 'unix',
-        'output_encoding': 'utf-8',
-        'generateid': 'true',
-        'expand_variables': 'false',
-        'output_filename': '',
-        'fold_whitespace': 'false',
-        # Run an arbitrary command after translation is complete
-        # so that it doesn't interfere with what's in translation
-        # console.
-        'run_command': '',
-        # Leave empty to run on all platforms, comma-separated
-        # for one or more specific platforms. Values must match
-        # output of platform.system().
-        'run_command_on_platforms': '',
-        'allowexternalscript': 'false',
-        # preprocess takes the same code path as flattenhtml, but it
-        # disables any processing/inlining outside of <if> and <include>.
-        'preprocess': 'false',
-        'flattenhtml': 'false',
-        'fallback_to_low_resolution': 'default',
-        'variables': '',
-        'compress': 'default',
-        'use_base_dir': 'true',
+      'encoding': 'cp1252',
+      'exclude_from_rc': 'false',
+      'line_end': 'unix',
+      'output_encoding': 'utf-8',
+      'generateid': 'true',
+      'expand_variables': 'false',
+      'output_filename': '',
+      'fold_whitespace': 'false',
+      # Run an arbitrary command after translation is complete
+      # so that it doesn't interfere with what's in translation
+      # console.
+      'run_command': '',
+      # Leave empty to run on all platforms, comma-separated
+      # for one or more specific platforms. Values must match
+      # output of platform.system().
+      'run_command_on_platforms': '',
+      'allowexternalscript': 'false',
+      # preprocess takes the same code path as flattenhtml, but it
+      # disables any processing/inlining outside of <if> and <include>.
+      'preprocess': 'false',
+      'flattenhtml': 'false',
+      'fallback_to_low_resolution': 'default',
+      'variables': '',
+      'compress': 'default',
+      'use_base_dir': 'true',
     }
 
   def IsExcludedFromRc(self):
@@ -154,8 +154,9 @@ class StructureNode(base.Node):
     this will also write file references to be base64 encoded data URLs.  The
     name of the new file is returned."""
     filename = self.ToRealPath(self.GetInputPath())
-    flat_filename = os.path.join(output_dir,
-        self.attrs['name'] + '_' + os.path.basename(filename))
+    flat_filename = os.path.join(
+      output_dir, self.attrs['name'] + '_' + os.path.basename(filename)
+    )
 
     if self._last_flat_filename == flat_filename:
       return
@@ -184,7 +185,8 @@ class StructureNode(base.Node):
     else:
       raise exception.UnexpectedAttribute(
         "Attribute 'line_end' must be one of 'unix' (default), 'windows' or "
-        "'mac'")
+        "'mac'"
+      )
 
   def GetCliques(self):
     return self.gatherer.GetCliques()
@@ -238,8 +240,10 @@ class StructureNode(base.Node):
 
   def RunPreSubstitutionGatherer(self, debug=False):
     if debug:
-      print('Running gatherer %s for file %s' %
-            (type(self.gatherer), self.GetInputPath()))
+      print(
+        'Running gatherer %s for file %s'
+        % (type(self.gatherer), self.GetInputPath())
+      )
 
     # Note: Parse() is idempotent, therefore this method is also.
     self.gatherer.Parse()
@@ -257,9 +261,13 @@ class StructureNode(base.Node):
     return None
 
   def HasFileForLanguage(self):
-    return self.attrs['type'] in ['tr_html', 'admin_template', 'txt',
-                                  'chrome_scaled_image',
-                                  'chrome_html']
+    return self.attrs['type'] in [
+      'tr_html',
+      'admin_template',
+      'txt',
+      'chrome_scaled_image',
+      'chrome_html',
+    ]
 
   def ExpandVariables(self):
     '''Variable expansion on structures is controlled by an XML attribute.
@@ -273,8 +281,9 @@ class StructureNode(base.Node):
     if 'grit_version' in attrs and attrs['grit_version'] > 1:
       return self.attrs['expand_variables'] == 'true'
     else:
-      return (self.attrs['expand_variables'] == 'true' or
-              self.attrs['file'].lower().endswith('.rc'))
+      return self.attrs['expand_variables'] == 'true' or self.attrs[
+        'file'
+      ].lower().endswith('.rc')
 
   def _Substitute(self, text):
     '''Perform local and global variable substitution.'''
@@ -289,8 +298,9 @@ class StructureNode(base.Node):
       target_platforms = self.attrs['run_command_on_platforms'].split(',')
       return platform.system() in target_platforms
 
-  def FileForLanguage(self, lang, output_dir, create_file=True,
-                      return_if_not_generated=True):
+  def FileForLanguage(
+    self, lang, output_dir, create_file=True, return_if_not_generated=True
+  ):
     '''Returns the filename of the file associated with this structure,
     for the specified language.
 
@@ -302,10 +312,13 @@ class StructureNode(base.Node):
     assert self.HasFileForLanguage()
     # If the source language is requested, and no extra changes are requested,
     # use the existing file.
-    if ((not lang or lang == self.GetRoot().GetSourceLanguage()) and
-        self.attrs['expand_variables'] != 'true' and
-        (not self.attrs['run_command'] or
-         not self.RunCommandOnCurrentPlatform())):
+    if (
+      (not lang or lang == self.GetRoot().GetSourceLanguage())
+      and self.attrs['expand_variables'] != 'true'
+      and (
+        not self.attrs['run_command'] or not self.RunCommandOnCurrentPlatform()
+      )
+    ):
       if return_if_not_generated:
         input_path = self.GetInputPath()
         if input_path is None:
@@ -325,10 +338,11 @@ class StructureNode(base.Node):
     # Only create the output if it was requested by the call.
     if create_file:
       text = self.gatherer.Translate(
-          lang,
-          pseudo_if_not_available=self.PseudoIsAllowed(),
-          fallback_to_english=self.ShouldFallbackToEnglish(),
-          skeleton_gatherer=self.GetSkeletonGatherer())
+        lang,
+        pseudo_if_not_available=self.PseudoIsAllowed(),
+        fallback_to_english=self.ShouldFallbackToEnglish(),
+        skeleton_gatherer=self.GetSkeletonGatherer(),
+      )
 
       file_contents = util.FixLineEnd(text, self.GetLineEnd())
       if self.ExpandVariables():
@@ -338,8 +352,9 @@ class StructureNode(base.Node):
         file_contents = self._Substitute(file_contents)
 
       with open(filename, 'wb') as file_object:
-        output_stream = util.WrapOutputStream(file_object,
-                                              self.attrs['output_encoding'])
+        output_stream = util.WrapOutputStream(
+          file_object, self.attrs['output_encoding']
+        )
         output_stream.write(file_contents)
 
       if self.attrs['run_command'] and self.RunCommandOnCurrentPlatform():

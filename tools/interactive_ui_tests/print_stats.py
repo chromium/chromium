@@ -32,9 +32,10 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).parent.parent.parent.resolve()
 TEST_TARGETS = '//chrome/test:*'
 TEST_NAME_REGEX = re.compile(
-    r"TEST(_[FP])?\(\s*'?([a-zA-Z][a-zA-Z0-9]*)'?,\s*'?" + \
-        r"([a-zA-Z][a-zA-Z0-9_]*)'?",
-    re.MULTILINE)
+  r"TEST(_[FP])?\(\s*'?([a-zA-Z][a-zA-Z0-9]*)'?,\s*'?"
+  + r"([a-zA-Z][a-zA-Z0-9_]*)'?",
+  re.MULTILINE,
+)
 INTERATIVE_UI_TESTS_REGEX = 'RunTestSequence'
 
 
@@ -56,7 +57,8 @@ def find_all_interactive_ui_tests_sources(out_dir):
     cmd = [gn_path, 'desc', out_dir, TEST_TARGETS, 'sources', '--format=json']
     # Set an encoding to convert the binary output to a string.
     json_output = subprocess.check_output(
-        cmd, encoding=locale.getpreferredencoding())
+      cmd, encoding=locale.getpreferredencoding()
+    )
 
     # Convert the sources to full paths
     targets = json.loads(json_output)
@@ -81,7 +83,8 @@ def find_interactive_ui_tests(filepath, interactive_tests):
     test_infos = []
     for match in re.finditer(TEST_NAME_REGEX, text):
       test_infos.append(
-          TestInfo(filepath, match.group(2), match.group(3), match.start()))
+        TestInfo(filepath, match.group(2), match.group(3), match.start())
+      )
 
     # Find interaction sequence tests in the file
     test_offsets = list(map(lambda x: x.offset, test_infos))
@@ -107,9 +110,8 @@ def find_all_interactive_ui_tests(out_dir):
 
 def print_stats(interactive_tests, verbose=False):
   tests = set(
-      list(
-          map(lambda x: f'{x.class_name}::{x.function_name}',
-              interactive_tests)))
+    list(map(lambda x: f'{x.class_name}::{x.function_name}', interactive_tests))
+  )
   print(f'Total number of tests: {len(tests)}')
   test_cases = set(list(map(lambda x: x.class_name, interactive_tests)))
   print(f'Total number of test cases: {len(test_cases)}')
@@ -122,11 +124,11 @@ def print_stats(interactive_tests, verbose=False):
 
 def main():
   parser = argparse.ArgumentParser(
-      description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-  parser.add_argument('-C',
-                      dest='out_dir',
-                      required=True,
-                      help='output directory of the build')
+    description=__doc__, formatter_class=argparse.RawTextHelpFormatter
+  )
+  parser.add_argument(
+    '-C', dest='out_dir', required=True, help='output directory of the build'
+  )
   args, _ = parser.parse_known_args()
   start_time = time.time()
   interactive_tests = find_all_interactive_ui_tests(args.out_dir)

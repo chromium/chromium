@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''Tool to create a new, empty .grd file with all the basic sections.
-'''
-
+'''Tool to create a new, empty .grd file with all the basic sections.'''
 
 import getopt
 import sys
@@ -14,7 +12,8 @@ from grit import constants
 from grit import util
 
 # The contents of the new .grd file
-_FILE_CONTENTS = '''\
+_FILE_CONTENTS = (
+  '''\
 <?xml version="1.0" encoding="UTF-8"?>
 <grit base_dir="." latest_public_release="0" current_release="1"
       source_lang_id="en" enc_check="%s">
@@ -51,14 +50,16 @@ _FILE_CONTENTS = '''\
       nontranslateable parts and create placeholders for them. -->
     </messages>
   </release>
-</grit>''' % constants.ENCODING_CHECK
+</grit>'''
+  % constants.ENCODING_CHECK
+)
 
 
 class NewGrd(interface.Tool):
   '''Usage: grit newgrd OUTPUT_FILE
 
-Creates a new, empty .grd file OUTPUT_FILE with comments about what to put
-where in the file.'''
+  Creates a new, empty .grd file OUTPUT_FILE with comments about what to put
+  where in the file.'''
 
   def ShortDescription(self):
     return 'Create a new empty .grd file.'
@@ -75,8 +76,9 @@ where in the file.'''
   def Run(self, opts, args):
     args = self.ParseOptions(args)
     if len(args) != 1:
-      print('This tool requires exactly one argument, the name of the output '
-            'file.')
+      print(
+        'This tool requires exactly one argument, the name of the output file.'
+      )
       return 2
     filename = args[0]
     with util.WrapOutputStream(open(filename, 'wb'), 'utf-8') as out:

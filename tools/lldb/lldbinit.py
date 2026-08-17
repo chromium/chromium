@@ -7,10 +7,13 @@
 # point at the root directory of the chromium checkout.
 import os
 import lldb
+
 this_dir = os.path.dirname(os.path.abspath(__file__))
 source_dir = os.path.join(os.path.join(this_dir, os.pardir), os.pardir)
 
 lldb.debugger.HandleCommand(
-    'settings set target.source-map ../.. ' + source_dir)
+  'settings set target.source-map ../.. ' + source_dir
+)
 lldb.debugger.HandleCommand(
-    'settings set target.env-vars CHROMIUM_LLDBINIT_SOURCED=1')
+  'settings set target.env-vars CHROMIUM_LLDBINIT_SOURCED=1'
+)

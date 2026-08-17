@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''The <skeleton> element.
-'''
-
+'''The <skeleton> element.'''
 
 from grit.node import base
 
@@ -22,7 +20,7 @@ class SkeletonNode(base.Node):
     '''If not specified, 'encoding' will actually default to the parent node's
     encoding.
     '''
-    return {'encoding' : ''}
+    return {'encoding': ''}
 
   def _ContentType(self):
     if 'file' in self.attrs:

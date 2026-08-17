@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-'''The 'grit build' tool.
-'''
-
+'''The 'grit build' tool.'''
 
 import codecs
 import collections
@@ -47,20 +45,21 @@ JAVA_STRINGS_PATH_RE = re.compile(r'^.*/(values.*)$')
 # require importing all of them on every run of GRIT.
 '''Map from <output> node types to modules under grit.format.'''
 _format_modules = {
-    'android': android_xml,
-    'c_format': c_format,
-    'chrome_messages_json': chrome_messages_json,
-    'chrome_messages_json_gzip': chrome_messages_json,
-    'data_package': data_pack,
-    'policy_templates': policy_templates_json,
-    'rc_all': rc,
-    'rc_header': rc_header,
-    'rc_nontranslateable': rc,
-    'rc_translateable': rc,
-    'resource_file_map_source': resource_map,
-    'resource_map_header': resource_map,
-    'resource_map_source': resource_map,
+  'android': android_xml,
+  'c_format': c_format,
+  'chrome_messages_json': chrome_messages_json,
+  'chrome_messages_json_gzip': chrome_messages_json,
+  'data_package': data_pack,
+  'policy_templates': policy_templates_json,
+  'rc_all': rc,
+  'rc_header': rc_header,
+  'rc_nontranslateable': rc,
+  'rc_translateable': rc,
+  'resource_file_map_source': resource_map,
+  'resource_map_header': resource_map,
+  'resource_map_source': resource_map,
 }
+
 
 def GetFormatter(type):
   module = _format_modules[type]
@@ -73,112 +72,125 @@ def GetFormatter(type):
 class RcBuilder(interface.Tool):
   '''A tool that builds RC files and resource header files for compilation.
 
-Usage:  grit build [-o OUTPUTDIR] [-D NAME[=VAL]]*
+  Usage:  grit build [-o OUTPUTDIR] [-D NAME[=VAL]]*
 
-All output options for this tool are specified in the input file (see
-'grit help' for details on how to specify the input file - it is a global
-option).
+  All output options for this tool are specified in the input file (see
+  'grit help' for details on how to specify the input file - it is a global
+  option).
 
-Options:
+  Options:
 
-  -a FILE           Assert that the given file is an output. There can be
-                    multiple "-a" flags listed for multiple outputs. If a "-a"
-                    or "--assert-output-file-list" argument is present, then
-                    the list of asserted files must match the output files or the
-                    tool will fail. The use-case is for the build system to
-                    maintain separate lists of output files and to catch errors
-                    if the build system's list and the grit list are out-of-sync.
+    -a FILE           Assert that the given file is an output. There can be
+                      multiple "-a" flags listed for multiple outputs. If a "-a"
+                      or "--assert-output-file-list" argument is present, then
+                      the list of asserted files must match the output files
+                      or the
+                      tool will fail. The use-case is for the build system to
+                      maintain separate lists of output files and to catch
+                      errors
+                      if the build system's list and the grit list are out-of-
+                      sync.
 
-  --assert-output-file-list
-                    Provide a file listing multiple asserted output files.
-                    There is one file name per line. This acts like specifying
-                    each file with "-a" on the command line, but without the
-                    possibility of running into OS line-length limits for very
-                    long lists.
+    --assert-output-file-list
+                      Provide a file listing multiple asserted output files.
+                      There is one file name per line. This acts like specifying
+                      each file with "-a" on the command line, but without the
+                      possibility of running into OS line-length limits for very
+                      long lists.
 
-  --assert-input-file-list
-                    Provide a file listing multiple asserted input files.
-                    There is one file name per line. If present, the list of
-                    asserted input files must match the actual input files or
-                    the tool will fail.
+    --assert-input-file-list
+                      Provide a file listing multiple asserted input files.
+                      There is one file name per line. If present, the list of
+                      asserted input files must match the actual input files or
+                      the tool will fail.
 
-  -o OUTPUTDIR      Specify what directory output paths are relative to.
-                    Defaults to the current directory.
+    -o OUTPUTDIR      Specify what directory output paths are relative to.
+                      Defaults to the current directory.
 
-  -p FILE           Specify a file containing a pre-determined mapping from
-                    resource names to resource ids which will be used to assign
-                    resource ids to those resources. Resources not found in this
-                    file will be assigned ids normally. The motivation is to run
-                    your app's startup and have it dump the resources it loads,
-                    and then pass these via this flag. This will pack startup
-                    resources together, thus reducing paging while all other
-                    resources are unperturbed. The file should have the format:
-                      RESOURCE_ONE_NAME 123
-                      RESOURCE_TWO_NAME 124
+    -p FILE           Specify a file containing a pre-determined mapping from
+                      resource names to resource ids which will be used to
+                      assign
+                      resource ids to those resources. Resources not found in
+                      this
+                      file will be assigned ids normally. The motivation is to
+                      run
+                      your app's startup and have it dump the resources it
+                      loads,
+                      and then pass these via this flag. This will pack startup
+                      resources together, thus reducing paging while all other
+                      resources are unperturbed. The file should have the
+                      format:
+                        RESOURCE_ONE_NAME 123
+                        RESOURCE_TWO_NAME 124
 
-  -D NAME[=VAL]     Specify a C-preprocessor-like define NAME with optional
-                    value VAL (defaults to 1) which will be used to control
-                    conditional inclusion of resources.
+    -D NAME[=VAL]     Specify a C-preprocessor-like define NAME with optional
+                      value VAL (defaults to 1) which will be used to control
+                      conditional inclusion of resources.
 
-  -E NAME=VALUE     Set environment variable NAME to VALUE (within grit).
+    -E NAME=VALUE     Set environment variable NAME to VALUE (within grit).
 
-  -f FIRSTIDSFILE   Path to a python file that specifies the first id of
-                    value to use for resources.  A non-empty value here will
-                    override the value specified in the <grit> node's
-                    first_ids_file.
+    -f FIRSTIDSFILE   Path to a python file that specifies the first id of
+                      value to use for resources.  A non-empty value here will
+                      override the value specified in the <grit> node's
+                      first_ids_file.
 
-  -w ALLOWLISTFILE  Path to a file containing the string names of the
-                    resources to include.  Anything not listed is dropped.
+    -w ALLOWLISTFILE  Path to a file containing the string names of the
+                      resources to include.  Anything not listed is dropped.
 
-  -t PLATFORM       Specifies the platform the build is targeting; defaults
-                    to the value of sys.platform. The value provided via this
-                    flag should match what sys.platform would report for your
-                    target platform; see grit.node.base.EvaluateCondition.
+    -t PLATFORM       Specifies the platform the build is targeting; defaults
+                      to the value of sys.platform. The value provided via this
+                      flag should match what sys.platform would report for your
+                      target platform; see grit.node.base.EvaluateCondition.
 
-  --allowlist-support
-                    Generate code to support extracting a resource allowlist
-                    from executables.
+    --allowlist-support
+                      Generate code to support extracting a resource allowlist
+                      from executables.
 
-  --write-only-new flag
-                    If flag is non-0, write output files to a temporary file
-                    first, and copy it to the real output only if the new file
-                    is different from the old file.  This allows some build
-                    systems to realize that dependent build steps might be
-                    unnecessary, at the cost of comparing the output data at
-                    grit time.
+    --write-only-new flag
+                      If flag is non-0, write output files to a temporary file
+                      first, and copy it to the real output only if the new file
+                      is different from the old file.  This allows some build
+                      systems to realize that dependent build steps might be
+                      unnecessary, at the cost of comparing the output data at
+                      grit time.
 
-  --depend-on-stamp
-                    If specified along with --depfile and --depdir, the depfile
-                    generated will depend on a stampfile instead of the first
-                    output in the input .grd file.
+    --depend-on-stamp
+                      If specified along with --depfile and --depdir, the
+                      depfile
+                      generated will depend on a stampfile instead of the first
+                      output in the input .grd file.
 
-  --css-minifier    A command to run the CSS minifier. If not set then CSS won't
-                    be minified. The command should read the original CSS from
-                    standard input, and output the minified CSS to standard
-                    output. A non-zero exit status will be taken as indicating
-                    failure.
+    --css-minifier    A command to run the CSS minifier. If not set then CSS
+    won't
+                      be minified. The command should read the original CSS from
+                      standard input, and output the minified CSS to standard
+                      output. A non-zero exit status will be taken as indicating
+                      failure.
 
-  --brotli          The full path to the brotli executable generated by
-                    third_party/brotli/BUILD.gn, required if any entries use
-                    compress="brotli".
+    --brotli          The full path to the brotli executable generated by
+                      third_party/brotli/BUILD.gn, required if any entries use
+                      compress="brotli".
 
-  --translate-genders
-                    Translate gendered strings into up to 4 separate files per
-                    language, for 'OTHER', 'FEMININE', 'MASCULINE', and 'NEUTER'
-                    genders.
+    --translate-genders
+                      Translate gendered strings into up to 4 separate files per
+                      language, for 'OTHER', 'FEMININE', 'MASCULINE', and
+                      'NEUTER'
+                      genders.
 
-  --android-output-zip
-                    Output a single zip file containing all the android
-                    strings.xml files instead of outputting each xml
-                    individually. This is a convenient way to skip some work in
-                    GN.
+    --android-output-zip
+                      Output a single zip file containing all the android
+                      strings.xml files instead of outputting each xml
+                      individually. This is a convenient way to skip some work
+                      in
+                      GN.
 
-Conditional inclusion of resources only affects the output of files which
-control which resources get linked into a binary, e.g. it affects .rc files
-meant for compilation but it does not affect resource header files (that define
-IDs).  This helps ensure that values of IDs stay the same, that all messages
-are exported to translation interchange files (e.g. XMB files), etc.
-'''
+  Conditional inclusion of resources only affects the output of files which
+  control which resources get linked into a binary, e.g. it affects .rc files
+  meant for compilation but it does not affect resource header files (that
+  define
+  IDs).  This helps ensure that values of IDs stay the same, that all messages
+  are exported to translation interchange files (e.g. XMB files), etc.
+  '''
 
   def ShortDescription(self):
     return 'A tool that builds RC files for compilation.'
@@ -202,14 +214,27 @@ are exported to translation interchange files (e.g. XMB files), etc.
     replace_ellipsis = True
     translate_genders = False
     (own_opts, args) = getopt.getopt(
-        args, 'a:p:o:D:E:f:w:t:',
-        ('depdir=', 'depfile=', 'assert-output-file-list=',
-         'assert-input-file-list=', 'help', 'output-all-resource-defines',
-         'no-output-all-resource-defines', 'no-replace-ellipsis',
-         'depend-on-stamp', 'css-minifier=', 'write-only-new=',
-         'allowlist-support', 'brotli=', 'translate-genders',
-         'android-output-zip='))
-    for (key, val) in own_opts:
+      args,
+      'a:p:o:D:E:f:w:t:',
+      (
+        'depdir=',
+        'depfile=',
+        'assert-output-file-list=',
+        'assert-input-file-list=',
+        'help',
+        'output-all-resource-defines',
+        'no-output-all-resource-defines',
+        'no-replace-ellipsis',
+        'depend-on-stamp',
+        'css-minifier=',
+        'write-only-new=',
+        'allowlist-support',
+        'brotli=',
+        'translate-genders',
+        'android-output-zip=',
+      ),
+    )
+    for key, val in own_opts:
       if key == '-a':
         assert_output_files.append(val)
       elif key == '--assert-output-file-list':
@@ -265,9 +290,10 @@ are exported to translation interchange files (e.g. XMB files), etc.
       print('This tool takes no tool-specific arguments.')
       return 2
     self.SetOptions(opts)
-    self.VerboseOut('Output directory: %s (absolute path: %s)\n' %
-                    (self.output_directory,
-                     os.path.abspath(self.output_directory)))
+    self.VerboseOut(
+      'Output directory: %s (absolute path: %s)\n'
+      % (self.output_directory, os.path.abspath(self.output_directory))
+    )
 
     if allowlist_filenames:
       self.allowlist_names = set()
@@ -281,13 +307,15 @@ are exported to translation interchange files (e.g. XMB files), etc.
 
     self.write_only_new = write_only_new
 
-    self.res = grd_reader.Parse(opts.input,
-                                debug=opts.extra_verbose,
-                                first_ids_file=first_ids_file,
-                                predetermined_ids_file=predetermined_ids_file,
-                                defines=self.defines,
-                                target_platform=target_platform,
-                                translate_genders=translate_genders)
+    self.res = grd_reader.Parse(
+      opts.input,
+      debug=opts.extra_verbose,
+      first_ids_file=first_ids_file,
+      predetermined_ids_file=predetermined_ids_file,
+      defines=self.defines,
+      target_platform=target_platform,
+      translate_genders=translate_genders,
+    )
 
     # Set an output context so that conditionals can use defines during the
     # gathering stage; we use a dummy language here since we are not outputting
@@ -349,9 +377,11 @@ are exported to translation interchange files (e.g. XMB files), etc.
     for node in start_node:
       # Same trick data_pack.py uses to see what nodes actually result in
       # real items.
-      if (isinstance(node, include.IncludeNode) or
-          isinstance(node, message.MessageNode) or
-          isinstance(node, structure.StructureNode)):
+      if (
+        isinstance(node, include.IncludeNode)
+        or isinstance(node, message.MessageNode)
+        or isinstance(node, structure.StructureNode)
+      ):
         text_ids = node.GetTextualIds()
         # Mark the item to be skipped if it wasn't in the allowlist.
         if text_ids and text_ids[0] not in allowlist_names:
@@ -370,10 +400,12 @@ are exported to translation interchange files (e.g. XMB files), etc.
     base_dir = util.dirname(output_node.GetOutputFilename())
 
     formatter = GetFormatter(output_node.GetType())
-    formatted = formatter(node,
-                          output_node.GetLanguage(),
-                          output_node.GetGender(),
-                          output_dir=base_dir)
+    formatted = formatter(
+      node,
+      output_node.GetLanguage(),
+      output_node.GetGender(),
+      output_dir=base_dir,
+    )
     # NB: Formatters may be generators or return lists.  The writelines API
     # accepts iterables as a shortcut to calling write directly.  That means
     # you can pass strings (iteration yields characters), but not bytes (as
@@ -399,12 +431,25 @@ are exported to translation interchange files (e.g. XMB files), etc.
     # Microsoft's RC compiler can only deal with single-byte or double-byte
     # files (no UTF-8), so we make all RC files UTF-16 to support all
     # character sets.
-    if output_type in ('rc_header', 'resource_file_map_source',
-                       'resource_map_header', 'resource_map_source'):
+    if output_type in (
+      'rc_header',
+      'resource_file_map_source',
+      'resource_map_header',
+      'resource_map_source',
+    ):
       return 'cp1252'
-    if output_type in ('android', 'c_format',  'plist', 'plist_strings', 'doc',
-                       'json', 'android_policy', 'chrome_messages_json',
-                       'chrome_messages_json_gzip', 'policy_templates'):
+    if output_type in (
+      'android',
+      'c_format',
+      'plist',
+      'plist_strings',
+      'doc',
+      'json',
+      'android_policy',
+      'chrome_messages_json',
+      'chrome_messages_json_gzip',
+      'policy_templates',
+    ):
       return 'utf_8'
     # TODO(gfeher) modify here to set utf-8 encoding for admx/adml
     return 'utf_16'
@@ -485,8 +530,9 @@ are exported to translation interchange files (e.g. XMB files), etc.
       self.res.InitializeIds()
 
     for output in self.res.GetOutputFiles():
-      output.output_filename = os.path.abspath(os.path.join(
-        self.output_directory, output.GetOutputFilename()))
+      output.output_filename = os.path.abspath(
+        os.path.join(self.output_directory, output.GetOutputFilename())
+      )
 
     # If there are allowlisted names, tag the tree once up front, this way
     # while looping through the actual output, it is just an attribute check.
@@ -495,7 +541,8 @@ are exported to translation interchange files (e.g. XMB files), etc.
 
     if self.android_output_zip_path is not None:
       self.android_output_tmp_dir = tempfile.TemporaryDirectory(
-          ignore_cleanup_errors=True)
+        ignore_cleanup_errors=True
+      )
     zippable_android_xml_outputs = []
     can_fork = hasattr(os, 'fork')
     if os.environ.get('GRIT_DISABLE_MULTIPROCESSING') == '1':
@@ -512,7 +559,8 @@ are exported to translation interchange files (e.g. XMB files), etc.
       self._ProcessOutput(first_output, zippable_android_xml_outputs)
 
       remaining_outputs = outputs[1:]
-      # Limit max workers to 16 to avoid overwhelming the system with Copy-On-Write
+      # Limit max workers to 16 to avoid overwhelming the system with
+      # Copy-On-Write
       # page faults caused by Python reference counting on the 100MB AST.
       num_workers = min(16, multiprocessing.cpu_count(), len(remaining_outputs))
       chunks = [remaining_outputs[i::num_workers] for i in range(num_workers)]
@@ -540,9 +588,9 @@ are exported to translation interchange files (e.g. XMB files), etc.
             for output in chunk:
               self._ProcessOutput(output, child_zippable)
             if child_zippable:
-              with open(os.path.join(tmp_dir, f'zip_{i}.txt'),
-                        'w',
-                        encoding='utf-8') as f:
+              with open(
+                os.path.join(tmp_dir, f'zip_{i}.txt'), 'w', encoding='utf-8'
+              ) as f:
                 f.write('\n'.join(child_zippable))
             os._exit(0)
           except Exception as e:
@@ -573,7 +621,6 @@ are exported to translation interchange files (e.g. XMB files), etc.
       for output in outputs:
         self._ProcessOutput(output, zippable_android_xml_outputs)
 
-
     # Move all the Android xml files into a single zip file. This simplifies gn
     # logic, since the next step in the build process would be to zip the files
     # anyway.
@@ -585,7 +632,8 @@ are exported to translation interchange files (e.g. XMB files), etc.
 
     # Print warnings if there are any duplicate shortcuts.
     warnings = shortcuts.GenerateDuplicateShortcutsWarnings(
-        self.res.UberClique(), self.res.GetTcProject())
+      self.res.UberClique(), self.res.GetTcProject()
+    )
     if warnings:
       print('\n'.join(warnings))
 
@@ -597,10 +645,9 @@ are exported to translation interchange files (e.g. XMB files), etc.
       self.VerboseOut(warnings)
     if self.res.UberClique().HasMissingTranslations():
       print(
-          f'missing translations: {self.res.UberClique().missing_translations_}'
+        f'missing translations: {self.res.UberClique().missing_translations_}'
       )
       sys.exit(-1)
-
 
   # Gets a temporary output path that mirrors the given reference path.
   # |out_filename| can be either absolute or relative.
@@ -620,9 +667,10 @@ are exported to translation interchange files (e.g. XMB files), etc.
   #   GetTempAndroidOutputPath('/absolute/path') =
   #     '/tmp/android_output/absolute/path'
   def GetTempAndroidOutputPath(self, out_filename):
-    return os.path.join(self.android_output_tmp_dir.name,
-                        os.path.relpath(os.path.abspath(out_filename), '/'))
-
+    return os.path.join(
+      self.android_output_tmp_dir.name,
+      os.path.relpath(os.path.abspath(out_filename), '/'),
+    )
 
   # zip_helpers.add_files_to_zip takes in a list of tuples (zip_filename,
   # fs_filename). We are given a list of fs_filenames, and must construct
@@ -635,8 +683,9 @@ are exported to translation interchange files (e.g. XMB files), etc.
     for fs_filename in xml_outputs:
       zip_filename = str(pathlib.Path(fs_filename).as_posix())
       match = JAVA_STRINGS_PATH_RE.match(zip_filename)
-      assert match is not None, ('fs_filename does not contain "/values": '
-                                 f'"{fs_filename}"')
+      assert match is not None, (
+        f'fs_filename does not contain "/values": "{fs_filename}"'
+      )
       zip_filename = match.group(1)
       ret.append((zip_filename, fs_filename))
 
@@ -660,17 +709,17 @@ are exported to translation interchange files (e.g. XMB files), etc.
   # including a single zip file instead.
   def GetFinalOutputFileList(self):
     files = [
-        os.path.abspath(
-            os.path.join(self.output_directory, i.GetOutputFilename()))
-        for i in self.res.GetOutputFiles()
-        if i.GetType() != 'android' or self.android_output_zip_path is None
+      os.path.abspath(
+        os.path.join(self.output_directory, i.GetOutputFilename())
+      )
+      for i in self.res.GetOutputFiles()
+      if i.GetType() != 'android' or self.android_output_zip_path is None
     ]
 
     if self.android_output_zip_path is not None:
       files.append(os.path.abspath(self.android_output_zip_path))
 
     return sorted(files)
-
 
   def CheckAssertedOutputFiles(self, assert_output_files):
     '''Checks that the asserted output files are specified in the given list.
@@ -686,8 +735,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
       missing = list(set(asserted) - set(actual))
       extra = list(set(actual) - set(asserted))
       duplicates = [
-          path for path, count in collections.Counter(actual).items()
-          if count > 1
+        path for path, count in collections.Counter(actual).items() if count > 1
       ]
       error = '''Asserted file list does not match.
 
@@ -698,11 +746,11 @@ Extra output files:
 Duplicate actual output files:
 %s
 '''
-      print(error %
-            ('\n'.join(missing), '\n'.join(extra), '\n'.join(duplicates)))
+      print(
+        error % ('\n'.join(missing), '\n'.join(extra), '\n'.join(duplicates))
+      )
       return False
     return True
-
 
   def CheckAssertedInputFiles(self, assert_input_files):
     '''Checks that the asserted input files match the actual input files.
@@ -712,14 +760,14 @@ Duplicate actual output files:
     '''
     cwd = os.getcwd()
     asserted = sorted(
-        set(
-            os.path.relpath(os.path.abspath(i), cwd)
-            for i in assert_input_files))
+      set(os.path.relpath(os.path.abspath(i), cwd) for i in assert_input_files)
+    )
     actual_files = list(self.res.GetInputFiles())
     if self.o is not None and self.o.input:
       actual_files.append(self.o.input)
     actual = sorted(
-        set(os.path.relpath(os.path.abspath(i), cwd) for i in actual_files))
+      set(os.path.relpath(os.path.abspath(i), cwd) for i in actual_files)
+    )
 
     missing = sorted(set(actual) - set(asserted))
     extra = sorted(set(asserted) - set(actual))
@@ -730,12 +778,12 @@ Duplicate actual output files:
         error.extend(missing)
       if extra:
         error.append(
-            '\nExtra input files (listed in BUILD.gn inputs but not used):')
+          '\nExtra input files (listed in BUILD.gn inputs but not used):'
+        )
         error.extend(extra)
       print('\n'.join(error))
       return False
     return True
-
 
   def GenerateDepfile(self, depfile, depdir, first_ids_file, depend_on_stamp):
     '''Generate a depfile that contains the implicit dependencies of the input
@@ -775,7 +823,7 @@ Duplicate actual output files:
     if first_ids_file is not None:
       infiles.append(first_ids_file)
 
-    if (depend_on_stamp):
+    if depend_on_stamp:
       output_file = depfile + ".stamp"
       # Touch the stamp file before generating the depfile.
       with open(output_file, 'a'):
@@ -783,8 +831,9 @@ Duplicate actual output files:
     else:
       # Get the first output file relative to the depdir.
       outputs = self.res.GetOutputFiles()
-      output_file = os.path.join(self.output_directory,
-                                 outputs[0].GetOutputFilename())
+      output_file = os.path.join(
+        self.output_directory, outputs[0].GetOutputFilename()
+      )
 
     output_file = os.path.relpath(output_file, depdir)
 
@@ -792,7 +841,8 @@ Duplicate actual output files:
     # generated file under the output dir becomes "gen/foo" instead of
     # "../../out/<name>/gen/foo".
     deps_text = ' '.join(
-        os.path.relpath(os.path.abspath(i), depdir) for i in infiles)
+      os.path.relpath(os.path.abspath(i), depdir) for i in infiles
+    )
 
     depfile_contents = output_file + ': ' + deps_text
     self.MakeDirectoriesTo(depfile)

@@ -13,13 +13,13 @@ import plistlib
 
 
 def GetDictionaryKeys(value, keys):
-    """ Returns a dictionary containing `keys` from `value` if present. """
+    """Returns a dictionary containing `keys` from `value` if present."""
     return {key: value[key] for key in keys if key in value}
 
 
 def FlattenDictionary(value, keys=[]):
-    """ Returns a flattened version of the dictionary `value`, with nested keys
-      combined as a.b.c. """
+    """Returns a flattened version of the dictionary `value`, with nested keys
+    combined as a.b.c."""
     result = {}
     if type(value) is dict:
         for key in value:
@@ -31,8 +31,8 @@ def FlattenDictionary(value, keys=[]):
 
 
 def GetCoalition(coalitions_data, browser_identifier: str):
-    """ Returns the coalition data whose name matches the identifier
-     `browser_identifier`"""
+    """Returns the coalition data whose name matches the identifier
+    `browser_identifier`"""
     for coalition in coalitions_data:
         if coalition['name'] == browser_identifier:
             return coalition
@@ -40,8 +40,9 @@ def GetCoalition(coalitions_data, browser_identifier: str):
 
 
 def ReadPowerMetricsData(scenario_dir, browser_identifier: str):
-    with open(os.path.join(scenario_dir, "powermetrics.plist"),
-              "r") as plist_file:
+    with open(
+        os.path.join(scenario_dir, "powermetrics.plist"), "r"
+    ) as plist_file:
         data = plist_file.read().split('\0')
         results = []
         for raw_sample in data:
@@ -52,55 +53,75 @@ def ReadPowerMetricsData(scenario_dir, browser_identifier: str):
 
             # Processing output of the 'tasks' sampler.
             coalition_keys = [
-                "energy_impact", "gputime_ms", "diskio_byteswritten",
-                "diskio_bytesread", "idle_wakeups", "intr_wakeups",
-                "cputime_sample_ms_per_s", "cputime_ns"
+                "energy_impact",
+                "gputime_ms",
+                "diskio_byteswritten",
+                "diskio_bytesread",
+                "idle_wakeups",
+                "intr_wakeups",
+                "cputime_sample_ms_per_s",
+                "cputime_ns",
             ]
             coalitions_data = parsed_sample['coalitions']
             if browser_identifier is not None:
-                browser_coalition_data = GetCoalition(coalitions_data,
-                                                      browser_identifier)
+                browser_coalition_data = GetCoalition(
+                    coalitions_data, browser_identifier
+                )
                 if browser_coalition_data is not None:
                     out_sample['browser'] = GetDictionaryKeys(
-                        browser_coalition_data, coalition_keys)
-            out_sample['all'] = GetDictionaryKeys(parsed_sample['all_tasks'],
-                                                  coalition_keys)
+                        browser_coalition_data, coalition_keys
+                    )
+            out_sample['all'] = GetDictionaryKeys(
+                parsed_sample['all_tasks'], coalition_keys
+            )
 
             # Add info for coalitions that could be of interest since they
             # might execute code on behalf of the browser.
-            window_server_data = GetCoalition(coalitions_data,
-                                              "com.apple.WindowServer")
+            window_server_data = GetCoalition(
+                coalitions_data, "com.apple.WindowServer"
+            )
             if window_server_data is not None:
                 out_sample['window_server'] = GetDictionaryKeys(
-                    window_server_data, coalition_keys)
+                    window_server_data, coalition_keys
+                )
 
-            kernel_coalition_data = GetCoalition(coalitions_data,
-                                                 "kernel_coalition")
+            kernel_coalition_data = GetCoalition(
+                coalitions_data, "kernel_coalition"
+            )
             if kernel_coalition_data is not None:
                 out_sample['kernel_coalition'] = GetDictionaryKeys(
-                    kernel_coalition_data, coalition_keys)
+                    kernel_coalition_data, coalition_keys
+                )
 
             # Processing output of the 'cpu_power' sampler.
             # Expected processor fields on Intel.
             out_sample['processor'] = GetDictionaryKeys(
-                parsed_sample['processor'], [
+                parsed_sample['processor'],
+                [
                     'freq_hz',
                     'package_joules',
-                ])
+                ],
+            )
             # Expected processor fields on M1.
             out_sample['processor'].update(
-                GetDictionaryKeys(parsed_sample['processor'], [
-                    'ane_energy',
-                    'dram_energy',
-                    'cpu_energy',
-                    'gpu_energy',
-                    'package_energy',
-                ]))
+                GetDictionaryKeys(
+                    parsed_sample['processor'],
+                    [
+                        'ane_energy',
+                        'dram_energy',
+                        'cpu_energy',
+                        'gpu_energy',
+                        'package_energy',
+                    ],
+                )
+            )
             if 'clusters' in parsed_sample['processor']:
                 for cluster in parsed_sample['processor']['clusters']:
-                    out_sample['processor'][
-                        cluster['name']] = GetDictionaryKeys(
-                            cluster, ['power', 'idle_ns', 'freq_hz'])
+                    out_sample['processor'][cluster['name']] = (
+                        GetDictionaryKeys(
+                            cluster, ['power', 'idle_ns', 'freq_hz']
+                        )
+                    )
             results.append(FlattenDictionary(out_sample))
         return results
 
@@ -112,13 +133,14 @@ def NormalizeMicrosecondsSampleTime(sample_time: pd.Series):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Parses, aggregates and summarizes power results')
+        description='Parses, aggregates and summarizes power results'
+    )
     parser.add_argument(
-        "--data_dir",
-        help="Directory containing benchmark data.",
-        required=True)
+        "--data_dir", help="Directory containing benchmark data.", required=True
+    )
     parser.add_argument(
-        '--verbose', action='store_true', help='Print verbose output.')
+        '--verbose', action='store_true', help='Print verbose output.'
+    )
     args = parser.parse_args()
 
     if args.verbose:
@@ -146,22 +168,26 @@ def main():
         powermetrics_dataframe = pd.DataFrame.from_records(powermetrics_data)
         # Add sample_time to powermetrics.
         powermetrics_dataframe["sample_time"] = NormalizeMicrosecondsSampleTime(
-            powermetrics_dataframe['elapsed_ns'].cumsum() / 1000.0)
+            powermetrics_dataframe['elapsed_ns'].cumsum() / 1000.0
+        )
         powermetrics_dataframe.set_index('sample_time', inplace=True)
 
         with open(os.path.join(subdir, "power_sampler.json")) as power_file:
             power_data = json.load(power_file)
         power_dataframe = pd.DataFrame.from_records(
             power_data['data_rows'],
-            columns=[key for key in power_data['column_labels']] +
-            ["sample_time"])
+            columns=[key for key in power_data['column_labels']]
+            + ["sample_time"],
+        )
         power_dataframe['sample_time'] = NormalizeMicrosecondsSampleTime(
-            power_dataframe['sample_time'])
+            power_dataframe['sample_time']
+        )
         power_dataframe.set_index('sample_time', inplace=True)
 
         # Join all data sources by sample_time.
         scenario_data = powermetrics_dataframe.join(
-            power_dataframe, how='outer')
+            power_dataframe, how='outer'
+        )
 
         summary_path = os.path.join(subdir, 'summary.csv')
         logging.info(f'Outputing results in {os.path.abspath(summary_path)}')

@@ -2,8 +2,7 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Visualizes the amount of IOSurface memory used over time.
-"""
+"""Visualizes the amount of IOSurface memory used over time."""
 
 import argparse
 import time
@@ -33,8 +32,10 @@ def _PlotData(pid: int):
     total_dirty_size = sum(io_surface.dirty for io_surface in io_surfaces)
     total_swapped_size = sum(io_surface.swapped for io_surface in io_surfaces)
 
-    print('SIZE = %d\tDIRTY = %d\tSWAPPED = %d' %
-          (total_virtual_size, total_dirty_size, total_swapped_size))
+    print(
+      'SIZE = %d\tDIRTY = %d\tSWAPPED = %d'
+      % (total_virtual_size, total_dirty_size, total_swapped_size)
+    )
     now = time.time()
 
     times.append(now - first_time)
@@ -76,10 +77,9 @@ def _PlotData(pid: int):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('--pid',
-                      help='PID of the GPU process',
-                      type=int,
-                      required=True)
+  parser.add_argument(
+    '--pid', help='PID of the GPU process', type=int, required=True
+  )
   args = parser.parse_args()
 
   _PlotData(args.pid)

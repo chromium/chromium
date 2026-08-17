@@ -20,8 +20,7 @@ def _GenerateString(content, indent='  '):
 
 
 def _GenerateArrayVariableName(element_name, field_name, field_name_count):
-  """Generates a unique variable name for an array variable.
-  """
+  """Generates a unique variable name for an array variable."""
   var = '%s_%s' % (element_name, field_name)
   if var not in field_name_count:
     field_name_count[var] = 0
@@ -41,12 +40,18 @@ def _GenerateArray(element_name, field_info, content, indent, field_name_count):
   lines = []
 
   array_field = class_generator.GenerateField(field_info['contents'])
-  array_type = array_field[:array_field.find(' ')]
+  array_type = array_field[: array_field.find(' ')]
   lines.append(indent + 'new %s[]{' % array_type)
   for subcontent in content:
     lines.append(
-        _GenerateFieldContent(element_name, field_info['contents'], subcontent,
-                              indent + _INDENT, field_name_count))
+      _GenerateFieldContent(
+        element_name,
+        field_info['contents'],
+        subcontent,
+        indent + _INDENT,
+        field_name_count,
+      )
+    )
   lines.append(indent + '},')
   return '\n'.join(lines)
 
@@ -66,8 +71,10 @@ def _GenerateClass(element_name, field_info, content, indent, field_name_count):
   for field in fields:
     subcontent = content.get(field['field'])
     lines.append(
-        _GenerateFieldContent(element_name, field, subcontent, indent + _INDENT,
-                              field_name_count))
+      _GenerateFieldContent(
+        element_name, field, subcontent, indent + _INDENT, field_name_count
+      )
+    )
 
   # remove the trailing comma for the last parameter
   lines[-1] = lines[-1][:-1]
@@ -76,8 +83,9 @@ def _GenerateClass(element_name, field_info, content, indent, field_name_count):
   return '\n'.join(lines)
 
 
-def _GenerateFieldContent(element_name, field_info, content, indent,
-                          field_name_count):
+def _GenerateFieldContent(
+  element_name, field_info, content, indent, field_name_count
+):
   """Generate the content of a field to be included in the constructor call. If
   the field's content is not specified, uses the default value if one exists.
   """
@@ -97,31 +105,38 @@ def _GenerateFieldContent(element_name, field_info, content, indent,
   elif java_type == 'string16':
     raise RuntimeError('Generating a UTF16 java String is not supported yet.')
   elif java_type == 'array':
-    return _GenerateArray(element_name, field_info, content, indent,
-                          field_name_count)
+    return _GenerateArray(
+      element_name, field_info, content, indent, field_name_count
+    )
   elif java_type == 'struct':
-    return _GenerateClass(element_name, field_info, content, indent,
-                          field_name_count)
+    return _GenerateClass(
+      element_name, field_info, content, indent, field_name_count
+    )
   else:
     raise RuntimeError('Unknown field type "%s"' % java_type)
 
 
-def _GenerateElement(type_name, schema, element_name, element,
-                     field_name_count):
-  """Generate the constructor call for one element.
-  """
+def _GenerateElement(
+  type_name, schema, element_name, element, field_name_count
+):
+  """Generate the constructor call for one element."""
   lines = []
-  lines.append(_INDENT + 'public static final %s %s = ' %
-               (type_name, element_name))
+  lines.append(
+    _INDENT + 'public static final %s %s = ' % (type_name, element_name)
+  )
   lines.append(2 * _INDENT + 'new %s(' % (type_name))
   for field_info in schema:
     content = element.get(field_info['field'], None)
-    if (content == None and not field_info.get('optional', False)):
-      raise RuntimeError('Mandatory field "%s" omitted in element "%s".' %
-                         (field_info['field'], element_name))
+    if content == None and not field_info.get('optional', False):
+      raise RuntimeError(
+        'Mandatory field "%s" omitted in element "%s".'
+        % (field_info['field'], element_name)
+      )
     lines.append(
-        _GenerateFieldContent(element_name, field_info, content, 2 * _INDENT,
-                              field_name_count))
+      _GenerateFieldContent(
+        element_name, field_info, content, 2 * _INDENT, field_name_count
+      )
+    )
 
   # remove the trailing comma for the last parameter
   lines[-1] = lines[-1][:-1]
@@ -142,7 +157,9 @@ def GenerateElements(type_name, schema, description, field_name_count={}):
 
   for element_name, element in description.get('elements', {}).items():
     result.append(
-        _GenerateElement(type_name, schema, element_name, element,
-                         field_name_count))
+      _GenerateElement(
+        type_name, schema, element_name, element, field_name_count
+      )
+    )
     result.append('')
   return '\n'.join(result)

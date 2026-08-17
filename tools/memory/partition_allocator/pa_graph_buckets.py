@@ -41,16 +41,27 @@ def main(argv: list[str]) -> None:
     yb2 = []
     with open(DUMPNAME, 'r') as f:
       for line in f.readlines():
-        index, bucket_size, num_allocs_a, total_requested_size_a, num_allocs_b, total_requested_size_b = [
-            int(tmp) for tmp in line.strip().split(',')
-        ]
+        (
+          index,
+          bucket_size,
+          num_allocs_a,
+          total_requested_size_a,
+          num_allocs_b,
+          total_requested_size_b,
+        ) = [int(tmp) for tmp in line.strip().split(',')]
 
         def record_allocs_and_sizes(y1, y2, num_allocs, total_requested_size):
           y1.append(bucket_size * num_allocs / MIB)
           y2.append((bucket_size * num_allocs - total_requested_size) / MIB)
 
-        print(index, bucket_size, num_allocs_a, total_requested_size_a,
-              num_allocs_b, total_requested_size_b)
+        print(
+          index,
+          bucket_size,
+          num_allocs_a,
+          total_requested_size_a,
+          num_allocs_b,
+          total_requested_size_b,
+        )
         x.append((index))
 
         # format buckets sizes with commas, e.g. 50000 -> 50,000
@@ -83,9 +94,14 @@ def main(argv: list[str]) -> None:
     def show_title(ax, total_size):
       diff = total_size - total_size_a
       ax.set_title(
-          'Alternate Distribution uses an extra {:+.2f} KiB due to internal fragmentation ({:+.2%})'
-          .format(diff * KIB, diff / total_size_a),
-          size='medium')
+        (
+            'Alternate Distribution uses an extra {:+.2f} KiB due to internal'
+            ' fragmentation ({:+.2%})'
+        ).format(
+          diff * KIB, diff / total_size_a
+        ),
+        size='medium',
+      )
 
     plt.suptitle('Memory Usage v. Bucket Size', size='x-large', weight='bold')
     show_title(ax_b, total_size_b)

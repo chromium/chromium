@@ -5,9 +5,9 @@
 
 '''Unit tests for the 'grit newgrd' tool.'''
 
-
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -21,7 +21,6 @@ class DummyOpts:
 
 
 class DiffStructuresUnittest(unittest.TestCase):
-
   def testMissingFiles(self):
     """Verify failure w/out file inputs."""
     tool = diff_structures.DiffStructures()

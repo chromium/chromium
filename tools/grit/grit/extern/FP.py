@@ -5,9 +5,11 @@
 
 try:
   import hashlib
+
   _new_md5 = hashlib.md5
 except ImportError:
   import md5
+
   _new_md5 = md5.new
 
 

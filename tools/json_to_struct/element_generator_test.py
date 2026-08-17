@@ -7,29 +7,33 @@ from element_generator import GenerateFieldContent
 from element_generator import GenerateElements
 import unittest
 
+
 class ElementGeneratorTest(unittest.TestCase):
   def testGenerateIntFieldContent(self):
-    lines = [];
-    GenerateFieldContent('', {'type': 'int', 'default': 5}, None, lines, '  ',
-                         {})
+    lines = []
+    GenerateFieldContent(
+      '', {'type': 'int', 'default': 5}, None, lines, '  ', {}
+    )
     self.assertEqual(['  5,'], lines)
-    lines = [];
+    lines = []
     GenerateFieldContent('', {'type': 'int', 'default': 5}, 12, lines, '  ', {})
     self.assertEqual(['  12,'], lines)
-    lines = [];
+    lines = []
     GenerateFieldContent('', {'type': 'int'}, -3, lines, '  ', {})
     self.assertEqual(['  -3,'], lines)
 
   def testGenerateStringFieldContent(self):
-    lines = [];
-    GenerateFieldContent('', {'type': 'string', 'default': 'foo_bar'}, None,
-                         lines, '  ', {})
+    lines = []
+    GenerateFieldContent(
+      '', {'type': 'string', 'default': 'foo_bar'}, None, lines, '  ', {}
+    )
     self.assertEqual(['  "foo_bar",'], lines)
-    lines = [];
-    GenerateFieldContent('', {'type': 'string', 'default': 'foo'}, 'bar\n',
-                         lines, '  ', {})
+    lines = []
+    GenerateFieldContent(
+      '', {'type': 'string', 'default': 'foo'}, 'bar\n', lines, '  ', {}
+    )
     self.assertEqual(['  "bar\\n",'], lines)
-    lines = [];
+    lines = []
     GenerateFieldContent('', {'type': 'string'}, None, lines, '  ', {})
     self.assertEqual(['  nullptr,'], lines)
     lines = []
@@ -37,98 +41,131 @@ class ElementGeneratorTest(unittest.TestCase):
     self.assertEqual(['  "foo",'], lines)
 
   def testGenerateString16FieldContent(self):
-    lines = [];
-    GenerateFieldContent('', {'type': 'string16',
-                              'default': u'f\u00d8\u00d81a'},
-                         None, lines, '  ', {})
+    lines = []
+    GenerateFieldContent(
+      '',
+      {'type': 'string16', 'default': 'f\u00d8\u00d81a'},
+      None,
+      lines,
+      '  ',
+      {},
+    )
     self.assertEqual(['  u"f\\x00d8" u"\\x00d8" u"1a",'], lines)
-    lines = [];
-    GenerateFieldContent('', {'type': 'string16', 'default': 'foo'},
-                         u'b\uc3a5r', lines, '  ', {})
+    lines = []
+    GenerateFieldContent(
+      '', {'type': 'string16', 'default': 'foo'}, 'b\uc3a5r', lines, '  ', {}
+    )
     self.assertEqual(['  u"b\\xc3a5" u"r",'], lines)
-    lines = [];
+    lines = []
     GenerateFieldContent('', {'type': 'string16'}, None, lines, '  ', {})
     self.assertEqual(['  nullptr,'], lines)
     lines = []
-    GenerateFieldContent('', {'type': 'string16'}, u'foo\\u1234', lines, '  ',
-                         {})
+    GenerateFieldContent(
+      '', {'type': 'string16'}, 'foo\\u1234', lines, '  ', {}
+    )
     self.assertEqual(['  u"foo\\\\u1234",'], lines)
 
   def testGenerateEnumFieldContent(self):
-    lines = [];
-    GenerateFieldContent('', {'type': 'enum', 'default': 'RED'}, None, lines,
-                         '  ', {})
+    lines = []
+    GenerateFieldContent(
+      '', {'type': 'enum', 'default': 'RED'}, None, lines, '  ', {}
+    )
     self.assertEqual(['  RED,'], lines)
-    lines = [];
-    GenerateFieldContent('', {'type': 'enum', 'default': 'RED'}, 'BLACK', lines,
-                         '  ', {})
+    lines = []
+    GenerateFieldContent(
+      '', {'type': 'enum', 'default': 'RED'}, 'BLACK', lines, '  ', {}
+    )
     self.assertEqual(['  BLACK,'], lines)
-    lines = [];
+    lines = []
     GenerateFieldContent('', {'type': 'enum'}, 'BLUE', lines, '  ', {})
     self.assertEqual(['  BLUE,'], lines)
 
   def testGenerateClassFieldContent(self):
     lines = []
-    GenerateFieldContent('', {
-        'type': 'class',
-        'default': 'std::nullopt'
-    }, None, lines, '  ', {})
+    GenerateFieldContent(
+      '', {'type': 'class', 'default': 'std::nullopt'}, None, lines, '  ', {}
+    )
     self.assertEqual(['  std::nullopt,'], lines)
     lines = []
-    GenerateFieldContent('', {
-        'type': 'class',
-        'default': 'std::nullopt'
-    }, 'true', lines, '  ', {})
+    GenerateFieldContent(
+      '', {'type': 'class', 'default': 'std::nullopt'}, 'true', lines, '  ', {}
+    )
     self.assertEqual(['  true,'], lines)
     lines = []
     GenerateFieldContent('', {'type': 'class'}, 'false', lines, '  ', {})
     self.assertEqual(['  false,'], lines)
 
   def testGenerateArrayFieldContent(self):
-    lines = ['STRUCT BEGINS'];
-    GenerateFieldContent('test', {'type': 'array', 'contents': {'type': 'int'}},
-                         None, lines, '  ', {})
+    lines = ['STRUCT BEGINS']
+    GenerateFieldContent(
+      'test',
+      {'type': 'array', 'contents': {'type': 'int'}},
+      None,
+      lines,
+      '  ',
+      {},
+    )
     self.assertEqual(['STRUCT BEGINS', '  {},'], lines)
     lines = ['STRUCT BEGINS']
-    GenerateFieldContent('test', {
-        'field': 'my_array',
-        'type': 'array',
-        'contents': {
-            'type': 'int'
-        }
-    }, [3, 4], lines, '  ', {})
+    GenerateFieldContent(
+      'test',
+      {'field': 'my_array', 'type': 'array', 'contents': {'type': 'int'}},
+      [3, 4],
+      lines,
+      '  ',
+      {},
+    )
     self.assertEqual(
-        'const int array_test_my_array[] = {\n' + '  3,\n' + '  4,\n' + '};\n' +
-        'STRUCT BEGINS\n' + '  array_test_my_array,', '\n'.join(lines))
+      'const int array_test_my_array[] = {\n'
+      + '  3,\n'
+      + '  4,\n'
+      + '};\n'
+      + 'STRUCT BEGINS\n'
+      + '  array_test_my_array,',
+      '\n'.join(lines),
+    )
     lines = ['STRUCT BEGINS']
-    GenerateFieldContent('test', {
-        'field': 'my_array',
-        'type': 'array',
-        'contents': {
-            'type': 'int'
-        }
-    }, [3, 4], lines, '  ', {'array_test_my_array': 1})
+    GenerateFieldContent(
+      'test',
+      {'field': 'my_array', 'type': 'array', 'contents': {'type': 'int'}},
+      [3, 4],
+      lines,
+      '  ',
+      {'array_test_my_array': 1},
+    )
     self.assertEqual(
-        'const int array_test_my_array_1[] = {\n' + '  3,\n' + '  4,\n' +
-        '};\n' + 'STRUCT BEGINS\n' + '  array_test_my_array_1,',
-        '\n'.join(lines))
+      'const int array_test_my_array_1[] = {\n'
+      + '  3,\n'
+      + '  4,\n'
+      + '};\n'
+      + 'STRUCT BEGINS\n'
+      + '  array_test_my_array_1,',
+      '\n'.join(lines),
+    )
 
   def testGenerateElements(self):
     schema = [
       {'field': 'f0', 'type': 'int', 'default': 1000, 'optional': True},
       {'field': 'f1', 'type': 'string'},
-      {'field': 'f2', 'type': 'enum', 'ctype': 'QuasiBool', 'default': 'MAYBE',
-       'optional': True},
-      {'field': 'f3', 'type': 'array', 'contents': {'type': 'string16'},
-       'optional': True},
+      {
+        'field': 'f2',
+        'type': 'enum',
+        'ctype': 'QuasiBool',
+        'default': 'MAYBE',
+        'optional': True,
+      },
+      {
+        'field': 'f3',
+        'type': 'array',
+        'contents': {'type': 'string16'},
+        'optional': True,
+      },
       {
         'field': 'f4',
         'type': 'struct',
         'type_name': 'InnerType',
-        'fields': [
-          {'field': 'g0', 'type': 'string'}
-        ],
-        'optional': True
+        'fields': [{'field': 'g0', 'type': 'string'}],
+        'optional': True,
       },
       {
         'field': 'f5',
@@ -138,21 +175,21 @@ class ElementGeneratorTest(unittest.TestCase):
           'type_name': 'InnerType',
           'fields': [
             {'field': 'a0', 'type': 'string'},
-            {'field': 'a1', 'type': 'string'}
-          ]
+            {'field': 'a1', 'type': 'string'},
+          ],
         },
-        'optional': True
-      }
+        'optional': True,
+      },
     ]
     description = {
       'int_variables': {'a': -5, 'b': 5},
       'elements': {
         'elem0': {'f0': 5, 'f1': 'foo', 'f2': 'SURE'},
         'elem1': {'f2': 'NOWAY', 'f0': -2, 'f1': 'bar'},
-        'elem2': {'f1': 'foo_bar', 'f3': [u'bar', u'foo']},
+        'elem2': {'f1': 'foo_bar', 'f3': ['bar', 'foo']},
         'elem3': {'f1': 'foo', 'f4': {'g0': 'test'}},
         'elem4': {'f1': 'foo', 'f5': [{'a0': 'test0', 'a1': 'test1'}]},
-      }
+      },
     }
 
     # Build the expected result stream based on the unpredicatble order the
@@ -162,63 +199,58 @@ class ElementGeneratorTest(unittest.TestCase):
       'b': 'const int b = 5;\n',
     }
     elements_expected = {
-        'elem0':
-        'const MyType elem0 = {\n'
-        '  5,\n'
-        '  "foo",\n'
-        '  SURE,\n'
-        '  {},\n'
-        '  {},\n'
-        '  {},\n'
-        '};\n',
-        'elem1':
-        'const MyType elem1 = {\n'
-        '  -2,\n'
-        '  "bar",\n'
-        '  NOWAY,\n'
-        '  {},\n'
-        '  {},\n'
-        '  {},\n'
-        '};\n',
-        'elem2':
-        'const char16_t* const array_elem2_f3[] = {\n'
-        '  u"bar",\n'
-        '  u"foo",\n'
-        '};\n'
-        'const MyType elem2 = {\n'
-        '  1000,\n'
-        '  "foo_bar",\n'
-        '  MAYBE,\n'
-        '  array_elem2_f3,\n'
-        '  {},\n'
-        '  {},\n'
-        '};\n',
-        'elem3':
-        'const MyType elem3 = {\n'
-        '  1000,\n'
-        '  "foo",\n'
-        '  MAYBE,\n'
-        '  {},\n'
-        '  {\n'
-        '    "test",\n'
-        '  },\n'
-        '  {},\n'
-        '};\n',
-        'elem4':
-        'const InnerType array_elem4_f5[] = {\n'
-        '  {\n'
-        '    "test0",\n'
-        '    "test1",\n'
-        '  },\n'
-        '};\n'
-        'const MyType elem4 = {\n'
-        '  1000,\n'
-        '  "foo",\n'
-        '  MAYBE,\n'
-        '  {},\n'
-        '  {},\n'
-        '  array_elem4_f5,\n'
-        '};\n'
+      'elem0': 'const MyType elem0 = {\n'
+      '  5,\n'
+      '  "foo",\n'
+      '  SURE,\n'
+      '  {},\n'
+      '  {},\n'
+      '  {},\n'
+      '};\n',
+      'elem1': 'const MyType elem1 = {\n'
+      '  -2,\n'
+      '  "bar",\n'
+      '  NOWAY,\n'
+      '  {},\n'
+      '  {},\n'
+      '  {},\n'
+      '};\n',
+      'elem2': 'const char16_t* const array_elem2_f3[] = {\n'
+      '  u"bar",\n'
+      '  u"foo",\n'
+      '};\n'
+      'const MyType elem2 = {\n'
+      '  1000,\n'
+      '  "foo_bar",\n'
+      '  MAYBE,\n'
+      '  array_elem2_f3,\n'
+      '  {},\n'
+      '  {},\n'
+      '};\n',
+      'elem3': 'const MyType elem3 = {\n'
+      '  1000,\n'
+      '  "foo",\n'
+      '  MAYBE,\n'
+      '  {},\n'
+      '  {\n'
+      '    "test",\n'
+      '  },\n'
+      '  {},\n'
+      '};\n',
+      'elem4': 'const InnerType array_elem4_f5[] = {\n'
+      '  {\n'
+      '    "test0",\n'
+      '    "test1",\n'
+      '  },\n'
+      '};\n'
+      'const MyType elem4 = {\n'
+      '  1000,\n'
+      '  "foo",\n'
+      '  MAYBE,\n'
+      '  {},\n'
+      '  {},\n'
+      '  array_elem4_f5,\n'
+      '};\n',
     }
     expected = ''
     for key, value in description['int_variables'].items():
@@ -241,11 +273,13 @@ class ElementGeneratorTest(unittest.TestCase):
       'int_variables': {'a': -5, 'b': 5},
       'elements': {
         'elem0': {'f0': 5},
-      }
+      },
     }
 
-    self.assertRaises(RuntimeError,
-      lambda: GenerateElements('MyType', schema, description))
+    self.assertRaises(
+      RuntimeError, lambda: GenerateElements('MyType', schema, description)
+    )
+
 
 if __name__ == '__main__':
   unittest.main()

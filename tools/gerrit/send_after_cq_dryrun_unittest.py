@@ -9,32 +9,24 @@ import send_after_cq_dryrun
 
 
 class TestReviewMonitor(unittest.TestCase):
-
     def setUp(self):
         # Patch find_gerrit_client to return a dummy path
-        with patch('send_after_cq_dryrun.find_gerrit_client',
-                   return_value='/path/to/gerrit_client.py'):
+        with patch(
+            'send_after_cq_dryrun.find_gerrit_client',
+            return_value='/path/to/gerrit_client.py',
+        ):
             self.monitor = send_after_cq_dryrun.ReviewMonitor(
                 issue_id='1234',
                 issue_url='https://crrev.com/1234',
                 host='https://chromium-review.googlesource.com',
                 patchset='5',
-                reviewers=['test@chromium.org'])
+                reviewers=['test@chromium.org'],
+            )
 
     def test_parse_results_all_success(self):
         results = [
-            {
-                'builder': {
-                    'builder': 'bot1'
-                },
-                'status': 'SUCCESS'
-            },
-            {
-                'builder': {
-                    'builder': 'bot2'
-                },
-                'status': 'SUCCESS'
-            },
+            {'builder': {'builder': 'bot1'}, 'status': 'SUCCESS'},
+            {'builder': {'builder': 'bot2'}, 'status': 'SUCCESS'},
         ]
         res = self.monitor.parse_results(results)
         self.assertTrue(res.finished)
@@ -44,18 +36,8 @@ class TestReviewMonitor(unittest.TestCase):
 
     def test_parse_results_still_running(self):
         results = [
-            {
-                'builder': {
-                    'builder': 'bot1'
-                },
-                'status': 'SUCCESS'
-            },
-            {
-                'builder': {
-                    'builder': 'bot2'
-                },
-                'status': 'STARTED'
-            },
+            {'builder': {'builder': 'bot1'}, 'status': 'SUCCESS'},
+            {'builder': {'builder': 'bot2'}, 'status': 'STARTED'},
         ]
         res = self.monitor.parse_results(results)
         self.assertFalse(res.finished)
@@ -66,21 +48,11 @@ class TestReviewMonitor(unittest.TestCase):
         # Even if one bot failed, it's not finished if others are still running.
         results = [
             {
-                'builder': {
-                    'builder': 'bot1'
-                },
+                'builder': {'builder': 'bot1'},
                 'status': 'FAILURE',
-                'tags': [{
-                    'key': 'user_agent',
-                    'value': 'cq'
-                }]
+                'tags': [{'key': 'user_agent', 'value': 'cq'}],
             },
-            {
-                'builder': {
-                    'builder': 'bot2'
-                },
-                'status': 'STARTED'
-            },
+            {'builder': {'builder': 'bot2'}, 'status': 'STARTED'},
         ]
         res = self.monitor.parse_results(results)
         self.assertFalse(res.finished)
@@ -92,25 +64,19 @@ class TestReviewMonitor(unittest.TestCase):
         # Bot1 failed at T1, then succeeded at T2.
         results = [
             {
-                'builder': {
-                    'builder': 'bot1'
-                },
+                'builder': {'builder': 'bot1'},
                 'status': 'FAILURE',
-                'createTime': '2026-02-13T10:00:00Z'
+                'createTime': '2026-02-13T10:00:00Z',
             },
             {
-                'builder': {
-                    'builder': 'bot1'
-                },
+                'builder': {'builder': 'bot1'},
                 'status': 'SUCCESS',
-                'createTime': '2026-02-13T11:00:00Z'
+                'createTime': '2026-02-13T11:00:00Z',
             },
             {
-                'builder': {
-                    'builder': 'bot2'
-                },
+                'builder': {'builder': 'bot2'},
                 'status': 'SUCCESS',
-                'createTime': '2026-02-13T10:30:00Z'
+                'createTime': '2026-02-13T10:30:00Z',
             },
         ]
         res = self.monitor.parse_results(results)
@@ -131,24 +97,18 @@ class TestReviewMonitor(unittest.TestCase):
 
         # 1st call: bot failed, but CQ label is still 1.
         # 2nd call: bot succeeded.
-        self.monitor.get_all_try_results = MagicMock(side_effect=[
-            [{
-                'builder': {
-                    'builder': 'bot1'
-                },
-                'status': 'FAILURE',
-                'tags': [{
-                    'key': 'user_agent',
-                    'value': 'cq'
-                }]
-            }],
-            [{
-                'builder': {
-                    'builder': 'bot1'
-                },
-                'status': 'SUCCESS'
-            }],
-        ])
+        self.monitor.get_all_try_results = MagicMock(
+            side_effect=[
+                [
+                    {
+                        'builder': {'builder': 'bot1'},
+                        'status': 'FAILURE',
+                        'tags': [{'key': 'user_agent', 'value': 'cq'}],
+                    }
+                ],
+                [{'builder': {'builder': 'bot1'}, 'status': 'SUCCESS'}],
+            ]
+        )
         # Initial check, after 1st try failure, then success
         self.monitor.get_cq_label = MagicMock(side_effect=[1, 1, 0])
         self.monitor.set_wip = MagicMock()
@@ -161,44 +121,41 @@ class TestReviewMonitor(unittest.TestCase):
         self.assertEqual(self.monitor.get_all_try_results.call_count, 2)
         self.monitor.set_ready.assert_called_once()
 
-
     @patch('json.load')
     @patch('send_after_cq_dryrun.run_command')
     def test_get_all_try_results(self, mock_run_command, mock_json_load):
         import json
+
         # Mock Gerrit response for ALL_REVISIONS
         mock_json_load.return_value = {
-            "revisions": {
-                "rev1": {
-                    "_number": 1
-                },
-                "rev2": {
-                    "_number": 2
-                }
-            }
+            "revisions": {"rev1": {"_number": 1}, "rev2": {"_number": 2}}
         }
 
         # Mock git cl try-results responses
-        ps1_resp = json.dumps([{
-            "builder": {
-                "builder": "bot1"
-            },
-            "status": "FAILURE",
-            "createTime": "T1"
-        }])
-        ps2_resp = json.dumps([{
-            "builder": {
-                "builder": "bot1"
-            },
-            "status": "SUCCESS",
-            "createTime": "T2"
-        }])
+        ps1_resp = json.dumps(
+            [
+                {
+                    "builder": {"builder": "bot1"},
+                    "status": "FAILURE",
+                    "createTime": "T1",
+                }
+            ]
+        )
+        ps2_resp = json.dumps(
+            [
+                {
+                    "builder": {"builder": "bot1"},
+                    "status": "SUCCESS",
+                    "createTime": "T2",
+                }
+            ]
+        )
 
         # side_effect returns values in sequence for consecutive calls
         mock_run_command.side_effect = [
             ("", 0),  # For Gerrit query
             (ps1_resp, 0),  # For PS 1 results
-            (ps2_resp, 0)  # For PS 2 results
+            (ps2_resp, 0),  # For PS 2 results
         ]
 
         results = self.monitor.get_all_try_results()
@@ -215,60 +172,51 @@ class TestReviewMonitor(unittest.TestCase):
         results = [
             # Builder A on PS1 (Failed)
             {
-                'builder': {
-                    'builder': 'builder_A'
-                },
-                'status':
-                'FAILURE',
-                'createTime':
-                '2026-02-13T10:00:00Z',
-                'tags': [{
-                    'key':
-                    'buildset',
-                    'value': ('patch/gerrit/chromium-review.googlesource.com/'
-                              '7793289/1')
-                }, {
-                    'key': 'user_agent',
-                    'value': 'cq'
-                }]
+                'builder': {'builder': 'builder_A'},
+                'status': 'FAILURE',
+                'createTime': '2026-02-13T10:00:00Z',
+                'tags': [
+                    {
+                        'key': 'buildset',
+                        'value': (
+                            'patch/gerrit/chromium-review.googlesource.com/'
+                            '7793289/1'
+                        ),
+                    },
+                    {'key': 'user_agent', 'value': 'cq'},
+                ],
             },
             # Builder A on PS2 (Success)
             {
-                'builder': {
-                    'builder': 'builder_A'
-                },
-                'status':
-                'SUCCESS',
-                'createTime':
-                '2026-02-13T11:00:00Z',
-                'tags': [{
-                    'key':
-                    'buildset',
-                    'value': ('patch/gerrit/chromium-review.googlesource.com/'
-                              '7793289/2')
-                }, {
-                    'key': 'user_agent',
-                    'value': 'cq'
-                }]
+                'builder': {'builder': 'builder_A'},
+                'status': 'SUCCESS',
+                'createTime': '2026-02-13T11:00:00Z',
+                'tags': [
+                    {
+                        'key': 'buildset',
+                        'value': (
+                            'patch/gerrit/chromium-review.googlesource.com/'
+                            '7793289/2'
+                        ),
+                    },
+                    {'key': 'user_agent', 'value': 'cq'},
+                ],
             },
             # Builder B on PS1 (Failed)
             {
-                'builder': {
-                    'builder': 'builder_B'
-                },
-                'status':
-                'FAILURE',
-                'createTime':
-                '2026-02-13T10:30:00Z',
-                'tags': [{
-                    'key':
-                    'buildset',
-                    'value': ('patch/gerrit/chromium-review.googlesource.com/'
-                              '7793289/1')
-                }, {
-                    'key': 'user_agent',
-                    'value': 'cq'
-                }]
+                'builder': {'builder': 'builder_B'},
+                'status': 'FAILURE',
+                'createTime': '2026-02-13T10:30:00Z',
+                'tags': [
+                    {
+                        'key': 'buildset',
+                        'value': (
+                            'patch/gerrit/chromium-review.googlesource.com/'
+                            '7793289/1'
+                        ),
+                    },
+                    {'key': 'user_agent', 'value': 'cq'},
+                ],
             },
         ]
 
@@ -283,68 +231,51 @@ class TestReviewMonitor(unittest.TestCase):
         self.assertEqual(len(res.failed_builders), 1)
         self.assertIn('builder_B (PS 1)', res.failed_builders)
         # Builder A should be successful because PS2 succeeded
-        self.assertIn("Success: 1/2",
-                      res.stats)  # builder_A success, builder_B failed
+        self.assertIn(
+            "Success: 1/2", res.stats
+        )  # builder_A success, builder_B failed
         self.assertIn("Failed: 1", res.stats)
 
     def test_parse_results_ignore_optional_failures(self):
         results = [
             # Builder A on PS1 (Failed) - CQ bot
             {
-                'builder': {
-                    'builder': 'builder_A'
-                },
-                'status':
-                'FAILURE',
-                'createTime':
-                '2026-02-13T10:00:00Z',
-                'tags': [{
-                    'key':
-                    'buildset',
-                    'value':
-                    'patch/gerrit/chromium-review.googlesource.com/7793289/1'
-                }, {
-                    'key': 'user_agent',
-                    'value': 'cq'
-                }]
+                'builder': {'builder': 'builder_A'},
+                'status': 'FAILURE',
+                'createTime': '2026-02-13T10:00:00Z',
+                'tags': [
+                    {
+                        'key': 'buildset',
+                        'value': 'patch/gerrit/chromium-review.googlesource.com/7793289/1',
+                    },
+                    {'key': 'user_agent', 'value': 'cq'},
+                ],
             },
             # Builder A on PS2 (Success) - CQ bot
             {
-                'builder': {
-                    'builder': 'builder_A'
-                },
-                'status':
-                'SUCCESS',
-                'createTime':
-                '2026-02-13T11:00:00Z',
-                'tags': [{
-                    'key':
-                    'buildset',
-                    'value':
-                    'patch/gerrit/chromium-review.googlesource.com/7793289/2'
-                }, {
-                    'key': 'user_agent',
-                    'value': 'cq'
-                }]
+                'builder': {'builder': 'builder_A'},
+                'status': 'SUCCESS',
+                'createTime': '2026-02-13T11:00:00Z',
+                'tags': [
+                    {
+                        'key': 'buildset',
+                        'value': 'patch/gerrit/chromium-review.googlesource.com/7793289/2',
+                    },
+                    {'key': 'user_agent', 'value': 'cq'},
+                ],
             },
             # Builder B on PS1 (Failed) - Optional bot
             {
-                'builder': {
-                    'builder': 'builder_B'
-                },
-                'status':
-                'FAILURE',
-                'createTime':
-                '2026-02-13T10:30:00Z',
-                'tags': [{
-                    'key':
-                    'buildset',
-                    'value':
-                    'patch/gerrit/chromium-review.googlesource.com/7793289/1'
-                }, {
-                    'key': 'user_agent',
-                    'value': 'gerrit'
-                }]
+                'builder': {'builder': 'builder_B'},
+                'status': 'FAILURE',
+                'createTime': '2026-02-13T10:30:00Z',
+                'tags': [
+                    {
+                        'key': 'buildset',
+                        'value': 'patch/gerrit/chromium-review.googlesource.com/7793289/1',
+                    },
+                    {'key': 'user_agent', 'value': 'gerrit'},
+                ],
             },
         ]
 
@@ -354,7 +285,8 @@ class TestReviewMonitor(unittest.TestCase):
 
         self.assertTrue(res.finished)
         self.assertTrue(
-            res.success)  # Because Builder B is optional and ignored
+            res.success
+        )  # Because Builder B is optional and ignored
         self.assertEqual(len(res.failed_builders), 0)
         self.assertIn("Success: 1/2", res.stats)
         self.assertIn("Failed: 0", res.stats)

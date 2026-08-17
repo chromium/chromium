@@ -8,7 +8,6 @@ custom parser that annotates source byte ranges of "leaf values" (strings and
 integers).
 """
 
-
 _isWhitespace = lambda ch: ch in ' \t\n'
 _isNotNewline = lambda ch: ch != '\n'
 _isDigit = lambda ch: ch.isdigit()
@@ -98,8 +97,9 @@ def Tokenize(data):
       _EatString()
       t = 'S'
     else:
-      raise ValueError('Unknown char %s at %s' %
-                       (repr(ch), _RenderLineCol(data, lo)))
+      raise ValueError(
+        'Unknown char %s at %s' % (repr(ch), _RenderLineCol(data, lo))
+      )
     yield (t, lo, ctx.pos)
   yield ('E', ctx.pos, ctx.pos)  # End sentinel.
 

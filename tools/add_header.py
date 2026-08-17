@@ -66,13 +66,15 @@ def IsSystemHeader(decorated_name):
 def IsCSystemHeader(decorated_name):
   """Returns true if decoraed_name looks like a C system header."""
   return IsSystemHeader(decorated_name) and UndecoratedName(
-      decorated_name).endswith('.h')
+    decorated_name
+  ).endswith('.h')
 
 
 def IsCXXSystemHeader(decorated_name):
   """Returns true if decoraed_name looks like a C++ system header."""
-  return IsSystemHeader(
-      decorated_name) and not UndecoratedName(decorated_name).endswith('.h')
+  return IsSystemHeader(decorated_name) and not UndecoratedName(
+    decorated_name
+  ).endswith('.h')
 
 
 def IsUserHeader(decorated_name):
@@ -83,7 +85,8 @@ def IsUserHeader(decorated_name):
 _EMPTY_LINE_RE = re.compile(r'\s*$')
 _COMMENT_RE = re.compile(r'\s*//(.*)$')
 _INCLUDE_RE = re.compile(
-    r'\s*#(import|include)\s+([<"].+?[">])\s*?(?://(.*))?$')
+  r'\s*#(import|include)\s+([<"].+?[">])\s*?(?://(.*))?$'
+)
 
 
 def FindIncludes(lines):
@@ -173,14 +176,24 @@ class Include(object):
     self.is_primary_header = False
 
   def __repr__(self):
-    return str((self.decorated_name, self.directive, self.preamble,
-                self.inline_comment, self.header_type, self.is_primary_header))
+    return str(
+      (
+        self.decorated_name,
+        self.directive,
+        self.preamble,
+        self.inline_comment,
+        self.header_type,
+        self.is_primary_header,
+      )
+    )
 
   def ShouldInsertNewline(self, previous_include):
     # Per the Google C++ style guide, different blocks of headers should be
     # separated by an empty line.
-    return (self.is_primary_header != previous_include.is_primary_header
-            or self.header_type != previous_include.header_type)
+    return (
+      self.is_primary_header != previous_include.is_primary_header
+      or self.header_type != previous_include.header_type
+    )
 
   def ToSource(self):
     """Generates a C++ source representation of this include."""
@@ -249,7 +262,7 @@ def _DecomposePath(filename):
 
 
 _PLATFORM_SUFFIX = (
-    r'(?:_(?:android|aura|chromeos|fuchsia|ios|linux|mac|ozone|posix|win|x11))?'
+  r'(?:_(?:android|aura|chromeos|fuchsia|ios|linux|mac|ozone|posix|win|x11))?'
 )
 _TEST_SUFFIX = r'(?:_(?:browser|interactive_ui|perf|ui|unit)?test)?'
 
@@ -271,8 +284,10 @@ def MarkPrimaryInclude(includes, filename):
   # First pass. Looking for exact match primary header.
   exact_match_primary_header = f'{os.path.splitext(filename)[0]}.h'
   for include in includes:
-    if IsUserHeader(include.decorated_name) and UndecoratedName(
-        include.decorated_name) == exact_match_primary_header:
+    if (
+      IsUserHeader(include.decorated_name)
+      and UndecoratedName(include.decorated_name) == exact_match_primary_header
+    ):
       include.is_primary_header = True
       return
 
@@ -296,10 +311,14 @@ def MarkPrimaryInclude(includes, filename):
     # This allows for situations where moo_posix.cc implements the interfaces
     # defined in moo.h.
     escaped_basename = re.escape(to_test[1])
-    if not (re.match(escaped_basename + _PLATFORM_SUFFIX + _TEST_SUFFIX + '$',
-                     basis[1]) or
-            re.match(escaped_basename + _TEST_SUFFIX + _PLATFORM_SUFFIX + '$',
-                     basis[1])):
+    if not (
+      re.match(
+        escaped_basename + _PLATFORM_SUFFIX + _TEST_SUFFIX + '$', basis[1]
+      )
+      or re.match(
+        escaped_basename + _TEST_SUFFIX + _PLATFORM_SUFFIX + '$', basis[1]
+      )
+    ):
       continue
 
     # The topmost directory name must match, and the rest of the directory path
@@ -318,9 +337,9 @@ def MarkPrimaryInclude(includes, filename):
     # 'Substantially similar' is defined to be:
     # - no more than two differences
     # - at least one match besides the topmost directory
-    total_differences = abs(total_matched -
-                            len(to_test[0])) + abs(total_matched -
-                                                   len(basis[0]))
+    total_differences = abs(total_matched - len(to_test[0])) + abs(
+      total_matched - len(basis[0])
+    )
     # Note: total_differences != 0 is mainly intended to allow more succinct
     # tests (otherwise tests with just a basename would always trip the
     # total_matched < 2 check).
@@ -347,25 +366,24 @@ def SerializeIncludes(includes):
   # NOTE: The order of these headers is the sort key and will be the order in
   # the output file. It should be set to match whatever clang-format will do.
   special_headers = [
-      # Listed first because it must be before initguid.h in the block below.
-      '<objbase.h>',
-
-      # Alphabetized block that don't matter relative to each other, but need to
-      # be included before any instance of the listed other header. These other
-      # listed headers are non-exhaustive examples.
-      '<atlbase.h>',      # atlapp.h
-      '<initguid.h>',     # emi.h
-      '<mmdeviceapi.h>',  # functiondiscoverykeys_devpkey.h
-      '<ocidl.h>',        # commdlg.h
-      '<ole2.h>',         # intshcut.h
-      '<shobjidl.h>',     # propkey.h
-      '<tchar.h>',        # tpcshrd.h
-      '<unknwn.h>',       # intshcut.h
-      '<windows.h>',      # hidclass.h, memoryapi.h, ncrypt.h, shellapi.h,
-                          # versionhelpers.h, winbase.h, etc.
-      '<winsock2.h>',     # ws2tcpip.h
-      '<winternl.h>',     # ntsecapi.h; also needs `#define _NTDEF_`
-      '<ws2tcpip.h>',     # iphlpapi.h
+    # Listed first because it must be before initguid.h in the block below.
+    '<objbase.h>',
+    # Alphabetized block that don't matter relative to each other, but need to
+    # be included before any instance of the listed other header. These other
+    # listed headers are non-exhaustive examples.
+    '<atlbase.h>',  # atlapp.h
+    '<initguid.h>',  # emi.h
+    '<mmdeviceapi.h>',  # functiondiscoverykeys_devpkey.h
+    '<ocidl.h>',  # commdlg.h
+    '<ole2.h>',  # intshcut.h
+    '<shobjidl.h>',  # propkey.h
+    '<tchar.h>',  # tpcshrd.h
+    '<unknwn.h>',  # intshcut.h
+    '<windows.h>',  # hidclass.h, memoryapi.h, ncrypt.h, shellapi.h,
+    # versionhelpers.h, winbase.h, etc.
+    '<winsock2.h>',  # ws2tcpip.h
+    '<winternl.h>',  # ntsecapi.h; also needs `#define _NTDEF_`
+    '<ws2tcpip.h>',  # iphlpapi.h
   ]
 
   # LINT.ThenChange(/.clang-format:winheader)
@@ -391,8 +409,12 @@ def SerializeIncludes(includes):
           return i
       return len(special_headers)
 
-    return (not include.is_primary_header, include.header_type,
-            SpecialSortKey(include), include.decorated_name)
+    return (
+      not include.is_primary_header,
+      include.header_type,
+      SpecialSortKey(include),
+      include.decorated_name,
+    )
 
   includes.sort(key=SortKey)
 
@@ -458,14 +480,18 @@ def AddHeaderToSource(filename, source, decorated_name, remove=False):
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Mass add (or remove) a new header into a bunch of files.')
+    description='Mass add (or remove) a new header into a bunch of files.'
+  )
   parser.add_argument(
-      '--header',
-      help='The decorated filename of the header to insert (e.g. "a" or <a>)',
-      required=True)
-  parser.add_argument('--remove',
-                      help='Remove the header file instead of adding it',
-                      action='store_true')
+    '--header',
+    help='The decorated filename of the header to insert (e.g. "a" or <a>)',
+    required=True,
+  )
+  parser.add_argument(
+    '--remove',
+    help='Remove the header file instead of adding it',
+    action='store_true',
+  )
   parser.add_argument('files', nargs='+')
   args = parser.parse_args()
   if ClassifyHeader(args.header) == _HEADER_TYPE_INVALID:
@@ -478,8 +504,9 @@ def main():
   print(f'{operation} #include {args.header}...')
   for filename in args.files:
     with open(filename, 'r') as f:
-      new_source = AddHeaderToSource(os.path.normpath(filename), f.read(),
-                                     args.header, args.remove)
+      new_source = AddHeaderToSource(
+        os.path.normpath(filename), f.read(), args.header, args.remove
+      )
     if not new_source:
       continue
     with open(filename, 'w', newline='\n') as f:

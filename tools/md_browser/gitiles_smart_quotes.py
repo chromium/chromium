@@ -18,13 +18,13 @@ class _GitilesSmartQuotesPattern(Pattern):
   """Process Gitiles' dumb->smart quotes."""
 
   QUOTES = {
-      '"': (u'“', u'”'),
-      "'": (u'‘', u'’'),
+    '"': ('“', '”'),
+    "'": ('‘', '’'),
   }
 
   def handleMatch(self, m):
     lq, rq = self.QUOTES[m.group(2)]
-    return u'%s%s%s' % (lq, m.group(3), rq)
+    return '%s%s%s' % (lq, m.group(3), rq)
 
 
 class _GitilesSmartQuotesExtension(Extension):
@@ -33,8 +33,10 @@ class _GitilesSmartQuotesExtension(Extension):
 
   def extendMarkdown(self, md):
     md.inlinePatterns.register(
-        _GitilesSmartQuotesPattern(r"""(['"])([^\2]+)\2"""),
-        'gitilessmartquotes', 61)
+      _GitilesSmartQuotesPattern(r"""(['"])([^\2]+)\2"""),
+      'gitilessmartquotes',
+      61,
+    )
 
 
 def makeExtension(*args, **kwargs):

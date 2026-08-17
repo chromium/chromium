@@ -3,12 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Unittest for policy_templates_json.py.
-"""
-
+"""Unittest for policy_templates_json.py."""
 
 import os
 import sys
+
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -24,16 +23,17 @@ from grit.tool import build
 
 
 class PolicyTemplatesJsonUnittest(unittest.TestCase):
-
   def testPolicyTranslation(self):
     # Create test policy_templates.json data.
     caption = "The main policy"
     caption_translation = "Die Hauptrichtlinie"
 
-    message = \
+    message = (
       "Red cabbage stays red cabbage and wedding dress stays wedding dress"
-    message_translation = \
+    )
+    message_translation = (
       "Blaukraut bleibt Blaukraut und Brautkleid bleibt Brautkleid"
+    )
 
     schema_key_description = "Number of users"
     schema_key_description_translation = "Anzahl der Nutzer"
@@ -85,10 +85,11 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
         return policy_template''' % (schema_key_description, caption, message)
 
     # Create translations. The translation IDs are hashed from the English text.
-    caption_id = grit.extern.tclib.GenerateMessageId(caption);
-    message_id = grit.extern.tclib.GenerateMessageId(message);
+    caption_id = grit.extern.tclib.GenerateMessageId(caption)
+    message_id = grit.extern.tclib.GenerateMessageId(message)
     schema_key_description_id = grit.extern.tclib.GenerateMessageId(
-        schema_key_description)
+      schema_key_description
+    )
     policy_xtb = """
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
@@ -96,10 +97,14 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
 <translation id="%s">%s</translation>
 <translation id="%s">%s</translation>
 <translation id="%s">%s</translation>
-</translationbundle>""" % (caption_id, caption_translation,
-                           message_id, message_translation,
-                           schema_key_description_id,
-                           schema_key_description_translation)
+</translationbundle>""" % (
+      caption_id,
+      caption_translation,
+      message_id,
+      message_translation,
+      schema_key_description_id,
+      schema_key_description_translation,
+    )
 
     # Write both to a temp file.
     tmp_dir_name = tempfile.gettempdir()
@@ -127,7 +132,9 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
     grd_string_io = StringIO(grd_text)
 
     # Parse the grit tree and load the policies' JSON with a gatherer.
-    grd = grd_reader.Parse(grd_string_io, dir=tmp_dir_name, defines={'_google_chrome': True})
+    grd = grd_reader.Parse(
+      grd_string_io, dir=tmp_dir_name, defines={'_google_chrome': True}
+    )
     grd.SetOutputLanguage('en')
     grd.RunGatherers()
 
@@ -143,7 +150,9 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
     grd.SetOutputLanguage(env_lang)
     grd.SetDefines(env_defs)
     buf = StringIO()
-    build.RcBuilder.ProcessNode(grd, DummyOutput('policy_templates', out_lang), buf)
+    build.RcBuilder.ProcessNode(
+      grd, DummyOutput('policy_templates', out_lang), buf
+    )
     output = buf.getvalue()
 
     # Caption and message texts get taken from xtb.
@@ -187,13 +196,15 @@ class PolicyTemplatesJsonUnittest(unittest.TestCase):
     }
   }
 
-}""" % (caption_translation, schema_key_description_translation,
-        message_translation)
+}""" % (
+      caption_translation,
+      schema_key_description_translation,
+      message_translation,
+    )
     self.assertEqual(expected, output)
 
 
 class DummyOutput:
-
   def __init__(self, type, language):
     self.type = type
     self.language = language

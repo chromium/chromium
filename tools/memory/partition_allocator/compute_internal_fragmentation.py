@@ -80,8 +80,9 @@ def _RoundUpToNearestBucket(buckets: list[int], size: int) -> int:
   return curr
 
 
-def _SummarizeStatsForAllocators(result_for_pid: dict, allocators: dict,
-                                 buckets: list[int]):
+def _SummarizeStatsForAllocators(
+  result_for_pid: dict, allocators: dict, buckets: list[int]
+):
   """We compute the wasted memory here by taking the 'allocated_objects_size'
   and rounding it up to nearest bucket (in |buckets|), and comparing the two.
   """
@@ -93,12 +94,13 @@ def _SummarizeStatsForAllocators(result_for_pid: dict, allocators: dict,
   pattern = re.compile("malloc/partitions/allocator/buckets/bucket_\d+")
   for entry in allocators:
     # |entry| can represent a subset of the allocations for a given allocator.
-    if (not pattern.match(entry)):
+    if not pattern.match(entry):
       continue
     attrs = allocators[entry]['attrs']
 
     allocated_objects_size = trace_utils.GetAllocatorAttr(
-        attrs, 'allocated_objects_size')
+      attrs, 'allocated_objects_size'
+    )
     slot_size = trace_utils.GetAllocatorAttr(attrs, 'slot_size')
     if allocated_objects_size != 0:
       # See: |CanStoreRawSize| in
@@ -112,15 +114,18 @@ def _SummarizeStatsForAllocators(result_for_pid: dict, allocators: dict,
         # allocated_objects_size.
         allocated_objects_size = slot_size
         rounded_allocated_objects_size = _RoundUpToNearestBucket(
-            buckets, slot_size)
+          buckets, slot_size
+        )
       else:
         bucket_size = _RoundUpToNearestBucket(buckets, slot_size)
-        rounded_allocated_objects_size = (allocated_objects_size /
-                                          slot_size) * bucket_size
+        rounded_allocated_objects_size = (
+          allocated_objects_size / slot_size
+        ) * bucket_size
         assert bucket_size in buckets
         assert slot_size <= bucket_size
-      fragmentation = (1 -
-                       allocated_objects_size / rounded_allocated_objects_size)
+      fragmentation = (
+        1 - allocated_objects_size / rounded_allocated_objects_size
+      )
       total_allocated_size += allocated_objects_size
       rounded_allocated_size += rounded_allocated_objects_size
     else:
@@ -129,15 +134,20 @@ def _SummarizeStatsForAllocators(result_for_pid: dict, allocators: dict,
       fragmentation = 0
 
     size_counts.append(
-        (slot_size, fragmentation * 100,
-         rounded_allocated_objects_size - allocated_objects_size))
+      (
+        slot_size,
+        fragmentation * 100,
+        rounded_allocated_objects_size - allocated_objects_size,
+      )
+    )
   size_counts.sort()
-  result_for_pid['regression'] = (rounded_allocated_size - total_allocated_size
-                                  ) * 100 / total_allocated_size
-  result_for_pid['data'] = np.array(size_counts,
-                                    dtype=[('size', np.int),
-                                           ('fragmentation', np.int),
-                                           ('unused', np.int)])
+  result_for_pid['regression'] = (
+    (rounded_allocated_size - total_allocated_size) * 100 / total_allocated_size
+  )
+  result_for_pid['data'] = np.array(
+    size_counts,
+    dtype=[('size', np.int), ('fragmentation', np.int), ('unused', np.int)],
+  )
 
 
 def _PlotProcess(all_data: dict, pid: int, output_prefix: str):
@@ -151,34 +161,40 @@ def _PlotProcess(all_data: dict, pid: int, output_prefix: str):
   data = all_data[pid]
   logging.info('Plotting data for PID %d' % pid)
 
-  fragmentation_title = ('Internal Fragmentation (%%) vs Size - %s - %s' %
-                         (data['name'], data['labels']))
-  fragmentation_output = ('%s_%s_fragmentation.png' % (output_prefix, pid))
-  trace_utils.PlotProcessFragmentation(fragmentation_title, data,
-                                       fragmentation_output)
+  fragmentation_title = 'Internal Fragmentation (%%) vs Size - %s - %s' % (
+    data['name'],
+    data['labels'],
+  )
+  fragmentation_output = '%s_%s_fragmentation.png' % (output_prefix, pid)
+  trace_utils.PlotProcessFragmentation(
+    fragmentation_title, data, fragmentation_output
+  )
 
   unused_title = (
-      'Internal Unused Memory vs Size - %s - %s (%.2f%% Regression)' %
-      (data['name'], data['labels'], data['regression']))
-  unused_output = ('%s_%d_unused.png' % (output_prefix, pid))
+    'Internal Unused Memory vs Size - %s - %s (%.2f%% Regression)'
+    % (data['name'], data['labels'], data['regression'])
+  )
+  unused_output = '%s_%d_unused.png' % (output_prefix, pid)
   trace_utils.PlotProcessWaste(unused_title, data, unused_output)
 
 
 def _CreateArgumentParser():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--trace',
-      type=str,
-      required=True,
-      help='Path to a trace.json[.gz] with memory-infra enabled.')
-  parser.add_argument('--output-dir',
-                      type=str,
-                      required=True,
-                      help='Output directory for graphs.')
-  parser.add_argument('--buckets',
-                      type=str,
-                      required=True,
-                      help='Path to file containing bucket sizes.')
+    '--trace',
+    type=str,
+    required=True,
+    help='Path to a trace.json[.gz] with memory-infra enabled.',
+  )
+  parser.add_argument(
+    '--output-dir', type=str, required=True, help='Output directory for graphs.'
+  )
+  parser.add_argument(
+    '--buckets',
+    type=str,
+    required=True,
+    help='Path to file containing bucket sizes.',
+  )
   return parser
 
 
@@ -193,14 +209,20 @@ def main():
 
   logging.info('Parsing the trace')
   stats_per_process = trace_utils.ParseTrace(
-      trace, (lambda result_for_pid, allocators: _SummarizeStatsForAllocators(
-          result_for_pid, allocators, buckets)))
+    trace,
+    (
+      lambda result_for_pid, allocators: _SummarizeStatsForAllocators(
+        result_for_pid, allocators, buckets
+      )
+    ),
+  )
 
   logging.info('Plotting the results')
   for pid in stats_per_process:
     if 'data' in stats_per_process[pid]:
-      _PlotProcess(stats_per_process, pid,
-                   os.path.join(args.output_dir, 'internal'))
+      _PlotProcess(
+        stats_per_process, pid, os.path.join(args.output_dir, 'internal')
+      )
 
 
 if __name__ == '__main__':

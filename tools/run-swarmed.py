@@ -20,8 +20,6 @@ results/*` to find the tests that failed or otherwise process the log files.
 See //docs/workflow/debugging-with-swarming.md for more details.
 """
 
-
-
 import argparse
 import hashlib
 import json
@@ -67,28 +65,28 @@ def _DoSpawn(args):
   runner_args = []
   json_file = os.path.join(args.results, '%d.json' % index)
   trigger_args = [
-      'tools/luci-go/swarming',
-      'trigger',
-      '-S',
-      f'https://{args.swarming_instance}.appspot.com',
-      '-digest',
-      cas_digest,
-      '-dump-json',
-      json_file,
-      '-tag=purpose:user-debug-run-swarmed',
-      # 30 is try level. So use the same here.
-      '-priority',
-      '30',
+    'tools/luci-go/swarming',
+    'trigger',
+    '-S',
+    f'https://{args.swarming_instance}.appspot.com',
+    '-digest',
+    cas_digest,
+    '-dump-json',
+    json_file,
+    '-tag=purpose:user-debug-run-swarmed',
+    # 30 is try level. So use the same here.
+    '-priority',
+    '30',
   ]
   if args.target_os == 'fuchsia':
     trigger_args += [
-        '-d',
-        'kvm=1',
+      '-d',
+      'kvm=1',
     ]
     if args.gpu is None:
       trigger_args += [
-          '-d',
-          'gpu=none',
+        '-d',
+        'gpu=none',
       ]
   elif args.target_os == 'android':
     if args.arch == 'x86':
@@ -99,7 +97,7 @@ def _DoSpawn(args):
       # android_28_google_apis_x86 == Android P emulator.
       # See //tools/android/avd/proto/ for other options.
       runner_args.append(
-          '--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb'
+        '--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb'
       )
     elif args.device_type is None and args.device_os is None:
       # The aliases for device type are stored here:
@@ -117,22 +115,29 @@ def _DoSpawn(args):
       runner_args.extend(['--platform', args.ios_sim_platform])
 
       version_with_underscore = args.ios_sim_version.replace('.', '_')
-      trigger_args.extend([
-          '-named-cache', f'runtime_ios_{version_with_underscore}'
-          f'=Runtime-ios-{args.ios_sim_version}'
-      ])
+      trigger_args.extend(
+        [
+          '-named-cache',
+          f'runtime_ios_{version_with_underscore}'
+          f'=Runtime-ios-{args.ios_sim_version}',
+        ]
+      )
     elif args.ios_device:
       # device trigger args
       trigger_args.extend(['-d', f'device={args.ios_device}'])
       trigger_args.extend(['-d', 'device_status=available'])
     else:
-      raise Exception('Either both of --ios-sim-version and --ios-sim-platform '
-                      'or --ios-device is required')
+      raise Exception(
+        'Either both of --ios-sim-version and --ios-sim-platform '
+        'or --ios-device is required'
+      )
 
     trigger_args.extend(
-        ['-named-cache', f'xcode_ios_{args.ios_xcode_build_version}=Xcode.app'])
+      ['-named-cache', f'xcode_ios_{args.ios_xcode_build_version}=Xcode.app']
+    )
     trigger_args.extend(
-        ['-cipd-package', '.:infra/tools/mac_toolchain/${platform}=latest'])
+      ['-cipd-package', '.:infra/tools/mac_toolchain/${platform}=latest']
+    )
 
   if args.service_account:
     account = args.service_account
@@ -144,8 +149,8 @@ def _DoSpawn(args):
 
   if args.arch != 'detect':
     trigger_args += [
-        '-d',
-        'cpu=' + args.arch,
+      '-d',
+      'cpu=' + args.arch,
     ]
 
   if args.device_type:
@@ -161,7 +166,7 @@ def _DoSpawn(args):
     # These flags are recognized by our test runners, but do not work
     # when running custom scripts.
     runner_args += [
-        '--test-launcher-summary-output=${ISOLATED_OUTDIR}/output.json'
+      '--test-launcher-summary-output=${ISOLATED_OUTDIR}/output.json'
     ]
     if 'junit' not in args.target_name:
       runner_args += ['--system-log-file=${ISOLATED_OUTDIR}/system_log']
@@ -170,13 +175,16 @@ def _DoSpawn(args):
   if args.gtest_repeat:
     runner_args.append('--gtest_repeat=' + args.gtest_repeat)
   if args.test_launcher_shard_index and args.test_launcher_total_shards:
-    runner_args.append('--test-launcher-shard-index=' +
-                       args.test_launcher_shard_index)
-    runner_args.append('--test-launcher-total-shards=' +
-                       args.test_launcher_total_shards)
+    runner_args.append(
+      '--test-launcher-shard-index=' + args.test_launcher_shard_index
+    )
+    runner_args.append(
+      '--test-launcher-total-shards=' + args.test_launcher_total_shards
+    )
   elif args.target_os == 'fuchsia':
-    filter_file = \
-        'testing/buildbot/filters/fuchsia.' + args.target_name + '.filter'
+    filter_file = (
+      'testing/buildbot/filters/fuchsia.' + args.target_name + '.filter'
+    )
     if os.path.isfile(filter_file):
       runner_args.append('--test-launcher-filter-file=../../' + filter_file)
 
@@ -203,17 +211,23 @@ def _Collect(spawn_result):
   task_ids = [task['task_id'] for task in task_json['tasks']]
 
   for t in task_ids:
-    print('Task {}: https://{}.appspot.com/task?id={}'.format(
-        index, args.swarming_instance, t))
-  p = subprocess.Popen([
+    print(
+      'Task {}: https://{}.appspot.com/task?id={}'.format(
+        index, args.swarming_instance, t
+      )
+    )
+  p = subprocess.Popen(
+    [
       'tools/luci-go/swarming',
       'collect',
       '-S',
       f'https://{args.swarming_instance}.appspot.com',
       '--task-output-stdout=console',
-  ] + task_ids,
-                       stdout=subprocess.PIPE,
-                       stderr=subprocess.STDOUT)
+    ]
+    + task_ids,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+  )
   stdout = p.communicate()[0]
   if p.returncode != 0 and len(stdout) < 2**10 and 'Internal error!' in stdout:
     exit_code = INTERNAL_ERROR_EXIT_CODE
@@ -230,81 +244,115 @@ def _Collect(spawn_result):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--swarming-instance',
-      choices=['chromium-swarm', 'chrome-swarming'],
-      default='chromium-swarm',
-      help='The swarming instance where the task(s) will be run.')
+    '--swarming-instance',
+    choices=['chromium-swarm', 'chrome-swarming'],
+    default='chromium-swarm',
+    help='The swarming instance where the task(s) will be run.',
+  )
   parser.add_argument('--swarming-os', help='OS specifier for Swarming.')
   parser.add_argument('--target-os', default='detect', help='gn target_os')
-  parser.add_argument('--arch', '-a', default='detect',
-                      help='CPU architecture of the test binary.')
-  parser.add_argument('--build',
-                      dest='build',
-                      action='store_true',
-                      help='Build before isolating.')
-  parser.add_argument('--no-build',
-                      dest='build',
-                      action='store_false',
-                      help='Do not build, just isolate (default).')
-  parser.add_argument('--isolate-map-file', '-i',
-                      help='path to isolate map file if not using default')
-  parser.add_argument('--copies', '-n', type=int, default=1,
-                      help='Number of copies to spawn.')
   parser.add_argument(
-      '--device-os', help='Run tests on the given version of Android.')
-  parser.add_argument('--device-type',
-                      help='device_type specifier for Swarming'
-                      ' from https://chromium-swarm.appspot.com/botlist .')
-  parser.add_argument('--gpu',
-                      help='gpu specifier for Swarming'
-                      ' from https://chromium-swarm.appspot.com/botlist .')
-  parser.add_argument('--pool',
-                      default='chromium.tests',
-                      help='Use the given swarming pool.')
-  parser.add_argument('--results', '-r', default='results',
-                      help='Directory in which to store results.')
+    '--arch',
+    '-a',
+    default='detect',
+    help='CPU architecture of the test binary.',
+  )
   parser.add_argument(
-      '--gtest_filter',
-      help='Deprecated. Pass as test runner arg instead, like \'-- '
-      '--gtest_filter="*#testFoo"\'')
+    '--build', dest='build', action='store_true', help='Build before isolating.'
+  )
   parser.add_argument(
-      '--gtest_repeat',
-      help='Deprecated. Pass as test runner arg instead, like \'-- '
-      '--gtest_repeat=99\'')
+    '--no-build',
+    dest='build',
+    action='store_false',
+    help='Do not build, just isolate (default).',
+  )
   parser.add_argument(
-      '--test-launcher-shard-index',
-      help='Shard index to run. Use with --test-launcher-total-shards.')
-  parser.add_argument('--test-launcher-total-shards',
-                      help='Number of shards to split the test into. Use with'
-                      ' --test-launcher-shard-index.')
-  parser.add_argument('--no-test-flags', action='store_true',
-                      help='Do not add --test-launcher-summary-output and '
-                           '--system-log-file flags to the comment.')
+    '--isolate-map-file',
+    '-i',
+    help='path to isolate map file if not using default',
+  )
+  parser.add_argument(
+    '--copies', '-n', type=int, default=1, help='Number of copies to spawn.'
+  )
+  parser.add_argument(
+    '--device-os', help='Run tests on the given version of Android.'
+  )
+  parser.add_argument(
+    '--device-type',
+    help='device_type specifier for Swarming'
+    ' from https://chromium-swarm.appspot.com/botlist .',
+  )
+  parser.add_argument(
+    '--gpu',
+    help='gpu specifier for Swarming'
+    ' from https://chromium-swarm.appspot.com/botlist .',
+  )
+  parser.add_argument(
+    '--pool', default='chromium.tests', help='Use the given swarming pool.'
+  )
+  parser.add_argument(
+    '--results',
+    '-r',
+    default='results',
+    help='Directory in which to store results.',
+  )
+  parser.add_argument(
+    '--gtest_filter',
+    help='Deprecated. Pass as test runner arg instead, like \'-- '
+    '--gtest_filter="*#testFoo"\'',
+  )
+  parser.add_argument(
+    '--gtest_repeat',
+    help='Deprecated. Pass as test runner arg instead, like \'-- '
+    '--gtest_repeat=99\'',
+  )
+  parser.add_argument(
+    '--test-launcher-shard-index',
+    help='Shard index to run. Use with --test-launcher-total-shards.',
+  )
+  parser.add_argument(
+    '--test-launcher-total-shards',
+    help='Number of shards to split the test into. Use with'
+    ' --test-launcher-shard-index.',
+  )
+  parser.add_argument(
+    '--no-test-flags',
+    action='store_true',
+    help='Do not add --test-launcher-summary-output and '
+    '--system-log-file flags to the comment.',
+  )
   parser.add_argument('out_dir', type=str, help='Build directory.')
   parser.add_argument('target_name', type=str, help='Name of target to run.')
   parser.add_argument(
-      '--service-account',
-      help='Optional service account that the swarming task will be run using. '
-      'Default value will be set based on the "--swarming-instance".')
+    '--service-account',
+    help='Optional service account that the swarming task will be run using. '
+    'Default value will be set based on the "--swarming-instance".',
+  )
   # ios only args
-  parser.add_argument('--ios-xcode-build-version',
-                      help='The version of xcode that will be used for all '
-                      'xcodebuild CLI commands')
-  parser.add_argument('--ios-sim-version',
-                      help='iOS simulator version, ex. 17.2')
-  parser.add_argument('--ios-sim-platform',
-                      help='iOS simulator platform, ex. iPhone 14')
-  parser.add_argument('--ios-device',
-                      help='iOS physical device type, ex. iPhone12,1')
   parser.add_argument(
-      'runner_args',
-      nargs='*',
-      type=str,
-      help='Arguments to pass to the test runner, e.g. gtest_filter and '
-      'gtest_repeat.')
-  parser.add_argument('--force',
-                      action='store_true',
-                      help='Bypasses deprecation notice.')
+    '--ios-xcode-build-version',
+    help='The version of xcode that will be used for all '
+    'xcodebuild CLI commands',
+  )
+  parser.add_argument(
+    '--ios-sim-version', help='iOS simulator version, ex. 17.2'
+  )
+  parser.add_argument(
+    '--ios-sim-platform', help='iOS simulator platform, ex. iPhone 14'
+  )
+  parser.add_argument(
+    '--ios-device', help='iOS physical device type, ex. iPhone12,1'
+  )
+  parser.add_argument(
+    'runner_args',
+    nargs='*',
+    type=str,
+    help='Arguments to pass to the test runner, e.g. gtest_filter and '
+    'gtest_repeat.',
+  )
+  parser.add_argument(
+    '--force', action='store_true', help='Bypasses deprecation notice.'
+  )
 
   args = parser.parse_intermixed_args()
 
@@ -312,11 +360,12 @@ def main():
   # has been live for a few months.
   if not args.force:
     print(
-        'This script is deprecated in favor of the UTR. For more info, see '
-        'https://chromium.googlesource.com/chromium/src/+/main/tools/utr/README.md. '
-        'To skip this warning, re-run this script with "--force". Note that '
-        'this script will be deleted sometime in 2025.',
-        file=sys.stderr)
+      'This script is deprecated in favor of the UTR. For more info, see '
+      'https://chromium.googlesource.com/chromium/src/+/main/tools/utr/README.md. '
+      'To skip this warning, re-run this script with "--force". Note that '
+      'this script will be deleted sometime in 2025.',
+      file=sys.stderr,
+    )
     return 1
 
   with open(os.path.join(args.out_dir, 'args.gn')) as f:
@@ -326,20 +375,18 @@ def main():
     if 'target_os' in gn_args:
       args.target_os = gn_args['target_os'].strip('"')
     else:
-      args.target_os = {
-          'darwin': 'mac',
-          'linux': 'linux',
-          'win32': 'win'
-      }[sys.platform]
+      args.target_os = {'darwin': 'mac', 'linux': 'linux', 'win32': 'win'}[
+        sys.platform
+      ]
 
   if args.swarming_os is None:
     args.swarming_os = {
-        'mac': 'Mac',
-        'ios': 'Mac',
-        'win': 'Windows',
-        'linux': 'Linux',
-        'android': 'Android',
-        'fuchsia': 'Linux'
+      'mac': 'Mac',
+      'ios': 'Mac',
+      'win': 'Windows',
+      'linux': 'Linux',
+      'android': 'Android',
+      'fuchsia': 'Linux',
     }[args.target_os]
 
   if args.target_os == 'win' and args.target_name.endswith('.exe'):
@@ -353,9 +400,10 @@ def main():
       return 1
     if args.target_os not in ('android', 'mac', 'win'):
       executable_info = subprocess.check_output(
-          ['file', os.path.join(args.out_dir, args.target_name)], text=True)
+        ['file', os.path.join(args.out_dir, args.target_name)], text=True
+      )
       if 'ARM aarch64' in executable_info:
-        args.arch = 'arm64',
+        args.arch = ('arm64',)
       else:
         args.arch = 'x86-64'
     elif args.target_os == 'android':
@@ -371,21 +419,32 @@ def main():
 
   print('If you get authentication errors, follow:')
   print(
-      '  https://chromium.googlesource.com/chromium/src/+/HEAD/docs/workflow/debugging-with-swarming.md#authenticating'
+    '  https://chromium.googlesource.com/chromium/src/+/HEAD/docs/workflow/debugging-with-swarming.md#authenticating'
   )
 
   print('Uploading to isolate server, this can take a while...')
   isolate = os.path.join(args.out_dir, args.target_name + '.isolate')
   archive_json = os.path.join(args.out_dir, args.target_name + '.archive.json')
-  subprocess.check_output([
-      'tools/luci-go/isolate', 'archive', '-cas-instance',
-      args.swarming_instance, '-isolate', isolate, '-dump-json', archive_json
-  ])
+  subprocess.check_output(
+    [
+      'tools/luci-go/isolate',
+      'archive',
+      '-cas-instance',
+      args.swarming_instance,
+      '-isolate',
+      isolate,
+      '-dump-json',
+      archive_json,
+    ]
+  )
   with open(archive_json) as f:
     cas_digest = json.load(f).get(args.target_name)
 
   mb_cmd = [
-      sys.executable, 'tools/mb/mb.py', 'get-swarming-command', '--as-list'
+    sys.executable,
+    'tools/mb/mb.py',
+    'get-swarming-command',
+    '--as-list',
   ]
   if not args.build:
     mb_cmd.append('--no-build')
@@ -404,8 +463,9 @@ def main():
     # Use dummy since threadpools give better exception messages
     # than process pools do, and threads work fine for what we're doing.
     pool = multiprocessing.dummy.Pool()
-    spawn_args = [(i, args, cas_digest, swarming_cmd)
-                  for i in range(args.copies)]
+    spawn_args = [
+      (i, args, cas_digest, swarming_cmd) for i in range(args.copies)
+    ]
     spawn_results = pool.imap_unordered(_Spawn, spawn_args)
 
     exit_codes = []
@@ -417,11 +477,18 @@ def main():
       failures = len(exit_codes) - successes - errors
       clear_to_eol = '\033[K'
       print(
-          '\r[%d/%d] collected: '
-          '%d successes, %d failures, %d bot errors...%s' %
-          (len(exit_codes), args.copies, successes, failures, errors,
-           clear_to_eol),
-          end=' ')
+        '\r[%d/%d] collected: '
+        '%d successes, %d failures, %d bot errors...%s'
+        % (
+          len(exit_codes),
+          args.copies,
+          successes,
+          failures,
+          errors,
+          clear_to_eol,
+        ),
+        end=' ',
+      )
       sys.stdout.flush()
 
     print()

@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" Lexer for PPAPI IDL """
+"""Lexer for PPAPI IDL"""
 
 #
 # IDL Lexer
@@ -39,6 +39,7 @@ from idl_option import GetOption, Option, ParseOptions
 
 Option('output', 'Generate output.')
 
+
 #
 # IDL Lexer
 #
@@ -47,56 +48,50 @@ class IDLLexer(object):
   # of valid token types.
   tokens = [
     # Symbol and keywords types
-      'COMMENT',
-      'DESCRIBE',
-      'ENUM',
-      'LABEL',
-      'SYMBOL',
-      'INLINE',
-      'INTERFACE',
-      'STRUCT',
-      'TYPEDEF',
-      'OR',
-
+    'COMMENT',
+    'DESCRIBE',
+    'ENUM',
+    'LABEL',
+    'SYMBOL',
+    'INLINE',
+    'INTERFACE',
+    'STRUCT',
+    'TYPEDEF',
+    'OR',
     # Extra WebIDL keywords
-      'CALLBACK',
-      'DICTIONARY',
-      'OPTIONAL',
-      'STATIC',
-
+    'CALLBACK',
+    'DICTIONARY',
+    'OPTIONAL',
+    'STATIC',
     # Invented for apps use
-      'NAMESPACE',
-
+    'NAMESPACE',
     # Data types
-      'FLOAT',
-      'OCT',
-      'INT',
-      'HEX',
-      'STRING',
-
+    'FLOAT',
+    'OCT',
+    'INT',
+    'HEX',
+    'STRING',
     # Operators
-      'LSHIFT',
-      'RSHIFT'
+    'LSHIFT',
+    'RSHIFT',
   ]
 
   # 'keywords' is a map of string to token type.  All SYMBOL tokens are
   # matched against keywords, to determine if the token is actually a keyword.
   keywords = {
-    'describe' : 'DESCRIBE',
-    'enum'  : 'ENUM',
-    'label' : 'LABEL',
-    'interface' : 'INTERFACE',
-    'readonly' : 'READONLY',
-    'struct' : 'STRUCT',
-    'typedef' : 'TYPEDEF',
-
-    'callback' : 'CALLBACK',
-    'dictionary' : 'DICTIONARY',
-    'optional' : 'OPTIONAL',
-    'static' : 'STATIC',
-    'namespace' : 'NAMESPACE',
-
-    'or' : 'OR',
+    'describe': 'DESCRIBE',
+    'enum': 'ENUM',
+    'label': 'LABEL',
+    'interface': 'INTERFACE',
+    'readonly': 'READONLY',
+    'struct': 'STRUCT',
+    'typedef': 'TYPEDEF',
+    'callback': 'CALLBACK',
+    'dictionary': 'DICTIONARY',
+    'optional': 'OPTIONAL',
+    'static': 'STATIC',
+    'namespace': 'NAMESPACE',
+    'or': 'OR',
   }
 
   # 'literals' is a value expected by lex which specifies a list of valid
@@ -179,7 +174,6 @@ class IDLLexer(object):
     sys.stderr.write(out + '\n')
     self.lex_errors += 1
 
-
   def AddLines(self, count):
     # Set the lexer position for the beginning of the next line.  In the case
     # of multiple lines, tokens can not exist on any of the lines except the
@@ -190,7 +184,8 @@ class IDLLexer(object):
       self.index.append(self.lexobj.lexpos)
 
   def FileLineMsg(self, file, line, msg):
-    if file:  return "%s(%d) : %s" % (file, line + 1, msg)
+    if file:
+      return "%s(%d) : %s" % (file, line + 1, msg)
     return "<BuiltIn> : %s" % msg
 
   def SourceLine(self, file, line, pos):
@@ -201,8 +196,9 @@ class IDLLexer(object):
 
   def ErrorMessage(self, file, line, pos, msg):
     return "\n%s\n%s" % (
-        self.FileLineMsg(file, line, msg),
-        self.SourceLine(file, line, pos))
+      self.FileLineMsg(file, line, msg),
+      self.SourceLine(file, line, pos),
+    )
 
   def SetData(self, filename, data):
     # Start with line 1, not zero
@@ -217,7 +213,6 @@ class IDLLexer(object):
     self.lexobj = lex.lex(object=self, lextab=None, optimize=0)
 
 
-
 #
 # FilesToTokens
 #
@@ -229,10 +224,12 @@ def FilesToTokens(filenames, verbose=False):
   for filename in filenames:
     data = open(filename).read()
     lexer.SetData(filename, data)
-    if verbose: sys.stdout.write('  Loaded %s...\n' % filename)
+    if verbose:
+      sys.stdout.write('  Loaded %s...\n' % filename)
     while 1:
       t = lexer.lexobj.token()
-      if t is None: break
+      if t is None:
+        break
       outlist.append(t)
   return outlist
 
@@ -243,9 +240,11 @@ def TokensFromText(text):
   outlist = []
   while 1:
     t = lexer.lexobj.token()
-    if t is None: break
+    if t is None:
+      break
     outlist.append(t.value)
   return outlist
+
 
 #
 # TextToTokens
@@ -258,7 +257,8 @@ def TextToTokens(source):
   lexer.SetData('AUTO', source)
   while 1:
     t = lexer.lexobj.token()
-    if t is None: break
+    if t is None:
+      break
     outlist.append(t.value)
   return outlist
 
@@ -280,7 +280,8 @@ def TestSame(values1):
   count2 = len(values2)
   if count1 != count2:
     print("Size mismatch original %d vs %d\n" % (count1, count2))
-    if count1 > count2: count1 = count2
+    if count1 > count2:
+      count1 = count2
 
   for i in range(count1):
     if values1[i] != values2[i]:
@@ -319,8 +320,10 @@ def TestExpect(tokens):
     index += 2
 
     if type != token.type:
-      sys.stderr.write('Mismatch:  Expected %s, but got %s = %s.\n' %
-                       (type, token.type, token.value))
+      sys.stderr.write(
+        'Mismatch:  Expected %s, but got %s = %s.\n'
+        % (type, token.type, token.value)
+      )
       errors += 1
 
   if not errors:
@@ -337,7 +340,8 @@ def Main(args):
   try:
     tokens = FilesToTokens(filenames, GetOption('verbose'))
     values = [tok.value for tok in tokens]
-    if GetOption('output'): sys.stdout.write(' <> '.join(values) + '\n')
+    if GetOption('output'):
+      sys.stdout.write(' <> '.join(values) + '\n')
     if GetOption('test'):
       if TestSame(values):
         return -1

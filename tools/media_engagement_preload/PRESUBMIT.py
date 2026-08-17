@@ -8,17 +8,21 @@
 
 def _RunMakeDafsaTests(input_api, output_api):
   """Runs unittest for make_dafsa if any related file has been modified."""
-  files = ('tools/media_engagement_preload/make_dafsa.py',
-           'tools/media_engagement_preload/make_dafsa_unittest.py')
+  files = (
+    'tools/media_engagement_preload/make_dafsa.py',
+    'tools/media_engagement_preload/make_dafsa_unittest.py',
+  )
   if not any(f in input_api.LocalPaths() for f in files):
     return []
 
   return input_api.RunTests(
-      input_api.canned_checks.RunUnitTestsInDirectory(
-          input_api,
-          output_api,
-          input_api.PresubmitLocalPath(),
-          files_to_check=['.*test\.py$']))
+    input_api.canned_checks.RunUnitTestsInDirectory(
+      input_api,
+      output_api,
+      input_api.PresubmitLocalPath(),
+      files_to_check=['.*test\.py$'],
+    )
+  )
 
 
 def CheckChangeOnUpload(input_api, output_api):

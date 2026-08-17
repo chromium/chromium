@@ -29,16 +29,17 @@ def get_src_path() -> str:
   src_path = Path(__file__).parent.parent.resolve()
   if not src_path:
     raise NotFoundError(
-        'Could not find checkout in any parent of the current path.')
+      'Could not find checkout in any parent of the current path.'
+    )
   return src_path
 
 
 @functools.lru_cache(maxsize=None)
 def git_rev_parse_head(path: Path):
   if (path / '.git').exists():
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD'],
-                                   encoding='utf-8',
-                                   cwd=path).strip()
+    return subprocess.check_output(
+      ['git', 'rev-parse', 'HEAD'], encoding='utf-8', cwd=path
+    ).strip()
   return git_rev_parse_head(path.parent)
 
 
@@ -53,12 +54,12 @@ def convert_diag_to_cs(diag: Dict[str, Any]) -> str:
   # https://source.chromium.org/chromium/chromium/src/+/main:apps/app_restore_service.cc
   sha_and_path = f'{sha}:{path}'
   return {
-      'name':
-      name,
-      'path': ('https://source.chromium.org/chromium/chromium/src/+/'
-               f'{sha}:{path};l={line}'),
-      'replacement':
-      replacement
+    'name': name,
+    'path': (
+      'https://source.chromium.org/chromium/chromium/src/+/'
+      f'{sha}:{path};l={line}'
+    ),
+    'replacement': replacement,
   }
 
 
@@ -92,8 +93,12 @@ def select_random_diags(diags: List[Dict[str, Any]], number: int) -> List[Any]:
 
 def is_diag_in_test_file(diag: Dict[str, Any]) -> bool:
   file_stem = os.path.splitext(diag['file_path'])[0]
-  return (file_stem.endswith('test') or file_stem.endswith('tests')
-          or '_test_' in file_stem or '_unittest_' in file_stem)
+  return (
+    file_stem.endswith('test')
+    or file_stem.endswith('tests')
+    or '_test_' in file_stem
+    or '_unittest_' in file_stem
+  )
 
 
 def is_diag_in_third_party(diag: Dict[str, Any]) -> bool:
@@ -102,26 +107,28 @@ def is_diag_in_third_party(diag: Dict[str, Any]) -> bool:
 
 def main(argv: List[str]):
   logging.basicConfig(
-      format='>> %(asctime)s: %(levelname)s: %(filename)s:%(lineno)d: '
-      '%(message)s',
-      level=logging.INFO,
+    format='>> %(asctime)s: %(levelname)s: %(filename)s:%(lineno)d: '
+    '%(message)s',
+    level=logging.INFO,
   )
 
   parser = argparse.ArgumentParser(
-      description=__doc__,
-      formatter_class=argparse.RawDescriptionHelpFormatter,
+    description=__doc__,
+    formatter_class=argparse.RawDescriptionHelpFormatter,
   )
-  parser.add_argument('-n',
-                      '--number',
-                      type=int,
-                      default=30,
-                      help='How many checks to sample')
-  parser.add_argument('--ignore-tests',
-                      action='store_true',
-                      help='Filters lints in test/unittest files if specified.')
-  parser.add_argument('--include-third-party',
-                      action='store_true',
-                      help='Includes lints in third_party if specified.')
+  parser.add_argument(
+    '-n', '--number', type=int, default=30, help='How many checks to sample'
+  )
+  parser.add_argument(
+    '--ignore-tests',
+    action='store_true',
+    help='Filters lints in test/unittest files if specified.',
+  )
+  parser.add_argument(
+    '--include-third-party',
+    action='store_true',
+    help='Includes lints in third_party if specified.',
+  )
   parser.add_argument('file', help='JSON file to parse')
   opts = parser.parse_args(argv)
 

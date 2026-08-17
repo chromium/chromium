@@ -61,19 +61,81 @@ from grit.gather import interface
 
 
 # HTML tags which break (separate) chunks.
-_BLOCK_TAGS = ['script', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'br',
-              'body', 'style', 'head', 'title', 'table', 'tr', 'td', 'th',
-              'ul', 'ol', 'dl', 'nl', 'li', 'div', 'object', 'center',
-              'html', 'link', 'form', 'select', 'textarea',
-              'button', 'option', 'map', 'area', 'blockquote', 'pre',
-              'meta', 'xmp', 'noscript', 'label', 'tbody', 'thead',
-              'script', 'style', 'pre', 'iframe', 'img', 'input', 'nowrap',
-              'fieldset', 'legend']
+_BLOCK_TAGS = [
+  'script',
+  'p',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'hr',
+  'br',
+  'body',
+  'style',
+  'head',
+  'title',
+  'table',
+  'tr',
+  'td',
+  'th',
+  'ul',
+  'ol',
+  'dl',
+  'nl',
+  'li',
+  'div',
+  'object',
+  'center',
+  'html',
+  'link',
+  'form',
+  'select',
+  'textarea',
+  'button',
+  'option',
+  'map',
+  'area',
+  'blockquote',
+  'pre',
+  'meta',
+  'xmp',
+  'noscript',
+  'label',
+  'tbody',
+  'thead',
+  'script',
+  'style',
+  'pre',
+  'iframe',
+  'img',
+  'input',
+  'nowrap',
+  'fieldset',
+  'legend',
+]
 
 # HTML tags which may appear within a chunk.
-_INLINE_TAGS = ['b', 'i', 'u', 'tt', 'code', 'font', 'a', 'span', 'small',
-               'key', 'nobr', 'url', 'em', 's', 'sup', 'strike',
-               'strong']
+_INLINE_TAGS = [
+  'b',
+  'i',
+  'u',
+  'tt',
+  'code',
+  'font',
+  'a',
+  'span',
+  'small',
+  'key',
+  'nobr',
+  'url',
+  'em',
+  's',
+  'sup',
+  'strike',
+  'strong',
+]
 
 # HTML tags within which linebreaks are significant.
 _PREFORMATTED_TAGS = ['textarea', 'xmp', 'pre']
@@ -81,9 +143,18 @@ _PREFORMATTED_TAGS = ['textarea', 'xmp', 'pre']
 # An array mapping some of the inline HTML tags to more meaningful
 # names for those tags.  This will be used when generating placeholders
 # representing these tags.
-_HTML_PLACEHOLDER_NAMES = { 'a' : 'link', 'br' : 'break', 'b' : 'bold',
-  'i' : 'italic', 'li' : 'item', 'ol' : 'ordered_list', 'p' : 'paragraph',
-  'ul' : 'unordered_list', 'img' : 'image', 'em' : 'emphasis' }
+_HTML_PLACEHOLDER_NAMES = {
+  'a': 'link',
+  'br': 'break',
+  'b': 'bold',
+  'i': 'italic',
+  'li': 'item',
+  'ol': 'ordered_list',
+  'p': 'paragraph',
+  'ul': 'unordered_list',
+  'img': 'image',
+  'em': 'emphasis',
+}
 
 # We append each of these characters in sequence to distinguish between
 # different placeholders with basically the same name (e.g. BOLD1, BOLD2).
@@ -94,8 +165,9 @@ _SUFFIXES = '123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 # Matches whitespace in an HTML document.  Also matches HTML comments, which are
 # treated as whitespace.
-_WHITESPACE = re.compile(r'(\s|&nbsp;|\\n|\\r|<!--\s*desc\s*=.*?-->)+',
-                              re.DOTALL)
+_WHITESPACE = re.compile(
+  r'(\s|&nbsp;|\\n|\\r|<!--\s*desc\s*=.*?-->)+', re.DOTALL
+)
 
 # Matches whitespace sequences which can be folded into a single whitespace
 # character.  This matches single characters so that non-spaces are replaced
@@ -112,7 +184,8 @@ _NON_WHITESPACE = re.compile(r'\S')
 _NBSP = re.compile(r'&nbsp;(&nbsp;)+')
 
 # Matches nontranslateable chunks of the document
-_NONTRANSLATEABLES = re.compile(r'''
+_NONTRANSLATEABLES = re.compile(
+  r'''
   <\s*script.+?<\s*/\s*script\s*>
   |
   <\s*style.+?<\s*/\s*style\s*>
@@ -126,10 +199,13 @@ _NONTRANSLATEABLES = re.compile(r'''
   <\s*/\s*[a-zA-Z_]+:.+?>   # custom tag (close)
   |
   <!\s*[A-Z]+\s*([^>]+|"[^"]+"|'[^']+')*?>
-  ''', re.MULTILINE | re.DOTALL | re.VERBOSE | re.IGNORECASE)
+  ''',
+  re.MULTILINE | re.DOTALL | re.VERBOSE | re.IGNORECASE,
+)
 
 # Matches a tag and its attributes
-_ELEMENT = re.compile(r'''
+_ELEMENT = re.compile(
+  r'''
   # Optional closing /, element name
   <\s*(?P<closing>/)?\s*(?P<element>[a-zA-Z0-9]+)\s*
   # Attributes and/or replaceables inside the tag, if any
@@ -141,14 +217,16 @@ _ELEMENT = re.compile(r'''
   )*)
   \s*(?P<empty>/)?\s*> # Optional empty-tag closing /, and tag close
   ''',
-  re.MULTILINE | re.DOTALL | re.VERBOSE)
+  re.MULTILINE | re.DOTALL | re.VERBOSE,
+)
 
 # Matches elements that may have translateable attributes.  The value of these
 # special attributes is given by group 'value1' or 'value2'.  Note that this
 # regexp demands that the attribute value be quoted; this is necessary because
 # the non-tree-building nature of the parser means we don't know when we're
 # writing out attributes, so we wouldn't know to escape spaces.
-_SPECIAL_ELEMENT = re.compile(r'''
+_SPECIAL_ELEMENT = re.compile(
+  r'''
   <\s*(
     input[^>]+?value\s*=\s*(\'(?P<value3>[^\']*)\'|"(?P<value4>[^"]*)")
     [^>]+type\s*=\s*"?'?(button|reset|text|submit)'?"?
@@ -162,13 +240,16 @@ _SPECIAL_ELEMENT = re.compile(r'''
     )
     \s*(\'(?P<value1>[^\']*)\'|"(?P<value2>[^"]*)")
   )[^>]*?>
-  ''', re.MULTILINE | re.DOTALL | re.VERBOSE | re.IGNORECASE)
+  ''',
+  re.MULTILINE | re.DOTALL | re.VERBOSE | re.IGNORECASE,
+)
 
 # Matches stuff that is translateable if it occurs in the right context
 # (between tags).  This includes all characters and character entities.
 # Note that this also matches &nbsp; which needs to be handled as whitespace
 # before this regexp is applied.
-_CHARACTERS = re.compile(r'''
+_CHARACTERS = re.compile(
+  r'''
   (
     \w
     |
@@ -176,35 +257,42 @@ _CHARACTERS = re.compile(r'''
     |
     &(\#[0-9]+|\#x[0-9a-fA-F]+|[A-Za-z0-9]+);
   )+
-  ''', re.MULTILINE | re.DOTALL | re.VERBOSE)
+  ''',
+  re.MULTILINE | re.DOTALL | re.VERBOSE,
+)
 
 # Matches Total Recall's "replaceable" tags, which are just any text
 # in capitals enclosed by delimiters like [] or [~~] or [$~~$] (e.g. [HELLO],
 # [~HELLO~] and [$~HELLO~$]).
-_REPLACEABLE = re.compile(r'\[(\$?\~)?(?P<name>[A-Z0-9-_]+?)(\~\$?)?\]',
-                               re.MULTILINE)
+_REPLACEABLE = re.compile(
+  r'\[(\$?\~)?(?P<name>[A-Z0-9-_]+?)(\~\$?)?\]', re.MULTILINE
+)
 
 
 # Matches the silly [!]-prefixed "header" that is used in some TotalRecall
 # templates.
-_SILLY_HEADER = re.compile(r'\[!\]\ntitle\t(?P<title>[^\n]+?)\n.+?\n\n',
-                                re.MULTILINE | re.DOTALL)
+_SILLY_HEADER = re.compile(
+  r'\[!\]\ntitle\t(?P<title>[^\n]+?)\n.+?\n\n', re.MULTILINE | re.DOTALL
+)
 
 
 # Matches a comment that provides a description for the message it occurs in.
 _DESCRIPTION_COMMENT = re.compile(
-  r'<!--\s*desc\s*=\s*(?P<description>.+?)\s*-->', re.DOTALL)
+  r'<!--\s*desc\s*=\s*(?P<description>.+?)\s*-->', re.DOTALL
+)
 
 # Matches a comment which is used to break apart multiple messages.
-_MESSAGE_BREAK_COMMENT = re.compile(r'<!--\s*message-break\s*-->',
-                                         re.DOTALL)
+_MESSAGE_BREAK_COMMENT = re.compile(r'<!--\s*message-break\s*-->', re.DOTALL)
 
 # Matches a comment which is used to prevent block tags from splitting a message
-_MESSAGE_NO_BREAK_COMMENT = re.compile(r'<!--\s*message-no-break\s*-->',
-                                       re.DOTALL)
+_MESSAGE_NO_BREAK_COMMENT = re.compile(
+  r'<!--\s*message-no-break\s*-->', re.DOTALL
+)
 
 
 _DEBUG = 0
+
+
 def _DebugPrint(text):
   if _DEBUG:
     print(text.encode('utf-8'))
@@ -220,7 +308,7 @@ class HtmlChunks:
     return self.last_translateable != -1
 
   def Rest(self):
-    return self.text_[self.current:]
+    return self.text_[self.current :]
 
   def StartTranslateable(self):
     assert not self.InTranslateable()
@@ -237,8 +325,9 @@ class HtmlChunks:
   def EndTranslateable(self):
     assert self.InTranslateable()
     # Append a translateable chunk
-    self.AddChunk(True,
-                  self.text_[self.chunk_start : self.last_translateable + 1])
+    self.AddChunk(
+      True, self.text_[self.chunk_start : self.last_translateable + 1]
+    )
     self.chunk_start = self.last_translateable + 1
     self.last_translateable = -1
     self.last_nontranslateable = self.current
@@ -337,7 +426,7 @@ class HtmlChunks:
     self.last_nobreak = False
 
     while self.current < len(self.text_):
-      _DebugPrint('REST: %s' % self.text_[self.current:self.current+60])
+      _DebugPrint('REST: %s' % self.text_[self.current : self.current + 60])
 
       m = _MESSAGE_NO_BREAK_COMMENT.match(self.Rest())
       if m:
@@ -355,8 +444,10 @@ class HtmlChunks:
         # we do not extend it until we find
         # more translateable parts, because we never want a translateable chunk
         # to end with whitespace.
-        if (not self.InTranslateable() and
-            self.last_nontranslateable == self.current - 1):
+        if (
+          not self.InTranslateable()
+          and self.last_nontranslateable == self.current - 1
+        ):
           self.last_nontranslateable = self.current + m.end() - 1
         self.AdvancePast(m)
         continue
@@ -396,8 +487,10 @@ class HtmlChunks:
 
             # First make a nontranslateable chunk up to and including the
             # quote before the translateable attribute value
-            self.AddChunk(False, self.text_[
-              self.chunk_start : self.current + sm.start(group)])
+            self.AddChunk(
+              False,
+              self.text_[self.chunk_start : self.current + sm.start(group)],
+            )
             # Then a translateable for the translateable bit
             self.AddChunk(True, self.Rest()[sm.start(group) : sm.end(group)])
             # Finally correct the data invariant for the parser
@@ -421,9 +514,9 @@ class HtmlChunks:
 
     # Close the final chunk
     if self.InTranslateable():
-      self.AddChunk(True, self.text_[self.chunk_start : ])
+      self.AddChunk(True, self.text_[self.chunk_start :])
     else:
-      self.AddChunk(False, self.text_[self.chunk_start : ])
+      self.AddChunk(False, self.text_[self.chunk_start :])
 
     return self.chunks_
 
@@ -459,7 +552,7 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
   count_names = {}  # Map of base names to number of times used
   end_names = {}  # Map of base names to stack of end tags (for correct nesting)
 
-  def MakeNameClosure(base, type = ''):
+  def MakeNameClosure(base, type=''):
     '''Returns a closure that can be called once all names have been allocated
     to return the final name of the placeholder.  This allows us to minimally
     number placeholders for non-overlap.
@@ -482,7 +575,7 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
     count_names.setdefault(name, 0)
     count_names[name] += 1
 
-    def MakeFinalName(name_ = name, index = count_names[name] - 1):
+    def MakeFinalName(name_=name, index=count_names[name] - 1):
       if type.lower() == 'end' and end_names.get(base):
         return end_names[base].pop(-1)  # For correct nesting
       if count_names[name_] != 1:
@@ -537,11 +630,19 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
       for group in m.groupdict():
         if m.groupdict()[group]:
           break
-      parts.append((MakeNameClosure(element_name, 'begin'),
-                    html[current : current + m.start(group)]))
+      parts.append(
+        (
+          MakeNameClosure(element_name, 'begin'),
+          html[current : current + m.start(group)],
+        )
+      )
       parts.append(m.group(group))
-      parts.append((MakeNameClosure(element_name, 'end'),
-                    html[current + m.end(group) : current + m.end()]))
+      parts.append(
+        (
+          MakeNameClosure(element_name, 'end'),
+          html[current + m.end(group) : current + m.end()],
+        )
+      )
       current += m.end()
       continue
 
@@ -580,12 +681,15 @@ def HtmlToMessage(html, include_block_tags=False, description=''):
       final_name = part[0]()
       original = part[1]
       msg_text += final_name
-      placeholders.append(tclib.Placeholder(final_name, original, '(HTML code)'))
+      placeholders.append(
+        tclib.Placeholder(final_name, original, '(HTML code)')
+      )
     else:
       msg_text += part
 
-  msg = tclib.Message(text=msg_text, placeholders=placeholders,
-                      description=description)
+  msg = tclib.Message(
+    text=msg_text, placeholders=placeholders, description=description
+  )
   content = msg.GetContent()
   for ix in range(len(content)):
     if isinstance(content[ix], str):
@@ -612,8 +716,9 @@ class TrHtml(interface.GathererBase):
     Args:
       attrs: The mapping of node attributes.
     '''
-    self.fold_whitespace_ = ('fold_whitespace' in attrs and
-                             attrs['fold_whitespace'] == 'true')
+    self.fold_whitespace_ = (
+      'fold_whitespace' in attrs and attrs['fold_whitespace'] == 'true'
+    )
 
   def GetText(self):
     '''Returns the original text of the HTML document'''
@@ -627,8 +732,13 @@ class TrHtml(interface.GathererBase):
     document.'''
     return [x for x in self.skeleton_ if isinstance(x, clique.MessageClique)]
 
-  def Translate(self, lang, pseudo_if_not_available=True,
-                skeleton_gatherer=None, fallback_to_english=False):
+  def Translate(
+    self,
+    lang,
+    pseudo_if_not_available=True,
+    skeleton_gatherer=None,
+    fallback_to_english=False,
+  ):
     '''Returns this document with translateable messages filled with
     the translation for language 'lang'.
 
@@ -655,9 +765,12 @@ class TrHtml(interface.GathererBase):
       if isinstance(item, str):
         out.append(item)
       else:
-        msg = item.MessageForLanguageAndGender(lang, constants.DEFAULT_GENDER,
-                                               pseudo_if_not_available,
-                                               fallback_to_english)
+        msg = item.MessageForLanguageAndGender(
+          lang,
+          constants.DEFAULT_GENDER,
+          pseudo_if_not_available,
+          fallback_to_english,
+        )
         for content in msg.GetContent():
           if isinstance(content, tclib.Placeholder):
             out.append(content.GetOriginal())
@@ -690,18 +803,24 @@ class TrHtml(interface.GathererBase):
     # handled by our HTML parsers.
     m = _SILLY_HEADER.match(text)
     if m:
-      self.skeleton_.append(text[:m.start('title')])
-      self.skeleton_.append(self.uberclique.MakeClique(
-        tclib.Message(text=text[m.start('title'):m.end('title')])))
+      self.skeleton_.append(text[: m.start('title')])
+      self.skeleton_.append(
+        self.uberclique.MakeClique(
+          tclib.Message(text=text[m.start('title') : m.end('title')])
+        )
+      )
       self.skeleton_.append(text[m.end('title') : m.end()])
-      text = text[m.end():]
+      text = text[m.end() :]
 
     chunks = HtmlChunks().Parse(text, self.fold_whitespace_)
 
     for chunk in chunks:
       if chunk[0]:  # Chunk is translateable
-        self.skeleton_.append(self.uberclique.MakeClique(
-          HtmlToMessage(chunk[1], description=chunk[2])))
+        self.skeleton_.append(
+          self.uberclique.MakeClique(
+            HtmlToMessage(chunk[1], description=chunk[2])
+          )
+        )
       else:
         self.skeleton_.append(chunk[1])
 
@@ -712,8 +831,11 @@ class TrHtml(interface.GathererBase):
       if isinstance(self.skeleton_[ix], clique.MessageClique):
         msg = self.skeleton_[ix].GetMessage()
         for item in msg.GetContent():
-          if (isinstance(item, str) and _NON_WHITESPACE.search(item)
-              and item != '&nbsp;'):
+          if (
+            isinstance(item, str)
+            and _NON_WHITESPACE.search(item)
+            and item != '&nbsp;'
+          ):
             got_text = True
             break
         if not got_text:

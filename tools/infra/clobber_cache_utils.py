@@ -42,10 +42,10 @@ def get_xcode_caches_for_all_bots(bots_state):
 def get_bots_state_by_dimensions(swarming_server, dimensions):
   """Gets the states of bots matching given dimensions."""
   cmd = [
-      _SWARMING_CLIENT,
-      'bots',
-      '-S',
-      swarming_server,
+    _SWARMING_CLIENT,
+    'bots',
+    '-S',
+    swarming_server,
   ]
   for d in dimensions:
     cmd.extend(['-dimension', d])
@@ -56,8 +56,9 @@ def get_bots_state_by_dimensions(swarming_server, dimensions):
     return []
 
 
-def trigger_clobber_cache(swarming_server, pool, realm, cache, bot_id,
-                          mount_rel_path, dry_run):
+def trigger_clobber_cache(
+  swarming_server, pool, realm, cache, bot_id, mount_rel_path, dry_run
+):
   """Clobber a specific cache on a given bot.
 
   Args:
@@ -73,26 +74,27 @@ def trigger_clobber_cache(swarming_server, pool, realm, cache, bot_id,
         actually triggering the clobber task.
   """
   cmd = [
-      _SWARMING_CLIENT,
-      'trigger',
-      '-S',
-      swarming_server,
-      '-realm',
-      realm,
-      '-dimension',
-      'pool=' + pool,
-      '-dimension',
-      'id=' + bot_id,
-      '-cipd-package',
-      'cpython3:infra/3pp/tools/cpython3/${platform}=latest',
-      '-named-cache',
-      cache + '=' + mount_rel_path,
-      '-priority',
-      '10',
-      '--',
-      'cpython3/bin/python3${EXECUTABLE_SUFFIX}',
-      '-c',
-      textwrap.dedent('''\
+    _SWARMING_CLIENT,
+    'trigger',
+    '-S',
+    swarming_server,
+    '-realm',
+    realm,
+    '-dimension',
+    'pool=' + pool,
+    '-dimension',
+    'id=' + bot_id,
+    '-cipd-package',
+    'cpython3:infra/3pp/tools/cpython3/${platform}=latest',
+    '-named-cache',
+    cache + '=' + mount_rel_path,
+    '-priority',
+    '10',
+    '--',
+    'cpython3/bin/python3${EXECUTABLE_SUFFIX}',
+    '-c',
+    textwrap.dedent(
+      '''\
           import os, shutil, stat
 
           def remove_readonly(func, path, _):
@@ -101,7 +103,8 @@ def trigger_clobber_cache(swarming_server, pool, realm, cache, bot_id,
               func(path)
 
           shutil.rmtree({mount_rel_path!r}, onerror=remove_readonly)
-          '''.format(mount_rel_path=mount_rel_path)),
+          '''.format(mount_rel_path=mount_rel_path)
+    ),
   ]
   if dry_run:
     print('Would run `%s`' % ' '.join(cmd))
@@ -120,17 +123,14 @@ def add_common_args(argument_parser):
       actually clobbering caches, defaults to False.
   """
   argument_parser.add_argument(
-      '-S', '--swarming-server', default=_SWARMING_SERVER)
+    '-S', '--swarming-server', default=_SWARMING_SERVER
+  )
   argument_parser.add_argument('-n', '--dry-run', action='store_true')
 
 
-def confirm_and_trigger_clobber_bots(swarming_server,
-                                     pool,
-                                     realm,
-                                     cache,
-                                     mount_rel_path,
-                                     dry_run,
-                                     bot_id=None):
+def confirm_and_trigger_clobber_bots(
+  swarming_server, pool, realm, cache, mount_rel_path, dry_run, bot_id=None
+):
   """Gets bot IDs, confirms with the user, handles dry-run and removes caches.
 
   Args:
@@ -152,7 +152,8 @@ def confirm_and_trigger_clobber_bots(swarming_server,
     bots_state = get_bots_state_by_dimensions(swarming_server, ['id=' + bot_id])
   else:
     bots_state = get_bots_state_by_dimensions(
-        swarming_server, ['pool=' + pool, 'caches=' + cache])
+      swarming_server, ['pool=' + pool, 'caches=' + cache]
+    )
     bot_ids = [bot['bot_id'] for bot in bots_state]
 
   if not bot_ids:
@@ -171,7 +172,8 @@ def confirm_and_trigger_clobber_bots(swarming_server,
       return []
 
   for b_id in bot_ids:
-    trigger_clobber_cache(swarming_server, pool, realm, cache, b_id,
-                          mount_rel_path, dry_run)
+    trigger_clobber_cache(
+      swarming_server, pool, realm, cache, b_id, mount_rel_path, dry_run
+    )
 
   return bots_state

@@ -34,7 +34,7 @@ class _GitilesExtBlockProcessor(BlockProcessor):
     match_start = self.RE_START.search(raw_block)
     if match_start:
       # Opening a new block.
-      rest = raw_block[match_start.end():]
+      rest = raw_block[match_start.end() :]
 
       if self._last_parent:
         # Inconsistent state (nested starting markers). Ignore the marker
@@ -57,7 +57,7 @@ class _GitilesExtBlockProcessor(BlockProcessor):
 
       # Process the text preceding the ending marker in the current context
       # (i.e. within the div block).
-      rest = raw_block[:match_end.start()]
+      rest = raw_block[: match_end.start()]
       self.parser.parseBlocks(parent, [rest])
 
       if not self._last_parent:
@@ -77,8 +77,9 @@ class _GitilesExtBlockExtension(Extension):
   highest builtin."""
 
   def extendMarkdown(self, md):
-    md.parser.blockprocessors.register(_GitilesExtBlockProcessor(md.parser),
-                                       'gitilesextblocks', 101)
+    md.parser.blockprocessors.register(
+      _GitilesExtBlockProcessor(md.parser), 'gitilesextblocks', 101
+    )
 
 
 def makeExtension(*args, **kwargs):

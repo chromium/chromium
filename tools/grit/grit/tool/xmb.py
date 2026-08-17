@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""The 'grit xmb' tool.
-"""
-
+"""The 'grit xmb' tool."""
 
 import getopt
 import os
@@ -26,9 +24,10 @@ _WHITESPACES_REGEX = re.compile(r'\s\s*')
 
 # See XmlEscape below.
 _XML_QUOTE_ESCAPES = {
-    "'":  '&apos;',
-    '"':  '&quot;',
+  "'": '&apos;',
+  '"': '&quot;',
 }
+
 
 def _XmlEscape(s):
   """Returns text escaped for XML in a way compatible with Google's
@@ -41,11 +40,11 @@ def _XmlEscape(s):
 def _WriteAttribute(file, name, value):
   """Writes an XML attribute to the specified file.
 
-    Args:
-      file: file to write to
-      name: name of the attribute
-      value: (unescaped) value of the attribute
-    """
+  Args:
+    file: file to write to
+    name: name of the attribute
+    value: (unescaped) value of the attribute
+  """
   name = name.encode('utf-8')
   if value:
     file.write(b' %s="%s"' % (name, _XmlEscape(value)))
@@ -53,11 +52,12 @@ def _WriteAttribute(file, name, value):
 
 def _WriteMessage(file, message):
   presentable_content = message.GetPresentableContent()
-  assert (isinstance(presentable_content, str) or
-          (len(message.parts) == 1 and
-           type(message.parts[0] == tclib.Placeholder)))
+  assert isinstance(presentable_content, str) or (
+    len(message.parts) == 1 and type(message.parts[0] == tclib.Placeholder)
+  )
   preserve_space = presentable_content != _WHITESPACES_REGEX.sub(
-      ' ', presentable_content.strip())
+    ' ', presentable_content.strip()
+  )
 
   file.write(b'<msg')
   _WriteAttribute(file, 'desc', message.GetDescription())
@@ -121,37 +121,42 @@ def WriteXmbFile(file, messages):
 
 class OutputXmb(interface.Tool):
   """Outputs all translateable messages in the .grd input file to an
-.xmb file, which is the format used to give source messages to
-Google's internal Translation Console tool.  The format could easily
-be used for other systems.
+  .xmb file, which is the format used to give source messages to
+  Google's internal Translation Console tool.  The format could easily
+  be used for other systems.
 
-Usage: grit xmb [-i|-h] [-l LIMITFILE] OUTPUTPATH
+  Usage: grit xmb [-i|-h] [-l LIMITFILE] OUTPUTPATH
 
-OUTPUTPATH is the path you want to output the .xmb file to.
+  OUTPUTPATH is the path you want to output the .xmb file to.
 
-The -l option can be used to output only some of the resources to the .xmb file.
-LIMITFILE is the path to a file that is used to limit the items output to the
-xmb file.  If the filename extension is .grd, the file must be a .grd file
-and the tool only output the contents of nodes from the input file that also
-exist in the limit file (as compared on the 'name' attribute). Otherwise it must
-contain a list of the IDs that output should be limited to, one ID per line, and
-the tool will only output nodes with 'name' attributes that match one of the
-IDs.
+  The -l option can be used to output only some of the resources to the .xmb
+  file.
+  LIMITFILE is the path to a file that is used to limit the items output to the
+  xmb file.  If the filename extension is .grd, the file must be a .grd file
+  and the tool only output the contents of nodes from the input file that also
+  exist in the limit file (as compared on the 'name' attribute). Otherwise it
+  must
+  contain a list of the IDs that output should be limited to, one ID per line,
+  and
+  the tool will only output nodes with 'name' attributes that match one of the
+  IDs.
 
-The -i option causes 'grit xmb' to output an "IDs only" file instead of an XMB
-file.  The "IDs only" file contains the message ID of each message that would
-normally be output to the XMB file, one message ID per line.  It is designed for
-use with the 'grit transl2tc' tool's -l option.
+  The -i option causes 'grit xmb' to output an "IDs only" file instead of an XMB
+  file.  The "IDs only" file contains the message ID of each message that would
+  normally be output to the XMB file, one message ID per line.  It is designed
+  for
+  use with the 'grit transl2tc' tool's -l option.
 
-Other options:
+  Other options:
 
-  -D NAME[=VAL]     Specify a C-preprocessor-like define NAME with optional
-                    value VAL (defaults to 1) which will be used to control
-                    conditional inclusion of resources.
+    -D NAME[=VAL]     Specify a C-preprocessor-like define NAME with optional
+                      value VAL (defaults to 1) which will be used to control
+                      conditional inclusion of resources.
 
-  -E NAME=VALUE     Set environment variable NAME to VALUE (within grit).
+    -E NAME=VALUE     Set environment variable NAME to VALUE (within grit).
 
-"""
+  """
+
   # The different output formats supported by this tool
   FORMAT_XMB = 0
   FORMAT_IDS_ONLY = 1
@@ -192,12 +197,16 @@ Other options:
         self.ShowUsage()
         sys.exit(0)
     if not len(args) == 1:
-      print('grit xmb takes exactly one argument, the path to the XMB file '
-            'to output.')
+      print(
+        'grit xmb takes exactly one argument, the path to the XMB file '
+        'to output.'
+      )
       return 2
 
     xmb_path = args[0]
-    res_tree = grd_reader.Parse(opts.input, debug=opts.extra_verbose, defines=self.defines)
+    res_tree = grd_reader.Parse(
+      opts.input, debug=opts.extra_verbose, defines=self.defines
+    )
     res_tree.SetOutputLanguage('en')
     res_tree.SetDefines(self.defines)
     res_tree.OnlyTheseTranslations([])
@@ -205,13 +214,15 @@ Other options:
 
     with open(xmb_path, 'wb') as output_file:
       self.Process(
-        res_tree, output_file, limit_file, limit_is_grd, limit_file_dir)
+        res_tree, output_file, limit_file, limit_is_grd, limit_file_dir
+      )
     if limit_file:
       limit_file.close()
     print("Wrote %s" % xmb_path)
 
-  def Process(self, res_tree, output_file, limit_file=None, limit_is_grd=False,
-              dir=None):
+  def Process(
+    self, res_tree, output_file, limit_file=None, limit_is_grd=False, dir=None
+  ):
     """Writes a document with the contents of res_tree into output_file,
     limiting output to the IDs specified in limit_file, which is a GRD file if
     limit_is_grd is true, otherwise a file with one ID per line.
@@ -236,9 +247,9 @@ Other options:
     if limit_file:
       if limit_is_grd:
         limit_list = []
-        limit_tree = grd_reader.Parse(limit_file,
-                                      dir=dir,
-                                      debug=self.o.extra_verbose)
+        limit_tree = grd_reader.Parse(
+          limit_file, dir=dir, debug=self.o.extra_verbose
+        )
         for node in limit_tree:
           if 'name' in node.attrs:
             limit_list.append(node.attrs['name'])
@@ -249,8 +260,9 @@ Other options:
     ids_already_done = {}
     messages = []
     for node in res_tree:
-      if (limit_file and
-          not ('name' in node.attrs and node.attrs['name'] in limit_list)):
+      if limit_file and not (
+        'name' in node.attrs and node.attrs['name'] in limit_list
+      ):
         continue
       if not node.IsTranslateable():
         continue
@@ -280,7 +292,7 @@ Other options:
         messages += [message]
 
     # Ensure a stable order of messages, to help regression testing.
-    messages.sort(key=lambda x:x.GetId())
+    messages.sort(key=lambda x: x.GetId())
 
     if self.format == self.FORMAT_IDS_ONLY:
       # We just print the list of IDs to the output file.

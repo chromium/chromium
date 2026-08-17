@@ -26,6 +26,7 @@ _CHANNEL_REGEX = r'channels/(\w+)/versions'
 
 _DSYM_URL_TEMPLATE = 'https://dl.google.com/chrome/mac/{channel}/dsym/googlechrome-{version}-{arch}-dsym.tar.bz2'
 
+
 def download_chrome_symbols(version, channel, arch, dest_dir):
     """Downloads and extracts the official Google Chrome dSYM files to a
     subdirectory of `dest_dir`.
@@ -49,11 +50,13 @@ def download_chrome_symbols(version, channel, arch, dest_dir):
         if channel:
             print(
                 f'Using release channel "{channel}" for {version}',
-                file=sys.stderr)
+                file=sys.stderr,
+            )
         else:
             print(
                 f'Could not identify channel for Chrome version {version}',
-                file=sys.stderr)
+                file=sys.stderr,
+            )
             return None
 
     # The symbol storage uses "arm64" rather than "aarch64".
@@ -63,9 +66,10 @@ def download_chrome_symbols(version, channel, arch, dest_dir):
     try:
         return _download_and_extract(version, channel, arch, dest_dir)
     except Exception as err:
-        print(f'Could not find dSYMs for Chrome {version} {arch}: '
-              f'{err}',
-              file=sys.stderr)
+        print(
+            f'Could not find dSYMs for Chrome {version} {arch}: {err}',
+            file=sys.stderr,
+        )
         return None
 
 
@@ -97,9 +101,16 @@ def _identify_channel(version, arch):
     print(
         f'Unable to identify release channel for {version}, '
         'now brute-force searching',
-        file=sys.stderr)
-    for channel in ('extended', 'stable', 'beta', 'dev', 'canary',
-                    'canary_asan'):
+        file=sys.stderr,
+    )
+    for channel in (
+        'extended',
+        'stable',
+        'beta',
+        'dev',
+        'canary',
+        'canary_asan',
+    ):
         url, _ = _get_url_and_dest(version, channel, arch, '')
         req = request.Request(url, method='HEAD')
         try:
@@ -117,8 +128,9 @@ def _get_url_and_dest(version, channel, arch, dest_dir):
     the format parameters."""
     args = {'channel': channel, 'arch': arch, 'version': version}
     url = _DSYM_URL_TEMPLATE.format(**args)
-    dest_dir = os.path.join(dest_dir,
-                            'googlechrome-{version}-{arch}-dsym'.format(**args))
+    dest_dir = os.path.join(
+        dest_dir, 'googlechrome-{version}-{arch}-dsym'.format(**args)
+    )
     return url, dest_dir
 
 
@@ -136,7 +148,8 @@ def _download_and_extract(version, channel, arch, dest_dir):
         with request.urlopen(url) as symbol_request:
             print(
                 f'Downloading and extracting symbols to {dest_dir}',
-                file=sys.stderr)
+                file=sys.stderr,
+            )
             print('This will take a minute...', file=sys.stderr)
             _extract_symbols_to(symbol_request, dest_dir)
             return dest_dir
@@ -157,11 +170,13 @@ def _extract_symbols_to(symbol_request, dest_dir):
     Raises:
         Exception if there is an error.
     """
-    proc = subprocess.Popen(['tar', 'xjf', '-'],
-                            cwd=dest_dir,
-                            stdin=subprocess.PIPE,
-                            stdout=sys.stderr,
-                            stderr=sys.stderr)
+    proc = subprocess.Popen(
+        ['tar', 'xjf', '-'],
+        cwd=dest_dir,
+        stdin=subprocess.PIPE,
+        stdout=sys.stderr,
+        stderr=sys.stderr,
+    )
     while True:
         data = symbol_request.read(4096)
         if not data:
@@ -177,25 +192,29 @@ def _extract_symbols_to(symbol_request, dest_dir):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--version', '-v', required=True, help='Version to download.')
+        '--version', '-v', required=True, help='Version to download.'
+    )
     parser.add_argument(
         '--channel',
         '-c',
         choices=['stable', 'beta', 'dev', 'canary'],
-        help='Chrome release channel for the version The channel will be ' \
-             'guessed if not specified.'
+        help='Chrome release channel for the version The channel will be '
+        'guessed if not specified.',
     )
     parser.add_argument(
         '--arch',
         '-a',
         choices=['aarch64', 'arm64', 'x86_64'],
-        help='CPU architecture to download. Defaults to that of the current OS.'
+        help=(
+            'CPU architecture to download. Defaults to that of the current OS.'
+        ),
     )
     parser.add_argument(
         '--out',
         '-o',
         required=True,
-        help='Directory to download the symbols to.')
+        help='Directory to download the symbols to.',
+    )
     args = parser.parse_args()
 
     arch = args.arch

@@ -5,6 +5,7 @@
 
 import sys
 import os
+
 sys.path += [os.path.dirname(os.path.dirname(__file__))]
 
 from json_data_generator.generator import JSONDataGenerator
@@ -20,11 +21,13 @@ class JSONDataGeneratorTest(unittest.TestCase):
     def setUp(self):
         self.generator = JSONDataGenerator('test')
         self.generator.AddJSONFilesToModel(
-            ['test/test_data1.json5', 'test/test_data2.json5'])
+            ['test/test_data1.json5', 'test/test_data2.json5']
+        )
 
     def testFileGeneration(self):
         generated_content = self.generator.RenderTemplate(
-            'test/template.test.jinja', 'test/jinja_helper.py')
+            'test/template.test.jinja', 'test/jinja_helper.py'
+        )
         self.assertEqualToFile(generated_content, 'test/expected.generated')
 
 

@@ -14,6 +14,7 @@ import argparse
 import json
 import re
 import sys
+
 """
 We are looking for various types of sanitizer warnings. They have different
 formats but all end in a line 'SUMMARY: (...)Sanitizer:'.
@@ -46,8 +47,10 @@ member call on address 0x28dc001c8a00 which does not point to an object of type
 ...
 SUMMARY: UndefinedBehaviorSanitizer: undefined-behavior
 """
-#pylint: disable=line-too-long
-_SUMMARY_MESSAGE_STR = r'\nSUMMARY: (Address|Leak|Memory|Thread|UndefinedBehavior)Sanitizer:'
+# pylint: disable=line-too-long
+_SUMMARY_MESSAGE_STR = (
+  r'\nSUMMARY: (Address|Leak|Memory|Thread|UndefinedBehavior)Sanitizer:'
+)
 _SUMMARY_MESSAGE_REGEX = re.compile(_SUMMARY_MESSAGE_STR)
 
 
@@ -89,8 +92,10 @@ def escalate_sanitizer_warnings(filename):
 
 def print_sanitizer_results(failed_test_names):
   failure_count = len(failed_test_names)
-  print('%d test%s failed via sanitizer warnings:' %
-        (failure_count, ('s' if failure_count != 1 else '')))
+  print(
+    '%d test%s failed via sanitizer warnings:'
+    % (failure_count, ('s' if failure_count != 1 else ''))
+  )
   for failed_test_name in failed_test_names:
     print('    %s' % failed_test_name)
 
@@ -98,13 +103,14 @@ def print_sanitizer_results(failed_test_names):
 def main():
   parser = argparse.ArgumentParser(description='Escalate sanitizer warnings.')
   parser.add_argument(
-      '--test-summary-json-file',
-      required=True,
-      help='Path to a JSON file produced by the test launcher. The script will '
-      'parse output snippets to find sanitizer warnings that are shown as '
-      'WARNINGS but should cause build failures in sanitizer versions. The '
-      'status will be FAILED when found. The result will be written back '
-      'to the JSON file.')
+    '--test-summary-json-file',
+    required=True,
+    help='Path to a JSON file produced by the test launcher. The script will '
+    'parse output snippets to find sanitizer warnings that are shown as '
+    'WARNINGS but should cause build failures in sanitizer versions. The '
+    'status will be FAILED when found. The result will be written back '
+    'to the JSON file.',
+  )
   args = parser.parse_args()
 
   if escalate_sanitizer_warnings(args.test_summary_json_file):

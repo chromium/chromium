@@ -40,12 +40,13 @@ def _SummarizeStatsForAllocators(result_for_pid: dict, allocators: dict):
   pattern = re.compile("malloc/partitions/allocator/buckets/bucket_\d+")
   for entry in allocators:
     # |entry| can represent a subset of the allocations for a given allocator.
-    if (not pattern.match(entry)):
+    if not pattern.match(entry):
       continue
     attrs = allocators[entry]['attrs']
 
     allocated_objects_size = trace_utils.GetAllocatorAttr(
-        attrs, 'allocated_objects_size')
+      attrs, 'allocated_objects_size'
+    )
     slot_size = trace_utils.GetAllocatorAttr(attrs, 'slot_size')
     try:
       # 'size' is only available in the dump if 'allocated_objects_size' is
@@ -59,12 +60,13 @@ def _SummarizeStatsForAllocators(result_for_pid: dict, allocators: dict):
     assert allocated_objects_size <= size
 
     size_counts.append(
-        (slot_size, 100 * fragmentation, size - allocated_objects_size))
+      (slot_size, 100 * fragmentation, size - allocated_objects_size)
+    )
   size_counts.sort()
-  result_for_pid['data'] = np.array(size_counts,
-                                    dtype=[('size', np.int),
-                                           ('fragmentation', np.int),
-                                           ('unused', np.int)])
+  result_for_pid['data'] = np.array(
+    size_counts,
+    dtype=[('size', np.int), ('fragmentation', np.int), ('unused', np.int)],
+  )
 
 
 def _PlotProcess(all_data: dict, pid: int, output_prefix: str):
@@ -78,29 +80,34 @@ def _PlotProcess(all_data: dict, pid: int, output_prefix: str):
   data = all_data[pid]
   logging.info('Plotting data for PID %d' % pid)
 
-  fragmentation_title = ('External Fragmentation (%%) vs Size - %s - %s' %
-                         (data['name'], data['labels']))
-  fragmentation_output = ('%s_%s_fragmentation.png' % (output_prefix, pid))
-  trace_utils.PlotProcessFragmentation(fragmentation_title, data,
-                                       fragmentation_output)
+  fragmentation_title = 'External Fragmentation (%%) vs Size - %s - %s' % (
+    data['name'],
+    data['labels'],
+  )
+  fragmentation_output = '%s_%s_fragmentation.png' % (output_prefix, pid)
+  trace_utils.PlotProcessFragmentation(
+    fragmentation_title, data, fragmentation_output
+  )
 
-  unused_title = ('External Unused Memory vs Size - %s - %s' %
-                  (data['name'], data['labels']))
-  unused_output = ('%s_%d_unused.png' % (output_prefix, pid))
+  unused_title = 'External Unused Memory vs Size - %s - %s' % (
+    data['name'],
+    data['labels'],
+  )
+  unused_output = '%s_%d_unused.png' % (output_prefix, pid)
   trace_utils.PlotProcessWaste(unused_title, data, unused_output)
 
 
 def _CreateArgumentParser():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--trace',
-      type=str,
-      required=True,
-      help='Path to a trace.json[.gz] with memory-infra enabled.')
-  parser.add_argument('--output-dir',
-                      type=str,
-                      required=True,
-                      help='Output directory for graphs.')
+    '--trace',
+    type=str,
+    required=True,
+    help='Path to a trace.json[.gz] with memory-infra enabled.',
+  )
+  parser.add_argument(
+    '--output-dir', type=str, required=True, help='Output directory for graphs.'
+  )
   return parser
 
 
@@ -113,14 +120,16 @@ def main():
   trace = trace_utils.LoadTrace(args.trace)
 
   logging.info('Parsing the trace')
-  stats_per_process = trace_utils.ParseTrace(trace,
-                                             _SummarizeStatsForAllocators)
+  stats_per_process = trace_utils.ParseTrace(
+    trace, _SummarizeStatsForAllocators
+  )
 
   logging.info('Plotting the results')
   for pid in stats_per_process:
     if 'data' in stats_per_process[pid]:
-      _PlotProcess(stats_per_process, pid,
-                   os.path.join(args.output_dir, 'external'))
+      _PlotProcess(
+        stats_per_process, pid, os.path.join(args.output_dir, 'external')
+      )
 
 
 if __name__ == '__main__':

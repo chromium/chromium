@@ -35,8 +35,8 @@ class WebIDLLexer(unittest.TestCase):
     self.lexer = IDLLexer()
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     self.filenames = [
-        os.path.join(cur_dir, 'test_lexer/values.in'),
-        os.path.join(cur_dir, 'test_lexer/keywords.in')
+      os.path.join(cur_dir, 'test_lexer/values.in'),
+      os.path.join(cur_dir, 'test_lexer/keywords.in'),
     ]
 
   #
@@ -58,7 +58,11 @@ class WebIDLLexer(unittest.TestCase):
 
       for i in range(count1):
         msg = 'Value %s does not match original %s on line %d of %s.' % (
-              tokens2[i].value, tokens1[i].value, tokens1[i].lineno, filename)
+          tokens2[i].value,
+          tokens1[i].value,
+          tokens1[i].lineno,
+          filename,
+        )
         self.assertEqual(tokens1[i].value, tokens2[i].value, msg)
 
   #
@@ -83,7 +87,11 @@ class WebIDLLexer(unittest.TestCase):
         expect_type = tokens[index].value
         actual_type = tokens[index + 1].type
         msg = 'Type %s does not match expected %s on line %d of %s.' % (
-              actual_type, expect_type, tokens[index].lineno, filename)
+          actual_type,
+          expect_type,
+          tokens[index].lineno,
+          filename,
+        )
         index += 2
         self.assertEqual(expect_type, actual_type, msg)
 

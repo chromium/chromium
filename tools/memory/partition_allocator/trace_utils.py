@@ -116,12 +116,14 @@ def _GetAllocatorDumps(trace: dict) -> list:
   """
   events = trace['traceEvents']
   memory_infra_events = [
-      e for e in events if e['cat'] == 'disabled-by-default-memory-infra'
+    e for e in events if e['cat'] == 'disabled-by-default-memory-infra'
   ]
   dumps = [
-      e for e in memory_infra_events
-      if e['name'] == 'periodic_interval' and e['args']['dumps']
-      ['level_of_detail'] == 'detailed' and 'allocators' in e['args']['dumps']
+    e
+    for e in memory_infra_events
+    if e['name'] == 'periodic_interval'
+    and e['args']['dumps']['level_of_detail'] == 'detailed'
+    and 'allocators' in e['args']['dumps']
   ]
   return dumps
 
@@ -141,17 +143,17 @@ def _ProcessNamesAndLabels(trace: dict) -> (dict, dict):
   pid_to_labels = {}
 
   metadata_events = [
-      e for e in trace['traceEvents'] if e['cat'] == '__metadata'
+    e for e in trace['traceEvents'] if e['cat'] == '__metadata'
   ]
 
   process_name_events = [
-      e for e in metadata_events if e['name'] == 'process_name'
+    e for e in metadata_events if e['name'] == 'process_name'
   ]
   for e in process_name_events:
     pid_to_name[e['pid']] = e['args']['name']
 
   process_labels_events = [
-      e for e in metadata_events if e['name'] == 'process_labels'
+    e for e in metadata_events if e['name'] == 'process_labels'
   ]
   for e in process_labels_events:
     pid_to_labels[e['pid']] = e['args']['labels']
@@ -159,8 +161,9 @@ def _ProcessNamesAndLabels(trace: dict) -> (dict, dict):
   return pid_to_name, pid_to_labels
 
 
-def ParseTrace(trace: dict,
-               compute_result: Callable[[dict, dict], None]) -> dict[int, dict]:
+def ParseTrace(
+  trace: dict, compute_result: Callable[[dict, dict], None]
+) -> dict[int, dict]:
   """Parses a trace, and returns thread cache stats.
 
   Args:
@@ -194,8 +197,8 @@ def ParseTrace(trace: dict,
     # We only use the last dump for a given pid, overwritting all previous
     # ones.
     result[pid] = {
-        'name': pid_to_name[pid],
-        'labels': pid_to_labels.get(pid, '')
+      'name': pid_to_name[pid],
+      'labels': pid_to_labels.get(pid, ''),
     }
     compute_result(result[pid], allocators)
 
@@ -234,8 +237,10 @@ def PlotProcessWaste(title, data, output):
   plt.title(title)
   plt.xscale('log', base=2)
   plt.yscale('log', base=2)
-  plt.stem(data['data']['size'][data['data']['unused'] != 0],
-           data['data']['unused'][data['data']['unused'] != 0])
+  plt.stem(
+    data['data']['size'][data['data']['unused'] != 0],
+    data['data']['unused'][data['data']['unused'] != 0],
+  )
   plt.ylim(ymin=1, ymax=2**20)
   plt.xlabel('Size (log)')
   plt.ylabel('Unused Size (log)')

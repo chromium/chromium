@@ -73,7 +73,7 @@ namespace fakeApi {
 """
 
 # The output we expect from our fake idl file.
-fake_idl_output = ("""// Copyright %s The Chromium Authors
+fake_idl_output = """// Copyright %s The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,12 +110,13 @@ FakeApi.prototype = {
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/fakeApi#event-onTrapDetected
  */
-FakeApi.prototype.onTrapDetected;""" %
-                   (datetime.now().year, sys.argv[0].replace('\\', '/')))
+FakeApi.prototype.onTrapDetected;""" % (
+  datetime.now().year,
+  sys.argv[0].replace('\\', '/'),
+)
 
 
 class JsExternGeneratorTest(unittest.TestCase):
-
   def _GetNamespace(self, fake_content, filename):
     """Returns a namespace object for the given content"""
     api_def = idl_schema.Process(fake_content, filename)
@@ -128,8 +129,8 @@ class JsExternGeneratorTest(unittest.TestCase):
   def testBasic(self):
     namespace = self._GetNamespace(fake_idl, 'fake_api.idl')
     self.assertMultiLineEqual(
-        fake_idl_output,
-        JsInterfaceGenerator().Generate(namespace).Render())
+      fake_idl_output, JsInterfaceGenerator().Generate(namespace).Render()
+    )
 
 
 if __name__ == '__main__':

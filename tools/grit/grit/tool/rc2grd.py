@@ -4,7 +4,6 @@
 
 '''The 'grit rc2grd' tool.'''
 
-
 import os.path
 import getopt
 import re
@@ -30,45 +29,58 @@ from grit import util
 
 
 # Matches files referenced from an .rc file
-_FILE_REF = re.compile(r'''
+_FILE_REF = re.compile(
+  r'''
   ^(?P<id>[A-Z_0-9.]+)[ \t]+
   (?P<type>[A-Z_0-9]+)[ \t]+
-  "(?P<file>.*?([^"]|""))"[ \t]*$''', re.VERBOSE | re.MULTILINE)
+  "(?P<file>.*?([^"]|""))"[ \t]*$''',
+  re.VERBOSE | re.MULTILINE,
+)
 
 
 # Matches a dialog section
 _DIALOG = re.compile(
-    r'^(?P<id>[A-Z0-9_]+)\s+DIALOG(EX)?\s.+?^BEGIN\s*$.+?^END\s*$',
-    re.MULTILINE | re.DOTALL)
+  r'^(?P<id>[A-Z0-9_]+)\s+DIALOG(EX)?\s.+?^BEGIN\s*$.+?^END\s*$',
+  re.MULTILINE | re.DOTALL,
+)
 
 
 # Matches a menu section
-_MENU = re.compile(r'^(?P<id>[A-Z0-9_]+)\s+MENU.+?^BEGIN\s*$.+?^END\s*$',
-                        re.MULTILINE | re.DOTALL)
+_MENU = re.compile(
+  r'^(?P<id>[A-Z0-9_]+)\s+MENU.+?^BEGIN\s*$.+?^END\s*$',
+  re.MULTILINE | re.DOTALL,
+)
 
 
 # Matches a versioninfo section
 _VERSIONINFO = re.compile(
-    r'^(?P<id>[A-Z0-9_]+)\s+VERSIONINFO\s.+?^BEGIN\s*$.+?^END\s*$',
-    re.MULTILINE | re.DOTALL)
+  r'^(?P<id>[A-Z0-9_]+)\s+VERSIONINFO\s.+?^BEGIN\s*$.+?^END\s*$',
+  re.MULTILINE | re.DOTALL,
+)
 
 
 # Matches a stringtable
 _STRING_TABLE = re.compile(
-    (r'^STRINGTABLE(\s+(PRELOAD|DISCARDABLE|CHARACTERISTICS.+|LANGUAGE.+|'
-     r'VERSION.+))*\s*\nBEGIN\s*$(?P<body>.+?)^END\s*$'),
-    re.MULTILINE | re.DOTALL)
+  (
+    r'^STRINGTABLE(\s+(PRELOAD|DISCARDABLE|CHARACTERISTICS.+|LANGUAGE.+|'
+    r'VERSION.+))*\s*\nBEGIN\s*$(?P<body>.+?)^END\s*$'
+  ),
+  re.MULTILINE | re.DOTALL,
+)
 
 
 # Matches each message inside a stringtable, breaking it up into comments,
 # the ID of the message, and the (RC-escaped) message text.
-_MESSAGE = re.compile(r'''
+_MESSAGE = re.compile(
+  r'''
   (?P<comment>(^\s+//.+?)*)  # 0 or more lines of comments preceding the message
   ^\s*
   (?P<id>[A-Za-z0-9_]+)  # id
   \s+
   "(?P<text>.*?([^"]|""))"([^"]|$)  # The message itself
-  ''', re.MULTILINE | re.DOTALL | re.VERBOSE)
+  ''',
+  re.MULTILINE | re.DOTALL | re.VERBOSE,
+)
 
 
 # Matches each line of comment text in a multi-line comment.
@@ -85,64 +97,67 @@ _WHITESPACE_ONLY = re.compile(r'\A\s*\Z', re.MULTILINE)
 # replace with placeholders.
 # TODO(joi) Check documentation for printf (and Windows variants) and FormatMessage
 _FORMAT_SPECIFIER = re.compile(
-  r'(%[-# +]?(?:[0-9]*|\*)(?:\.(?:[0-9]+|\*))?(?:h|l|L)?' # printf up to last char
-  r'(?:d|i|o|u|x|X|e|E|f|F|g|G|c|r|s|ls|ws)'              # printf last char
-  r'|\$[1-9][0-9]*)')                                     # FormatMessage
+  r'(%[-# +]?(?:[0-9]*|\*)(?:\.(?:[0-9]+|\*))?(?:h|l|L)?'  # printf up to last char
+  r'(?:d|i|o|u|x|X|e|E|f|F|g|G|c|r|s|ls|ws)'  # printf last char
+  r'|\$[1-9][0-9]*)'
+)  # FormatMessage
 
 
 class Rc2Grd(interface.Tool):
   '''A tool for converting .rc files to .grd files.  This tool is only for
-converting the source (nontranslated) .rc file to a .grd file.  For importing
-existing translations, use the rc2xtb tool.
+  converting the source (nontranslated) .rc file to a .grd file.  For importing
+  existing translations, use the rc2xtb tool.
 
-Usage:  grit [global options] rc2grd [OPTIONS] RCFILE
+  Usage:  grit [global options] rc2grd [OPTIONS] RCFILE
 
-The tool takes a single argument, which is the path to the .rc file to convert.
-It outputs a .grd file with the same name in the same directory as the .rc file.
-The .grd file may have one or more TODO comments for things that have to be
-cleaned up manually.
+  The tool takes a single argument, which is the path to the .rc file to
+  convert.
+  It outputs a .grd file with the same name in the same directory as the .rc
+  file.
+  The .grd file may have one or more TODO comments for things that have to be
+  cleaned up manually.
 
-OPTIONS may be any of the following:
+  OPTIONS may be any of the following:
 
-  -e ENCODING    Specify the ENCODING of the .rc file. Default is 'cp1252'.
+    -e ENCODING    Specify the ENCODING of the .rc file. Default is 'cp1252'.
 
-  -h TYPE        Specify the TYPE attribute for HTML structures.
-                 Default is 'tr_html'.
+    -h TYPE        Specify the TYPE attribute for HTML structures.
+                   Default is 'tr_html'.
 
-  -u ENCODING    Specify the ENCODING of HTML files. Default is 'utf-8'.
+    -u ENCODING    Specify the ENCODING of HTML files. Default is 'utf-8'.
 
-  -n MATCH       Specify the regular expression to match in comments that will
-                 indicate that the resource the comment belongs to is not
-                 translateable. Default is 'Not locali(s|z)able'.
+    -n MATCH       Specify the regular expression to match in comments that will
+                   indicate that the resource the comment belongs to is not
+                   translateable. Default is 'Not locali(s|z)able'.
 
-  -r GRDFILE     Specify that GRDFILE should be used as a "role model" for
-                 any placeholders that otherwise would have had TODO names.
-                 This attempts to find an identical message in the GRDFILE
-                 and uses that instead of the automatically placeholderized
-                 message.
+    -r GRDFILE     Specify that GRDFILE should be used as a "role model" for
+                   any placeholders that otherwise would have had TODO names.
+                   This attempts to find an identical message in the GRDFILE
+                   and uses that instead of the automatically placeholderized
+                   message.
 
-  --pre CLASS    Specify an optional, fully qualified classname, which
-                 has to be a subclass of grit.tool.PreProcessor, to
-                 run on the text of the RC file before conversion occurs.
-                 This can be used to support constructs in the RC files
-                 that GRIT cannot handle on its own.
+    --pre CLASS    Specify an optional, fully qualified classname, which
+                   has to be a subclass of grit.tool.PreProcessor, to
+                   run on the text of the RC file before conversion occurs.
+                   This can be used to support constructs in the RC files
+                   that GRIT cannot handle on its own.
 
-  --post CLASS   Specify an optional, fully qualified classname, which
-                 has to be a subclass of grit.tool.PostProcessor, to
-                 run on the text of the converted RC file.
-                 This can be used to alter the content of the RC file
-                 based on the conversion that occured.
+    --post CLASS   Specify an optional, fully qualified classname, which
+                   has to be a subclass of grit.tool.PostProcessor, to
+                   run on the text of the converted RC file.
+                   This can be used to alter the content of the RC file
+                   based on the conversion that occured.
 
-For menus, dialogs and version info, the .grd file will refer to the original
-.rc file.  Once conversion is complete, you can strip the original .rc file
-of its string table and all comments as these will be available in the .grd
-file.
+  For menus, dialogs and version info, the .grd file will refer to the original
+  .rc file.  Once conversion is complete, you can strip the original .rc file
+  of its string table and all comments as these will be available in the .grd
+  file.
 
-Note that this tool WILL NOT obey C preprocessor rules, so even if something
-is #if 0-ed out it will still be included in the output of this tool
-Therefore, if your .rc file contains sections like this, you should run the
-C preprocessor on the .rc file or manually edit it before using this tool.
-'''
+  Note that this tool WILL NOT obey C preprocessor rules, so even if something
+  is #if 0-ed out it will still be included in the output of this tool
+  Therefore, if your .rc file contains sections like this, you should run the
+  C preprocessor on the .rc file or manually edit it before using this tool.
+  '''
 
   def ShortDescription(self):
     return 'A tool for converting .rc source files to .grd files.'
@@ -160,9 +175,10 @@ C preprocessor on the .rc file or manually edit it before using this tool.
     '''Given a list of arguments, set this object's options and return
     all non-option arguments.
     '''
-    (own_opts, args) = getopt.getopt(args, 'e:h:u:n:r',
-                                     ('help', 'pre=', 'post='))
-    for (key, val) in own_opts:
+    (own_opts, args) = getopt.getopt(
+      args, 'e:h:u:n:r', ('help', 'pre=', 'post=')
+    )
+    for key, val in own_opts:
       if key == '-e':
         self.input_encoding = val
       elif key == '-h':
@@ -188,23 +204,27 @@ C preprocessor on the .rc file or manually edit it before using this tool.
   def Run(self, opts, args):
     args = self.ParseOptions(args)
     if len(args) != 1:
-      print('This tool takes a single tool-specific argument, the path to the\n'
-            '.rc file to process.')
+      print(
+        'This tool takes a single tool-specific argument, the path to the\n'
+        '.rc file to process.'
+      )
       return 2
     self.SetOptions(opts)
 
     path = args[0]
-    out_path = os.path.join(util.dirname(path),
-                os.path.splitext(os.path.basename(path))[0] + '.grd')
+    out_path = os.path.join(
+      util.dirname(path), os.path.splitext(os.path.basename(path))[0] + '.grd'
+    )
 
     rctext = util.ReadFile(path, self.input_encoding)
     grd_text = str(self.Process(rctext, path))
     with util.WrapOutputStream(open(out_path, 'wb'), 'utf-8') as outfile:
       outfile.write(grd_text)
 
-    print('Wrote output file %s.\nPlease check for TODO items in the file.' %
-          (out_path,))
-
+    print(
+      'Wrote output file %s.\nPlease check for TODO items in the file.'
+      % (out_path,)
+    )
 
   def Process(self, rctext, rc_path):
     '''Processes 'rctext' and returns a resource tree corresponding to it.
@@ -218,17 +238,20 @@ C preprocessor on the .rc file or manually edit it before using this tool.
     '''
 
     if self.pre_process:
-      preprocess_class = util.NewClassInstance(self.pre_process,
-                                               preprocess_interface.PreProcessor)
+      preprocess_class = util.NewClassInstance(
+        self.pre_process, preprocess_interface.PreProcessor
+      )
       if preprocess_class:
         rctext = preprocess_class.Process(rctext, rc_path)
       else:
         self.Out(
-          'PreProcessing class could not be found. Skipping preprocessing.\n')
+          'PreProcessing class could not be found. Skipping preprocessing.\n'
+        )
 
     # Start with a basic skeleton for the .grd file
-    root = grd_reader.Parse(StringIO(
-      '''<?xml version="1.0" encoding="UTF-8"?>
+    root = grd_reader.Parse(
+      StringIO(
+        '''<?xml version="1.0" encoding="UTF-8"?>
       <grit base_dir="." latest_public_release="0"
           current_release="1" source_lang_id="en">
         <outputs />
@@ -238,13 +261,18 @@ C preprocessor on the .rc file or manually edit it before using this tool.
           <structures />
           <messages />
         </release>
-      </grit>'''), util.dirname(rc_path))
+      </grit>'''
+      ),
+      util.dirname(rc_path),
+    )
     includes = root.children[2].children[0]
     structures = root.children[2].children[1]
     messages = root.children[2].children[2]
-    assert (isinstance(includes, grit.node.empty.IncludesNode) and
-            isinstance(structures, grit.node.empty.StructuresNode) and
-            isinstance(messages, grit.node.empty.MessagesNode))
+    assert (
+      isinstance(includes, grit.node.empty.IncludesNode)
+      and isinstance(structures, grit.node.empty.StructuresNode)
+      and isinstance(messages, grit.node.empty.MessagesNode)
+    )
 
     self.AddIncludes(rctext, includes)
     self.AddStructures(rctext, structures, os.path.basename(rc_path))
@@ -255,22 +283,22 @@ C preprocessor on the .rc file or manually edit it before using this tool.
     self.ExtraVerboseOut('Done validating that all IDs are unique.\n')
 
     if self.post_process:
-      postprocess_class = util.NewClassInstance(self.post_process,
-                                                postprocess_interface.PostProcessor)
+      postprocess_class = util.NewClassInstance(
+        self.post_process, postprocess_interface.PostProcessor
+      )
       if postprocess_class:
         root = postprocess_class.Process(rctext, rc_path, root)
       else:
         self.Out(
-          'PostProcessing class could not be found. Skipping postprocessing.\n')
+          'PostProcessing class could not be found. Skipping postprocessing.\n'
+        )
 
     return root
-
 
   def IsHtml(self, res_type, fname):
     '''Check whether both the type and file extension indicate HTML'''
     fext = fname.split('.')[-1].lower()
     return res_type == 'HTML' and fext in ('htm', 'html')
-
 
   def AddIncludes(self, rctext, node):
     '''Scans 'rctext' for included resources (e.g. BITMAP, ICON) and
@@ -281,10 +309,10 @@ C preprocessor on the .rc file or manually edit it before using this tool.
       fname = rc.Section.UnEscape(m.group('file'))
       assert fname.find('\n') == -1
       if not self.IsHtml(res_type, fname):
-        self.VerboseOut('Processing %s with ID %s (filename: %s)\n' %
-                        (res_type, id, fname))
+        self.VerboseOut(
+          'Processing %s with ID %s (filename: %s)\n' % (res_type, id, fname)
+        )
         node.AddChild(include.IncludeNode.Construct(node, id, res_type, fname))
-
 
   def AddStructures(self, rctext, node, rc_filename):
     '''Scans 'rctext' for structured resources (e.g. menus, dialogs, version
@@ -296,22 +324,27 @@ C preprocessor on the .rc file or manually edit it before using this tool.
       res_type = m.group('type').upper()
       fname = rc.Section.UnEscape(m.group('file'))
       if self.IsHtml(type, fname):
-        node.AddChild(structure.StructureNode.Construct(
-          node, id, self.html_type, fname, self.html_encoding))
+        node.AddChild(
+          structure.StructureNode.Construct(
+            node, id, self.html_type, fname, self.html_encoding
+          )
+        )
 
     # Then add all RC includes
     def AddStructure(res_type, id):
       self.VerboseOut('Processing %s with ID %s\n' % (res_type, id))
-      node.AddChild(structure.StructureNode.Construct(node, id, res_type,
-                                                      rc_filename,
-                                                      encoding=self.input_encoding))
+      node.AddChild(
+        structure.StructureNode.Construct(
+          node, id, res_type, rc_filename, encoding=self.input_encoding
+        )
+      )
+
     for m in _MENU.finditer(rctext):
       AddStructure('menu', m.group('id'))
     for m in _DIALOG.finditer(rctext):
       AddStructure('dialog', m.group('id'))
     for m in _VERSIONINFO.finditer(rctext):
       AddStructure('version', m.group('id'))
-
 
   def AddMessages(self, rctext, node):
     '''Scans 'rctext' for all messages in string tables, preprocesses them as
@@ -364,15 +397,18 @@ C preprocessor on the .rc file or manually edit it before using this tool.
         if not is_translateable:
           msg_obj = tclib.Message(text=text)
 
-        msg_node = message.MessageNode.Construct(node, msg_obj, id,
-                                                 desc=comment_text,
-                                                 translateable=is_translateable,
-                                                 meaning=message_meaning)
+        msg_node = message.MessageNode.Construct(
+          node,
+          msg_obj,
+          id,
+          desc=comment_text,
+          translateable=is_translateable,
+          meaning=message_meaning,
+        )
         msg_node.attrs['internal_comment'] = internal_comment
 
         node.AddChild(msg_node)
         self.ExtraVerboseOut('Done processing message %s\n' % id)
-
 
   def Placeholderize(self, text):
     '''Creates a tclib.Message object from 'text', attempting to recognize
@@ -396,15 +432,17 @@ C preprocessor on the .rc file or manually edit it before using this tool.
       todo_counter = 1  # We make placeholder IDs 'TODO_0001' etc.
       for part in parts:
         if _FORMAT_SPECIFIER.match(part):
-          msg.AppendPlaceholder(tclib.Placeholder(
-            'TODO_%04d' % todo_counter, part, 'TODO'))
+          msg.AppendPlaceholder(
+            tclib.Placeholder('TODO_%04d' % todo_counter, part, 'TODO')
+          )
           todo_counter += 1
         elif part != '':
           msg.AppendText(part)
 
       if self.role_model and len(parts) > 1:  # there are TODO placeholders
         role_model_msg = self.role_model.UberClique().BestCliqueByOriginalText(
-          msg.GetRealContent(), '')
+          msg.GetRealContent(), ''
+        )
         if role_model_msg:
           # replace wholesale to get placeholder names and examples
           msg = role_model_msg

@@ -5,12 +5,16 @@
 
 import unittest
 
-from cpp_util import (Classname, CloseNamespace, GetCppNamespace,
-                      GenerateIfndefName, OpenNamespace)
+from cpp_util import (
+  Classname,
+  CloseNamespace,
+  GetCppNamespace,
+  GenerateIfndefName,
+  OpenNamespace,
+)
 
 
 class CppUtilTest(unittest.TestCase):
-
   def testClassname(self):
     self.assertEqual('Permissions', Classname('permissions'))
     self.assertEqual('UpdateAllTheThings', Classname('updateAllTheThings'))
@@ -20,36 +24,38 @@ class CppUtilTest(unittest.TestCase):
     self.assertEqual('namespace foo {', OpenNamespace('foo').Render())
     self.assertEqual('}  // namespace foo', CloseNamespace('foo').Render())
 
-    self.assertEqual('namespace extensions {\n'
-                     'namespace foo {',
-                     OpenNamespace('extensions::foo').Render())
-    self.assertEqual('}  // namespace foo\n'
-                     '}  // namespace extensions',
-                     CloseNamespace('extensions::foo').Render())
+    self.assertEqual(
+      'namespace extensions {\nnamespace foo {',
+      OpenNamespace('extensions::foo').Render(),
+    )
+    self.assertEqual(
+      '}  // namespace foo\n}  // namespace extensions',
+      CloseNamespace('extensions::foo').Render(),
+    )
 
     self.assertEqual(
-        'namespace extensions {\n'
-        'namespace gen {\n'
-        'namespace api {',
-        OpenNamespace('extensions::gen::api').Render())
+      'namespace extensions {\nnamespace gen {\nnamespace api {',
+      OpenNamespace('extensions::gen::api').Render(),
+    )
     self.assertEqual(
-        '}  // namespace api\n'
-        '}  // namespace gen\n'
-        '}  // namespace extensions',
-        CloseNamespace('extensions::gen::api').Render())
+      '}  // namespace api\n}  // namespace gen\n}  // namespace extensions',
+      CloseNamespace('extensions::gen::api').Render(),
+    )
 
     self.assertEqual(
-        'namespace extensions {\n'
-        'namespace gen {\n'
-        'namespace api {\n'
-        'namespace foo {',
-        OpenNamespace('extensions::gen::api::foo').Render())
+      'namespace extensions {\n'
+      'namespace gen {\n'
+      'namespace api {\n'
+      'namespace foo {',
+      OpenNamespace('extensions::gen::api::foo').Render(),
+    )
     self.assertEqual(
-        '}  // namespace foo\n'
-        '}  // namespace api\n'
-        '}  // namespace gen\n'
-        '}  // namespace extensions',
-        CloseNamespace('extensions::gen::api::foo').Render())
+      '}  // namespace foo\n'
+      '}  // namespace api\n'
+      '}  // namespace gen\n'
+      '}  // namespace extensions',
+      CloseNamespace('extensions::gen::api::foo').Render(),
+    )
 
   def testGenerateIfndefName(self):
     self.assertEqual('FOO_BAR_BAZ_H__', GenerateIfndefName('foo\\bar\\baz.h'))
@@ -58,8 +64,9 @@ class CppUtilTest(unittest.TestCase):
   def testGetCppNamespace(self):
     namespace_pattern = "test::api::%(namespace)s"
     unix_name = "SimpleApi"
-    self.assertEqual("test::api::SimpleApi",
-                     GetCppNamespace(namespace_pattern, unix_name))
+    self.assertEqual(
+      "test::api::SimpleApi", GetCppNamespace(namespace_pattern, unix_name)
+    )
 
 
 if __name__ == '__main__':

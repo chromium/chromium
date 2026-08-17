@@ -25,15 +25,24 @@ import markdown
 THIS_DIR = os.path.realpath(os.path.dirname(__file__))
 SRC_DIR = os.path.dirname(os.path.dirname(THIS_DIR))
 
+
 def main(argv):
   parser = argparse.ArgumentParser(prog='md_browser')
-  parser.add_argument('-p', '--port', type=int, default=8080,
-                      help='port to run on (default = %(default)s)')
+  parser.add_argument(
+    '-p',
+    '--port',
+    type=int,
+    default=8080,
+    help='port to run on (default = %(default)s)',
+  )
   parser.add_argument('-d', '--directory', type=str, default=SRC_DIR)
-  parser.add_argument('-e', '--external', action='store_true',
-                      help='whether to bind to external port')
-  parser.add_argument('file', nargs='?',
-                      help='open file in browser')
+  parser.add_argument(
+    '-e',
+    '--external',
+    action='store_true',
+    help='whether to bind to external port',
+  )
+  parser.add_argument('file', nargs='?', help='open file in browser')
   args = parser.parse_args(argv)
 
   top_level = os.path.realpath(args.directory)
@@ -137,7 +146,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     # strip off the repo and branch info, if present, for compatibility
     # with gitiles.
     if path.startswith('/chromium/src/+/master'):
-      path = path[len('/chromium/src/+/master'):]
+      path = path[len('/chromium/src/+/master') :]
 
     full_path = os.path.normpath(os.path.join(self.server.top_level, path[1:]))
 
@@ -169,30 +178,37 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
   def _DoMD(self, path):
     extensions = [
-        'markdown.extensions.def_list',
-        'markdown.extensions.fenced_code',
-        'markdown.extensions.tables',
-        'markdown.extensions.toc',
-        'gitiles_autolink',
-        'gitiles_ext_blocks',
-        'gitiles_smart_quotes',
+      'markdown.extensions.def_list',
+      'markdown.extensions.fenced_code',
+      'markdown.extensions.tables',
+      'markdown.extensions.toc',
+      'gitiles_autolink',
+      'gitiles_ext_blocks',
+      'gitiles_smart_quotes',
     ]
     extension_configs = {
-        'markdown.extensions.toc': {
-            'slugify': _gitiles_slugify
-        },
+      'markdown.extensions.toc': {'slugify': _gitiles_slugify},
     }
 
     contents = self._Read(path[1:])
 
-    md = markdown.Markdown(extensions=extensions,
-                           extension_configs=extension_configs,
-                           tab_length=4,
-                           output_format='html4')
+    md = markdown.Markdown(
+      extensions=extensions,
+      extension_configs=extension_configs,
+      tab_length=4,
+      output_format='html4',
+    )
 
-    has_a_single_h1 = (len([line for line in contents.splitlines()
-                            if (line.startswith('#') and
-                                not line.startswith('##'))]) == 1)
+    has_a_single_h1 = (
+      len(
+        [
+          line
+          for line in contents.splitlines()
+          if (line.startswith('#') and not line.startswith('##'))
+        ]
+      )
+      == 1
+    )
 
     md.treeprocessors.register(_AdjustTOC(has_a_single_h1), 'adjust_toc', 4)
 
@@ -215,23 +231,25 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     self._Write('<table class="FileContents">')
     with open(full_path) as fp:
       # Escape html over the entire file at once.
-      data = fp.read().replace(
-          '&', '&amp;').replace(
-          '<', '&lt;').replace(
-          '>', '&gt;').replace(
-          '"', '&quot;')
+      data = (
+        fp.read()
+        .replace('&', '&amp;')
+        .replace('<', '&lt;')
+        .replace('>', '&gt;')
+        .replace('"', '&quot;')
+      )
       for i, line in enumerate(data.splitlines(), start=1):
         self._Write(
-            ('<tr class="u-pre u-monospace FileContents-line">'
-             '<td class="u-lineNum u-noSelect FileContents-lineNum">'
-             '<a name="%(num)s" '
-             'onclick="window.location.hash=%(quot)s#%(num)s%(quot)s">'
-             '%(num)s</a></td>'
-             '<td class="FileContents-lineContents">%(line)s</td></tr>') % {
-                 'num': i,
-                 'quot': "'",
-                 'line': line
-             })
+          (
+            '<tr class="u-pre u-monospace FileContents-line">'
+            '<td class="u-lineNum u-noSelect FileContents-lineNum">'
+            '<a name="%(num)s" '
+            'onclick="window.location.hash=%(quot)s#%(num)s%(quot)s">'
+            '%(num)s</a></td>'
+            '<td class="FileContents-lineContents">%(line)s</td></tr>'
+          )
+          % {'num': i, 'quot': "'", 'line': line}
+        )
     self._Write('</table>')
 
     self._WriteTemplate('footer.html')
@@ -242,13 +260,16 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
   def _DoNotFound(self):
     self._WriteHeader('text/html', status_code=404)
-    self._Write('<html><body>%s not found</body></html>' %
-                html.escape(self.path))
+    self._Write(
+      '<html><body>%s not found</body></html>' % html.escape(self.path)
+    )
 
   def _DoUnknown(self):
     self._WriteHeader('text/html', status_code=501)
-    self._Write('<html><body>I do not know how to serve %s.</body>'
-                '</html>' % html.escape(self.path))
+    self._Write(
+      '<html><body>I do not know how to serve %s.</body>'
+      '</html>' % html.escape(self.path)
+    )
 
   def _DoDirListing(self, full_path):
     self._WriteHeader('text/html')
@@ -256,8 +277,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     self._Write('<div class="doc">')
 
     self._Write('<div class="Breadcrumbs">\n')
-    self._Write('<a class="Breadcrumbs-crumb">%s</a>\n' %
-                html.escape(self.path))
+    self._Write(
+      '<a class="Breadcrumbs-crumb">%s</a>\n' % html.escape(self.path)
+    )
     self._Write('</div>\n')
 
     escaped_dir = html.escape(self.path.rstrip('/'), quote=True)
@@ -271,8 +293,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
           bold = ('<b>', '</b>')
         else:
           bold = ('', '')
-        self._Write('<a href="%s/%s">%s%s%s</a><br/>\n' %
-                    (escaped_dir, f, bold[0], f, bold[1]))
+        self._Write(
+          '<a href="%s/%s">%s%s%s</a><br/>\n'
+          % (escaped_dir, f, bold[0], f, bold[1])
+        )
 
       self._Write('<br/>\n')
 
@@ -309,8 +333,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     self.end_headers()
 
   def _WriteTemplate(self, template):
-    contents = self._Read(os.path.join('tools', 'md_browser', template),
-                          relative_to=SRC_DIR)
+    contents = self._Read(
+      os.path.join('tools', 'md_browser', template), relative_to=SRC_DIR
+    )
     self._Write(contents)
 
 

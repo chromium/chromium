@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-""" Error and information logging for IDL """
+"""Error and information logging for IDL"""
 
 import sys
 
@@ -13,6 +13,7 @@ class IDLLog(object):
   Caputres logging output and/or sends out via a file handle, typically
   stdout or stderr.
   """
+
   def __init__(self, name, out):
     if name:
       self._name = '%s : ' % name
@@ -49,6 +50,7 @@ class IDLLog(object):
     self._log = []
     return out
 
-ErrOut  = IDLLog('Error', sys.stderr)
+
+ErrOut = IDLLog('Error', sys.stderr)
 WarnOut = IDLLog('Warning', sys.stdout)
 InfoOut = IDLLog('', sys.stdout)

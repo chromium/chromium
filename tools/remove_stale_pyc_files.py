@@ -14,12 +14,15 @@ def GetFdCommand():
     try:
       # We check for --help output to ensure it's the right program and
       # supports the flags we need.
-      res = subprocess.run([cmd, '--help'],
-                           capture_output=True,
-                           text=True,
-                           check=False)
-      if (res.returncode == 0 and '--glob' in res.stdout
-          and '--print0' in res.stdout and '--no-ignore' in res.stdout):
+      res = subprocess.run(
+        [cmd, '--help'], capture_output=True, text=True, check=False
+      )
+      if (
+        res.returncode == 0
+        and '--glob' in res.stdout
+        and '--print0' in res.stdout
+        and '--no-ignore' in res.stdout
+      ):
         return cmd
     except OSError:
       continue
@@ -62,9 +65,10 @@ def RemoveAllStalePycFiles(base_dirs):
     output = None
     try:
       res = subprocess.run(
-          [fd_cmd, '--no-ignore', '--print0', '--glob', '*.pyc'] + base_dirs,
-          capture_output=True,
-          check=True)
+        [fd_cmd, '--no-ignore', '--print0', '--glob', '*.pyc'] + base_dirs,
+        capture_output=True,
+        check=True,
+      )
       output = res.stdout
     except (subprocess.CalledProcessError, OSError):
       # Fall back to os.walk if fd fails.

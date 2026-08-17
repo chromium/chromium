@@ -15,19 +15,17 @@ import worktree
 
 
 class TestWorktree(unittest.TestCase):
-
   @patch("worktree.subprocess.run")
   def test_run_cmd(self, mock_run):
     worktree.run_cmd(["echo", "hi"])
-    mock_run.assert_called_once_with(["echo", "hi"],
-                                     cwd=None,
-                                     check=True,
-                                     text=True,
-                                     capture_output=False)
+    mock_run.assert_called_once_with(
+      ["echo", "hi"], cwd=None, check=True, text=True, capture_output=False
+    )
 
   @patch("worktree.subprocess.run")
   def test_run_cmd_no_check_failure(self, mock_run):
     import subprocess
+
     mock_run.side_effect = subprocess.CalledProcessError(1, ["false"])
     result = worktree.run_cmd(["false"], check=False)
     self.assertIsNone(result)
@@ -35,8 +33,9 @@ class TestWorktree(unittest.TestCase):
   @patch("pathlib.Path.is_dir", return_value=True)
   @patch("pathlib.Path.exists", side_effect=[True, True, True])
   @patch("pathlib.Path.resolve")
-  def test_validate_parent_repo_success(self, mock_resolve, mock_exists,
-                                        mock_is_dir):
+  def test_validate_parent_repo_success(
+    self, mock_resolve, mock_exists, mock_is_dir
+  ):
     mock_resolve.return_value = Path("/fake/repo")
     parent_dir, g_config, s_dir = worktree.validate_parent_repo("/fake/repo")
     self.assertEqual(parent_dir, Path("/fake/repo"))
@@ -46,24 +45,29 @@ class TestWorktree(unittest.TestCase):
   @patch("pathlib.Path.is_dir", return_value=True)
   @patch("pathlib.Path.exists", side_effect=[True, True, True])
   @patch("pathlib.Path.resolve")
-  def test_validate_parent_repo_from_src(self, mock_resolve, mock_exists,
-                                         mock_is_dir):
+  def test_validate_parent_repo_from_src(
+    self, mock_resolve, mock_exists, mock_is_dir
+  ):
     # Simulate being called from /fake/repo/src
     mock_resolve.return_value = Path("/fake/repo/src")
     parent_dir, g_config, s_dir = worktree.validate_parent_repo(
-        "/fake/repo/src")
+      "/fake/repo/src"
+    )
     self.assertEqual(parent_dir, Path("/fake/repo"))
     self.assertEqual(g_config, Path("/fake/repo/.gclient"))
     self.assertEqual(s_dir, Path("/fake/repo/src"))
 
-  @patch("pathlib.Path.read_text",
-         return_value='solutions = []\ncache_dir = "/tmp/cache"')
+  @patch(
+    "pathlib.Path.read_text",
+    return_value='solutions = []\ncache_dir = "/tmp/cache"',
+  )
   def test_check_cache_dir_present(self, mock_read):
     with patch("builtins.print") as mock_print:
       worktree.check_cache_dir(Path("fake/.gclient"))
       # Should not print warning
       self.assertFalse(
-          any("WARNING" in str(call) for call in mock_print.call_args_list))
+        any("WARNING" in str(call) for call in mock_print.call_args_list)
+      )
 
   @patch("pathlib.Path.read_text", return_value='solutions = []')
   def test_check_cache_dir_missing(self, mock_read):
@@ -71,35 +75,47 @@ class TestWorktree(unittest.TestCase):
       worktree.check_cache_dir(Path("fake/.gclient"))
       # Should print warning
       mock_print.assert_any_call(
-          "\nWARNING: 'cache_dir' not found in your .gclient file.")
+        "\nWARNING: 'cache_dir' not found in your .gclient file."
+      )
 
   @patch("worktree.run_cmd")
   def test_create_worktree(self, mock_run):
     worktree.create_worktree("parent/src", "variant/src", "my_branch")
     mock_run.assert_called_with(
-        ["git", "worktree", "add", "variant/src", "-b", "my_branch"],
-        cwd="parent/src")
+      ["git", "worktree", "add", "variant/src", "-b", "my_branch"],
+      cwd="parent/src",
+    )
 
   @patch("worktree.run_cmd")
   def test_create_worktree_with_base(self, mock_run):
-    worktree.create_worktree("parent/src", "variant/src", "my_branch",
-                             "base_branch")
+    worktree.create_worktree(
+      "parent/src", "variant/src", "my_branch", "base_branch"
+    )
     # Should call git worktree add AND git branch --set-upstream-to
     self.assertEqual(mock_run.call_count, 2)
-    mock_run.assert_any_call([
-        "git", "worktree", "add", "variant/src", "-b", "my_branch",
-        "base_branch"
-    ],
-                             cwd="parent/src")
     mock_run.assert_any_call(
-        ["git", "branch", "--set-upstream-to", "base_branch", "my_branch"],
-        cwd="variant/src")
+      [
+        "git",
+        "worktree",
+        "add",
+        "variant/src",
+        "-b",
+        "my_branch",
+        "base_branch",
+      ],
+      cwd="parent/src",
+    )
+    mock_run.assert_any_call(
+      ["git", "branch", "--set-upstream-to", "base_branch", "my_branch"],
+      cwd="variant/src",
+    )
 
   def test_setup_vscode_color(self):
-    with patch("pathlib.Path.mkdir"), \
-         patch("pathlib.Path.exists", return_value=False), \
-         patch("pathlib.Path.write_text") as mock_write:
-
+    with (
+      patch("pathlib.Path.mkdir"),
+      patch("pathlib.Path.exists", return_value=False),
+      patch("pathlib.Path.write_text") as mock_write,
+    ):
       variant_src = Path("/tmp/src")
       worktree.setup_vscode_color(variant_src, "red")
 
@@ -107,8 +123,9 @@ class TestWorktree(unittest.TestCase):
       args, _ = mock_write.call_args
       content = json.loads(args[0])
       self.assertEqual(
-          content["workbench.colorCustomizations"]["titleBar.activeBackground"],
-          "#3a1414")
+        content["workbench.colorCustomizations"]["titleBar.activeBackground"],
+        "#3a1414",
+      )
 
   @patch("worktree.Path.exists")
   def test_get_next_variant_name(self, mock_exists):
@@ -126,9 +143,16 @@ class TestWorktree(unittest.TestCase):
   @patch("shutil.copy2")
   @patch("worktree.run_cmd")
   @patch("worktree.Path.exists")
-  def test_main_internal_base(self, mock_exists, mock_run, mock_copy,
-                              mock_create, mock_mkdir, mock_check,
-                              mock_validate):
+  def test_main_internal_base(
+    self,
+    mock_exists,
+    mock_run,
+    mock_copy,
+    mock_create,
+    mock_mkdir,
+    mock_check,
+    mock_validate,
+  ):
     # Mocking validate_parent_repo
     parent_dir = Path("/fake/repo")
     gclient_config = parent_dir / ".gclient"
@@ -142,9 +166,10 @@ class TestWorktree(unittest.TestCase):
     mock_exists.side_effect = [False, False, True]
 
     # Mocking args
-    with patch("sys.argv", [
-        "worktree.py", "/fake/repo", "--internal-base", "internal_base_branch"
-    ]):
+    with patch(
+      "sys.argv",
+      ["worktree.py", "/fake/repo", "--internal-base", "internal_base_branch"],
+    ):
       worktree.main()
 
       # Verify internal logic
@@ -155,11 +180,19 @@ class TestWorktree(unittest.TestCase):
 
       # Find the index of internal commands in mock_run.call_args_list
       calls = [call.args[0] for call in mock_run.call_args_list]
-      self.assertIn(["git", "checkout", "-b", "repo_1", "internal_base_branch"],
-                    calls)
-      self.assertIn([
-          "git", "branch", "--set-upstream-to", "internal_base_branch", "repo_1"
-      ], calls)
+      self.assertIn(
+        ["git", "checkout", "-b", "repo_1", "internal_base_branch"], calls
+      )
+      self.assertIn(
+        [
+          "git",
+          "branch",
+          "--set-upstream-to",
+          "internal_base_branch",
+          "repo_1",
+        ],
+        calls,
+      )
 
     @patch("worktree.validate_parent_repo")
     @patch("worktree.check_cache_dir")
@@ -168,10 +201,16 @@ class TestWorktree(unittest.TestCase):
     @patch("shutil.copy2")
     @patch("worktree.run_cmd")
     @patch("worktree.Path.exists")
-    def test_main_internal_base_fetch_from_parent(self, mock_exists, mock_run,
-                                                  mock_copy, mock_create,
-                                                  mock_mkdir, mock_check,
-                                                  mock_validate):
+    def test_main_internal_base_fetch_from_parent(
+      self,
+      mock_exists,
+      mock_run,
+      mock_copy,
+      mock_create,
+      mock_mkdir,
+      mock_check,
+      mock_validate,
+    ):
       # Mocking validate_parent_repo
       parent_dir = Path("/fake/repo")
       gclient_config = parent_dir / ".gclient"
@@ -193,30 +232,43 @@ class TestWorktree(unittest.TestCase):
       # 5. git checkout -b ...
       # 6. git branch --set-upstream-to ...
       mock_run.side_effect = [
-          None,  # git show-ref returns None (captured=True)
-          None,  # git remote add
-          None,  # git fetch
-          None,  # git checkout
-          None  # git branch --set-upstream-to
+        None,  # git show-ref returns None (captured=True)
+        None,  # git remote add
+        None,  # git fetch
+        None,  # git checkout
+        None,  # git branch --set-upstream-to
       ]
 
       # Mocking args
-      with patch("sys.argv", [
-          "worktree.py", "/fake/repo", "--internal-base", "internal_base_branch"
-      ]):
+      with patch(
+        "sys.argv",
+        [
+          "worktree.py",
+          "/fake/repo",
+          "--internal-base",
+          "internal_base_branch",
+        ],
+      ):
         worktree.main()
 
         # Verify ios_internal logic
         calls = [call.args[0] for call in mock_run.call_args_list]
         self.assertIn(
-            ["git", "remote", "add", "parent",
-             str(parent_src / "internal")], calls)
+          ["git", "remote", "add", "parent", str(parent_src / "internal")],
+          calls,
+        )
         self.assertIn(["git", "fetch", "parent", "internal_base_branch"], calls)
         self.assertIn(["git", "checkout", "-b", "repo_1", "FETCH_HEAD"], calls)
-        self.assertIn([
-            "git", "branch", "--set-upstream-to", "parent/internal_base_branch",
-            "repo_1"
-        ], calls)
+        self.assertIn(
+          [
+            "git",
+            "branch",
+            "--set-upstream-to",
+            "parent/internal_base_branch",
+            "repo_1",
+          ],
+          calls,
+        )
 
 
 if __name__ == "__main__":

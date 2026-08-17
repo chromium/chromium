@@ -10,7 +10,6 @@ and inlines the specified file, producing one HTML file with no external
 dependencies. It recursively inlines the included files.
 """
 
-
 import os
 import re
 import sys
@@ -41,27 +40,31 @@ DIST_SUBSTR = '%DISTRIBUTION%'
 
 # Matches beginning of an "if" block.
 _BEGIN_IF_BLOCK = re.compile(
-    r'<if [^>]*?expr=("(?P<expr1>[^">]*)"|\'(?P<expr2>[^\'>]*)\')[^>]*?>')
+  r'<if [^>]*?expr=("(?P<expr1>[^">]*)"|\'(?P<expr2>[^\'>]*)\')[^>]*?>'
+)
 
 # Matches ending of an "if" block.
 _END_IF_BLOCK = re.compile(r'</if>')
 
 # Used by DoInline to replace various links with inline content.
 _STYLESHEET_RE = re.compile(
-    r'<link rel="stylesheet"[^>]+?href="(?P<filename>[^"]*)".*?>(\s*</link>)?',
-    re.DOTALL)
+  r'<link rel="stylesheet"[^>]+?href="(?P<filename>[^"]*)".*?>(\s*</link>)?',
+  re.DOTALL,
+)
 _INCLUDE_RE = re.compile(
-    r'(?P<comment>\/\/ )?<include[^>]+?'
-    r'src=("(?P<file1>[^">]*)"|\'(?P<file2>[^\'>]*)\').*?>(\s*</include>)?',
-    re.DOTALL)
+  r'(?P<comment>\/\/ )?<include[^>]+?'
+  r'src=("(?P<file1>[^">]*)"|\'(?P<file2>[^\'>]*)\').*?>(\s*</include>)?',
+  re.DOTALL,
+)
 _SRC_RE = re.compile(
-    r'<(?!script)(?:[^>]+?\s)src="(?!\[\[|{{)(?P<filename>[^"\']*)"',
-    re.MULTILINE)
+  r'<(?!script)(?:[^>]+?\s)src="(?!\[\[|{{)(?P<filename>[^"\']*)"', re.MULTILINE
+)
 # This re matches '<img srcset="..."' or '<source srcset="..."'
 _SRCSET_RE = re.compile(
-    r'<(img|source)\b(?:[^>]*?\s)srcset="(?!\[\[|{{|\$i18n{)'
-    r'(?P<srcset>[^"\']*)"',
-    re.MULTILINE)
+  r'<(img|source)\b(?:[^>]*?\s)srcset="(?!\[\[|{{|\$i18n{)'
+  r'(?P<srcset>[^"\']*)"',
+  re.MULTILINE,
+)
 # This re is for splitting srcset value string into "image candidate strings".
 # Notes:
 # - HTML 5.2 states that URL cannot start or end with comma.
@@ -72,14 +75,16 @@ _SRCSET_RE = re.compile(
 #   that form both of them.
 # Matches for example "img2.png 2x" or "img9.png 11E-2w".
 _SRCSET_ENTRY_RE = re.compile(
-    r'\s*(?P<url>[^,\s]\S+[^,\s])'
-    r'(?:\s+(?P<descriptor>[\deE.-]+[wx]))?\s*'
-    r'(?P<separator>,|$)',
-    re.MULTILINE)
+  r'\s*(?P<url>[^,\s]\S+[^,\s])'
+  r'(?:\s+(?P<descriptor>[\deE.-]+[wx]))?\s*'
+  r'(?P<separator>,|$)',
+  re.MULTILINE,
+)
 _ICON_RE = re.compile(
-    r'<link rel="icon"\s(?:[^>]+?\s)?'
-    r'href=(?P<quote>")(?P<filename>[^"\']*)\1',
-    re.MULTILINE)
+  r'<link rel="icon"\s(?:[^>]+?\s)?'
+  r'href=(?P<quote>")(?P<filename>[^"\']*)\1',
+  re.MULTILINE,
+)
 
 
 def GetDistribution():
@@ -95,8 +100,10 @@ def GetDistribution():
       distribution = distribution[1:].lower()
   return distribution
 
-def ConvertFileToDataURL(filename, base_path, distribution, inlined_files,
-    names_only):
+
+def ConvertFileToDataURL(
+  filename, base_path, distribution, inlined_files, names_only
+):
   """Convert filename to inlined data URI.
 
   Takes a filename from ether "src" or "srcset", and attempts to read the file
@@ -119,7 +126,7 @@ def ConvertFileToDataURL(filename, base_path, distribution, inlined_files,
     # filename is probably a URL, which we don't want to bother inlining
     return filename
 
-  filename = filename.replace(DIST_SUBSTR , distribution)
+  filename = filename.replace(DIST_SUBSTR, distribution)
   filepath = os.path.normpath(os.path.join(base_path, filename))
   inlined_files.add(filepath)
 
@@ -128,15 +135,22 @@ def ConvertFileToDataURL(filename, base_path, distribution, inlined_files,
 
   mimetype = mimetypes.guess_type(filename)[0]
   if mimetype is None:
-    raise Exception('%s is of an an unknown type and '
-                    'cannot be stored in a data url.' % filename)
+    raise Exception(
+      '%s is of an an unknown type and '
+      'cannot be stored in a data url.' % filename
+    )
   inline_data = base64.standard_b64encode(util.ReadFile(filepath, util.BINARY))
   return 'data:%s;base64,%s' % (mimetype, inline_data.decode('utf-8'))
 
 
 def SrcInlineAsDataURL(
-    src_match, base_path, distribution, inlined_files, names_only=False,
-    filename_expansion_function=None):
+  src_match,
+  base_path,
+  distribution,
+  inlined_files,
+  names_only=False,
+  filename_expansion_function=None,
+):
   """regex replace function.
 
   Takes a regex match for src="filename", attempts to read the file
@@ -159,19 +173,26 @@ def SrcInlineAsDataURL(
   if filename_expansion_function:
     filename = filename_expansion_function(filename)
 
-  data_url = ConvertFileToDataURL(filename, base_path, distribution,
-                                  inlined_files, names_only)
+  data_url = ConvertFileToDataURL(
+    filename, base_path, distribution, inlined_files, names_only
+  )
 
   if not data_url:
     return data_url
 
-  prefix = src_match.string[src_match.start():src_match.start('filename')]
-  suffix = src_match.string[src_match.end('filename'):src_match.end()]
+  prefix = src_match.string[src_match.start() : src_match.start('filename')]
+  suffix = src_match.string[src_match.end('filename') : src_match.end()]
   return prefix + data_url + suffix
 
+
 def SrcsetInlineAsDataURL(
-    srcset_match, base_path, distribution, inlined_files, names_only=False,
-    filename_expansion_function=None):
+  srcset_match,
+  base_path,
+  distribution,
+  inlined_files,
+  names_only=False,
+  filename_expansion_function=None,
+):
   """regex replace function to inline files in srcset="..." attributes
 
   Takes a regex match for srcset="filename 1x, filename 2x, ...", attempts to
@@ -210,29 +231,31 @@ def SrcsetInlineAsDataURL(
 
   # When iterating over split srcset we fill this parts of a single image
   # candidate string: [url, descriptor]
-  candidate = [];
-
+  candidate = []
   # Each entry should consist of some text before the entry, the url,
   # the descriptor or None if the entry has no descriptor, a comma separator or
   # the end of the line, and finally some text after the entry (which is the
   # same as the text before the next entry).
   for i in range(0, len(parts) - 1, 4):
-    before, url, descriptor, separator, after = parts[i:i+5]
+    before, url, descriptor, separator, after = parts[i : i + 5]
 
     # There must be a comma-separated next entry or this must be the last entry.
     assert separator == "," or (separator == "" and i == len(parts) - 5), (
-           "Bad srcset format in {}".format(srcset_match.group(0)))
+      "Bad srcset format in {}".format(srcset_match.group(0))
+    )
     # Both before and after the entry must be empty
-    assert before == after == "", (
-           "Bad srcset format in {}".format(srcset_match.group(0)))
+    assert before == after == "", "Bad srcset format in {}".format(
+      srcset_match.group(0)
+    )
 
     if filename_expansion_function:
       filename = filename_expansion_function(url)
     else:
       filename = url
 
-    data_url = ConvertFileToDataURL(filename, base_path, distribution,
-                                    inlined_files, names_only)
+    data_url = ConvertFileToDataURL(
+      filename, base_path, distribution, inlined_files, names_only
+    )
 
     # This is not "names_only" mode
     if data_url:
@@ -242,10 +265,12 @@ def SrcsetInlineAsDataURL(
 
       new_candidates.append(" ".join(candidate))
 
-  prefix = srcset_match.string[srcset_match.start():
-      srcset_match.start('srcset')]
-  suffix = srcset_match.string[srcset_match.end('srcset'):srcset_match.end()]
+  prefix = srcset_match.string[
+    srcset_match.start() : srcset_match.start('srcset')
+  ]
+  suffix = srcset_match.string[srcset_match.end('srcset') : srcset_match.end()]
   return prefix + ','.join(new_candidates) + suffix
+
 
 class InlinedData:
   """Helper class holding the results from DoInline().
@@ -253,6 +278,7 @@ class InlinedData:
   Holds the inlined data and the set of filenames of all the inlined
   files.
   """
+
   def __init__(self, inlined_data, inlined_files):
     self.inlined_data = inlined_data
     self.inlined_files = inlined_files
@@ -265,7 +291,7 @@ def CheckConditionalElements(grd_node, string, add_remove_comments_for=None):
     return grd_node is None or grd_node.EvaluateCondition(expr1 + expr2)
 
   def CreateReplacementComment(string):
-    """ Creates the comment about removed lines when string is deleted.
+    """Creates the comment about removed lines when string is deleted.
 
     Generate the "grit-removed-lines:#" comment for removing the section
     represented by 'string'.
@@ -273,8 +299,11 @@ def CheckConditionalElements(grd_node, string, add_remove_comments_for=None):
     if add_remove_comments_for == '.html':
       comment_start = '<!--'
       comment_end = '-->'
-    elif (add_remove_comments_for == '.ts' or add_remove_comments_for == '.js'
-          or add_remove_comments_for == '.css'):
+    elif (
+      add_remove_comments_for == '.ts'
+      or add_remove_comments_for == '.js'
+      or add_remove_comments_for == '.css'
+    ):
       comment_start = '/*'
       comment_end = '*/'
     else:
@@ -285,7 +314,7 @@ def CheckConditionalElements(grd_node, string, add_remove_comments_for=None):
     if newlines == 0:
       return ""
 
-    return (comment_start + f"grit-removed-lines:{newlines}" + comment_end)
+    return comment_start + f"grit-removed-lines:{newlines}" + comment_end
 
   """Helper function to conditionally inline inner elements
 
@@ -302,7 +331,7 @@ def CheckConditionalElements(grd_node, string, add_remove_comments_for=None):
     return string
 
   condition_satisfied = IsConditionSatisfied(begin_if)
-  leading = string[0:begin_if.start()]
+  leading = string[0 : begin_if.start()]
   content_start = begin_if.end()
 
   # Find matching "if" block end.
@@ -323,29 +352,44 @@ def CheckConditionalElements(grd_node, string, add_remove_comments_for=None):
       count = count + 1
       pos = next_if.end()
 
-  trailing = string[end_if.end():]
-  trailing = CheckConditionalElements(grd_node, trailing,
-                                      add_remove_comments_for)
+  trailing = string[end_if.end() :]
+  trailing = CheckConditionalElements(
+    grd_node, trailing, add_remove_comments_for
+  )
 
   if condition_satisfied:
-    content = string[content_start:end_if.start()]
+    content = string[content_start : end_if.start()]
     # if_replacement_comment will be blank unless there's a multiline expr.
-    if_replacement_comment = ('' if add_remove_comments_for is None else
-                              CreateReplacementComment(
-                                  string[begin_if.start():begin_if.end()]))
-    return leading + if_replacement_comment + CheckConditionalElements(
-        grd_node, content, add_remove_comments_for) + trailing
+    if_replacement_comment = (
+      ''
+      if add_remove_comments_for is None
+      else CreateReplacementComment(string[begin_if.start() : begin_if.end()])
+    )
+    return (
+      leading
+      + if_replacement_comment
+      + CheckConditionalElements(grd_node, content, add_remove_comments_for)
+      + trailing
+    )
 
-  replacement_comment = ('' if add_remove_comments_for is None else
-                         CreateReplacementComment(
-                             string[begin_if.start():end_if.end()]))
+  replacement_comment = (
+    ''
+    if add_remove_comments_for is None
+    else CreateReplacementComment(string[begin_if.start() : end_if.end()])
+  )
   return leading + replacement_comment + trailing
 
 
 def DoInline(
-    input_filename, grd_node, allow_external_script=False,
-    preprocess_only=False, names_only=False, strip_whitespace=False,
-    rewrite_function=None, filename_expansion_function=None):
+  input_filename,
+  grd_node,
+  allow_external_script=False,
+  preprocess_only=False,
+  names_only=False,
+  strip_whitespace=False,
+  rewrite_function=None,
+  filename_expansion_function=None,
+):
   """Helper function that inlines the resources in a specified file.
 
   Reads input_filename, finds all the src attributes and attempts to
@@ -374,26 +418,38 @@ def DoInline(
   # Keep track of all the files we inline.
   inlined_files = set()
 
-  def SrcReplace(src_match, filepath=input_filepath,
-                 inlined_files=inlined_files):
+  def SrcReplace(
+    src_match, filepath=input_filepath, inlined_files=inlined_files
+  ):
     """Helper function to provide SrcInlineAsDataURL with the base file path"""
     return SrcInlineAsDataURL(
-        src_match, filepath, distribution, inlined_files, names_only=names_only,
-        filename_expansion_function=filename_expansion_function)
+      src_match,
+      filepath,
+      distribution,
+      inlined_files,
+      names_only=names_only,
+      filename_expansion_function=filename_expansion_function,
+    )
 
-  def SrcsetReplace(srcset_match, filepath=input_filepath,
-                 inlined_files=inlined_files):
+  def SrcsetReplace(
+    srcset_match, filepath=input_filepath, inlined_files=inlined_files
+  ):
     """Helper function to provide SrcsetInlineAsDataURL with the base file
     path.
     """
     return SrcsetInlineAsDataURL(
-        srcset_match, filepath, distribution, inlined_files,
-        names_only=names_only,
-        filename_expansion_function=filename_expansion_function)
+      srcset_match,
+      filepath,
+      distribution,
+      inlined_files,
+      names_only=names_only,
+      filename_expansion_function=filename_expansion_function,
+    )
 
-  def GetFilepath(src_match, base_path = input_filepath):
-    filename = [v for k, v in src_match.groupdict().items()
-                if k.startswith('file') and v][0]
+  def GetFilepath(src_match, base_path=input_filepath):
+    filename = [
+      v for k, v in src_match.groupdict().items() if k.startswith('file') and v
+    ][0]
 
     if filename.find(':') != -1:
       # filename is probably a URL, which we don't want to bother inlining
@@ -404,17 +460,16 @@ def DoInline(
     if filename.startswith("%ROOT_GEN_DIR%"):
       # Expand %ROOT_GEN_DIR%  placeholder to allow inlining generated files.
       filename = filename.replace(
-          '%ROOT_GEN_DIR%', os.path.relpath(os.environ['root_gen_dir'],
-                                            base_path))
+        '%ROOT_GEN_DIR%', os.path.relpath(os.environ['root_gen_dir'], base_path)
+      )
 
     if filename_expansion_function:
       filename = filename_expansion_function(filename)
     return os.path.normpath(os.path.join(base_path, filename))
 
-  def InlineFileContents(src_match,
-                         pattern,
-                         inlined_files=inlined_files,
-                         strip_whitespace=False):
+  def InlineFileContents(
+    src_match, pattern, inlined_files=inlined_files, strip_whitespace=False
+  ):
     """Helper function to inline external files of various types"""
     filepath = GetFilepath(src_match)
     if filepath is None:
@@ -422,29 +477,34 @@ def DoInline(
     inlined_files.add(filepath)
 
     if names_only:
-      inlined_files.update(GetResourceFilenames(
+      inlined_files.update(
+        GetResourceFilenames(
           filepath,
           grd_node,
           allow_external_script,
           rewrite_function,
-          filename_expansion_function=filename_expansion_function))
+          filename_expansion_function=filename_expansion_function,
+        )
+      )
       return ""
     # To recursively save inlined files, we need InlinedData instance returned
     # by DoInline.
-    inlined_data_inst=DoInline(filepath, grd_node,
-        allow_external_script=allow_external_script,
-        preprocess_only=preprocess_only,
-        strip_whitespace=strip_whitespace,
-        filename_expansion_function=filename_expansion_function)
+    inlined_data_inst = DoInline(
+      filepath,
+      grd_node,
+      allow_external_script=allow_external_script,
+      preprocess_only=preprocess_only,
+      strip_whitespace=strip_whitespace,
+      filename_expansion_function=filename_expansion_function,
+    )
 
     inlined_files.update(inlined_data_inst.inlined_files)
 
-    return pattern % inlined_data_inst.inlined_data;
-
+    return pattern % inlined_data_inst.inlined_data
 
   def InlineIncludeFiles(src_match):
     """Helper function to directly inline generic external files (without
-       wrapping them with any kind of tags).
+    wrapping them with any kind of tags).
     """
     return InlineFileContents(src_match, '%s')
 
@@ -453,8 +513,9 @@ def DoInline(
     attrs = (match.group('attrs1') + match.group('attrs2')).strip()
     if attrs:
       attrs = ' ' + attrs
-    return InlineFileContents(match, '<script' + attrs + '>%s</script>',
-                              strip_whitespace=True)
+    return InlineFileContents(
+      match, '<script' + attrs + '>%s</script>', strip_whitespace=True
+    )
 
   def InlineCSSText(text, css_filepath):
     """Helper function that inlines external resources in CSS text"""
@@ -493,10 +554,12 @@ def DoInline(
 
   def GetUrlRegexString(postfix=''):
     """Helper function that returns a string for a regex that matches url('')
-       but not url([[ ]]) or url({{ }}). Appends |postfix| to group names.
+    but not url([[ ]]) or url({{ }}). Appends |postfix| to group names.
     """
-    url_re = (r'url\((?!\[\[|{{)(?P<q%s>"|\'|)(?P<filename%s>[^"\'()]*)'
-              r'(?P=q%s)\)')
+    url_re = (
+      r'url\((?!\[\[|{{)(?P<q%s>"|\'|)(?P<filename%s>[^"\'()]*)'
+      r'(?P=q%s)\)'
+    )
     return url_re % (postfix, postfix, postfix)
 
   def InlineCSSImages(text, filepath=input_filepath):
@@ -505,8 +568,11 @@ def DoInline(
     # or *-image.
     property_re = r'(content|background|[\w-]*-image):[^;]*'
     # Replace group names to prevent duplicates when forming value_re.
-    image_set_value_re = (r'image-set\(([ ]*' + GetUrlRegexString('2') +
-        r'[ ]*[0-9.]*x[ ]*(,[ ]*)?)+\)')
+    image_set_value_re = (
+      r'image-set\(([ ]*'
+      + GetUrlRegexString('2')
+      + r'[ ]*[0-9.]*x[ ]*(,[ ]*)?)+\)'
+    )
     value_re = '(%s|%s)' % (GetUrlRegexString(), image_set_value_re)
     css_re = property_re + value_re
     return re.sub(css_re, lambda m: InlineCSSUrls(m, filepath), text)
@@ -514,17 +580,19 @@ def DoInline(
   def InlineCSSUrls(src_match, filepath=input_filepath):
     """Helper function that inlines each url on a CSS image rule match."""
     # Replace contents of url() references in matches.
-    return re.sub(GetUrlRegexString(),
-                  lambda m: SrcReplace(m, filepath),
-                  src_match.group(0))
+    return re.sub(
+      GetUrlRegexString(), lambda m: SrcReplace(m, filepath), src_match.group(0)
+    )
 
   def InlineCSSImports(text, filepath=input_filepath):
     """Helper function that inlines CSS files included via the @import
-       directive.
+    directive.
     """
-    return re.sub(r'@import\s+' + GetUrlRegexString() + r';',
-                  lambda m: InlineCSSFile(m, '%s', filepath),
-                  text)
+    return re.sub(
+      r'@import\s+' + GetUrlRegexString() + r';',
+      lambda m: InlineCSSFile(m, '%s', filepath),
+      text,
+    )
 
   if names_only:
     relpath = os.path.relpath(input_filename, os.getcwd())
@@ -548,20 +616,23 @@ def DoInline(
 
   if not preprocess_only:
     if strip_whitespace:
-      flat_text = minifier.Minify(flat_text.encode('utf-8'),
-                                  input_filename).decode('utf-8')
+      flat_text = minifier.Minify(
+        flat_text.encode('utf-8'), input_filename
+      ).decode('utf-8')
 
     if not allow_external_script:
       # We need to inline css and js before we inline images so that image
       # references gets inlined in the css and js
-      flat_text = re.sub(r'<script (?P<attrs1>.*?)src="(?P<filename>[^"\']*)"'
-                         r'(?P<attrs2>.*?)></script>',
-                         InlineScript,
-                         flat_text)
+      flat_text = re.sub(
+        r'<script (?P<attrs1>.*?)src="(?P<filename>[^"\']*)"'
+        r'(?P<attrs2>.*?)></script>',
+        InlineScript,
+        flat_text,
+      )
 
     flat_text = _STYLESHEET_RE.sub(
-        lambda m: InlineCSSFile(m, '<style>%s</style>'),
-        flat_text)
+      lambda m: InlineCSSFile(m, '<style>%s</style>'), flat_text
+    )
 
   # Check conditional elements, second pass. This catches conditionals in any
   # of the text we just inlined.
@@ -585,9 +656,15 @@ def DoInline(
   return InlinedData(flat_text, inlined_files)
 
 
-def InlineToString(input_filename, grd_node, preprocess_only = False,
-                   allow_external_script=False, strip_whitespace=False,
-                   rewrite_function=None, filename_expansion_function=None):
+def InlineToString(
+  input_filename,
+  grd_node,
+  preprocess_only=False,
+  allow_external_script=False,
+  strip_whitespace=False,
+  rewrite_function=None,
+  filename_expansion_function=None,
+):
   """Inlines the resources in a specified file and returns it as a string.
 
   Args:
@@ -598,16 +675,19 @@ def InlineToString(input_filename, grd_node, preprocess_only = False,
   """
   try:
     return DoInline(
-        input_filename,
-        grd_node,
-        preprocess_only=preprocess_only,
-        allow_external_script=allow_external_script,
-        strip_whitespace=strip_whitespace,
-        rewrite_function=rewrite_function,
-        filename_expansion_function=filename_expansion_function).inlined_data
+      input_filename,
+      grd_node,
+      preprocess_only=preprocess_only,
+      allow_external_script=allow_external_script,
+      strip_whitespace=strip_whitespace,
+      rewrite_function=rewrite_function,
+      filename_expansion_function=filename_expansion_function,
+    ).inlined_data
   except OSError as e:
-    raise Exception("Failed to open %s while trying to flatten %s. (%s)" %
-                    (e.filename, input_filename, e.strerror))
+    raise Exception(
+      "Failed to open %s while trying to flatten %s. (%s)"
+      % (e.filename, input_filename, e.strerror)
+    )
 
 
 def InlineToFile(input_filename, output_filename, grd_node):
@@ -629,25 +709,30 @@ def InlineToFile(input_filename, output_filename, grd_node):
     out_file.write(inlined_data)
 
 
-def GetResourceFilenames(filename,
-                         grd_node,
-                         allow_external_script=False,
-                         rewrite_function=None,
-                         filename_expansion_function=None):
+def GetResourceFilenames(
+  filename,
+  grd_node,
+  allow_external_script=False,
+  rewrite_function=None,
+  filename_expansion_function=None,
+):
   """For a grd file, returns a set of all the files that would be inline."""
   try:
     return DoInline(
-        filename,
-        grd_node,
-        names_only=True,
-        preprocess_only=False,
-        allow_external_script=allow_external_script,
-        strip_whitespace=False,
-        rewrite_function=rewrite_function,
-        filename_expansion_function=filename_expansion_function).inlined_files
+      filename,
+      grd_node,
+      names_only=True,
+      preprocess_only=False,
+      allow_external_script=allow_external_script,
+      strip_whitespace=False,
+      rewrite_function=rewrite_function,
+      filename_expansion_function=filename_expansion_function,
+    ).inlined_files
   except OSError as e:
-    raise Exception("Failed to open %s while trying to flatten %s. (%s)" %
-                    (e.filename, filename, e.strerror))
+    raise Exception(
+      "Failed to open %s while trying to flatten %s. (%s)"
+      % (e.filename, filename, e.strerror)
+    )
 
 
 def main():
@@ -656,6 +741,7 @@ def main():
     print("html_inline.py inputfile outputfile")
   else:
     InlineToFile(sys.argv[1], sys.argv[2], None)
+
 
 if __name__ == '__main__':
   main()

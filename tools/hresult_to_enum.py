@@ -23,7 +23,8 @@ import re
 import sys
 
 _HRESULT_RE = re.compile(
-    r'^#define\s+([0-9A-Z_]+)\s+.*_HRESULT_TYPEDEF_\((0x[0-9A-F]{8}).*')
+  r'^#define\s+([0-9A-Z_]+)\s+.*_HRESULT_TYPEDEF_\((0x[0-9A-F]{8}).*'
+)
 
 
 def _HexToSignedInt(hex_str):
@@ -42,8 +43,7 @@ def _HexToSignedInt(hex_str):
 
 
 def _HresultToEnum(match):
-  """Converts an HRESULT define to an enums.xml entry.
-  """
+  """Converts an HRESULT define to an enums.xml entry."""
   hresult = match.group(1)
   hex_str = match.group(2)
   int_str = _HexToSignedInt(hex_str)
@@ -51,8 +51,7 @@ def _HresultToEnum(match):
 
 
 def _ConvertAllHresultDefines(source):
-  """Converts all HRESULT defines to enums.xml entries.
-  """
+  """Converts all HRESULT defines to enums.xml entries."""
   in_lines = source.splitlines()
   out_lines = []
 
@@ -67,15 +66,20 @@ def _ConvertAllHresultDefines(source):
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Convert HEX HRESULT to signed integer.')
-  parser.add_argument('-i',
-                      '--input',
-                      help='The input file containing HRESULT defines',
-                      required=True)
-  parser.add_argument('-o',
-                      '--output',
-                      help='The output file containing enums.xml entries',
-                      required=True)
+    description='Convert HEX HRESULT to signed integer.'
+  )
+  parser.add_argument(
+    '-i',
+    '--input',
+    help='The input file containing HRESULT defines',
+    required=True,
+  )
+  parser.add_argument(
+    '-o',
+    '--output',
+    help='The output file containing enums.xml entries',
+    required=True,
+  )
   args = parser.parse_args()
 
   with open(args.input, 'r') as f:

@@ -53,8 +53,7 @@ def _PrefixSchemaWithNamespace(schema):
 
   def prefix(obj, key, mandatory):
     if not key in obj:
-      assert not mandatory, ('Required key "%s" is not present in object.' %
-                             key)
+      assert not mandatory, 'Required key "%s" is not present in object.' % key
       return
     assert type(obj[key]) is str
     if obj[key].find('.') == -1:
@@ -81,11 +80,19 @@ def _PrefixSchemaWithNamespace(schema):
 
 
 class CppBundleGenerator(object):
-  """This class contains methods to generate code based on multiple schemas.
-  """
+  """This class contains methods to generate code based on multiple schemas."""
 
-  def __init__(self, root, model, api_defs, cpp_type_generator,
-               cpp_namespace_pattern, bundle_name, source_file_dir, impl_dir):
+  def __init__(
+    self,
+    root,
+    model,
+    api_defs,
+    cpp_type_generator,
+    cpp_namespace_pattern,
+    bundle_name,
+    source_file_dir,
+    impl_dir,
+  ):
     self._root = root
     self._model = model
     self._api_defs = api_defs
@@ -113,10 +120,16 @@ class CppBundleGenerator(object):
     c = code_util.Code()
     c.Append(cpp_util.CHROMIUM_LICENSE)
     c.Append()
-    c.Append(cpp_util.GENERATED_BUNDLE_FILE_MESSAGE % (cpp_util.ToPosixPath(
-        self._source_file_dir), cpp_util.GetGeneratedByCommandLine()))
+    c.Append(
+      cpp_util.GENERATED_BUNDLE_FILE_MESSAGE
+      % (
+        cpp_util.ToPosixPath(self._source_file_dir),
+        cpp_util.GetGeneratedByCommandLine(),
+      )
+    )
     ifndef_name = cpp_util.GenerateIfndefName(
-        '%s/%s.h' % (cpp_util.ToPosixPath(self._source_file_dir), file_base))
+      '%s/%s.h' % (cpp_util.ToPosixPath(self._source_file_dir), file_base)
+    )
     c.Append()
     c.Append('#ifndef %s' % ifndef_name)
     c.Append('#define %s' % ifndef_name)
@@ -156,7 +169,8 @@ class CppBundleGenerator(object):
       c.Append("#if %s" % function_ifdefs, indent_level=0)
 
     function_name = '%sFunction' % JsFunctionNameToClassName(
-        namespace_name, function.name)
+      namespace_name, function.name
+    )
     c.Sblock('{')
     c.Append('&NewExtensionFunction<%s>,' % function_name)
     c.Append('%s::static_function_name(),' % function_name)
@@ -170,8 +184,10 @@ class CppBundleGenerator(object):
   def _GenerateFunctionRegistryRegisterAll(self):
     c = code_util.Code()
     c.Append('// static')
-    c.Sblock('void %s::RegisterAll(ExtensionFunctionRegistry* registry) {' %
-             self._GenerateBundleClass('GeneratedFunctionRegistry'))
+    c.Sblock(
+      'void %s::RegisterAll(ExtensionFunctionRegistry* registry) {'
+      % self._GenerateBundleClass('GeneratedFunctionRegistry')
+    )
     c.Sblock('constexpr ExtensionFunctionRegistry::FactoryEntry kEntries[] = {')
     for namespace in self._model.namespaces.values():
       namespace_ifdefs = self._GetPlatformIfdefs(namespace)
@@ -188,9 +204,11 @@ class CppBundleGenerator(object):
           if function.nocompile:
             continue
           namespace_types_name = JsFunctionNameToClassName(
-              namespace.name, type_.name)
+            namespace.name, type_.name
+          )
           c.Concat(
-              self._GenerateRegistrationEntry(namespace_types_name, function))
+            self._GenerateRegistrationEntry(namespace_types_name, function)
+          )
 
       if namespace_ifdefs is not None:
         c.Append("#endif  // %s" % namespace_ifdefs, indent_level=0)
@@ -223,11 +241,12 @@ class _APIHGenerator(object):
     c.Append()
     c.Concat(cpp_util.OpenNamespace(self._bundle._cpp_namespace))
     c.Append()
-    c.Append('class %s {' %
-             self._bundle._GenerateBundleClass('GeneratedFunctionRegistry'))
+    c.Append(
+      'class %s {'
+      % self._bundle._GenerateBundleClass('GeneratedFunctionRegistry')
+    )
     c.Sblock(' public:')
-    c.Append('static void RegisterAll('
-             'ExtensionFunctionRegistry* registry);')
+    c.Append('static void RegisterAll(ExtensionFunctionRegistry* registry);')
     c.Eblock('};')
     c.Append()
     c.Concat(cpp_util.CloseNamespace(self._bundle._cpp_namespace))
@@ -244,11 +263,22 @@ class _APICCGenerator(object):
     c = code_util.Code()
     c.Append(cpp_util.CHROMIUM_LICENSE)
     c.Append()
-    c.Append(cpp_util.GENERATED_BUNDLE_FILE_MESSAGE % (cpp_util.ToPosixPath(
-        self._bundle._source_file_dir), cpp_util.GetGeneratedByCommandLine()))
+    c.Append(
+      cpp_util.GENERATED_BUNDLE_FILE_MESSAGE
+      % (
+        cpp_util.ToPosixPath(self._bundle._source_file_dir),
+        cpp_util.GetGeneratedByCommandLine(),
+      )
+    )
     c.Append()
-    c.Append('#include "%s"' % (cpp_util.ToPosixPath(
-        os.path.join(self._bundle._impl_dir, 'generated_api_registration.h'))))
+    c.Append(
+      '#include "%s"'
+      % (
+        cpp_util.ToPosixPath(
+          os.path.join(self._bundle._impl_dir, 'generated_api_registration.h')
+        )
+      )
+    )
     c.Append()
     c.Append('#include "build/android_buildflags.h"')
     c.Append('#include "build/build_config.h"')
@@ -256,15 +286,20 @@ class _APICCGenerator(object):
     for namespace in self._bundle._model.namespaces.values():
       namespace_name = namespace.unix_name.replace("experimental_", "")
       implementation_header = namespace.compiler_options.get(
-          "implemented_in", "%s/%s/%s_api.h" %
-          (self._bundle._impl_dir, namespace_name, namespace_name))
+        "implemented_in",
+        "%s/%s/%s_api.h"
+        % (self._bundle._impl_dir, namespace_name, namespace_name),
+      )
       if not os.path.exists(
-          os.path.join(self._bundle._root,
-                       os.path.normpath(implementation_header))):
+        os.path.join(
+          self._bundle._root, os.path.normpath(implementation_header)
+        )
+      ):
         raise ValueError(
-            'Header file for namespace "%s" (either at the'
-            ' default path or specified in compiler_options) not found: %s' %
-            (namespace.unix_name, implementation_header))
+          'Header file for namespace "%s" (either at the'
+          ' default path or specified in compiler_options) not found: %s'
+          % (namespace.unix_name, implementation_header)
+        )
       ifdefs = self._bundle._GetPlatformIfdefs(namespace)
       if ifdefs is not None:
         c.Append("#if %s" % ifdefs, indent_level=0)
@@ -274,8 +309,7 @@ class _APICCGenerator(object):
       if ifdefs is not None:
         c.Append("#endif  // %s" % ifdefs, indent_level=0)
     c.Append()
-    c.Append('#include '
-             '"extensions/browser/extension_function_registry.h"')
+    c.Append('#include "extensions/browser/extension_function_registry.h"')
     c.Append()
     c.Concat(cpp_util.OpenNamespace(self._bundle._cpp_namespace))
     c.Append()
@@ -298,8 +332,9 @@ class _SchemasHGenerator(object):
     c.Append()
     c.Concat(cpp_util.OpenNamespace(self._bundle._cpp_namespace))
     c.Append()
-    c.Append('class %s {' %
-             self._bundle._GenerateBundleClass('GeneratedSchemas'))
+    c.Append(
+      'class %s {' % self._bundle._GenerateBundleClass('GeneratedSchemas')
+    )
     c.Sblock(' public:')
     c.Append('// Determines if schema named |name| is generated.')
     c.Append('static bool IsGenerated(std::string_view name);')
@@ -315,8 +350,9 @@ class _SchemasHGenerator(object):
 def _FormatNameAsConstant(name):
   """Formats a name to be a C++ constant of the form kConstantName"""
   name = '%s%s' % (name[0].upper(), name[1:])
-  return 'k%s' % re.sub('_[a-z]', lambda m: m.group(0)[1].upper(),
-                        name.replace('.', '_'))
+  return 'k%s' % re.sub(
+    '_[a-z]', lambda m: m.group(0)[1].upper(), name.replace('.', '_')
+  )
 
 
 class _SchemasCCGenerator(object):
@@ -329,11 +365,22 @@ class _SchemasCCGenerator(object):
     c = code_util.Code()
     c.Append(cpp_util.CHROMIUM_LICENSE)
     c.Append()
-    c.Append(cpp_util.GENERATED_BUNDLE_FILE_MESSAGE % (cpp_util.ToPosixPath(
-        self._bundle._source_file_dir), cpp_util.GetGeneratedByCommandLine()))
+    c.Append(
+      cpp_util.GENERATED_BUNDLE_FILE_MESSAGE
+      % (
+        cpp_util.ToPosixPath(self._bundle._source_file_dir),
+        cpp_util.GetGeneratedByCommandLine(),
+      )
+    )
     c.Append()
-    c.Append('#include "%s"' % (cpp_util.ToPosixPath(
-        os.path.join(self._bundle._source_file_dir, 'generated_schemas.h'))))
+    c.Append(
+      '#include "%s"'
+      % (
+        cpp_util.ToPosixPath(
+          os.path.join(self._bundle._source_file_dir, 'generated_schemas.h')
+        )
+      )
+    )
     c.Append()
     c.Append('#include <algorithm>')
     c.Append('#include <iterator>')
@@ -344,40 +391,48 @@ class _SchemasCCGenerator(object):
     c.Append('namespace {')
     for api in self._bundle._api_defs:
       namespace = self._bundle._model.namespaces[api.get('namespace')]
-      json_content = json.dumps(_PrefixSchemaWithNamespace(
-          _RemoveUnneededFields(api)),
-                                separators=(',', ':'))
+      json_content = json.dumps(
+        _PrefixSchemaWithNamespace(_RemoveUnneededFields(api)),
+        separators=(',', ':'),
+      )
       # This will output a valid JSON C string. Note that some schemas are
       # too large to compile on windows. Split the JSON up into several
       # strings, since apparently that helps.
       max_length = 8192
       segments = [
-          json_content[i:i + max_length]
-          for i in range(0, len(json_content), max_length)
+        json_content[i : i + max_length]
+        for i in range(0, len(json_content), max_length)
       ]
       c.Append(
-          'constexpr char %s[] = R"R(%s)R";' %
-          (_FormatNameAsConstant(namespace.name), ')R" R"R('.join(segments)))
+        'constexpr char %s[] = R"R(%s)R";'
+        % (_FormatNameAsConstant(namespace.name), ')R" R"R('.join(segments))
+      )
     c.Append('}  // namespace')
     c.Append()
     c.Concat(cpp_util.OpenNamespace(self._bundle._cpp_namespace))
     c.Append()
     c.Append('// static')
-    c.Sblock('bool %s::IsGenerated(std::string_view name) {' %
-             self._bundle._GenerateBundleClass('GeneratedSchemas'))
+    c.Sblock(
+      'bool %s::IsGenerated(std::string_view name) {'
+      % self._bundle._GenerateBundleClass('GeneratedSchemas')
+    )
     c.Append('return !Get(name).empty();')
     c.Eblock('}')
     c.Append()
     c.Append('// static')
-    c.Sblock('std::string_view %s::Get(std::string_view name) {' %
-             self._bundle._GenerateBundleClass('GeneratedSchemas'))
+    c.Sblock(
+      'std::string_view %s::Get(std::string_view name) {'
+      % self._bundle._GenerateBundleClass('GeneratedSchemas')
+    )
 
-    c.Append('static constexpr auto kSchemas = '
-             'base::MakeFixedFlatMap<std::string_view, std::string_view>({')
+    c.Append(
+      'static constexpr auto kSchemas = '
+      'base::MakeFixedFlatMap<std::string_view, std::string_view>({'
+    )
     c.Sblock()
     namespaces = [
-        self._bundle._model.namespaces[api.get('namespace')].name
-        for api in self._bundle._api_defs
+      self._bundle._model.namespaces[api.get('namespace')].name
+      for api in self._bundle._api_defs
     ]
     for namespace in sorted(namespaces):
       schema_constant_name = _FormatNameAsConstant(namespace)

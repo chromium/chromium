@@ -11,6 +11,7 @@ import sys
 
 # For Node, EvaluateExpression
 import grit.node.base
+
 # For CheckConditionalElements
 import grit.format.html_inline
 
@@ -23,11 +24,13 @@ class PreprocessIfExprNode(grit.node.base.Node):
 
   def PreprocessIfExpr(self, content, removal_comments_extension):
     return grit.format.html_inline.CheckConditionalElements(
-        self, content, removal_comments_extension)
+      self, content, removal_comments_extension
+    )
 
   def EvaluateCondition(self, expr):
-    return grit.node.base.Node.EvaluateExpression(expr, self.defines,
-                                                  self.target_platform, {})
+    return grit.node.base.Node.EvaluateExpression(
+      expr, self.defines, self.target_platform, {}
+    )
 
   def SetDefines(self, defines):
     self.defines = defines
@@ -49,9 +52,9 @@ def ParseDefinesArg(definesArg):
     parts = [part.strip() for part in define.split('=', 1)]
     name = parts[0]
     val = True if len(parts) == 1 else parts[1]
-    if (val == "1" or val == "true"):
+    if val == "1" or val == "true":
       val = True
-    elif (val == "0" or val == "false"):
+    elif val == "0" or val == "false":
       val = False
     defines[name] = val
   return defines
@@ -107,8 +110,9 @@ def main(argv):
       raise Exception('Error processing %s' % in_path)
     out_path = os.path.join(out_folder, input_file)
     out_dir = os.path.dirname(out_path)
-    assert out_dir.startswith(out_folder), \
-           'Cannot preprocess files to locations not under %s.' % out_dir
+    assert out_dir.startswith(out_folder), (
+      'Cannot preprocess files to locations not under %s.' % out_dir
+    )
     try:
       os.makedirs(out_dir)
     except OSError as e:
@@ -143,8 +147,11 @@ def main(argv):
     manifest_data['base_dir'] = '%s' % args.out_folder
     manifest_data['files'] = args.in_files
     manifest_file = open(
-        os.path.normpath(os.path.join(_CWD, args.out_manifest)), 'w',
-        encoding='utf-8', newline='\n')
+      os.path.normpath(os.path.join(_CWD, args.out_manifest)),
+      'w',
+      encoding='utf-8',
+      newline='\n',
+    )
     json.dump(manifest_data, manifest_file)
   return
 

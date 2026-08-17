@@ -85,7 +85,7 @@ import java_element_generator
 import struct_generator
 
 
-HEAD = u"""// Copyright %d The Chromium Authors
+HEAD = """// Copyright %d The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,10 +98,9 @@ HEAD = u"""// Copyright %d The Chromium Authors
 
 
 def _GenerateHeaderGuard(h_filename):
-  """Generates the string used in #ifndef guarding the header file.
-  """
-  result = re.sub(u'[%s\\\\.]' % os.sep, u'_', h_filename.upper())
-  return re.sub(u'^_*', '', result) + u'_'  # Remove leading underscores.
+  """Generates the string used in #ifndef guarding the header file."""
+  result = re.sub('[%s\\\\.]' % os.sep, '_', h_filename.upper())
+  return re.sub('^_*', '', result) + '_'  # Remove leading underscores.
 
 
 def _GenerateH(basepath, fileroot, head, namespace, schema, description):
@@ -119,28 +118,28 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
         this file.
   """
 
-  h_filename = fileroot + u'.h'
+  h_filename = fileroot + '.h'
   with io.open(os.path.join(basepath, h_filename), 'w', encoding='utf-8') as f:
     f.write(head)
 
     header_guard = _GenerateHeaderGuard(h_filename)
-    f.write(u'#ifndef %s\n' % header_guard)
-    f.write(u'#define %s\n' % header_guard)
-    f.write(u'\n')
+    f.write('#ifndef %s\n' % header_guard)
+    f.write('#define %s\n' % header_guard)
+    f.write('\n')
 
     aggregation = GetAggregationDetails(description)
 
     if aggregation.kind == AggregationKind.ARRAY:
       f.write("#include <array>\n")
-    f.write(u'#include <cstddef>\n')
-    f.write(u'\n')
+    f.write('#include <cstddef>\n')
+    f.write('\n')
 
-    if system_headers := schema.get(u'system-headers', []):
+    if system_headers := schema.get('system-headers', []):
       for header in system_headers:
-        f.write(u'#include <%s>\n' % header)
-      f.write(u'\n')
+        f.write('#include <%s>\n' % header)
+      f.write('\n')
 
-    headers = schema.get(u'headers', [])
+    headers = schema.get('headers', [])
     if aggregation.kind == AggregationKind.MAP:
       headers.append("base/containers/fixed_flat_map.h")
 
@@ -148,36 +147,37 @@ def _GenerateH(basepath, fileroot, head, namespace, schema, description):
       headers.append("base/memory/raw_ptr.h")
 
     for header in sorted(set(headers)):
-      f.write(u'#include "%s"\n' % header)
-    f.write(u'\n')
+      f.write('#include "%s"\n' % header)
+    f.write('\n')
 
     if namespace:
-      f.write(u'namespace %s {\n' % namespace)
-      f.write(u'\n')
+      f.write('namespace %s {\n' % namespace)
+      f.write('\n')
 
-    f.write(struct_generator.GenerateStruct(
-      schema['type_name'], schema['schema']))
-    f.write(u'\n')
+    f.write(
+      struct_generator.GenerateStruct(schema['type_name'], schema['schema'])
+    )
+    f.write('\n')
 
     for var_name, value in description.get('int_variables', {}).items():
-      f.write(u'extern const int %s;\n' % var_name)
+      f.write('extern const int %s;\n' % var_name)
 
     # Generate forward declarations of all elements.
     if aggregation.export_items:
-      f.write(u'\n')
+      f.write('\n')
       for element_name, element in description['elements'].items():
-        f.write(u'extern const %s %s;\n' % (schema['type_name'], element_name))
+        f.write('extern const %s %s;\n' % (schema['type_name'], element_name))
 
     aggregated = GenerateHHAggregation(schema['type_name'], aggregation)
     if aggregated:
       f.write(aggregated)
 
     if namespace:
-      f.write(u'\n')
-      f.write(u'}  // namespace %s\n' % namespace)
+      f.write('\n')
+      f.write('}  // namespace %s\n' % namespace)
 
-    f.write(u'\n')
-    f.write(u'#endif  // %s\n' % header_guard)
+    f.write('\n')
+    f.write('#endif  // %s\n' % header_guard)
 
 
 def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
@@ -195,11 +195,12 @@ def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
         this file.
   """
 
-  with io.open(os.path.join(basepath, fileroot + '.cc'), 'w',
-               encoding='utf-8') as f:
+  with io.open(
+    os.path.join(basepath, fileroot + '.cc'), 'w', encoding='utf-8'
+  ) as f:
     f.write(head)
 
-    f.write('#include "%s"\n' % (fileroot + u'.h'))
+    f.write('#include "%s"\n' % (fileroot + '.h'))
     f.write('\n')
 
     if namespace:
@@ -212,8 +213,11 @@ def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
       f.write('namespace {\n')
       f.write('\n')
 
-    f.write(element_generator.GenerateElements(schema['type_name'],
-        schema['schema'], description))
+    f.write(
+      element_generator.GenerateElements(
+        schema['type_name'], schema['schema'], description
+      )
+    )
 
     if not aggregation.export_items:
       f.write('\n}  // anonymous namespace \n\n')
@@ -223,8 +227,8 @@ def _GenerateCC(basepath, fileroot, head, namespace, schema, description):
       f.write(aggregated)
 
     if namespace:
-      f.write(u'\n')
-      f.write(u'}  // namespace %s\n' % namespace)
+      f.write('\n')
+      f.write('}  // namespace %s\n' % namespace)
 
 
 def _GenerateJava(basepath, fileroot, head, package, schema, description):
@@ -241,45 +245,50 @@ def _GenerateJava(basepath, fileroot, head, package, schema, description):
     description: A dict containing the description. See comment at the top of
         this file.
   """
-  with io.open(os.path.join(basepath, fileroot + '.java'),
-               'w',
-               encoding='utf-8') as f:
+  with io.open(
+    os.path.join(basepath, fileroot + '.java'), 'w', encoding='utf-8'
+  ) as f:
     f.write(head)
 
     if package:
-      f.write(u'package %s;\n' % package)
-      f.write(u'\n')
+      f.write('package %s;\n' % package)
+      f.write('\n')
 
-    f.write(u'public class GeneratedFieldtrialTestingConfigVariations {\n')
-
-    f.write(
-        class_generator.GenerateInnerClasses(schema['type_name'],
-                                             schema['schema']))
+    f.write('public class GeneratedFieldtrialTestingConfigVariations {\n')
 
     f.write(
-        java_element_generator.GenerateElements(schema['type_name'],
-                                                schema['schema'], description))
+      class_generator.GenerateInnerClasses(
+        schema['type_name'], schema['schema']
+      )
+    )
 
-    f.write(u'} // class GeneratedFieldtrialTestingConfigVariations\n')
+    f.write(
+      java_element_generator.GenerateElements(
+        schema['type_name'], schema['schema'], description
+      )
+    )
+
+    f.write('} // class GeneratedFieldtrialTestingConfigVariations\n')
 
 
 def _Load(filename):
-  """Loads a JSON file int a Python object and return this object.
-  """
+  """Loads a JSON file int a Python object and return this object."""
   # TODO(beaudoin): When moving to Python 2.7 use object_pairs_hook=OrderedDict.
   with io.open(filename, 'r', encoding='utf-8') as handle:
     result = json.loads(json_comment_eater.Nom(handle.read()))
   return result
 
 
-def GenerateClass(basepath,
-                  output_root,
-                  package,
-                  schema,
-                  description,
-                  description_filename,
-                  schema_filename,
-                  year=None):
+def GenerateClass(
+  basepath,
+  output_root,
+  package,
+  schema,
+  description,
+  description_filename,
+  schema_filename,
+  year=None,
+):
   """Generates a Java class from a JSON description.
 
   Args:
@@ -301,8 +310,16 @@ def GenerateClass(basepath,
   _GenerateJava(basepath, output_root, head, package, schema, description)
 
 
-def GenerateStruct(basepath, output_root, namespace, schema, description,
-                   description_filename, schema_filename, year=None):
+def GenerateStruct(
+  basepath,
+  output_root,
+  namespace,
+  schema,
+  description,
+  description_filename,
+  schema_filename,
+  year=None,
+):
   """Generates a C++ struct from a JSON description.
 
   Args:
@@ -324,18 +341,28 @@ def GenerateStruct(basepath, output_root, namespace, schema, description,
   _GenerateH(basepath, output_root, head, namespace, schema, description)
   _GenerateCC(basepath, output_root, head, namespace, schema, description)
 
+
 if __name__ == '__main__':
   parser = optparse.OptionParser(
-      description='Generates an C++ array of struct from a JSON description.',
-      usage='usage: %prog [option] -s schema description')
-  parser.add_option('-b', '--destbase',
-      help='base directory of generated files.')
-  parser.add_option('-d', '--destdir',
-      help='directory to output generated files, relative to destbase.')
-  parser.add_option('-n', '--namespace',
-      help='C++ namespace for generated files. e.g search_providers.')
-  parser.add_option('-s', '--schema', help='path to the schema file, '
-      'mandatory.')
+    description='Generates an C++ array of struct from a JSON description.',
+    usage='usage: %prog [option] -s schema description',
+  )
+  parser.add_option(
+    '-b', '--destbase', help='base directory of generated files.'
+  )
+  parser.add_option(
+    '-d',
+    '--destdir',
+    help='directory to output generated files, relative to destbase.',
+  )
+  parser.add_option(
+    '-n',
+    '--namespace',
+    help='C++ namespace for generated files. e.g search_providers.',
+  )
+  parser.add_option(
+    '-s', '--schema', help='path to the schema file, mandatory.'
+  )
   parser.add_option('-o', '--output', help='output filename, ')
   (opts, args) = parser.parse_args()
 
@@ -357,5 +384,12 @@ if __name__ == '__main__':
 
   schema = _Load(opts.schema)
   description = _Load(description_filename)
-  GenerateStruct(basepath, output_root, opts.namespace, schema, description,
-                 description_filename, opts.schema)
+  GenerateStruct(
+    basepath,
+    output_root,
+    opts.namespace,
+    schema,
+    description,
+    description_filename,
+    opts.schema,
+  )

@@ -23,8 +23,11 @@ def _get_commit_message(rev):
 
 def get_commit_date(rev):
   """Gets the date a commit was committed."""
-  raw_date = _run_git('show', '--no-patch', '--no-notes', '--pretty=%cd',
-                      rev).strip().decode('utf-8')
+  raw_date = (
+    _run_git('show', '--no-patch', '--no-notes', '--pretty=%cd', rev)
+    .strip()
+    .decode('utf-8')
+  )
   # The last space separate section is timezone. '%z' doesn't let us parse this
   # because python datetime (in 2.7, at least) doesn't support parsing timezones
   # by default.
