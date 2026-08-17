@@ -1692,16 +1692,10 @@ inline EMarginTrim CSSIdentifierValue::ConvertTo() const {
       return kMarginTrimNone;
     case CSSValueID::kBlock:
       return kMarginTrimBlock;
-    case CSSValueID::kInline:
-      return kMarginTrimInline;
     case CSSValueID::kBlockStart:
       return kMarginTrimBlockStart;
-    case CSSValueID::kInlineStart:
-      return kMarginTrimInlineStart;
     case CSSValueID::kBlockEnd:
       return kMarginTrimBlockEnd;
-    case CSSValueID::kInlineEnd:
-      return kMarginTrimInlineEnd;
     default:
       NOTREACHED();
   }

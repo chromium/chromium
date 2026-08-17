@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] e.style['margin-trim'] = "inline block" should set the property value
-  assert_equals: serialization should be canonical expected "inline block" but got "block inline"
-[FAIL] e.style['margin-trim'] = "inline-start block-start" should set the property value
-  assert_equals: serialization should be canonical expected "inline-start block-start" but got "block-start inline-start"
-[FAIL] e.style['margin-trim'] = "inline-end block-start block-end" should set the property value
-  assert_equals: serialization should be canonical expected "inline-end block-start block-end" but got "block-start block-end inline-end"
-Harness: the test ran to completion.
-
