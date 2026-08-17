@@ -108,73 +108,60 @@ AtMemoryHandler::~AtMemoryHandler() = default;
 
 std::optional<AtMemoryHandler::CaretInfo> AtMemoryHandler::GetCaretInfo(
     const WebElement& element) const {
-  // TODO(crbug.com/545987198): Consider re-adding `element.Focused()`.
   if (!element || !element.ContainsFrameSelection() ||
       element.DynamicTo<WebFormElement>() ||
       !form_util::IsAccessible(element)) {
     return std::nullopt;
   }
 
+  FieldType field_type;
   if (const auto form_control = element.DynamicTo<WebFormControlElement>();
       form_util::IsTextAreaElementOrTextInput(form_control) &&
       form_util::GetAutofillFormControlType(form_control) !=
           FormControlType::kInputPassword &&
       form_control.IsEnabled() && !form_control.IsReadOnly()) {
-    unsigned int begin = form_control.SelectionStart();
-    unsigned int end = form_control.SelectionEnd();
-    if (begin == end) {
-      return CaretInfo{FieldType::kTextTypeFormControl, begin};
-    }
+    field_type = FieldType::kTextTypeFormControl;
   } else if (element.IsContentEditable()) {
-    if (auto* render_frame = agent_->unsafe_render_frame()) {
-      const WebRange selection = render_frame->GetWebFrame()
-                                     ->GetInputMethodController()
-                                     ->GetSelectionOffsets();
-      int begin = selection.StartOffset();
-      int end = selection.EndOffset();
-      if (begin == end && begin >= 0) {
-        return CaretInfo{FieldType::kContentEditable,
-                         static_cast<size_t>(begin)};
-      }
-    }
+    field_type = FieldType::kContentEditable;
+  } else {
+    return std::nullopt;
   }
-  return std::nullopt;
+
+  WebLocalFrame* frame = element.GetDocument().GetFrame();
+  if (!frame) {
+    return std::nullopt;
+  }
+
+  const WebRange selection =
+      frame->GetInputMethodController()->GetSelectionOffsets();
+  int begin = selection.StartOffset();
+  int end = selection.EndOffset();
+  if (begin != end || begin < 0) {
+    return std::nullopt;
+  }
+  return CaretInfo{field_type, static_cast<size_t>(begin)};
 }
 
 bool AtMemoryHandler::HasTriggerStringNextToCaret(
     const WebElement& element) const {
-  if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
-    return false;
-  }
-
   const WebString trigger = WebString(GetTriggerString());
   if (trigger.IsEmpty()) {
     return false;
   }
-
   std::optional<CaretInfo> info = GetCaretInfo(element);
   if (!info) {
     return false;
   }
-
-  switch (info->field_type) {
-    case FieldType::kTextTypeFormControl:
-      return info->offset >= trigger.length() &&
-             element.DynamicTo<WebFormControlElement>()
-                 .EditingValue()
-                 .Substring(info->offset - trigger.length(), trigger.length())
-                 .Equals(trigger);
-    case FieldType::kContentEditable:
-      if (auto* frame = agent_->unsafe_render_frame()) {
-        return info->offset >= trigger.length() &&
-               frame->GetWebFrame()
-                   ->RangeAsText(WebRange(info->offset - trigger.length(),
-                                          trigger.length()))
-                   .Equals(trigger);
-      }
-      break;
+  WebLocalFrame* frame = element.GetDocument().GetFrame();
+  if (!frame) {
+    return false;
   }
-  return false;
+  return info->offset >= trigger.length() &&
+         frame
+             ->RangeAsText(WebRange(
+                 base::saturated_cast<int>(info->offset - trigger.length()),
+                 base::saturated_cast<int>(trigger.length())))
+             .Equals(trigger);
 }
 
 bool AtMemoryHandler::DidReceiveKeyDown(const WebElement& element,
