@@ -586,8 +586,7 @@ TEST_F(OtpManagerImplTest, OnBeforeFocusOnFormField_ClearsPendingCallback) {
   otp_manager.OnBeforeFocusOnFormField(autofill_manager(), FormGlobalId(),
                                        FieldGlobalId());
 
-  // The future should now be ready, and contain an empty vector.
-  EXPECT_TRUE(future.IsReady());
+  // The future should now contain an empty vector.
   EXPECT_TRUE(future.Get().empty());
 
   // Now, let the SMS backend respond. This should not affect the already run
@@ -626,8 +625,7 @@ TEST_F(OtpManagerImplTest, OnBeforeFocusOnNonFormField_ClearsPendingCallback) {
   // callback.
   otp_manager.OnBeforeFocusOnNonFormField(autofill_manager());
 
-  // The future should now be ready, and contain an empty vector.
-  EXPECT_TRUE(future.IsReady());
+  // The future should now contain an empty vector.
   EXPECT_TRUE(future.Get().empty());
 
   // Now, let the SMS backend respond. This should not affect the already run

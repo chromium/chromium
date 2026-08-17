@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -145,8 +146,14 @@ void OtpManagerImpl::OnFieldTypesDetermined(
 void OtpManagerImpl::OnBeforeFocusOnFormField(AutofillManager& manager,
                                               FormGlobalId form,
                                               FieldGlobalId field) {
-  if (!last_pending_get_suggestions_callback_.is_null()) {
-    std::move(last_pending_get_suggestions_callback_).Run({});
+  if (last_pending_get_suggestions_callback_) {
+    // Post the callback asynchronously to prevent re-entrancy when notifying
+    // `Observer::OnAfterAskForValuesToFill` from inside this
+    // `Observer::OnBeforeFocusOnFormField` notification loop.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(last_pending_get_suggestions_callback_),
+                       std::vector<std::string>{}));
   }
 }
 
@@ -155,8 +162,14 @@ void OtpManagerImpl::OnBeforeFocusOnFormField(AutofillManager& manager,
 // TODO(crbug.com/451991285): Remove this method once we switch to using
 // observers instead of delaying the callback.
 void OtpManagerImpl::OnBeforeFocusOnNonFormField(AutofillManager& manager) {
-  if (!last_pending_get_suggestions_callback_.is_null()) {
-    std::move(last_pending_get_suggestions_callback_).Run({});
+  if (last_pending_get_suggestions_callback_) {
+    // Post the callback asynchronously to prevent re-entrancy when notifying
+    // `Observer::OnAfterAskForValuesToFill` from inside this
+    // `Observer::OnBeforeFocusOnNonFormField` notification loop.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(last_pending_get_suggestions_callback_),
+                       std::vector<std::string>{}));
   }
 }
 
