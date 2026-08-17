@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_rtc_stats_report.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
@@ -18,8 +19,8 @@
 namespace blink {
 
 // https://w3c.github.io/webrtc-pc/#rtcstatsreport-object
-class RTCStatsReport final : public ScriptWrappable,
-                             public Maplike<RTCStatsReport> {
+class MODULES_EXPORT RTCStatsReport final : public ScriptWrappable,
+                                            public Maplike<RTCStatsReport> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
