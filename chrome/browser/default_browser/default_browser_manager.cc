@@ -171,8 +171,6 @@ DefaultBrowserManager::DefaultBrowserManager(
                              base::Unretained(this)),
               *this);
     }
-
-    monitor_->StartMonitor();
   }
 }
 
@@ -261,6 +259,9 @@ void DefaultBrowserManager::PerformDefaultBrowserCheckValidations(
 base::CallbackListSubscription
 DefaultBrowserManager::RegisterDefaultBrowserChanged(
     DefaultBrowserChangedCallback callback) {
+  if (monitor_) {
+    monitor_->StartMonitor();
+  }
   return observers_.Add(std::move(callback));
 }
 

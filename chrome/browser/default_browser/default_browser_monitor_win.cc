@@ -31,6 +31,10 @@ constexpr std::array<std::wstring_view, 2> kDefaultBrowserSchemes = {
 void DefaultBrowserMonitor::StartMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (registry_watcher_) {
+    return;
+  }
+
   // Create a new watcher, transferring ownership to the unique_ptr.
   // The watcher will call OnDefaultBrowserChanged when a change is detected.
   registry_watcher_ = std::make_unique<RegistryWatcher>(

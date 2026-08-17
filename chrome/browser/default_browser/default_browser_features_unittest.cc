@@ -10,20 +10,6 @@
 
 namespace default_browser {
 
-TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserFrameworkEnabled) {
-  EXPECT_FALSE(IsDefaultBrowserFrameworkEnabled());
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kDefaultBrowserFramework);
-    EXPECT_TRUE(IsDefaultBrowserFrameworkEnabled());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kDefaultBrowserFramework);
-    EXPECT_FALSE(IsDefaultBrowserFrameworkEnabled());
-  }
-}
-
 TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserPromptSurfacesEnabled) {
   {
     base::test::ScopedFeatureList feature_list;
