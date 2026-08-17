@@ -12,6 +12,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/suspicious_site_warnings/suspicious_site_controller_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -146,10 +147,27 @@ SuspiciousSiteBubbleView::SuspiciousSiteBubbleView(
   back_to_safety_button_->SetStyle(ui::ButtonStyle::kProminent);
 }
 
-SuspiciousSiteBubbleView::~SuspiciousSiteBubbleView() = default;
+SuspiciousSiteBubbleView::~SuspiciousSiteBubbleView() {
+  if (web_contents()) {
+    if (auto* controller =
+            safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+                web_contents())) {
+      controller->OnBubbleDestroyed();
+    }
+  }
+}
 
 void SuspiciousSiteBubbleView::OnBackToSafetyClicked() {
   if (web_contents()) {
+    if (auto* controller =
+            safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+                web_contents())) {
+      controller->OnBackToSafetyClicked();
+      if (GetWidget()) {
+        GetWidget()->Close();
+      }
+      return;
+    }
     auto& controller = web_contents()->GetController();
     const GURL& current_url = web_contents()->GetLastCommittedURL();
 
@@ -178,6 +196,15 @@ void SuspiciousSiteBubbleView::OnBackToSafetyClicked() {
 
 void SuspiciousSiteBubbleView::OnMarkAsSafeClicked() {
   if (web_contents()) {
+    if (auto* controller =
+            safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+                web_contents())) {
+      controller->OnMarkAsSafeClicked();
+      if (GetWidget()) {
+        GetWidget()->Close();
+      }
+      return;
+    }
     const GURL& current_url = web_contents()->GetLastCommittedURL();
     if (current_url.is_valid() && !current_url.host().empty()) {
       if (auto* profile = Profile::FromBrowserContext(
@@ -197,6 +224,12 @@ void SuspiciousSiteBubbleView::OnMarkAsSafeClicked() {
 
 void SuspiciousSiteBubbleView::OpenHelpCenter() {
   if (web_contents()) {
+    if (auto* controller =
+            safe_browsing::SuspiciousSiteControllerDesktop::FromWebContents(
+                web_contents())) {
+      controller->OnLearnMoreClicked();
+      return;
+    }
     web_contents()->OpenURL(
         content::OpenURLParams(GURL(chrome::kUnsafeSiteWarningHelpCenterURL),
                                content::Referrer(),
@@ -238,6 +271,12 @@ void ShowSuspiciousSiteBubble(content::WebContents* web_contents) {
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   ShowSuspiciousSiteBubble(browser, web_contents);
 }
+
+namespace safe_browsing {
+void ShowSuspiciousSiteBubble(content::WebContents* web_contents) {
+  ::ShowSuspiciousSiteBubble(web_contents);
+}
+}  // namespace safe_browsing
 
 // IN-TEST
 PageInfoBubbleViewBase* CreateSuspiciousSiteBubbleForTesting(

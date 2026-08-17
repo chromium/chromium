@@ -1,0 +1,37 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("suspicious_site_warnings") {
+  sources = [
+    "suspicious_site_controller_desktop.cc",
+    "suspicious_site_controller_desktop.h",
+    "suspicious_site_ui.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/core/browser:suspicious_site_warning_allowlist",
+    "//content/public/browser",
+    "//url",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/content_settings/core/browser",
+    "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
+    "//components/safe_browsing/content/browser:safe_browsing_service",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//net",
+    "//ui/base",
+  ]
+}

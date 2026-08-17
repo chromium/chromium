@@ -4011,7 +4011,10 @@ source_set("browser") {
   }
 
   if (!is_android) {
-    deps += [ "//chrome/browser/contextual_cueing/internals" ]
+    deps += [
+      "//chrome/browser/contextual_cueing/internals",
+      "//chrome/browser/safe_browsing/suspicious_site_warnings",
+    ]
   }
 
   # This target intentionally has no sources of its own and no

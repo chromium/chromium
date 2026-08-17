@@ -978,7 +978,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="DismissedBySystem"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/safe_browsing/android/suspicious_site_controller_android.h:SuspiciousSiteWarningOutcome) -->
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h:SuspiciousSiteWarningOutcome) -->
 
 <!-- LINT.IfChange(SuspiciousSiteWarningUserInteraction) -->
 
@@ -992,9 +992,10 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Close tab"/>
   <int value="7" label="Learn more clicked"/>
   <int value="8" label="System back button/gesture used"/>
+  <int value="9" label="Destroyed"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/safe_browsing/android/suspicious_site_controller_android.h:SuspiciousSiteWarningUserInteraction) -->
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/suspicious_site_warning_allowlist.h:SuspiciousSiteWarningUserInteraction) -->
 
 <!-- LINT.IfChange(SyncedEsbOutcome) -->
 

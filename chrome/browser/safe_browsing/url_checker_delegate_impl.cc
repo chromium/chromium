@@ -34,6 +34,8 @@
 #include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/safe_browsing/android/suspicious_site_controller_android.h"
+#else
+#include "chrome/browser/safe_browsing/suspicious_site_warnings/suspicious_site_ui.h"  // nogncheck
 #endif
 
 namespace safe_browsing {
@@ -169,7 +171,6 @@ void UrlCheckerDelegateImpl::ShowSuspiciousSiteWarning(
     int64_t navigation_id,
     const base::RepeatingCallback<content::WebContents*()>&
         web_contents_getter) {
-#if BUILDFLAG(IS_ANDROID)
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -182,12 +183,15 @@ void UrlCheckerDelegateImpl::ShowSuspiciousSiteWarning(
               return;
             }
             if (content::WebContents* contents = web_contents_getter.Run()) {
+#if BUILDFLAG(IS_ANDROID)
               safe_browsing::SuspiciousSiteControllerAndroid::
                   ShowForWebContents(contents, navigation_id);
+#else
+              safe_browsing::ShowSuspiciousSiteWarning(contents, navigation_id);
+#endif
             }
           },
           base::WrapRefCounted(this), navigation_id, web_contents_getter));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(

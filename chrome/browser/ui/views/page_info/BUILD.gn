@@ -87,6 +87,7 @@ source_set("impl") {
     "//chrome/browser/file_system_access",
     "//chrome/browser/page_info",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/safe_browsing/suspicious_site_warnings",
     "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_web_contents_delegate",
