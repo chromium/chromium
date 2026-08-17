@@ -7,11 +7,11 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_H_
 #define GPU_COMMAND_BUFFER_COMMON_GLES2_CMD_FORMAT_H_
 
+#include <atomic>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
-#include "base/atomicops.h"
 #include "base/check_op.h"
 #include "base/rand_util.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
@@ -155,19 +155,22 @@ struct UniformsES3Header {
 
 struct DisjointValueSync {
   void Reset() {
-    base::subtle::Release_Store(&disjoint_count, 0);
+    std::atomic_ref<uint32_t> count_ref(disjoint_count);
+    count_ref.store(0, std::memory_order_release);
   }
 
   void SetDisjointCount(uint32_t token) {
+    std::atomic_ref<uint32_t> count_ref(disjoint_count);
     DCHECK_NE(token, 0u);
-    base::subtle::Release_Store(&disjoint_count, token);
+    count_ref.store(token, std::memory_order_release);
   }
 
   uint32_t GetDisjointCount() {
-    return base::subtle::Acquire_Load(&disjoint_count);
+    std::atomic_ref<uint32_t> count_ref(disjoint_count);
+    return count_ref.load(std::memory_order_acquire);
   }
 
-  base::subtle::Atomic32 disjoint_count;
+  uint32_t disjoint_count;
 };
 
 static_assert(sizeof(QuerySync) == 12, "size of QuerySync should be 12");
