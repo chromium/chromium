@@ -636,6 +636,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
+#include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/android/permissions_reprompt_controller_android.h"
 #endif
 
@@ -3495,13 +3496,28 @@ void ChromeContentBrowserClient::RequestPlatformLocalNetworkPermission(
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if BUILDFLAG(IS_ANDROID)
-  permissions::PermissionsRepromptControllerAndroid::CreateForWebContents(
-      &web_contents);
-  permissions::PermissionsRepromptControllerAndroid::FromWebContents(
-      &web_contents)
-      ->RepromptPermissionRequest({ContentSettingsType::LOCAL_NETWORK_ACCESS},
-                                  ContentSettingsType::LOCAL_NETWORK_ACCESS,
-                                  std::move(callback));
+  const std::vector<ContentSettingsType> types = {
+      ContentSettingsType::LOCAL_NETWORK_ACCESS};
+
+  switch (permissions::ShouldRepromptUserForPermissions(&web_contents, types)) {
+    case permissions::PermissionRepromptState::kNoNeed:
+      std::move(callback).Run(/*permission_granted=*/true);
+      return;
+
+    case permissions::PermissionRepromptState::kCannotShow:
+      std::move(callback).Run(/*permission_granted=*/false);
+      return;
+
+    case permissions::PermissionRepromptState::kShow:
+      permissions::PermissionsRepromptControllerAndroid::CreateForWebContents(
+          &web_contents);
+      permissions::PermissionsRepromptControllerAndroid::FromWebContents(
+          &web_contents)
+          ->RepromptPermissionRequest(types,
+                                      ContentSettingsType::LOCAL_NETWORK_ACCESS,
+                                      std::move(callback));
+      return;
+  }
 #else
   std::move(callback).Run(/*granted=*/false);
 #endif
