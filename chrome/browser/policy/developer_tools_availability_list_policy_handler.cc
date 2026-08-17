@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -39,6 +40,11 @@ namespace {
 bool ValidateHost(const std::string& host) {
   return host == "*" || host.find('*') == std::string::npos;
 }
+
+bool IsAllowlistPolicy(std::string_view policy_name) {
+  return policy_name == policy::key::kDeveloperToolsAvailabilityAllowlist;
+}
+
 }  // namespace
 
 namespace policy {
@@ -134,11 +140,19 @@ void DeveloperToolsAvailabilityListPolicyHandler::ApplyPolicySettings(
 bool DeveloperToolsAvailabilityListPolicyHandler::ValidatePolicy(
     const std::string& url_pattern) {
   url_matcher::util::FilterComponents components;
-  return url_matcher::util::FilterToComponents(
-             url_pattern, &components.scheme, &components.host,
-             &components.match_subdomains, &components.port, &components.path,
-             &components.query) &&
-         ValidateHost(components.host);
+  if (!url_matcher::util::FilterToComponents(
+          url_pattern, &components.scheme, &components.host,
+          &components.match_subdomains, &components.port, &components.path,
+          &components.query) ||
+      !ValidateHost(components.host)) {
+    return false;
+  }
+
+  if (IsAllowlistPolicy(policy_name()) && components.IsWildcard()) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace policy

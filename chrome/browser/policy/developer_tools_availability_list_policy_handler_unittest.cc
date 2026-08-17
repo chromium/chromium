@@ -227,6 +227,44 @@ TEST_F(DeveloperToolsAvailabilityListPolicyHandlerTest,
 }
 
 TEST_F(DeveloperToolsAvailabilityListPolicyHandlerTest,
+       CheckPolicySettings_AllowlistRejectsWildcardAsterisk) {
+  base::ListValue in;
+  in.Append("*");
+  SetPolicy(key::kDeveloperToolsAvailabilityAllowlist,
+            base::Value(std::move(in)));
+
+  EXPECT_TRUE(allowlist_handler_->CheckPolicySettings(policies_, &errors_));
+  EXPECT_EQ(1U, errors_.size());
+}
+
+TEST_F(DeveloperToolsAvailabilityListPolicyHandlerTest,
+       ApplyPolicySettings_AllowlistFiltersOutWildcardAsterisk) {
+  base::ListValue in;
+  in.Append("*");
+  SetPolicy(key::kDeveloperToolsAvailabilityAllowlist,
+            base::Value(std::move(in)));
+  allowlist_handler_->ApplyPolicySettings(policies_, &prefs_);
+
+  EXPECT_FALSE(
+      prefs_.GetValue(prefs::kDeveloperToolsAvailabilityAllowlist, nullptr));
+
+  // With a mix of wildcard and valid URLs:
+  base::ListValue in_mixed;
+  in_mixed.Append("*");
+  in_mixed.Append("example.com");
+  SetPolicy(key::kDeveloperToolsAvailabilityAllowlist,
+            base::Value(std::move(in_mixed)));
+  allowlist_handler_->ApplyPolicySettings(policies_, &prefs_);
+
+  const base::Value* out = nullptr;
+  EXPECT_TRUE(
+      prefs_.GetValue(prefs::kDeveloperToolsAvailabilityAllowlist, &out));
+  ASSERT_TRUE(out && out->is_list());
+  ASSERT_EQ(1U, out->GetList().size());
+  EXPECT_EQ("example.com", out->GetList()[0].GetString());
+}
+
+TEST_F(DeveloperToolsAvailabilityListPolicyHandlerTest,
        ApplyPolicySettings_Successful_Blocklist) {
   base::ListValue blocklist;
   blocklist.Append("*");
