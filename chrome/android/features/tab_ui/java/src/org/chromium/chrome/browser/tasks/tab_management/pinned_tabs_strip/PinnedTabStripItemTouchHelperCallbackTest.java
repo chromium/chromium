@@ -91,9 +91,18 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
 
         mViewHolder = spy(new TestViewHolder(new View(context)));
 
+        when(mTabListModel.size()).thenReturn(5);
         when(mRecyclerViewSupplier.get()).thenReturn(mRecyclerView);
         mMockViewHolder1 = prepareMockViewHolder(TAB_ID1, mItemView1, POSITION1);
         mMockViewHolder2 = prepareMockViewHolder(TAB_ID2, mItemView2, POSITION2);
+        when(mTabListModel.get(POSITION1))
+                .thenReturn(
+                        new org.chromium.ui.modelutil.MVCListAdapter.ListItem(
+                                TabProperties.UiType.TAB, mMockViewHolder1.model));
+        when(mTabListModel.get(POSITION2))
+                .thenReturn(
+                        new org.chromium.ui.modelutil.MVCListAdapter.ListItem(
+                                TabProperties.UiType.TAB, mMockViewHolder2.model));
 
         mCallback =
                 new PinnedTabStripItemTouchHelperCallback(
@@ -171,6 +180,29 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
         mCallback.onSelectedChanged(mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
         mCallback.onSelectedChanged(mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
         verify(mTabListModel).updateSelectedCardForSelection(POSITION1, false);
+    }
+
+    @Test
+    public void testOnMove_OutOfBounds() {
+        when(mMockViewHolder1.getBindingAdapterPosition()).thenReturn(10);
+        assertFalse(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
+
+        when(mMockViewHolder1.getBindingAdapterPosition()).thenReturn(POSITION1);
+        when(mMockViewHolder2.getBindingAdapterPosition()).thenReturn(10);
+        assertFalse(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
+    }
+
+    @Test
+    public void testOnSelectedChanged_OutOfBounds() {
+        ViewHolder oobViewHolder = prepareMockViewHolder(999, mItemView1, 10);
+        mCallback.onSelectedChanged(oobViewHolder, ItemTouchHelper.ACTION_STATE_DRAG);
+        verify(mTabListModel, never()).updateSelectedCardForSelection(10, true);
+
+        // When model size shrinks while dragging (e.g. tab closed), idle should not crash
+        mCallback.onSelectedChanged(mMockViewHolder1, ItemTouchHelper.ACTION_STATE_DRAG);
+        when(mTabListModel.size()).thenReturn(0);
+        mCallback.onSelectedChanged(mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+        verify(mTabListModel, never()).updateSelectedCardForSelection(POSITION1, false);
     }
 
     @Test

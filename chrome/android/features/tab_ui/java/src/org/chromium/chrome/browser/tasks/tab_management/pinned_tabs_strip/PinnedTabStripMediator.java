@@ -57,6 +57,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.ListObservable;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -80,6 +82,7 @@ public class PinnedTabStripMediator {
     private final GridLayoutManager mTabGridListLayoutManager;
     private final PropertyModel mStripPropertyModel;
     private final TabListItemSizeChangedObserver mTabListItemSizeChangedObserver;
+    private final ListObserver<Void> mTabGridListObserver;
     private final TabModelObserver mTabModelObserver;
     private final Supplier<@Nullable TabBookmarker> mTabBookmarkerSupplier;
     private final MonotonicObservableSupplier<TabModel> mTabModelSupplier;
@@ -153,6 +156,30 @@ public class PinnedTabStripMediator {
         mPinnedTabListItemHeight = res.getDimensionPixelSize(R.dimen.pinned_tab_strip_item_height);
         mPinnedTabsStripRowCoverageHeightPx =
                 res.getDimensionPixelSize(R.dimen.pinned_tabs_strip_row_coverage_height);
+        mTabGridListObserver =
+                new ListObserver<>() {
+                    @Override
+                    public void onItemRangeInserted(ListObservable source, int index, int count) {
+                        updatePinnedTabsBar();
+                    }
+
+                    @Override
+                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                        updatePinnedTabsBar();
+                    }
+
+                    @Override
+                    public void onItemRangeChanged(
+                            ListObservable source, int index, int count, @Nullable Void payload) {
+                        updatePinnedTabsBar();
+                    }
+
+                    @Override
+                    public void onItemMoved(ListObservable source, int curIndex, int newIndex) {
+                        updatePinnedTabsBar();
+                    }
+                };
+        mTabGridListModel.addObserver(mTabGridListObserver);
         mTabModelObserver =
                 new TabModelObserver() {
                     @Override
@@ -255,6 +282,8 @@ public class PinnedTabStripMediator {
 
         List<ListItem> newPinnedTabs = new ArrayList<>();
 
+        TabModel tabModel = mTabModelSupplier.get();
+
         // Find pinned tabs that are scrolled off-screen (above the current viewport) or are in a
         // partially visible row covered by the pinned tabs strip.
         for (int i = 0; i < lastItemToConsiderForPinning; i++) {
@@ -267,6 +296,13 @@ public class PinnedTabStripMediator {
             }
 
             if (model.get(IS_PINNED)) {
+                int tabId = model.get(TAB_ID);
+                if (tabModel != null) {
+                    Tab tab = tabModel.getTabById(tabId);
+                    if (tab != null && tab.isClosing()) {
+                        continue;
+                    }
+                }
                 newPinnedTabs.add(createPinnedTabListItem(model));
             }
         }
@@ -478,6 +514,7 @@ public class PinnedTabStripMediator {
     }
 
     void destroy() {
+        mTabGridListModel.removeObserver(mTabGridListObserver);
         mTabLisCoordinator.removeTabListItemSizeChangedObserver(mTabListItemSizeChangedObserver);
         mTabModelSupplier.removeObserver(mOnTabModelChanged);
         // Remove the observer onTabModelChanged() added; removeObserver above won't. Mirrors

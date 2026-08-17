@@ -542,6 +542,36 @@ public class PinnedTabStripMediatorTest {
     }
 
     @Test
+    public void testOnTabClosePending_removesClosingTabFromPinnedList() {
+        int tabId = 123;
+        mTabListModel.add(createTabListItem(tabId, true));
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
+        mMediator.onScrolled();
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(1);
+
+        when(mTabModel.getTabById(tabId)).thenReturn(mTab1);
+        when(mTab1.isClosing()).thenReturn(true);
+
+        mTabModelObserverCaptor
+                .getValue()
+                .onTabClosePending(List.of(mTab1), false, TabClosingSource.UNKNOWN);
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void testMainListObserver_removesItemFromPinnedList() {
+        int tabId = 123;
+        mTabListModel.add(createTabListItem(tabId, true));
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(1);
+        mMediator.onScrolled();
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(1);
+
+        // When item is removed from main grid model, pinned strip model updates automatically.
+        mTabListModel.removeAt(0);
+        assertThat(mPinnedTabsModelList.size()).isEqualTo(0);
+    }
+
+    @Test
     public void testTabClosureUndone_updatePinnedBar_postsToUiThread() {
         mMediator.onScrolled(); // Initial state.
         mTabModelObserverCaptor.getValue().tabClosureUndone(mTab1);

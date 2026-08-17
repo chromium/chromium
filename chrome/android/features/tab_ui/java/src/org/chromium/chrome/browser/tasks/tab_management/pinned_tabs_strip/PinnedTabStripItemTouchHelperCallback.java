@@ -113,6 +113,8 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
                 || destinationIndex == RecyclerView.NO_POSITION
                 || fromPosition < 0
                 || destinationIndex < 0
+                || fromPosition >= mModel.size()
+                || destinationIndex >= mModel.size()
                 || fromPosition == destinationIndex) {
             return false;
         }
@@ -145,18 +147,20 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
                         ? viewHolder.getBindingAdapterPosition()
                         : RecyclerView.NO_POSITION;
 
-        if (position != RecyclerView.NO_POSITION) {
+        if (position != RecyclerView.NO_POSITION && position < mModel.size()) {
             mTabGridItemLongPressOrchestrator.onSelectedChanged(position, actionState);
         }
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-            if (position != RecyclerView.NO_POSITION) {
+            if (position != RecyclerView.NO_POSITION && position < mModel.size()) {
                 mSelectedTabIndex = position;
                 mModel.updateSelectedCardForSelection(mSelectedTabIndex, true);
             }
         } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
             if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX) {
-                mModel.updateSelectedCardForSelection(mSelectedTabIndex, false);
+                if (mSelectedTabIndex < mModel.size()) {
+                    mModel.updateSelectedCardForSelection(mSelectedTabIndex, false);
+                }
                 mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
             }
         }
