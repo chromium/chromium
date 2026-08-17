@@ -63,8 +63,6 @@ import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -114,7 +112,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -136,7 +133,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -402,7 +398,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private final TabListLayoutDelegate mTabListLayoutDelegate;
     private final TabActionListener mTabClosedListener;
     private final TabGridItemTouchHelperCallback mTabGridItemTouchHelperCallback;
-    private final TabMultiSelectHelper mMultiSelectHelper;
+    private final @Nullable TabMultiSelectHelper mMultiSelectHelper;
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
     private final @Nullable SnackbarManager mSnackbarManager;
     private final @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
@@ -412,6 +408,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private final boolean mIsSingleContextMode;
     private final @TabListLayoutType int mLayoutType;
     private final TabListConfig mTabListConfig;
+    private final @Nullable TabUnderlineManager mTabUnderlineManager;
 
     private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
     private @TabComponentId int mComponentId;
@@ -434,7 +431,6 @@ public class TabListMediator implements TabListNotificationHandler {
     private View.AccessibilityDelegate mAccessibilityDelegate;
     private int mCurrentSpanCount;
     private @Nullable OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
-    private @Nullable TabUnderlineManager mTabUnderlineManager;
 
     private final ActorUiTabController.Observer mActorObserver =
             new ActorUiTabController.Observer() {
@@ -495,8 +491,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         //     here.
                         recordTabSelection(tabId);
                     }
-                    if (VerticalTabUtils.isMultiSelectEnabled()
-                            && mComponentId == TabComponentId.VERTICAL_TABS) {
+                    if (mMultiSelectHelper != null) {
                         int modifiers = triggeringMotion != null ? triggeringMotion.metaState : 0;
                         if (mMultiSelectHelper.handleTabClick(tabId, modifiers)) {
                             return;
@@ -944,6 +939,10 @@ public class TabListMediator implements TabListNotificationHandler {
         mLayoutType = tabListConfig.layoutType;
         mRailCollapseStateSupplier = tabListConfig.railCollapseStateSupplier;
         mTabListConfig = tabListConfig;
+        mTabUnderlineManager = tabListConfig.tabUnderlineManager;
+        if (mTabUnderlineManager != null) {
+            mTabUnderlineManager.addObserver(mTabUnderlineObserver);
+        }
         mTabGridDialogHandler = dialogHandler;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mComponentId = componentId;
@@ -954,7 +953,10 @@ public class TabListMediator implements TabListNotificationHandler {
         mAllowedSelectionCount = allowedSelectionCount;
         mIsSingleContextMode = isSingleContextMode;
         mMultiSelectHelper =
-                new TabMultiSelectHelper(this::getCurrentTabModelChecked, this::handleTabSelection);
+                tabListConfig.supportsModifierMultiSelect
+                        ? new TabMultiSelectHelper(
+                                this::getCurrentTabModelChecked, this::handleTabSelection)
+                        : null;
 
         switch (mLayoutType) {
             case TabListLayoutType.FLAT:
@@ -1499,7 +1501,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         // Right now we need to update layout only if there is a price welcome message card in tab
         // switcher.
-        if (mMode == TabListMode.GRID
+        if (mTabListConfig.supportsMessageCards
                 && mTabActionState != TabActionState.SELECTABLE
                 && PriceTrackingFeatures.isPriceAnnotationsEnabled(originalProfile)) {
             mListObserver =
@@ -1865,7 +1867,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     @Override
                     public void onConfigurationChanged(Configuration newConfig) {
                         updateSpanCount(manager, newConfig.screenWidthDp);
-                        if (mMode == TabListMode.GRID
+                        if (mTabListConfig.supportsMessageCards
                                 && mTabActionState != TabActionState.SELECTABLE) {
                             updateLayout();
                         }
@@ -1983,8 +1985,7 @@ public class TabListMediator implements TabListNotificationHandler {
         }
 
         if (mTabUnderlineManager != null) {
-            mTabUnderlineManager.destroy();
-            mTabUnderlineManager = null;
+            mTabUnderlineManager.removeObserver(mTabUnderlineObserver);
         }
     }
 
@@ -2102,23 +2103,6 @@ public class TabListMediator implements TabListNotificationHandler {
         return tabActionState != TabActionState.SELECTABLE
                 ? mContextClickTabItemEventListener
                 : null;
-    }
-
-    /** Gets or lazily initializes the tab underline manager. */
-    private @Nullable TabUnderlineManager getOrInitTabUnderlineManager(Tab tab) {
-        boolean isGlicOrContextualTasksEnabled =
-                GlicEnabling.isEnabledByFlags() || ChromeFeatureList.sContextualTasks.isEnabled();
-        if (mMode != TabListMode.VERTICAL || tab.isIncognito() || !isGlicOrContextualTasksEnabled) {
-            return null;
-        }
-        if (mTabUnderlineManager == null) {
-            WindowAndroid windowAndroid = tab.getWindowAndroid();
-            if (windowAndroid != null) {
-                mTabUnderlineManager = new TabUnderlineManager(windowAndroid);
-                mTabUnderlineManager.addObserver(mTabUnderlineObserver);
-            }
-        }
-        return mTabUnderlineManager;
     }
 
     @TabActionState
@@ -2777,7 +2761,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     private void updateLoadingState(Tab tab, boolean isLoading) {
-        if (mMode != TabListMode.VERTICAL || !mShowingTabs) return;
+        if (!mTabListConfig.supportsTabLoadingState || !mShowingTabs) return;
         @Nullable PropertyModel model = mModelList.getModelFromTabId(tab.getId());
         if (model == null) return;
         // Suppress loading indicator for NTP. NTP loads instantly, but the brief load events can
@@ -2961,7 +2945,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
     @VisibleForTesting
     void recordPriceAnnotationsEnabledMetrics() {
-        if (mMode != TabListMode.GRID
+        if (!mTabListConfig.supportsMessageCards
                 || getCurrentTabModelChecked().isIncognitoBranded()
                 || mLayoutType == TabListLayoutType.FLAT
                 || mOriginalProfile == null
@@ -3099,9 +3083,8 @@ public class TabListMediator implements TabListNotificationHandler {
             }
         }
 
-        TabUnderlineManager tabUnderlineManager = getOrInitTabUnderlineManager(tab);
-        if (tabUnderlineManager != null) {
-            tabUnderlineManager.registerTab(tab);
+        if (mTabUnderlineManager != null && !tab.isIncognito()) {
+            mTabUnderlineManager.registerTab(tab);
         }
     }
 
@@ -3832,13 +3815,5 @@ public class TabListMediator implements TabListNotificationHandler {
         var oldValueId = mComponentId;
         mComponentId = componentId;
         ResettersForTesting.register(() -> mComponentId = oldValueId);
-    }
-
-    @Nullable TabUnderlineManager getOrInitTabUnderlineManagerForTesting(Tab tab) {
-        return getOrInitTabUnderlineManager(tab);
-    }
-
-    TabUnderlineManager.Observer getTabUnderlineObserverForTesting() {
-        return mTabUnderlineObserver;
     }
 }

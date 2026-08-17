@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
@@ -23,8 +24,19 @@ public class TabListConfig {
     /** The layout organization type for the TabList. */
     public final @TabListLayoutType int layoutType;
 
-    /** Whether the layout supports message card items. */
+    /**
+     * Whether the layout supports message card items (e.g. IPH, promo cards, price welcome cards).
+     * Currently only the Tab Switcher Grid ({@link TabListLayoutType#GROUPED}) uses message cards
+     * and price tracking. If a non-grid layout needs price tracking independently in the future,
+     * add a dedicated capability flag.
+     */
     public final boolean supportsMessageCards;
+
+    /** Whether the tab list supports modifier-based multi-selection (e.g. Ctrl/Shift+Click). */
+    public final boolean supportsModifierMultiSelect;
+
+    /** Whether the tab list items support displaying a loading state / spinner. */
+    public final boolean supportsTabLoadingState;
 
     /** Supplier for the rail collapse state in vertical tabs, or null if not supported. */
     public final @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
@@ -33,20 +45,29 @@ public class TabListConfig {
     /** Listener for tab hover card events, or null if not supported. */
     public final @Nullable TabHoverCardListener tabHoverCardListener;
 
+    /** Manager for active tab underline indicators (e.g. for Glic), or null if not supported. */
+    public final @Nullable TabUnderlineManager tabUnderlineManager;
+
     private TabListConfig(Builder builder) {
         layoutType = builder.mLayoutType;
         supportsMessageCards = builder.mSupportsMessageCards;
+        supportsModifierMultiSelect = builder.mSupportsModifierMultiSelect;
+        supportsTabLoadingState = builder.mSupportsTabLoadingState;
         railCollapseStateSupplier = builder.mRailCollapseStateSupplier;
         tabHoverCardListener = builder.mTabHoverCardListener;
+        tabUnderlineManager = builder.mTabUnderlineManager;
     }
 
     /** Builder to construct {@link TabListConfig}. */
     public static class Builder {
         private final @TabListLayoutType int mLayoutType;
         private boolean mSupportsMessageCards;
+        private boolean mSupportsModifierMultiSelect;
+        private boolean mSupportsTabLoadingState;
         private @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
                 mRailCollapseStateSupplier;
         private @Nullable TabHoverCardListener mTabHoverCardListener;
+        private @Nullable TabUnderlineManager mTabUnderlineManager;
 
         /**
          * @param layoutType The {@link TabListLayoutType} for the tab list.
@@ -61,6 +82,24 @@ public class TabListConfig {
          */
         public Builder setSupportsMessageCards(boolean supportsMessageCards) {
             mSupportsMessageCards = supportsMessageCards;
+            return this;
+        }
+
+        /**
+         * @param supportsModifierMultiSelect Whether the tab list supports modifier multi-select.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setSupportsModifierMultiSelect(boolean supportsModifierMultiSelect) {
+            mSupportsModifierMultiSelect = supportsModifierMultiSelect;
+            return this;
+        }
+
+        /**
+         * @param supportsTabLoadingState Whether tab list items support displaying a loading state.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setSupportsTabLoadingState(boolean supportsTabLoadingState) {
+            mSupportsTabLoadingState = supportsTabLoadingState;
             return this;
         }
 
@@ -82,6 +121,15 @@ public class TabListConfig {
         public Builder setTabHoverCardListener(
                 @Nullable TabHoverCardListener tabHoverCardListener) {
             mTabHoverCardListener = tabHoverCardListener;
+            return this;
+        }
+
+        /**
+         * @param tabUnderlineManager Manager for active tab underline indicators, or null.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setTabUnderlineManager(@Nullable TabUnderlineManager tabUnderlineManager) {
+            mTabUnderlineManager = tabUnderlineManager;
             return this;
         }
 

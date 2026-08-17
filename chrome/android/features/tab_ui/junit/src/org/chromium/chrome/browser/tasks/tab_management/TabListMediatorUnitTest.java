@@ -186,6 +186,7 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarExplicitTrigger;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
@@ -405,6 +406,7 @@ public class TabListMediatorUnitTest {
     @Mock TabCardLabelData mTabCardLabelData;
     @Mock SimpleRecyclerViewAdapter.ViewHolder mViewHolder1;
     @Mock SimpleRecyclerViewAdapter.ViewHolder mViewHolder2;
+    @Mock TabUnderlineManager mTabUnderlineManager;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -415,6 +417,8 @@ public class TabListMediatorUnitTest {
 
     @Captor
     ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver> mTemplateUrlServiceObserver;
+
+    @Captor ArgumentCaptor<TabUnderlineManager.Observer> mTabUnderlineObserverCaptor;
 
     private final SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier =
             ObservableSuppliers.createMonotonic();
@@ -1067,6 +1071,18 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void updatesLoadingState_DisabledWhenUnsupported() {
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+        assertFalse(mTabListConfig.supportsTabLoadingState);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertFalse(model.get(TabProperties.IS_LOADING));
+
+        mTabObserverCaptor.getValue().onLoadStarted(mTab1, /* toDifferentDocument= */ true);
+        assertFalse(model.get(TabProperties.IS_LOADING));
+    }
+
+    @Test
     public void sendsSelectSignalCorrectly() {
         mModelList
                 .get(1)
@@ -1142,6 +1158,26 @@ public class TabListMediatorUnitTest {
 
         // Verify normal selection is bypassed when multi-selecting.
         verify(mTabModel, never()).setIndex(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testTabSelection_MultiSelectDisabled_ShiftClick_SelectsTab() {
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+        assertFalse(mTabListConfig.supportsModifierMultiSelect);
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+
+        when(mMotionEvent.getMetaState()).thenReturn(KeyEvent.META_SHIFT_ON);
+        when(mMotionEvent.getPointerCount()).thenReturn(0);
+        MotionEventInfo info = MotionEventInfo.fromMotionEvent(mMotionEvent);
+
+        mModelList
+                .get(0)
+                .model
+                .get(TabProperties.TAB_CLICK_LISTENER)
+                .run(mItemView1, mTab1.getId(), info);
+
+        // Verify normal selection occurs when modifier multi-selection is disabled.
+        verify(mTabListItemOnClickListenerProvider).onTabSelecting(mTab1.getId());
     }
 
     @Test
@@ -4074,6 +4110,19 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testRecordPriceAnnotationsEnabledMetrics_DisabledWhenUnsupported() {
+        setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
+        String histogramName = "Commerce.PriceDrop.AnnotationsEnabled";
+
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+        assertFalse(mTabListConfig.supportsMessageCards);
+
+        mMediator.recordPriceAnnotationsEnabledMetrics();
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(histogramName), equalTo(0));
+    }
+
+    @Test
     public void testSelectableUpdates_withoutRelated() {
         when(mSelectionDelegate.isItemSelected(ITEM1_ID)).thenReturn(true);
         when(mSelectionDelegate.isItemSelected(ITEM2_ID)).thenReturn(false);
@@ -6000,34 +6049,31 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testTabUnderlineManager_NullInGridMode() {
-        GlicEnabling.setEnabledForTesting(true);
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
-        assertNull(mMediator.getOrInitTabUnderlineManagerForTesting(mTab1));
+        assertNull(mTabListConfig.tabUnderlineManager);
+        verify(mTabUnderlineManager, never()).addObserver(any());
     }
 
     @Test
-    public void testTabUnderlineManager_NullInIncognito() {
-        GlicEnabling.setEnabledForTesting(true);
-        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.VERTICAL);
+    public void testTabUnderlineManager_NotRegisteredInIncognito() {
         when(mTab1.isIncognito()).thenReturn(true);
-        assertNull(mMediator.getOrInitTabUnderlineManagerForTesting(mTab1));
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+        verify(mTabUnderlineManager, never()).registerTab(mTab1);
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS)
-    public void testTabUnderlineManager_NullWhenFlagsDisabled() {
-        GlicEnabling.setEnabledForTesting(false);
-        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.VERTICAL);
+    public void testTabUnderlineManager_RegisteredForNonIncognito() {
         when(mTab1.isIncognito()).thenReturn(false);
-        assertNull(mMediator.getOrInitTabUnderlineManagerForTesting(mTab1));
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+        verify(mTabUnderlineManager).registerTab(mTab1);
     }
 
     @Test
     public void testTabUnderlineObserver_UpdatesModel() {
-        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.VERTICAL);
-        initAndAssertAllProperties();
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
 
-        TabUnderlineManager.Observer observer = mMediator.getTabUnderlineObserverForTesting();
+        verify(mTabUnderlineManager).addObserver(mTabUnderlineObserverCaptor.capture());
+        TabUnderlineManager.Observer observer = mTabUnderlineObserverCaptor.getValue();
         assertNotNull(observer);
 
         assertFalse(mModelList.get(0).model.get(TabProperties.IS_GLIC_ACTIVE));
@@ -6040,6 +6086,16 @@ public class TabListMediatorUnitTest {
 
         // Ensure no NPE occurs when an invalid or unknown tab ID is updated.
         observer.onIndicatorStateChanged(Tab.INVALID_TAB_ID, /* isActive= */ true);
+    }
+
+    @Test
+    public void testDestroy_RemovesTabUnderlineObserver() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+
+        verify(mTabUnderlineManager).addObserver(mTabUnderlineObserverCaptor.capture());
+
+        mMediator.destroy();
+        verify(mTabUnderlineManager).removeObserver(mTabUnderlineObserverCaptor.getValue());
     }
 
     private void setUpTabGroupCardDescriptionString() {
@@ -6465,6 +6521,15 @@ public class TabListMediatorUnitTest {
                 (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
                         ? mTabListConfig.supportsMessageCards
                         : (type == TabListMediatorType.TAB_SWITCHER);
+        boolean supportsModifierMultiSelect =
+                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
+                        ? mTabListConfig.supportsModifierMultiSelect
+                        : (type == TabListMediatorType.VERTICAL_TABS
+                                && VerticalTabUtils.isMultiSelectEnabled());
+        boolean supportsTabLoadingState =
+                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
+                        ? mTabListConfig.supportsTabLoadingState
+                        : (type == TabListMediatorType.VERTICAL_TABS);
         NonNullObservableSupplier<@RailCollapseState Integer> railCollapseStateSupplier =
                 (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
                         ? mTabListConfig.railCollapseStateSupplier
@@ -6473,12 +6538,19 @@ public class TabListMediatorUnitTest {
                 (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
                         ? mTabListConfig.tabHoverCardListener
                         : null;
+        TabUnderlineManager tabUnderlineManager =
+                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
+                        ? mTabListConfig.tabUnderlineManager
+                        : (type == TabListMediatorType.VERTICAL_TABS ? mTabUnderlineManager : null);
 
         mTabListConfig =
                 new TabListConfig.Builder(layoutType)
                         .setSupportsMessageCards(supportsMessageCards)
+                        .setSupportsModifierMultiSelect(supportsModifierMultiSelect)
+                        .setSupportsTabLoadingState(supportsTabLoadingState)
                         .setRailCollapseStateSupplier(railCollapseStateSupplier)
                         .setTabHoverCardListener(tabHoverCardListener)
+                        .setTabUnderlineManager(tabUnderlineManager)
                         .build();
 
         mMediator =
