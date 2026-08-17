@@ -164,6 +164,16 @@ public class WebViewChromiumAwInit {
                             && aconfigDelegate.isNativeWebViewZygoteEnabled(
                                     mFactory.getWebViewDelegate());
                 }
+
+                @Override
+                public long getDrawFnFunctionTable() {
+                    return DrawFunctor.getDrawFnFunctionTable();
+                }
+
+                @Override
+                public long getDrawSWFunctionTable() {
+                    return GraphicsUtils.getDrawSWFunctionTable();
+                }
             };
 
     private final AtomicInteger mChromiumFirstStartupRequestMode =
@@ -702,8 +712,8 @@ public class WebViewChromiumAwInit {
     private void initPlatSupportLibrary() {
         try (DualTraceEvent e =
                 DualTraceEvent.scoped("WebViewChromiumAwInit.initPlatSupportLibrary")) {
-            AwDrawFnImpl.setDrawFnFunctionTable(DrawFunctor.getDrawFnFunctionTable());
-            AwContents.setAwDrawSWFunctionTable(GraphicsUtils.getDrawSWFunctionTable());
+            AwDrawFnImpl.setDrawFnFunctionTable(mStartupDelegate.getDrawFnFunctionTable());
+            AwContents.setAwDrawSWFunctionTable(mStartupDelegate.getDrawSWFunctionTable());
         }
     }
 

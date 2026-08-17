@@ -113,6 +113,15 @@ public final class AwBrowserProcess {
 
         /** Returns whether to use native sandboxed services. */
         boolean shouldForceNativeSandboxedServices();
+
+        // TODO(abhijithnair): Rethink whether `getDrawFnFunctionTable` and `getDrawSWFunctionTable`
+        // are the right interface. See
+        // https://chromium-review.git.corp.google.com/c/chromium/src/+/8257352/comment/d9c4282e_3fa74a88/
+        /** Returns the function table pointer for hardware-accelerated drawing. */
+        long getDrawFnFunctionTable();
+
+        /** Returns the function table pointer for software drawing. */
+        long getDrawSWFunctionTable();
     }
 
     private static String sWebViewPackageName;
