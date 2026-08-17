@@ -273,7 +273,7 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that signing out a supervised user account clears the account data.
 // TODO(crbug.com/378058907): Re-enable this test.
-- (void)DISABLED_testSignOutForSupervisedUserClearAccountData {
+- (void)testSignOutForSupervisedUserClearAccountData {
   // Sign in with a fake supervised identity.
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];
