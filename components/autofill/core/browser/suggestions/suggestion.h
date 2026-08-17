@@ -362,7 +362,6 @@ struct Suggestion {
     ShouldTruncate should_truncate = ShouldTruncate(false);
   };
 
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ui.suggestion
   enum class Icon {
     // kNoIcon is kept at the top of the list.
     kNoIcon,
