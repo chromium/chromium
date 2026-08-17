@@ -500,10 +500,6 @@ class CertBuilder {
 // each log for a single CA.)
 class MtcLogBuilder {
  public:
-  enum Spec {
-    kDavidBen08,
-    kPlants05,
-  };
   // Type aliases to make interfaces more obvious what the integer types mean.
   using LogNumber = uint16_t;
   using LandmarkNumber = uint64_t;
@@ -514,12 +510,6 @@ class MtcLogBuilder {
     crypto::keypair::PrivateKey key;
     bssl::SignatureAlgorithm signature_algorithm;
   };
-
-  // Create a log builder for draft-davidben-08 with the specified log id and
-  // base id. If `base_id` is empty, `log_id` will also be used as the
-  // `base_id`.
-  explicit MtcLogBuilder(base::span<const uint8_t> log_id,
-                         base::span<const uint8_t> base_id = {});
 
   // Create a log builder for draft-plants-05 with the specified `ca_id` and
   // `log_number`.
@@ -532,7 +522,6 @@ class MtcLogBuilder {
 
   base::span<const uint8_t> log_id() const { return log_id_; }
   base::span<const uint8_t> ca_id() const {
-    CHECK_EQ(spec_, kPlants05);
     return ca_id_;
   }
 
@@ -667,11 +656,8 @@ class MtcLogBuilder {
     MtcLogEntry(MtcLogEntry&&);
     MtcLogEntry& operator=(MtcLogEntry&& other);
 
-    static MtcLogEntry NullEntry();
-
     std::vector<uint8_t> BuildMerkleTreeCertEntryTbsCertEntry(
-        std::vector<uint8_t> issuer_tlv,
-        Spec spec);
+        std::vector<uint8_t> issuer_tlv);
     std::vector<uint8_t> BuildTBSCertificate(std::vector<uint8_t> issuer_tlv,
                                              uint64_t serial);
 
@@ -692,20 +678,12 @@ class MtcLogBuilder {
     std::vector<uint8_t> subject_public_key_info;
   };
 
-  Spec spec_;
-
   // The tree size at each landmark (the vector is a mapping from
   // LandmarkNumber to LogIndex). Landmark 0 is always the empty tree.
   std::vector<LogIndex> landmarks_;
 
-  // The meaning of log_id_ differs between davidben-08 and plants-05.
   std::vector<uint8_t> log_id_;
-  // Only used in davidben-08.
-  std::vector<uint8_t> base_id_;
-  // Only used in plants-05.
   std::vector<uint8_t> ca_id_;
-
-  // Not used in kDavidBen08.
   LogNumber log_number_;
 
   std::unique_ptr<Data> data_;
