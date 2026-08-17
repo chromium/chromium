@@ -70,6 +70,9 @@ BASE_DECLARE_FEATURE(kPaymentHandlerCameraAccess);
 // and indicator is allowed in Payment Handler windows.
 BASE_DECLARE_FEATURE(kPaymentHandlerCameraAccessUx);
 
+// Used to control whether SPC supports validating locale.
+BASE_DECLARE_FEATURE(kSPCLocaleValidation);
+
 }  // namespace features
 }  // namespace payments
 
