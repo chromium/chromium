@@ -70,8 +70,7 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
   int overflow_added_or_removed_count_ = 0;
 
   // Owned by NotificationMenuViewTest.
-  raw_ptr<NotificationMenuView, DanglingUntriaged> notification_menu_view_ =
-      nullptr;
+  raw_ptr<NotificationMenuView> notification_menu_view_ = nullptr;
 };
 
 }  // namespace
@@ -124,7 +123,13 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
   }
 
   void TearDown() override {
+    mock_notification_menu_controller_->set_notification_menu_view(nullptr);
+    notification_menu_view_ = nullptr;
     widget_->Close();
+    test_api_.reset();
+    widget_.reset();
+    mock_notification_menu_controller_.reset();
+    zero_duration_scope_.reset();
     views::ViewsTestBase::TearDown();
   }
 
@@ -213,7 +218,7 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
  private:
   std::unique_ptr<MockNotificationMenuController>
       mock_notification_menu_controller_;
-  raw_ptr<NotificationMenuView, DanglingUntriaged> notification_menu_view_;
+  raw_ptr<NotificationMenuView> notification_menu_view_;
   std::unique_ptr<NotificationMenuViewTestAPI> test_api_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> zero_duration_scope_;
