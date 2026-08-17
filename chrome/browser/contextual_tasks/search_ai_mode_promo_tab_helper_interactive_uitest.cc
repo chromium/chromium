@@ -20,7 +20,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_signin_button_view.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"

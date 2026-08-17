@@ -13,7 +13,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"

@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](Browser* browser) {
+          [](BrowserWindowInterface* browser) {
             browser->tab_strip_model()->ActivateTabAt(1);
           },
           browser()),

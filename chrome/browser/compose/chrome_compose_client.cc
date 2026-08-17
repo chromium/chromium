@@ -28,7 +28,6 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -402,8 +401,7 @@ void ChromeComposeClient::OpenComposeSettings() {
 
   base::RecordAction(
       base::UserMetricsAction("Compose.SessionPaused.MSBBSettingsShown"));
-  ShowPromoInPage::Start(browser->GetBrowserForMigrationOnly(),
-                         std::move(params));
+  ShowPromoInPage::Start(browser, std::move(params));
 
   open_settings_requested_ = true;
 }

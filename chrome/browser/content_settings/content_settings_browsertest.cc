@@ -22,8 +22,8 @@
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/common/chrome_paths.h"
@@ -91,7 +91,8 @@ using net::URLRequestMockHTTPJob;
 
 namespace {
 
-BrowsingDataModel* GetSiteSettingsAllowedBrowsingDataModel(Browser* browser) {
+BrowsingDataModel* GetSiteSettingsAllowedBrowsingDataModel(
+    BrowserWindowInterface* browser) {
   PageSpecificContentSettings* settings =
       PageSpecificContentSettings::GetForFrame(browser->tab_strip_model()
                                                    ->GetActiveWebContents()
@@ -99,7 +100,8 @@ BrowsingDataModel* GetSiteSettingsAllowedBrowsingDataModel(Browser* browser) {
   return settings->allowed_browsing_data_model();
 }
 
-BrowsingDataModel* GetSiteSettingsBlockedBrowsingDataModel(Browser* browser) {
+BrowsingDataModel* GetSiteSettingsBlockedBrowsingDataModel(
+    BrowserWindowInterface* browser) {
   PageSpecificContentSettings* settings =
       PageSpecificContentSettings::GetForFrame(browser->tab_strip_model()
                                                    ->GetActiveWebContents()
@@ -204,7 +206,7 @@ class CookieSettingsTest
 
   void set_secure_scheme() { secure_scheme_ = true; }
 
-  std::string ReadCookie(Browser* browser) {
+  std::string ReadCookie(BrowserWindowInterface* browser) {
     switch (ReadMode()) {
       case CookieMode::kDocumentCookieJS:
         return JSReadCookie(browser);
@@ -215,7 +217,7 @@ class CookieSettingsTest
     }
   }
 
-  void WriteCookie(Browser* browser) {
+  void WriteCookie(BrowserWindowInterface* browser) {
     switch (WriteMode()) {
       case CookieMode::kDocumentCookieJS:
         return JSWriteCookie(browser);
@@ -279,7 +281,8 @@ class CookieSettingsTest
 
   // Read a cookie by fetching a url and checking what Cookie header (if any) it
   // saw.
-  std::string HttpReadCookieWithURL(Browser* browser, const GURL& url) {
+  std::string HttpReadCookieWithURL(BrowserWindowInterface* browser,
+                                    const GURL& url) {
     {
       base::AutoLock auto_lock(cookies_seen_lock_);
       cookies_seen_.clear();
@@ -297,7 +300,8 @@ class CookieSettingsTest
   }
 
   // Set a cookie by visiting a page that has a Set-Cookie header.
-  void HttpWriteCookieWithURL(Browser* browser, const GURL& url) {
+  void HttpWriteCookieWithURL(BrowserWindowInterface* browser,
+                              const GURL& url) {
     auto* frame = browser->tab_strip_model()
                       ->GetActiveWebContents()
                       ->GetPrimaryMainFrame();
@@ -308,14 +312,14 @@ class CookieSettingsTest
 
  private:
   // Read a cookie via JavaScript.
-  std::string JSReadCookie(Browser* browser) {
+  std::string JSReadCookie(BrowserWindowInterface* browser) {
     return content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                            "document.cookie")
         .ExtractString();
   }
 
   // Read a cookie with JavaScript cookie-store API
-  std::string JSAsyncReadCookie(Browser* browser) {
+  std::string JSAsyncReadCookie(BrowserWindowInterface* browser) {
     return content::EvalJs(
                browser->tab_strip_model()->GetActiveWebContents(),
                "async function doGet() {"
@@ -331,7 +335,7 @@ class CookieSettingsTest
 
   // Read a cookie by fetching the page url (which we should have just navigated
   // to) and checking what Cookie header (if any) it saw.
-  std::string HttpReadCookie(Browser* browser) {
+  std::string HttpReadCookie(BrowserWindowInterface* browser) {
     GURL url = browser->tab_strip_model()
                    ->GetActiveWebContents()
                    ->GetLastCommittedURL();
@@ -340,7 +344,7 @@ class CookieSettingsTest
   }
 
   // Set a cookie with JavaScript.
-  void JSWriteCookie(Browser* browser) {
+  void JSWriteCookie(BrowserWindowInterface* browser) {
     bool rv =
         content::ExecJs(browser->tab_strip_model()->GetActiveWebContents(),
                         "document.cookie = 'name=Good;Max-Age=3600'");
@@ -348,7 +352,7 @@ class CookieSettingsTest
   }
 
   // Set a cookie with JavaScript cookie-store api.
-  void JSAsyncWriteCookie(Browser* browser) {
+  void JSAsyncWriteCookie(BrowserWindowInterface* browser) {
     content::EvalJsResult result =
         content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
                         "async function doSet() {"
@@ -365,7 +369,7 @@ class CookieSettingsTest
   }
 
   // Set a cookie by visiting a page that has a Set-Cookie header.
-  void HttpWriteCookie(Browser* browser) {
+  void HttpWriteCookie(BrowserWindowInterface* browser) {
     HttpWriteCookieWithURL(browser, GetSetCookieURL());
   }
 

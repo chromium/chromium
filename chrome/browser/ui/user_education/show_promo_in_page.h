@@ -21,7 +21,7 @@ namespace user_education {
 class HelpBubble;
 }  // namespace user_education
 
-class Browser;
+class BrowserWindowInterface;
 
 // Utility for opening a page (optionally) and showing a help bubble on a
 // predetermined element. The object exists only as long as the operation
@@ -109,7 +109,8 @@ class ShowPromoInPage {
 
   // Opens the page in `browser` and displays a Help Bubble as described by
   // `params`. This method must be called on the UI thread.
-  static base::WeakPtr<ShowPromoInPage> Start(Browser* browser, Params params);
+  static base::WeakPtr<ShowPromoInPage> Start(BrowserWindowInterface* browser,
+                                              Params params);
 
   // Returns the help bubble if one was created.
   virtual user_education::HelpBubble* GetHelpBubbleForTesting() = 0;

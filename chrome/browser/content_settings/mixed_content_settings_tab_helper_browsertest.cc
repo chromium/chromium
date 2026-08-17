@@ -5,7 +5,6 @@
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 
 #include "base/command_line.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"

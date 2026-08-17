@@ -14,8 +14,8 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/user_education/user_education_types.h"
@@ -37,7 +37,7 @@ constexpr base::TimeDelta kShowPromoInPageTimeout = base::Seconds(30);
 
 class ShowPromoInPageImpl : public ShowPromoInPage {
  public:
-  explicit ShowPromoInPageImpl(Browser* browser, Params params)
+  explicit ShowPromoInPageImpl(BrowserWindowInterface* browser, Params params)
       : browser_(browser->GetWeakPtr()), callback_(std::move(params.callback)) {
     DCHECK(callback_);
     DCHECK(browser_);
@@ -172,7 +172,8 @@ ShowPromoInPage::Params::~Params() = default;
 ShowPromoInPage::ShowPromoInPage() = default;
 ShowPromoInPage::~ShowPromoInPage() = default;
 
-base::WeakPtr<ShowPromoInPage> ShowPromoInPage::Start(Browser* browser,
-                                                      Params params) {
+base::WeakPtr<ShowPromoInPage> ShowPromoInPage::Start(
+    BrowserWindowInterface* browser,
+    Params params) {
   return (new ShowPromoInPageImpl(browser, std::move(params)))->GetWeakPtr();
 }
