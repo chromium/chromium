@@ -71,7 +71,7 @@ std::unique_ptr<ImageDecoder> CreateFactoryJPEGDecoder() {
 enum class JPEGExpectedDifference {
   kNone,
   kSizeAvailability,
-  kDecodeFailure,
+  kLibjpegTurboDecodeFailure,
 };
 
 struct JPEGComparisonTestCase {
@@ -116,14 +116,15 @@ JPEGComparisonTestCase SizeAvailabilityDifference(const char* path,
                                 0, 0, description};
 }
 
-JPEGComparisonTestCase DecodeFailureDifference(const char* path,
-                                               const char* description) {
-  return JPEGComparisonTestCase{path, JPEGExpectedDifference::kDecodeFailure, 0,
-                                0, description};
+JPEGComparisonTestCase LibjpegTurboDecodeFailure(const char* path,
+                                                 const char* description) {
+  return JPEGComparisonTestCase{
+      path, JPEGExpectedDifference::kLibjpegTurboDecodeFailure, 0, 0,
+      description};
 }
 
 JPEGComparisonTestCase ArithmeticDecodeDifference(const char* path) {
-  return DecodeFailureDifference(
+  return LibjpegTurboDecodeFailure(
       path,
       "The libjpeg-turbo build omits arithmetic decoding while zune-jpeg "
       "decodes this image.");
@@ -405,9 +406,12 @@ TEST_P(JPEGDecoderComparisonTest, CompareDecoders) {
 
   bool cpp_failed = cpp_decoder->Failed();
   bool rust_failed = rust_decoder->Failed();
-  if (test_case.expected_difference == JPEGExpectedDifference::kDecodeFailure) {
-    EXPECT_NE(cpp_failed, rust_failed)
-        << jpeg_path << ": expected decode failure-state difference";
+  if (test_case.expected_difference ==
+      JPEGExpectedDifference::kLibjpegTurboDecodeFailure) {
+    EXPECT_TRUE(cpp_failed)
+        << jpeg_path << ": expected libjpeg-turbo decode failure";
+    EXPECT_FALSE(rust_failed)
+        << jpeg_path << ": expected zune-jpeg decode success";
     return;
   }
   EXPECT_EQ(cpp_failed, rust_failed)
@@ -488,14 +492,8 @@ INSTANTIATE_TEST_SUITE_P(
         NoDifference(
             "/images/jpeg-suite/baseline/32x32x8_grayscale_quantization.jpg"),
         NoDifference("/images/jpeg-suite/baseline/32x32x8_restarts.jpg"),
-        DecodeFailureDifference(
-            "/images/jpeg-suite/baseline/32x32x8_rgb.jpg",
-            "RGB JPEG colorspace: libjpeg-turbo decodes this suite input, but "
-            "zune-jpeg currently reports a decode failure."),
-        DecodeFailureDifference(
-            "/images/jpeg-suite/baseline/32x32x8_rgb_interleaved.jpg",
-            "Interleaved RGB JPEG colorspace: libjpeg-turbo decodes this suite "
-            "input, but zune-jpeg currently reports a decode failure."),
+        NoDifference("/images/jpeg-suite/baseline/32x32x8_rgb.jpg"),
+        NoDifference("/images/jpeg-suite/baseline/32x32x8_rgb_interleaved.jpg"),
         NoDifference("/images/jpeg-suite/baseline/32x32x8_ycbcr.jpg"),
         SmallPixelDifference(
             "/images/jpeg-suite/baseline/32x32x8_ycbcr_2x2_1x1_1x1.jpg",
@@ -546,14 +544,9 @@ INSTANTIATE_TEST_SUITE_P(
                      "32x32x8_grayscale_quantization.jpg"),
         NoDifference(
             "/images/jpeg-suite/extended_huffman/32x32x8_restarts.jpg"),
-        DecodeFailureDifference(
-            "/images/jpeg-suite/extended_huffman/32x32x8_rgb.jpg",
-            "RGB JPEG colorspace: libjpeg-turbo decodes this suite input, but "
-            "zune-jpeg currently reports a decode failure."),
-        DecodeFailureDifference(
-            "/images/jpeg-suite/extended_huffman/32x32x8_rgb_interleaved.jpg",
-            "Interleaved RGB JPEG colorspace: libjpeg-turbo decodes this suite "
-            "input, but zune-jpeg currently reports a decode failure."),
+        NoDifference("/images/jpeg-suite/extended_huffman/32x32x8_rgb.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/extended_huffman/32x32x8_rgb_interleaved.jpg"),
         NoDifference("/images/jpeg-suite/extended_huffman/32x32x8_ycbcr.jpg"),
         SmallPixelDifference(
             "/images/jpeg-suite/extended_huffman/"
@@ -638,20 +631,20 @@ INSTANTIATE_TEST_SUITE_P(
             "/images/jpeg-suite/progressive_huffman/32x32x12_grayscale.jpg",
             "12-bit progressive JPEG is supported by libjpeg-turbo header "
             "parsing but not by zune-jpeg."),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/32x32x8_cmyk.jpg",
             "Progressive CMYK JPEG: libjpeg-turbo reports decode failure in "
             "Blink while zune-jpeg decodes the image."),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/"
             "32x32x8_cmyk_interleaved.jpg",
             "Progressive interleaved CMYK JPEG: libjpeg-turbo reports decode "
             "failure in Blink while zune-jpeg decodes the image."),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/32x32x8_grayscale.jpg",
             "Progressive Huffman grayscale JPEG: libjpeg-turbo reports decode "
             "failure in Blink while zune-jpeg decodes the image."),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/"
             "32x32x8_grayscale_quantization.jpg",
             "Progressive Huffman grayscale JPEG with quantization-table "
@@ -669,48 +662,55 @@ INSTANTIATE_TEST_SUITE_P(
                      "32x32x8_grayscale_successive_ac.jpg"),
         NoDifference("/images/jpeg-suite/progressive_huffman/"
                      "32x32x8_grayscale_successive_dc.jpg"),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/32x32x8_restarts.jpg",
             "Progressive Huffman JPEG with restart markers: libjpeg-turbo "
             "reports decode failure in Blink while zune-jpeg decodes the "
             "image."),
-        NoDifference("/images/jpeg-suite/progressive_huffman/32x32x8_rgb.jpg"),
-        NoDifference("/images/jpeg-suite/progressive_huffman/"
-                     "32x32x8_rgb_interleaved.jpg"),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
+            "/images/jpeg-suite/progressive_huffman/32x32x8_rgb.jpg",
+            "Progressive RGB JPEG has a malformed combined DC+AC scan: "
+            "libjpeg-turbo reports decode failure while zune-jpeg accepts it."),
+        LibjpegTurboDecodeFailure(
+            "/images/jpeg-suite/progressive_huffman/"
+            "32x32x8_rgb_interleaved.jpg",
+            "Progressive interleaved RGB JPEG has a malformed combined DC+AC "
+            "scan: libjpeg-turbo reports decode failure while zune-jpeg "
+            "accepts it."),
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/32x32x8_ycbcr.jpg",
             "Progressive Huffman YCbCr JPEG: libjpeg-turbo reports decode "
             "failure in Blink while zune-jpeg decodes the image."),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/"
             "32x32x8_ycbcr_2x2_1x1_1x1.jpg",
             "Progressive Huffman mixed-sampling YCbCr JPEG: libjpeg-turbo "
             "reports decode failure in Blink while zune-jpeg decodes the "
             "image."),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/"
             "32x32x8_ycbcr_2x2_1x1_1x1_interleaved.jpg",
             "Progressive Huffman interleaved mixed-sampling YCbCr JPEG: "
             "libjpeg-turbo reports decode failure in Blink while zune-jpeg "
             "decodes the image."),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/"
             "32x32x8_ycbcr_2x2_2x1_1x2.jpg",
             "Progressive Huffman mixed-sampling YCbCr JPEG: libjpeg-turbo "
             "reports decode failure in Blink while zune-jpeg decodes the "
             "image."),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/"
             "32x32x8_ycbcr_2x2_2x1_1x2_interleaved.jpg",
             "Progressive Huffman interleaved mixed-sampling YCbCr JPEG: "
             "libjpeg-turbo reports decode failure in Blink while zune-jpeg "
             "decodes the image."),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/"
             "32x32x8_ycbcr_interleaved.jpg",
             "Progressive Huffman interleaved YCbCr JPEG: libjpeg-turbo reports "
             "decode failure in Blink while zune-jpeg decodes the image."),
-        DecodeFailureDifference(
+        LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/"
             "32x32x8_ycbcr_quantization.jpg",
             "Progressive Huffman YCbCr JPEG with quantization-table variation: "

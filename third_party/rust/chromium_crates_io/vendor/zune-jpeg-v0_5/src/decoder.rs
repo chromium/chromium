@@ -14,6 +14,7 @@ use alloc::string::ToString;
 use alloc::vec::Vec;
 use alloc::sync::Arc;
 use alloc::{format, vec};
+use core::num::NonZeroU32;
 
 use zune_core::bytestream::{ZByteReaderTrait, ZReader};
 use zune_core::colorspace::ColorSpace;
@@ -132,6 +133,7 @@ pub(crate) struct ScanHeaderStateSnapshot {
     pub(crate) entropy_tables:   EntropyTables,
     pub(crate) restart_interval: usize,
     pub(crate) input_colorspace: ColorSpace,
+    pub(crate) adobe_transform:  Option<u8>,
     pub(crate) is_mjpeg:         bool
 }
 
@@ -248,6 +250,8 @@ pub struct JpegDecoder<T> {
     /// Image input colorspace, should be YCbCr for a sane image, might be
     /// grayscale too
     pub(crate) input_colorspace: ColorSpace,
+    /// Adobe APP14 transform, resolved with the SOF component count at SOS.
+    pub(crate) adobe_transform:  Option<u8>,
     // Is the image using arithmetic coding?
     pub(crate) is_arithmetic:    bool,
     // Progressive image details
@@ -415,6 +419,7 @@ where
             entropy_tables:   self.entropy_tables.clone(),
             restart_interval: self.restart_interval,
             input_colorspace: self.input_colorspace,
+            adobe_transform:  self.adobe_transform,
             is_mjpeg:         self.is_mjpeg
         }
     }
@@ -424,6 +429,7 @@ where
         self.entropy_tables = snapshot.entropy_tables.clone();
         self.restart_interval = snapshot.restart_interval;
         self.input_colorspace = snapshot.input_colorspace;
+        self.adobe_transform = snapshot.adobe_transform;
         self.is_mjpeg = snapshot.is_mjpeg;
     }
 
@@ -610,6 +616,7 @@ where
             idct_1x1_func:               choose_idct_1x1_func(&options),
             color_convert_16:            color_convert,
             input_colorspace:            ColorSpace::YCbCr,
+            adobe_transform:             None,
             z_order:                     [0; MAX_COMPONENTS],
             restart_interval:            0,
             todo:                        0x7fff_ffff,
@@ -1122,31 +1129,9 @@ where
         // break after reading the start of scan.
         // what follows is the image data
         if n == Marker::SOS {
-            self.headers_decoded = true;
+            self.resolve_input_colorspace()?;
             trace!("Input colorspace {:?}", self.input_colorspace);
-
-            // Check if image is RGB
-            // The check is weird, we need to check if ID
-            // represents R, G and B in ascii,
-            //
-            // I am not sure if this is even specified in any standard,
-            // but jpegli https://github.com/google/jpegli does encode
-            // its images that way, so this will check for that. and handle it appropriately
-            // It is spefified here so that on a successful header decode,we can at least
-            // try to attribute image colorspace  correctly.
-            //
-            // It was first the issue in https://github.com/etemesi254/zune-image/issues/291
-            // that brought it to light
-            //
-            let mut is_rgb = self.components.len() == 3;
-            let chars = ['R', 'G', 'B'];
-            for (comp, single_char) in self.components.iter().zip(chars.iter()) {
-                is_rgb &= comp.id == (*single_char) as u8;
-            }
-            // Image is RGB, change colorspace
-            if is_rgb {
-                self.input_colorspace = ColorSpace::RGB;
-            }
+            self.headers_decoded = true;
 
             self.enter_scan_state()?;
             return Ok(MarkerStep::EnteredScan);
@@ -1154,6 +1139,55 @@ where
 
         self.checkpoint_headers()?;
         Ok(MarkerStep::Continue)
+    }
+
+    fn resolve_input_colorspace(&mut self) -> Result<(), DecodeErrors> {
+        self.input_colorspace = match self.adobe_transform {
+            Some(0) if self.components.len() == 3 => ColorSpace::RGB,
+            Some(0) => ColorSpace::CMYK,
+            Some(1) => ColorSpace::YCbCr,
+            Some(2) => ColorSpace::YCCK,
+            Some(_) => unreachable!("APP14 parser rejects unknown transforms"),
+            None if self.components.len() == 1 => ColorSpace::Luma,
+            None if self.components.len() == 4 => ColorSpace::CMYK,
+            None
+                if self.components.len() == 3
+                    && self
+                        .components
+                        .iter()
+                        .zip(b"RGB")
+                        .all(|(component, id)| component.id == *id) =>
+            {
+                ColorSpace::RGB
+            }
+            None => ColorSpace::YCbCr
+        };
+
+        if self.input_colorspace.num_components() > self.components.len() {
+            if self.options.strict_mode() {
+                return Err(DecodeErrors::Format(format!(
+                    "Expected {} number of components but found {}",
+                    self.input_colorspace.num_components(),
+                    self.components.len()
+                )));
+            }
+
+            if self.input_colorspace == ColorSpace::YCCK && self.components.len() == 3 {
+                warn!("Treating YCCK colorspace as YCbCr because component count is 3");
+                self.input_colorspace = ColorSpace::YCbCr;
+            } else if let Some(component_count) = u32::try_from(self.components.len())
+                .ok()
+                .and_then(NonZeroU32::new)
+            {
+                warn!(
+                    "Expected {} number of components but found {}; defaulting to multiband",
+                    self.input_colorspace.num_components(),
+                    self.components.len()
+                );
+                self.input_colorspace = ColorSpace::MultiBand(component_count);
+            }
+        }
+        Ok(())
     }
 
     // Read a length-prefixed marker payload and discard its body. Shared by

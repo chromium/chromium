@@ -12,11 +12,9 @@
 use alloc::format;
 use core::cmp::max;
 use core::fmt;
-use core::num::NonZeroU32;
 
 use zune_core::bytestream::ZByteReaderTrait;
-use zune_core::colorspace::ColorSpace;
-use zune_core::log::{trace, warn};
+use zune_core::log::trace;
 
 use crate::components::{ComponentID, SampleRatios};
 use crate::errors::DecodeErrors;
@@ -184,19 +182,6 @@ pub(crate) fn setup_component_params<T: ZByteReaderTrait>(
     let img_width = img.width();
     let img_height = img.height();
 
-    // in case of adobe app14 being present, zero may indicate
-    // either CMYK if components are 4 or RGB if components are 3,
-    // see https://docs.oracle.com/javase/6/docs/api/javax/imageio/metadata/doc-files/jpeg_metadata.html
-    // so since we may not know how many number of components
-    // we have when decoding app14, we have to defer that check
-    // until now.
-    //
-    // We know adobe app14 was present since it's the only one that can modify
-    // input colorspace to be CMYK
-    if img.components.len() == 3 && img.input_colorspace == ColorSpace::CMYK {
-        img.input_colorspace = ColorSpace::RGB;
-    }
-
     // h_max contains the maximum horizontal component
     // v_max contains the maximum vertical component
     for component in &mut img.components {
@@ -293,60 +278,6 @@ pub(crate) fn setup_component_params<T: ZByteReaderTrait>(
         );
     }
 
-    // check colorspace matches
-    if img.input_colorspace.num_components() > img.components.len() {
-        if img.options.strict_mode() {
-            let msg = format!(
-                "Expected {} number of components but found {}",
-                img.input_colorspace.num_components(),
-                img.components.len()
-            );
-
-            return Err(DecodeErrors::Format(msg));
-        } else if img.input_colorspace == ColorSpace::YCCK {
-            // Some images may have YCCK format (from adobe app14 segment) which is supposed to be 4 components
-            // but only 3 components, see issue https://github.com/etemesi254/zune-image/issues/275
-            // So this is the behaviour of other decoders
-            // - stb_image: Treats it as YCbCr image
-            // - libjpeg_turbo: Does not know how to parse YCCK images (transform 2 app14) so treats
-            // it as YCbCr
-            // So I will match that to match existing ones
-            if img.components.len() == 3 {
-                warn!("Treating YCCK colorspace as YCbCr because component count is 3");
-                img.input_colorspace = ColorSpace::YCbCr;
-            } else {
-                warn!(
-                    "Treating YCCK colorspace as multiband because component count is {}",
-                    img.components.len()
-                );
-                img.input_colorspace =
-                    ColorSpace::MultiBand(NonZeroU32::new(img.components.len() as u32).unwrap());
-            }
-        } else {
-            // Note, translated this to a warning to handle valid images of the sort
-            // See https://github.com/etemesi254/zune-image/issues/288 where there
-            // was a CMYK image with two components which would be decoded to 4 components
-            // by the decoder.
-            // So with a warning that becomes supported.
-            //
-            // djpeg fails to render an image from that also probably because it does not
-            // understand the expected format.
-            warn!(
-                "Expected {} number of components but found {}",
-                img.input_colorspace.num_components(),
-                img.components.len()
-            );
-            warn!("Defaulting to multisample to decode");
-
-            // N/B: We do not post process the color of such, treating it as multiband
-            // is the best option since I am not aware of grayscale+alpha which is the most common
-            // two band format in jpeg.
-            if !img.components.is_empty() {
-                img.input_colorspace =
-                    ColorSpace::MultiBand(NonZeroU32::new(img.components.len() as u32).unwrap());
-            }
-        }
-    }
     Ok(())
 }
 

@@ -22,6 +22,7 @@
 //! layout, etc.
 //!
 use alloc::format;
+use alloc::string::ToString;
 
 use zune_core::bytestream::{ZByteReaderTrait, ZReader};
 
@@ -898,9 +899,12 @@ impl BitStream for BitStreamArithmetic {
                     // This entry is zero
                     pos += 1;
                     if pos > self.spec_end {
-                        return Err(DecodeErrors::ArithmeticDecode(
-                            "Overrun while decoding initial AC coefficients, did not find end of band".to_string()
-                        ));
+                        // Match libjpeg-turbo's JWRN_ARITH_BAD_CODE path: keep
+                        // coefficients decoded so far, stop reading this scan,
+                        // skip its remaining MCUs, and reinitialize arithmetic
+                        // state at the next SOS. libjpeg does the same by
+                        // setting `ct = -1`; later MCU calls become no-ops.
+                        return Ok(false);
                     }
                 } else {
                     break;
@@ -914,7 +918,7 @@ impl BitStream for BitStreamArithmetic {
             block[t_pos] = (symbol as i16).wrapping_mul(bit);
             pos += 1;
         }
-        return Ok(true);
+        Ok(true)
     }
 
     #[allow(clippy::too_many_lines, clippy::op_ref)]

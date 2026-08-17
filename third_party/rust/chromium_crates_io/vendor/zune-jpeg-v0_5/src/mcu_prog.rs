@@ -556,7 +556,11 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                         .unwrap();
 
                     let ac_table = B::get_ac_table(&mut self.entropy_tables, ac_pos)?;
-                    stream.decode_mcu_ac_first(&mut self.stream, ac_table, data)?;
+                    if !stream.decode_mcu_ac_first(&mut self.stream, ac_table, data)? {
+                        // Arithmetic bad-code termination is scan-wide, matching
+                        // libjpeg's no-op handling for the remaining MCUs.
+                        return Ok(());
+                    }
                 }
 
                 self.todo -= 1;

@@ -1,0 +1,64 @@
+From 432e77cada6a4a634710b09f1a91c124b51d1e45 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Wed, 12 Aug 2026 15:34:42 +0000
+Subject: [PATCH] fix(jpeg): preserve progressive arithmetic AC scans
+
+Backport of https://github.com/etemesi254/zune-image/pull/427.
+
+---
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs
+index 4c7bb2ee64b29..9acadf4b00b8a 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream_arith.rs
+@@ -22,6 +22,7 @@
+ //! layout, etc.
+ //!
+ use alloc::format;
++use alloc::string::ToString;
+ 
+ use zune_core::bytestream::{ZByteReaderTrait, ZReader};
+ 
+@@ -898,9 +899,12 @@ impl BitStream for BitStreamArithmetic {
+                     // This entry is zero
+                     pos += 1;
+                     if pos > self.spec_end {
+-                        return Err(DecodeErrors::ArithmeticDecode(
+-                            "Overrun while decoding initial AC coefficients, did not find end of band".to_string()
+-                        ));
++                        // Match libjpeg-turbo's JWRN_ARITH_BAD_CODE path: keep
++                        // coefficients decoded so far, stop reading this scan,
++                        // skip its remaining MCUs, and reinitialize arithmetic
++                        // state at the next SOS. libjpeg does the same by
++                        // setting `ct = -1`; later MCU calls become no-ops.
++                        return Ok(false);
+                     }
+                 } else {
+                     break;
+@@ -914,7 +918,7 @@ impl BitStream for BitStreamArithmetic {
+             block[t_pos] = (symbol as i16).wrapping_mul(bit);
+             pos += 1;
+         }
+-        return Ok(true);
++        Ok(true)
+     }
+ 
+     #[allow(clippy::too_many_lines, clippy::op_ref)]
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
+index dd300f2f5fae7..fa36243031721 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu_prog.rs
+@@ -556,7 +556,11 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
+                         .unwrap();
+ 
+                     let ac_table = B::get_ac_table(&mut self.entropy_tables, ac_pos)?;
+-                    stream.decode_mcu_ac_first(&mut self.stream, ac_table, data)?;
++                    if !stream.decode_mcu_ac_first(&mut self.stream, ac_table, data)? {
++                        // Arithmetic bad-code termination is scan-wide, matching
++                        // libjpeg's no-op handling for the remaining MCUs.
++                        return Ok(());
++                    }
+                 }
+ 
+                 self.todo -= 1;
+-- 
+2.50.1

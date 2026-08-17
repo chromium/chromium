@@ -1,0 +1,312 @@
+From 681717104171beb3ef14dfa6bd7ab3df701a6af6 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Fri, 7 Aug 2026 14:23:57 +0000
+Subject: [PATCH] fix(jpeg): finalize APP14 colorspace in headers
+
+Backport of https://github.com/etemesi254/zune-image/pull/426.
+
+---
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+index 883f6c55..8132b7d4 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+@@ -14,6 +14,7 @@ use alloc::string::ToString;
+ use alloc::vec::Vec;
+ use alloc::sync::Arc;
+ use alloc::{format, vec};
++use core::num::NonZeroU32;
+ 
+ use zune_core::bytestream::{ZByteReaderTrait, ZReader};
+ use zune_core::colorspace::ColorSpace;
+@@ -132,6 +133,7 @@ pub(crate) struct ScanHeaderStateSnapshot {
+     pub(crate) entropy_tables:   EntropyTables,
+     pub(crate) restart_interval: usize,
+     pub(crate) input_colorspace: ColorSpace,
++    pub(crate) adobe_transform:  Option<u8>,
+     pub(crate) is_mjpeg:         bool
+ }
+ 
+@@ -248,6 +250,8 @@ pub struct JpegDecoder<T> {
+     /// Image input colorspace, should be YCbCr for a sane image, might be
+     /// grayscale too
+     pub(crate) input_colorspace: ColorSpace,
++    /// Adobe APP14 transform, resolved with the SOF component count at SOS.
++    pub(crate) adobe_transform:  Option<u8>,
+     // Is the image using arithmetic coding?
+     pub(crate) is_arithmetic:    bool,
+     // Progressive image details
+@@ -415,6 +419,7 @@ where
+             entropy_tables:   self.entropy_tables.clone(),
+             restart_interval: self.restart_interval,
+             input_colorspace: self.input_colorspace,
++            adobe_transform:  self.adobe_transform,
+             is_mjpeg:         self.is_mjpeg
+         }
+     }
+@@ -424,6 +429,7 @@ where
+         self.entropy_tables = snapshot.entropy_tables.clone();
+         self.restart_interval = snapshot.restart_interval;
+         self.input_colorspace = snapshot.input_colorspace;
++        self.adobe_transform = snapshot.adobe_transform;
+         self.is_mjpeg = snapshot.is_mjpeg;
+     }
+ 
+@@ -610,6 +616,7 @@ where
+             idct_1x1_func:               choose_idct_1x1_func(&options),
+             color_convert_16:            color_convert,
+             input_colorspace:            ColorSpace::YCbCr,
++            adobe_transform:             None,
+             z_order:                     [0; MAX_COMPONENTS],
+             restart_interval:            0,
+             todo:                        0x7fff_ffff,
+@@ -1122,31 +1129,9 @@ where
+         // break after reading the start of scan.
+         // what follows is the image data
+         if n == Marker::SOS {
+-            self.headers_decoded = true;
++            self.resolve_input_colorspace()?;
+             trace!("Input colorspace {:?}", self.input_colorspace);
+-
+-            // Check if image is RGB
+-            // The check is weird, we need to check if ID
+-            // represents R, G and B in ascii,
+-            //
+-            // I am not sure if this is even specified in any standard,
+-            // but jpegli https://github.com/google/jpegli does encode
+-            // its images that way, so this will check for that. and handle it appropriately
+-            // It is spefified here so that on a successful header decode,we can at least
+-            // try to attribute image colorspace  correctly.
+-            //
+-            // It was first the issue in https://github.com/etemesi254/zune-image/issues/291
+-            // that brought it to light
+-            //
+-            let mut is_rgb = self.components.len() == 3;
+-            let chars = ['R', 'G', 'B'];
+-            for (comp, single_char) in self.components.iter().zip(chars.iter()) {
+-                is_rgb &= comp.id == (*single_char) as u8;
+-            }
+-            // Image is RGB, change colorspace
+-            if is_rgb {
+-                self.input_colorspace = ColorSpace::RGB;
+-            }
++            self.headers_decoded = true;
+ 
+             self.enter_scan_state()?;
+             return Ok(MarkerStep::EnteredScan);
+@@ -1156,6 +1141,55 @@ where
+         Ok(MarkerStep::Continue)
+     }
+ 
++    fn resolve_input_colorspace(&mut self) -> Result<(), DecodeErrors> {
++        self.input_colorspace = match self.adobe_transform {
++            Some(0) if self.components.len() == 3 => ColorSpace::RGB,
++            Some(0) => ColorSpace::CMYK,
++            Some(1) => ColorSpace::YCbCr,
++            Some(2) => ColorSpace::YCCK,
++            Some(_) => unreachable!("APP14 parser rejects unknown transforms"),
++            None if self.components.len() == 1 => ColorSpace::Luma,
++            None if self.components.len() == 4 => ColorSpace::CMYK,
++            None
++                if self.components.len() == 3
++                    && self
++                        .components
++                        .iter()
++                        .zip(b"RGB")
++                        .all(|(component, id)| component.id == *id) =>
++            {
++                ColorSpace::RGB
++            }
++            None => ColorSpace::YCbCr
++        };
++
++        if self.input_colorspace.num_components() > self.components.len() {
++            if self.options.strict_mode() {
++                return Err(DecodeErrors::Format(format!(
++                    "Expected {} number of components but found {}",
++                    self.input_colorspace.num_components(),
++                    self.components.len()
++                )));
++            }
++
++            if self.input_colorspace == ColorSpace::YCCK && self.components.len() == 3 {
++                warn!("Treating YCCK colorspace as YCbCr because component count is 3");
++                self.input_colorspace = ColorSpace::YCbCr;
++            } else if let Some(component_count) = u32::try_from(self.components.len())
++                .ok()
++                .and_then(NonZeroU32::new)
++            {
++                warn!(
++                    "Expected {} number of components but found {}; defaulting to multiband",
++                    self.input_colorspace.num_components(),
++                    self.components.len()
++                );
++                self.input_colorspace = ColorSpace::MultiBand(component_count);
++            }
++        }
++        Ok(())
++    }
++
+     // Read a length-prefixed marker payload and discard its body. Shared by
+     // the unknown-marker path in `decode_headers_internal` and the catch-all
+     // arm in `parse_marker_inner`. The full body is buffered (and immediately
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs
+index c7f39922..af9ee203 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs
+@@ -16,8 +16,7 @@ use alloc::vec::Vec;
+ use core::cmp::max;
+ 
+ use zune_core::bytestream::ZByteReaderTrait;
+-use zune_core::colorspace::ColorSpace;
+-use zune_core::log::{debug, trace, warn};
++use zune_core::log::{trace, warn};
+ 
+ use crate::components::{Components, SampleRatios};
+ use crate::decoder::{ExtendedXmpSegment, GainMapInfo, ICCChunk, JpegDecoder, MAX_COMPONENTS};
+@@ -416,14 +415,6 @@ pub(crate) fn parse_start_of_frame<T: ZByteReaderTrait>(
+         if img_height == 0 {
+             img.expects_dnl = true;
+         }
+-        if num_components == 1 {
+-            img.input_colorspace = ColorSpace::Luma;
+-            debug!("Overriding default colorspace set to Luma");
+-        }
+-        if num_components == 4 && img.input_colorspace == ColorSpace::YCbCr {
+-            trace!("Input image has 4 components, defaulting to CMYK colorspace");
+-            img.input_colorspace = ColorSpace::CMYK;
+-        }
+         img.info.components = num_components;
+         img.components = components;
+         img.seen_sof = true;
+@@ -594,7 +585,7 @@ pub(crate) fn parse_app14<T: ZByteReaderTrait>(
+         let body = cursor.body();
+ 
+         // Validate, decide, then commit. No partial mutation on error.
+-        let new_colorspace = if body.len() >= 5 && &body[..5] == b"Adobe" {
++        let transform = if body.len() >= 5 && &body[..5] == b"Adobe" {
+             // Adobe segment must be at least 12 bytes of body (6 id + 5 ver/flags + 1 transform).
+             if body.len() < 12 {
+                 return Err(DecodeErrors::FormatStatic(
+@@ -605,9 +596,7 @@ pub(crate) fn parse_app14<T: ZByteReaderTrait>(
+             let transform = body[11];
+             // https://exiftool.org/TagNames/JPEG.html#Adobe
+             match transform {
+-                0 => Some(ColorSpace::CMYK),
+-                1 => Some(ColorSpace::YCbCr),
+-                2 => Some(ColorSpace::YCCK),
++                0..=2 => Some(transform),
+                 _ => {
+                     return Err(DecodeErrors::Format(format!(
+                         "Unknown Adobe colorspace {transform}"
+@@ -620,8 +609,8 @@ pub(crate) fn parse_app14<T: ZByteReaderTrait>(
+         };
+ 
+         // Commit phase.
+-        if let Some(cs) = new_colorspace {
+-            decoder.input_colorspace = cs;
++        if let Some(transform) = transform {
++            decoder.adobe_transform = Some(transform);
+         }
+         Ok(())
+     })
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/misc.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/misc.rs
+index 2bff1cf7..3a000d75 100644
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/misc.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/misc.rs
+@@ -12,11 +12,9 @@
+ use alloc::format;
+ use core::cmp::max;
+ use core::fmt;
+-use core::num::NonZeroU32;
+ 
+ use zune_core::bytestream::ZByteReaderTrait;
+-use zune_core::colorspace::ColorSpace;
+-use zune_core::log::{trace, warn};
++use zune_core::log::trace;
+ 
+ use crate::components::{ComponentID, SampleRatios};
+ use crate::errors::DecodeErrors;
+@@ -184,19 +182,6 @@ pub(crate) fn setup_component_params<T: ZByteReaderTrait>(
+     let img_width = img.width();
+     let img_height = img.height();
+ 
+-    // in case of adobe app14 being present, zero may indicate
+-    // either CMYK if components are 4 or RGB if components are 3,
+-    // see https://docs.oracle.com/javase/6/docs/api/javax/imageio/metadata/doc-files/jpeg_metadata.html
+-    // so since we may not know how many number of components
+-    // we have when decoding app14, we have to defer that check
+-    // until now.
+-    //
+-    // We know adobe app14 was present since it's the only one that can modify
+-    // input colorspace to be CMYK
+-    if img.components.len() == 3 && img.input_colorspace == ColorSpace::CMYK {
+-        img.input_colorspace = ColorSpace::RGB;
+-    }
+-
+     // h_max contains the maximum horizontal component
+     // v_max contains the maximum vertical component
+     for component in &mut img.components {
+@@ -293,60 +278,6 @@ pub(crate) fn setup_component_params<T: ZByteReaderTrait>(
+         );
+     }
+ 
+-    // check colorspace matches
+-    if img.input_colorspace.num_components() > img.components.len() {
+-        if img.options.strict_mode() {
+-            let msg = format!(
+-                "Expected {} number of components but found {}",
+-                img.input_colorspace.num_components(),
+-                img.components.len()
+-            );
+-
+-            return Err(DecodeErrors::Format(msg));
+-        } else if img.input_colorspace == ColorSpace::YCCK {
+-            // Some images may have YCCK format (from adobe app14 segment) which is supposed to be 4 components
+-            // but only 3 components, see issue https://github.com/etemesi254/zune-image/issues/275
+-            // So this is the behaviour of other decoders
+-            // - stb_image: Treats it as YCbCr image
+-            // - libjpeg_turbo: Does not know how to parse YCCK images (transform 2 app14) so treats
+-            // it as YCbCr
+-            // So I will match that to match existing ones
+-            if img.components.len() == 3 {
+-                warn!("Treating YCCK colorspace as YCbCr because component count is 3");
+-                img.input_colorspace = ColorSpace::YCbCr;
+-            } else {
+-                warn!(
+-                    "Treating YCCK colorspace as multiband because component count is {}",
+-                    img.components.len()
+-                );
+-                img.input_colorspace =
+-                    ColorSpace::MultiBand(NonZeroU32::new(img.components.len() as u32).unwrap());
+-            }
+-        } else {
+-            // Note, translated this to a warning to handle valid images of the sort
+-            // See https://github.com/etemesi254/zune-image/issues/288 where there
+-            // was a CMYK image with two components which would be decoded to 4 components
+-            // by the decoder.
+-            // So with a warning that becomes supported.
+-            //
+-            // djpeg fails to render an image from that also probably because it does not
+-            // understand the expected format.
+-            warn!(
+-                "Expected {} number of components but found {}",
+-                img.input_colorspace.num_components(),
+-                img.components.len()
+-            );
+-            warn!("Defaulting to multisample to decode");
+-
+-            // N/B: We do not post process the color of such, treating it as multiband
+-            // is the best option since I am not aware of grayscale+alpha which is the most common
+-            // two band format in jpeg.
+-            if !img.components.is_empty() {
+-                img.input_colorspace =
+-                    ColorSpace::MultiBand(NonZeroU32::new(img.components.len() as u32).unwrap());
+-            }
+-        }
+-    }
+     Ok(())
+ }
+ 
+-- 
+2.50.1
+

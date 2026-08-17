@@ -16,8 +16,7 @@ use alloc::vec::Vec;
 use core::cmp::max;
 
 use zune_core::bytestream::ZByteReaderTrait;
-use zune_core::colorspace::ColorSpace;
-use zune_core::log::{debug, trace, warn};
+use zune_core::log::{trace, warn};
 
 use crate::components::{Components, SampleRatios};
 use crate::decoder::{ExtendedXmpSegment, GainMapInfo, ICCChunk, JpegDecoder, MAX_COMPONENTS};
@@ -416,14 +415,6 @@ pub(crate) fn parse_start_of_frame<T: ZByteReaderTrait>(
         if img_height == 0 {
             img.expects_dnl = true;
         }
-        if num_components == 1 {
-            img.input_colorspace = ColorSpace::Luma;
-            debug!("Overriding default colorspace set to Luma");
-        }
-        if num_components == 4 && img.input_colorspace == ColorSpace::YCbCr {
-            trace!("Input image has 4 components, defaulting to CMYK colorspace");
-            img.input_colorspace = ColorSpace::CMYK;
-        }
         img.info.components = num_components;
         img.components = components;
         img.seen_sof = true;
@@ -594,7 +585,7 @@ pub(crate) fn parse_app14<T: ZByteReaderTrait>(
         let body = cursor.body();
 
         // Validate, decide, then commit. No partial mutation on error.
-        let new_colorspace = if body.len() >= 5 && &body[..5] == b"Adobe" {
+        let transform = if body.len() >= 5 && &body[..5] == b"Adobe" {
             // Adobe segment must be at least 12 bytes of body (6 id + 5 ver/flags + 1 transform).
             if body.len() < 12 {
                 return Err(DecodeErrors::FormatStatic(
@@ -605,9 +596,7 @@ pub(crate) fn parse_app14<T: ZByteReaderTrait>(
             let transform = body[11];
             // https://exiftool.org/TagNames/JPEG.html#Adobe
             match transform {
-                0 => Some(ColorSpace::CMYK),
-                1 => Some(ColorSpace::YCbCr),
-                2 => Some(ColorSpace::YCCK),
+                0..=2 => Some(transform),
                 _ => {
                     return Err(DecodeErrors::Format(format!(
                         "Unknown Adobe colorspace {transform}"
@@ -620,8 +609,8 @@ pub(crate) fn parse_app14<T: ZByteReaderTrait>(
         };
 
         // Commit phase.
-        if let Some(cs) = new_colorspace {
-            decoder.input_colorspace = cs;
+        if let Some(transform) = transform {
+            decoder.adobe_transform = Some(transform);
         }
         Ok(())
     })
