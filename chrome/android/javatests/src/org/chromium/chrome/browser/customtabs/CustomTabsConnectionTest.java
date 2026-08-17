@@ -72,7 +72,6 @@ public class CustomTabsConnectionTest {
     private CustomTabsConnection mCustomTabsConnection;
     private static final String URL = "http://www.google.com";
     private static final String URL2 = "https://www.android.com";
-    private static final String URL3 = "https://example.com";
     private static final String INVALID_SCHEME_URL = "intent://www.google.com";
     private static final String TEST_PAGE = "/chrome/test/data/android/simple.html";
 

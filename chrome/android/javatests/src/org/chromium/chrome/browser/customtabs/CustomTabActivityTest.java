@@ -404,7 +404,7 @@ public class CustomTabActivityTest {
         intent.putExtra(CustomTabsIntent.EXTRA_TOOLBAR_COLOR, color);
     }
 
-    private Bundle makeBottomBarBundle(int id, Bitmap icon, String description) {
+    private Bundle makeBottomBarBundle(Bitmap icon, String description) {
         Bundle bundle = new Bundle();
         PendingIntent pi =
                 PendingIntent.getBroadcast(
@@ -774,7 +774,7 @@ public class CustomTabActivityTest {
         Intent intent = createMinimalCustomTabIntent();
         ArrayList<Bundle> bundles = new ArrayList<>();
         for (int i = 1; i <= numItems; i++) {
-            Bundle bundle = makeBottomBarBundle(i, expectedIcon, Integer.toString(i));
+            Bundle bundle = makeBottomBarBundle(expectedIcon, Integer.toString(i));
             bundles.add(bundle);
         }
         intent.putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, bundles);
@@ -830,7 +830,7 @@ public class CustomTabActivityTest {
         Intent intent = createMinimalCustomTabIntent();
         ArrayList<Bundle> bundles = new ArrayList<>();
         for (int i = 1; i <= numItems; i++) {
-            Bundle bundle = makeBottomBarBundle(i, expectedIcon, Integer.toString(i));
+            Bundle bundle = makeBottomBarBundle(expectedIcon, Integer.toString(i));
             bundles.add(bundle);
         }
         intent.putExtra(CustomTabsIntent.EXTRA_TOOLBAR_ITEMS, bundles);

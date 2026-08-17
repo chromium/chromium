@@ -45,8 +45,6 @@ import java.io.IOException;
 @Batch(Batch.PER_CLASS)
 public class CustomTabBrandingTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
-    // Keep consistent with the key in SharedPreferencesBrandingTimeStorage.
-    private static final String BRANDING_SHARED_PREF_KEY = "pref_cct_brand_show_time";
     private static final String TOOLBAR_BRANDING_RENDER_IMAGE_ID = "cct_branding_toolbar";
 
     @Rule

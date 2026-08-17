@@ -33,7 +33,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 public class CustomTabFromChromeExternalNavigationTest {
     @Rule public CustomTabActivityTestRule mActivityRule = new CustomTabActivityTestRule();
 
-    private Intent getCustomTabFromChromeIntent(final String url, final boolean markFromChrome) {
+    private Intent getCustomTabFromChromeIntent(final String url) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -47,7 +47,7 @@ public class CustomTabFromChromeExternalNavigationTest {
     }
 
     private void startCustomTabFromChrome(String url) {
-        Intent intent = getCustomTabFromChromeIntent(url, true);
+        Intent intent = getCustomTabFromChromeIntent(url);
         mActivityRule.startCustomTabActivityWithIntent(intent);
     }
 
