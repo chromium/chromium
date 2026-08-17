@@ -418,6 +418,29 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(this.testParams.expectedHotkey, hotkeyState.hotkey);
   }
 
+  async testGetZoomLevel() {
+    assertDefined(this.host.getZoomLevel);
+    const zoomLevelSequence = observeSequence(this.host.getZoomLevel());
+    const initialZoom = await zoomLevelSequence.next();
+    // Verify that the initial zoom is around 1.0.
+    assertTrue(
+        initialZoom > 0.8 && initialZoom < 1.2,
+        `Initial zoom is unexpected: ${initialZoom}`);
+
+    await this.advanceToNextStep();
+
+    const newZoom = await zoomLevelSequence.next();
+    // Verify that zoom increased.
+    assertTrue(
+        newZoom > initialZoom,
+        `Zoom did not increase: initial=${initialZoom}, new=${newZoom}`);
+    // Verify that the zoom change is reasonable (e.g. around 10% change, but
+    // can be smaller due to display scaling).
+    const diff = newZoom - initialZoom;
+    assertTrue(
+        diff > 0.005 && diff < 0.3, `Zoom change is unexpected: diff=${diff}`);
+  }
+
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

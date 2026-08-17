@@ -90,6 +90,14 @@ function findNextZoomOutFactor(currentZoom: number): number|undefined {
   return ZOOM_FACTORS.findLast(f => currentZoom - f >= ZOOM_DELTA_THRESHOLD);
 }
 
+interface ZoomChangeEventData {
+  newZoomFactor: number;
+}
+
+function isZoomChangeEvent(e: Event): e is Event&ZoomChangeEventData {
+  return 'newZoomFactor' in e && typeof e.newZoomFactor === 'number';
+}
+
 export type PageType =
     // A login page.
     'login'
@@ -253,23 +261,21 @@ export class WebviewController {
     this.eventTracker.add(
         this.webview, 'unresponsive', this.onUnresponsive.bind(this));
     this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this));
-    if (isFullWebView(this.webview)) {
-      this.eventTracker.add(
-          this.webview, 'zoomchange',
-          (e: chrome.webviewTag.ZoomChangeEvent) => {
-            const percentage = Math.round(e.newZoomFactor * 100);
-            const message =
-                loadTimeData.getStringF('zoomLabel', percentage + '%');
-            getAnnouncerInstance().announce(message);
-            if (e.newZoomFactor > 0) {
-              this.webview.getZoom((reportedZoom: number) => {
-                this.displayScaleMultiplier = reportedZoom / e.newZoomFactor;
-              });
-            }
-            this.browserProxy.pageHandler.onZoomLevelChange(e.newZoomFactor);
-            this.host?.onZoomLevelChanged(e.newZoomFactor);
-          });
-    }
+    this.eventTracker.add(this.webview, 'zoomchange', (e: Event) => {
+      if (!isZoomChangeEvent(e)) {
+        return;
+      }
+      const percentage = Math.round(e.newZoomFactor * 100);
+      const message = loadTimeData.getStringF('zoomLabel', percentage + '%');
+      getAnnouncerInstance().announce(message);
+      if (e.newZoomFactor > 0) {
+        this.webview.getZoom((reportedZoom: number) => {
+          this.displayScaleMultiplier = reportedZoom / e.newZoomFactor;
+        });
+      }
+      this.browserProxy.pageHandler.onZoomLevelChange(e.newZoomFactor);
+      this.host?.onZoomLevelChanged(e.newZoomFactor);
+    });
     this.eventTracker.add(
         this.webview, 'loadstart', this.onLoadStart.bind(this));
     this.eventTracker.add(

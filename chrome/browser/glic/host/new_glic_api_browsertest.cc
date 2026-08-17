@@ -1078,6 +1078,18 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetOsHotkeyState) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetZoomLevel) {
+  // Confirm that the observer is notified through getZoomLevel of the initial
+  // state, i.e. zoom level of 1.0.
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // Zoom in and confirm that the observer is notified of the new state, i.e.
+  // zoom level of 1.1.
+  instance->host().Zoom(mojom::ZoomAction::kZoomIn);
+  ContinueJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetPanelStateAttached) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();

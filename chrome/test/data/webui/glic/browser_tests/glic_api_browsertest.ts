@@ -903,19 +903,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals('Prompt Suggestion', invokeOptions.prompts?.[0]);
   }
 
-  async testGetZoomLevel() {
-    assertDefined(this.host.getZoomLevel);
-    const sequence = observeSequence<number>(this.host.getZoomLevel());
-    const zoom = await sequence.next();
-    assertDefined(zoom);
-    assertEquals(zoom, 1.0);
-
-    // Trigger zoom-in.
-    await this.advanceToNextStep();
-
-    const newZoom = await sequence.next();
-    assertEquals(newZoom, 1.1);
-  }
 
   private async closePanelAndWaitUntilInactive() {
     assertDefined(this.host.closePanel);
