@@ -739,6 +739,15 @@ PhysicalFragment::StickyDescendants() const {
   return *empty;
 }
 
+const GCedHeapVector<SnapArea>& PhysicalFragment::SnapAreas() const {
+  if (propagated_data_ && propagated_data_->snap_areas) {
+    return *propagated_data_->snap_areas;
+  }
+  DEFINE_STATIC_LOCAL(Persistent<GCedHeapVector<SnapArea>>, empty,
+                      (MakeGarbageCollected<GCedHeapVector<SnapArea>>()));
+  return *empty;
+}
+
 bool PhysicalFragment::DependsOnPercentageBlockSize(
     const FragmentBuilder& builder) {
   if (!builder.node_ || builder.node_.IsInline()) {

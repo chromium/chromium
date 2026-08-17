@@ -5,21 +5,27 @@
 #include "third_party/blink/renderer/core/layout/fragment_builder.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_fragment.h"
+#include "third_party/blink/renderer/core/layout/snap_area.h"
 #include "third_party/blink/renderer/core/layout/split_axis_item.h"
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -30,6 +36,26 @@ bool IsInlineContainerForNode(const BlockNode& node,
   return inline_container &&
          inline_container->CanContainOutOfFlowPositionedElement(
              node.Style().GetPosition());
+}
+
+std::pair<PhysicalAxes, PhysicalAxes> PartitionAxes(PhysicalAxes container_axes,
+                                                    PhysicalAxes target_axes) {
+  PhysicalAxes consumed = container_axes & target_axes;
+  PhysicalAxes pending = target_axes ^ consumed;
+  return {consumed, pending};
+}
+
+PhysicalAxes GetScrollSnapAlignAxes(const cc::ScrollSnapAlign& align,
+                                    WritingDirectionMode writing_direction) {
+  bool is_horizontal = writing_direction.IsHorizontal();
+  PhysicalAxes axes = kPhysicalAxesNone;
+  if (align.alignment_block != cc::SnapAlignment::kNone) {
+    axes |= is_horizontal ? kPhysicalAxesVertical : kPhysicalAxesHorizontal;
+  }
+  if (align.alignment_inline != cc::SnapAlignment::kNone) {
+    axes |= is_horizontal ? kPhysicalAxesHorizontal : kPhysicalAxesVertical;
+  }
+  return axes;
 }
 
 }  // namespace
@@ -150,10 +176,9 @@ void FragmentBuilder::PropagateStickyDescendants(
   if (has_sticky_position) {
     const PhysicalAxes axes =
         LayoutBoxModelObject::StickyConstrainedAxes(child.Style());
-    const PhysicalAxes consumed = scrollable_axes & axes;
-    const PhysicalAxes pending = axes ^ consumed;
     // Sticky descendant continues propagation to ancestor through this
     // single-axis scroll container.
+    const auto [consumed, pending] = PartitionAxes(scrollable_axes, axes);
     if (scrollable_axes && pending) {
       single_axis_scroller_position_sticky = true;
     }
@@ -165,10 +190,8 @@ void FragmentBuilder::PropagateStickyDescendants(
 
   for (const auto& item : sticky_descendants) {
     if (auto* pending_obj = item.GetIfPending()) {
-      const PhysicalAxes consumed = scrollable_axes & item.PendingAxes();
-      const PhysicalAxes pending = item.PendingAxes() ^ consumed;
-      // Sticky descendant continues propagation to ancestor through this
-      // single-axis scroll container.
+      const auto [consumed, pending] =
+          PartitionAxes(scrollable_axes, item.PendingAxes());
       if (scrollable_axes && pending) {
         single_axis_scroller_position_sticky = true;
       }
@@ -182,53 +205,62 @@ void FragmentBuilder::PropagateStickyDescendants(
   }
 }
 
-GCedHeapVector<Member<Element>>& FragmentBuilder::EnsureSnapAreas() {
+GCedHeapVector<SnapArea>& FragmentBuilder::EnsureSnapAreas() {
   if (!snap_areas_) {
-    snap_areas_ = MakeGarbageCollected<GCedHeapVector<Member<Element>>>();
+    snap_areas_ = MakeGarbageCollected<GCedHeapVector<SnapArea>>();
   }
   return *snap_areas_;
 }
 
 void FragmentBuilder::PropagateSnapAreas(const PhysicalFragment& child) {
-  auto get_insertion_pos = [&](Element* snap_area) {
+  auto get_insertion_pos = [&](Element* new_snap_area) {
     auto& snap_areas = EnsureSnapAreas();
     // TODO(crbug.com/365680822): ::column pseudo-elements don't have layout
     // objects, and how snap areas established by them should be sorted,
     // relatively to real elements, is undefined.
-    const LayoutBox* new_box = snap_area->GetLayoutBox();
+    const LayoutBox* new_box = new_snap_area->GetLayoutBox();
     if (!new_box) {
       return snap_areas.size();
     }
     // Ensure that snap areas are added in DOM order.
     for (wtf_size_t i = snap_areas.size(); i >= 1; i--) {
-      const LayoutBox* existing_box = snap_areas.at(i - 1)->GetLayoutBox();
+      auto* existing_box = snap_areas.at(i - 1).GetElement()->GetLayoutBox();
       if (existing_box && existing_box->IsBeforeInPreOrder(*new_box)) {
         return i;
       }
     }
     return 0u;
   };
+
+  HeapVector<SnapArea> resolved_child_snap_areas;
   if (child.IsSnapArea()) {
     // Insert a new snap area *once* per node, when at the last fragment
     // (i.e. when there's no outgoing break token).
     if (!To<PhysicalBoxFragment>(child).GetBreakToken()) {
-      auto* snap_area = To<Element>(child.GetLayoutObject()->GetNode());
-      EnsureSnapAreas().insert(get_insertion_pos(snap_area), snap_area);
+      auto* element = To<Element>(child.GetLayoutObject()->GetNode());
+      resolved_child_snap_areas.push_back(ResolveSnapArea(SnapArea(element)));
     }
   }
 
-  if (const auto* child_snap_areas = child.PropagatedSnapAreas()) {
-    EnsureSnapAreas().InsertVector(get_insertion_pos(child_snap_areas->at(0)),
-                                   *child_snap_areas);
+  for (auto& item : child.SnapAreas()) {
+    if (item.IsPending()) {
+      resolved_child_snap_areas.push_back(ResolveSnapArea(item));
+    }
   }
 
-  if (child.IsSnapArea() && child.PropagatedSnapAreas()) {
+  if (!resolved_child_snap_areas.empty()) {
+    EnsureSnapAreas().InsertVector(
+        get_insertion_pos(resolved_child_snap_areas.front().GetElement()),
+        resolved_child_snap_areas);
+  }
+
+  if (child.IsSnapArea() && child.HasPendingSnapAreas()) {
     child.GetDocument().CountUse(WebFeature::kScrollSnapNestedSnapAreas);
   }
 }
 
 void FragmentBuilder::AddSnapAreaForColumn(ColumnPseudoElement* column_pseudo) {
-  EnsureSnapAreas().push_back(column_pseudo);
+  EnsureSnapAreas().push_back(ResolveSnapArea(SnapArea(column_pseudo)));
 }
 
 void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
@@ -379,6 +411,48 @@ PhysicalAxes FragmentBuilder::GetOverflowScrollAxes() const {
     }
   }
   return kPhysicalAxesNone;
+}
+
+PhysicalAxes FragmentBuilder::GetScrollSnapAxes() const {
+  PhysicalAxes overflow_scroll_axes = GetOverflowScrollAxes();
+
+  // If the flag is enabled, a single-axis scroll container will consume only
+  // one axis and propagate the other to its parent.
+  if (RuntimeEnabledFeatures::
+          SingleAxisScrollContainersForScrollSnapEnabled()) {
+    return overflow_scroll_axes;
+  }
+  // If the flag is disabled, this fragment should either consume both axes if
+  // it is a scroll container, or neither otherwise.
+  return overflow_scroll_axes == kPhysicalAxesNone ? kPhysicalAxesNone
+                                                   : kPhysicalAxesBoth;
+}
+
+SnapArea FragmentBuilder::ResolveSnapArea(const SnapArea& snap_area) const {
+  PhysicalAxes scroll_snap_axes = GetScrollSnapAxes();
+  // If this fragment is not a scroll container, return the snap area
+  // unmodified.
+  if (scroll_snap_axes == kPhysicalAxesNone) {
+    return snap_area;
+  }
+
+  std::optional<WritingDirectionMode> writing_direction_mode;
+  PhysicalAxes pending_axes = kPhysicalAxesNone;
+  if (!snap_area.Resolved()) {
+    // If the snap area is not resolved to a scroll container yet, this fragment
+    // is the nearest ancestor scroll container. Resolve the snap area's logical
+    // axes using this container's writing direction mode.
+    writing_direction_mode = GetWritingDirection();
+    pending_axes = GetScrollSnapAlignAxes(
+        snap_area.GetElement()->ComputedStyleRef().GetScrollSnapAlign(),
+        *writing_direction_mode);
+  } else {
+    writing_direction_mode = snap_area.ContainerWritingDirectionMode();
+    pending_axes = snap_area.PendingAxes();
+  }
+
+  auto [consumed, pending] = PartitionAxes(scroll_snap_axes, pending_axes);
+  return {snap_area.GetElement(), consumed, pending, writing_direction_mode};
 }
 
 // Propagate data in |child| to this fragment. The |child| will then be added as

@@ -556,6 +556,7 @@ blink_core_sources_layout = [
   "simplified_layout_algorithm.h",
   "simplified_oof_layout_algorithm.cc",
   "simplified_oof_layout_algorithm.h",
+  "snap_area.h",
   "space_utils.cc",
   "space_utils.h",
   "split_axis_item.h",

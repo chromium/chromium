@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENT_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FRAGMENT_BUILDER_H_
 
+#include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
@@ -33,6 +34,7 @@ class EarlyBreak;
 class FragmentItemsBuilder;
 class InlineBreakToken;
 class LayoutObject;
+class SnapArea;
 
 class CORE_EXPORT FragmentBuilder {
   STACK_ALLOCATED();
@@ -513,7 +515,7 @@ class CORE_EXPORT FragmentBuilder {
 
   GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>&
   EnsureStickyDescendants();
-  GCedHeapVector<Member<Element>>& EnsureSnapAreas();
+  GCedHeapVector<SnapArea>& EnsureSnapAreas();
 
   void PropagateFromLayoutResultAndFragment(
       const LayoutResult&,
@@ -525,6 +527,10 @@ class CORE_EXPORT FragmentBuilder {
   void PropagateScrollInitialTarget(const PhysicalFragment& child);
 
   PhysicalAxes GetOverflowScrollAxes() const;
+
+  PhysicalAxes GetScrollSnapAxes() const;
+
+  SnapArea ResolveSnapArea(const SnapArea& snap_area) const;
 
   void PropagateFromFragment(
       const PhysicalFragment& child,
@@ -571,7 +577,7 @@ class CORE_EXPORT FragmentBuilder {
 
   GCedHeapVector<SplitAxisItem<LayoutBoxModelObject>>* sticky_descendants_ =
       nullptr;
-  GCedHeapVector<Member<Element>>* snap_areas_ = nullptr;
+  GCedHeapVector<SnapArea>* snap_areas_ = nullptr;
   // Animation triggers belonging to the element to which this fragment belongs,
   // or an element in its subtree.
   TriggerScopedNameMap* named_triggers_ = nullptr;

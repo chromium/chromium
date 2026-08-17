@@ -5747,6 +5747,7 @@
     {
       name: "SingleAxisScrollContainersForScrollSnap",
       depends_on: ["SingleAxisScrollContainers"],
+      status: "test",
     },
     {
       name: "SkipAd",

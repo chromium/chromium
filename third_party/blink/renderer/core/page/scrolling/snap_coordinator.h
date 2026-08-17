@@ -8,8 +8,10 @@
 #include "cc/input/scroll_snap_data.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
 
@@ -39,7 +41,9 @@ class CORE_EXPORT SnapCoordinator final {
   // container.
   static cc::SnapAreaData CalculateSnapAreaData(
       Element& snap_area,
-      const LayoutBox& snap_container);
+      const LayoutBox& snap_container,
+      PhysicalAxes snap_axes,
+      WritingDirectionMode snap_container_writing_mode_direction);
 
   // Returns true if the SnapContainerData actually changed.
   static bool UpdateSnapContainerData(LayoutBox&);
