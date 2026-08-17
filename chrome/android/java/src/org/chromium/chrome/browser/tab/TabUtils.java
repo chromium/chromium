@@ -23,6 +23,7 @@ import android.widget.ImageView.ScaleType;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -320,6 +321,7 @@ public class TabUtils {
         };
     }
 
+    // LINT.IfChange(TabAlert)
     /**
      * Returns the {@link DrawableRes} ID for a given tab alert.
      *
@@ -334,8 +336,17 @@ public class TabUtils {
             case TabAlert.AUDIO_PLAYING -> R.drawable.volume_up_24dp;
             case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
                     R.drawable.radio_button_checked_24dp;
+            case TabAlert.BLUETOOTH_CONNECTED -> R.drawable.ic_bluetooth_connected;
+            case TabAlert.BLUETOOTH_SCAN_ACTIVE -> R.drawable.gm_filled_bluetooth_searching_24;
             case TabAlert.DESKTOP_CAPTURING, TabAlert.TAB_CAPTURING -> R.drawable.capture_24dp;
+            case TabAlert.GLIC_ACCESSING, TabAlert.GLIC_SHARING ->
+                    R.drawable.ic_screensaver_auto_16dp;
+            // WebHID is unsupported on Android (services/device/hid lacks an Android driver).
+            case TabAlert.HID_CONNECTED -> Resources.ID_NULL;
             case TabAlert.PIP_PLAYING -> R.drawable.picture_in_picture_24px;
+            case TabAlert.SERIAL_CONNECTED -> R.drawable.gm_filled_developer_board_24;
+            case TabAlert.USB_CONNECTED -> R.drawable.gm_filled_usb_24;
+            case TabAlert.VR_PRESENTING_IN_HEADSET -> R.drawable.gm_filled_cardboard_24;
             default -> Resources.ID_NULL;
         };
     }
@@ -351,7 +362,10 @@ public class TabUtils {
             Context context, @Nullable @TabAlert Integer alertState, @ColorInt int defaultTint) {
         if (alertState == null) return defaultTint;
         return switch (alertState) {
-            case TabAlert.ACTOR_ACCESSING, TabAlert.ACTOR_WAITING_ON_USER ->
+            case TabAlert.ACTOR_ACCESSING,
+                    TabAlert.ACTOR_WAITING_ON_USER,
+                    TabAlert.GLIC_ACCESSING,
+                    TabAlert.GLIC_SHARING ->
                     SemanticColorUtils.getColorPrimary(context);
             case TabAlert.AUDIO_RECORDING, TabAlert.MEDIA_RECORDING, TabAlert.VIDEO_RECORDING ->
                     context.getColor(R.color.tab_recording_media_color);
@@ -361,6 +375,42 @@ public class TabUtils {
             default -> defaultTint;
         };
     }
+
+    /**
+     * Returns the {@link StringRes} ID for the tooltip / accessibility description of a tab alert.
+     *
+     * @param alertState The {@link TabAlert} for which to get the description.
+     */
+    public static @StringRes int getTabAlertDescriptionRes(@Nullable @TabAlert Integer alertState) {
+        if (alertState == null) return Resources.ID_NULL;
+        return switch (alertState) {
+            case TabAlert.ACTOR_ACCESSING, TabAlert.ACTOR_WAITING_ON_USER ->
+                    R.string.tooltip_tab_alert_state_actor_accessing;
+            case TabAlert.AUDIO_MUTING -> R.string.tooltip_tab_alert_state_audio_muting;
+            case TabAlert.AUDIO_PLAYING -> R.string.tooltip_tab_alert_state_audio_playing;
+            case TabAlert.AUDIO_RECORDING -> R.string.tooltip_tab_alert_state_audio_recording;
+            case TabAlert.BLUETOOTH_CONNECTED ->
+                    R.string.tooltip_tab_alert_state_bluetooth_connected;
+            case TabAlert.BLUETOOTH_SCAN_ACTIVE ->
+                    R.string.tooltip_tab_alert_state_bluetooth_scan_active;
+            case TabAlert.DESKTOP_CAPTURING -> R.string.tooltip_tab_alert_state_desktop_capturing;
+            case TabAlert.GLIC_ACCESSING -> R.string.tooltip_tab_alert_state_glic_accessing;
+            case TabAlert.GLIC_SHARING -> R.string.tooltip_tab_alert_state_glic_sharing;
+            // WebHID is unsupported on Android (see getTabAlertDrawable above).
+            case TabAlert.HID_CONNECTED -> Resources.ID_NULL;
+            case TabAlert.MEDIA_RECORDING -> R.string.tooltip_tab_alert_state_media_recording;
+            case TabAlert.PIP_PLAYING -> R.string.tooltip_tab_alert_state_pip_playing;
+            case TabAlert.SERIAL_CONNECTED -> R.string.tooltip_tab_alert_state_serial_connected;
+            case TabAlert.TAB_CAPTURING -> R.string.tooltip_tab_alert_state_tab_capturing;
+            case TabAlert.USB_CONNECTED -> R.string.tooltip_tab_alert_state_usb_connected;
+            case TabAlert.VIDEO_RECORDING -> R.string.tooltip_tab_alert_state_video_recording;
+            case TabAlert.VR_PRESENTING_IN_HEADSET ->
+                    R.string.tooltip_tab_alert_state_vr_presenting;
+            default -> Resources.ID_NULL;
+        };
+    }
+
+    // LINT.ThenChange(/components/tabs/public/tab_alert.h)
 
     /**
      * Returns the {@link DrawableRes} ID for a given media state.

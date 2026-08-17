@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.format.Formatter;
 import android.util.AttributeSet;
@@ -17,7 +18,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
@@ -293,31 +296,19 @@ public class TabHoverCardView extends FrameLayout {
     }
 
     private void updateAlertStatusView(@Nullable @TabAlert Integer alertState) {
-        boolean showAlert = false;
-        if (alertState != null) {
-            showAlert = true;
-            @ColorInt int accentColor = SemanticColorUtils.getDefaultIconColorAccent1(getContext());
-            ColorStateList accentTintList = ColorStateList.valueOf(accentColor);
-            mAlertStatusView.setDrawableTintColor(accentTintList);
-            switch (alertState) {
-                case TabAlert.ACTOR_ACCESSING -> {
-                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_actor_accessing);
-                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_arrow_selector_spark_16dp, 0, 0, 0);
-                }
-                case TabAlert.GLIC_ACCESSING -> {
-                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_glic_accessing);
-                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_screensaver_auto_16dp, 0, 0, 0);
-                }
-                case TabAlert.GLIC_SHARING -> {
-                    mAlertStatusView.setText(R.string.tooltip_tab_alert_state_glic_sharing);
-                    mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                            R.drawable.ic_screensaver_auto_16dp, 0, 0, 0);
-                }
-                default -> showAlert = false;
-            }
+        @DrawableRes int iconRes = TabUtils.getTabAlertDrawable(alertState);
+        @StringRes int stringRes = TabUtils.getTabAlertDescriptionRes(alertState);
+
+        boolean showAlert = iconRes != Resources.ID_NULL && stringRes != Resources.ID_NULL;
+        if (showAlert) {
+            @ColorInt int defaultTint = SemanticColorUtils.getDefaultIconColorAccent1(getContext());
+            @ColorInt
+            int tint = TabUtils.getTabAlertTintColor(getContext(), alertState, defaultTint);
+            mAlertStatusView.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
+            mAlertStatusView.setDrawableTintColor(ColorStateList.valueOf(tint));
+            mAlertStatusView.setText(stringRes);
         }
+
         mAlertStatusView.setVisibility(showAlert ? VISIBLE : GONE);
         updateAlertStatusBottomMargin();
     }

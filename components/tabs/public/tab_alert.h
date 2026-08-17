@@ -31,7 +31,7 @@ enum class TabAlert {
 };
 // Any changes to the TabAlert enum needs to be updated in CompareAlerts as
 // well.
-// LINT.ThenChange(/chrome/browser/ui/tabs/alert/tab_alert_controller.cc)
+// LINT.ThenChange(/chrome/browser/ui/tabs/alert/tab_alert_controller.cc,/chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java:TabAlert)
 }  // namespace tabs
 
 #endif  // COMPONENTS_TABS_PUBLIC_TAB_ALERT_H_

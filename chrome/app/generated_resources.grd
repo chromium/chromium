@@ -16818,46 +16818,46 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
 
       <!--Tab alert tooltip strings-->
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_MEDIA_RECORDING" desc="Extra tool tip text, when the tab is recording media (Camera and Microphone).">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_MEDIA_RECORDING" desc="Extra tool tip text, when the tab is recording media (Camera and Microphone)." formatter_data="android_java">
         This tab is using your camera and microphone
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_RECORDING" desc="Extra tool tip text, when the tab is using microphone.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_RECORDING" desc="Extra tool tip text, when the tab is using microphone." formatter_data="android_java">
         This tab is using your microphone
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_VIDEO_RECORDING" desc="Extra tool tip text, when the tab is using camera.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_VIDEO_RECORDING" desc="Extra tool tip text, when the tab is using camera." formatter_data="android_java">
         This tab is using your camera
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_TAB_CAPTURING" desc="Extra tool tip text, when the tab content is being captured.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_TAB_CAPTURING" desc="Extra tool tip text, when the tab content is being captured." formatter_data="android_java">
         This tab's content is being shared
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_PLAYING" desc="Extra tool tip text, when the tab is playing audio.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_PLAYING" desc="Extra tool tip text, when the tab is playing audio." formatter_data="android_java">
         This tab is playing audio
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_MUTING" desc="Extra tool tip text, when all tab audio output is muted.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_AUDIO_MUTING" desc="Extra tool tip text, when all tab audio output is muted." formatter_data="android_java">
         This tab's audio is being muted
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_CONNECTED" desc="Extra tool tip text, when tab is connected to a Bluetooth device.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_CONNECTED" desc="Extra tool tip text, when tab is connected to a Bluetooth device." formatter_data="android_java">
         This tab is connected to a Bluetooth device
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_SCAN_ACTIVE" desc="Extra tool tip text, when tab is actively scanning for Bluetooth devices.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_BLUETOOTH_SCAN_ACTIVE" desc="Extra tool tip text, when tab is actively scanning for Bluetooth devices." formatter_data="android_java">
         This tab is actively scanning for Bluetooth devices
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_USB_CONNECTED" desc="Extra tool tip text, when tab is connected to a USB device.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_USB_CONNECTED" desc="Extra tool tip text, when tab is connected to a USB device." formatter_data="android_java">
         This tab is connected to a USB device
       </message>
       <message name="IDS_TOOLTIP_TAB_ALERT_STATE_HID_CONNECTED" desc="Extra tool tip text, when tab is connected to a HID device.">
         This tab is connected to a HID device
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_SERIAL_CONNECTED" desc="Extra tool tip text, when tab is connected to a serial port.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_SERIAL_CONNECTED" desc="Extra tool tip text, when tab is connected to a serial port." formatter_data="android_java">
         This tab is connected to a serial port
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_PIP_PLAYING" desc="Extra tool tip text, when tab is playing a video in Picture-in-Picture.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_PIP_PLAYING" desc="Extra tool tip text, when tab is playing a video in Picture-in-Picture." formatter_data="android_java">
         This tab is playing a video in picture-in-picture mode
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_DESKTOP_CAPTURING" desc="Extra tool tip text, when the tab is capturing desktop contents.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_DESKTOP_CAPTURING" desc="Extra tool tip text, when the tab is capturing desktop contents." formatter_data="android_java">
         This tab is sharing your screen
       </message>
-      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING" desc="Extra tool tip text, when the tab is presenting VR content to a headset.">
+      <message name="IDS_TOOLTIP_TAB_ALERT_STATE_VR_PRESENTING" desc="Extra tool tip text, when the tab is presenting VR content to a headset." formatter_data="android_java">
         This tab is presenting VR content to a headset
       </message>
 
