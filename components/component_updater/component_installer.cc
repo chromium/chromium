@@ -207,6 +207,7 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
   // Acquire the ownership of the |local_install_path|.
   base::ScopedTempDir install_path_owner;
   if (!install_path_owner.Set(local_install_path)) {
+    VPLOG(0) << "ScopedTempDir::Set failed: " << local_install_path.value();
     base::DeletePathRecursively(local_install_path);
     return Result(InstallError::INSTALL_PATH_ERROR);
   }
