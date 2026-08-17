@@ -42,6 +42,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "partition_alloc/partition_alloc_constants.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -667,6 +668,13 @@ class WTF_EXPORT StringImpl {
   const size_type length_;
   mutable std::atomic<uint32_t> hash_and_flags_;
 };
+
+// The maximum length of a 16-bit string such that its StringImpl allocation
+// (header plus character data) fits within
+// partition_alloc::MaxAllocationSize().
+inline constexpr wtf_size_t kStringMaxUCharLength = static_cast<wtf_size_t>(
+    (partition_alloc::MaxAllocationSize() - sizeof(StringImpl)) /
+    sizeof(UChar));
 
 template <>
 ALWAYS_INLINE base::span<LChar> StringImpl::Span<LChar>() const {

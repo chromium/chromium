@@ -267,11 +267,9 @@ bool StringBuilder::DoesAppendCauseOverflow(unsigned length) const {
   }
   const wtf_size_t new_length = checked_new_length.ValueOrDie();
 
-  if (base::FeatureList::IsEnabled(features::kCapStringBuilderLengthTo1GiB)) {
-    constexpr wtf_size_t kMaxLength = static_cast<wtf_size_t>(1) << 30;
-    if (new_length > kMaxLength) {
-      return true;
-    }
+  if (base::FeatureList::IsEnabled(features::kCapStringBuilderLengthTo1GiB) &&
+      new_length > kStringMaxUCharLength) {
+    return true;
   }
 
   if (new_length < Capacity()) {

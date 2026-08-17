@@ -688,26 +688,23 @@ TEST(StringBuilderTest, ReserveCapacityTwice16) {
 }
 
 TEST(StringBuilderTest, DoesAppendCauseOverflow) {
-  constexpr wtf_size_t kMaxLength = static_cast<wtf_size_t>(1) << 30;
+  constexpr wtf_size_t kOneGiB = static_cast<wtf_size_t>(1) << 30;
 
   {
     StringBuilder builder;
     EXPECT_FALSE(builder.DoesAppendCauseOverflow(0));
     EXPECT_FALSE(builder.DoesAppendCauseOverflow(1));
-    EXPECT_FALSE(builder.DoesAppendCauseOverflow(
-        base::checked_cast<unsigned>(kMaxLength)));
-    EXPECT_TRUE(builder.DoesAppendCauseOverflow(
-        base::checked_cast<unsigned>(kMaxLength + 1)));
+    EXPECT_FALSE(builder.DoesAppendCauseOverflow(kStringMaxUCharLength));
+    EXPECT_TRUE(builder.DoesAppendCauseOverflow(kStringMaxUCharLength + 1));
+    EXPECT_TRUE(builder.DoesAppendCauseOverflow(kOneGiB));
   }
 
   {
-    // 16-bit strings have the same character count limit.
     StringBuilder builder;
     builder.Ensure16Bit();
-    EXPECT_FALSE(builder.DoesAppendCauseOverflow(
-        base::checked_cast<unsigned>(kMaxLength)));
-    EXPECT_TRUE(builder.DoesAppendCauseOverflow(
-        base::checked_cast<unsigned>(kMaxLength + 1)));
+    EXPECT_FALSE(builder.DoesAppendCauseOverflow(kStringMaxUCharLength));
+    EXPECT_TRUE(builder.DoesAppendCauseOverflow(kStringMaxUCharLength + 1));
+    EXPECT_TRUE(builder.DoesAppendCauseOverflow(kOneGiB));
   }
 }
 
