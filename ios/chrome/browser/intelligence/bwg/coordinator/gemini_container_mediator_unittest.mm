@@ -135,6 +135,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
     mediator_ = [[GeminiContainerMediator alloc] initWithBrowser:browser_.get()
                                                     eventHandler:&delegate_];
     mediator_.containerHandler = mock_container_handler_;
+    mediator_.geminiHandler = mock_gemini_handler_;
   }
 
   static std::unique_ptr<KeyedService> CreateMockTracker(ProfileIOS* context) {
@@ -657,6 +658,58 @@ TEST_F(GeminiContainerMediatorTest,
   EXPECT_FALSE(config.requireFullPageContext);
   histogram_tester.ExpectUniqueSample(kRequireFullPageContextHistogram, false,
                                       1);
+}
+
+// Tests that changing detent to minimized when container is in zero state and
+// Chrome Next IA is enabled dismisses the Gemini flow, while changing detent
+// otherwise does not.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidChangeDetentDismissesInZeroStateChromeNextIa) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration, kChromeNextIa}, {});
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  EXPECT_TRUE(mediator_.isZeroState);
+
+  OCMExpect([mock_gemini_handler_ dismissGeminiFlowWithCompletion:nil]);
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+
+  // When zeroState is NO, changing detent to minimized should not dismiss.
+  mediator_.zeroState = NO;
+  [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:nil];
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+}
+
+// Tests that changing detent to minimized when container is in zero state but
+// Chrome Next IA is disabled does not dismiss the Gemini flow.
+TEST_F(GeminiContainerMediatorTest, TestDidChangeDetentNextIaDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {kChromeNextIa});
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  EXPECT_TRUE(mediator_.isZeroState);
+
+  [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:nil];
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+}
+
+// Tests that accessibility escape request dismisses the Gemini flow.
+TEST_F(GeminiContainerMediatorTest, TestAssistantContainerDidRequestDismissal) {
+  OCMExpect([mock_gemini_handler_ dismissGeminiFlowWithCompletion:nil]);
+  [mediator_ assistantContainerDidRequestDismissal:nil];
+  EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 }
 
 }  // namespace
