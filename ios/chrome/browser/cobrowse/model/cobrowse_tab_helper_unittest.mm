@@ -124,6 +124,11 @@ class CobrowseTabHelperTest : public PlatformTest {
   // Returns the mock SceneCommandsHandler.
   id mock_scene_commands_handler() { return mock_scene_commands_handler_; }
 
+  // Returns the CobrowseBrowserAgent for the regular browser.
+  CobrowseBrowserAgent* agent() {
+    return CobrowseBrowserAgent::FromBrowser(browser());
+  }
+
  private:
   // Creates a new WebState with options, adds it to the Browser's list and
   // returns a pointer to it.
@@ -382,4 +387,62 @@ TEST_F(CobrowseTabHelperTest, NoTriggerWhenNotEligible) {
   tab_helper->DidStartNavigation(web_state, &context);
 
   [mock_scene_commands_handler() verify];
+}
+
+// Tests that SetCobrowseContext rejects a context update with an empty query
+// UNLESS the context has attached items.
+TEST_F(CobrowseTabHelperTest,
+       SetCobrowseContextRejectsEmptyQueryUnlessHasAttachments) {
+  // 1. Initial valid context.
+  GURL valid_url("https://www.google.com/search?q=valid&udm=50");
+  CobrowseContext* valid_context =
+      [[CobrowseContext alloc] initWithURL:valid_url];
+  agent()->SetCobrowseContext(valid_context);
+  EXPECT_EQ(agent()->GetCobrowseContext(), valid_context);
+
+  // 2. Empty query context WITHOUT attachments should be REJECTED.
+  GURL empty_query_url("https://www.google.com/search?q=&udm=50");
+  CobrowseContext* empty_query_context =
+      [[CobrowseContext alloc] initWithURL:empty_query_url];
+  agent()->SetCobrowseContext(empty_query_context);
+  // The agent should ignore the empty query context and keep the valid one.
+  EXPECT_EQ(agent()->GetCobrowseContext(), valid_context);
+
+  // 3. Empty query context WITH attachments should be ACCEPTED.
+  CobrowseContext* empty_query_with_attachment_context =
+      [[CobrowseContext alloc] initWithURL:empty_query_url];
+  // Mock an attachment item. A non-empty array is sufficient.
+  empty_query_with_attachment_context.attachedItems =
+      @[ [[NSObject alloc] init] ];
+
+  agent()->SetCobrowseContext(empty_query_with_attachment_context);
+  EXPECT_EQ(agent()->GetCobrowseContext(), empty_query_with_attachment_context);
+
+  // 4. Empty query context WITH valid server session tokens should be ACCEPTED.
+  GURL valid_session_url("https://www.google.com/search?q=&udm=50&cinpts=123");
+  CobrowseContext* valid_session_context =
+      [[CobrowseContext alloc] initWithURL:valid_session_url];
+  agent()->SetCobrowseContext(valid_session_context);
+  // The agent should accept the update because it has a valid session token,
+  // even without attachments.
+  EXPECT_EQ(agent()->GetCobrowseContext(), valid_session_context);
+
+  // 5. If transitioning from a non-empty query to an empty query without
+  // attachments, it should be REJECTED (simulates the chip tap bug).
+  // First, set a valid non-empty query context.
+  GURL valid_query_url("https://www.google.com/search?q=hello&udm=50");
+  CobrowseContext* valid_query_context =
+      [[CobrowseContext alloc] initWithURL:valid_query_url];
+  agent()->SetCobrowseContext(valid_query_context);
+  EXPECT_EQ(agent()->GetCobrowseContext(), valid_query_context);
+
+  // Now, attempt to transition to an empty query with session tokens.
+  GURL buggy_chip_url("https://www.google.com/search?q=&udm=50&mstk=abc");
+  CobrowseContext* buggy_chip_context =
+      [[CobrowseContext alloc] initWithURL:buggy_chip_url];
+  agent()->SetCobrowseContext(buggy_chip_context);
+  // The agent should REJECT the update because the transition is from a
+  // valid query to an empty query without attachments, simulating the chip tap
+  // bug.
+  EXPECT_EQ(agent()->GetCobrowseContext(), valid_query_context);
 }

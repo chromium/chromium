@@ -27,6 +27,9 @@ class GURL;
 // The items attached from the composebox.
 @property(nonatomic, copy) NSArray<ComposeboxInputItem*>* attachedItems;
 
+// Whether the context contains server session tokens (mstk, mtid, or cinpts).
+@property(nonatomic, assign, readonly) BOOL hasServerSessionTokens;
+
 // Returns a default context with the base search URL, used mainly for debugging
 // purposes.
 + (instancetype)defaultContext;

@@ -70,6 +70,14 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
 
   // Called when eligibility changes.
   void OnEligibilityChanged();
+
+  // Returns true if the incoming context update should be accepted.
+  // Explicitly rejects contexts originating from an empty query navigation
+  // (e.g. q=&) which occur due to an upstream bug. Only reject if there
+  // are no attached items and no server session tokens, as a user could
+  // legitimately send an empty text query with an attachment or valid session
+  // tokens.
+  bool ShouldAcceptContextUpdate(CobrowseContext* context) const;
 };
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_MODEL_COBROWSE_BROWSER_AGENT_H_
