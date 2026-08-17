@@ -1459,6 +1459,10 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_NAVIGATE_DRAIN_PREFETCH,
                 "Enables draining the prefetch queue before loading the URL in the WebView"
                         + " navigate method"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_SINGLE_SHARED_CONTEXT_STATE,
+                "Allows Webview to allocate and share a single shared context for all the"
+                        + " webview instances."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
