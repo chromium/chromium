@@ -1769,9 +1769,6 @@ void ProfileImpl::UpdateAiSubscriptionTierInStorage() {
                                       ->GetProfileAttributesStorage()
                                       .GetProfileAttributesWithPath(GetPath());
   if (entry) {
-    // TODO(crbug.com/522296672): Specify the right way to obtain this
-    // information as `GetAiSubscriptionTier` only works for certain groups of
-    // users.
     auto* subscription_service = subscription_eligibility::
         SubscriptionEligibilityServiceFactory::GetForProfile(this);
     entry->SetAiSubscriptionTier(

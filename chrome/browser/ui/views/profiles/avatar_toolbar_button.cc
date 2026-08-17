@@ -370,9 +370,6 @@ std::optional<SkColor> AvatarToolbarButton::GetHighlightBorderColor() const {
 void AvatarToolbarButton::UpdateInkdrop() {
   StateProvider* state_provider = state_manager_.GetActiveStateProvider();
   auto [hover_color_id, ripple_color_id] = state_provider->GetInkdropColors();
-  // TODO(crbug.com/516795763): When `kEnableAiSubscriptionAvatarRing` is
-  // enabled this method results in blurring the avatar ring. Consider if we
-  // need separate handling when the ring is visible.
   ConfigureToolbarInkdropForRefresh2023(this, hover_color_id, ripple_color_id);
 }
 

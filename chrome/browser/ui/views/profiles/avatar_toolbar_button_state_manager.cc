@@ -2089,8 +2089,6 @@ std::pair<ui::ImageModel, AvatarIconType> StateProvider::GetAvatarIcon(
       ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
           image, icon_size, icon_size, profiles::SHAPE_CIRCLE));
 
-  // TODO(crbug.com/516795763): Ensure this is is triggered every time the ai
-  // subscription level changes (via listening for changes).
   if (ShouldShowGradientAvatarRing()) {
     gfx::ImageSkia avatar_with_ai_ring =
         AddLinearGradientRingToAvatar(avatar_model, color_provider, icon_size);
