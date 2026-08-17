@@ -285,7 +285,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         int holderItemViewType = holder.getItemViewType();
 
                         if (holderItemViewType != UiType.TAB
-                                || holderItemViewType != UiType.TAB_GROUP) {
+                                && holderItemViewType != UiType.TAB_GROUP) {
                             return;
                         }
 
@@ -677,7 +677,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
             if (mOnBeforeItemTouchHelperItemTouchListener != null
                     && mItemTouchHelper != null
                     && mOnAfterItemTouchHelperItemTouchListener != null) {
-                mRecyclerView.addOnItemTouchListener(mOnBeforeItemTouchHelperItemTouchListener);
+                mRecyclerView.removeOnItemTouchListener(mOnBeforeItemTouchHelperItemTouchListener);
                 mItemTouchHelper.attachToRecyclerView(null);
                 mRecyclerView.removeOnItemTouchListener(mOnAfterItemTouchHelperItemTouchListener);
             }
@@ -924,6 +924,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
 
     @Override
     public void showPriceDropTooltip(int index) {
+        if (!mModelList.isValidIndex(index)) return;
+
         mModelList.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, true);
     }
 
