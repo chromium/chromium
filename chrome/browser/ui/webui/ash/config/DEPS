@@ -26,7 +26,9 @@ include_rules = [
   "+chrome/browser/ash/scanning",
   "+chrome/browser/ash/shimless_rma",
   "+chrome/browser/ash/system_web_apps/apps",
+  "+chrome/browser/browser_process.h",
   "+chrome/browser/feedback",
+  "+chrome/browser/global_features.h",
   "+chrome/browser/ui/ash/holding_space",
   "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/browser/ui/webui/about/about_ui.h",
@@ -73,3 +75,10 @@ include_rules = [
   "+chrome/browser/ui/webui/nearby_internals",
   "+chrome/browser/ui/webui/nearby_share",
 ]
+
+specific_include_rules = {
+  "chrome_web_ui_configs_chromeos\\.cc": [
+    "+chrome/browser/consent_auditor/consent_auditor_factory.h",
+    "+chrome/browser/signin/identity_manager_factory.h",
+  ]
+}

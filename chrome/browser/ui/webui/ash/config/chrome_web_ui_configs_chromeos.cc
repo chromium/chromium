@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
 #include "content/public/browser/webui_config_map.h"
 #include "url/gurl.h"
@@ -65,6 +68,8 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/recorder_app/chrome_recorder_app_ui_delegate.h"
 #include "chrome/browser/ash/system_web_apps/apps/vc_background_ui/vc_background_ui_utils.h"
+#include "chrome/browser/consent_auditor/consent_auditor_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
@@ -114,6 +119,7 @@
 #include "chrome/browser/ui/webui/chromeos/chrome_url_disabled/chrome_url_disabled_ui.h"
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_ui.h"
 #include "ui/webui/webui_util.h"
@@ -225,6 +231,30 @@ std::unique_ptr<content::WebUIConfig> MakeHelpAppUIConfig() {
   return std::make_unique<HelpAppUIConfig>(create_controller_func);
 }
 
+std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig() {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        Profile* profile = Profile::FromWebUI(web_ui);
+        const AccountId& account_id =
+            CHECK_DEREF(AnnotatedAccountId::Get(profile));
+        signin::IdentityManager* identity_manager =
+            IdentityManagerFactory::GetForProfile(profile);
+        consent_auditor::ConsentAuditor* consent_auditor =
+            ConsentAuditorFactory::GetForProfile(profile);
+
+        auto delegate = std::make_unique<ChromeRecorderAppUIDelegate>(
+            g_browser_process->local_state(),
+            g_browser_process->GetFeatures()->application_locale_storage(),
+            g_browser_process->variations_service(),
+            user_manager::UserManager::Get(), account_id, identity_manager,
+            consent_auditor);
+        return std::make_unique<RecorderAppUI>(web_ui, std::move(delegate));
+      });
+
+  return std::make_unique<RecorderAppUIConfig>(create_controller_func);
+}
+
 void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   //
@@ -316,9 +346,7 @@ void RegisterAshChromeWebUIConfigs() {
               &printing::print_management::PrintingManagerFactory::
                   CreatePrintManagementUIController)));
   map.AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>());
-  map.AddWebUIConfig(
-      MakeComponentConfigWithDelegate<RecorderAppUIConfig, RecorderAppUI,
-                                      ChromeRecorderAppUIDelegate>());
+  map.AddWebUIConfig(MakeRecorderAppUIConfig());
   map.AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<SanitizeDialogUIConfig, SanitizeDialogUI,

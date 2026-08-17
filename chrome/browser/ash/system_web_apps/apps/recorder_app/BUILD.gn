@@ -21,7 +21,6 @@ static_library("recorder_app") {
 
   deps = [
     "//ash/constants",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/consent_auditor",
     "//chrome/browser/feedback",
@@ -29,8 +28,10 @@ static_library("recorder_app") {
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/signin",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/strings",
+    "//components/application_locale_storage",
     "//components/consent_auditor",
     "//components/feedback",
     "//components/signin/public/identity_manager",
