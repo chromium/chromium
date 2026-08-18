@@ -26,7 +26,7 @@ namespace dictation {
 
 namespace {
 
-constexpr base::ByteSize kInnerTextLimit = base::KiBU(200);
+constexpr base::ByteSize kInnerTextLimit = base::KiB(200);
 
 // Helper to recursively find FrameData by document token in the ContentNode
 // tree.
