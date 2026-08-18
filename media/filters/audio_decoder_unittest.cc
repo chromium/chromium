@@ -1256,6 +1256,52 @@ TEST(SymphoniaAudioDecoderStandaloneTest, ToSymphoniaPacketNullTimestamp) {
   SymphoniaPacket packet = ToSymphoniaPacket(*buffer, std::nullopt);
   EXPECT_EQ(packet.timestamp_us, 0uL);
 }
+
+TEST(SymphoniaAudioDecoderStandaloneTest, DecodeTruncatedBufferFails) {
+  base::test::TaskEnvironment task_environment;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kSymphoniaAudioDecoding, kSymphoniaMp3Decoding}, {});
+
+  NullMediaLog media_log;
+  auto decoder = std::make_unique<SymphoniaAudioDecoder>(
+      task_environment.GetMainThreadTaskRunner(), &media_log);
+
+  AudioDecoderConfig config(AudioCodec::kMP3, kSampleFormatF32,
+                            ChannelLayoutConfig::Stereo(), 48000,
+                            EmptyExtraData(), EncryptionScheme::kUnencrypted);
+
+  bool init_cb_called = false;
+  decoder->Initialize(config, nullptr,
+                      base::BindOnce(
+                          [](bool* init_cb_called, DecoderStatus status) {
+                            *init_cb_called = true;
+                            EXPECT_TRUE(status.is_ok());
+                          },
+                          &init_cb_called),
+                      base::DoNothing(), base::DoNothing());
+  task_environment.RunUntilIdle();
+  EXPECT_TRUE(init_cb_called);
+
+  // Send a truncated MP3 buffer with a valid syncword but incomplete frame.
+  const uint8_t truncated_mp3_data[] = {0xFF, 0xFB, 0x90, 0x00, 0x01, 0x02};
+  auto buffer = DecoderBuffer::CopyFrom(truncated_mp3_data);
+  buffer->set_timestamp(base::Microseconds(0));
+
+  bool decode_cb_called = false;
+  DecoderStatus decode_status = DecoderStatus::Codes::kOk;
+  decoder->Decode(std::move(buffer),
+                  base::BindOnce(
+                      [](bool* decode_cb_called, DecoderStatus* decode_status,
+                         DecoderStatus status) {
+                        *decode_cb_called = true;
+                        *decode_status = status;
+                      },
+                      &decode_cb_called, &decode_status));
+  task_environment.RunUntilIdle();
+  EXPECT_TRUE(decode_cb_called);
+  EXPECT_FALSE(decode_status.is_ok());
+}
 #endif
 
 }  // namespace media

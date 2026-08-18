@@ -441,6 +441,14 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
     return DecoderStatus::Codes::kOk;
   }
 
+  // An empty buffer has no payload to decode.
+  if (buffer.empty()) {
+    const bool processed = discard_helper_->ProcessBuffers(
+        AudioDiscardHelper::TimeInfo::FromBuffer(buffer), nullptr);
+    DCHECK(!processed);
+    return DecoderStatus::Codes::kOk;
+  }
+
   // The first frame only has a valid timestamp if it is not EOS.
   if (!first_frame_timestamp_.has_value()) {
     first_frame_timestamp_ = buffer.timestamp();
@@ -455,26 +463,19 @@ DecoderStatus SymphoniaAudioDecoder::SymphoniaDecode(
                                   result.status);
   }
 
-  if (result.status != SymphoniaDecodeStatus::Ok &&
-      result.status != SymphoniaDecodeStatus::UnexpectedEndOfStream) {
+  if (result.status != SymphoniaDecodeStatus::Ok) {
     MEDIA_LOG(ERROR, media_log_)
         << "Symphonia error occurred: " << result.error_str.c_str();
     return ToDecoderStatus(result);
   }
 
-  // The Symphonia glue will return an empty buffer if end of stream is reached.
+  // The Symphonia glue will return an empty buffer if 0 frames were decoded.
   if (result.buffer->data.empty()) {
-    if (result.status == SymphoniaDecodeStatus::UnexpectedEndOfStream) {
-      MEDIA_LOG(WARNING, media_log_) << "Reached an unexpected end of stream.";
-    }
-
     // Even if we didn't decode a frame, we should still send the packet
     // to the discard helper for caching.
-    if (!buffer.end_of_stream()) {
-      const bool processed = discard_helper_->ProcessBuffers(
-          AudioDiscardHelper::TimeInfo::FromBuffer(buffer), nullptr);
-      DCHECK(!processed);
-    }
+    const bool processed = discard_helper_->ProcessBuffers(
+        AudioDiscardHelper::TimeInfo::FromBuffer(buffer), nullptr);
+    DCHECK(!processed);
 
     return DecoderStatus::Codes::kOk;
   }
