@@ -103,48 +103,35 @@ public final class StartupMetrics {
 
     /**
      * Records all Chromium startup metrics including mode-specific slices and call site reasons
-     * from the unified {@link StartupDiagnostics} container, as well as the corresponding trace
-     * events.
+     * from {@link StartupTasksRunner.StartupTimings}, as well as the corresponding trace events.
      */
-    public static void recordChromiumInitTimes(StartupDiagnostics diagnostics) {
-        Long totalTimeTakenMs = diagnostics.getTotalTimeUiThreadChromiumInitMillis();
-        Long longestUiBlockingTaskTimeMs =
-                diagnostics.getMaxTimePerTaskUiThreadChromiumInitMillis();
-        Long startTimeMs = diagnostics.getStartTimeMillis();
-        int startupMode = diagnostics.getStartupMode();
-        int startCallSite = diagnostics.getStartCallSite();
-        int finishCallSite = diagnostics.getFinishCallSite();
+    public static void recordChromiumInitTimes(StartupTasksRunner.StartupTimings timings) {
+        String startupModeSuffix = getStartupModeSuffix(timings.startupMode);
+        RecordHistogram.recordTimesHistogram(
+                HISTOGRAM_START_CHROMIUM_LOCKED, timings.totalTimeTakenMs);
+        RecordHistogram.recordTimesHistogram(
+                HISTOGRAM_START_CHROMIUM_LOCKED + startupModeSuffix, timings.totalTimeTakenMs);
+        RecordHistogram.recordTimesHistogram(
+                HISTOGRAM_LONGEST_UI_BLOCKING_TASK_TIME, timings.longestUiBlockingTaskTimeMs);
+        RecordHistogram.recordTimesHistogram(
+                HISTOGRAM_LONGEST_UI_BLOCKING_TASK_TIME + startupModeSuffix,
+                timings.longestUiBlockingTaskTimeMs);
+        RecordHistogram.recordTimesHistogram(HISTOGRAM_WALL_CLOCK_TIME, timings.wallClockTimeMs);
+        RecordHistogram.recordTimesHistogram(
+                HISTOGRAM_WALL_CLOCK_TIME + startupModeSuffix, timings.wallClockTimeMs);
 
-        if (totalTimeTakenMs != null
-                && longestUiBlockingTaskTimeMs != null
-                && startTimeMs != null) {
-            long wallClockTimeMs = SystemClock.uptimeMillis() - startTimeMs;
-            String startupModeSuffix = getStartupModeSuffix(startupMode);
-            RecordHistogram.recordTimesHistogram(HISTOGRAM_START_CHROMIUM_LOCKED, totalTimeTakenMs);
-            RecordHistogram.recordTimesHistogram(
-                    HISTOGRAM_START_CHROMIUM_LOCKED + startupModeSuffix, totalTimeTakenMs);
-            RecordHistogram.recordTimesHistogram(
-                    HISTOGRAM_LONGEST_UI_BLOCKING_TASK_TIME, longestUiBlockingTaskTimeMs);
-            RecordHistogram.recordTimesHistogram(
-                    HISTOGRAM_LONGEST_UI_BLOCKING_TASK_TIME + startupModeSuffix,
-                    longestUiBlockingTaskTimeMs);
-            RecordHistogram.recordTimesHistogram(HISTOGRAM_WALL_CLOCK_TIME, wallClockTimeMs);
-            RecordHistogram.recordTimesHistogram(
-                    HISTOGRAM_WALL_CLOCK_TIME + startupModeSuffix, wallClockTimeMs);
-
-            // Record traces
-            TraceEvent.webViewStartupStartChromiumLocked(
-                    startTimeMs,
-                    totalTimeTakenMs,
-                    /* startCallSite= */ startCallSite,
-                    /* finishCallSite= */ finishCallSite,
-                    /* startupMode= */ startupMode);
-        }
+        // Record traces
+        TraceEvent.webViewStartupStartChromiumLocked(
+                timings.startTimeMs,
+                timings.totalTimeTakenMs,
+                /* startCallSite= */ timings.startCallSite,
+                /* finishCallSite= */ timings.finishCallSite,
+                /* startupMode= */ timings.startupMode);
 
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_STARTUP_MODE, startupMode, StartupTasksRunner.StartupMode.COUNT);
+                HISTOGRAM_STARTUP_MODE, timings.startupMode, StartupTasksRunner.StartupMode.COUNT);
         RecordHistogram.recordEnumeratedHistogram(
-                HISTOGRAM_INIT_REASON2, startCallSite, StartupCallSite.COUNT);
+                HISTOGRAM_INIT_REASON2, timings.startCallSite, StartupCallSite.COUNT);
     }
 
     private static String getStartupModeSuffix(@StartupTasksRunner.StartupMode int startupMode) {

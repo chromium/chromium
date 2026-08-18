@@ -27,6 +27,7 @@ import org.chromium.android_webview.AwServiceWorkerController;
 import org.chromium.android_webview.AwTracingController;
 import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.StartupDiagnostics;
+import org.chromium.android_webview.StartupTasksRunner;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.TraceEvent;
@@ -915,12 +916,15 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         Consumer<BiConsumer<@StartUpResultField Integer, Object>> resultStream =
                 (finalResultHandler) -> {
                     // Once we have the final handler, stream the results.
-                    finalResultHandler.accept(
-                            StartUpResultField.TOTAL_TIME_UI_THREAD_MILLIS,
-                            result.getTotalTimeUiThreadChromiumInitMillis());
-                    finalResultHandler.accept(
-                            StartUpResultField.MAX_TIME_PER_TASK_UI_THREAD_MILLIS,
-                            result.getMaxTimePerTaskUiThreadChromiumInitMillis());
+                    StartupTasksRunner.StartupTimings timings = result.getStartupTimings();
+                    if (timings != null) {
+                        finalResultHandler.accept(
+                                StartUpResultField.TOTAL_TIME_UI_THREAD_MILLIS,
+                                timings.totalTimeTakenMs);
+                        finalResultHandler.accept(
+                                StartUpResultField.MAX_TIME_PER_TASK_UI_THREAD_MILLIS,
+                                timings.longestUiBlockingTaskTimeMs);
+                    }
 
                     Throwable syncLoc = result.getSynchronousChromiumInitLocationOrNull();
                     if (syncLoc != null) {
@@ -991,10 +995,12 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
             StartupDiagnostics.Callback callback =
                     result -> {
                         SupportLibStartUpResult supportLibResult = new SupportLibStartUpResult();
-                        supportLibResult.setTotalTimeInUiThreadMillis(
-                                result.getTotalTimeUiThreadChromiumInitMillis());
-                        supportLibResult.setMaxTimePerTaskInUiThreadMillis(
-                                result.getMaxTimePerTaskUiThreadChromiumInitMillis());
+                        StartupTasksRunner.StartupTimings timings = result.getStartupTimings();
+                        if (timings != null) {
+                            supportLibResult.setTotalTimeInUiThreadMillis(timings.totalTimeTakenMs);
+                            supportLibResult.setMaxTimePerTaskInUiThreadMillis(
+                                    timings.longestUiBlockingTaskTimeMs);
+                        }
                         Throwable syncChromiumInitLocation =
                                 result.getSynchronousChromiumInitLocationOrNull();
                         if (syncChromiumInitLocation != null) {

@@ -268,8 +268,9 @@ public class WebViewChromiumAwInit {
         return new StartupTasksRunner(
                 new StartupTasksRunner.Delegate() {
                     @Override
-                    public void onStartupComplete(StartupDiagnostics diagnostics) {
-                        recordStartupMetrics();
+                    public void onStartupComplete(StartupTasksRunner.StartupTimings timings) {
+                        mStartupDiagnostics.setStartupTimings(timings);
+                        recordStartupMetrics(timings);
                     }
 
                     @Override
@@ -287,7 +288,6 @@ public class WebViewChromiumAwInit {
                         return mInitState.get() == INIT_FINISHED;
                     }
                 },
-                mStartupDiagnostics,
                 preBrowserProcessStartTasks,
                 postBrowserProcessStartTasks,
                 mRunStartupTasksAsync,
@@ -493,16 +493,15 @@ public class WebViewChromiumAwInit {
         AwBrowserProcess.doNetworkInitializations(ContextUtils.getApplicationContext());
     }
 
-    private void recordStartupMetrics() {
+    private void recordStartupMetrics(StartupTasksRunner.StartupTimings timings) {
         mWebViewStartUpCallbackRunQueue.notifyChromiumStarted();
 
         // Stop early trace event collection.
         // They have already been emitted if a trace session was started to capture startup.
         EarlyTraceEvent.reset();
 
-         // Record histograms
-        StartupMetrics.recordChromiumInitTimes(mStartupDiagnostics);
-
+        // Record histograms
+        StartupMetrics.recordChromiumInitTimes(timings);
         // Also create the trace events for the earlier WebViewChromiumFactoryProvider init, which
         // happens before tracing is ready.
         mFactory.recordInitTraces();

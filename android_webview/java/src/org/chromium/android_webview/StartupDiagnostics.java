@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.android_webview.StartupTasksRunner.StartupTimings;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -24,22 +25,7 @@ public class StartupDiagnostics {
     private final Object mLock = new Object();
 
     @GuardedBy("mLock")
-    private @Nullable Long mTotalTimeUiThreadChromiumInitMillis;
-
-    @GuardedBy("mLock")
-    private @Nullable Long mMaxTimePerTaskUiThreadChromiumInitMillis;
-
-    @GuardedBy("mLock")
-    private @Nullable Long mStartTimeMillis;
-
-    @GuardedBy("mLock")
-    private int mStartupMode;
-
-    @GuardedBy("mLock")
-    private int mStartCallSite;
-
-    @GuardedBy("mLock")
-    private int mFinishCallSite;
+    private @Nullable StartupTimings mTimings;
 
     @GuardedBy("mLock")
     private @Nullable Throwable mSynchronousChromiumInitLocation;
@@ -50,39 +36,16 @@ public class StartupDiagnostics {
     @GuardedBy("mLock")
     private @Nullable Throwable mAsynchronousChromiumInitLocation;
 
-    public @Nullable Long getTotalTimeUiThreadChromiumInitMillis() {
+    public void setStartupTimings(StartupTimings timings) {
         synchronized (mLock) {
-            return mTotalTimeUiThreadChromiumInitMillis;
+            assert mTimings == null;
+            mTimings = timings;
         }
     }
 
-    public @Nullable Long getMaxTimePerTaskUiThreadChromiumInitMillis() {
+    public @Nullable StartupTimings getStartupTimings() {
         synchronized (mLock) {
-            return mMaxTimePerTaskUiThreadChromiumInitMillis;
-        }
-    }
-
-    public @Nullable Long getStartTimeMillis() {
-        synchronized (mLock) {
-            return mStartTimeMillis;
-        }
-    }
-
-    public int getStartupMode() {
-        synchronized (mLock) {
-            return mStartupMode;
-        }
-    }
-
-    public int getStartCallSite() {
-        synchronized (mLock) {
-            return mStartCallSite;
-        }
-    }
-
-    public int getFinishCallSite() {
-        synchronized (mLock) {
-            return mFinishCallSite;
+            return mTimings;
         }
     }
 
@@ -101,40 +64,6 @@ public class StartupDiagnostics {
     public @Nullable Throwable getAsynchronousChromiumInitLocationOrNull() {
         synchronized (mLock) {
             return mAsynchronousChromiumInitLocation;
-        }
-    }
-
-    public void setTotalTimeUiThreadChromiumInitMillis(Long time) {
-        synchronized (mLock) {
-            assert (mTotalTimeUiThreadChromiumInitMillis == null);
-            mTotalTimeUiThreadChromiumInitMillis = time;
-        }
-    }
-
-    public void setMaxTimePerTaskUiThreadChromiumInitMillis(Long time) {
-        synchronized (mLock) {
-            assert (mMaxTimePerTaskUiThreadChromiumInitMillis == null);
-            mMaxTimePerTaskUiThreadChromiumInitMillis = time;
-        }
-    }
-
-    public void setStartTimeMillis(Long time) {
-        synchronized (mLock) {
-            assert (mStartTimeMillis == null);
-            mStartTimeMillis = time;
-        }
-    }
-
-    public void setStartupMode(int startupMode) {
-        synchronized (mLock) {
-            mStartupMode = startupMode;
-        }
-    }
-
-    public void setCallSites(int startCallSite, int finishCallSite) {
-        synchronized (mLock) {
-            mStartCallSite = startCallSite;
-            mFinishCallSite = finishCallSite;
         }
     }
 
