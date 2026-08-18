@@ -8503,6 +8503,9 @@ chromium-metrics-reviews@google.com.
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     Records the outcome of interactions with Mojo through Mojo Facade on iOS.
+
+    Note: Starting in M153, MojoHandle.readMessage metrics are logged, and
+    unknown action variants are recorded under Mojo.Unknown.
   </summary>
   <token key="Action">
     <variant name="Mojo.bindInterface"/>
