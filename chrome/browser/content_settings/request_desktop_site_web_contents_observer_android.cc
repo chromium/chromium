@@ -166,8 +166,8 @@ bool RequestDesktopSiteWebContentsObserverAndroid::ShouldAllowOnExternalDisplay(
       std::vector<std::string> allowlist =
           base::SplitString(oemAllowlistStr, ",", base::TRIM_WHITESPACE,
                             base::SPLIT_WANT_NONEMPTY);
-      std::string manufacturer = base::android::android_info::manufacturer();
-      base::ToLowerASCII(manufacturer);
+      std::string manufacturer =
+          base::ToLowerASCII(base::android::android_info::manufacturer());
       s_is_oem_allowlisted_for_external_display_desktop_ua =
           std::ranges::contains(allowlist, manufacturer);
     }

@@ -119,17 +119,21 @@ CharT ToUpperASCII(CharT c) {
   return (c >= 'a' && c <= 'z') ? static_cast<CharT>(c + 'A' - 'a') : c;
 }
 
-// Converts the given string to its ASCII-lowercase equivalent. Non-ASCII
-// bytes (or UTF-16 code units in `std::u16string_view`) are permitted but will
-// be unmodified.
-BASE_EXPORT std::string ToLowerASCII(std::string_view str);
-BASE_EXPORT std::u16string ToLowerASCII(std::u16string_view str);
+// Upper/Lower conversions. Note that CompareCaseInsensitiveASCII() and
+// EqualsCaseInsensitiveASCII() are preferred unless the returned string will
+// be stored and reused, to avoid unnecessary allocations.
 
-// Converts the given string to its ASCII-uppercase equivalent. Non-ASCII
+// Returns an ASCII-lowercase equivalent copy of the given string. Non-ASCII
 // bytes (or UTF-16 code units in `std::u16string_view`) are permitted but will
 // be unmodified.
-BASE_EXPORT std::string ToUpperASCII(std::string_view str);
-BASE_EXPORT std::u16string ToUpperASCII(std::u16string_view str);
+[[nodiscard]] BASE_EXPORT std::string ToLowerASCII(std::string_view str);
+[[nodiscard]] BASE_EXPORT std::u16string ToLowerASCII(std::u16string_view str);
+
+// Returns an ASCII-uppercase equivalent copy of the given string. Non-ASCII
+// bytes (or UTF-16 code units in `std::u16string_view`) are permitted but will
+// be unmodified.
+[[nodiscard]] BASE_EXPORT std::string ToUpperASCII(std::string_view str);
+[[nodiscard]] BASE_EXPORT std::u16string ToUpperASCII(std::u16string_view str);
 
 // Functor for ASCII case-insensitive comparisons for STL algorithms like
 // std::search. Non-ASCII bytes (or UTF-16 code units in `std::u16string_view`)
@@ -145,6 +149,8 @@ template <typename Char>
 struct CaseInsensitiveCompareASCII {
  public:
   bool operator()(Char x, Char y) const {
+    // This is efficient because the per-character ToLowerASCII() does not
+    // need to allocate.
     return ToLowerASCII(x) == ToLowerASCII(y);
   }
 };
