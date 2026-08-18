@@ -305,6 +305,25 @@ TEST_F(ComposeboxHandlerTest, SetSmartTabSharingActive) {
   EXPECT_FALSE(handler().IsSmartTabSharingActive());
 }
 
+TEST_F(ComposeboxHandlerTest, ResetInputStateModelClearsSmartTabSharingActive) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasksContext,
+        {{"ContextualTasksContextSmartTabSharing", "true"}}},
+       {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
+      {});
+
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+
+  handler().SetSmartTabSharingActive(true);
+  EXPECT_TRUE(handler().IsSmartTabSharingActive());
+
+  // Starting a new session resets the session handle and input state model.
+  contextual_session_handle()->set_smart_tab_sharing_active(std::nullopt);
+  handler().ResetInputStateModel();
+  EXPECT_FALSE(handler().IsSmartTabSharingActive());
+}
+
 TEST_F(ComposeboxHandlerTest, OnContextMenuOpenedTriggersFetch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

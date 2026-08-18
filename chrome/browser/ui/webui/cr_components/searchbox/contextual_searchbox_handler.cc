@@ -705,6 +705,8 @@ void ContextualSearchboxHandler::OnAnyTabNavigated(
 
 void ContextualSearchboxHandler::ResetInputStateModel() {
   input_state_model_.reset();
+  smart_tab_sharing_active_for_thread_.reset();
+  last_sent_smart_tab_sharing_active_.reset();
 }
 
 contextual_search::ContextualSearchMetricsRecorder*
