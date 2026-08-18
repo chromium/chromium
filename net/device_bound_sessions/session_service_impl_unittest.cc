@@ -216,7 +216,8 @@ class SessionServiceImplTest : public ::testing::Test,
       service_->RegisterBoundSession(
           base::DoNothing(), std::move(fetch_param),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-          NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+          SiteForCookies(), NetLogWithSource(),
+          /*original_request_initiator=*/std::nullopt);
     }
   }
 
@@ -296,7 +297,7 @@ TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
       /*authorization=*/std::nullopt);
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   net::TestDelegate delegate;
@@ -412,7 +413,7 @@ TEST_F(SessionServiceImplTest, NullAccessObserver) {
       "challenge", /*authorization=*/std::nullopt);
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // The access observer was null, so no call is expected
@@ -429,7 +430,7 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnRegistration) {
   service().RegisterBoundSession(
       future.GetRepeatingCallback<const SessionAccess&>(),
       std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   SessionAccess access = future.Take();
@@ -521,7 +522,7 @@ TEST_F(SessionServiceImplTest, EventObserverOnRegistrationSuccess) {
       kSessionId, kRefreshUrlString, kOrigin);
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 }
 
@@ -549,7 +550,7 @@ TEST_F(SessionServiceImplTest, EventObserverOnRegistrationFailure) {
       SessionError::kInvalidFetcherUrl, kRefreshUrlString);
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 }
 
@@ -594,7 +595,7 @@ TEST_F(SessionServiceImplTest,
       error.failed_request, error.type));
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 }
 
@@ -656,7 +657,7 @@ TEST_F(SessionServiceImplTest, NoCallbackIfEventObserverRemoved) {
       kSessionId, kRefreshUrlString, kOrigin);
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 }
 
@@ -1392,7 +1393,8 @@ TEST_F(SessionServiceImplTest, RefreshedSessionKeepsAttestationKey) {
     service().RegisterBoundSession(
         base::DoNothing(), std::move(fetch_param),
         IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
-        NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
+        SiteForCookies(), NetLogWithSource(),
+        /*original_request_initiator=*/std::nullopt);
   }
 
   Session* session = service().GetSession({site, Session::Id("SessionA")});
@@ -1782,7 +1784,7 @@ TEST_F(SessionServiceImplTest, NetLogRegistration) {
       "challenge", /*authorization=*/std::nullopt);
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource::Make(NetLogSourceType::URL_REQUEST),
       /*original_request_initiator=*/std::nullopt);
   EXPECT_EQ(
@@ -2125,7 +2127,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       Session::Id(kSessionId));
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // Validate the relying session exists.
@@ -2163,7 +2165,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       kTestRefreshUrl, Session::Id(kSessionId));
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // Validate the relying session does not exist
@@ -2204,7 +2206,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       kTestRefreshUrl, Session::Id("incorrect-provider-session"));
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // Validate the relying session does not exist
@@ -2248,7 +2250,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       GURL("https://subdomain.example.com"), Session::Id(kSessionId));
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // Validate the relying session does not exist.
@@ -2269,7 +2271,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       GURL("http:///"), Session::Id(kSessionId));
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // Validate the relying session does not exist.
@@ -2293,7 +2295,7 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       GURL("data:text/html,session-provider"), Session::Id(kSessionId));
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // Validate the relying session does not exist.
@@ -2338,7 +2340,7 @@ TEST_F(SessionServiceImplTestWithoutFederatedSessions,
       Session::Id(kSessionId));
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // Validate the relying session does not exist.
@@ -2362,7 +2364,7 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRegistration) {
       /*authorization=*/std::nullopt);
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   net::TestDelegate delegate;
@@ -2651,7 +2653,7 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
   // Will invoke the store's save session method.
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   auto site = SchemefulSite(kTestUrl);
@@ -3108,7 +3110,7 @@ TEST_F(SessionServiceImplWithStoreTest, FederatedRegistrationKeyUnrestored) {
 
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // The relying session will not exist
@@ -3190,7 +3192,7 @@ TEST_F(SessionServiceImplWithStoreTest,
   EXPECT_CALL(store(), SaveSession);
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource(), /*original_request_initiator=*/std::nullopt);
 
   // The relying session will exist, since we restored the provider key.
@@ -3293,7 +3295,7 @@ TEST_F(SessionServiceImplTest, GoogleRegistrationLog) {
       "challenge", /*authorization=*/std::nullopt);
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource::Make(NetLogSourceType::URL_REQUEST),
       /*original_request_initiator=*/std::nullopt);
   histogram_tester.ExpectUniqueSample(
@@ -3310,7 +3312,7 @@ TEST_F(SessionServiceImplTest, NoGoogleRegistrationLog) {
       "challenge", /*authorization=*/std::nullopt);
   service().RegisterBoundSession(
       base::DoNothing(), std::move(fetch_param),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       NetLogWithSource::Make(NetLogSourceType::URL_REQUEST),
       /*original_request_initiator=*/std::nullopt);
   histogram_tester.ExpectTotalCount(

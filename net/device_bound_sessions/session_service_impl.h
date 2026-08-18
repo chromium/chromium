@@ -18,6 +18,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/net_export.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
@@ -86,6 +87,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       OnAccessCallback on_access_callback,
       RegistrationFetcherParam registration_params,
       const IsolationInfo& isolation_info,
+      const net::SiteForCookies& site_for_cookies,
       const NetLogWithSource& net_log,
       const std::optional<url::Origin>& original_request_initiator) override;
 
@@ -341,6 +343,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       OnAccessCallback on_access_callback,
       RegistrationFetcherParam registration_params,
       const IsolationInfo& isolation_info,
+      const net::SiteForCookies& site_for_cookies,
       const NetLogWithSource& net_log,
       const std::optional<url::Origin>& original_request_initiator,
       base::expected<Session*, SessionError> federated_provider_session);

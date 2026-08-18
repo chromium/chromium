@@ -254,6 +254,7 @@ class RegistrationTest : public TestWithTaskEnvironment {
             param, session_service(), unexportable_key_service(),
             context_.get(),
             IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+            SiteForCookies(),
             /*net_log_source=*/std::nullopt,
             /*original_request_initiator=*/std::nullopt,
             unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -520,6 +521,7 @@ TEST_F(RegistrationTest, BasicSuccess) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -543,6 +545,51 @@ TEST_F(RegistrationTest, BasicSuccess) {
       "Net.DeviceBoundSessions.Registration.Network.Result", HTTP_OK, 1);
 }
 
+TEST_F(RegistrationTest, SiteForCookiesUsedForStrictCookies) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating([](const test_server::HttpRequest& request)
+                              -> std::unique_ptr<test_server::HttpResponse> {
+        auto response = std::make_unique<test_server::BasicHttpResponse>();
+        response->set_code(HTTP_OK);
+        response->AddCustomHeader(
+            "Set-Cookie",
+            "auth_cookie=test_value; SameSite=Strict; Secure; Path=/");
+        response->set_content(kBasicValidJson);
+        return response;
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam();
+
+  // Create an IsolationInfo with empty site_for_cookies, but provide an
+  // explicit valid site_for_cookies.
+  url::Origin origin = url::Origin::Create(GetBaseURL());
+  IsolationInfo isolation_info = IsolationInfo::Create(
+      IsolationInfo::RequestType::kOther, origin, origin, SiteForCookies());
+  SiteForCookies site_for_cookies = SiteForCookies::FromOrigin(origin);
+
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          isolation_info, site_for_cookies,
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const Session& session = callback.outcome().SessionForTesting();
+  EXPECT_EQ(session.id().value(), "session_id");
+
+  base::test::TestFuture<const CookieList&> cookie_future;
+  context_->cookie_store()->GetAllCookiesAsync(cookie_future.GetCallback());
+  const CookieList& cookies = cookie_future.Get();
+  ASSERT_EQ(cookies.size(), 1u);
+  EXPECT_EQ(cookies[0].Name(), "auth_cookie");
+}
+
 TEST_F(RegistrationTest, VerifyTaskPriority) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   unexportable_keys::MockUnexportableKeyService mock_service;
@@ -561,7 +608,7 @@ TEST_F(RegistrationTest, VerifyTaskPriority) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), mock_service, context_.get(),
-          isolation_info,
+          isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kUserVisible);
@@ -586,7 +633,7 @@ TEST_F(RegistrationTest, SigningKeyGenerationFailure) {
 
   auto fetcher = RegistrationFetcher::CreateFetcher(
       request_param, session_service(), mock_service, context_.get(),
-      isolation_info,
+      isolation_info, isolation_info.site_for_cookies(),
       /*net_log_source=*/std::nullopt,
       /*original_request_initiator=*/std::nullopt,
       unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -617,7 +664,7 @@ TEST_F(RegistrationTest, AttestationKeyGenerationFailure) {
 
   auto fetcher = RegistrationFetcher::CreateFetcher(
       request_param, session_service(), mock_service, context_.get(),
-      isolation_info,
+      isolation_info, isolation_info.site_for_cookies(),
       /*net_log_source=*/std::nullopt,
       /*original_request_initiator=*/std::nullopt,
       unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -651,7 +698,7 @@ TEST_F(RegistrationTest, AttestationKeyGenerationSuccess) {
       /*authorization=*/std::nullopt, AttestationMode::kRequired);
   auto fetcher = RegistrationFetcher::CreateFetcher(
       param, session_service(), unexportable_key_service(), context_.get(),
-      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+      IsolationInfo::CreateTransient(/*nonce=*/std::nullopt), SiteForCookies(),
       /*net_log_source=*/std::nullopt,
       /*original_request_initiator=*/std::nullopt,
       unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -689,6 +736,7 @@ TEST_F(RegistrationTest, NoScopeJson) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -724,6 +772,7 @@ TEST_F(RegistrationTest, NoSessionIdJson) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -760,6 +809,7 @@ TEST_F(RegistrationTest, EmptySessionIdJson) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -800,6 +850,7 @@ TEST_F(RegistrationTest, SpecificationNotDictJson) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -849,6 +900,7 @@ TEST_F(RegistrationTest, MissingPathDefaults) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -905,6 +957,7 @@ TEST_F(RegistrationTest, MissingDomainDefaults) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -960,6 +1013,7 @@ TEST_F(RegistrationTest, MissingRefreshUrlDefault) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1009,6 +1063,7 @@ TEST_F(RegistrationTest, OneSpecTypeInvalid) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1048,6 +1103,7 @@ TEST_F(RegistrationTest, InvalidTypeSpecList) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1089,6 +1145,7 @@ TEST_F(RegistrationTest, TypeIsNotCookie) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1133,6 +1190,7 @@ TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1177,6 +1235,7 @@ TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1215,6 +1274,7 @@ TEST_F(RegistrationTest, CredEntryWithoutDict) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1257,7 +1317,7 @@ TEST_F(RegistrationTest, CredEntryWithoutAttributes) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
-          isolation_info,
+          isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/origin,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1294,6 +1354,7 @@ TEST_F(RegistrationTest, CredEntryWithEmptyName) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1317,6 +1378,7 @@ TEST_F(RegistrationTest, ReturnTextFile) {
       RegistrationFetcher::CreateFetcher(
           params, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1342,6 +1404,7 @@ TEST_F(RegistrationTest, ReturnInvalidJson) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1367,6 +1430,7 @@ TEST_F(RegistrationTest, ReturnEmptyJson) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1392,6 +1456,7 @@ TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1420,6 +1485,7 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1444,6 +1510,7 @@ TEST_F(RegistrationTest, ResponseErrorCaptured) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1475,6 +1542,7 @@ TEST_F(RegistrationTest, NetErrorCaptured) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1507,6 +1575,7 @@ TEST_F(RegistrationTest, ServerError407) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1532,6 +1601,7 @@ TEST_F(RegistrationTest, ServerError400) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1557,6 +1627,7 @@ TEST_F(RegistrationTest, ServerError500) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1593,6 +1664,7 @@ TEST_F(RegistrationTest, ServerErrorReturnOne403ThenSuccess) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1660,6 +1732,7 @@ TEST_F(RegistrationTest, FollowHttpsToHttpsRedirect) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1721,6 +1794,7 @@ TEST_F(RegistrationTest, Registration_RedirectToCrossOrigin_Fails) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1749,6 +1823,7 @@ TEST_F(RegistrationTest, FailOnSslErrorExpired) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1802,7 +1877,7 @@ TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1844,7 +1919,7 @@ TEST_F(RegistrationTest, FetchRegistrationWithCachedChallenge) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1882,7 +1957,7 @@ TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1915,7 +1990,7 @@ TEST_F(RegistrationTest, FetchRefreshAndChallengeRequired_NoChallenge) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -1969,7 +2044,7 @@ TEST_F(RegistrationTest,
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2024,7 +2099,7 @@ TEST_F(RegistrationTest,
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2053,6 +2128,7 @@ TEST_F(RegistrationTest, ContinueFalse) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2086,7 +2162,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), mock_service, context_.get(),
-          isolation_info,
+          isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2121,7 +2197,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), mock_service, context_.get(),
-          isolation_info,
+          isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2146,6 +2222,7 @@ TEST_F(RegistrationTest, NetLogRegistrationResultLogged) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2175,7 +2252,7 @@ TEST_F(RegistrationTest, NetLogRefreshResultLogged) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2215,7 +2292,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedChallenge) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2255,7 +2332,7 @@ TEST_F(RegistrationTest, RefreshCachesSignedChallenge) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2298,7 +2375,7 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeUsed) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), mock_key_service, context_.get(),
-          isolation_info,
+          isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2339,7 +2416,7 @@ TEST_F(RegistrationTest, RefreshCachedSignedChallengeDoesNotMatch) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2373,6 +2450,7 @@ TEST_F(RegistrationTest, RegistrationTriggersSigningOccurrence) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2399,7 +2477,7 @@ TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2451,7 +2529,7 @@ TEST_F(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_param, session_service(), unexportable_key_service(),
-          context_.get(), isolation_info,
+          context_.get(), isolation_info, isolation_info.site_for_cookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2503,6 +2581,7 @@ TEST_F(RegistrationTest, MissingIncludeSiteFails) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2534,6 +2613,7 @@ TEST_F(RegistrationTest, ShutdownDuringRequest) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2563,6 +2643,7 @@ TEST_F(RegistrationTest, EmptyResponseOnRegistration) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2592,6 +2673,7 @@ TEST_F(RegistrationTest, EmptyResponseOnRefresh) {
           request_param, session_service(), unexportable_key_service(),
           context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2625,6 +2707,7 @@ TEST_F(RegistrationTest, SetChallengeOnRegistration) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2659,6 +2742,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_Success) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2688,6 +2772,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_WellKnownUnavailable) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2719,6 +2804,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_WellKnownMalformed) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2751,6 +2837,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_WellKnownMalformedEntry) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2785,6 +2872,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_Unauthorized) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2813,6 +2901,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_IncludeSiteFalse_Fails) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2851,6 +2940,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_MultipleAllowed) {
             param, session_service(), unexportable_key_service(),
             context_.get(),
             IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+            SiteForCookies(),
             /*net_log_source=*/std::nullopt,
             /*original_request_initiator=*/std::nullopt,
             unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2873,6 +2963,7 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_MultipleAllowed) {
             param, session_service(), unexportable_key_service(),
             context_.get(),
             IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+            SiteForCookies(),
             /*net_log_source=*/std::nullopt,
             /*original_request_initiator=*/std::nullopt,
             unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -2933,6 +3024,7 @@ TEST_F(RegistrationTest, RegistrationRedirectToSubdomain) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -3284,6 +3376,7 @@ TEST_F(RegistrationTest, RegistrationFailsIfCantSetCookies) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -3315,6 +3408,7 @@ TEST_F(RegistrationTest, RegisterAuthorizationNoChallenge) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -3354,6 +3448,7 @@ TEST_F(RegistrationTest, RefreshRetryTransientError) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -3428,6 +3523,7 @@ TEST_F(RegistrationTest, RefreshRetryTransientErrorOnSecondRoundtrip) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -3508,6 +3604,7 @@ TEST_F(RegistrationTest, RefreshRetryTransientErrorOnBothRoundtrips) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -3559,6 +3656,7 @@ TEST_F(RegistrationTest, RefreshRetryTransientErrorDisabled) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
@@ -3603,6 +3701,7 @@ TEST_F(RegistrationTest, RegistrationNoRetryTransientError) {
       RegistrationFetcher::CreateFetcher(
           param, session_service(), unexportable_key_service(), context_.get(),
           IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          SiteForCookies(),
           /*net_log_source=*/std::nullopt,
           /*original_request_initiator=*/std::nullopt,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);

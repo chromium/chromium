@@ -211,6 +211,7 @@ void SessionServiceImpl::RegisterBoundSession(
     OnAccessCallback on_access_callback,
     RegistrationFetcherParam registration_params,
     const IsolationInfo& isolation_info,
+    const net::SiteForCookies& site_for_cookies,
     const NetLogWithSource& net_log,
     const std::optional<url::Origin>& original_request_initiator) {
   if (registration_params.provider_session_id().has_value()) {
@@ -232,23 +233,22 @@ void SessionServiceImpl::RegisterBoundSession(
         std::move(provider_key_thumbprint), on_access_callback,
         base::BindOnce(&SessionServiceImpl::RegisterBoundSessionInternal,
                        weak_factory_.GetWeakPtr(), on_access_callback,
-                       std::move(registration_params),
-                       std::move(isolation_info), std::move(net_log),
-                       std::move(original_request_initiator)));
+                       std::move(registration_params), isolation_info,
+                       site_for_cookies, net_log, original_request_initiator));
     return;
   }
 
-  RegisterBoundSessionInternal(std::move(on_access_callback),
-                               std::move(registration_params),
-                               std::move(isolation_info), std::move(net_log),
-                               std::move(original_request_initiator),
-                               /*federated_provider_session=*/nullptr);
+  RegisterBoundSessionInternal(
+      std::move(on_access_callback), std::move(registration_params),
+      isolation_info, site_for_cookies, net_log, original_request_initiator,
+      /*federated_provider_session=*/nullptr);
 }
 
 void SessionServiceImpl::RegisterBoundSessionInternal(
     OnAccessCallback on_access_callback,
     RegistrationFetcherParam registration_params,
     const IsolationInfo& isolation_info,
+    const net::SiteForCookies& site_for_cookies,
     const NetLogWithSource& net_log,
     const std::optional<url::Origin>& original_request_initiator,
     base::expected<Session*, SessionError> federated_provider_session) {
@@ -288,7 +288,7 @@ void SessionServiceImpl::RegisterBoundSessionInternal(
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           request_params, *this, key_service_.get(), context_.get(),
-          isolation_info, net_log_source_for_registration,
+          isolation_info, site_for_cookies, net_log_source_for_registration,
           original_request_initiator,
           unexportable_keys::BackgroundTaskPriority::kBestEffort);
   RegistrationFetcher* fetcher_raw = fetcher.get();
@@ -1354,8 +1354,8 @@ void SessionServiceImpl::RefreshSessionInternal(
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
           registration_param, *this, key_service_.get(), context_.get(),
-          request.isolation_info(), net_log_source_for_refresh,
-          request.initiator(), priority);
+          request.isolation_info(), request.site_for_cookies(),
+          net_log_source_for_refresh, request.initiator(), priority);
   RegistrationFetcher* fetcher_raw = fetcher.get();
   registration_fetchers_.insert(std::move(fetcher));
   fetcher_raw->StartFetchWithExistingKey(registration_param, *key_id,
@@ -1494,7 +1494,8 @@ void SessionServiceImpl::HandleResponseHeaders(
   for (auto& param : params) {
     RegisterBoundSession(request.device_bound_session_access_callback(),
                          std::move(param), request.isolation_info(),
-                         request.net_log(), request.initiator());
+                         request.site_for_cookies(), request.net_log(),
+                         request.initiator());
   }
 
   // If response header Sec-Session-Challenge is present, for each header

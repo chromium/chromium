@@ -13,6 +13,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/registration_result.h"
 #include "net/device_bound_sessions/session.h"
@@ -57,6 +58,7 @@ class NET_EXPORT RegistrationFetcher {
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
+      const net::SiteForCookies& site_for_cookies,
       std::optional<NetLogSource> net_log_source,
       const std::optional<url::Origin>& original_request_initiator,
       unexportable_keys::BackgroundTaskPriority priority);
