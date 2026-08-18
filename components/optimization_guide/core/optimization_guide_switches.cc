@@ -19,10 +19,6 @@ const char kOptimizationGuideServiceModelExecutionURL[] =
 const char kOptimizationGuideServiceModelExecutionDefaultURL[] =
     "https://chromemodelexecution-pa.googleapis.com/v1:Execute";
 
-// Purges the store containing prediction medels and host model features on
-// startup, so that it's guaranteed to be using fresh data.
-const char kPurgeModelAndFeaturesStore[] = "purge-model-and-features-store";
-
 const char kDisableModelDownloadVerificationForTesting[] =
     "disable-model-download-verification";
 
@@ -93,11 +89,6 @@ std::string GetModelQualityServiceAPIKey() {
   }
 
   return google_apis::GetAPIKey();
-}
-
-bool ShouldPurgeModelAndFeaturesStoreOnStartup() {
-  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  return cmd_line->HasSwitch(kPurgeModelAndFeaturesStore);
 }
 
 bool IsDebugLogsEnabled() {

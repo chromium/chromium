@@ -20,14 +20,6 @@
 namespace optimization_guide {
 namespace switches {
 
-// TODO(crbug.com/514743962): Move to components/optimization_guide/core/delivery/model_store_metadata_entry.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kPurgeModelAndFeaturesStore[];
-// Returns whether all entries within the store should be purged during startup
-// if the explicit purge switch exists.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldPurgeModelAndFeaturesStoreOnStartup();
-
 // TODO(crbug.com/514743962): Move to components/optimization_guide/core/delivery/prediction_model_download_manager.h.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kDisableModelDownloadVerificationForTesting[];
