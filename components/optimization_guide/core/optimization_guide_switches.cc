@@ -19,9 +19,6 @@ const char kOptimizationGuideServiceModelExecutionURL[] =
 const char kOptimizationGuideServiceModelExecutionDefaultURL[] =
     "https://chromemodelexecution-pa.googleapis.com/v1:Execute";
 
-const char kDisableModelDownloadVerificationForTesting[] =
-    "disable-model-download-verification";
-
 const char kDebugLoggingEnabled[] = "enable-optimization-guide-debug-logs";
 
 // Disables the fetching of models and overrides the file path and metadata to
@@ -95,11 +92,6 @@ bool IsDebugLogsEnabled() {
   static bool enabled =
       base::CommandLine::ForCurrentProcess()->HasSwitch(kDebugLoggingEnabled);
   return enabled;
-}
-
-bool ShouldSkipModelDownloadVerificationForTesting() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(kDisableModelDownloadVerificationForTesting);
 }
 
 bool ShouldValidateModel() {
