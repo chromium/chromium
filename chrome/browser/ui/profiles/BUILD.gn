@@ -116,6 +116,7 @@ source_set("impl") {
         # signin_intercept_first_run_experience_dialog.h listed above - see
         # comment in :profiles above.
         "//chrome/browser/ui/signin",
+        "//chrome/browser/ui/views/profiles:profile_management_types",
         "//chrome/browser/ui/webui/signin:profile",
       ]
     }

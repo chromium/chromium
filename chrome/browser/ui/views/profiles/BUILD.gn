@@ -223,6 +223,11 @@ if (is_win || is_mac || is_linux) {
     ]
   }
 
+  source_set("profile_management_types") {
+    public = [ "profile_management_types.h" ]
+    public_deps = [ "//base" ]
+  }
+
   # ProfilePickerView and the flow controllers this helper drives are only
   # compiled into //chrome/browser/ui on Windows, Mac and Linux, so the helper
   # (whose object file is always linked in, unlike when it lived in the
@@ -246,6 +251,7 @@ if (is_win || is_mac || is_linux) {
     ]
 
     deps = [
+      ":profile_management_types",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/profiles:profile_test_util",
       "//chrome/browser/ui/profiles:test_support",

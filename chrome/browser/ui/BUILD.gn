@@ -1097,7 +1097,6 @@ static_library("ui") {
     # TODO(crbug.com/353332589): Remove this circular dependency when the
     # following headers get componentized:
     # c/b/ui/browser.h, browser_window.h
-    # c/b/ui/views/profiles/profile_management_types.h
     "//chrome/browser/ui/profiles:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency when the
@@ -2229,7 +2228,6 @@ static_library("ui") {
       "views/profiles/profile_management_flow_controller_impl.h",
       "views/profiles/profile_management_step_controller.cc",
       "views/profiles/profile_management_step_controller.h",
-      "views/profiles/profile_management_types.h",
       "views/profiles/profile_menu_view.cc",
       "views/profiles/profile_menu_view.h",
       "views/profiles/profile_picker_feature_promo_controller.cc",
@@ -2256,6 +2254,7 @@ static_library("ui") {
       "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/startup/default_browser_prompt:impl",
       "//chrome/browser/ui/views/profiles:badged_profile_photo",
+      "//chrome/browser/ui/views/profiles:profile_management_types",
       "//chrome/browser/ui/webui/app_home",
       "//chrome/browser/ui/webui/app_home:impl",
       "//chrome/browser/ui/webui/app_settings",
