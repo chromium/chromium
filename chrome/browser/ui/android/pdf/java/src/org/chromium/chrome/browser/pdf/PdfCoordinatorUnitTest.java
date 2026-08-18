@@ -131,6 +131,7 @@ public class PdfCoordinatorUnitTest {
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         PdfCoordinator.skipLoadPdfForTesting(true);
+        PdfUtils.setInlinePdfV2EditEnabledForTesting(true);
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(TEST_CONTENT_URI));
         PostTask.setPrenativeThreadPoolExecutorForTesting(Runnable::run);
     }
@@ -1372,6 +1373,25 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.setEditMode(true);
 
         assertTrue(shadowFragment.getEditModeEnabled());
+        assertFalse(shadowFragment.wasApplyDraftEditsCalled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowEditablePdfViewerFragment.class})
+    public void testSetEditMode_EditDisabled() {
+        PdfUtils.setInlinePdfV2EditEnabledForTesting(false);
+        createPdfCoordinator();
+        ShadowEditablePdfViewerFragment shadowFragment =
+                Shadow.extract(mPdfCoordinator.mChromePdfViewerFragment);
+        shadowFragment.setHasUnsavedChanges(true);
+
+        mPdfCoordinator.setEditMode(true);
+        assertNull(shadowFragment.getEditModeEnabled());
+        assertFalse(shadowFragment.wasApplyDraftEditsCalled());
+
+        mPdfCoordinator.setEditMode(false);
+        assertFalse(shadowFragment.getEditModeEnabled());
         assertFalse(shadowFragment.wasApplyDraftEditsCalled());
     }
 

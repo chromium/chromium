@@ -76,6 +76,7 @@ public class PdfToolbarCoordinatorUnitTest {
                 .when(mSpyPopupWindow)
                 .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
 
+        PdfUtils.setInlinePdfV2EditEnabledForTesting(true);
         mPdfPageView = LayoutInflater.from(mActivity).inflate(R.layout.pdf_page, null);
         mPdfToolbarCoordinator = new PdfToolbarCoordinator(mPdfPageView, mDelegate);
         mPdfToolbarCoordinator.onDocumentLoaded(100, "test_title.pdf");
@@ -87,6 +88,16 @@ public class PdfToolbarCoordinatorUnitTest {
     public void tearDown() throws Exception {
         mCloseableMocks.close();
         UiWidgetFactory.setInstance(null);
+    }
+
+    private void setToolbarWidth(int widthDp) {
+        PdfToolbar toolbar = mPdfPageView.findViewById(R.id.pdf_toolbar);
+        setToolbarWidth(toolbar, widthDp);
+    }
+
+    private void setToolbarWidth(PdfToolbar toolbar, int widthDp) {
+        float density = mActivity.getResources().getDisplayMetrics().density;
+        toolbar.layout(0, 0, (int) (widthDp * density), 56);
     }
 
     @Test
@@ -380,11 +391,8 @@ public class PdfToolbarCoordinatorUnitTest {
 
     @Test
     public void testFitToPageViaMenu_recordsMetric() {
-        PdfToolbar toolbar = mPdfPageView.findViewById(R.id.pdf_toolbar);
-        float density = mActivity.getResources().getDisplayMetrics().density;
         // Layout narrow to hide fit-to-page button and show it in the menu
-        int widthPx = (int) (680 * density);
-        toolbar.layout(0, 0, widthPx, 56);
+        setToolbarWidth(680);
 
         View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
         moreMenuButton.performClick();
@@ -588,9 +596,6 @@ public class PdfToolbarCoordinatorUnitTest {
 
     @Test
     public void testAdaptiveHiding() {
-        PdfToolbar toolbar = mPdfPageView.findViewById(R.id.pdf_toolbar);
-        org.junit.Assert.assertNotNull("Toolbar should not be null", toolbar);
-
         View downloadButton = mPdfPageView.findViewById(R.id.download_button);
         View fitToPageButton = mPdfPageView.findViewById(R.id.fit_to_page_button);
         View zoomDecreaseButton = mPdfPageView.findViewById(R.id.zoom_decrease_button);
@@ -598,15 +603,13 @@ public class PdfToolbarCoordinatorUnitTest {
         View editButton = mPdfPageView.findViewById(R.id.edit_button);
         View title = mPdfPageView.findViewById(R.id.pdf_title);
 
-        View pageZoomDivider = mPdfPageView.findViewById(R.id.page_zoom_divider);
+        View centerGroup = mPdfPageView.findViewById(R.id.pdf_toolbar_group_center);
+        View navZoomDivider = mPdfPageView.findViewById(R.id.nav_zoom_divider);
         View zoomFitDivider = mPdfPageView.findViewById(R.id.zoom_fit_divider);
         View fitEditDivider = mPdfPageView.findViewById(R.id.fit_edit_divider);
 
-        float density = mActivity.getResources().getDisplayMetrics().density;
-
         // State 1: Wide screen (e.g. 900dp) -> All should be visible
-        int widthPx = (int) (900 * density);
-        toolbar.layout(0, 0, widthPx, 56);
+        setToolbarWidth(900);
 
         assertEquals(
                 PdfUtils.isInlinePdfV2Enabled() ? View.VISIBLE : View.GONE,
@@ -615,9 +618,10 @@ public class PdfToolbarCoordinatorUnitTest {
         assertEquals(View.VISIBLE, zoomDecreaseButton.getVisibility());
         assertEquals(View.VISIBLE, currentPage.getVisibility());
         assertEquals(View.VISIBLE, editButton.getVisibility());
-        assertEquals(View.VISIBLE, pageZoomDivider.getVisibility());
+        assertEquals(View.VISIBLE, navZoomDivider.getVisibility());
         assertEquals(View.VISIBLE, zoomFitDivider.getVisibility());
         assertEquals(View.VISIBLE, fitEditDivider.getVisibility());
+        assertEquals(View.VISIBLE, centerGroup.getVisibility());
 
         // Verify title is constrained to center group
         ConstraintLayout.LayoutParams layoutParams =
@@ -625,66 +629,66 @@ public class PdfToolbarCoordinatorUnitTest {
         assertEquals(R.id.pdf_toolbar_group_center, layoutParams.endToStart);
 
         // State 2: Narrower (e.g. 780dp) -> Download should be GONE, others VISIBLE
-        widthPx = (int) (780 * density);
-        toolbar.layout(0, 0, widthPx, 56);
+        setToolbarWidth(780);
         assertEquals(View.GONE, downloadButton.getVisibility());
         assertEquals(View.VISIBLE, fitToPageButton.getVisibility());
         assertEquals(View.VISIBLE, zoomDecreaseButton.getVisibility());
         assertEquals(View.VISIBLE, currentPage.getVisibility());
         assertEquals(View.VISIBLE, editButton.getVisibility());
-        assertEquals(View.VISIBLE, pageZoomDivider.getVisibility());
+        assertEquals(View.VISIBLE, navZoomDivider.getVisibility());
         assertEquals(View.VISIBLE, zoomFitDivider.getVisibility());
         assertEquals(View.VISIBLE, fitEditDivider.getVisibility());
+        assertEquals(View.VISIBLE, centerGroup.getVisibility());
 
         // State 3: Narrower (e.g. 720dp) -> Download GONE, others VISIBLE (was Download and Rotate
         // GONE)
-        widthPx = (int) (720 * density);
-        toolbar.layout(0, 0, widthPx, 56);
+        setToolbarWidth(720);
         assertEquals(View.GONE, downloadButton.getVisibility());
         assertEquals(View.VISIBLE, fitToPageButton.getVisibility());
         assertEquals(View.VISIBLE, zoomDecreaseButton.getVisibility());
         assertEquals(View.VISIBLE, currentPage.getVisibility());
         assertEquals(View.VISIBLE, editButton.getVisibility());
-        assertEquals(View.VISIBLE, pageZoomDivider.getVisibility());
+        assertEquals(View.VISIBLE, navZoomDivider.getVisibility());
         assertEquals(View.VISIBLE, zoomFitDivider.getVisibility());
         assertEquals(View.VISIBLE, fitEditDivider.getVisibility());
+        assertEquals(View.VISIBLE, centerGroup.getVisibility());
 
         // State 4: Narrower (e.g. 680dp) -> Download, Fit GONE (was Download, Rotate, Fit GONE)
-        widthPx = (int) (680 * density);
-        toolbar.layout(0, 0, widthPx, 56);
+        setToolbarWidth(680);
         assertEquals(View.GONE, downloadButton.getVisibility());
         assertEquals(View.GONE, fitToPageButton.getVisibility());
         assertEquals(View.VISIBLE, zoomDecreaseButton.getVisibility());
         assertEquals(View.VISIBLE, currentPage.getVisibility());
         assertEquals(View.VISIBLE, editButton.getVisibility());
-        assertEquals(View.VISIBLE, pageZoomDivider.getVisibility());
+        assertEquals(View.VISIBLE, navZoomDivider.getVisibility());
         assertEquals(View.GONE, zoomFitDivider.getVisibility());
         assertEquals(View.GONE, fitEditDivider.getVisibility());
+        assertEquals(View.VISIBLE, centerGroup.getVisibility());
 
         // State 5: Narrower (e.g. 620dp) -> Download, Fit, Zoom GONE (was Download, Rotate, Fit,
         // Zoom GONE)
-        widthPx = (int) (620 * density);
-        toolbar.layout(0, 0, widthPx, 56);
+        setToolbarWidth(620);
         assertEquals(View.GONE, downloadButton.getVisibility());
         assertEquals(View.GONE, fitToPageButton.getVisibility());
         assertEquals(View.GONE, zoomDecreaseButton.getVisibility());
         assertEquals(View.VISIBLE, currentPage.getVisibility());
         assertEquals(View.VISIBLE, editButton.getVisibility());
-        assertEquals(View.GONE, pageZoomDivider.getVisibility());
+        assertEquals(View.GONE, navZoomDivider.getVisibility());
         assertEquals(View.GONE, zoomFitDivider.getVisibility());
         assertEquals(View.GONE, fitEditDivider.getVisibility());
+        assertEquals(View.VISIBLE, centerGroup.getVisibility());
 
         // State 6: Most narrow (e.g. 550dp) -> All center gone, only print/menu/title remain
-        widthPx = (int) (550 * density);
-        toolbar.layout(0, 0, widthPx, 56);
+        setToolbarWidth(550);
         assertEquals(View.GONE, downloadButton.getVisibility());
         assertEquals(View.GONE, fitToPageButton.getVisibility());
         assertEquals(View.GONE, zoomDecreaseButton.getVisibility());
         assertEquals(View.GONE, currentPage.getVisibility());
         assertEquals(View.GONE, editButton.getVisibility());
-        assertEquals(View.GONE, pageZoomDivider.getVisibility());
+        assertEquals(View.GONE, navZoomDivider.getVisibility());
         assertEquals(View.GONE, zoomFitDivider.getVisibility());
         assertEquals(View.GONE, fitEditDivider.getVisibility());
+        assertEquals(View.GONE, centerGroup.getVisibility());
 
         // Print and More menu should still be visible
         View printButton = mPdfPageView.findViewById(R.id.print_button);
@@ -757,32 +761,40 @@ public class PdfToolbarCoordinatorUnitTest {
     }
 
     @Test
+    public void testEditButton_EditDisabled() {
+        PdfUtils.setInlinePdfV2EditEnabledForTesting(false);
+        View pageView = LayoutInflater.from(mActivity).inflate(R.layout.pdf_page, null);
+        PdfToolbarCoordinator coordinator = new PdfToolbarCoordinator(pageView, mDelegate);
+        PdfToolbar toolbar = pageView.findViewById(R.id.pdf_toolbar);
+        View editButton = pageView.findViewById(R.id.edit_button);
+        View fitEditDivider = pageView.findViewById(R.id.fit_edit_divider);
+
+        // Wide screen (e.g. 900dp) -> Edit button and fit_edit_divider should be GONE when edit is disabled
+        setToolbarWidth(toolbar, 900);
+
+        assertEquals(View.GONE, editButton.getVisibility());
+        assertEquals(View.GONE, fitEditDivider.getVisibility());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2_DOWNLOAD)
     public void testDownloadButton_FeatureDisabled() {
-        PdfToolbar toolbar = mPdfPageView.findViewById(R.id.pdf_toolbar);
-        org.junit.Assert.assertNotNull("Toolbar should not be null", toolbar);
-
         View downloadButton = mPdfPageView.findViewById(R.id.download_button);
-        float density = mActivity.getResources().getDisplayMetrics().density;
 
         // Wide screen (e.g. 900dp) -> Should still be GONE because feature is disabled
-        int widthPx = (int) (900 * density);
-        toolbar.layout(0, 0, widthPx, 56);
+        setToolbarWidth(900);
 
         assertEquals(View.GONE, downloadButton.getVisibility());
     }
 
     @Test
     public void testDoneButtonVisibilityAndClick() {
-        PdfToolbar toolbar = mPdfPageView.findViewById(R.id.pdf_toolbar);
         View doneButton = mPdfPageView.findViewById(R.id.done_button);
         View editButton = mPdfPageView.findViewById(R.id.edit_button);
         org.junit.Assert.assertNotNull("Done button should not be null", doneButton);
-        float density = mActivity.getResources().getDisplayMetrics().density;
 
         // 1. Initial State: Edit mode inactive, wide screen -> Done button GONE
-        int wideWidthPx = (int) (900 * density);
-        toolbar.layout(0, 0, wideWidthPx, 56);
+        setToolbarWidth(900);
         assertEquals(View.GONE, doneButton.getVisibility());
 
         // 2. Wide screen, Edit mode active -> Done button VISIBLE (along with edit button)
@@ -791,8 +803,7 @@ public class PdfToolbarCoordinatorUnitTest {
         assertEquals(View.VISIBLE, doneButton.getVisibility());
 
         // 3. Narrow screen (edit button hidden), Edit mode active -> Done button still VISIBLE
-        int narrowWidthPx = (int) (550 * density);
-        toolbar.layout(0, 0, narrowWidthPx, 56);
+        setToolbarWidth(550);
         assertEquals(View.GONE, editButton.getVisibility());
         assertEquals(View.VISIBLE, doneButton.getVisibility());
 

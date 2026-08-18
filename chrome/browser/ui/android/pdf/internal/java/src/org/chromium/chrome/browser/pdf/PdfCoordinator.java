@@ -1423,6 +1423,12 @@ public class PdfCoordinator
      */
     @Override
     public void setEditMode(boolean editMode) {
+        if (!PdfUtils.isInlinePdfV2EditEnabled()) {
+            if (!editMode) {
+                mChromePdfViewerFragment.setEditModeEnabled(false);
+            }
+            return;
+        }
         if (!editMode && mChromePdfViewerFragment.hasUnsavedChanges()) {
             mChromePdfViewerFragment.applyDraftEdits();
         } else {

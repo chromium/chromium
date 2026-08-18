@@ -21,6 +21,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -158,6 +159,7 @@ public class PdfUtils {
     private static final Set<String> PERMANENT_PDF_SCHEMES =
             Set.of(UrlConstants.CONTENT_SCHEME, UrlConstants.FILE_SCHEME);
     private static boolean sShouldOpenPdfInlineForTesting;
+    private static @Nullable Boolean sInlinePdfV2EditEnabledForTesting;
 
     /**
      * Determines whether the navigation is to a pdf file.
@@ -312,6 +314,7 @@ public class PdfUtils {
 
     static void setShouldOpenPdfInlineForTesting(boolean shouldOpenPdfInlineForTesting) {
         sShouldOpenPdfInlineForTesting = shouldOpenPdfInlineForTesting;
+        ResettersForTesting.register(() -> sShouldOpenPdfInlineForTesting = false);
     }
 
     /**
@@ -553,6 +556,37 @@ public class PdfUtils {
      */
     public static boolean isInlinePdfV2FormFillingEnabled() {
         return isInlinePdfV2Enabled() && ChromeFeatureList.sInlinePdfV2EnableFormFilling.getValue();
+    }
+
+    /**
+     * Checks whether edit mode for inline PDF V2 feature is enabled.
+     *
+     * @return {@code true} if edit mode for inline PDF V2 feature is enabled, {@code false}
+     *     otherwise.
+     */
+    public static boolean isInlinePdfV2EditEnabled() {
+        if (sInlinePdfV2EditEnabledForTesting != null) {
+            return sInlinePdfV2EditEnabledForTesting;
+        }
+        if (!isInlinePdfV2Enabled()) {
+            return false;
+        }
+        return isPlatformSupportedForEdit();
+    }
+
+    // Android 15 (Vanilla Ice Cream / Extension 13) only supports read-only viewing.
+    private static boolean isPlatformSupportedForEdit() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            return true;
+        }
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S) >= 18;
+    }
+
+    static void setInlinePdfV2EditEnabledForTesting(
+            @Nullable Boolean inlinePdfV2EditEnabledForTesting) {
+        sInlinePdfV2EditEnabledForTesting = inlinePdfV2EditEnabledForTesting;
+        ResettersForTesting.register(() -> sInlinePdfV2EditEnabledForTesting = null);
     }
 
     /** Returns {@code true} if {@link PdfViewFragment} is reused on activity restart. */

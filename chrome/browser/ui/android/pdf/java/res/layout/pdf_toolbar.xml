@@ -85,9 +85,9 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextSmall.Primary"
                 android:paddingEnd="12dp" />
 
-            <!-- page_zoom_divider -->
+            <!-- nav_zoom_divider -->
             <View
-                android:id="@+id/page_zoom_divider"
+                android:id="@+id/nav_zoom_divider"
                 android:layout_width="1dp"
                 android:layout_height="24dp"
                 android:background="@color/divider_color"

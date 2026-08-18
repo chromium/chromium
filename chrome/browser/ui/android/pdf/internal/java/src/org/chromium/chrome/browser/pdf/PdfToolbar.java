@@ -44,7 +44,7 @@ public class PdfToolbar extends Toolbar {
     private @Nullable List<View> mPageNav;
     private @Nullable View mEditButton;
 
-    private @Nullable View mPageZoomDivider;
+    private @Nullable View mNavZoomDivider;
     private @Nullable View mZoomFitDivider;
     private @Nullable View mFitEditDivider;
 
@@ -82,8 +82,11 @@ public class PdfToolbar extends Toolbar {
                         findViewById(R.id.page_count));
 
         mEditButton = findViewById(R.id.edit_button);
+        if (!PdfUtils.isInlinePdfV2EditEnabled()) {
+            setViewVisibility(mEditButton, false);
+        }
 
-        mPageZoomDivider = findViewById(R.id.page_zoom_divider);
+        mNavZoomDivider = findViewById(R.id.nav_zoom_divider);
         mZoomFitDivider = findViewById(R.id.zoom_fit_divider);
         mFitEditDivider = findViewById(R.id.fit_edit_divider);
 
@@ -91,6 +94,8 @@ public class PdfToolbar extends Toolbar {
         mCenterGroup = findViewById(R.id.pdf_toolbar_group_center);
         mEndGroup = findViewById(R.id.pdf_toolbar_group_end);
         mTitle = findViewById(R.id.pdf_title);
+
+        updateDividersAndConstraints();
 
         addOnLayoutChangeListener(
                 CommonOnLayoutChangeListeners.createWidthChangedListener(
@@ -122,35 +127,41 @@ public class PdfToolbar extends Toolbar {
 
     void setPageNavAndEditVisible(boolean visible) {
         setViewsVisibility(mPageNav, visible);
-        setViewVisibility(mEditButton, visible);
-        setViewVisibility(mCenterGroup, visible);
+        setViewVisibility(mEditButton, visible && PdfUtils.isInlinePdfV2EditEnabled());
         updateDividersAndConstraints();
     }
 
     private void updateDividersAndConstraints() {
-        boolean showNavEdit = mEditButton != null && mEditButton.getVisibility() == View.VISIBLE;
+        boolean showPageNav =
+                mPageNav != null
+                        && !mPageNav.isEmpty()
+                        && mPageNav.get(0).getVisibility() == View.VISIBLE;
+        boolean showEdit = mEditButton != null && mEditButton.getVisibility() == View.VISIBLE;
         boolean showZoom =
                 mZoomControls != null
                         && !mZoomControls.isEmpty()
-                        && mZoomControls.get(0) != null
                         && mZoomControls.get(0).getVisibility() == View.VISIBLE;
         boolean showFit =
                 mFitToPageButton != null && mFitToPageButton.getVisibility() == View.VISIBLE;
 
         // Dividers
-        setViewVisibility(mPageZoomDivider, showNavEdit && showZoom);
+        setViewVisibility(mNavZoomDivider, showPageNav && showZoom);
         setViewVisibility(mZoomFitDivider, showZoom && showFit);
-        setViewVisibility(mFitEditDivider, showFit && showNavEdit);
+        setViewVisibility(mFitEditDivider, showFit && showEdit);
+
+        boolean isCenterGroupVisible = showPageNav || showZoom || showFit || showEdit;
+        setViewVisibility(mCenterGroup, isCenterGroupVisible);
 
         // Adjust title constraints
         if (mConstraintLayout != null
                 && mTitle != null
                 && mCenterGroup != null
                 && mEndGroup != null) {
-            if (mIsTitleConstrainedToCenter == null || mIsTitleConstrainedToCenter != showNavEdit) {
+            if (mIsTitleConstrainedToCenter == null
+                    || mIsTitleConstrainedToCenter != isCenterGroupVisible) {
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.clone(mConstraintLayout);
-                if (showNavEdit) {
+                if (isCenterGroupVisible) {
                     constraintSet.connect(
                             R.id.pdf_title,
                             ConstraintSet.END,
@@ -166,7 +177,7 @@ public class PdfToolbar extends Toolbar {
                             0);
                 }
                 constraintSet.applyTo(mConstraintLayout);
-                mIsTitleConstrainedToCenter = showNavEdit;
+                mIsTitleConstrainedToCenter = isCenterGroupVisible;
             }
         }
     }
