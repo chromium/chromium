@@ -463,6 +463,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "ambient_autofill_unmasked_spii_cache_ttl",
                    base::Minutes(1));
 
+// When enabled, Personal Context Autofill AI suggestions display detailed
+// source info submenus on Desktop.
+BASE_FEATURE(kAutofillAmbientAutofillSourceAttribution,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether pContext suggestion suppression in Ambient Autofill is
 // enabled.
 BASE_FEATURE(kAutofillAmbientAutofillSuppression,

@@ -6106,6 +6106,7 @@ Called by update_autofill_enums.py.-->
   <int value="96" label="AtMemory source attribution"/>
   <int value="97" label="AtMemory fetching"/>
   <int value="98" label="Remove Autofill AI info"/>
+  <int value="99" label="Autofill AI source attribution"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->

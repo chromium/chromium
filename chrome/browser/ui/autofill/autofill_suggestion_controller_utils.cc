@@ -45,6 +45,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAutocompleteAtMemoryButton:
+    case SuggestionType::kAutofillAiSourceAttribution:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kFreeformFooter:
     case SuggestionType::kManageAddress:
@@ -53,10 +54,10 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kManageAutofillAiShopping:
     case SuggestionType::kManageAutofillAiTravel:
     case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kManageIban:
     case SuggestionType::kManageLoyaltyCard:
     case SuggestionType::kPendingStateSignin:
-    case SuggestionType::kManageEnhancedAutofill:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kSeePromoCodeDetails:
@@ -169,6 +170,7 @@ bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion) {
     case SuggestionType::kAtMemoryGenericError:
     case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAtMemorySourceAttribution:
+    case SuggestionType::kAutofillAiSourceAttribution:
       return false;
     case SuggestionType::kAtMemorySearchResult:
       // No data suggestions do not have an `AtMemoryPayload`.

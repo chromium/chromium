@@ -76,6 +76,7 @@ bool IsSuggestionTypeEligibleForKeyboardAccessory(SuggestionType type) {
     case SuggestionType::kAtMemoryAiDisclosure:
     case SuggestionType::kAtMemorySourceAttribution:
     case SuggestionType::kAtMemoryFetching:
+    case SuggestionType::kAutofillAiSourceAttribution:
     case SuggestionType::kRemoveAutofillAi:
       return false;
 

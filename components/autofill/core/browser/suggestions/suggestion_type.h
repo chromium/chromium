@@ -242,9 +242,13 @@ enum class SuggestionType {
   // info.
   kRemoveAutofillAi = 98,
 
-  // Next ID: 99
+  // Option in the child submenu of an Autofill AI suggestion showing specific
+  // entity source info.
+  kAutofillAiSourceAttribution = 99,
 
-  kMaxValue = kRemoveAutofillAi
+  // Next ID: 100
+
+  kMaxValue = kAutofillAiSourceAttribution
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

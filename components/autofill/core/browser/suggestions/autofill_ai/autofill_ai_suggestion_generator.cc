@@ -512,6 +512,108 @@ bool CanFillSomeField(const EntityInstance& entity,
       });
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+std::u16string PayloadSourceToString(
+    EntityInstance::PersonalContextRecordTypePayload::Source::Type
+        source_type) {
+  using EntityPayloadSourceType =
+      EntityInstance::PersonalContextRecordTypePayload::Source::Type;
+  switch (source_type) {
+    case EntityPayloadSourceType::kPhotos:
+      return l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_AI_SOURCE_FROM_APP,
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SOURCE_APP_PHOTOS));
+    case EntityPayloadSourceType::kGmail:
+      return l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_AI_SOURCE_FROM_APP,
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SOURCE_APP_GMAIL));
+    case EntityPayloadSourceType::kUnspecified:
+      NOTREACHED();
+  }
+}
+
+std::vector<std::u16string> GetDisambiguationValues(
+    const EntityInstance& entity,
+    std::string_view app_locale) {
+  std::vector<AttributeType> types = base::ToVector(entity.type().attributes());
+  std::erase_if(types, std::not_fn(&AttributeType::is_disambiguation_type));
+  std::ranges::sort(types, AttributeType::DisambiguationOrder);
+
+  std::vector<std::u16string> values;
+  for (AttributeType type : types) {
+    if (base::optional_ref<const AttributeInstance> attr =
+            entity.attribute(type)) {
+      if (std::u16string val = attr->GetCompleteInfo(app_locale);
+          !val.empty()) {
+        values.push_back(std::move(val));
+      }
+    }
+  }
+  return values;
+}
+
+std::optional<Suggestion> CreatePersonalContextSourceAttributionSuggestion(
+    const EntityInstance& entity,
+    const EntityInstance::PersonalContextRecordTypePayload::Source& source,
+    std::string_view app_locale) {
+  GURL source_url(source.url);
+  if (!source_url.is_valid()) {
+    return std::nullopt;
+  }
+
+  std::vector<std::u16string> parts = {PayloadSourceToString(source.type)};
+  base::Extend(parts, GetDisambiguationValues(entity, app_locale));
+
+  Suggestion source_info(base::JoinString(parts, kLabelSeparator),
+                         SuggestionType::kAutofillAiSourceAttribution);
+  source_info.trailing_icon = Suggestion::Icon::kOpenInNew;
+  source_info.payload = std::move(source_url);
+  return source_info;
+}
+
+std::vector<Suggestion> CreatePersonalContextSourceAttributionSuggestions(
+    const EntityInstance& entity,
+    std::string_view app_locale) {
+  using EntityPayloadSource =
+      EntityInstance::PersonalContextRecordTypePayload::Source;
+  CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kPersonalContext);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillSourceAttribution)) {
+    return {};
+  }
+  const EntityInstance::PersonalContextRecordTypePayload& payload =
+      std::get<EntityInstance::PersonalContextRecordTypePayload>(
+          entity.record_type_data());
+  std::vector<Suggestion> suggestions;
+  for (const EntityPayloadSource& source : payload.sources) {
+    if (std::optional<Suggestion> suggestion =
+            CreatePersonalContextSourceAttributionSuggestion(entity, source,
+                                                             app_locale)) {
+      suggestions.push_back(std::move(*suggestion));
+    }
+  }
+  return suggestions;
+}
+
+std::vector<Suggestion> CreateAmbientAutofillSubMenu(
+    const EntityInstance& entity,
+    std::string_view app_locale) {
+  std::vector<Suggestion> submenu =
+      CreatePersonalContextSourceAttributionSuggestions(entity, app_locale);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAmbientAutofillSuppressionUI)) {
+    Suggestion remove_info(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
+        SuggestionType::kRemoveAutofillAi);
+    remove_info.icon = Suggestion::Icon::kClose;
+    remove_info.payload = Suggestion::AutofillAiPayload(entity.guid());
+    submenu.push_back(std::move(remove_info));
+  }
+  return submenu;
+}
+#endif
+
 Suggestion GetSuggestionForEntity(
     const FormStructure& form,
     const EntityInstance& entity,
@@ -537,16 +639,7 @@ Suggestion GetSuggestionForEntity(
   if (entity.record_type() == EntityInstance::RecordType::kPersonalContext) {
     suggestion.labels.push_back({Suggestion::Text(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI))});
-
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillAmbientAutofillSuppressionUI)) {
-      Suggestion remove_info(
-          l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
-          SuggestionType::kRemoveAutofillAi);
-      remove_info.icon = Suggestion::Icon::kClose;
-      remove_info.payload = Suggestion::AutofillAiPayload(entity.guid());
-      suggestion.children = {std::move(remove_info)};
-    }
+    suggestion.children = CreateAmbientAutofillSubMenu(entity, app_locale);
   }
 #endif
 

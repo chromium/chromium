@@ -406,6 +406,7 @@ struct Suggestion {
     kLoyalty,
     kMagic,
     kOfferTag,
+    kOpenInNew,
     kOrder,
     kOrderSpark,
     kPassport,
@@ -537,6 +538,7 @@ struct Suggestion {
       case SuggestionType::kTroubleSigningInEntry:
         return std::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kSeePromoCodeDetails:
+      case SuggestionType::kAutofillAiSourceAttribution:
         return std::holds_alternative<GURL>(payload);
       case SuggestionType::kIbanEntry:
         return std::holds_alternative<Guid>(payload) ||

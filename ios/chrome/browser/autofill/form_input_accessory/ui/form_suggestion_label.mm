@@ -320,6 +320,7 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kAutofillAiOtherOrders:
     case SuggestionType::kAutofillAiOtherShipments:
     case SuggestionType::kAutofillAiPrivateInferenceNotice:
+    case SuggestionType::kAutofillAiSourceAttribution:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kFetchingAmbientData:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:

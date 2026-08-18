@@ -900,6 +900,15 @@
   <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI" desc="Sublabel text indicating that a suggestion is sourced from Gemini.">
     Suggested by Gemini
   </message>
+  <message name="IDS_AUTOFILL_AI_SOURCE_FROM_APP" desc="Source attribution showing which app an Autofill AI item came from. $1 is the app name (e.g. Photos, Gmail).">
+    From <ph name="APP_NAME">$1<ex>Photos</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_AI_SOURCE_APP_PHOTOS" desc="App name for Google Photos.">
+    Photos
+  </message>
+  <message name="IDS_AUTOFILL_AI_SOURCE_APP_GMAIL" desc="App name for Gmail.">
+    Gmail
+  </message>
   <message name="IDS_AUTOFILL_AI_REMOVE_INFO" desc="Text for a child menu option to remove an Autofill AI suggestion.">
     Remove this info
   </message>

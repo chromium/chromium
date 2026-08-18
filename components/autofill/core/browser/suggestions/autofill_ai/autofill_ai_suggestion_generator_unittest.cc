@@ -590,6 +590,288 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                       Suggestion::AutofillAiPayload(
                           passport_personal_context.guid()))))));
 }
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_DetailedSource_Photos) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAmbientAutofillSourceAttribution);
+
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {{.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kPhotos,
+                         .url = "https://photos.example.com"}}},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  std::u16string expected_source_label =
+      u"From Photos · Pippi Långstrump · Sweden";
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(AllOf(
+          EqualsSuggestion(
+              SuggestionType::kFillAutofillAi,
+              Suggestion::AutofillAiPayload(passport_personal_context.guid())),
+          ChildrenAre(AllOf(
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               expected_source_label, Suggestion::Icon::kNoIcon,
+                               GURL("https://photos.example.com")),
+              HasTrailingIcon(Suggestion::Icon::kOpenInNew))))));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_DetailedSource_Gmail) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAmbientAutofillSourceAttribution);
+
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {{.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kGmail,
+                         .url = "https://mail.example.com"}}},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  std::u16string expected_source_label =
+      u"From Gmail · Pippi Långstrump · Sweden";
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(AllOf(
+          EqualsSuggestion(
+              SuggestionType::kFillAutofillAi,
+              Suggestion::AutofillAiPayload(passport_personal_context.guid())),
+          ChildrenAre(AllOf(
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               expected_source_label, Suggestion::Icon::kNoIcon,
+                               GURL("https://mail.example.com")),
+              HasTrailingIcon(Suggestion::Icon::kOpenInNew))))));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_MultipleSources) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAmbientAutofillSourceAttribution);
+
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {{.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kPhotos,
+                         .url = "https://photos.example.com"},
+                        {.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kGmail,
+                         .url = "https://mail.example.com"}}},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(AllOf(
+          EqualsSuggestion(
+              SuggestionType::kFillAutofillAi,
+              Suggestion::AutofillAiPayload(passport_personal_context.guid())),
+          ChildrenAre(AllOf(EqualsSuggestion(
+                                SuggestionType::kAutofillAiSourceAttribution,
+                                u"From Photos · Pippi Långstrump · Sweden",
+                                Suggestion::Icon::kNoIcon,
+                                GURL("https://photos.example.com")),
+                            HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
+                      AllOf(EqualsSuggestion(
+                                SuggestionType::kAutofillAiSourceAttribution,
+                                u"From Gmail · Pippi Långstrump · Sweden",
+                                Suggestion::Icon::kNoIcon,
+                                GURL("https://mail.example.com")),
+                            HasTrailingIcon(Suggestion::Icon::kOpenInNew))))));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_InvalidAndEmptyUrl_Omitted) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAmbientAutofillSourceAttribution);
+
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {{.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kGmail,
+                         .url = "not a valid url"},
+                        {.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kGmail,
+                         .url = ""},
+                        {.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kPhotos,
+                         .url = "https://photos.example.com"}}},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(AllOf(
+          EqualsSuggestion(
+              SuggestionType::kFillAutofillAi,
+              Suggestion::AutofillAiPayload(passport_personal_context.guid())),
+          ChildrenAre(AllOf(
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               u"From Photos · Pippi Långstrump · Sweden",
+                               Suggestion::Icon::kNoIcon,
+                               GURL("https://photos.example.com")),
+              HasTrailingIcon(Suggestion::Icon::kOpenInNew))))));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_DetailedSourceAndHideSuggestion) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAutofillAmbientAutofillSourceAttribution,
+       features::kAutofillAmbientAutofillSuppressionUI},
+      {});
+
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {{.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kPhotos,
+                         .url = "https://photos.example.com"}}},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  std::u16string expected_source_label =
+      u"From Photos · Pippi Långstrump · Sweden";
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(AllOf(
+          EqualsSuggestion(
+              SuggestionType::kFillAutofillAi,
+              Suggestion::AutofillAiPayload(passport_personal_context.guid())),
+          ChildrenAre(
+              AllOf(EqualsSuggestion(
+                        SuggestionType::kAutofillAiSourceAttribution,
+                        expected_source_label, Suggestion::Icon::kNoIcon,
+                        GURL("https://photos.example.com")),
+                    HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
+              EqualsSuggestion(
+                  SuggestionType::kRemoveAutofillAi,
+                  l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
+                  Suggestion::Icon::kClose,
+                  Suggestion::AutofillAiPayload(
+                      passport_personal_context.guid()))))));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_DetailedSourceDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {features::kAutofillAmbientAutofillSourceAttribution,
+           features::kAutofillAmbientAutofillSuppressionUI});
+
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {{.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kPhotos,
+                         .url = "https://photos.example.com"}}},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              IdentityDocSuggestionsAre(
+                  AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                         Suggestion::AutofillAiPayload(
+                                             passport_personal_context.guid())),
+                        ChildrenAre())));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_PersonalContext_NoSources_NoAttributionItem) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAmbientAutofillSourceAttribution);
+
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.record_type =
+               EntityInstance::PersonalContextRecordTypePayload{.sources = {}},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER, NAME_FULL});
+
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              IdentityDocSuggestionsAre(
+                  AllOf(EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                         Suggestion::AutofillAiPayload(
+                                             passport_personal_context.guid())),
+                        ChildrenAre())));
+}
+
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_PersonalContext_EmptyAttributes_NoDuplicateDelimiters) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAmbientAutofillSourceAttribution);
+
+  EntityInstance passport_personal_context =
+      GetPassportEntityInstanceWithRandomGuid(
+          {.name = u"Jane Doe",
+           .number = u"P123",
+           .country = nullptr,
+           .expiry_date = nullptr,
+           .issue_date = nullptr,
+           .record_type =
+               EntityInstance::PersonalContextRecordTypePayload{
+                   .sources =
+                       {{.type =
+                             EntityInstance::PersonalContextRecordTypePayload::
+                                 Source::Type::kPhotos,
+                         .url = "https://photos.example.com"}}},
+           .use_count = 0});
+  SetEntities({passport_personal_context});
+  SetForm({PASSPORT_NUMBER});
+
+  std::u16string expected_source_label = u"From Photos · Jane Doe";
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      IdentityDocSuggestionsAre(AllOf(
+          EqualsSuggestion(
+              SuggestionType::kFillAutofillAi,
+              Suggestion::AutofillAiPayload(passport_personal_context.guid())),
+          ChildrenAre(AllOf(
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               expected_source_label, Suggestion::Icon::kNoIcon,
+                               GURL("https://photos.example.com")),
+              HasTrailingIcon(Suggestion::Icon::kOpenInNew))))));
+}
 #endif
 
 TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestion_PrefixMatching) {
