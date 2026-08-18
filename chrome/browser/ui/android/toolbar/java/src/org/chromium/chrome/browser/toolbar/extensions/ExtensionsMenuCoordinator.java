@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinatorImpl.MenuButtonPinningDelegate;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuButtonState;
-import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -352,9 +351,6 @@ public class ExtensionsMenuCoordinator
                     }
                 });
         mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "");
-        mMainPageModel.set(
-                ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE,
-                ExtensionsMenuTypes.OptionalSectionType.NONE);
         mMainPageModel.set(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, new ArrayList<>());
         mMainPageModel.set(
                 ExtensionsMenuProperties.ALLOW_EXTENSION_CLICK_LISTENER,

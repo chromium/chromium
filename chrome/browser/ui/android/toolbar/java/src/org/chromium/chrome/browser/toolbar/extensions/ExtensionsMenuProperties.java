@@ -12,9 +12,10 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.HostAccessRequest;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.OptionalSectionType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -41,7 +42,8 @@ class ExtensionsMenuProperties {
             new WritableObjectPropertyKey<>();
 
     /** The current page being displayed in the extensions menu. */
-    public static final WritableIntPropertyKey CURRENT_PAGE = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<Page> CURRENT_PAGE =
+            new WritableIntDefPropertyKey<>(Page.MAIN);
 
     public static final WritableObjectPropertyKey<OnClickListener>
             DISCOVER_EXTENSIONS_CLICK_LISTENER = new WritableObjectPropertyKey<>();
@@ -72,7 +74,8 @@ class ExtensionsMenuProperties {
     public static final WritableObjectPropertyKey<OnClickListener>
             MENU_BUTTON_PINNING_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
-    public static final WritableIntPropertyKey OPTIONAL_SECTION_TYPE = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<OptionalSectionType> OPTIONAL_SECTION_TYPE =
+            new WritableIntDefPropertyKey<>(OptionalSectionType.NONE);
 
     /** Callback to resize the popup window after page transitions. */
     public static final WritableObjectPropertyKey<Runnable> POPUP_RESIZE_CALLBACK =
