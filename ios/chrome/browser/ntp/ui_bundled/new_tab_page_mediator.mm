@@ -1027,8 +1027,10 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
   [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
   [self.logoMediator setLogoTintColor:nil];
-  base::UmaHistogramEnumeration("IOS.HomeCustomization.Background.Ntp.Loaded",
-                                HomeCustomizationBackgroundStyle::kDefault);
+  if (initialLoad) {
+    base::UmaHistogramEnumeration("IOS.HomeCustomization.Background.Ntp.Loaded",
+                                  HomeCustomizationBackgroundStyle::kDefault);
+  }
 }
 
 // Fetches and applies a custom background image.
