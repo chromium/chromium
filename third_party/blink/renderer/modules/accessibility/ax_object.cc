@@ -2989,6 +2989,50 @@ bool AXObject::IsValidationMessage() const {
   return false;
 }
 
+namespace {
+
+// Returns the ARIA role implied for a focusgroup item, or kUnknown when no
+// role should be inferred. This encapsulates the accessibility policy for
+// focusgroup item-role inference:
+//  * Non-control inferred roles preserve explicit ARIA and richer native
+//    semantics.
+//  * The owner's role must match the behavior's minimum ARIA role, so items of
+//    an owner with a non-implied explicit role are left untouched.
+//  * The inferred role is the behavior's item minimum ARIA role, which is
+//    kUnknown for behaviors whose items do not map to an ARIA role.
+// Callers own the AXObject/cache lookups needed to supply |owner_role|.
+ax::mojom::blink::Role InferFocusgroupItemRole(
+    const FocusgroupData& owner_data,
+    ax::mojom::blink::Role owner_role,
+    ax::mojom::blink::Role item_raw_aria_role,
+    ax::mojom::blink::Role item_native_role) {
+  // Only infer item roles when the owner's role matches the behavior's minimum
+  // ARIA role. We don't want to infer roles for focusgroup items within a
+  // focusgroup owner that has an explicit role set to something other than the
+  // behavior's minimum.
+  if (owner_role != focusgroup::FocusgroupMinimumAriaRole(owner_data)) {
+    return ax::mojom::blink::Role::kUnknown;
+  }
+
+  // Not all focusgroup behaviors map their items to an ARIA role.
+  const ax::mojom::blink::Role implied_role =
+      focusgroup::FocusgroupItemMinimumAriaRole(owner_data);
+
+  // Non-control roles describe content and must not replace author-supplied or
+  // native semantics. Control roles may replace button semantics as described
+  // at the call site.
+  if (!ui::IsControl(implied_role) &&
+      (item_raw_aria_role != ax::mojom::blink::Role::kUnknown ||
+       (item_native_role != ax::mojom::blink::Role::kGenericContainer &&
+        item_native_role != ax::mojom::blink::Role::kUnknown))) {
+    return ax::mojom::blink::Role::kUnknown;
+  }
+
+  return implied_role;
+}
+
+}  // namespace
+
 ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
   // Focusgroup child implied role inference:
   // Applies only when:
@@ -3034,21 +3078,13 @@ ax::mojom::blink::Role AXObject::ComputeFinalRoleForSerialization() const {
     if (focusgroup_owner) {
       AXObject* focusgroup_owner_axobj = AXObjectCache().Get(focusgroup_owner);
       if (focusgroup_owner_axobj) {
-        // Check to see if the focusgroup owner's role matches the behavior's
-        // minimum ARIA role. We don't want to infer roles for focusgroup items
-        // within a focusgroup owner that has an explicit role set to something
-        // other than thek behavior's minimum.
-        if (focusgroup_owner_axobj->RoleValue() ==
-            focusgroup::FocusgroupMinimumAriaRole(
-                focusgroup_owner->GetFocusgroupData())) {
-          ax::mojom::blink::Role implied_role =
-              focusgroup::FocusgroupItemMinimumAriaRole(
-                  focusgroup_owner->GetFocusgroupData());
-          // Not all focusgroup behaviors will have their items map to an ARIA
-          // role.
-          if (implied_role != ax::mojom::blink::Role::kUnknown) {
-            return implied_role;
-          }
+        // Orchestrate the AX/cache lookups here and delegate the inference
+        // policy to InferFocusgroupItemRole().
+        const ax::mojom::blink::Role implied_role = InferFocusgroupItemRole(
+            focusgroup_owner->GetFocusgroupData(),
+            focusgroup_owner_axobj->RoleValue(), RawAriaRole(), role_);
+        if (implied_role != ax::mojom::blink::Role::kUnknown) {
+          return implied_role;
         }
       }
     }

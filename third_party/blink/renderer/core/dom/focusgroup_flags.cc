@@ -60,7 +60,7 @@ constexpr BehaviorMapping kBehaviorMap[] = {
      FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock},
     {"menubar", FocusgroupBehavior::kMenubar, ax::mojom::blink::Role::kMenuBar,
      FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline},
-    {"feed", FocusgroupBehavior::kFeed, ax::mojom::blink::Role::kUnknown,
+    {"feed", FocusgroupBehavior::kFeed, ax::mojom::blink::Role::kFeed,
      FocusgroupFlags::kBlock | FocusgroupFlags::kItemControls},
     {"grid", FocusgroupBehavior::kGrid, ax::mojom::blink::Role::kGrid,
      FocusgroupFlags::kNone},
@@ -677,8 +677,9 @@ ax::mojom::blink::Role FocusgroupItemMinimumAriaRole(
     case FocusgroupBehavior::kMenu:
     case FocusgroupBehavior::kMenubar:
       return ax::mojom::blink::Role::kMenuItem;
-    case FocusgroupBehavior::kToolbar:
     case FocusgroupBehavior::kFeed:
+      return ax::mojom::blink::Role::kArticle;
+    case FocusgroupBehavior::kToolbar:
     case FocusgroupBehavior::kGrid:
     case FocusgroupBehavior::kNoBehavior:
     case FocusgroupBehavior::kOptOut:

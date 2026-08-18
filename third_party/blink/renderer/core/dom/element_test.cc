@@ -1287,6 +1287,9 @@ TEST_F(ElementTest, FocusgroupMinimumAriaRole) {
   EXPECT_EQ(ax::mojom::blink::Role::kMenuBar,
             focusgroup::FocusgroupMinimumAriaRole(
                 {FocusgroupBehavior::kMenubar, FocusgroupFlags::kNone}));
+  EXPECT_EQ(ax::mojom::blink::Role::kFeed,
+            focusgroup::FocusgroupMinimumAriaRole(
+                {FocusgroupBehavior::kFeed, FocusgroupFlags::kNone}));
   EXPECT_EQ(ax::mojom::blink::Role::kGrid,
             focusgroup::FocusgroupMinimumAriaRole(
                 {FocusgroupBehavior::kGrid, FocusgroupFlags::kNone}));
@@ -1300,6 +1303,13 @@ TEST_F(ElementTest, FocusgroupMinimumAriaRole) {
   EXPECT_EQ(ax::mojom::blink::Role::kGrid,
             focusgroup::FocusgroupMinimumAriaRole(
                 {FocusgroupBehavior::kGrid, FocusgroupFlags::kWrapInline}));
+}
+
+TEST_F(ElementTest, FocusgroupFeedItemMinimumAriaRole) {
+  EXPECT_EQ(ax::mojom::blink::Role::kArticle,
+            focusgroup::FocusgroupItemMinimumAriaRole(
+                {FocusgroupBehavior::kFeed,
+                 FocusgroupFlags::kBlock | FocusgroupFlags::kItemControls}));
 }
 
 TEST_F(ElementTest, MixStyleAttributeAndCSSOMChanges) {
