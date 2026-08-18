@@ -5566,9 +5566,11 @@ GraphBuilderCoreml::AddOperationForPrelu(
   CHECK_EQ(input_operand_info.mil_data_type,
            GetOperandInfo(operation.slope_operand_id).mil_data_type);
 
+  // A slope which out-ranks the input broadcasts the output beyond the input
+  // shape, which the CoreML prelu below cannot express.
   if (input_operand_info.dimensions.size() != 4u ||
       !constant_operands_->contains(operation.slope_operand_id) ||
-      slope_shape.size() < 3u) {
+      slope_shape.size() < 3u || slope_shape.size() > 4u) {
     return AddOperationForPreluEmulate(operation, block);
   }
 
@@ -5625,9 +5627,11 @@ GraphBuilderCoreml::AddOperationForPreluEmulate(
       CreateFloatValue(input_operand_info.mil_data_type, 0.0f), min_result,
       mojom::ElementWiseBinary::Kind::kMin, block));
 
+  const OperandInfo& output_operand_info =
+      GetOperandInfo(operation.output_operand_id);
   ASSIGN_OR_RETURN(OperandId mul_slope,
                    GenerateInternalOperandInfo(input_operand_info.mil_data_type,
-                                               input_operand_info.dimensions));
+                                               output_operand_info.dimensions));
   RETURN_IF_ERROR(AddOperationForElementwiseBinary(
       min_result, operation.slope_operand_id, mul_slope,
       mojom::ElementWiseBinary::Kind::kMul, block));

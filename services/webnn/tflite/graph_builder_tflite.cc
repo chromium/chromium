@@ -8880,13 +8880,16 @@ auto GraphBuilderTflite::SerializePrelu(const mojom::Prelu& prelu)
   // TFLite's PReLU kernel only supports broadcasting up to rank 4, so emulate
   // higher-rank cases with element-wise ops. Use `> 4` rather than `== 5` to
   // reflect the kernel's rank limit directly and remain correct if the op
-  // support limit is ever raised beyond rank 5.
+  // support limit is ever raised beyond rank 5. The kernel also requires the
+  // broadcast to keep the input's shape, so emulate the cases where slope
+  // expands the output past the input as well.
   //
   // Emulate PReLU as `max(x, 0) + slope * min(x, 0)`, which is equivalent to:
   //   - For x >= 0: max(x, 0) = x, min(x, 0) = 0, result = x
   //   - For x <  0: max(x, 0) = 0, min(x, 0) = x, result = slope * x
   if (input_tensor_info.dimensions.size() > 4 ||
-      slope_tensor_info.dimensions.size() > 4) {
+      slope_tensor_info.dimensions.size() > 4 ||
+      output_tensor_info.dimensions != input_tensor_info.dimensions) {
     // SerializeInputTensorInfo() has already dequantized input tensors to
     // float32 for PReLU, so the shared scalar zero tensor is created as
     // float32 as well.

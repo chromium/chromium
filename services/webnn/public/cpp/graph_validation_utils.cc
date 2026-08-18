@@ -2417,16 +2417,17 @@ base::expected<OperandDescriptor, std::string> ValidatePreluAndInferOutput(
     return base::unexpected(ErrorWithLabel(
         label, "The data type of slope doesn't match the data type of input."));
   }
-  // TODO(crbug.com/387892103): Use bidirectional broadcasting.
-  // BroadcastShape unidirectionally broadcasts slope.dimensions to
-  // input.dimensions.
-  if (!BroadcastShapes(slope.shape(), input.shape(), /*bidirectional=*/false)) {
+  // WebNN allows input and slope to be bidirectionally broadcastable, producing
+  // an output whose shape is the broadcast of the two.
+  std::optional<std::vector<uint32_t>> output_shape =
+      BroadcastShapes(slope.shape(), input.shape(), /*bidirectional=*/true);
+  if (!output_shape) {
     return base::unexpected(ErrorWithLabel(
-        label,
-        "The shape of slope is not broadcastable to the shape of input."));
+        label, "The shapes of input and slope are not broadcastable."));
   }
 
-  return input;
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   *output_shape, label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateReduceAndInferOutput(
