@@ -547,8 +547,7 @@ void HTMLDocumentParser::PrepareToStopParsing() {
 
   DocumentParser::PrepareToStopParsing();
 
-  // We will not have a scriptRunner when parsing a DocumentFragment.
-  if (script_runner_) {
+  if (script_runner_ && !IsParsingFragment()) {
     GetDocument()->SetReadyState(Document::kInteractive);
   }
 
@@ -558,7 +557,9 @@ void HTMLDocumentParser::PrepareToStopParsing() {
     return;
   }
 
-  GetDocument()->OnPrepareToStopParsing();
+  if (!IsParsingFragment()) {
+    GetDocument()->OnPrepareToStopParsing();
+  }
 
   AttemptToRunDeferredScriptsAndEnd();
 
@@ -1241,7 +1242,7 @@ void HTMLDocumentParser::NotifyScriptLoaded() {
   DCHECK(script_runner_);
   DCHECK(!IsExecutingScript());
 
-  if (IsStopped()) {
+  if (IsStopped() || IsDetached()) {
     return;
   }
 
