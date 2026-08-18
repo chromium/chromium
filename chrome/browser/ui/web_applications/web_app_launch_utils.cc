@@ -82,6 +82,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/browser/launch_queue/launch_params.h"
 #include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "components/webapps/common/web_app_id.h"
@@ -372,8 +373,8 @@ void ReparentWebContentsIntoBrowserImpl(BrowserWindowInterface* source_browser,
   }
 
   if (!target_app_id) {
-    IntentPickerTabHelper* helper =
-        IntentPickerTabHelper::FromWebContents(web_contents);
+    IntentPickerTabHelper* helper = IntentPickerTabHelper::From(
+        tabs::TabInterface::GetFromContents(web_contents));
     CHECK(helper);
     helper->MaybeShowIntentPickerIcon();
   }

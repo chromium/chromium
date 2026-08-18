@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include <memory>
 #include <utility>
 
@@ -40,6 +39,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -97,8 +97,8 @@ class IntentChipButtonBrowserTest
   template <typename Action>
   testing::AssertionResult DoAndWaitForIntentPickerIconUpdate(Action action) {
     base::test::TestFuture<void> intent_picker_done;
-    auto* tab_helper = IntentPickerTabHelper::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    auto* tab_helper = IntentPickerTabHelper::From(
+        browser()->tab_strip_model()->GetActiveTab());
     tab_helper->SetIconUpdateCallbackForTesting(
         intent_picker_done.GetCallback());
     // On Mac, updating the icon requires asynchronous work that is done on the
@@ -287,8 +287,8 @@ class IntentChipButtonBrowserUiTest
   void ShowUi(const std::string& name) override {
     auto* const web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    auto* const tab_helper =
-        IntentPickerTabHelper::FromWebContents(web_contents);
+    auto* const tab_helper = IntentPickerTabHelper::From(
+        tabs::TabInterface::GetFromContents(web_contents));
     base::RunLoop run_loop;
     tab_helper->SetIconUpdateCallbackForTesting(run_loop.QuitClosure());
     tab_helper->MaybeShowIconForApps(
@@ -319,8 +319,7 @@ class IntentChipButtonBrowserUiTest
     // TODO(crbug.com/384567062): Support set_baseline() in UiBrowserTest.
     const std::string screenshot_name = base::StrCat(
         {test_info->test_suite_name(), "_", test_info->name(), "_7763146"});
-    return VerifyPixelUi(location_bar,
-                         test_info->test_suite_name(),
+    return VerifyPixelUi(location_bar, test_info->test_suite_name(),
                          screenshot_name) != ui::test::ActionResult::kFailed;
   }
 

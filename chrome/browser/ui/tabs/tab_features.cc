@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/context_highlight/context_highlight_tab_feature.h"
 #include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
@@ -524,6 +525,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<SearchEngineChoiceTabHelper>(tab.GetContents());
   }
 
+  intent_picker_tab_helper_ =
+      std::make_unique<IntentPickerTabHelper>(tab, tab.GetContents());
+
   from_gws_navigation_and_keep_alive_request_observer_ =
       FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreate(
           tab.GetContents());
@@ -728,6 +732,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     search_engine_choice_tab_helper_ =
         std::make_unique<SearchEngineChoiceTabHelper>(new_contents);
   }
+
+  // The reset() must happen first so that the old instance deregisters
+  // itself from the UnownedUserDataHost before the new instance registers
+  // itself.
+  intent_picker_tab_helper_.reset();
+  intent_picker_tab_helper_ =
+      std::make_unique<IntentPickerTabHelper>(*tab, new_contents);
 
   sync_sessions_router_.reset();
   sync_sessions_router_ =

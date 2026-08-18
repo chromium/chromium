@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/web_contents.h"
@@ -104,7 +105,6 @@ class DefaultLinkCapturingInteractiveUiTest
         web_app::InstallWebAppInNewTabAndClose(browser(), GetOuterUrl());
     return {outer_app_id, inner_app_id};
   }
-
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -205,8 +205,8 @@ IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_NE(web_contents, nullptr);
 
-  IntentPickerTabHelper* tab_helper =
-      IntentPickerTabHelper::FromWebContents(web_contents);
+  IntentPickerTabHelper* tab_helper = IntentPickerTabHelper::From(
+      tabs::TabInterface::GetFromContents(web_contents));
 
   ui::ImageModel app_icon = tab_helper->app_icon();
 

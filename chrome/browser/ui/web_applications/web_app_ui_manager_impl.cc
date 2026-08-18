@@ -74,6 +74,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/user_education_data.h"
@@ -185,7 +186,6 @@ void ShowNonclosableAppToast(const web_app::WebAppRegistrar& registrar,
   ash::ShowNonclosableAppToast(app_id, registrar.GetAppShortName(app_id));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
 
 }  // namespace
 
@@ -415,7 +415,6 @@ void WebAppUiManagerImpl::ShowWebAppProtocolLaunchDialog(
   ::web_app::ShowWebAppProtocolLaunchDialog(protocol_url, profile_, app_id,
                                             std::move(launch_callback));
 }
-
 
 void WebAppUiManagerImpl::ShowSubAppsInstallDialog(
     content::WebContents* initiating_web_contents,
@@ -675,8 +674,10 @@ void WebAppUiManagerImpl::ShowIntentPicker(
     content::WebContents* web_contents,
     ShowIntentPickerBubbleCallback callback,
     std::optional<webapps::AppId> scoped_app_id) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
   IntentPickerTabHelper* intent_picker_tab_helper =
-      IntentPickerTabHelper::FromWebContents(web_contents);
+      tab ? IntentPickerTabHelper::From(tab) : nullptr;
 
   if (!intent_picker_tab_helper) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

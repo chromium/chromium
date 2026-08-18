@@ -1714,7 +1714,8 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                     tab_strip_model->GetActiveWebContents();
                 const GURL& url = chrome::GetURLToBookmark(web_contents);
                 IntentPickerTabHelper* const intent_picker_tab_helper =
-                    IntentPickerTabHelper::FromWebContents(web_contents);
+                    IntentPickerTabHelper::From(
+                        tab_strip_model->GetActiveTab());
                 CHECK(intent_picker_tab_helper);
                 intent_picker_tab_helper->ShowIntentPickerBubbleOrLaunchApp(
                     url);

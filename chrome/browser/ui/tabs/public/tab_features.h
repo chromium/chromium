@@ -44,6 +44,7 @@ class FileSystemAccessPageActionController;
 class FocusTabAfterNavigationHelper;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class HttpAuthCacheStatus;
+class IntentPickerTabHelper;
 class IntentPickerViewPageActionController;
 class JsOptimizationsPageActionController;
 class LensOverlayController;
@@ -688,6 +689,9 @@ class TabFeatures {
   // Prefetches zero-prefix suggestions on opening or switching to an NTP.
   std::unique_ptr<ZeroSuggestPrefetchTabHelper>
       zero_suggest_prefetch_tab_helper_;
+
+  // Controls the visibility of the intent picker page action.
+  std::unique_ptr<IntentPickerTabHelper> intent_picker_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

@@ -574,8 +574,10 @@ void WebAppInstallFlowDialogDelegate::
 // reveal the app bundle, then closes the dialog.
 void WebAppInstallFlowDialogDelegate::OnCancelOrCloseClicked() {
   if (current_step_ == InstallDialogStep::kSuccessful) {
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents());
     IntentPickerTabHelper* helper =
-        IntentPickerTabHelper::FromWebContents(web_contents());
+        tab ? IntentPickerTabHelper::From(tab) : nullptr;
     if (helper) {
       helper->MaybeShowIntentPickerIcon();
     }

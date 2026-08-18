@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -75,7 +76,8 @@ class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
   template <typename Action>
   testing::AssertionResult DoAndWaitForIntentPickerIconUpdate(Action action) {
     base::test::TestFuture<void> intent_picker_done;
-    auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
+    auto* tab_helper = IntentPickerTabHelper::From(
+        tabs::TabInterface::GetFromContents(GetWebContents()));
     tab_helper->SetIconUpdateCallbackForTesting(
         intent_picker_done.GetCallback());
     // On Mac, updating the icon requires asynchronous work that is done on the
@@ -117,7 +119,6 @@ class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
                            "iframe.id = 'iframe';"
                            "document.body.appendChild(iframe);");
   }
-
 
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -202,7 +203,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
   const GURL in_scope_url =
       embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
+  auto* tab_helper = IntentPickerTabHelper::From(
+      tabs::TabInterface::GetFromContents(GetWebContents()));
   NavigateToLaunchingPage(browser());
 
   base::RunLoop run_loop;
@@ -683,7 +685,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerCrashTest, DoubleClickDoesNotCrash) {
   NavigateToLaunchingPage(browser());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
 
-  auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
+  auto* tab_helper = IntentPickerTabHelper::From(
+      tabs::TabInterface::GetFromContents(GetWebContents()));
   ASSERT_TRUE(tab_helper);
 
   base::test::TestFuture<bool> future1;

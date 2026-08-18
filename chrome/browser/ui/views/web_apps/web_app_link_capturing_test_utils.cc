@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
@@ -41,7 +42,8 @@ IntentPickerBubbleView* intent_picker_bubble() {
 testing::AssertionResult AwaitIntentPickerTabHelperIconUpdateComplete(
     content::WebContents* web_contents) {
   base::test::TestFuture<void> future;
-  auto* tab_helper = IntentPickerTabHelper::FromWebContents(web_contents);
+  auto* tab_helper = IntentPickerTabHelper::From(
+      tabs::TabInterface::GetFromContents(web_contents));
   tab_helper->SetIconUpdateCallbackForTesting(  // IN-TEST
       future.GetCallback(), /*include_latest_navigation=*/true);
   if (!future.Wait()) {
@@ -110,6 +112,5 @@ views::Button* GetIntentPickerButtonAtIndex(size_t index) {
   EXPECT_LE(index, children.size());
   return static_cast<views::Button*>(children[index]);
 }
-
 
 }  // namespace web_app
