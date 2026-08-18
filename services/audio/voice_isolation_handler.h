@@ -14,20 +14,14 @@
 #include "media/base/audio_glitch_info.h"
 
 namespace media {
-class MlModelHandle;
-}  // namespace media
-
-namespace audio {
-class MlModelManager;
-}  // namespace audio
-
-namespace media {
 class AudioBus;
 class AudioParameters;
+class MlModelHandle;
 class VoiceIsolation;
 }  // namespace media
 
 namespace audio {
+class MlModelManager;
 
 // Encapsulates the voice isolation capability in the audio service.
 //
@@ -53,6 +47,11 @@ class VoiceIsolationHandler {
       const media::AudioParameters& output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback);
 
+  static std::unique_ptr<VoiceIsolationHandler> CreateForTesting(
+      std::unique_ptr<media::VoiceIsolation> voice_isolation,
+      const media::AudioParameters& output_params,
+      DeliverProcessedAudioCallback deliver_processed_audio_callback);
+
   // Processes the captured audio. Called on the capture/processing thread.
   void ProcessCapturedAudio(const media::AudioBus& audio_source,
                             base::TimeTicks audio_capture_time,
@@ -60,8 +59,13 @@ class VoiceIsolationHandler {
                             const media::AudioGlitchInfo& audio_glitch_info);
 
  private:
-  explicit VoiceIsolationHandler(
+  VoiceIsolationHandler(
       scoped_refptr<media::MlModelHandle> model_handle,
+      const media::AudioParameters& output_params,
+      DeliverProcessedAudioCallback deliver_processed_audio_callback);
+
+  VoiceIsolationHandler(
+      std::unique_ptr<media::VoiceIsolation> voice_isolation,
       const media::AudioParameters& output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback);
 

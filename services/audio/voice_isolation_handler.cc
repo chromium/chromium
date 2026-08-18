@@ -29,6 +29,20 @@ VoiceIsolationHandler::VoiceIsolationHandler(
   CHECK(output_bus_);
 }
 
+VoiceIsolationHandler::VoiceIsolationHandler(
+    std::unique_ptr<media::VoiceIsolation> voice_isolation,
+    const media::AudioParameters& output_params,
+    DeliverProcessedAudioCallback deliver_processed_audio_callback)
+    : model_handle_(nullptr),
+      voice_isolation_(std::move(voice_isolation)),
+      deliver_processed_audio_callback_(
+          std::move(deliver_processed_audio_callback)),
+      output_bus_(media::AudioBus::Create(output_params)) {
+  CHECK(!deliver_processed_audio_callback_.is_null());
+  CHECK(output_bus_);
+  CHECK(voice_isolation_);
+}
+
 VoiceIsolationHandler::~VoiceIsolationHandler() = default;
 
 void VoiceIsolationHandler::ProcessCapturedAudio(
@@ -57,6 +71,15 @@ std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::MaybeCreate(
 
   return base::WrapUnique(
       new VoiceIsolationHandler(std::move(model_handle), output_params,
+                                std::move(deliver_processed_audio_callback)));
+}
+
+std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::CreateForTesting(
+    std::unique_ptr<media::VoiceIsolation> voice_isolation,
+    const media::AudioParameters& output_params,
+    DeliverProcessedAudioCallback deliver_processed_audio_callback) {
+  return base::WrapUnique(
+      new VoiceIsolationHandler(std::move(voice_isolation), output_params,
                                 std::move(deliver_processed_audio_callback)));
 }
 }  // namespace audio

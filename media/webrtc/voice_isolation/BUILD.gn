@@ -37,9 +37,22 @@ source_set("voice_isolation") {
   ]
 }
 
+source_set("mock_voice_isolation") {
+  testonly = true
+  sources = [
+    "mock_voice_isolation.cc",
+    "mock_voice_isolation.h",
+  ]
+  deps = [
+    "//media/webrtc",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [
+    ":mock_voice_isolation",
     "//media/webrtc",
     "//testing/gmock",
     "//testing/gtest",

@@ -231,6 +231,7 @@ source_set("tests") {
       "output_device_mixer_manager_unittest.cc",
       "processing_audio_fifo_unittest.cc",
     ]
+    deps += [ "//media/webrtc/voice_isolation:mock_voice_isolation" ]
     data += [ "//media/webrtc/voice_isolation/test_model_1_2_160_2.tflite" ]
   }
 

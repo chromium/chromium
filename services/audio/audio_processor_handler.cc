@@ -81,6 +81,9 @@ AudioProcessorHandler::AudioProcessorHandler(
   // One and only one is defined.
   CHECK(deliver_processed_audio_callback_.is_null() !=
         (voice_isolation_handler_ == nullptr));
+  // Voice isolation handler must be provided if and only if voice isolation is
+  // enabled in settings.
+  CHECK_EQ(voice_isolation_handler_ != nullptr, settings.voice_isolation);
   if (aecdump_recording_manager_) {
     aecdump_recording_manager->RegisterAecdumpSource(this);
   }

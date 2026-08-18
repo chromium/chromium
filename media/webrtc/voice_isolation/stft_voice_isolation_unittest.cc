@@ -17,7 +17,9 @@ namespace media {
 using testing::_;
 using testing::Return;
 
-class MockVoiceIsolation : public VoiceIsolationComponent {
+namespace {
+
+class MockVoiceIsolationComponent : public VoiceIsolationComponent {
  public:
   MOCK_METHOD(void,
               ProcessAudio,
@@ -26,6 +28,8 @@ class MockVoiceIsolation : public VoiceIsolationComponent {
   MOCK_METHOD(size_t, FrameSize, (), (const, override));
   MOCK_METHOD(size_t, FramesPerSecond, (), (const, override));
 };
+
+}  // namespace
 
 TEST(VoiceIsolationWindowedFftTest, WindowOlaProperty) {
   // Check Overlap-Add.
@@ -51,7 +55,7 @@ TEST(VoiceIsolationWindowedFftTest, WindowOlaProperty) {
 }
 
 TEST(StftVoiceIsolationTest, Creation) {
-  auto mock_inner = std::make_unique<MockVoiceIsolation>();
+  auto mock_inner = std::make_unique<MockVoiceIsolationComponent>();
   EXPECT_CALL(*mock_inner, FrameSize()).WillRepeatedly(Return(320));
   EXPECT_CALL(*mock_inner, FramesPerSecond()).WillRepeatedly(Return(50));
 
@@ -65,7 +69,7 @@ TEST(StftVoiceIsolationTest, FrameSizeAndDelay) {
   constexpr size_t kFrameSize = 2 * 160;
   constexpr size_t kFramesPerSecond = 50;
 
-  auto mock_inner = std::make_unique<MockVoiceIsolation>();
+  auto mock_inner = std::make_unique<MockVoiceIsolationComponent>();
   EXPECT_CALL(*mock_inner, FrameSize()).WillRepeatedly(Return(kFftSize));
   EXPECT_CALL(*mock_inner, FramesPerSecond())
       .WillRepeatedly(Return(kFramesPerSecond));
@@ -77,7 +81,7 @@ TEST(StftVoiceIsolationTest, FrameSizeAndDelay) {
 
 TEST(StftVoiceIsolationTest, ProcessAudioLoopback) {
   // Test perfect reconstruction (or near perfect) with passthrough internal.
-  auto mock_passthrough_inner = std::make_unique<MockVoiceIsolation>();
+  auto mock_passthrough_inner = std::make_unique<MockVoiceIsolationComponent>();
   auto* mock_passthrough_inner_ptr = mock_passthrough_inner.get();
 
   constexpr unsigned int kFftSize = 2 * 2 * 160;
