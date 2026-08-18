@@ -3945,6 +3945,11 @@ TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutContentEditable) {
   EXPECT_EQ(form_util::GetFieldRendererId(editable_element),
             last_focused_field_id_);
   EXPECT_FALSE(last_focused_field_id_.is_null());
+
+  BlurElement("editable_div");
+  fake_driver_.Flush();
+  EXPECT_EQ(FocusedFieldType::kUnknown, last_focused_field_type_);
+  EXPECT_TRUE(last_focused_field_id_.is_null());
 }
 
 // Tests that multiple contenteditable elements receive distinct FieldRendererId
@@ -3990,6 +3995,11 @@ TEST_F(PasswordAutofillAgentTest, ContentEditableFieldRendererIds) {
   EXPECT_EQ(FocusedFieldType::kContenteditableField, last_focused_field_type_);
   EXPECT_EQ(id2, last_focused_field_id_);
 
+  BlurElement("editable2");
+  fake_driver_.Flush();
+  EXPECT_EQ(FocusedFieldType::kUnknown, last_focused_field_type_);
+  EXPECT_TRUE(last_focused_field_id_.is_null());
+
   FocusElement("readonly_input");
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kUnfillableElement, last_focused_field_type_);
@@ -3997,6 +4007,8 @@ TEST_F(PasswordAutofillAgentTest, ContentEditableFieldRendererIds) {
 
   BlurElement("readonly_input");
   fake_driver_.Flush();
+  EXPECT_EQ(FocusedFieldType::kUnknown, last_focused_field_type_);
+  EXPECT_TRUE(last_focused_field_id_.is_null());
 }
 #else
 // Tests that focusing a contenteditable element on desktop is ignored by

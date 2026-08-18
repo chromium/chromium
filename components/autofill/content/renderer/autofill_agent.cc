@@ -742,6 +742,16 @@ void AutofillAgent::FocusedElementChanged(
     autofill_driver->FocusOnNonFormField();
     handle_focus_change();
   }
+
+  // TODO(crbug.com/370301890): Notify PasswordAutofillAgent about
+  // focus-on-non-form-field elements. This is a temporary hack and must be
+  // moved to PasswordAutofillAgent::FocusedElementChanged().
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySupportContenteditableOnAndroid) &&
+      password_autofill_agent_) {
+    password_autofill_agent_->FocusedElementChangedWithCustomSemantics(
+        new_focused_element, /*pass_key=*/{});
+  }
 }
 
 void AutofillAgent::ObserveCaret(WebElement element) {
