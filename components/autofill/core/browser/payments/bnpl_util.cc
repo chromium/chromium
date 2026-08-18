@@ -191,26 +191,25 @@ std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
     // equivalently-sorted elements are randomized. This is to ensure there is
     // no implicit preference towards any issuers.
     base::RandomShuffle(result.begin(), result.end());
-
-    // Sort the `BnplIssuerContext` vector so that it follows below rules:
-    // 1. Eligible issuers should be in front of uneligible ones in a sorted
-    //    vector.
-    // 2. Linked issuers must go before unlinked ones if they have the same
-    //    eligibility.
-    // Note: If one issuer has a payment instrument and the other doesn't,
-    //    then one is linked and the other is unlinked.
-    std::ranges::stable_sort(result, [](const BnplIssuerContext& rhs,
-                                        const BnplIssuerContext& lhs) {
-      // Lambda comparator which returns true if `rhs` should be in front of
-      // `lhs`.
-      // Note: Boolean value `false` is less than boolean value `true`.
-      return std::forward_as_tuple(
-                 rhs.IsEligible(),
-                 rhs.issuer.payment_instrument().has_value()) >
-             std::forward_as_tuple(lhs.IsEligible(),
-                                   lhs.issuer.payment_instrument().has_value());
-    });
   }
+
+  // Sort the `BnplIssuerContext` vector so that it follows below rules:
+  // 1. Eligible issuers should be in front of uneligible ones in a sorted
+  //    vector.
+  // 2. Linked issuers must go before unlinked ones if they have the same
+  //    eligibility.
+  // Note: If one issuer has a payment instrument and the other doesn't,
+  //    then one is linked and the other is unlinked.
+  std::ranges::stable_sort(result, [](const BnplIssuerContext& rhs,
+                                      const BnplIssuerContext& lhs) {
+    // Lambda comparator which returns true if `rhs` should be in front of
+    // `lhs`.
+    // Note: Boolean value `false` is less than boolean value `true`.
+    return std::forward_as_tuple(rhs.IsEligible(),
+                                 rhs.issuer.payment_instrument().has_value()) >
+           std::forward_as_tuple(lhs.IsEligible(),
+                                 lhs.issuer.payment_instrument().has_value());
+  });
 
   return result;
 }

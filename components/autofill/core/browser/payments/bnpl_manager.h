@@ -192,6 +192,10 @@ class BnplManager : public AutofillManager::Observer {
 
     // The callback that will fill the fetched BNPL VCN into the form.
     OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback;
+
+    // Ordered list of BNPL issuers to enforce stable sorting across flow UI
+    // updates.
+    std::vector<BnplIssuer> enforced_issuer_order;
   };
 
   // Returns true if the user has seen the amount extraction AI terms.

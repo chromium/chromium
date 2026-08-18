@@ -534,6 +534,36 @@ TEST_F(BnplUtilTest, GetSortedBnplIssuerContext_MaintainsEnforcedOrder) {
   EXPECT_EQ(contexts[2].issuer.issuer_id(), IssuerId::kBnplKlarna);
 }
 
+TEST_F(BnplUtilTest,
+       GetSortedBnplIssuerContext_EnforcedOrder_SortsEligibleFirst) {
+  // Affirm price range: $50 - $1000
+  BnplIssuer issuer_affirm =
+      test::GetTestLinkedBnplIssuer(IssuerId::kBnplAffirm);
+  issuer_affirm.set_eligible_price_ranges(
+      {BnplIssuer::EligiblePriceRange("USD", 50'000'000, 1000'000'000)});
+
+  // Zip price range: $30 - $1000
+  BnplIssuer issuer_zip = test::GetTestLinkedBnplIssuer(IssuerId::kBnplZip);
+  issuer_zip.set_eligible_price_ranges(
+      {BnplIssuer::EligiblePriceRange("USD", 30'000'000, 1000'000'000)});
+
+  // Enforced order has Affirm first, Zip second.
+  std::vector<BnplIssuer> enforced_order = {issuer_affirm, issuer_zip};
+
+  // Checkout amount is $40: Zip is eligible, Affirm is ineligible (too low).
+  std::vector<BnplIssuerContext> contexts = GetSortedBnplIssuerContext(
+      autofill_client(), /*checkout_amount=*/40'000'000,
+      /*amount_extraction_error=*/std::nullopt, enforced_order);
+
+  ASSERT_EQ(contexts.size(), 2U);
+  // Zip must be sorted first because it is eligible, even though Affirm was
+  // first in enforced_order.
+  EXPECT_EQ(contexts[0].issuer.issuer_id(), IssuerId::kBnplZip);
+  EXPECT_TRUE(contexts[0].IsEligible());
+  EXPECT_EQ(contexts[1].issuer.issuer_id(), IssuerId::kBnplAffirm);
+  EXPECT_FALSE(contexts[1].IsEligible());
+}
+
 // Verify that if the triggering field is CVC, the BNPL option should not be
 // appended.
 TEST_F(BnplUtilTest, ShouldShowBnplSuggestions_IsCvcField) {
