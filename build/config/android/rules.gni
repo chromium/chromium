@@ -2205,6 +2205,8 @@ if (!is_robolectric && enable_java_templates) {
   #   suffix_apk_assets_used_by: Prefixes android assets used by the given apk
   #     with $package_name. Adds the list of renamed packages to
   #     BuildConfig.java.
+  #   suffix_apk_assets_string: Optional string to use for suffixing assets
+  #     instead of $package_name.
   template("android_apk_or_module") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     _template_name = target_name
@@ -2770,6 +2772,7 @@ if (!is_robolectric && enable_java_templates) {
                                "secondary_abi_loadable_modules",
                                "secondary_native_lib_placeholders",
                                "sources",
+                               "suffix_apk_assets_string",
                                "suffix_apk_assets_used_by",
                                "uses_split",
                              ])
@@ -3418,6 +3421,7 @@ if (!is_robolectric && enable_java_templates) {
             "static_library_provider",
             "static_library_provider_use_secondary_abi",
             "strip_unused_resources",
+            "suffix_apk_assets_string",
             "suffix_apk_assets_used_by",
             "target_sdk_version",
             "testonly",
@@ -3553,6 +3557,7 @@ if (!is_robolectric && enable_java_templates) {
             "static_library_provider",
             "static_library_provider_use_secondary_abi",
             "strip_unused_resources",
+            "suffix_apk_assets_string",
             "suffix_apk_assets_used_by",
             "target_sdk_version",
             "testonly",
