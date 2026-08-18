@@ -1450,6 +1450,24 @@ TEST_F(InlineCursorBlockFragmentationTest, MoveToLayoutObject) {
   TestFragment3(InlineCursor(*fragments[2], *fragments[2]->Items()));
 }
 
+TEST_F(InlineCursorTest, CulledInlineWithNonIFCChild) {
+  SetBodyInnerHTML(R"HTML(
+    <span id="culled">
+      <ruby>
+        <rb>base</rb>
+        <rt>annotation</rt>
+      </ruby>
+    </span>
+  )HTML");
+  const auto* culled = To<LayoutInline>(GetLayoutObjectByElementId("culled"));
+  EXPECT_FALSE(culled->ShouldCreateBoxFragment());
+
+  InlineCursor cursor;
+  cursor.MoveToIncludingCulledInline(*culled);
+  for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+  }
+}
+
 }  // namespace
 
 }  // namespace blink

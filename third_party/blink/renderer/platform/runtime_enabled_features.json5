@@ -3643,6 +3643,10 @@
       status: "stable",
     },
     {
+      name: "InlineCursorSkipNonIfc",
+      status: "stable",
+    },
+    {
       name: "InlineScriptCacheHint",
       status: "experimental",
     },

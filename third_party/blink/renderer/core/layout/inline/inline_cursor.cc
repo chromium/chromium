@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/inline_paint_context.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 class HTMLBRElement;
@@ -1554,8 +1555,14 @@ const LayoutObject* InlineCursor::CulledInlineTraversal::Find(
       return child;
 
     if (child->IsBox()) {
-      if (!child->IsFloatingOrOutOfFlowPositioned())
+      if (!child->IsFloatingOrOutOfFlowPositioned() &&
+          // Some objects are out of the IFC although they look like in-flow
+          // (`!IsFloatingOrOutOfFlowPositioned()`), such as ruby annotations or
+          // after block-in-inline splits.
+          (!RuntimeEnabledFeatures::InlineCursorSkipNonIfcEnabled() ||
+           child->IsInLayoutNGInlineFormattingContext())) {
         return child;
+      }
       child = child->NextInPreOrderAfterChildren(layout_inline_);
       continue;
     }
