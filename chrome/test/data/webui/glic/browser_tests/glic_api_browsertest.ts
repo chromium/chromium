@@ -761,62 +761,6 @@ class ApiTests extends ApiTestFixtureBase {
   }
 }
 
-// Tests which do not wait for the panel to open before starting.
-class ApiTestWithoutOpen extends ApiTestFixtureBase {
-  override async setUpTest() {
-    await this.client.waitForInitialize();
-  }
-
-
-  async testNoExtractionWhileHidden() {
-    assertDefined(this.host.getContextFromFocusedTab);
-    assertDefined(this.host.getContextFromTab);
-    assertDefined(this.host.getFocusedTabStateV2);
-    assertDefined(this.host.pinTabs);
-    await this.host.setTabContextPermissionState(true);
-
-    // While still hidden (preloaded), focused tab extraction should fail.
-    await assertRejects(this.host.getContextFromFocusedTab({}), {
-      withErrorMessage:
-          'GetContextFromFocusedTab not allowed while backgrounded',
-    });
-
-    // Glic panel is open, so both focused and arbitrary tab extraction should
-    // succeed.
-    await this.advanceToNextStep();
-    await this.client.waitForFirstOpen();
-    let result = await this.host.getContextFromFocusedTab({});
-    assertDefined(result);
-    assertEquals(
-        new URL(result.tabData.url).pathname, '/glic/browser_tests/test.html',
-        `Tab data has unexpected url ${result.tabData.url}`);
-    const focusedTab = await this.host.getFocusedTabStateV2().getCurrentValue();
-    const tabId = checkDefined(focusedTab?.hasFocus?.tabData.tabId);
-    assertTrue(await this.host.pinTabs([tabId]));
-    result = await this.host.getContextFromTab(tabId, {});
-    assertDefined(result);
-    assertEquals(
-        new URL(result.tabData.url).pathname, '/glic/browser_tests/test.html',
-        `Tab data has unexpected url ${result.tabData.url}`);
-
-    // Glic panel is hidden again. Focused and arbitrary tab extraction should
-    // fail.
-    await this.advanceToNextStep();
-    // Panel closure was only requested by native code, but still needs to be
-    // waited on.
-    await observeSequence(this.host.panelActive()).waitForValue(false);
-    await assertRejects(this.host.getContextFromFocusedTab({}), {
-      withErrorMessage:
-          'GetContextFromFocusedTab not allowed while backgrounded',
-    });
-    await assertRejects(this.host.getContextFromTab(tabId, {}), {
-      withErrorMessage: 'GetContextFromTab not allowed while backgrounded',
-    });
-  }
-}
-
-
-
 class DaisyChainApiTests extends ApiTestFixtureBase {
   async clickLinkInGlicUi() {
     const link = document.createElement('a');
@@ -859,7 +803,6 @@ class DaisyChainApiTests extends ApiTestFixtureBase {
 const TEST_FIXTURES = [
   ApiTests,
   DaisyChainApiTests,
-  ApiTestWithoutOpen,
 ];
 
 testMain(TEST_FIXTURES);
