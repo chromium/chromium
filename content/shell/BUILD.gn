@@ -872,12 +872,14 @@ if (is_mac) {
   content_shell_framework_name = "$content_shell_product_name Framework"
   content_shell_helper_name = "$content_shell_product_name Helper"
 
+  content_shell_mac_helpers = content_mac_helpers + content_mac_aperitif_helpers
+
   bundle_data("content_shell_framework_helpers") {
     testonly = true
     sources = [ "$root_out_dir/chrome_crashpad_handler" ]
     outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
     public_deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
-    foreach(helper_params, content_mac_helpers) {
+    foreach(helper_params, content_shell_mac_helpers) {
       sources += [
         "$root_out_dir/${content_shell_helper_name}${helper_params[2]}.app",
       ]
@@ -1024,7 +1026,7 @@ if (is_mac) {
     }
   }
 
-  foreach(helper_params, content_mac_helpers) {
+  foreach(helper_params, content_shell_mac_helpers) {
     _helper_target = helper_params[0]
     _helper_bundle_id = helper_params[1]
     _helper_suffix = helper_params[2]
