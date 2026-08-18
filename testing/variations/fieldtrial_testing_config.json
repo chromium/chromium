@@ -27408,6 +27408,21 @@
             ]
         }
     ],
+    "WebViewMemoryProfilingClient": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewMemoryProfilingClient"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewMigrateVisitedLinks": [
         {
             "platforms": [
