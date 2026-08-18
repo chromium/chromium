@@ -123,11 +123,11 @@ create a new pair, call the `PendingRemote::new_pipe` function, and specify the
 type of the interface using a trait object:
 
 ```Rust
-let (p_rem: PendingRemote<dyn MathService>,
-     p_rec: PendingReceiver<dyn MathService>) = PendingRemote::new_pipe();
+let (p_remote: PendingRemote<dyn MathService>,
+     p_receiver: PendingReceiver<dyn MathService>) = PendingRemote::new_pipe();
 
 // Equivalent to the above
-let (p_rem, p_rec) = PendingRemote::<dyn MathService>::new_pipe();
+let (p_remote, p_receiver) = PendingRemote::<dyn MathService>::new_pipe();
 ```
 
 ### Sending Messages
@@ -142,7 +142,7 @@ processing. This is done by calling the `bind` function to transform a
 // Binds to the current default sequence
 // `bind_with_options` can be used to specify a different sequence,
 // or add a disconnect handler.
-let math_remote: Remote<dyn MathService> = p_rem.bind();
+let math_remote: Remote<dyn MathService> = p_remote.bind();
 ```
 
 Once the Remote is bound, you can start sending messages immediately (even
@@ -197,11 +197,11 @@ register_mojom_state_object_impls!(impl MathService for CountingMathService);
 
 // Bind a receiver to the current sequence which counts the number
 // of times `Add` is called.
-fn setup_counting_receiver(p_rec: PendingReceiver<dyn MathService>)
+fn setup_counting_receiver(p_receiver: PendingReceiver<dyn MathService>)
   -> Receiver<CountingMathService>
 {
   let count_state = CountingMathService { num_times_added: 0 };
-  p_rec.bind(count_state)
+  p_receiver.bind(count_state)
 }
 ```
 
@@ -224,10 +224,10 @@ impl MathService for SaturatingMathService {
 register_mojom_state_object_impls!(impl MathService for SaturatingMathService);
 
 // Bind a receiver to the current sequence which uses saturating addition
-fn setup_counting_receiver(p_rec: PendingReceiver<dyn MathService>)
+fn setup_counting_receiver(p_receiver: PendingReceiver<dyn MathService>)
   -> Receiver<SaturatingMathService>
 {
-  p_rec.bind(SaturatingMathService {})
+  p_receiver.bind(SaturatingMathService {})
 }
 ```
 
@@ -418,7 +418,121 @@ TODO(crbug.com/547988937): link to an in-production use case instead/as well.
 
 ### Associated Interfaces
 
-<https://crbug.com/493274453>
+The basic Mojo model is simple: you create two ends of a message pipe (a
+`Remote` and a `Receiver`, then send them to different part of the program and
+use them to send messages through that pipe). If you want to communicate with
+multiple parts of the program, you create multiple pipes.
+
+However, those pipes operate independently and asynchronously. Therefore, two
+messages sent on different pipes won't necessarily arrive in the order they were
+sent (even if they arrive on the same sequence). If you really need to ensure
+ordering between multiple `Remote`/`Receiver` pairs, you can use associated
+interfaces.
+
+For an alternate description of the concepts (in terms of C++), you can see
+the description in the
+[C++ bindings](/mojo/public/cpp/bindings/README.md#Associated-Interfaces).
+Both languages behave identically, so this mostly serves as an alternate
+explanation of the same thing.
+
+#### Overall Model
+
+The Rust types `AssociatedRemote` and `AssociatedReceiver` are analogoues to the
+`Remote/Receiver` types, but with the difference that they do not own their
+message pipe. Instead, they communicate using an existing pipe, connected by
+some other `Remote/Receiver` pair. Those are the **primary endpoints**; the
+other are **associated endpoints**.
+
+Associated endpoints operate just like the primary endpoints; they have an
+interface (e.g. `AssociatedRemote<dyn MathService>`) and can be used to send
+and receive messages (e.g. `assoc_rem.Add(1, 3)`). The main different is that
+_all messages sent on a single message pipe will be processed in the order they
+were sent_ (strict FIFO order).
+
+There can be any number of associated endpoints per pipe, but only one primary
+pair. The endpoints don't all need to have the same interface; you can have
+`AssociatedRemote<dyn MathService>` and `AssociatedRemote<dyn LaundryService>`
+operating on the same pipe without problems.
+
+**Caveats**:
+
+* Since the primary pair owns the pipe, closing one of them will permanently
+  disconnect _all_ associated interfaces on that pipe.
+* Due to the FIFO ordering guarantee, if _any_ remote sends a message before its
+  receiver is ready (o.e. it hasn't been [bound](#sending-messages)), _all_
+  messages on the pipe will be stalled until the receiver is set up or dropped.
+  * This also applies to disconnect notifications when one half of an associated
+    pair is dropped.
+
+#### Usage
+
+As with regular remotes and receivers, associated endpoints begin their life in
+a "pending" form that must be bound to a particular sequence before it can be
+used.
+
+In Rust, these are the `PendingAssociatedRemote` and `PendingAssociatedReceiver`
+types; in Mojom, they are written `pending_associated_remote` and
+`pending_associated_receiver`.
+
+```text
+// This interface does nothing allows users to create an associated
+// MathService pair. It can also be used to send other kinds of
+// messages, like a normal interface.
+interface Foo {
+  PassMathService(pending_associated_receiver<MathService> bar_rec);
+  DoSomething(int32 arg);
+};
+
+// Note that the MathService interface is entirely normal; you can _also_
+// create a non-associated Remote/Receiver pair for MathService if you like.
+interface MathService {
+  Add(int32 x, int32 y);
+};
+```
+
+To create a new associated pair, call `PendingAssociatedRemote::new_pair` or
+`PendingAssociatedReceiver::new_pair`.
+
+```Rust
+let (p_remote, p_receiver) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+```
+
+Like non-associated `Remotes` and `Receivers`, you must first bind these before
+they can be used.
+
+```Rust
+let mut bar_remote: AssociatedRemote<dyn MathService> = p_remote.bind();
+```
+
+However, associated endpoints have an additional step: you must specify which
+message pipe the pair will use. To do so, **you must send one of the endpoints
+in a Mojo message**:
+
+```Rust
+// Sending `p_remote` over an existing endpoint associates BOTH `p_remote` and `p_receiver`
+// with that endpoint's underlying message pipe.
+foo_remote.PassBar(p_receiver);
+```
+
+Note that `foo_remote` does not have to be the pipe's primary `Remote`; it's
+perfectly fine to send `p_receiver` through an already-set-up associated endpoint.
+
+**Caveats**:
+
+* You must send exactly one of each pending associated pair.
+* Once sent, you cannot send an associated endpoint again (since it has already
+  been associated with the first pipe you sent it through).
+* You cannot send messages until you've sent one of the endpoints through a pipe
+  (since there's no way to know which pipe to send the message on).
+  * You can check whether this has happened yet by calling
+    `.ready_for_messages()`.
+
+Once that's done, you can treat the endpoints just like primary endpoints, and
+bind/drop them the same way.
+
+#### Associating with a C++ pipe
+
+<https://crbug.com/540355135>
 
 ### Versioning
 

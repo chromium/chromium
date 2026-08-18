@@ -1166,6 +1166,8 @@ Associated interfaces are interfaces which:
 * make it possible for the receiver to access a single message pipe from
   multiple sequences.
 
+*(For using associated interfaces in Rust, see [Rust Associated Interfaces](/mojo/public/rust/bindings/README.md#Associated-Interfaces)).*
+
 ### Mojom
 
 New types `pending_associated_remote` and `pending_associated_receiver` are

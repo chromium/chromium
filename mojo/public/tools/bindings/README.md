@@ -727,9 +727,11 @@ relative ordering guarantees among them. Associated interfaces are useful when
 one interface needs to guarantee strict FIFO ordering with respect to one or
 more other interfaces, as they allow interfaces to share a single pipe.
 
-Currently associated interfaces are only supported in generated C++ bindings.
+Currently associated interfaces are supported in generated C++, JavaScript, and Rust bindings.
 See the documentation for
-[C++ Associated Interfaces](/mojo/public/cpp/bindings/README.md#Associated-Interfaces).
+[C++ Associated Interfaces](/mojo/public/cpp/bindings/README.md#Associated-Interfaces),
+[JavaScript Associated Interfaces](/mojo/public/js/README.md#Associated-Interfaces), and
+[Rust Associated Interfaces](/mojo/public/rust/bindings/README.md#Associated-Interfaces).
 
 ## Versioning
 
