@@ -831,6 +831,10 @@ static_library("test_support") {
     "test_scheme_classifier.h",
   ]
 
+  if (!is_ios) {
+    sources += [ "geolocation_header_service_test_api.h" ]
+  }
+
   public_deps = [
     ":browser",
     "//base",

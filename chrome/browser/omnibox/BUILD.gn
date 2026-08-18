@@ -45,6 +45,7 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/search_engines",
     "//chrome/test:test_support",
+    "//components/omnibox/browser:test_support",
     "//components/search_engines",
     "//content/test:test_support",
     "//testing/gtest",

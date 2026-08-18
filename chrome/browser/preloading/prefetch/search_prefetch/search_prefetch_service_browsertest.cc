@@ -52,6 +52,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/geolocation_header_service.h"
+#include "components/omnibox/browser/geolocation_header_service_test_api.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -724,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
       base::test::RunUntil([&]() { return geo_service->HasCachedLocation(); }));
 
   // Set stale location age.
-  geo_service->SetLocationAgeForTesting(base::Hours(25));
+  GeolocationHeaderServiceTestApi(geo_service).SetLocationAge(base::Hours(25));
 
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
                                                         GetWebContents()));

@@ -42,6 +42,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/geolocation_header_service.h"
+#include "components/omnibox/browser/geolocation_header_service_test_api.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -246,7 +247,8 @@ IN_PROC_BROWSER_TEST_P(InlineLocationSignalingE2EInteractiveUiTest,
       GeolocationHeaderServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(geo_service);
   if (GetParam().has_cached_location) {
-    geo_service->SetLocationForTesting(CreateMockGeoposition());
+    GeolocationHeaderServiceTestApi(geo_service)
+        .SetLocation(CreateMockGeoposition());
   }
 
   HostContentSettingsMap* settings_map =
@@ -277,8 +279,9 @@ IN_PROC_BROWSER_TEST_P(InlineLocationSignalingE2EInteractiveUiTest,
 
   // Wait for any asynchronous Mojo geolocation query triggered by the focus
   // flow or DSE change to complete before modifying omnibox state.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !geo_service->is_geolocation_bound_for_testing(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !GeolocationHeaderServiceTestApi(geo_service).is_geolocation_bound();
+  }));
 
   prime_histogram_tester.ExpectUniqueSample(
       "Omnibox.GeolocationHeaderService.PrimeLocationOutcome",
