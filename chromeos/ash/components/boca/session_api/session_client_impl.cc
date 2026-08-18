@@ -29,7 +29,9 @@ SessionClientImpl::SessionClientImpl(
     signin::IdentityManager* identity_manager)
     : url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
-      sender_(CreateRequestSender()) {}
+      sender_(CreateRequestSender(
+          signin::OAuthConsumerId::kChromeOsBocaSchoolToolsAuth,
+          kTrafficAnnotation)) {}
 SessionClientImpl::SessionClientImpl(
     std::unique_ptr<google_apis::RequestSender> sender)
     : sender_(std::move(sender)) {}
@@ -37,16 +39,16 @@ SessionClientImpl::SessionClientImpl(
 SessionClientImpl::~SessionClientImpl() = default;
 
 std::unique_ptr<google_apis::RequestSender>
-SessionClientImpl::CreateRequestSender() {
+SessionClientImpl::CreateRequestSender(
+    signin::OAuthConsumerId consumer_id,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   CHECK(url_loader_factory_);
   CHECK(identity_manager_);
 
   auto auth_service = std::make_unique<google_apis::AuthService>(
       identity_manager_,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      url_loader_factory_,
-      signin::OAuthConsumerId::kChromeOsBocaSchoolToolsAuth);
-
+      url_loader_factory_, consumer_id);
   return std::make_unique<google_apis::RequestSender>(
       std::move(auth_service), url_loader_factory_,
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -55,7 +57,7 @@ SessionClientImpl::CreateRequestSender() {
                to the user on Web UI surfaces. */
            base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
-      /*custom_user_agent=*/"", kTrafficAnnotation);
+      /*custom_user_agent=*/"", traffic_annotation);
 }
 
 void SessionClientImpl::CreateSession(

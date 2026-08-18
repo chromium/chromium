@@ -141,7 +141,8 @@ void BocaUI::Create(
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
       std::move(page_handler), std::move(page), web_ui(),
       &boca_session_manager_.get(),
-      std::make_unique<ClassroomPageHandlerImpl>(),
+      std::make_unique<ClassroomPageHandlerImpl>(
+          CHECK_DEREF(boca_session_manager_->session_client_impl())),
       std::move(content_settings_handler),
       TabInfoCollector::Create(web_ui(), is_producer_), system_web_app_manager,
       boca_session_manager_->session_client_impl(),

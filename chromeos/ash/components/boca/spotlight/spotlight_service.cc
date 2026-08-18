@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
+#include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/spotlight/register_screen_request.h"
 #include "chromeos/ash/components/boca/spotlight/update_view_screen_state_request.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -23,8 +24,11 @@
 namespace ash::boca {
 
 SpotlightService::SpotlightService(BocaSessionManager* boca_session_manager)
-    : boca_session_manager_(CHECK_DEREF(boca_session_manager)),
-      sender_(CreateRequestSender()) {}
+    : SpotlightService(
+          boca_session_manager,
+          boca_session_manager->session_client_impl()->CreateRequestSender(
+              signin::OAuthConsumerId::kChromeOsBocaSchoolToolsAuth,
+              kTrafficAnnotation)) {}
 
 SpotlightService::SpotlightService(
     BocaSessionManager* boca_session_manager,
@@ -33,31 +37,6 @@ SpotlightService::SpotlightService(
       sender_(std::move(sender)) {}
 
 SpotlightService::~SpotlightService() = default;
-
-std::unique_ptr<google_apis::RequestSender>
-SpotlightService::CreateRequestSender() {
-  auto url_loader_factory = BocaAppClient::Get()->GetURLLoaderFactory();
-  auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();
-
-  if (!identity_manager) {
-    return nullptr;
-  }
-  auto auth_service = std::make_unique<google_apis::AuthService>(
-      identity_manager,
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      url_loader_factory,
-      signin::OAuthConsumerId::kChromeOsBocaSchoolToolsAuth);
-
-  return std::make_unique<google_apis::RequestSender>(
-      std::move(auth_service), url_loader_factory,
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(),
-           /* `USER_VISIBLE` is because the requested/returned data is visible
-               to the user on Web UI surfaces. */
-           base::TaskPriority::USER_VISIBLE,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
-      /*custom_user_agent=*/"", kTrafficAnnotation);
-}
 
 void SpotlightService::ViewScreen(std::string student_gaia_id,
                                   std::string url_base,

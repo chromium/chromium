@@ -10,7 +10,8 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
-#include "student_heartbeat_request.h"
+#include "chromeos/ash/components/boca/session_api/student_heartbeat_request.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 
 namespace boca {
 class Session;
@@ -58,7 +59,9 @@ class SessionClientImpl {
   SessionClientImpl& operator=(const SessionClientImpl&) = delete;
   virtual ~SessionClientImpl();
 
-  virtual std::unique_ptr<google_apis::RequestSender> CreateRequestSender();
+  virtual std::unique_ptr<google_apis::RequestSender> CreateRequestSender(
+      signin::OAuthConsumerId consumer_id,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation);
   virtual void CreateSession(std::unique_ptr<CreateSessionRequest> request);
   virtual void GetSession(std::unique_ptr<GetSessionRequest> request,
                           bool can_skip_duplicate_request);

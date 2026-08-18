@@ -32,12 +32,6 @@ signin::IdentityManager* BocaAppClientImpl::GetIdentityManager() {
   return IdentityManagerFactory::GetForProfile(profile);
 }
 
-scoped_refptr<network::SharedURLLoaderFactory>
-BocaAppClientImpl::GetURLLoaderFactory() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  return profile->GetURLLoaderFactory();
-}
-
 std::string BocaAppClientImpl::GetDeviceId() {
   if (!ash::DeviceSettingsService::IsInitialized()) {
     return std::string();

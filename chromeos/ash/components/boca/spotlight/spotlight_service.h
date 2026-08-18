@@ -34,8 +34,6 @@ class SpotlightService {
   SpotlightService& operator=(const SpotlightService&) = delete;
   virtual ~SpotlightService();
 
-  virtual std::unique_ptr<google_apis::RequestSender> CreateRequestSender();
-
   virtual void ViewScreen(std::string student_gaia_id,
                           std::string url_base,
                           ViewScreenRequestCallback callback);

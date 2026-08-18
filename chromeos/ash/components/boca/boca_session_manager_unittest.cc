@@ -147,10 +147,6 @@ class MockObserver : public BocaSessionManager::Observer {
 class MockBocaAppClient : public BocaAppClient {
  public:
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
-  MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
-              GetURLLoaderFactory,
-              (),
-              (override));
   MOCK_METHOD(std::string, GetDeviceId, (), (override));
   MOCK_METHOD(std::string, GetSchoolToolsServerBaseUrl, (), (override));
 };
