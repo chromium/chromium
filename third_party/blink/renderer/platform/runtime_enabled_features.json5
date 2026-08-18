@@ -2328,12 +2328,6 @@
       base_feature: "none",
     },
     {
-      // For readonly inputs, do not allow access to the picker.
-      // This landed in M146 and can be removed in M148.
-      name: "DisallowPickerForReadonlyInputs",
-      status: "stable",
-    },
-    {
       name: "DisconnectWebSocketOnBFCache",
       status: "stable",
     },
