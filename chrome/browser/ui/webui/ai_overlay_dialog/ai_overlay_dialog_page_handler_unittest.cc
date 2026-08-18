@@ -8,7 +8,11 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -36,26 +40,47 @@ class MockPage : public ai_overlay_dialog::mojom::Page {
   void SetUsePersona(bool use_persona) override {}
 };
 
-class AiOverlayDialogPageHandlerTest : public BrowserWithTestWindowTest {
+class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   AiOverlayDialogPageHandlerTest() = default;
   ~AiOverlayDialogPageHandlerTest() override = default;
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    controller_ = std::make_unique<AiOverlayDialogController>(browser());
+    ChromeRenderViewHostTestHarness::SetUp();
+    tab_strip_model_delegate_.SetBrowserWindowInterface(
+        &browser_window_interface_);
+    tab_strip_model_ =
+        std::make_unique<TabStripModel>(&tab_strip_model_delegate_, profile());
+    ON_CALL(browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile()));
+    ON_CALL(browser_window_interface_, GetTabStripModel())
+        .WillByDefault(testing::Return(tab_strip_model_.get()));
+
+    controller_ =
+        std::make_unique<AiOverlayDialogController>(&browser_window_interface_);
+
     mojo::PendingRemote<ai_overlay_dialog::mojom::Page> page_remote;
     page_receiver_.Bind(page_remote.InitWithNewPipeAndPassReceiver());
 
     handler_ = std::make_unique<AiOverlayDialogPageHandler>(
         handler_remote_.BindNewPipeAndPassReceiver(), std::move(page_remote),
-        browser());
+        &browser_window_interface_);
   }
 
   void TearDown() override {
     handler_.reset();
     controller_.reset();
-    BrowserWithTestWindowTest::TearDown();
+    if (tab_strip_model_) {
+      tab_strip_model_->CloseAllTabs();
+      tab_strip_model_.reset();
+    }
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  void AddTab() {
+    std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+    tab_strip_model_->AppendWebContents(std::move(contents),
+                                        /*foreground=*/true);
   }
 
   AiOverlayDialogPageHandler* handler() { return handler_.get(); }
@@ -64,6 +89,11 @@ class AiOverlayDialogPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
  private:
+  const tabs::TabModel::PreventFeatureInitializationForTesting
+      prevent_tab_features_;
+  TestTabStripModelDelegate tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
   MockPage mock_page_;
   mojo::Receiver<ai_overlay_dialog::mojom::Page> page_receiver_{&mock_page_};
   mojo::Remote<ai_overlay_dialog::mojom::PageHandler> handler_remote_;
@@ -72,7 +102,7 @@ class AiOverlayDialogPageHandlerTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(AiOverlayDialogPageHandlerTest, GetCursorPosition) {
-  AddTab(browser(), GURL("about:blank"));
+  AddTab();
 
   base::test::TestFuture<const std::optional<gfx::Point>&> future;
   handler_remote()->GetCursorPosition(future.GetCallback());
@@ -86,7 +116,7 @@ TEST_F(AiOverlayDialogPageHandlerTest, GetCursorPosition) {
 }
 
 TEST_F(AiOverlayDialogPageHandlerTest, CaptureRawViewportRegion) {
-  AddTab(browser(), GURL("about:blank"));
+  AddTab();
 
   base::test::TestFuture<ai_overlay_dialog::mojom::RawViewportRegionResultPtr>
       future;
