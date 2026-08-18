@@ -1056,7 +1056,7 @@ gpu.ci.linux_builder(
         configs = [
             "gpu_tests",
             "android_builder",
-            "android_fastbuild",
+            "android_with_static_analysis",
             "release_builder",
             "try_builder",
             "remoteexec",
@@ -1102,7 +1102,7 @@ gpu.ci.linux_builder(
         configs = [
             "gpu_tests",
             "android_builder",
-            "android_fastbuild",
+            "android_with_static_analysis",
             "release_builder",
             "try_builder",
             "remoteexec",

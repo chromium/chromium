@@ -98,7 +98,7 @@ gpu.ci.linux_builder(
             "remoteexec",
             "arm64",
             "static_angle",
-            "android_fastbuild",
+            "android_with_static_analysis",
         ],
     ),
     targets = targets.bundle(
