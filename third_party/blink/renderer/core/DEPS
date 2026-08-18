@@ -224,6 +224,12 @@ specific_include_rules = {
     "scripted_idle_task_controller(_test)?.(cc|h)": [
         "+base/task/delayed_task_handle.h",
     ],
+    "local_frame_mojo_handler.cc" : [
+        "+base/command_line.h",
+    ],
+    "timezone_controller.cc" : [
+        "+base/command_line.h",
+    ],
     "xml_http_request.cc": [
         "+net/base/mime_util.h",
     ],

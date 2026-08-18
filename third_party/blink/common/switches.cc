@@ -196,5 +196,8 @@ const char kXSLTEnabledPolicy[] = "xslt-enabled-policy";
 const char kRestrictBackgroundFetchFromServiceWorker[] =
     "restrict-background-fetch-from-service-worker";
 
+// A switch passed to renderer processes hosting Top Chrome WebUI.
+const char kTopChromeWebUI[] = "top-chrome-webui";
+
 }  // namespace switches
 }  // namespace blink

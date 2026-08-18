@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/core/timezone/timezone_controller.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -102,6 +105,11 @@ TimeZoneController::~TimeZoneController() = default;
 
 // static
 void TimeZoneController::Init() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          blink::switches::kTopChromeWebUI) &&
+      base::FeatureList::IsEnabled(features::kWebUIBypassMojoConnections)) {
+    return;
+  }
   // monitor must not use HeapMojoRemote. TimeZoneController is not managed by
   // Oilpan. monitor is only used to bind receiver_ here and never used
   // again.
