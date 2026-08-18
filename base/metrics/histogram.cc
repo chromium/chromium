@@ -282,6 +282,7 @@ HistogramBase* Histogram::Factory::Build() {
         "DevTools.DeveloperResourceLoaded",
         "DevTools.DeveloperResourceScheme",
         "DevTools.ExperimentEnabledAtLaunch",
+        "DevTools.ExperimentDisabledAtLaunch",
         "DevTools.PanelShown",
     };
     if (!std::ranges::contains(kKnownBadHistogramsHashes, name_)) {
