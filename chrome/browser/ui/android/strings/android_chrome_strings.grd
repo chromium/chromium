@@ -7854,6 +7854,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_GLIC_BUTTON_UNPINNED" desc="Snackbar message shown after the user unpins the Glic button from the tab strip.">
         Gemini unpinned
       </message>
+      <message name="IDS_GLIC_MIC_DISABLED_SNACKBAR" desc="Snackbar message shown when the microphone is disabled and unable to prompt user for permission.">
+        Enable mic to use voice
+      </message>
 
       <!-- Immersive Playback Confirmation strings -->
       <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the snackbar asking the user if they want to view the video in immersive mode." translateable="false">
