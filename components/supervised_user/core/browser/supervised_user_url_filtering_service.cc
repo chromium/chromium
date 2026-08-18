@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/features.h"
 
 namespace supervised_user {
@@ -186,13 +185,14 @@ SupervisedUserFilterTopLevelResult WebFilteringResult::ToTopLevelResult()
 }
 
 SupervisedUserUrlFilteringService::SupervisedUserUrlFilteringService(
-    const SupervisedUserService& supervised_user_service,
+    std::unique_ptr<UrlFilteringDelegate> family_link_url_filter,
     std::unique_ptr<UrlFilteringDelegate> device_parental_controls_url_filter)
-    : supervised_user_service_(supervised_user_service),
+    : family_link_url_filter_(std::move(family_link_url_filter)),
       device_parental_controls_url_filter_(
           std::move(device_parental_controls_url_filter)) {
-  family_link_url_filter_observation_.Observe(
-      supervised_user_service_->GetURLFilter());
+  CHECK(family_link_url_filter_);
+  CHECK(device_parental_controls_url_filter_);
+  family_link_url_filter_observation_.Observe(family_link_url_filter_.get());
   device_parental_controls_url_filter_observation_.Observe(
       device_parental_controls_url_filter_.get());
 }
@@ -201,7 +201,7 @@ SupervisedUserUrlFilteringService::~SupervisedUserUrlFilteringService() =
 
 WebFilterType SupervisedUserUrlFilteringService::GetWebFilterType() const {
   return AggregateWebFilterType(*device_parental_controls_url_filter_,
-                                *supervised_user_service_->GetURLFilter());
+                                *family_link_url_filter_);
 }
 
 WebFilteringResult SupervisedUserUrlFilteringService::GetFilteringBehavior(
@@ -210,7 +210,7 @@ WebFilteringResult SupervisedUserUrlFilteringService::GetFilteringBehavior(
       device_parental_controls_url_filter_->GetFilteringBehavior(url);
   CHECK(device_filtering_result.IsAllowed())
       << "Device filtering always passes synchronous checks.";
-  return supervised_user_service_->GetURLFilter()->GetFilteringBehavior(url);
+  return family_link_url_filter_->GetFilteringBehavior(url);
 }
 
 void SupervisedUserUrlFilteringService::GetFilteringBehavior(
@@ -230,7 +230,7 @@ void SupervisedUserUrlFilteringService::GetFilteringBehavior(
       url, skip_manual_parent_filter,
       base::BindOnce(&OnFirstFilteringBehaviorResult, url,
                      skip_manual_parent_filter, std::move(callback), options,
-                     supervised_user_service_->GetURLFilter()->GetWeakPtr()),
+                     family_link_url_filter_->GetWeakPtr()),
       options);
 }
 
@@ -252,7 +252,7 @@ void SupervisedUserUrlFilteringService::GetFilteringBehaviorForSubFrame(
       url, main_frame_url,
       base::BindOnce(&OnFirstFilteringBehaviorResultForSubFrame, url,
                      main_frame_url, std::move(callback), options,
-                     supervised_user_service_->GetURLFilter()->GetWeakPtr()),
+                     family_link_url_filter_->GetWeakPtr()),
       options);
 }
 

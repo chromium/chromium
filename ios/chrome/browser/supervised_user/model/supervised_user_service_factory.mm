@@ -65,6 +65,8 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
       CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetForProfile(profile));
   return std::make_unique<SupervisedUserService>(
       identity_manager, url_loader_factory, CHECK_DEREF(profile->GetPrefs()),
+      // TODO(crbug.com/469335277): remove after migration to
+      // SupervisedUserUrlFilteringService.
       std::make_unique<FamilyLinkUrlFilter>(
           family_link_settings_service, CHECK_DEREF(profile->GetPrefs()),
           std::make_unique<FilterDelegateImpl>(),

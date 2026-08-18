@@ -233,10 +233,16 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
       pref_store_environment_.device_parental_controls());
 
   url_filtering_service_ = std::make_unique<SupervisedUserUrlFilteringService>(
-      *service_.get(), std::make_unique<DeviceParentalControlsUrlFilter>(
-                           pref_store_environment_.device_parental_controls(),
-                           std::make_unique<UrlCheckerClientWrapper>(
-                                device_parental_controls_url_checker_client_)));
+      std::make_unique<FamilyLinkUrlFilter>(
+          *pref_store_environment_.settings_service(),
+          *pref_store_environment_.pref_service(),
+          std::make_unique<FakeURLFilterDelegate>(),
+          std::make_unique<UrlCheckerClientWrapper>(
+              family_link_url_checker_client_)),
+      std::make_unique<DeviceParentalControlsUrlFilter>(
+          pref_store_environment_.device_parental_controls(),
+          std::make_unique<UrlCheckerClientWrapper>(
+              device_parental_controls_url_checker_client_)));
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
       pref_store_environment_.pref_service(), *service_.get(),
       *url_filtering_service_.get(),

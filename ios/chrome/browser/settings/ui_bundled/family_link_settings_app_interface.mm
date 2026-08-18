@@ -9,11 +9,13 @@
 #import "base/version_info/channel.h"
 #import "components/prefs/pref_service.h"
 #import "components/supervised_user/core/browser/family_link_settings_service.h"
+#import "components/supervised_user/core/browser/family_link_url_filter.h"
 #import "components/supervised_user/core/browser/permission_request_creator.h"
 #import "components/supervised_user/core/browser/permission_request_creator_mock.h"
 #import "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_test_environment.h"
+#import "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
@@ -26,6 +28,7 @@
 #import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_url_filtering_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
@@ -159,10 +162,14 @@ bool IsShowingInterstitialForState(web::WebState* web_state) {
 }
 
 + (void)setDefaultClassifyURLNavigationIsAllowed:(BOOL)is_allowed {
-  supervised_user::SupervisedUserServiceFactory::GetInstance()
-      ->GetForProfile(chrome_test_util::GetOriginalProfile())
-      ->GetURLFilter()
-      ->SetURLCheckerClientForTesting(std::make_unique<StaticUrlCheckerClient>(
+  supervised_user::UrlFilteringDelegate& url_filter =
+      supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile())
+          ->GetFamilyLinkUrlFilterForTesting();
+  supervised_user::FamilyLinkUrlFilter& family_link_url_filter =
+      static_cast<supervised_user::FamilyLinkUrlFilter&>(url_filter);
+  family_link_url_filter.SetURLCheckerClientForTesting(
+      std::make_unique<StaticUrlCheckerClient>(
           is_allowed ? safe_search_api::ClientClassification::kAllowed
                      : safe_search_api::ClientClassification::kRestricted));
 }

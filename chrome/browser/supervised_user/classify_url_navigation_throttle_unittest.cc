@@ -17,8 +17,6 @@
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -30,9 +28,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/child_account_service.h"
+#include "components/supervised_user/core/browser/device_parental_controls_url_filter.h"
 #include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -42,7 +40,6 @@
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/navigation_simulator.h"
@@ -73,9 +70,9 @@ class ClassifyUrlNavigationThrottleTestBase
   std::unique_ptr<TestingProfile> CreateTestingProfile() override {
     TestingProfile::Builder builder;
     builder.AddTestingFactory(
-        SupervisedUserServiceFactory::GetInstance(),
+        SupervisedUserUrlFilteringServiceFactory::GetInstance(),
         base::BindRepeating(&ClassifyUrlNavigationThrottleTestBase::
-                                BuildTestSupervisedUserService,
+                                BuildTestSupervisedUserUrlFilteringService,
                             base::Unretained(this)));
     return builder.Build();
   }
@@ -145,28 +142,23 @@ class ClassifyUrlNavigationThrottleTestBase
   }
 
  private:
-  std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
+  std::unique_ptr<KeyedService> BuildTestSupervisedUserUrlFilteringService(
       content::BrowserContext* browser_context) {
     Profile* profile = Profile::FromBrowserContext(browser_context);
-    std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
-        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile);
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-        profile->GetDefaultStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess();
+
     FamilyLinkSettingsService& settings_service =
         CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
             profile->GetProfileKey()));
-    return std::make_unique<SupervisedUserService>(
-        identity_manager, url_loader_factory, *profile->GetPrefs(),
+    return std::make_unique<SupervisedUserUrlFilteringService>(
         std::make_unique<FamilyLinkUrlFilter>(
             settings_service, *profile->GetPrefs(),
             std::make_unique<FakeURLFilterDelegate>(),
             std::make_unique<UrlCheckerClientWrapper>(
                 mock_url_checker_client_)),
-        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-        TestingBrowserProcess::GetGlobal()->device_parental_controls());
+        std::make_unique<DeviceParentalControlsUrlFilter>(
+            TestingBrowserProcess::GetGlobal()->device_parental_controls(),
+            std::make_unique<UrlCheckerClientWrapper>(
+                mock_url_checker_client_)));
   }
 
   std::unique_ptr<content::MockNavigationHandle> navigation_handle_;

@@ -11,9 +11,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/device_parental_controls_url_filter.h"
+#include "components/supervised_user/core/browser/family_link_settings_service.h"
+#include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -25,6 +31,17 @@
 #endif
 
 namespace supervised_user {
+
+namespace {
+
+class FilterDelegateImpl : public FamilyLinkUrlFilter::Delegate {
+ public:
+  bool SupportsWebstoreURL(const GURL& url) const override {
+    return IsSupportedChromeExtensionURL(url);
+  }
+};
+
+}  // namespace
 
 // static
 SupervisedUserUrlFilteringService*
@@ -52,11 +69,12 @@ SupervisedUserUrlFilteringServiceFactory::
     SupervisedUserUrlFilteringServiceFactory()
     : ProfileKeyedServiceFactory("SupervisedUserUrlFilteringService",
                                  BuildProfileSelectionsForRegularAndGuest()) {
-  // Temporary dependency on the SupervisedUserService instance to allow
-  // migration of legacy SupervisedUserURLFilter methods that are called through
-  // the SupervisedUserService: service_->GetURLFilter()->Method(). Remove once
-  // all callers are migrated to the SupervisedUserUrlFilteringService.
-  // TODO(crbug.com/469336110): Remove this dependency after migration.
+  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(FamilyLinkSettingsServiceFactory::GetInstance());
+  // SupervisedUserService still primes FamilyLinkSettingsService, which
+  // configures the FamilyLinkUrlFilter.
+  // TODO(crbug.com/469336110): Figure out how FamilyLinkSettingsService could
+  // self-manage it's state.
   DependsOn(SupervisedUserServiceFactory::GetInstance());
 }
 
@@ -69,15 +87,27 @@ SupervisedUserUrlFilteringServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   SupervisedUserServicePlatformDelegate platform_delegate(*profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      context->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess();
+  FamilyLinkSettingsService& family_link_settings_service =
+      CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
+          profile->GetProfileKey()));
 
   return std::make_unique<SupervisedUserUrlFilteringService>(
-      CHECK_DEREF(SupervisedUserServiceFactory::GetForProfile(profile)),
+      std::make_unique<FamilyLinkUrlFilter>(
+          family_link_settings_service, *profile->GetPrefs(),
+          std::make_unique<FilterDelegateImpl>(),
+          std::make_unique<SupervisedUserUrlCheckerClient>(
+              identity_manager, url_loader_factory, *profile->GetPrefs(),
+              platform_delegate.GetCountryCode(),
+              platform_delegate.GetChannel())),
       std::make_unique<DeviceParentalControlsUrlFilter>(
           g_browser_process->device_parental_controls(),
           std::make_unique<SupervisedUserUrlCheckerClient>(
-              context->GetDefaultStoragePartition()
-                  ->GetURLLoaderFactoryForBrowserProcess(),
-              platform_delegate.GetCountryCode(),
+              url_loader_factory, platform_delegate.GetCountryCode(),
               platform_delegate.GetChannel())));
 }
 

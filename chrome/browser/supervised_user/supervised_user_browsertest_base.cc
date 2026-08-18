@@ -66,9 +66,15 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
 std::unique_ptr<KeyedService> BuildSupervisedUserUrlFilteringService(
     MockUrlCheckerClient& mock_url_checker_client,
     content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  FamilyLinkSettingsService& settings_service =
+      CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
+          profile->GetProfileKey()));
   return std::make_unique<SupervisedUserUrlFilteringService>(
-      CHECK_DEREF(SupervisedUserServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context))),
+      std::make_unique<FamilyLinkUrlFilter>(
+          settings_service, *profile->GetPrefs(),
+          std::make_unique<FakeURLFilterDelegate>(),
+          std::make_unique<UrlCheckerClientWrapper>(mock_url_checker_client)),
       std::make_unique<DeviceParentalControlsUrlFilter>(
           g_browser_process->device_parental_controls(),
           std::make_unique<UrlCheckerClientWrapper>(mock_url_checker_client)));

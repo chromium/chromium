@@ -10,10 +10,10 @@
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -22,7 +22,6 @@
 
 namespace supervised_user {
 
-class SupervisedUserService;
 // Forward declarations for delegates.
 class UrlFilteringDelegate;
 class SupervisedUserUrlFilteringService;
@@ -180,7 +179,7 @@ class SupervisedUserUrlFilteringService : public KeyedService,
   };
 
   SupervisedUserUrlFilteringService(
-      const SupervisedUserService& supervised_user_service,
+      std::unique_ptr<UrlFilteringDelegate> family_link_url_filter,
       std::unique_ptr<UrlFilteringDelegate>
           device_parental_controls_url_filter);
 
@@ -216,6 +215,17 @@ class SupervisedUserUrlFilteringService : public KeyedService,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+  // Test-only accessor for the family link url filter delegate. Used only in
+  // integration tests on mobile platforms that cannot use testing factory
+  // substitution.
+  // TODO(crbug.com/297313665): Rethink or unify testing APIs for supervised
+  // user stack.
+  UrlFilteringDelegate& GetFamilyLinkUrlFilterForTesting() const {
+    return *family_link_url_filter_.get();
+  }
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+
  private:
   // Notifies observers that the url filtering result is ready.
   void NotifyUrlChecked(WebFilteringResult result) const;
@@ -226,9 +236,8 @@ class SupervisedUserUrlFilteringService : public KeyedService,
   void OnUrlChecked(const UrlFilteringDelegate& delegate,
                     WebFilteringResult result) const override;
 
-  // Provides access to legacy way of resolving URL filtering. Temporarily, also
-  // owns one of the delegates (Family Link url filter delegate).
-  raw_ref<const SupervisedUserService> supervised_user_service_;
+  // Owns the Family Link url filter delegate.
+  std::unique_ptr<UrlFilteringDelegate> family_link_url_filter_;
   // Owns the device parental controls url filter delegate.
   std::unique_ptr<UrlFilteringDelegate> device_parental_controls_url_filter_;
 
