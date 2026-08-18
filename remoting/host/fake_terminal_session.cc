@@ -88,16 +88,21 @@ std::vector<int32_t> TerminalSession::GetPersistentTerminalIds() {
 std::unique_ptr<TerminalSession> TerminalSession::Create(
     TerminalSessionManager::OutputCallback output_cb,
     TerminalSessionManager::ExitCallback exit_cb,
+    TerminalSessionManager::ProcessInfoCallback process_info_cb,
     int32_t id) {
-  return std::make_unique<FakeTerminalSession>(std::move(output_cb),
-                                               std::move(exit_cb), id);
+  return std::make_unique<FakeTerminalSession>(
+      std::move(output_cb), std::move(exit_cb), std::move(process_info_cb), id);
 }
 
 FakeTerminalSession::FakeTerminalSession(
     TerminalSessionManager::OutputCallback output_cb,
     TerminalSessionManager::ExitCallback exit_cb,
+    TerminalSessionManager::ProcessInfoCallback process_info_cb,
     int32_t id)
-    : output_cb_(std::move(output_cb)), exit_cb_(std::move(exit_cb)), id_(id) {
+    : output_cb_(std::move(output_cb)),
+      exit_cb_(std::move(exit_cb)),
+      process_info_cb_(std::move(process_info_cb)),
+      id_(id) {
   GetActiveSessionList().push_back(this);
 }
 
@@ -143,6 +148,13 @@ void FakeTerminalSession::TriggerOutput(const std::string& data) {
 void FakeTerminalSession::TriggerExit() {
   if (exit_cb_) {
     std::move(exit_cb_).Run(id_);
+  }
+}
+
+void FakeTerminalSession::TriggerProcessInfo(bool is_active,
+                                             std::string_view process_name) {
+  if (process_info_cb_) {
+    process_info_cb_.Run(id_, is_active, process_name);
   }
 }
 

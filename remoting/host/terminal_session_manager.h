@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -26,6 +27,9 @@ class TerminalSessionManager {
       base::RepeatingCallback<void(int32_t, const std::string&)>;
 
   using ExitCallback = base::RepeatingCallback<void(int32_t)>;
+
+  using ProcessInfoCallback = base::RepeatingCallback<
+      void(int32_t terminal_id, bool is_active, std::string_view process_name)>;
 
   TerminalSessionManager();
   ~TerminalSessionManager();
@@ -50,7 +54,9 @@ class TerminalSessionManager {
   //   fail.
   // - If WriteTerminal() or ResizeTerminal() is called on a session that has
   //   not yet been restored, it will fail.
-  void Start(OutputCallback output_callback, ExitCallback exit_callback);
+  void Start(OutputCallback output_callback,
+             ExitCallback exit_callback,
+             ProcessInfoCallback process_info_callback);
 
   // Spawns a new terminal session using the stored output and exit callbacks.
   // Returns the ID of the new session, or -1 if the terminal could not be created.
@@ -88,6 +94,7 @@ class TerminalSessionManager {
 
   OutputCallback output_callback_;
   ExitCallback exit_callback_;
+  ProcessInfoCallback process_info_callback_;
   std::map<int32_t, std::unique_ptr<TerminalSession>> terminal_sessions_;
   int32_t next_id_ = 1;
   bool is_restoring_ = false;

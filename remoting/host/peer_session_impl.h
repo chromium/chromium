@@ -297,6 +297,10 @@ class PeerSessionImpl : public PeerSession,
 
   void OnTerminalExited(int32_t terminal_id);
 
+  void SendTerminalProcessInfo(int32_t terminal_id,
+                               bool is_active,
+                               std::string_view process_name);
+
   void OnPairingResponse(
       std::optional<protocol::PairingResponse> pairing_response);
 

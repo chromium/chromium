@@ -29,7 +29,8 @@ class TerminalSessionManagerTest : public testing::Test {
   void SetUp() override { FakeTerminalSession::ResetStaticState(); }
 
   void StartManager() {
-    manager_.Start(output_callback_.Get(), exit_callback_.Get());
+    manager_.Start(output_callback_.Get(), exit_callback_.Get(),
+                   process_info_callback_.Get());
     base::ThreadPoolInstance::Get()->FlushForTesting();
     task_environment_.RunUntilIdle();
   }
@@ -38,6 +39,8 @@ class TerminalSessionManagerTest : public testing::Test {
   TerminalSessionManager manager_;
   base::MockCallback<TerminalSessionManager::OutputCallback> output_callback_;
   base::MockCallback<TerminalSessionManager::ExitCallback> exit_callback_;
+  base::MockCallback<TerminalSessionManager::ProcessInfoCallback>
+      process_info_callback_;
 };
 
 TEST_F(TerminalSessionManagerTest, CreateTerminalAndAssignsId) {
@@ -150,11 +153,7 @@ TEST_F(TerminalSessionManagerTest, DetachAllSessionsDetachesSessions) {
 
 TEST_F(TerminalSessionManagerTest, RestorePersistentTerminalsWithoutCollision) {
   FakeTerminalSession::SetPersistentTerminalIds({20, -1, 10});
-
-  // Restore persistent terminals asynchronously via Start().
-  manager_.Start(output_callback_.Get(), exit_callback_.Get());
-  ASSERT_TRUE(base::test::RunUntil(
-      [this] { return manager_.GetTerminalSessionIds().size() == 2u; }));
+  StartManager();
 
   // Restored persistent terminals should exist in sorted order.
   EXPECT_THAT(manager_.GetTerminalSessionIds(),
@@ -169,9 +168,8 @@ TEST_F(TerminalSessionManagerTest, RestorePersistentTerminalsWithoutCollision) {
 TEST_F(TerminalSessionManagerTest,
        DetachAllSessionsCancelsPendingRestoration) {
   FakeTerminalSession::SetPersistentTerminalIds({10, 20});
-
-  // Restore persistent terminals asynchronously via Start().
-  manager_.Start(output_callback_.Get(), exit_callback_.Get());
+  manager_.Start(output_callback_.Get(), exit_callback_.Get(),
+                 process_info_callback_.Get());
 
   // Immediately disconnect the client before tasks can complete.
   manager_.DetachAllSessions();
@@ -188,8 +186,8 @@ TEST_F(TerminalSessionManagerTest,
 
 TEST_F(TerminalSessionManagerTest, CreateTerminalFailsDuringRestore) {
   FakeTerminalSession::SetPersistentTerminalIds({10, 20});
-
-  manager_.Start(output_callback_.Get(), exit_callback_.Get());
+  manager_.Start(output_callback_.Get(), exit_callback_.Get(),
+                 process_info_callback_.Get());
 
   // Calling CreateTerminal while restore is in flight should return -1.
   EXPECT_EQ(manager_.CreateTerminal(), -1);
@@ -200,6 +198,33 @@ TEST_F(TerminalSessionManagerTest, CreateTerminalFailsDuringRestore) {
   // After restoration completes, CreateTerminal should succeed without collision.
   int32_t post_restore_id = manager_.CreateTerminal();
   EXPECT_EQ(post_restore_id, 21);
+}
+
+TEST_F(TerminalSessionManagerTest, ProcessInfoRoutesCorrectly) {
+  StartManager();
+  int32_t id = manager_.CreateTerminal();
+  ASSERT_NE(id, -1);
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+
+  EXPECT_CALL(process_info_callback_, Run(id, true, "vim"));
+  sessions[0]->TriggerProcessInfo(true, "vim");
+}
+
+TEST_F(TerminalSessionManagerTest,
+       ProcessInfoRoutesCorrectlyOnRestoredTerminals) {
+  FakeTerminalSession::SetPersistentTerminalIds({10, 20});
+  StartManager();
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  EXPECT_EQ(sessions.size(), 2u);
+
+  EXPECT_CALL(process_info_callback_, Run(10, true, "bash"));
+  sessions[0]->TriggerProcessInfo(true, "bash");
+
+  EXPECT_CALL(process_info_callback_, Run(20, false, "~"));
+  sessions[1]->TriggerProcessInfo(false, "~");
 }
 
 }  // namespace remoting

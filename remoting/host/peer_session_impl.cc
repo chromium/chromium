@@ -438,6 +438,8 @@ void PeerSessionImpl::SetCapabilities(
         base::BindRepeating(&PeerSessionImpl::SendTerminalOutput,
                             weak_factory_.GetWeakPtr()),
         base::BindRepeating(&PeerSessionImpl::OnTerminalExited,
+                            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(&PeerSessionImpl::SendTerminalProcessInfo,
                             weak_factory_.GetWeakPtr()));
   }
 
@@ -714,6 +716,18 @@ void PeerSessionImpl::OnTerminalExited(int32_t terminal_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   protocol::TerminalControl response;
   response.mutable_close_terminal()->set_terminal_id(terminal_id);
+  connection_->client_stub()->DeliverTerminalControl(response);
+}
+
+void PeerSessionImpl::SendTerminalProcessInfo(int32_t terminal_id,
+                                              bool is_active,
+                                              std::string_view process_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  protocol::TerminalControl response;
+  auto* process_info = response.mutable_process_info();
+  process_info->set_terminal_id(terminal_id);
+  process_info->set_is_active(is_active);
+  process_info->set_process_name(process_name);
   connection_->client_stub()->DeliverTerminalControl(response);
 }
 

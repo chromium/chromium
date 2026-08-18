@@ -9,6 +9,7 @@ namespace remoting {
 std::unique_ptr<TerminalSession> TerminalSession::Create(
     TerminalSessionManager::OutputCallback output_cb,
     TerminalSessionManager::ExitCallback exit_cb,
+    TerminalSessionManager::ProcessInfoCallback process_info_cb,
     int32_t id) {
   return nullptr;
 }

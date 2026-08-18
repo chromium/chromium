@@ -23,7 +23,8 @@ TerminalSessionManager::~TerminalSessionManager() {
 }
 
 void TerminalSessionManager::Start(OutputCallback output_callback,
-                                     ExitCallback exit_callback) {
+                                   ExitCallback exit_callback,
+                                   ProcessInfoCallback process_info_callback) {
   DCHECK(terminal_sessions_.empty());
   if (is_restoring_) {
     LOG(ERROR) << "Cannot restore persistent terminals while already restoring";
@@ -31,6 +32,7 @@ void TerminalSessionManager::Start(OutputCallback output_callback,
   }
   output_callback_ = std::move(output_callback);
   exit_callback_ = std::move(exit_callback);
+  process_info_callback_ = std::move(process_info_callback);
   is_restoring_ = true;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -56,8 +58,9 @@ int32_t TerminalSessionManager::CreateTerminal() {
       base::BindRepeating(&TerminalSessionManager::OnTerminalExited,
                           weak_factory_.GetWeakPtr());
 
-  std::unique_ptr<TerminalSession> session =
-      TerminalSession::Create(output_callback_, std::move(wrapped_exit_callback), id);
+  std::unique_ptr<TerminalSession> session = TerminalSession::Create(
+      output_callback_, std::move(wrapped_exit_callback),
+      process_info_callback_, id);
   if (!session) {
     return -1;
   }
@@ -192,9 +195,9 @@ void TerminalSessionManager::RestoreTerminal(int32_t terminal_id) {
       base::BindRepeating(&TerminalSessionManager::OnTerminalExited,
                           weak_factory_.GetWeakPtr());
 
-  std::unique_ptr<TerminalSession> session =
-      TerminalSession::Create(output_callback_,
-                              std::move(wrapped_exit_callback), terminal_id);
+  std::unique_ptr<TerminalSession> session = TerminalSession::Create(
+      output_callback_, std::move(wrapped_exit_callback),
+      process_info_callback_, terminal_id);
   if (!session) {
     LOG(ERROR) << "Failed to restore terminal session for ID: " << terminal_id;
     return;

@@ -37,6 +37,7 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "remoting/base/logging.h"
+#include "remoting/host/terminal_process_monitor_linux.h"
 #include "remoting/host/terminal_session_manager.h"
 
 namespace remoting {
@@ -154,11 +155,14 @@ base::Process LaunchShellProcess(int32_t id, base::ScopedFD subsidiary_fd) {
 
 class TerminalSessionLinux : public TerminalSession {
  public:
-  TerminalSessionLinux(TerminalSessionManager::OutputCallback output_cb,
-                       TerminalSessionManager::ExitCallback exit_cb,
-                       int32_t id)
+  TerminalSessionLinux(
+      TerminalSessionManager::OutputCallback output_cb,
+      TerminalSessionManager::ExitCallback exit_cb,
+      TerminalSessionManager::ProcessInfoCallback process_info_cb,
+      int32_t id)
       : output_callback_(std::move(output_cb)),
         exit_callback_(std::move(exit_cb)),
+        process_info_callback_(std::move(process_info_cb)),
         id_(id),
         writer_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -329,6 +333,7 @@ class TerminalSessionLinux : public TerminalSession {
     }
     detached_ = true;
     output_watcher_.reset();
+    process_monitor_.reset();
     if (process_.IsValid() && writer_task_runner_) {
       writer_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(&TerminateProcessInBackground,
@@ -403,13 +408,42 @@ class TerminalSessionLinux : public TerminalSession {
 
   void OnShellPidRetrieved(std::optional<pid_t> pid) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (detached_ || terminated_) {
+      HOST_LOG << "OnShellPidRetrieved called after detach or terminate, "
+                  "ignoring";
+      return;
+    }
     if (pid) {
       shell_pid_ = *pid;
       HOST_LOG << "Retrieved shell PID " << *pid
                << " for terminal session " << id_;
-      // TODO(kraphael): Start monitoring the shell process.
+      if (process_info_callback_) {
+        process_monitor_ = std::make_unique<TerminalProcessMonitorLinux>(
+            *pid,
+            base::BindRepeating(&TerminalSessionLinux::OnProcessInfoChanged,
+                                weak_factory_.GetWeakPtr()));
+        process_monitor_->StartPolling();
+      }
     } else {
       LOG(WARNING) << "Failed to retrieve shell PID for tmux terminal " << id_;
+    }
+  }
+
+  void OnProcessInfoChanged(
+      bool is_active,
+      const std::optional<std::string>& process_name) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (detached_ || terminated_) {
+      HOST_LOG << "OnProcessInfoChanged called after detach or terminate, "
+                  "ignoring";
+      return;
+    }
+    if (process_info_callback_) {
+      std::string_view process_name_view = "";
+      if (process_name) {
+        process_name_view = *process_name;
+      }
+      process_info_callback_.Run(id_, is_active, process_name_view);
     }
   }
 
@@ -417,8 +451,12 @@ class TerminalSessionLinux : public TerminalSession {
   base::Process process_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<base::FileDescriptorWatcher::Controller> output_watcher_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<TerminalProcessMonitorLinux> process_monitor_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   TerminalSessionManager::OutputCallback output_callback_;
   TerminalSessionManager::ExitCallback exit_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  TerminalSessionManager::ProcessInfoCallback process_info_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
   int32_t id_;
   bool detached_ = false;
@@ -439,9 +477,11 @@ class TerminalSessionLinux : public TerminalSession {
 std::unique_ptr<TerminalSession> TerminalSession::Create(
     TerminalSessionManager::OutputCallback output_cb,
     TerminalSessionManager::ExitCallback exit_cb,
+    TerminalSessionManager::ProcessInfoCallback process_info_cb,
     int32_t id) {
-  return std::make_unique<TerminalSessionLinux>(std::move(output_cb),
-                                                std::move(exit_cb), id);
+  return std::make_unique<TerminalSessionLinux>(
+      std::move(output_cb), std::move(exit_cb), std::move(process_info_cb),
+      id);
 }
 
 // static

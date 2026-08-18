@@ -971,6 +971,58 @@ TEST_F(PeerSessionImplTest, ControlTerminal_OutputAndExit) {
   }));
 }
 
+TEST_F(PeerSessionImplTest, ControlTerminal_ProcessInfo) {
+  CreatePeerSession();
+  ConnectPeerSession();
+
+  protocol::Capabilities capabilities;
+  capabilities.set_capabilities(protocol::kTerminalModeCapability);
+  peer_session_->SetCapabilities(capabilities);
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::test::TestFuture<void> future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        future.GetCallback());
+  future.Get();
+
+  // Create a terminal
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(1);
+  protocol::TerminalControl create_req;
+  create_req.mutable_create_request();
+  peer_session_->ControlTerminal(create_req);
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+
+  // Trigger ProcessInfo from the terminal
+  base::test::TestFuture<protocol::TerminalControl> info_future;
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillOnce([&info_future](const protocol::TerminalControl& control) {
+        info_future.SetValue(control);
+      });
+
+  sessions[0]->TriggerProcessInfo(true);
+  protocol::TerminalControl info_received = info_future.Get();
+
+  ASSERT_TRUE(info_received.has_process_info());
+  EXPECT_EQ(info_received.process_info().terminal_id(), 1);
+  EXPECT_TRUE(info_received.process_info().is_active());
+  EXPECT_EQ(info_received.process_info().process_name(), "test-process");
+
+  base::test::TestFuture<protocol::TerminalControl> info_future2;
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillOnce([&info_future2](const protocol::TerminalControl& control) {
+        info_future2.SetValue(control);
+      });
+
+  sessions[0]->TriggerProcessInfo(true, "/var/log");
+  info_received = info_future2.Get();
+
+  ASSERT_TRUE(info_received.has_process_info());
+  EXPECT_EQ(info_received.process_info().terminal_id(), 1);
+  EXPECT_TRUE(info_received.process_info().is_active());
+  EXPECT_EQ(info_received.process_info().process_name(), "/var/log");
+}
+
 TEST_F(PeerSessionImplTest, ControlTerminal_RemoveRequest) {
   CreatePeerSession();
   ConnectPeerSession();

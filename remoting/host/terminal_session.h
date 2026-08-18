@@ -22,6 +22,7 @@ class TerminalSession {
   static std::unique_ptr<TerminalSession> Create(
       TerminalSessionManager::OutputCallback output_cb,
       TerminalSessionManager::ExitCallback exit_cb,
+      TerminalSessionManager::ProcessInfoCallback process_info_cb,
       int32_t id);
 
   // Returns the IDs of all currently persistent terminal sessions.
