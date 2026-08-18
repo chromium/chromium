@@ -49,6 +49,11 @@ function hasExtraInfo(extraInfo, option) {
 //
 // When WebRequestPerContextEventDispatch is enabled, the browser dispatches
 // matching events once per context, and JS matches context listeners locally.
+//
+// For events the browser awaits, this reports each response through
+// "webRequestInternal.eventHandled" and signals completion when every
+// listener was notified and the block count is zero; see
+// `maybeReportEventHandlingDone()`.
 // ----------------------------------------------------------------------------
 
 // Listener IDs for the `ParsedFilter` cache (see `WebRequestNatives`).
@@ -144,6 +149,155 @@ function getFilteredDetails(details, listener) {
   return copy;
 }
 
+// Reports a listener exception without aborting dispatch. Uses the bindings'
+// exception handler to report each listener error separately, matching
+// `EventEmitter::DispatchSync()`.
+function reportError(e) {
+  // TODO(crbug.com/494684626): Add a test that multiple listener errors are
+  // reported correctly.
+  // NOTE: Keep in sync with `EventEmitter::DispatchSync()` in
+  // //extensions/renderer/bindings/event_emitter.cc.
+  const kEventHandlerErrorMessage = 'Error in event handler';
+  bindingUtil.handleException(kEventHandlerErrorMessage, e);
+}
+
+// Sends the completion signal once every listener was notified and no
+// response is pending.
+function maybeReportEventHandlingDone(dispatch) {
+  if (dispatch.allListenersNotified && dispatch.blockCount === 0) {
+    webRequestNatives.ReportEventHandlingDone(
+        dispatch.eventName, dispatch.requestId, dispatch.instanceId);
+  }
+}
+
+// Decrements the block count, reporting `response` if the listener produced
+// one; may send the completion signal.
+function decrementBlockCount(dispatch, response, extraInfoSpec) {
+  if (response !== undefined && response !== null) {
+    // TODO(crbug.com/494684626): Drop the subEventName parameter with the
+    // legacy per-listener path. Until then, pass `eventName` for both.
+    webRequestInternal.eventHandled(
+        dispatch.eventName, dispatch.eventName, dispatch.requestId,
+        dispatch.instanceId, response, extraInfoSpec || []);
+  }
+  dispatch.blockCount--;
+  maybeReportEventHandlingDone(dispatch);
+}
+
+// Reports `response` and decrements the block count. Does nothing if the
+// listener already responded.
+function onEventHandled(listener, dispatch, response) {
+  const idx = $Array.indexOf(listener.blockedDispatches, dispatch);
+  if (idx < 0) {
+    return;
+  }
+  $Array.splice(listener.blockedDispatches, idx, 1);
+  decrementBlockCount(dispatch, response, listener.extraInfoSpec);
+}
+
+// Runs a blocking listener, which responds through its return value (either a
+// response object or, if allowed, a promise).
+function runBlockingListener(dispatch, listener, filteredDetails) {
+  dispatch.blockCount++;
+  $Array.push(listener.blockedDispatches, dispatch);
+  try {
+    const result = $Function.apply(listener.callback, null, [filteredDetails]);
+    if (allowAsyncResponsesForAllEvents && result instanceof $Promise.self) {
+      // The dispatch stays tracked until the promise settles or the listener
+      // is removed. Promise rejections unblock the dispatch without a
+      // response; rethrowing logs the error to the console.
+      $Promise.catch($Promise.then(result, function(asyncResult) {
+        onEventHandled(listener, dispatch, asyncResult);
+      }), function(e) {
+        onEventHandled(listener, dispatch, undefined);
+        throw e;
+      });
+    } else {
+      // Synchronous return value.
+      onEventHandled(listener, dispatch, result);
+    }
+  } catch (e) {
+    // Report the error and unblock the dispatch with no response.
+    reportError(e);
+    onEventHandled(listener, dispatch, undefined);
+  }
+}
+
+// Runs an async blocking listener, which responds through a callback rather
+// than a return value.
+function runAsyncBlockingListener(dispatch, listener, filteredDetails) {
+  // TODO(crbug.com/494684626): Add a test for a listener that returns a
+  // promise and removes itself inside its callback.
+  dispatch.blockCount++;
+  $Array.push(listener.blockedDispatches, dispatch);
+  const handledCallback = function(response) {
+    onEventHandled(listener, dispatch, response);
+  };
+  try {
+    $Function.apply(
+        listener.callback, null, [filteredDetails, handledCallback]);
+  } catch (e) {
+    reportError(e);
+    onEventHandled(listener, dispatch, undefined);
+  }
+}
+
+// Returns the handler for the (parent) `eventName` events that the browser
+// sends to this context.
+function createEventDispatchHandler(eventName) {
+  return function(args) {
+    // This handler replaces the default dispatch to the parent event's own
+    // listeners, which are placeholders that never run; the real callbacks
+    // come from `trackedListeners`.
+    const details = args[0];
+    const payload = args[1];
+
+    // Per-dispatch state, shared with the helpers above.
+    const dispatch = {
+      __proto__: null,
+      eventName: eventName,
+      requestId: details.requestId,
+      instanceId: payload.instanceId,
+      blockCount: 0,
+      allListenersNotified: false,
+    };
+
+    const matchingIds = webRequestNatives.GetMatchingListeners(
+        eventName, details.url, details.type, details.tabId, payload.windowId,
+        payload.instanceId, payload.awaitResponse);
+
+    for (let i = 0; i < matchingIds.length; ++i) {
+      let listener = trackedListeners[matchingIds[i]];
+      if (!listener) {
+        continue;
+      }
+      let filteredDetails = getFilteredDetails(details, listener);
+
+      if (listener.isBlocking) {
+        // Blocking listener (return value).
+        runBlockingListener(dispatch, listener, filteredDetails);
+      } else if (listener.isAsyncBlocking) {
+        // Async blocking listener (callback).
+        runAsyncBlockingListener(dispatch, listener, filteredDetails);
+      } else {
+        // Non-blocking listener.
+        try {
+          $Function.apply(listener.callback, null, [filteredDetails]);
+        } catch (e) {
+          reportError(e);
+        }
+      }
+    }
+
+    // Every listener was notified; the completion signal now waits only for
+    // the pending responses (and goes out at once if there are none).
+    if (payload.awaitResponse) {
+      dispatch.allListenersNotified = true;
+      maybeReportEventHandlingDone(dispatch);
+    }
+  };
+}
+
 // Returns the custom event that carries `eventName`'s listener
 // registrations to the browser.
 function getOrCreateParentEvent(eventName) {
@@ -155,6 +309,8 @@ function getOrCreateParentEvent(eventName) {
       eventName, /*supportsFilters=*/ true,
       /*supportsLazyListeners=*/ true);
   parentEvents[eventName] = parentEvent;
+  bindingUtil.registerEventDispatchHandler(
+      eventName, createEventDispatchHandler(eventName));
   return parentEvent;
 }
 

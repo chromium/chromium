@@ -298,6 +298,8 @@ v8::Local<v8::Value> EventEmitter::DispatchSync(
             listener_error_callback_function, context,
             listener_error_callback_argument);
       }
+      // NOTE: Keep in sync with `kEventHandlerErrorMessage` in
+      // //extensions/renderer/resources/web_request_event.js.
       exception_handler_->HandleException(context, "Error in event handler",
                                           &try_catch);
       // `ExceptionHandler:HandleException()` can run arbitrary JS code (e.g. if
