@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tab_sharing_toolbar_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/tab_sharing_toolbar_height"
+    android:orientation="vertical"
+    android:background="@macro/default_bg_color">
+
+    <LinearLayout
+        android:id="@+id/tab_sharing_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:background="@macro/default_bg_color">
+
+        <ImageView
+            android:id="@+id/tab_sharing_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="12dp"
+            app:srcCompat="@drawable/ic_present_to_all_24dp"
+            app:tint="@color/default_icon_color_tint_list"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:id="@+id/tab_sharing_message"
+            tools:text="Sharing this tab to example.com"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColorLink="@macro/default_text_color_link"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/tab_sharing_stop_button"
+            style="@style/FilledButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:text="@string/tab_sharing_toolbar_stop_sharing" />
+
+    </LinearLayout>
+
+</LinearLayout>

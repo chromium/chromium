@@ -6369,6 +6369,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Sharing to <ph name="DEVICE_NAME">%1$s<ex>Pixel 3</ex></ph>
       </message>
 
+      <!-- Tab sharing toolbar -->
+      <message name="IDS_TAB_SHARING_TOOLBAR_SHARING_CURRENT_TAB_LABEL" desc="Text displayed on a toolbar when current tab is being shared.">
+        Sharing this tab to <ph name="APP_NAME">%1$s<ex>meet.google.com</ex></ph>
+      </message>
+      <message name="IDS_TAB_SHARING_TOOLBAR_SHARING_ANOTHER_TAB_LABEL" desc="Text displayed on a toolbar when another (non-current) tab is being shared.">
+        Sharing <ph name="TAB_NAME">%1$s<ex>youtube.com</ex></ph> to <ph name="APP_NAME">%2$s<ex>meet.google.com</ex></ph>
+      </message>
+      <message name="IDS_TAB_SHARING_TOOLBAR_SHARING_ANOTHER_TAB_TO_THIS_TAB_LABEL" desc="Text displayed on the toolbar when a tab is being shared to the current tab.">
+        Sharing <ph name="TAB_NAME">%1$s<ex>youtube.com</ex></ph> to this tab
+      </message>
+      <message name="IDS_TAB_SHARING_TOOLBAR_STOP_SHARING" desc="Text displayed on the button to stop tab sharing.">
+        Stop sharing
+      </message>
+
       <!-- Sharing Hub -->
       <message name="IDS_SHARING_HUB_STORAGE_DISABLED_TEXT" desc="Text to show when storage permission is disabled.">
         You have disabled Storage access, please go to Settings to enable it.

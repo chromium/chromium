@@ -1371,6 +1371,12 @@ if (enable_screen_capture) {
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerManagerBridge.java",
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerTabObserver.java",
     "java/src/org/chromium/chrome/browser/media/MediaCaptureUtils.java",
+    "java/src/org/chromium/chrome/browser/media/TabSharingToolbarContainer.java",
+    "java/src/org/chromium/chrome/browser/media/TabSharingToolbarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/media/TabSharingToolbarMediator.java",
+    "java/src/org/chromium/chrome/browser/media/TabSharingToolbarProperties.java",
+    "java/src/org/chromium/chrome/browser/media/TabSharingToolbarUiCoordinator.java",
+    "java/src/org/chromium/chrome/browser/media/TabSharingToolbarViewBinder.java",
     "java/src/org/chromium/chrome/browser/media/TabSharingUIBridge.java",
     "java/src/org/chromium/chrome/browser/media/TabSharingUIManager.java",
   ]

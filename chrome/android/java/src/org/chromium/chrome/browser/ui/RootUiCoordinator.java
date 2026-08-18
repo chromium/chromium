@@ -122,6 +122,7 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
+import org.chromium.chrome.browser.media.TabSharingToolbarUiCoordinator;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.messages.ChromeMessageAutodismissDurationProvider;
@@ -448,6 +449,7 @@ public class RootUiCoordinator
     private @Nullable ReaderModeBottomSheetManager mReaderModeBottomSheetManager;
     private @Nullable AppMenuObserver mAppMenuObserver;
     private @Nullable LinkHoverStatusBarCoordinator mLinkHoverStatusBarCoordinator;
+    private @Nullable TabSharingToolbarUiCoordinator mTabSharingToolbarUiCoordinator;
     private @Nullable BookmarkAllTabsHandler mBookmarkAllTabsHandler;
 
     private final OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
@@ -1188,6 +1190,11 @@ public class RootUiCoordinator
             mLinkHoverStatusBarCoordinator = null;
         }
 
+        if (mTabSharingToolbarUiCoordinator != null) {
+            mTabSharingToolbarUiCoordinator.destroy();
+            mTabSharingToolbarUiCoordinator = null;
+        }
+
         if (mAutomotiveBackButtonToolbarCoordinator != null) {
             mAutomotiveBackButtonToolbarCoordinator.destroy();
             mAutomotiveBackButtonToolbarCoordinator = null;
@@ -1469,6 +1476,13 @@ public class RootUiCoordinator
                         mCompositorViewHolderSupplier.asNonNull().get(),
                         () -> mBrowserControlsManager.getContentOffset());
         AnchoredDialogCoordinatorProvider.attach(mWindowAndroid, mAnchoredDialogCoordinator);
+
+        ViewGroup controlContainer = (ViewGroup) mActivity.findViewById(R.id.control_container);
+        if (ChromeFeatureList.sTabSharingToolbarAndroid.isEnabled() && controlContainer != null) {
+            mTabSharingToolbarUiCoordinator =
+                    new TabSharingToolbarUiCoordinator(
+                            mActivity, controlContainer, mTopControlsStacker, mActivityTabProvider);
+        }
     }
 
     private void initReaderModeBottomSheetManager() {

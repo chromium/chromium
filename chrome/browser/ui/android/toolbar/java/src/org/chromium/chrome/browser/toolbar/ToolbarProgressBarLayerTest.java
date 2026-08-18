@@ -29,6 +29,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
@@ -126,6 +127,16 @@ public class ToolbarProgressBarLayerTest {
         mLayer.onTopControlLayerHeightChanged(0, 0);
         assertEquals(
                 456,
+                ((CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams())
+                        .getAnchorId());
+
+        // Tab sharing toolbar is visible and at bottom.
+        when(mTopControlsStacker.isLayerAtBottom(
+                        TopControlsStacker.TopControlType.TAB_SHARING_TOOLBAR))
+                .thenReturn(true);
+        mLayer.onTopControlLayerHeightChanged(0, 0);
+        assertEquals(
+                R.id.tab_sharing_toolbar_container,
                 ((CoordinatorLayout.LayoutParams) mProgressBarContainer.getLayoutParams())
                         .getAnchorId());
     }

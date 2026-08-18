@@ -219,7 +219,13 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
                     CoordinatorLayout.LayoutParams lp =
                             (CoordinatorLayout.LayoutParams)
                                     mProgressBarContainer.getLayoutParams();
-                    if (mTopControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)
+                    // When simultaneous sessions (multiple toolbars) are supported, containers
+                    // must be differentiated per session and this anchor lookup revisited.
+                    // TODO(crbug.com/487666920): Support multiple simultaneous tab-sharing
+                    // toolbars.
+                    if (mTopControlsStacker.isLayerAtBottom(TopControlType.TAB_SHARING_TOOLBAR)) {
+                        lp.setAnchorId(R.id.tab_sharing_toolbar_container);
+                    } else if (mTopControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)
                             && mBookmarkBarIdSupplier.get() != 0) {
                         int bookmarkBarId = mBookmarkBarIdSupplier.get();
                         lp.setAnchorId(bookmarkBarId);
