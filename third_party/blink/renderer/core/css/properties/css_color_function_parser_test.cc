@@ -340,8 +340,7 @@ TEST(ColorFunctionParserTest, RelativeColorWithRandomInContrastColor) {
 
   ColorFunctionParser parser;
   CSSParserLocalContext local_context(CSSPropertyName(CSSPropertyID::kColor),
-                                      CSSPropertyID::kInvalid,
-                                      /*custom_function_name=*/g_null_atom);
+                                      CSSPropertyID::kInvalid);
   const CSSValue* result = parser.ConsumeFunctionalSyntaxColor(
       stream, *context, local_context, css_parsing_utils::ColorParserContext());
   ASSERT_TRUE(result);

@@ -4195,8 +4195,7 @@ bool ConsumeShorthandVia2Longhands(
   DCHECK_EQ(longhands.size(), 2u);
 
   auto local_context = CSSParserLocalContext(
-      CSSPropertyName(longhands[0]->PropertyID()), shorthand.id(),
-      /*custom_function_name=*/g_null_atom);
+      CSSPropertyName(longhands[0]->PropertyID()), shorthand.id());
 
   const CSSValue* start =
       ParseLonghand(longhands[0]->PropertyID(), context, local_context, stream);
@@ -4235,8 +4234,7 @@ bool ConsumeShorthandVia4Longhands(
   DCHECK_EQ(longhands.size(), 4u);
 
   auto local_context = CSSParserLocalContext(
-      CSSPropertyName(longhands[0]->PropertyID()), shorthand.id(),
-      /*custom_function_name=*/g_null_atom);
+      CSSPropertyName(longhands[0]->PropertyID()), shorthand.id());
 
   const CSSValue* top =
       ParseLonghand(longhands[0]->PropertyID(), context, local_context, stream);
@@ -4302,8 +4300,7 @@ bool ConsumeShorthandGreedilyViaLonghands(
   bool found_any = false;
   bool found_longhand;
   auto local_context =
-      CSSParserLocalContext(CSSPropertyName(shorthand.id()), shorthand.id(),
-                            /*custom_function_name=*/g_null_atom);
+      CSSParserLocalContext(CSSPropertyName(shorthand.id()), shorthand.id());
   do {
     found_longhand = false;
     for (size_t i = 0; i < shorthand.length(); ++i) {

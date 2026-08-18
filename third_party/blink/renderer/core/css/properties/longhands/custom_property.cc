@@ -177,8 +177,7 @@ void CustomProperty::ApplyValue(StyleResolverState& state,
     DCHECK(declaration);
     CSSVariableData& data = *declaration->VariableDataValue();
     CSSParserLocalContext local_context(GetCSSPropertyName(),
-                                        CSSPropertyID::kInvalid,
-                                        /*custom_function_name=*/g_null_atom);
+                                        CSSPropertyID::kInvalid);
     registered_value = Parse(data.OriginalText(), *context, local_context);
   }
 

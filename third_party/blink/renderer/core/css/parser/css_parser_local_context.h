@@ -80,6 +80,14 @@ class CORE_EXPORT CSSParserLocalContext {
 
   // For standard CSS properties, need to pass CSSPropertyName with unresolved
   // property id.
+  explicit CSSParserLocalContext(CSSPropertyName property_name,
+                                 CSSPropertyID current_shorthand)
+      : CSSParserLocalContext(property_name,
+                              current_shorthand,
+                              /*custom_function_name=*/g_null_atom) {}
+
+  // For standard CSS properties, need to pass CSSPropertyName with unresolved
+  // property id.
   // `custom_function` parameter is used for values defined in CSS @function
   // arguments, result values and local variables.
   explicit CSSParserLocalContext(CSSPropertyName property_name,

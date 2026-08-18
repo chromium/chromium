@@ -112,8 +112,7 @@ const CSSValue* CSSPropertyParser::ParseSingleValue(
       css_parsing_utils::ConsumeCSSWideKeyword(stream, *context);
   if (!value) {
     auto local_context = CSSParserLocalContext(
-        CSSPropertyName(unresolved_property), CSSPropertyID::kInvalid,
-        /*custom_function_name=*/g_null_atom);
+        CSSPropertyName(unresolved_property), CSSPropertyID::kInvalid);
     value = ParseLonghand(unresolved_property, *context, local_context, stream);
   }
   if (!value || !stream.AtEnd()) {
@@ -156,8 +155,7 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
   bool is_shorthand = property.IsShorthand();
   DCHECK(context_);
   CSSParserLocalContext local_context(CSSPropertyName(unresolved_property),
-                                      CSSPropertyID::kInvalid,
-                                      /*custom_function_name=*/g_null_atom);
+                                      CSSPropertyID::kInvalid);
 
   // NOTE: The first branch of the if here uses the tokenized form,
   // and the second uses the streaming parser. This is only allowed
