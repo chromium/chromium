@@ -440,7 +440,7 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
   // to clear it. #root keeps its containertiming attribute.
   root->setAttribute(html_names::kContainertimingignoreAttr, g_empty_atom);
   ASSERT_TRUE(root->GetLayoutObject());
-  ASSERT_TRUE(root->GetLayoutObject()->ContainerTimingChanged());
+  ASSERT_TRUE(ContainerTimingChanged(*root->GetLayoutObject()));
 
   // Painting with the dirty bit must not crash and must still record.
   SimulatePaint(root, gfx::RectF(200, 0, 100, 100));

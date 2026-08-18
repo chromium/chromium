@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data_field.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/paint/pre_paint_subtree_walk_reasons.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
@@ -221,20 +222,10 @@ class CORE_EXPORT DisplayLockContext final
   void NotifySubtreeLostSelection();
   void NotifySubtreeGainedSelection();
 
-  void SetNeedsPrePaintSubtreeWalk(
-      bool needs_effective_allowed_touch_action_update,
-      bool needs_blocking_wheel_event_handler_update,
-      bool needs_soft_navigation_context_update,
-      bool needs_container_timing_context_update) {
-    needs_effective_allowed_touch_action_update_ =
-        needs_effective_allowed_touch_action_update;
-    needs_blocking_wheel_event_handler_update_ =
-        needs_blocking_wheel_event_handler_update;
-    needs_soft_navigation_context_update_ =
-        needs_soft_navigation_context_update;
-    needs_container_timing_context_update_ =
-        needs_container_timing_context_update;
-    needs_prepaint_subtree_walk_ = true;
+  void SetNeedsPrePaintSubtreeWalk(PrePaintSubtreeWalkReasons reasons) {
+    pre_paint_subtree_walk_reasons_ = reasons;
+    // TODO(crbug.com/547894783): Clear this after update.
+    needs_pre_paint_subtree_walk_ = true;
   }
 
   void DidForceActivatableDisplayLocks() {
@@ -517,11 +508,12 @@ class CORE_EXPORT DisplayLockContext final
 
   StyleRecalcChange blocked_child_recalc_change_;
 
-  bool needs_effective_allowed_touch_action_update_ = false;
-  bool needs_blocking_wheel_event_handler_update_ = false;
-  bool needs_soft_navigation_context_update_ = false;
-  bool needs_container_timing_context_update_ = false;
-  bool needs_prepaint_subtree_walk_ = false;
+  PrePaintSubtreeWalkReasons pre_paint_subtree_walk_reasons_;
+  // This can be true even if `pre_paint_subtree_walk_reasons_` is empty,
+  // in cases where we need to walk the subtree for reasons other than the
+  // specific reasons in `pre_paint_subtree_walk_reasons_`.
+  bool needs_pre_paint_subtree_walk_ = false;
+
   bool needs_compositing_dependent_flag_update_ = false;
   bool needs_visual_overflow_recalc_update_ = false;
 

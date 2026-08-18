@@ -5131,17 +5131,11 @@ void LayoutObject::ClearPaintFlags() {
             DocumentLifecycle::kInPrePaint);
   ClearPaintInvalidationFlags();
   needs_paint_property_update_ = false;
-  effective_allowed_touch_action_changed_ = false;
-  blocking_wheel_event_handler_changed_ = false;
-  soft_navigation_context_changed_ = false;
-  container_timing_changed_ = false;
+  pre_paint_subtree_walk_reasons_ = 0;
 
   if (!ChildPrePaintBlockedByDisplayLock()) {
     descendant_needs_paint_property_update_ = false;
-    descendant_effective_allowed_touch_action_changed_ = false;
-    descendant_blocking_wheel_event_handler_changed_ = false;
-    descendant_soft_navigation_context_changed_ = false;
-    descendant_container_timing_changed_ = false;
+    descendant_pre_paint_subtree_walk_reasons_ = 0;
     subtree_paint_property_update_reasons_ =
         static_cast<unsigned>(SubtreePaintPropertyUpdateReason::kNone);
   }
@@ -5230,125 +5224,63 @@ void LayoutObject::InvalidateSelectedChildrenOnStyleChange() {
   }
 }
 
-void LayoutObject::MarkEffectiveAllowedTouchActionChanged() {
+void LayoutObject::SetNeedsPrePaintSubtreeWalk(
+    PrePaintSubtreeWalkReasons reasons) {
   NOT_DESTROYED();
   DCHECK(!GetDocument().InvalidationDisallowed());
-  effective_allowed_touch_action_changed_ = true;
-  // If we're locked, mark our descendants as needing this change. This is used
-  // a signal to ensure we mark the element as needing effective allowed
-  // touch action recalculation when the element becomes unlocked.
+  CHECK(!reasons.empty());
+  pre_paint_subtree_walk_reasons_ |= reasons.ToEnumBitmask();
+  // If we're locked, mark our descendants as needing pre-paint subtree walk.
+  // This is used a signal to ensure we mark the element as needing pre-paint
+  // subtree walk when the element becomes unlocked.
   if (ChildPrePaintBlockedByDisplayLock()) {
-    descendant_effective_allowed_touch_action_changed_ = true;
-    return;
-  }
-
-  if (Parent())
-    Parent()->MarkDescendantEffectiveAllowedTouchActionChanged();
-}
-
-void LayoutObject::MarkDescendantEffectiveAllowedTouchActionChanged() {
-  NOT_DESTROYED();
-  DCHECK(!GetDocument().InvalidationDisallowed());
-  LayoutObject* obj = this;
-  while (obj && !obj->DescendantEffectiveAllowedTouchActionChanged()) {
-    obj->descendant_effective_allowed_touch_action_changed_ = true;
-    if (obj->ChildPrePaintBlockedByDisplayLock())
-      break;
-
-    obj = obj->Parent();
-  }
-}
-
-void LayoutObject::MarkBlockingWheelEventHandlerChanged() {
-  NOT_DESTROYED();
-  DCHECK(!GetDocument().InvalidationDisallowed());
-  blocking_wheel_event_handler_changed_ = true;
-  // If we're locked, mark our descendants as needing this change. This is used
-  // as a signal to ensure we mark the element as needing wheel event handler
-  // recalculation when the element becomes unlocked.
-  if (ChildPrePaintBlockedByDisplayLock()) {
-    descendant_blocking_wheel_event_handler_changed_ = true;
-    return;
-  }
-
-  if (Parent())
-    Parent()->MarkDescendantBlockingWheelEventHandlerChanged();
-}
-
-void LayoutObject::MarkDescendantBlockingWheelEventHandlerChanged() {
-  NOT_DESTROYED();
-  DCHECK(!GetDocument().InvalidationDisallowed());
-  LayoutObject* obj = this;
-  while (obj && !obj->DescendantBlockingWheelEventHandlerChanged()) {
-    obj->descendant_blocking_wheel_event_handler_changed_ = true;
-    if (obj->ChildPrePaintBlockedByDisplayLock())
-      break;
-
-    obj = obj->Parent();
-  }
-}
-
-void LayoutObject::MarkSoftNavigationContextChanged() {
-  NOT_DESTROYED();
-  DCHECK(!GetDocument().InvalidationDisallowed());
-  soft_navigation_context_changed_ = true;
-  // If we're locked, mark our descendants as needing this change. This is used
-  // as a signal to ensure we mark the element as needing soft navigation
-  // context recalculation when the element becomes unlocked.
-  if (ChildPrePaintBlockedByDisplayLock()) {
-    descendant_soft_navigation_context_changed_ = true;
+    descendant_pre_paint_subtree_walk_reasons_ |= reasons.ToEnumBitmask();
     return;
   }
 
   if (Parent()) {
-    Parent()->MarkDescendantSoftNavigationContextChanged();
+    Parent()->SetDescendantNeedsPrePaintSubtreeWalk(reasons);
   }
 }
 
-void LayoutObject::MarkDescendantSoftNavigationContextChanged() {
+void LayoutObject::SetDescendantNeedsPrePaintSubtreeWalk(
+    PrePaintSubtreeWalkReasons reasons) {
   NOT_DESTROYED();
   DCHECK(!GetDocument().InvalidationDisallowed());
-  LayoutObject* obj = this;
-  while (obj && !obj->DescendantSoftNavigationContextChanged()) {
-    obj->descendant_soft_navigation_context_changed_ = true;
+  for (LayoutObject* obj = this;
+       obj && !obj->GetDescendantPrePaintSubtreeWalkReasons().HasAll(reasons);
+       obj = obj->Parent()) {
+    obj->descendant_pre_paint_subtree_walk_reasons_ |= reasons.ToEnumBitmask();
     if (obj->ChildPrePaintBlockedByDisplayLock()) {
       break;
     }
-    obj = obj->Parent();
   }
+}
+
+void LayoutObject::MarkEffectiveAllowedTouchActionChanged() {
+  NOT_DESTROYED();
+  SetNeedsPrePaintSubtreeWalk(
+      {PrePaintSubtreeWalkReason::kEffectiveAllowedTouchAction});
+}
+
+void LayoutObject::MarkBlockingWheelEventHandlerChanged() {
+  NOT_DESTROYED();
+  SetNeedsPrePaintSubtreeWalk(
+      {PrePaintSubtreeWalkReason::kBlockingWheelEventHandler});
+}
+
+void LayoutObject::MarkSoftNavigationContextChanged() {
+  NOT_DESTROYED();
+  SetNeedsPrePaintSubtreeWalk(
+      {PrePaintSubtreeWalkReason::kSoftNavigationContext});
 }
 
 void LayoutObject::MarkContainerTimingChanged() {
   NOT_DESTROYED();
   DCHECK(RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
       GetDocument().GetExecutionContext()));
-  DCHECK(!GetDocument().InvalidationDisallowed());
-  container_timing_changed_ = true;
-  // If we're locked, mark our descendants as needing this change. This is used
-  // as a signal to ensure we mark the element as needing container timing
-  // recalculation when the element becomes unlocked.
-  if (ChildPrePaintBlockedByDisplayLock()) {
-    descendant_container_timing_changed_ = true;
-    return;
-  }
-  if (Parent()) {
-    Parent()->MarkDescendantContainerTimingChanged();
-  }
-}
-
-void LayoutObject::MarkDescendantContainerTimingChanged() {
-  NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
-      GetDocument().GetExecutionContext()));
-  DCHECK(!GetDocument().InvalidationDisallowed());
-  LayoutObject* obj = this;
-  while (obj && !obj->DescendantContainerTimingChanged()) {
-    obj->descendant_container_timing_changed_ = true;
-    if (obj->ChildPrePaintBlockedByDisplayLock()) {
-      break;
-    }
-    obj = obj->Parent();
-  }
+  SetNeedsPrePaintSubtreeWalk(
+      {PrePaintSubtreeWalkReason::kContainerTimingContext});
 }
 
 // Note about ::first-letter pseudo-element:

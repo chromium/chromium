@@ -1674,14 +1674,14 @@ TEST_P(FrameThrottlingTest, AncestorTouchActionAndWheelEventHandlers) {
   auto* handler = MakeGarbageCollected<EmptyEventListener>();
   parent->addEventListener(event_type_names::kTouchstart, handler);
   parent->addEventListener(event_type_names::kWheel, handler);
-  EXPECT_TRUE(parent_object->EffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(parent_object->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(EffectiveAllowedTouchActionChanged(*parent_object));
+  EXPECT_TRUE(BlockingWheelEventHandlerChanged(*parent_object));
   UpdateAllLifecyclePhases();
   EXPECT_TRUE(parent_object->InsideBlockingTouchEventHandler());
   EXPECT_TRUE(parent_object->InsideBlockingWheelEventHandler());
   // Event handler status update is pending in the throttled frame.
-  EXPECT_TRUE(child_layout_view->EffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(child_layout_view->BlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(EffectiveAllowedTouchActionChanged(*child_layout_view));
+  EXPECT_TRUE(BlockingWheelEventHandlerChanged(*child_layout_view));
   EXPECT_FALSE(child_layout_view->InsideBlockingTouchEventHandler());
   EXPECT_FALSE(child_layout_view->InsideBlockingWheelEventHandler());
   EXPECT_FALSE(child_object->InsideBlockingTouchEventHandler());
@@ -1699,8 +1699,8 @@ TEST_P(FrameThrottlingTest, AncestorTouchActionAndWheelEventHandlers) {
   EXPECT_TRUE(parent_object->InsideBlockingTouchEventHandler());
   EXPECT_TRUE(parent_object->InsideBlockingWheelEventHandler());
   // Event handler status is updated in the unthrottled frame.
-  EXPECT_FALSE(child_layout_view->EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(child_layout_view->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(*child_layout_view));
+  EXPECT_FALSE(BlockingWheelEventHandlerChanged(*child_layout_view));
   EXPECT_TRUE(child_layout_view->InsideBlockingTouchEventHandler());
   EXPECT_TRUE(child_layout_view->InsideBlockingWheelEventHandler());
   EXPECT_TRUE(child_object->InsideBlockingTouchEventHandler());
@@ -1746,20 +1746,18 @@ TEST_P(FrameThrottlingTest, DescendantTouchActionAndWheelEventHandlers) {
   auto* handler = MakeGarbageCollected<EmptyEventListener>();
   child->addEventListener(event_type_names::kTouchstart, handler);
   child->addEventListener(event_type_names::kWheel, handler);
-  EXPECT_TRUE(child_object->EffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(child_object->BlockingWheelEventHandlerChanged());
-  EXPECT_TRUE(
-      child_layout_view->DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(child_layout_view->DescendantBlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(parent_object->DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(parent_object->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(EffectiveAllowedTouchActionChanged(*child_object));
+  EXPECT_TRUE(BlockingWheelEventHandlerChanged(*child_object));
+  EXPECT_TRUE(DescendantEffectiveAllowedTouchActionChanged(*child_layout_view));
+  EXPECT_TRUE(DescendantBlockingWheelEventHandlerChanged(*child_layout_view));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(*parent_object));
+  EXPECT_FALSE(DescendantBlockingWheelEventHandlerChanged(*parent_object));
   UpdateAllLifecyclePhases();
   // Event handler status update is pending in the throttled frame.
-  EXPECT_TRUE(child_object->EffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(child_object->BlockingWheelEventHandlerChanged());
-  EXPECT_TRUE(
-      child_layout_view->DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(child_layout_view->DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(EffectiveAllowedTouchActionChanged(*child_object));
+  EXPECT_TRUE(BlockingWheelEventHandlerChanged(*child_object));
+  EXPECT_TRUE(DescendantEffectiveAllowedTouchActionChanged(*child_layout_view));
+  EXPECT_TRUE(DescendantBlockingWheelEventHandlerChanged(*child_layout_view));
   EXPECT_FALSE(child_layout_view->InsideBlockingTouchEventHandler());
   EXPECT_FALSE(child_layout_view->InsideBlockingWheelEventHandler());
   EXPECT_FALSE(child_object->InsideBlockingTouchEventHandler());
@@ -1775,11 +1773,11 @@ TEST_P(FrameThrottlingTest, DescendantTouchActionAndWheelEventHandlers) {
   CompositeFrame();
   EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
   // Event handler status is updated in the unthrottled frame.
-  EXPECT_FALSE(child_object->EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(child_object->BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(*child_object));
+  EXPECT_FALSE(BlockingWheelEventHandlerChanged(*child_object));
   EXPECT_FALSE(
-      child_layout_view->DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(child_layout_view->DescendantBlockingWheelEventHandlerChanged());
+      DescendantEffectiveAllowedTouchActionChanged(*child_layout_view));
+  EXPECT_FALSE(DescendantBlockingWheelEventHandlerChanged(*child_layout_view));
   EXPECT_FALSE(child_layout_view->InsideBlockingTouchEventHandler());
   EXPECT_FALSE(child_layout_view->InsideBlockingWheelEventHandler());
   EXPECT_TRUE(child_object->InsideBlockingTouchEventHandler());

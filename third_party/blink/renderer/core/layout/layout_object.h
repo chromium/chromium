@@ -2980,6 +2980,26 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   void InvalidateSelectionOnStyleChange();
 
+  // Marks this object needs PrePaint subtree walk for any reason, and marks
+  // all ancestors as having such a descendant. During PrePaintTreeWalk, we
+  // will walk the whole subtree of this LayoutObject to update status specific
+  // to each reason. Display lock can block the subtree walk at some point, and
+  // DisplayLockContext will record the status and resume the subtree walk when
+  // it's unlocked. The reasons are accumulated until cleared after the subtree
+  // walk is done.
+  void SetNeedsPrePaintSubtreeWalk(PrePaintSubtreeWalkReasons);
+  PrePaintSubtreeWalkReasons GetPrePaintSubtreeWalkReasons() const {
+    NOT_DESTROYED();
+    return PrePaintSubtreeWalkReasons::FromEnumBitmask(
+        pre_paint_subtree_walk_reasons_);
+  }
+  void SetDescendantNeedsPrePaintSubtreeWalk(PrePaintSubtreeWalkReasons);
+  PrePaintSubtreeWalkReasons GetDescendantPrePaintSubtreeWalkReasons() const {
+    NOT_DESTROYED();
+    return PrePaintSubtreeWalkReasons::FromEnumBitmask(
+        descendant_pre_paint_subtree_walk_reasons_);
+  }
+
   // The allowed touch action is the union of the effective touch action
   // (from style) and blocking touch event handlers.
   TouchAction EffectiveAllowedTouchAction() const {
@@ -2999,19 +3019,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return inside_blocking_touch_event_handler_;
   }
-  // Mark this object as having a |EffectiveAllowedTouchAction| changed, and
-  // mark all ancestors as having a descendant that changed. This will cause a
-  // PrePaint tree walk to update effective allowed touch action.
   void MarkEffectiveAllowedTouchActionChanged();
-  void MarkDescendantEffectiveAllowedTouchActionChanged();
-  bool EffectiveAllowedTouchActionChanged() const {
-    NOT_DESTROYED();
-    return effective_allowed_touch_action_changed_;
-  }
-  bool DescendantEffectiveAllowedTouchActionChanged() const {
-    NOT_DESTROYED();
-    return descendant_effective_allowed_touch_action_changed_;
-  }
   void UpdateInsideBlockingTouchEventHandler(bool inside) {
     NOT_DESTROYED();
     inside_blocking_touch_event_handler_ = inside;
@@ -3027,30 +3035,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // mark all ancestors as having a descendant that changed. This will cause a
   // PrePaint tree walk to update blocking wheel event handler state.
   void MarkBlockingWheelEventHandlerChanged();
-  void MarkDescendantBlockingWheelEventHandlerChanged();
-  bool BlockingWheelEventHandlerChanged() const {
-    NOT_DESTROYED();
-    return blocking_wheel_event_handler_changed_;
-  }
-  bool DescendantBlockingWheelEventHandlerChanged() const {
-    NOT_DESTROYED();
-    return descendant_blocking_wheel_event_handler_changed_;
-  }
   void UpdateInsideBlockingWheelEventHandler(bool inside) {
     NOT_DESTROYED();
     inside_blocking_wheel_event_handler_ = inside;
   }
 
   void MarkSoftNavigationContextChanged();
-  void MarkDescendantSoftNavigationContextChanged();
-  bool SoftNavigationContextChanged() const {
-    NOT_DESTROYED();
-    return soft_navigation_context_changed_;
-  }
-  bool DescendantSoftNavigationContextChanged() const {
-    NOT_DESTROYED();
-    return descendant_soft_navigation_context_changed_;
-  }
   bool ShouldInheritSoftNavigationContext() const {
     NOT_DESTROYED();
     return should_inherit_soft_navigation_context_;
@@ -3065,15 +3055,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // resets them after every pre-paint walk, so reads stay 0 when the feature
   // is off (no runtime check needed on the paint hot path).
   void MarkContainerTimingChanged();
-  void MarkDescendantContainerTimingChanged();
-  bool ContainerTimingChanged() const {
-    NOT_DESTROYED();
-    return container_timing_changed_;
-  }
-  bool DescendantContainerTimingChanged() const {
-    NOT_DESTROYED();
-    return descendant_container_timing_changed_;
-  }
   bool ShouldInheritContainerTimingRoot() const {
     NOT_DESTROYED();
     return should_inherit_container_timing_root_;
@@ -3131,9 +3112,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     }
     void EnsureIsReadyForPaintInvalidation() {
       layout_object_.EnsureIsReadyForPaintInvalidation();
-    }
-    void MarkEffectiveAllowedTouchActionChanged() {
-      layout_object_.MarkEffectiveAllowedTouchActionChanged();
     }
 
     void SetBackgroundPaintLocation(BackgroundPaintLocation location) {
@@ -3959,63 +3937,25 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   unsigned is_truncated_ : 1 = false;
 
+  // See SetPrePaintSubtreeWalkReasons().
+  unsigned pre_paint_subtree_walk_reasons_ : kPrePaintSubtreeWalkReasonBits =
+      PrePaintSubtreeWalkReasons::All().ToEnumBitmask();
+  unsigned descendant_pre_paint_subtree_walk_reasons_
+      : kPrePaintSubtreeWalkReasonBits = 0;
+
   // Whether this object's Node has a blocking touch event handler on itself
   // or an ancestor. This is updated during the PrePaint phase.
   unsigned inside_blocking_touch_event_handler_ : 1 = false;
 
-  // Set when |EffectiveAllowedTouchAction| changes (i.e., blocking touch
-  // event handlers change or effective touch action style changes). This only
-  // needs to be set on the object that changes as the PrePaint walk will
-  // ensure descendants are updated.
-  unsigned effective_allowed_touch_action_changed_ : 1 = true;
-
-  // Set when a descendant's |EffectiveAllowedTouchAction| changes. This
-  // is used to ensure the PrePaint tree walk processes objects with
-  // |effective_allowed_touch_action_changed_|.
-  unsigned descendant_effective_allowed_touch_action_changed_ : 1 = false;
-
   // Whether this object's Node has a blocking wheel event handler on itself
   // or an ancestor. This is updated during the PrePaint phase.
   unsigned inside_blocking_wheel_event_handler_ : 1 = false;
-
-  // Set when |InsideBlockingWheelEventHandler| changes (i.e., blocking wheel
-  // event handlers change). This only needs to be set on the object that
-  // changes as the PrePaint walk will ensure descendants are updated.
-  unsigned blocking_wheel_event_handler_changed_ : 1 = true;
-
-  // Set when a descendant's |InsideBlockingWheelEventHandler| changes. This
-  // is used to ensure the PrePaint tree walk processes objects with
-  // |blocking_wheel_event_handler_changed_|.
-  unsigned descendant_blocking_wheel_event_handler_changed_ : 1 = false;
-
-  // Set when the associated SoftNavigationContext changes, which is used to
-  // ensure |should_inherit_soft_navigation_context_| is updated for this
-  // object and its descendants.
-  unsigned soft_navigation_context_changed_ : 1 = true;
-
-  // Set when a descendant's associated SoftNavigationContext changes, which
-  // implies |ShouldInheritSoftNavigationContext| needs to be recomputed. This
-  // is used to ensure the PrePaint tree walk processes objects with
-  // |soft_navigation_context_changed_|.
-  unsigned descendant_soft_navigation_context_changed_ : 1 = false;
 
   // Whether the associated node inherits its SoftNavigationContext from its
   // parent. Used during the PrePaint walk to help determine when the context
   // being pushed down to descendants needs to change. The actual context
   // mapping is stored in SoftNavigationPaintAttributionTracker.
   unsigned should_inherit_soft_navigation_context_ : 1 = true;
-
-  // Set when the containertiming or containertimingignore attribute changes on
-  // this node, triggering a re-walk by ContainerTimingPaintAttributionTracker.
-  // Initialized to true so every new LayoutObject is visited by the pre-paint
-  // walk at least once to populate the tracker. ClearPaintFlags() resets it
-  // after the walk.
-  unsigned container_timing_changed_ : 1 = true;
-
-  // Set on ancestors when a descendant's container timing attribute changes.
-  // Used to ensure the PrePaint walk processes nodes with
-  // |container_timing_changed_|.
-  unsigned descendant_container_timing_changed_ : 1 = false;
 
   // Whether this node inherits its container timing root from its parent.
   // false = this node IS a container root or stop node. Cached from pre-paint

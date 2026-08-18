@@ -216,6 +216,44 @@ PhysicalRect VisualRectInDocument(const LayoutObject& object,
 // SVG transforms instead.
 PhysicalRect LocalVisualRect(const LayoutObject& object);
 
+inline bool EffectiveAllowedTouchActionChanged(const LayoutObject& object) {
+  return object.GetPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kEffectiveAllowedTouchAction);
+}
+inline bool DescendantEffectiveAllowedTouchActionChanged(
+    const LayoutObject& object) {
+  return object.GetDescendantPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kEffectiveAllowedTouchAction);
+}
+
+inline bool BlockingWheelEventHandlerChanged(const LayoutObject& object) {
+  return object.GetPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kBlockingWheelEventHandler);
+}
+inline bool DescendantBlockingWheelEventHandlerChanged(
+    const LayoutObject& object) {
+  return object.GetDescendantPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kBlockingWheelEventHandler);
+}
+
+inline bool SoftNavigationContextChanged(const LayoutObject& object) {
+  return object.GetPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kSoftNavigationContext);
+}
+inline bool DescendantSoftNavigationContextChanged(const LayoutObject& object) {
+  return object.GetDescendantPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kSoftNavigationContext);
+}
+
+inline bool ContainerTimingChanged(const LayoutObject& object) {
+  return object.GetPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kContainerTimingContext);
+}
+inline bool DescendantContainerTimingChanged(const LayoutObject& object) {
+  return object.GetDescendantPrePaintSubtreeWalkReasons().Has(
+      PrePaintSubtreeWalkReason::kContainerTimingContext);
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_CORE_UNIT_TEST_HELPER_H_

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
+#include "third_party/blink/renderer/core/paint/pre_paint_subtree_walk_reasons.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -62,14 +63,15 @@ class CORE_EXPORT PrePaintTreeWalk final {
       fixed_positioned_container = {};
 
       // For soft navigation.
-      soft_navigation_context_changed = false;
       soft_navigation_context_container_root = nullptr;
       soft_navigation_paint_attribution_tracker = nullptr;
 
       // For container timing.
-      container_timing_context_changed = false;
       container_timing_context_root = nullptr;
       container_timing_paint_attribution_tracker = nullptr;
+
+      subtree_walk_reasons =
+          CrossFramePrePaintSubtreeWalkReasons(subtree_walk_reasons);
 
       // Both for soft navigation and container timing.
       paint_timing_text_aggregation_node = nullptr;
@@ -80,20 +82,10 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // Whether there is a blocking touch event handler on any ancestor.
     bool inside_blocking_touch_event_handler = false;
 
-    // When the effective allowed touch action changes on an ancestor, the
-    // entire subtree may need to update.
-    bool effective_allowed_touch_action_changed = false;
-
     // Whether there is a blocking wheel event handler on any ancestor.
     bool inside_blocking_wheel_event_handler = false;
 
-    // When the blocking wheel event handlers change on an ancestor, the entire
-    // subtree may need to update.
-    bool blocking_wheel_event_handler_changed = false;
-
-    // When the `SoftNavigationContext` of a node changes on an ancestor, the
-    // entire subtree may need to update.
-    bool soft_navigation_context_changed = false;
+    PrePaintSubtreeWalkReasons subtree_walk_reasons;
 
     // The nearest ancestor `Node` associated with a `SoftNavigationContext`, if
     // any. `SoftNavigationContext` is set for roots appended to the DOM, and
@@ -109,10 +101,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // experimental feature is disabled.
     SoftNavigationPaintAttributionTracker*
         soft_navigation_paint_attribution_tracker = nullptr;
-
-    // Whether a descendant's container timing attribute changed, requiring a
-    // re-walk by ContainerTimingPaintAttributionTracker.
-    bool container_timing_context_changed = false;
 
     // The nearest ancestor element with "containertiming" attribute, or null.
     Element* container_timing_context_root = nullptr;

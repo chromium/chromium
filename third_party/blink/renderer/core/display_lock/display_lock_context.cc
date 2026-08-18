@@ -730,33 +730,11 @@ bool DisplayLockContext::MarkAncestorsForPrePaintIfNeeded() {
     // update, then ensure to mark self as needing the update. This sets up the
     // correct flags for PrePaint to recompute the necessary values and
     // propagate the information into the subtree.
-    if (needs_effective_allowed_touch_action_update_ ||
-        layout_object->EffectiveAllowedTouchActionChanged() ||
-        layout_object->DescendantEffectiveAllowedTouchActionChanged()) {
-      // Note that although the object itself should have up to date value, in
-      // order to force recalc of the whole subtree, we mark it as needing an
-      // update.
-      layout_object->MarkEffectiveAllowedTouchActionChanged();
-    }
-    if (needs_blocking_wheel_event_handler_update_ ||
-        layout_object->BlockingWheelEventHandlerChanged() ||
-        layout_object->DescendantBlockingWheelEventHandlerChanged()) {
-      // Note that although the object itself should have up to date value, in
-      // order to force recalc of the whole subtree, we mark it as needing an
-      // update.
-      layout_object->MarkBlockingWheelEventHandlerChanged();
-    }
-    if (needs_soft_navigation_context_update_ ||
-        layout_object->SoftNavigationContextChanged() ||
-        layout_object->DescendantSoftNavigationContextChanged()) {
-      layout_object->MarkSoftNavigationContextChanged();
-    }
-    if (RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
-            document_->GetExecutionContext()) &&
-        (needs_container_timing_context_update_ ||
-         layout_object->ContainerTimingChanged() ||
-         layout_object->DescendantContainerTimingChanged())) {
-      layout_object->MarkContainerTimingChanged();
+    PrePaintSubtreeWalkReasons reasons = pre_paint_subtree_walk_reasons_;
+    reasons.PutAll(layout_object->GetPrePaintSubtreeWalkReasons());
+    reasons.PutAll(layout_object->GetDescendantPrePaintSubtreeWalkReasons());
+    if (!reasons.empty()) {
+      layout_object->SetNeedsPrePaintSubtreeWalk(reasons);
     }
     return true;
   }
@@ -849,11 +827,8 @@ bool DisplayLockContext::IsElementDirtyForPrePaint() const {
   if (auto* layout_object = element_->GetLayoutObject()) {
     return PrePaintTreeWalk::ObjectRequiresPrePaint(*layout_object) ||
            PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(*layout_object) ||
-           needs_prepaint_subtree_walk_ ||
-           needs_effective_allowed_touch_action_update_ ||
-           needs_blocking_wheel_event_handler_update_ ||
-           needs_soft_navigation_context_update_ ||
-           needs_container_timing_context_update_;
+           needs_pre_paint_subtree_walk_ ||
+           !pre_paint_subtree_walk_reasons_.empty();
   }
   return false;
 }

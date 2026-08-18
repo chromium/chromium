@@ -2899,13 +2899,12 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
             if (layout_view->ShouldCheckForPaintInvalidation()) {
               owner->SetShouldCheckForPaintInvalidation();
             }
-            if (layout_view->EffectiveAllowedTouchActionChanged() ||
-                layout_view->DescendantEffectiveAllowedTouchActionChanged()) {
-              owner->MarkDescendantEffectiveAllowedTouchActionChanged();
-            }
-            if (layout_view->BlockingWheelEventHandlerChanged() ||
-                layout_view->DescendantBlockingWheelEventHandlerChanged()) {
-              owner->MarkDescendantBlockingWheelEventHandlerChanged();
+            PrePaintSubtreeWalkReasons reasons =
+                CrossFramePrePaintSubtreeWalkReasons(base::Union(
+                    layout_view->GetPrePaintSubtreeWalkReasons(),
+                    layout_view->GetDescendantPrePaintSubtreeWalkReasons()));
+            if (!reasons.empty()) {
+              owner->SetDescendantNeedsPrePaintSubtreeWalk(reasons);
             }
           }
         }

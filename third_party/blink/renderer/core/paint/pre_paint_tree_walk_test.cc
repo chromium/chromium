@@ -329,13 +329,13 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingTouchEventHandlerUpdate) {
   auto& handler = *GetLayoutObjectByElementId("handler");
   auto& descendant = *GetLayoutObjectByElementId("descendant");
 
-  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(handler.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(handler));
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(descendant));
 
-  EXPECT_FALSE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(handler.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(handler));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(descendant));
 
   EXPECT_FALSE(ancestor.InsideBlockingTouchEventHandler());
   EXPECT_FALSE(handler.InsideBlockingTouchEventHandler());
@@ -346,22 +346,22 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingTouchEventHandlerUpdate) {
   auto* handler_element = GetDocument().getElementById(AtomicString("handler"));
   handler_element->addEventListener(event_type_names::kTouchstart, callback);
 
-  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(handler.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_TRUE(EffectiveAllowedTouchActionChanged(handler));
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(descendant));
 
-  EXPECT_TRUE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(handler.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(DescendantEffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(handler));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(descendant));
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(handler.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(handler));
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(descendant));
 
-  EXPECT_FALSE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(handler.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(handler));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(descendant));
 
   EXPECT_FALSE(ancestor.InsideBlockingTouchEventHandler());
   EXPECT_TRUE(handler.InsideBlockingTouchEventHandler());
@@ -384,32 +384,32 @@ TEST_P(PrePaintTreeWalkTest, EffectiveTouchActionStyleUpdate) {
   auto& touchaction = *GetLayoutObjectByElementId("touchaction");
   auto& descendant = *GetLayoutObjectByElementId("descendant");
 
-  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(touchaction.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(touchaction.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(touchaction));
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(descendant));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(touchaction));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(descendant));
 
   GetDocument()
       .getElementById(AtomicString("touchaction"))
       ->setAttribute(html_names::kClassAttr, AtomicString("touchaction"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
-  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(touchaction.EffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(descendant.EffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_TRUE(touchaction.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_TRUE(EffectiveAllowedTouchActionChanged(touchaction));
+  EXPECT_TRUE(EffectiveAllowedTouchActionChanged(descendant));
+  EXPECT_TRUE(DescendantEffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_TRUE(DescendantEffectiveAllowedTouchActionChanged(touchaction));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(descendant));
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(touchaction.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(touchaction.DescendantEffectiveAllowedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(touchaction));
+  EXPECT_FALSE(EffectiveAllowedTouchActionChanged(descendant));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(ancestor));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(touchaction));
+  EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(descendant));
 }
 
 TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
@@ -427,13 +427,13 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
   auto& handler = *GetLayoutObjectByElementId("handler");
   auto& descendant = *GetLayoutObjectByElementId("descendant");
 
-  EXPECT_FALSE(ancestor.BlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(handler.BlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(descendant.BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(BlockingWheelEventHandlerChanged(ancestor));
+  EXPECT_FALSE(BlockingWheelEventHandlerChanged(handler));
+  EXPECT_FALSE(BlockingWheelEventHandlerChanged(descendant));
 
-  EXPECT_FALSE(ancestor.DescendantBlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(handler.DescendantBlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(descendant.DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(DescendantBlockingWheelEventHandlerChanged(ancestor));
+  EXPECT_FALSE(DescendantBlockingWheelEventHandlerChanged(handler));
+  EXPECT_FALSE(DescendantBlockingWheelEventHandlerChanged(descendant));
 
   EXPECT_FALSE(ancestor.InsideBlockingWheelEventHandler());
   EXPECT_FALSE(handler.InsideBlockingWheelEventHandler());
@@ -444,22 +444,22 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
   auto* handler_element = GetDocument().getElementById(AtomicString("handler"));
   handler_element->addEventListener(event_type_names::kWheel, callback);
 
-  EXPECT_FALSE(ancestor.BlockingWheelEventHandlerChanged());
-  EXPECT_TRUE(handler.BlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(descendant.BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(BlockingWheelEventHandlerChanged(ancestor));
+  EXPECT_TRUE(BlockingWheelEventHandlerChanged(handler));
+  EXPECT_FALSE(BlockingWheelEventHandlerChanged(descendant));
 
-  EXPECT_TRUE(ancestor.DescendantBlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(handler.DescendantBlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(descendant.DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_TRUE(DescendantBlockingWheelEventHandlerChanged(ancestor));
+  EXPECT_FALSE(DescendantBlockingWheelEventHandlerChanged(handler));
+  EXPECT_FALSE(DescendantBlockingWheelEventHandlerChanged(descendant));
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(ancestor.BlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(handler.BlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(descendant.BlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(BlockingWheelEventHandlerChanged(ancestor));
+  EXPECT_FALSE(BlockingWheelEventHandlerChanged(handler));
+  EXPECT_FALSE(BlockingWheelEventHandlerChanged(descendant));
 
-  EXPECT_FALSE(ancestor.DescendantBlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(handler.DescendantBlockingWheelEventHandlerChanged());
-  EXPECT_FALSE(descendant.DescendantBlockingWheelEventHandlerChanged());
+  EXPECT_FALSE(DescendantBlockingWheelEventHandlerChanged(ancestor));
+  EXPECT_FALSE(DescendantBlockingWheelEventHandlerChanged(handler));
+  EXPECT_FALSE(DescendantBlockingWheelEventHandlerChanged(descendant));
 
   EXPECT_FALSE(ancestor.InsideBlockingWheelEventHandler());
   EXPECT_TRUE(handler.InsideBlockingWheelEventHandler());
@@ -577,15 +577,15 @@ TEST_F(SoftNavigationPrePaintTreeWalkTest,
   auto& descendant = *GetLayoutObjectByElementId("descendant");
   auto& content = *GetLayoutObjectByElementId("content");
 
-  EXPECT_FALSE(ancestor.SoftNavigationContextChanged());
-  EXPECT_FALSE(target.SoftNavigationContextChanged());
-  EXPECT_FALSE(descendant.SoftNavigationContextChanged());
-  EXPECT_FALSE(content.SoftNavigationContextChanged());
+  EXPECT_FALSE(SoftNavigationContextChanged(ancestor));
+  EXPECT_FALSE(SoftNavigationContextChanged(target));
+  EXPECT_FALSE(SoftNavigationContextChanged(descendant));
+  EXPECT_FALSE(SoftNavigationContextChanged(content));
 
-  EXPECT_FALSE(ancestor.DescendantSoftNavigationContextChanged());
-  EXPECT_FALSE(target.DescendantSoftNavigationContextChanged());
-  EXPECT_FALSE(descendant.DescendantSoftNavigationContextChanged());
-  EXPECT_FALSE(content.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(ancestor));
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(target));
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(descendant));
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(content));
 
   EXPECT_TRUE(ancestor.ShouldInheritSoftNavigationContext());
   EXPECT_TRUE(target.ShouldInheritSoftNavigationContext());
@@ -601,26 +601,26 @@ TEST_F(SoftNavigationPrePaintTreeWalkTest,
   ASSERT_TRUE(tracker);
   tracker->MarkNodeAsDirectlyModified(target.GetNode(), context);
 
-  EXPECT_FALSE(ancestor.SoftNavigationContextChanged());
-  EXPECT_TRUE(target.SoftNavigationContextChanged());
-  EXPECT_FALSE(descendant.SoftNavigationContextChanged());
-  EXPECT_FALSE(content.SoftNavigationContextChanged());
+  EXPECT_FALSE(SoftNavigationContextChanged(ancestor));
+  EXPECT_TRUE(SoftNavigationContextChanged(target));
+  EXPECT_FALSE(SoftNavigationContextChanged(descendant));
+  EXPECT_FALSE(SoftNavigationContextChanged(content));
 
-  EXPECT_TRUE(ancestor.DescendantSoftNavigationContextChanged());
-  EXPECT_FALSE(target.DescendantSoftNavigationContextChanged());
-  EXPECT_FALSE(descendant.DescendantSoftNavigationContextChanged());
-  EXPECT_FALSE(content.DescendantSoftNavigationContextChanged());
+  EXPECT_TRUE(DescendantSoftNavigationContextChanged(ancestor));
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(target));
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(descendant));
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(content));
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(ancestor.SoftNavigationContextChanged());
-  EXPECT_FALSE(target.SoftNavigationContextChanged());
-  EXPECT_FALSE(descendant.SoftNavigationContextChanged());
-  EXPECT_FALSE(content.SoftNavigationContextChanged());
+  EXPECT_FALSE(SoftNavigationContextChanged(ancestor));
+  EXPECT_FALSE(SoftNavigationContextChanged(target));
+  EXPECT_FALSE(SoftNavigationContextChanged(descendant));
+  EXPECT_FALSE(SoftNavigationContextChanged(content));
 
-  EXPECT_FALSE(ancestor.DescendantSoftNavigationContextChanged());
-  EXPECT_FALSE(target.DescendantSoftNavigationContextChanged());
-  EXPECT_FALSE(descendant.DescendantSoftNavigationContextChanged());
-  EXPECT_FALSE(content.DescendantSoftNavigationContextChanged());
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(ancestor));
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(target));
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(descendant));
+  EXPECT_FALSE(DescendantSoftNavigationContextChanged(content));
 
   EXPECT_TRUE(ancestor.ShouldInheritSoftNavigationContext());
   EXPECT_FALSE(target.ShouldInheritSoftNavigationContext());
@@ -675,15 +675,15 @@ TEST_F(ContainerTimingPrePaintTreeWalkTest,
 
   // A clean walk with no containertiming roots leaves every node clean and
   // inheriting its (absent) ancestor root.
-  EXPECT_FALSE(ancestor.ContainerTimingChanged());
-  EXPECT_FALSE(target.ContainerTimingChanged());
-  EXPECT_FALSE(descendant.ContainerTimingChanged());
-  EXPECT_FALSE(content.ContainerTimingChanged());
+  EXPECT_FALSE(ContainerTimingChanged(ancestor));
+  EXPECT_FALSE(ContainerTimingChanged(target));
+  EXPECT_FALSE(ContainerTimingChanged(descendant));
+  EXPECT_FALSE(ContainerTimingChanged(content));
 
-  EXPECT_FALSE(ancestor.DescendantContainerTimingChanged());
-  EXPECT_FALSE(target.DescendantContainerTimingChanged());
-  EXPECT_FALSE(descendant.DescendantContainerTimingChanged());
-  EXPECT_FALSE(content.DescendantContainerTimingChanged());
+  EXPECT_FALSE(DescendantContainerTimingChanged(ancestor));
+  EXPECT_FALSE(DescendantContainerTimingChanged(target));
+  EXPECT_FALSE(DescendantContainerTimingChanged(descendant));
+  EXPECT_FALSE(DescendantContainerTimingChanged(content));
 
   EXPECT_TRUE(ancestor.ShouldInheritContainerTimingRoot());
   EXPECT_TRUE(target.ShouldInheritContainerTimingRoot());
@@ -696,29 +696,29 @@ TEST_F(ContainerTimingPrePaintTreeWalkTest,
   target_element->setAttribute(html_names::kContainertimingAttr,
                                AtomicString("target"));
 
-  EXPECT_FALSE(ancestor.ContainerTimingChanged());
-  EXPECT_TRUE(target.ContainerTimingChanged());
-  EXPECT_FALSE(descendant.ContainerTimingChanged());
-  EXPECT_FALSE(content.ContainerTimingChanged());
+  EXPECT_FALSE(ContainerTimingChanged(ancestor));
+  EXPECT_TRUE(ContainerTimingChanged(target));
+  EXPECT_FALSE(ContainerTimingChanged(descendant));
+  EXPECT_FALSE(ContainerTimingChanged(content));
 
-  EXPECT_TRUE(ancestor.DescendantContainerTimingChanged());
-  EXPECT_FALSE(target.DescendantContainerTimingChanged());
-  EXPECT_FALSE(descendant.DescendantContainerTimingChanged());
-  EXPECT_FALSE(content.DescendantContainerTimingChanged());
+  EXPECT_TRUE(DescendantContainerTimingChanged(ancestor));
+  EXPECT_FALSE(DescendantContainerTimingChanged(target));
+  EXPECT_FALSE(DescendantContainerTimingChanged(descendant));
+  EXPECT_FALSE(DescendantContainerTimingChanged(content));
 
   // The walk consumes the dirty bits and caches the inheritance decision:
   // #target becomes a root (does not inherit), its descendants inherit it.
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_FALSE(ancestor.ContainerTimingChanged());
-  EXPECT_FALSE(target.ContainerTimingChanged());
-  EXPECT_FALSE(descendant.ContainerTimingChanged());
-  EXPECT_FALSE(content.ContainerTimingChanged());
+  EXPECT_FALSE(ContainerTimingChanged(ancestor));
+  EXPECT_FALSE(ContainerTimingChanged(target));
+  EXPECT_FALSE(ContainerTimingChanged(descendant));
+  EXPECT_FALSE(ContainerTimingChanged(content));
 
-  EXPECT_FALSE(ancestor.DescendantContainerTimingChanged());
-  EXPECT_FALSE(target.DescendantContainerTimingChanged());
-  EXPECT_FALSE(descendant.DescendantContainerTimingChanged());
-  EXPECT_FALSE(content.DescendantContainerTimingChanged());
+  EXPECT_FALSE(DescendantContainerTimingChanged(ancestor));
+  EXPECT_FALSE(DescendantContainerTimingChanged(target));
+  EXPECT_FALSE(DescendantContainerTimingChanged(descendant));
+  EXPECT_FALSE(DescendantContainerTimingChanged(content));
 
   EXPECT_TRUE(ancestor.ShouldInheritContainerTimingRoot());
   EXPECT_FALSE(target.ShouldInheritContainerTimingRoot());
