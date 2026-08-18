@@ -5,6 +5,7 @@
 import 'chrome://iwa-dev/install_dialog.js';
 
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
+import {PLACEHOLDER_URL as PROXY_PLACEHOLDER_URL} from 'chrome://iwa-dev/install_dev_proxy_tab.js';
 import type {IwaDevInstallDialogElement} from 'chrome://iwa-dev/install_dialog.js';
 import {TabIndex} from 'chrome://iwa-dev/install_dialog.js';
 import {MIN_FETCH_DELAY_MS, PLACEHOLDER_URL} from 'chrome://iwa-dev/install_update_manifest_tab.js';
@@ -93,6 +94,18 @@ suite('<iwa-dev-install-dialog>', () => {
       input = proxyTab.shadowRoot!.querySelector<CrInputElement>('cr-input')!;
       assertTrue(!!input);
     });
+
+    test(
+        'auto-completes placeholder url on Tab keydown when url input is empty',
+        async () => {
+          assertEquals('', input.value);
+          assertTrue(installButton.disabled);
+
+          input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Tab'}));
+          await microtasksFinished();
+          assertEquals(PROXY_PLACEHOLDER_URL, input.value);
+          assertFalse(installButton.disabled);
+        });
 
     test('validates proxy url on install click', async () => {
       const invalidUrl = 'invalid-url';

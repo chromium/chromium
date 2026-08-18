@@ -7,6 +7,8 @@ import '//resources/cr_elements/cr_input/cr_input.js';
 import {getHtml} from './install_dev_proxy_tab.html.js';
 import {IwaDevInstallTabElement} from './install_tab.js';
 
+export const PLACEHOLDER_URL = 'http://localhost:2137';
+
 export class IwaDevInstallDevProxyTabElement extends IwaDevInstallTabElement {
   static get is() {
     return 'iwa-dev-install-dev-proxy-tab';
@@ -51,6 +53,12 @@ export class IwaDevInstallDevProxyTabElement extends IwaDevInstallTabElement {
   }
 
   protected onInputKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Tab' && !this.url_) {
+      e.preventDefault();
+      this.url_ = PLACEHOLDER_URL;
+      this.notifyValidChanged();
+      return;
+    }
     if (e.key === 'Enter' && this.isValid()) {
       this.submit();
     }

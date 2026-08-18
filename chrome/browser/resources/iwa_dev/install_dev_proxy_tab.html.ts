@@ -5,6 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {IwaDevInstallDevProxyTabElement} from './install_dev_proxy_tab.js';
+import {PLACEHOLDER_URL} from './install_dev_proxy_tab.js';
 
 export function getHtml(this: IwaDevInstallDevProxyTabElement) {
   // clang-format off
@@ -12,7 +13,7 @@ export function getHtml(this: IwaDevInstallDevProxyTabElement) {
 <cr-input
     type="url"
     label="Dev Mode Proxy URL"
-    placeholder="http://localhost:2137"
+    placeholder="${PLACEHOLDER_URL}"
     .value="${this.url_}"
     @value-changed="${this.onUrlValueChanged_}"
     @keydown="${this.onInputKeydown_}"
