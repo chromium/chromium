@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -23,7 +27,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
      */
     WritableBooleanPropertyKey ACTIVITY_WINDOW_FOCUSED = new WritableBooleanPropertyKey();
 
-    WritableIntPropertyKey SELECTION_MODE = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<SelectionController.Mode> SELECTION_MODE =
+            new WritableIntDefPropertyKey<>(SelectionController.Mode.SATURATING);
 
     WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
@@ -33,7 +38,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
      * Specifies the color scheme. It can be light or dark because of a publisher defined color,
      * incognito, or the default theme that follows dynamic colors.
      */
-    WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<BrandedColorScheme> COLOR_SCHEME =
+            new WritableIntDefPropertyKey<>(BrandedColorScheme.APP_DEFAULT);
 
     /**
      * Whether the dropdown container should always be visible, even if there's no suggestions to
@@ -64,7 +70,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
             new ReadableObjectPropertyKey<>();
 
     /** The layout mode of the fusebox; see {@link FuseboxLayoutMode} */
-    WritableIntPropertyKey FUSEBOX_LAYOUT_MODE = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<FuseboxLayoutMode> FUSEBOX_LAYOUT_MODE =
+            new WritableIntDefPropertyKey<>(FuseboxLayoutMode.TOOLBAR);
 
     /**
      * The observer that will receive notifications that the user is interacting with an item on the
@@ -102,7 +109,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     ReadableObjectPropertyKey<ModelList> SUGGESTION_MODELS = new ReadableObjectPropertyKey<>();
 
     /** On-screen placement of the Toolbar. */
-    WritableIntPropertyKey TOOLBAR_POSITION = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<ControlsPosition> TOOLBAR_POSITION =
+            new WritableIntDefPropertyKey<>(ControlsPosition.TOP);
 
     /** Whether to apply a left margin offset to the suggestions container. */
     WritableBooleanPropertyKey APPLY_MARGIN_FOR_LEFT_SIDE_BAR = new WritableBooleanPropertyKey();
