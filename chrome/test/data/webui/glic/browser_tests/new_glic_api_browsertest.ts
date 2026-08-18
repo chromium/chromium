@@ -653,6 +653,54 @@ class ApiTests extends ApiTestFixtureBase {
     assertFalse('pageContent' in result);
     assertFalse('screenshot' in result);
   }
+
+  async testGetContextFromFocusedTabWithAllRequestedData() {
+    assertDefined(this.host.getContextFromFocusedTab);
+    const result = await this.host.getContextFromFocusedTab({
+      innerText: true,
+      viewportScreenshot: true,
+      annotatedPageContent: true,
+      maxMetaTags: 32,
+      pdfData: true,
+    });
+    assertDefined(result);
+    assertDefined(result.tabData);
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/glic/browser_tests/test.html',
+        `Tab data has unexpected url ${result.tabData.url}`);
+    assertFalse(!!result.pdfDocumentData);  // The page is not a PDF.
+    assertDefined(result.webPageData);
+    assertEquals(
+        'This is a test page', result.webPageData.mainDocument.innerText);
+    assertDefined(result.viewportScreenshot);
+    assertTrue(
+        (result.viewportScreenshot.data.byteLength ?? 0) > 0,
+        `Expected viewport screenshot bytes, got ${
+            result.viewportScreenshot.data.byteLength}`);
+    assertTrue(result.viewportScreenshot.heightPixels > 0);
+    assertTrue(result.viewportScreenshot.widthPixels > 0);
+    assertEquals('image/jpeg', result.viewportScreenshot.mimeType);
+    assertDefined(result.annotatedPageData);
+    const annotatedPageContentSize =
+        (await new Response(result.annotatedPageData.annotatedPageContent)
+             .bytes())
+            .length;
+    assertTrue(annotatedPageContentSize > 1);
+
+    // Check metadata.
+    assertDefined(result.annotatedPageData.metadata);
+    assertDefined(result.annotatedPageData.metadata.frameMetadata);
+    assertEquals(result.annotatedPageData.metadata.frameMetadata.length, 1);
+    const frameMetadata = result.annotatedPageData.metadata.frameMetadata[0];
+    assertDefined(frameMetadata);
+    const url: URL = new URL(frameMetadata.url);
+    assertEquals(url.pathname, '/glic/browser_tests/test.html');
+    assertEquals(frameMetadata.metaTags.length, 1);
+    const metaTag = frameMetadata.metaTags[0];
+    assertDefined(metaTag);
+    assertEquals(metaTag.name, 'author');
+    assertEquals(metaTag.content, 'George');
+  }
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

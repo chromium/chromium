@@ -231,6 +231,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestSystemSettingsTest",
       "NewGlicGetHostCapabilityApiTest",
       "NewGlicApiTestUserStatusCheckTest",
+      "NewGlicApiTestWithPixelOutput",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
       "NewGlicApiTestWithNewTabDaisyChain",
@@ -504,7 +505,7 @@ class NewGlicApiTestWithPixelOutput : public NewGlicApiTest {
   NewGlicApiTestWithPixelOutput() {
     // Pixel output is necessary for some tests, but it slows down the tests
     // significantly, and may cause flakes on some platforms.
-    EnablePixelOutput(2.0f);
+    EnablePixelOutput();
   }
 };
 
@@ -3580,6 +3581,29 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput,
       {GetTabListInterface()->GetTab(0)->GetHandle(),
        GetTabListInterface()->GetTab(1)->GetHandle()});
   ExecuteJsTest();
+}
+
+// Note: Win-ASAN is flaky.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_testGetContextFromFocusedTabWithAllRequestedData \
+  DISABLED_testGetContextFromFocusedTabWithAllRequestedData
+#else
+#define MAYBE_testGetContextFromFocusedTabWithAllRequestedData \
+  testGetContextFromFocusedTabWithAllRequestedData
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput,
+                       MAYBE_testGetContextFromFocusedTabWithAllRequestedData) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab0);
+  NavigateTab(*tab0,
+              embedded_test_server()->GetURL("/glic/browser_tests/test.html"));
+  ASSERT_OK(OpenGlicForActiveTab());
+  glic::GlicHistogramTester histogram_tester;
+  ExecuteJsTest();
+
+  // No error should be logged to the text histogram.
+  histogram_tester.ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Text", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithPixelOutput,

@@ -761,25 +761,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
               testing::IsEmpty());
 }
 
-
-// Note: Win-ASAN is flaky.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_testGetContextFromFocusedTabWithAllRequestedData \
-  DISABLED_testGetContextFromFocusedTabWithAllRequestedData
-#else
-#define MAYBE_testGetContextFromFocusedTabWithAllRequestedData \
-  testGetContextFromFocusedTabWithAllRequestedData
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       MAYBE_testGetContextFromFocusedTabWithAllRequestedData) {
-  ExecuteJsTest();
-
-  // No context error should have been recorded.
-  EXPECT_THAT(histogram_tester->GetAllSamplesForPrefix(
-                  "Glic.Api.GetContextFromFocusedTab.Error"),
-              testing::IsEmpty());
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextForActorFromTabWithoutPermission) {
   ExecuteJsTest();
