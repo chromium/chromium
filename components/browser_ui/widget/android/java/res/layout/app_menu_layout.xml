@@ -18,7 +18,7 @@ found in the LICENSE file.
         android:clipToOutline="true"
         android:background="?attr/popupBgShape">
 
-        <org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView
+        <org.chromium.components.browser_ui.widget.list_view.AppMenuListView
             android:id="@+id/app_menu_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"

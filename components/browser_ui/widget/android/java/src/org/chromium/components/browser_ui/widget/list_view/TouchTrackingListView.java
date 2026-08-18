@@ -45,7 +45,7 @@ import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
  * </pre>
  */
 @NullMarked
-public final class TouchTrackingListView extends ListView implements ListViewTouchTracker {
+public class TouchTrackingListView extends ListView implements ListViewTouchTracker {
 
     private final GestureDetector mGestureDetector;
 
