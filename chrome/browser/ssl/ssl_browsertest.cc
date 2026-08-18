@@ -63,7 +63,6 @@
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
 #include "chrome/browser/ssl/ssl_client_certificate_selector.h"
 #include "chrome/browser/ssl/ssl_error_controller_client.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -4852,11 +4851,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, RestoreHasSSLState) {
 
 void SetupRestoredTabWithNavigation(
     net::test_server::EmbeddedTestServer* https_server,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   ASSERT_TRUE(https_server->Start());
   GURL url(https_server->GetURL("/ssl/google.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
-  WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = browser->GetTabStripModel()->GetActiveWebContents();
 
   content::TestNavigationObserver observer(tab);
   EXPECT_TRUE(ExecJs(tab, "history.pushState({}, '', '');"));
@@ -4867,13 +4866,13 @@ void SetupRestoredTabWithNavigation(
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   chrome::CloseTab(browser);
 
-  WebContents* blank_tab = browser->tab_strip_model()->GetActiveWebContents();
+  WebContents* blank_tab = browser->GetTabStripModel()->GetActiveWebContents();
 
   // Restore the tab.
   ui_test_utils::TabAddedWaiter tab_added_waiter(browser);
   chrome::RestoreTab(browser);
   tab_added_waiter.Wait();
-  tab = browser->tab_strip_model()->GetActiveWebContents();
+  tab = browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   EXPECT_NE(tab, blank_tab);

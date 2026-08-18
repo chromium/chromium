@@ -5,7 +5,7 @@
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -40,9 +40,9 @@ class ConnectionHelpTabHelperTest : public InProcessBrowserTest {
   }
 
  protected:
-  void SetHelpCenterUrl(Browser* browser, const GURL& url) {
+  void SetHelpCenterUrl(BrowserWindowInterface* browser, const GURL& url) {
     ConnectionHelpTabHelper::FromWebContents(
-        browser->tab_strip_model()->GetActiveWebContents())
+        browser->GetTabStripModel()->GetActiveWebContents())
         ->SetHelpCenterUrlForTesting(url);
   }
 

@@ -6,7 +6,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/ssl_browsertest_base.h"
 #include "chrome/browser/ssl/ssl_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -35,7 +35,7 @@ class SSLUITestWithWebApps : public InteractiveBrowserTestMixin<SSLUITestBase> {
         /*enabled_features=*/{net::features::kVerifyQWACs}, disabled_features);
   }
 
-  Browser* InstallAndOpenTestWebApp(const GURL& start_url) {
+  BrowserWindowInterface* InstallAndOpenTestWebApp(const GURL& start_url) {
     auto web_app_info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -47,7 +47,8 @@ class SSLUITestWithWebApps : public InteractiveBrowserTestMixin<SSLUITestBase> {
     webapps::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_info));
 
-    Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+    BrowserWindowInterface* app_browser =
+        web_app::LaunchWebAppBrowserAndWait(profile, app_id);
     ui_test_utils::WaitUntilBrowserBecomeActive(app_browser);
     return app_browser;
   }
@@ -56,7 +57,7 @@ class SSLUITestWithWebApps : public InteractiveBrowserTestMixin<SSLUITestBase> {
   // the app window is closed, a new tab with the app URL is opened, and there
   // is no interstitial.
   void ProceedThroughInterstitialInAppAndCheckNewTabOpened(
-      Browser* app_browser,
+      BrowserWindowInterface* app_browser,
       const GURL& app_url) {
     Profile* profile = browser()->GetProfile();
 
@@ -66,7 +67,7 @@ class SSLUITestWithWebApps : public InteractiveBrowserTestMixin<SSLUITestBase> {
     int num_tabs = browser()->tab_strip_model()->count();
 
     ProceedThroughInterstitial(
-        app_browser->tab_strip_model()->GetActiveWebContents());
+        app_browser->GetTabStripModel()->GetActiveWebContents());
     ui_test_utils::WaitUntilBrowserBecomeActive(browser());
 
     EXPECT_EQ(--num_browsers,
@@ -94,10 +95,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithWebApps,
   ASSERT_TRUE(https_server_expired_.Start());
 
   const GURL app_url = https_server_expired_.GetURL("/ssl/google.html");
-  Browser* app_browser = InstallAndOpenTestWebApp(app_url);
+  BrowserWindowInterface* app_browser = InstallAndOpenTestWebApp(app_url);
 
   content::WebContents* app_tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(app_tab));
   ssl_test_util::CheckAuthenticationBrokenState(
       app_tab, net::CERT_STATUS_DATE_INVALID,
@@ -128,12 +129,12 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWithWebApps,
                                                 net::CERT_STATUS_DATE_INVALID,
                                                 ssl_test_util::AuthState::NONE);
 
-  Browser* app_browser = InstallAndOpenTestWebApp(app_url);
+  BrowserWindowInterface* app_browser = InstallAndOpenTestWebApp(app_url);
 
   // Apps are not allowed to have SSL errors, so the interstitial should be
   // showing even though the user proceeded through it in a regular tab.
   content::WebContents* app_tab =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(app_tab));
 
   ProceedThroughInterstitialInAppAndCheckNewTabOpened(app_browser, app_url);

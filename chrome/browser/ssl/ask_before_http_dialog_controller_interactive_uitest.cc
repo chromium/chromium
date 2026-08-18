@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
+
 #include <algorithm>
 #include <memory>
 #include <vector>
@@ -11,11 +13,11 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ssl/ask_before_http_dialog_controller.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -215,7 +217,7 @@ class AskBeforeHttpDialogControllerUiTest
   // Incognito testing support
   //
   // Returns the active Browser for the test type being run.
-  Browser* GetBrowser() const {
+  BrowserWindowInterface* GetBrowser() const {
     return incognito_browser_ ? incognito_browser_.get() : browser();
   }
   // Call to use an Incognito browser rather than the default.
@@ -565,7 +567,8 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
 class CrashTriggerView : public views::View {
   METADATA_HEADER(CrashTriggerView, views::View)
  public:
-  explicit CrashTriggerView(Browser* browser) : browser_(browser) {
+  explicit CrashTriggerView(BrowserWindowInterface* browser)
+      : browser_(browser) {
     SetFocusBehavior(FocusBehavior::ALWAYS);
     GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
     GetViewAccessibility().SetName(u"Crash Trigger");
@@ -573,7 +576,7 @@ class CrashTriggerView : public views::View {
 
   void OnFocus() override {
     if (auto* tab = tabs::TabInterface::MaybeGetFromContents(
-            browser_->tab_strip_model()->GetActiveWebContents())) {
+            browser_->GetTabStripModel()->GetActiveWebContents())) {
       if (auto* controller = AskBeforeHttpDialogController::From(tab)) {
         controller->CloseDialog();
       }
@@ -582,7 +585,7 @@ class CrashTriggerView : public views::View {
   }
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 };
 
 BEGIN_METADATA(CrashTriggerView)

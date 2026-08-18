@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -54,7 +54,7 @@ class SSLFencedFrameBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  Browser* InstallAndOpenTestWebApp(const GURL& start_url) {
+  BrowserWindowInterface* InstallAndOpenTestWebApp(const GURL& start_url) {
     auto web_app_info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = start_url.GetWithoutFilename();
@@ -66,7 +66,8 @@ class SSLFencedFrameBrowserTest : public InProcessBrowserTest {
     webapps::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_info));
 
-    Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(profile, app_id);
+    BrowserWindowInterface* app_browser =
+        web_app::LaunchWebAppBrowserAndWait(profile, app_id);
     return app_browser;
   }
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
@@ -110,10 +111,10 @@ IN_PROC_BROWSER_TEST_F(SSLFencedFrameBrowserTest,
       "window.certificateErrorPageController.proceed();";
   ASSERT_TRUE(ExecJs(web_contents(), javascript));
 
-  Browser* app_browser = InstallAndOpenTestWebApp(
+  BrowserWindowInterface* app_browser = InstallAndOpenTestWebApp(
       embedded_test_server()->GetURL("/fenced_frames/title2.html"));
   WebContents* app_contents =
-      app_browser->tab_strip_model()->GetActiveWebContents();
+      app_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_FALSE(IsShowingSSLInterstitial(app_contents));
 
   // Create a fenced frame and navigate to the allowlisted url.
