@@ -369,8 +369,8 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
   std::unique_ptr<TabSearchUI> webui_controller_;
 };
 
-#if BUILDFLAG(IS_LINUX) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER) || \
-                            defined(MEMORY_SANITIZER))
+// TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_GetTabs DISABLED_GetTabs
 #else
 #define MAYBE_GetTabs GetTabs
@@ -887,8 +887,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_TabsNotChanged) {
 
 // Verify tab update event is called correctly with data
 // TODO(https://crbug.com/537538766): Fails on Linux MSan Tests and looks
-// flaky on Linux, generally.
-#if BUILDFLAG(IS_LINUX)
+// flaky on Linux and ChromeOS, generally.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TabUpdated DISABLED_TabUpdated
 #else
 #define MAYBE_TabUpdated TabUpdated
@@ -1317,7 +1317,13 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabInFuture) {
   handler()->GetProfileData(std::move(callback));
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
+// TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ReplaceActiveSplitTab DISABLED_ReplaceActiveSplitTab
+#else
+#define MAYBE_ReplaceActiveSplitTab ReplaceActiveSplitTab
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_ReplaceActiveSplitTab) {
   AddTabWithTitle(browser(), tab_url1_, kTabName1);
   AddTabWithTitle(browser(), tab_url2_, kTabName2);
   AddTabWithTitle(browser(), tab_url3_, kTabName3);
@@ -1453,7 +1459,13 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_TabSearchUsedPref) {
   EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, RemoveSplit_NTP) {
+// TODO(crbug.com/537538766): Flaky on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RemoveSplit_NTP DISABLED_RemoveSplit_NTP
+#else
+#define MAYBE_RemoveSplit_NTP RemoveSplit_NTP
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_RemoveSplit_NTP) {
   EXPECT_CALL(page_, HostWindowChanged()).Times(testing::AnyNumber());
   EXPECT_CALL(page_, TabsChanged(_)).Times(testing::AnyNumber());
   EXPECT_CALL(page_, TabUpdated(_)).Times(testing::AnyNumber());
