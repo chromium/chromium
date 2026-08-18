@@ -56,10 +56,7 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
   void PropagateFocusRequest(
       toolbar_ui_api::mojom::FocusRequestTarget target) override {}
 
-  std::optional<GURL> ConsumeDroppedUrl(
-      const gfx::PointF& drop_position) override {
-    return std::nullopt;
-  }
+  void OpenOmniboxIfFullPopup(bool query_zps) override {}
 
   toolbar_ui_api::mojom::OmniboxViewStatePtr TakeState() {
     return std::move(state_);
@@ -428,7 +425,8 @@ TEST_F(WebUIReadOnlyOmniboxTest, OnPointer) {
       omnibox_view_
           ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewPointer(
               toolbar_ui_api::mojom::OmniboxActionPointer::New(
-                  /*is_pointer_down=*/true, /*start_zero_suggest=*/false)))
+                  /*is_pointer_down=*/true, /*start_zero_suggest=*/false,
+                  gfx::Range(0))))
           .has_value());
 
   // Sending pointer up action with start_zero_suggest=true should succeed.
@@ -436,7 +434,8 @@ TEST_F(WebUIReadOnlyOmniboxTest, OnPointer) {
       omnibox_view_
           ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewPointer(
               toolbar_ui_api::mojom::OmniboxActionPointer::New(
-                  /*is_pointer_down=*/false, /*start_zero_suggest=*/true)))
+                  /*is_pointer_down=*/false, /*start_zero_suggest=*/true,
+                  gfx::Range(0))))
           .has_value());
 }
 

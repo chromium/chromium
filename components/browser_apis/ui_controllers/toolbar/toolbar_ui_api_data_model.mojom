@@ -143,6 +143,9 @@ struct OmniboxActionPointer {
   // If true, asks for zero-suggest completion to start. Applies only if
   // `is_pointer_down` is false.
   bool start_zero_suggest = false;
+
+  // State of the selection in the omnibox on the WebUI side.
+  gfx.mojom.Range selection;
 };
 
 struct OmniboxActionDropText {

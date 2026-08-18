@@ -60,16 +60,24 @@ class WebUIReadOnlyOmnibox
       public TemplateURLServiceObserver,
       public content::WebContentsObserver {
  public:
+  // Interface from the omnibox to its embedder (e.g. the location bar).
   class UpdatePropagator {
    public:
     virtual ~UpdatePropagator();
+    // Push omnibox state, `update`, to WebUI.
     virtual void PropagateOmniboxUpdate(
         toolbar_ui_api::mojom::OmniboxViewStatePtr update) = 0;
+
+    // Push whether to synthesize fake focus ring for AIM button to WebUI.
     virtual void PropagateApplyFocusRingToAimButton(bool force_focus) = 0;
+
+    // Push a focus request to WebUI.
     virtual void PropagateFocusRequest(
         toolbar_ui_api::mojom::FocusRequestTarget target) = 0;
-    virtual std::optional<GURL> ConsumeDroppedUrl(
-        const gfx::PointF& drop_position) = 0;
+
+    // If the location bar is using a full popup, ask to open it,
+    // potentially also querying zero suggest.
+    virtual void OpenOmniboxIfFullPopup(bool query_zps) = 0;
   };
 
   // Parameters must outlive `this`.
@@ -161,8 +169,11 @@ class WebUIReadOnlyOmnibox
   // Requests focus with particular omnibox-related target
   void SetFocusWithTarget(toolbar_ui_api::mojom::FocusRequestTarget target);
 
- private:
+  // Sends the current state of the omnibox to the UpdatePropagator
+  // passed to the constructor.
   void RequestUpdateWebUI();
+
+ private:
   void ResetFormatting();
   void ResetBrowserVersion();
 
@@ -173,8 +184,7 @@ class WebUIReadOnlyOmnibox
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnKey(
       const toolbar_ui_api::mojom::OmniboxActionKey& key);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnPointer(
-      bool is_down,
-      bool start_zero_suggest);
+      const toolbar_ui_api::mojom::OmniboxActionPointer& pointer);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropText(
       const toolbar_ui_api::mojom::OmniboxActionDropText& drop_text);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropFile(

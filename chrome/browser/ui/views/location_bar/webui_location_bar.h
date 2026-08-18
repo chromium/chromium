@@ -60,8 +60,7 @@ class WebUILocationBar : public LocationBar,
   void PropagateApplyFocusRingToAimButton(bool force_focus) override;
   void PropagateFocusRequest(
       toolbar_ui_api::mojom::FocusRequestTarget target) override;
-  std::optional<GURL> ConsumeDroppedUrl(
-      const gfx::PointF& drop_position) override;
+  void OpenOmniboxIfFullPopup(bool query_zps) override;
 
   // Called from WebUIToolbarWebView:
   void OnThemeChanged();
@@ -98,6 +97,7 @@ class WebUILocationBar : public LocationBar,
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
   ui::TrackedElement* GetAnchorOrNull() override;
+  bool in_popup_state_transition() const override;
   BrowserWindowInterface* GetBrowser() override;
   Profile* GetProfile() override;
   void OnChanged() override;
@@ -174,6 +174,7 @@ class WebUILocationBar : public LocationBar,
   void OnMovedOrShown(ui::TrackedElement* element);
   void OnPopupStateChanged(OmniboxPopupState old_state,
                            OmniboxPopupState new_state);
+  void ClearInPopupStateTransition();
 
   void UpdateLocationBarFlagsState();
   void UpdateSelectedKeywordState();
@@ -219,6 +220,7 @@ class WebUILocationBar : public LocationBar,
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
   std::unique_ptr<OmniboxPopupViewWebUI> omnibox_popup_view_;
+  const bool using_full_popup_;
   // The presenter controlling the showing of the AI mode popup.
   std::unique_ptr<OmniboxPopupAimPresenter> omnibox_popup_aim_presenter_;
   std::unique_ptr<OmniboxPopupFileSelector> omnibox_popup_file_selector_;
@@ -233,6 +235,8 @@ class WebUILocationBar : public LocationBar,
 
   // Whether to paint AIM button as focused (with focus still on omnibox).
   bool force_aim_button_focus_ring_ = false;
+
+  bool in_popup_state_transition_ = false;
 
   toolbar_ui_api::IconHandle location_icon_;
   security_state::SecurityLevel last_update_security_level_ =

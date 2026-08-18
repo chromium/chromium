@@ -622,6 +622,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.inputDelegate_.handlePointer(this, {
       isPointerDown: true,
       startZeroSuggest: false,
+      selection: this.getMojoSelection(),
     });
   }
 
@@ -664,6 +665,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.inputDelegate_.handlePointer(this, {
       isPointerDown: false,
       startZeroSuggest: zeroSuggest,
+      selection: this.getMojoSelection(),
     });
 
     this.selectAllOnMouseRelease_ = false;
@@ -717,6 +719,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.inputDelegate_.handlePointer(this, {
       isPointerDown: true,
       startZeroSuggest: false,
+      selection: this.getMojoSelection(),
     });
   }
 
@@ -739,6 +742,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         this.inputDelegate_.handlePointer(this, {
           isPointerDown: false,
           startZeroSuggest: false,
+          selection: this.getMojoSelection(),
         });
       }
       return;
@@ -757,6 +761,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.inputDelegate_.handlePointer(this, {
       isPointerDown: false,
       startZeroSuggest: zeroSuggest,
+      selection: this.getMojoSelection(),
     });
 
     this.selectAllOnTouchRelease_ = false;
