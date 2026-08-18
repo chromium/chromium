@@ -129,14 +129,19 @@ IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(TabGroupHeaderInteractiveUiTest,
                        MAYBE_DragCollapsedGroup) {
-  CreateTabGroup({CreateTab()});
+  tab_groups::TabGroupId group_id = CreateTabGroup({CreateTab()});
 
   RunTestSequence(
       WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
-      PollViewProperty(kTabGroupCollapsedState, kTabGroupHeaderElementId),
       // Collapse the group
-      MoveMouseTo(kTabGroupHeaderElementId), ClickMouse(ui_controls::LEFT),
-      WaitForState(kTabGroupCollapsedState, true), FinishTabstripAnimations(),
+      Do([&]() {
+        GetTabStrip()->ToggleTabGroupCollapsedState(
+            group_id, ToggleTabGroupCollapsedStateOrigin::kMouse);
+      }),
+      FinishTabstripAnimations(),
+      // Verify it is collapsed
+      CheckViewProperty(kTabGroupHeaderElementId,
+                        &TabGroupHeader::is_collapsed_for_testing, true),
       // Drag the group header. We drag it a bit to the right.
       MoveMouseTo(kTabGroupHeaderElementId),
       DragMouseTo(kTabGroupHeaderElementId,
