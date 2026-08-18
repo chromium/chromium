@@ -14,6 +14,7 @@
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor/layer_test_api.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace ui_devtools {
@@ -85,7 +86,8 @@ void AppendLayerPropertiesMatchedStyle(
     ret->emplace_back("alpha_shape_bounding_box", bounding_box.ToString());
   }
 
-  const cc::Layer* cc_layer = layer->cc_layer_for_testing();
+  const cc::Layer* cc_layer =
+      ui::LayerTestApi(const_cast<ui::Layer*>(layer)).cc_layer();
   if (cc_layer) {
     // Property trees must be updated in order to get valid render surface
     // reasons.

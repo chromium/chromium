@@ -4,9 +4,9 @@
 
 #include <surface-augmenter-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
-#include "build/build_config.h"
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
@@ -16,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_test_api.h"
 
 namespace exo::wayland {
 namespace {
@@ -241,10 +242,12 @@ TEST_F(SurfaceAugmenterTest, AugmentedSubSurfacesAreNotAttachedToLayerTree) {
   });
 
   // Check that the surfaces's Layers are attached.
-  EXPECT_TRUE(
-      parent_surface->window()->layer()->cc_layer_for_testing()->IsAttached());
-  EXPECT_TRUE(
-      child_surface->window()->layer()->cc_layer_for_testing()->IsAttached());
+  EXPECT_TRUE(ui::LayerTestApi(parent_surface->window()->layer())
+                  .cc_layer()
+                  ->IsAttached());
+  EXPECT_TRUE(ui::LayerTestApi(child_surface->window()->layer())
+                  .cc_layer()
+                  ->IsAttached());
 
   //----------------------------------------------------------------
   //  Create yet another surface. Make it augmented.
@@ -289,8 +292,9 @@ TEST_F(SurfaceAugmenterTest, AugmentedSubSurfacesAreNotAttachedToLayerTree) {
   });
 
   // Check that the last child's Layer is not attached.
-  EXPECT_FALSE(
-      child2_surface->window()->layer()->cc_layer_for_testing()->IsAttached());
+  EXPECT_FALSE(ui::LayerTestApi(child2_surface->window()->layer())
+                   .cc_layer()
+                   ->IsAttached());
 }
 
 }  // namespace

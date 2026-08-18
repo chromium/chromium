@@ -39,6 +39,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_delegate.h"
 #include "ui/compositor/layer_observer.h"
+#include "ui/compositor/layer_test_api.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/gfx/animation/animation.h"
@@ -1037,10 +1038,6 @@ void Layer::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
   SetLayerBackgroundFilters();
 }
 
-bool Layer::SwitchCCLayerForTest() {
-  return false;
-}
-
 void Layer::SetBackdropFilterQuality(const float quality) {
   backdrop_filter_quality_ = quality / GetDeviceScaleFactor();
   cc_layer_->SetBackdropFilterQuality(backdrop_filter_quality_);
@@ -1101,9 +1098,6 @@ base::WeakPtr<Layer> Layer::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-bool Layer::ContainsMirrorForTest(Layer* mirror) const {
-  return std::ranges::contains(mirrors_, mirror, &LayerMirror::dest);
-}
 
 bool Layer::HasExternalContent() const {
   return false;
@@ -1711,6 +1705,10 @@ bool Layer::GetTransformRelativeToImpl(const Layer* ancestor,
   return p == ancestor;
 }
 
+bool Layer::ContainsMirrorForTest(Layer* mirror) const {
+  return std::ranges::contains(mirrors_, mirror, &LayerMirror::dest);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // LayerNotDrawn, public:
 
@@ -1728,18 +1726,6 @@ LayerNotDrawn::~LayerNotDrawn() {
 bool LayerNotDrawn::ShouldSchedulePaint() const {
   // LayerNotDrawn does not draw any content, so it never needs to paint.
   return false;
-}
-
-bool LayerNotDrawn::SwitchCCLayerForTest() {
-  if (!FinishAnimationsBeforeSwitchToLayer()) {
-    return false;
-  }
-
-  scoped_refptr<cc::PictureLayer> new_layer = cc::PictureLayer::Create(this);
-  SwitchToLayer(new_layer);
-
-  content_layer_ = std::move(new_layer);
-  return true;
 }
 
 scoped_refptr<cc::DisplayItemList> LayerNotDrawn::PaintContentsToDisplayList() {
@@ -1948,18 +1934,6 @@ bool LayerTextured::ShouldSchedulePaint() const {
   return delegate_ || LayerWithExternalTexture::ShouldSchedulePaint();
 }
 
-bool LayerTextured::SwitchCCLayerForTest() {
-  if (!FinishAnimationsBeforeSwitchToLayer()) {
-    return false;
-  }
-
-  scoped_refptr<cc::PictureLayer> new_layer = cc::PictureLayer::Create(this);
-  SwitchToLayer(new_layer);
-
-  content_layer_ = std::move(new_layer);
-  return true;
-}
-
 scoped_refptr<cc::DisplayItemList> LayerTextured::PaintContentsToDisplayList() {
   TRACE_EVENT1("ui", "LayerTextured::PaintContentsToDisplayList", "name",
                name_);
@@ -1988,10 +1962,6 @@ bool LayerTextured::FillsBoundsCompletely() const {
 
 void LayerTextured::SetFillsBoundsCompletely(bool fills_bounds_completely) {
   fills_bounds_completely_ = fills_bounds_completely;
-}
-
-bool LayerTextured::IsPaintDeferredForTesting() const {
-  return deferred_paint_requests_;
 }
 
 void LayerTextured::OnPaintScheduled() {
@@ -2062,18 +2032,6 @@ bool LayerSolidColor::ShouldSchedulePaint() const {
 
 void LayerSolidColor::OnPaintScheduled() {
   ScheduleDraw();
-}
-
-bool LayerSolidColor::SwitchCCLayerForTest() {
-  if (!FinishAnimationsBeforeSwitchToLayer()) {
-    return false;
-  }
-
-  scoped_refptr<cc::SolidColorLayer> new_layer = cc::SolidColorLayer::Create();
-  SwitchToLayer(new_layer);
-
-  solid_color_layer_ = std::move(new_layer);
-  return true;
 }
 
 void LayerSolidColor::SetShowReflectedLayerSubtree(
@@ -2271,19 +2229,6 @@ bool LayerSurface::HasExternalContent() const {
 
 bool LayerSurface::ShouldSchedulePaint() const {
   return false;
-}
-
-bool LayerSurface::SwitchCCLayerForTest() {
-  if (!FinishAnimationsBeforeSwitchToLayer()) {
-    return false;
-  }
-
-  scoped_refptr<cc::SurfaceLayer> new_layer = cc::SurfaceLayer::Create();
-  SwitchToLayer(new_layer);
-
-  surface_layer_ = std::move(new_layer);
-  surface_layer_->SetSurfaceHitTestable(true);
-  return true;
 }
 
 void LayerSurface::SetBackgroundColor(SkColor4f color) {

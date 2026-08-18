@@ -17,6 +17,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_test_api.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -90,7 +91,8 @@ void PrintLayerHierarchyImp(const Layer* layer,
   if (!layer->GetSubpixelOffset().IsZero())
     *out << " " << layer->GetSubpixelOffset().ToString();
 
-  const cc::Layer* cc_layer = layer->cc_layer_for_testing();
+  const cc::Layer* cc_layer =
+      ui::LayerTestApi(const_cast<Layer*>(layer)).cc_layer();
   if (cc_layer) {
     // Property trees must be updated in order to get valid render surface
     // reasons.

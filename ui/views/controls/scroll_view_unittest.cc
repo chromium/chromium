@@ -28,6 +28,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_test_api.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
@@ -3193,8 +3194,8 @@ TEST_P(WidgetScrollViewTestRTLAndLayers, ScrollOffsetUsingLayers) {
   EXPECT_TRUE(compositor);
 
   // But setting on the impl side should fail since the layer isn't committed.
-  cc::ElementId element_id =
-      container->layer()->cc_layer_for_testing()->element_id();
+  ui::LayerTestApi layer_test_api(container->layer());
+  cc::ElementId element_id = layer_test_api.cc_layer()->element_id();
   EXPECT_FALSE(compositor->ScrollLayerTo(element_id, gfx::PointF(0, 0)));
   EXPECT_EQ(gfx::PointF(0, offset.y()), test_api.CurrentOffset());
 

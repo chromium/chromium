@@ -535,24 +535,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   gfx::PointF CurrentScrollOffset() const;
   void SetScrollOffset(const gfx::PointF& offset);
 
-  cc::Layer* cc_layer_for_testing() { return cc_layer_; }
-  const cc::Layer* cc_layer_for_testing() const { return cc_layer_; }
-
-
   float device_scale_factor() const { return device_scale_factor_; }
-
-  // Triggers a call to `FinishAnimationsBeforeSwitchToLayer` and
-  // `SwitchToLayer`. If this returns false, then `this` Layer was destroyed.
-  // TODO(crbug.com/522627357): Move all the test-only methods to TestApi class.
-  virtual bool SwitchCCLayerForTest();
-
-  const cc::Region& damaged_region_for_testing() const {
-    return damaged_region_;
-  }
-
-  const gfx::Size& frame_size_in_dip_for_testing() const {
-    return frame_size_in_dip_;
-  }
 
   // |quality| is used as a multiplier to scale the temporary surface
   // that might be created by the compositor to apply the backdrop filters.
@@ -568,12 +551,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   const Layer* layer_mask_back_link() const { return layer_mask_back_link_; }
 
   base::WeakPtr<Layer> AsWeakPtr();
-
-  bool ContainsMirrorForTest(Layer* mirror) const;
-
-  void SetCompositorForTesting(Compositor* compositor) {
-    compositor_ = compositor;
-  }
 
  protected:
   explicit Layer(LayerType type);
@@ -607,6 +584,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   friend class ScopedLayerRequest<LayerRequestType::kPaint>;
   friend class ScopedLayerRequest<LayerRequestType::kTrilinearFiltering>;
   friend class ScopedLayerRequest<LayerRequestType::kCacheRenderSurface>;
+  friend class LayerTestApi;
   class LayerMirror;
   class SubpixelPositionOffsetCache;
 
@@ -731,6 +709,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   bool GetTransformRelativeToImpl(const Layer* ancestor,
                                   bool is_target_transform,
                                   gfx::Transform* transform) const;
+
+  bool ContainsMirrorForTest(Layer* mirror) const;
 
   const LayerType type_;
 
@@ -863,7 +843,6 @@ class COMPOSITOR_EXPORT LayerNotDrawn : public Layer,
 
   // Layer:
   bool ShouldSchedulePaint() const override;
-  bool SwitchCCLayerForTest() override;
 
   // ContentLayerClient implementation.
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
@@ -949,7 +928,6 @@ class COMPOSITOR_EXPORT LayerTextured : public LayerWithExternalTexture,
   // Layer:
   std::unique_ptr<Layer> Clone() const override;
   bool ShouldSchedulePaint() const override;
-  bool SwitchCCLayerForTest() override;
 
   // ContentLayerClient implementation.
   scoped_refptr<cc::DisplayItemList> PaintContentsToDisplayList() override;
@@ -961,8 +939,6 @@ class COMPOSITOR_EXPORT LayerTextured : public LayerWithExternalTexture,
 
   cc::PictureLayer* content_layer() { return content_layer_.get(); }
 
-  bool IsPaintDeferredForTesting() const;
-
  protected:
   // Layer:
   void OnPaintScheduled() override;
@@ -971,6 +947,8 @@ class COMPOSITOR_EXPORT LayerTextured : public LayerWithExternalTexture,
   void Reset() override;
 
  private:
+  friend class LayerTestApi;
+
   // See `SetFillsBoundsCompletely()`.
   bool fills_bounds_completely_ = false;
 
@@ -1016,11 +994,10 @@ class COMPOSITOR_EXPORT LayerSolidColor : public LayerWithExternalTexture {
   // Layer:
   std::unique_ptr<Layer> Clone() const override;
   bool ShouldSchedulePaint() const override;
-  bool SwitchCCLayerForTest() override;
-
-  cc::MirrorLayer* mirror_layer_for_testing() { return mirror_layer_.get(); }
 
  private:
+  friend class LayerTestApi;
+
   // Layer:
   void Reset() override;
   void OnPaintScheduled() override;
@@ -1097,7 +1074,6 @@ class COMPOSITOR_EXPORT LayerSurface : public Layer {
   bool HasExternalContent() const override;
   std::unique_ptr<Layer> Clone() const override;
   bool ShouldSchedulePaint() const override;
-  bool SwitchCCLayerForTest() override;
 
   void SetBackgroundColor(SkColor4f color);
   SkColor4f GetBackgroundColor() const;

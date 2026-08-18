@@ -27,6 +27,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator_collection.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/compositor/layer_test_api.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/scoped_layer_request.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
@@ -1788,7 +1789,8 @@ TEST(LayerAnimatorTest, CacheRenderSurface) {
   TestImplicitAnimationObserver observer(false);
 
   EXPECT_FALSE(observer.animations_completed());
-  EXPECT_FALSE(layer.cc_layer_for_testing()->cache_render_surface());
+  ui::LayerTestApi layer_test_api(&layer);
+  EXPECT_FALSE(layer_test_api.cc_layer()->cache_render_surface());
   animator->SetOpacity(1.0f);
 
   {
@@ -1799,13 +1801,13 @@ TEST(LayerAnimatorTest, CacheRenderSurface) {
   }
 
   EXPECT_FALSE(observer.animations_completed());
-  EXPECT_TRUE(layer.cc_layer_for_testing()->cache_render_surface());
+  EXPECT_TRUE(layer_test_api.cc_layer()->cache_render_surface());
   animator->StopAnimatingProperty(LayerAnimationElement::OPACITY);
   EXPECT_TRUE(observer.animations_completed());
   EXPECT_TRUE(observer.WasAnimationCompletedForProperty(
       LayerAnimationElement::OPACITY));
   EXPECT_FLOAT_EQ(0.0f, layer.opacity());
-  EXPECT_FALSE(layer.cc_layer_for_testing()->cache_render_surface());
+  EXPECT_FALSE(layer_test_api.cc_layer()->cache_render_surface());
 }
 
 // Tests that caching render surface added to a scoped settings object will not
@@ -1879,7 +1881,8 @@ TEST(LayerAnimatorTest, CacheRenderSurfaceInTwoAnimations) {
   animator->set_disable_timer_for_test(true);
 
   // Case 1: the original cache status if false.
-  EXPECT_FALSE(layer.cc_layer_for_testing()->cache_render_surface());
+  ui::LayerTestApi layer_test_api(&layer);
+  EXPECT_FALSE(layer_test_api.cc_layer()->cache_render_surface());
   animator->SetBrightness(1.0f);
   animator->SetOpacity(1.0f);
 
@@ -1889,7 +1892,7 @@ TEST(LayerAnimatorTest, CacheRenderSurfaceInTwoAnimations) {
     settings.CacheRenderSurface();
     animator->SetBrightness(0.0f);
   }
-  EXPECT_TRUE(layer.cc_layer_for_testing()->cache_render_surface());
+  EXPECT_TRUE(layer_test_api.cc_layer()->cache_render_surface());
 
   // Start the opacity animation.
   {
@@ -1897,25 +1900,25 @@ TEST(LayerAnimatorTest, CacheRenderSurfaceInTwoAnimations) {
     settings.CacheRenderSurface();
     animator->SetOpacity(0.0f);
   }
-  EXPECT_TRUE(layer.cc_layer_for_testing()->cache_render_surface());
+  EXPECT_TRUE(layer_test_api.cc_layer()->cache_render_surface());
 
   // Finish the brightness animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::BRIGHTNESS);
     EXPECT_FLOAT_EQ(0.0f, layer.layer_brightness());
-    EXPECT_TRUE(layer.cc_layer_for_testing()->cache_render_surface());
+    EXPECT_TRUE(layer_test_api.cc_layer()->cache_render_surface());
   }
 
   // Finish the opacity animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::OPACITY);
     EXPECT_FLOAT_EQ(0.0f, layer.opacity());
-    EXPECT_FALSE(layer.cc_layer_for_testing()->cache_render_surface());
+    EXPECT_FALSE(layer_test_api.cc_layer()->cache_render_surface());
   }
 
   // Case 2: the original cache status if true.
   ScopedCacheRenderSurfaceLock lock(&layer);
-  EXPECT_TRUE(layer.cc_layer_for_testing()->cache_render_surface());
+  EXPECT_TRUE(layer_test_api.cc_layer()->cache_render_surface());
   animator->SetBrightness(1.0f);
   animator->SetOpacity(1.0f);
 
@@ -1925,7 +1928,7 @@ TEST(LayerAnimatorTest, CacheRenderSurfaceInTwoAnimations) {
     settings.CacheRenderSurface();
     animator->SetBrightness(0.0f);
   }
-  EXPECT_TRUE(layer.cc_layer_for_testing()->cache_render_surface());
+  EXPECT_TRUE(layer_test_api.cc_layer()->cache_render_surface());
 
   // Start the opacity animation.
   {
@@ -1933,20 +1936,20 @@ TEST(LayerAnimatorTest, CacheRenderSurfaceInTwoAnimations) {
     settings.CacheRenderSurface();
     animator->SetOpacity(0.0f);
   }
-  EXPECT_TRUE(layer.cc_layer_for_testing()->cache_render_surface());
+  EXPECT_TRUE(layer_test_api.cc_layer()->cache_render_surface());
 
   // Finish the brightness animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::BRIGHTNESS);
     EXPECT_FLOAT_EQ(0.0f, layer.layer_brightness());
-    EXPECT_TRUE(layer.cc_layer_for_testing()->cache_render_surface());
+    EXPECT_TRUE(layer_test_api.cc_layer()->cache_render_surface());
   }
 
   // Finish the opacity animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::OPACITY);
     EXPECT_FLOAT_EQ(0.0f, layer.opacity());
-    EXPECT_TRUE(layer.cc_layer_for_testing()->cache_render_surface());
+    EXPECT_TRUE(layer_test_api.cc_layer()->cache_render_surface());
   }
 }
 
@@ -1959,7 +1962,8 @@ TEST(LayerAnimatorTest, DeferredPaint) {
   TestImplicitAnimationObserver observer(false);
 
   EXPECT_FALSE(observer.animations_completed());
-  EXPECT_FALSE(layer.IsPaintDeferredForTesting());
+  ui::LayerTestApi layer_test_api(&layer);
+  EXPECT_FALSE(layer_test_api.IsPaintDeferred());
   animator->SetOpacity(1.0f);
 
   {
@@ -1970,13 +1974,13 @@ TEST(LayerAnimatorTest, DeferredPaint) {
   }
 
   EXPECT_FALSE(observer.animations_completed());
-  EXPECT_TRUE(layer.IsPaintDeferredForTesting());
+  EXPECT_TRUE(layer_test_api.IsPaintDeferred());
   animator->StopAnimatingProperty(LayerAnimationElement::OPACITY);
   EXPECT_TRUE(observer.animations_completed());
   EXPECT_TRUE(observer.WasAnimationCompletedForProperty(
       LayerAnimationElement::OPACITY));
   EXPECT_FLOAT_EQ(0.0f, layer.opacity());
-  EXPECT_FALSE(layer.IsPaintDeferredForTesting());
+  EXPECT_FALSE(layer_test_api.IsPaintDeferred());
 }
 
 // Tests that deferred painting request is added to child layers and will be
@@ -1993,9 +1997,14 @@ TEST(LayerAnimatorTest, DeferredPaintOnChildLayer) {
   TestImplicitAnimationObserver observer(false);
 
   EXPECT_FALSE(observer.animations_completed());
-  EXPECT_FALSE(layer.IsPaintDeferredForTesting());
-  EXPECT_FALSE(child_layer1.IsPaintDeferredForTesting());
-  EXPECT_FALSE(child_layer2.IsPaintDeferredForTesting());
+
+  ui::LayerTestApi layer_test_api(&layer);
+  ui::LayerTestApi child_layer1_test_api(&child_layer1);
+  ui::LayerTestApi child_layer2_test_api(&child_layer2);
+
+  EXPECT_FALSE(layer_test_api.IsPaintDeferred());
+  EXPECT_FALSE(child_layer1_test_api.IsPaintDeferred());
+  EXPECT_FALSE(child_layer2_test_api.IsPaintDeferred());
   animator->SetOpacity(1.0f);
 
   {
@@ -2006,23 +2015,23 @@ TEST(LayerAnimatorTest, DeferredPaintOnChildLayer) {
   }
 
   EXPECT_FALSE(observer.animations_completed());
-  EXPECT_TRUE(layer.IsPaintDeferredForTesting());
-  EXPECT_TRUE(child_layer1.IsPaintDeferredForTesting());
-  EXPECT_TRUE(child_layer2.IsPaintDeferredForTesting());
+  EXPECT_TRUE(layer_test_api.IsPaintDeferred());
+  EXPECT_TRUE(child_layer1_test_api.IsPaintDeferred());
+  EXPECT_TRUE(child_layer2_test_api.IsPaintDeferred());
 
   // Reparent child_layer2.
   ui::LayerTextured new_parent_layer;
   new_parent_layer.Add(&child_layer2);
-  EXPECT_TRUE(child_layer2.IsPaintDeferredForTesting());
+  EXPECT_TRUE(child_layer2_test_api.IsPaintDeferred());
 
   animator->StopAnimatingProperty(LayerAnimationElement::OPACITY);
   EXPECT_TRUE(observer.animations_completed());
   EXPECT_TRUE(observer.WasAnimationCompletedForProperty(
       LayerAnimationElement::OPACITY));
   EXPECT_FLOAT_EQ(0.0f, layer.opacity());
-  EXPECT_FALSE(layer.IsPaintDeferredForTesting());
-  EXPECT_FALSE(child_layer1.IsPaintDeferredForTesting());
-  EXPECT_FALSE(child_layer2.IsPaintDeferredForTesting());
+  EXPECT_FALSE(layer_test_api.IsPaintDeferred());
+  EXPECT_FALSE(child_layer1_test_api.IsPaintDeferred());
+  EXPECT_FALSE(child_layer2_test_api.IsPaintDeferred());
 }
 
 // Tests that deffered paint request added to two scoped settings objects is
@@ -2033,7 +2042,8 @@ TEST(LayerAnimatorTest, DeferredPaintInTwoAnimations) {
   animator->set_disable_timer_for_test(true);
 
   // Case 1: the original deferred paint status if false.
-  EXPECT_FALSE(layer.IsPaintDeferredForTesting());
+  ui::LayerTestApi layer_test_api(&layer);
+  EXPECT_FALSE(layer_test_api.IsPaintDeferred());
   animator->SetBrightness(1.0f);
   animator->SetOpacity(1.0f);
 
@@ -2043,7 +2053,7 @@ TEST(LayerAnimatorTest, DeferredPaintInTwoAnimations) {
     settings.DeferPaint();
     animator->SetBrightness(0.0f);
   }
-  EXPECT_TRUE(layer.IsPaintDeferredForTesting());
+  EXPECT_TRUE(layer_test_api.IsPaintDeferred());
 
   // Start the opacity animation.
   {
@@ -2051,25 +2061,25 @@ TEST(LayerAnimatorTest, DeferredPaintInTwoAnimations) {
     settings.DeferPaint();
     animator->SetOpacity(0.0f);
   }
-  EXPECT_TRUE(layer.IsPaintDeferredForTesting());
+  EXPECT_TRUE(layer_test_api.IsPaintDeferred());
 
   // Finish the brightness animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::BRIGHTNESS);
     EXPECT_FLOAT_EQ(0.0f, layer.layer_brightness());
-    EXPECT_TRUE(layer.IsPaintDeferredForTesting());
+    EXPECT_TRUE(layer_test_api.IsPaintDeferred());
   }
 
   // Finish the opacity animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::OPACITY);
     EXPECT_FLOAT_EQ(0.0f, layer.opacity());
-    EXPECT_FALSE(layer.IsPaintDeferredForTesting());
+    EXPECT_FALSE(layer_test_api.IsPaintDeferred());
   }
 
   // Case 2: the original cache status if true.
   ScopedPaintLock lock(&layer);
-  EXPECT_TRUE(layer.IsPaintDeferredForTesting());
+  EXPECT_TRUE(layer_test_api.IsPaintDeferred());
   animator->SetBrightness(1.0f);
   animator->SetOpacity(1.0f);
 
@@ -2079,7 +2089,7 @@ TEST(LayerAnimatorTest, DeferredPaintInTwoAnimations) {
     settings.DeferPaint();
     animator->SetBrightness(0.0f);
   }
-  EXPECT_TRUE(layer.IsPaintDeferredForTesting());
+  EXPECT_TRUE(layer_test_api.IsPaintDeferred());
 
   // Start the opacity animation.
   {
@@ -2087,20 +2097,20 @@ TEST(LayerAnimatorTest, DeferredPaintInTwoAnimations) {
     settings.DeferPaint();
     animator->SetOpacity(0.0f);
   }
-  EXPECT_TRUE(layer.IsPaintDeferredForTesting());
+  EXPECT_TRUE(layer_test_api.IsPaintDeferred());
 
   // Finish the brightness animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::BRIGHTNESS);
     EXPECT_FLOAT_EQ(0.0f, layer.layer_brightness());
-    EXPECT_TRUE(layer.IsPaintDeferredForTesting());
+    EXPECT_TRUE(layer_test_api.IsPaintDeferred());
   }
 
   // Finish the opacity animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::OPACITY);
     EXPECT_FLOAT_EQ(0.0f, layer.opacity());
-    EXPECT_TRUE(layer.IsPaintDeferredForTesting());
+    EXPECT_TRUE(layer_test_api.IsPaintDeferred());
   }
 }
 
@@ -2176,7 +2186,8 @@ TEST(LayerAnimatorTest, TrilinearFiltering) {
   TestImplicitAnimationObserver observer(false);
 
   EXPECT_FALSE(observer.animations_completed());
-  EXPECT_FALSE(layer.cc_layer_for_testing()->trilinear_filtering());
+  ui::LayerTestApi layer_test_api(&layer);
+  EXPECT_FALSE(layer_test_api.cc_layer()->trilinear_filtering());
   animator->SetOpacity(1.0f);
 
   {
@@ -2187,13 +2198,13 @@ TEST(LayerAnimatorTest, TrilinearFiltering) {
   }
 
   EXPECT_FALSE(observer.animations_completed());
-  EXPECT_TRUE(layer.cc_layer_for_testing()->trilinear_filtering());
+  EXPECT_TRUE(layer_test_api.cc_layer()->trilinear_filtering());
   animator->StopAnimatingProperty(LayerAnimationElement::OPACITY);
   EXPECT_TRUE(observer.animations_completed());
   EXPECT_TRUE(observer.WasAnimationCompletedForProperty(
       LayerAnimationElement::OPACITY));
   EXPECT_FLOAT_EQ(0.0f, layer.opacity());
-  EXPECT_FALSE(layer.cc_layer_for_testing()->trilinear_filtering());
+  EXPECT_FALSE(layer_test_api.cc_layer()->trilinear_filtering());
 }
 
 // Tests that trilinear filtering request added to a scoped settings object will
@@ -2267,7 +2278,8 @@ TEST(LayerAnimatorTest, TrilinearFilteringInTwoAnimations) {
   animator->set_disable_timer_for_test(true);
 
   // Case 1: the original trilinear filtering status if false.
-  EXPECT_FALSE(layer.cc_layer_for_testing()->trilinear_filtering());
+  ui::LayerTestApi layer_test_api(&layer);
+  EXPECT_FALSE(layer_test_api.cc_layer()->trilinear_filtering());
   animator->SetBrightness(1.0f);
   animator->SetOpacity(1.0f);
 
@@ -2277,7 +2289,7 @@ TEST(LayerAnimatorTest, TrilinearFilteringInTwoAnimations) {
     settings.TrilinearFiltering();
     animator->SetBrightness(0.0f);
   }
-  EXPECT_TRUE(layer.cc_layer_for_testing()->trilinear_filtering());
+  EXPECT_TRUE(layer_test_api.cc_layer()->trilinear_filtering());
 
   // Start the opacity animation.
   {
@@ -2285,25 +2297,25 @@ TEST(LayerAnimatorTest, TrilinearFilteringInTwoAnimations) {
     settings.TrilinearFiltering();
     animator->SetOpacity(0.0f);
   }
-  EXPECT_TRUE(layer.cc_layer_for_testing()->trilinear_filtering());
+  EXPECT_TRUE(layer_test_api.cc_layer()->trilinear_filtering());
 
   // Finish the brightness animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::BRIGHTNESS);
     EXPECT_FLOAT_EQ(0.0f, layer.layer_brightness());
-    EXPECT_TRUE(layer.cc_layer_for_testing()->trilinear_filtering());
+    EXPECT_TRUE(layer_test_api.cc_layer()->trilinear_filtering());
   }
 
   // Finish the opacity animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::OPACITY);
     EXPECT_FLOAT_EQ(0.0f, layer.opacity());
-    EXPECT_FALSE(layer.cc_layer_for_testing()->trilinear_filtering());
+    EXPECT_FALSE(layer_test_api.cc_layer()->trilinear_filtering());
   }
 
   // Case 2: the original original trilinear status if true.
   ScopedTrilinearFilteringLock lock(&layer);
-  EXPECT_TRUE(layer.cc_layer_for_testing()->trilinear_filtering());
+  EXPECT_TRUE(layer_test_api.cc_layer()->trilinear_filtering());
   animator->SetBrightness(1.0f);
   animator->SetOpacity(1.0f);
 
@@ -2313,7 +2325,7 @@ TEST(LayerAnimatorTest, TrilinearFilteringInTwoAnimations) {
     settings.TrilinearFiltering();
     animator->SetBrightness(0.0f);
   }
-  EXPECT_TRUE(layer.cc_layer_for_testing()->trilinear_filtering());
+  EXPECT_TRUE(layer_test_api.cc_layer()->trilinear_filtering());
 
   // Start the opacity animation.
   {
@@ -2321,20 +2333,20 @@ TEST(LayerAnimatorTest, TrilinearFilteringInTwoAnimations) {
     settings.TrilinearFiltering();
     animator->SetOpacity(0.0f);
   }
-  EXPECT_TRUE(layer.cc_layer_for_testing()->trilinear_filtering());
+  EXPECT_TRUE(layer_test_api.cc_layer()->trilinear_filtering());
 
   // Finish the brightness animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::BRIGHTNESS);
     EXPECT_FLOAT_EQ(0.0f, layer.layer_brightness());
-    EXPECT_TRUE(layer.cc_layer_for_testing()->trilinear_filtering());
+    EXPECT_TRUE(layer_test_api.cc_layer()->trilinear_filtering());
   }
 
   // Finish the opacity animation.
   {
     animator->StopAnimatingProperty(LayerAnimationElement::OPACITY);
     EXPECT_FLOAT_EQ(0.0f, layer.opacity());
-    EXPECT_TRUE(layer.cc_layer_for_testing()->trilinear_filtering());
+    EXPECT_TRUE(layer_test_api.cc_layer()->trilinear_filtering());
   }
 }
 
@@ -3315,13 +3327,13 @@ TEST(LayerAnimatorTest, LayerMovedBetweenCompositorsDuringAnimation) {
   LayerTextured root_1;
   compositor_1->SetRootLayer(&root_1);
   cc::MutatorHost* mutator_host_1 =
-      root_1.cc_layer_for_testing()->layer_tree_host()->mutator_host();
+      ui::LayerTestApi(&root_1).cc_layer()->layer_tree_host()->mutator_host();
 
   Compositor* compositor_2 = host_2->GetCompositor();
   LayerTextured root_2;
   compositor_2->SetRootLayer(&root_2);
   cc::MutatorHost* mutator_host_2 =
-      root_2.cc_layer_for_testing()->layer_tree_host()->mutator_host();
+      ui::LayerTestApi(&root_2).cc_layer()->layer_tree_host()->mutator_host();
 
   // Verify that neither compositor has active animators.
   EXPECT_FALSE(compositor_1->layer_animator_collection()->HasActiveAnimators());
@@ -3386,15 +3398,16 @@ TEST(LayerAnimatorTest, ThreadedAnimationSurvivesIfLayerRemovedAdded) {
   animator->ScheduleAnimation(new LayerAnimationSequence(
       LayerAnimationElement::CreateOpacityElement(target_opacity, time_delta)));
 
+  ui::LayerTestApi layer_test_api(&layer);
   cc::MutatorHost* mutator =
-      layer.cc_layer_for_testing()->layer_tree_host()->mutator_host();
+      layer_test_api.cc_layer()->layer_tree_host()->mutator_host();
   EXPECT_TRUE(mutator->HasTickingKeyframeModelForTesting(layer.element_id()));
 
   root.Remove(&layer);
 
   root.Add(&layer);
 
-  mutator = layer.cc_layer_for_testing()->layer_tree_host()->mutator_host();
+  mutator = layer_test_api.cc_layer()->layer_tree_host()->mutator_host();
   EXPECT_TRUE(mutator->HasTickingKeyframeModelForTesting(layer.element_id()));
 
   host.reset();
