@@ -68,6 +68,8 @@ crbug.com/457388389 http/tests/devtools/console/console-edit-property-value.js [
 crbug.com/457388389 http/tests/devtools/console/console-group-click.js [ Failure Pass Timeout ]
 crbug.com/457388389 http/tests/devtools/console/console-proxy.js [ Failure Pass Timeout ]
 crbug.com/457388389 http/tests/devtools/console/viewport-testing/console-clicking-messages.js [ Failure Pass Timeout ]
+crbug.com/457388389 http/tests/devtools/local-object-properties-section.js [ Failure Pass Timeout ]
+crbug.com/457388389 http/tests/devtools/console/console-dir-global.js [ Failure Pass Timeout ]
 
 
 
