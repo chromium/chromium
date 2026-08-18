@@ -15,7 +15,7 @@
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/top_level_storage_access_api/top_level_storage_access_permission_context.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -677,10 +677,11 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
                       R"(, "serviceSites": ["https://)", kHostB, R"("]})"}));
   }
 
-  permissions::MockPermissionPromptFactory MakePromptFactory(Browser& browser) {
+  permissions::MockPermissionPromptFactory MakePromptFactory(
+      BrowserWindowInterface& browser) {
     return permissions::MockPermissionPromptFactory(
         permissions::PermissionRequestManager::FromWebContents(
-            browser.tab_strip_model()->GetActiveWebContents()));
+            browser.GetTabStripModel()->GetActiveWebContents()));
   }
 
  private:
