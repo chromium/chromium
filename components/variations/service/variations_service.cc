@@ -1173,9 +1173,9 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
   const Study& study = *processed_study.study();
   const Study::Experiment& experiment = study.experiment(experiment_index);
 
-  // For now, only allow killswitches.
-  if (experiment.feature_association().enable_feature_size() > 0 ||
-      experiment.feature_association().disable_feature_size() == 0) {
+  // For now, only allow killswitches (disabling features) or groups specifying
+  // no features.
+  if (experiment.feature_association().enable_feature_size() > 0) {
     return kNotStrictKillswitch;
   }
 
@@ -1235,14 +1235,37 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
   // TODO(crbug.com/482450632): Technically the outlined scenario is safe and
   // could be supported as it results in a valid state that is fully contained
   // in the killswitch seed. But for now, prevent these cases for simplicity.
-  base::flat_set<base::FeatureList::ControllingTrialInfo>
-      controlling_trial_infos;
-  for (const std::string& feature_name : feature_names) {
-    controlling_trial_infos.insert(
-        feature_list->GetControllingTrialInfoByFeatureName(feature_name));
-  }
-  if (controlling_trial_infos.size() != 1) {
-    return kFeaturesNotControlledBySameTrial;
+  auto* runtime_field_trial_overrides =
+      base::RuntimeFieldTrialOverrides::GetInstance();
+  base::FeatureList::ControllingTrialInfo controlling_trial_info;
+  if (!feature_names.empty()) {
+    base::flat_set<base::FeatureList::ControllingTrialInfo>
+        controlling_trial_infos;
+    for (const std::string& feature_name : feature_names) {
+      controlling_trial_infos.insert(
+          feature_list->GetControllingTrialInfoByFeatureName(feature_name));
+    }
+    if (controlling_trial_infos.size() != 1) {
+      return kFeaturesNotControlledBySameTrial;
+    }
+    controlling_trial_info = *controlling_trial_infos.begin();
+  } else {
+    // For runtime experiments that do not specify any feature, we consider the
+    // "controlling trial" (the trial that this experiment will ultimately be
+    // overriding) to be the trial with the same name. It's possible there are
+    // no such trial (i.e. this won't be overriding any trial) -- this is
+    // handled later on below.
+    if (runtime_field_trial_overrides->GetRuntimeOverride(study.name())) {
+      controlling_trial_info = {
+          .trial_name = study.name(),
+          .is_runtime_override = true,
+      };
+    } else if (base::FieldTrialList::Find(study.name())) {
+      controlling_trial_info = {
+          .trial_name = study.name(),
+          .is_runtime_override = false,
+      };
+    }
   }
 
   // Third, the trial that controls the features (if any) does not specify any
@@ -1250,8 +1273,6 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
   // but the new runtime mutable experiment only killswitches FeatureA, this
   // would create an invalid state that does not exist in any individual seed
   // (FeatureA disabled, FeatureB enabled).
-  const base::FeatureList::ControllingTrialInfo& controlling_trial_info =
-      *controlling_trial_infos.begin();
   const std::string& controlling_trial_name = controlling_trial_info.trial_name;
   bool controlling_trial_is_runtime_override =
       controlling_trial_info.is_runtime_override;
@@ -1299,8 +1320,6 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
   //
   // First step is to find the trial that this will be overriding (if any), and
   // any previous overrides that this is replacing (if any).
-  auto* runtime_field_trial_overrides =
-      base::RuntimeFieldTrialOverrides::GetInstance();
   const base::FieldTrial* trial_to_override;
   std::string previous_override_to_replace;
   if (controlling_trial_is_runtime_override) {

@@ -90,8 +90,7 @@ chromium-metrics-reviews@google.com.
     forced from the command line).
   </int>
   <int value="4" label="Not Strict Killswitch">
-    The experiment is not a strict killswitch (e.g., it enables features or does
-    not disable any).
+    The experiment is not a strict killswitch (e.g., it enables features).
   </int>
   <int value="5" label="Not starts_active">
     The study is not activated on startup (starts_active).
