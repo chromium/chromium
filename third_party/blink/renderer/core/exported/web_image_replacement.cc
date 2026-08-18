@@ -34,4 +34,14 @@ WebImageReplacement::CreateAndBindReceiver(const WebElement& element) {
   return base::ok(ToCrossVariantMojoType(std::move(result.value())));
 }
 
+// static
+bool WebImageReplacement::IsReplacedByUserAgent(const WebElement& element) {
+  auto* image_element =
+      DynamicTo<HTMLImageElement>(static_cast<Element*>(element));
+  if (!image_element) {
+    return false;
+  }
+  return image_element->replacedByUserAgent();
+}
+
 }  // namespace blink

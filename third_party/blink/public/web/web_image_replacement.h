@@ -21,6 +21,10 @@ class BLINK_EXPORT WebImageReplacement {
       CrossVariantMojoRemote<mojom::ImageReplacementInterfaceBase>,
       WebString>
   CreateAndBindReceiver(const WebElement& element);
+
+  // Returns true if the element is an HTMLImageElement and has active image
+  // replacement. Returns false otherwise.
+  static bool IsReplacedByUserAgent(const WebElement& element);
 };
 
 }  // namespace blink

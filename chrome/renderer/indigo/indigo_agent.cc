@@ -50,7 +50,9 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
         .SetMethod("startImageReplacement",
                    &IndigoContext::StartImageReplacement)
         .SetMethod("notifyNoPrimaryImageFound",
-                   &IndigoContext::NotifyNoPrimaryImageFound);
+                   &IndigoContext::NotifyNoPrimaryImageFound)
+        .SetMethod("isReplacedByUserAgent",
+                   &IndigoContext::IsReplacedByUserAgent);
   }
 
   void Trace(cppgc::Visitor* visitor) const final {
@@ -188,6 +190,23 @@ class IndigoContext final : public gin::Wrappable<IndigoContext> {
       indigo_agent_->GetHost().ReportInvokeError(
           chrome::mojom::IndigoInvokeError::kNoPrimaryImageFound);
     }
+  }
+
+  // isReplacedByUserAgent(img: HTMLImageElement): boolean
+  //
+  // Note: This API is exposed via a custom `IndigoContext` binding rather than
+  // enabling standard Blink IDL bindings in isolated worlds. This avoids
+  // polluting UseCounter metrics for origin trials, keeps the API isolated
+  // from main-world scripts, and allows safer iteration on future features
+  // (e.g. event handling) without main-world interference.
+  bool IsReplacedByUserAgent(v8::Isolate* isolate,
+                             v8::Local<v8::Value> element_wrapper) {
+    blink::WebElement element =
+        blink::WebElement::FromV8Value(isolate, element_wrapper);
+    if (element.IsNull()) {
+      return false;
+    }
+    return blink::WebImageReplacement::IsReplacedByUserAgent(element);
   }
 
   const base::WeakPtr<IndigoAgent> indigo_agent_;

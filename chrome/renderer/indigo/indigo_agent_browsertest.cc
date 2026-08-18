@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_future.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -50,7 +51,8 @@ class MockIndigoAgentHost : public chrome::mojom::IndigoAgentHost {
       bool is_primary,
       StartImageReplacementCallback callback) override {
     last_is_primary_ = is_primary;
-    replacements_.Add(std::move(replacement));
+    last_replacement_remote_.reset();
+    last_replacement_remote_.Bind(std::move(replacement));
     replacement_started_.SetValue();
     std::move(callback).Run();
   }
@@ -66,10 +68,13 @@ class MockIndigoAgentHost : public chrome::mojom::IndigoAgentHost {
   std::optional<chrome::mojom::IndigoInvokeError> last_invoke_error() const {
     return last_invoke_error_;
   }
+  mojo::Remote<blink::mojom::ImageReplacement>& last_replacement_remote() {
+    return last_replacement_remote_;
+  }
 
  private:
   mojo::AssociatedReceiver<chrome::mojom::IndigoAgentHost> receiver_{this};
-  mojo::RemoteSet<blink::mojom::ImageReplacement> replacements_;
+  mojo::Remote<blink::mojom::ImageReplacement> last_replacement_remote_;
   base::test::TestFuture<void> replacement_started_;
   base::test::TestFuture<void> invoke_error_future_;
   bool last_is_primary_ = false;
@@ -98,11 +103,18 @@ class IndigoAgentBrowserTest : public ChromeRenderViewTest {
   }
 
   void SetUp() override {
+    base::DiscardableMemoryAllocator::SetInstance(
+        &discardable_memory_allocator_);
     ChromeRenderViewTest::SetUp();
 
     // It's a bit inconvenient to extract the IndigoAgent instance created in
     // ChromeContentRendererClient, so we just create and bind a new one here.
     new IndigoAgent(GetMainRenderFrame(), &interface_registry_);
+  }
+
+  void TearDown() override {
+    base::DiscardableMemoryAllocator::SetInstance(nullptr);
+    ChromeRenderViewTest::TearDown();
   }
 
   template <typename T>
@@ -130,6 +142,7 @@ class IndigoAgentBrowserTest : public ChromeRenderViewTest {
   MockIndigoAgentHost host_;
 
  private:
+  base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
   base::test::ScopedFeatureList feature_list_;
   blink::AssociatedInterfaceRegistry interface_registry_;
 };
@@ -500,6 +513,114 @@ TEST_F(IndigoAgentBrowserTest, NotifyNoPrimaryImageFoundTriggersMojoCallback) {
   EXPECT_TRUE(host_.invoke_error_reported());
   EXPECT_EQ(host_.last_invoke_error(),
             chrome::mojom::IndigoInvokeError::kNoPrimaryImageFound);
+}
+
+TEST_F(IndigoAgentBrowserTest, IsReplacedByUserAgentInIsolatedWorld) {
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
+
+  const std::string kScript = R"(
+    window.indigo.setup({
+      invoke: function() {
+        const img = document.createElement('img');
+        img.id = 'test-img';
+        document.body.appendChild(img);
+        const div = document.createElement('div');
+        document.body.appendChild(div);
+
+        window.is_replaced_method = window.indigo.isReplacedByUserAgent(img);
+        window.is_replaced_null = window.indigo.isReplacedByUserAgent(null);
+        window.is_replaced_div = window.indigo.isReplacedByUserAgent(div);
+        window.is_replaced_obj = window.indigo.isReplacedByUserAgent({});
+        window.is_replaced_str = window.indigo.isReplacedByUserAgent('test');
+        window.is_replaced_num = window.indigo.isReplacedByUserAgent(123);
+      }
+    });
+  )";
+  const GURL kUrl("https://example.com/test.js");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+
+  base::test::TestFuture<void> inject_done;
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       inject_done.GetCallback());
+  ASSERT_TRUE(inject_done.Wait());
+
+  base::test::TestFuture<void> invoke_done;
+  remote->Invoke(invoke_done.GetCallback());
+  ASSERT_TRUE(invoke_done.Wait());
+
+  EXPECT_EQ(false, EvaluateAs<bool>("window.is_replaced_method"));
+  EXPECT_EQ(false, EvaluateAs<bool>("window.is_replaced_null"));
+  EXPECT_EQ(false, EvaluateAs<bool>("window.is_replaced_div"));
+  EXPECT_EQ(false, EvaluateAs<bool>("window.is_replaced_obj"));
+  EXPECT_EQ(false, EvaluateAs<bool>("window.is_replaced_str"));
+  EXPECT_EQ(false, EvaluateAs<bool>("window.is_replaced_num"));
+
+  // Verify that replacedByUserAgent is NOT exposed in the main world.
+  blink::WebLocalFrame* frame = GetMainRenderFrame()->GetWebFrame();
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Value> main_result = frame->ExecuteScriptAndReturnValue(
+      blink::WebScriptSource(blink::WebString(
+          "document.getElementById('test-img').replacedByUserAgent")));
+  EXPECT_TRUE(main_result->IsUndefined());
+}
+
+TEST_F(IndigoAgentBrowserTest,
+       IsReplacedByUserAgentReturnsTrueAfterReplacement) {
+  LoadHTML(
+      "<!DOCTYPE html><body><img id='test-img' "
+      "src='data:image/png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+"
+      "ip1sAAAAASUVORK5CYII='></body>");
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
+
+  const std::string kScript = R"(
+    window.indigo.setup({
+      invoke: function() {
+        const img = document.getElementById('test-img');
+        window.indigo.startImageReplacement(img);
+      }
+    });
+  )";
+  const GURL kUrl("https://example.com/test.js");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+
+  base::test::TestFuture<void> inject_done;
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       inject_done.GetCallback());
+  ASSERT_TRUE(inject_done.Wait());
+
+  base::test::TestFuture<void> invoke_done;
+  remote->Invoke(invoke_done.GetCallback());
+  ASSERT_TRUE(invoke_done.Wait());
+
+  ASSERT_TRUE(host_.WaitForReplacementStarted());
+
+  // Before replacement is started from the host, verify it is still false.
+  EXPECT_EQ(false, EvaluateAs<bool>("window.indigo.isReplacedByUserAgent("
+                                    "document.getElementById('test-img'))"));
+
+  // Start replacement on the image from the host and flush the pipe so
+  // StartReplacement executes synchronously on the renderer.
+  mojo::PendingRemote<blink::mojom::ImageReplacementHost> host_remote;
+  std::ignore = host_remote.InitWithNewPipeAndPassReceiver();
+  host_.last_replacement_remote()->StartReplacement(std::move(host_remote),
+                                                    std::nullopt);
+  host_.last_replacement_remote().FlushForTesting();
+
+  // After replacement is active, verify that the method returns true in the
+  // isolated world.
+  EXPECT_EQ(true, EvaluateAs<bool>("window.indigo.isReplacedByUserAgent("
+                                   "document.getElementById('test-img'))"));
+
+  // Verify that it still remains undefined in the main world.
+  blink::WebLocalFrame* frame = GetMainRenderFrame()->GetWebFrame();
+  v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Value> main_result = frame->ExecuteScriptAndReturnValue(
+      blink::WebScriptSource(blink::WebString(
+          "document.getElementById('test-img').replacedByUserAgent")));
+  EXPECT_TRUE(main_result->IsUndefined());
 }
 
 }  // namespace
