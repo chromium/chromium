@@ -175,7 +175,9 @@ export function processTemplate(filePath) {
   const returnStatement = getHtmlFn.body.statements.find(ts.isReturnStatement);
   assert.ok(
       returnStatement && returnStatement.expression &&
-      ts.isTaggedTemplateExpression(returnStatement.expression));
+          ts.isTaggedTemplateExpression(returnStatement.expression),
+      `getHtml() in ${
+          filePath} must return a tagged template expression (e.g. html\`...\`)`);
   const templateNode = returnStatement.expression.template;
   result = processNode(templateNode);
   const placeholder = '<!--_html_template_placeholder_-->';

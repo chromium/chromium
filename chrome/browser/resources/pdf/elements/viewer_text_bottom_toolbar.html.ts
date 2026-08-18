@@ -16,35 +16,37 @@ import type {ViewerTextBottomToolbarElement} from './viewer_text_bottom_toolbar.
 export function getHtml(this: ViewerTextBottomToolbarElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-      <select class="md-select" @change="${this.onTypefaceChange_}"
-          aria-label="$i18n{ink2TextFont}">
-        ${this.fontNames.map(typeface => html`
-          <option value="${typeface}"
-              ?selected="${this.isSelectedTypeface(typeface)}">
-            ${this.i18n(this.getLabelForTypeface(typeface))}
-          </option>`)}
-      </select>
-      <select class="md-select size-select" @change="${this.onSizeChange_}"
-          aria-label="$i18n{ink2TextFontSize}">
-        ${this.sizes.map(size => html`
-          <option value="${size}" ?selected="${this.isSelectedSize(size)}">
-            ${size}
-          </option>`)}
-      </select>
-      <text-styles-selector class="toolbar-icon"></text-styles-selector>
-      <viewer-bottom-toolbar-dropdown id="alignment" class="toolbar-icon"
-          button-title="$i18n{ink2TextAlignment}">
-        <cr-icon slot="icon" icon="${this.getAlignmentIcon_()}"></cr-icon>
-        <text-alignment-selector slot="menu"></text-alignment-selector>
-      </viewer-bottom-toolbar-dropdown>
-      <viewer-bottom-toolbar-dropdown id="color" class="toolbar-icon"
-          button-title="$i18n{ink2TextColor}">
-        <div slot="icon" class="color-chip"></div>
-        <ink-color-selector slot="menu" label="$i18n{ink2TextColor}"
-            .colors="${this.colors}" .currentColor="${this.currentColor}"
-            @current-color-changed="${this.onCurrentColorChanged}">
-        </ink-color-selector>
-      </viewer-bottom-toolbar-dropdown>
-  <!--_html_template_end_-->`;
+<select class="md-select" @change="${this.onTypefaceChange_}"
+    aria-label="$i18n{ink2TextFont}">
+  ${this.fontNames.map(typeface => html`
+    <option value="${typeface}"
+        ?selected="${this.isSelectedTypeface(typeface)}">
+      ${this.i18n(this.getLabelForTypeface(typeface))}
+    </option>
+  `)}
+</select>
+<select class="md-select size-select" @change="${this.onSizeChange_}"
+    aria-label="$i18n{ink2TextFontSize}">
+  ${this.sizes.map(size => html`
+    <option value="${size}" ?selected="${this.isSelectedSize(size)}">
+      ${size}
+    </option>
+  `)}
+</select>
+<text-styles-selector class="toolbar-icon"></text-styles-selector>
+<viewer-bottom-toolbar-dropdown id="alignment" class="toolbar-icon"
+    button-title="$i18n{ink2TextAlignment}">
+  <cr-icon slot="icon" icon="${this.getAlignmentIcon_()}"></cr-icon>
+  <text-alignment-selector slot="menu"></text-alignment-selector>
+</viewer-bottom-toolbar-dropdown>
+<viewer-bottom-toolbar-dropdown id="color" class="toolbar-icon"
+    button-title="$i18n{ink2TextColor}">
+  <div slot="icon" class="color-chip"></div>
+  <ink-color-selector slot="menu" label="$i18n{ink2TextColor}"
+      .colors="${this.colors}" .currentColor="${this.currentColor}"
+      @current-color-changed="${this.onCurrentColorChanged}">
+  </ink-color-selector>
+</viewer-bottom-toolbar-dropdown>
+<!--_html_template_end_-->`;
   // clang-format on
 }

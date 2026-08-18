@@ -15,15 +15,17 @@ export function getHtml(this: ViewerBookmarkElement) {
     <cr-icon-button id="expand" iron-icon="cr:chevron-right"
         ?hidden="${this.getExpandHidden_()}"
         aria-label="$i18n{bookmarkExpandIconAriaLabel}"
-        aria-expanded="${this.childrenShown_}"
-        @click="${this.onExpandClick_}"></cr-icon-button>
+        aria-expanded="${this.childrenShown_}" @click="${this.onExpandClick_}">
+    </cr-icon-button>
   </div>
   <span id="title" tabindex="0">${this.bookmark.title}</span>
 </div>
 ${this.childrenShown_ ? html`
   ${this.bookmark.children.map(item => html`
     <viewer-bookmark .bookmark="${item}" .depth="${this.getChildDepth_()}">
-    </viewer-bookmark>`)}` : ''}
+    </viewer-bookmark>
+  `)}
+` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

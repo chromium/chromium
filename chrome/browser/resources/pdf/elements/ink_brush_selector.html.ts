@@ -13,15 +13,15 @@ import type {InkBrushSelectorElement} from './ink_brush_selector.js';
 export function getHtml(this: InkBrushSelectorElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-    <cr-radio-group selectable-elements="selectable-icon-button"
-        .selected="${this.currentType}" aria-label="$i18n{ink2Tool}"
-        @selected-changed="${this.onSelectedChanged_}">
-      ${BRUSH_TYPES.map(brush =>  html`
-        <selectable-icon-button id="${brush}"
-            icon="${this.getIcon_(brush)}"
-            name="${brush}" label="${this.getLabel_(brush)}">
-        </selectable-icon-button>`)}
-    </cr-radio-group>
-  <!--_html_template_end_-->`;
+<cr-radio-group selectable-elements="selectable-icon-button"
+    .selected="${this.currentType}" aria-label="$i18n{ink2Tool}"
+    @selected-changed="${this.onSelectedChanged_}">
+  ${BRUSH_TYPES.map(brush => html`
+    <selectable-icon-button id="${brush}" icon="${this.getIcon_(brush)}"
+        name="${brush}" label="${this.getLabel_(brush)}">
+    </selectable-icon-button>
+  `)}
+</cr-radio-group>
+<!--_html_template_end_-->`;
   // clang-format on
 }

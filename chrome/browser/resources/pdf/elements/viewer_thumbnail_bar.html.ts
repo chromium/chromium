@@ -14,8 +14,8 @@ export function getHtml(this: ViewerThumbnailBarElement) {
         aria-label="${this.getAriaLabel_(item)}"
         aria-selected="${this.isActivePage_(item)}"
         .clockwiseRotations="${this.clockwiseRotations}"
-        .isActive="${this.isActivePage_(item)}"
-        .pageNumber="${item}">
-    </viewer-thumbnail>`)}
+        .isActive="${this.isActivePage_(item)}" .pageNumber="${item}">
+    </viewer-thumbnail>
+  `)}
 </div>`;
 }

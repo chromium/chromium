@@ -12,15 +12,14 @@ import type {TextStylesSelectorElement} from './text_styles_selector.js';
 export function getHtml(this: TextStylesSelectorElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-    ${this.getTextStyles_().map(style => html`
-      <cr-icon-button class="${this.getActiveClass_(style)}"
-          @click="${this.onStyleButtonClick_}"
-          data-style="${style}"
-          iron-icon="pdf-ink:format-${style}"
-          aria-pressed="${this.getAriaPressed_(style)}"
-          aria-label="${this.getTitle_(style)}"
-          title="${this.getTitle_(style)}">
-      </cr-icon-button>`)}
-  <!--_html_template_end_-->`;
+${this.getTextStyles_().map(style => html`
+  <cr-icon-button class="${this.getActiveClass_(style)}"
+      @click="${this.onStyleButtonClick_}" data-style="${style}"
+      iron-icon="pdf-ink:format-${style}"
+      aria-pressed="${this.getAriaPressed_(style)}"
+      aria-label="${this.getTitle_(style)}" title="${this.getTitle_(style)}">
+  </cr-icon-button>
+`)}
+<!--_html_template_end_-->`;
   // clang-format on
 }

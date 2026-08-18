@@ -15,20 +15,20 @@ import type {TextAlignmentSelectorElement} from './text_alignment_selector.js';
 export function getHtml(this: TextAlignmentSelectorElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-    <cr-radio-group aria-label="$i18n{ink2TextAlignment}"
-        selectable-elements="selectable-icon-button"
-        .selected="${this.currentAlignment_}"
-        @selected-changed="${this.onAlignmentSelectedChanged_}">
-      <selectable-icon-button icon="pdf-ink:format-align-left"
-          name="${TextAlignment.LEFT}" label="$i18n{ink2TextAlignLeft}">
-      </selectable-icon-button>
-      <selectable-icon-button icon="pdf-ink:format-align-center"
-          name="${TextAlignment.CENTER}" label="$i18n{ink2TextAlignCenter}">
-      </selectable-icon-button>
-      <selectable-icon-button icon="pdf-ink:format-align-right"
-          name="${TextAlignment.RIGHT}" label="$i18n{ink2TextAlignRight}">
-      </selectable-icon-button>
-    </cr-radio-group>
-  <!--_html_template_end_-->`;
+<cr-radio-group aria-label="$i18n{ink2TextAlignment}"
+    selectable-elements="selectable-icon-button"
+    .selected="${this.currentAlignment_}"
+    @selected-changed="${this.onAlignmentSelectedChanged_}">
+  <selectable-icon-button icon="pdf-ink:format-align-left"
+      name="${TextAlignment.LEFT}" label="$i18n{ink2TextAlignLeft}">
+  </selectable-icon-button>
+  <selectable-icon-button icon="pdf-ink:format-align-center"
+      name="${TextAlignment.CENTER}" label="$i18n{ink2TextAlignCenter}">
+  </selectable-icon-button>
+  <selectable-icon-button icon="pdf-ink:format-align-right"
+      name="${TextAlignment.RIGHT}" label="$i18n{ink2TextAlignRight}">
+  </selectable-icon-button>
+</cr-radio-group>
+<!--_html_template_end_-->`;
   // clang-format on
 }

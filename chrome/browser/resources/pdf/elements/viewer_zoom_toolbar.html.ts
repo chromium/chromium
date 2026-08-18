@@ -14,16 +14,16 @@ export function getHtml(this: ViewerZoomToolbarElement) {
       .keyboardNavigationActive="${this.keyboardNavigationActive_}"
       icons="pdf:fullscreen-exit cr:fullscreen">
   </viewer-zoom-button>
-  <viewer-zoom-button id="zoom-in-button"
-      icons="pdf:add"
+  <viewer-zoom-button id="zoom-in-button" icons="pdf:add"
       tooltips="$i18n{tooltipZoomIn}"
       .keyboardNavigationActive="${this.keyboardNavigationActive_}"
-      @fabclick="${this.onZoomInFabclick_}"></viewer-zoom-button>
-  <viewer-zoom-button id="zoom-out-button"
-      icons="pdf:remove"
+      @fabclick="${this.onZoomInFabclick_}">
+  </viewer-zoom-button>
+  <viewer-zoom-button id="zoom-out-button" icons="pdf:remove"
       tooltips="$i18n{tooltipZoomOut}"
       .keyboardNavigationActive="${this.keyboardNavigationActive_}"
-      @fabclick="${this.onZoomOutFabclick_}"></viewer-zoom-button>
+      @fabclick="${this.onZoomOutFabclick_}">
+  </viewer-zoom-button>
 </div>
 <!--_html_template_end_-->`;
 }

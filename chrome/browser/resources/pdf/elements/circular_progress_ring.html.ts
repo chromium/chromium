@@ -8,11 +8,10 @@ import type {CircularProgressRingElement} from './circular_progress_ring.js';
 
 export function getHtml(this: CircularProgressRingElement) {
   return html`
-<svg id="progressRing" viewBox="-25 -25 250 250"
-    version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg id="progressRing" viewBox="-25 -25 250 250" version="1.1"
+    xmlns="http://www.w3.org/2000/svg">
   <circle id="progressTrack"></circle>
-  <circle id="innerProgress"
-      stroke-dashoffset="${this.strokeDashOffset}">
+  <circle id="innerProgress" stroke-dashoffset="${this.strokeDashOffset}">
   </circle>
 </svg>`;
 }

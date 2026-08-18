@@ -13,6 +13,7 @@ export function getHtml(this: ViewerAttachmentBarElement) {
 </div>
 ${this.attachments.map((item, index) => html`
   <viewer-attachment .attachment="${item}" .index="${index}">
-  </viewer-attachment>`)}
+  </viewer-attachment>
+`)}
 <!--_html_template_end_-->`;
 }

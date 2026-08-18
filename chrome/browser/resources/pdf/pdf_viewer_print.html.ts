@@ -11,8 +11,7 @@ export function getHtml(this: PdfViewerPrintElement) {
   return html`
 <div id="sizer"></div>
 
-<viewer-zoom-toolbar id="zoomToolbar"
-    @fit-to-changed="${this.onFitToChanged}"
+<viewer-zoom-toolbar id="zoomToolbar" @fit-to-changed="${this.onFitToChanged}"
     @zoom-in="${this.onZoomIn}" @zoom-out="${this.onZoomOut}">
 </viewer-zoom-toolbar>
 
@@ -20,7 +19,8 @@ export function getHtml(this: PdfViewerPrintElement) {
 
 <div id="content"></div>
 
-${this.showErrorDialog ? html`<viewer-error-dialog id="error-dialog">
-</viewer-error-dialog>` : ''}`;
+${this.showErrorDialog ? html`
+  <viewer-error-dialog id="error-dialog"></viewer-error-dialog>
+` : ''}`;
   // clang-format on
 }

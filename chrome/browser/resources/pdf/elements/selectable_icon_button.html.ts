@@ -10,12 +10,10 @@ import type {SelectableIconButtonElement} from './selectable_icon_button.js';
 
 export function getHtml(this: SelectableIconButtonElement) {
   return html`
-    <cr-icon-button id="button" role="radio" iron-icon="${this.icon}"
-        tabindex="${this.getButtonTabIndex()}"
-        aria-checked="${this.getAriaChecked()}"
-        aria-disabled="${this.getAriaDisabled()}"
-        aria-label="${this.label}"
-        title="${this.label}"
-        @keydown="${this.onInputKeydown}">
-    </cr-icon-button>`;
+<cr-icon-button id="button" role="radio" iron-icon="${this.icon}"
+    tabindex="${this.getButtonTabIndex()}"
+    aria-checked="${this.getAriaChecked()}"
+    aria-disabled="${this.getAriaDisabled()}" aria-label="${this.label}"
+    title="${this.label}" @keydown="${this.onInputKeydown}">
+</cr-icon-button>`;
 }
