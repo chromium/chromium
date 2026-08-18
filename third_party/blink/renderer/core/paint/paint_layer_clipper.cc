@@ -103,7 +103,7 @@ void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
     return;
   }
 
-  layer_offset = context.sub_pixel_accumulation;
+  layer_offset = PhysicalOffset();
   if (layer_ == context.root_layer) {
     DCHECK_EQ(&fragment_data, context.root_fragment);
   } else {
@@ -172,12 +172,6 @@ void PaintLayerClipper::CalculateBackgroundClipRectInternal(
   // paint outside of those bounds.
   // The total painting bounds includes any visual overflow (such as shadow) and
   // filter bounds.
-  //
-  // TODO(chrishtr): sourceToDestinationVisualRect and
-  // sourceToDestinationClipRect may not compute tight results in the presence
-  // of transforms. Tight results are required for most use cases of these
-  // rects, so we should add methods to GeometryMapper that guarantee there
-  // are tight results, or else signal an error.
   if ((should_apply_self_overflow_clip == kRespectOverflowClip) &&
       HasNonVisibleOverflow(*layer_)) {
     // Implement the following special case: if computing clip rects with
@@ -206,9 +200,7 @@ void PaintLayerClipper::CalculateBackgroundClipRectInternal(
   }
 
   if (!output.IsInfinite()) {
-    // TODO(chrishtr): generalize to multiple fragments.
     output.Move(-context.root_fragment->PaintOffset());
-    output.Move(context.sub_pixel_accumulation);
   }
 }
 
