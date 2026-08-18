@@ -721,7 +721,11 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
   std::vector<contextual_tasks::UrlResource> committed_context =
       contextual_tasks::ConvertAiModeContextToUrlResources(message,
                                                            submitted_context);
-  if (handle && !committed_context.empty()) {
+  if (committed_context.empty()) {
+    return;
+  }
+
+  if (handle) {
     // Now that we have extracted the submitted contexts and are ready to update
     // the context in the ContextualTask, we can clear out the submitted context
     // from the ContextualSearchSessionHandle.
