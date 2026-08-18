@@ -19,6 +19,7 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bubble/model/utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
@@ -147,6 +148,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   BubbleViewControllerPresenter* _readerModeOptionsBubblePresenter;
   BubbleViewControllerPresenter* _geminiImageRemixBubblePresenter;
   BubbleViewControllerPresenter* _pinSiteToMostVisitedTilesBubblePresenter;
+  BubbleViewControllerPresenter* _sendTabToSelfOmniboxBubblePresenter;
 
   // List of existing gestural IPH views.
   GestureInProductHelpView* _pullToRefreshGestureIPH;
@@ -220,17 +222,18 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   [_whatsNewBubblePresenter dismissAnimated:NO];
   [_lensKeyboardPresenter dismissAnimated:NO];
   [_defaultPageModeTipBubblePresenter dismissAnimated:NO];
-  [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
   [_pageActionMenuBubblePresenter dismissAnimated:NO];
   [_readerModeOptionsBubblePresenter dismissAnimated:NO];
   [_geminiImageRemixBubblePresenter dismissAnimated:NO];
   [_pinSiteToMostVisitedTilesBubblePresenter dismissAnimated:NO];
+  [self hideBubblesPointingToOmnibox];
   [self hideAllGestureInProductHelpViewsForReason:IPHDismissalReasonType::
                                                       kUnknown];
 }
 
 - (void)hideBubblesPointingToOmnibox {
   [_lensOverlayEntrypointBubblePresenter dismissAnimated:NO];
+  [_sendTabToSelfOmniboxBubblePresenter dismissAnimated:NO];
 }
 
 - (void)handleTapOutsideOfVisibleGestureInProductHelp {
@@ -915,6 +918,34 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   }
 }
 
+- (void)presentSendTabToSelfOmniboxBubble {
+  if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
+    return;
+  }
+
+  BOOL isBottomOmnibox = [self isBottomOmnibox];
+  BubbleArrowDirection arrowDirection =
+      isBottomOmnibox ? BubbleArrowDirectionDown : BubbleArrowDirectionUp;
+  GuideName* guideName =
+      isBottomOmnibox ? kSecondaryToolbarGuide : kTopOmniboxGuide;
+  NSString* text =
+      l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_OMNIBOX_IPH_TEXT);
+
+  CGPoint omniboxAnchor = [self anchorPointToGuide:guideName
+                                         direction:arrowDirection];
+
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:feature_engagement::kIPHSendTabToSelfOmnibox
+                          direction:arrowDirection
+                          alignment:BubbleAlignmentCenter
+                               text:text
+              voiceOverAnnouncement:text
+                        anchorPoint:omniboxAnchor];
+  if (presenter) {
+    _sendTabToSelfOmniboxBubblePresenter = presenter;
+  }
+}
+
 - (void)presentGeminiImageRemixBubbleWithGeminiHandler:
             (id<GeminiCommands>)geminiHandler
                        pageActionMenuEntryPointHandler:
@@ -1549,6 +1580,13 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   return IsBottomOmniboxAvailable() &&
          GetApplicationContext()->GetLocalState()->GetBoolean(
              omnibox::kIsOmniboxInBottomPosition);
+}
+
+#pragma mark - Testing
+
+- (BubbleViewControllerPresenter*)
+    sendTabToSelfOmniboxBubblePresenterForTesting {
+  return _sendTabToSelfOmniboxBubblePresenter;
 }
 
 @end

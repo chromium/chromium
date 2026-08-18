@@ -256,6 +256,10 @@
       [_presenter presentHomeBackgroundCustomizationTipBubble];
       break;
     }
+    case InProductHelpType::kSendTabToSelfOmnibox: {
+      [_presenter presentSendTabToSelfOmniboxBubble];
+      break;
+    }
   }
 }
 

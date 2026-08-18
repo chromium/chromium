@@ -13,21 +13,37 @@
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/send_tab_to_self/send_tab_to_self_model.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
+
+namespace {
+
+// Returns the SendTabToSelfModel for `profile`, or nullptr if unavailable.
+send_tab_to_self::SendTabToSelfModel* GetSendTabToSelfModel(
+    ProfileIOS* profile) {
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile);
+  return service ? service->GetSendTabToSelfModel() : nullptr;
+}
+
+}  // namespace
 
 TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
     : BrowserUserData(browser),
@@ -48,6 +64,11 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
   if (send_tab_to_self::AreIOSTabRemindersEnabled() && bookmark_model_) {
     bookmark_model_observation_.Observe(bookmark_model_.get());
     reading_list_model_observation_.Observe(reading_list_model_.get());
+  }
+  send_tab_to_self::SendTabToSelfModel* send_tab_to_self_model =
+      GetSendTabToSelfModel(browser->GetProfile());
+  if (send_tab_to_self_model) {
+    send_tab_to_self_model_observation_.Observe(send_tab_to_self_model);
   }
   url_loading_notifier_->AddObserver(this);
   // As the CallbackListSubscription is stored in a member variable, it will
@@ -133,6 +154,8 @@ void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
     StopObservingReadingListModel();
   }
 
+  send_tab_to_self_model_observation_.Reset();
+
   web_state_list_ = nil;
   url_loading_notifier_ = nil;
   command_dispatcher_ = nil;
@@ -174,6 +197,13 @@ void TabBasedIPHBrowserAgent::ReadingListDidAddEntry(
     // A reading list entry was manually added by the user.
     [PopupMenuHandler() displayPopupMenuTabRemindersIPH];
   }
+}
+
+#pragma mark - send_tab_to_self::SendTabToSelfModelObserver
+
+void TabBasedIPHBrowserAgent::OnModelReady() {
+  send_tab_to_self_model_observation_.Reset();
+  AttemptSendTabToSelfIPH();
 }
 
 #pragma mark - UrlLoadingObserver
@@ -317,13 +347,41 @@ id<PopupMenuCommands> TabBasedIPHBrowserAgent::PopupMenuHandler() {
   return HandlerForProtocol(command_dispatcher_, PopupMenuCommands);
 }
 
+void TabBasedIPHBrowserAgent::AttemptSendTabToSelfIPH() {
+  if (send_tab_to_self_iph_attempted_ || is_bvc_covered_) {
+    return;
+  }
+  web::WebState* current_web_state = web_state_list_->GetActiveWebState();
+  if (!current_web_state) {
+    return;
+  }
+
+  send_tab_to_self::SendTabToSelfModel* send_tab_to_self_model =
+      GetSendTabToSelfModel(browser_->GetProfile());
+  if (send_tab_to_self_model && !send_tab_to_self_model->IsReady()) {
+    return;
+  }
+
+  send_tab_to_self_iph_attempted_ = true;
+  send_tab_to_self_model_observation_.Reset();
+
+  if (send_tab_to_self::IsOmniboxEntryPointEligible(current_web_state,
+                                                    browser_->GetProfile())) {
+    [HelpHandler()
+        presentInProductHelpWithType:InProductHelpType::kSendTabToSelfOmnibox];
+  }
+}
+
 void TabBasedIPHBrowserAgent::BrowserViewVisibilityStateDidChange(
     BrowserViewVisibilityState current_state,
     BrowserViewVisibilityState previous_state) {
   is_bvc_covered_ = current_state != BrowserViewVisibilityState::kVisible;
   if (current_state == BrowserViewVisibilityState::kVisible) {
     web::WebState* current_web_state = web_state_list_->GetActiveWebState();
-    if (current_web_state && !current_web_state->IsLoading()) {
+    if (!current_web_state) {
+      return;
+    }
+    if (!current_web_state->IsLoading()) {
       if (multi_gesture_refresh_) {
         [HelpHandler()
             presentInProductHelpWithType:InProductHelpType::kPullToRefresh];
@@ -333,6 +391,9 @@ void TabBasedIPHBrowserAgent::BrowserViewVisibilityStateDidChange(
             presentInProductHelpWithType:InProductHelpType::kToolbarSwipe];
         tapped_adjacent_tab_ = false;
       }
+    }
+    if (!send_tab_to_self_iph_attempted_) {
+      AttemptSendTabToSelfIPH();
     }
   } else if (previous_state == BrowserViewVisibilityState::kVisible) {
     ResetFeatureStatesAndRemoveIPHViews();

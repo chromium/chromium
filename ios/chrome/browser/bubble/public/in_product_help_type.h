@@ -56,6 +56,8 @@ enum class InProductHelpType : NSInteger {
   /// Help bubble pointing to the Page Action Menu in the Omnibox when the user
   /// launched via an App Store promotion for Gemini.
   kGeminiExternalAppStoreEvent,
+  /// Help bubble pointing to the address bar for Send Tab to Self.
+  kSendTabToSelfOmnibox,
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_PUBLIC_IN_PRODUCT_HELP_TYPE_H_

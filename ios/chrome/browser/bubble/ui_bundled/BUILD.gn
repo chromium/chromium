@@ -23,6 +23,7 @@ source_set("ui_bundled") {
     "//components/omnibox/browser",
     "//components/prefs",
     "//components/segmentation_platform/embedder/default_model",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bubble/model",
     "//ios/chrome/browser/bubble/ui_bundled/gesture_iph",
@@ -111,6 +112,7 @@ source_set("constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "bubble_presenter_unittest.mm",
     "bubble_unittest_util.h",
     "bubble_unittest_util.mm",
     "bubble_util_unittest.mm",
@@ -120,12 +122,22 @@ source_set("unit_tests") {
   ]
   deps = [
     ":bubble_view",
+    ":constants",
     ":ui_bundled",
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
   frameworks = [ "CoreGraphics.framework" ]
