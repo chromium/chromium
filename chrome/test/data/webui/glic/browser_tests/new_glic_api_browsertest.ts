@@ -90,6 +90,10 @@ class ApiTests extends ApiTestFixtureBase {
         'test_client_data_from_cc', openData.conversationInfo?.clientData);
   }
 
+  async testMaybeRefreshUserStatus() {
+    assertDefined(this.host.maybeRefreshUserStatus);
+    await this.host.maybeRefreshUserStatus();
+  }
   async testGetModelQualityClientIdFeatureDisabled() {
     assertDefined(this.host.getHostCapabilities);
     const capabilities: Set<HostCapability> =

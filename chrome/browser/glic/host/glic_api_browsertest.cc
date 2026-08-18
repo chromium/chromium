@@ -1186,22 +1186,6 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
-                       testMaybeRefreshUserStatus) {
-  Profile* profile = browser()->GetProfile();
-  policy::ScopedManagementServiceOverrideForTesting platform_management(
-      policy::ManagementServiceFactory::GetForProfile(profile),
-      policy::EnterpriseManagementAuthority::CLOUD);
-  UpdatePrimaryAccountToBeManaged(profile);
-
-  ASSERT_FALSE(GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin());
-  user_status_.user_status_code = UserStatusCode::DISABLED_BY_ADMIN;
-  ExecuteJsTest();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
-  }));
-  EXPECT_GE(user_status_fetch_count_, 1u);
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
                        testMaybeRefreshUserStatusThrottled) {

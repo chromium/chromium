@@ -31,6 +31,7 @@
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
@@ -108,6 +109,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -228,6 +230,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicOnboardingApiTest",
       "NewGlicApiTestSystemSettingsTest",
       "NewGlicGetHostCapabilityApiTest",
+      "NewGlicApiTestUserStatusCheckTest",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
       "NewGlicApiTestWithNewTabDaisyChain",
@@ -2999,6 +3002,62 @@ IN_PROC_BROWSER_TEST_P(NewGlicGetHostCapabilityApiTest,
   ExecuteJsTest({.params = base::Value(std::move(expected_capabilities))});
 }
 
+namespace {
+void UpdatePrimaryAccountToBeManaged(Profile* profile) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CoreAccountInfo core_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfo(core_account_info);
+  account_info =
+      AccountInfo::Builder(account_info)
+          .SetHostedDomain(gaia::ExtractDomainName(account_info.email))
+          .Build();
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+}
+}  // namespace
+
+class NewGlicApiTestUserStatusCheckTest : public NewGlicApiTest {
+ protected:
+  void SetUpOnMainThread() override {
+    NewGlicApiTest::SetUpOnMainThread();
+    service()->enabling().SetUserStatusFetchOverrideForTest(
+        base::BindRepeating(&NewGlicApiTestUserStatusCheckTest::UserStatusFetch,
+                            base::Unretained(this)));
+  }
+
+  void UserStatusFetch(
+      base::OnceCallback<void(const CachedUserStatus&)> callback) {
+    user_status_fetch_count_++;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), user_status_));
+  }
+
+  CachedUserStatus user_status_;
+  unsigned int user_status_fetch_count_ = 0;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestUserStatusCheckTest,
+                       testMaybeRefreshUserStatus) {
+  Profile* profile = GetProfile();
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile),
+      policy::EnterpriseManagementAuthority::CLOUD);
+  UpdatePrimaryAccountToBeManaged(profile);
+
+  ASSERT_FALSE(GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin());
+  user_status_.user_status_code = UserStatusCode::DISABLED_BY_ADMIN;
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
+  }));
+  EXPECT_GE(user_status_fetch_count_, 1u);
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFails) {
   service()->enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
   glic::GlicHistogramTester histogram_tester;
@@ -4632,6 +4691,11 @@ INSTANTIATE_TEST_SUITE_P(
                     TestParams{.trust_first_onboarding_arm2 = true,
                                .auto_open_pdf = true}),
     &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestUserStatusCheckTest,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
 
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestNoFloatyOrLiveMode,

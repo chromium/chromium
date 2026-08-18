@@ -512,11 +512,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testMaybeRefreshUserStatus() {
-    assertDefined(this.host.maybeRefreshUserStatus);
-    this.host.maybeRefreshUserStatus();
-  }
-
   async testMaybeRefreshUserStatusThrottled() {
     assertDefined(this.host.maybeRefreshUserStatus);
     for (let i = 0; i < 10; i++) {
