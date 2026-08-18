@@ -37,4 +37,5 @@ message JourneySpecifics {
   }
   repeated ContinuationQuery continuation_queries = 8;
 }
-// LINT.ThenChange(//components/history/core/browser/journeys/journeys_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)
+// LINT.ThenChange(//components/history/core/browser/journeys/journeys_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics,
+// //components/history/core/browser/journeys/journeys_database.cc)
