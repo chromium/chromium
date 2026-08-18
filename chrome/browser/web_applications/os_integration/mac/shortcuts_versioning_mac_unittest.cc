@@ -94,9 +94,13 @@ TEST_F(ShortcutsVersioningMacTest, InitialVersionIsStored) {
   // subsystem should cause the current shortcuts version to be written to
   // prefs.
   EXPECT_FALSE(profile()->GetPrefs()->HasPrefPath(prefs::kAppShortcutsVersion));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kAppShortcutsOsVersion));
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   EXPECT_TRUE(profile()->GetPrefs()->HasPrefPath(prefs::kAppShortcutsVersion));
   EXPECT_TRUE(profile()->GetPrefs()->HasPrefPath(prefs::kAppShortcutsArch));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kAppShortcutsOsVersion));
 }
 
 TEST_F(ShortcutsVersioningMacTest, RebuildShortcutsOnVersionChange) {
@@ -219,6 +223,59 @@ TEST_F(ShortcutsVersioningMacTest, UserDeletedShortcutsNotUpdated) {
 
   // Verify that shortcut isn't re-created.
   EXPECT_FALSE(base::PathExists(app1_path));
+}
+
+TEST_F(ShortcutsVersioningMacTest, RebuildShortcutsOnOsVersionChange) {
+  profile()->GetPrefs()->SetString(prefs::kAppShortcutsOsVersion, "10.0.0");
+
+  base::OnceClosure done_update_callback;
+  OsIntegrationManager::SetUpdateShortcutsForAllAppsCallback(
+      base::BindLambdaForTesting([&](Profile* p, base::OnceClosure callback) {
+        EXPECT_EQ(p, profile());
+        done_update_callback = std::move(callback);
+      }));
+
+  web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+  // Starting the WebAppProvider should not synchronously trigger shortcut
+  // updating.
+  EXPECT_TRUE(done_update_callback.is_null());
+
+  // Install app.
+  webapps::AppId app_id1 =
+      test::InstallDummyWebApp(profile(), kTestApp1Name, kTestApp1Url);
+
+  base::FilePath app1_path = GetShortcutPath(kTestApp1Name);
+  EXPECT_TRUE(base::PathExists(app1_path));
+
+  // Mess up contents of the installed app, to verify rebuilding works.
+  base::FilePath app_binary_path =
+      app1_path.AppendASCII("Contents").AppendASCII("MacOS");
+  EXPECT_TRUE(base::DeletePathRecursively(app_binary_path));
+
+  // A couple of seconds later shortcut updating should still not have happened.
+  FastForwardBy(base::Seconds(5));
+  EXPECT_TRUE(done_update_callback.is_null());
+
+  // However eventually shortcut updating should trigger.
+  FastForwardBy(base::Seconds(15));
+  ASSERT_FALSE(done_update_callback.is_null());
+
+  // Make sure the updated shortcuts OS version is not persisted to prefs until
+  // after we signal completion of updating.
+  EXPECT_EQ("10.0.0",
+            profile()->GetPrefs()->GetString(prefs::kAppShortcutsOsVersion));
+  {
+    base::RunLoop run_loop;
+    OsIntegrationManager::OnSetCurrentAppShortcutsVersionCallbackForTesting() =
+        run_loop.QuitClosure();
+    std::move(done_update_callback).Run();
+    run_loop.Run();
+  }
+  EXPECT_NE("10.0.0",
+            profile()->GetPrefs()->GetString(prefs::kAppShortcutsOsVersion));
+
+  // Verify shortcut was rebuilt.
+  EXPECT_TRUE(base::PathExists(app_binary_path));
 }
 
 }  // namespace web_app

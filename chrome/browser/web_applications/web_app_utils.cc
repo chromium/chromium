@@ -623,6 +623,7 @@ void ClearWebAppProfilePrefs(PrefService* profile_prefs) {
   profile_prefs->ClearPref(prefs::kWebAppsUninstalledDefaultChromeApps);
   profile_prefs->ClearPref(prefs::kAppShortcutsVersion);
   profile_prefs->ClearPref(prefs::kAppShortcutsArch);
+  profile_prefs->ClearPref(prefs::kAppShortcutsOsVersion);
   profile_prefs->ClearPref(prefs::kIsolatedWebAppPendingInitializationCount);
   profile_prefs->ClearPref(prefs::kIsolatedWebAppUserInstallationEnabled);
 }

@@ -2486,6 +2486,11 @@ inline constexpr char kAppShortcutsVersion[] = "apps.shortcuts_version";
 // re-created.
 inline constexpr char kAppShortcutsArch[] = "apps.shortcuts_arch";
 
+// A string indicating the OS version under which app shortcuts have been
+// created. If this changes (e.g., due to updating macOS version), then all
+// app shortcuts will be re-created.
+inline constexpr char kAppShortcutsOsVersion[] = "apps.shortcuts_os_version";
+
 // This references a default content setting value which we expose through the
 // preferences extensions API and also used for migration of the old
 // |kEnableDRM| preference.
