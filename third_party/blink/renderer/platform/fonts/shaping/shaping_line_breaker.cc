@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
 namespace blink {
@@ -366,6 +367,12 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
     // and thus unable to compute. Return the result up to range_end.
     DCHECK_EQ(candidate_break, range_end);
     SetBreakOffset(range_end, text, result_out);
+    if (line_end_result &&
+        RuntimeEnabledFeatures::LineBreakerHanKerningEndEnabled())
+        [[unlikely]] {
+      return ConcatShapeResults(start, range_end, first_safe.offset, last_safe,
+                                line_start_result, line_end_result);
+    }
     return ShapeToEnd(start, line_start_result, first_safe.offset, range_start,
                       range_end);
   }

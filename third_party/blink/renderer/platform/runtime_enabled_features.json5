@@ -3857,6 +3857,10 @@
       status: "stable",
     },
     {
+      name: "LineBreakerHanKerningEnd",
+      status: "stable",
+    },
+    {
       name: "ListOwnerMustHaveCSSBox",
       status: "stable",
     },
