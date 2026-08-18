@@ -11,7 +11,6 @@
 #include "chrome/browser/password_manager/web_app_profile_switcher.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -121,15 +120,14 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
       ProfileBrowserCollection::GetForProfile(second_profile)
           ->GetLastActiveBrowser();
   ASSERT_TRUE(new_browser_window);
-  Browser* new_browser = new_browser_window->GetBrowserForMigrationOnly();
-  EXPECT_EQ(new_browser->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_EQ(new_browser_window->tab_strip_model()->GetActiveWebContents(),
             new_web_contents);
 
   std::optional<webapps::AppId> app_id =
       web_app::FindInstalledAppWithUrlInScope(second_profile,
                                               GURL(kTestWebUIAppURL));
   ASSERT_TRUE(app_id);
-  EXPECT_TRUE(web_app::AppBrowserController::IsWebApp(new_browser));
+  EXPECT_TRUE(web_app::AppBrowserController::IsWebApp(new_browser_window));
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForTest(second_profile);
   EXPECT_EQ(provider->registrar_unsafe().GetAppUserDisplayMode(app_id.value()),
@@ -156,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
                                          profile_switch_complete.GetCallback());
   profile_switcher.SwitchToProfile(second_profile->GetPath());
 
-  Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* new_browser = ui_test_utils::WaitForBrowserToOpen();
 
   // Check that the new Browser belong to the second profile and Password
   // Manager is opened.
@@ -195,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
                                                    ash::kPasswordManagerAppId);
   ASSERT_TRUE(second_profile_app_browser);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser(),
-            second_profile_app_browser->GetBrowserForMigrationOnly());
+            second_profile_app_browser);
 
   // Switch to the first profile from the second.
   base::test::TestFuture<void> profile_switch_complete;
@@ -203,8 +201,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileSwitcherBrowserTest,
                                          *second_profile,
                                          profile_switch_complete.GetCallback());
   profile_switcher.SwitchToProfile(first_profile->GetPath());
-  ui_test_utils::BrowserActivationWaiter(
-      first_profile_app_browser->GetBrowserForMigrationOnly())
+  ui_test_utils::BrowserActivationWaiter(first_profile_app_browser)
       .WaitForActivation();
   EXPECT_TRUE(profile_switch_complete.Wait());
 

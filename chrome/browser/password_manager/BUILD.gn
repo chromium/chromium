@@ -363,6 +363,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/test:test_support_ui",

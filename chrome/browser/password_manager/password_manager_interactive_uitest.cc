@@ -18,7 +18,6 @@
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"

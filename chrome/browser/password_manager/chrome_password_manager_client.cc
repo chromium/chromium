@@ -180,7 +180,6 @@
 #include "components/webauthn/android/webauthn_cred_man_delegate_factory.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/factories/password_counter_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -1383,8 +1382,7 @@ void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
   if (!browser) {
     browser = GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
   }
-  ::NavigateToManagePasswordsPage(browser->GetBrowserForMigrationOnly(),
-                                  referrer);
+  ::NavigateToManagePasswordsPage(browser, referrer);
 #endif
 }
 

@@ -31,7 +31,6 @@
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
