@@ -31,6 +31,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -109,7 +110,8 @@ public class TabProperties {
     }
 
     /** The {@link TabActionState} for the view, either CLOSABLE or SELECTABLE. */
-    public static final WritableIntPropertyKey TAB_ACTION_STATE = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<TabActionState> TAB_ACTION_STATE =
+            new WritableIntDefPropertyKey<>(TabActionState.UNSET);
 
     // TODO(crbug.com/415829966): Combine TAB_ID and TAB_GROUP_SYNC_ID among other identifiers like
     // tab group Token into a single value-type object that can be consolidated into one key.
@@ -125,8 +127,8 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabActionListener> TAB_CONTEXT_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    // This will be initialized to 0, which is TabCardHighlightState.NOT_HIGHLIGHTED.
-    public static final WritableIntPropertyKey HIGHLIGHT_STATE = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<TabCardHighlightState> HIGHLIGHT_STATE =
+            new WritableIntDefPropertyKey<>(TabCardHighlightState.NOT_HIGHLIGHTED);
 
     public static final WritableBooleanPropertyKey IS_PINNED = new WritableBooleanPropertyKey();
 
