@@ -37,10 +37,12 @@ void CloseNSPopovers(NSWindow* parent_window) {
 // help with input routing.
 @interface ImmersiveModeMapper : NSObject <ImmersiveModeDelegate>
 @property(weak) NSWindow* originalHostingWindow;
+@property(weak) NSWindow* originalBrowserWindow;
 @end
 
 @implementation ImmersiveModeMapper
 @synthesize originalHostingWindow = _originalHostingWindow;
+@synthesize originalBrowserWindow = _originalBrowserWindow;
 @end
 
 // Private API that reflects the "reveal amount" of the toolbar.
@@ -161,6 +163,28 @@ bool IsNSToolbarFullScreenWindow(NSWindow* window) {
   return [window isKindOfClass:NSClassFromString(@"NSToolbarFullScreenWindow")];
 }
 
+NSWindow* OriginalHostingWindowFromFullScreenWindow(
+    NSWindow* full_screen_window) {
+  if ([full_screen_window.delegate
+          conformsToProtocol:@protocol(ImmersiveModeDelegate)]) {
+    return base::apple::ObjCCastStrict<NSObject<ImmersiveModeDelegate>>(
+               full_screen_window.delegate)
+        .originalHostingWindow;
+  }
+  return nullptr;
+}
+
+NSWindow* OriginalBrowserWindowFromFullScreenWindow(
+    NSWindow* full_screen_window) {
+  if ([full_screen_window.delegate
+          conformsToProtocol:@protocol(ImmersiveModeDelegate)]) {
+    return base::apple::ObjCCastStrict<NSObject<ImmersiveModeDelegate>>(
+               full_screen_window.delegate)
+        .originalBrowserWindow;
+  }
+  return nullptr;
+}
+
 ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
     BrowserNativeWidgetWindow* browser_window,
     NativeWidgetMacOverlayNSWindow* overlay_window)
@@ -192,6 +216,7 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
   // NSWindow to the overlay view widget's NSWindow.
   immersive_mode_mapper_ = [[ImmersiveModeMapper alloc] init];
   immersive_mode_mapper_.originalHostingWindow = overlay_window_;
+  immersive_mode_mapper_.originalBrowserWindow = browser_window_;
   immersive_mode_titlebar_view_controller_.view = [[ImmersiveModeView alloc]
       initWithController:weak_ptr_factory_.GetWeakPtr()];
 

@@ -44,6 +44,10 @@ namespace remote_cocoa {
 // figure out how to restructure code so callers outside of remote_cocoa can
 // stop existing.
 REMOTE_COCOA_APP_SHIM_EXPORT bool IsNSToolbarFullScreenWindow(NSWindow* window);
+REMOTE_COCOA_APP_SHIM_EXPORT NSWindow*
+OriginalHostingWindowFromFullScreenWindow(NSWindow* full_screen_window);
+REMOTE_COCOA_APP_SHIM_EXPORT NSWindow*
+OriginalBrowserWindowFromFullScreenWindow(NSWindow* full_screen_window);
 
 // Manages a single fullscreen session.
 class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeControllerCocoa
