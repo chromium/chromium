@@ -7,12 +7,12 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "ui/base/base_window.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)

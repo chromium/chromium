@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_IPH_CONTROLLER_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_IPH_CONTROLLER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+
+class BrowserWindowInterface;
 
 namespace glic {
 

@@ -25,6 +25,7 @@ source_set("impl") {
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common:chrome_features",
   ]
 }

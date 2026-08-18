@@ -10,9 +10,10 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance_coordinator.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+class BrowserWindowInterface;
 
 namespace glic {
 
