@@ -21,6 +21,11 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/bind.h"
+#include "base/win/com_init_util.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/json/json_string_value_serializer.h"
 #include "base/values.h"
@@ -246,6 +251,28 @@ IN_PROC_BROWSER_TEST_F(PlatformUtilTest, OpenFolder) {
             CallOpenItem(existing_file_, OPEN_FOLDER));
   EXPECT_EQ(OPEN_FAILED_PATH_NOT_FOUND, CallOpenItem(nowhere_, OPEN_FOLDER));
 }
+
+#if BUILDFLAG(IS_WIN)
+// OpenItem()'s Windows implementation hands off to ShellExecute(), which can
+// marshal to shell extensions or out-of-process handlers (e.g. DDE hand-off)
+// that require the calling thread to be a COM Single-Threaded Apartment.
+// Regression test for https://crbug.com/543076346: without that guarantee,
+// the hand-off can silently fail with no error and no process created.
+IN_PROC_BROWSER_TEST_F(PlatformUtilTest, OpenItemRunsOnComStaThread) {
+  base::win::ComApartmentType apartment_type =
+      base::win::ComApartmentType::NONE;
+  internal::SetOpenItemThreadObserverForTesting(
+      base::BindLambdaForTesting([&apartment_type] {
+        apartment_type = base::win::GetComApartmentTypeForThread();
+      }));
+
+  EXPECT_EQ(OPEN_SUCCEEDED, CallOpenItem(existing_file_, OPEN_FILE));
+  // Clear the observer: it captures a reference to a local, which must not
+  // outlive this test.
+  internal::SetOpenItemThreadObserverForTesting(base::RepeatingClosure());
+  EXPECT_EQ(base::win::ComApartmentType::STA, apartment_type);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_POSIX)
 // Symbolic links are currently only supported on Posix. Windows technically

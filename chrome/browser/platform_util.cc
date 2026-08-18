@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -22,6 +23,8 @@ namespace {
 void VerifyAndOpenItemOnBlockingThread(const base::FilePath& path,
                                        OpenItemType type,
                                        OpenOperationCallback callback) {
+  internal::RunOpenItemThreadObserverForTesting();
+
   base::File target_item(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!base::PathExists(path)) {
     if (!callback.is_null())
@@ -58,12 +61,22 @@ void OpenItem(Profile*,
   // TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN because this doesn't need global
   // state and can hang shutdown without this trait as it may result in an
   // interactive dialog.
+  static constexpr base::TaskTraits kTraits = {
+      base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+      base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
+#if BUILDFLAG(IS_WIN)
+  // ShellExecute() can marshal to shell extensions or out-of-process
+  // handlers (e.g., a hand-off via the Windows DDE protocol) that require
+  // the calling thread to be a COM Single-Threaded Apartment (STA).
+  base::ThreadPool::CreateCOMSTATaskRunner(kTraits)->PostTask(
+      FROM_HERE, base::BindOnce(&VerifyAndOpenItemOnBlockingThread, full_path,
+                                item_type, std::move(callback)));
+#else
   base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      FROM_HERE, kTraits,
       base::BindOnce(&VerifyAndOpenItemOnBlockingThread, full_path, item_type,
                      std::move(callback)));
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 

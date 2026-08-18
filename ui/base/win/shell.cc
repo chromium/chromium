@@ -23,6 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/win/com_init_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/shell_util.h"
 #include "base/win/win_util.h"
@@ -101,6 +102,11 @@ bool InvokeShellExecute(const std::wstring& path,
                         const std::wstring& verb,
                         const std::wstring& class_name,
                         DWORD mask) {
+  // This can marshal to shell extensions or out-of-process handlers (e.g.,
+  // a hand-off via the Windows DDE protocol) that require the calling
+  // thread to be a COM Single-Threaded Apartment.
+  base::win::AssertComApartmentType(base::win::ComApartmentType::STA);
+
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
