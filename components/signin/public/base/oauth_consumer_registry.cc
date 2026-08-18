@@ -333,6 +333,8 @@ constexpr char kSyncPreviewName[] = "chromesync_preview";
 constexpr char kNotebooksServiceName[] = "notebooks_service";
 constexpr char kRemoteActorLoginCredentialsServiceName[] =
     "remote_actor_login_credentials_service";
+constexpr char kDeviceAuthorizationRequestName[] =
+    "device_authorization_request";
 }  // namespace
 
 namespace signin {
@@ -801,6 +803,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
     case OAuthConsumerId::kSiteTokenProvider:
       return GetOAuthConsumerForSiteTokenProvider();
+    case OAuthConsumerId::kDeviceAuthorizationRequest:
+      return OAuthConsumer(
+          /*name=*/kDeviceAuthorizationRequestName,
+          /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
   }
 }
 

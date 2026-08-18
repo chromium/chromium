@@ -1,0 +1,13 @@
+include_rules = [
+  "+components/endpoint_fetcher",
+  "+components/signin/public",
+  "+components/sync/base",
+  "+components/version_info",
+]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+google_apis/gaia",
+    "+net/http",
+  ],
+}

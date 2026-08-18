@@ -539,4 +539,5 @@ Refer to README.md for content description and update process.
  <item id="notebooks_service_create_notebook" added_in_milestone="152" content_hash_code="00b284b0" os_list="linux,windows,android,chromeos" file_path="components/notebooks/internal/notebooks_network_service_impl.cc" />
  <item id="notebooks_service_create_notebook_source" added_in_milestone="152" content_hash_code="02552ad6" os_list="linux,windows,android,chromeos" file_path="components/notebooks/internal/notebooks_network_service_impl.cc" />
  <item id="fetch_user_data_processing_consent" added_in_milestone="153" content_hash_code="036ac1e5" os_list="linux,windows,android,chromeos" file_path="components/one_time_tokens/core/browser/user_data_processing_consent_fetcher.cc" />
+ <item id="device_authorization_key_fetch" added_in_milestone="153" content_hash_code="076ce283" os_list="linux,windows,android,chromeos" file_path="components/webauthn/core/browser/device_authorization/device_authorization_keys_fetcher.cc" />
 </annotations>

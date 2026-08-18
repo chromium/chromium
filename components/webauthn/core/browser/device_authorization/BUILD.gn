@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("device_authorization") {
+  sources = [
+    "device_authorization_keys_fetcher.cc",
+    "device_authorization_keys_fetcher.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/endpoint_fetcher",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/sync/base",
+    "//components/version_info",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "device_authorization_keys_fetcher_unittest.cc" ]
+
+  deps = [
+    ":device_authorization",
+    "//base",
+    "//base/test:test_support",
+    "//components/endpoint_fetcher",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager:test_support",
+    "//google_apis",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

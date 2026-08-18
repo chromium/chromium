@@ -136,7 +136,8 @@ enum class OAuthConsumerId {
   kBrowserActuator = 106,
   kTabContextContainersService = 107,
   kSiteTokenProvider = 108,
-  kMaxValue = kSiteTokenProvider,
+  kDeviceAuthorizationRequest = 109,
+  kMaxValue = kDeviceAuthorizationRequest,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 
