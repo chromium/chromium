@@ -32,6 +32,14 @@ interface IAccessibilityTestHelperService {
     boolean waitForNode(in NodeMatcher matcher, long timeoutMs);
 
     /**
+     * Waits for a window to become active.
+     * Returns true if an active window is present within the timeout, false otherwise.
+     *
+     * @param timeoutMs The maximum time to wait in milliseconds.
+     */
+    boolean waitForActiveWindow(long timeoutMs);
+
+    /**
      * Finds a node matching the matcher and performs the given action on it.
      *
      * @param matcher The node matching criteria.

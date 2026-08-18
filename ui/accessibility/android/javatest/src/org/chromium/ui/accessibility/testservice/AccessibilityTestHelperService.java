@@ -43,6 +43,12 @@ public class AccessibilityTestHelperService extends Service {
                 }
 
                 @Override
+                public boolean waitForActiveWindow(long timeoutMs) {
+                    Log.i(TAG, "waitForActiveWindow called, timeoutMs: " + timeoutMs);
+                    return AccessibilityTestService.waitForActiveWindow(timeoutMs);
+                }
+
+                @Override
                 public boolean performActionOnNode(
                         NodeMatcher matcher, int action, Bundle arguments) {
                     Log.i(TAG, "performActionOnNode called in HelperService");

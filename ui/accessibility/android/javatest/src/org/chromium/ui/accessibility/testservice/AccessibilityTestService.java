@@ -5,11 +5,13 @@
 package org.chromium.ui.accessibility.testservice;
 
 import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityWindowInfo;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
@@ -155,14 +157,65 @@ public class AccessibilityTestService extends AccessibilityService {
         }
     }
 
+    public static boolean waitForActiveWindow(long timeoutMs) {
+        return waitForCondition(
+                () -> {
+                    if (getRootInActiveWindow(/* useFallback= */ true) != null) {
+                        Log.i(TAG, "Found active window instantly.");
+                        return true;
+                    }
+                    return false;
+                },
+                (event) -> {
+                    if (getRootInActiveWindow(/* useFallback= */ true) != null) {
+                        Log.i(TAG, "Found active window after event: " + event);
+                        return true;
+                    }
+                    return false;
+                },
+                timeoutMs,
+                "Timed out waiting for active window");
+    }
+
+    private static AccessibilityNodeInfo getRootInActiveWindow(boolean useFallback) {
+        AccessibilityTestService instance = getInstance();
+        if (instance == null) {
+            Log.e(
+                    TAG,
+                    "AccessibilityTestService's instance was null when looking after root node.");
+            return null;
+        }
+        AccessibilityNodeInfo root = instance.getRootInActiveWindow();
+        if (root != null) {
+            return root;
+        }
+
+        List<AccessibilityWindowInfo> windows = instance.getWindows();
+
+        if (useFallback && windows != null) {
+            for (AccessibilityWindowInfo window : windows) {
+                if (window.isActive() || window.isFocused()) {
+                    AccessibilityNodeInfo windowRoot = window.getRoot();
+                    if (windowRoot != null) {
+                        return windowRoot;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private static boolean findNode(NodeMatcher nodeMatcher) {
         AccessibilityTestService instance = getInstance();
         if (instance == null) {
             Log.e(TAG, "AccessibilityTestService's instance was null when looking after node.");
             return false;
         }
-        AccessibilityNodeInfo root = instance.getRootInActiveWindow();
-        if (root == null) return false;
+        AccessibilityNodeInfo root = getRootInActiveWindow(/* useFallback= */ true);
+        if (root == null) {
+            Log.w(TAG, "Root node is null when looking for: " + nodeMatcher);
+            return false;
+        }
         return findNodeRecursive(root, nodeMatcher) != null;
     }
 
@@ -256,7 +309,7 @@ public class AccessibilityTestService extends AccessibilityService {
                 return false;
             }
 
-            AccessibilityNodeInfo root = instance.getRootInActiveWindow();
+            AccessibilityNodeInfo root = getRootInActiveWindow(/* useFallback= */ true);
             if (root == null) {
                 Log.e(TAG, "Root node is null");
                 return false;
@@ -286,7 +339,7 @@ public class AccessibilityTestService extends AccessibilityService {
                 return "Error: AccessibilityTestService instance is null";
             }
 
-            AccessibilityNodeInfo root = instance.getRootInActiveWindow();
+            AccessibilityNodeInfo root = getRootInActiveWindow(/* useFallback= */ true);
             if (root == null) {
                 Log.e(TAG, "Root node is null");
                 return "Error: Root node is null";
@@ -431,6 +484,14 @@ public class AccessibilityTestService extends AccessibilityService {
     protected void onServiceConnected() {
         super.onServiceConnected();
         Log.d(TAG, "onServiceConnected");
+        AccessibilityServiceInfo info = getServiceInfo();
+        if (info != null) {
+            info.flags |=
+                    AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+                            | AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS
+                            | AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS;
+            setServiceInfo(info);
+        }
         synchronized (sLock) {
             sInstance = this;
         }
