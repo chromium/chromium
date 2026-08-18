@@ -10,11 +10,13 @@ import static androidx.core.view.WindowInsetsCompat.Type.tappableElement;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -37,6 +39,11 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager.HomepageStateListener;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -198,10 +205,9 @@ public class EdgeToEdgeControllerImpl
     private final ObserverList<TopInsetProvider.Observer> mTopInsetObservers = new ObserverList<>();
     private final boolean mIsEdgelessTopInsetEnabled;
     private boolean mConsumeTopInset;
-    // TODO(crbug.com/498302496): Remove when Tab Switcher
-    // transitions are unified with general layout edge-to-edge state handling.
-    private boolean mInTabSwitcherToNtpTransition;
     private boolean mIsTabSwitcherShowing;
+    private boolean mStatusIndicatorVisible;
+    private @Nullable HomepageStateListener mHomepageStateListener;
 
     /**
      * Creates an implementation of the EdgeToEdgeController that will use the Android APIs to allow
@@ -253,11 +259,15 @@ public class EdgeToEdgeControllerImpl
                         assert tab.getWebContents() != null
                                 : "onContentChanged called on tab w/o WebContents: "
                                         + tab.getTitle();
+                        boolean wasDrawingToTopEdge = isDrawingToTopEdge();
+                        mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
                         drawToEdge(
                                 EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
                                 /* changedWindowState= */ false);
                         updateWebContentsObserver(tab);
-                        if (mInsetObserver != null) {
+                        // Only retrigger when we draw to the top edge, to reduce the number of
+                        // calls to retriggerOnApplyWindowInsets.
+                        if (wasDrawingToTopEdge != isDrawingToTopEdge() && mInsetObserver != null) {
                             mInsetObserver.retriggerOnApplyWindowInsets();
                         }
                     }
@@ -298,6 +308,39 @@ public class EdgeToEdgeControllerImpl
         // false for now, and updated later if padding gets applied.
         mEdgeToEdgeManager.setContentFitsWindowInsets(false);
 
+        if (mIsEdgelessTopInsetEnabled) {
+            mHomepageStateListener =
+                    new NtpCustomizationConfigManager.HomepageStateListener() {
+                        @Override
+                        public void onBackgroundImageChanged(
+                                Bitmap originalBitmap,
+                                BackgroundImageInfo backgroundImageInfo,
+                                boolean fromInitialization,
+                                @NtpBackgroundType int oldType,
+                                @NtpBackgroundType int newType) {
+                            onNtpBackgroundChanged(fromInitialization, oldType, newType);
+                        }
+
+                        @Override
+                        public void onBackgroundColorChanged(
+                                @Nullable NtpThemeColorInfo ntpThemeColorInfo,
+                                @ColorInt int backgroundColor,
+                                boolean fromInitialization,
+                                @NtpBackgroundType int oldType,
+                                @NtpBackgroundType int newType) {
+                            onNtpBackgroundChanged(fromInitialization, oldType, newType);
+                        }
+
+                        @Override
+                        public void onBackgroundReset(@NtpBackgroundType int oldType) {
+                            onNtpBackgroundReset(oldType);
+                        }
+                    };
+            NtpCustomizationConfigManager manager = NtpCustomizationConfigManager.getInstance();
+            manager.addListener(mHomepageStateListener, activity, /* skipNotify= */ false);
+        }
+
+        mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
         // retriggerOnApplyWindowInsets to populate all the initial state.
         mIsPageOptedIntoEdgeToEdge = EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab);
         mInsetObserver.retriggerOnApplyWindowInsets();
@@ -315,17 +358,11 @@ public class EdgeToEdgeControllerImpl
 
     @VisibleForTesting
     void onTabSwitched(@Nullable Tab tab) {
-        boolean isRegularNtp = EdgeToEdgeUtils.isRegularNtp(tab);
-
-        if (mIsTabSwitcherShowing && isRegularNtp) {
-            mInTabSwitcherToNtpTransition = true;
-        }
-
-        boolean isPreviousTabRegularNtp = EdgeToEdgeUtils.isRegularNtp(mCurrentTab);
+        boolean wasDrawingToTopEdge = isDrawingToTopEdge();
 
         if (mCurrentTab != null) mCurrentTab.removeObserver(mTabObserver);
         mCurrentTab = tab;
-        mConsumeTopInset = EdgeToEdgeUtils.supportsEnableTopEdgeToEdge(mCurrentTab);
+        mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
         if (tab != null) {
             tab.addObserver(mTabObserver);
             if (tab.getWebContents() != null) {
@@ -337,19 +374,11 @@ public class EdgeToEdgeControllerImpl
                 EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(mCurrentTab),
                 /* changedWindowState= */ false);
 
-        if (!mInTabSwitcherToNtpTransition) {
-            // TODO(crbug.com/498302496): Replace NTP-specific retriggering with general top-edge
-            // state change detection (wasDrawingToTopEdge != isDrawingToTopEdge) when expanding
-            // top edge-to-edge to web pages (viewport-fit=cover).
-            boolean shouldReTrigger = false;
-            if (isRegularNtp) {
-                if (tab != null && tab.isNativePage()) {
-                    shouldReTrigger = true;
-                }
-            } else if (isPreviousTabRegularNtp) {
-                shouldReTrigger = true;
-            }
-            if (shouldReTrigger && mInsetObserver != null) {
+        if (!mIsTabSwitcherShowing) {
+            boolean isDrawingToTopEdge = isDrawingToTopEdge();
+            // Only retrigger when the top edge-to-edge state changes to
+            // avoid unnecessary retriggers.
+            if (wasDrawingToTopEdge != isDrawingToTopEdge && mInsetObserver != null) {
                 mInsetObserver.retriggerOnApplyWindowInsets();
             }
         }
@@ -372,8 +401,59 @@ public class EdgeToEdgeControllerImpl
     @Override
     public boolean isDrawingToTopEdge() {
         // TODO(crbug.com/498302496): When top edge-to-edge expands to web pages, update this to
-        // also check page opt-in (mIsPageOptedIntoEdgeToEdge) and status indicator visibility.
-        return mIsEdgelessTopInsetEnabled && mConsumeTopInset;
+        // also check page opt-in (mIsPageOptedIntoEdgeToEdge).
+        assert !mConsumeTopInset || mIsEdgelessTopInsetEnabled
+                : "Top inset should not be consumed when edgeless top inset is disabled";
+        return mConsumeTopInset;
+    }
+
+    private boolean shouldDrawTopEdgeToEdge(@Nullable Tab tab) {
+        if (!mIsEdgelessTopInsetEnabled || mStatusIndicatorVisible) return false;
+        if (EdgeToEdgeUtils.supportsEnableTopEdgeToEdge(tab)) {
+            return true;
+        }
+        // Handle pending NTP before NativePage is initialized.
+        if (EdgeToEdgeUtils.isRegularNtp(tab)) {
+            return NtpCustomizationConfigManager.getInstance().getBackgroundType()
+                    != NtpBackgroundType.DEFAULT;
+        }
+        return false;
+    }
+
+    @Override
+    public void setStatusIndicatorVisible(boolean visible) {
+        if (mStatusIndicatorVisible == visible) return;
+        mStatusIndicatorVisible = visible;
+        if (mInsetObserver != null) {
+            mInsetObserver.retriggerOnApplyWindowInsets();
+        }
+    }
+
+    @VisibleForTesting
+    void onNtpBackgroundChanged(
+            boolean fromInitialization,
+            @NtpBackgroundType int oldType,
+            @NtpBackgroundType int newType) {
+        if (oldType == newType) return;
+
+        boolean shouldRefreshWindowInsets = oldType == NtpBackgroundType.DEFAULT;
+        if (fromInitialization || !shouldRefreshWindowInsets) return;
+
+        changeConsumeTopInset(shouldDrawTopEdgeToEdge(mCurrentTab));
+    }
+
+    @VisibleForTesting
+    void onNtpBackgroundReset(@NtpBackgroundType int oldType) {
+        if (oldType == NtpBackgroundType.DEFAULT) return;
+
+        changeConsumeTopInset(shouldDrawTopEdgeToEdge(mCurrentTab));
+    }
+
+    private void changeConsumeTopInset(boolean consumeTopInset) {
+        mConsumeTopInset = consumeTopInset;
+        if (mInsetObserver != null) {
+            mInsetObserver.retriggerOnApplyWindowInsets();
+        }
     }
 
     @Override
@@ -470,8 +550,7 @@ public class EdgeToEdgeControllerImpl
 
     @Override
     public void onFinishedHiding(int layoutType) {
-        if (mInTabSwitcherToNtpTransition && layoutType == LayoutType.HUB) {
-            mInTabSwitcherToNtpTransition = false;
+        if (layoutType == LayoutType.HUB) {
             if (mInsetObserver != null) {
                 mInsetObserver.retriggerOnApplyWindowInsets();
             }
@@ -713,7 +792,7 @@ public class EdgeToEdgeControllerImpl
 
         if (mIsEdgelessTopInsetEnabled) {
             if (mCurrentTab != null || !mIsTabSwitcherShowing) {
-                mConsumeTopInset = EdgeToEdgeUtils.supportsEnableTopEdgeToEdge(mCurrentTab);
+                mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
             }
 
             @LayoutType
@@ -723,7 +802,8 @@ public class EdgeToEdgeControllerImpl
                     mCurrentTab != null || activeLayoutType != LayoutType.HUB;
             if (shouldNotifyTopObservers) {
                 for (var observer : mTopInsetObservers) {
-                    observer.onToEdgeChange(mSystemInsets.top, mConsumeTopInset, activeLayoutType);
+                    observer.onToEdgeChange(
+                            mSystemInsets.top, isDrawingToTopEdge(), activeLayoutType);
                 }
             }
         }
@@ -931,6 +1011,10 @@ public class EdgeToEdgeControllerImpl
         }
         if (mFullscreenManager != null) {
             mFullscreenManager.removeObserver(this);
+        }
+        if (mHomepageStateListener != null) {
+            NtpCustomizationConfigManager.getInstance().removeListener(mHomepageStateListener);
+            mHomepageStateListener = null;
         }
         mEdgeToEdgeStateProvider.releaseEdgeToEdgeToken(mEdgeToEdgeToken);
     }

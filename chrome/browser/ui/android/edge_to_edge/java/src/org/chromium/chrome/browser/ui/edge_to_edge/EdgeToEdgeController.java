@@ -65,4 +65,16 @@ public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier, T
 
     @Override
     default void removeObserver(TopInsetProvider.Observer observer) {}
+
+    /**
+     * Sets whether the status indicator (e.g. offline indicator) is currently visible. When
+     * visible, edge-to-edge on top is disabled to avoid the status indicator being obscured by the
+     * status bar.
+     *
+     * <p>TODO(crbug.com/498302496): Ported from TopInsetCoordinator to maintain parity. In the long
+     * term, replace this with a general top-control / TopControlsStacker locking mechanism.
+     *
+     * @param visible Whether the status indicator is visible.
+     */
+    default void setStatusIndicatorVisible(boolean visible) {}
 }

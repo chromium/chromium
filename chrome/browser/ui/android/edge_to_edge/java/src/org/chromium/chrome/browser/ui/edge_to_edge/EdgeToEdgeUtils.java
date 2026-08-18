@@ -357,13 +357,21 @@ public class EdgeToEdgeUtils {
         return safeAreaInsetsTracker != null && safeAreaInsetsTracker.hasSafeAreaConstraint();
     }
 
-    /** Whether a native tab will be drawn edge to to edge. */
+    /** Whether a native tab will be drawn edge to edge. */
     static boolean isNativeTabDrawingToEdge(@Nullable Tab activeTab) {
         // TODO(crbug.com/339025702): Check if we are in tab switcher when activeTab is null.
         if (activeTab == null) return false;
 
         NativePage nativePage = activeTab.getNativePage();
         return nativePage != null && nativePage.supportsEdgeToEdge();
+    }
+
+    /** Whether a native tab will be drawn top edge to edge. */
+    static boolean isNativeTabDrawingToTopEdge(@Nullable Tab activeTab) {
+        if (activeTab == null) return false;
+
+        NativePage nativePage = activeTab.getNativePage();
+        return nativePage != null && nativePage.supportsEdgeToEdgeOnTop();
     }
 
     /**
@@ -488,13 +496,16 @@ public class EdgeToEdgeUtils {
      */
     public static boolean supportsEnableTopEdgeToEdge(@Nullable Tab tab) {
         // TODO(crbug.com/498302496): Currently top edge-to-edge is only supported on native pages.
-        // Support for web pages will be added in future iterations.
-        if (!isEdgelessTopInsetEnabled() || tab == null || !tab.isNativePage()) {
+        // Support for web pages (e.g. viewport-fit=cover) will be added in future iterations.
+        if (!isEdgelessTopInsetEnabled() || tab == null) {
             return false;
         }
 
-        NativePage nativePage = tab.getNativePage();
-        return nativePage != null && nativePage.supportsEdgeToEdgeOnTop();
+        if (tab.isNativePage()) {
+            return isNativeTabDrawingToTopEdge(tab);
+        }
+
+        return false;
     }
 
     /**
@@ -504,9 +515,6 @@ public class EdgeToEdgeUtils {
      * @return True if the tab is non-incognito and has an NTP URL.
      */
     public static boolean isRegularNtp(@Nullable Tab tab) {
-        // TODO(crbug.com/498302496): Temporary check ported from TopInsetCoordinator to avoid
-        // retriggering window insets unnecessarily. This will be replaced by general top-edge
-        // state change detection in follow-ups.
         return tab != null
                 && !tab.isIncognito()
                 && tab.getUrl() != null

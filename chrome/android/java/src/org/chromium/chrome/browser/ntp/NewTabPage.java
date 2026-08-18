@@ -587,18 +587,21 @@ public class NewTabPage
 
         mSupportsEnableEdgeToEdgeOnTop =
                 NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(windowAndroid, mIsLff);
+
+        // Initialize NTP theme customization state before setting up top inset observers so that
+        // the initial customized theme state is known before observers start listening. The
+        // listener to observe custom background changes is added in all form factors as long as the
+        // feature is enabled.
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+            setIsUseEdgeToEdgeForCustomizedTheme();
+            initHomepageStateListener();
+        }
+
         if (mSupportsEnableEdgeToEdgeOnTop) {
             // Apply edge-to-edge adjustments exclusively to phones. These are not required for LFF
             // devices.
             initTopInsetProviderObserver();
             initUseLightIconTint();
-        }
-
-        // The listener to observe custom background changes are added in all form factors as long
-        // as the feature is enabled.
-        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
-            setIsUseEdgeToEdgeForCustomizedTheme();
-            initHomepageStateListener();
         }
 
         NewTabPageUma.recordContentSuggestionsDisplayStatus(profile);
