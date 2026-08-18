@@ -111,7 +111,7 @@ void InfoBarInternalsHandler::TriggerInfoBar(InfoBarType type,
 }
 
 void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
-  // Please keep the entries in alphabetized order base on the type.
+  // Please keep the entries in alphabetized order based on the type.
   std::vector<InfoBarEntryPtr> infobar_list;
   if (base::FeatureList::IsEnabled(features::kInfoBarInlineLinks)) {
     infobar_list.emplace_back(InfoBarEntry::New(
@@ -141,11 +141,6 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "Chrome as their default browser. This trigger resets any browser "
       "state can prevents the infobar to shown, then shows the infobar. "
       "This can only be triggered on non-ChromeOS Desktop platforms."));
-  infobar_list.emplace_back(InfoBarEntry::New(
-      /*type=*/InfoBarType::kSessionRestore, /*name=*/"Session Restore",
-      /*description=*/
-      "Triggers the session restore infobar. This infobar can only be "
-      "triggered on Mac, Windows and Linux."));
 #endif
 
   infobar_list.emplace_back(InfoBarEntry::New(
@@ -222,8 +217,15 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "shows the infobar."));
 #endif
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kSessionRestore, /*name=*/"Session Restore",
+      /*description=*/
+      "Triggers the session restore infobar. This infobar can only be "
+      "triggered on Mac, Windows and Linux."));
+#endif
 
+#if BUILDFLAG(IS_WIN)
   infobar_list.emplace_back(InfoBarEntry::New(
       /*type=*/InfoBarType::kStartupLaunch, /*name=*/"Startup Launch",
       /*description=*/
@@ -248,8 +250,10 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
   BrowserWindowInterface* const bwi =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   Profile* const profile = bwi ? bwi->GetProfile() : nullptr;
+  auto* const browser_infobar_manager =
+      infobars::BrowserInfoBarManager::From(g_browser_process);
 
-  // Please keep the entries in alphabetized order base on the type.
+  // Please keep the entries in alphabetized order based on the type.
   switch (type) {
     case InfoBarType::kAlternateNav: {
       if (!bwi || !bwi->GetActiveTabInterface()) {
@@ -270,8 +274,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
     case InfoBarType::kChromeForTesting: {
       if (infobars::IsInfoBarMigrated(
               infobars::InfoBarDelegate::CHROME_FOR_TESTING_INFOBAR_DELEGATE)) {
-        auto* browser_infobar_manager =
-            infobars::BrowserInfoBarManager::From(g_browser_process);
         if (!browser_infobar_manager) {
           return false;
         }
@@ -312,16 +314,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 
       chrome::startup::default_prompt::ResetPromptPrefs(profile);
       DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
-      return true;
-    }
-    case InfoBarType::kSessionRestore: {
-      if (!profile) {
-        return false;
-      }
-      session_restore_infobar::SessionRestoreInfoBarManager::GetInstance()
-          ->ShowInfoBar(*profile,
-                        session_restore_infobar::SessionRestoreInfoBarDelegate::
-                            InfobarMessageType::kTurnOffFromRestart);
       return true;
     }
 #endif
@@ -443,11 +435,24 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       return false;
     }
 #endif
+#if BUILDFLAG(IS_MAC)
+    case InfoBarType::kKeystone: {
+#if BUILDFLAG(ENABLE_UPDATER)
+      if (!profile) {
+        return false;
+      }
+
+      profile->GetPrefs()->SetBoolean(prefs::kShowUpdatePromotionInfoBar, true);
+      ShowUpdaterPromotionInfoBar();
+      return true;
+#else
+      return false;
+#endif
+    }
+#endif
     case InfoBarType::kLocalTestPoliciesApplied: {
       if (infobars::IsInfoBarMigrated(
               infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR)) {
-        auto* browser_infobar_manager =
-            infobars::BrowserInfoBarManager::From(g_browser_process);
         if (!browser_infobar_manager) {
           return false;
         }
@@ -473,8 +478,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 
       if (infobars::IsInfoBarMigrated(
               infobars::InfoBarDelegate::PAGE_INFO_INFOBAR_DELEGATE)) {
-        auto* browser_infobar_manager =
-            infobars::BrowserInfoBarManager::From(g_browser_process);
         if (!browser_infobar_manager) {
           return false;
         }
@@ -491,37 +494,6 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
       }
       return true;
     }
-#if BUILDFLAG(ENABLE_PLUGINS)
-    case InfoBarType::kReloadPlugin: {
-      if (!bwi || !bwi->GetActiveTabInterface()) {
-        return false;
-      }
-
-      content::WebContents* web_contents =
-          bwi->GetActiveTabInterface()->GetContents();
-      ReloadPluginInfoBarDelegate::Create(
-          infobars::ContentInfoBarManager::FromWebContents(web_contents),
-          &web_contents->GetController(),
-          l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
-                                     u"Infobar Internals"));
-      return true;
-    }
-#endif
-#if BUILDFLAG(IS_MAC)
-    case InfoBarType::kKeystone: {
-#if BUILDFLAG(ENABLE_UPDATER)
-      if (!profile) {
-        return false;
-      }
-
-      profile->GetPrefs()->SetBoolean(prefs::kShowUpdatePromotionInfoBar, true);
-      ShowUpdaterPromotionInfoBar();
-      return true;
-#else
-      return false;
-#endif
-    }
-#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     case InfoBarType::kPdf: {
       if (!bwi || !bwi->GetActiveTabInterface()) {
@@ -541,6 +513,34 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
 
       controller->MaybeShowInfoBarCallback(
           shell_integration::DefaultWebClientState::NOT_DEFAULT);
+      return true;
+    }
+#endif
+#if BUILDFLAG(ENABLE_PLUGINS)
+    case InfoBarType::kReloadPlugin: {
+      if (!bwi || !bwi->GetActiveTabInterface()) {
+        return false;
+      }
+
+      content::WebContents* web_contents =
+          bwi->GetActiveTabInterface()->GetContents();
+      ReloadPluginInfoBarDelegate::Create(
+          infobars::ContentInfoBarManager::FromWebContents(web_contents),
+          &web_contents->GetController(),
+          l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
+                                     u"Infobar Internals"));
+      return true;
+    }
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    case InfoBarType::kSessionRestore: {
+      if (!profile) {
+        return false;
+      }
+      session_restore_infobar::SessionRestoreInfoBarManager::GetInstance()
+          ->ShowInfoBar(*profile,
+                        session_restore_infobar::SessionRestoreInfoBarDelegate::
+                            InfobarMessageType::kTurnOffFromRestart);
       return true;
     }
 #endif
