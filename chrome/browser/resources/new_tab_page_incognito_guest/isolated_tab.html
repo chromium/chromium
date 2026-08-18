@@ -1,17 +1,62 @@
 <!doctype html>
-<html
-  dir="$i18n{textdirection}"
-  lang="$i18n{language}"
-  class="md"
->
-  <head>
-    <meta charset="utf-8" />
-    <meta name="color-scheme" content="light dark" />
-    <link rel="viewport" content="width=device-width" />
-    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css" />
-    <link rel="stylesheet" href="isolated_tab.css" />
-  </head>
-  <body>
-    <div class="content"></div>
-  </body>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<title>$i18n{title}</title>
+<link rel="icon"
+      type="image/svg+xml"
+      href="../../../../ui/webui/resources/images/business.svg">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+<link rel="stylesheet" href="isolated_tab.css">
+</head>
+<body>
+<div class="content">
+  <div class="icon" role="presentation"></div>
+  <h1>$i18n{isolatedTabHeading}</h1>
+  <p id="subtitle">
+    <span>$i18n{isolatedTabDescription}</span>
+    <a class="learn-more-button"
+        href="$i18n{learnMoreLink}"
+        aria-label="$i18nPolymer{learnMoreA11yLabel}">$i18n{learnMore}</a>
+  </p>
+  <div id="boxes-grid">
+    <div class="box-card">
+      <div class="box-header">
+        <div class="box-icon dlp"></div>
+        <div class="box-title">$i18n{activityMonitoringBoxTitle}</div>
+      </div>
+      <div class="box-content">$i18nRaw{activityMonitoringBoxContent}</div>
+    </div>
+    <div class="box-card">
+      <div class="box-header">
+        <div class="box-icon timer-pause"></div>
+        <div class="box-title">$i18n{browsingDataBoxTitle}</div>
+      </div>
+      <div class="box-content">$i18nRaw{browsingDataBoxContent}</div>
+    </div>
+    <div class="box-card">
+      <div class="box-header">
+        <div class="box-icon extension"></div>
+        <div class="box-title">$i18n{extensionsBoxTitle}</div>
+      </div>
+      <div class="box-content">$i18nRaw{extensionsBoxContent}</div>
+    </div>
+    <div class="box-card">
+      <div class="box-header">
+        <div class="box-icon cookie-off"></div>
+        <div class="box-title">$i18n{thirdPartyCookiesBoxTitle}</div>
+      </div>
+      <div class="box-content">$i18nRaw{thirdPartyCookiesBoxContent}</div>
+    </div>
+  </div>
+  <div id="cookie-controls">
+    <div id="cookie-controls-header">
+      <div class="cookie-controls-icon" aria-hidden="true"></div>
+      <em>$i18n{cookieIsolatedControlsTitle}</em>
+    </div>
+  </div>
+</div>
+</body>
 </html>

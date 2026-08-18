@@ -99,9 +99,12 @@ generate_grd("build_grdp") {
     # is_desktop_android)) if we disable composebox on mobile Android phones.
     input_files += [
       "business.svg",
+      "business_splash.svg",
       "chevron_down.svg",
       "colorize.svg",
       "colorize_old.svg",
+      "cookie_off.svg",
+      "dlp.svg",
       "dark/chevron_down.svg",
       "icon_bookmark.svg",
       "icon_bookmark_old.svg",
@@ -114,6 +117,7 @@ generate_grd("build_grdp") {
       "promotion_banner_light.svg",
       "dark/promotion_banner_dark.svg",
       "promotion_policy_banner_close.svg",
+      "timer_pause.svg",
     ]
   }
 

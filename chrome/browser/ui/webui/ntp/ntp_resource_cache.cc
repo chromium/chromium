@@ -306,6 +306,35 @@ void NTPResourceCache::CreateNewTabIsolatedHTML(
   ui::TemplateReplacements replacements;
   base::DictValue localized_strings;
 
+  replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_TAB_TITLE);
+  replacements["isolatedTabHeading"] =
+      l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_HEADING);
+  replacements["isolatedTabDescription"] =
+      l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_DESCRIPTION);
+  replacements["learnMore"] =
+      l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_LEARN_MORE_LINK);
+  replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
+  replacements["cookieIsolatedControlsTitle"] =
+      l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_VISIBILITY_WARNING);
+  replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
+      IDS_NEW_ISOLATED_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
+  replacements["activityMonitoringBoxTitle"] =
+      l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_ACTIVITY_MONITORING_TITLE);
+  replacements["activityMonitoringBoxContent"] = l10n_util::GetStringUTF8(
+      IDS_NEW_ISOLATED_TAB_ACTIVITY_MONITORING_CONTENT);
+  replacements["browsingDataBoxTitle"] =
+      l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_BROWSING_DATA_TITLE);
+  replacements["browsingDataBoxContent"] =
+      l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_BROWSING_DATA_CONTENT);
+  replacements["extensionsBoxTitle"] =
+      l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_EXTENSIONS_TITLE);
+  replacements["extensionsBoxContent"] =
+      l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_EXTENSIONS_CONTENT);
+  replacements["thirdPartyCookiesBoxTitle"] =
+      l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_THIRD_PARTY_COOKIES_TITLE);
+  replacements["thirdPartyCookiesBoxContent"] = l10n_util::GetStringUTF8(
+      IDS_NEW_ISOLATED_TAB_THIRD_PARTY_COOKIES_CONTENT);
+
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
 

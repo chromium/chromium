@@ -193,4 +193,45 @@
         Opens a Help Center article in a new tab
       </message>
 
+      <!-- Isolated mode NTP strings -->
+      <message name="IDS_NEW_ISOLATED_TAB_HEADING" desc="Heading displayed on the new tab page in Isolated mode.">
+        You’re now in Isolated mode
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_DESCRIPTION" desc="Text introducing the learn more link in Isolated mode.">
+        Learn more about
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_LEARN_MORE_LINK" desc="Link text to learn more about browsing in Isolated mode.">
+        browsing in Isolated mode
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_LEARN_MORE_ACCESSIBILITY_LABEL" desc="Accessibility label for the learn more link in Isolated mode.">
+        Learn more about browsing in Isolated mode.
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_VISIBILITY_WARNING" desc="Warning text displayed on the Isolated mode NTP explaining who can see browsing activity.">
+        Your activity might be visible to: websites you visit, your employer or school, your internet service provider
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_ACTIVITY_MONITORING_TITLE" desc="Title for the activity monitoring card in Isolated mode.">
+        Activity monitoring
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_ACTIVITY_MONITORING_CONTENT" desc="Description for the activity monitoring card in Isolated mode.">
+        Certain browsing activity may be monitored by your organization to prevent data loss; go to <ph name="BEGIN_LINK">&lt;a href="chrome://management"&gt;</ph>chrome://management<ph name="END_LINK">&lt;/a&gt;</ph> for more details
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_BROWSING_DATA_TITLE" desc="Title for the browsing data card in Isolated mode.">
+        Browsing data
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_BROWSING_DATA_CONTENT" desc="Description for the browsing data card in Isolated mode.">
+        Your browsing history, cookies and site data, cache, and information entered in forms will be deleted once you close all Isolated windows
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_EXTENSIONS_TITLE" desc="Title for the extensions card in Isolated mode.">
+        Extensions
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_EXTENSIONS_CONTENT" desc="Description for the extensions card in Isolated mode.">
+        Extensions required by your organization will remain turned on; go to <ph name="BEGIN_LINK">&lt;a href="chrome://extensions"&gt;</ph>chrome://extensions<ph name="END_LINK">&lt;/a&gt;</ph> for more details
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_THIRD_PARTY_COOKIES_TITLE" desc="Title for the third-party cookies card in Isolated mode.">
+        Third-party cookies
+      </message>
+      <message name="IDS_NEW_ISOLATED_TAB_THIRD_PARTY_COOKIES_CONTENT" desc="Description for the third-party cookies card in Isolated mode.">
+        Sites are blocked from using third-party cookies. If a site relying on these cookies isn't working, you can <ph name="BEGIN_LINK">&lt;a href="chrome://settings/cookies"&gt;</ph>try giving that site temporary access to third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
+      </message>
+
 </grit-part>
