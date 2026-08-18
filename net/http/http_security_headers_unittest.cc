@@ -10,7 +10,6 @@
 
 #include "base/base64.h"
 #include "base/stl_util.h"
-#include "crypto/sha2.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_util.h"

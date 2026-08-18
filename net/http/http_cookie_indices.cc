@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/pickle.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
@@ -118,7 +118,7 @@ CookieIndicesHash HashCookieIndices(
     }
     pickle.WriteBool(false);
   }
-  return crypto::SHA256Hash(pickle.payload_bytes());
+  return crypto::hash::Sha256(pickle.payload_bytes());
 }
 
 }  // namespace net

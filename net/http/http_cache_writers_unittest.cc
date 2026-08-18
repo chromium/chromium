@@ -17,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "crypto/secure_hash.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_cache_transaction.h"
 #include "net/http/http_response_info.h"

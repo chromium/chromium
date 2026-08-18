@@ -33,7 +33,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "crypto/hash.h"
-#include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"

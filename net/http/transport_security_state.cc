@@ -32,7 +32,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "crypto/hash.h"
-#include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/url_util.h"
@@ -60,7 +59,7 @@ const TransportSecurityStateSource* g_hsts_source = kDefaultHSTSSource;
 
 TransportSecurityState::HashedHost HashHost(
     base::span<const uint8_t> canonicalized_host) {
-  return crypto::SHA256Hash(canonicalized_host);
+  return crypto::hash::Sha256(canonicalized_host);
 }
 
 // Returns true if the intersection of |a| and |b| is not empty. If either
