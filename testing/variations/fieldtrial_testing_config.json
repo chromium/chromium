@@ -17081,6 +17081,60 @@
             ]
         }
     ],
+    "NtpAurora": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_LargePadding",
+                    "params": {
+                        "change_button_color": "true",
+                        "padding_style": "3"
+                    },
+                    "enable_features": [
+                        "NtpAurora"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NtpAurora"
+                    ]
+                },
+                {
+                    "name": "Enabled_ComposeplateStyling",
+                    "params": {
+                        "change_button_color": "true"
+                    },
+                    "enable_features": [
+                        "NtpAurora"
+                    ]
+                },
+                {
+                    "name": "Enabled_TightPadding",
+                    "params": {
+                        "change_button_color": "true",
+                        "padding_style": "1"
+                    },
+                    "enable_features": [
+                        "NtpAurora"
+                    ]
+                },
+                {
+                    "name": "Enabled_MediumPadding",
+                    "params": {
+                        "change_button_color": "true",
+                        "padding_style": "2"
+                    },
+                    "enable_features": [
+                        "NtpAurora"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpComposeboxDesktop": [
         {
             "platforms": [

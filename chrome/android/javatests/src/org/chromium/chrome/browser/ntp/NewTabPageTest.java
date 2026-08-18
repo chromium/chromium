@@ -229,7 +229,7 @@ public class NewTabPageTest {
         onView(withId(R.id.search_box)).perform(click());
         View view = mNtp.getView().findViewById(R.id.search_box);
         ChromeRenderTestRule.sanitize(view);
-        mRenderTestRule.render(view, "focus_fake_box_v4");
+        mRenderTestRule.render(view, "focus_fake_box_v5");
         scrimManager.disableAnimationForTesting(false);
     }
 
@@ -247,7 +247,7 @@ public class NewTabPageTest {
         onView(withId(R.id.search_box)).perform(click());
         View view = mNtp.getView().findViewById(R.id.search_box);
         ChromeRenderTestRule.sanitize(view);
-        mRenderTestRule.render(view, "focus_fake_box_with_plus_button_v2");
+        mRenderTestRule.render(view, "focus_fake_box_with_plus_button_v3");
         scrimManager.disableAnimationForTesting(false);
     }
 
@@ -1019,6 +1019,23 @@ public class NewTabPageTest {
                 });
 
         int expectedMvtTopMargin = res.getDimensionPixelSize(R.dimen.ntp_section_top_margin);
+        int expectedMvtTopPadding = res.getDimensionPixelSize(R.dimen.mvt_container_top_padding);
+        int expectedMvtBottomPadding =
+                res.getDimensionPixelSize(R.dimen.mvt_container_bottom_padding);
+
+        @NewTabPageUtils.PaddingStyle int paddingStyle = NewTabPageUtils.getPaddingStyleForAurora();
+        if (paddingStyle != NewTabPageUtils.PaddingStyle.DEFAULT) {
+            int topMargin =
+                    (paddingStyle == NewTabPageUtils.PaddingStyle.SMALL)
+                            ? R.dimen.mvt_container_top_margin_medium
+                            : R.dimen.mvt_container_top_margin_large;
+            expectedMvtTopMargin = res.getDimensionPixelSize(topMargin);
+            expectedMvtTopPadding =
+                    res.getDimensionPixelSize(R.dimen.mvt_container_top_padding_small);
+            expectedMvtBottomPadding =
+                    res.getDimensionPixelSize(R.dimen.mvt_container_bottom_padding_small);
+        }
+
         int expectedMvtBottomMargin = res.getDimensionPixelSize(R.dimen.ntp_section_bottom_margin);
         Assert.assertEquals(
                 "The top margin of the most visited tiles container is wrong.",
@@ -1030,9 +1047,6 @@ public class NewTabPageTest {
                 expectedMvtBottomMargin,
                 ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).bottomMargin);
 
-        int expectedMvtTopPadding = res.getDimensionPixelSize(R.dimen.mvt_container_top_padding);
-        int expectedMvtBottomPadding =
-                res.getDimensionPixelSize(R.dimen.mvt_container_bottom_padding);
         Assert.assertEquals(
                 "The top padding of the most visited tiles container is wrong.",
                 expectedMvtTopPadding,

@@ -94,8 +94,8 @@ public class TabSwitcherDrawableRenderTest {
     public void testTabSwitcherDrawable_toggleNotificationRegular_withHomeButtonRemovalKeepOnNtp()
             throws Exception {
         testTabSwitcherDrawable_toggleNotificationRegularImpl(
-                "tab_page_toolbar_view_regular_off_with_home_button_removal",
-                "tab_page_toolbar_view_regular_on_with_home_button_removal");
+                "tab_page_toolbar_view_regular_off_with_home_button_removal_v1",
+                "tab_page_toolbar_view_regular_on_with_home_button_removal_v1");
     }
 
     private void testTabSwitcherDrawable_toggleNotificationRegularImpl(
