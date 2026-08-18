@@ -232,6 +232,30 @@ std::vector<uint8_t> BuildFakeHashSequenceStartResponse(
   return resp;
 }
 
+std::vector<uint8_t> BuildFakeSequenceUpdateResponse(
+    uint32_t response_code = 0) {
+  uint32_t resp_size = 10;
+  if (response_code == 0) {
+    resp_size += 4 + 5;  // parameter_size (4) + session (5)
+  }
+
+  std::vector<uint8_t> resp(resp_size);
+  base::SpanWriter<uint8_t> writer(resp);
+  writer.WriteEnumBigEndian(TPM_ST_SESSIONS);
+  writer.WriteU32BigEndian(resp_size);
+  writer.WriteU32BigEndian(response_code);
+
+  if (response_code == 0) {
+    writer.WriteU32BigEndian(0);  // parameter_size = 0
+    writer.WriteU16BigEndian(0);  // nonce size: 0
+    writer.WriteU8BigEndian(0);   // sessionAttributes: 0
+    writer.WriteU16BigEndian(0);  // hmac size: 0
+  }
+
+  CHECK_EQ(writer.remaining(), 0u);
+  return resp;
+}
+
 std::vector<uint8_t> BuildFakeSignResponse(base::span<const uint8_t> signature,
                                            uint32_t response_code = 0,
                                            TpmSt tag = TPM_ST_SESSIONS) {
@@ -640,6 +664,8 @@ TEST(TpmCppParserTest, TpmCommandStringify) {
   EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kHash), "Hash");
   EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kHashSequenceStart),
             "HashSequenceStart");
+  EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kSequenceUpdate),
+            "SequenceUpdate");
   EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kSign), "Sign");
 }
 
@@ -648,6 +674,8 @@ TEST(TpmCppParserTest, ResponseStructCommandConstants) {
   static_assert(HashResponse::kCommand == TpmCommand::kHash);
   static_assert(HashSequenceStartResponse::kCommand ==
                 TpmCommand::kHashSequenceStart);
+  static_assert(SequenceUpdateResponse::kCommand ==
+                TpmCommand::kSequenceUpdate);
   static_assert(SignResponse::kCommand == TpmCommand::kSign);
 }
 
@@ -679,6 +707,39 @@ TEST(TpmCppParserTest, ParseHashSequenceStartResponse_TpmError) {
 
   EXPECT_THAT(
       ParseHashSequenceStartResponse(resp),
+      ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
+}
+
+TEST(TpmCppParserTest, BuildSequenceUpdateCommand) {
+  uint32_t sequence_handle = 0x80000001;
+  static constexpr auto kData = ToByteArray({1, 2, 3, 4});
+
+  std::vector<uint8_t> cmd = BuildSequenceUpdateCommand(sequence_handle, kData);
+  EXPECT_EQ(cmd.size(), 33u);
+
+  base::SpanReader<const uint8_t> reader(cmd);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmSt>(), TPM_ST_SESSIONS);
+  EXPECT_EQ(reader.ReadU32BigEndian(), 33u);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmCc>(), TPM_CC_SEQUENCE_UPDATE);
+  EXPECT_EQ(reader.ReadU32BigEndian(), sequence_handle);
+  EXPECT_EQ(reader.ReadU32BigEndian(), 9u);
+  EXPECT_TRUE(reader.Read<9>().has_value());
+  EXPECT_EQ(reader.ReadU16BigEndian(), 4u);
+  EXPECT_EQ(reader.Read<4>(), kData);
+}
+
+TEST(TpmCppParserTest, ParseSequenceUpdateResponse_Success) {
+  std::vector<uint8_t> resp = BuildFakeSequenceUpdateResponse();
+
+  EXPECT_THAT(ParseSequenceUpdateResponse(resp),
+              ValueIs(SequenceUpdateResponse{}));
+}
+
+TEST(TpmCppParserTest, ParseSequenceUpdateResponse_TpmError) {
+  std::vector<uint8_t> resp = BuildFakeSequenceUpdateResponse(0x100);
+
+  EXPECT_THAT(
+      ParseSequenceUpdateResponse(resp),
       ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
 }
 

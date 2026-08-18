@@ -251,6 +251,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Certify" summary="TPM2_Certify"/>
   <variant name="Hash" summary="TPM2_Hash"/>
   <variant name="HashSequenceStart" summary="TPM2_HashSequenceStart"/>
+  <variant name="SequenceUpdate" summary="TPM2_SequenceUpdate"/>
   <variant name="Sign" summary="TPM2_Sign"/>
 </variants>
 

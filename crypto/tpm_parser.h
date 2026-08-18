@@ -35,6 +35,7 @@ enum class TpmCommand {
   kCertify,            // TPM2_Certify
   kHash,               // TPM2_Hash
   kHashSequenceStart,  // TPM2_HashSequenceStart
+  kSequenceUpdate,     // TPM2_SequenceUpdate
   kSign,               // TPM2_Sign
 };
 
@@ -49,6 +50,9 @@ void AbslStringify(Sink& sink, TpmCommand command) {
       return;
     case TpmCommand::kHashSequenceStart:
       sink.Append("HashSequenceStart");
+      return;
+    case TpmCommand::kSequenceUpdate:
+      sink.Append("SequenceUpdate");
       return;
     case TpmCommand::kSign:
       sink.Append("Sign");
@@ -152,6 +156,14 @@ struct CRYPTO_EXPORT HashSequenceStartResponse {
                          const HashSequenceStartResponse&) = default;
 };
 
+// Response from parsing a TPM2_SequenceUpdate response.
+struct CRYPTO_EXPORT SequenceUpdateResponse {
+  static constexpr auto kCommand = TpmCommand::kSequenceUpdate;
+
+  friend bool operator==(const SequenceUpdateResponse&,
+                         const SequenceUpdateResponse&) = default;
+};
+
 // Response components extracted from a parsed TPM2_Sign response.
 struct CRYPTO_EXPORT SignResponse {
   static constexpr auto kCommand = TpmCommand::kSign;
@@ -227,6 +239,18 @@ CRYPTO_EXPORT std::vector<uint8_t> BuildHashSequenceStartCommand(
 // extracted.
 CRYPTO_EXPORT TpmParseErrorOr<HashSequenceStartResponse>
 ParseHashSequenceStartResponse(base::span<const uint8_t> response_blob);
+
+// Builds a serialized TPM2_SequenceUpdate command buffer.
+//
+// * `sequence_handle` - The handle of the sequence to be updated.
+// * `data` - The byte buffer to append to the hash sequence.
+CRYPTO_EXPORT std::vector<uint8_t> BuildSequenceUpdateCommand(
+    uint32_t sequence_handle,
+    base::span<const uint8_t> data);
+
+// Parses a serialized TPM2_SequenceUpdate response.
+CRYPTO_EXPORT TpmParseErrorOr<SequenceUpdateResponse>
+ParseSequenceUpdateResponse(base::span<const uint8_t> response_blob);
 
 // Builds a serialized TPM2_Sign command buffer.
 CRYPTO_EXPORT std::vector<uint8_t> BuildSignCommand(

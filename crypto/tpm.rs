@@ -219,6 +219,8 @@ pub mod ffi {
     enum TpmCc {
         /// TPM_CC_CERTIFY is the command code for TPM2_Certify.
         TPM_CC_CERTIFY = 0x00000148,
+        /// TPM_CC_SEQUENCE_UPDATE is the command code for TPM2_SequenceUpdate.
+        TPM_CC_SEQUENCE_UPDATE = 0x0000015C,
         /// TPM_CC_SIGN is the command code for TPM2_Sign.
         TPM_CC_SIGN = 0x0000015D,
         /// TPM_CC_HASH is the command code for TPM2_Hash.
@@ -324,6 +326,12 @@ pub mod ffi {
         /// Parses a TPM2_HashSequenceStart response.
         fn parse_hash_sequence_start_response(resp: &[u8]) -> HashSequenceStartResponse;
 
+        /// Builds a TPM2_SequenceUpdate command buffer.
+        fn build_sequence_update_command(sequence_handle: u32, data: &[u8]) -> Vec<u8>;
+
+        /// Parses a TPM2_SequenceUpdate response.
+        fn parse_sequence_update_response(resp: &[u8]) -> ResponseStatus;
+
         /// Builds a TPM2_Sign command buffer.
         fn build_sign_command(
             key_handle: u32,
@@ -367,6 +375,15 @@ impl From<TpmParseError> for ffi::ResponseStatus {
             TpmParseError::ChallengeMismatch => {
                 Self { result: ffi::ParseResult::ChallengeMismatch, tpm_response_code: 0 }
             }
+        }
+    }
+}
+
+impl From<Result<(), TpmParseError>> for ffi::ResponseStatus {
+    fn from(result: Result<(), TpmParseError>) -> Self {
+        match result {
+            Ok(()) => Self::OK,
+            Err(err) => err.into(),
         }
     }
 }
@@ -1264,4 +1281,115 @@ impl From<Result<u32, TpmParseError>> for ffi::HashSequenceStartResponse {
 /// Parses a TPM2_HashSequenceStart response.
 pub fn parse_hash_sequence_start_response(resp: &[u8]) -> ffi::HashSequenceStartResponse {
     parse_hash_sequence_start_response_impl(resp).into()
+}
+
+/// Builds a TPM2_SequenceUpdate command.
+///
+/// * `sequence_handle` - Handle of the sequence object.
+/// * `data` - Data to be added to the sequence hash.
+///
+/// Note: This function assumes empty password authorization for the sequence
+/// handle.
+///
+/// # Panics
+///
+/// Panics if `data` exceeds `TPM_MAX_BUFFER_SIZE` bytes.
+///
+/// A TPM SequenceUpdate command has the following structure (Table 91):
+///
+/// Header:
+///
+/// | Type                | Name           |
+/// |---------------------|----------------|
+/// | TPMI_ST_COMMAND_TAG | tag            |
+/// | UINT32              | commandSize    |
+/// | TPM_CC              | commandCode    |
+///
+/// Handles:
+///
+/// | Type                | Name           |
+/// |---------------------|----------------|
+/// | TPMI_DH_OBJECT      | sequenceHandle |
+///
+/// Parameters:
+///
+/// | Type                | Name           |
+/// |---------------------|----------------|
+/// | TPM2B_MAX_BUFFER    | buffer         |
+///
+/// See Table 91 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=146.
+///
+/// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
+/// for a general overview of the structure of a TPM command.
+pub fn build_sequence_update_command(sequence_handle: u32, data: &[u8]) -> Vec<u8> {
+    assert!(
+        data.len() <= TPM_MAX_BUFFER_SIZE,
+        "TPM2_SequenceUpdate data exceeds TPM_MAX_BUFFER_SIZE ({} bytes)",
+        TPM_MAX_BUFFER_SIZE
+    );
+    let total_size = TPM_HEADER_SIZE
+        + TPM_HANDLE_SIZE
+        + TPM_AUTH_SIZE_SIZE
+        + TPM_SESSION_SIZE
+        + 2 // data size prefix
+        + data.len();
+
+    let mut writer = Writer::with_capacity(total_size);
+
+    // 1. Command Header
+    writer.write_command_header(TpmSt::TPM_ST_SESSIONS, total_size, TpmCc::TPM_CC_SEQUENCE_UPDATE);
+
+    // 2. Handles
+    writer.write_u32(sequence_handle);
+
+    // 3. Authorization Area
+    writer.write_password_sessions(1);
+
+    // 4. Command Parameters
+    writer.write_tpm2b(data);
+
+    writer.into_inner()
+}
+
+/// Parses a TPM2_SequenceUpdate response.
+///
+/// Header:
+///
+/// | Type   | Name         |
+/// |--------|--------------|
+/// | TPM_ST | tag          |
+/// | UINT32 | responseSize |
+/// | TPM_RC | responseCode |
+///
+/// See Table 92 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=146.
+///
+/// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
+/// for a general overview of the structure of a TPM response.
+fn parse_sequence_update_response_impl(resp: &[u8]) -> Result<(), TpmParseError> {
+    let mut reader = Reader::new(resp);
+    let header = reader.read_response_header(resp.len())?;
+    if header.tag != TpmSt::TPM_ST_SESSIONS {
+        return Err(TpmParseError::WrongType);
+    }
+
+    let parameter_size: usize = reader
+        .read_u32()
+        .ok_or(TpmParseError::BufferTooSmall)?
+        .try_into()
+        .map_err(|_| TpmParseError::BufferTooSmall)?;
+
+    if parameter_size != 0 {
+        return Err(TpmParseError::TrailingBytes);
+    }
+
+    let _session = TpmsAuthResponse::parse(&mut reader)?;
+
+    reader.ensure_empty()?;
+
+    Ok(())
+}
+
+/// Parses a TPM2_SequenceUpdate response.
+pub fn parse_sequence_update_response(resp: &[u8]) -> ffi::ResponseStatus {
+    parse_sequence_update_response_impl(resp).into()
 }
