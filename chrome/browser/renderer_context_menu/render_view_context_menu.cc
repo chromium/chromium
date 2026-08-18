@@ -5523,11 +5523,6 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
   if (!IsNormalBrowser()) {
     return;
   }
-  if (content_type_->SupportsGroup(
-          ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE) &&
-      CanAppendGlicShareImageItem()) {
-    return;
-  }
 
   if (IsPasswordField()) {
     return;

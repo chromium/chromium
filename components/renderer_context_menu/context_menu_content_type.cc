@@ -105,7 +105,7 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
       return SupportsGroupInternal(ITEM_GROUP_MEDIA_IMAGE);
 
     case ITEM_GROUP_GLIC:
-      return true;
+      return has_selection || !SupportsGroupInternal(ITEM_GROUP_MEDIA_IMAGE);
 
     case ITEM_GROUP_MEDIA_VIDEO:
       return params_.media_type == ContextMenuDataMediaType::kVideo;

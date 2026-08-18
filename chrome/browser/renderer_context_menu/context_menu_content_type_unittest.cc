@@ -80,6 +80,16 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
                     ContextMenuContentType::ITEM_GROUP_EDITABLE));
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_SEARCH_PROVIDER));
+    EXPECT_TRUE(
+        content_type->SupportsGroup(ContextMenuContentType::ITEM_GROUP_GLIC));
+  }
+
+  {
+    content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+    params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+    auto content_type = std::make_unique<ContextMenuContentType>(params, true);
+    EXPECT_TRUE(
+        content_type->SupportsGroup(ContextMenuContentType::ITEM_GROUP_GLIC));
   }
 
   {
@@ -102,6 +112,8 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
                     ContextMenuContentType::ITEM_GROUP_SEARCHWEBFORIMAGE));
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_PRINT));
+    EXPECT_FALSE(
+        content_type->SupportsGroup(ContextMenuContentType::ITEM_GROUP_GLIC));
 
     EXPECT_FALSE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_MEDIA_VIDEO));

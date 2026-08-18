@@ -84,6 +84,79 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest, GlicItemAbsentForImage) {
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
 }
 
+class GlicContextMenuShareImageDisabledBrowserTest
+    : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicContextMenuShareImageDisabledBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kGlic, features::kGlicContextMenu},
+        {features::kGlicShareImage});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuShareImageDisabledBrowserTest,
+                       GlicItemAbsentForImage) {
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.has_image_contents = true;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest,
+                       GlicItemPresentForTextSelection) {
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"selected text";
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest,
+                       GlicItemPresentForImageInTextSelection) {
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::ContextMenuParams params;
+  params.page_url = web_contents->GetVisibleURL();
+  params.selection_text = u"selected text";
+  params.has_image_contents = true;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents->GetPrimaryMainFrame(), params);
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+}
+
 IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest,
                        GlicPrecedesLensAndReadingModeInPageMenu) {
   TemplateURLService* model =
