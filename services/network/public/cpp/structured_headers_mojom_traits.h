@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -38,19 +37,19 @@ struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
     return item.GetDecimal();
   }
 
-  static std::string_view string_value(
+  static const std::string& string_value(
       const net::structured_headers::Item& item) {
-    return item.GetString();
+    return item.GetStringStrict();
   }
 
-  static std::string_view token_value(
+  static const std::string& token_value(
       const net::structured_headers::Item& item) {
-    return item.GetString();
+    return item.GetToken();
   }
 
   static const std::string& byte_sequence_value(
       const net::structured_headers::Item& item) {
-    return item.GetString();
+    return item.GetByteSequence();
   }
 
   static bool boolean_value(const net::structured_headers::Item& item) {
@@ -65,7 +64,7 @@ template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_STRUCTURED_HEADERS)
     StructTraits<network::mojom::StructuredHeadersParameterDataView,
                  std::pair<std::string, net::structured_headers::Item>> {
-  static std::string_view key(
+  static const std::string& key(
       const std::pair<std::string, net::structured_headers::Item>& param) {
     return param.first;
   }
