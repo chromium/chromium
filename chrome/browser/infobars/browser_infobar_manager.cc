@@ -44,6 +44,18 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
   RegistryInfoBarDelegate(InfoBarSpec spec, content::WebContents* contents)
       : content::WebContentsObserver(contents), spec_(std::move(spec)) {}
 
+  ~RegistryInfoBarDelegate() override {
+    // Reports whatever outcome is still owed. Interactions report eagerly
+    // and clear it; manager-initiated removals clear it too.
+    if (pending_result_) {
+      base::UmaHistogramSparse("InfoBar.Centralized.Ignored", GetIdentifier());
+      ReportResult(*pending_result_);
+    }
+  }
+
+  // Keeps a manager-initiated removal from being reported as an outcome.
+  void suppress_result() { pending_result_.reset(); }
+
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override {
     return spec_.identifier();
   }
@@ -118,6 +130,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
     if (contents && spec_.ok_button_callback()) {
       spec_.ok_button_callback().Run(contents);
     }
+    ReportResult(InfoBarResult::kAccepted);
     return true;
   }
 
@@ -127,6 +140,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
     if (contents && spec_.cancel_button_callback()) {
       spec_.cancel_button_callback().Run(contents);
     }
+    ReportResult(InfoBarResult::kCancelled);
     return true;
   }
 
@@ -136,6 +150,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
     if (contents && spec_.dismiss_callback()) {
       spec_.dismiss_callback().Run(contents);
     }
+    ReportResult(InfoBarResult::kDismissed);
   }
 
   bool LinkClicked(WindowOpenDisposition disposition) override {
@@ -173,7 +188,22 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
   }
 
  private:
+  void ReportResult(InfoBarResult result) {
+    if (!pending_result_) {
+      return;
+    }
+
+    pending_result_.reset();
+
+    if (spec_.result_callback()) {
+      spec_.result_callback().Run(web_contents(), result);
+    }
+  }
+
   InfoBarSpec spec_;
+  // The terminal outcome still owed at destruction, cleared once an
+  // interaction reports its own result.
+  std::optional<InfoBarResult> pending_result_ = InfoBarResult::kIgnored;
   // Computed once and cached so the substitutions don't change under the
   // view.
   mutable std::optional<std::vector<MessageSubstitution>> substitutions_;
@@ -202,6 +232,19 @@ ContentInfoBarManager* GetActiveTabInfoBarManager() {
   }
 
   return ContentInfoBarManager::FromWebContents(web_contents);
+}
+
+// Keeps `infobar` from reporting a result when it goes away. Every infobar
+// here was created by this manager, so the cast is safe.
+void SuppressInfoBarResult(infobars::InfoBar* infobar) {
+  static_cast<RegistryInfoBarDelegate*>(infobar->delegate())->suppress_result();
+}
+
+// Removes `infobar` without reporting a result.
+void RemoveInfoBarWithoutResult(infobars::InfoBarManager* manager,
+                                infobars::InfoBar* infobar) {
+  SuppressInfoBarResult(infobar);
+  manager->RemoveInfoBar(infobar);
 }
 
 }  // namespace
@@ -331,7 +374,7 @@ void BrowserInfoBarManager::Hide(
 
     for (infobars::InfoBar* infobar : manager->infobars()) {
       if (infobar->delegate()->GetIdentifier() == identifier) {
-        manager->RemoveInfoBar(infobar);
+        RemoveInfoBarWithoutResult(manager, infobar);
         break;
       }
     }
@@ -346,7 +389,7 @@ void BrowserInfoBarManager::Hide(
 
         manager_map.erase(
             map_it);  // Erase first to signal programmatic removal.
-        manager->RemoveInfoBar(infobar);
+        RemoveInfoBarWithoutResult(manager, infobar);
       }
       active_global_infobars_.erase(active_it);
     }
@@ -395,7 +438,13 @@ void BrowserInfoBarManager::OnInfoBarRemoved(infobars::InfoBar* infobar,
         if (browser) {
           if (browser->GetTabStripModel()->closing_all() ||
               browser->IsDeleteScheduled()) {
-            // Do nothing.
+            // The window is closing, not the infobar, which stays up in the
+            // other browsers. This instance must not report an outcome for
+            // a logical infobar the user can still see; whichever instance
+            // goes last reports for it.
+            if (!it->second.active_instances.empty()) {
+              SuppressInfoBarResult(infobar);
+            }
           } else {
             Hide(identifier);
           }
@@ -454,7 +503,7 @@ void BrowserInfoBarManager::OnActiveTabChanged(
       if (it != manager_map.end()) {
         infobars::InfoBar* infobar = it->second;
         manager_map.erase(it);  // Erase first to signal programmatic removal.
-        old_manager->RemoveInfoBar(infobar);
+        RemoveInfoBarWithoutResult(old_manager, infobar);
       }
     }
   }

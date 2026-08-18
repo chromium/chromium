@@ -48,6 +48,10 @@ enum class InfoBarResult {
 // InfoBarSpec defines an InfoBar's appearance and behavior.
 class InfoBarSpec {
  public:
+  // Runs when the user presses a button or dismisses the infobar. The
+  // infobar is torn down right after the call, so an action callback must
+  // not destroy it or close the tab synchronously. Use Hide() or the
+  // result callback for work that has to happen after teardown.
   using ActionCallback = base::RepeatingCallback<void(content::WebContents*)>;
   using SubstitutionsCallback =
       base::RepeatingCallback<std::vector<MessageSubstitution>(
