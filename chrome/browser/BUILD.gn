@@ -2442,21 +2442,10 @@ source_set("browser") {
     "//components/optimization_guide/optimization_guide_internals/webui",
     "//components/page_info/core:proto",
     "//components/page_load_metrics/browser",
-    "//components/page_load_metrics/browser/observers/ad_metrics",
-    "//components/page_load_metrics/common",
-    "//components/page_load_metrics/google/browser",
-    "//components/paint_preview/buildflags",
-    "//components/paint_preview/features",
     "//components/password_manager/content/browser",
-    "//components/password_manager/content/common",
     "//components/password_manager/core/browser",
-    "//components/password_manager/core/browser:password_switches",
-    "//components/password_manager/core/browser/affiliation:affiliation_fetching",
-    "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/export",
     "//components/password_manager/core/browser/features:password_features",
-    "//components/password_manager/core/browser/generation:core",
-    "//components/password_manager/core/browser/sharing",
     "//components/password_manager/core/common",
     "//components/payments/content:utils",
     "//components/payments/core",
@@ -2464,9 +2453,6 @@ source_set("browser") {
     "//components/performance_manager",
     "//components/performance_manager/scenario_api",
     "//components/permissions",
-    "//components/permissions/prediction_service",
-    "//components/permissions/prediction_service:prediction_service_messages_proto",
-    "//components/policy:generated",
     "//components/policy/content:safe_sites_navigation_throttle",
     "//components/policy/content/",
     "//components/policy/core/browser",
@@ -2477,113 +2463,54 @@ source_set("browser") {
     "//components/prefs",
     "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
-    "//components/privacy_sandbox/privacy_sandbox_attestations",
     "//components/profile_metrics",
     "//components/proxy_config",
-    "//components/push_messaging",
     "//components/qr_code_generator:bitmap_generator",
     "//components/query_parser",
     "//components/reading_list/core",
-    "//components/record_replay/core/common:mojom",
     "//components/regional_capabilities",
     "//components/renderer_context_menu",
-    "//components/reporting/client:report_queue",
-    "//components/reporting/client:report_queue_configuration",
     "//components/reporting/client:report_queue_factory",
-    "//components/reporting/client:report_queue_provider",
-    "//components/reporting/encryption:primitives",
-    "//components/reporting/encryption:verification",
-    "//components/reporting/proto:record_constants",
-    "//components/reporting/proto:record_proto",
-    "//components/reporting/proto:status_proto",
-    "//components/reporting/proto:upload_tracker_proto",
-    "//components/reporting/resources:resource_manager",
-    "//components/reporting/storage:storage_module_interface",
-    "//components/reporting/util:backoff_settings",
-    "//components/reporting/util:status",
-    "//components/reporting/util:status_macros",
     "//components/resources",
     "//components/safe_browsing/content/browser",
-    "//components/safe_browsing/content/browser:safe_browsing_service",
-    "//components/safe_browsing/content/browser/notification_content_detection",
     "//components/safe_browsing/content/browser/password_protection",
     "//components/safe_browsing/content/browser/web_ui",
-    "//components/safe_browsing/content/common/proto:download_file_types_proto",
-    "//components/safe_browsing/core/browser",
-    "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
-    "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/browser/db:database_manager",
-    "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_service",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
-    "//components/safe_browsing/core/browser/realtime:enterprise_url_lookup_service",
-    "//components/safe_browsing/core/browser/realtime:policy_engine",
-    "//components/safe_browsing/core/browser/realtime:url_lookup_service",
-    "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
-    "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_policy_handler",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/safe_browsing/core/common/proto:csd_proto",
-    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
-    "//components/safe_search_api",
-    "//components/safe_search_api:safe_search_client",
-    "//components/saved_tab_groups/delegate",
-    "//components/saved_tab_groups/internal",
-    "//components/saved_tab_groups/public",
     "//components/schema_org/common:improved_mojom",
-    "//components/search",
     "//components/search_engines",
     "//components/search_provider_logos",
-    "//components/security_interstitials/content:proto",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/security_interstitials/core",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/security_state/content",
     "//components/security_state/core",
-    "//components/segmentation_platform/embedder/default_model",
-    "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",
-    "//components/services/app_service",
-    "//components/services/heap_profiling",
-    "//components/services/patch/content",
-    "//components/services/quarantine",
-    "//components/services/quarantine/public/mojom",
-    "//components/services/unzip/content",
-    "//components/services/unzip/public/cpp",
-    "//components/services/unzip/public/mojom",
     "//components/sessions",
-    "//components/shared_highlighting/core/common",
-    "//components/sharing_message/ios_push",
-    "//components/sharing_message/proto",
-    "//components/sharing_message/shared_clipboard",
     "//components/signin/core/browser",
     "//components/signin/public/identity_manager",
-    "//components/signin/public/webdata",
     "//components/site_engagement/content",
     "//components/site_engagement/core/mojom:mojo_bindings",
-    "//components/site_isolation",
     "//components/skills:features",
-    "//components/sqlite_proto",
     "//components/startup_metric_utils",
     "//components/storage_monitor",
     "//components/strike_database:features",
     "//components/strings",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
-    "//components/subresource_filter/core/common",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:fetcher",
     "//components/supervised_user/core/common",
     "//components/sync",
-    "//components/sync_bookmarks",
     "//components/sync_preferences",
-    "//components/sync_preferences:common_syncable_prefs_database",
-    "//components/sync_preferences:features",
     "//components/sync_sessions",
     "//components/tab_groups",
-    "//components/touch_to_search/core/browser",
     "//components/tracing:background_tracing_utils",
     "//components/tracing:tracing_config",
     "//components/tracing:tracing_metrics",
@@ -2939,13 +2866,8 @@ source_set("browser") {
       "//components/payments/content",
       "//components/payments/content:utils",
       "//components/record_replay/content/browser",
-      "//components/record_replay/core/browser",
-      "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
-      "//components/services/app_service",
-      "//components/shared_highlighting/core/common",
       "//components/soda",
       "//components/soda:constants",
-      "//components/soda:utils",
       "//components/ukm/content",
       "//components/unexportable_keys",
       "//components/user_education/common",
@@ -3424,15 +3346,8 @@ source_set("browser") {
       "//components/exo",
       "//components/pref_registry",
       "//components/prefs",
-      "//components/quirks",
-      "//components/reporting/metrics:metrics_data_collection",
-      "//components/reporting/proto:metric_data_proto",
-      "//components/services/app_service/public/cpp:instance_update",
-      "//components/services/font:lib",
-      "//components/services/font/public/mojom",
       "//components/session_manager/core",
       "//components/signin/public/identity_manager",
-      "//components/sync/base",
       "//components/user_manager",
       "//components/user_manager:multi_user",
       "//device/fido",
@@ -3464,10 +3379,6 @@ source_set("browser") {
       deps += [ "//chrome/browser/chromeos/printing" ]
     }
   } else {  # !is_chromeos
-    deps += [
-      "//components/reporting/storage:storage_configuration",
-      "//components/reporting/storage:storage_module",
-    ]
     if (!is_android) {
       deps +=
           [ "//chrome/browser/ui/webui/default_browser:modal_mojo_bindings" ]
@@ -3519,7 +3430,6 @@ source_set("browser") {
       "//chrome/browser/ui/webui/skills:mojo_bindings",
       "//components/device_signals/core/browser",
       "//components/policy/proto",
-      "//components/power_metrics",
       "//services/data_decoder/public/cpp",
     ]
   }
@@ -3558,8 +3468,6 @@ source_set("browser") {
       "//chrome/browser/updates:impl",
       "//chrome/browser/updates:update_metrics",
       "//chrome/updater:browser_sources",
-      "//components/supervised_user/core/common:features",
-      "//components/themes:policy",
     ]
   }
 
@@ -3572,16 +3480,7 @@ source_set("browser") {
     }
 
     if (use_dbus) {
-      deps += [
-        "//chrome/common:chrome_features",
-        "//components/os_crypt/async/browser:secret_portal_key_provider",
-      ]
-    }
-  }
-
-  if (is_posix) {
-    if (!is_mac) {
-      deps += [ "//components/os_crypt/async/browser:posix_key_provider" ]
+      deps += [ "//chrome/common:chrome_features" ]
     }
   }
 
@@ -3649,7 +3548,6 @@ source_set("browser") {
       "//chrome/browser/printing",
       "//chrome/browser/printing:impl",
       "//chrome/common/printing",
-      "//components/printing/browser/headless",
     ]
   }
 
@@ -3791,7 +3689,6 @@ source_set("browser") {
     deps += [
       "//chrome/browser/pdf",
       "//chrome/browser/pdf:pdf_pref_names",
-      "//components/pdf/browser:interceptors",
       "//extensions/common/api",
       "//pdf:features",
     ]
@@ -3853,8 +3750,6 @@ source_set("browser") {
     deps += [
       "//components/safe_browsing/content/browser:client_side_detection",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
-      "//components/safe_browsing/content/browser/download:download_stats",
-      "//components/safe_browsing/content/common:file_type_policies",
     ]
   }
 
