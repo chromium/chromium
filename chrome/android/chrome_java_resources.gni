@@ -688,4 +688,5 @@ chrome_java_resources = [
   "java/res/xml/search_widget_info.xml",
   "java/res/xml/tracing_preferences.xml",
   "java/res/xml/unified_account_settings_preferences.xml",
+  "java/res/xml/universal_opt_out_preferences.xml",
 ]

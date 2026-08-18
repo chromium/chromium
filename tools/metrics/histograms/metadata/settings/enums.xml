@@ -124,6 +124,7 @@ chromium-metrics-reviews@google.com.
   <int value="1322563897" label="(Obsolete) TopicsManageFragment"/>
   <int value="1370078648" label="AdaptiveToolbarSettingsFragment"/>
   <int value="1370406966" label="AutofillLocalCardEditor"/>
+  <int value="1398652905" label="UniversalOptOutSettings"/>
   <int value="1409846592" label="TabArchiveSettingsFragment"/>
   <int value="1421890558" label="PasswordSettings"/>
   <int value="1505293227" label="PrivacySettings"/>

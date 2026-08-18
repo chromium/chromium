@@ -1048,6 +1048,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 
 For example, some websites may respond to this request by showing you ads that aren’t based on other websites you’ve visited. Many websites will still collect and use your browsing data — for example to improve security, to provide content, ads and recommendations, and to generate reporting statistics.
       </message>
+      <message name="IDS_UNIVERSAL_OPT_OUT_TITLE" desc="Title for the 'Universal Opt Out' preference." translateable="false">
+        Send an opt-out request to sites regarding use of your data
+      </message>
+      <message name="IDS_UNIVERSAL_OPT_OUT_SUB_PAGE_TITLE" desc="Title for the sub-page of the 'Universal Opt Out' settings." translateable="false">
+        Opt-out request
+      </message>
+      <message name="IDS_UNIVERSAL_OPT_OUT_INFO_TEXT" desc="Info text for the 'Universal Opt Out' preference." translateable="false">
+        Depending on the laws in your region, this opt-out request may affect the sale or sharing of your data, or it may affect how your data is used for targeted advertising. The sites you visit, including Google, are responsible for determining how they respond to this request.
+      </message>
       <message name="IDS_CAN_MAKE_PAYMENT_TITLE" desc="Title for preference to allow websites to know whether you have payment methods available through PaymentRequest.CanMakePayment interface">
         Access payment methods
       </message>

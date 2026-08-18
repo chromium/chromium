@@ -29,6 +29,10 @@ found in the LICENSE file.
         android:title="@string/do_not_track_title"
         android:fragment="org.chromium.chrome.browser.privacy.settings.DoNotTrackSettings" />
     <Preference
+        android:key="universal_opt_out"
+        android:title="@string/universal_opt_out_title"
+        android:fragment="org.chromium.chrome.browser.privacy.settings.UniversalOptOutSettings" />
+    <Preference
         android:key="preload_pages"
         android:title="@string/preload_pages_title"
         android:summary="@string/preload_pages_summary"

@@ -82,6 +82,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/supervised_user/core/common/pref_names.h",
     "//components/translate/core/browser/translate_pref_names.h",
     "//components/unified_consent/pref_names.cc",
+    "//components/universal_optout/prefs.h",
   ]
 
   class_name = "org.chromium.chrome.browser.preferences.Pref"

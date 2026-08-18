@@ -590,4 +590,21 @@ public class PrivacySettingsFragmentTest {
                                 }),
                         eq(true));
     }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
+    public void testUniversalOptOutSettingsVisible_FeatureEnabled() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        scrollToSetting(withText(R.string.universal_opt_out_title));
+        onView(withText(R.string.universal_opt_out_title)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @DisableFeatures(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)
+    public void testUniversalOptOutSettingsHidden_FeatureDisabled() {
+        mSettingsActivityTestRule.startSettingsActivity();
+        onView(withText(R.string.universal_opt_out_title)).check(doesNotExist());
+    }
 }

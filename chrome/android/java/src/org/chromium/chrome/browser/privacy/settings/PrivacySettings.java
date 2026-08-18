@@ -99,6 +99,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
     private static final String PREF_JAVASCRIPT_OPTIMIZER = "javascript_optimizer";
     @VisibleForTesting static final String PREF_DO_NOT_TRACK = "do_not_track";
+    private static final String PREF_UNIVERSAL_OPT_OUT = "universal_opt_out";
     @VisibleForTesting static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
     private static final String PREF_ADVANCED_PROTECTION_INFO = "advanced_protection_info";
     private static final int SECURE_CONNECTIONS_MESSAGE_ID =
@@ -278,6 +279,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
             scrollToPreference(PREF_ADVANCED_PROTECTION_INFO);
         }
 
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)) {
+            getPreferenceScreen().removePreference(findPreference(PREF_UNIVERSAL_OPT_OUT));
+        }
+
         updatePreferences();
     }
 
@@ -387,6 +392,16 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     UserPrefs.get(getProfile()).getBoolean(Pref.ENABLE_DO_NOT_TRACK)
                             ? R.string.text_on
                             : R.string.text_off);
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)) {
+            Preference universalOptOutPref = findPreference(PREF_UNIVERSAL_OPT_OUT);
+            if (universalOptOutPref != null) {
+                universalOptOutPref.setSummary(
+                        UserPrefs.get(getProfile()).getBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED)
+                                ? R.string.text_on
+                                : R.string.text_off);
+            }
         }
 
         Preference preloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
