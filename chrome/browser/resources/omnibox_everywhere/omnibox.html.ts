@@ -132,6 +132,11 @@ export function getHtml(this: OmniboxEverywhereOmniboxElement) {
           <div class="icon window"></div>
           ${this.i18n('screenshotWindowLabel')}
         </button>
+        <button class="dropdown-item" id="screenshotRegion"
+            @click="${this.onScreenshotRegionClick_}">
+          <div class="icon region"></div>
+          ${this.i18n('screenshotRegionLabel')}
+        </button>
       </cr-action-menu>
     </div>
   `;

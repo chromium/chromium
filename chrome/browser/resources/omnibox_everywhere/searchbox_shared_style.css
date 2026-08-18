@@ -169,3 +169,8 @@
   -webkit-mask-image: url(
     '//resources/cr_components/searchbox/icons/screenshot_window.svg');
 }
+
+#screenshotMenu .icon.region {
+  -webkit-mask-image: url(
+    '//resources/cr_components/searchbox/icons/screenshot_region.svg');
+}
