@@ -246,6 +246,8 @@ class CONTENT_EXPORT DedicatedWorkerHost final
     return service_worker_handle_.get();
   }
 
+  bool file_url_support() const { return file_url_support_; }
+
 #if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
   PressureServiceForDedicatedWorker* pressure_service() {
     return pressure_service_.get();
