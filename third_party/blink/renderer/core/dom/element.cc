@@ -1138,7 +1138,7 @@ Node* Element::Clone(Document& factory,
   // 2-3. If registry is a global custom element registry, then set
   // registry to document's effective global custom element registry.
   if (registry && registry->IsGlobalRegistry()) {
-    registry = factory.customElementRegistry();
+    registry = factory.EffectiveGlobalCustomElementRegistry();
   }
   if (!data.Has(CloneOption::kIncludeDescendants)) {
     copy = &CloneWithoutChildren(data, registry, &factory);
@@ -1165,7 +1165,7 @@ Node* Element::Clone(Document& factory,
       // set shadowRootRegistry to document's effective global custom element
       // registry
       if (shadow_root_registry && shadow_root_registry->IsGlobalRegistry()) {
-        shadow_root_registry = factory.customElementRegistry();
+        shadow_root_registry = factory.EffectiveGlobalCustomElementRegistry();
       }
       // 6.4 Run attach a shadow root with copy, node's shadow root's mode,
       // true, node’s shadow root’s delegates focus, and node’s shadow root’s
