@@ -2085,9 +2085,11 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
       if (auto* layout_object = active_element->GetLayoutObject()) {
         bounds = layout_object->AbsoluteBoundingBoxRectForUnboundedElement();
       }
-      if (!bounds.IsEmpty()) {
-        unbounded_surface_state_->host_->UpdateBounds(bounds);
-      }
+      // Unbounded elements must have a minimum size of 1x1 to prevent
+      // empty-bounds compositor and platform window issues.
+      bounds.set_width(std::max(1, bounds.width()));
+      bounds.set_height(std::max(1, bounds.height()));
+      unbounded_surface_state_->host_->UpdateBounds(bounds);
     }
   }
 }

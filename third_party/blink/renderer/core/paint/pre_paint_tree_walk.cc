@@ -716,6 +716,10 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
             widget->BlinkSpaceToDIPs(gfx::RectF(current_bounds)));
       }
     }
+    // Unbounded elements must have a minimum size of 1x1 to prevent
+    // empty-bounds compositor and platform window issues.
+    current_bounds.set_width(std::max(1, current_bounds.width()));
+    current_bounds.set_height(std::max(1, current_bounds.height()));
     if (html_element &&
         current_bounds != html_element->LastSentUnboundedBounds()) {
       const_cast<HTMLElement*>(html_element)

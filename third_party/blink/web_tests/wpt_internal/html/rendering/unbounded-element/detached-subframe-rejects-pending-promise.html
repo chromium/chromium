@@ -14,11 +14,7 @@ let iframe_loaded_promise = new Promise(resolve => {
 </script>
 
 <iframe id="iframe"
-        srcdoc="
-          <div id='div'
-               unbounded
-               style='width: 100px; height: 100px;'>
-          </div>"
+        srcdoc="<div id='div' unbounded></div>"
         onload="iframeLoaded()"></iframe>
 
 <script>

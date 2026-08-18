@@ -1617,6 +1617,13 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
     return promise;
   }
 
+  if (!isConnected()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The element is not connected to a document."));
+    return promise;
+  }
+
   auto* frame = GetDocument().GetFrame();
   if (!frame) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -1660,17 +1667,11 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
           local_root_widget->BlinkSpaceToDIPs(gfx::RectF(bounds)));
     }
   }
+  // Unbounded elements must have a minimum size of 1x1 to prevent empty-bounds
+  // compositor and platform window issues.
+  bounds.set_width(std::max(1, bounds.width()));
+  bounds.set_height(std::max(1, bounds.height()));
   SetLastSentUnboundedBounds(bounds);
-
-  if (bounds.IsEmpty()) {
-    // TODO(crbug.com/508672616): This is likely weird for now as an element
-    // without layout or with display: none has empty bounds. We should think of
-    // a cleaner way to handle or report this.
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError,
-        "Unbounded elements must have non-empty bounds."));
-    return promise;
-  }
 
 #if BUILDFLAG(IS_ANDROID)
   // Unbounded elements rely on

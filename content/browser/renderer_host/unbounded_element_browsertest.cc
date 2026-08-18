@@ -217,8 +217,6 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
     const div = document.createElement('div');
     div.id = 'target';
     div.setAttribute('unbounded', '');
-    div.style.width = '100px';
-    div.style.height = '100px';
     document.body.appendChild(div);
 
     div.showUnboundedElement().then(() => "Success", e => e.name);
@@ -338,7 +336,7 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, MAYBE_LightDismissEscKey) {
   std::string script = R"(
     document.body.innerHTML = `
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <div id="target" style="width:50px; height:50px;" unbounded></div>
+      <div id="target" unbounded></div>
     `;
     document.getElementById('target').showUnboundedElement();
   )";
@@ -399,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, PopoverInsideUnbounded) {
   std::string script = R"(
     document.body.innerHTML = `
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <div id="child" style="width:100px; height:100px;" unbounded>
+      <div id="child" unbounded>
         <div id="popover" popover>Nested Popover</div>
       </div>
     `;
@@ -460,12 +458,12 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, VisualOverflowBounds) {
 }
 
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
-                       RequestWithEmptyBoundsThrowsException) {
+                       RequestWithZeroSizeBoundsSucceeds) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  // Execute script that calls showUnboundedElement on an element with empty
-  // bounds and catches the exception name.
+  // Execute script that calls showUnboundedElement on an element with zero size
+  // and verify it resolves successfully with a minimum 1x1 window allocation.
   std::string script = R"(
     document.body.innerHTML = `
       <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -474,7 +472,14 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
     document.getElementById('target').showUnboundedElement()
         .then(() => "Success", e => e.name);
   )";
-  EXPECT_EQ("NotSupportedError", EvalJs(primary_main_frame_host(), script));
+  EXPECT_EQ("Success", EvalJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  gfx::Rect bounds = window->GetBounds();
+  EXPECT_EQ(1, bounds.width());
+  EXPECT_EQ(1, bounds.height());
 }
 
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
@@ -487,7 +492,7 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   std::string script = R"(
     document.body.innerHTML = `
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <div id="target" style="width:100px; height:100px;"></div>
+      <div id="target"></div>
     `;
     document.getElementById('target').showUnboundedElement()
         .then(() => "Success", e => e.name);
@@ -1021,7 +1026,7 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   std::string script = R"(
     document.body.innerHTML = `
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <div id="target" style="width:100px; height:100px;" unbounded></div>
+      <div id="target" unbounded></div>
       <iframe id="test_iframe" src="about:blank"></iframe>
     `;
     document.getElementById('target').showUnboundedElement();
@@ -1048,7 +1053,7 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   std::string script = R"(
     document.body.innerHTML = `
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <div id="c" style="width: 100px; height: 100px;">
+      <div id="c">
         <input id="i">
       </div>
     `;
@@ -1080,7 +1085,7 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, CloseOnWindowFocusLost) {
   std::string script = R"(
     document.body.innerHTML = `
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <div id="target" style="width:50px; height:50px;" unbounded></div>
+      <div id="target" unbounded></div>
     `;
     document.getElementById('target').showUnboundedElement();
   )";
@@ -1115,8 +1120,8 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   std::string script = R"JS(
     document.body.innerHTML = `
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <div id="first" style="width:50px; height:50px;" unbounded></div>
-      <div id="second" style="width:50px; height:50px;" unbounded></div>
+      <div id="first" unbounded></div>
+      <div id="second" unbounded></div>
     `;
     const first = document.getElementById('first');
     const second = document.getElementById('second');
@@ -1308,8 +1313,6 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementPermutationBrowserTest,
     std::string invoke_script = R"(
       const div = document.createElement('div');
       div.setAttribute('unbounded', '');
-      div.style.width = '100px';
-      div.style.height = '100px';
       document.body.appendChild(div);
       div.showUnboundedElement().then(() => "Success", e => e.name);
     )";

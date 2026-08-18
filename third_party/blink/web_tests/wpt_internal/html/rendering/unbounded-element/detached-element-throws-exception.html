@@ -7,7 +7,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<div id="div" unbounded style="width: 100px; height: 100px;"></div>
+<div id="div" unbounded></div>
 
 <script>
 promise_test(async t => {
@@ -19,6 +19,6 @@ promise_test(async t => {
   // Calling showUnboundedElement on a detached element should reject.
   await test_driver.bless("show unbounded element");
   const p = div.showUnboundedElement();
-  await promise_rejects_dom(t, 'NotSupportedError', p);
-}, 'Calling showUnboundedElement on a detached element of the active document should reject with NotSupportedError.');
+  await promise_rejects_dom(t, 'InvalidStateError', p);
+}, 'Calling showUnboundedElement on a detached element of the active document should reject with InvalidStateError.');
 </script>

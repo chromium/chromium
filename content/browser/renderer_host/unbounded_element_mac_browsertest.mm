@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacUnboundedZOrderTest,
 
   std::string script = R"(
     document.body.innerHTML = `
-      <div id="target" style="width:50px; height:50px;" unbounded></div>
+      <div id="target" unbounded></div>
     `;
     document.getElementById('target').showUnboundedElement();
   )";
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacUnboundedZOrderTest,
   // Trigger unbounded element show
   std::string script = R"(
     document.body.innerHTML = `
-      <div id="target" style="width:50px; height:50px;" unbounded></div>
+      <div id="target" unbounded></div>
     `;
     document.getElementById('target').showUnboundedElement();
   )";

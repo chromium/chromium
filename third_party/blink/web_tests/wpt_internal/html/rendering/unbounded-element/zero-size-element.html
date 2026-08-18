@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/536954443">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<div id="zero_size" unbounded style="width: 0px; height: 0px;"></div>
+<div id="display_none" unbounded style="display: none;"></div>
+<div id="resizable" unbounded style="width: 0px; height: 0px;"></div>
+
+<script>
+promise_test(async t => {
+  const el = document.getElementById('zero_size');
+  await test_driver.bless("show unbounded element");
+  await el.showUnboundedElement();
+  assert_true(el.matches(':unbounded'), 'The zero-size element should match :unbounded.');
+  await el.hideUnboundedElement();
+  assert_false(el.matches(':unbounded'), 'The zero-size element should not match :unbounded after hide.');
+}, 'showUnboundedElement() succeeds on a zero-size element (0x0).');
+
+promise_test(async t => {
+  const el = document.getElementById('display_none');
+  await test_driver.bless("show unbounded element");
+  await el.showUnboundedElement();
+  assert_true(el.matches(':unbounded'), 'The display:none element should match :unbounded.');
+  await el.hideUnboundedElement();
+  assert_false(el.matches(':unbounded'), 'The display:none element should not match :unbounded after hide.');
+}, 'showUnboundedElement() succeeds on a display:none element.');
+
+promise_test(async t => {
+  const el = document.getElementById('resizable');
+  await test_driver.bless("show unbounded element");
+  await el.showUnboundedElement();
+  assert_true(el.matches(':unbounded'), 'The element should match :unbounded while 0x0.');
+
+  // Dynamically resize the element to non-zero dimensions.
+  el.style.width = '100px';
+  el.style.height = '100px';
+  // Force style and layout update.
+  el.offsetWidth;
+
+  assert_true(el.matches(':unbounded'), 'The element should remain :unbounded after resizing.');
+  await el.hideUnboundedElement();
+  assert_false(el.matches(':unbounded'), 'The element should not match :unbounded after hide.');
+}, 'showUnboundedElement() succeeds on a zero-size element that is subsequently resized.');
+</script>
