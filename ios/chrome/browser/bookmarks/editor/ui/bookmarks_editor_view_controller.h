@@ -29,6 +29,10 @@
 @property(nonatomic, weak) id<BookmarksEditorMutator> mutator;
 // Whether some value was edited.
 @property(nonatomic, assign) BOOL edited;
+// Whether the view controller's coordinator is stopping programmatically.
+// When YES, `viewDidDisappear:` ignores dismissal notifications to prevent
+// redundant delegate callbacks during coordinator teardown.
+@property(nonatomic, assign) BOOL coordinatorIsStopping;
 // Whether the view can be dismissed.
 @property(nonatomic, assign) BOOL canBeDismissed;
 

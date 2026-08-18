@@ -506,6 +506,12 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [IntentDonationHelper donateIntent:IntentType::kOpenBookmarks];
 }
 
+// Note: Unlike a standard trio of mediator-coordinator-viewcontroller,
+// multiple `BookmarksHomeViewController` instances are pushed for subfolder
+// navigation under a single coordinator and a single mediator.
+// `viewDidDisappear:` cannot be used for shutdown as subfolder navigation
+// would prematurely destroy the coordinator's shared mediator. Teardown is
+// instead tied to root container removal (`parent == nil`).
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   [super didMoveToParentViewController:parent];
   if (_isShutDown) {

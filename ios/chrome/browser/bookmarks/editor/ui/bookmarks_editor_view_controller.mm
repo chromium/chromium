@@ -182,6 +182,19 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   self.navigationController.toolbarHidden = NO;
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  if (self.coordinatorIsStopping) {
+    return;
+  }
+  // Exclude when the disappearance is due to pushing a new view controller
+  // into stack.
+  if (self.isBeingDismissed || self.navigationController.isBeingDismissed ||
+      self.isMovingFromParentViewController) {
+    [self.delegate bookmarkEditorWantsDismissal:self];
+  }
+}
+
 #pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {

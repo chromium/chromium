@@ -153,9 +153,15 @@ using bookmarks::BookmarkNode;
   [self reloadView];
 }
 
-- (void)didMoveToParentViewController:(UIViewController*)parent {
-  [super didMoveToParentViewController:parent];
-  if (!parent) {
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  if (self.coordinatorIsStopping) {
+    return;
+  }
+  // Exclude when the disappearance is due to pushing a new view controller
+  // into stack.
+  if (self.isBeingDismissed || self.navigationController.isBeingDismissed ||
+      self.isMovingFromParentViewController) {
     [self.delegate bookmarksFolderChooserViewControllerDidDismiss:self];
   }
 }

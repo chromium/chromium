@@ -28,6 +28,10 @@
 @property(nonatomic, weak) id<BookmarksFolderChooserDataSource> dataSource;
 // Mutator to apply changes to model layer.
 @property(nonatomic, weak) id<BookmarksFolderChooserMutator> mutator;
+// Whether the view controller's coordinator is stopping programmatically.
+// When YES, `viewDidDisappear:` ignores dismissal notifications to prevent
+// redundant delegate callbacks during coordinator teardown.
+@property(nonatomic, assign) BOOL coordinatorIsStopping;
 
 // Initializes the view controller.
 // `allowsCancel` puts a cancel and done button in the navigation bar instead

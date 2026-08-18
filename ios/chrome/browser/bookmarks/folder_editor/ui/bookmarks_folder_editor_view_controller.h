@@ -71,6 +71,11 @@ class SyncService;
 // Whether the UI is disabled.
 @property(nonatomic, assign) BOOL UIDisabled;
 
+// Whether the view controller's coordinator is stopping programmatically.
+// When YES, `viewDidDisappear:` ignores dismissal notifications to prevent
+// redundant delegate callbacks during coordinator teardown.
+@property(nonatomic, assign) BOOL coordinatorIsStopping;
+
 // Snackbar commands handler for this ViewController.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 

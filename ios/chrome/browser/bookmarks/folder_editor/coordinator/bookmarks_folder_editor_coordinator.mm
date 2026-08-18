@@ -42,6 +42,8 @@
   // If `_folderNode` is `nullptr`, the user is adding a new folder. Otherwise
   // the user is editing an existing folder.
   raw_ptr<const bookmarks::BookmarkNode> _folderNode;
+  // Whether this coordinator has been stopped.
+  BOOL _stopped;
 }
 
 @end
@@ -123,15 +125,26 @@
 }
 
 - (void)stop {
+  if (_stopped) {
+    return;
+  }
+  _stopped = YES;
+  _viewController.coordinatorIsStopping = YES;
   [super stop];
   // Stop child coordinator before stopping `self`.
   [self stopBookmarksFolderChooserCoordinator];
 
   CHECK(_viewController, base::NotFatalUntil::M152);
+  _viewController.UIDisabled = YES;
   if (_navigationController) {
-    [_navigationController.presentingViewController
-        dismissViewControllerAnimated:YES
-                           completion:nil];
+    // If the navigation controller is already being interactively dismissed by
+    // UIKit (e.g. swipe-down gesture), skip programmatic dismissal to avoid
+    // interrupting UIKit's transition animator and causing app hangs.
+    if (!_navigationController.isBeingDismissed) {
+      [_navigationController.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:nil];
+    }
     _navigationController.presentationController.delegate = nil;
     _navigationController = nil;
   } else if (_baseNavigationController &&
@@ -140,21 +153,24 @@
     // the parent coordinator (who owns the `_baseNavigationController`) has
     // already been dismissed. In this case `_baseNavigationController` itself
     // is no longer being presented and this coordinator was dismissed as well.
-    CHECK_EQ(_baseNavigationController.topViewController, _viewController,
-             base::NotFatalUntil::M152);
-    [_baseNavigationController popViewControllerAnimated:YES];
-  } else if (!_baseNavigationController) {
-    // If there is no `_baseNavigationController` and `_navigationController`,
-    // the view controller has been already dismissed. See
-    // `presentationControllerDidDismiss:` and
-    // `bookmarksFolderEditorDidDismiss:`.
-    // Therefore `self.baseViewController.presentedViewController` must be
-    // `nil`.
-    CHECK(!self.baseViewController.presentedViewController,
-          base::NotFatalUntil::M152);
+    //
+    // Pop `_viewController` (and any child VCs on top of it) back to its
+    // parent view controller. If `_viewController` was already popped
+    // interactively (e.g. back button tap), `indexOfObject:` returns
+    // `NSNotFound` and popping is skipped.
+    if (!_baseNavigationController.isBeingDismissed) {
+      NSUInteger index = [_baseNavigationController.viewControllers
+          indexOfObject:_viewController];
+      if (index != NSNotFound && index > 0) {
+        UIViewController* previousVC =
+            _baseNavigationController.viewControllers[index - 1];
+        [_baseNavigationController popToViewController:previousVC animated:YES];
+      }
+    }
   }
   [_viewController disconnect];
   _viewController = nil;
+  _baseNavigationController = nil;
 }
 
 #pragma mark - BookmarksFolderEditorCoordinator
@@ -212,7 +228,6 @@
 
 - (void)bookmarksFolderEditorDidDismiss:
     (BookmarksFolderEditorViewController*)folderEditor {
-  CHECK(_baseNavigationController, base::NotFatalUntil::M152);
   _baseNavigationController = nil;
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
 }
@@ -273,8 +288,8 @@
 #pragma mark - Private
 
 - (void)stopBookmarksFolderChooserCoordinator {
-  [_folderChooserCoordinator stop];
   _folderChooserCoordinator.delegate = nil;
+  [_folderChooserCoordinator stop];
   _folderChooserCoordinator = nil;
   _viewController.UIDisabled = NO;
 }

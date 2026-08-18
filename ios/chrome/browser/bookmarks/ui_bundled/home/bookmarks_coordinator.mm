@@ -137,6 +137,9 @@ enum class PresentedState {
   // was presented. Used to prevent Universal Cross-Site Scripting (UXSS)
   // if the underlying tab navigates while bookmarks UI is open.
   GURL _lastCommittedURLBeforePresentation;
+
+  // Whether this coordinator has been stopped.
+  BOOL _stopped;
 }
 
 @synthesize sceneHandler = _sceneHandler;
@@ -171,6 +174,10 @@ enum class PresentedState {
 }
 
 - (void)stop {
+  if (_stopped) {
+    return;
+  }
+  _stopped = YES;
   [_mediator disconnect];
   _mediator = nil;
   switch (self.currentPresentedState) {
@@ -653,8 +660,8 @@ enum class PresentedState {
       << [self description];
   CHECK(self.folderChooserCoordinator, base::NotFatalUntil::M152)
       << [self description];
-  [self.folderChooserCoordinator stop];
   self.folderChooserCoordinator.delegate = nil;
+  [self.folderChooserCoordinator stop];
   self.folderChooserCoordinator = nil;
   self.currentPresentedState = PresentedState::NONE;
 }

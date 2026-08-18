@@ -52,6 +52,9 @@
 
   // The folder chooser coordinator.
   BookmarksFolderChooserCoordinator* _folderChooserCoordinator;
+
+  // Whether this coordinator has been stopped.
+  BOOL _stopped;
 }
 
 // The action sheet coordinator, if one is currently being shown.
@@ -110,8 +113,14 @@
 }
 
 - (void)stop {
+  if (_stopped) {
+    return;
+  }
+  _stopped = YES;
+  _viewController.coordinatorIsStopping = YES;
   [super stop];
   CHECK(_navigationController, base::NotFatalUntil::M150);
+  _mediator.UIDisabled = YES;
   [_mediator disconnect];
   [self dismissActionSheetCoordinator];
   _mediator.consumer = nil;
@@ -124,9 +133,13 @@
   _snackbarCommandsHandler = nil;
   [self stopFolderChooserCoordinator];
 
-  // animatedDismissal should have been explicitly set before calling stop.
-  [_navigationController dismissViewControllerAnimated:self.animatedDismissal
-                                            completion:nil];
+  // If the navigation controller is already being interactively dismissed by
+  // UIKit (e.g. swipe-down gesture), skip programmatic dismissal to avoid
+  // interrupting UIKit's transition animator and causing app hangs.
+  if (!_navigationController.isBeingDismissed) {
+    [_navigationController dismissViewControllerAnimated:self.animatedDismissal
+                                              completion:nil];
+  }
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
 }
@@ -282,13 +295,6 @@
     (BookmarksFolderChooserCoordinator*)coordinator {
   CHECK(_folderChooserCoordinator, base::NotFatalUntil::M150);
   [self stopFolderChooserCoordinator];
-  if (!_navigationController.presentingViewController) {
-    // In this case the `_navigationController` itself was dismissed.
-    // TODO(crbug.com/40251259): Remove this if block when dismiss handling
-    // is done in coordinators.
-    [_viewController.view endEditing:YES];
-    [self.delegate bookmarksEditorCoordinatorShouldStop:self];
-  }
 }
 
 #pragma mark - Private
