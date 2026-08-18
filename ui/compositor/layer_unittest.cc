@@ -998,6 +998,8 @@ TEST_P(LayerWithDelegateTest, CloneWithTrilinearFiltering) {
 
 TEST_P(LayerWithDelegateTest, CloneDamagedRegion) {
   auto layer = CreateLayer<LayerTextured>();
+  ui::LayerTestApi layer_test_api(layer.get());
+
   // Set a delegate so that the damage region is accumulated.
   DrawTreeLayerDelegate delegate(gfx::Rect(0, 0, 10, 10));
   layer->set_delegate(&delegate);
@@ -1009,10 +1011,11 @@ TEST_P(LayerWithDelegateTest, CloneDamagedRegion) {
   for (auto rect : damaged_region)
     layer->SchedulePaint(rect);
 
-  ASSERT_EQ(damaged_region, layer->damaged_region());
+  ASSERT_EQ(damaged_region, layer_test_api.damaged_region());
 
   auto clone = layer->Clone();
-  EXPECT_EQ(damaged_region, clone->damaged_region());
+  ui::LayerTestApi clone_test_api(clone.get());
+  EXPECT_EQ(damaged_region, clone_test_api.damaged_region());
 }
 
 TEST_P(LayerWithDelegateTest, Mirroring) {

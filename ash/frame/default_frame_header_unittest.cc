@@ -21,6 +21,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_test_api.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/color_utils.h"
@@ -319,7 +320,8 @@ TEST_F(DefaultFrameHeaderTest, AnimateDuringAnimation) {
   win_1.reset();
   EXPECT_TRUE(wm::IsActiveWindow(win_0.get()));
   // Makes sure that the layer has full damaged bounds.
-  EXPECT_TRUE(win_0->layer()->damaged_region().Contains(layer_bounds));
+  ui::LayerTestApi layer_test_api(win_0->layer());
+  EXPECT_TRUE(layer_test_api.damaged_region().Contains(layer_bounds));
 }
 
 }  // namespace ash

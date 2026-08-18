@@ -494,8 +494,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate {
   // |cc_layer_|.
   void SendDamagedRects();
 
-  const cc::Region& damaged_region() const { return damaged_region_; }
-
   void CompleteAllAnimations();
 
   // Suppresses painting the content by disconnecting |delegate_|.

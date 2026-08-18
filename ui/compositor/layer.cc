@@ -1917,7 +1917,7 @@ void LayerTextured::RemoveDeferredPaintRequest() {
                 perfetto::CounterTrack("DeferredPaintRequests",
                                        reinterpret_cast<uintptr_t>(this)),
                 deferred_paint_requests_);
-  if (!deferred_paint_requests_ && !damaged_region().IsEmpty()) {
+  if (!deferred_paint_requests_ && !damaged_region_.IsEmpty()) {
     ScheduleDraw();
   }
 }
