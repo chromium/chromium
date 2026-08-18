@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -33,6 +34,7 @@ import androidx.core.widget.ImageViewCompat;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R.string;
@@ -67,7 +69,7 @@ class TabVerticalViewBinder {
     private static final float ROTATION_EXPANDED = 180f;
     private static final float ACTUATION_SPINNER_ROTATION_DEGREES = 360f;
     private static final long ACTUATION_SPINNER_DURATION_MS = 2000L;
-    static final long CHEVRON_ANIMATION_DURATION_MS = 200L;
+    @VisibleForTesting static final long CHEVRON_ANIMATION_DURATION_MS = 200L;
 
     // Public Entry-Point Binders
 
@@ -193,6 +195,8 @@ class TabVerticalViewBinder {
                 TabListViewBinderUtils.bindActionButton(
                         model, menuButton, model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
             }
+        } else if (TabProperties.TAB_HOVER_CARD_LISTENER == propertyKey) {
+            setupTabGroupHeaderHoverListener(model, view);
         }
     }
 
@@ -253,13 +257,13 @@ class TabVerticalViewBinder {
             // fully intact.
             final MotionEventInfo[] lastMotion = new MotionEventInfo[1];
             view.setOnTouchListener(
-                    (View v, MotionEvent event) -> {
+                    (View _, MotionEvent event) -> {
                         lastMotion[0] = MotionEventInfo.fromMotionEvent(event);
                         return false;
                     });
 
             view.setOnClickListener(
-                    (View v) ->
+                    (View _) ->
                             listener.run(
                                     view, propertyModel.get(TabProperties.TAB_ID), lastMotion[0]));
         }
@@ -876,6 +880,7 @@ class TabVerticalViewBinder {
      * explicitly computed as: (rail_collapsed_width - tab_item_collapsed_size) / 2 -
      * rail_horizontal_margin.
      */
+    @VisibleForTesting
     static int getCollapsedChildMarginStart(Context context) {
         Resources resources = context.getResources();
         int railWidth =
@@ -1024,7 +1029,7 @@ class TabVerticalViewBinder {
             Runnable onHoverEnter,
             Runnable onHoverExit) {
         parentView.setOnHoverListener(
-                (v, motionEvent) -> {
+                (View _, MotionEvent motionEvent) -> {
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_HOVER_ENTER:
                             onHoverEnter.run();
@@ -1126,7 +1131,8 @@ class TabVerticalViewBinder {
 
         Runnable onHoverExit =
                 () -> {
-                    applyHoverBackgroundState(model, view, false, defaultBackgroundColor);
+                    applyHoverBackgroundState(
+                            model, view, /* isHovered= */ false, defaultBackgroundColor);
                     updateIcons(model, view, /* isHovered= */ false);
                     notifyHoverChange(model, view, /* isHovered= */ false);
                 };
@@ -1137,8 +1143,16 @@ class TabVerticalViewBinder {
     private static void setupTabGroupHeaderHoverListener(PropertyModel model, ViewGroup view) {
         @Nullable View menuButton = view.findViewById(R.id.menu_button);
 
-        Runnable onHoverEnter = () -> updateGroupHeaderIcons(model, view, /* isHovered= */ true);
-        Runnable onHoverExit = () -> updateGroupHeaderIcons(model, view, /* isHovered= */ false);
+        Runnable onHoverEnter =
+                () -> {
+                    updateGroupHeaderIcons(model, view, /* isHovered= */ true);
+                    notifyGroupHeaderHoverChange(model, view, /* isHovered= */ true);
+                };
+        Runnable onHoverExit =
+                () -> {
+                    updateGroupHeaderIcons(model, view, /* isHovered= */ false);
+                    notifyGroupHeaderHoverChange(model, view, /* isHovered= */ false);
+                };
 
         setupHoverOrchestration(view, menuButton, onHoverEnter, onHoverExit);
     }
@@ -1153,11 +1167,26 @@ class TabVerticalViewBinder {
         }
     }
 
+    /** Notifies {@link TabHoverCardListener} of hover state transitions on tab items. */
     private static void notifyHoverChange(PropertyModel model, View view, boolean isHovered) {
         TabHoverCardListener listener = model.get(TabProperties.TAB_HOVER_CARD_LISTENER);
         if (listener != null) {
             int tabId = model.get(TabProperties.TAB_ID);
             listener.onTabHoverCardStateChanged(tabId, view, isHovered);
+        }
+    }
+
+    /** Notifies {@link TabHoverCardListener} of hover state transitions on tab group headers. */
+    private static void notifyGroupHeaderHoverChange(
+            PropertyModel model, View view, boolean isHovered) {
+        TabHoverCardListener listener = model.get(TabProperties.TAB_HOVER_CARD_LISTENER);
+        if (listener != null) {
+            int tabId = model.get(TabProperties.TAB_ID);
+            Token tabGroupId = model.get(TabProperties.TAB_GROUP_HEADER_ID);
+            if (tabGroupId == null) {
+                tabGroupId = model.get(TabProperties.TAB_GROUP_ID);
+            }
+            listener.onTabGroupHoverCardStateChanged(tabId, tabGroupId, view, isHovered);
         }
     }
 }

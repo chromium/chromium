@@ -190,6 +190,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock private VerticalTabRailCollapseController.RailCollapseListener mMockRailCollapseListener;
     @Mock private ViewStub mTabHoverCardViewStub;
+    @Mock private ViewGroup mHoverCardParent;
     @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
     @Mock private TabHoverCardView mTabHoverCardView;
     @Mock private ServiceStatus mServiceStatus;
@@ -256,12 +257,14 @@ public class VerticalTabListCoordinatorUnitTest {
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
 
-        when(mTabHoverCardViewStub.getParent()).thenReturn(mock(ViewGroup.class));
+        when(mTabHoverCardViewStub.getParent()).thenReturn(mHoverCardParent);
         when(mTabHoverCardView.getContext()).thenReturn(mActivity);
         doAnswer(
                         invocation -> {
                             ViewStub.OnInflateListener listener = invocation.getArgument(0);
-                            listener.onInflate(mTabHoverCardViewStub, mTabHoverCardView);
+                            if (listener != null) {
+                                listener.onInflate(mTabHoverCardViewStub, mTabHoverCardView);
+                            }
                             return null;
                         })
                 .when(mTabHoverCardViewStub)

@@ -245,6 +245,7 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<UiTabState> ACTOR_UI_STATE =
             new WritableObjectPropertyKey<>();
 
+    /** Listener for hover state changes on tabs and tab group headers. */
     public static final WritableObjectPropertyKey<TabHoverCardListener> TAB_HOVER_CARD_LISTENER =
             new WritableObjectPropertyKey<>();
 

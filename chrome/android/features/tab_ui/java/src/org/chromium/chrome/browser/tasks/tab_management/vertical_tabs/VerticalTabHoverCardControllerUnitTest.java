@@ -82,7 +82,9 @@ public class VerticalTabHoverCardControllerUnitTest {
         doAnswer(
                         invocation -> {
                             ViewStub.OnInflateListener listener = invocation.getArgument(0);
-                            listener.onInflate(mTabHoverCardViewStub, mTabHoverCardView);
+                            if (listener != null) {
+                                listener.onInflate(mTabHoverCardViewStub, mTabHoverCardView);
+                            }
                             return null;
                         })
                 .when(mTabHoverCardViewStub)

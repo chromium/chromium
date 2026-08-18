@@ -48,7 +48,7 @@ public class TabListConfig {
     public final @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
             railCollapseStateSupplier;
 
-    /** Listener for tab hover card events, or null if not supported. */
+    /** Listener for tab and tab group hover card events, or null if not supported. */
     public final @Nullable TabHoverCardListener tabHoverCardListener;
 
     /** Manager for active tab underline indicators (e.g. for Glic), or null if not supported. */
@@ -148,7 +148,7 @@ public class TabListConfig {
         }
 
         /**
-         * @param tabHoverCardListener Listener for tab hover card events, or null.
+         * @param tabHoverCardListener Listener for tab and tab group hover card events, or null.
          * @return The {@link Builder} instance.
          */
         public Builder setTabHoverCardListener(
