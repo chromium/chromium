@@ -10,6 +10,7 @@
 #import "base/types/pass_key.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_constants.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
@@ -40,14 +41,6 @@ namespace {
 inline base::PassKey<FullscreenMediatorPassKeyFactory> PassKey() {
   return FullscreenMediatorPassKeyFactory::passkey();
 }
-
-// The scroll distance threshold for snapping to a fullscreen state.
-static constexpr CGFloat kFullscreenSnapThreshold = 10.0;
-
-// The progress thresholds for automatically animating into or out of
-// fullscreen.
-static constexpr CGFloat kEnterFullscreenProgressThreshold = 0.75;
-static constexpr CGFloat kExitFullscreenProgressThreshold = 0.25;
 }  // namespace
 
 @interface FullscreenMediator () <BrowserLayoutStateObserver,
@@ -305,7 +298,14 @@ static constexpr CGFloat kExitFullscreenProgressThreshold = 0.25;
     }
   }
 
-  _browserAgent->IncrementalScroll(delta, PassKey());
+  CGFloat scrollVelocity = 0.0;
+  if (IsFullscreenEasedTransitionsEnabled()) {
+    CGPoint panVelocity = [scrollView.panGestureRecognizer
+        velocityInView:scrollView.panGestureRecognizer.view];
+    scrollVelocity = std::abs(panVelocity.y);
+  }
+
+  _browserAgent->IncrementalScroll(delta, scrollVelocity, PassKey());
 
   if (IsFullscreenEasedTransitionsEnabled()) {
     CGFloat progress = _browserAgent->top_progress();
@@ -441,7 +441,8 @@ static constexpr CGFloat kExitFullscreenProgressThreshold = 0.25;
 #pragma mark - FullscreenBrowserAgentObserving
 
 - (void)fullscreenDidUpdateState:(FullscreenBrowserAgent*)agent {
-  [self updateViewportInsets:agent->insets()];
+  [self updateViewportInsets:agent->insets()
+             initialVelocity:agent->animation_initial_velocity()];
 }
 
 - (void)fullscreenDidUpdateObscuredInsetRange:(FullscreenBrowserAgent*)agent {
@@ -471,6 +472,11 @@ static constexpr CGFloat kExitFullscreenProgressThreshold = 0.25;
 // contentInset to adjust for the current position and size of
 // the toolbars.
 - (void)updateViewportInsets:(UIEdgeInsets)insets {
+  [self updateViewportInsets:insets initialVelocity:0.0];
+}
+
+- (void)updateViewportInsets:(UIEdgeInsets)insets
+             initialVelocity:(CGFloat)initialVelocity {
   if (!self.webState) {
     return;
   }
@@ -490,11 +496,11 @@ static constexpr CGFloat kExitFullscreenProgressThreshold = 0.25;
     // inset is updated due to a device rotation or omnibox position change.
     CGPoint offset = _scrollViewProxy.contentOffset;
     offset.y += _scrollViewProxy.contentInset.top;
-    webView.obscuredInsets = insets;
+    [webView setObscuredInsets:insets initialVelocity:initialVelocity];
     offset.y -= _scrollViewProxy.contentInset.top;
     _scrollViewProxy.contentOffset = offset;
   } else {
-    webView.obscuredInsets = insets;
+    [webView setObscuredInsets:insets initialVelocity:initialVelocity];
   }
   _updatingInsets = NO;
 }

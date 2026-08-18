@@ -256,6 +256,11 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 }
 
 - (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
+  [self setObscuredInsets:obscuredInsets initialVelocity:0.0];
+}
+
+- (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets
+          initialVelocity:(CGFloat)initialVelocity {
   if (!UIEdgeInsetsEqualToEdgeInsets(obscuredInsets, UIEdgeInsetsZero)) {
     _usesObscuredInsets = YES;
   }
@@ -308,6 +313,7 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
             initWithStartInsets:_obscuredInsets
             targetInsets:obscuredInsets
             duration:duration
+            initialVelocity:initialVelocity
             updateHandler:^(UIEdgeInsets insets) {
               [weakSelf applyContentInsetModeObscuredInsets:insets];
             }

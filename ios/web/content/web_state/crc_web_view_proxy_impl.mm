@@ -130,6 +130,11 @@
   _contentView.contentInset = obscuredInsets;
 }
 
+- (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets
+          initialVelocity:(CGFloat)initialVelocity {
+  _contentView.contentInset = obscuredInsets;
+}
+
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset
            maximumViewportInset:(UIEdgeInsets)maxInset {
 }

@@ -32,6 +32,7 @@ TEST_F(CRWViewportInsetsAnimatorTest, AnimateWithDurationRunsToCompletion) {
       [[CRWViewportInsetsAnimator alloc] initWithStartInsets:startInsets
           targetInsets:targetInsets
           duration:duration
+          initialVelocity:0.0
           updateHandler:^(UIEdgeInsets insets) {
             lastReportedInsets = insets;
           }
@@ -71,6 +72,7 @@ TEST_F(CRWViewportInsetsAnimatorTest, StopAnimationCancelsDisplayLink) {
       [[CRWViewportInsetsAnimator alloc] initWithStartInsets:UIEdgeInsetsZero
           targetInsets:UIEdgeInsetsMake(50, 0, 50, 0)
           duration:0.3
+          initialVelocity:0.0
           updateHandler:^(UIEdgeInsets insets) {
             updateCount++;
           }

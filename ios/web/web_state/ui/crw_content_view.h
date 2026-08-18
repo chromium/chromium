@@ -46,6 +46,10 @@ enum class CrFullscreenState {
 // supports the `obscuredContentInsets` property.
 @property(nonatomic, assign) UIEdgeInsets obscuredInsets;
 
+// Sets the obscured insets with an initial velocity for spring animations.
+- (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets
+          initialVelocity:(CGFloat)initialVelocity;
+
 // Sets the minimum and maximum viewport insets. This forwards these values to
 // the underlying WKWebView.
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset

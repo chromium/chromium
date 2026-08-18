@@ -9,6 +9,7 @@ source_set("model") {
     "fullscreen_browser_agent_observer.h",
     "fullscreen_browser_agent_observer_bridge.h",
     "fullscreen_browser_agent_observer_bridge.mm",
+    "fullscreen_constants.h",
   ]
   deps = [
     "//base",
@@ -30,6 +31,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/fullscreen/public:metrics",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common:timing",
     "//testing/gtest",
   ]

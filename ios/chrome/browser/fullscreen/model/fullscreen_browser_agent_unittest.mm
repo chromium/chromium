@@ -217,7 +217,7 @@ TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
   base_observer.did_update_called_ = false;
 
   // Scroll down partially.
-  agent->IncrementalScroll(20.0, PassKey());
+  agent->IncrementalScroll(20.0, 0.0, PassKey());
 
   EXPECT_EQ(0.5, agent->top_progress());
   EXPECT_NEAR(0.6666, agent->bottom_progress(), 0.001);
@@ -228,7 +228,7 @@ TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
   EXPECT_TRUE(base_observer.did_update_called_);
 
   // Fast scroll down to check 0.0 bounds clamping.
-  agent->IncrementalScroll(200.0, PassKey());
+  agent->IncrementalScroll(200.0, 0.0, PassKey());
 
   EXPECT_EQ(0.0, agent->top_progress());
   EXPECT_EQ(0.0, agent->bottom_progress());
@@ -236,7 +236,7 @@ TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
   EXPECT_EQ(20.0, agent->insets().bottom);
 
   // Fast scroll up to check 1.0 bounds clamping.
-  agent->IncrementalScroll(-500.0, PassKey());
+  agent->IncrementalScroll(-500.0, 0.0, PassKey());
 
   EXPECT_EQ(1.0, agent->top_progress());
   EXPECT_EQ(1.0, agent->bottom_progress());

@@ -82,8 +82,15 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
   // returns zero.
   base::TimeDelta animation_duration() const { return animation_duration_; }
 
+  // Returns the normalized initial velocity of the current animation, if called
+  // inside an animation block. Otherwise returns zero.
+  CGFloat animation_initial_velocity() const {
+    return animation_initial_velocity_;
+  }
+
   // Incrementally changes the fullscreen progress based on a drag or scroll.
-  void IncrementalScroll(CGFloat amount, PassKey);
+  // `velocity` is the current velocity of the scroll gesture (in pt/s).
+  void IncrementalScroll(CGFloat amount, CGFloat velocity, PassKey);
 
   // Enters or exits fullscreen mode.
   void EnterFullscreen(PassKey,
@@ -132,6 +139,7 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
 
   // Updates the progress and broadcasts the change to observers.
   void UpdateProgressAndBroadcast(FullscreenTransition transition,
+                                  FullscreenModeTransitionTrigger trigger,
                                   bool animated);
 
   // Notifies all observers of an updated state.
@@ -186,6 +194,12 @@ class FullscreenBrowserAgent : public BrowserUserData<FullscreenBrowserAgent> {
 
   // The animation duration for the current transition.
   base::TimeDelta animation_duration_ = base::TimeDelta();
+
+  // The current velocity of the scroll gesture.
+  CGFloat scroll_velocity_ = 0.0;
+
+  // The normalized initial velocity for the current transition.
+  CGFloat animation_initial_velocity_ = 0.0;
 
   // The obscured inset for the keyboard when visible.
   CGFloat keyboard_obscured_inset_ = 0.0;

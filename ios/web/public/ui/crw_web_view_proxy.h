@@ -27,6 +27,10 @@
 // setting this property will not have any effect.
 @property(nonatomic, assign) UIEdgeInsets obscuredInsets;
 
+// Sets the obscured insets with an initial velocity for spring animations.
+- (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets
+          initialVelocity:(CGFloat)initialVelocity;
+
 // Sets the web view's min and max viewport insets.
 - (void)setMinimumViewportInset:(UIEdgeInsets)minInset
            maximumViewportInset:(UIEdgeInsets)maxInset;

@@ -16,11 +16,13 @@ typedef void (^CRWViewportInsetsUpdateHandler)(UIEdgeInsets insets);
 // insets using a CADisplayLink.
 @interface CRWViewportInsetsAnimator : NSObject
 
-// Initializes the animator with start and target insets, duration, an update
-// handler invoked on each frame tick, and a completion callback.
+// Initializes the animator with start and target insets, duration, initial
+// velocity, an update handler invoked on each frame tick, and a completion
+// callback.
 - (instancetype)initWithStartInsets:(UIEdgeInsets)startInsets
                        targetInsets:(UIEdgeInsets)targetInsets
                            duration:(NSTimeInterval)duration
+                    initialVelocity:(CGFloat)initialVelocity
                       updateHandler:
                           (CRWViewportInsetsUpdateHandler)updateHandler
                          completion:(ProceduralBlock)completion

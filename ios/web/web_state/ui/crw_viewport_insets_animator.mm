@@ -6,12 +6,14 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import <algorithm>
 #import <cmath>
 
 #import "base/check.h"
 
 @implementation CRWViewportInsetsAnimator {
   NSTimeInterval _duration;
+  CGFloat _initialVelocity;
   UIEdgeInsets _startInsets;
   CRWViewportInsetsUpdateHandler _updateHandler;
   ProceduralBlock _completion;
@@ -23,6 +25,7 @@
 - (instancetype)initWithStartInsets:(UIEdgeInsets)startInsets
                        targetInsets:(UIEdgeInsets)targetInsets
                            duration:(NSTimeInterval)duration
+                    initialVelocity:(CGFloat)initialVelocity
                       updateHandler:
                           (CRWViewportInsetsUpdateHandler)updateHandler
                          completion:(ProceduralBlock)completion {
@@ -33,6 +36,7 @@
     _targetInsets = targetInsets;
     _currentInsets = startInsets;
     _duration = duration;
+    _initialVelocity = initialVelocity;
     _updateHandler = [updateHandler copy];
     _completion = [completion copy];
   }
@@ -67,10 +71,13 @@
 // progress, invokes the update handler with intermediate insets, and runs
 // completion on finish.
 - (void)handleDisplayLink:(CADisplayLink*)displayLink {
-  if (_animationStartTime <= 0) {
-    _animationStartTime = displayLink.timestamp;
+  CFTimeInterval frameTime = displayLink.targetTimestamp > 0
+                                 ? displayLink.targetTimestamp
+                                 : displayLink.timestamp;
+  if (_animationStartTime <= 0 || _animationStartTime > frameTime) {
+    _animationStartTime = frameTime;
   }
-  CFTimeInterval elapsed = displayLink.timestamp - _animationStartTime;
+  CFTimeInterval elapsed = std::max(0.0, frameTime - _animationStartTime);
   double progress = _duration > 0 ? (elapsed / _duration) : 1.0;
   if (progress >= 1.0) {
     UIEdgeInsets targetInsets = _targetInsets;
@@ -87,10 +94,16 @@
     return;
   }
 
-  // Ease-in-out quadratic curve.
-  double easedProgress = progress < 0.5
-                             ? 2.0 * progress * progress
-                             : 1.0 - std::pow(-2.0 * progress + 2.0, 2) / 2.0;
+  double easedProgress = 0.0;
+  if (_duration > 0) {
+    // UIKit critically damped spring with settling factor ~9.2334.
+    constexpr double kSpringSettlingFactor = 9.233414;
+    double omega = kSpringSettlingFactor / _duration;
+    easedProgress = 1.0 - (1.0 + (omega - _initialVelocity) * elapsed) *
+                              std::exp(-omega * elapsed);
+  } else {
+    easedProgress = 1.0;
+  }
 
   UIEdgeInsets currentInsets = UIEdgeInsetsMake(
       _startInsets.top + easedProgress * (_targetInsets.top - _startInsets.top),
