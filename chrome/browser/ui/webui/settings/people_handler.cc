@@ -670,7 +670,7 @@ base::ListValue PeopleHandler::GetStoredAccountsList() {
     // If dice is enabled, show all the accounts.
     for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
              identity_manager,
-             /*restrict_to_accounts_eligible_for_sync=*/true)) {
+             /*restrict_to_accounts_eligible_for_signin=*/true)) {
       accounts.Append(GetAccountValue(identity_manager, account));
     }
     return accounts;

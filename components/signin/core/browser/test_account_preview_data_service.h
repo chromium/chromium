@@ -44,6 +44,11 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
     preference_ = std::move(preference);
   }
 
+  void SetPreferredAccountForPromo(
+      std::optional<AccountPreviewPreference> preference) {
+    preferred_account_for_promo_ = std::move(preference);
+  }
+
   void TriggerCallback(std::optional<AccountPreviewPreference> pref);
   bool has_pending_callback() const { return !pending_callback_.is_null(); }
   base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
@@ -54,6 +59,7 @@ class TestAccountPreviewDataService : public AccountPreviewDataService {
  private:
   bool defer_callbacks_ = false;
   std::optional<AccountPreviewPreference> preference_;
+  std::optional<AccountPreviewPreference> preferred_account_for_promo_;
   base::OnceCallback<void(std::optional<AccountPreviewPreference>)>
       pending_callback_;
 };

@@ -236,7 +236,7 @@ base::ListValue SupportToolMessageHandler::GetAccountsList() {
       IdentityManagerFactory::GetForProfile(profile);
   for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
            identity_manager,
-           /*restrict_to_accounts_eligible_for_sync=*/false)) {
+           /*restrict_to_accounts_eligible_for_signin=*/false)) {
     if (!account.IsEmpty()) {
       account_list.Append(account.email);
     }
