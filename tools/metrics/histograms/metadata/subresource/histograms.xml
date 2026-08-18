@@ -307,7 +307,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalCPUDuration"
-    units="microseconds" expires_after="2026-12-16">
+    units="microseconds" expires_after="2027-02-14">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

@@ -1342,7 +1342,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DeviceLocalAccountPolicyRefresh3"
-    enum="EnterprisePolicyRefresh" expires_after="2026-12-16">
+    enum="EnterprisePolicyRefresh" expires_after="2027-02-14">
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -2617,7 +2617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EncryptedCache.FactoryCreationSuccess"
-    enum="BooleanSuccess" expires_after="2026-12-16">
+    enum="BooleanSuccess" expires_after="2027-02-14">
   <owner>haihan@google.com</owner>
   <owner>valadkevich@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -2628,7 +2628,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EncryptedCache.KeyCreationSuccess"
-    enum="BooleanSuccess" expires_after="2026-12-16">
+    enum="BooleanSuccess" expires_after="2027-02-14">
   <owner>haihan@google.com</owner>
   <owner>valadkevich@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -2638,7 +2638,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EncryptedCache.KeyHasherObtainSuccess"
-    enum="BooleanSuccess" expires_after="2026-12-16">
+    enum="BooleanSuccess" expires_after="2027-02-14">
   <owner>haihan@google.com</owner>
   <owner>valadkevich@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -2659,7 +2659,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EncryptedCache.KeyRetrievalFromPrefsSuccess"
-    enum="BooleanSuccess" expires_after="2026-12-16">
+    enum="BooleanSuccess" expires_after="2027-02-14">
   <owner>haihan@google.com</owner>
   <owner>valadkevich@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -3001,7 +3001,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ExtensibleEnterpriseSSO.Okta.Result"
-    enum="BooleanSuccess" expires_after="2026-12-01">
+    enum="BooleanSuccess" expires_after="2027-02-14">
   <owner>ssolarewicz@chromium.org</owner>
   <owner>cec-growth@google.com</owner>
   <summary>
@@ -3013,7 +3013,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ExtensibleEnterpriseSSO.Okta.{Status}.Duration"
-    units="ms" expires_after="2026-12-01">
+    units="ms" expires_after="2027-02-14">
   <owner>ssolarewicz@chromium.org</owner>
   <owner>cec-growth@google.com</owner>
   <summary>
@@ -3223,7 +3223,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.IframeDlpRulesSupport.{DeepScanAccessPoint}.UrlChainSize"
-    units="count" expires_after="2026-12-16">
+    units="count" expires_after="2027-02-14">
   <owner>haihan@google.com</owner>
   <owner>nancylanxiao@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -3857,7 +3857,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>rbock@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -3991,7 +3991,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>bfranz@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -4076,7 +4076,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ReportingEvent.{EventType}.{UploadResult}.Duration"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>nancylanxiao@google.com</owner>
   <owner>domfc@chromium.org</owner>
   <owner>xanth@google.com</owner>
@@ -4094,7 +4094,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ReportingEventUploadFailure"
-    enum="EnterpriseReportingEventType" expires_after="2026-12-13">
+    enum="EnterpriseReportingEventType" expires_after="2027-02-14">
   <owner>xanth@google.com</owner>
   <owner>alshawwa@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
@@ -4106,7 +4106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.ReportingEventUploadSuccess"
-    enum="EnterpriseReportingEventType" expires_after="2026-12-13">
+    enum="EnterpriseReportingEventType" expires_after="2027-02-14">
   <owner>xanth@google.com</owner>
   <owner>alshawwa@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
@@ -4323,7 +4323,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.LocalStorage.Enabled"
-    enum="BooleanEnabled" expires_after="2026-12-16">
+    enum="BooleanEnabled" expires_after="2027-02-14">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4332,7 +4332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.LocalStorage.Misconfigured" enum="Boolean"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4373,7 +4373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.WriteAccessError" enum="Boolean"
-    expires_after="2026-12-06">
+    expires_after="2027-02-14">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4499,7 +4499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.{MigrationDestination}.Enabled"
-    enum="Boolean" expires_after="2026-11-29">
+    enum="Boolean" expires_after="2027-02-14">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4612,7 +4612,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.{Action}.OneDrive.SignInError"
-    enum="Boolean" expires_after="2026-11-30">
+    enum="Boolean" expires_after="2027-02-14">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>

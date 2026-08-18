@@ -106,7 +106,7 @@ each histogram.
 
 <histogram
     name="CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.{CoreType}"
-    units="%" expires_after="2026-12-16">
+    units="%" expires_after="2027-02-14">
   <owner>anthonyvd@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

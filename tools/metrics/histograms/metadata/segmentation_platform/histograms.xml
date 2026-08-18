@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ClassificationRequest.TotalDuration.{SegmentationKey}"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

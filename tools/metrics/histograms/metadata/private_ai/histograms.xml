@@ -158,7 +158,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Client.WebSocketCloseCode" enum="WebSocketCloseCode"
-    expires_after="2026-12-10">
+    expires_after="2027-02-14">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>
@@ -172,7 +172,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivateAi.Client.WebSocketSessionDuration.ClosedByServer"
-    units="ms" expires_after="2026-12-10">
+    units="ms" expires_after="2027-02-14">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
   <owner>dullweber@chromium.org</owner>

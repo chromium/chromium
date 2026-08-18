@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.InstallerDownloader.InterruptReason"
-    enum="InterruptReason" expires_after="2026-12-16">
+    enum="InterruptReason" expires_after="2027-02-14">
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.PlatformExperienceHelper.InstallerLaunchStatus.System"
-    enum="SystemInstallerLaunchStatus" expires_after="2026-12-16">
+    enum="SystemInstallerLaunchStatus" expires_after="2027-02-14">
   <owner>alsan@chromium.org</owner>
   <owner>chrome-desktop-ui-waterloo@google.com</owner>
   <summary>
@@ -589,7 +589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.ShouldPinToTaskbarResult{PinAppToTaskbarChannel}"
-    enum="TaskbarPinResult" expires_after="2026-12-16">
+    enum="TaskbarPinResult" expires_after="2027-02-14">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
@@ -600,7 +600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Windows.TaskbarPinFromFRESucceeded" enum="Boolean"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>

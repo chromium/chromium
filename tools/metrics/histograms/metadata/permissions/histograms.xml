@@ -418,7 +418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AIv4.ComputeEmbeddingsDuration" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -432,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AIv4.ComputeEmbeddingsStatus"
-    enum="ComputeEmbeddingsStatus" expires_after="2026-12-16">
+    enum="ComputeEmbeddingsStatus" expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -445,7 +445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AIv4.EmbedderMetadataValid" enum="BooleanValid"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -457,7 +457,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AIv4.FinishedPassageEmbeddingsTaskOutdated"
-    enum="BooleanSuccess" expires_after="2026-12-16">
+    enum="BooleanSuccess" expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -471,7 +471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AIv4.LanguageDetectionStatus"
-    enum="LanguageDetectionStatus" expires_after="2026-12-16">
+    enum="LanguageDetectionStatus" expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AIv4.PassageEmbeddingsComputationTimeout"
-    enum="Boolean" expires_after="2026-12-16">
+    enum="Boolean" expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -496,7 +496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.AIv4.TryCancelPreviousEmbeddingsModelExecution"
-    enum="BooleanSuccess" expires_after="2026-12-16">
+    enum="BooleanSuccess" expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -1111,7 +1111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.PredictionService.Timeout" enum="BooleanTimedOut"
-    expires_after="2026-12-09">
+    expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -1486,7 +1486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.Prompt.Geolocation.{Action}.Accuracy"
-    enum="GeolocationAccuracy" expires_after="2026-12-16">
+    enum="GeolocationAccuracy" expires_after="2027-02-14">
   <owner>tommasin@chromium.org</owner>
   <owner>antoniosartori@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -2211,7 +2211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.{PredictionModel}.SnapshotTaken"
-    enum="BooleanSuccess" expires_after="2026-12-16">
+    enum="BooleanSuccess" expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -2224,7 +2224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Permissions.{PredictionModel}.SnapshotTakenDuration"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -2253,7 +2253,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.{PredictionModel}.{PermissionType}.RenderedTextSize"
-    units="characters" expires_after="2026-12-16">
+    units="characters" expires_after="2027-02-14">
   <owner>elklm@chromium.org</owner>
   <owner>hempjudith@google.com</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
@@ -2268,7 +2268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.EngagementScore" units="units"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -2279,7 +2279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.EngagementType"
-    enum="SiteEngagementServiceEngagementType" expires_after="2026-12-16">
+    enum="SiteEngagementServiceEngagementType" expires_after="2027-02-14">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -2289,7 +2289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.MeanEngagement" units="units"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>jdeblasio@chromium.org</owner>
   <owner>chrome-secure-web-and-net@chromium.org</owner>
   <summary>
@@ -2303,7 +2303,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.MedianEngagement" units="units"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -2314,7 +2314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteEngagementService.OriginsEngaged" units="units"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>

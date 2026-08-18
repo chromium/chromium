@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.AntiVirusMetricsProvider.Latency" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>yawfrempong@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -1047,7 +1047,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.TruncatedEvents.UserAction" units="events"
-    expires_after="2027-02-07">
+    expires_after="2027-02-14">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

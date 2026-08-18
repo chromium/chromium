@@ -347,7 +347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Eviction.Renderer"
-    enum="BackForwardCacheRendererEvictionReason" expires_after="2026-12-16">
+    enum="BackForwardCacheRendererEvictionReason" expires_after="2027-02-14">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -357,7 +357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.Eviction.TimeUntilProcessKilled" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>fergal@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -566,7 +566,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackForwardCache.NewPageNavHasPotentialMatch" enum="Boolean"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -1847,7 +1847,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.OnBeforeUnloadOverheadTime" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3262,7 +3262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.URLLoader.OnAcceptCHFrameReceived.ExecutionTime"
-    units="microseconds" expires_after="2026-12-16">
+    units="microseconds" expires_after="2027-02-14">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -4153,7 +4153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Prerender.Experimental.Search.ResponseReuseCount"
-    units="count" expires_after="2026-11-29">
+    units="count" expires_after="2027-02-14">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

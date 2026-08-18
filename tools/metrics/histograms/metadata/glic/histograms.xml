@@ -1705,7 +1705,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.TurnCount{Profile}" units="count"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -2018,7 +2018,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.NavigationCapture.{FeatureEnabledStatus}"
-    enum="GeminiNavigationCaptureResult" expires_after="2026-11-29">
+    enum="GeminiNavigationCaptureResult" expires_after="2027-02-14">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
   <summary>
@@ -2642,7 +2642,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Response.Segmentation" enum="GlicResponseSegmentation"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>
@@ -3175,7 +3175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Turn.Actuation.IsRetry" enum="Boolean"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>qinmin@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3186,7 +3186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Turn.Actuation.ResponseStartTime" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3225,7 +3225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Turn.Duration.{Model}" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3260,7 +3260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Turn.ResponseStartTime" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3270,7 +3270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Turn.ResponseStartTime.InputMode.{Mode}" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3284,7 +3284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Turn.ResponseStartTime.{TabContext}" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3305,7 +3305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Turn.ResponseStopTime.{Cause}" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3320,7 +3320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Turn.Source" enum="GlicTurnSource"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>

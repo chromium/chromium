@@ -769,7 +769,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Engagement.{Type}.Volume{Volume}"
-    units="site-engagement-score*2" expires_after="2026-12-16">
+    units="site-engagement-score*2" expires_after="2027-02-14">
   <owner>antoniosartori@chromium.org</owner>
   <owner>feuunk@chromium.org</owner>
   <summary>
@@ -1161,7 +1161,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Scheduler.Tips.FeatureTypeAction{NotificationTipsFeatureType}"
-    enum="NotificationSchedulerUserActionType" expires_after="2026-12-16">
+    enum="NotificationSchedulerUserActionType" expires_after="2027-02-14">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
@@ -1184,7 +1184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Scheduler.Tips.FeatureTypeShown"
-    enum="TipsNotificationsFeatureType" expires_after="2026-12-16">
+    enum="TipsNotificationsFeatureType" expires_after="2027-02-14">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
@@ -1196,7 +1196,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Notifications.Tips.FeatureTipPromo.EventType{NotificationTipsFeatureType}"
-    enum="TipsNotificationsFeatureTipPromoEventType" expires_after="2026-12-16">
+    enum="TipsNotificationsFeatureTipPromoEventType" expires_after="2027-02-14">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>

@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Setup.Install.WinAppRuntime.WaitForStartInstall.TimingMs"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>
@@ -322,7 +322,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Setup.Install.WinAppRuntime.{Operation}.Result" enum="Hresult"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>

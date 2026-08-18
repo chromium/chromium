@@ -59,7 +59,7 @@ found in the LICENSE file.
 </variants>
 
 <histogram name="MultistepFilter.Acceptance" enum="SuggestionUserDecision"
-    expires_after="2026-12-15">
+    expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.Acceptance.ByRetention.{RetentionSlice}"
-    enum="SuggestionUserDecision" expires_after="2026-12-15">
+    enum="SuggestionUserDecision" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -84,7 +84,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.Acceptance.ByTask.{TaskType}"
-    enum="SuggestionUserDecision" expires_after="2026-12-15">
+    enum="SuggestionUserDecision" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -98,7 +98,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.Acceptance.InitialCue"
-    enum="SuggestionUserDecision" expires_after="2026-12-15">
+    enum="SuggestionUserDecision" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -111,7 +111,7 @@ found in the LICENSE file.
 
 <histogram
     name="MultistepFilter.Acceptance.InitialCue.ByRetention.{RetentionSlice}"
-    enum="SuggestionUserDecision" expires_after="2026-12-15">
+    enum="SuggestionUserDecision" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -124,7 +124,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.Acceptance.InitialCue.ByTask.{TaskType}"
-    enum="SuggestionUserDecision" expires_after="2026-12-15">
+    enum="SuggestionUserDecision" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -137,7 +137,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.Acceptance.ReopenedCue"
-    enum="SuggestionUserDecision" expires_after="2026-12-15">
+    enum="SuggestionUserDecision" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -151,7 +151,7 @@ found in the LICENSE file.
 
 <histogram
     name="MultistepFilter.Acceptance.ReopenedCue.ByRetention.{RetentionSlice}"
-    enum="SuggestionUserDecision" expires_after="2026-12-15">
+    enum="SuggestionUserDecision" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -165,7 +165,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.Acceptance.ReopenedCue.ByTask.{TaskType}"
-    enum="SuggestionUserDecision" expires_after="2026-12-15">
+    enum="SuggestionUserDecision" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -179,7 +179,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.ApplicationOutcome"
-    enum="SuggestionApplicationResult" expires_after="2026-12-15">
+    enum="SuggestionApplicationResult" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -204,7 +204,7 @@ found in the LICENSE file.
 
 <histogram
     name="MultistepFilter.ApplicationOutcome.ByRetention.{RetentionSlice}"
-    enum="SuggestionApplicationResult" expires_after="2026-12-15">
+    enum="SuggestionApplicationResult" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -230,7 +230,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.ApplicationOutcome.ByTask.{TaskType}"
-    enum="SuggestionApplicationResult" expires_after="2026-12-15">
+    enum="SuggestionApplicationResult" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -256,7 +256,7 @@ found in the LICENSE file.
 
 <histogram
     name="MultistepFilter.ApplicationOutcome.ByTask.{TaskType}.ByFacet.{FacetType}"
-    enum="BooleanSuccess" expires_after="2026-12-15">
+    enum="BooleanSuccess" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -276,7 +276,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.NumberOfFacetsShown" units="count"
-    expires_after="2026-12-15">
+    expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -288,7 +288,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.NumberOfFacetsShown.ByTask.{TaskType}"
-    units="count" expires_after="2026-12-15">
+    units="count" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -301,7 +301,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.NumberOfFacetsSuccessfullyApplied"
-    units="count" expires_after="2026-12-15">
+    units="count" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -318,7 +318,7 @@ found in the LICENSE file.
 
 <histogram
     name="MultistepFilter.NumberOfFacetsSuccessfullyApplied.ByTask.{TaskType}"
-    units="count" expires_after="2026-12-15">
+    units="count" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -337,7 +337,7 @@ found in the LICENSE file.
 
 <histogram name="MultistepFilter.PostSuggestionApplication.UserEngagement"
     enum="MultistepFilterPostSuggestionApplicationUserEngagement"
-    expires_after="2026-12-15">
+    expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -374,7 +374,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.SuggestionAge.Accepted" units="minutes"
-    expires_after="2026-12-15">
+    expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -397,7 +397,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.SuggestionAge.Shown" units="minutes"
-    expires_after="2026-12-15">
+    expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -408,7 +408,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.SuggestionAge.ShownOnSameDomain"
-    units="minutes" expires_after="2026-12-15">
+    units="minutes" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -420,7 +420,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.Time.NavigationToSuggestionAccepted"
-    units="ms" expires_after="2026-12-15">
+    units="ms" expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -431,7 +431,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.Time.NavigationToSuggestionShown" units="ms"
-    expires_after="2026-12-15">
+    expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -442,7 +442,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.Time.SuggestionAcceptanceToApplied" units="ms"
-    expires_after="2026-12-15">
+    expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
@@ -454,7 +454,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="MultistepFilter.Time.SuggestionShownToAccepted" units="ms"
-    expires_after="2026-12-15">
+    expires_after="2027-02-14">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>

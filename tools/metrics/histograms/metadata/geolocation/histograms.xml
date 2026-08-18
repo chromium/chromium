@@ -459,7 +459,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Geolocation.SystemGeolocationSourceWin.PermissionStatusChangedAfterPrompt"
-    enum="LocationSystemPermissionStatus" expires_after="2026-12-16">
+    enum="LocationSystemPermissionStatus" expires_after="2027-02-14">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>

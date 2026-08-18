@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.Mac.FindGenericPasswordError"
-    enum="MacSecurityFrameworkOSStatus" expires_after="2026-12-16">
+    enum="MacSecurityFrameworkOSStatus" expires_after="2027-02-14">
   <owner>avi@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <owner>markrowe@chromium.org</owner>
@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.Mac.FindGenericPasswordResult"
-    enum="FindGenericPasswordResult" expires_after="2026-12-16">
+    enum="FindGenericPasswordResult" expires_after="2027-02-14">
   <owner>avi@chromium.org</owner>
   <owner>lgrey@chromium.org</owner>
   <owner>markrowe@chromium.org</owner>
@@ -664,7 +664,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.MerchantTrustEngagement.{Event}"
-    units="EngagementScore" expires_after="2026-12-16">
+    units="EngagementScore" expires_after="2027-02-14">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <summary>
@@ -679,7 +679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.MerchantTrustInteraction.{SiteFamiliarity}"
-    enum="MerchantTrustInteraction" expires_after="2026-12-16">
+    enum="MerchantTrustInteraction" expires_after="2027-02-14">
   <owner>tommasin@chromium.org</owner>
   <owner>privacy-on-the-web@google.com</owner>
   <summary>

@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="LanguageDetection.TFLiteModel.ClassifyText.HighestConfidenceLanguage"
-    enum="LocaleCodeBCP47" expires_after="2026-12-16">
+    enum="LocaleCodeBCP47" expires_after="2027-02-14">
   <owner>fergal@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -347,7 +347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.AcceptLanguage.FirstAcceptLanguage"
-    enum="LanguageName" expires_after="2026-12-06">
+    enum="LanguageName" expires_after="2027-02-14">
   <owner>victortan@chromium.org</owner>
   <owner>katabolism-finch@google.com</owner>
   <summary>
@@ -397,7 +397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Availability"
-    enum="LanguageUsage.UI.Android.Availability" expires_after="2026-12-10">
+    enum="LanguageUsage.UI.Android.Availability" expires_after="2027-02-14">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.Correctness"
-    enum="LanguageUsage.UI.Android.Correctness" expires_after="2026-12-10">
+    enum="LanguageUsage.UI.Android.Correctness" expires_after="2027-02-14">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

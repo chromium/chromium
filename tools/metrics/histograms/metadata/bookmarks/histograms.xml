@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarkBar.Android.ShownOnStartUpReason"
-    enum="BookmarkBarShownReason" expires_after="2026-12-16">
+    enum="BookmarkBarShownReason" expires_after="2027-02-14">
   <owner>mschillaci@google.com</owner>
   <owner>eleanorlee@google.com</owner>
   <owner>clank-app-team@google.com</owner>
@@ -730,7 +730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ParentFolderType" enum="BookmarkFolderType"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>

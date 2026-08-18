@@ -784,7 +784,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InitialWebUI.Startup{Scenario}.BrowserWindow.FirstPaint{StartupTemperature}"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
@@ -802,7 +802,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InitialWebUI.Startup{Scenario}.BrowserWindow.ShowRequestedToFirstPaint{StartupTemperature}"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
@@ -849,7 +849,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InitialWebUI.Startup{Scenario}.ReloadButton.RendererProcessCreated{StartupTemperature}"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>elkurin@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
@@ -870,7 +870,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InitialWebUI.Startup{Scenario}.ReloadButton.RendererProcessLaunched{StartupTemperature}"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>elkurin@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
@@ -1333,7 +1333,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.ShownUrl" enum="WebUIUrlHashes"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>kerenzhu@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <owner>chrome-webui@google.com</owner>

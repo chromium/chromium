@@ -533,7 +533,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.AimEligibility.CountryCodeEmpty" enum="Boolean"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>mahmadi@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -4300,7 +4300,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SearchPrefetch.TakePrefetchResponseFromMemoryCache.ResourceResponseReceived"
-    enum="Boolean" expires_after="2026-12-16">
+    enum="Boolean" expires_after="2027-02-14">
   <owner>gjc@google.com</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -4812,7 +4812,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SuggestionUsed.URL.NavigationToLargestContentfulPaint2.1"
-    units="ms" expires_after="2026-11-12">
+    units="ms" expires_after="2027-02-14">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>

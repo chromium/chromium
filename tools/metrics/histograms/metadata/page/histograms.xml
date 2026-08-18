@@ -2304,7 +2304,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.GoogleSearch.NavigationTiming.CreateStreamDelay2"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>hayato@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -3672,7 +3672,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart{SyntheticResponseSuffix}"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -4804,7 +4804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Internal.SoftNavigation.{Status}.TotalPaintArea"
-    units="pixels" expires_after="2026-12-15">
+    units="pixels" expires_after="2027-02-14">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -4817,7 +4817,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Internal.SoftNavigation.{Status}.TotalPaintAreaPoints"
-    units="Points" expires_after="2026-12-15">
+    units="Points" expires_after="2027-02-14">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -5275,7 +5275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToFirstPaint" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -5637,7 +5637,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PageLoad.SoftNavigation.SoftNavigationPageLoadMetricsObserverState"
     enum="SoftNavigationPageLoadMetricsObserverState"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>sullivan@chromium.org</owner>
   <owner>johannes@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>

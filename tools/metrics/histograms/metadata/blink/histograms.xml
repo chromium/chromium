@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Accessibility.ModeFlag" enum="AccessibilityModeFlagEnum"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@chromium.org</owner>
   <summary>
@@ -271,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Animation.CompositedAnimationFailureReason"
-    enum="CompositorAnimationsFailureReason" expires_after="2026-12-16">
+    enum="CompositorAnimationsFailureReason" expires_after="2027-02-14">
   <owner>smcgruer@chromium.org</owner>
   <owner>animations-dev@chromium.org</owner>
   <summary>
@@ -1466,7 +1466,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Evp.PermissionUi.Status" enum="EvpPermissionUiStatus"
-    expires_after="2026-11-01">
+    expires_after="2027-02-14">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1862,7 +1862,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FedCm.CloseVerifySheet.Android" enum="Boolean"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -2492,7 +2492,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.FedCm.Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -3836,7 +3836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.LCPP.PotentiallyLCPResourcePriorityBoosts2"
-    units="count" expires_after="2026-12-16">
+    units="count" expires_after="2027-02-14">
   <owner>kouhei@chromium.org</owner>
   <owner>
     src/third_party/blink/renderer/core/lcp_critical_path_predictor/OWNERS
@@ -6217,7 +6217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.{Host}.{Heap}.{Context}" units="KB"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>junov@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>

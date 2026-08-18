@@ -245,7 +245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.MenuTranslation.IsAvailable" enum="BooleanAvailable"
-    expires_after="2026-12-10">
+    expires_after="2027-02-14">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PageLoad.FinalTargetLanguage" enum="LocaleCodeBCP47"
-    expires_after="2026-12-10">
+    expires_after="2027-02-14">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -611,7 +611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.ResponseTime" units="ms"
-    expires_after="2026-12-10">
+    expires_after="2027-02-14">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -652,7 +652,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Translate.PartialTranslation.Translated.CharacterCount"
-    units="characters" expires_after="2026-12-10">
+    units="characters" expires_after="2027-02-14">
   <owner>cuianthony@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

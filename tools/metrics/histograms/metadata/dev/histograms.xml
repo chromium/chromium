@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.BuiltInAiAvailability"
-    enum="DevToolsBuiltInAiAvailability" expires_after="2026-10-24">
+    enum="DevToolsBuiltInAiAvailability" expires_after="2027-02-14">
   <owner>wolfi@google.com</owner>
   <owner>alexrudenko@google.com</owner>
   <component>1559716</component>
@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.DeveloperResourceScheme"
-    enum="DevToolsDeveloperResourceScheme" expires_after="2026-12-16">
+    enum="DevToolsDeveloperResourceScheme" expires_after="2027-02-14">
   <owner>bmeurer@google.com</owner>
   <owner>danilsomsikov@google.com</owner>
   <summary>

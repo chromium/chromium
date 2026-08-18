@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="ReadAloud.AudioOverviews.PlaybackPositionOnManualClose"
-    enum="PlaybackLocation" expires_after="2026-12-16">
+    enum="PlaybackLocation" expires_after="2027-02-14">
   <owner>shlomib@google.com</owner>
   <summary>
     Android only. Records the playback location at the time when the user
@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.AudioOverviews.TimeToMidLoadingManualClose"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>shlomib@google.com</owner>
   <summary>
     Android only. Recorded when the user closes the player while the playback is
@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.DurationListened" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>andresmolina@google.com</owner>
   <owner>chrome-readaloud-team@google.com</owner>
   <summary>
@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.Eligibility.IneligiblityReason"
-    enum="ReadAloudIneligibilityReason" expires_after="2026-12-06">
+    enum="ReadAloudIneligibilityReason" expires_after="2027-02-14">
   <owner>andresmolina@google.com</owner>
   <owner>chrome-readaloud-team@google.com</owner>
   <summary>
@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.Eligibility.IsUserEligible" enum="BooleanEligible"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>andresmolina@google.com</owner>
   <owner>chrome-readaloud-team@google.com</owner>
   <summary>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.IsPageReadabilitySuccessful" enum="BooleanSuccess"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>andresmolina@google.com</owner>
   <owner>chrome-readaloud-team@google.com</owner>
   <summary>
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.IsPageReadable" enum="BooleanEligible"
-    expires_after="2026-12-13">
+    expires_after="2027-02-14">
   <owner>andresmolina@google.com</owner>
   <owner>chrome-readaloud-team@google.com</owner>
   <summary>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.IsTabPlaybackCreationSuccessful"
-    enum="BooleanSuccess" expires_after="2026-12-16">
+    enum="BooleanSuccess" expires_after="2027-02-14">
   <owner>andresmolina@google.com</owner>
   <owner>chrome-readaloud-team@google.com</owner>
   <summary>
@@ -219,7 +219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.PlaybackModeChange" enum="PlaybackMode"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>shlomib@google.com</owner>
   <owner>juanmejia@google.com</owner>
   <summary>
@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.ReadAloudError.{Phase}" enum="ReadAloudErrorCode"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>andresmolina@google.com</owner>
   <owner>chrome-readaloud-team@google.com</owner>
   <summary>
@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.SpeedChange" enum="ReadAloudSpeed"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>andresmolina@google.com</owner>
   <owner>chrome-readaloud-team@google.com</owner>
   <summary>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.StandardPlayback.PlaybackPositionOnManualClose"
-    enum="PlaybackLocation" expires_after="2026-12-16">
+    enum="PlaybackLocation" expires_after="2027-02-14">
   <owner>shlomib@google.com</owner>
   <summary>
     Android only. Records the playback location at the time when the user
@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.StandardPlayback.TimeToMidLoadingManualClose"
-    units="ms" expires_after="2026-12-16">
+    units="ms" expires_after="2027-02-14">
   <owner>shlomib@google.com</owner>
   <summary>
     Android only. Recorded when the user closes the player while the playback is
@@ -333,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.TabPlaybackCreationSuccess"
-    enum="ReadAloudEntrypoint" expires_after="2026-12-16">
+    enum="ReadAloudEntrypoint" expires_after="2027-02-14">
   <owner>andresmolina@google.com</owner>
   <owner>chrome-readaloud-team@google.com</owner>
   <summary>

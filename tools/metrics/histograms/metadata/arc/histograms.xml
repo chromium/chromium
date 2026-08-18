@@ -676,7 +676,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.ArcOnDemandV2.ActivationShouldBeDelayed" enum="Boolean"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>yuholong@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>

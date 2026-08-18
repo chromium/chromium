@@ -938,7 +938,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.BatterySaver.BatteryPercent{BatteryPercentWhen}" units="%"
-    expires_after="2026-11-29">
+    expires_after="2027-02-14">
   <owner>cwd@google.com</owner>
   <owner>ckwyee@google.com</owner>
   <summary>The battery charge percent when {BatteryPercentWhen}</summary>
@@ -4696,7 +4696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Lock.AuthMethod.Used.ClamShellMode"
-    enum="AuthMethod" expires_after="2026-12-16">
+    enum="AuthMethod" expires_after="2027-02-14">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -5721,7 +5721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NotifierFramework.Nudge.ShownCount"
-    enum="NudgeCatalogName" expires_after="2026-12-16">
+    enum="NudgeCatalogName" expires_after="2027-02-14">
   <owner>kradtke@chromium.org</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -6515,7 +6515,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Picker.Search.{Provider}Provider.QueryTime" units="ms"
-    expires_after="2026-11-29">
+    expires_after="2027-02-14">
   <owner>shend@chromium.org</owner>
   <owner>jopalmer@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
@@ -7202,7 +7202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.IsOobeCompleted" enum="BooleanSuccess"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -7392,7 +7392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ScannerFeature.Timer.{Type}" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>jhtin@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -7430,7 +7430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ScannerFeature.UserState" enum="ScannerFeatureUserState"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>jhtin@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -8078,7 +8078,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ShortcutCustomization.ModifyType.{ActionName}"
-    enum="ShortcutCustomizationModificationType" expires_after="2026-12-06">
+    enum="ShortcutCustomizationModificationType" expires_after="2027-02-14">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -10058,7 +10058,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.MultiDisplayMode" enum="MultiDisplayModes"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

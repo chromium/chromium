@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokeBrushType" enum="PDFInk2StrokeBrushType"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokeHighlighterColor"
-    enum="PDFInk2StrokeHighlighterColor" expires_after="2026-12-16">
+    enum="PDFInk2StrokeHighlighterColor" expires_after="2027-02-14">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -202,7 +202,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokeInputDeviceType"
-    enum="PDFInk2StrokeInputDeviceType" expires_after="2026-12-16">
+    enum="PDFInk2StrokeInputDeviceType" expires_after="2027-02-14">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2StrokePenColor" enum="PDFInk2StrokePenColor"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -245,7 +245,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextAnnotationAlignment"
-    enum="PDFInk2TextAnnotationAlignment" expires_after="2026-12-16">
+    enum="PDFInk2TextAnnotationAlignment" expires_after="2027-02-14">
   <owner>thestig@chromium.org</owner>
   <owner>andyphan@chromium.org</owner>
   <summary>
@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextAnnotationBold" enum="Boolean"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>thestig@chromium.org</owner>
   <owner>andyphan@chromium.org</owner>
   <summary>
@@ -269,7 +269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextAnnotationColor" enum="PDFInk2TextAnnotationColor"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>thestig@chromium.org</owner>
   <owner>andyphan@chromium.org</owner>
   <summary>
@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextAnnotationItalic" enum="Boolean"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>thestig@chromium.org</owner>
   <owner>andyphan@chromium.org</owner>
   <summary>
@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextAnnotationSize" units="pixels"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>thestig@chromium.org</owner>
   <owner>andyphan@chromium.org</owner>
   <summary>
@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextAnnotationTypeface"
-    enum="PDFInk2TextAnnotationTypeface" expires_after="2026-12-16">
+    enum="PDFInk2TextAnnotationTypeface" expires_after="2027-02-14">
   <owner>thestig@chromium.org</owner>
   <owner>andyphan@chromium.org</owner>
   <summary>
@@ -337,7 +337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextHighlighterColor"
-    enum="PDFInk2StrokeHighlighterColor" expires_after="2026-12-16">
+    enum="PDFInk2StrokeHighlighterColor" expires_after="2027-02-14">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.Ink2TextHighlightInputDeviceType"
-    enum="PDFInk2StrokeInputDeviceType" expires_after="2026-12-16">
+    enum="PDFInk2StrokeInputDeviceType" expires_after="2027-02-14">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -376,7 +376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.LoadedWithV2InkAnnotations2"
-    enum="PDFLoadedWithV2InkAnnotations" expires_after="2026-12-16">
+    enum="PDFLoadedWithV2InkAnnotations" expires_after="2027-02-14">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
