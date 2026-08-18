@@ -1152,72 +1152,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
-class GlicApiTestUserStatusCheckTest : public GlicApiTestWithOneTab {
- protected:
-  void SetUpOnMainThread() override {
-    GlicApiTestWithOneTab::SetUpOnMainThread();
-    GetService()->enabling().SetUserStatusFetchOverrideForTest(
-        base::BindRepeating(&GlicApiTestUserStatusCheckTest::UserStatusFetch,
-                            base::Unretained(this)));
-  }
-
-  void UserStatusFetch(
-      base::OnceCallback<void(const CachedUserStatus&)> callback) {
-    user_status_fetch_count_++;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), user_status_));
-  }
-
-  CachedUserStatus user_status_;
-  unsigned int user_status_fetch_count_ = 0;
-};
-
-void UpdatePrimaryAccountToBeManaged(Profile* profile) {
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CoreAccountInfo core_account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfo(core_account_info);
-  account_info =
-      AccountInfo::Builder(account_info)
-          .SetHostedDomain(gaia::ExtractDomainName(account_info.email))
-          .Build();
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-}
-
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
-                       testMaybeRefreshUserStatusThrottled) {
-  // As previous, but requests several updates (e.g., as though many errors
-  // were processed around the same time). An "enabled" status is assumed as
-  // otherwise the client will be unloaded.
-  //
-  // These expectations are a little loose, because we can't use mock time in
-  // browser tests yet, but they should be sufficient to catch a total lack of
-  // throttling, at least.
-
-  Profile* profile = browser()->GetProfile();
-  policy::ScopedManagementServiceOverrideForTesting platform_management(
-      policy::ManagementServiceFactory::GetForProfile(profile),
-      policy::EnterpriseManagementAuthority::CLOUD);
-  UpdatePrimaryAccountToBeManaged(profile);
-
-  ASSERT_FALSE(GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin());
-  user_status_.user_status_code = UserStatusCode::ENABLED;
-  ExecuteJsTest();
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return user_status_fetch_count_ >= 2;
-  })) << "There should be at least two fetches (initial and delayed)";
-  {
-    base::RunLoop loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, loop.QuitClosure(), base::Seconds(5));
-    loop.Run();
-  }
-  EXPECT_LT(user_status_fetch_count_, 5u)
-      << "We should not send most of the fetches";
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testSwitchConversationToExistingInstance) {
@@ -1432,10 +1366,6 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestRuntimeFeatureOff,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestUserStatusCheckTest,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,

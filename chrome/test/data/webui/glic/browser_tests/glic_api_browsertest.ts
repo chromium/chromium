@@ -512,14 +512,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testMaybeRefreshUserStatusThrottled() {
-    assertDefined(this.host.maybeRefreshUserStatus);
-    for (let i = 0; i < 10; i++) {
-      this.host.maybeRefreshUserStatus();
-      await sleep(100);
-    }
-  }
-
   async testGetModelQualityClientIdFeatureEnabled() {
     assertDefined(this.host.getHostCapabilities);
     const capabilities: Set<HostCapability> =

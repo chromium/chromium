@@ -1816,6 +1816,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
                                      1);
   histogram_tester.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text", 1);
 }
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
@@ -3056,6 +3057,44 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestUserStatusCheckTest,
     return GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
   }));
   EXPECT_GE(user_status_fetch_count_, 1u);
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestUserStatusCheckTest,
+                       testMaybeRefreshUserStatusThrottled) {
+  // As previous, but requests several updates (e.g., as though many errors
+  // were processed around the same time). An "enabled" status is assumed as
+  // otherwise the client will be unloaded.
+  //
+  // These expectations are a little loose, because we can't use mock time in
+  // browser tests yet, but they should be sufficient to catch a total lack of
+  // throttling, at least.
+
+  Profile* profile = GetProfile();
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile),
+      policy::EnterpriseManagementAuthority::CLOUD);
+  UpdatePrimaryAccountToBeManaged(profile);
+
+  ASSERT_FALSE(GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin());
+  user_status_.user_status_code = UserStatusCode::ENABLED;
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return user_status_fetch_count_ >= 2;
+  })) << "There should be at least two fetches (initial and delayed)";
+  {
+    base::RunLoop loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, loop.QuitClosure(), base::Seconds(5));
+    loop.Run();
+  }
+  // The client code requests 10 updates in quick succession, but the throttling
+  // interval in the test parameters is set to 2 seconds. A total of 3 fetches
+  // is expected (1 initial, 1 delayed, 1 at the end of the script loops). If
+  // throttling is not working we will see up to 12 fetches.
+  EXPECT_LE(user_status_fetch_count_, 4u);
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFails) {
