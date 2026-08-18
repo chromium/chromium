@@ -21,8 +21,8 @@
 from __future__ import print_function
 
 import argparse
+import codecs
 import collections
-import fileinput
 import os
 import re
 import sys
@@ -30,10 +30,10 @@ import sys
 # fix-it:"../../base/threading/sequenced_worker_pool.h":{341:3-341:11}:""
 # Note that the file path is relative to the build directory.
 _FIXIT_RE = re.compile(
-  r'^fix-it:"(?P<file>.+?)":'
-  r'{(?P<start_line>\d+?):(?P<start_col>\d+?)-'
-  r'(?P<end_line>\d+?):(?P<end_col>\d+?)}:'
-  r'"(?P<text>.*?)"$'
+  rb'^fix-it:"(?P<file>.+?)":'
+  rb'{(?P<start_line>\d+?):(?P<start_col>\d+?)-'
+  rb'(?P<end_line>\d+?):(?P<end_col>\d+?)}:'
+  rb'"(?P<text>.*?)"$'
 )
 
 FixIt = collections.namedtuple(
@@ -51,28 +51,33 @@ def main():
   args = parser.parse_args()
 
   fixits = collections.defaultdict(list)
-  for line in fileinput.input(['-']):
-    if not line.startswith('fix-it:'):
+  for line in sys.stdin.buffer:
+    if not line.startswith(b'fix-it:'):
       continue
     m = _FIXIT_RE.match(line)
     if not m:
       continue
+    # Machine-parseable fixits escape certain characters:
+    # https://github.com/llvm/llvm-project/blob/4d676e56f0ee819a20a021434a53060a43c33120/clang/lib/Frontend/TextDiagnostic.cpp#L1629
+    text, _ = codecs.escape_decode(m.group('text'))
     # The negative line numbers are a hack to sort fixits in line order but
     # reverse column order. Applying the fixits in reverse order makes things
     # simpler, since column offsets won't have to be adjusted as the text is
     # changed.
-    fixits[m.group('file')].append(
+    filename = m.group('file').decode('utf-8')
+    fixits[filename].append(
       FixIt(
         int(m.group('start_line')),
         -int(m.group('start_col')),
         int(m.group('end_line')),
         -int(m.group('end_col')),
-        m.group('text'),
+        text,
       )
     )
   for k, v in fixits.items():
     v.sort()
-    with open(os.path.join(args.p, k), mode='r+', encoding='utf-8') as f:
+    # Offsets in fixit hints are in bytes, so use binary mode.
+    with open(os.path.join(args.p, k), mode='rb+') as f:
       lines = f.readlines()
       last_fixit = None
       line_offset = 0
