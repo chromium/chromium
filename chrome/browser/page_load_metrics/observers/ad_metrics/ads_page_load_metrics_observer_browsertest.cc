@@ -2173,7 +2173,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
 
   // Make the response large enough so that normal editing to the resource files
   // won't interfere with the test expectations.
-  const base::ByteSize response_size = base::KiBU(64);
+  const base::ByteSize response_size = base::KiB(64);
 
   // Ad resource will not finish loading but should be reported to metrics.
   incomplete_resource_response->WaitForRequest();
