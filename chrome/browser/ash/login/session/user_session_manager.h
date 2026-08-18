@@ -49,6 +49,10 @@ class PrefRegistrySimple;
 class PrefService;
 class Profile;
 
+namespace component_updater {
+class ComponentManagerAsh;
+}  // namespace component_updater
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -162,11 +166,14 @@ class UserSessionManager
   // `local_state`, `application_locale_storage` and
   // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` must be non-null.
+  // `component_manager_ash` may be null in unit tests.
   UserSessionManager(
       PrefService* local_state,
       ApplicationLocaleStorage* application_locale_storage,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      scoped_refptr<component_updater::ComponentManagerAsh>
+          component_manager_ash);
   UserSessionManager(const UserSessionManager&) = delete;
   UserSessionManager& operator=(const UserSessionManager&) = delete;
   ~UserSessionManager() override;
@@ -553,6 +560,8 @@ class UserSessionManager
       shared_url_loader_factory_;
   const raw_ref<policy::BrowserPolicyConnectorAsh>
       browser_policy_connector_ash_;
+  const scoped_refptr<component_updater::ComponentManagerAsh>
+      component_manager_ash_;
 
   base::WeakPtr<UserSessionManagerDelegate> delegate_;
 

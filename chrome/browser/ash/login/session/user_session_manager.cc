@@ -113,7 +113,6 @@
 #include "chrome/browser/ash/tether/tether_service.h"
 #include "chrome/browser/ash/tpm/tpm_firmware_update_notification.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/metrics/first_web_contents_profiler.h"
@@ -719,11 +718,13 @@ UserSessionManager::UserSessionManager(
     PrefService* local_state,
     ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash)
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
+      component_manager_ash_(std::move(component_manager_ash)),
       delegate_(nullptr),
       network_connection_tracker_(nullptr),
       authenticator_(nullptr),
@@ -735,6 +736,9 @@ UserSessionManager::UserSessionManager(
       attempt_restart_closure_(base::BindRepeating(
           []() { session_manager::SessionManager::Get()->RequestRestart(); })) {
   CHECK(shared_url_loader_factory_);
+  if (!component_manager_ash_) {
+    CHECK_IS_TEST();
+  }
 
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
   content::GetNetworkConnectionTrackerFromUIThread(
@@ -1440,9 +1444,10 @@ void UserSessionManager::VoteForSavingLoginPassword(
 }
 
 void UserSessionManager::InitDemoSessionIfNeeded(base::OnceClosure callback) {
+  CHECK(component_manager_ash_);
   DemoSession* demo_session = DemoSession::StartIfInDemoMode(
       &local_state_.get(), &application_locale_storage_.get(),
-      g_browser_process->platform_part()->component_manager_ash());
+      component_manager_ash_);
   if (!demo_session || !demo_session->started()) {
     std::move(callback).Run();
     return;

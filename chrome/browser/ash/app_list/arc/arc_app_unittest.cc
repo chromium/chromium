@@ -432,7 +432,10 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
-            ->browser_policy_connector_ash());
+            ->browser_policy_connector_ash(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash());
 
     arc_app_test_.set_initialize_real_intent_helper_bridge(true);
     arc_app_test_.PreProfileSetUp();

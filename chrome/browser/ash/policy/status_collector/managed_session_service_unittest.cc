@@ -58,7 +58,10 @@ class ManagedSessionServiceTest : public ::testing::Test,
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
-            ->browser_policy_connector_ash());
+            ->browser_policy_connector_ash(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash());
 
     managed_session_service_ =
         std::make_unique<ManagedSessionService>(&test_clock_);

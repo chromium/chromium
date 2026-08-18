@@ -63,7 +63,10 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
-            ->browser_policy_connector_ash());
+            ->browser_policy_connector_ash(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash());
     user_manager_->AddUser(AccountId::FromUserEmail(kProfileEmail));
 
     // Initialize User, Profile and KerberosCredentialsManager.

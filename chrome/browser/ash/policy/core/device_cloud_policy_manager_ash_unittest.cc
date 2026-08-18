@@ -248,7 +248,10 @@ class DeviceCloudPolicyManagerAshTest
         TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
-            ->browser_policy_connector_ash());
+            ->browser_policy_connector_ash(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash());
 
     // SystemSaltGetter is used in DeviceOAuth2TokenService.
     ash::SystemSaltGetter::Initialize();

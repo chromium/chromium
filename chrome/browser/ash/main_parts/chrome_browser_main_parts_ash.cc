@@ -943,7 +943,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
       g_browser_process->local_state(),
       g_browser_process->GetFeatures()->application_locale_storage(),
       g_browser_process->shared_url_loader_factory(),
-      g_browser_process->platform_part()->browser_policy_connector_ash());
+      g_browser_process->platform_part()->browser_policy_connector_ash(),
+      g_browser_process->platform_part()->component_manager_ash());
 
   // List of instances providing KeyedService related services.
   app_service_registry_ = std::make_unique<apps::AppServiceRegistry>();
