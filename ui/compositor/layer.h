@@ -938,7 +938,11 @@ class COMPOSITOR_EXPORT LayerTextured : public LayerWithExternalTexture,
 
   ~LayerTextured() override;
 
-  // Request deferring painting for layer.
+  // Requests deferring painting for this layer.
+  // Note: While painting is deferred, damaged is accumulated, but it is not
+  // committed to the cc::Layer (and no draw is scheduled at the compositor).
+  // Once all deferred paint requests are removed, the accumulated damage is
+  // committed and a draw is scheduled.
   void AddDeferredPaintRequest();
   void RemoveDeferredPaintRequest();
 
