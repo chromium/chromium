@@ -417,6 +417,22 @@ public class TabRestorerUnitTest {
         assertTrue(state.isClaimedOrDestroyed());
     }
 
+    @Test
+    public void testOnCachedActiveTabLoaded_lateArrivingAfterLoaded() {
+        when(mStorageLoadedData.getLoadedTabStates()).thenReturn(new LoadedTabState[0]);
+        mRestorer.onDataLoaded(mStorageLoadedData);
+
+        LoadedTabState cachedState = createLoadedTabState(1, UrlConstants.GOOGLE_URL);
+        WebContentsState contentsState = cachedState.tabState.contentsState;
+        mRestorer.onCachedActiveTabLoaded(cachedState);
+
+        verify(contentsState).destroy();
+        assertNull(cachedState.tabState.contentsState);
+        assertTrue(cachedState.isClaimedOrDestroyed());
+        verify(mTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
+        verify(mDelegate, never()).onActiveTabRestored(anyBoolean());
+    }
+
     private LoadedTabState createLoadedTabState(int id, String url) {
         TabState tabState = new TabState();
         tabState.url = new GURL(url);

@@ -179,6 +179,7 @@ class TabRestorer {
             loadedTabState.destroy();
             return;
         } else if (mState >= State.LOADED) {
+            loadedTabState.destroy();
             return;
         }
 
