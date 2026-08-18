@@ -24,26 +24,22 @@ namespace {
 // (see //storage/browser/quota/quota_settings.cc): the smaller of a fixed
 // reserve and a fraction of the total partition size.
 bool HasSufficientFreeDiskSpace(const base::FilePath& temp_dir) {
-  const std::optional<int64_t> free_bytes =
-      base::SysInfo::AmountOfFreeDiskSpace(temp_dir);
-  const std::optional<int64_t> total_bytes =
-      base::SysInfo::AmountOfTotalDiskSpace(temp_dir);
-  if (!free_bytes.has_value() || *free_bytes < 0 || !total_bytes.has_value() ||
-      *total_bytes < 0) {
+  const std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      base::SysInfo::AmountOfDiskSpace(temp_dir);
+  if (!disk_space.has_value()) {
     VLOG(1) << "[WebNN] Could not query disk space for " << temp_dir
             << "; declining weights file.";
     return false;
   }
 
-  const uint64_t headroom = std::min<uint64_t>(
-      kWeightsFileMustRemainAvailableBytes.InBytes(),
-      base::ClampFloor<uint64_t>(static_cast<double>(*total_bytes) *
-                                 kWeightsFileMustRemainAvailableRatio));
+  const base::ByteSize headroom =
+      std::min(kWeightsFileMustRemainAvailableBytes,
+               disk_space->total * kWeightsFileMustRemainAvailableRatio);
 
-  if (static_cast<uint64_t>(*free_bytes) < headroom) {
-    VLOG(1) << "[WebNN] Not enough free disk space (" << *free_bytes
-            << " B free, need " << headroom
-            << " B headroom); declining weights file.";
+  if (disk_space->available < headroom) {
+    VLOG(1) << "[WebNN] Not enough free disk space (" << disk_space->available
+            << " free, need " << headroom
+            << " headroom); declining weights file.";
     return false;
   }
   return true;
