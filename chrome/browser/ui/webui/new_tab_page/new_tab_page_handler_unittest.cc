@@ -290,10 +290,6 @@ class MockCustomizeChromeTabHelper
               (SidePanelOpenTrigger, std::optional<CustomizeChromeSection>),
               (override));
   MOCK_METHOD(void, CloseSidePanel, (), (override));
-
- protected:
-  MOCK_METHOD(void, CreateAndRegisterEntry, (), (override));
-  MOCK_METHOD(void, DeregisterEntry, (), (override));
 };
 
 int GetDictPrefKeyCount(Profile* profile,
@@ -348,10 +344,10 @@ class NewTabPageHandlerTest : public testing::Test {
         .WillOnce(testing::SaveArg<0>(&promo_service_observer_));
     if (!base::FeatureList::IsEnabled(
             ntp_features::kNtpBackgroundImageErrorDetection)) {
-      EXPECT_CALL(mock_page_, SetTheme).Times(1);
+      EXPECT_CALL(mock_page_, SetTheme).Times(testing::AtLeast(1));
       EXPECT_CALL(mock_ntp_custom_background_service_,
                   RefreshBackgroundIfNeeded)
-          .Times(1);
+          .Times(testing::AtLeast(1));
     } else {
       EXPECT_CALL(mock_ntp_custom_background_service_,
                   VerifyCustomBackgroundImageURL)

@@ -75,10 +75,6 @@ class MockCustomizeChromeTabHelper
               (SidePanelOpenTrigger, std::optional<CustomizeChromeSection>),
               (override));
   MOCK_METHOD(void, CloseSidePanel, (), (override));
-
- protected:
-  MOCK_METHOD(void, CreateAndRegisterEntry, (), (override));
-  MOCK_METHOD(void, DeregisterEntry, (), (override));
 };
 
 class CustomizeButtonsHandlerBrowserTestBase : public InProcessBrowserTest {

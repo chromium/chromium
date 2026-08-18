@@ -12,11 +12,15 @@ if (is_android) {
 assert(enable_webui_ntp)
 
 source_set("customize_chrome") {
-  sources = [ "side_panel_controller.h" ]
+  sources = [
+    "side_panel_controller.cc",
+    "side_panel_controller.h",
+  ]
 
   public_deps = [
+    "//base",
     "//chrome/browser/ui/side_panel",
-    "//chrome/browser/ui/webui/side_panel/customize_chrome",
+    "//ui/base/unowned_user_data",
   ]
 }
 

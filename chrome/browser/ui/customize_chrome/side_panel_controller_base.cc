@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/customize_chrome/side_panel_controller_base.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,16 +16,16 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/grit/branded_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+#else
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"  // nogncheck
 #endif
@@ -30,7 +33,8 @@
 namespace customize_chrome {
 
 SidePanelControllerBase::SidePanelControllerBase(tabs::TabInterface& tab)
-    : tab_(tab) {
+    : tab_(tab),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   content::WebContentsObserver::Observe(tab_->GetContents());
   will_discard_contents_callback_subscription_ =
       tab_->RegisterWillDiscardContents(
@@ -81,8 +85,8 @@ void SidePanelControllerBase::OnEntryWillHide(SidePanelEntry* entry,
 
 bool SidePanelControllerBase::CanShowOnURL(const GURL& url) const {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/507919199): CustomizeChromePageHandler and
-  //     NtpCustomBackgroundServiceFactory are not yet compiled on Android.
+  // TODO(crbug.com/507919199): CustomizeChromePageHandler is not compiled on
+  // Android, so its support check is not available here yet.
   return true;
 #else
   Profile* const profile = tab_->GetProfile();
@@ -105,12 +109,11 @@ void SidePanelControllerBase::DidFinishNavigation(
     return;
   }
   const GURL& url = entry->GetURL();
-  if (CanShowOnURL(url)) {
-    CreateAndRegisterEntry();
-    OnEntryRegisteredForUrl(url);
-  } else {
-    DeregisterEntry();
+  if (!CanShowOnURL(url)) {
+    return;
   }
+  CreateAndRegisterEntry();
+  OnEntryRegisteredForUrl(url);
 }
 
 void SidePanelControllerBase::CreateAndRegisterEntry() {
@@ -135,20 +138,6 @@ void SidePanelControllerBase::CreateAndRegisterEntry() {
 #endif
   entry->AddObserver(this);
   registry->Register(std::move(entry));
-}
-
-void SidePanelControllerBase::DeregisterEntry() {
-  auto* registry = SidePanelRegistry::From(&tab_.get());
-  if (!registry) {
-    return;
-  }
-  auto* entry = registry->GetEntryForKey(
-      SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
-  if (entry) {
-    entry->RemoveObserver(this);
-  }
-  registry->Deregister(
-      SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
 }
 
 void SidePanelControllerBase::OpenSidePanel(

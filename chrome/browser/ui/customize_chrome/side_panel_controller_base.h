@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_native_view.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class GURL;
 class SidePanelUI;
@@ -26,7 +27,7 @@ class TabInterface;
 
 namespace customize_chrome {
 
-// Responsible for implementing logic to create and register/deregister the
+// Responsible for implementing logic to create and register the
 // customize chrome side panel. This implementation listens to the webcontents
 // for a given tab and, on navigation completion, registers the sidepanel entry
 // for the tab, if its possible to show the CustomizeChrome sidepanel.
@@ -43,8 +44,6 @@ class SidePanelControllerBase : public SidePanelController,
   bool IsCustomizeChromeEntryAvailable() const override;
   bool IsCustomizeChromeEntryShowing() const override;
   void SetEntryChangedCallback(StateChangedCallBack callback) override;
-  void CreateAndRegisterEntry() override;
-  void DeregisterEntry() override;
   void OpenSidePanel(SidePanelOpenTrigger trigger,
                      std::optional<CustomizeChromeSection> section) override;
   void CloseSidePanel() override;
@@ -76,8 +75,10 @@ class SidePanelControllerBase : public SidePanelController,
   const raw_ref<tabs::TabInterface> tab_;
 
  private:
+  // Registers the entry if the tab has a registry and no existing entry.
+  void CreateAndRegisterEntry();
+
   // Returns whether the SidePanel should be allowed to show on a given URL.
-  // Currently this limits to the New Tab Page only.
   bool CanShowOnURL(const GURL& url) const;
   // tabs::TabInterface callback:
   void WillDiscardContents(tabs::TabInterface* tab,
@@ -87,6 +88,7 @@ class SidePanelControllerBase : public SidePanelController,
   // Subscription for the discard of the tab.
   base::CallbackListSubscription will_discard_contents_callback_subscription_;
   StateChangedCallBack entry_state_changed_callback_;
+  ui::ScopedUnownedUserData<SidePanelController> scoped_unowned_user_data_;
 };
 
 }  // namespace customize_chrome

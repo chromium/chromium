@@ -154,7 +154,8 @@ if (!is_android) {
     sources = [ "customize_chrome_browsertest.cc" ]
     deps = [
       ":impl",
-      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/search/background",
+      "//chrome/browser/tab_list",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/customize_chrome",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",

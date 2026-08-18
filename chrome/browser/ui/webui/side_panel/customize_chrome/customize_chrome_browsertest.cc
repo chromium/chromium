@@ -2,56 +2,56 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/ui_base_features.h"
 
-class CustomizeChromeSidePanelBrowserTest : public InProcessBrowserTest {
+class CustomizeChromeSidePanelBrowserTest : public PlatformBrowserTest {
  protected:
   // Activates the browser tab at `index`.
-  void ActivateTabAt(BrowserWindowInterface* browser, int index) {
-    browser->GetTabStripModel()->ActivateTabAt(index);
+  void ActivateTabAt(int index) {
+    TabListInterface* tab_list = GetTabListInterface();
+    tab_list->ActivateTab(tab_list->GetTab(index)->GetHandle());
   }
 
   // Appends a new tab with `url` to the end of the tabstrip.
-  void AppendTab(BrowserWindowInterface* browser, const GURL& url) {
-    chrome::AddTabAt(browser, url, -1, true);
+  void AppendTab(const GURL& url) {
+    GetTabListInterface()->OpenTab(url, -1, true);
   }
 
-  // Returns the CustomizeChromeTabHelper associated with the tab
-  customize_chrome::SidePanelController* GetSidePanelController(
-      BrowserWindowInterface* browser) {
-    return browser->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->customize_chrome_side_panel_controller();
+  // Returns the Customize Chrome side panel controller for the active tab.
+  customize_chrome::SidePanelController* GetSidePanelController() {
+    return customize_chrome::SidePanelController::Get(
+        GetTabListInterface()->GetActiveTab()->GetUnownedUserDataHost());
   }
+};
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+class UnsupportedCustomizeChromeSidePanelBrowserTest
+    : public CustomizeChromeSidePanelBrowserTest {
+ protected:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    PlatformBrowserTest::SetUpBrowserContextKeyedServices(context);
+    NtpCustomBackgroundServiceFactory::GetInstance()->SetTestingFactory(context,
+                                                                        {});
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
                        RegisterCustomizeChromeSidePanel) {
-  auto* customize_chrome_side_panel_controller =
-      GetSidePanelController(browser());
+  auto* customize_chrome_side_panel_controller = GetSidePanelController();
 
   // When navigating to the New Tab Page, the Customize Chrome entry should be
   // available
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
                                            chrome::ChromeUINewTabURLAsGURL()));
   EXPECT_TRUE(customize_chrome_side_panel_controller
                   ->IsCustomizeChromeEntryAvailable());
@@ -65,22 +65,19 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
-                       DeregisterCustomizeChromeSidePanel) {
-  // If the Customize Chrome side panel is open and you navigate away from the
-  // NTP the side panel entry should not be in the tabs' registry and the side
-  // panel should not show the customize chrome entry
-  auto* customize_chrome_side_panel_controller =
-      GetSidePanelController(browser());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                       CustomizeChromeSidePanelRemainsOpenAfterNavigation) {
+  // Toolbar pinning keeps an open Customize Chrome side panel registered and
+  // visible after navigating away from the NTP.
+  auto* customize_chrome_side_panel_controller = GetSidePanelController();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
                                            chrome::ChromeUINewTabURLAsGURL()));
   customize_chrome_side_panel_controller->OpenSidePanel(
       SidePanelOpenTrigger::kAppMenu, CustomizeChromeSection::kAppearance);
   EXPECT_TRUE(
       customize_chrome_side_panel_controller->IsCustomizeChromeEntryShowing());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
                                            GURL(chrome::kChromeUISettingsURL)));
 
-  // Toolbar Pinning allows the cusst
   EXPECT_TRUE(customize_chrome_side_panel_controller
                   ->IsCustomizeChromeEntryAvailable());
   EXPECT_TRUE(
@@ -89,36 +86,33 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
                        ContextualCustomizeChromeSidePanel) {
-  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
+  SidePanelUI::From(GetBrowserWindowInterface())->DisableAnimationsForTesting();
   // The Customize Chrome side panel should be contextual, opening on one tab
   // should not open it on other tabs.
-  AppendTab(browser(), chrome::ChromeUINewTabURLAsGURL());
-  AppendTab(browser(), chrome::ChromeUINewTabURLAsGURL());
-  ActivateTabAt(browser(), 1);
+  AppendTab(chrome::ChromeUINewTabURLAsGURL());
+  AppendTab(chrome::ChromeUINewTabURLAsGURL());
+  ActivateTabAt(1);
   // Navigate to URL to allow WebUI to load, if not then callback that is set
   // in the New Tab Page constructor and run when
   // OpenSidePanel() is called will not be set.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
                                            chrome::ChromeUINewTabURLAsGURL()));
-  auto* customize_chrome_side_panel_controller1 =
-      GetSidePanelController(browser());
+  auto* customize_chrome_side_panel_controller1 = GetSidePanelController();
   EXPECT_FALSE(
       customize_chrome_side_panel_controller1->IsCustomizeChromeEntryShowing());
   customize_chrome_side_panel_controller1->OpenSidePanel(
       SidePanelOpenTrigger::kAppMenu, CustomizeChromeSection::kAppearance);
-  ActivateTabAt(browser(), 2);
-  auto* customize_chrome_side_panel_controller2 =
-      GetSidePanelController(browser());
+  ActivateTabAt(2);
+  auto* customize_chrome_side_panel_controller2 = GetSidePanelController();
   EXPECT_FALSE(
       customize_chrome_side_panel_controller2->IsCustomizeChromeEntryShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
                        HideCustomizeChromeSidePanel) {
-  browser()->GetFeatures().side_panel_ui()->DisableAnimationsForTesting();
-  auto* customize_chrome_side_panel_controller =
-      GetSidePanelController(browser());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+  SidePanelUI::From(GetBrowserWindowInterface())->DisableAnimationsForTesting();
+  auto* customize_chrome_side_panel_controller = GetSidePanelController();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
                                            chrome::ChromeUINewTabURLAsGURL()));
   customize_chrome_side_panel_controller->OpenSidePanel(
       SidePanelOpenTrigger::kAppMenu, CustomizeChromeSection::kAppearance);
@@ -131,76 +125,29 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
       customize_chrome_side_panel_controller->IsCustomizeChromeEntryShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
-                       DeregisterEmptyCustomizeChromeEntry) {
-  // When there is no customize chrome entry, calling deregister should
-  // not crash.
-  auto* customize_chrome_side_panel_controller =
-      GetSidePanelController(browser());
-  customize_chrome_side_panel_controller->DeregisterEntryForTesting();
+IN_PROC_BROWSER_TEST_F(UnsupportedCustomizeChromeSidePanelBrowserTest,
+                       DoesNotRegisterCustomizeChromeEntryWhenUnsupported) {
+  auto* customize_chrome_side_panel_controller = GetSidePanelController();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
+                                           GURL("about:blank")));
+  EXPECT_FALSE(customize_chrome_side_panel_controller
+                   ->IsCustomizeChromeEntryAvailable());
 }
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
-                       RegisterCustomizeChromeEntry) {
-  // When CreateAndRegisterEntry() is called, the current tabs side
-  // panel registry should contain a kCustomizeChromeEntry.
-  auto* customize_chrome_side_panel_controller =
-      GetSidePanelController(browser());
-  customize_chrome_side_panel_controller->CreateAndRegisterEntryForTesting();
-  auto* registry = SidePanelRegistry::From(browser()->GetActiveTabInterface());
-  EXPECT_EQ(registry
-                ->GetEntryForKey(
-                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
-                ->key()
-                .id(),
-            SidePanelEntry::Id::kCustomizeChrome);
-}
+                       RepeatedNavigationsDoNotReregisterCustomizeChromeEntry) {
+  // Repeated navigations keep the original entry instead of replacing it.
+  auto* registry =
+      SidePanelRegistry::From(GetTabListInterface()->GetActiveTab());
 
-IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
-                       DeregisterCustomizeChromeEntry) {
-  // When Deregister() is called, there should be no side panel entry
-  // in the registry.
-  auto* customize_chrome_side_panel_controller =
-      GetSidePanelController(browser());
-  auto* registry = SidePanelRegistry::From(browser()->GetActiveTabInterface());
-
-  customize_chrome_side_panel_controller->CreateAndRegisterEntryForTesting();
-  EXPECT_EQ(registry
-                ->GetEntryForKey(
-                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
-                ->key()
-                .id(),
-            SidePanelEntry::Id::kCustomizeChrome);
-  customize_chrome_side_panel_controller->DeregisterEntryForTesting();
-  EXPECT_EQ(registry->GetEntryForKey(
-                SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome)),
-            nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
-                       CreateAndRegisterMultipleTimes) {
-  // When CreateAndRegisterEntry() is called multiple times, only
-  // one entry should be added to the registry.
-  auto* customize_chrome_side_panel_controller =
-      GetSidePanelController(browser());
-  auto* registry = SidePanelRegistry::From(browser()->GetActiveTabInterface());
-
-  customize_chrome_side_panel_controller->CreateAndRegisterEntryForTesting();
-  EXPECT_EQ(registry
-                ->GetEntryForKey(
-                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
-                ->key()
-                .id(),
-            SidePanelEntry::Id::kCustomizeChrome);
-  customize_chrome_side_panel_controller->CreateAndRegisterEntryForTesting();
-  EXPECT_EQ(registry
-                ->GetEntryForKey(
-                    SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome))
-                ->key()
-                .id(),
-            SidePanelEntry::Id::kCustomizeChrome);
-  customize_chrome_side_panel_controller->DeregisterEntryForTesting();
-  EXPECT_EQ(registry->GetEntryForKey(
-                SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome)),
-            nullptr);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
+                                           chrome::ChromeUINewTabURLAsGURL()));
+  SidePanelEntry* entry = registry->GetEntryForKey(
+      SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
+  ASSERT_NE(entry, nullptr);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
+                                           GURL(chrome::kChromeUISettingsURL)));
+  EXPECT_EQ(entry, registry->GetEntryForKey(SidePanelEntry::Key(
+                       SidePanelEntry::Id::kCustomizeChrome)));
 }
