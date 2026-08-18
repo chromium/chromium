@@ -193,6 +193,12 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, CORS preflight cache keys take the tainted origin flag into
+// account (using an opaque / null origin), preventing tainted preflight
+// results from satisfying untainted requests.
+BASE_FEATURE(kCorsPreflightCacheKeyTaintedOrigin,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Do not send TLS client certificates in CORS preflight. Omit all client certs
 // and continue the handshake without sending one if requested.
 BASE_FEATURE(kOmitCorsClientCert, base::FEATURE_DISABLED_BY_DEFAULT);

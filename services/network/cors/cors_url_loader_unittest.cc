@@ -94,6 +94,25 @@ INSTANTIATE_TEST_SUITE_P(All,
                          CorsURLLoaderTestWithSafeRevalidation,
                          testing::Bool());
 
+class CorsURLLoaderTestWithTaintedOriginCacheKey
+    : public CorsURLLoaderTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  CorsURLLoaderTestWithTaintedOriginCacheKey() {
+    feature_list_.InitWithFeatureState(
+        features::kCorsPreflightCacheKeyTaintedOrigin, GetParam());
+  }
+
+  bool IsTaintedOriginCacheKeyEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CorsURLLoaderTestWithTaintedOriginCacheKey,
+                         testing::Bool());
+
 class BadMessageTestHelper {
  public:
   BadMessageTestHelper()
@@ -2371,7 +2390,8 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchSucceedsWithNIK) {
   EXPECT_TRUE(GetRequest().headers.HasHeader(net::HttpRequestHeaders::kOrigin));
 }
 
-TEST_F(CorsURLLoaderTest, RestrictedPrefetchRedirectUpdatesIsolationInfo) {
+TEST_P(CorsURLLoaderTestWithTaintedOriginCacheKey,
+       RestrictedPrefetchRedirectUpdatesIsolationInfo) {
   url::Origin initiator = url::Origin::Create(GURL("https://example.com"));
   const GURL url("https://other.example.com/foo.png");
   const GURL new_url("https://other.example.org/bar.png");
@@ -2448,18 +2468,43 @@ TEST_F(CorsURLLoaderTest, RestrictedPrefetchRedirectUpdatesIsolationInfo) {
 
   RunUntilCreateLoaderAndStartCalled();
 
-  // Verify that the preflight cache now contains the entry for
-  // other.example.org under expected_nik and NOT under the stale NIK!
-  EXPECT_TRUE(
-      network_context()
-          ->cors_preflight_controller()
-          ->GetPreflightCacheForTesting()
-          .DoesEntryExistForTesting(initiator, new_url.spec(), expected_nik));
-  EXPECT_FALSE(
-      network_context()
-          ->cors_preflight_controller()
-          ->GetPreflightCacheForTesting()
-          .DoesEntryExistForTesting(initiator, new_url.spec(), stale_nik));
+  if (IsTaintedOriginCacheKeyEnabled()) {
+    // When kCorsPreflightCacheKeyTaintedOrigin is enabled, tainted preflights
+    // are not cached, so no entry is added for new_url.
+    EXPECT_FALSE(
+        network_context()
+            ->cors_preflight_controller()
+            ->GetPreflightCacheForTesting()
+            .DoesEntryExistForTesting(initiator, new_url.spec(), expected_nik));
+    EXPECT_FALSE(
+        network_context()
+            ->cors_preflight_controller()
+            ->GetPreflightCacheForTesting()
+            .DoesEntryExistForTesting(initiator, new_url.spec(), stale_nik));
+    EXPECT_EQ(1u, network_context()
+                      ->cors_preflight_controller()
+                      ->GetPreflightCacheForTesting()
+                      .CountEntriesForTesting());
+  } else {
+    // When kCorsPreflightCacheKeyTaintedOrigin is disabled, the tainted
+    // preflight is keyed under `initiator`. Verify that the preflight cache
+    // contains the entry for other.example.org under expected_nik and NOT under
+    // the stale NIK.
+    EXPECT_TRUE(
+        network_context()
+            ->cors_preflight_controller()
+            ->GetPreflightCacheForTesting()
+            .DoesEntryExistForTesting(initiator, new_url.spec(), expected_nik));
+    EXPECT_FALSE(
+        network_context()
+            ->cors_preflight_controller()
+            ->GetPreflightCacheForTesting()
+            .DoesEntryExistForTesting(initiator, new_url.spec(), stale_nik));
+    EXPECT_EQ(2u, network_context()
+                      ->cors_preflight_controller()
+                      ->GetPreflightCacheForTesting()
+                      .CountEntriesForTesting());
+  }
 
   // The actual redirected request (GET) to `new_url`
   EXPECT_EQ(4, num_created_loaders());

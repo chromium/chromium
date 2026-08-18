@@ -43,6 +43,7 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network::cors {
 
@@ -478,9 +479,12 @@ class PreflightController::PreflightLoader final {
 
     if (!(original_request_.load_flags & net::LOAD_DISABLE_CACHE) &&
         net_error == net::OK) {
-      controller_->AppendToCache(*original_request_.request_initiator,
-                                 original_request_.url, network_isolation_key_,
-                                 std::move(result));
+      if (!tainted_ || !base::FeatureList::IsEnabled(
+                           features::kCorsPreflightCacheKeyTaintedOrigin)) {
+        controller_->AppendToCache(*original_request_.request_initiator,
+                                   original_request_.url,
+                                   network_isolation_key_, std::move(result));
+      }
     }
 
     CHECK(!detected_error_status.has_value() || net_error != net::OK);
@@ -614,6 +618,8 @@ void PreflightController::PerformPreflightCheck(
                 : net::NetworkIsolationKey();
 
   if (!RetrieveCacheFlags(request.load_flags) &&
+      (!tainted || !base::FeatureList::IsEnabled(
+                       features::kCorsPreflightCacheKeyTaintedOrigin)) &&
       cache_.CheckIfRequestCanSkipPreflight(
           request.request_initiator.value(), request.url, network_isolation_key,
           request.credentials_mode, request.method, request.headers,
