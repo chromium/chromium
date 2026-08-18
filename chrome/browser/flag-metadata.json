@@ -463,7 +463,7 @@
   {
     "name": "android-theme-resource-provider",
     "owners": [ "wenyufu@chromium.org", "clank-app-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "android-tips-notifications",
