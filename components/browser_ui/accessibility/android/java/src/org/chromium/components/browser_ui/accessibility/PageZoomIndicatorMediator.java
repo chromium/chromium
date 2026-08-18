@@ -15,12 +15,9 @@ import android.widget.PopupWindow.OnDismissListener;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-
-import java.util.Locale;
 
 /**
  * Internal Mediator for the page zoom feature. Created by the |PageZoomIndicatorCoordinator|, and
@@ -117,25 +114,18 @@ class PageZoomIndicatorMediator {
     }
 
     private void updateButtonStates(double newZoomFactor) {
-        double roundedZoomFactor = MathUtils.roundTwoDecimalPlaces(newZoomFactor);
-
-        // If the new zoom factor is greater than the minimum zoom factor, enable decrease button.
         mModel.set(
                 PageZoomProperties.DECREASE_ZOOM_ENABLED,
-                roundedZoomFactor > AVAILABLE_ZOOM_FACTORS[0]);
-
-        // If the new zoom factor is less than the maximum zoom factor, enable increase button.
+                PageZoomUtils.canDecreaseZoom(newZoomFactor));
         mModel.set(
                 PageZoomProperties.INCREASE_ZOOM_ENABLED,
-                roundedZoomFactor < AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
+                PageZoomUtils.canIncreaseZoom(newZoomFactor));
     }
 
     private void updateZoomPercentageText(double newZoomFactor) {
-        long readableZoomLevel =
-                Math.round(100 * PageZoomUtils.convertZoomFactorToZoomLevel(newZoomFactor));
         mModel.set(
                 PageZoomProperties.ZOOM_PERCENT_TEXT,
-                String.format(Locale.US, "%d%%", readableZoomLevel));
+                PageZoomUtils.formatZoomPercentage(newZoomFactor));
     }
 
     // Testing

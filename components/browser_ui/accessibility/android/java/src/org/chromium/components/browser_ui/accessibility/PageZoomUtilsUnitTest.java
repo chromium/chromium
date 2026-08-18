@@ -186,4 +186,34 @@ public class PageZoomUtilsUnitTest {
                 PageZoomUtils.getNextIndex(true, -3.80),
                 0.0001);
     }
+
+    @Test
+    public void testCanDecreaseZoom() {
+        Assert.assertFalse(
+                PageZoomUtils.canDecreaseZoom(HostZoomMap.AVAILABLE_ZOOM_FACTORS[0]));
+        Assert.assertTrue(PageZoomUtils.canDecreaseZoom(0.0));
+        Assert.assertTrue(
+                PageZoomUtils.canDecreaseZoom(
+                        HostZoomMap.AVAILABLE_ZOOM_FACTORS[
+                                HostZoomMap.AVAILABLE_ZOOM_FACTORS.length - 1]));
+    }
+
+    @Test
+    public void testCanIncreaseZoom() {
+        Assert.assertTrue(
+                PageZoomUtils.canIncreaseZoom(HostZoomMap.AVAILABLE_ZOOM_FACTORS[0]));
+        Assert.assertTrue(PageZoomUtils.canIncreaseZoom(0.0));
+        Assert.assertFalse(
+                PageZoomUtils.canIncreaseZoom(
+                        HostZoomMap.AVAILABLE_ZOOM_FACTORS[
+                                HostZoomMap.AVAILABLE_ZOOM_FACTORS.length - 1]));
+    }
+
+    @Test
+    public void testFormatZoomPercentage() {
+        Assert.assertEquals("100%", PageZoomUtils.formatZoomPercentage(0.0));
+        Assert.assertEquals("50%", PageZoomUtils.formatZoomPercentage(-3.80));
+        Assert.assertEquals("150%", PageZoomUtils.formatZoomPercentage(2.22));
+        Assert.assertEquals("300%", PageZoomUtils.formatZoomPercentage(6.03));
+    }
 }

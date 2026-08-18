@@ -20,6 +20,7 @@ import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * General purpose utils class for page zoom feature. This is for methods that are shared by both
@@ -421,5 +422,36 @@ public class PageZoomUtils {
 
     public static long getReadableZoomLevel(double zoomFactor) {
         return Math.round(100 * convertZoomFactorToZoomLevel(zoomFactor));
+    }
+
+    /**
+     * Returns true if the zoom level can be decreased from the current zoom factor.
+     *
+     * @param zoomFactor The current zoom factor.
+     * @return boolean
+     */
+    public static boolean canDecreaseZoom(double zoomFactor) {
+        return MathUtils.roundTwoDecimalPlaces(zoomFactor) > AVAILABLE_ZOOM_FACTORS[0];
+    }
+
+    /**
+     * Returns true if the zoom level can be increased from the current zoom factor.
+     *
+     * @param zoomFactor The current zoom factor.
+     * @return boolean
+     */
+    public static boolean canIncreaseZoom(double zoomFactor) {
+        return MathUtils.roundTwoDecimalPlaces(zoomFactor)
+                < AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1];
+    }
+
+    /**
+     * Formats the zoom factor as a percentage string (e.g. "100%").
+     *
+     * @param zoomFactor The zoom factor to format.
+     * @return String The formatted percentage string.
+     */
+    public static String formatZoomPercentage(double zoomFactor) {
+        return String.format(Locale.US, "%d%%", getReadableZoomLevel(zoomFactor));
     }
 }
