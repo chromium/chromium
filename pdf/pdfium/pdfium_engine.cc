@@ -5409,12 +5409,11 @@ void PDFiumEngine::AddFont(FontId font_id,
 
   constexpr SkFontTableTag kHeadTag = SkSetFourByteTag('h', 'e', 'a', 'd');
   const bool is_sfnt = typeface->getTableSize(kHeadTag) > 0;
+  CHECK(is_sfnt);
 
-  // TODO(crbug.com/506133432): Avoid hardcoding the cid parameter?
-  int font_type = is_sfnt ? FPDF_FONT_TRUETYPE : FPDF_FONT_TYPE1;
   ScopedFPDFFont font(FPDFText_LoadFont(doc(), font_data_span.data(),
                                         font_data_span.size(),
-                                        /*font_type=*/font_type,
+                                        /*font_type=*/FPDF_FONT_TRUETYPE,
                                         /*cid=*/true));
 
   base::UmaHistogramBoolean("PDF.Ink2FontLoaded", font != nullptr);
