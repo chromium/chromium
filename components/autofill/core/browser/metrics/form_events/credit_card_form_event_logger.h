@@ -61,8 +61,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   // Called by BnplManager after its suggestion update barrier callback is
   // triggered and a BNPL suggestion is shown.
-  virtual void OnBnplSuggestionShown(
-      bool suggestion_contains_pay_later_tab_entry);
+  virtual void OnBnplSuggestionShown(bool pay_later_tab_shown);
 
   // Invoked when `suggestions` are successfully fetched.
   // `with_cvc` indicates whether CVC is saved in any of the suggestion in
@@ -258,8 +257,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, one of the cards in the suggestions fetched card info retrieval
   // enrolled.
   bool suggestion_contains_card_info_retrieval_enrolled_card_ = false;
-  // If true, one of the suggestions will be shown in the Pay Later tab.
-  bool suggestion_contains_pay_later_tab_entry_ = false;
+  // If true, the Pay Later tab was shown in suggestions.
+  bool pay_later_tab_shown_ = false;
   // If true, the suggestions shown on BNPL eligible merchant is logged and
   // should not be logged again.
   bool has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = false;

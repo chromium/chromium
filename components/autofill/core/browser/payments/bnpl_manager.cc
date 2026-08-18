@@ -346,7 +346,7 @@ void BnplManager::OnCreditCardSuggestionsShown(
         .SetAutofillHasSeenBnpl();
     browser_autofill_manager_->GetCreditCardFormEventLogger()
         .OnBnplSuggestionShown(
-            /*suggestion_contains_pay_later_tab_entry=*/false);
+            /*pay_later_tab_shown=*/false);
   }
 
   update_suggestions_callback_ = update_suggestions_callback;
@@ -1174,7 +1174,7 @@ void BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl(
       .Run(update_suggestions_result.suggestions, trigger_source);
   browser_autofill_manager_->GetCreditCardFormEventLogger()
       .OnBnplSuggestionShown(
-          /*suggestion_contains_pay_later_tab_entry=*/false);
+          /*pay_later_tab_shown=*/false);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

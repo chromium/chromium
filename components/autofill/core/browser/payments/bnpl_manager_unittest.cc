@@ -2111,7 +2111,7 @@ TEST_F(BnplManagerTest,
   EXPECT_CALL(callback, Run);
   EXPECT_CALL(*credit_card_form_event_logger_,
               OnBnplSuggestionShown(
-                  /*suggestion_contains_pay_later_tab_entry=*/false));
+                  /*pay_later_tab_shown=*/false));
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kUnspecified);
@@ -2140,7 +2140,7 @@ TEST_F(
   EXPECT_CALL(callback, Run).Times(0);
   EXPECT_CALL(*credit_card_form_event_logger_,
               OnBnplSuggestionShown(
-                  /*suggestion_contains_pay_later_tab_entry=*/false))
+                  /*pay_later_tab_shown=*/false))
       .Times(0);
 
   bnpl_manager_->NotifyOfSuggestionGeneration(
@@ -2301,7 +2301,7 @@ TEST_F(BnplManagerTest,
 
   EXPECT_CALL(*credit_card_form_event_logger_,
               OnBnplSuggestionShown(
-                  /*suggestion_contains_pay_later_tab_entry=*/false));
+                  /*pay_later_tab_shown=*/false));
   bnpl_manager_->OnCreditCardSuggestionsShown(suggestions, base::DoNothing());
 }
 
@@ -3556,7 +3556,7 @@ TEST_F(BnplManagerPayLaterTabTest,
   EXPECT_CALL(callback, Run).Times(0);
   EXPECT_CALL(*credit_card_form_event_logger_,
               OnBnplSuggestionShown(
-                  /*suggestion_contains_pay_later_tab_entry=*/false))
+                  /*pay_later_tab_shown=*/false))
       .Times(0);
 
   bnpl_manager_->NotifyOfSuggestionGeneration(

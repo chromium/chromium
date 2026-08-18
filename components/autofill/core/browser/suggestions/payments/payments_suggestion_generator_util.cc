@@ -987,8 +987,8 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
           IsCardNumberFieldEmpty(form_structure));
     }
     manager.GetCreditCardFormEventLogger().OnBnplSuggestionShown(
-        /*suggestion_contains_pay_later_tab_entry=*/base::FeatureList::
-            IsEnabled(features::kAutofillEnablePayNowPayLaterTabs));
+        /*pay_later_tab_shown=*/base::FeatureList::IsEnabled(
+            features::kAutofillEnablePayNowPayLaterTabs));
     manager.client()
         .GetPersonalDataManager()
         .payments_data_manager()

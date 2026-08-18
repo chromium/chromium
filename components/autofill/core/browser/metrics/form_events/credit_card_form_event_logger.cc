@@ -67,9 +67,8 @@ CreditCardFormEventLogger::CreditCardFormEventLogger(
 CreditCardFormEventLogger::~CreditCardFormEventLogger() = default;
 
 void CreditCardFormEventLogger::OnBnplSuggestionShown(
-    bool suggestion_contains_pay_later_tab_entry) {
-  suggestion_contains_pay_later_tab_entry_ =
-      suggestion_contains_pay_later_tab_entry;
+    bool pay_later_tab_shown) {
+  pay_later_tab_shown_ = pay_later_tab_shown;
   if (!has_logged_bnpl_suggestion_shown_) {
     LogBnplSuggestionShown(driver().GetPageUkmSourceId());
     has_logged_bnpl_suggestion_shown_ = true;
@@ -88,7 +87,7 @@ void CreditCardFormEventLogger::OnDidFetchSuggestion(
   suggestion_contains_card_with_cvc_ = with_cvc;
   suggestion_contains_card_info_retrieval_enrolled_card_ =
       with_card_info_retrieval_enrolled;
-  suggestion_contains_pay_later_tab_entry_ = with_pay_later_tab_suggestion;
+  pay_later_tab_shown_ = with_pay_later_tab_suggestion;
   suggestion_contains_externally_saved_card_ = with_externally_saved_card;
   suggestion_contains_never_used_card_ = with_never_used_card;
   is_virtual_card_standalone_cvc_field_ = is_virtual_card_standalone_cvc_field;
@@ -187,7 +186,7 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
       payments::IsEligibleForBnpl(owner_->client())) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnablePayNowPayLaterTabs)) {
-      LogSuggestionShownForPayLaterTab(suggestion_contains_pay_later_tab_entry_,
+      LogSuggestionShownForPayLaterTab(pay_later_tab_shown_,
                                        driver().GetPageUkmSourceId());
     } else {
       LogBnplFormEvent(BnplFormEvent::kSuggestionsShownOnBnplEligiblePage);
@@ -637,7 +636,7 @@ void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptCompleted(
 void CreditCardFormEventLogger::OnUserDecisionToUseBnpl(
     base::span<const Suggestion> suggestions_shown) {
   if (!has_logged_user_decision_to_use_bnpl_) {
-    if (suggestion_contains_pay_later_tab_entry_) {
+    if (pay_later_tab_shown_) {
       LogPayLaterTabSelected(driver().GetPageUkmSourceId());
     } else {
       LogBnplSuggestionAccepted(
@@ -712,7 +711,7 @@ CreditCardFormEventLogger::GetCreditCardSuggestionSummaryForTesting() const {
   return CreditCardSuggestionSummary{
       suggestion_contains_card_with_cvc_,
       suggestion_contains_card_info_retrieval_enrolled_card_,
-      suggestion_contains_pay_later_tab_entry_,
+      pay_later_tab_shown_,
       suggestion_contains_externally_saved_card_,
       suggestion_contains_never_used_card_,
       metadata_logging_context_};
