@@ -32,8 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
-import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -69,8 +68,8 @@ public class PartnerHomepageIntegrationTest {
                     new BasePartnerBrowserCustomizationIntegrationTestRule();
 
     @Rule
-    public SettingsActivityTestRule<HomepageSettings> mHomepageSettingsTestRule =
-            new SettingsActivityTestRule<>(HomepageSettings.class);
+    public SettingsTestRule<HomepageSettings> mHomepageSettingsTestRule =
+            new SettingsTestRule<>(HomepageSettings.class);
 
     @Rule
     public final RuleChain mRuleChain =
@@ -254,8 +253,7 @@ public class PartnerHomepageIntegrationTest {
      */
     private void toggleHomepageSwitchPreference(boolean expected) {
         // Launch preference activity with Homepage settings fragment.
-        SettingsActivity homepagePreferenceActivity =
-                mHomepageSettingsTestRule.startSettingsActivity();
+        mHomepageSettingsTestRule.startSettingsActivity();
         HomepageSettings fragment = mHomepageSettingsTestRule.getFragment();
         ChromeSwitchPreference preference =
                 (ChromeSwitchPreference)
