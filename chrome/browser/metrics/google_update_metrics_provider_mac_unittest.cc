@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/google_update_metrics_provider_mac.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -38,5 +39,23 @@ TEST(GoogleUpdateMetricsProviderMacTest, SetsVersions) {
   GoogleUpdateMetricsProviderMac().ProvideSystemProfileMetrics(&proto);
   EXPECT_EQ(proto.google_update().client_status().version(), "5.6.7.8");
   EXPECT_EQ(proto.google_update().google_update_status().version(), "1.2.3.4");
+}
+
+TEST(GoogleUpdateMetricsProviderMacTest, SetsCohortHash) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  updater::UpdateService::AppState app;
+  app.app_id = updater::GetAppId();
+  app.cohort = "1:A:B";
+  base::ScopedClosureRunner scoped_override =
+      updater::OverrideService(updater::UpdateService::Result::kSuccess, {app});
+
+  updater::LoadAppStates();
+
+  metrics::SystemProfileProto proto;
+  GoogleUpdateMetricsProviderMac().ProvideSystemProfileMetrics(&proto);
+  EXPECT_EQ(proto.google_update().client_status().cohort_hash(),
+            base::PersistentHash("1:A"));
+  EXPECT_FALSE(proto.google_update().google_update_status().has_cohort_hash());
 }
 #endif

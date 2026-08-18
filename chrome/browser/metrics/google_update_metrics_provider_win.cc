@@ -83,8 +83,7 @@ void GoogleUpdateMetricsProviderWin::ProvideSystemProfileMetrics(
   // Do nothing for chromium builds.
   if (!IsGoogleChromeBuild())
     return;
-  base::UmaHistogramSparse("GoogleUpdate.InstallDetails.UpdateCohortId",
-                           GetHashedCohortId());
+
   metrics::SystemProfileProto::GoogleUpdate* google_update =
       system_profile_proto->mutable_google_update();
 
@@ -110,6 +109,11 @@ void GoogleUpdateMetricsProviderWin::ProvideSystemProfileMetrics(
     ProductDataToProto(google_update_metrics_.product_data,
                        google_update->mutable_client_status());
   }
+
+  const uint32_t cohort_hash = GetHashedCohortId();
+  base::UmaHistogramSparse("GoogleUpdate.InstallDetails.UpdateCohortId",
+                           cohort_hash);
+  google_update->mutable_client_status()->set_cohort_hash(cohort_hash);
 }
 
 GoogleUpdateMetricsProviderWin::GoogleUpdateMetrics::GoogleUpdateMetrics()

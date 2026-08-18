@@ -26,10 +26,15 @@ void GoogleUpdateMetricsProviderMac::ProvideSystemProfileMetrics(
       updater::GetLastKnownBrowserRegistration();
   if (browser_state) {
     const std::string browser_state_cohort = browser_state->cohort.value_or("");
+
+    const uint32_t cohort_hash = base::PersistentHash(
+        browser_state_cohort.substr(0, browser_state_cohort.find_last_of(":")));
     base::UmaHistogramSparse("GoogleUpdate.InstallDetails.UpdateCohortId",
-                             base::PersistentHash(browser_state_cohort.substr(
-                                 0, browser_state_cohort.find_last_of(":"))));
-    google_update->mutable_client_status()->set_version(browser_state->version);
+                             cohort_hash);
+
+    auto* client_status = google_update->mutable_client_status();
+    client_status->set_cohort_hash(cohort_hash);
+    client_status->set_version(browser_state->version);
   }
 
   std::optional<updater::UpdateService::AppState> updater_state =
