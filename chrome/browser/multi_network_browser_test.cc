@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/download_request_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/network_service_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
@@ -256,39 +258,134 @@ void VerifyFactoryCounts(const TestChromeContentBrowserClient& test_client,
 
 }  // namespace
 
+/**
+ * Given a target_network X, multi-network browser test emulate target network
+ * binding in the following way:
+ * 1. EmbeddedTestServer starts listening on 127.0.0.X:PORT
+ * 2. Browser issues requests to http://127.0.0.1:PORT/..., with
+ *    target_network = X (set in WebContents::CreateParams)
+ * 3. Socket layer translates requests for 127.0.0.1 to 127.0.0.X, iff the
+ *    socket layer receives the target_network = X from the NetworkService API
+ *    being tested.
+ * 4. The request then succeeds because it can reach EmbeddedTestServer on
+ *    127.0.0.X:PORT. This happens only if the target network has been
+ *    correctly propagated all the way from the WebContents to the socket layer.
+ *
+ * Example:
+ *  Browser / WebContents (target_network = X)
+ *             |
+ *             v
+ *  URLLoaderFactory (target_network = X)
+ *             |
+ *             v
+ *  net::URLRequest (target_network = X)
+ *             |
+ *             v
+ *  TCPSocketPosix / UDPSocketPosix (bound_network_ = X)
+ *             |
+ *             +---> BindToNetwork(X)
+ *             |       |
+ *             |       v
+ *             |     Emulation ON: No-op / return OK
+ *             |
+ *             +---> Connect("127.0.0.1", PORT)
+ *                     |
+ *                     v
+ *                   Emulation ON & bound_network_ != default network
+ *                   Translate destination to "127.0.0.X", PORT
+ *                     |
+ *                     v
+ *                   Connects to EmbeddedTestServer (127.0.0.X:PORT) [OK]
+ */
+
 class MultiNetworkBrowserTest : public PlatformBrowserTest {
  public:
-  void SetExpectedTargetNetworkForTesting(
-      std::optional<net::handles::NetworkHandle> target_network) {
-    GetProfile()
-        ->GetDefaultStoragePartition()
-        ->GetNetworkContext()
-        ->SetExpectedTargetNetworkForTesting(target_network);
+  void SetUpOnMainThread() override {
+    PlatformBrowserTest::SetUpOnMainThread();
+    // When the network service runs out-of-process, all socket operations and
+    // network binding calls happen inside the dedicated Network Service utility
+    // process. We use the NetworkServiceTest Mojo IPC interface to toggle
+    // emulation in that remote process before starting any test requests.
+    //
+    // When the network service runs in-process, it shares the browser's address
+    // space, so we directly call
+    // net::handles::SetEmulateNetworkBindingForTesting. Although
+    // SetUpOnMainThread runs on the UI/main thread while sockets execute on the
+    // IO/network thread, posting navigation tasks to the IO thread forms a
+    // happens-before memory barrier, guaranteeing that the IO thread reads the
+    // updated flag without data races.
+    if (content::IsOutOfProcessNetworkService()) {
+      mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+      content::GetNetworkService()->BindTestInterfaceForTesting(
+          network_service_test.BindNewPipeAndPassReceiver());
+      base::test::TestFuture<void> future;
+      network_service_test->SetEmulateNetworkBindingForTesting(
+          true, future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+    } else {
+      net::handles::SetEmulateNetworkBindingForTesting(true);
+    }
   }
 
   void TearDownOnMainThread() override {
-    SetExpectedTargetNetworkForTesting(std::nullopt);
+    // See comments in SetUpOnMainThread() for more details.
+    if (content::IsOutOfProcessNetworkService()) {
+      mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
+      content::GetNetworkService()->BindTestInterfaceForTesting(
+          network_service_test.BindNewPipeAndPassReceiver());
+      base::test::TestFuture<void> future;
+      network_service_test->SetEmulateNetworkBindingForTesting(
+          false, future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+    } else {
+      net::handles::SetEmulateNetworkBindingForTesting(false);
+    }
     PlatformBrowserTest::TearDownOnMainThread();
   }
+
+  std::string GetLoopbackAddressForNetwork(
+      net::handles::NetworkHandle network) {
+    CHECK_GE(network, 2);
+    CHECK_LE(network, 254);
+    return base::StringPrintf("127.0.0.%d", static_cast<int>(network));
+  }
 };
+
+// MultiNetworkBrowserTest rely on the assumption that EmbeddedTestServer is
+// not reachable via 127.0.0.1 if started on 127.0.0.X, with X != 1. To err on
+// the safe side, this test confirms that this is really the case.
+IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
+                       UnreachableServerWithoutEmulateNetworkBinding) {
+  constexpr net::handles::NetworkHandle network = 2;
+
+  content::WebContents::CreateParams create_params(GetProfile());
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(create_params);
+
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
+
+  content::TestNavigationObserver observer(web_contents.get());
+  content::NavigationController::LoadURLParams load_params(url);
+  web_contents->GetController().LoadURLWithParams(load_params);
+  observer.Wait();
+  EXPECT_FALSE(observer.last_navigation_succeeded());
+}
 
 IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, NavigationSetsTargetNetwork) {
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 2;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -308,19 +405,15 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, SubresourceSetsTargetNetwork) {
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 3;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -348,19 +441,15 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, DownloadSetsTargetNetwork) {
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 4;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::DownloadManager* download_manager =
       GetProfile()->GetDownloadManager();
@@ -372,8 +461,7 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, DownloadSetsTargetNetwork) {
   params->set_content_initiated(false);
   download_manager->DownloadUrl(std::move(params));
   // TODO(crbug.com/543377467): Wait for the download to complete and check it
-  // succeeds. Rearchitecturing MultiNetworkBrowserTest to not rely on a CHECK
-  // in CreateRequest will make it easier to do that.
+  // succeeds.
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return test_client.CountBoundNetwork(URLLoaderFactoryType::kDownload,
@@ -435,11 +523,6 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 5;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
@@ -449,8 +532,9 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   PopupTestWebContentsDelegate delegate(GetProfile());
   web_contents->SetDelegate(&delegate);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -485,11 +569,6 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 12;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
@@ -499,8 +578,9 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   PopupTestWebContentsDelegate delegate(GetProfile());
   web_contents->SetDelegate(&delegate);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -536,11 +616,6 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 6;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
@@ -572,8 +647,9 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
         return nullptr;
       }));
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -599,19 +675,15 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, PrefetchSetsTargetNetwork) {
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 7;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -643,11 +715,6 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 8;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
@@ -688,8 +755,9 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -699,37 +767,31 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
 
   // Service worker script requests pass frame == nullptr to
   // WillCreateURLLoaderFactory, making it currently impossible to retrieve the
-  // target_network from the frame. We reset SetExpectedTargetNetworkForTesting
-  // to expect the default network (kInvalidNetworkHandle) so that
-  // URLRequestContext::CreateRequest won't fail when fetching the service
-  // worker script.
-  SetExpectedTargetNetworkForTesting(std::nullopt);
-
+  // target_network from the frame. Because the service worker factory ignores
+  // the target network, its request connects to 127.0.0.1 instead of 127.0.0.8,
+  // failing to reach the test server listening on 127.0.0.8.
   EXPECT_EQ(
-      "ok",
+      "err",
       content::EvalJs(
           web_contents.get(),
           "navigator.serviceWorker.register('/service_worker/generated_sw.js')"
-          ".then(() => 'ok').catch(e => 'err: ' + e.message)"));
+          ".then(() => 'ok').catch(e => 'err')"));
 
   VerifyFactoryCounts(
       test_client, network,
       {.navigation = 1,
        .document_subresource = 2,
-       .invalid_network_handle = kExpectedNonNetworkFactories + 4u});
+       // Service worker script requests pass frame == nullptr to
+       // WillCreateURLLoaderFactory, creating 1 kServiceWorkerScript factory
+       // and 1 non-network factory unbound to target_network before the script
+       // fetch fails to reach the 127.0.0.8 server.
+       .invalid_network_handle = kExpectedNonNetworkFactories + 2u});
 }
 
-// This test is not prescriptive, but rather demonstrates that WebSockets
-// currently ignore the target_network.
 IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, WebSocketIgnoresTargetNetwork) {
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 9;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
@@ -738,9 +800,10 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, WebSocketIgnoresTargetNetwork) {
 
   net::EmbeddedTestServer ws_server(net::EmbeddedTestServer::TYPE_HTTP);
   ws_server.ServeFilesFromSourceDirectory("chrome/test/data");
-  ASSERT_TRUE(ws_server.Start());
+  ASSERT_TRUE(
+      ws_server.Start(/*port=*/0, GetLoopbackAddressForNetwork(network)));
 
-  GURL url = ws_server.GetURL("/title1.html");
+  GURL url = ws_server.GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -748,15 +811,8 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, WebSocketIgnoresTargetNetwork) {
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
-  // WebSocket requests currently don't retrieve the target_network from the
-  // frame. Reset SetExpectedTargetNetworkForTesting to expect the default
-  // network (kInvalidNetworkHandle) so that URLRequestContext::CreateRequest
-  // won't fail when creating the WebSocket connection.
-  // TODO(crbug.com/527777927): Support target_network in WebSockets and make
-  // this test fail if WebSockets do not use the target_network.
-  SetExpectedTargetNetworkForTesting(std::nullopt);
-
-  GURL ws_url = net::test_server::GetWebSocketURL(ws_server, "/echo");
+  GURL ws_url =
+      net::test_server::GetWebSocketURL(ws_server, "127.0.0.1", "/echo");
   std::string script = content::JsReplace(
       "new Promise(resolve => {"
       "  const ws = new WebSocket($1);"
@@ -776,23 +832,16 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 10;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
   // TODO(crbug.com/537268694): Consider supporting target_network in WebRTC.
-  // SetExpectedTargetNetworkForTesting should also be extended to support
-  // checking at the socket-layer, so that we can correctly surface that WebRTC
-  // ignores the target_network.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -813,19 +862,15 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, SubframeSetsTargetNetwork) {
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 11;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -860,11 +905,6 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, WindowOpenSetsTargetNetwork) {
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 16;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
@@ -874,8 +914,9 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, WindowOpenSetsTargetNetwork) {
   PopupTestWebContentsDelegate delegate(GetProfile());
   web_contents->SetDelegate(&delegate);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -883,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, WindowOpenSetsTargetNetwork) {
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
-  GURL popup_url = embedded_test_server()->GetURL("/title2.html");
+  GURL popup_url = embedded_test_server()->GetURL("127.0.0.1", "/title2.html");
   content::TestNavigationObserver popup_observer(popup_url);
   popup_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
@@ -918,11 +959,6 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 17;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
@@ -932,8 +968,9 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   PopupTestWebContentsDelegate delegate(GetProfile());
   web_contents->SetDelegate(&delegate);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -941,7 +978,7 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
-  GURL popup_url = embedded_test_server()->GetURL("/title2.html");
+  GURL popup_url = embedded_test_server()->GetURL("127.0.0.1", "/title2.html");
   content::TestNavigationObserver popup_observer(popup_url);
   popup_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(content::ExecJs(
@@ -976,19 +1013,15 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest, BeaconSetsTargetNetwork) {
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 13;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -1010,11 +1043,6 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 14;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
@@ -1039,8 +1067,9 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
         return nullptr;
       }));
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -1073,11 +1102,6 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   TestChromeContentBrowserClient test_client;
 
   constexpr net::handles::NetworkHandle network = 15;
-  // This is necessary to prevent requests from failing due to a fake network
-  // being used. See
-  // net::URLRequestContext::set_expected_target_network_for_testing for more
-  // information.
-  SetExpectedTargetNetworkForTesting(network);
 
   content::WebContents::CreateParams create_params(GetProfile());
   create_params.target_network = network;
@@ -1107,8 +1131,9 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
         return nullptr;
       }));
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(embedded_test_server()->Start(
+      /*port=*/0, GetLoopbackAddressForNetwork(network)));
+  GURL url = embedded_test_server()->GetURL("127.0.0.1", "/title1.html");
 
   content::TestNavigationObserver observer(web_contents.get());
   content::NavigationController::LoadURLParams load_params(url);
@@ -1116,7 +1141,8 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
-  GURL pay_method_url = embedded_test_server()->GetURL("/pay_manifest.json");
+  GURL pay_method_url =
+      embedded_test_server()->GetURL("127.0.0.1", "/pay_manifest.json");
 
   std::string script = content::JsReplace(
       "const req = new PaymentRequest([{supportedMethods: $1}], {"

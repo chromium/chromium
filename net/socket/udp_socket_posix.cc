@@ -674,11 +674,15 @@ int UDPSocketPosix::InternalConnect(const IPEndPoint& address) {
   DCHECK(!is_connected());
   DCHECK(!remote_address_.get());
 
+  IPEndPoint target_address =
+      handles::MaybeTranslateEmulatedNetworkAddressForTesting(address,
+                                                              bound_network_);
+
   int rv = 0;
   if (bind_type_ == DatagramSocket::RANDOM_BIND) {
     // Construct IPAddress of appropriate size (IPv4 or IPv6) of 0s,
     // representing INADDR_ANY or in6addr_any.
-    size_t addr_size = address.GetSockAddrFamily() == AF_INET
+    size_t addr_size = target_address.GetSockAddrFamily() == AF_INET
                            ? IPAddress::kIPv4AddressSize
                            : IPAddress::kIPv6AddressSize;
     rv = RandomBind(IPAddress::AllZeros(addr_size));
@@ -690,7 +694,7 @@ int UDPSocketPosix::InternalConnect(const IPEndPoint& address) {
   }
 
   SockaddrStorage storage;
-  if (!address.ToSockAddr(storage.addr(), &storage.addr_len)) {
+  if (!target_address.ToSockAddr(storage.addr(), &storage.addr_len)) {
     return ERR_ADDRESS_INVALID;
   }
 
@@ -698,7 +702,7 @@ int UDPSocketPosix::InternalConnect(const IPEndPoint& address) {
   if (rv < 0)
     return MapSystemError(errno);
 
-  remote_address_ = std::make_unique<IPEndPoint>(address);
+  remote_address_ = std::make_unique<IPEndPoint>(target_address);
   return rv;
 }
 
@@ -726,8 +730,9 @@ int UDPSocketPosix::BindToNetwork(handles::NetworkHandle network) {
   DCHECK(!is_connected());
 #if BUILDFLAG(IS_ANDROID)
   int rv = net::android::BindToNetwork(socket_, network);
-  if (rv == OK)
+  if (rv == OK) {
     bound_network_ = network;
+  }
   return rv;
 #else
   NOTIMPLEMENTED();
@@ -1422,7 +1427,10 @@ int UDPSocketPosix::InternalSendTo(IOBuffer* buf,
     addr = nullptr;
     storage.addr_len = 0;
   } else {
-    if (!address->ToSockAddr(storage.addr(), &storage.addr_len)) {
+    IPEndPoint target_address =
+        handles::MaybeTranslateEmulatedNetworkAddressForTesting(*address,
+                                                                bound_network_);
+    if (!target_address.ToSockAddr(storage.addr(), &storage.addr_len)) {
       int result = ERR_ADDRESS_INVALID;
       LogWrite(result, nullptr, nullptr);
       return result;

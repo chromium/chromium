@@ -1901,19 +1901,4 @@ interface NetworkContext {
 
   // Updates the variations headers to be used for requests.
   SetVariationsHeaders(variations.mojom.VariationsHeaders? variations_headers);
-
-  // Sets the expected target network to test Chrome's multi-networking.
-  // See net::URLRequestContext::set_expected_target_network_for_testing, and
-  // chrome/browser/multi_network_browser_test.cc, for details.
-  // NOTE: Ideally we would expose this via NetworkServiceTest's mojo APIs.
-  // Having said that, we need the ability to target the NetworkContext
-  // associated with the default storage partition. Doing that via a
-  // NetworkContext API is trivial, since the test environment already has
-  // access to the NetworkContext it cares about. Doing so via a
-  // NetworkServiceTest API requires being able to identify and target specific
-  // NetworkContexts, which is currently not possible.
-  // TODO(crbug.com/543274233): Drop this in favor of an API exposed via
-  // NetworkServiceTest that directly affects the socket layer. See the bug and
-  // https://crrev.com/c/7904261/comment/43ee0e22_e82eef35/ for more details.
-  SetExpectedTargetNetworkForTesting(int64? target_network);
 };

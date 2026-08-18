@@ -272,4 +272,10 @@ interface NetworkServiceTest {
   // process ID and URL.
   [Sync]
   HasRawHeadersAccess(uint32 process_id, url.mojom.Url url) => (bool result);
+
+  // Sets whether to emulate network binding for testing. This is used by
+  // Chrome's multi-networking.
+  // See net::handles::SetEmulateNetworkBindingForTesting, and
+  // chrome/browser/multi_network_browser_test.cc, for details.
+  SetEmulateNetworkBindingForTesting(bool enabled) => ();
 };

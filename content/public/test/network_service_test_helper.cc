@@ -39,6 +39,7 @@
 #include "net/base/address_map_linux.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/disk_cache/disk_cache.h"
@@ -824,6 +825,13 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
             ->HasRawHeadersAccess(
                 network::OriginatingProcessId::FromUnsafeValue(process_id),
                 url));
+  }
+
+  void SetEmulateNetworkBindingForTesting(
+      bool enabled,
+      SetEmulateNetworkBindingForTestingCallback callback) override {
+    net::handles::SetEmulateNetworkBindingForTesting(enabled);
+    std::move(callback).Run();
   }
 
  private:

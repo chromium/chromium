@@ -242,6 +242,8 @@ class NET_EXPORT TCPSocketPosix {
   };
   std::optional<PortRandomizationData> port_randomization_data_;
 #endif  // BUILDFLAG(IS_MAC)
+
+  handles::NetworkHandle bound_network_ = handles::kInvalidNetworkHandle;
 };
 
 }  // namespace net

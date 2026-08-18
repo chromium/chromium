@@ -22,6 +22,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/dns/public/dns_protocol.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -290,6 +291,10 @@ int BindToNetwork(SocketDescriptor socket, handles::NetworkHandle network) {
   DCHECK_NE(socket, kInvalidSocket);
   if (network == handles::kInvalidNetworkHandle)
     return ERR_INVALID_ARGUMENT;
+
+  if (handles::GetEmulateNetworkBindingForTesting()) {
+    return OK;
+  }
 
   int rv;
   static MarshmallowSetNetworkForSocket marshmallow_set_network_for_socket =

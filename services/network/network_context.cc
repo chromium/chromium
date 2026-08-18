@@ -4050,10 +4050,6 @@ void NetworkContext::SetVariationsHeaders(
   variations_headers_ = std::move(variations_headers);
 }
 
-void NetworkContext::SetExpectedTargetNetworkForTesting(
-    std::optional<int64_t> target_network) {
-  url_request_context_->set_expected_target_network_for_testing(target_network);
-}
 
 bool NetworkContext::HasCookieAccessForDeviceBoundSession(
     const net::device_bound_sessions::CookieAccessCheckParams& params) {

@@ -413,8 +413,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       const net::NetworkAnonymizationKey& network_anonymization_key) override {}
   void SetVariationsHeaders(
       variations::mojom::VariationsHeadersPtr variations_headers) override {}
-  void SetExpectedTargetNetworkForTesting(
-      std::optional<int64_t> target_network) override {}
 };
 
 }  // namespace network

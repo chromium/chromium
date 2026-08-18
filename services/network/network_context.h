@@ -625,9 +625,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void SetVariationsHeaders(
       variations::mojom::VariationsHeadersPtr variations_headers) override;
 
-  void SetExpectedTargetNetworkForTesting(
-      std::optional<int64_t> target_network) override;
-
   void GetDeviceBoundSessionManager(
       mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager) override;
