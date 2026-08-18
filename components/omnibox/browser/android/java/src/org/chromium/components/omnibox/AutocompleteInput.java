@@ -359,8 +359,8 @@ public class AutocompleteInput implements UserData {
     /**
      * Returns the supplier for the AutocompleteRequestType.
      *
-     * <p>Use sparingly - to install/remove observers. Readers should use {@see getRequestType()}.
-     * Writers should use {@see setRequestType()}.
+     * <p>Use sparingly - to install/remove observers. Readers should use {@link getRequestType()}.
+     * Writers should use {@link setRequestType()}.
      */
     public NonNullObservableSupplier<@AutocompleteRequestType Integer> getRequestTypeSupplier() {
         return mRequestTypeSupplier;
@@ -381,8 +381,8 @@ public class AutocompleteInput implements UserData {
     /**
      * Returns the supplier for the current keyword.
      *
-     * <p>Use sparingly - to install/remove observers. Readers should use {@see getKeyword()}.
-     * Writers should use {@see setSiteSearchData()}.
+     * <p>Use sparingly - to install/remove observers. Readers should use {@link getKeyword()}.
+     * Writers should use {@link setSiteSearchData()}.
      */
     public NullableObservableSupplier<SiteSearchData> getSiteSearchDataSupplier() {
         return mSiteSearchData;
@@ -719,8 +719,8 @@ public class AutocompleteInput implements UserData {
     /**
      * Returns the supplier for the AutocompleteState.
      *
-     * <p>Use sparingly - to install/remove observers. Readers should use {@see
-     * getAutocompleteState()}. Writers should use {@see setAutocompleteState()}.
+     * <p>Use sparingly - to install/remove observers. Readers should use {@link
+     * #getAutocompleteState()}. Writers should use {@link #setAutocompleteState()}.
      */
     public NonNullObservableSupplier<@AutocompleteState Integer> getAutocompleteStateSupplier() {
         return mAutocompleteStateSupplier;

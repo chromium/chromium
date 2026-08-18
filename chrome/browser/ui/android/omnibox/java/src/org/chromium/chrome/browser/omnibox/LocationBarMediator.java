@@ -3149,7 +3149,7 @@ class LocationBarMediator
         return mUrlHasFocus;
     }
 
-    /** {@see OmniboxStub#loadUrlFromVoice(String)} */
+    /** {@link OmniboxStub#loadUrlFromVoice(String)} */
     @Override
     public void loadUrlFromVoice(String query) {
         if (mAutocompleteCoordinator == null) return;

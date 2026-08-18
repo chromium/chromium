@@ -455,13 +455,13 @@ public class AutocompleteMatch {
         return mIsDeletable;
     }
 
-    /** {@return whether the match type is a search or url match to what the user typed} */
+    /** Returns whether the match type is a search or url match to what the user typed. */
     public static boolean isWhatYouTyped(@OmniboxSuggestionType int type) {
         return type == OmniboxSuggestionType.URL_WHAT_YOU_TYPED
                 || type == OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED;
     }
 
-    /** {@return whether the member match type is a search or url match to what the user typed} */
+    /** Returns whether the member match type is a search or url match to what the user typed. */
     public boolean isWhatYouTyped() {
         return isWhatYouTyped(mType);
     }
