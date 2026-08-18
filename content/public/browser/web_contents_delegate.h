@@ -512,6 +512,9 @@ class CONTENT_EXPORT WebContentsDelegate {
   // both the value set by the AWC API and browser's "native" resizability.
   virtual bool GetCanResize();
 
+  // Returns whether the window is pinned always-on-top.
+  virtual bool GetIsAlwaysOnTop();
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns whether the RFH can use Additional Windowing Controls (AWC) APIs.
   // https://github.com/explainers-by-googlers/additional-windowing-controls/blob/main/README.md

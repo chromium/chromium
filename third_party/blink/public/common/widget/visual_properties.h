@@ -110,6 +110,9 @@ struct BLINK_COMMON_EXPORT VisualProperties {
 
   bool resizable = true;
 
+  // Whether the window floats on top of other windows.
+  bool always_on_top = false;
+
   // The display mode.
   mojom::DisplayMode display_mode = mojom::DisplayMode::kUndefined;
 

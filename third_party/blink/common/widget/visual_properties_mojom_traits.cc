@@ -35,6 +35,7 @@ bool StructTraits<
   }
   out->auto_resize_enabled = data.auto_resize_enabled();
   out->resizable = data.resizable();
+  out->always_on_top = data.always_on_top();
   out->scroll_focused_node_into_view = data.scroll_focused_node_into_view();
   out->is_fullscreen_granted = data.is_fullscreen_granted();
   out->display_mode = data.display_mode();

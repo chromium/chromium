@@ -1142,6 +1142,12 @@ bool BrowserWebContentsDelegate::GetCanResize() {
   return window_->GetCanResize();
 }
 
+bool BrowserWebContentsDelegate::GetIsAlwaysOnTop() {
+  // TODO(https://crbug.com/546631275): Return true when this browser
+  // represents an always-on-top popup.
+  return false;
+}
+
 bool BrowserWebContentsDelegate::CanUseWindowingControls(
     content::RenderFrameHost* requesting_frame) {
   if (!app_browser_controller_) {

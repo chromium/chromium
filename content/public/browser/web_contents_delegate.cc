@@ -185,6 +185,10 @@ bool WebContentsDelegate::GetCanResize() {
   return false;
 }
 
+bool WebContentsDelegate::GetIsAlwaysOnTop() {
+  return false;
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool WebContentsDelegate::CanUseWindowingControls(
     RenderFrameHost* requesting_frame) {

@@ -17,4 +17,5 @@ struct WindowFeatures {
     bool has_height = false;
 
     bool is_popup = false;
+    bool always_on_top = false;
 };

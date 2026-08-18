@@ -120,6 +120,10 @@ bool RenderWidgetHostDelegate::GetResizable() {
 #endif
 }
 
+bool RenderWidgetHostDelegate::GetIsAlwaysOnTop() {
+  return false;
+}
+
 gfx::Rect RenderWidgetHostDelegate::GetWindowsControlsOverlayRect() const {
   return gfx::Rect();
 }

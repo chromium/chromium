@@ -5101,6 +5101,10 @@ bool WebContentsImpl::GetResizable() {
   return GetDelegate() && GetDelegate()->GetCanResize();
 }
 
+bool WebContentsImpl::GetIsAlwaysOnTop() {
+  return GetDelegate() && GetDelegate()->GetIsAlwaysOnTop();
+}
+
 void WebContentsImpl::FullscreenFrameSetUpdated() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::FullscreenFrameSetUpdated");

@@ -257,6 +257,9 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // desktopOSs and false for mobileOSs.
   virtual bool GetResizable();
 
+  // Returns whether the window is pinned always-on-top.
+  virtual bool GetIsAlwaysOnTop();
+
   // Returns the Window Control Overlay rectangle. Only applies to an
   // outermost main frame's widget. Other widgets always returns an empty rect.
   virtual gfx::Rect GetWindowsControlsOverlayRect() const;

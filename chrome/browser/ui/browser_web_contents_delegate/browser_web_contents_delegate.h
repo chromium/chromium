@@ -199,6 +199,7 @@ class BrowserWebContentsDelegate : public content::WebContentsDelegate {
                           scoped_refptr<content::FileSelectListener> listener,
                           const base::FilePath& path) override;
   bool GetCanResize() override;
+  bool GetIsAlwaysOnTop() override;
   bool CanUseWindowingControls(
       content::RenderFrameHost* requesting_frame) override;
   void MinimizeFromWebAPI() override;
