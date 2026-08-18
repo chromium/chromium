@@ -152,6 +152,7 @@ WebURLResponse WebURLResponse::Create(
   response.SetWasFetchedViaSPDY(head.was_fetched_via_spdy);
   response.SetWasFetchedViaServiceWorker(head.was_fetched_via_service_worker);
   response.SetFromSyntheticResponse(head.from_synthetic_response);
+  response.SetInterceptedByPlugin(head.intercepted_by_plugin);
   response.SetDidUseSharedDictionary(head.did_use_shared_dictionary);
   response.SetServiceWorkerResponseSource(head.service_worker_response_source);
   if (!head.service_worker_router_info.is_null()) {
@@ -493,6 +494,10 @@ bool WebURLResponse::FromSyntheticResponse() const {
 
 void WebURLResponse::SetFromSyntheticResponse(bool value) {
   resource_response_->SetFromSyntheticResponse(value);
+}
+
+void WebURLResponse::SetInterceptedByPlugin(bool value) {
+  resource_response_->SetInterceptedByPlugin(value);
 }
 
 network::mojom::FetchResponseSource

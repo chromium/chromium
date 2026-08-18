@@ -29,9 +29,11 @@
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/mime_handler/mime_handler_registry.h"
@@ -46,6 +48,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/url_constants.h"
 
 namespace extensions {
@@ -57,6 +60,11 @@ constexpr char kTestExtensionDir[] = "generic_mime_handler";
 constexpr char kTestPdfPath[] = "/test.pdf";
 constexpr char kHeaderProbePdfPath[] = "/header-probe.pdf";
 constexpr char kAuthTokenHeaderName[] = "X-Auth-Token";
+
+// A strict policy whose `default-src 'none'` fallback would block the
+// embedder document's inline styles absent the plugin-intercepted exemption.
+constexpr char kStrictCspHeader[] =
+    "default-src 'none'; img-src 'self'; media-src 'self'";
 
 // Serves `pdf_body` at kHeaderProbePdfPath with a mix of response headers:
 // CORS-safelisted ones (Content-Type via set_content_type, plus Cache-Control
@@ -139,16 +147,15 @@ class GenericMimeHandlerBrowserTest : public ExtensionApiTest {
     return extension_frame;
   }
 
-  // Loads the test extension, navigates to /test.pdf, blocks until
-  // handler.js calls `chrome.test.succeed()`, and returns the extension
-  // RFH (nullptr on failure). Also verifies the architectural invariant
-  // that the extension frame is a cross-origin iframe of a top-level
-  // embedder frame -- the scenario these tests target.
-  content::RenderFrameHost* LoadHandlerAndGetExtensionFrame() {
+  // Loads the test extension, navigates to `url` (a resource the handler
+  // intercepts), blocks until handler.js calls `chrome.test.succeed()`, and
+  // returns the extension RFH (nullptr on failure). Also verifies the
+  // architectural invariant that the extension frame is a cross-origin
+  // iframe of a top-level embedder frame -- the scenario these tests target.
+  content::RenderFrameHost* LoadHandlerAndGetExtensionFrame(const GURL& url) {
     EXPECT_TRUE(
         LoadExtension(test_data_dir_.AppendASCII("generic_mime_handler")));
-    EXPECT_TRUE(OpenTestURL(embedded_test_server()->GetURL("/test.pdf"),
-                            /*open_in_incognito=*/false));
+    EXPECT_TRUE(OpenTestURL(url, /*open_in_incognito=*/false));
     content::RenderFrameHost* extension_frame = FindMimeHandlerExtensionFrame();
     if (!extension_frame) {
       return nullptr;
@@ -160,6 +167,11 @@ class GenericMimeHandlerBrowserTest : public ExtensionApiTest {
     EXPECT_NE(extension_frame->GetLastCommittedOrigin(),
               embedder_frame->GetLastCommittedOrigin());
     return extension_frame;
+  }
+
+  content::RenderFrameHost* LoadHandlerAndGetExtensionFrame() {
+    return LoadHandlerAndGetExtensionFrame(
+        embedded_test_server()->GetURL(kTestPdfPath));
   }
 
  private:
@@ -237,6 +249,75 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
 
   // The non-safelisted header must be stripped.
   EXPECT_EQ(false, has_header("X-Auth-Token"));
+}
+
+// A PDF served with a strict Content-Security-Policy must still render at
+// full size. The response's CSP applies to the synthetic embedder document;
+// if its inline styles are dropped, the handler iframe collapses to the
+// replaced-element default 300x150 instead of filling the page.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       CSPDoesNotBlockEmbedderStyles) {
+  // The set-header-with-file default handler serves the shared test PDF with
+  // the strict CSP attached.
+  const GURL csp_pdf_url(embedded_test_server()->GetURL(
+      std::string("/set-header-with-file/chrome/test/data/pdf/test.pdf"
+                  "?Content-Security-Policy: ") +
+      kStrictCspHeader));
+  content::RenderFrameHost* extension_frame =
+      LoadHandlerAndGetExtensionFrame(csp_pdf_url);
+  ASSERT_TRUE(extension_frame);
+
+  // Cross-process frame geometry propagates asynchronously from the parent
+  // renderer's layout; wait for it before comparing bounds.
+  content::WaitForHitTestData(extension_frame);
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  const gfx::Rect embedder_rect =
+      web_contents->GetPrimaryMainFrame()->GetView()->GetViewBounds();
+  ASSERT_FALSE(embedder_rect.IsEmpty());
+  EXPECT_EQ(embedder_rect, extension_frame->GetView()->GetViewBounds());
+
+  // Vacuity guard: the site CSP must actually be enforced on the embedder
+  // document. `default-src 'none'` makes `connect-src` fall back to 'none',
+  // so a fetch() from the embedder must be blocked.
+  EXPECT_EQ(false,
+            content::EvalJs(
+                web_contents->GetPrimaryMainFrame(),
+                content::JsReplace("fetch($1).then(() => true, () => false)",
+                                   csp_pdf_url)));
+}
+
+// A blob: PDF's synthetic embedder document inherits its CSP from the
+// creator document rather than from response headers. The inherited
+// style-src 'none' must not break the embedder's inline styles either.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       InheritedCSPDoesNotBlockEmbedderStyles) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir)));
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
+                                              "/blob_pdf_iframe_csp.html")));
+
+  // Open the blob PDF in an iframe and wait for both the navigation and the
+  // handler's chrome.test.succeed().
+  ResultCatcher catcher;
+  content::TestNavigationObserver navigation_observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(web_contents->GetPrimaryMainFrame(),
+                              "openBlobPdfInIframe()"));
+  navigation_observer.Wait();
+  ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  // The synthetic embedder document committed in the iframe sets margin:0
+  // inline; without the exemption the inherited CSP drops it and the body
+  // regains the default 8px margin.
+  content::RenderFrameHost* embedder_host =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(embedder_host);
+  EXPECT_EQ("0px",
+            content::EvalJs(
+                embedder_host,
+                "getComputedStyle(document.body).getPropertyValue('margin')"));
 }
 
 // Verifies that a generic MIME handler with `can_embed: false` is selected

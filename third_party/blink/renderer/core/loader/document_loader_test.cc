@@ -23,6 +23,8 @@
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -961,6 +963,72 @@ TEST_P(DocumentLoaderTest, DecodedBodyDataWithBlockedParser) {
 
   // DecodedBodyLoader uppercases all data.
   EXPECT_EQ(MainFrame()->GetDocument().Body().TextContent(), "FOO");
+}
+
+// Commits `html` as `main_frame`'s document, optionally marking the response
+// plugin-intercepted as the browser does for responses claimed by a MIME
+// handler, and returns the committed document's body.
+Element* CommitHTMLForTest(WebLocalFrameImpl* main_frame,
+                           std::string_view html,
+                           bool intercepted_by_plugin) {
+  std::unique_ptr<WebNavigationParams> params =
+      WebNavigationParams::CreateWithHTMLStringForTesting(
+          base::span(html),
+          url_test_helpers::ToKURL("https://example.com/foo.html"));
+  params->response.SetInterceptedByPlugin(intercepted_by_plugin);
+  LocalFrame* local_frame = main_frame->GetFrame();
+  local_frame->Loader().CommitNavigation(std::move(params), nullptr);
+  frame_test_helpers::PumpPendingRequestsForFrameToLoad(main_frame);
+  return local_frame->GetDocument()->body();
+}
+
+// A document whose <meta> CSP forbids all inline style and whose body
+// carries an inline width. Whether the width applies discriminates the
+// plugin-intercepted inline-style exemption.
+constexpr char kInlineStylePageWithStrictCSP[] =
+    "<html><head><meta http-equiv=\"Content-Security-Policy\" "
+    "content=\"style-src 'none'\"></head>"
+    "<body style=\"width:100px\"></body></html>";
+
+// A plugin-intercepted response commits a browser-generated document whose
+// inline styles must be exempt from the CSP delivered with the intercepted
+// resource.
+TEST_P(DocumentLoaderTest, InterceptedByPluginAllowsInlineStyleUnderCSP) {
+  Element* body = CommitHTMLForTest(MainFrame(), kInlineStylePageWithStrictCSP,
+                                    /*intercepted_by_plugin=*/true);
+  ASSERT_TRUE(body);
+  EXPECT_EQ(100, body->OffsetWidth());
+}
+
+// Control for InterceptedByPluginAllowsInlineStyleUnderCSP: without the
+// plugin-intercepted bit, the same CSP must block the inline style. Guards
+// the test above from passing vacuously if the <meta> CSP were not applied.
+TEST_P(DocumentLoaderTest, CSPBlocksInlineStyleWithoutPluginInterception) {
+  Element* body = CommitHTMLForTest(MainFrame(), kInlineStylePageWithStrictCSP,
+                                    /*intercepted_by_plugin=*/false);
+  ASSERT_TRUE(body);
+  EXPECT_EQ(0, body->OffsetWidth());
+}
+
+// The exemption covers inline style only: a script-src policy on the same
+// plugin-intercepted document must still block inline script.
+TEST_P(DocumentLoaderTest, InterceptedByPluginKeepsScriptSrcEnforced) {
+  // Prove inline script executes in this harness, so the block below is
+  // CSP's doing rather than script being disabled.
+  Element* body = CommitHTMLForTest(
+      MainFrame(), "<body><script>document.title = 'ran';</script></body>",
+      /*intercepted_by_plugin=*/true);
+  ASSERT_TRUE(body);
+  ASSERT_EQ("ran", MainFrame()->GetFrame()->GetDocument()->title());
+
+  body = CommitHTMLForTest(
+      MainFrame(),
+      "<html><head><meta http-equiv=\"Content-Security-Policy\" "
+      "content=\"script-src 'none'\"></head>"
+      "<body><script>document.title = 'ran';</script></body></html>",
+      /*intercepted_by_plugin=*/true);
+  ASSERT_TRUE(body);
+  EXPECT_NE("ran", MainFrame()->GetFrame()->GetDocument()->title());
 }
 
 TEST_P(DocumentLoaderTest, EmbeddedCredentialsNavigation) {
