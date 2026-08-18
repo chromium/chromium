@@ -1712,19 +1712,18 @@ void ContextualSearchboxHandler::ClearFiles(
     tab_context_snapshot_.reset();
   }
 
-  // Clear all tab underlines related to only this surface:
-  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
-    if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
-      for (const auto& [token, handle] : selected_tabs) {
-        active_task_context_provider->RemoveLocalTabUnderline(
-            tabs::TabHandle(handle));
+  // Clear token-to-tab id pairs and local tab underlines if this function is
+  // due to the 'clear all' or close button being clicked (not on query
+  // submission).
+  if (!query_submitted) {
+    if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+      if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
+        for (const auto& [token, handle] : selected_tabs) {
+          active_task_context_provider->RemoveLocalTabUnderline(
+              tabs::TabHandle(handle));
+        }
       }
     }
-  }
-
-  // Clear token-to-tab id pairs if this function is due to the
-  // 'clear all' button being clicked.
-  if (!query_submitted) {
     selected_tabs.clear();
   }
 
