@@ -192,7 +192,9 @@ void FileSystemAccessFileHandleImpl::CreateFileWriter(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RunWithPermission(
-      FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
+      keep_existing_data
+          ? blink::mojom::FileSystemAccessPermissionMode::kReadWrite
+          : FileSystemAccessManagerImpl::GetEffectiveWritePermissionMode(),
       base::BindOnce(&FileSystemAccessFileHandleImpl::CreateFileWriterImpl,
                      weak_factory_.GetWeakPtr(), keep_existing_data, auto_close,
                      mode),
@@ -534,7 +536,8 @@ void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(
     blink::mojom::FileSystemAccessWritableFileStreamLockMode mode,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(GetEffectiveWritePermissionStatus(),
+  DCHECK_EQ(keep_existing_data ? GetReadWritePermissionStatus()
+                               : GetEffectiveWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
   // TODO(crbug.com/40194651): Expand this check to all backends.
@@ -610,7 +613,9 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
     return;
   }
 
-  if (GetEffectiveWritePermissionStatus() != PermissionStatus::GRANTED) {
+  if ((keep_existing_data ? GetReadWritePermissionStatus()
+                          : GetEffectiveWritePermissionStatus()) !=
+      PermissionStatus::GRANTED) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kPermissionDenied),
                             mojo::NullRemote());

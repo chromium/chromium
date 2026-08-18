@@ -530,6 +530,56 @@ TEST_F(FileSystemAccessFileHandleImplCreateFileWriterTest, WithAutoClose) {
       FileWriterCreationIs(FileSystemAccessStatus::kOk));
 }
 
+// Verifies that creating a file writer with `keep_existing_data = true`
+// requires read permission in addition to write permission.
+// This prevents a site from bypassing read permission revocation, e.g. after a
+// file is removed and recreated, by reading the existing file contents into a
+// swap file via `createWritable`.
+TEST_F(FileSystemAccessFileHandleImplCreateFileWriterTest,
+       CreateWritableWithKeepExistingDataRequiresReadAccess) {
+  base::FilePath file;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(dir_.GetPath(), &file));
+
+  auto handle = GetHandleWithPermissions(
+      file,
+      /*read_grant=*/deny_grant_,
+      /*write_grant=*/allow_grant_);
+
+  // When keep_existing_data is true, we should get kPermissionDenied because
+  // we don't have read access.
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future;
+  handle->CreateFileWriter(
+      /*keep_existing_data=*/true,
+      /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed,
+      future.GetCallback());
+  std::pair<blink::mojom::FileSystemAccessErrorPtr,
+            mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      writer_pair = future.Take();
+  EXPECT_THAT(writer_pair,
+              FileWriterCreationIs(FileSystemAccessStatus::kPermissionDenied));
+
+  // When keep_existing_data is false, the call should succeed because we
+  // have write access.
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      future_no_keep;
+  handle->CreateFileWriter(
+      /*keep_existing_data=*/false,
+      /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kSiloed,
+      future_no_keep.GetCallback());
+  std::pair<blink::mojom::FileSystemAccessErrorPtr,
+            mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      writer_pair_no_keep = future_no_keep.Take();
+  EXPECT_THAT(writer_pair_no_keep,
+              FileWriterCreationIs(FileSystemAccessStatus::kOk));
+}
+
 // TODO(crbug.com/40276567): Add test to cover that swap file is truncated when
 // `keep_existing_data` is false.
 
