@@ -229,10 +229,8 @@ void GlicProfileManager::DidSelectProfile(Profile* profile) {
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);
 
-  // Toggle glic but prevent close if it is already open for the selected
-  // profile.
-  service->ToggleUI(nullptr, /*prevent_close=*/true,
-                    mojom::InvocationSource::kProfilePicker);
+  // Show glic for the selected profile.
+  service->ShowUI(nullptr, mojom::InvocationSource::kProfilePicker);
 }
 
 void GlicProfileManager::OnProfileAdded(Profile* profile) {
