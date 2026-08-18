@@ -589,6 +589,30 @@ class ApiTests extends ApiTestFixtureBase {
         diff > 0.005 && diff < 0.3, `Zoom change is unexpected: diff=${diff}`);
   }
 
+  async testGetHostCapabilities() {
+    assertDefined(this.host.getHostCapabilities);
+    const capabilities: Set<HostCapability> =
+        await this.host.getHostCapabilities();
+    const expectedCapabilities: HostCapability[] = this.testParams ?? [];
+    assertTrue(
+        expectedCapabilities.every(
+            (expected: HostCapability) => capabilities.has(expected)),
+        `Expect each of ${
+            this.capabilitiesToString(expectedCapabilities)} is in ${
+            this.capabilitiesToString(Array.from(capabilities))}`);
+  }
+
+  private capabilitiesToString(capabilities: HostCapability[]): string {
+    return `[${capabilities.map(this.capabilityToString).join(',')}]`;
+  }
+
+  private capabilityToString(capability: HostCapability): string {
+    const capabilityName = HostCapability[capability];
+    if (capabilityName) {
+      return capabilityName;
+    }
+    throw new Error(`Unknown capability: ${capability}`);
+  }
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

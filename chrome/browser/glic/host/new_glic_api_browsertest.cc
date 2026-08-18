@@ -227,6 +227,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestWithSkillsDisabled",
       "NewGlicOnboardingApiTest",
       "NewGlicApiTestSystemSettingsTest",
+      "NewGlicGetHostCapabilityApiTest",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithFileUploadPolicyEnabled",
       "NewGlicApiTestWithNewTabDaisyChain",
@@ -2903,6 +2904,101 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPanelWillOpenBeforeClientReady) {
   ExecuteJsTest();
 }
 
+class NewGlicGetHostCapabilityApiTest : public GlicApiBrowserTest,
+                                        public WithTestParams,
+                                        public GlicApiTestPasskeys {
+ public:
+  NewGlicGetHostCapabilityApiTest()
+      : GlicApiBrowserTest("./new_glic_api_browsertest.js") {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlic, {}},
+        {features::kGlicProcessCounterAbuseVerdict, {}},
+        {features::kGlicWebContentsWarming,
+         {{features::kGlicWebContentsWarmingDelay.name, "7d"}}},
+        {features::kGlicRollout, {}},
+        {mojom::features::kGlicMultiTab, {}},
+        {features::kGlicWebActuationSetting, {}},
+        {features::kGlicCaptureRegion, {}},
+        {features::kGlicPopupWindowsEnabled, {}},
+        {features::kLogJsConsoleMessages, {}},
+        {features::kGlicUserStatusCheck,
+         {{features::kGlicUserStatusRefreshApi.name, "true"},
+          {features::kGlicUserStatusThrottleInterval.name, "2s"}}},
+        {features::kGlicOpenPasswordManagerSettingsPageApi, {}},
+        {features::kGlicActor,
+         {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+        {blink::features::kAIPageContentTrackedElementsIframe, {}},
+    };
+
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kGlicWarming,
+        features::kGlicDaisyChainNewTabs,
+        features::kGlicCountryFiltering,
+        features::kGlicLocaleFiltering,
+    };
+
+    if (GetParam().enable_scroll_to_pdf) {
+      enabled_features.push_back(
+          {features::kGlicScrollTo, {{"glic-scroll-to-pdf", "true"}}});
+    } else {
+      disabled_features.push_back(features::kGlicScrollTo);
+    }
+
+    if (GetParam().auto_open_pdf) {
+      enabled_features.push_back(
+          {features::kAutoOpenGlicForPdf,
+           {{"AutoOpenGlicForPdfWithOnboarding", "true"}}});
+    }
+
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicGetHostCapabilityApiTest,
+                       testGetHostCapabilities) {
+  tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab0);
+  NavigateTab(*tab0, GetTestUrl("page.html"));
+
+  base::ListValue expected_capabilities;
+  if (GetParam().enable_scroll_to_pdf) {
+#if BUILDFLAG(ENABLE_PDF)
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kScrollToPdf));
+#endif
+  }
+  if (GetParam().trust_first_onboarding_arm2) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm2));
+    service()->enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
+  }
+  if (GetParam().auto_open_pdf) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kPdfZeroState));
+  }
+  expected_capabilities.Append(
+      std::to_underlying(mojom::HostCapability::kInvoke));
+  if (!base::FeatureList::IsEnabled(features::kGlicLiveMode)) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kNoLiveMode));
+  }
+  if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kAutoLoginSignInWithGoogle));
+  }
+  if (base::FeatureList::IsEnabled(features::kGlicWebDragAndDropFileUpload)) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kImgWebDragDrop));
+  }
+
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest({.params = base::Value(std::move(expected_capabilities))});
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFails) {
   service()->enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
   glic::GlicHistogramTester histogram_tester;
@@ -4526,6 +4622,16 @@ INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTest,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    NewGlicGetHostCapabilityApiTest,
+    testing::Values(TestParams{},
+                    TestParams{.enable_scroll_to_pdf = true},
+                    TestParams{.trust_first_onboarding_arm2 = true},
+                    TestParams{.trust_first_onboarding_arm2 = true,
+                               .auto_open_pdf = true}),
+    &WithTestParams::PrintTestVariant);
 
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestNoFloatyOrLiveMode,

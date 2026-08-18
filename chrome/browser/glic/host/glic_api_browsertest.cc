@@ -1309,75 +1309,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
   ASSERT_FALSE(instance1->IsHibernated());
 }
 
-class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
- public:
-  GlicGetHostCapabilityApiTest()
-      : GlicApiTestWithOneTab(
-            {.fre_status = GetParam().onboarding_needed
-                               ? prefs::FreStatus::kNotStarted
-                               : prefs::FreStatus::kCompleted}) {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (GetParam().enable_scroll_to_pdf) {
-      enabled_features.push_back(
-          {features::kGlicScrollTo, {{"glic-scroll-to-pdf", "true"}}});
-    } else {
-      disabled_features.push_back(features::kGlicScrollTo);
-    }
-
-    enabled_features.push_back({features::kGlicMultiInstance, {}});
-    enabled_features.push_back({mojom::features::kGlicMultiTab, {}});
-    enabled_features.push_back({features::kGlicMultitabUnderlines, {}});
-
-    if (GetParam().auto_open_pdf) {
-      enabled_features.push_back(
-          {features::kAutoOpenGlicForPdf,
-           {{"AutoOpenGlicForPdfWithOnboarding", "true"}}});
-    }
-
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                       disabled_features);
-  }
-
-  ~GlicGetHostCapabilityApiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
-  base::ListValue expected_capabilities;
-  if (GetParam().enable_scroll_to_pdf) {
-#if BUILDFLAG(ENABLE_PDF)
-    expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kScrollToPdf));
-#endif
-  }
-  if (GetParam().onboarding_needed) {
-    expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm2));
-  }
-  if (GetParam().auto_open_pdf) {
-    expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kPdfZeroState));
-  }
-  expected_capabilities.Append(
-      std::to_underlying(mojom::HostCapability::kInvoke));
-  if (!base::FeatureList::IsEnabled(features::kGlicLiveMode)) {
-    expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kNoLiveMode));
-  }
-  if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
-    expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kAutoLoginSignInWithGoogle));
-  }
-  if (base::FeatureList::IsEnabled(features::kGlicWebDragAndDropFileUpload)) {
-    expected_capabilities.Append(
-        std::to_underlying(mojom::HostCapability::kImgWebDragDrop));
-  }
-  ExecuteJsTest({.params = base::Value(std::move(expected_capabilities))});
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testAdditionalContext) {
   // Runs the JS test until the first `advanceToNextStep()`.
@@ -1486,15 +1417,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithGeminiActOnWebPolicy,
   ContinueJsTest();
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicGetHostCapabilityApiTest,
-                         testing::Values(TestParams{},
-                                         TestParams{
-                                             .enable_scroll_to_pdf = true},
-                                         TestParams{.onboarding_needed = true},
-                                         TestParams{.onboarding_needed = true,
-                                                    .auto_open_pdf = true}),
-                         &WithTestParams::PrintTestVariant);
 
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});

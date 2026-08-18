@@ -525,19 +525,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testGetHostCapabilities() {
-    assertDefined(this.host.getHostCapabilities);
-    const capabilities: Set<HostCapability> =
-        await this.host.getHostCapabilities();
-    const expectedCapabilities: HostCapability[] = this.testParams ?? [];
-    assertTrue(
-        expectedCapabilities.every(
-            (expected: HostCapability) => capabilities.has(expected)),
-        `Expect each of ${
-            this.capabilitiesToString(expectedCapabilities)} is in ${
-            this.capabilitiesToString(Array.from(capabilities))}`);
-  }
-
   async testGetModelQualityClientIdFeatureEnabled() {
     assertDefined(this.host.getHostCapabilities);
     const capabilities: Set<HostCapability> =
@@ -695,18 +682,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.closePanel);
     await this.host.closePanel();
     await observeSequence(this.host.panelActive()).waitForValue(false);
-  }
-
-  private capabilitiesToString(capabilities: HostCapability[]): string {
-    return `[${capabilities.map(this.capabilityToString).join(',')}]`;
-  }
-
-  private capabilityToString(capability: HostCapability): string {
-    const capabilityName = HostCapability[capability];
-    if (capabilityName) {
-      return capabilityName;
-    }
-    throw new Error(`Unknown capability: ${capability}`);
   }
 }
 
