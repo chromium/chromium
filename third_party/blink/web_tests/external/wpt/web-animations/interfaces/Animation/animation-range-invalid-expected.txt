@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] range with font-relative units via string
+  assert_throws_js: function "() => {\n      target.animate({ width: "200px" }, options);\n    }" did not throw
+[FAIL] range with font-relative units via string in calc
+  assert_throws_js: function "() => {\n      target.animate({ width: "200px" }, options);\n    }" did not throw
+[FAIL] Range with font-relative units via typed CSSOM using CSSMathSum with range names
+  assert_throws_js: function "() => {\n      target.animate({ width: "200px" }, options);\n    }" did not throw
+[FAIL] Range with font-relative units via typed CSSOM using CSSMathSum without range names
+  assert_throws_js: function "() => {\n      target.animate({ width: "200px" }, options);\n    }" did not throw
+[FAIL] Range with font-relative units via direct typed CSSOM without range names
+  assert_throws_js: function "() => {\n      target.animate({ width: "200px" }, options);\n    }" did not throw
+[FAIL] Range with font-relative units via direct typed CSSOM using CSSMathSum with range names
+  assert_throws_js: function "() => {\n      target.animate({ width: "200px" }, options);\n    }" did not throw
+[FAIL] Range with invalid range name via dictionary
+  assert_throws_js: function "() => {\n      target.animate({ width: "200px" }, options);\n    }" did not throw
+[FAIL] Range with invalid range name with offset
+  assert_throws_js: function "() => {\n      target.animate({ width: "200px" }, options);\n    }" did not throw
+Harness: the test ran to completion.
+

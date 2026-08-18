@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] src = /images/green.png, display-none
+  assert_equals: lazy image has no natural width expected 0 but got 100
+[FAIL] src = /images/green.png, below-viewport
+  assert_equals: lazy image has no natural width expected 0 but got 100
+[FAIL] srcset = /images/green.png, display-none
+  assert_equals: lazy image has no natural width expected 0 but got 100
+[FAIL] srcset = /images/green.png, below-viewport
+  assert_equals: lazy image has no natural width expected 0 but got 100
+Harness: the test ran to completion.
+

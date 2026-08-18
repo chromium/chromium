@@ -2721,6 +2721,7 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-inline/text-box-trim/text-box-trim-first-line-pseudo-002.html [ Failure ]
 crbug.com/546278641 external/wpt/css/css-values/using-font-relative-units-in-font-properties.html [ Crash ]
 crbug.com/546159614 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
 crbug.com/546241037 external/wpt/css/css-borders/corner-shape/corner-shape-superellipse-concave.html [ Failure ]
@@ -9408,7 +9409,7 @@ crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_sc
 crbug.com/547617167 external/wpt/webdriver/tests/bidi/external/user_agent_client_hints/set_client_hints_override/user_contexts.py [ Failure Timeout ]
 crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/status_code.py [ Failure Timeout ]
 crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/bidi/network/provide_response/status_code.py [ Failure Timeout ]
-crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/bidi/script/add_preload_script/add_preload_script.py [ Failure Timeout Pass ]
+crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/bidi/script/add_preload_script/add_preload_script.py [ Failure Pass Timeout ]
 crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/bidi/script/call_function/invalid.py [ Failure Timeout ]
 crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/bidi/storage/delete_cookies/partition.py [ Failure Timeout ]
 crbug.com/547617167 [ Linux ] external/wpt/webdriver/tests/classic/element_send_keys/file_upload.py [ Failure Timeout ]
