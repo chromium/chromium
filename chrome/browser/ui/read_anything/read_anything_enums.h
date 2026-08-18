@@ -114,6 +114,7 @@ inline ReadAnythingOpenTrigger SidePanelToReadAnythingOpenTrigger(
 #endif
     case SidePanelOpenTrigger::kGlicOpened:
     case SidePanelOpenTrigger::kContextualTasks:
+    case SidePanelOpenTrigger::kPdfTranslation:
     case SidePanelOpenTrigger::kUnknown:
       return ReadAnythingOpenTrigger::kUnknown;
   }

@@ -26149,6 +26149,7 @@ Called by update_net_error_codes.py.-->
   <int value="30" label="Opened from context menu Listen to this page option"/>
   <int value="31" label="Opened from an unknown Read Anything trigger"/>
   <int value="32" label="Opened from an unknown trigger"/>
+  <int value="33" label="Opened from PDF translation"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/side_panel/side_panel_enums.h:SidePanelOpenTrigger) -->
