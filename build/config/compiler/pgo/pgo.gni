@@ -7,6 +7,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
+import("//build_overrides/build.gni")
 
 if (is_ios) {
   import("//build/config/apple/mobile_config.gni")
@@ -41,6 +42,14 @@ declare_args() {
   pgo_override_filename = ""
   pgo_gs_bucket = ""
   pgo_gs_bucket_path = ""
+
+  # Whether to use a dedicated PGO profile for the separate renderer binary.
+  # Defaults to true when enable_separate_renderer_binary is enabled.
+  # TODO(crbug.com/534570563): Remove this transient arg once the separate
+  # renderer binary rollout and performance validation is complete.
+  enable_separate_pgo =
+      build_with_chromium && defined(enable_separate_renderer_binary) &&
+      enable_separate_renderer_binary
 }
 
 declare_args() {

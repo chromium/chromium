@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_main_delegate.h"
+#include "chrome/app/llvm_profile_util.h"
 #include "content/public/app/content_main.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -42,6 +43,7 @@ DLLEXPORT int __cdecl ChromeRendererMain(
     int64_t exe_entry_point_ticks,
     int64_t preread_begin_ticks,
     int64_t preread_end_ticks) {
+  SetLLVMProfileProcessType(ProfileProcessType::kRenderer);
   install_static::InitializeFromPrimaryModule();
 
 #if !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
@@ -95,6 +97,7 @@ DLLEXPORT int __cdecl ChromeRendererMain(
 #elif BUILDFLAG(IS_POSIX)
 [[gnu::visibility("default")]] int ChromeRendererMain(int argc,
                                                       const char** argv) {
+  SetLLVMProfileProcessType(ProfileProcessType::kRenderer);
   ChromeMainDelegate chrome_main_delegate(
       {.exe_entry_point_ticks = base::TimeTicks::Now()});
   content::ContentMainParams params(&chrome_main_delegate);

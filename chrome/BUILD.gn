@@ -192,6 +192,8 @@ if (!is_android && !is_mac) {
         "app/chrome_exe_main_win.cc",
         "app/delay_load_failure_hook_win.cc",
         "app/delay_load_failure_hook_win.h",
+        "app/llvm_profile_util.cc",
+        "app/llvm_profile_util.h",
         "app/main_dll_loader_win.cc",
         "app/main_dll_loader_win.h",
       ]
@@ -203,6 +205,7 @@ if (!is_android && !is_mac) {
         ":visual_elements_resources",
         "//base",
         "//build:branding_buildflags",
+        "//build/config/compiler:compiler_buildflags",
         "//chrome/app:chrome_exe_main_exports",
         "//chrome/app:exit_code_watcher",
         "//chrome/app/version_assembly:chrome_exe_manifest",
@@ -558,7 +561,11 @@ if (is_win) {
       "CHROMIUM_CREATOR=$chrome_mac_creator_code",
     ]
 
-    sources = [ "app/chrome_exe_main_mac.cc" ]
+    sources = [
+      "app/chrome_exe_main_mac.cc",
+      "app/llvm_profile_util.cc",
+      "app/llvm_profile_util.h",
+    ]
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -569,6 +576,7 @@ if (is_win) {
       "//base:compiler_specific",
       "//base/allocator:early_zone_registration_apple",
       "//build:branding_buildflags",
+      "//build/config/compiler:compiler_buildflags",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
     ]
@@ -803,7 +811,11 @@ if (is_win) {
       if (_is_aperitif_helper) {
         sources += [ "app/chrome_exe_main_mac.c" ]
       } else {
-        sources += [ "app/chrome_exe_main_mac.cc" ]
+        sources += [
+          "app/chrome_exe_main_mac.cc",
+          "app/llvm_profile_util.cc",
+          "app/llvm_profile_util.h",
+        ]
       }
 
       configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -817,6 +829,7 @@ if (is_win) {
         "//base:compiler_specific",
         "//base/allocator:early_zone_registration_apple",
         "//build:branding_buildflags",
+        "//build/config/compiler:compiler_buildflags",
         "//chrome/common:version_header",
         "//sandbox/mac:seatbelt",
       ]
@@ -2040,6 +2053,8 @@ if (enable_separate_renderer_binary) {
     "app/chrome_main_delegate.cc",
     "app/chrome_main_delegate.h",
     "app/chrome_renderer_main.cc",
+    "app/llvm_profile_util.cc",
+    "app/llvm_profile_util.h",
     "app/startup_timestamps.h",
     "common/chrome_content_client.cc",
     "common/chrome_content_client.h",
@@ -2048,6 +2063,7 @@ if (enable_separate_renderer_binary) {
   _chrome_renderer_deps = [
     "//base",
     "//base:i18n",
+    "//build/config/compiler:compiler_buildflags",
     "//chrome/common",
     "//chrome/common:version_header",
     "//chrome/renderer",
@@ -2076,6 +2092,11 @@ if (enable_separate_renderer_binary) {
 
   if (is_win || is_mac) {
     shared_library("chrome_renderer") {
+      if (enable_separate_pgo) {
+        configs -= [ "//build/config/compiler/pgo:default_pgo_flags" ]
+        configs += [ "//build/config/compiler/pgo:renderer_pgo_flags" ]
+      }
+
       if (is_mac) {
         output_name = "renderer"
       }
@@ -2113,6 +2134,11 @@ if (enable_separate_renderer_binary) {
     }
   } else {
     executable("chrome_renderer") {
+      if (enable_separate_pgo) {
+        configs -= [ "//build/config/compiler/pgo:default_pgo_flags" ]
+        configs += [ "//build/config/compiler/pgo:renderer_pgo_flags" ]
+      }
+
       sources = _chrome_renderer_sources + [
                   "app/chrome_crash_reporter_client.cc",
                   "app/chrome_crash_reporter_client.h",

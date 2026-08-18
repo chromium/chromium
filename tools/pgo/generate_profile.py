@@ -31,6 +31,8 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import time
+import psutil
 import tempfile
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -145,6 +147,7 @@ class OptionsNamespace(argparse.Namespace):
     skip_profdata: bool
     run_public_benchmarks_only: bool
     temporal_trace_length: Optional[int]
+    separate_renderer_pgo: bool
     repeats: int
     verbose: int
     quiet: int
@@ -222,6 +225,12 @@ def parse_args():
         '--temporal-trace-length',
         type=int,
         help='Add flags necessary for temporal PGO (experimental).',
+    )
+    parser.add_argument(
+        '--separate-renderer-pgo',
+        action='store_true',
+        default=False,
+        help='Generate a separate PGO profile for the renderer binary.',
     )
     parser.add_argument(
         '-r',
@@ -486,6 +495,45 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
             cwd=_ROOT_DIR,
         )
 
+    # When using separate renderer binaries, child processes (e.g., renderers
+    # or helpers) need time to exit cleanly so that LLVM profile handlers
+    # write out all .profraw files before classification and merging begin.
+    if not args.dry_run:
+        builddir_abs = os.path.abspath(args.builddir).lower()
+        _LOGGER.info(
+            f"Waiting for all child processes in {args.builddir} to exit..."
+        )
+        max_wait_seconds = 30
+        start_time = time.time()
+        while time.time() - start_time < max_wait_seconds:
+            running_processes = []
+            for proc in psutil.process_iter(['name', 'exe', 'pid']):
+                try:
+                    exe_path = proc.info['exe']
+                    if exe_path and os.path.abspath(
+                        exe_path
+                    ).lower().startswith(builddir_abs):
+                        running_processes.append(proc.info['pid'])
+                except (
+                    psutil.NoSuchProcess,
+                    psutil.AccessDenied,
+                    psutil.ZombieProcess,
+                ):
+                    pass
+                except Exception:
+                    pass
+            if not running_processes:
+                break
+            _LOGGER.info(
+                f"Still waiting for child PIDs to exit: {running_processes}..."
+            )
+            time.sleep(1)
+        else:
+            _LOGGER.warning(
+                f"Timed out waiting for child processes to exit after "
+                f"{max_wait_seconds}s: {running_processes}"
+            )
+
     if args.skip_profdata:
         _LOGGER.info("Skipping profdata merging")
 
@@ -499,7 +547,37 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
     if not profraw_files:
         raise RuntimeError(f'No profraw files found in {profraw_path}')
 
-    run_profdata_merge(profdata_path, profraw_files, args)
+    if not args.separate_renderer_pgo:
+        run_profdata_merge(profdata_path, profraw_files, args)
+    else:
+        # Group profraw files by the prefix before the first '-' in their
+        # basename.
+        # e.g., 'default-12345.profraw' -> prefix 'default'
+        # e.g., 'renderer-12345.profraw' -> prefix 'renderer'
+        files_by_prefix = {}
+        for f in profraw_files:
+            filename = os.path.basename(f)
+            prefix = (
+                filename.split('-', 1)[0] if '-' in filename else filename[:-8]
+            )
+            files_by_prefix.setdefault(prefix, []).append(f)
+
+        # Process the 'default' (main browser process) files first
+        default_files = files_by_prefix.pop('default', [])
+        if default_files:
+            run_profdata_merge(profdata_path, default_files, args)
+        else:
+            raise RuntimeError(f'No browser profile files found for {name}')
+
+        # Perform one merge per remaining prefix
+        if files_by_prefix:
+            for prefix, prefix_files in files_by_prefix.items():
+                target_profdata_path = profdata_path.replace(
+                    '.profdata', f'_{prefix}.profdata'
+                )
+                run_profdata_merge(target_profdata_path, prefix_files, args)
+        else:
+            _LOGGER.warning(f'No non-default profile files found for {name}')
 
     # Test merge to prevent issues like: https://crbug.com/353702041
     with tempfile.NamedTemporaryFile() as f:
@@ -589,14 +667,60 @@ def run_benchmarks(benchmarks: List[Benchmark], args: OptionsNamespace):
     return fail_count
 
 
-def merge_profdata(profile_output_path: str, args: OptionsNamespace):
+def merge_profdata(
+    profile_output_path: str,
+    args: OptionsNamespace,
+    benchmarks: Optional[List[Benchmark]] = None,
+):
     _LOGGER.info(f"Merging all profdata files into: {profile_output_path}")
-    profdata_files = glob.glob(f'{args.profiledir}/*.profdata')
-    _LOGGER.debug(f"Found {len(profdata_files)} profdata files")
-    if not profdata_files:
-        raise RuntimeError(f'No profdata files found in {args.profiledir}')
+    all_profdata = glob.glob(f'{args.profiledir}/*.profdata')
 
-    run_profdata_merge(profile_output_path, profdata_files, args)
+    if not args.separate_renderer_pgo:
+        _LOGGER.debug(f"Found {len(all_profdata)} profdata files")
+        if not all_profdata:
+            raise RuntimeError(f'No profdata files found in {args.profiledir}')
+        run_profdata_merge(profile_output_path, all_profdata, args)
+    else:
+        benchmark_names = {b.name for b in benchmarks} if benchmarks else set()
+        default_profdata = []
+        files_by_prefix = {}
+        for f in all_profdata:
+            basename = os.path.basename(f)
+            stem = (
+                basename[: -len('.profdata')]
+                if basename.endswith('.profdata')
+                else basename
+            )
+            if stem in benchmark_names:
+                default_profdata.append(f)
+                continue
+            matched = False
+            for b_name in sorted(benchmark_names, key=len, reverse=True):
+                if stem.startswith(b_name + '_'):
+                    prefix = stem[len(b_name) + 1 :]
+                    files_by_prefix.setdefault(prefix, []).append(f)
+                    matched = True
+                    break
+            if not matched:
+                if '_' in stem:
+                    prefix = stem.split('_')[-1]
+                    files_by_prefix.setdefault(prefix, []).append(f)
+                else:
+                    default_profdata.append(f)
+
+        _LOGGER.debug(f"Found {len(default_profdata)} browser profdata files")
+        if not default_profdata:
+            raise RuntimeError(
+                f'No browser profdata files found in {args.profiledir}'
+            )
+        run_profdata_merge(profile_output_path, default_profdata, args)
+
+        for prefix, files in files_by_prefix.items():
+            _LOGGER.debug(f"Found {len(files)} {prefix} profdata files")
+            target_output_path = profile_output_path.replace(
+                '.profdata', f'_{prefix}.profdata'
+            )
+            run_profdata_merge(target_output_path, files, args)
 
     if args.temporal_trace_length:
         _LOGGER.info("Generating orderfile for temporal PGO")
@@ -729,7 +853,7 @@ def main():
         # files instead of profdata files.
         suffix = ".profraw" if args.isolated_script_test_output else ".profdata"
         profile_output_path = f'{args.outputdir}/profile{suffix}'
-        merge_profdata(profile_output_path, args)
+        merge_profdata(profile_output_path, args, benchmarks)
 
     if not args.keep_temps:
         _LOGGER.info(
