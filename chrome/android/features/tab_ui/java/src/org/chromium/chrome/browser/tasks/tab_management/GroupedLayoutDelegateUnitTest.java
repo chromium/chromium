@@ -223,6 +223,51 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testOnFaviconUpdated_InTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
+        when(mMediator.getIndexAndTabForTabGroupId(TAB_GROUP_ID)).thenReturn(new Pair<>(0, mTab1));
+
+        mDelegate.onFaviconUpdated(mTab1, null, null);
+
+        verify(mMediator).updateThumbnailFetcher(model, TAB1_ID);
+        verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
+    }
+
+    @Test
+    public void testOnFaviconUpdated_InTabGroup_NotFound() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mMediator.getIndexAndTabForTabGroupId(TAB_GROUP_ID)).thenReturn(null);
+
+        mDelegate.onFaviconUpdated(mTab1, null, null);
+
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
+        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testOnFaviconUpdated_NotInTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
+        PropertyModel model = createAndAddPropertyModel(TAB1_ID);
+
+        mDelegate.onFaviconUpdated(mTab1, null, null);
+
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
+        verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
+    }
+
+    @Test
+    public void testOnFaviconUpdated_NotInTabGroup_NotFound() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
+
+        mDelegate.onFaviconUpdated(mTab1, null, null);
+
+        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+    }
+
+    @Test
     public void testDidChangeTabGroupTitle() {
         String newTitle = "New Title";
         mDelegate.didChangeTabGroupTitle(TAB_GROUP_ID, newTitle);

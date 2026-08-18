@@ -169,6 +169,22 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testOnFaviconUpdated() {
+        PropertyModel model = addTabToModelList(TAB1_ID, null);
+
+        mDelegate.onFaviconUpdated(mTab1, null, null);
+
+        verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
+    }
+
+    @Test
+    public void testOnFaviconUpdated_NotFound() {
+        mDelegate.onFaviconUpdated(mTab1, null, null);
+
+        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+    }
+
+    @Test
     public void testDidChangeTabGroupTitle() {
         mDelegate.didChangeTabGroupTitle(TAB_GROUP_ID, "New Title");
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);

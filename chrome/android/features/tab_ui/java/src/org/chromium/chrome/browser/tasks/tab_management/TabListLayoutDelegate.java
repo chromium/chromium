@@ -7,14 +7,18 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 
+import android.graphics.Bitmap;
+
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 /**
  * Abstract delegate handler for {@link TabGroupObserver} callbacks. Layout-specific subclasses
@@ -78,6 +82,19 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
 
         mMediator.addTabCardToModel(tab, newIndex);
         return newIndex;
+    }
+
+    /**
+     * Updates the favicon for a tab or its representing card when the favicon changes.
+     *
+     * @param updatedTab The {@link Tab} whose favicon was updated.
+     * @param icon The updated favicon {@link Bitmap}, or null.
+     * @param iconUrl The {@link GURL} of the updated favicon, or null.
+     */
+    void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
+        @Nullable PropertyModel model = mModelList.getModelFromTabId(updatedTab.getId());
+        if (model == null) return;
+        mMediator.updateFaviconForTab(model, updatedTab, icon, iconUrl);
     }
 
     @Override

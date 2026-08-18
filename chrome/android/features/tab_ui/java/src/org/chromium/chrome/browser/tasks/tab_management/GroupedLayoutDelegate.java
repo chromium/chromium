@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.graphics.Bitmap;
 import android.util.Pair;
 
 import org.chromium.base.Token;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -98,6 +100,25 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         // Get the position of the nth tab card ignoring any other CARD_TYPE entries present in the
         // model list outside of TAB, TAB_GROUP, and ARCHIVED_TAB_GROUP.
         return mModelList.indexOfNthTabCard(tabIndex);
+    }
+
+    @Override
+    void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
+        if (mMediator.isTabInTabGroup(updatedTab)) {
+            @Nullable Pair<Integer, Tab> indexAndTab =
+                    mMediator.getIndexAndTabForTabGroupId(updatedTab.getTabGroupId());
+            if (indexAndTab == null) return;
+
+            PropertyModel model = mModelList.get(indexAndTab.first).model;
+            Tab representativeTab = indexAndTab.second;
+
+            if (mThumbnailProvider != null) {
+                mMediator.updateThumbnailFetcher(model, representativeTab.getId());
+            }
+            mMediator.updateFaviconForTab(model, representativeTab, icon, iconUrl);
+        } else {
+            super.onFaviconUpdated(updatedTab, icon, iconUrl);
+        }
     }
 
     @Override

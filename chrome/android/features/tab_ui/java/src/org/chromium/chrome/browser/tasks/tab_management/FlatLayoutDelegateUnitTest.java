@@ -126,6 +126,23 @@ public class FlatLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testOnFaviconUpdated() {
+        addTabsToModelList(TAB1_ID);
+        PropertyModel model = mModelList.get(0).model;
+
+        mDelegate.onFaviconUpdated(mTab1, null, null);
+
+        verify(mMediator).updateFaviconForTab(model, mTab1, null, null);
+    }
+
+    @Test
+    public void testOnFaviconUpdated_NotFound() {
+        mDelegate.onFaviconUpdated(mTab1, null, null);
+
+        verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+    }
+
+    @Test
     public void testDidChangeTabGroupTitle_NoOp() {
         mDelegate.didChangeTabGroupTitle(TAB_GROUP_ID, "New Title");
 

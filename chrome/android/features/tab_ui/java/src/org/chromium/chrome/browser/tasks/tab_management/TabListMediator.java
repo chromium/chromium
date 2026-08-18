@@ -670,27 +670,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
                     assert mShowingTabs;
 
-                    @Nullable PropertyModel tabInfo;
-                    @Nullable Tab tab;
-                    if (mLayoutType == TabListLayoutType.GROUPED && isTabInTabGroup(updatedTab)) {
-                        @Nullable Pair<Integer, Tab> indexAndTab =
-                                getIndexAndTabForTabGroupId(updatedTab.getTabGroupId());
-                        if (indexAndTab == null) return;
-
-                        tabInfo = mModelList.get(indexAndTab.first).model;
-                        tab = indexAndTab.second;
-
-                        if (mThumbnailProvider != null) {
-                            updateThumbnailFetcher(tabInfo, tab.getId());
-                        }
-                    } else {
-                        tabInfo = mModelList.getModelFromTabId(updatedTab.getId());
-                        if (tabInfo == null) return;
-
-                        tab = updatedTab;
-                    }
-
-                    updateFaviconForTab(tabInfo, tab, icon, iconUrl);
+                    mTabListLayoutDelegate.onFaviconUpdated(updatedTab, icon, iconUrl);
                 }
 
                 @Override
