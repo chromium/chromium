@@ -152,6 +152,21 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
         documentId,
       },
     },
+    {
+      label: 'onCompleted-P',
+      event: 'onCompleted',
+      details: {
+        url,
+        method: 'OPTIONS',
+        ip: '127.0.0.1',
+        fromCache: false,
+        statusCode: 200,
+        statusLine: 'HTTP/1.1 200 OK',
+        initiator,
+        type,
+        documentId,
+      },
+    },
   ];
   const eventOrderForPreflight = [
     'onBeforeRequest-P',
@@ -159,11 +174,8 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
     'onSendHeaders-P',
     'onHeadersReceived-P',
     'onResponseStarted-P',
+    'onCompleted-P',
   ];
-  // The completion event of the preflight request coming from the network OR
-  // The cancellation event of the preflight request coming from the CORS module
-  // should arrive, but we are not sure which comes first - that is essentially
-  // racy, so we cannot have an expecation here.
 
   // First, onBeforeRequest is called for the actual request, and then the
   // preflight request is made. As there is no 'access-control-allow-headers'
@@ -174,20 +186,31 @@ function setExpectationsForObservablePreflight(extraInfoSpec) {
       label: 'onBeforeRequest',
       event: 'onBeforeRequest',
       details: {
-        url: url,
+        url,
         method: 'GET',
         initiator,
-        type: 'xmlhttprequest',
-        frameUrl: 'unknown frame URL',
-        documentId: 1,
+        type,
+        frameUrl,
+        documentId,
       },
     },
-  ].concat(eventsForPreflight);
-  const eventOrder = ['onBeforeRequest'].concat(eventOrderForPreflight);
-
-  // We should see the cancellation of the actual request, but we cannot
-  // have that expecation here because we don't have an expecation on
-  // the completion of the preflight request. See above.
+    ...eventsForPreflight,
+    {
+      label: 'onErrorOccurred',
+      event: 'onErrorOccurred',
+      details: {
+        url,
+        method: 'GET',
+        error: 'net::ERR_FAILED',
+        initiator,
+        type,
+        fromCache: false,
+        documentId,
+      },
+    },
+  ];
+  const eventOrder =
+      ['onBeforeRequest', ...eventOrderForPreflight, 'onErrorOccurred'];
 
   expect(
       events,
@@ -560,7 +583,7 @@ function registerOnBeforeRequestAndOnErrorOcurredListeners() {
 const SCRIPT_URL = '_test_resources/api_test/webrequest/framework.js';
 const loadScript = chrome.test.loadScript(SCRIPT_URL);
 
-loadScript.then(async function() {
+loadScript.then(function() {
   runTests([
     function testOriginHeader() {
       // Register two sets of listener. One with extraHeaders and the second one
