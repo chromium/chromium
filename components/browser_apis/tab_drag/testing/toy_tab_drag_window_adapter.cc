@@ -27,7 +27,7 @@ gfx::Rect ToyTabDragWindowAdapter::GetBoundsInScreen() const {
   return bounds_;
 }
 
-bool ToyTabDragWindowAdapter::IsDraggingEntireWindow(
+bool ToyTabDragWindowAdapter::ShouldDragWholeWindow(
     size_t dragged_tab_count) const {
   return dragged_tab_count == tab_count_;
 }

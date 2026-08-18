@@ -87,7 +87,7 @@ class TabDragSession {
 
   // Attached mode handlers
   void HandleMoveWhileAttached(const gfx::Point& screen_point);
-  bool IsDraggingEntireWindow() const;
+  bool ShouldDragWholeWindow() const;
   bool ShouldTearOff(const gfx::Point& screen_point) const;
   void DetachAndStartWindowDrag(const gfx::Point& screen_point);
   void StartWindowDrag(TabDragWindowId window_id,

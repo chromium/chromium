@@ -48,7 +48,7 @@ base::expected<void, mojo_base::mojom::ErrorPtr> TabDragSession::Start() {
       dragged_tabs_, dragged_window_, start_point_in_screen_,
       tab_original_offset_x_);
 
-  if (IsDraggingEntireWindow()) {
+  if (ShouldDragWholeWindow()) {
     StartWindowDrag(dragged_window_, start_point_in_screen_);
   }
 
@@ -150,7 +150,7 @@ void TabDragSession::HandleMovedEvent(const gfx::Point& screen_point) {
 }
 
 void TabDragSession::HandleMoveWhileAttached(const gfx::Point& screen_point) {
-  if (IsDraggingEntireWindow()) {
+  if (ShouldDragWholeWindow()) {
     StartWindowDrag(dragged_window_, screen_point);
     return;
   }
@@ -162,12 +162,12 @@ void TabDragSession::HandleMoveWhileAttached(const gfx::Point& screen_point) {
   }
 }
 
-bool TabDragSession::IsDraggingEntireWindow() const {
+bool TabDragSession::ShouldDragWholeWindow() const {
   TabDragWindowAdapter* source_window = registry()->Get(dragged_window_);
   if (!source_window) {
     return false;
   }
-  return source_window->IsDraggingEntireWindow(dragged_tabs_.size());
+  return source_window->ShouldDragWholeWindow(dragged_tabs_.size());
 }
 
 bool TabDragSession::ShouldTearOff(const gfx::Point& screen_point) const {
