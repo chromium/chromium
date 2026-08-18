@@ -1,7 +1,7 @@
 Name: BoringSSL
 URL: https://boringssl.googlesource.com/boringssl
 Version: N/A
-Revision: defe5810ee8be430bcdeccf46a199bec0e93abdb
+Revision: bb2b3174e6d48a32f07f1f3e100f68f3239ebb3f
 Update Mechanism: Autoroll
 License: Apache-2.0, BSD-3-Clause
 License File: src/LICENSE
