@@ -390,7 +390,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      * This method measures and lays out the avatar view, registers the avatar resource and triggers
      * an update to the group title bitmap
      *
-     * @params avatarView The Android view of the avatar.
+     * @param avatarView The Android view of the avatar.
      * @param registerAvatarResource A callback to register the avatar resource once it is captured.
      * @param updateGroupTitleBitmap A {@link Runnable} to update the group title bitmap after the
      *     avatar is captured.

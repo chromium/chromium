@@ -120,7 +120,7 @@ public class DateOrderedListCoordinator implements ToolbarCoordinator.ToolbarLis
      * @param dateOrderedListObserver A {@link DateOrderedListObserver}.
      * @param modalDialogManager A {@link ModalDialogManager}.
      * @param helpPageLauncher A helper to launch a URL in a CCT for the appropriate Profile.
-     * @param discardableReferencePool A {@linK DiscardableReferencePool} reference to use for large
+     * @param discardableReferencePool A {@link DiscardableReferencePool} reference to use for large
      *     objects (e.g. bitmaps) in the UI.
      */
     public DateOrderedListCoordinator(

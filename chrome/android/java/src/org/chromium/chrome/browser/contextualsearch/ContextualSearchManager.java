@@ -104,7 +104,7 @@ import java.util.function.Supplier;
  *
  * <p>There is a native class corresponding to this class that communicates with the server through
  * a delegate. The server interaction is vectored through an interface to allow a stub for testing
- * in {@Link ContextualSearchNetworkCommunicator}.
+ * in {@link ContextualSearchNetworkCommunicator}.
  *
  * <p>The lifetime of this class corresponds to the Activity, and this class creates and owns a
  * {@link ContextualSearchPanel} with the same lifetime.

@@ -187,7 +187,7 @@ class DateOrderedListMediator implements BackPressHandler {
      * @param config A {@link DownloadManagerUiConfig} to provide UI config params.
      * @param dateOrderedListObserver An observer of the list and recycler view.
      * @param model The {@link ListItemModel} to push {@code provider} into.
-     * @param discardableReferencePool A {@linK DiscardableReferencePool} reference to use for large
+     * @param discardableReferencePool A {@link DiscardableReferencePool} reference to use for large
      *     objects (e.g. bitmaps) in the UI.
      */
     public DateOrderedListMediator(

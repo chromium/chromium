@@ -84,7 +84,7 @@ public class FacilitatedPaymentsFopSelectorScreen implements FacilitatedPayments
     /**
      * The {@link PropertyModel} for the FOP selector has a single property:
      *
-     * <p>SCREEN_ITEMS: A {@Llink ModelList} to which items of different view types can be added to
+     * <p>SCREEN_ITEMS: A {@link ModelList} to which items of different view types can be added to
      * show them in a list. To show a new view type, register it with the adapter.
      */
     @Override

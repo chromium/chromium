@@ -113,7 +113,7 @@ public final class TabGroupSyncUtils {
         unmapLocalIdsNotInTabModelList(tabGroupSyncService, Collections.singletonList(tabModel));
     }
 
-    /** Same as {@Link #unmapLocalIdsNotInTabModel} only with a list of tab models. */
+    /** Same as {@link #unmapLocalIdsNotInTabModel} only with a list of tab models. */
     public static void unmapLocalIdsNotInTabModelList(
             TabGroupSyncService tabGroupSyncService, List<TabModel> tabModelList) {
         for (TabModel tabModel : tabModelList) {

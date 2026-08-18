@@ -853,8 +853,8 @@ public class ReaderModeManager extends EmptyTabObserver
      * @param isDistillable Whether the tab is considered distillable.
      * @param isMobileOptimized Whether the tab is considered optimized for mobile.
      * @param isLast Whether this is the last signal we'll get for the tab.
-     * @returns A pair which contains: pair.first - Whether distillability has been fully
-     *     determined. pair.second - The current distillation status.
+     * @return A pair which contains: pair.first - Whether distillability has been fully determined.
+     *     pair.second - The current distillation status.
      */
     public static Pair<Boolean, Integer> computeDistillationStatus(
             Tab tab, boolean isDistillable, boolean isMobileOptimized, boolean isLast) {

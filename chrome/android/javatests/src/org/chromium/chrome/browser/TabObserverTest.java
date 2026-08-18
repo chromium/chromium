@@ -45,7 +45,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class TabObserverTest {
-    /** A {@Link TabObserver} that has callback helpers for each event. */
+    /** A {@link TabObserver} that has callback helpers for each event. */
     private static class TestTabObserver extends EmptyTabObserver {
         private final CallbackHelper mInteractabilityHelper = new CallbackHelper();
         private final CallbackHelper mUrlUpdatedHelper = new CallbackHelper();

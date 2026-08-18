@@ -39,7 +39,7 @@ public class EdgeToEdgeControllerFactory {
      *
      * @param activity The Android {@link Activity} to allow drawing under System Bars.
      * @param windowAndroid The current {@link WindowAndroid} to allow drawing under System Bars.
-     * @param tabObservableSupplier Supplies an {@Link Observer} that is notified whenever the Tab
+     * @param tabObservableSupplier Supplies an {@link Observer} that is notified whenever the Tab
      *     changes.
      * @param edgeToEdgeManager Provides the edge-to-edge state and allows for requests to draw
      *     edge-to-edge.

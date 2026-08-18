@@ -186,7 +186,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
     }
 
     /**
-     * Sets Supplier for {@lnk ModalDialogManager} used to display {@link
+     * Sets Supplier for {@link ModalDialogManager} used to display {@link
      * AutofillDeletePaymentMethodConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(

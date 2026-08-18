@@ -285,7 +285,7 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
     }
 
     /**
-     * Converts {@param eventX} from a fresh {@plink MotionEvent} from being relative to {@link
+     * Converts {@param eventX} from a fresh {@link MotionEvent} from being relative to {@link
      * #mFromView} to relative to Inner.
      */
     private float fixEventX(float eventX) {

@@ -1047,7 +1047,7 @@ public class FeedSurfaceCoordinator
     }
 
     /**
-     * Creates a flavor {@Link FeedStream} without any other side-effects.
+     * Creates a flavor {@link FeedStream} without any other side-effects.
      *
      * @param kind Kind of stream being created.
      * @return The FeedStream created.

@@ -147,12 +147,12 @@ public class ContextMenuManager {
         @Nullable String getContextMenuTitle();
 
         /**
-         * @returns Whether the given menu item is supported.
+         * @return Whether the given menu item is supported.
          */
         boolean isItemSupported(@ContextMenuItemId int menuItemId);
 
         /**
-         * @returns Whether there exists enough space for pinned shortcut addition.
+         * @return Whether there exists enough space for pinned shortcut addition.
          */
         boolean hasSpaceForPinnedShortcut();
 

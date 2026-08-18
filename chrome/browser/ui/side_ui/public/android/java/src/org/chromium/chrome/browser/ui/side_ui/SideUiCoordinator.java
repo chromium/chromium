@@ -295,7 +295,7 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      * Registers a {@link SideUiContainer} to be maintained by this coordinator.
      *
      * @param sideUiContainer The {@link SideUiContainer} to register.
-     * @throw IllegalArgumentException if the given sideUiContainer has conflicts with the existing
+     * @throws IllegalArgumentException if the given sideUiContainer has conflicts with the existing
      *     ones, such as duplicated {@link SideUiId} or {@link AnchorSide}.
      */
     void registerSideUiContainer(SideUiContainer sideUiContainer);

@@ -126,7 +126,7 @@ public class TabListEditorCoordinator {
     /** An interface to control the TabListEditor. */
     public interface TabListEditorController extends BackPressHandler {
         /**
-         * Shows the TabListEditor with the given {@Link Tab}s.
+         * Shows the TabListEditor with the given {@link Tab}s.
          *
          * @param tabs List of {@link Tab}s to show.
          * @param tabGroupSyncIds List of syncIds tied to {@link SavedTabGroup}s to be shown.

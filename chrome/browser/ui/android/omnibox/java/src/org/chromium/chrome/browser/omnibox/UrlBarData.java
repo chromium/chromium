@@ -108,7 +108,7 @@ public class UrlBarData {
      *     Spanned} that contains formatting to highlight parts of the display text
      * @param editingText the text that should replace the display text when editing the contents of
      *     the URL bar, or null to use the {@link #displayText} when editing
-     * @returns new instance of UrlBarData, possibly UrlBarData.EMPTY if all supplied parameters are
+     * @return new instance of UrlBarData, possibly UrlBarData.EMPTY if all supplied parameters are
      *     null, empty, or invalid.
      */
     public static UrlBarData forUrlAndText(
