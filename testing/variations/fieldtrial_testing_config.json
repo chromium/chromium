@@ -2989,6 +2989,27 @@
             ]
         }
     ],
+    "AutofillEnableResurrectingPaymentsUsers": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Security",
+                    "params": {
+                        "autofill_enable_resurrecting_payments_churned_users_treatment": "1"
+                    },
+                    "enable_features": [
+                        "AutofillEnableResurrectingPaymentsUsers"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableSaveAndFill": [
         {
             "platforms": [
