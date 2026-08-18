@@ -104,8 +104,6 @@ class PdfInfoBarController : public infobars::InfoBarManager::Observer {
   // InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
 
-  void set_action_taken(bool action_taken) { action_taken_ = action_taken; }
-
   // Shows the PDF infobar if:
   // * `default_state` indicates that Chrome (including other channels) is not
   //   the default PDF viewer
@@ -154,9 +152,6 @@ class PdfInfoBarController : public infobars::InfoBarManager::Observer {
   static std::optional<bool> higher_priority_infobar_shown_;
 
   ui::ScopedUnownedUserData<PdfInfoBarController> scoped_unowned_user_data_;
-
-  // Tracks whether user action has been taken on the infobar.
-  bool action_taken_ = false;
 
   // Must be the last member variable.
   base::WeakPtrFactory<PdfInfoBarController> weak_factory_{this};
