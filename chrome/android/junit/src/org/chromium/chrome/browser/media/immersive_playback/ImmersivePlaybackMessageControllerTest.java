@@ -94,6 +94,19 @@ public class ImmersivePlaybackMessageControllerTest {
     }
 
     @Test
+    public void testShow_EnqueuesMessageWithIcon() {
+        mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher)
+                .enqueueMessage(
+                        messageCaptor.capture(), any(), eq(MessageScopeType.NAVIGATION), eq(false));
+        PropertyModel messageModel = messageCaptor.getValue();
+        Assert.assertEquals(
+                R.drawable.ic_panorama_horizontal_24dp,
+                messageModel.get(MessageBannerProperties.ICON_RESOURCE_ID));
+    }
+
+    @Test
     public void testActionClicks_OpensDialog() {
         mController.show(mCallback, ImmersiveStereoMode.MONO, ImmersiveProjectionType.QUAD);
 

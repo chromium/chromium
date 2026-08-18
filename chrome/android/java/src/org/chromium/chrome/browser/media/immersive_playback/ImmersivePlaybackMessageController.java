@@ -172,6 +172,9 @@ public class ImmersivePlaybackMessageController {
                         .with(
                                 MessageBannerProperties.MESSAGE_IDENTIFIER,
                                 MessageIdentifier.IMMERSIVE_PLAYBACK_CONFIRMATION)
+                        .with(
+                                MessageBannerProperties.ICON_RESOURCE_ID,
+                                R.drawable.ic_panorama_horizontal_24dp)
                         .with(MessageBannerProperties.TITLE, title)
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, buttonText)
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::handlePrimaryAction)
