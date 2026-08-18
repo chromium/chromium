@@ -178,6 +178,16 @@ Response EmulationHandler::Disable() {
   user_agent_ = std::string();
   if (device_emulation_enabled_) {
     device_emulation_enabled_ = false;
+    // Restore the view size changed by SetDeviceMetricsOverride(), as
+    // ClearDeviceMetricsOverride() does. Otherwise a client that disconnects
+    // without clearing its override leaves the view at the emulated size, and
+    // WebContentsImpl::GetSizeForMainFrame() keeps applying it.
+    if (host_) {
+      WebContentsImpl* web_contents = GetWebContents();
+      if (web_contents && !web_contents->IsBeingDestroyed()) {
+        web_contents->ClearDeviceEmulationSize();
+      }
+    }
     if (screen_orientation_lock_emulation_enabled_) {
       screen_orientation_lock_emulation_enabled_ = false;
       UpdateScreenOrientationEmulation(false);

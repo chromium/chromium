@@ -1,0 +1,5 @@
+Tests that the view size set by Emulation.setDeviceMetricsOverride is restored when the session disconnects without clearing the override.
+Size with override: 400x300
+Disconnecting session without clearing the override
+Size restored after disconnect: true
+
