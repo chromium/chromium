@@ -205,9 +205,11 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_MINIMUM_WIDTH,
   // Corner radius for Block-style Action App Menu section container cards.
   DISTANCE_ACTION_APP_MENU_CONTAINER_CORNER_RADIUS,
-  // Top padding for the first item in a Block-style Action App Menu section card.
+  // Top padding for the first item in a Block-style Action App Menu section
+  // card.
   DISTANCE_ACTION_APP_MENU_ITEM_FIRST_TOP_PADDING,
-  // Bottom padding for the last item in a Block-style Action App Menu section card.
+  // Bottom padding for the last item in a Block-style Action App Menu section
+  // card.
   DISTANCE_ACTION_APP_MENU_ITEM_LAST_BOTTOM_PADDING,
   // Default vertical margin for Block-style Action App Menu items.
   DISTANCE_ACTION_APP_MENU_ITEM_DEFAULT_VERTICAL_MARGIN,
@@ -215,6 +217,12 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_ICON_SIZE,
   // Full height of a Block-style Action App Menu item row.
   DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT,
+  // Width of a block-style entry in the Action App Menu.
+  DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH,
+  // Height of a block-style entry in the Action App Menu.
+  DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT,
+  // Size of vector icon inside a block-style entry.
+  DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE,
 };
 
 class ChromeLayoutProvider : public views::LayoutProvider {

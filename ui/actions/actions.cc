@@ -40,6 +40,11 @@ DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<ActionPinnableState>,
                              std::underlying_type_t<ActionPinnableState>(
                                  ActionPinnableState::kNotPinnable))
 
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kShortTitleTextKeyInternal)
+
+const ui::ClassProperty<std::u16string*>* const kShortTitleTextKey =
+    kShortTitleTextKeyInternal;
+
 ActionList::ActionList(Delegate* delegate) : delegate_(delegate) {}
 
 ActionList::~ActionList() = default;

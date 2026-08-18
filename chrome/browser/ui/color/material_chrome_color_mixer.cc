@@ -366,6 +366,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorAppMenuYourChromeBackground] = {ui::kColorSysTonalContainer};
   mixer[kColorAppMenuToolsAndActionsBackground] = {
       ui::kColorSysNeutralContainer};
+  mixer[kColorAppMenuBlockButtonBackground] = {ui::kColorSysSurface};
+  mixer[kColorAppMenuBlockButtonBackgroundHovered] = {
+      ui::kColorSysTonalContainer};
+  mixer[kColorAppMenuBlockButtonBorder] = {ui::kColorSysInversePrimary};
+  mixer[kColorAppMenuBlockButtonForeground] = {ui::kColorSysPrimary};
   mixer[kColorAvatarButtonHighlightSyncPaused] = {
       kColorAvatarButtonHighlightDefault};
   mixer[kColorAvatarButtonHighlightPasskeysLocked] = {

@@ -1050,6 +1050,9 @@ void BrowserActions::InitializeChromeMenuActions() {
           features::IsRoundedIconsEnabled() ? kIncognitoIcon
                                             : kIncognitoRefreshMenuOldIcon)
           .SetEnabled(IncognitoModePrefs::IsIncognitoAllowed(profile))
+          .SetProperty(actions::kShortTitleTextKey,
+                       new std::u16string(
+                           l10n_util::GetStringUTF16(IDS_APP_MENU_INCOGNITO)))
           .Build());
 
   root_action_item_->AddChild(
@@ -2085,6 +2088,15 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi))
           .SetActionId(kActionNewWindow)
+          .SetText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_NEW_WINDOW)))
+          .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
+              l10n_util::GetStringUTF16(IDS_NEW_WINDOW)))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kNewWindowIcon
+                                                : kNewWindowOldIcon,
+              ui::kColorIcon))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_NEW_WINDOW))
           .Build());
   root_action_item_->AddChild(
       actions::ActionItem::Builder(

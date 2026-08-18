@@ -698,6 +698,8 @@ enum class ActionPinnableState {
 COMPONENT_EXPORT(ACTIONS)
 extern const ui::ClassProperty<
     std::underlying_type_t<ActionPinnableState>>* const kActionItemPinnableKey;
+COMPONENT_EXPORT(ACTIONS)
+extern const ui::ClassProperty<std::u16string*>* const kShortTitleTextKey;
 
 }  // namespace actions
 

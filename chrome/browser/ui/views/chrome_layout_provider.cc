@@ -265,6 +265,12 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 16;
     case DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT:
       return 32;
+    case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH:
+      return 105;
+    case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT:
+      return 56;
+    case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE:
+      return 20;
   }
   NOTREACHED();
 }

@@ -28,6 +28,10 @@
   E_CPONLY(kColorAppMenuChipInkDropRipple) \
   E_CPONLY(kColorAppMenuYourChromeBackground) \
   E_CPONLY(kColorAppMenuToolsAndActionsBackground) \
+  E_CPONLY(kColorAppMenuBlockButtonBackground) \
+  E_CPONLY(kColorAppMenuBlockButtonBackgroundHovered) \
+  E_CPONLY(kColorAppMenuBlockButtonBorder) \
+  E_CPONLY(kColorAppMenuBlockButtonForeground) \
   /* Actor UI colors.*/ \
   E_CPONLY(kColorActorUiHandoffButtonBackground) \
   E_CPONLY(kColorActorUiHandoffButtonBorder) \
