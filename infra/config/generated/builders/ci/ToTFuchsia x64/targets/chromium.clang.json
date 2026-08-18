@@ -158,6 +158,27 @@
         },
         "test": "content_shell_crash_test",
         "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
+      },
+      {
+        "ci_only": true,
+        "merge": {
+          "args": [
+            "--smoke-test-mode"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "module_name": "//ui/views:views_perftests_fuchsia",
+        "module_scheme": "gtest",
+        "name": "views_perftests_fuchsia",
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_perftests_fuchsia",
+        "test_id_prefix": "ninja://ui/views:views_perftests_fuchsia/"
       }
     ]
   }

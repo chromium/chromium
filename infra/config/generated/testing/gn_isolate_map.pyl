@@ -2279,6 +2279,21 @@
       "views_perftests",
     ],
   },
+  "views_perftests_fuchsia": {
+    "label": "//ui/views:views_perftests_fuchsia",
+    "type": "script",
+    "module_scheme": "gtest",
+    "script": "//build/fuchsia/test/run_test.py",
+    "skip_usage_check": True,
+    "args": [
+      "perf_gtest",
+      "bin/run_views_perftests_fuchsia",
+      "--out-dir",
+      ".",
+      "--non-telemetry=true",
+      "--gtest-benchmark-name=views_perftests",
+    ],
+  },
   "views_unittests": {
     "label": "//ui/views:views_unittests",
     "type": "windowed_test_launcher",

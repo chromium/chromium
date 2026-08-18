@@ -2939,6 +2939,7 @@ targets.bundle(
         "component_storage_test",
         "content_shell_crash_test",
         "gpu_angle_fuchsia_unittests_isolated_scripts",
+        "views_perftests_fuchsia",
     ],
     per_test_modifications = {
         "content_shell_crash_test": targets.mixin(
@@ -2946,6 +2947,9 @@ targets.bundle(
                 "--platform=fuchsia",
             ],
             # TODO(crbug.com/40821367): Remove once it's stable.
+            ci_only = True,
+        ),
+        "views_perftests_fuchsia": targets.mixin(
             ci_only = True,
         ),
     },

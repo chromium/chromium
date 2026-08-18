@@ -2594,6 +2594,10 @@ targets.tests.isolated_script_test(
     name = "views_perftests",
 )
 
+targets.tests.isolated_script_test(
+    name = "views_perftests_fuchsia",
+)
+
 targets.tests.gtest_test(
     name = "views_unittests",
 )

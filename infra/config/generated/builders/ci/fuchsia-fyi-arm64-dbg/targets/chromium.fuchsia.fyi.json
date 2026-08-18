@@ -1628,6 +1628,32 @@
         },
         "test": "flatbuffers_unittests",
         "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
+      },
+      {
+        "ci_only": true,
+        "merge": {
+          "args": [
+            "--smoke-test-mode"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "module_name": "//ui/views:views_perftests_fuchsia",
+        "module_scheme": "gtest",
+        "name": "views_perftests_fuchsia",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "inside_docker": "1",
+            "os": "Ubuntu"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_perftests_fuchsia",
+        "test_id_prefix": "ninja://ui/views:views_perftests_fuchsia/"
       }
     ]
   }

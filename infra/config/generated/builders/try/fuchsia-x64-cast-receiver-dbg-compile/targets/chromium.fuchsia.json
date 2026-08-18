@@ -2097,6 +2097,35 @@
         },
         "test": "telemetry_gpu_integration_test_fuchsia",
         "test_id_prefix": "ninja://content/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "--orchestrate"
+        ],
+        "ci_only": true,
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [
+            "--smoke-test-mode"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "module_name": "//ui/views:views_perftests_fuchsia",
+        "module_scheme": "gtest",
+        "name": "views_perftests_fuchsia",
+        "resultdb": {
+          "enable": true,
+          "inv_extended_properties_dir": "${ISOLATED_OUTDIR}/invocations"
+        },
+        "swarming": {
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_perftests_fuchsia",
+        "test_id_prefix": "ninja://ui/views:views_perftests_fuchsia/"
       }
     ]
   }
