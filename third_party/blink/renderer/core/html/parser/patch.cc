@@ -1,7 +1,3 @@
-// Copyright 2026 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 #include "third_party/blink/renderer/core/html/parser/patch.h"
 
 #include "base/memory/stack_allocated.h"
@@ -10,15 +6,26 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/html/parser/external_patch_loader.h"
 #include "third_party/blink/renderer/core/html/parser/html_construction_site.h"
+#include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
+#include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
 
@@ -50,19 +57,6 @@ Patch* Patch::Prepare(ContainerNode* scope,
     return nullptr;
   }
 
-  const bool is_buffered =
-      RuntimeEnabledFeatures::DeclarativeFragmentEnabled() &&
-      template_element->FastHasAttribute(html_names::kBufferAttr);
-
-  if (marker_name.empty()) {
-    if (RuntimeEnabledFeatures::DeclarativeFragmentEnabled()) {
-      return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), scope,
-                                         template_element, template_element,
-                                         is_buffered);
-    }
-    return nullptr;
-  }
-
   while (auto* parent_template = DynamicTo<HTMLTemplateElement>(scope)) {
     if (auto* parent_patch = parent_template->GetPatch()) {
       if (!parent_patch->is_buffered()) {
@@ -72,63 +66,95 @@ Patch* Patch::Prepare(ContainerNode* scope,
     }
     scope = parent_template->InsertionTarget();
   }
-  if (scope == scope->GetDocument().body()) {
-    scope = scope->GetDocument().documentElement();
-  }
 
-  DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr, ("name"));
-  DEFINE_STATIC_LOCAL(AtomicString, kMarkerTarget, ("marker"));
-  DEFINE_STATIC_LOCAL(AtomicString, kStartTarget, ("start"));
-  DEFINE_STATIC_LOCAL(AtomicString, kEndTarget, ("end"));
+  const bool is_buffered =
+      template_element &&
+      (RuntimeEnabledFeatures::DeclarativeFragmentEnabled() &&
+       (template_element->FastHasAttribute(html_names::kBufferAttr) ||
+        template_element->FastHasAttribute(html_names::kIntegrityAttr)));
 
-  for (Node& descendant : NodeTraversal::DescendantsOf(*scope)) {
-    auto* processing_instruction = DynamicTo<ProcessingInstruction>(descendant);
-    if (!processing_instruction ||
-        (processing_instruction->GetAttributeValue(
-             kNamePseudoAttr, g_empty_atom) != marker_name)) {
-      continue;
+  ContainerNode* parent = nullptr;
+  Node* start_marker = nullptr;
+  Node* end_marker = nullptr;
+
+  if (marker_name.empty()) {
+    if (RuntimeEnabledFeatures::DeclarativeFragmentEnabled()) {
+      parent = scope;
+      start_marker = template_element;
+      end_marker = template_element;
     }
-    if (processing_instruction->target() == kMarkerTarget) {
-      return MakeGarbageCollected<Patch>(
-          base::PassKey<Patch>(), processing_instruction->parentNode(),
-          processing_instruction, processing_instruction, is_buffered);
-    }
-
-    if (processing_instruction->target() != kStartTarget) {
-      continue;
+  } else {
+    if (scope == scope->GetDocument().body()) {
+      scope = scope->GetDocument().documentElement();
     }
 
-    ContainerNode* parent = processing_instruction->parentNode();
-    int marker_depth = 0;
-    NodeRemovalScope remove_scope;
+    DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr, ("name"));
+    DEFINE_STATIC_LOCAL(AtomicString, kMarkerTarget, ("marker"));
+    DEFINE_STATIC_LOCAL(AtomicString, kStartTarget, ("start"));
+    DEFINE_STATIC_LOCAL(AtomicString, kEndTarget, ("end"));
 
-    for (Node* node = processing_instruction->nextSibling(); node;
-         node = node->nextSibling()) {
-      if (ProcessingInstruction* next_processing_instruction =
-              DynamicTo<ProcessingInstruction>(*node)) {
-        if (next_processing_instruction->target() == kStartTarget) {
-          marker_depth++;
-        } else if (next_processing_instruction->target() == kEndTarget) {
-          if (marker_depth == 0) {
-            return MakeGarbageCollected<Patch>(
-                base::PassKey<Patch>(), parent, processing_instruction,
-                next_processing_instruction, is_buffered);
-          }
-          marker_depth--;
-        }
+    for (Node& descendant : NodeTraversal::DescendantsOf(*scope)) {
+      auto* processing_instruction =
+          DynamicTo<ProcessingInstruction>(descendant);
+      if (!processing_instruction ||
+          (processing_instruction->GetAttributeValue(
+               kNamePseudoAttr, g_empty_atom) != marker_name)) {
+        continue;
+      }
+      if (processing_instruction->target() == kMarkerTarget) {
+        parent = processing_instruction->parentNode();
+        start_marker = processing_instruction;
+        end_marker = processing_instruction;
+        break;
       }
 
-      remove_scope.Remove(node);
-    }
+      if (processing_instruction->target() != kStartTarget) {
+        continue;
+      }
 
-    // No end PI found.
-    return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), parent,
-                                       processing_instruction, nullptr,
-                                       is_buffered);
+      ContainerNode* pi_parent = processing_instruction->parentNode();
+      int marker_depth = 0;
+      NodeRemovalScope remove_scope;
+
+      for (Node* node = processing_instruction->nextSibling(); node;
+           node = node->nextSibling()) {
+        if (ProcessingInstruction* next_processing_instruction =
+                DynamicTo<ProcessingInstruction>(*node)) {
+          if (next_processing_instruction->target() == kStartTarget) {
+            marker_depth++;
+          } else if (next_processing_instruction->target() == kEndTarget) {
+            if (marker_depth == 0) {
+              parent = pi_parent;
+              start_marker = processing_instruction;
+              end_marker = next_processing_instruction;
+              break;
+            }
+            marker_depth--;
+          }
+        }
+
+        remove_scope.Remove(node);
+      }
+
+      if (parent) {
+        break;
+      }
+
+      // No end PI found.
+      parent = pi_parent;
+      start_marker = processing_instruction;
+      end_marker = nullptr;
+      break;
+    }
   }
 
-  // No start/marker PI found.
-  return nullptr;
+  if (!parent) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), parent,
+                                     start_marker, end_marker, is_buffered,
+                                     template_element);
 }
 
 void Patch::Apply(HTMLConstructionSiteTask& task) {
@@ -136,6 +162,38 @@ void Patch::Apply(HTMLConstructionSiteTask& task) {
   task.next_child = end_marker_ && end_marker_->parentNode() == parent_
                         ? end_marker_
                         : nullptr;
+}
+
+void Patch::DidFinishParsingChildren(HTMLTemplateElement* template_element) {
+  if (!loader_) {
+    Finalize(template_element);
+  }
+}
+
+void Patch::DidRemoveTemplateElement() {
+  if (loader_) {
+    loader_->Cancel();
+  }
+}
+
+Patch::Patch(base::PassKey<Patch> key,
+             ContainerNode* parent,
+             Node* start_marker,
+             Node* end_marker,
+             bool is_buffered,
+             HTMLTemplateElement* template_element)
+    : parent_(parent),
+      start_marker_(start_marker),
+      end_marker_(end_marker),
+      is_buffered_(is_buffered) {
+  const AtomicString& src_attr =
+      (template_element && RuntimeEnabledFeatures::DeclarativeFragmentEnabled())
+          ? template_element->FastGetAttribute(html_names::kSrcAttr)
+          : g_null_atom;
+  if (!src_attr.empty()) {
+    loader_ = MakeGarbageCollected<ExternalPatchLoader>(this, template_element,
+                                                        src_attr);
+  }
 }
 
 void Patch::Finalize(HTMLTemplateElement* template_element) {
@@ -179,6 +237,7 @@ void Patch::Trace(Visitor* visitor) const {
   visitor->Trace(parent_);
   visitor->Trace(start_marker_);
   visitor->Trace(end_marker_);
+  visitor->Trace(loader_);
 }
 
 }  // namespace blink
