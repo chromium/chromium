@@ -580,19 +580,31 @@ template("single_gcc_toolchain") {
       } else {
         main_so_file = sofile_with_symbols
       }
-      command = "$ld -shared $soname_flag {{ldflags}}${extra_ldflags} -o \"$main_so_file\" "
+      link_command = "$ld -shared $soname_flag {{ldflags}}${extra_ldflags} -o \"$main_so_file\" "
 
       if (use_mold_separate_debug_file) {
         # TODO(40208899): See if it adding --detach for local builds helps.
-        command += "\"-Wl,--separate-debug-file=$sofile_with_symbols\" -Wl,--no-detach "
+        link_command += "\"-Wl,--separate-debug-file=$sofile_with_symbols\" -Wl,--no-detach "
       }
-      command += "@\"$rspfile\" {{rlibs}}"
+      link_command += "@\"$rspfile\" {{rlibs}}"
 
-      if (defined(invoker.strip) && !use_mold_separate_debug_file) {
-        strip_command =
-            "${invoker.strip} -o \"$sofile\" \"$sofile_with_symbols\""
-        command += " && " + strip_command
+      # Generate a map file to be used for binary size analysis.
+      # Map file adds ~10% to the link time on a z620.
+      # With target_os="android", libchrome.so.map.gz is ~20MB.
+      map_switch = ""
+      if (enable_linker_map) {
+        map_file = "$sofile_with_symbols.map.gz"
+        map_switch = " --map-file \"$map_file\""
       }
+
+      strip_switch = ""
+      if (defined(invoker.strip) && !use_mold_separate_debug_file) {
+        strip_switch = " --strip=\"${invoker.strip}\" --symbols-file=\"$sofile_with_symbols\""
+      }
+
+      link_wrapper =
+          rebase_path("//build/toolchain/gcc_link_wrapper.py", root_build_dir)
+      command = "\"$python_path\" \"$link_wrapper\" --output=\"$sofile\"$strip_switch$map_switch -- $link_command"
       rspfile_content = "$whole_archive_flag {{inputs}} {{solibs}} $no_whole_archive_flag {{libs}} {{rlibs}}"
 
       description = "SOLINK_MODULE $sofile"
@@ -617,6 +629,9 @@ template("single_gcc_toolchain") {
             invoker.use_unstripped_as_runtime_outputs) {
           runtime_outputs = [ sofile_with_symbols ]
         }
+      }
+      if (defined(map_file)) {
+        outputs += [ map_file ]
       }
     }
 
