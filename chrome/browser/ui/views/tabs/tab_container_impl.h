@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
@@ -171,6 +172,10 @@ class TabContainerImpl : public TabContainer,
   void UpdateZOrderCacheForTesting();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(TabContainerTest, GetChildIndexForSlotView);
+  FRIEND_TEST_ALL_PREFIXES(TabContainerTest,
+                           GetChildIndexForSlotViewWithGroups);
+
   class RemoveTabDelegate;
   views::ViewModelT<Tab>* GetTabsViewModel();
 
@@ -248,6 +253,11 @@ class TabContainerImpl : public TabContainer,
   // Moves `slot_view` within children() to match `layout_helper_`'s slot
   // ordering.
   void OrderTabSlotView(TabSlotView* slot_view);
+
+  // Returns the index in children() where `slot_view` belongs according to
+  // `layout_helper_`'s slot ordering. `slot_view` must already be known to
+  // `layout_helper_`, but doesn't have to be a child yet.
+  size_t GetChildIndexForSlotView(const TabSlotView* slot_view) const;
 
   // Returns true if the specified point in TabStrip coords is within the
   // hit-test region of the specified Tab.

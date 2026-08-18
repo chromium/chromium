@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
@@ -140,8 +141,9 @@ std::vector<Tab*> TabContainerImpl::AddTabs(
   }
 
   for (auto& param : tabs_params) {
-    Tab* tab_ptr = AddChildView(std::move(param.tab));
-    OrderTabSlotView(tab_ptr);
+    const size_t child_index = GetChildIndexForSlotView(param.tab.get());
+    Tab* tab_ptr = AddChildViewAt(std::move(param.tab), child_index);
+    MarkZOrderCacheDirty();
     added_tabs.push_back(tab_ptr);
   }
 
@@ -1492,9 +1494,16 @@ void TabContainerImpl::OrderTabSlotView(TabSlotView* slot_view) {
   }
 
   // `slot_view` is in the wrong place in children(). Fix it.
-  std::vector<TabSlotView*> slots = layout_helper_->GetTabSlotViews();
-  size_t target_slot_index =
-      std::ranges::find(slots, slot_view) - slots.begin();
+  ReorderChildView(slot_view, GetChildIndexForSlotView(slot_view));
+  MarkZOrderCacheDirty();
+}
+
+size_t TabContainerImpl::GetChildIndexForSlotView(
+    const TabSlotView* slot_view) const {
+  const std::vector<TabSlotView*> slots = layout_helper_->GetTabSlotViews();
+  const auto slot_it = std::ranges::find(slots, slot_view);
+  CHECK(slot_it != slots.end());
+  const size_t target_slot_index = slot_it - slots.begin();
   // Find the index in children() that corresponds to `target_slot_index`.
   size_t view_index = 0;
   for (size_t slot_index = 0; slot_index < target_slot_index; ++slot_index) {
@@ -1507,9 +1516,7 @@ void TabContainerImpl::OrderTabSlotView(TabSlotView* slot_view) {
     }
     ++view_index;
   }
-
-  ReorderChildView(slot_view, view_index);
-  MarkZOrderCacheDirty();
+  return view_index;
 }
 
 bool TabContainerImpl::IsPointInTab(

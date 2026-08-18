@@ -634,6 +634,71 @@ TEST_F(TabContainerTest, TabViewOrderWithGroups) {
   EXPECT_EQ(GetTabSlotViewsInFocusOrder(), GetTabSlotViewsInVisualOrder());
 }
 
+// Verifies GetChildIndexForSlotView() computes the children() index matching
+// the layout model's slot order, and stays consistent through inserts and
+// moves.
+TEST_F(TabContainerTest, GetChildIndexForSlotView) {
+  auto* container = views::AsViewClass<TabContainerImpl>(tab_container_.get());
+  ASSERT_TRUE(container);
+
+  const auto expect_indices_match_children = [&]() {
+    for (int i = 0; i < container->GetTabCount(); ++i) {
+      Tab* const tab = container->GetTabAtModelIndex(i);
+      EXPECT_EQ(container->children()[container->GetChildIndexForSlotView(tab)],
+                tab);
+    }
+  };
+
+  Tab* tab0 = AddTab(0);
+  EXPECT_EQ(0u, container->GetChildIndexForSlotView(tab0));
+
+  // Appending places the new tab after existing ones.
+  Tab* tab1 = AddTab(1);
+  EXPECT_EQ(1u, container->GetChildIndexForSlotView(tab1));
+
+  // Inserting in the middle shifts successors.
+  Tab* middle = AddTab(1);
+  EXPECT_EQ(1u, container->GetChildIndexForSlotView(middle));
+  EXPECT_EQ(2u, container->GetChildIndexForSlotView(tab1));
+  expect_indices_match_children();
+
+  // Moves keep the mapping consistent.
+  MoveTab(0, 2);
+  expect_indices_match_children();
+  MoveTab(2, 1);
+  expect_indices_match_children();
+}
+
+// Verifies GetChildIndexForSlotView() accounts for group headers, which
+// occupy their own slot in children().
+TEST_F(TabContainerTest, GetChildIndexForSlotViewWithGroups) {
+  auto* container = views::AsViewClass<TabContainerImpl>(tab_container_.get());
+  ASSERT_TRUE(container);
+
+  AddTab(0);
+  AddTab(1);
+  AddTab(2);
+
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(1, group);
+
+  // The header slots immediately before the group's first tab.
+  TabGroupHeader* const header = container->GetGroupViews(group)->header();
+  EXPECT_EQ(1u, container->GetChildIndexForSlotView(header));
+  EXPECT_EQ(2u, container->GetChildIndexForSlotView(
+                    container->GetTabAtModelIndex(1)));
+  EXPECT_EQ(3u, container->GetChildIndexForSlotView(
+                    container->GetTabAtModelIndex(2)));
+
+  // Every slot view is found at its computed index in children().
+  for (views::View* view : GetTabSlotViewsInVisualOrder()) {
+    TabSlotView* const slot_view = static_cast<TabSlotView*>(view);
+    EXPECT_EQ(
+        container->children()[container->GetChildIndexForSlotView(slot_view)],
+        slot_view);
+  }
+}
+
 namespace {
 ui::DropTargetEvent MakeEventForDragLocation(const gfx::Point& p) {
   return ui::DropTargetEvent({}, gfx::PointF(p), {},
