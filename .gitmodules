@@ -175,6 +175,9 @@
 [submodule "third_party/dom_distiller_js/dist"]
 	path = third_party/dom_distiller_js/dist
 	url = https://chromium.googlesource.com/chromium/dom-distiller/dist
+[submodule "third_party/ds_store/src"]
+	path = third_party/ds_store/src
+	url = https://chromium.googlesource.com/external/github.com/dmgbuild/ds_store
 [submodule "third_party/dragonbox/src"]
 	path = third_party/dragonbox/src
 	url = https://chromium.googlesource.com/external/github.com/jk-jeon/dragonbox
@@ -419,6 +422,9 @@
 	path = third_party/lss
 	url = https://chromium.googlesource.com/linux-syscall-support
 	gclient-condition = checkout_android or checkout_linux
+[submodule "third_party/mac_alias/src"]
+	path = third_party/mac_alias/src
+	url = https://chromium.googlesource.com/external/github.com/dmgbuild/mac_alias
 [submodule "third_party/material_color_utilities/src"]
 	path = third_party/material_color_utilities/src
 	url = https://chromium.googlesource.com/external/github.com/material-foundation/material-color-utilities
