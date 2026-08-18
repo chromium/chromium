@@ -764,6 +764,7 @@ test("gfx_unittests") {
     "image/image_skia_unittest.cc",
     "image/image_unittest.cc",
     "interpolated_transform_unittest.cc",
+    "scoped_animation_duration_scale_mode_unittest.cc",
     "test/run_all_unittests.cc",
     "text_elider_unittest.cc",
     "text_utils_unittest.cc",

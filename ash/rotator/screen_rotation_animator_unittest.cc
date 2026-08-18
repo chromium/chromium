@@ -24,6 +24,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/compositor/layer_animator.h"
@@ -822,6 +823,83 @@ TEST_P(ScreenRotationAnimatorSmoothAnimationTest, NewRequestShouldNotCancel) {
   test_api()->CompleteAnimations();
   EXPECT_FALSE(test_api()->HasActiveAnimations());
   EXPECT_EQ(display::Display::ROTATE_0, GetDisplayRotation(display_id));
+}
+
+TEST_P(ScreenRotationAnimatorSmoothAnimationTest,
+       MultiDisplayConcurrentRotation) {
+  // Set up two displays.
+  UpdateDisplay("640x480,640x480");
+  const display::DisplayIdList ids =
+      display_manager()->GetConnectedDisplayIdList();
+  ASSERT_EQ(2u, ids.size());
+  const int64_t id1 = ids[0];
+  const int64_t id2 = ids[1];
+
+  aura::Window* const root1 = Shell::GetRootWindowForDisplayId(id1);
+  aura::Window* const root2 = Shell::GetRootWindowForDisplayId(id2);
+
+  DisplayConfigurationController* const controller =
+      Shell::Get()->display_configuration_controller();
+  DisplayConfigurationControllerTestApi(controller).SetDisplayAnimator(true);
+
+  base::RunLoop run_loop_a_after;
+  base::RunLoop run_loop_b_after;
+
+  auto animator1_owner = std::make_unique<TestScreenRotationAnimator>(
+      root1, base::BindLambdaForTesting([&]() {
+        // Trigger Display 2's rotation when Display 1 finishes before-copy.
+        // At this point, Display 1's disable scope is active.
+        controller->SetDisplayRotation(
+            id2, display::Display::ROTATE_90,
+            display::Display::RotationSource::USER,
+            DisplayConfigurationController::ANIMATION_ASYNC);
+      }),
+      base::BindLambdaForTesting([&]() { run_loop_a_after.Quit(); }));
+  TestScreenRotationAnimator* const animator1 = animator1_owner.get();
+  RootWindowController::ForWindow(root1)->SetScreenRotationAnimatorForTest(
+      std::move(animator1_owner));
+
+  auto animator2_owner = std::make_unique<TestScreenRotationAnimator>(
+      root2, base::DoNothing(),
+      base::BindLambdaForTesting([&]() { run_loop_b_after.Quit(); }));
+  TestScreenRotationAnimator* const animator2 = animator2_owner.get();
+  RootWindowController::ForWindow(root2)->SetScreenRotationAnimatorForTest(
+      std::move(animator2_owner));
+
+  ScreenRotationAnimatorTestApi test_api1(animator1);
+  test_api1.DisableAnimationTimers();
+  ScreenRotationAnimatorTestApi test_api2(animator2);
+  test_api2.DisableAnimationTimers();
+
+  // Reset the fixture's animator_ helper so it does not interfere.
+  animator_.reset();
+
+  // Start Display 1's rotation (ASYNC).
+  controller->SetDisplayRotation(
+      id1, display::Display::ROTATE_90, display::Display::RotationSource::USER,
+      DisplayConfigurationController::ANIMATION_ASYNC);
+
+  // Wait for both after-copy callbacks to complete.
+  run_loop_a_after.Run();
+  run_loop_b_after.Run();
+
+  // Complete any active rotation animations.
+  if (test_api1.HasActiveAnimations()) {
+    test_api1.CompleteAnimations();
+  }
+  if (test_api2.HasActiveAnimations()) {
+    test_api2.CompleteAnimations();
+  }
+  EXPECT_FALSE(test_api1.HasActiveAnimations());
+  EXPECT_FALSE(test_api2.HasActiveAnimations());
+
+  EXPECT_EQ(display::Display::ROTATE_90, GetDisplayRotation(id1));
+  EXPECT_EQ(display::Display::ROTATE_90, GetDisplayRotation(id2));
+
+  // Verify the global multiplier was restored back to SLOW_DURATION (set by the
+  // fixture).
+  EXPECT_EQ(gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION,
+            gfx::ScopedAnimationDurationScaleMode::duration_multiplier());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
