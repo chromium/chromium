@@ -301,6 +301,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         public @DisplayMode.EnumType int getDisplayMode() {
+            if (isFullscreen()) {
+                return DisplayMode.FULLSCREEN;
+            }
+
             // A page using `window-controls-overlay` and `minimal-ui` display modes expects certain
             // UI features to be in the web app header. If these features cannot be rendred for
             // whatever reason (e.g. desktop window is too small) then it is not accurate to set the

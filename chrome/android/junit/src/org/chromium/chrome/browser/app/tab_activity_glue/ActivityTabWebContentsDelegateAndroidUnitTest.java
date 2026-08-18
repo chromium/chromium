@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,10 +43,12 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.PopupCreator;
 import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -91,14 +94,15 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 Activity activity,
                 TabCreatorManager tabCreatorManager,
                 TabModel tabModel,
-                ExclusiveAccessManager exclusiveAccessManager) {
+                ExclusiveAccessManager exclusiveAccessManager,
+                FullscreenManager fullscreenManager) {
             super(
                     tab,
                     activity,
                     null,
                     false,
                     null,
-                    null,
+                    fullscreenManager,
                     tabCreatorManager,
                     mock(Supplier.class),
                     mock(Supplier.class),
@@ -107,6 +111,10 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                     exclusiveAccessManager);
             mTabModel = tabModel;
             mTabMap = new HashMap<>();
+        }
+
+        int getDisplayModeCheckedForTesting() {
+            return getDisplayModeChecked();
         }
 
         @Override
@@ -160,6 +168,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock PopupCreator mPopupCreator;
     @Mock MultiWindowUtils mMultiWindowUtils;
     @Mock ExclusiveAccessManager mExclusiveAccessManager;
+    @Mock FullscreenManager mFullscreenManager;
     @Mock RenderFrameHost mRenderFrameHost;
     @Mock private View mUrlBar;
     @Mock private View mMenuButton;
@@ -183,7 +192,12 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         PopupCreatorFactory.setInstanceForTesting(mPopupCreator);
         mTabWebContentsDelegateAndroid =
                 new TestActivityTabWebContentsDelegateAndroid(
-                        mTab, mActivity, mTabCreatorManager, mTabModel, mExclusiveAccessManager);
+                        mTab,
+                        mActivity,
+                        mTabCreatorManager,
+                        mTabModel,
+                        mExclusiveAccessManager,
+                        mFullscreenManager);
         DisplayAndroidManager.setInstanceForTesting(mDisplayAndroidManager);
         AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
         AndroidTaskUtils.setAppTaskForTesting(mAppTask);
@@ -550,5 +564,18 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
         assertFalse(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ false));
         assertFalse(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
+    }
+
+    @Test
+    public void testGetDisplayModeChecked_fullscreen() {
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);
+        assertEquals(
+                DisplayMode.FULLSCREEN,
+                mTabWebContentsDelegateAndroid.getDisplayModeCheckedForTesting());
+
+        when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(false);
+        assertEquals(
+                DisplayMode.BROWSER,
+                mTabWebContentsDelegateAndroid.getDisplayModeCheckedForTesting());
     }
 }

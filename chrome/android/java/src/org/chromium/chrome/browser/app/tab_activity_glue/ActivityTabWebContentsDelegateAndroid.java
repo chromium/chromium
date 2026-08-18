@@ -174,7 +174,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
-    public int getDisplayMode() {
+    public @DisplayMode.EnumType int getDisplayMode() {
+        if (isFullscreen()) {
+            return DisplayMode.FULLSCREEN;
+        }
         return DisplayMode.BROWSER;
     }
 
@@ -204,6 +207,14 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                     ? mFullscreenManager.getPersistentFullscreenMode()
                     : false;
         }
+    }
+
+    /**
+     * Returns whether the application is confirmed to be in persistent/immersive fullscreen mode
+     * (excluding pending transitions).
+     */
+    protected boolean isFullscreen() {
+        return mFullscreenManager != null && mFullscreenManager.getPersistentFullscreenMode();
     }
 
     @Override
