@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_script_identifier.h"
 #include "third_party/blink/renderer/core/ad_tracker/monkey_patchable_api.h"
@@ -174,20 +175,25 @@ class CORE_EXPORT ScriptAncestryTracker
   v8::Isolate* GetIsolate() const;
 
  private:
-  // Helper for the `ignore_monkey_patch` heuristic. Returns true if the API is
-  // called from a non-ad script through an ad script's monkey patch, and this
-  // is the first time this API has been called this way within the current
-  // synchronous task. If it returns true, the call should be ignored for ad
-  // tracking purposes. This method is not const because it modifies
-  // `ad_monkey_patch_calls_in_scope_`.
-  //
-  // Precondition: The script at the top of the stack is a known ad script.
-  bool IsFirstCallOfApiFromNonAttributedScript(v8::Isolate* isolate,
-                                               MonkeyPatchableApi api,
-                                               LazyStackTrace& stack_trace);
+  // Helper for `ignore_monkey_patch` heuristic. Tracks the API call within
+  // the current synchronous task and returns true if it is the first time the
+  // API is being called. This method is not const because it modifies
+  // `monkey_patch_calls_in_scope_`.
+  bool IsFirstMonkeyPatchCall(MonkeyPatchableApi api);
 
-  // Helper for `IsFirstCallOfApiFromNonAttributedScript` that performs the
-  // stack analysis. It returns true if the call stack indicates that a
+  struct MonkeyPatchCallerResult {
+    bool is_api_in_stack = false;
+    std::optional<V8ScriptId> marked_caller_id;
+  };
+
+  // Helper for `WasApiCalledByNonAttributedScript` and `IsMarkedScriptInStack`.
+  // Inspects the stack to find the patched API.
+  MonkeyPatchCallerResult FindMonkeyPatchCaller(
+      v8::Isolate* isolate,
+      const v8::Local<v8::Function>& api_function,
+      base::span<const v8::StackTrace::ScriptData> stack) const;
+
+  // Analyzes the stack to determine if the call stack indicates that a
   // non-marked script called the monkey patched `api`.
   bool WasApiCalledByNonAttributedScript(v8::Isolate* isolate,
                                          MonkeyPatchableApi api,

@@ -303,33 +303,41 @@ bool ScriptAncestryTracker::IsMarkedScriptInStack(
     return false;
   }
 
-  if (matched_script_index > 0) {
-    // The top script on the stack is non-marked, but a script further down (at
-    // `matched_script_index`) is marked. If a marked script is calling a
-    // monkeypatched non-marked API, consider it still related.
-    if (ignore_monkey_patch != MonkeyPatchableApi::kNone &&
-        IsFunctionAMonkeyPatch(isolate,
-                               stack[matched_script_index - 1].function,
-                               ignore_monkey_patch)) {
-      if (out_script) {
-        *out_script = *matched_script;
+  if (ignore_monkey_patch != MonkeyPatchableApi::kNone) {
+    MonkeyPatchableApiFunctionInfo api_info =
+        GetMonkeyPatchableApiFunctionInfo(isolate, ignore_monkey_patch);
+    v8::Local<v8::Function> api_function;
+    if (api_info.is_monkey_patched &&
+        api_info.function.ToLocal(&api_function)) {
+      MonkeyPatchCallerResult result =
+          FindMonkeyPatchCaller(isolate, api_function, stack);
+      if (result.is_api_in_stack) {
+        if (result.marked_caller_id.has_value()) {
+          // The API was invoked by a marked script. Attribute the call to it.
+          if (out_script) {
+            *out_script = result.marked_caller_id;
+          }
+          return true;
+        } else {
+          // The API was invoked by a non-marked script. Allow this to bypass
+          // the marked-script-in-stack check once per synchronous task.
+          if (IsFirstMonkeyPatchCall(ignore_monkey_patch)) {
+            return false;
+          }
+        }
       }
-      return true;
     }
+  }
+
+  // If the API was not found in the stack (e.g., cached patch or exceeds the
+  // stack scan limit), fall back to the top stack frame's status.
+
+  // Top script is non-marked.
+  if (matched_script_index > 0) {
     return false;
   }
 
-  // The top of the stack is a marked script. This heuristic avoids
-  // misattributing calls due to monkey patching. If the top script is marked
-  // but not the bottom, then determine if the API call was initiated by the
-  // marked script or not. If it wasn't initiated by the marked script, then let
-  // it through once.
-  if (ignore_monkey_patch != MonkeyPatchableApi::kNone &&
-      IsFirstCallOfApiFromNonAttributedScript(isolate, ignore_monkey_patch,
-                                              stack_trace)) {
-    return false;
-  }
-
+  // Top script is marked. Attribute to marked script.
   if (out_script) {
     *out_script = *matched_script;
   }
@@ -385,26 +393,45 @@ ScriptAncestryTracker::GetScriptMetadata(V8ScriptId script_id) const {
   return it != script_metadata_.end() ? &it->value : nullptr;
 }
 
-bool ScriptAncestryTracker::IsFirstCallOfApiFromNonAttributedScript(
-    v8::Isolate* isolate,
-    MonkeyPatchableApi api,
-    LazyStackTrace& stack_trace) {
+bool ScriptAncestryTracker::IsFirstMonkeyPatchCall(MonkeyPatchableApi api) {
   // The heuristic only applies on the first call to an API within a task.
   // Note, running_sync_tasks_ will be 0 when in a promise callback microtask,
   // since we're not monitoring promises we don't apply the allow-once heuristic
   // in that scenario.
-  if (running_sync_tasks_ > 0 && monkey_patch_calls_in_scope_.Contains(api)) {
-    return false;
-  }
-
-  if (WasApiCalledByNonAttributedScript(isolate, api, stack_trace)) {
-    if (running_sync_tasks_ > 0) {
-      monkey_patch_calls_in_scope_.insert(api);
-    }
+  if (running_sync_tasks_ == 0) {
     return true;
   }
+  if (monkey_patch_calls_in_scope_.Contains(api)) {
+    return false;
+  }
+  monkey_patch_calls_in_scope_.insert(api);
+  return true;
+}
 
-  return false;
+ScriptAncestryTracker::MonkeyPatchCallerResult
+ScriptAncestryTracker::FindMonkeyPatchCaller(
+    v8::Isolate* isolate,
+    const v8::Local<v8::Function>& api_function,
+    base::span<const v8::StackTrace::ScriptData> stack) const {
+  MonkeyPatchCallerResult result;
+  if (stack.size() <= 1) {
+    return result;
+  }
+
+  // Look for the exact tracked API in the stack. The frame immediately
+  // preceding it is the true initiator.
+  for (size_t i = 0; i < stack.size() - 1; ++i) {
+    if (IsFunctionAMonkeyPatch(isolate, stack[i].function, api_function)) {
+      result.is_api_in_stack = true;
+      V8ScriptId caller_id(stack[i + 1].id);
+      if (caller_id.value() > 0 && IsMarkedScript(caller_id)) {
+        result.marked_caller_id = caller_id;
+      }
+      return result;
+    }
+  }
+
+  return result;
 }
 
 bool ScriptAncestryTracker::WasApiCalledByNonAttributedScript(
@@ -425,41 +452,12 @@ bool ScriptAncestryTracker::WasApiCalledByNonAttributedScript(
   LazyStackTrace stack_trace(isolate);
   auto stack = stack_trace.GetStack(5);
 
-  // The expected monkey patch pattern requires a non-marked script calling a
-  // marked script. Thus, the stack must have at least two frames.
-  if (stack.empty() || stack.size() <= 1) {
-    return false;
+  MonkeyPatchCallerResult result =
+      FindMonkeyPatchCaller(isolate, api_function, stack);
+  if (result.is_api_in_stack) {
+    return !result.marked_caller_id.has_value();
   }
 
-  // To distinguish the expected monkey patch pattern from an active
-  // "just-in-time" patch, we walk the stack to find the boundary between
-  // marked and non-marked script frames.
-  for (size_t i = 1; i < stack.size(); ++i) {
-    const v8::StackTrace::ScriptData& frame = stack[i];
-    V8ScriptId script_id(frame.id);
-    if (script_id.value() > 0) {
-      // If this frame is still marked related, continue up the stack.
-      if (IsMarkedScript(script_id)) {
-        continue;
-      }
-    }
-
-    // Frame `i` is the first non-marked script. The previous frame (`i-1`)
-    // must be the marked script entry point. We expect this to be the patched
-    // API itself (or its proxy's apply trap).
-    const v8::StackTrace::ScriptData& marked_barrier_frame = stack[i - 1];
-
-    // Verify that the function at the boundary is indeed the API we are
-    // tracking. This prevents misidentifying unrelated calls (e.g., a
-    // non-marked script calling a random helper function inside an
-    // ad/extension) as a monkey patch. If the boundary function doesn't match
-    // the API or its proxy trap, it's not the pattern we are looking for.
-    return IsFunctionAMonkeyPatch(isolate, marked_barrier_frame.function,
-                                  api_function);
-  }
-
-  // If the loop completes, the entire stack trace is from marked scripts, so
-  // the call did not originate from a non-marked script.
   return false;
 }
 
