@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
-import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -177,8 +176,8 @@ class TabRestorer {
     public void onCachedActiveTabLoaded(LoadedTabState loadedTabState) {
         TabState tabState = loadedTabState.tabState;
         if (mState == State.CANCELLED) {
-            WebContentsState contentsState = tabState.contentsState;
-            if (contentsState != null) contentsState.destroy();
+            loadedTabState.destroy();
+            return;
         } else if (mState >= State.LOADED) {
             return;
         }
@@ -198,7 +197,11 @@ class TabRestorer {
                         /* isActiveTab= */ true,
                         mIsFromRecreating);
 
-        if (tab == null) destroyLoadedTabState(loadedTabState);
+        if (tab == null) {
+            loadedTabState.destroy();
+        } else {
+            loadedTabState.claim();
+        }
         mCachedRestoredActiveTabId = loadedTabState.tabId;
     }
 
@@ -359,9 +362,11 @@ class TabRestorer {
             TabGroupVisualDataStore.removeCachedGroups(mData.getGroupsData());
         }
 
-        for (LoadedTabState loadedTabState : mData.getLoadedTabStates()) {
-            if (mTabIdsToIgnore.contains(loadedTabState.tabId)) continue;
-            destroyLoadedTabState(loadedTabState);
+        if (mState != State.CANCELLED) {
+            for (LoadedTabState loadedTabState : mData.getLoadedTabStates()) {
+                assert loadedTabState.isClaimedOrDestroyed()
+                        : "Not all tabs were claimed or destroyed";
+            }
         }
 
         mData.destroy();
@@ -427,6 +432,8 @@ class TabRestorer {
      */
     private void restoreTab(LoadedTabState loadedTabState, int index, boolean isActive) {
         assert mState == State.RESTORING;
+        if (loadedTabState.isClaimedOrDestroyed()) return;
+
         @TabId int tabId = loadedTabState.tabId;
 
         if (mTabIdsToIgnore.contains(loadedTabState.tabId)) return;
@@ -438,9 +445,11 @@ class TabRestorer {
         Tab tab =
                 maybeRestoreTab(loadedTabState.tabState, tabId, index, isActive, mIsFromRecreating);
         if (tab == null) {
-            destroyLoadedTabState(loadedTabState);
+            loadedTabState.destroy();
             return;
         }
+
+        loadedTabState.claim();
 
         boolean isIncognito = mIncognito;
         mDelegate.onDetailsRead(
@@ -566,14 +575,9 @@ class TabRestorer {
 
         for (LoadedTabState loadedTabState : loadedTabStates) {
             if (loadedTabState.tabId != mCachedRestoredActiveTabId) continue;
-            destroyLoadedTabState(loadedTabState);
+            loadedTabState.destroy();
             break;
         }
-    }
-
-    private void destroyLoadedTabState(LoadedTabState loadedTabState) {
-        WebContentsState state = loadedTabState.tabState.contentsState;
-        if (state != null) state.destroy();
     }
 
     @EnsuresNonNullIf({"mCachedRestoredActiveTabId"})

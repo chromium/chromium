@@ -187,6 +187,7 @@ proto_java_library("critical_persisted_tab_data_proto_java") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/CurrentTabObserverTest.java",
+    "java/src/org/chromium/chrome/browser/tab/StorageLoadedDataUnitTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabAssociatedAppTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabContextMenuDataUnitTest.java",
     "java/src/org/chromium/chrome/browser/tab/TabDragStateDataTest.java",

@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
-import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -379,7 +378,7 @@ public class TabStateStore implements TabPersistentStore {
                     incognitoFinal,
                     data -> {
                         if (mIsDestroyed) {
-                            fullyDestroyLoadedData(data);
+                            data.destroy();
                             return;
                         }
                         assumeNonNull(mMergeCombinedTabRestorer);
@@ -617,7 +616,7 @@ public class TabStateStore implements TabPersistentStore {
             Log.e(TAG, formattedErrorMessage);
 
             mMigrationManager.onShadowStoreRazed();
-            fullyDestroyLoadedData(data);
+            data.destroy();
 
             // Leave to guarantee failures are caught in debug.
             assert false : formattedErrorMessage;
@@ -625,7 +624,7 @@ public class TabStateStore implements TabPersistentStore {
         }
 
         if (mIsDestroyed) {
-            fullyDestroyLoadedData(data);
+            data.destroy();
             return;
         }
 
@@ -701,17 +700,6 @@ public class TabStateStore implements TabPersistentStore {
     private void assertInitialized() {
         assert mTabStateStorageService != null;
         assert mModelTrackingManager != null;
-    }
-
-    private void fullyDestroyLoadedData(StorageLoadedData data) {
-        assumeNonNull(mModelTrackingManager).onRestoreCancelled();
-        LoadedTabState[] loadedTabStates = data.getLoadedTabStates();
-        for (LoadedTabState loadedTabState : loadedTabStates) {
-            WebContentsState contentsState = loadedTabState.tabState.contentsState;
-            if (contentsState == null) continue;
-            contentsState.destroy();
-        }
-        data.destroy();
     }
 
     private void updateTabCountForModel(boolean incognito) {

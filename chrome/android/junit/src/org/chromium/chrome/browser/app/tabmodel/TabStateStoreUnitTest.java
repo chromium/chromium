@@ -31,7 +31,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -52,14 +55,10 @@ import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.Stor
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
-
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 
 import java.util.List;
 
@@ -423,7 +422,8 @@ public class TabStateStoreUnitTest {
         callbacks.get(0).onResult(mRegularData);
         callbacks.get(1).onResult(mIncognitoData);
 
-        verify(mModelTrackingOrchestrator, times(2)).onRestoreCancelled();
+        verify(mRegularData).destroy();
+        verify(mIncognitoData).destroy();
     }
 
     @Test
@@ -562,7 +562,6 @@ public class TabStateStoreUnitTest {
         verify(mTabStateStorageService).clearUnusedNodesForWindow(WINDOW_TAG, false, null);
         verify(mTabCountTracker).clearTabCount(false);
         verify(mActiveTabCache).clearActiveTab(false);
-        verify(tabState.contentsState).destroy();
         verify(mRegularData).destroy();
     }
 

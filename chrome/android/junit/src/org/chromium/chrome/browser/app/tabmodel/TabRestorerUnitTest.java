@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -205,6 +206,7 @@ public class TabRestorerUnitTest {
     @Test
     public void testMaybeRestoreTab_isReparenting() {
         LoadedTabState state = createLoadedTabState(1, UrlConstants.GOOGLE_URL);
+        WebContentsState contentsState = state.tabState.contentsState;
         when(mTabCreator.isReparenting(eq(1))).thenReturn(true);
 
         mRestorer.onCachedActiveTabLoaded(state);
@@ -214,13 +216,16 @@ public class TabRestorerUnitTest {
         verify(mDelegate, never()).onActiveTabRestored(anyBoolean());
 
         // WebContentsState from TabState is destroyed because we use the reparented tab instead.
-        verify(state.tabState.contentsState).destroy();
+        verify(contentsState).destroy();
+        assertNull(state.tabState.contentsState);
+        assertTrue(state.isClaimedOrDestroyed());
     }
 
     @Test
     public void testStartWithActiveTabImmediately_Reparenting() {
         LoadedTabState[] states = new LoadedTabState[1];
         states[0] = createLoadedTabState(1, UrlConstants.GOOGLE_URL);
+        WebContentsState contentsState = states[0].tabState.contentsState;
         when(mStorageLoadedData.getLoadedTabStates()).thenReturn(states);
         when(mStorageLoadedData.getActiveTabIndex()).thenReturn(0);
         when(mTabCreator.isReparenting(eq(1))).thenReturn(true);
@@ -231,7 +236,9 @@ public class TabRestorerUnitTest {
         // Active tab should be restored synchronously.
         verify(mTabCreator).createFrozenTab(any(), eq(1), eq(0));
         verify(mDelegate, never()).onActiveTabRestored(anyBoolean());
-        verify(states[0].tabState.contentsState).destroy();
+        verify(contentsState).destroy();
+        assertNull(states[0].tabState.contentsState);
+        assertTrue(states[0].isClaimedOrDestroyed());
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verify(mDelegate).onFinished(eq(false));
@@ -241,6 +248,7 @@ public class TabRestorerUnitTest {
     public void testRestoreTab_Reparenting() {
         LoadedTabState[] states = new LoadedTabState[1];
         states[0] = createLoadedTabState(1, UrlConstants.GOOGLE_URL);
+        WebContentsState contentsState = states[0].tabState.contentsState;
         when(mStorageLoadedData.getLoadedTabStates()).thenReturn(states);
         when(mStorageLoadedData.getActiveTabIndex()).thenReturn(-1);
         when(mTabCreator.isReparenting(eq(1))).thenReturn(true);
@@ -262,7 +270,9 @@ public class TabRestorerUnitTest {
                         anyBoolean(),
                         anyBoolean(),
                         anyBoolean());
-        verify(states[0].tabState.contentsState).destroy();
+        verify(contentsState).destroy();
+        assertNull(states[0].tabState.contentsState);
+        assertTrue(states[0].isClaimedOrDestroyed());
         verify(mDelegate).onFinished(eq(false));
     }
 
@@ -365,6 +375,46 @@ public class TabRestorerUnitTest {
         // Empty contentsState buffer limit == 0 falls back to createTabWithoutContentsState.
         verify(mTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
         verify(mTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
+    }
+
+    @Test
+    public void testRestoreTab_ClaimsLoadedTabState() {
+        LoadedTabState state = createLoadedTabState(1, UrlConstants.GOOGLE_URL);
+        when(mStorageLoadedData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {state});
+        when(mStorageLoadedData.getActiveTabIndex()).thenReturn(0);
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(1);
+        when(tab.getUrl()).thenReturn(new GURL(UrlConstants.GOOGLE_URL));
+        when(mTabCreator.createFrozenTab(any(), eq(1), eq(0))).thenReturn(tab);
+
+        mRestorer.onDataLoaded(mStorageLoadedData);
+        mRestorer.start(/* restoreActiveTabImmediately= */ true);
+
+        assertTrue(state.isClaimedOrDestroyed());
+    }
+
+    @Test
+    public void testRestoreTab_SkippedTabDestroysContentsState() {
+        TabState tabState = new TabState();
+        tabState.url = new GURL(UrlConstants.GOOGLE_URL);
+        WebContentsState contentsState = mock(WebContentsState.class);
+        ByteBuffer emptyBuffer = ByteBuffer.allocate(0);
+        when(contentsState.buffer()).thenReturn(emptyBuffer);
+        when(contentsState.getVirtualUrlFromState()).thenReturn(UrlConstants.GOOGLE_URL);
+        tabState.contentsState = contentsState;
+        LoadedTabState state = new LoadedTabState(1, tabState);
+
+        when(mStorageLoadedData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {state});
+        when(mStorageLoadedData.getActiveTabIndex()).thenReturn(-1);
+
+        mRestorer.onDataLoaded(mStorageLoadedData);
+        mRestorer.start(/* restoreActiveTabImmediately= */ false);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(contentsState).destroy();
+        assertNull(tabState.contentsState);
+        assertTrue(state.isClaimedOrDestroyed());
     }
 
     private LoadedTabState createLoadedTabState(int id, String url) {
