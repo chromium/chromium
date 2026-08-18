@@ -4,6 +4,7 @@
 
 #include "crypto/unexportable_key.h"
 
+#include <algorithm>
 #include <limits>
 #include <optional>
 #include <tuple>
@@ -150,7 +151,7 @@ class UnexportableKeyTest
             crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256) {
       return crypto::sign::SignatureKind::ECDSA_SHA1;
     }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
     switch (algorithm()) {
       case crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
         return crypto::sign::SignatureKind::ECDSA_SHA256;
@@ -530,6 +531,7 @@ TEST_P(UnexportableKeyTest, FromWrappedSigningKeyFailsForAttestationKey) {
       provider->FromWrappedSigningKeySlowly(attestation_wrapped);
   EXPECT_FALSE(loaded_signing_key);
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_P(UnexportableKeyTest, AttestationKeyCanSignSlowly) {
   if (provider_type() != Provider::kTPM && provider_type() != Provider::kFake) {
@@ -564,7 +566,44 @@ TEST_P(UnexportableKeyTest, AttestationKeyCanSignSlowly) {
 
   EXPECT_TRUE(crypto::sign::Verify(signature_kind(), public_key, msg, sig));
 }
-#endif
+
+TEST_P(UnexportableKeyTest, AttestationKeyCanSignArbitraryPayloadSizes) {
+  if (provider_type() != Provider::kTPM && provider_type() != Provider::kFake) {
+    GTEST_SKIP() << "Attestation keys are only supported on TPM or Fake.";
+  }
+
+  std::optional<crypto::ScopedFakeUnexportableKeyProvider> fake;
+  if (provider_type() == Provider::kFake) {
+    fake.emplace();
+  }
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
+  if (!provider) {
+    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+  auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
+  if (!attestation_key) {
+    GTEST_SKIP()
+        << "Provider does not support the requested attestation algorithm.";
+  }
+
+  ASSERT_OK_AND_ASSIGN(auto public_key,
+                       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+                           attestation_key->GetSubjectPublicKeyInfo()));
+
+  for (size_t size : {0u, 512u, 1024u, 1025u, 2048u, 3500u}) {
+    SCOPED_TRACE(testing::Message() << "Payload size: " << size);
+    std::vector<uint8_t> msg(size);
+    std::ranges::generate(
+        msg, [i = 0]() mutable { return static_cast<uint8_t>(i++); });
+
+    ASSERT_OK_AND_ASSIGN(auto sig, attestation_key->SignSlowly(msg));
+    EXPECT_TRUE(crypto::sign::Verify(signature_kind(), public_key, msg, sig));
+  }
+}
 
 TEST_P(UnexportableKeyTest, AttestationKeyMock) {
   crypto::ScopedMockUnexportableKeyProvider mock_provider;
@@ -657,9 +696,10 @@ TEST_P(UnexportableKeyTest, AttestationKeySignFailsForTpmGeneratedValue) {
 
 #if BUILDFLAG(IS_APPLE)
   if (provider_type() == Provider::kTPM) {
-    GTEST_SKIP() << "Secure Enclave does not have TPM-style restrictions.";
+    GTEST_SKIP() << "Apple Secure Enclave keys are not subject to TPM 2.0 "
+                    "TPM_GENERATED_VALUE signing restrictions.";
   }
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
 
   std::optional<crypto::ScopedFakeUnexportableKeyProvider> fake;
   if (provider_type() == Provider::kFake) {
