@@ -37,6 +37,7 @@ import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.HttpAuthDatabase;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.StartupCallSite;
+import org.chromium.android_webview.StartupController;
 import org.chromium.android_webview.StartupDiagnostics;
 import org.chromium.android_webview.StartupMetrics;
 import org.chromium.android_webview.StartupTasksRunner;
@@ -138,8 +139,8 @@ public class WebViewChromiumAwInit {
     private final WebViewChromiumRunQueue mWebViewStartUpCallbackRunQueue =
             new WebViewChromiumRunQueue();
 
-    private final AwBrowserProcess.StartupDelegate mStartupDelegate =
-            new AwBrowserProcess.StartupDelegate() {
+    private final StartupController.Delegate mStartupDelegate =
+            new StartupController.Delegate() {
                 @Override
                 public void waitForJavaResourcesSetup() {
                     WebViewChromiumAwInit.this.waitForJavaResourcesSetup();
@@ -164,6 +165,9 @@ public class WebViewChromiumAwInit {
                     return GraphicsUtils.getDrawSWFunctionTable();
                 }
             };
+
+    @SuppressWarnings("UnusedVariable")
+    private final StartupController mStartupController = new StartupController(mStartupDelegate);
 
     private final AtomicInteger mChromiumFirstStartupRequestMode =
             new AtomicInteger(StartupTasksRunner.StartupRequestMode.UNSET);
@@ -639,7 +643,7 @@ public class WebViewChromiumAwInit {
                 mStartupDiagnostics.setSynchronousChromiumInitLocation(
                         new Throwable(
                                 "Location where Chromium init was started synchronously on the UI"
-                                        + " thread"));
+                                         + " thread"));
                 // If we are currently running on the UI thread then we must do init now. If there
                 // was already a task posted to the UI thread from another thread to do it, it will
                 // just no-op when it runs.

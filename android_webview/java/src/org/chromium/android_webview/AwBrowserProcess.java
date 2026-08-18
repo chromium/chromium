@@ -106,24 +106,6 @@ public final class AwBrowserProcess {
     private static final TaskRunner sSequencedTaskRunner =
             PostTask.createSequencedTaskRunner(TaskTraits.BEST_EFFORT_MAY_BLOCK);
 
-    /** Delegate interface for callbacks needed during WebView global startup. */
-    public interface StartupDelegate {
-        /** Wait until it's possible to access Android resources defined in the Chromium APK. */
-        void waitForJavaResourcesSetup();
-
-        /** Returns whether to use native sandboxed services. */
-        boolean shouldForceNativeSandboxedServices();
-
-        // TODO(abhijithnair): Rethink whether `getDrawFnFunctionTable` and `getDrawSWFunctionTable`
-        // are the right interface. See
-        // https://chromium-review.git.corp.google.com/c/chromium/src/+/8257352/comment/d9c4282e_3fa74a88/
-        /** Returns the function table pointer for hardware-accelerated drawing. */
-        long getDrawFnFunctionTable();
-
-        /** Returns the function table pointer for software drawing. */
-        long getDrawSWFunctionTable();
-    }
-
     private static String sWebViewPackageName;
     private static @ApkType int sApkType;
     private static @Nullable String sProcessDataDirSuffix;
