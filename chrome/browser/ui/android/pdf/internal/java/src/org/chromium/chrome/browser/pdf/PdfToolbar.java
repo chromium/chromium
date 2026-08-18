@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.pdf;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 import androidx.appcompat.widget.Toolbar;
@@ -186,8 +185,6 @@ public class PdfToolbar extends Toolbar {
         return mDownloadButton != null && mDownloadButton.getVisibility() == View.VISIBLE;
     }
 
-
-
     public boolean isFitToPageButtonVisible() {
         return mFitToPageButton != null && mFitToPageButton.getVisibility() == View.VISIBLE;
     }
@@ -204,23 +201,6 @@ public class PdfToolbar extends Toolbar {
         if (views == null) return;
         for (View view : views) {
             setViewVisibility(view, visible);
-        }
-    }
-
-    @Override
-    public void clearChildFocus(View child) {
-        super.clearChildFocus(child);
-        if (child.getId() == R.id.current_page) {
-            hideKeyboard(child);
-        }
-    }
-
-    private void hideKeyboard(View view) {
-        InputMethodManager imm =
-                (InputMethodManager)
-                        view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }

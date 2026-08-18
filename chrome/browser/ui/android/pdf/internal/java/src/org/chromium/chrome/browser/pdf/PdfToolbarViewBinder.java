@@ -10,7 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -65,39 +67,50 @@ class PdfToolbarViewBinder {
         } else if (PdfToolbarProperties.PAGE_NUMBER_EDIT_LISTENER == key) {
             EditText currentPage = view.findViewById(R.id.current_page);
             Callback<Integer> listener = model.get(PdfToolbarProperties.PAGE_NUMBER_EDIT_LISTENER);
+            currentPage.setOnFocusChangeListener(
+                    (v, hasFocus) -> {
+                        if (!hasFocus) {
+                            String text = currentPage.getText().toString();
+                            boolean isSuccess = false;
+                            if (!text.isEmpty()) {
+                                try {
+                                    int pageNumber = Integer.parseInt(text);
+                                    int totalPageCount =
+                                            model.get(PdfToolbarProperties.TOTAL_PAGE_COUNT);
+                                    if (pageNumber >= 1 && pageNumber <= totalPageCount) {
+                                        listener.onResult(pageNumber);
+                                        isSuccess = true;
+                                    }
+                                } catch (NumberFormatException e) {
+                                    isSuccess = false;
+                                }
+                            }
+                            // If the input was invalid, reset the text to the current page
+                            if (!isSuccess) {
+                                int currentFallback =
+                                        model.get(PdfToolbarProperties.CURRENT_PAGE_NUMBER);
+                                currentPage.setText(String.valueOf(currentFallback));
+                            }
+                            // Hide soft keyboard
+                            KeyboardUtils.hideAndroidSoftKeyboard(currentPage);
+                        }
+                    });
 
             currentPage.setOnEditorActionListener(
                     (v, actionId, event) -> {
-                        if (actionId != EditorInfo.IME_ACTION_GO
-                                && actionId != EditorInfo.IME_ACTION_DONE) {
-                            return false;
+                        if (actionId == EditorInfo.IME_ACTION_GO
+                                || actionId == EditorInfo.IME_ACTION_DONE
+                                // Physical keyboard enter key returns IME_NULL.
+                                || (actionId == EditorInfo.IME_NULL
+                                        && event != null
+                                        && KeyNavigationUtil.isActionDown(event)
+                                        && KeyNavigationUtil.isEnter(event))) {
+                            // Clear focus.
+                            currentPage.clearFocus();
+                            return true;
                         }
-                        boolean isSuccess = false;
-                        String text = currentPage.getText().toString();
-                        if (!text.isEmpty()) {
-                            try {
-                                int pageNumber = Integer.parseInt(text);
-                                int totalPageCount =
-                                        model.get(PdfToolbarProperties.TOTAL_PAGE_COUNT);
-
-                                if (pageNumber >= 1 && pageNumber <= totalPageCount) {
-                                    listener.onResult(pageNumber);
-                                    isSuccess = true;
-                                }
-                            } catch (NumberFormatException e) {
-                                isSuccess = false;
-                            }
-                        }
-                        // If the input was invalid, reset the text to the current page
-                        if (!isSuccess) {
-                            int currentFallback =
-                                    model.get(PdfToolbarProperties.CURRENT_PAGE_NUMBER);
-                            currentPage.setText(String.valueOf(currentFallback));
-                        }
-                        currentPage.clearFocus();
-                        return true;
+                        return false;
                     });
-
         } else if (PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON == key) {
             ImageView fitToPageButton = view.findViewById(R.id.fit_to_page_button);
             if (model.get(PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON)) {
