@@ -9,9 +9,12 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
+#include "remoting/base/mock_session_authz_service_client.h"
 #include "remoting/base/rsa_key_pair.h"
+#include "remoting/base/session_authz_service_client_factory.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/authenticator_test_base.h"
@@ -102,6 +105,28 @@ class ProxyAuthenticator : public Authenticator {
 
  private:
   raw_ptr<Authenticator> authenticator_;
+};
+
+class FakeSessionAuthzServiceClientFactory
+    : public SessionAuthzServiceClientFactory {
+ public:
+  FakeSessionAuthzServiceClientFactory(
+      AuthenticationMethod method,
+      std::unique_ptr<SessionAuthzServiceClient> client)
+      : method_(method), client_(std::move(client)) {}
+
+  std::unique_ptr<SessionAuthzServiceClient> Create() override {
+    return std::move(client_);
+  }
+
+  AuthenticationMethod method() override { return method_; }
+
+ protected:
+  ~FakeSessionAuthzServiceClientFactory() override = default;
+
+ private:
+  AuthenticationMethod method_;
+  std::unique_ptr<SessionAuthzServiceClient> client_;
 };
 
 }  // namespace
@@ -465,6 +490,76 @@ TEST_F(NegotiatingAuthenticatorTest,
   client->ProcessMessage(host_message, base::DoNothing());
 
   EXPECT_EQ(client, nullptr);
+}
+
+TEST_F(NegotiatingAuthenticatorTest,
+       CreateHostAuthenticator_SharedSecret_SynchronousTeardown) {
+  auto auth_config =
+      std::make_unique<HostAuthenticationConfig>(host_cert_, key_pair_);
+  auth_config->AddSharedSecretAuth("hash");
+  auto host = std::make_unique<NegotiatingHostAuthenticator>(
+      kHostJid, kClientJid, std::move(auth_config));
+
+  JingleAuthentication client_message;
+  client_message.method = AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519;
+
+  // This should not crash.
+  host->ProcessMessage(client_message,
+                       base::BindLambdaForTesting([&]() { host.reset(); }));
+
+  EXPECT_EQ(host, nullptr);
+}
+
+TEST_F(NegotiatingAuthenticatorTest,
+       CreateHostAuthenticator_Pairing_SynchronousTeardown) {
+  auto pairing_registry = base::MakeRefCounted<SynchronousPairingRegistry>(
+      std::make_unique<MockPairingRegistryDelegate>());
+  auto auth_config =
+      std::make_unique<HostAuthenticationConfig>(host_cert_, key_pair_);
+  auth_config->AddPairingAuth(pairing_registry);
+  auth_config->AddSharedSecretAuth("hash");
+  auto host = std::make_unique<NegotiatingHostAuthenticator>(
+      kHostJid, kClientJid, std::move(auth_config));
+
+  JingleAuthentication client_message;
+  client_message.method = AuthenticationMethod::PAIRED_SPAKE2_CURVE25519;
+
+  // This should not crash.
+  host->ProcessMessage(client_message,
+                       base::BindLambdaForTesting([&]() { host.reset(); }));
+
+  EXPECT_EQ(host, nullptr);
+}
+
+TEST_F(NegotiatingAuthenticatorTest,
+       CreateHostAuthenticator_SessionAuthz_SynchronousTeardown) {
+  auto mock_client = std::make_unique<MockSessionAuthzServiceClient>();
+  EXPECT_CALL(*mock_client, GenerateHostToken(_))
+      .WillOnce([](MockSessionAuthzServiceClient::GenerateHostTokenCallback
+                       callback) {
+        std::move(callback).Run(
+            HttpStatus(HttpStatus::Code::PERMISSION_DENIED, "denied"), nullptr);
+      });
+
+  auto factory = base::MakeRefCounted<FakeSessionAuthzServiceClientFactory>(
+      AuthenticationMethod::CLOUD_SESSION_AUTHZ_SPAKE2_CURVE25519,
+      std::move(mock_client));
+
+  auto auth_config =
+      std::make_unique<HostAuthenticationConfig>(host_cert_, key_pair_);
+  auth_config->AddSessionAuthzAuth(factory);
+  auto host = std::make_unique<NegotiatingHostAuthenticator>(
+      kHostJid, kClientJid, std::move(auth_config));
+
+  JingleAuthentication client_message;
+  client_message.method =
+      AuthenticationMethod::CLOUD_SESSION_AUTHZ_SPAKE2_CURVE25519;
+
+  // This should not crash.
+  host->ProcessMessage(client_message,
+                       base::BindLambdaForTesting([&]() { host.reset(); }));
+
+  EXPECT_EQ(host, nullptr);
 }
 
 }  // namespace remoting::protocol
