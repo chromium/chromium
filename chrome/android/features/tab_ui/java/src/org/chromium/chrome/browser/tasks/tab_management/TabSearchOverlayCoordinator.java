@@ -11,18 +11,23 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Browser;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
@@ -61,6 +66,7 @@ import org.chromium.chrome.browser.searchwidget.SearchActivityUtils;
 import org.chromium.chrome.browser.searchwidget.SearchBoxDataProvider;
 import org.chromium.chrome.browser.searchwidget.SearchUiCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -143,7 +149,6 @@ public class TabSearchOverlayCoordinator
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TabSearchDismissalReason)
 
     private final Activity mActivity;
-    private final ViewGroup mParentContainer;
     private final WindowAndroid mWindowAndroid;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final SnackbarManager mSnackbarManager;
@@ -155,6 +160,7 @@ public class TabSearchOverlayCoordinator
     private final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final TabObscuringHandler mTabObscuringHandler;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
     private final PropertyModel mModel;
@@ -170,15 +176,16 @@ public class TabSearchOverlayCoordinator
                     PropertyModel, TabSearchOverlayViewBinder.ViewHolder, PropertyKey>
             mChangeProcessor;
     private @Nullable LinearLayout mPanelContainer;
+    private @Nullable PopupWindow mPopupWindow;
     private @Nullable SearchUiCoordinator mSearchUiCoordinator;
     private ViewTreeObserver.@Nullable OnWindowFocusChangeListener mWindowFocusListener;
+    private TabObscuringHandler.@Nullable Token mTabObscuringToken;
     private boolean mEncounteredEmptyStateThisSession;
 
     /**
      * Constructs a new TabSearchOverlayCoordinator.
      *
      * @param activity The current Android Activity.
-     * @param parentContainer The parent ViewGroup to attach the search overlay view to.
      * @param windowAndroid The window helper for managing window-level state.
      * @param profileSupplier Supplier for the current Profile.
      * @param snackbarManager Manager for showing snackbar notifications.
@@ -190,10 +197,10 @@ public class TabSearchOverlayCoordinator
      * @param compositorViewHolderSupplier Supplier for the compositor view holder.
      * @param tabGroupUiActionHandlerSupplier Supplier for the tab group UI action handler.
      * @param desktopWindowStateManager Manager for monitoring desktop windowing state changes.
+     * @param tabObscuringHandler Delegate object handling obscuring views.
      */
     public TabSearchOverlayCoordinator(
             Activity activity,
-            ViewGroup parentContainer,
             WindowAndroid windowAndroid,
             MonotonicObservableSupplier<Profile> profileSupplier,
             SnackbarManager snackbarManager,
@@ -204,9 +211,9 @@ public class TabSearchOverlayCoordinator
             BackPressManager backPressManager,
             MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            TabObscuringHandler tabObscuringHandler) {
         mActivity = activity;
-        mParentContainer = parentContainer;
         mWindowAndroid = windowAndroid;
         mProfileSupplier = profileSupplier;
         mSnackbarManager = snackbarManager;
@@ -218,6 +225,7 @@ public class TabSearchOverlayCoordinator
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mDesktopWindowStateManager = desktopWindowStateManager;
+        mTabObscuringHandler = tabObscuringHandler;
         mBackPressManager.addHandler(this, BackPressHandler.Type.TAB_SEARCH_OVERLAY);
         mLifecycleDispatcher.register(this);
 
@@ -244,6 +252,10 @@ public class TabSearchOverlayCoordinator
 
     /** Destroys the coordinator, cleaning up resources and child coordinators. */
     public void destroy() {
+        if (mTabObscuringToken != null) {
+            mTabObscuringHandler.unobscure(mTabObscuringToken);
+            mTabObscuringToken = null;
+        }
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
@@ -263,10 +275,14 @@ public class TabSearchOverlayCoordinator
             mSearchUiCoordinator = null;
         }
         mSearchBoxDataProvider.destroy();
-        if (mPanelContainer != null) {
-            mParentContainer.removeView(mPanelContainer);
-            mPanelContainer = null;
+        if (mPopupWindow != null) {
+            if (mPopupWindow.isShowing()) {
+                mModel.set(TabSearchOverlayProperties.VISIBLE, false);
+            }
+            mPopupWindow.dismiss();
+            mPopupWindow = null;
         }
+        mPanelContainer = null;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -277,27 +293,15 @@ public class TabSearchOverlayCoordinator
         mPanelContainer =
                 (LinearLayout)
                         LayoutInflater.from(mActivity)
-                                .inflate(
-                                        R.layout.tab_search_overlay_layout,
-                                        mParentContainer,
-                                        false);
+                                .inflate(R.layout.tab_search_overlay_layout, null, false);
         final LinearLayout panelContainer = mPanelContainer;
         View panelView = panelContainer.findViewById(R.id.tab_search_overlay_panel);
         panelView.addOnLayoutChangeListener((_, _, _, _, _, _, _, _, _) -> updateExclusionRects());
         View searchActivityView = panelContainer.findViewById(R.id.search_activity_container);
 
+        // Set up the overlay container within a standalone PopupWindow anchored to the DecorView.
+        setupPopupWindow(panelContainer);
         setupWindowFocusListener(panelContainer);
-        mParentContainer.addView(panelContainer);
-
-        // Consume all unhandled touch, hover, generic motion, and context click events to prevent
-        // them from bleeding through to sibling views underneath the overlay (i.e. Vertical Tabs).
-        // This makes the search box have focus the entire time the overlay panel is visible. If the
-        // desire is to remove focus when clicking on empty space on the panel, the bleed through
-        // bug will need to be addressed and input preservation logic added in LocationBarMediator.
-        panelView.setOnTouchListener(this::consumeMotionEvent);
-        panelView.setOnHoverListener(this::consumeMotionEvent);
-        panelView.setOnGenericMotionListener(this::consumeMotionEvent);
-        panelView.setOnContextClickListener(this::consumeContextClick);
 
         // Set up listeners on the scrim view to forward scroll and drag events to the
         // underlying web contents page, which is managed by the compositor view.
@@ -397,6 +401,58 @@ public class TabSearchOverlayCoordinator
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, viewHolder, TabSearchOverlayViewBinder::bind);
+    }
+
+    /**
+     * Configures the {@link PopupWindow} used to host the Tab Search overlay.
+     *
+     * <p>The overlay is displayed within a standalone {@link PopupWindow} anchored to the
+     * Activity's DecorView rather than directly within the root view hierarchy. This provides
+     * several key benefits:
+     *
+     * <ul>
+     *   <li>Enables the overlay to extend across the entire window area (including into the app
+     *       header / caption bar area in desktop windowing environments) without being constrained
+     *       by layout boundaries or parent clipping.
+     *   <li>Isolates the overlay window hierarchy, eliminating hover and pointer event
+     *       bleed-through to underlying views (such as toolbar buttons or tab strip elements).
+     *   <li>Naturally captures and consumes touch and click events across the full window,
+     *       preventing unwanted interaction with views positioned beneath the overlay.
+     *   <li>Avoids focus and Z-index collisions with underlying views in the main Activity
+     *       hierarchy.
+     * </ul>
+     *
+     * @param contentView The root view to set as the popup's content view.
+     */
+    private void setupPopupWindow(View contentView) {
+        mPopupWindow =
+                new PopupWindow(mActivity) {
+                    @Override
+                    public void dismiss() {
+                        // When the popup is visible, dismiss() is only invoked by the Android
+                        // framework when a system Back press or Escape key is received by the
+                        // PopupDecorView. All other dismissal paths call hide() directly with their
+                        // specific dismissal reasons and invoke dismiss() once the hide animation
+                        // completes (at which point isVisible() is false).
+                        if (isVisible()) {
+                            hide(TabSearchDismissalReason.BACK_PRESS);
+                        } else {
+                            super.dismiss();
+                        }
+                    }
+                };
+        mPopupWindow.setContentView(contentView);
+        mPopupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+        mPopupWindow.setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
+        mPopupWindow.setFocusable(true);
+        mPopupWindow.setOutsideTouchable(true);
+        mPopupWindow.setClippingEnabled(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            mPopupWindow.setAttachedInDecor(true);
+        }
+        mPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
+        mPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
     private void setupWindowFocusListener(LinearLayout panelContainer) {
@@ -500,14 +556,6 @@ public class TabSearchOverlayCoordinator
         return true;
     }
 
-    private boolean consumeMotionEvent(View v, MotionEvent event) {
-        return true;
-    }
-
-    private boolean consumeContextClick(View v) {
-        return true;
-    }
-
     private void bringTabToFront(TabWindowInfo tabWindowInfo, GURL url) {
         SearchActivityUtils.bringTabToFront(
                 mActivity,
@@ -569,8 +617,21 @@ public class TabSearchOverlayCoordinator
         ensureInitialized();
         if (mModel.get(TabSearchOverlayProperties.VISIBLE)) return;
 
+        // Obscure underlying tabs and toolbar to suppress accessibility focus and screen reader
+        // interactions.
+        if (mTabObscuringToken == null) {
+            mTabObscuringToken =
+                    mTabObscuringHandler.obscure(TabObscuringHandler.Target.ALL_TABS_AND_TOOLBAR);
+        }
+
         // Reset session-scoped metrics tracking for the new search session.
         mEncounteredEmptyStateThisSession = false;
+
+        if (mPopupWindow != null && !mPopupWindow.isShowing()) {
+            View decorView = mActivity.getWindow().getDecorView();
+            // Anchor the popup window to the top-left of the screen to cover the full window.
+            mPopupWindow.showAtLocation(decorView, Gravity.START | Gravity.TOP, 0, 0);
+        }
 
         // Ensure that transient properties (like empty state visibility) are reset to their
         // default states before showing the search UI.
@@ -594,6 +655,11 @@ public class TabSearchOverlayCoordinator
                 "Android.TabSearch.DismissalReason", reason, TabSearchDismissalReason.NUM_ENTRIES);
         RecordHistogram.recordBooleanHistogram(
                 "Android.TabSearch.SessionHadEmptyState", mEncounteredEmptyStateThisSession);
+
+        if (mTabObscuringToken != null) {
+            mTabObscuringHandler.unobscure(mTabObscuringToken);
+            mTabObscuringToken = null;
+        }
 
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
         mBackPressStateSupplier.set(false);
@@ -682,6 +748,9 @@ public class TabSearchOverlayCoordinator
         if (mSearchUiCoordinator != null) {
             var locationBar = mSearchUiCoordinator.getLocationBarCoordinator();
             locationBar.clearOmniboxFocus();
+        }
+        if (mPopupWindow != null && mPopupWindow.isShowing()) {
+            mPopupWindow.dismiss();
         }
     }
 
@@ -900,5 +969,9 @@ public class TabSearchOverlayCoordinator
 
     ViewTreeObserver.@Nullable OnWindowFocusChangeListener getWindowFocusListenerForTesting() {
         return mWindowFocusListener;
+    }
+
+    @Nullable PopupWindow getPopupWindowForTesting() {
+        return mPopupWindow;
     }
 }

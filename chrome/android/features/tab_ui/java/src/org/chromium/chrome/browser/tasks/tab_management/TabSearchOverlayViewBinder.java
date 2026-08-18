@@ -71,6 +71,11 @@ public class TabSearchOverlayViewBinder {
                     // calls), immediately set visibility to GONE instead of running the hide
                     // animation as a safeguard.
                     view.panelContainer.setVisibility(View.GONE);
+                    Runnable onHideFinished =
+                            model.get(TabSearchOverlayProperties.ON_HIDE_FINISHED);
+                    if (onHideFinished != null) {
+                        onHideFinished.run();
+                    }
                 }
             }
         } else if (TabSearchOverlayProperties.IS_INCOGNITO == propertyKey) {

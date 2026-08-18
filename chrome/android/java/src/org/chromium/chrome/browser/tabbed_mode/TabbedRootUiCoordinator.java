@@ -2275,14 +2275,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (ChromeFeatureList.sTabSearchForDesktop.isEnabled()) {
-            ViewGroup tabSearchParent =
-                    anchorContainerParent != null
-                            ? anchorContainerParent
-                            : assumeNonNull(mCoordinator);
             mTabSearchOverlayCoordinator =
                     new TabSearchOverlayCoordinator(
                             mActivity,
-                            tabSearchParent,
                             mWindowAndroid,
                             mProfileSupplier,
                             assumeNonNull(mSnackbarManagerSupplier.get()),
@@ -2293,7 +2288,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mBackPressManager,
                             mCompositorViewHolderSupplier,
                             mTabGroupUiActionHandlerSupplier,
-                            getDesktopWindowStateManager());
+                            getDesktopWindowStateManager(),
+                            mTabObscuringHandlerSupplier.get());
         }
 
         mSideUiCoordinator =
