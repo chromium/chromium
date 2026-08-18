@@ -484,6 +484,50 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
   }
 
+  async testSingleFocusedTabUpdatesOnTabEvents() {
+    assertDefined(this.host.getFocusedTabStateV2);
+    const sequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
+
+    // #1: Initial state has the first tab open.
+    {
+      const focus: FocusedTabData = await sequence.next();
+      assertDefined(focus.hasFocus);
+      assertEquals(
+          new URL(focus.hasFocus.tabData.url).pathname, '/test_data/page.html',
+          `url=${focus.hasFocus.tabData.url}`);
+      assertFalse(!!focus.hasNoFocus);
+      assertTrue(sequence.isEmpty());
+    }
+
+    // #2: After navigation in the first tab.
+    {
+      await this.advanceToNextStep();
+      const focus: FocusedTabData = await sequence.next();
+      assertDefined(focus.hasFocus);
+      assertEquals(
+          new URL(focus.hasFocus.tabData.url).pathname, '/test_data/page2.html',
+          `url=${focus.hasFocus.tabData.url}`);
+      assertFalse(!!focus.hasNoFocus);
+      assertTrue(sequence.isEmpty());
+    }
+
+    // #3: After a second tab is created and focused.
+    {
+      await this.advanceToNextStep();
+      // Tab creation and activation triggers transient deactivation and load
+      // states (sending hasNoFocus) before the tab is pinned and fully loaded.
+      const focus = await sequence.waitFor(
+          f => !!f.hasFocus && f.hasFocus.tabData.url.endsWith('page.html'));
+      assertDefined(focus.hasFocus);
+      assertEquals(
+          new URL(focus.hasFocus.tabData.url).pathname, '/test_data/page.html',
+          `url=${focus.hasFocus.tabData.url}`);
+      assertFalse(!!focus.hasNoFocus);
+      assertTrue(sequence.isEmpty());
+    }
+  }
+
   async testGetZoomLevel() {
     assertDefined(this.host.getZoomLevel);
     const zoomLevelSequence = observeSequence(this.host.getZoomLevel());

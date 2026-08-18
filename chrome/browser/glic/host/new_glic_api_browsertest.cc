@@ -1116,6 +1116,30 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ASSERT_OK(OpenGlicForActiveTab());
   ContinueJsTest();
 }
+// TODO(b/548051210): Flaky on Android and Linux due to debounce timing.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_testSingleFocusedTabUpdatesOnTabEvents \
+  testSingleFocusedTabUpdatesOnTabEvents
+#else
+#define MAYBE_testSingleFocusedTabUpdatesOnTabEvents \
+  DISABLED_testSingleFocusedTabUpdatesOnTabEvents
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       MAYBE_testSingleFocusedTabUpdatesOnTabEvents) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // Step 2: Navigate the active tab.
+  auto* first_tab = GetTabListInterface()->GetActiveTab();
+  NavigateTab(*first_tab, GetTestUrl("page2.html"));
+  ContinueJsTest();
+
+  // Step 3: Create and activate a second tab.
+  auto* second_tab = CreateAndActivateTab(GetTestUrl("page.html"));
+  GetOnlyGlicInstance()->GetSharingManager()->PinTabs(
+      {second_tab->GetHandle()});
+  ContinueJsTest();
+}
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetZoomLevel) {
   // Confirm that the observer is notified through getZoomLevel of the initial
   // state, i.e. zoom level of 1.0.

@@ -50,58 +50,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
   }
 
-  async testSingleFocusedTabUpdatesOnTabEvents() {
-    assertDefined(this.host.getFocusedTabStateV2);
-    const sequence =
-        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
-    // Check events from first tab.
-    {
-      const focus = await sequence.next();
-      assertDefined(
-          !!focus.hasFocus,
-          `#1: should have a focused tab; FocusedTabData=${
-              JSON.stringify(focus)}`);
-      assertEquals(
-          new URL(focus.hasFocus?.tabData.url).pathname,
-          '/glic/browser_tests/test.html',
-          `#1: Unexpected URL; FocusedTabData=${JSON.stringify(focus)}`);
-      assertTrue(
-          sequence.isEmpty(), '#1: Spurious updates after first tab opened');
-    }
-
-    // After a navigation occurs in the first tab.
-    {
-      await this.advanceToNextStep();
-      const focus = await sequence.next();
-      assertDefined(
-          !!focus.hasFocus,
-          `#2: should have a focused tab; FocusedTabData=${
-              JSON.stringify(focus)}`);
-      assertEquals(
-          new URL(focus.hasFocus?.tabData.url).pathname,
-          '/scrollable_page_with_content.html',
-          `#2: Unexpected URL; FocusedTabData=${JSON.stringify(focus)}`);
-      assertTrue(
-          sequence.isEmpty(), '#2: Spurious updates after first tab navigated');
-    }
-
-    // A new tab is opened and navigated.
-    {
-      await this.advanceToNextStep();
-      const focus = await sequence.next();
-      assertDefined(
-          !!focus.hasFocus,
-          `#3: should have a focused tab; FocusedTabData=${
-              JSON.stringify(focus)}`);
-      assertEquals(
-          new URL(focus.hasFocus?.tabData.url).pathname,
-          '/glic/browser_tests/test.html',
-          `#3: Unexpected URL; FocusedTabData=${JSON.stringify(focus)}`);
-      assertTrue(
-          sequence.isEmpty(), '#3: Spurious updates after a new tab opened');
-    }
-  }
-
   async testGetContextFromFocusedTabWithoutPermission() {
     assertDefined(this.host.getContextFromFocusedTab);
     await this.host.setTabContextPermissionState(false);

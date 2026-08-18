@@ -1471,66 +1471,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
       << "We should not send most of the fetches";
 }
 
-// Given the time-based nature of debouncing, testing with non-mocked clocks can
-// be flaky. This suite increases the applied delays to reduce the chance of
-// flakiness. This suite is disabled on all slow binaries.
-#if defined(SLOW_BINARY)
-#define MAYBE_GlicApiTestWithOneTabMoreDebounceDelay \
-  DISABLED_GlicApiTestWithOneTabMoreDebounceDelay
-#else
-#define MAYBE_GlicApiTestWithOneTabMoreDebounceDelay \
-  GlicApiTestWithOneTabMoreDebounceDelay
-#endif
-class MAYBE_GlicApiTestWithOneTabMoreDebounceDelay
-    : public GlicApiTestWithOneTab {
- public:
-  MAYBE_GlicApiTestWithOneTabMoreDebounceDelay() {
-    features2_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{
-            features::kGlicTabFocusDataDedupDebounce,
-            {
-                // Set an arbitrarily high debounce delay to avoid flakiness.
-                {features::kGlicTabFocusDataDebounceDelayMs.name, "1000"},
-            },
-        }},
-        /*disabled_features=*/
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList features2_;
-};
-
-// Confirm that the web client receives a minimal number of focused tab updates
-// by triggering events that generate such updates.
-// TODO(b/424242331): figure out why this is failing on linux-rel bot.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_testSingleFocusedTabUpdatesOnTabEvents \
-  testSingleFocusedTabUpdatesOnTabEvents
-#else
-#define MAYBE_testSingleFocusedTabUpdatesOnTabEvents \
-  DISABLED_testSingleFocusedTabUpdatesOnTabEvents
-#endif
-IN_PROC_BROWSER_TEST_P(MAYBE_GlicApiTestWithOneTabMoreDebounceDelay,
-                       MAYBE_testSingleFocusedTabUpdatesOnTabEvents) {
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  // Initial state with first tab.
-  ExecuteJsTest();
-
-  // Navigate to another page in the first tab.
-  RunTestSequence(NavigateWebContents(
-      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
-                     "/scrollable_page_with_content.html")));
-  ContinueJsTest();
-
-  // Open a new tab that becomes active and navigate to a another page.
-  RunTestSequence(AddInstrumentedTab(
-      kSecondTab, InProcessBrowserTest::embedded_test_server()->GetURL(
-                      "/glic/browser_tests/test.html")));
-  ContinueJsTest();
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testSwitchConversationToExistingInstance) {
   // Open glic. It will register a conversation.
@@ -1849,10 +1789,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestUserStatusCheckTest,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         MAYBE_GlicApiTestWithOneTabMoreDebounceDelay,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
