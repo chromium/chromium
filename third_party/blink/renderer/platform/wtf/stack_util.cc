@@ -181,12 +181,14 @@ bool IsOnStack(void* address) {
   // Fall through as there is still a regular stack present even when running
   // with ASAN fake stacks.
 #endif  // defined(ADDRESS_SANITIZER)
+#if defined(__has_feature)
 #if __has_feature(safe_stack)
   if (__builtin___get_unsafe_stack_ptr() <= address &&
       address <= __builtin___get_unsafe_stack_top()) {
     return true;
   }
 #endif  // __has_feature(safe_stack)
+#endif  // defined(__has_feature)
   return (GetCurrentStackPosition() <= reinterpret_cast<uintptr_t>(address)) &&
          (address <= GetStackStart());
 }
