@@ -1933,16 +1933,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OptimizationGuide.ModelQualityLogsUploaderService.Status"
-    enum="HttpResponseCode" expires_after="2025-08-10">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>rajendrant@chromium.org</owner>
-  <summary>
-    The HTTP response code for each model quality logs upload, recorded on
-    success and failure.
-  </summary>
-</histogram>
-
 <histogram
     name="OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.{LogAiDataRequestFeature}"
     enum="OptimizationGuideModelQualityLogsUploadStatus"
