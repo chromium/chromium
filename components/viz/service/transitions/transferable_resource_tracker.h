@@ -81,7 +81,7 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
 
   // Ref count management for the resources returned by `ImportResources`.
   void RefResource(ResourceId id);
-  void UnrefResource(ResourceId id,
+  bool UnrefResource(ResourceId id,
                      int count,
                      const gpu::SyncToken& sync_token);
 

@@ -288,15 +288,17 @@ void SurfaceAnimationManager::RefResources(
 }
 
 void SurfaceAnimationManager::UnrefResources(
-    const std::vector<ReturnedResourceViz>& resources) {
-  if (transferable_resource_tracker_.is_empty())
+    std::vector<ReturnedResourceViz>& resources) {
+  if (transferable_resource_tracker_.is_empty()) {
     return;
-  for (const auto& resource : resources) {
-    if (resource.id >= kVizReservedRangeStartId) {
-      transferable_resource_tracker_.UnrefResource(resource.id, resource.count,
-                                                   resource.sync_token);
-    }
   }
+  std::erase_if(resources, [this](const ReturnedResourceViz& resource) {
+    if (resource.id >= kVizReservedRangeStartId) {
+      return transferable_resource_tracker_.UnrefResource(
+          resource.id, resource.count, resource.sync_token);
+    }
+    return false;
+  });
 }
 
 // static

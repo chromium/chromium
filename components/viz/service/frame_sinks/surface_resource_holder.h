@@ -28,8 +28,10 @@ class ReservedResourceDelegate {
       const std::vector<TransferableResource>& resources) = 0;
   virtual void RefResources(
       const std::vector<TransferableResource>& resources) = 0;
-  virtual void UnrefResources(
-      const std::vector<ReturnedResourceViz>& resources) = 0;
+  // Unrefs resources managed by this delegate. The delegate is expected to
+  // remove all handled/unreferenced resources from `resources` in-place so that
+  // any remaining unhandled reserved resources can be detected and cleaned up.
+  virtual void UnrefResources(std::vector<ReturnedResourceViz>& resources) = 0;
 };
 
 // A SurfaceResourceHolder manages the lifetime of resources submitted by a
@@ -48,7 +50,10 @@ class VIZ_SERVICE_EXPORT SurfaceResourceHolder {
   void Reset();
   void ReceiveFromChild(const std::vector<TransferableResource>& resources);
   void RefResources(const std::vector<TransferableResource>& resources);
-  void UnrefResources(std::vector<ReturnedResourceViz> resources);
+  // Returns unhandled reserved resources (with IDs >=
+  // kVizReservedRangeStartId).
+  std::vector<ReturnedResourceViz> UnrefResources(
+      std::vector<ReturnedResourceViz> resources);
 
  private:
   raw_ptr<SurfaceResourceHolderClient> client_;

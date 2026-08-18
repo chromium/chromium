@@ -101,12 +101,13 @@ void TransferableResourceTracker::RefResource(ResourceId id) {
   id_tracker_->RefId(id, /*count=*/1);
 }
 
-void TransferableResourceTracker::UnrefResource(
+bool TransferableResourceTracker::UnrefResource(
     ResourceId id,
     int count,
     const gpu::SyncToken& sync_token) {
-  if (!managed_resources_.contains(id)) {
-    return;
+  auto it = managed_resources_.find(id);
+  if (it == managed_resources_.end()) {
+    return false;
   }
 
   // Always update the release sync token, even if we're still keeping the
@@ -114,14 +115,13 @@ void TransferableResourceTracker::UnrefResource(
   // then release it from surface animation manager, we will still have the
   // right sync token.
   if (sync_token.HasData()) {
-    auto it = managed_resources_.find(id);
-    CHECK(it != managed_resources_.end());
     it->second.release_sync_token = sync_token;
   }
 
   if (id_tracker_->UnrefId(id, count)) {
-    managed_resources_.erase(id);
+    managed_resources_.erase(it);
   }
+  return true;
 }
 
 TransferableResourceTracker::TransferableResourceHolder::

@@ -79,7 +79,13 @@ class VIZ_COMMON_EXPORT ReservedResourceIdTracker {
   // resource id.
   bool UnrefId(ResourceId id, int count);
 
+  // Returns true if the given `id` is currently tracked in `id_ref_counts_`.
+  bool IsTracked(ResourceId id) const;
+
   void set_next_id_for_test(uint32_t next_id) { next_id_ = next_id; }
+  size_t id_ref_counts_size_for_testing() const {
+    return id_ref_counts_.size();
+  }
 
  private:
   uint32_t next_id_ = kVizReservedRangeStartId.GetUnsafeValue();

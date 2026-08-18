@@ -74,6 +74,13 @@ BASE_FEATURE(kDisconnectOnInvalidHitTestRegionList,
 
 namespace {
 
+// If enabled, CompositorFrameSinkSupport cleans up unhandled/orphaned reserved
+// resource IDs when in-flight frame resources are returned after their owning
+// SurfaceAnimationManager (or other delegate) has already been destroyed (e.g.,
+// due to a premature kRelease directive during rapid view transitions).
+BASE_FEATURE(kCleanupOrphanedReservedResourceIds,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool RecordShouldSendBeginFrame(const std::string& reason, bool should_send) {
   TRACE_EVENT2("viz", "SendBeginFrameDecision", "reason", reason, "should_send",
                should_send);
@@ -450,13 +457,30 @@ void CompositorFrameSinkSupport::UnrefResources(
     std::vector<ReturnedResourceViz> resources) {
   // `ReservedResourceDelegate` allocates ResourceIds in a different range
   // than the client so it can process returned resources before
-  // |surface_resource_holder_|.
+  // |surface_resource_holder_|. Delegates remove handled resources from
+  // `resources`.
   ForAllReservedResourceDelegates(
       [&resources](ReservedResourceDelegate& delegate) {
         delegate.UnrefResources(resources);
       });
 
-  surface_resource_holder_.UnrefResources(std::move(resources));
+  std::vector<ReturnedResourceViz> unhandled_resources =
+      surface_resource_holder_.UnrefResources(std::move(resources));
+
+  // Any remaining reserved resource IDs in `unhandled_resources` were not
+  // claimed by any active `ReservedResourceDelegate` (e.g. because the delegate
+  // was destroyed upon receiving a kRelease directive before the in-flight
+  // frame resources were returned). If the cleanup feature is enabled, directly
+  // unref them on the central `ReservedResourceIdTracker` to prevent leaking
+  // IDs.
+  if (base::FeatureList::IsEnabled(kCleanupOrphanedReservedResourceIds)) {
+    auto* id_tracker = frame_sink_manager_->reserved_resource_id_tracker();
+    for (const auto& resource : unhandled_resources) {
+      if (id_tracker->IsTracked(resource.id)) {
+        id_tracker->UnrefId(resource.id, resource.count);
+      }
+    }
+  }
 }
 
 void CompositorFrameSinkSupport::ReturnResources(

@@ -71,8 +71,9 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       const std::vector<TransferableResource>& resources) override;
   void RefResources(
       const std::vector<TransferableResource>& resources) override;
-  void UnrefResources(
-      const std::vector<ReturnedResourceViz>& resources) override;
+  // Unrefs resources managed by this animation manager and removes handled
+  // resources from `resources`.
+  void UnrefResources(std::vector<ReturnedResourceViz>& resources) override;
 
  private:
   friend class SurfaceAnimationManagerTest;

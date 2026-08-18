@@ -2319,6 +2319,88 @@ TEST_P(CompositorFrameSinkSupportTest, ViewTransitionBlitRequestTextureQuad) {
 }
 
 TEST_P(CompositorFrameSinkSupportTest,
+       ViewTransitionRapidReleaseDoesNotLeakReservedResourceIds) {
+  // This test verifies that when a View Transition is rapidly released
+  // (destroying the SurfaceAnimationManager before the in-flight frame
+  // resources are returned to UnrefResources), the reserved resource IDs in
+  // ReservedResourceIdTracker are properly cleaned up.
+  //
+  // When kCleanupOrphanedReservedResourceIds is enabled (default), 0 IDs are
+  // leaked. When kCleanupOrphanedReservedResourceIds is disabled (or without
+  // the fix), this test fails because the reserved resource ID ref count in
+  // ReservedResourceIdTracker is permanently leaked (size == 1).
+  blink::ViewTransitionToken token;
+  gfx::Rect rect(kDefaultSize);
+  gfx::Transform transform;
+
+  auto root_render_pass = CompositorRenderPass::Create();
+  CompositorRenderPassId root_id{1};
+  root_render_pass->SetNew(root_id, rect, rect, transform);
+  SharedQuadState* shared_quad_state =
+      root_render_pass->CreateAndAppendSharedQuadState();
+  ViewTransitionElementResourceId resource_id(token, 1, false);
+
+  auto* vt_quad =
+      root_render_pass->CreateAndAppendDrawQuad<SharedElementDrawQuad>();
+  vt_quad->SetNew(shared_quad_state, rect, rect, resource_id);
+
+  auto orphan_render_pass = CompositorRenderPass::Create();
+  CompositorRenderPassId orphan_id{2};
+  orphan_render_pass->SetNew(orphan_id, rect, rect, transform);
+  shared_quad_state = orphan_render_pass->CreateAndAppendSharedQuadState();
+  auto* solid_quad =
+      orphan_render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  solid_quad->SetNew(shared_quad_state, rect, rect, SkColors::kBlue, false);
+
+  CompositorRenderPassList render_passes;
+  render_passes.push_back(std::move(orphan_render_pass));
+  render_passes.push_back(std::move(root_render_pass));
+  CompositorFrame frame = MakeCompositorFrame(std::move(render_passes));
+  frame.metadata.has_shared_element_resources = true;
+
+  CompositorFrameTransitionDirective::SharedElement shared_element;
+  shared_element.render_pass_id = orphan_id;
+  shared_element.view_transition_element_resource_id = resource_id;
+
+  frame.metadata.transition_directives.push_back(
+      CompositorFrameTransitionDirective::CreateSave(
+          token, /*maybe_cross_frame_sink=*/false, /*sequence_id=*/1,
+          {shared_element}, {}, false));
+
+  auto result = support_->MaybeSubmitCompositorFrame(
+      local_surface_id_, std::move(frame), std::nullopt, 0);
+  EXPECT_EQ(SubmitResult::ACCEPTED, result);
+
+  Surface* surface = support_->GetLastCreatedSurfaceForTesting();
+  ASSERT_TRUE(surface);
+  // Reserved resource is allocated and referenced in the active frame.
+  EXPECT_EQ(manager_->reserved_resource_id_tracker()
+                ->id_ref_counts_size_for_testing(),
+            1u);
+
+  // Process kRelease before the frame is replaced / returned.
+  auto release_directive = CompositorFrameTransitionDirective::CreateRelease(
+      token, /*maybe_cross_frame_sink=*/false, /*sequence_id=*/2,
+      /*delay_layer_tree_view_deletion=*/false);
+  ProcessCompositorFrameTransitionDirective(support_.get(), release_directive,
+                                            surface);
+  EXPECT_FALSE(SupportHasSurfaceAnimationManager(support_.get()));
+
+  // Submit a new frame to displace the active frame, which calls
+  // UnrefFrameResourcesAndRunCallbacks -> UnrefResources.
+  auto result2 = support_->MaybeSubmitCompositorFrame(
+      local_surface_id_, MakeDefaultCompositorFrame(), std::nullopt, 0);
+  EXPECT_EQ(SubmitResult::ACCEPTED, result2);
+
+  // With the feature enabled, the orphaned reserved resource ID was
+  // unreferenced cleanly and no IDs are leaked. Without the feature/fix, this
+  // assertion fails because the ID is leaked (size == 1).
+  EXPECT_EQ(manager_->reserved_resource_id_tracker()
+                ->id_ref_counts_size_for_testing(),
+            0u);
+}
+
+TEST_P(CompositorFrameSinkSupportTest,
        GetRequestRegionProperties_NoSurfaceWithActiveFrame) {
   const auto props =
       support_->GetRequestRegionProperties(VideoCaptureSubTarget());
