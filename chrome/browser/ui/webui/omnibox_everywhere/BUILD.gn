@@ -7,10 +7,12 @@ assert(!is_android)
 source_set("omnibox_everywhere") {
   sources = [
     "composebox_everywhere_handler.cc",
-    "composebox_everywhere_handler.h",
     "omnibox_everywhere_handler.cc",
-    "omnibox_everywhere_handler.h",
     "omnibox_everywhere_ui.cc",
+  ]
+  public = [
+    "composebox_everywhere_handler.h",
+    "omnibox_everywhere_handler.h",
     "omnibox_everywhere_ui.h",
   ]
   public_deps = [
@@ -44,6 +46,7 @@ source_set("omnibox_everywhere") {
     "//components/omnibox/browser:mojo_bindings",
     "//components/omnibox/common:features",
     "//components/search",
+    "//components/search_engines",
     "//components/strings:components_strings",
     "//content/public/browser",
     "//ui/base",

@@ -2175,7 +2175,7 @@ void ContextualSearchboxHandler::OpenUrl(
             base::BindOnce(
                 [](OmniboxEverywhereService* service, const GURL& url,
                    WindowOpenDisposition disposition) {
-                  service->OpenUrl(url, disposition);
+                  service->OpenUrl(url, disposition, ui::PAGE_TRANSITION_LINK);
                 },
                 base::Unretained(service), url, disposition));
         return;

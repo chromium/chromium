@@ -36,6 +36,13 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler {
 
   // searchbox::mojom::PageHandler:
   void OnThumbnailRemoved() override {}
+  void SubmitQuery(const std::string& query_text,
+                   uint8_t mouse_button,
+                   bool alt_key,
+                   bool ctrl_key,
+                   bool meta_key,
+                   bool shift_key,
+                   bool is_voice_search) override;
 
   // Overridden to intercept the Drive upload request, dynamically associate the
   // standalone WebContents with the latest active BrowserWindowInterface, and

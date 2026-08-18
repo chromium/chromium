@@ -25,18 +25,19 @@ class OmniboxEverywhereService : public KeyedService {
   OmniboxEverywhereService& operator=(const OmniboxEverywhereService&) = delete;
   ~OmniboxEverywhereService() override;
 
-  void HidePopup();
-  bool IsPopupVisible() const;
-  void ShowProfilePicker();
-  void OpenUrl(const GURL& url,
-               WindowOpenDisposition disposition,
-               ui::PageTransition transition = ui::PAGE_TRANSITION_LINK);
+  virtual void HidePopup();
+  virtual bool IsPopupVisible() const;
+  virtual void ShowProfilePicker();
+
+  virtual void OpenUrl(const GURL& url,
+                       WindowOpenDisposition disposition,
+                       ui::PageTransition transition);
 
   // KeyedService:
   void Shutdown() override;
 
-  void OnDrivePickerOpened();
-  void OnDrivePickerClosed();
+  virtual void OnDrivePickerOpened();
+  virtual void OnDrivePickerClosed();
 
  private:
   omnibox_everywhere::OmniboxEverywhereController* controller() const;

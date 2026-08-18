@@ -6368,6 +6368,7 @@ test("unit_tests") {
       "../browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics_unittest.cc",
       "../browser/ui/views/tabs/dragging/test/mock_tab_drag_context.cc",
       "../browser/ui/views/tabs/dragging/test/mock_tab_drag_context.h",
+      "../browser/ui/webui/omnibox_everywhere/omnibox_everywhere_handler_unittest.cc",
       "../renderer/accessibility/phrase_segmentation/dependency_parser_model_unittest.cc",
       "../renderer/accessibility/phrase_segmentation/dependency_tree_unittest.cc",
       "../renderer/accessibility/phrase_segmentation/phrase_segmenter_unittest.cc",
