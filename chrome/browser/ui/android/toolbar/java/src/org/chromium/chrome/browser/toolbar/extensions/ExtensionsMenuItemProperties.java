@@ -10,9 +10,10 @@ import android.widget.CompoundButton;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.ControlState.Status;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 @NullMarked
@@ -43,8 +44,8 @@ public class ExtensionsMenuItemProperties {
     public static final WritableObjectPropertyKey<CompoundButton.OnCheckedChangeListener>
             SITE_ACCESS_TOGGLE_ON_CLICK = new WritableObjectPropertyKey<>();
 
-    public static final WritableIntPropertyKey SITE_ACCESS_TOGGLE_STATUS =
-            new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<Status> SITE_ACCESS_TOGGLE_STATUS =
+            new WritableIntDefPropertyKey<>(Status.HIDDEN);
 
     public static final WritableObjectPropertyKey<String> SITE_ACCESS_TOGGLE_TOOLTIP =
             new WritableObjectPropertyKey<>();
@@ -52,8 +53,8 @@ public class ExtensionsMenuItemProperties {
     public static final WritableObjectPropertyKey<View.OnClickListener>
             SITE_PERMISSIONS_BUTTON_ON_CLICK = new WritableObjectPropertyKey<>();
 
-    public static final WritableIntPropertyKey SITE_PERMISSIONS_BUTTON_STATUS =
-            new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<Status> SITE_PERMISSIONS_BUTTON_STATUS =
+            new WritableIntDefPropertyKey<>(Status.HIDDEN);
 
     public static final WritableObjectPropertyKey<String> SITE_PERMISSIONS_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
