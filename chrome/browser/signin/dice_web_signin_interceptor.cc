@@ -1696,8 +1696,7 @@ void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
   BrowserWindowInterface* browser =
       ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   DCHECK(browser);
-  delegate_->ShowFirstRunExperienceInNewProfile(
-      browser->GetBrowserForMigrationOnly(), state_->account_id_,
+  delegate_->ShowFirstRunExperienceInNewProfile(browser, state_->account_id_,
                                                 *state_->interception_type_);
 }
 

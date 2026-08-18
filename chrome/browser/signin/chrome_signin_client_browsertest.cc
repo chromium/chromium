@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
 
   // Create a new browser for the signed-in profile, which should now trigger
   // the survey.
-  Browser* new_browser = CreateBrowser(profile);
+  BrowserWindowInterface* new_browser = CreateBrowser(profile);
   ASSERT_TRUE(new_browser);
 }
 

@@ -24,7 +24,7 @@ class WebContents;
 }
 
 struct AccountInfo;
-class Browser;
+class BrowserWindowInterface;
 class SigninUIError;
 
 // Outcome of the interception heuristic (decision whether the interception
@@ -227,7 +227,7 @@ class WebSigninInterceptor {
     // Shows the first run experience for `account_id` in `browser` opened for
     // a newly created profile.
     virtual void ShowFirstRunExperienceInNewProfile(
-        Browser* browser,
+        BrowserWindowInterface* browser,
         const CoreAccountId& account_id,
         SigninInterceptionType interception_type) = 0;
 

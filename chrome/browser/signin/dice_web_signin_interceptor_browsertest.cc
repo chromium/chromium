@@ -166,7 +166,7 @@ class FakeDiceWebSigninInterceptorDelegate
   }
 
   void ShowFirstRunExperienceInNewProfile(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override {
     EXPECT_FALSE(fre_browser_)
@@ -176,7 +176,7 @@ class FakeDiceWebSigninInterceptorDelegate
     fre_account_id_ = account_id;
   }
 
-  Browser* fre_browser() { return fre_browser_; }
+  BrowserWindowInterface* fre_browser() { return fre_browser_; }
 
   const CoreAccountId& fre_account_id() { return fre_account_id_; }
 
@@ -209,7 +209,8 @@ class FakeDiceWebSigninInterceptorDelegate
   }
 
  private:
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> fre_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> fre_browser_ =
+      nullptr;
   CoreAccountId fre_account_id_;
   WebSigninInterceptor::SigninInterceptionType expected_interception_type_ =
       WebSigninInterceptor::SigninInterceptionType::kMultiUser;
@@ -3037,7 +3038,7 @@ class CapturingInterceptorDelegate : public DiceWebSigninInterceptorDelegate {
   }
 
   void ShowFirstRunExperienceInNewProfile(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType type) override {}
 

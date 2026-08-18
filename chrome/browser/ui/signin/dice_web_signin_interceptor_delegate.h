@@ -15,7 +15,6 @@ namespace content {
 class WebContents;
 }
 
-class Browser;
 class BrowserWindowInterface;
 class Profile;
 struct CoreAccountId;
@@ -41,7 +40,7 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
       base::OnceClosure dialog_closed_closure,
       base::RepeatingClosure retry_callback) override;
   void ShowFirstRunExperienceInNewProfile(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override;
   void ShowSigninError(content::WebContents* web_contents,

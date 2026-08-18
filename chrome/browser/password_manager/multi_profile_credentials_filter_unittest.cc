@@ -69,7 +69,7 @@ class TestDiceWebSigninInterceptorDelegate
     return nullptr;
   }
   void ShowFirstRunExperienceInNewProfile(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override {
   }

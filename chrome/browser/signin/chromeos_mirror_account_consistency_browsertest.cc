@@ -9,7 +9,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -45,16 +45,14 @@ void TestMirrorRequestForProfile(net::EmbeddedTestServer* test_server,
   replace_host.SetHostStr(kGaiaDomain);
   gaia_url = gaia_url.ReplaceComponents(replace_host);
 
-  Browser* browser =
-      CreateBrowserWindow(
-          BrowserWindowCreateParams(profile, /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(profile, /*from_user_gesture=*/true));
   ui_test_utils::NavigateToURLWithDisposition(
       browser, gaia_url, WindowOpenDisposition::SINGLETON_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   std::string inner_text =
-      content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+      content::EvalJs(browser->GetTabStripModel()->GetActiveWebContents(),
                       "document.body.innerText;")
           .ExtractString();
   // /echoheader returns "None" if the header isn't set.
