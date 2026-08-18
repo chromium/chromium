@@ -82,6 +82,11 @@ def init(ctx):
             },
         },
         "rules": [],
+        # Allowlist for fail-on-bad-deps feature.
+        "bad_deps": {
+            "obj/ash/quick_pair/repository/repository/device_image_store.o": "crbug.com/546524333",
+            "obj/ash/quick_pair/repository/repository/device_address_map.o": "crbug.com/546524333",
+        },
         # Executables sent from Windows host to Linux workers need to set executable bit explicitly.
         # This is necessary for cross platform build actions. e.g. node binary for typescript
         "executables": [
