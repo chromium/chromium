@@ -647,10 +647,8 @@ public class StripLayoutHelperManager
                             () -> windowAndroid.getActivity().get(),
                             toolbarManager.getTabStripHeightSupplier());
 
-            if (ChromeFeatureList.sEscCancelDrag.isEnabled()) {
-                backPressManager.addHandler(
-                        mTabStripDragHandler, BackPressHandler.Type.CANCEL_TAB_STRIP_DRAG);
-            }
+            backPressManager.addHandler(
+                    mTabStripDragHandler, BackPressHandler.Type.CANCEL_TAB_STRIP_DRAG);
         }
 
         mToolbarManager = toolbarManager;

@@ -555,7 +555,6 @@ public abstract class ChromeFeatureList {
             "EnableToolbarPositioningInResizeMode";
     public static final String ENABLE_X_AXIS_ACTIVITY_TRANSITION = "EnableXAxisActivityTransition";
     public static final String ENFORCE_INCOGNITO_ISOLATION = "EnforceIncognitoIsolation";
-    public static final String ESC_CANCEL_DRAG = "EscCancelDrag";
     public static final String FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT =
             "FacilitatedPaymentsEnableA2APayment";
     public static final String FAVICON_DISABLE_HOST_FALLBACK = "FaviconDisableHostFallback";
@@ -1707,8 +1706,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ENABLE_SWIPE_TO_SWITCH_PANE, false);
     public static final MutableFlagWithSafeDefault sEnableToolbarPositioningInResizeMode =
             newMutableFlagWithSafeDefault(ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE, true);
-    public static final MutableFlagWithSafeDefault sEscCancelDrag =
-            newMutableFlagWithSafeDefault(ESC_CANCEL_DRAG, true);
     public static final MutableFlagWithSafeDefault sFlyoutInBookmarksBar =
             newMutableFlagWithSafeDefault(FLYOUT_IN_BOOKMARKS_BAR, false);
     public static final MutableFlagWithSafeDefault sIncognitoScreenshot =
