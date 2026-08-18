@@ -351,15 +351,22 @@ WTF_EXPORT StringBuilder& VFormatTo(StringBuilder& builder,
 // - Placeholders: Unindexed `{}` or `{:}` and width-specified `{:width}` or
 //   zero-padded `{:0width}` (where width is a 32-bit unsigned integer) with
 //   an optional precision specifier `:.precision` (for floating-point types
-//   only), and an optional type specifier `d`, `x`, `X`, `s`, `p`, `P`, `e`,
-//   `E`, `f`, `F`, `g`, `G` (e.g. `{:d}`, `{:08x}`, `{:p}`, `{:.2f}`, `{:E}`)
-//   are supported. Positional (e.g. `{0}`) format specifiers are currently not
-//   supported.
+//   only), and an optional type specifier `c`, `d`, `x`, `X`, `s`, `p`, `P`,
+//   `e`, `E`, `f`, `F`, `g`, `G` (e.g. `{:d}`, `{:08x}`, `{:p}`, `{:.2f}`,
+//   `{:c}`) are supported.
+//   Positional (e.g. `{0}`) format specifiers are currently not supported.
+//   Width and precision are forbidden for the `c` type specifier and for
+//   character types without a type specifier.
 // - Escaping: `{{` outputs `{`, and `}}` outputs `}`.
 //
 // Supported Argument Types:
+// - Character types: `char`, `LChar`, `UChar`. If no type specifier is given,
+//   they are formatted as characters. They can also be formatted as integers
+//   using `d`, `x`, `X`.
 // - Integral types: `int32_t`, `uint32_t`, `int64_t`, `uint64_t` (and
-//   implicitly convertible types).
+//   implicitly convertible types). The `c` specifier formats integral types as
+//   characters. A CHECK failure occurs if the value is negative or exceeds
+//   0x10FFFF.
 // - Floating-point types: `double` (and implicitly convertible types).
 // - String types: `blink::StringView`, `blink::String`, `blink::AtomicString`,
 //   `std::string`, `std::string_view`, `const char[N]`.
