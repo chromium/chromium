@@ -5,10 +5,13 @@
 
 #include "skia/ext/skcolorspace_primaries.h"
 
+#include <array>
 #include <iomanip>
 #include <sstream>
 
+#include "skia/ext/geometry.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkPoint.h"
 
 #if !defined(SKIA_COLOR_SPACE_PRIMARIES_OPERATOR_EQUAL)
 bool operator==(const SkColorSpacePrimaries& a,
@@ -73,6 +76,35 @@ SkColorSpacePrimaries GetD65PrimariesFromToXYZD50Matrix(
   primaries.fWX = kD65_X;
   primaries.fWY = kD65_Y;
   return primaries;
+}
+
+float FractionGamutCovered(const SkColorSpacePrimaries& a,
+                           const SkColorSpacePrimaries& b) {
+  std::array<SkPoint, 3> a_pts = {
+      SkPoint::Make(a.fRX, a.fRY),
+      SkPoint::Make(a.fGX, a.fGY),
+      SkPoint::Make(a.fBX, a.fBY),
+  };
+  std::array<SkPoint, 3> b_pts = {
+      SkPoint::Make(b.fRX, b.fRY),
+      SkPoint::Make(b.fGX, b.fGY),
+      SkPoint::Make(b.fBX, b.fBY),
+  };
+  return FractionTriangleCovered(a_pts, b_pts);
+}
+
+float FractionGamutCovered(const SkColorSpace* a,
+                           const SkColorSpacePrimaries& b) {
+  if (!a) {
+    return 0.f;
+  }
+  skcms_Matrix3x3 to_XYZD50;
+  if (!a->toXYZD50(&to_XYZD50)) {
+    return 0.f;
+  }
+  const SkColorSpacePrimaries a_primaries =
+      GetD65PrimariesFromToXYZD50Matrix(to_XYZD50);
+  return FractionGamutCovered(a_primaries, b);
 }
 
 }  // namespace skia

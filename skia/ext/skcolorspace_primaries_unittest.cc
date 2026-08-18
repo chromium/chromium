@@ -11,9 +11,9 @@
 namespace skia {
 namespace {
 
-constexpr float kEpsilon = 0.0001;
-
 TEST(SkiaUtils, PrimariesD65) {
+  constexpr float kEpsilon = 0.0001f;
+
   // DCI P3 (D65)
   const auto p3 = SkNamedPrimariesExt::kP3;
 
@@ -34,6 +34,8 @@ TEST(SkiaUtils, PrimariesD65) {
 }
 
 TEST(SkiaUtils, PrimariesD50) {
+  constexpr float kEpsilon = 0.0001f;
+
   // ProPhoto (which has a D50 white point)
   const auto pro_photo = SkNamedPrimaries::kProPhotoRGB;
 
@@ -59,6 +61,71 @@ TEST(SkiaUtils, PrimariesD50) {
       EXPECT_NEAR(pro_photo_row[j], d65_row[j], kEpsilon);
     }
   }
+}
+
+TEST(SkiaUtils, FractionGamutCovered) {
+  constexpr float kEpsilon = 0.0001f;
+  constexpr float kBigEpsilon = 0.001f;
+
+  const auto srgb = SkNamedPrimariesExt::kSRGB;
+  const auto p3 = SkNamedPrimariesExt::kP3;
+  const auto rec2020 = SkNamedPrimaries::kRec2020;
+  const auto a98 = SkNamedPrimariesExt::kA98RGB;
+
+  // Identity / self-coverage
+  EXPECT_NEAR(FractionGamutCovered(srgb, srgb), 1.0f, kEpsilon);
+  EXPECT_NEAR(FractionGamutCovered(p3, p3), 1.0f, kEpsilon);
+  EXPECT_NEAR(FractionGamutCovered(rec2020, rec2020), 1.0f, kEpsilon);
+  EXPECT_NEAR(FractionGamutCovered(a98, a98), 1.0f, kEpsilon);
+
+  // Larger gamut covering smaller gamut entirely.
+  // sRGB is 100% covered by P3 and Rec.2020.
+  EXPECT_NEAR(FractionGamutCovered(p3, srgb), 1.0f, kEpsilon);
+  EXPECT_NEAR(FractionGamutCovered(rec2020, srgb), 1.0f, kEpsilon);
+
+  // Note: Display P3's red primary (0.68, 0.32) is slightly outside Rec.2020's
+  // Green-Red edge, so Rec.2020 covers ~99.98% of Display P3.
+  EXPECT_NEAR(FractionGamutCovered(rec2020, p3), 0.9998f, kBigEpsilon);
+
+  // Smaller gamut covering a fraction of larger gamut
+  // sRGB area = 0.11205, Display P3 area = 0.1520 => fraction = ~0.73717
+  EXPECT_NEAR(FractionGamutCovered(srgb, p3), 0.7372f, kBigEpsilon);
+  // sRGB area = 0.11205, Rec.2020 area = 0.21187 => fraction = ~0.5289
+  EXPECT_NEAR(FractionGamutCovered(srgb, rec2020), 0.5289f, kBigEpsilon);
+
+  // Partial overlap (A98RGB vs P3)
+  EXPECT_NEAR(FractionGamutCovered(p3, a98), 0.8825f, kBigEpsilon);
+  EXPECT_NEAR(FractionGamutCovered(a98, p3), 0.8776f, kBigEpsilon);
+
+  // Invalid / degenerate gamuts
+  EXPECT_EQ(FractionGamutCovered(SkNamedPrimariesExt::kInvalid, srgb), 0.0f);
+  EXPECT_EQ(FractionGamutCovered(srgb, SkNamedPrimariesExt::kInvalid), 0.0f);
+
+  constexpr SkColorSpacePrimaries kCollinear = {0.1f, 0.1f, 0.2f,    0.2f,
+                                                0.3f, 0.3f, 0.3127f, 0.3290f};
+  EXPECT_EQ(FractionGamutCovered(kCollinear, srgb), 0.0f);
+  EXPECT_EQ(FractionGamutCovered(srgb, kCollinear), 0.0f);
+
+  // Disjoint gamuts
+  constexpr SkColorSpacePrimaries kDisjoint = {0.8f,  0.8f, 0.9f,    0.8f,
+                                               0.85f, 0.9f, 0.3127f, 0.3290f};
+  EXPECT_EQ(FractionGamutCovered(kDisjoint, srgb), 0.0f);
+  EXPECT_EQ(FractionGamutCovered(srgb, kDisjoint), 0.0f);
+
+  // SkColorSpace overloads
+  auto srgb_cs = SkColorSpace::MakeSRGB();
+  auto p3_cs =
+      SkColorSpace::MakeRGB(SkNamedTransferFn::kSRGB, SkNamedGamut::kDisplayP3);
+
+  // Note: SkColorSpace matrix inversion and chromatic adaptation introduces
+  // small floating-point roundoff (~1e-4).
+  EXPECT_NEAR(FractionGamutCovered(srgb_cs.get(), srgb), 1.0f, kBigEpsilon);
+  EXPECT_NEAR(FractionGamutCovered(p3_cs.get(), srgb), 1.0f, kBigEpsilon);
+  EXPECT_NEAR(FractionGamutCovered(srgb_cs.get(), p3), 0.7372f, kBigEpsilon);
+
+  EXPECT_EQ(
+      FractionGamutCovered(static_cast<const SkColorSpace*>(nullptr), srgb),
+      0.0f);
 }
 
 }  // namespace

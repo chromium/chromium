@@ -5,9 +5,9 @@
 #ifndef SKIA_EXT_SKCOLORSPACE_PRIMARIES_H_
 #define SKIA_EXT_SKCOLORSPACE_PRIMARIES_H_
 
-#include "third_party/skia/include/core/SkColorSpace.h"
-
 #include <string>
+
+#include "third_party/skia/include/core/SkColorSpace.h"
 
 // TODO(https://crbug.com/skia/13721): Add these operators to Skia source.
 #if !defined(SKIA_COLOR_SPACE_PRIMARIES_OPERATOR_EQUAL)
@@ -28,6 +28,14 @@ SK_API std::string SkColorSpacePrimariesToString(
 // white point that would produce this matrix.
 SK_API SkColorSpacePrimaries
 GetD65PrimariesFromToXYZD50Matrix(const skcms_Matrix3x3& m);
+
+// Return what fraction of the gamut of `b` is covered by `a`.
+SK_API float FractionGamutCovered(const SkColorSpacePrimaries& a,
+                                  const SkColorSpacePrimaries& b);
+
+// Return what fraction of the gamut of `b` is covered by `a`.
+SK_API float FractionGamutCovered(const SkColorSpace* a,
+                                  const SkColorSpacePrimaries& b);
 
 }  // namespace skia
 

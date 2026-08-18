@@ -4,10 +4,110 @@
 
 #include "skia/ext/geometry.h"
 
+#include <algorithm>
+#include <array>
+#include <cmath>
+
 #include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRect.h"
 
 namespace skia {
+
+float FractionTriangleCovered(std::array<SkPoint, 3>& a,
+                              std::array<SkPoint, 3>& b) {
+  if (!a[0].isFinite() || !a[1].isFinite() || !a[2].isFinite() ||
+      !b[0].isFinite() || !b[1].isFinite() || !b[2].isFinite()) {
+    return 0.f;
+  }
+
+  // Ensure triangle `a` is oriented counter-clockwise in-place.
+  float area_a_signed = SkPoint::CrossProduct(a[1] - a[0], a[2] - a[0]) * 0.5f;
+  if (area_a_signed < 0.f) {
+    std::swap(a[1], a[2]);
+  } else if (area_a_signed == 0.f) {
+    return 0.f;
+  }
+
+  // Ensure triangle `b` is oriented counter-clockwise in-place.
+  float area_b_signed = SkPoint::CrossProduct(b[1] - b[0], b[2] - b[0]) * 0.5f;
+  if (area_b_signed < 0.f) {
+    std::swap(b[1], b[2]);
+    area_b_signed = -area_b_signed;
+  } else if (area_b_signed == 0.f) {
+    return 0.f;
+  }
+  const float area_b = area_b_signed;
+
+  // Set up subject polygon (initially triangle `b`).
+  // Clipping a triangle against 3 half-planes produces at most 6 vertices.
+  std::array<SkPoint, 8> p = {b[0], b[1], b[2]};
+  size_t p_count = 3;
+
+  // Sutherland-Hodgman clipping: clip subject polygon `p` against each edge
+  // of `a`.
+  for (size_t a_edge_index = 0; a_edge_index < 3; ++a_edge_index) {
+    if (p_count < 3) {
+      return 0.f;
+    }
+    // `a1`, `a2`, and `a_edge` represent the `a_edge_index`-th edge of `a`.
+    const SkPoint& a1 = a[a_edge_index];
+    const SkPoint& a2 = a[(a_edge_index + 1) % 3];
+    const SkVector a_edge = a2 - a1;
+
+    // Intersect this edge of `a` with all edges of `p`, producing the new
+    // polygon `next_p`.
+    std::array<SkPoint, 8> next_p;
+    size_t next_p_count = 0;
+    for (size_t p_edge_index = 0; p_edge_index < p_count; ++p_edge_index) {
+      const SkPoint& p1 = p[p_edge_index];
+      const SkPoint& p2 = p[(p_edge_index + 1) % p_count];
+
+      // Determine if `p1` and `p2` are inside the half-plane bounded by
+      // `a_edge` (points to the left of the directed edge have cross
+      // product >= 0).
+      float d1 = a_edge.cross(p1 - a1);
+      float d2 = a_edge.cross(p2 - a1);
+      bool p1_inside = (d1 >= 0.f);
+      bool p2_inside = (d2 >= 0.f);
+
+      // Compute the intersection if `p1` and `p2` are on opposite sides of
+      // `a_edge`.
+      SkPoint intersection;
+      if (p1_inside != p2_inside) {
+        float denom = d1 - d2;
+        float t = std::abs(denom) > 1e-6f ? (d1 / denom) : 0.f;
+        intersection = p1 + (p2 - p1) * t;
+      }
+
+      // Insert `p2` and/or `intersection` into `next_p`.
+      if (p2_inside) {
+        if (!p1_inside) {
+          next_p[next_p_count++] = intersection;
+        }
+        next_p[next_p_count++] = p2;
+      } else if (p1_inside) {
+        next_p[next_p_count++] = intersection;
+      }
+    }
+
+    // Replace `p` with `next_p` for the next iteration.
+    p = next_p;
+    p_count = next_p_count;
+  }
+  if (p_count < 3) {
+    return 0.f;
+  }
+
+  // Compute intersection polygon area using the Shoelace formula.
+  float intersection_area = 0.f;
+  for (size_t i = 0; i < p_count; ++i) {
+    intersection_area += SkPoint::CrossProduct(p[i], p[(i + 1) % p_count]);
+  }
+  intersection_area = std::abs(intersection_area * 0.5f);
+
+  return std::clamp(intersection_area / area_b, 0.f, 1.f);
+}
 
 SkRect ScaleSkRectProportional(const SkRect& output_bounds,
                                const SkRect& input_bounds,

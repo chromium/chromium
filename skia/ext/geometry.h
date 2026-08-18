@@ -5,13 +5,20 @@
 #ifndef SKIA_EXT_GEOMETRY_H_
 #define SKIA_EXT_GEOMETRY_H_
 
+#include <array>
 #include <vector>
 
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSize.h"
 
 namespace skia {
+
+// Return what fraction of the triangle `b` is covered by the triangle `a`.
+// If either triangle is clockwise, its vertices are swapped in place to be CCW.
+SK_API float FractionTriangleCovered(std::array<SkPoint, 3>& a,
+                                     std::array<SkPoint, 3>& b);
 
 // Returns a rect that has the same relationship to `output_bounds` as
 // `input_rect` has to `input_bounds`. The only requirement for valid

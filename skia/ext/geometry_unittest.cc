@@ -293,6 +293,60 @@ TEST(Geometry, Fractional) {
   EXPECT_EQ(out_dest[1][2], SkRect::MakeLTRB(18, 38, 20, 40));
 }
 
+TEST(Geometry, FractionTriangleCovered) {
+  constexpr float kEpsilon = 0.0001f;
+
+  std::array<SkPoint, 3> a = {SkPoint::Make(0.0f, 0.0f),
+                              SkPoint::Make(1.0f, 0.0f),
+                              SkPoint::Make(0.0f, 1.0f)};
+  std::array<SkPoint, 3> b = {SkPoint::Make(0.0f, 0.0f),
+                              SkPoint::Make(0.5f, 0.0f),
+                              SkPoint::Make(0.0f, 0.5f)};
+
+  // Self coverage
+  EXPECT_NEAR(FractionTriangleCovered(a, a), 1.0f, kEpsilon);
+
+  // Triangle b is completely inside triangle a (area of b = 0.125, area of a =
+  // 0.5)
+  EXPECT_NEAR(FractionTriangleCovered(a, b), 1.0f, kEpsilon);
+
+  // Triangle a covers 100% of b, but triangle a's area covered by b is 0.125 /
+  // 0.5 = 0.25
+  EXPECT_NEAR(FractionTriangleCovered(b, a), 0.25f, kEpsilon);
+
+  // Clockwise order for triangle a should be swapped to CCW in place and give
+  // the same result
+  std::array<SkPoint, 3> a_cw = {SkPoint::Make(0.0f, 0.0f),
+                                 SkPoint::Make(0.0f, 1.0f),
+                                 SkPoint::Make(1.0f, 0.0f)};
+  EXPECT_NEAR(FractionTriangleCovered(a_cw, b), 1.0f, kEpsilon);
+  // Verify that a_cw was swapped to CCW in place
+  EXPECT_GT(SkPoint::CrossProduct(a_cw[1] - a_cw[0], a_cw[2] - a_cw[0]), 0.f);
+
+  // Clockwise order for triangle b should be swapped to CCW in place and give
+  // the same result
+  std::array<SkPoint, 3> b_cw = {SkPoint::Make(0.0f, 0.0f),
+                                 SkPoint::Make(0.0f, 0.5f),
+                                 SkPoint::Make(0.5f, 0.0f)};
+  EXPECT_NEAR(FractionTriangleCovered(a, b_cw), 1.0f, kEpsilon);
+  // Verify that b_cw was swapped to CCW in place
+  EXPECT_GT(SkPoint::CrossProduct(b_cw[1] - b_cw[0], b_cw[2] - b_cw[0]), 0.f);
+
+  // Disjoint triangles
+  std::array<SkPoint, 3> disjoint = {SkPoint::Make(2.0f, 2.0f),
+                                     SkPoint::Make(3.0f, 2.0f),
+                                     SkPoint::Make(2.0f, 3.0f)};
+  EXPECT_EQ(FractionTriangleCovered(disjoint, a), 0.0f);
+  EXPECT_EQ(FractionTriangleCovered(a, disjoint), 0.0f);
+
+  // Degenerate / collinear triangles
+  std::array<SkPoint, 3> collinear = {SkPoint::Make(0.1f, 0.1f),
+                                      SkPoint::Make(0.2f, 0.2f),
+                                      SkPoint::Make(0.3f, 0.3f)};
+  EXPECT_EQ(FractionTriangleCovered(collinear, a), 0.0f);
+  EXPECT_EQ(FractionTriangleCovered(a, collinear), 0.0f);
+}
+
 }  // namespace
 
 }  // namespace skia
