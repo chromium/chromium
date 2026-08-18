@@ -182,6 +182,22 @@ TpmParseErrorOr<HashResponse> ParseHashResponse(
   });
 }
 
+std::vector<uint8_t> BuildHashSequenceStartCommand(TpmAlg hash_alg) {
+  return base::ToVector(build_hash_sequence_start_command(hash_alg));
+}
+
+TpmParseErrorOr<HashSequenceStartResponse> ParseHashSequenceStartResponse(
+    base::span<const uint8_t> response_blob) {
+  RawHashSequenceStartResponse raw_response =
+      parse_hash_sequence_start_response(base::SpanToRustSlice(response_blob));
+
+  return MapResponseStatus(raw_response.status).transform([&] {
+    return HashSequenceStartResponse{
+        .sequence_handle = raw_response.sequence_handle,
+    };
+  });
+}
+
 std::vector<uint8_t> BuildSignCommand(
     uint32_t key_handle,
     base::span<const uint8_t> digest,

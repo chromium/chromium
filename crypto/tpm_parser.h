@@ -32,9 +32,10 @@ using enum TpmSt;
 // LINT.IfChange(TpmCommand)
 // Enumerates the TPM 2.0 commands implemented by this module.
 enum class TpmCommand {
-  kCertify,  // TPM2_Certify
-  kHash,     // TPM2_Hash
-  kSign,     // TPM2_Sign
+  kCertify,            // TPM2_Certify
+  kHash,               // TPM2_Hash
+  kHashSequenceStart,  // TPM2_HashSequenceStart
+  kSign,               // TPM2_Sign
 };
 
 template <typename Sink>
@@ -45,6 +46,9 @@ void AbslStringify(Sink& sink, TpmCommand command) {
       return;
     case TpmCommand::kHash:
       sink.Append("Hash");
+      return;
+    case TpmCommand::kHashSequenceStart:
+      sink.Append("HashSequenceStart");
       return;
     case TpmCommand::kSign:
       sink.Append("Sign");
@@ -138,6 +142,16 @@ struct CRYPTO_EXPORT HashResponse {
   friend bool operator==(const HashResponse&, const HashResponse&) = default;
 };
 
+// Response components extracted from a parsed TPM2_HashSequenceStart response.
+struct CRYPTO_EXPORT HashSequenceStartResponse {
+  static constexpr auto kCommand = TpmCommand::kHashSequenceStart;
+
+  uint32_t sequence_handle = 0;
+
+  friend bool operator==(const HashSequenceStartResponse&,
+                         const HashSequenceStartResponse&) = default;
+};
+
 // Response components extracted from a parsed TPM2_Sign response.
 struct CRYPTO_EXPORT SignResponse {
   static constexpr auto kCommand = TpmCommand::kSign;
@@ -199,6 +213,20 @@ CRYPTO_EXPORT std::vector<uint8_t> BuildHashCommand(
 // will be extracted.
 CRYPTO_EXPORT TpmParseErrorOr<HashResponse> ParseHashResponse(
     base::span<const uint8_t> response_blob);
+
+// Builds a serialized TPM2_HashSequenceStart command buffer.
+//
+// * `hash_alg` - The hash algorithm to use for the sequence.
+CRYPTO_EXPORT std::vector<uint8_t> BuildHashSequenceStartCommand(
+    TpmAlg hash_alg);
+
+// Parses a serialized TPM2_HashSequenceStart response.
+//
+// If the TPM returns an error code, an error of type `kTpmErrorResponse` will
+// be returned containing the error code, and no sequence handle will be
+// extracted.
+CRYPTO_EXPORT TpmParseErrorOr<HashSequenceStartResponse>
+ParseHashSequenceStartResponse(base::span<const uint8_t> response_blob);
 
 // Builds a serialized TPM2_Sign command buffer.
 CRYPTO_EXPORT std::vector<uint8_t> BuildSignCommand(

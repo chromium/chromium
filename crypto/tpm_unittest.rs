@@ -613,3 +613,111 @@ fn test_sign_happy_path() {
     };
     expect_eq!(result.signature, expected_sig_bytes);
 }
+
+#[gtest(TpmTest, BuildHashSequenceStartCommand)]
+fn test_build_hash_sequence_start_command() {
+    let hash_alg = tpm::TpmAlg::TPM_ALG_SHA256;
+    let cmd = tpm::build_hash_sequence_start_command(hash_alg);
+
+    // Header (10) + auth (2) + hashAlg (2) = 14
+    expect_eq!(cmd.len(), 14);
+
+    let mut reader = tpm::Reader::new(&cmd);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmSt::TPM_ST_NO_SESSIONS.repr);
+    expect_eq!(reader.read_u32().unwrap(), 14);
+    expect_eq!(reader.read_u32().unwrap(), tpm::TpmCc::TPM_CC_HASH_SEQUENCE_START.repr);
+
+    expect_eq!(reader.read_u16().unwrap(), 0); // empty auth
+    expect_eq!(reader.read_u16().unwrap(), hash_alg.repr);
+}
+
+struct HashSequenceStartResponseBuilder {
+    tag: u16,
+    rc: u32,
+    sequence_handle: u32,
+}
+
+impl HashSequenceStartResponseBuilder {
+    fn new() -> Self {
+        Self { tag: tpm::TpmSt::TPM_ST_NO_SESSIONS.repr, rc: 0, sequence_handle: 0x80000001 }
+    }
+
+    fn set_tag(mut self, tag: u16) -> Self {
+        self.tag = tag;
+        self
+    }
+
+    fn set_rc(mut self, rc: u32) -> Self {
+        self.rc = rc;
+        self
+    }
+
+    fn build(self) -> Vec<u8> {
+        let mut total_size = 10;
+        if self.rc == 0 {
+            total_size += 4; // sequenceHandle
+        }
+
+        let mut writer = tpm::Writer::with_capacity(total_size);
+        writer.write_u16(self.tag);
+        writer.write_u32(u32::try_from(total_size).unwrap());
+        writer.write_u32(self.rc);
+
+        if self.rc == 0 {
+            writer.write_u32(self.sequence_handle);
+        }
+
+        writer.into_inner()
+    }
+}
+
+#[gtest(TpmParserTest, HashSequenceStartHappyPath)]
+fn test_hash_sequence_start_happy_path() {
+    let builder = HashSequenceStartResponseBuilder::new();
+    let resp = builder.build();
+
+    let result = tpm::parse_hash_sequence_start_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::Ok));
+    expect_eq!(result.status.tpm_response_code, 0);
+    expect_eq!(result.sequence_handle, 0x80000001);
+}
+
+#[gtest(TpmParserTest, HashSequenceStartWrongTag)]
+fn test_hash_sequence_start_wrong_tag() {
+    let builder = HashSequenceStartResponseBuilder::new().set_tag(tpm::TpmSt::TPM_ST_SESSIONS.repr);
+    let resp = builder.build();
+
+    let result = tpm::parse_hash_sequence_start_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::WrongType));
+}
+
+#[gtest(TpmParserTest, HashSequenceStartBufferTooSmall)]
+fn test_hash_sequence_start_buffer_too_small() {
+    let builder = HashSequenceStartResponseBuilder::new();
+    let mut resp = builder.build();
+    resp.pop();
+
+    let result = tpm::parse_hash_sequence_start_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::BufferTooSmall));
+}
+
+#[gtest(TpmParserTest, HashSequenceStartTrailingBytes)]
+fn test_hash_sequence_start_trailing_bytes() {
+    let builder = HashSequenceStartResponseBuilder::new();
+    let mut resp = builder.build();
+    resp.push(0);
+
+    let result = tpm::parse_hash_sequence_start_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::TrailingBytes));
+}
+
+#[gtest(TpmParserTest, HashSequenceStartTpmError)]
+fn test_hash_sequence_start_tpm_error() {
+    let builder = HashSequenceStartResponseBuilder::new().set_rc(0x100);
+    let resp = builder.build();
+
+    let result = tpm::parse_hash_sequence_start_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::TpmErrorResponse));
+    expect_eq!(result.status.tpm_response_code, 0x100);
+    expect_eq!(result.sequence_handle, 0);
+}

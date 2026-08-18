@@ -22,6 +22,7 @@
 #include "crypto/test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace crypto::tpm {
 
@@ -203,6 +204,28 @@ std::vector<uint8_t> BuildFakeHashResponse(
     writer.WriteEnumBigEndian(ticket_hierarchy);
     writer.WriteU16BigEndian(ticket_digest.size());
     writer.Write(ticket_digest);
+  }
+
+  CHECK_EQ(writer.remaining(), 0u);
+  return resp;
+}
+
+std::vector<uint8_t> BuildFakeHashSequenceStartResponse(
+    uint32_t sequence_handle,
+    uint32_t response_code = 0) {
+  uint32_t resp_size = 10;
+  if (response_code == 0) {
+    resp_size += 4;
+  }
+
+  std::vector<uint8_t> resp(resp_size);
+  base::SpanWriter<uint8_t> writer(resp);
+  writer.WriteEnumBigEndian(TPM_ST_NO_SESSIONS);
+  writer.WriteU32BigEndian(resp_size);
+  writer.WriteU32BigEndian(response_code);
+
+  if (response_code == 0) {
+    writer.WriteU32BigEndian(sequence_handle);
   }
 
   CHECK_EQ(writer.remaining(), 0u);
@@ -610,6 +633,53 @@ TEST(TpmCppParserTest, ParseTpmSignature_InvalidAlgorithm) {
 TEST(TpmCppParserTest, ParseTpmSignature_MalformedBlob) {
   static constexpr auto kMalformedSig = ToByteArray({1, 2, 3});
   EXPECT_EQ(ParseTpmSignature(kMalformedSig), std::nullopt);
+}
+
+TEST(TpmCppParserTest, TpmCommandStringify) {
+  EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kCertify), "Certify");
+  EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kHash), "Hash");
+  EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kHashSequenceStart),
+            "HashSequenceStart");
+  EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kSign), "Sign");
+}
+
+TEST(TpmCppParserTest, ResponseStructCommandConstants) {
+  static_assert(CertifyResponse::kCommand == TpmCommand::kCertify);
+  static_assert(HashResponse::kCommand == TpmCommand::kHash);
+  static_assert(HashSequenceStartResponse::kCommand ==
+                TpmCommand::kHashSequenceStart);
+  static_assert(SignResponse::kCommand == TpmCommand::kSign);
+}
+
+TEST(TpmCppParserTest, BuildHashSequenceStartCommand) {
+  TpmAlg hash_alg = TPM_ALG_SHA256;
+  std::vector<uint8_t> cmd = BuildHashSequenceStartCommand(hash_alg);
+  EXPECT_EQ(cmd.size(), 14u);
+
+  base::SpanReader<const uint8_t> reader(cmd);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmSt>(), TPM_ST_NO_SESSIONS);
+  EXPECT_EQ(reader.ReadU32BigEndian(), 14u);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmCc>(), TPM_CC_HASH_SEQUENCE_START);
+  EXPECT_EQ(reader.ReadU16BigEndian(), 0u);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmAlg>(), hash_alg);
+}
+
+TEST(TpmCppParserTest, ParseHashSequenceStartResponse_Success) {
+  uint32_t sequence_handle = 0x80000001;
+  std::vector<uint8_t> resp =
+      BuildFakeHashSequenceStartResponse(sequence_handle);
+
+  ASSERT_OK_AND_ASSIGN(auto parsed, ParseHashSequenceStartResponse(resp));
+  EXPECT_EQ(parsed.sequence_handle, sequence_handle);
+}
+
+TEST(TpmCppParserTest, ParseHashSequenceStartResponse_TpmError) {
+  std::vector<uint8_t> resp =
+      BuildFakeHashSequenceStartResponse(0x80000001, 0x100);
+
+  EXPECT_THAT(
+      ParseHashSequenceStartResponse(resp),
+      ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
 }
 
 }  // namespace crypto::tpm

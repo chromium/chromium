@@ -605,6 +605,7 @@ TPMOperation TpmCommandToOperation(tpm::TpmCommand command) {
     case tpm::TpmCommand::kSign:
       return TPMOperation::kMessageSigning;
     case tpm::TpmCommand::kHash:
+    case tpm::TpmCommand::kHashSequenceStart:
       return TPMOperation::kMessageHashing;
   }
 }

@@ -145,6 +145,15 @@ pub mod ffi {
         signature: Vec<u8>,
     }
 
+    /// Response from parsing a TPM2_HashSequenceStart command.
+    #[cxx_name = "RawHashSequenceStartResponse"]
+    struct HashSequenceStartResponse {
+        /// The outcome of the parsing operation.
+        status: ResponseStatus,
+        /// The sequence handle created by the TPM.
+        sequence_handle: u32,
+    }
+
     /// Results that can occur during TPM signature parsing.
     // LINT.IfChange(SignatureParseResult)
     #[derive(Debug)]
@@ -214,6 +223,9 @@ pub mod ffi {
         TPM_CC_SIGN = 0x0000015D,
         /// TPM_CC_HASH is the command code for TPM2_Hash.
         TPM_CC_HASH = 0x0000017D,
+        /// TPM_CC_HASH_SEQUENCE_START is the command code for
+        /// TPM2_HashSequenceStart.
+        TPM_CC_HASH_SEQUENCE_START = 0x00000186,
     }
 
     /// TPM Structure Tags.
@@ -305,6 +317,12 @@ pub mod ffi {
         /// Note that if the TPM returns an error code, the `digest` and
         /// `validation_ticket` fields will be empty.
         fn parse_hash_response(resp: &[u8]) -> HashResponse;
+
+        /// Builds a TPM2_HashSequenceStart command buffer.
+        fn build_hash_sequence_start_command(hash_alg: TpmAlg) -> Vec<u8>;
+
+        /// Parses a TPM2_HashSequenceStart response.
+        fn parse_hash_sequence_start_response(resp: &[u8]) -> HashSequenceStartResponse;
 
         /// Builds a TPM2_Sign command buffer.
         fn build_sign_command(
@@ -1142,4 +1160,108 @@ pub fn parse_hash_response(resp: &[u8]) -> ffi::HashResponse {
 
 pub fn parse_sign_response(resp: &[u8]) -> ffi::SignResponse {
     parse_sign_response_impl(resp).into()
+}
+
+/// Builds a TPM2_HashSequenceStart command.
+///
+/// * `hash_alg` - The hash algorithm to use for the sequence.
+///
+/// Note: This function sets an empty authorization value for the sequence.
+///
+/// A TPM HashSequenceStart command has the following structure (Table 85):
+///
+/// Header:
+///
+/// | Type                | Name           |
+/// |---------------------|----------------|
+/// | TPMI_ST_COMMAND_TAG | tag            |
+/// | UINT32              | commandSize    |
+/// | TPM_CC              | commandCode    |
+///
+/// Parameters:
+///
+/// | Type                | Name           |
+/// |---------------------|----------------|
+/// | TPM2B_AUTH          | auth           |
+/// | TPMI_ALG_HASH       | hashAlg        |
+///
+/// See Table 85 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=140.
+///
+/// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
+/// for a general overview of the structure of a TPM command.
+pub fn build_hash_sequence_start_command(hash_alg: TpmAlg) -> Vec<u8> {
+    let total_size = TPM_HEADER_SIZE
+        + 2 // auth size prefix (0x0000)
+        + 2; // hashAlg
+
+    let mut writer = Writer::with_capacity(total_size);
+
+    // 1. Command Header
+    writer.write_command_header(
+        TpmSt::TPM_ST_NO_SESSIONS,
+        total_size,
+        TpmCc::TPM_CC_HASH_SEQUENCE_START,
+    );
+
+    // 2. Command Parameters
+    writer.write_u16(0); // empty auth (TPM2B_AUTH with size 0)
+    writer.write_u16(hash_alg.repr);
+
+    writer.into_inner()
+}
+
+/// Parses a TPM2_HashSequenceStart response.
+///
+/// Header:
+///
+/// | Type   | Name         |
+/// |--------|--------------|
+/// | TPM_ST | tag          |
+/// | UINT32 | responseSize |
+/// | TPM_RC | responseCode |
+///
+/// Handles:
+///
+/// | Type           | Name           |
+/// |----------------|----------------|
+/// | TPMI_DH_OBJECT | sequenceHandle |
+///
+/// See Table 86 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=140.
+///
+/// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
+/// for a general overview of the structure of a TPM response.
+fn parse_hash_sequence_start_response_impl(resp: &[u8]) -> Result<u32, TpmParseError> {
+    let mut reader = Reader::new(resp);
+    let header = reader.read_response_header(resp.len())?;
+    if header.tag != TpmSt::TPM_ST_NO_SESSIONS {
+        return Err(TpmParseError::WrongType);
+    }
+
+    let sequence_handle = reader.read_u32().ok_or(TpmParseError::BufferTooSmall)?;
+
+    reader.ensure_empty()?;
+
+    Ok(sequence_handle)
+}
+
+impl From<TpmParseError> for ffi::HashSequenceStartResponse {
+    fn from(err: TpmParseError) -> Self {
+        ffi::HashSequenceStartResponse { status: err.into(), sequence_handle: 0 }
+    }
+}
+
+impl From<Result<u32, TpmParseError>> for ffi::HashSequenceStartResponse {
+    fn from(result: Result<u32, TpmParseError>) -> Self {
+        match result {
+            Ok(sequence_handle) => {
+                ffi::HashSequenceStartResponse { status: ffi::ResponseStatus::OK, sequence_handle }
+            }
+            Err(err) => err.into(),
+        }
+    }
+}
+
+/// Parses a TPM2_HashSequenceStart response.
+pub fn parse_hash_sequence_start_response(resp: &[u8]) -> ffi::HashSequenceStartResponse {
+    parse_hash_sequence_start_response_impl(resp).into()
 }
