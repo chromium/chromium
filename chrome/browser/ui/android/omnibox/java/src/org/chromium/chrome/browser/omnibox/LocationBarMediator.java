@@ -2899,6 +2899,7 @@ class LocationBarMediator
 
     @Override
     public void onTabChanged(@Nullable Tab previousTab) {
+        boolean hadActiveInput = mCurrentInput != null;
         suspendInput();
         mUrlCoordinator.clearFocus();
 
@@ -2909,7 +2910,7 @@ class LocationBarMediator
             input.setFocusReason(OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
             mUrlFocusedWithoutAnimations = true;
             beginInput(input);
-        } else {
+        } else if (hadActiveInput) {
             focusCurrentTab();
         }
 
