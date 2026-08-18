@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -814,7 +815,9 @@ class AuthenticationCredentialsContainerActiveModeMultiIdpTest
 };
 
 TEST_F(AuthenticationCredentialsContainerActiveModeMultiIdpTest,
-       RejectActiveModeWithMultipleIdps) {
+       RejectActiveModeWithMultipleIdpsWhenFeatureDisabled) {
+  ScopedFedCmActiveModeMultipleIdentityProvidersForTest
+      scoped_active_mode_multi_idp(false);
   test::TaskEnvironment task_environment;
   MockFederatedRequestService mock_federated_request_service;
   CredentialManagerTestingContext context(
@@ -845,6 +848,47 @@ TEST_F(AuthenticationCredentialsContainerActiveModeMultiIdpTest,
   task_environment.RunUntilIdle();
 
   EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
+}
+
+TEST_F(AuthenticationCredentialsContainerActiveModeMultiIdpTest,
+       AllowActiveModeWithMultipleIdpsWhenFeatureEnabled) {
+  ScopedFedCmActiveModeMultipleIdentityProvidersForTest
+      scoped_active_mode_multi_idp(true);
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
+  test::TaskEnvironment task_environment;
+  MockFederatedRequestService mock_federated_request_service;
+  CredentialManagerTestingContext context(
+      /*mock_credential_manager=*/nullptr, /*mock_authenticator=*/nullptr,
+      /*mock_federated_request_service=*/&mock_federated_request_service);
+
+  CredentialRequestOptions* options = CredentialRequestOptions::Create();
+  IdentityCredentialRequestOptions* identity =
+      IdentityCredentialRequestOptions::Create();
+
+  auto* idp1 = IdentityProviderRequestOptions::Create();
+  idp1->setConfigURL("https://idp.example");
+  idp1->setClientId("clientId");
+
+  auto* idp2 = IdentityProviderRequestOptions::Create();
+  idp2->setConfigURL("https://idp2.example/config.json");
+  idp2->setClientId("clientId");
+
+  identity->setProviders({idp1, idp2});
+  identity->setMode(V8IdentityCredentialRequestOptionsMode::Enum::kActive);
+  options->setIdentity(identity);
+
+  auto promise = AuthenticationCredentialsContainer::credentials(
+                     *context.DomWindow().navigator())
+                     ->get(context.GetScriptState(), options,
+                           IGNORE_EXCEPTION_FOR_TESTING);
+
+  mock_federated_request_service.WaitForCallToStartToken();
+  EXPECT_EQ(1u, mock_federated_request_service.GetTotalPendingCallbacks());
+  mock_federated_request_service.InvokeStartTokenRequestCallback();
+
+  ScriptPromiseTester tester(context.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
 }
 
 TEST(AuthenticationCredentialsContainerTest,

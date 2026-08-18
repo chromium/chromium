@@ -2655,6 +2655,11 @@ inline constexpr char kEmailVerificationProtocolName[] =
 inline constexpr char kEmailVerificationProtocolDescription[] =
     "Enables the Email Verification Protocol in Autofill.";
 
+inline constexpr char kFedCmActiveModeMultipleIdentityProvidersName[] =
+    "FedCmActiveModeMultipleIdentityProviders";
+inline constexpr char kFedCmActiveModeMultipleIdentityProvidersDescription[] =
+    "Enables Active Mode support with multiple Identity Providers in FedCM.";
+
 inline constexpr char kFedCmIdPRegistrationName[] =
     "FedCM with IdP Registration support";
 inline constexpr char kFedCmIdPRegistrationDescription[] =

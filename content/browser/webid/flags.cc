@@ -95,4 +95,9 @@ bool IsFedCmNativeIdPsEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmNativeIdPs);
 }
 
+bool IsActiveModeMultipleIdentityProvidersEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmActiveModeMultipleIdentityProviders);
+}
+
 }  // namespace content::webid

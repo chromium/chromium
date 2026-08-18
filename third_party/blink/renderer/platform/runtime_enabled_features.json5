@@ -2791,6 +2791,13 @@
       base_feature: "none",
     },
     {
+      name: "FedCmActiveModeMultipleIdentityProviders",
+      depends_on: ["FedCmMultipleIdentityProviders"],
+      status: "experimental",
+      base_feature: "none",
+      public: true,
+    },
+    {
       name: "FedCmAutofill",
       implied_by: ["FedCmDelegation"],
       public: true,

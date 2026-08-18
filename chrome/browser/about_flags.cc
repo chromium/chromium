@@ -8815,6 +8815,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEmailVerificationProtocolDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEmailVerificationProtocol)},
 
+    {"fedcm-active-mode-multiple-identity-providers",
+     flag_descriptions::kFedCmActiveModeMultipleIdentityProvidersName,
+     flag_descriptions::kFedCmActiveModeMultipleIdentityProvidersDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kFedCmActiveModeMultipleIdentityProviders)},
+
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},

@@ -66,6 +66,9 @@ bool IsFedCmAmbientUIEnabled();
 // Whether native IdPs are enabled.
 bool IsFedCmNativeIdPsEnabled();
 
+// Whether Active Mode with multiple IdPs is enabled.
+bool IsActiveModeMultipleIdentityProvidersEnabled();
+
 }  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

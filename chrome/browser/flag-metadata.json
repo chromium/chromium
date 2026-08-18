@@ -4987,6 +4987,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "fedcm-active-mode-multiple-identity-providers",
+    "owners": [ "ryqin@google.com", "web-identity-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "fedcm-ambient-ui",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 155

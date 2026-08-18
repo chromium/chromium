@@ -436,6 +436,10 @@ BASE_FEATURE(kEnforceDedicatedWorkerSameOriginCheck,
 BASE_FEATURE(kEnforceSharedWorkerSameOriginCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Active Mode support with multiple Identity Providers in FedCM.
+BASE_FEATURE(kFedCmActiveModeMultipleIdentityProviders,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM IdP Registration API.
 BASE_FEATURE(kFedCmIdPRegistration, base::FEATURE_DISABLED_BY_DEFAULT);
 

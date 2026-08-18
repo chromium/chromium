@@ -11082,6 +11082,8 @@ from previous Chrome versions.
   <int value="-1119700637" label="ui-disable-partial-swap"/>
   <int value="-1119699533" label="RetainOmniboxOnFocus:enabled"/>
   <int value="-1119552494" label="SyncTrustedVaultPassphraseRecovery:disabled"/>
+  <int value="-1118964322"
+      label="FedCmActiveModeMultipleIdentityProviders:enabled"/>
   <int value="-1118921985" label="ForceEnableSystemAec:enabled"/>
   <int value="-1118333116" label="PrintPreviewSetupAssistance:enabled"/>
   <int value="-1118113279" label="NavigationRequestPreconnect:enabled"/>
@@ -18863,6 +18865,8 @@ from previous Chrome versions.
   <int value="1317207024" label="VoiceSearchCoherenceSearchbox:enabled"/>
   <int value="1317562265" label="SeccompSandboxAndroid:disabled"/>
   <int value="1318073661" label="MaterialDesignExtensions:enabled"/>
+  <int value="1318824686"
+      label="FedCmActiveModeMultipleIdentityProviders:disabled"/>
   <int value="1319024729" label="ServiceWorkerServicification:disabled"/>
   <int value="1319068611" label="SecondaryUiMd:disabled"/>
   <int value="1319498514" label="NewMacNotificationAPI:disabled"/>

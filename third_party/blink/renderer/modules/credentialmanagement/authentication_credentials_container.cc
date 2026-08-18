@@ -2529,7 +2529,9 @@ void AuthenticationCredentialsContainer::GetForIdentity(
   auto v8_rp_mode = identity_options.mode();
   rp_mode = mojo::ConvertTo<mojom::blink::RpMode>(v8_rp_mode);
   if (rp_mode == mojom::blink::RpMode::kActive) {
-    if (identity_provider_ptrs.size() > 1u) {
+    if (!blink::RuntimeEnabledFeatures::
+            FedCmActiveModeMultipleIdentityProvidersEnabled(context) &&
+        identity_provider_ptrs.size() > 1u) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kInvalidStateError,
           "Active mode is not currently supported with multiple identity "
