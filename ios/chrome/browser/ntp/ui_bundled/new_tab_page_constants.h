@@ -60,4 +60,7 @@ extern const NSInteger kCustomizationNewBadgeMaxImpressionCount;
 // The bottom spacing underneath the Magic Stack.
 extern const float kBottomMagicStackPadding;
 
+// The horizontal margin on the leading and trailing sides of the NTP content.
+extern const CGFloat kNewTabPageHorizontalMargin;
+
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONSTANTS_H_

@@ -553,7 +553,11 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 }
 
 - (void)updateNTPLayout {
-  [self updateNTPLayoutForWidth:self.collectionView.bounds.size.width];
+  if (IsNewTabPageUICleanupEnabled()) {
+    [self updateNTPLayoutForWidth:self.view.bounds.size.width];
+  } else {
+    [self updateNTPLayoutForWidth:self.collectionView.bounds.size.width];
+  }
 }
 
 - (void)updateHeightAboveFeed {
@@ -1423,11 +1427,13 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     BOOL animateScrollAnimation =
         IsChromeNextIaEnabled() ? YES : !self.disableScrollAnimation;
     UIEdgeInsets insets = self.collectionView.safeAreaInsets;
-    [self.headerView
-        updateFakeOmniboxForOffset:[self adjustedOffset].y
-                       screenWidth:self.collectionView.frame.size.width
-                    safeAreaInsets:insets
-            animateScrollAnimation:animateScrollAnimation];
+    CGFloat screenWidth = IsNewTabPageUICleanupEnabled()
+                              ? self.view.bounds.size.width
+                              : self.collectionView.frame.size.width;
+    [self.headerView updateFakeOmniboxForOffset:[self adjustedOffset].y
+                                    screenWidth:screenWidth
+                                 safeAreaInsets:insets
+                         animateScrollAnimation:animateScrollAnimation];
     [self.NTPContentDelegate
         didUpdateNTPTabOmniboxScrollProgress:self.headerView.scrollProgress];
   }
@@ -1534,18 +1540,15 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
   if (self.feedHeaderViewController) {
     [self cleanUpCollectionViewConstraints];
-
     [NSLayoutConstraint activateConstraints:@[
-      // Apply parent collection view constraints.
-      [self.collectionView.centerXAnchor
-          constraintEqualToAnchor:self.moduleLayoutGuide.centerXAnchor],
-
       // Apply feed header constraints.
       [self.feedHeaderViewController.view.centerXAnchor
           constraintEqualToAnchor:self.collectionView.frameLayoutGuide
                                       .centerXAnchor],
       [self.feedHeaderViewController.view.widthAnchor
           constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor],
+      [self.collectionView.centerXAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.centerXAnchor],
     ]];
     if (self.feedTopSectionViewController) {
       [NSLayoutConstraint activateConstraints:@[
@@ -1607,14 +1610,23 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   if (self.quickActionsVisible) {
     _quickActionsViewController.view.translatesAutoresizingMaskIntoConstraints =
         NO;
-    [NSLayoutConstraint activateConstraints:@[
-      [_quickActionsViewController.view.leadingAnchor
-          constraintEqualToAnchor:self.headerView.fakeOmniboxView
-                                      .leadingAnchor],
-      [_quickActionsViewController.view.trailingAnchor
-          constraintEqualToAnchor:self.headerView.fakeOmniboxView
-                                      .trailingAnchor],
-    ]];
+    if (IsNewTabPageUICleanupEnabled()) {
+      [NSLayoutConstraint activateConstraints:@[
+        [_quickActionsViewController.view.leadingAnchor
+            constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
+        [_quickActionsViewController.view.trailingAnchor
+            constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
+      ]];
+    } else {
+      [NSLayoutConstraint activateConstraints:@[
+        [_quickActionsViewController.view.leadingAnchor
+            constraintEqualToAnchor:self.headerView.fakeOmniboxView
+                                        .leadingAnchor],
+        [_quickActionsViewController.view.trailingAnchor
+            constraintEqualToAnchor:self.headerView.fakeOmniboxView
+                                        .trailingAnchor],
+      ]];
+    }
   }
 
   // Anchor each module except the one directly below the header, since it will
@@ -1769,9 +1781,14 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 // Updates the width constraint of `moduleLayoutGuide`.
 - (void)updateModuleWidthWithWidth:(CGFloat)viewWidth {
   CGFloat oldWidth = _moduleWidth.constant;
-  CGFloat widthMultiplier = (100 - kHomeModuleMinimumPadding) / 100;
-  CGFloat width =
-      MIN(viewWidth * widthMultiplier, kDiscoverFeedContentMaxWidth);
+  CGFloat width;
+  if (IsNewTabPageUICleanupEnabled()) {
+    width = MIN(viewWidth - (2 * kNewTabPageHorizontalMargin),
+                kDiscoverFeedContentMaxWidth);
+  } else {
+    CGFloat widthMultiplier = (100 - kHomeModuleMinimumPadding) / 100;
+    width = MIN(viewWidth * widthMultiplier, kDiscoverFeedContentMaxWidth);
+  }
 
   BOOL existingConstraintUpdated = NO;
   if (!_moduleWidth) {
