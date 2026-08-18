@@ -86,8 +86,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.test.util.ViewUtils;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -100,11 +98,8 @@ import java.util.Set;
 })
 @DoNotBatch(reason = "Test start up behaviors.")
 public class LocationBarTest {
-    private static final String TEST_QUERY = "testing query";
-    private static final List<String> TEST_PARAMS = Arrays.asList("foo=bar");
     private static final String HOSTNAME = "suchwowveryyes.edu";
     private static final String GOOGLE_URL = "https://www.google.com";
-    private static final String NON_GOOGLE_URL = "https://www.notgoogle.com";
 
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -123,7 +118,6 @@ public class LocationBarTest {
     private UrlBar mUrlBar;
     private LocationBarCoordinator mLocationBarCoordinator;
     private LocationBarMediator mLocationBarMediator;
-    private String mSearchUrl;
     private String mHostUrl;
     private ActivityKeyboardVisibilityDelegate mKeyboardDelegate;
     private OmniboxTestUtils mOmnibox;
@@ -161,7 +155,6 @@ public class LocationBarTest {
                 ((LocationBarCoordinator)
                         activity.getToolbarManager().getToolbarLayoutForTesting().getLocationBar());
         mLocationBarMediator = mLocationBarCoordinator.getMediatorForTesting();
-        mSearchUrl = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURL("/search");
         mLocationBarCoordinator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
         mLocationBarCoordinator.setLensControllerForTesting(mLensController);
         mKeyboardDelegate = mActivity.getWindowAndroid().getKeyboardDelegate();

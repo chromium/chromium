@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -82,7 +81,6 @@ public class MostVisitedTilesTest {
     // Note: since we use the TestAutocompleteController, this could be any string.
     private static final String START_PAGE_LOCATION = "/echo/start.html";
     private static final String SEARCH_QUERY = "related search query";
-    private static final int MV_TILE_CAROUSEL_MATCH_POSITION = 1;
     private static final long MV_TILE_NATIVE_HANDLE = 0xfce2;
 
     public final @Rule FreshCtaTransitTestRule mActivityTestRule =
@@ -97,7 +95,6 @@ public class MostVisitedTilesTest {
 
     private AutocompleteCoordinator mAutocomplete;
     private EmbeddedTestServer mTestServer;
-    private Tab mTab;
     private SuggestionInfo<BaseCarouselSuggestionView> mCarousel;
     private String mStartUrl;
     private OmniboxTestUtils mOmnibox;
@@ -116,7 +113,6 @@ public class MostVisitedTilesTest {
         mOmnibox = new OmniboxTestUtils(mActivity);
         mLocationBarLayout = mActivity.findViewById(R.id.location_bar);
         mAutocomplete = mLocationBarLayout.getAutocompleteCoordinator();
-        mTab = mPage.loadedTabElement.value();
         mStartUrl = mActivityTestRule.getTestServer().getURL(START_PAGE_LOCATION);
 
         setUpSuggestionsToShow();

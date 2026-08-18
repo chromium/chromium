@@ -47,7 +47,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -84,9 +83,6 @@ public class OmniboxTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
-
-    private static final OnSuggestionsReceivedListener sEmptySuggestionListener =
-            (result, isFinal) -> {};
 
     @Test
     @EnormousTest
@@ -296,9 +292,6 @@ public class OmniboxTest {
 
         final String testHttpsUrl =
                 httpsTestServer.getURL("/chrome/test/data/android/omnibox/one.html");
-        ImageView securityView =
-                (ImageView)
-                        mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
         mActivityTestRule.loadUrl(testHttpsUrl);
         onSSLStateUpdatedCallbackHelper.waitForCallback(0);
         final LocationBarLayout locationBar =
@@ -468,6 +461,9 @@ public class OmniboxTest {
 
         final String testHttpsUrl =
                 testServer.getURL("/chrome/test/data/android/theme_color_test.html");
+        ImageView securityView =
+                (ImageView)
+                        mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
         mActivityTestRule.loadUrl(testHttpsUrl);
         // Tablets don't have website theme colors.
         if (!mActivityTestRule.getActivity().isTablet()) {
@@ -476,9 +472,6 @@ public class OmniboxTest {
         onSSLStateUpdatedCallbackHelper.waitForCallback(0);
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
-        ImageView securityView =
-                (ImageView)
-                        mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
         boolean securityIcon =
                 locationBarLayout.getStatusCoordinatorForTesting().isSecurityViewShown();
         assertTrue("Omnibox should have a Security icon", securityIcon);
