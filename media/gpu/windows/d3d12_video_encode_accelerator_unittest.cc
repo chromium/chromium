@@ -56,6 +56,7 @@ class MockVideoEncoderDelegate : public D3D12VideoEncodeDelegate {
   MOCK_METHOD(EncoderStatus::Or<EncodeResult>,
               Encode,
               (D3D12PictureBuffer,
+               const gfx::Rect&,
                const gfx::ColorSpace&,
                const BitstreamBuffer&,
                const VideoEncoder::EncodeOptions&,
@@ -94,14 +95,14 @@ class MockVideoEncoderDelegateFactory
         .WillByDefault(Return(16));
     ON_CALL(*encoder_delegate, GetMaxNumOfManualRefBuffers())
         .WillByDefault(Return(0));
-    ON_CALL(*encoder_delegate, Encode(_, _, _, _, _))
-        .WillByDefault([](D3D12PictureBuffer, const gfx::ColorSpace&,
-                          const BitstreamBuffer& bitstream_buffer,
-                          const VideoEncoder::EncodeOptions&,
-                          const gfx::HDRMetadata&)
-                           -> D3D12VideoEncodeDelegate::EncodeResult {
-          return {bitstream_buffer.id()};
-        });
+    ON_CALL(*encoder_delegate, Encode(_, _, _, _, _, _))
+        .WillByDefault(
+            [](D3D12PictureBuffer, const gfx::Rect&, const gfx::ColorSpace&,
+               const BitstreamBuffer& bitstream_buffer,
+               const VideoEncoder::EncodeOptions&, const gfx::HDRMetadata&)
+                -> D3D12VideoEncodeDelegate::EncodeResult {
+              return {bitstream_buffer.id()};
+            });
     return std::move(encoder_delegate);
   }
 
@@ -160,21 +161,23 @@ class D3D12VideoEncodeAcceleratorTest : public testing::Test {
         VideoEncodeAccelerator::Config::ContentType::kCamera);
   }
 
-  scoped_refptr<VideoFrame> CreateTestVideoFrame() {
+  scoped_refptr<VideoFrame> CreateTestVideoFrame(
+      const gfx::Size& coded_size = kSupportedSize,
+      const std::optional<gfx::Rect>& visible_rect = std::nullopt) {
     gfx::GpuMemoryBufferHandle fake_handle(
         gfx::DXGIHandle::CreateFakeForTest());
 
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     auto shared_image = test_sii_->CreateSharedImage(
-        {viz::MultiPlaneFormat::kNV12, kSupportedSize, gfx::ColorSpace(),
+        {viz::MultiPlaneFormat::kNV12, coded_size, gfx::ColorSpace(),
          gpu::SharedImageUsageSet(si_usage), "D3D12VideoEncodeAcceleratorTest"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
         std::move(fake_handle));
     return media::VideoFrame::WrapMappableSharedImage(
         std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
-        base::NullCallback(), gfx::Rect(kSupportedSize), kSupportedSize,
-        base::TimeDelta{});
+        base::NullCallback(), visible_rect.value_or(gfx::Rect(coded_size)),
+        kSupportedSize, base::TimeDelta{});
   }
 
   void WaitForEncoderTasksToComplete() const {
@@ -515,12 +518,12 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, EncodeErrorStopsProcessingNextFrames) {
           .WillByDefault(Return(16));
       ON_CALL(*encoder_delegate, GetMaxNumOfManualRefBuffers())
           .WillByDefault(Return(0));
-      ON_CALL(*encoder_delegate, Encode(_, _, _, _, _))
+      ON_CALL(*encoder_delegate, Encode(_, _, _, _, _, _))
           .WillByDefault(
-              [this](D3D12PictureBuffer, const gfx::ColorSpace&,
-                     const BitstreamBuffer& bitstream_buffer,
-                     const VideoEncoder::EncodeOptions&,
-                     const gfx::HDRMetadata&)
+              [this](
+                  D3D12PictureBuffer, const gfx::Rect&, const gfx::ColorSpace&,
+                  const BitstreamBuffer& bitstream_buffer,
+                  const VideoEncoder::EncodeOptions&, const gfx::HDRMetadata&)
                   -> EncoderStatus::Or<D3D12VideoEncodeDelegate::EncodeResult> {
                 ++encode_call_count_;
                 if (encode_call_count_ == 1) {
@@ -591,6 +594,78 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, EncodeErrorStopsProcessingNextFrames) {
   // loop should break without attempting to encode the second frame.
   EXPECT_EQ(fail_factory_ptr->encode_call_count_, 1);
   Mock::VerifyAndClearExpectations(client_.get());
+}
+
+// The delegate crops the input texture down to the visible rectangle it is
+// given, so the accelerator has to tell it which region of the texture the
+// producer actually filled. A GPU texture is handed over untouched, so its
+// visible rectangle is the frame's.
+TEST_F(D3D12VideoEncodeAcceleratorTest, ForwardsVisibleRectToDelegate) {
+  auto* d3d12_video_encode_accelerator =
+      static_cast<D3D12VideoEncodeAccelerator*>(
+          video_encode_accelerator_.get());
+
+  // Records the visible rectangle passed to every Encode() call.
+  class RecordVisibleRectFactory : public MockVideoEncoderDelegateFactory {
+   public:
+    std::vector<gfx::Rect> visible_rects_;
+
+    std::unique_ptr<D3D12VideoEncodeDelegate> CreateVideoEncodeDelegate(
+        ID3D12VideoDevice3* video_device,
+        VideoCodecProfile profile) override {
+      auto encoder_delegate =
+          MockVideoEncoderDelegateFactory::CreateVideoEncodeDelegate(
+              video_device, profile);
+      ON_CALL(*static_cast<MockVideoEncoderDelegate*>(encoder_delegate.get()),
+              Encode(_, _, _, _, _, _))
+          .WillByDefault([this](D3D12PictureBuffer,
+                                const gfx::Rect& input_visible_rect,
+                                const gfx::ColorSpace&,
+                                const BitstreamBuffer& bitstream_buffer,
+                                const VideoEncoder::EncodeOptions&,
+                                const gfx::HDRMetadata&)
+                             -> D3D12VideoEncodeDelegate::EncodeResult {
+            visible_rects_.push_back(input_visible_rect);
+            return {bitstream_buffer.id()};
+          });
+      return encoder_delegate;
+    }
+  };
+
+  auto factory = std::make_unique<RecordVisibleRectFactory>();
+  auto* factory_ptr = factory.get();
+  d3d12_video_encode_accelerator->SetEncoderFactoryForTesting(
+      std::move(factory));
+
+  auto supported_profiles =
+      d3d12_video_encode_accelerator->GetSupportedProfiles();
+  ASSERT_FALSE(supported_profiles.empty());
+  auto config = SupportedProfileToConfig(supported_profiles.front());
+
+  size_t bitstream_buffer_size = 0;
+  EXPECT_CALL(*client_, RequireBitstreamBuffers(_, _, _))
+      .WillOnce([&](unsigned int, const gfx::Size&, size_t size_in_bytes) {
+        bitstream_buffer_size = size_in_bytes;
+      });
+  ASSERT_TRUE(d3d12_video_encode_accelerator
+                  ->Initialize(config, client_.get(), media_log_->Clone())
+                  .is_ok());
+  WaitForEncoderTasksToComplete();
+  Mock::VerifyAndClearExpectations(client_.get());
+
+  d3d12_video_encode_accelerator->UseOutputBitstreamBuffer(BitstreamBuffer(
+      0, base::UnsafeSharedMemoryRegion::Create(bitstream_buffer_size),
+      bitstream_buffer_size));
+
+  // A 1080p frame delivered in a macroblock aligned 1920x1088 texture.
+  gfx::Size coded_size = kSupportedSize;
+  coded_size += {0, 8};
+  d3d12_video_encode_accelerator->Encode(
+      CreateTestVideoFrame(coded_size, gfx::Rect(kSupportedSize)), false);
+  WaitForEncoderTasksToComplete();
+
+  ASSERT_EQ(factory_ptr->visible_rects_.size(), 1u);
+  EXPECT_EQ(factory_ptr->visible_rects_[0], gfx::Rect(kSupportedSize));
 }
 
 }  // namespace media

@@ -22,6 +22,7 @@
 #include "third_party/libgav1/src/src/buffer_pool.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
+#include "ui/gfx/geometry/rect.h"
 
 using ::testing::_;
 using ::testing::ElementsAreArray;
@@ -205,8 +206,9 @@ class D3D12VideoEncodeAV1DelegateTest
 
     VideoEncoder::EncodeOptions options;
     options.quantizer = qindex;
-    auto result = encoder_delegate_->Encode({input_frame.Get()}, color_space,
-                                            bitstream_buffer, options);
+    auto result = encoder_delegate_->Encode(
+        {input_frame.Get()}, gfx::Rect(config.input_visible_size), color_space,
+        bitstream_buffer, options);
     if (!result.has_value()) {
       ADD_FAILURE() << "Encode() failed: "
                     << std::move(result).error().message();
@@ -248,9 +250,9 @@ class D3D12VideoEncodeAV1DelegateTest
           return EncoderStatus::Codes::kOk;
         });
 
-    auto result =
-        encoder_delegate_->Encode({input_frame.Get()}, color_space,
-                                  bitstream_buffer, options, hdr_metadata);
+    auto result = encoder_delegate_->Encode(
+        {input_frame.Get()}, gfx::Rect(config.input_visible_size), color_space,
+        bitstream_buffer, options, hdr_metadata);
     if (!result.has_value()) {
       ADD_FAILURE() << "Encode() failed: "
                     << std::move(result).error().message();
@@ -432,7 +434,8 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrame) {
         .WillRepeatedly(Return(kStreamSize));
 
     auto result = encoder_delegate_->Encode(
-        {input_frame.Get()}, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+        {input_frame.Get()}, gfx::Rect(config.input_visible_size),
+        gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
         VideoEncoder::EncodeOptions());
     EXPECT_EQ(result.has_value(), true);
     auto [bitstream_buffer_id, metadata] = std::move(result).value();
@@ -474,7 +477,8 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, EncodeFrameWith10BitInput) {
       .WillRepeatedly(Return(kStreamSize));
 
   auto result = encoder_delegate_->Encode(
-      {input_frame.Get()}, gfx::ColorSpace::CreateHDR10(), bitstream_buffer,
+      {input_frame.Get()}, gfx::Rect(config.input_visible_size),
+      gfx::ColorSpace::CreateHDR10(), bitstream_buffer,
       VideoEncoder::EncodeOptions());
   ASSERT_TRUE(result.has_value());
   auto [bitstream_buffer_id, metadata] = std::move(result).value();
@@ -689,9 +693,9 @@ TEST_F(D3D12VideoEncodeAV1DelegateTest, ExternalRateControl) {
 
     VideoEncoder::EncodeOptions options;
     options.quantizer = quantizers[i];
-    auto result = encoder_delegate_->Encode({input_frame.Get()},
-                                            gfx::ColorSpace::CreateSRGB(),
-                                            bitstream_buffer, options);
+    auto result = encoder_delegate_->Encode(
+        {input_frame.Get()}, gfx::Rect(config.input_visible_size),
+        gfx::ColorSpace::CreateSRGB(), bitstream_buffer, options);
     EXPECT_EQ(result.has_value(), true);
     auto [bitstream_buffer_id, metadata] = std::move(result).value();
     EXPECT_EQ(metadata.qp, quantizers[i]);

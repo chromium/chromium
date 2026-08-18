@@ -34,6 +34,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -1179,7 +1180,8 @@ int RunD3D12VideoEncodeDelegateFuzzer(FuzzedDataProvider& provider) {
   }
 
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC709();
-  delegate->Encode(picture_buffer, color_space, bitstream_buffer, options);
+  delegate->Encode(picture_buffer, gfx::Rect(frame_size), color_space,
+                   bitstream_buffer, options);
 
   return 0;
 }

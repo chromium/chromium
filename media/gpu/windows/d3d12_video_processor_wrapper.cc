@@ -136,11 +136,13 @@ D3D12FenceAndValue D3D12VideoProcessorWrapper::ProcessFrames(
     const gfx::ColorSpace& output_color_space,
     const gfx::Rect& output_rectangle) {
   DCHECK(command_queue_ && command_allocator_ && command_list_ && fence_);
+  DCHECK(!input_rectangle.IsEmpty());
   D3D12_RESOURCE_DESC input_texture_desc = input_texture->GetDesc();
   D3D12_RESOURCE_DESC output_texture_desc = output_texture->GetDesc();
   D3D12_VIDEO_SIZE_RANGE source_size_range{
       static_cast<UINT>(input_texture_desc.Width), input_texture_desc.Height,
-      static_cast<UINT>(input_texture_desc.Width), input_texture_desc.Height};
+      static_cast<UINT>(input_rectangle.width()),
+      static_cast<UINT>(input_rectangle.height())};
   D3D12_VIDEO_SIZE_RANGE destination_size_range{
       static_cast<UINT>(output_texture_desc.Width), output_texture_desc.Height,
       static_cast<UINT>(output_texture_desc.Width), output_texture_desc.Height};
@@ -163,11 +165,14 @@ D3D12FenceAndValue D3D12VideoProcessorWrapper::ProcessFrames(
       UNSAFE_TODO(memcmp(&output_stream_desc, &output_stream_desc_,
                          sizeof(D3D12_VIDEO_PROCESS_OUTPUT_STREAM_DESC))) !=
           0) {
+    // Query for the source rectangle rather than the whole input texture: that
+    // is the region ProcessFrames() below samples, and the driver's answer
+    // depends on the size it is asked to read and scale.
     if (!CheckVideoProcessorSupport(
-            static_cast<UINT>(input_texture_desc.Width),
-            input_texture_desc.Height, input_texture_desc.Format,
-            input_color_space, output_texture_desc.Format,
-            output_color_space)) {
+            static_cast<UINT>(input_rectangle.width()),
+            static_cast<UINT>(input_rectangle.height()),
+            input_texture_desc.Format, input_color_space,
+            output_texture_desc.Format, output_color_space)) {
       DLOG(ERROR) << "D3D12 cannot support video processing.";
       return {};
     }

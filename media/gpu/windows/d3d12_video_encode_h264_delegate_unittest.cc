@@ -14,6 +14,7 @@
 #include "media/gpu/windows/mf_video_encoder_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 
 using testing::_;
 using testing::Mock;
@@ -362,7 +363,8 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFrame) {
         return EncoderStatus::Codes::kOk;
       });
   auto result_or_error = encoder_delegate_->Encode(
-      input_frame, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+      input_frame, gfx::Rect(config.input_visible_size),
+      gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
       VideoEncoder::EncodeOptions());
   ASSERT_TRUE(result_or_error.has_value());
 
@@ -421,7 +423,8 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFramesAndVerifyKeyFrameFlag) {
           return EncoderStatus::Codes::kOk;
         });
     auto result_or_error = encoder_delegate_->Encode(
-        input_frame, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+        input_frame, gfx::Rect(config.input_visible_size),
+        gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
         VideoEncoder::EncodeOptions());
     ASSERT_TRUE(result_or_error.has_value());
     Mock::VerifyAndClearExpectations(GetVideoEncoderWrapper());
@@ -461,7 +464,8 @@ TEST_F(D3D12VideoEncodeH264DelegateTest,
     EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata())
         .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kStreamSize)));
     auto result_or_error = encoder_delegate_->Encode(
-        input_frame, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+        input_frame, gfx::Rect(config.input_visible_size),
+        gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
         VideoEncoder::EncodeOptions());
     ASSERT_TRUE(result_or_error.has_value());
 
@@ -494,23 +498,23 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeWithManualReferenceControl) {
   encode_opts.key_frame = true;
   encode_opts.reference_buffers = {};
   encode_opts.update_buffer = 0;
-  auto result_or_error =
-      encoder_delegate_->Encode(input_frame, gfx::ColorSpace::CreateSRGB(),
-                                bitstream_buffer, encode_opts);
+  auto result_or_error = encoder_delegate_->Encode(
+      input_frame, gfx::Rect(config.input_visible_size),
+      gfx::ColorSpace::CreateSRGB(), bitstream_buffer, encode_opts);
   ASSERT_TRUE(result_or_error.has_value());
 
   encode_opts.reference_buffers = {0};
   encode_opts.update_buffer = std::nullopt;
-  result_or_error =
-      encoder_delegate_->Encode(input_frame, gfx::ColorSpace::CreateSRGB(),
-                                bitstream_buffer, encode_opts);
+  result_or_error = encoder_delegate_->Encode(
+      input_frame, gfx::Rect(config.input_visible_size),
+      gfx::ColorSpace::CreateSRGB(), bitstream_buffer, encode_opts);
   ASSERT_TRUE(result_or_error.has_value());
 
   encode_opts.reference_buffers = {0};
   encode_opts.update_buffer = 0;
-  result_or_error =
-      encoder_delegate_->Encode(input_frame, gfx::ColorSpace::CreateSRGB(),
-                                bitstream_buffer, encode_opts);
+  result_or_error = encoder_delegate_->Encode(
+      input_frame, gfx::Rect(config.input_visible_size),
+      gfx::ColorSpace::CreateSRGB(), bitstream_buffer, encode_opts);
   ASSERT_TRUE(result_or_error.has_value());
 }
 

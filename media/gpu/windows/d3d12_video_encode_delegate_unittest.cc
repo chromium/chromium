@@ -268,7 +268,8 @@ TEST_F(D3D12VideoEncodeDelegateTest, EncodeFailsWhenVideoProcessorUnsupported) {
   BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kPayloadSize);
   EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames).Times(0);
   auto result_or_error = encoder_delegate_->Encode(
-      input_frame, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+      input_frame, gfx::Rect(config.input_visible_size),
+      gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
       VideoEncoder::EncodeOptions());
   ASSERT_FALSE(result_or_error.has_value());
   EXPECT_EQ(std::move(result_or_error).error().code(),
@@ -301,9 +302,9 @@ TEST_F(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrameWithoutVP) {
   EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames).Times(0);
   EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
       .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kPayloadSize)));
-  auto result_or_error =
-      encoder_delegate_->Encode(input_frame, color_space, bitstream_buffer,
-                                VideoEncoder::EncodeOptions());
+  auto result_or_error = encoder_delegate_->Encode(
+      input_frame, gfx::Rect(input_size), color_space, bitstream_buffer,
+      VideoEncoder::EncodeOptions());
   Mock::VerifyAndClearExpectations(GetVideoProcessorWrapper());
   ASSERT_TRUE(result_or_error.has_value())
       << std::move(result_or_error).error().message();
@@ -318,8 +319,10 @@ TEST_F(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrameWithVP) {
   VideoEncodeAccelerator::Config config = GetDefaultH264Config();
   ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
 
+  // A texture wider than the encoder input size, so the video processor has to
+  // run. NV12 requires even dimensions, hence the step of two.
   gfx::Size input_size = config.input_visible_size;
-  input_size += {1, 0};
+  input_size += {2, 0};
   auto input_frame = CreateResource(input_size, config.input_format);
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   constexpr size_t kPayloadSize = 1024;
@@ -342,9 +345,9 @@ TEST_F(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrameWithVP) {
 
   EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
       .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kPayloadSize)));
-  auto result_or_error =
-      encoder_delegate_->Encode(input_frame, color_space, bitstream_buffer,
-                                VideoEncoder::EncodeOptions());
+  auto result_or_error = encoder_delegate_->Encode(
+      input_frame, gfx::Rect(input_size), color_space, bitstream_buffer,
+      VideoEncoder::EncodeOptions());
   Mock::VerifyAndClearExpectations(GetVideoProcessorWrapper());
   ASSERT_TRUE(result_or_error.has_value())
       << std::move(result_or_error).error().message();
@@ -355,6 +358,210 @@ TEST_F(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrameWithVP) {
       gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL);
   EXPECT_EQ(metadata.encoded_color_space, output_color_space);
   EXPECT_EQ(metadata.payload_size_bytes, kPayloadSize);
+}
+
+class D3D12VideoEncodeDelegateVisibleRectTest
+    : public D3D12VideoEncodeDelegateTest {
+ protected:
+  // Encodes one frame and returns the source rectangle the video processor was
+  // asked to sample. The delegate must be initialized by the caller.
+  gfx::Rect EncodeAndGetSourceRect(const D3D12PictureBuffer& picture_buffer,
+                                   const gfx::Rect& input_visible_rect,
+                                   gfx::Rect* destination_rect = nullptr) {
+    constexpr size_t kPayloadSize = 1024;
+    auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
+    BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(),
+                                     kPayloadSize);
+    gfx::Rect source_rect;
+    auto fence = MakeComPtr<NiceMock<D3D12FenceMock>>();
+    EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames)
+        .WillOnce([&](ID3D12Resource*, UINT, const gfx::ColorSpace&,
+                      const gfx::Rect& input_rectangle, ID3D12Resource*, UINT,
+                      const gfx::ColorSpace&,
+                      const gfx::Rect& output_rectangle) {
+          source_rect = input_rectangle;
+          if (destination_rect) {
+            *destination_rect = output_rectangle;
+          }
+          return D3D12FenceAndValue{fence.Get(), 0};
+        });
+    EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+        .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kPayloadSize)));
+    auto result_or_error = encoder_delegate_->Encode(
+        picture_buffer, input_visible_rect, gfx::ColorSpace::CreateREC709(),
+        bitstream_buffer, VideoEncoder::EncodeOptions());
+    Mock::VerifyAndClearExpectations(GetVideoProcessorWrapper());
+    EXPECT_TRUE(result_or_error.has_value())
+        << std::move(result_or_error).error().message();
+    return source_rect;
+  }
+
+  // Attempts to encode one frame that the delegate is expected to reject before
+  // submitting any video processing work, and returns the resulting error code.
+  EncoderStatus::Codes EncodeAndGetRejection(
+      const D3D12PictureBuffer& picture_buffer,
+      const gfx::Rect& input_visible_rect) {
+    constexpr size_t kPayloadSize = 1024;
+    auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
+    BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(),
+                                     kPayloadSize);
+    EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames).Times(0);
+    auto result_or_error = encoder_delegate_->Encode(
+        picture_buffer, input_visible_rect, gfx::ColorSpace::CreateREC709(),
+        bitstream_buffer, VideoEncoder::EncodeOptions());
+    Mock::VerifyAndClearExpectations(GetVideoProcessorWrapper());
+    if (result_or_error.has_value()) {
+      ADD_FAILURE() << "Encode() unexpectedly succeeded";
+      return EncoderStatus::Codes::kOk;
+    }
+    return std::move(result_or_error).error().code();
+  }
+};
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, CropsToVisibleRect) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1920, 1080);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format));
+
+  gfx::Rect destination_rect;
+  EXPECT_EQ(EncodeAndGetSourceRect(picture_buffer, gfx::Rect(0, 0, 1920, 1080),
+                                   &destination_rect),
+            gfx::Rect(0, 0, 1920, 1080));
+  EXPECT_EQ(destination_rect, gfx::Rect(0, 0, 1920, 1080));
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, CropsToVisibleRectWithOffset) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1888, 1064);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1080), config.input_format));
+
+  EXPECT_EQ(
+      EncodeAndGetSourceRect(picture_buffer, gfx::Rect(16, 8, 1888, 1064)),
+      gfx::Rect(16, 8, 1888, 1064));
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, RejectsOddVisibleRectOrigin) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1264, 704);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1280, 720), config.input_format));
+
+  EXPECT_EQ(EncodeAndGetRejection(picture_buffer, gfx::Rect(15, 7, 1264, 704)),
+            EncoderStatus::Codes::kInvalidInputFrame);
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, RejectsOddVisibleRectSize) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.input_visible_size = gfx::Size(1264, 704);
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1280, 720), config.input_format));
+  for (const gfx::Rect& visible_rect :
+       {gfx::Rect(0, 0, 1265, 704), gfx::Rect(0, 0, 1264, 705),
+        gfx::Rect(0, 0, 1265, 705)}) {
+    EXPECT_EQ(EncodeAndGetRejection(picture_buffer, visible_rect),
+              EncoderStatus::Codes::kInvalidInputFrame)
+        << "Unexpectedly accepted visible rectangle "
+        << visible_rect.ToString();
+  }
+}
+
+// A crop that is not already the encoder's input size is scaled to it, the same
+// tolerance MF VEA provides via PerformD3DScaling(). The crop is the source and
+// the encoder input size is the destination; neither is the texture size.
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, ScalesCropToEncoderInputSize) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1920, 1088), config.input_format));
+
+  gfx::Rect destination_rect;
+  EXPECT_EQ(EncodeAndGetSourceRect(picture_buffer, gfx::Rect(0, 0, 1920, 1080),
+                                   &destination_rect),
+            gfx::Rect(0, 0, 1920, 1080));
+  EXPECT_EQ(destination_rect, gfx::Rect(config.input_visible_size));
+}
+
+// The video processor samples only the visible rectangle, so the support query
+// has to describe the crop size -- not the input texture, and not the encoder
+// input size the crop is scaled to.
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       ChecksVideoProcessorSupportForCropSize) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  // An ARGB input frame differs from the NV12 encoder input format, so the
+  // encoder runs the video processor to convert it.
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1296, 728), PIXEL_FORMAT_ARGB));
+
+  EXPECT_CALL(*GetVideoProcessorWrapper(),
+              CheckVideoProcessorSupport(1024u, 576u, _, _, _, _))
+      .WillOnce(Return(true));
+  EXPECT_EQ(EncodeAndGetSourceRect(picture_buffer, gfx::Rect(16, 8, 1024, 576)),
+            gfx::Rect(16, 8, 1024, 576));
+}
+
+// The alignment requirement comes from 4:2:0 chroma subsampling, so a source
+// that stores chroma at full resolution can be cropped at an odd origin.
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       AllowsUnalignedVisibleRectForNon420Format) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  // An ARGB input frame differs from the NV12 encoder input format, so the
+  // encoder runs the video processor to convert it.
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(gfx::Size(1296, 728), PIXEL_FORMAT_ARGB));
+
+  EXPECT_EQ(EncodeAndGetSourceRect(
+                picture_buffer,
+                gfx::Rect(gfx::Point(15, 7), config.input_visible_size)),
+            gfx::Rect(15, 7, 1280, 720));
+}
+
+// Callers must always name the region to encode. There is no "whole texture"
+// shorthand, so an empty rectangle is a caller bug rather than a request to
+// encode everything.
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest, RejectsEmptyVisibleRect) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(config.input_visible_size, config.input_format));
+
+  for (const gfx::Rect& visible_rect :
+       {gfx::Rect(), gfx::Rect(0, 0, 1280, 0), gfx::Rect(0, 0, 0, 720),
+        gfx::Rect(16, 8, 0, 0)}) {
+    EXPECT_EQ(EncodeAndGetRejection(picture_buffer, visible_rect),
+              EncoderStatus::Codes::kInvalidInputFrame)
+        << "Unexpectedly accepted empty visible rectangle "
+        << visible_rect.ToString();
+  }
+}
+
+TEST_F(D3D12VideoEncodeDelegateVisibleRectTest,
+       RejectsVisibleRectOutsideTexture) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  D3D12PictureBuffer picture_buffer(
+      CreateResource(config.input_visible_size, config.input_format));
+
+  EXPECT_EQ(EncodeAndGetRejection(
+                picture_buffer,
+                gfx::Rect(gfx::Point(0, 2), config.input_visible_size)),
+            EncoderStatus::Codes::kInvalidInputFrame);
 }
 
 TEST_F(D3D12VideoEncodeDelegateTest, EncodeWithTooManyReferenceBuffersFails) {
@@ -377,8 +584,9 @@ TEST_F(D3D12VideoEncodeDelegateTest, EncodeWithTooManyReferenceBuffersFails) {
     options.reference_buffers.push_back(static_cast<uint8_t>(i));
   }
 
-  auto result_or_error = encoder_delegate_->Encode(input_frame, color_space,
-                                                   bitstream_buffer, options);
+  auto result_or_error =
+      encoder_delegate_->Encode(input_frame, gfx::Rect(input_size), color_space,
+                                bitstream_buffer, options);
 
   // Expect an error indicating too many reference buffers.
   EXPECT_FALSE(result_or_error.has_value());
@@ -402,8 +610,9 @@ TEST_F(D3D12VideoEncodeDelegateTest,
   options.reference_buffers.push_back(
       static_cast<uint8_t>(encoder_delegate_->GetMaxNumOfManualRefBuffers()));
 
-  auto result_or_error = encoder_delegate_->Encode(input_frame, color_space,
-                                                   bitstream_buffer, options);
+  auto result_or_error =
+      encoder_delegate_->Encode(input_frame, gfx::Rect(input_size), color_space,
+                                bitstream_buffer, options);
 
   EXPECT_FALSE(result_or_error.has_value());
   EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
@@ -426,8 +635,9 @@ TEST_F(D3D12VideoEncodeDelegateTest,
   options.update_buffer =
       static_cast<uint8_t>(encoder_delegate_->GetMaxNumOfRefFrames());
 
-  auto result_or_error = encoder_delegate_->Encode(input_frame, color_space,
-                                                   bitstream_buffer, options);
+  auto result_or_error =
+      encoder_delegate_->Encode(input_frame, gfx::Rect(input_size), color_space,
+                                bitstream_buffer, options);
 
   EXPECT_FALSE(result_or_error.has_value());
   EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
@@ -454,16 +664,18 @@ TEST_F(D3D12VideoEncodeDelegateTest, EncodeWithEmptyRefsOnNonKeyframeFails) {
   options.key_frame = true;
   options.reference_buffers = {};
   options.update_buffer = 0;
-  auto result_or_error = encoder_delegate_->Encode(input_frame, color_space,
-                                                   bitstream_buffer, options);
+  auto result_or_error =
+      encoder_delegate_->Encode(input_frame, gfx::Rect(input_size), color_space,
+                                bitstream_buffer, options);
   ASSERT_TRUE(result_or_error.has_value());
 
   // Frame 1: non-keyframe with empty references — should fail.
   options.key_frame = false;
   options.reference_buffers = {};
   options.update_buffer = std::nullopt;
-  result_or_error = encoder_delegate_->Encode(input_frame, color_space,
-                                              bitstream_buffer, options);
+  result_or_error =
+      encoder_delegate_->Encode(input_frame, gfx::Rect(input_size), color_space,
+                                bitstream_buffer, options);
   EXPECT_FALSE(result_or_error.has_value());
   EXPECT_EQ(result_or_error.code(), EncoderStatus::Codes::kBadReferenceBuffer);
 }

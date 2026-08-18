@@ -9,6 +9,8 @@
 #include "base/bits.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
@@ -39,6 +41,18 @@
 namespace media {
 
 namespace {
+
+bool Is420Subsampled(DXGI_FORMAT format) {
+  switch (format) {
+    case DXGI_FORMAT_NV12:
+    case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_P016:
+    case DXGI_FORMAT_420_OPAQUE:
+      return true;
+    default:
+      return false;
+  }
+}
 
 bool IsVBRSupported(ID3D12VideoDevice3* video_device,
                     VideoCodecProfile output_profile) {
@@ -275,6 +289,7 @@ bool D3D12VideoEncodeDelegate::UpdateRateControl(
 EncoderStatus::Or<D3D12VideoEncodeDelegate::EncodeResult>
 D3D12VideoEncodeDelegate::Encode(
     D3D12PictureBuffer picture_buffer,
+    const gfx::Rect& input_visible_rect,
     const gfx::ColorSpace& input_frame_color_space,
     const BitstreamBuffer& bitstream_buffer,
     const VideoEncoder::EncodeOptions& options,
@@ -308,7 +323,48 @@ D3D12VideoEncodeDelegate::Encode(
 
   const gfx::ColorSpace& output_color_space =
       GetEncoderOutputColorSpaceFromInputColorSpace(input_frame_color_space);
-  if (D3D12_RESOURCE_DESC input_frame_desc = picture_buffer.resource->GetDesc();
+
+  const D3D12_RESOURCE_DESC input_frame_desc =
+      picture_buffer.resource->GetDesc();
+  const gfx::Rect input_frame_rect(
+      0, 0, base::checked_cast<int>(input_frame_desc.Width),
+      base::checked_cast<int>(input_frame_desc.Height));
+  if (input_visible_rect.IsEmpty() ||
+      !input_frame_rect.Contains(input_visible_rect)) {
+    return {EncoderStatus::Codes::kInvalidInputFrame,
+            base::StrCat({"Input frame visible rectangle ",
+                          input_visible_rect.ToString(),
+                          " is not a valid region of the input texture ",
+                          input_frame_rect.ToString()})};
+  }
+  // 4:2:0 chroma is shared between neighboring row and column pairs, so an odd
+  // origin or size does not name a whole chroma sample and cannot be cropped
+  // to. Reject it rather than silently encoding a different region, matching
+  // MF VEA's behavior.
+  //
+  // Note that for 4:2:2 formats, x and width must be even. Make sure this is
+  // handled if in the future we allow GPU passthrough of such texture to the
+  // encoder.
+  if (Is420Subsampled(input_frame_desc.Format) &&
+      (input_visible_rect.x() % 2 != 0 || input_visible_rect.y() % 2 != 0 ||
+       input_visible_rect.width() % 2 != 0 ||
+       input_visible_rect.height() % 2 != 0)) {
+    return {EncoderStatus::Codes::kInvalidInputFrame,
+            "Input frame visible rectangle is not properly aligned for a 4:2:0 "
+            "subsampled format"};
+  }
+  const gfx::Rect encoder_input_rect(
+      0, 0, base::checked_cast<int>(input_size_.Width),
+      base::checked_cast<int>(input_size_.Height));
+
+  // The video processor pass below both crops to |input_visible_rect| and, if
+  // that region is not already the encoder's input size, scales it to
+  // |encoder_input_rect|. Config::input_visible_size is documented as the size
+  // clients report via VideoFrame::visible_rect(), so a differing crop is
+  // strictly out of contract, but scaling it is deliberate: MF VEA tolerates
+  // the same mismatch via PerformD3DScaling(), and rejecting it here would
+  // break clients that work on the Media Foundation path.
+  if (input_visible_rect != encoder_input_rect ||
       input_frame_desc.Width != input_size_.Width ||
       input_frame_desc.Height != input_size_.Height ||
       input_frame_desc.Format != input_format_ ||
@@ -320,8 +376,8 @@ D3D12VideoEncodeDelegate::Encode(
       // before allocating resources or submitting any GPU work, so we fail with
       // a clear error rather than deep inside the video processor.
       if (!video_processor_wrapper_->CheckVideoProcessorSupport(
-              static_cast<UINT>(input_frame_desc.Width),
-              static_cast<UINT>(input_frame_desc.Height),
+              static_cast<UINT>(input_visible_rect.width()),
+              static_cast<UINT>(input_visible_rect.height()),
               input_frame_desc.Format, input_frame_color_space, input_format_,
               output_color_space)) {
         return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
@@ -347,10 +403,9 @@ D3D12VideoEncodeDelegate::Encode(
     }
     auto fence_or_value = video_processor_wrapper_->ProcessFrames(
         picture_buffer.resource.Get(), picture_buffer.subresource,
-        input_frame_color_space,
-        gfx::Rect(0, 0, input_frame_desc.Width, input_frame_desc.Height),
+        input_frame_color_space, input_visible_rect,
         processed_input_frame_.Get(), 0, output_color_space,
-        gfx::Rect(0, 0, input_size_.Width, input_size_.Height));
+        encoder_input_rect);
     if (!fence_or_value.first) {
       return {EncoderStatus::Codes::kD3D12VideoProcessorProcessFramesFailed,
               "D3D12 video processor process frame failed"};
