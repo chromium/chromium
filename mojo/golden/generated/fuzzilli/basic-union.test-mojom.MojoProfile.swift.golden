@@ -10,7 +10,7 @@
 //     basic-union.test-mojom
 //
 
-private static let mojoPrefix = "golden."
+private let mojoPrefix = "golden."
 
 ///
 /// Interfaces
@@ -140,7 +140,7 @@ private let MojoIntegerArrayGenerator = CodeGenerator(
     b.createArray(
         with: [elem],
         elementGroupName:
-            ObjectGroup.integerElement.group.name)
+            ObjectGroup.integerElement.name)
 }
 
 ///

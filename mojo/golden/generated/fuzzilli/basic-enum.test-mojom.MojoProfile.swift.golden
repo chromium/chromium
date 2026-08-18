@@ -10,7 +10,7 @@
 //     basic-enum.test-mojom
 //
 
-private static let mojoPrefix = "golden."
+private let mojoPrefix = "golden."
 
 ///
 /// Interfaces

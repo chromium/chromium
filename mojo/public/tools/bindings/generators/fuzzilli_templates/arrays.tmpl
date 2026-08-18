@@ -22,6 +22,6 @@ private let Mojo{{array|format_unique_name}}Generator = CodeGenerator(
         elementGroupName:
             ObjectGroup.
                 {{- array.kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
-                .group.name)
+                .name)
 }
 {%- endfor %}

@@ -10,7 +10,7 @@
 //     basic-array.test-mojom
 //
 
-private static let mojoPrefix = "golden."
+private let mojoPrefix = "golden."
 
 ///
 /// Interfaces
@@ -197,7 +197,7 @@ private let MojoGoldenEntryArrayGenerator = CodeGenerator(
     b.createArray(
         with: [elem],
         elementGroupName:
-            ObjectGroup.goldenEntry.group.name)
+            ObjectGroup.goldenEntry.name)
 }
 private let MojoBooleanArrayGenerator = CodeGenerator(
     "MojoBooleanArrayGenerator",
@@ -207,7 +207,7 @@ private let MojoBooleanArrayGenerator = CodeGenerator(
     b.createArray(
         with: [elem],
         elementGroupName:
-            ObjectGroup.booleanElement.group.name)
+            ObjectGroup.booleanElement.name)
 }
 private let MojoStringArrayGenerator = CodeGenerator(
     "MojoStringArrayGenerator",
@@ -217,7 +217,7 @@ private let MojoStringArrayGenerator = CodeGenerator(
     b.createArray(
         with: [elem],
         elementGroupName:
-            ObjectGroup.stringElement.group.name)
+            ObjectGroup.stringElement.name)
 }
 private let MojoFloatArrayGenerator = CodeGenerator(
     "MojoFloatArrayGenerator",
@@ -227,7 +227,7 @@ private let MojoFloatArrayGenerator = CodeGenerator(
     b.createArray(
         with: [elem],
         elementGroupName:
-            ObjectGroup.floatElement.group.name)
+            ObjectGroup.floatElement.name)
 }
 private let MojoIntegerArrayGenerator = CodeGenerator(
     "MojoIntegerArrayGenerator",
@@ -237,7 +237,7 @@ private let MojoIntegerArrayGenerator = CodeGenerator(
     b.createArray(
         with: [elem],
         elementGroupName:
-            ObjectGroup.integerElement.group.name)
+            ObjectGroup.integerElement.name)
 }
 
 ///
