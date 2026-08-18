@@ -13,6 +13,8 @@ import androidx.annotation.IntDef;
 import org.chromium.autofill.mojom.SubmissionSource;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -407,7 +409,7 @@ public class AutofillProviderUMA {
     }
 
     private @Nullable SessionRecorder mRecorder;
-    private @Nullable Boolean mAutofillDisabledOnSessionStart;
+    private @TriState int mAutofillDisabledOnSessionStart;
 
     private final boolean mIsAwGCurrentAutofillService;
     private @Nullable ServerPredictionRecorder mServerPredictionRecorder;
@@ -436,10 +438,10 @@ public class AutofillProviderUMA {
 
     public void onSessionStarted(boolean autofillDisabled) {
         // Record autofill status once per instance and only if user triggers the autofill.
-        if (mAutofillDisabledOnSessionStart == null
-                || mAutofillDisabledOnSessionStart.booleanValue() != autofillDisabled) {
+        @TriState int disabledState = TriStateUtils.from(autofillDisabled);
+        if (mAutofillDisabledOnSessionStart != disabledState) {
             RecordHistogram.recordBooleanHistogram(UMA_AUTOFILL_ENABLED, !autofillDisabled);
-            mAutofillDisabledOnSessionStart = autofillDisabled;
+            mAutofillDisabledOnSessionStart = disabledState;
         }
 
         if (mRecorder != null) recordSession();
@@ -539,9 +541,7 @@ public class AutofillProviderUMA {
      * session has been started.
      */
     public void recordSession() {
-        if (mAutofillDisabledOnSessionStart != null
-                && !mAutofillDisabledOnSessionStart.booleanValue()
-                && mRecorder != null) {
+        if (mAutofillDisabledOnSessionStart == TriState.FALSE && mRecorder != null) {
             mRecorder.recordHistogram(mCurrentProvider);
         }
         mRecorder = null;
