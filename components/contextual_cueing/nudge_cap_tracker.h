@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_NUDGE_CAP_TRACKER_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_NUDGE_CAP_TRACKER_H_
+#ifndef COMPONENTS_CONTEXTUAL_CUEING_NUDGE_CAP_TRACKER_H_
+#define COMPONENTS_CONTEXTUAL_CUEING_NUDGE_CAP_TRACKER_H_
+
+#include <cstddef>
+#include <optional>
 
 #include "base/containers/queue.h"
 #include "base/time/time.h"
@@ -44,4 +47,4 @@ class NudgeCapTracker {
 
 }  // namespace contextual_cueing
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_NUDGE_CAP_TRACKER_H_
+#endif  // COMPONENTS_CONTEXTUAL_CUEING_NUDGE_CAP_TRACKER_H_

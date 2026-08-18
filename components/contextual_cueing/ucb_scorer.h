@@ -2,12 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_UCB_SCORER_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_UCB_SCORER_H_
-
-#include "chrome/browser/contextual_cueing/cue_target.h"
+#ifndef COMPONENTS_CONTEXTUAL_CUEING_UCB_SCORER_H_
+#define COMPONENTS_CONTEXTUAL_CUEING_UCB_SCORER_H_
 
 namespace contextual_cueing {
+
+// Interaction statistics for a candidate cue target.
+struct TargetStats {
+  int impressions = 0;
+  int clicks = 0;
+  int dismissals = 0;
+};
 
 // Hyperparameters for the UCB (Upper Confidence Bound) scoring function.
 struct UCBHyperparameters {
@@ -35,4 +40,4 @@ double CalculateUCBScore(const TargetStats& stats,
 
 }  // namespace contextual_cueing
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_UCB_SCORER_H_
+#endif  // COMPONENTS_CONTEXTUAL_CUEING_UCB_SCORER_H_

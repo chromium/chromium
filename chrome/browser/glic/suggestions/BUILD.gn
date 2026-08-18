@@ -20,6 +20,7 @@ source_set("suggestions") {
     "//base",
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/profiles:profile",
+    "//components/contextual_cueing",
     "//components/optimization_guide/core",
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/core",

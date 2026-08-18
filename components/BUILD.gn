@@ -220,6 +220,7 @@ test("components_unittests") {
     "//components/content_capture/common:unit_tests",
     "//components/content_settings/core/browser:unit_tests",
     "//components/content_settings/core/common:unit_tests",
+    "//components/contextual_cueing:unit_tests",
     "//components/contextual_search:unit_tests",
     "//components/contextual_search/footprints:unit_tests",
     "//components/contextual_search/internal:unit_tests",

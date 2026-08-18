@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/ucb_scorer.h"
+#include "components/contextual_cueing/ucb_scorer.h"
 
 #include <algorithm>
 #include <cmath>
-
 
 namespace contextual_cueing {
 

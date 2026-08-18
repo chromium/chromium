@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("contextual_cueing") {
+  sources = [
+    "contextual_cueing_enums.h",
+    "nudge_cap_tracker.cc",
+    "nudge_cap_tracker.h",
+    "ucb_scorer.cc",
+    "ucb_scorer.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "nudge_cap_tracker_unittest.cc",
+    "ucb_scorer_unittest.cc",
+  ]
+  deps = [
+    ":contextual_cueing",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

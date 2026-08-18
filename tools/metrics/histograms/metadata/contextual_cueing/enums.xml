@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:ContextualCueingDecision) -->
+<!-- LINT.ThenChange(//components/contextual_cueing/contextual_cueing_enums.h:ContextualCueingDecision) -->
 
 <!-- LINT.IfChange(ContextualCueingInteraction) -->
 
@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:ContextualCueingInteraction) -->
+<!-- LINT.ThenChange(//components/contextual_cueing/contextual_cueing_enums.h:ContextualCueingInteraction) -->
 
 <!-- LINT.IfChange(NudgeDecision) -->
 
@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:CueFormFactor) -->
+<!-- LINT.ThenChange(//components/contextual_cueing/contextual_cueing_enums.h:CueFormFactor) -->
 
 <!-- LINT.IfChange(CueTargetType) -->
 

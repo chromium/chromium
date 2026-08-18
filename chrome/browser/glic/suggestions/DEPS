@@ -1,6 +1,7 @@
 include_rules = [
   "+chrome/browser/contextual_cueing",
+  "+components/contextual_cueing",
   "+components/keyed_service/core",
   "+pdf/mojom/pdf.mojom.h",
-  "+services/metrics/public/cpp"
+  "+services/metrics/public/cpp",
 ]

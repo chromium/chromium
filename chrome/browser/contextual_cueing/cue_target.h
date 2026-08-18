@@ -35,12 +35,6 @@ enum class CueTargetType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:CueTargetType)
 
-struct TargetStats {
-  int impressions = 0;
-  int clicks = 0;
-  int dismissals = 0;
-};
-
 // Level of UI prominence the orchestrator is willing to grant for this page
 // load. Determined by the controller based on global quotas and backoff state.
 enum class CueIntrusiveness {

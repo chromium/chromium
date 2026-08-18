@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/nudge_cap_tracker.h"
+#include "components/contextual_cueing/nudge_cap_tracker.h"
 
 namespace contextual_cueing {
+
 NudgeCapTracker::NudgeCapTracker(size_t cap_count, base::TimeDelta duration)
     : cap_count_(cap_count), duration_(duration) {}
 

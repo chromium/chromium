@@ -4,11 +4,11 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 
-#include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/features.h"
-#include "chrome/browser/contextual_cueing/nudge_cap_tracker.h"
 #include "chrome/browser/contextual_cueing/prefs.h"
-#include "chrome/browser/contextual_cueing/ucb_scorer.h"
+#include "components/contextual_cueing/contextual_cueing_enums.h"
+#include "components/contextual_cueing/nudge_cap_tracker.h"
+#include "components/contextual_cueing/ucb_scorer.h"
 #include "components/prefs/pref_service.h"
 
 #if !BUILDFLAG(IS_ANDROID)
