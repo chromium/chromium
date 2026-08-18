@@ -162,7 +162,7 @@ enum class PrerenderFinalStatus {
   // Cancelled by window.close() from renderer side.
   kWindowClosed = 82,
 
-  kSlowNetwork = 83,
+  // kSlowNetwork = 83,  // No longer used.
   kOtherPrerenderedPageActivated = 84,
 
   // When the V8 optimizer is disabled by the site settings, prerendering a page

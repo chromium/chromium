@@ -349,10 +349,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
         std::make_unique<test::PrerenderTestHelper>(base::BindRepeating(
             &PrerenderBrowserTest::web_contents, base::Unretained(this)));
 
-    feature_list_.InitWithFeatures(
-        {::features::kSuppressesPrerenderingOnSlowNetwork,
-         blink::features::kFetchLaterAPI},
-        {});
+    feature_list_.InitWithFeatures({blink::features::kFetchLaterAPI}, {});
   }
   ~PrerenderBrowserTest() override = default;
 
@@ -16126,76 +16123,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
 
   // The initiator page should not be closed by window.closed().
   EXPECT_TRUE(ExecJs(web_contents(), ""));
-}
-
-// Tests that Prerender is suppressed by slow network.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTestFallbackEnabledDisabled,
-                       SlowNetwork) {
-  // Emulate slow network.
-  MockClientHintsControllerDelegate client_hints_controller_delegate(
-      GetShellUserAgentMetadata());
-  ShellContentBrowserClient::Get()
-      ->browser_context()
-      ->set_client_hints_controller_delegate(&client_hints_controller_delegate);
-  network::NetworkQualityTracker& network_quality_tracker =
-      *client_hints_controller_delegate.GetNetworkQualityTracker();
-  base::TimeDelta http_rtt =
-      base::Milliseconds(1) +
-      ::features::kSuppressesPrerenderingOnSlowNetworkThreshold.Get();
-  network_quality_tracker.ReportRTTsAndThroughputForTesting(
-      http_rtt, network_quality_tracker.GetDownstreamThroughputKbps());
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL initial_url = GetUrl("/empty.html");
-  GURL prerendering_url = GetUrl("/empty.html?prerender");
-
-  // Attempt to prerender.
-  test::PrerenderHostRegistryObserver observer(*web_contents_impl());
-  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
-  AddPrerenderAsync(prerendering_url);
-  observer.WaitForTrigger(prerendering_url);
-
-  // It should fail.
-  EXPECT_FALSE(HasHostForUrl(prerendering_url));
-  ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kSlowNetwork);
-
-  // Navigate primary page to flush the metrics.
-  NavigatePrimaryPage(prerendering_url);
-
-  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
-    // Prerender is cancelled, but prefetch ahead of prerender is still alive
-    // and the navigation uses it.
-    ExpectPreloadingAttemptUkm(
-        {attempt_ukm_entry_builder().BuildEntry(
-             PrimaryPageSourceId(), PreloadingType::kPrerender,
-             PreloadingEligibility::kSlowNetwork,
-             PreloadingHoldbackStatus::kUnspecified,
-             PreloadingTriggeringOutcome::kUnspecified,
-             PreloadingFailureReason::kUnspecified,
-             /*accurate=*/true,
-             /*ready_time=*/std::nullopt,
-             blink::mojom::SpeculationEagerness::kImmediate),
-         attempt_ukm_entry_builder().BuildEntry(
-             PrimaryPageSourceId(), PreloadingType::kPrefetch,
-             PreloadingEligibility::kEligible,
-             PreloadingHoldbackStatus::kAllowed,
-             PreloadingTriggeringOutcome::kSuccess,
-             PreloadingFailureReason::kUnspecified,
-             /*accurate=*/true,
-             /*ready_time=*/kMockElapsedTime,
-             blink::mojom::SpeculationEagerness::kImmediate)});
-  } else {
-    ExpectPreloadingAttemptUkm({attempt_ukm_entry_builder().BuildEntry(
-        PrimaryPageSourceId(), PreloadingType::kPrerender,
-        PreloadingEligibility::kSlowNetwork,
-        PreloadingHoldbackStatus::kUnspecified,
-        PreloadingTriggeringOutcome::kUnspecified,
-        PreloadingFailureReason::kUnspecified,
-        /*accurate=*/true,
-        /*ready_time=*/std::nullopt,
-        blink::mojom::SpeculationEagerness::kImmediate)});
-  }
 }
 
 class V8OptimizerContentBrowserClient

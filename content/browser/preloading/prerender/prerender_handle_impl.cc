@@ -123,11 +123,6 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
 
     // window.close() is called in a prerendered page.
     case PrerenderFinalStatus::kWindowClosed:
-      return false;
-
-    case PrerenderFinalStatus::kSlowNetwork:
-      return true;
-
     case PrerenderFinalStatus::kOtherPrerenderedPageActivated:
       return false;
 
