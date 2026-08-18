@@ -1,0 +1,64 @@
+# tags: [ mac win linux ]
+# tags: [ mac26-arm64 mac26 mac15-arm64 mac15 mac14-arm64 mac14 ]
+# tags: [ x86_64 arm64 ]
+# tags: [ release debug ]
+# results: [ Timeout Crash Pass Failure Skip ]
+
+# An Optimization Guide internal script (run_chrome_ai_wpt_tests.py) uses these
+# expectations instead of the typical TestExpectations file, in order to test
+# Built-In AI APIs in Branded Chrome builds with side-loaded models & configs.
+
+# These tests fail a 'downloadable' availability precondition, per sideloading.
+# NOTE: They unexpectedly pass on retry; perhaps due to crbug.com/429183223.
+crbug.com/390246212 external/wpt/ai/language_detection/detector.https.window.html [ Skip ]
+
+# These tests fail flakily with `Unhandled rejection with value: object "Error: element click intercepted error"`.
+crbug.com/517535239 external/wpt/ai/language_detection/detector-iframe.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/language-model/language-model-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/rewriter/rewriter-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/summarizer/summarizer-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/writer/writer-iframe.tentative.https.html [ Failure Pass ]
+
+# The overflow test times out because filling the context window on CPU takes too long.
+[ mac ] external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.html [ Timeout ]
+[ linux ] external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.html [ Timeout ]
+[ win x86_64 ] external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.html [ Timeout ]
+
+# Windows ARM64 CPU service disconnects on context overflow abort.
+crbug.com/547931317 [ win arm64 ] external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.html [ Failure Timeout ]
+
+# These tests produce minor token count variations, missing capability failures, or timing flakiness on legacy CPU.
+crbug.com/513585708 external/wpt/ai/language-model/language-model-append.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/language-model/language-model-clone.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/language-model/prompt/context/usage-initial-prompt.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/language-model/prompt/empty-inputs/null-input.tentative.https.window.html [ Failure Pass ]
+crbug.com/513585708 external/wpt/ai/language-model/prompt/empty-inputs/undefined-input.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/language-model/prompt/prompt-simple-question.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/empty-object-input.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/empty-sequence-input.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/garbage-collection.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/language-model/prompt/streaming/prompt-streaming.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/rewriter/rewriter-abort.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/rewriter/rewriter-rewrite-streaming.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/rewriter/rewriter-rewrite.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/summarizer/summarizer-summarize-streaming.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/summarizer/summarizer-summarize.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/writer/writer-write-streaming.tentative.https.window.html [ Failure Timeout Pass ]
+crbug.com/513585708 external/wpt/ai/writer/writer-write.tentative.https.window.html [ Failure Timeout Pass ]
+
+# Audio inputs are currently disabled by default for the CPU model via feature flags; image and video should be re-assessed.
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/audio/* [ Failure Pass ]
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/availability.tentative.https.window.html [ Failure Pass ]
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/create.tentative.https.window.html [ Failure Pass ]
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/image/* [ Failure Pass ]
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/mix-post-abort.tentative.https.window.html [ Failure Pass ]
+crbug.com/514431981 external/wpt/ai/language-model/prompt/multimodal/video/* [ Failure Pass ]
+
+# Temporarily skip semantic embedder WPTs
+crbug.com/428233906 external/wpt/ai/semantic_embedder/* [ Skip ]
+
+# There is no TranslateKit component for Win ARM64.
+crbug.com/379233932 [ win arm64 ] external/wpt/ai/translator/* [ Skip ]
+
+# Gemma 4 hits early EOS on natural story termination under exact-length regex constraint.
+crbug.com/546202331 external/wpt/ai/language-model/response-constraint/regex/exact-length.tentative.https.window.html [ Failure ]

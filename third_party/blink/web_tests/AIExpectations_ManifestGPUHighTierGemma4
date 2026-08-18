@@ -1,0 +1,42 @@
+# tags: [ mac win linux ]
+# tags: [ mac26-arm64 mac26 mac15-arm64 mac15 mac14-arm64 mac14 ]
+# tags: [ x86_64 arm64 ]
+# tags: [ release debug ]
+# results: [ Timeout Crash Pass Failure Skip ]
+
+# An Optimization Guide internal script (run_chrome_ai_wpt_tests.py) uses these
+# expectations instead of the typical TestExpectations file, in order to test
+# Built-In AI APIs in Branded Chrome builds with side-loaded models & configs.
+
+# These tests fail a 'downloadable' availability precondition, per sideloading.
+# NOTE: They unexpectedly pass on retry; perhaps due to crbug.com/429183223.
+crbug.com/390246212 external/wpt/ai/language_detection/detector.https.window.html [ Skip ]
+
+# These tests fail flakily with `Unhandled rejection with value: object "Error: element click intercepted error"`.
+crbug.com/517535239 external/wpt/ai/language_detection/detector-iframe.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/language-model/language-model-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/rewriter/rewriter-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/summarizer/summarizer-iframe.tentative.https.html [ Failure Pass ]
+crbug.com/517535239 external/wpt/ai/writer/writer-iframe.tentative.https.html [ Failure Pass ]
+
+# The overflow test times out because filling the context window takes too long.
+external/wpt/ai/language-model/prompt/context/overflow.tentative.https.window.html [ Timeout ]
+
+# Temporarily skip semantic embedder WPTs
+crbug.com/428233906 external/wpt/ai/semantic_embedder/* [ Skip ]
+
+# There is no TranslateKit component for Win ARM64.
+crbug.com/379233932 [ win arm64 ] external/wpt/ai/translator/* [ Skip ]
+
+# Skip all WPTs on Windows ARM64 because of timeouts and deadlocks.
+crbug.com/543441359 [ win arm64 ] external/wpt/ai/* [ Skip ]
+
+# Gemma 4 hits early EOS on natural story termination under exact-length regex constraint.
+crbug.com/546202331 external/wpt/ai/language-model/response-constraint/regex/exact-length.tentative.https.window.html [ Failure ]
+
+# Generative conversational LLM output variation does not always include literal substring "/undefined/".
+external/wpt/ai/language-model/prompt/empty-inputs/undefined-input.tentative.https.window.html [ Failure Pass ]
+
+# DirectML on AMD GPUs produces non-contextual text for multimodal image prompts.
+external/wpt/ai/language-model/prompt/multimodal/image/blob.tentative.https.window.html [ Failure Pass ]
+external/wpt/ai/language-model/prompt/multimodal/image/offscreen-canvas.tentative.https.window.html [ Failure Pass ]
