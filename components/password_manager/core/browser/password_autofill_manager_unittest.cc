@@ -489,15 +489,15 @@ TEST_F(PasswordAutofillManagerTest, PreviewSuggestion) {
       password_autofill_manager_->PreviewSuggestionForTest(test_username_));
 }
 
-TEST_F(PasswordAutofillManagerTest, PreviewGroupedSuggestion) {
+TEST_F(PasswordAutofillManagerTest, DoNotPreviewGroupedSuggestion) {
   fill_data().preferred_login.is_grouped_affiliation = true;
   TestPasswordManagerClient client;
   InitializePasswordAutofillManager(&client, nullptr);
 
-  // Grouped suggestions should be masked using an 8-character long mask.
-  EXPECT_CALL(*client.mock_driver(),
-              PreviewSuggestion(test_username_, std::u16string(8, '*')));
-  EXPECT_TRUE(
+  // Grouped suggestions should not be previewed to avoid leaking data to the
+  // renderer without user confirmation.
+  EXPECT_CALL(*client.mock_driver(), PreviewSuggestion).Times(0);
+  EXPECT_FALSE(
       password_autofill_manager_->PreviewSuggestionForTest(test_username_));
 }
 
@@ -2507,7 +2507,7 @@ TEST_F(PasswordAutofillManagerTest,
 }
 
 TEST_F(PasswordAutofillManagerTest,
-       PasswordRecoveryFlow_PreviewGroupedBackupSuggestion) {
+       PasswordRecoveryFlow_DoNotPreviewGroupedBackupSuggestion) {
   TestPasswordManagerClient client;
   InitializePasswordAutofillManager(&client, nullptr);
   const Suggestion::PasswordSuggestionDetails payload(
@@ -2516,9 +2516,9 @@ TEST_F(PasswordAutofillManagerTest,
   const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       autofill::SuggestionType::kBackupPasswordEntry, test_username_, payload);
 
-  // Grouped backup suggestions should be masked using an 8-character long mask.
-  EXPECT_CALL(*client.mock_driver(),
-              PreviewSuggestion(test_username_, std::u16string(8, '*')));
+  // Grouped backup suggestions should not be previewed to avoid leaking data
+  // without user confirmation.
+  EXPECT_CALL(*client.mock_driver(), PreviewSuggestion).Times(0);
   password_autofill_manager_->DidSelectSuggestion(suggestion);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
