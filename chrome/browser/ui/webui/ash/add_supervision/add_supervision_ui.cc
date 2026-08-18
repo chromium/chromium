@@ -8,13 +8,13 @@
 #include <utility>
 
 #include "ash/constants/webui_url_constants.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
@@ -26,6 +26,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/supervision_resources.h"
 #include "chrome/grit/supervision_resources_map.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/google/core/common/google_util.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
@@ -194,7 +196,8 @@ void AddSupervisionUI::BindInterface(
   signin::IdentityManager* identity_manager =
       test_identity_manager_
           ? test_identity_manager_
-          : IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
+          : IdentityManagerProvider::Get().Find(CHECK_DEREF(
+                AnnotatedAccountId::Get(Profile::FromWebUI(web_ui()))));
 
   mojo_api_handler_ = std::make_unique<AddSupervisionHandler>(
       std::move(receiver), web_ui(), identity_manager, this);
