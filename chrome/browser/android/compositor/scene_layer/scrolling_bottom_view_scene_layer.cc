@@ -47,7 +47,8 @@ void ScrollingBottomViewSceneLayer::UpdateScrollingBottomViewLayer(
     float y_offset,
     bool show_shadow,
     const JavaRef<jobject>& joffset_tag,
-    int32_t bottom_padding) {
+    int32_t bottom_padding,
+    int32_t content_height) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   ui::Resource* bottom_view_resource = resource_manager->GetResource(
@@ -59,21 +60,26 @@ void ScrollingBottomViewSceneLayer::UpdateScrollingBottomViewLayer(
 
   view_layer_->SetUIResourceId(bottom_view_resource->ui_resource()->id());
 
-  int container_height = bottom_view_resource->size().height();
-  int texture_y_offset = 0;
+  int effective_content_height =
+      content_height > 0 ? content_height
+                         : (bottom_view_resource->size().height() -
+                            (show_shadow ? shadow_height : 0) - bottom_padding);
 
-  // The view container layer's height depends on whether the shadow is
-  // showing. If the shadow should be clipped, reduce the height of the
-  // container.
+  int texture_y_offset = 0;
+  int shadow_offset = 0;
   if (!show_shadow) {
-    container_height -= shadow_height;
     texture_y_offset -= shadow_height;
+  } else {
+    shadow_offset = shadow_height;
   }
+
+  int container_height =
+      effective_content_height + bottom_padding + shadow_offset;
 
   view_container_->SetBounds(
       gfx::Size(bottom_view_resource->size().width(), container_height));
   view_container_->SetPosition(
-      gfx::PointF(0, y_offset - container_height + bottom_padding));
+      gfx::PointF(0, y_offset - shadow_offset - effective_content_height));
 
   viz::OffsetTag offset_tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
   view_container_->SetOffsetTag(offset_tag);
