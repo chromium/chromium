@@ -71,10 +71,9 @@ class CORE_EXPORT ValueWrapperSyntheticModuleScript final
   // taking the Synthetic Module Record as its sole argument. These will usually
   // set up the exported values, by using SetSyntheticModuleExport. They must
   // not modify [[ExportNames]]. They may return an abrupt completion.
-  static v8::MaybeLocal<v8::Value> EvaluationSteps(
+  static v8::MaybeLocal<v8::Promise> EvaluationSteps(
       v8::Local<v8::Context> context,
       v8::Local<v8::Module> module);
-
 };
 
 }  // namespace blink

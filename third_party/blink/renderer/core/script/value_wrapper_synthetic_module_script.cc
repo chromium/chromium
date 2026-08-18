@@ -194,7 +194,7 @@ ValueWrapperSyntheticModuleScript::ValueWrapperSyntheticModuleScript(
 // spec  https://webidl.spec.whatwg.org/#synthetic-module-records
 // It is responsible for setting the default export of the provided module to
 // the value wrapped by the ValueWrapperSyntheticModuleScript
-v8::MaybeLocal<v8::Value> ValueWrapperSyntheticModuleScript::EvaluationSteps(
+v8::MaybeLocal<v8::Promise> ValueWrapperSyntheticModuleScript::EvaluationSteps(
     v8::Local<v8::Context> context,
     v8::Local<v8::Module> module) {
   v8::Isolate* isolate = v8::Isolate::GetCurrent();
@@ -216,7 +216,7 @@ v8::MaybeLocal<v8::Value> ValueWrapperSyntheticModuleScript::EvaluationSteps(
       LOG(FATAL) << "Cannot recover from failure to create a new "
                     "v8::Promise::Resolver object (OOM?)";
     }
-    return v8::MaybeLocal<v8::Value>();
+    return v8::MaybeLocal<v8::Promise>();
   }
   promise_resolver->Resolve(context, v8::Undefined(isolate)).ToChecked();
   return promise_resolver->GetPromise();
