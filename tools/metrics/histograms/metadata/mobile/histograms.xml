@@ -392,7 +392,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.Messages.Passwords.Modal.Event{Mobile_Messages_Password_Type}"
-    enum="MobileMessagesPasswordsModalEvent" expires_after="2026-09-29">
+    enum="MobileMessagesPasswordsModalEvent" expires_after="2027-09-29">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
