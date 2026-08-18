@@ -536,6 +536,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.app") {
     "src/org/chromium/chrome/browser/app/appmenu/OverviewAppMenuTest.java",
     "src/org/chromium/chrome/browser/app/appmenu/TabbedAppMenuPTTest.java",
     "src/org/chromium/chrome/browser/app/appmenu/TabbedAppMenuTest.java",
+    "src/org/chromium/chrome/browser/app/bookmarks/BookmarkEditDesktopTest.java",
     "src/org/chromium/chrome/browser/app/bookmarks/BookmarkEditTest.java",
     "src/org/chromium/chrome/browser/app/bookmarks/BookmarkFolderPickerActivityTest.java",
     "src/org/chromium/chrome/browser/app/bookmarks/BookmarkTabletTest.java",

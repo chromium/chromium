@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.BookmarkViewUtils;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowCoordinator;
@@ -72,6 +73,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
     private BookmarkTextInputLayout mTitleEditText;
     private BookmarkTextInputLayout mUrlEditText;
     private @Nullable MenuItem mDeleteButton;
+    private @Nullable MenuItem mCloseButton;
     private FrameLayout mFolderPickerRowContainer;
 
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
@@ -114,13 +116,15 @@ public class BookmarkEditActivity extends SnackbarActivity {
             return;
         }
 
-        setContentView(R.layout.bookmark_edit);
+        boolean isDesktopLayout = BookmarkUtils.isDesktopBookmarksLayoutEnabled();
+        int layoutId = isDesktopLayout ? R.layout.bookmark_edit_desktop : R.layout.bookmark_edit;
+        setContentView(layoutId);
         mTitleEditText = findViewById(R.id.title_text);
         mUrlEditText = findViewById(R.id.url_text);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(!isDesktopLayout);
 
         View shadow = findViewById(R.id.shadow);
         View scrollView = findViewById(R.id.scroll_view);
@@ -156,6 +160,22 @@ public class BookmarkEditActivity extends SnackbarActivity {
                         ShoppingServiceFactory.getForProfile(profile));
 
         mFolderPickerRowContainer = findViewById(R.id.folder_row_container);
+
+        if (isDesktopLayout) {
+            View removeButton = findViewById(R.id.remove_button);
+            removeButton.setOnClickListener(
+                    (v) -> {
+                        mModel.deleteBookmark(mBookmarkId);
+                        finish();
+                    });
+            View saveButton = findViewById(R.id.save_button);
+            saveButton.setOnClickListener(
+                    (v) -> {
+                        saveBookmark();
+                        finish();
+                    });
+        }
+
         mEdgeToEdgePadAdjuster =
                 EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                         scrollView, getEdgeToEdgeSupplier());
@@ -180,14 +200,25 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        mDeleteButton =
-                menu.add(R.string.bookmark_toolbar_delete)
-                        .setIcon(
-                                UiUtils.getTintedDrawable(
-                                        this,
-                                        R.drawable.ic_delete_fill_24dp,
-                                        R.color.default_icon_color_tint_list))
-                        .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            mCloseButton =
+                    menu.add(R.string.close)
+                            .setIcon(
+                                    UiUtils.getTintedDrawable(
+                                            this,
+                                            R.drawable.material_ic_close_24dp,
+                                            R.color.default_icon_color_tint_list))
+                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        } else {
+            mDeleteButton =
+                    menu.add(R.string.bookmark_toolbar_delete)
+                            .setIcon(
+                                    UiUtils.getTintedDrawable(
+                                            this,
+                                            R.drawable.ic_delete_fill_24dp,
+                                            R.color.default_icon_color_tint_list))
+                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        }
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -201,6 +232,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
             mModel.deleteBookmark(mBookmarkId);
             finish();
             return true;
+        } else if (item == mCloseButton) {
+            finish();
+            return true;
         } else if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
@@ -208,8 +242,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onStop() {
+    private void saveBookmark() {
         if (mModel.doesBookmarkExist(mBookmarkId)) {
             BookmarkItem bookmarkItem = assumeNonNull(mModel.getBookmarkById(mBookmarkId));
             final GURL originalUrl = bookmarkItem.getUrl();
@@ -226,6 +259,13 @@ public class BookmarkEditActivity extends SnackbarActivity {
                     mModel.setBookmarkUrl(mBookmarkId, fixedUrl);
                 }
             }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        if (!BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            saveBookmark();
         }
 
         super.onStop();
@@ -258,6 +298,21 @@ public class BookmarkEditActivity extends SnackbarActivity {
     @VisibleForTesting
     @Nullable MenuItem getDeleteButton() {
         return mDeleteButton;
+    }
+
+    @VisibleForTesting
+    @Nullable MenuItem getCloseButton() {
+        return mCloseButton;
+    }
+
+    @VisibleForTesting
+    @Nullable View getSaveButton() {
+        return findViewById(R.id.save_button);
+    }
+
+    @VisibleForTesting
+    @Nullable View getRemoveButton() {
+        return findViewById(R.id.remove_button);
     }
 
     ScrollView getScrollViewForTesting() {
