@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -388,6 +389,36 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
   DisableExtension(extension->id());
   destroyed_watcher.Wait();
   EXPECT_TRUE(destroyed_watcher.IsDestroyed());
+}
+
+// Uninstalling the handler while the viewer tab is the browser's only tab
+// replaces that tab with the NTP instead of closing it, without crashing.
+// The single-tab case is distinct: the viewer's WebContents is reused for
+// the replacement navigation rather than destroyed. Regression test for
+// crbug.com/542646771.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
+                       UninstallingTopLevelHandlerLastTabShowsNtp) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
+  ASSERT_TRUE(extension);
+
+  ResultCatcher catcher;
+  content::WebContents* pdf_web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(pdf_web_contents,
+                            embedded_test_server()->GetURL(kTestPdfPath)));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+
+  content::TestNavigationObserver ntp_observer(pdf_web_contents);
+  UninstallExtension(extension->id());
+  ntp_observer.Wait();
+
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_FALSE(mime_handler::MimeHandlerStreamManager::FromWebContents(
+      pdf_web_contents));
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(),
+            pdf_web_contents->GetLastCommittedURL());
 }
 
 // Disabling the handler while the viewer tab has a beforeunload handler

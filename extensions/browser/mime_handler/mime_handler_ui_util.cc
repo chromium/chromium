@@ -28,13 +28,16 @@ const Extension* GetTopLevelMimeHandlerExtension(
   }
   auto* registry = ExtensionRegistry::Get(web_contents.GetBrowserContext());
   CHECK(registry);
-  // A claimed `StreamInfo` never outlives its handler extension's enabled
-  // state: `MimeHandlerStreamManager` erases an extension's streams
-  // synchronously in `OnExtensionUnloaded()` (frame teardown alone can be
-  // deferred, e.g. by a beforeunload dialog). So an ID returned by
-  // `GetTopLevelHandlerExtensionId()` must resolve to an enabled extension.
+  // The stream can transiently outlive the extension's enabled state:
+  // `MimeHandlerStreamManager` erases streams in `OnExtensionUnloaded()`, but
+  // an unloading extension leaves the enabled set before `ExtensionRegistry`
+  // observers run, and an earlier observer can synchronously reach this code
+  // (e.g. by starting a navigation) within that window. Treat the mid-unload
+  // state as "no handler".
   const Extension* extension = registry->enabled_extensions().GetByID(*id);
-  CHECK(extension);
+  if (!extension) {
+    return nullptr;
+  }
   // Allowlisted plugin extensions never relabel the chip. The allowlist
   // contains built-in PDF and QuickOffice variants, so this single filter
   // covers both categories (see `kMIMETypeHandlersAllowlist`).
