@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ServerBased.Uncertainty2s"
       summary="server-authoritative network time with uncertainty &lt;= 2s"/>
   <variant name="ServerBased.Uncertainty10s"
-      summary="server-authoritative network time with uncertainty &lt;= 10s"/>
+      summary="server-authoritative network time with uncertainty&lt;= 10s"/>
   <variant name="ServerBased.Uncertainty15s"
       summary="server-authoritative network time with uncertainty &lt;= 15s"/>
 </variants>
@@ -1883,7 +1883,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.MissingProgressMarkerInGetUpdatesResponse"
-    enum="SyncDataTypes" expires_after="2026-10-01">
+    enum="SyncDataTypes" expires_after="2027-10-01">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
