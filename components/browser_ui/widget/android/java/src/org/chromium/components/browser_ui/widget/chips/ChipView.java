@@ -29,7 +29,6 @@ import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.AppCompatTextView;
-import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -88,6 +87,7 @@ public class ChipView extends LinearLayout {
     private final @Px int mChipStartPadding;
     private final @Px int mChipEndPadding;
     private final @Px int mTextStartPadding;
+    private final @Px int mChipCompactPadding;
 
     private @MonotonicNonNull ViewGroup mEndIconWrapper;
     private @MonotonicNonNull LinearLayout mTextViewsWrapper;
@@ -128,7 +128,6 @@ public class ChipView extends LinearLayout {
                 a.getDimensionPixelSize(
                         R.styleable.ChipView_chipStartPadding,
                         getResources().getDimensionPixelSize(R.dimen.chip_view_start_padding));
-        mChipStartPadding = chipStartPadding;
 
         @Px int chipTopPadding = a.getDimensionPixelSize(R.styleable.ChipView_chipTopPadding, 0);
 
@@ -138,6 +137,9 @@ public class ChipView extends LinearLayout {
                         R.styleable.ChipView_chipEndPadding,
                         getResources().getDimensionPixelSize(R.dimen.chip_view_end_padding));
         mChipEndPadding = chipEndPadding;
+
+        mChipCompactPadding =
+                getResources().getDimensionPixelSize(R.dimen.chip_view_compact_padding);
 
         @Px
         int chipBottomPadding = a.getDimensionPixelSize(R.styleable.ChipView_chipBottomPadding, 0);
@@ -230,6 +232,7 @@ public class ChipView extends LinearLayout {
             int chipHeight = getResources().getDimensionPixelOffset(R.dimen.chip_default_height);
             chipStartPadding = (chipHeight - iconHeight) / 2;
         }
+        mChipStartPadding = chipStartPadding;
 
         int loadingViewHeightPadding = (iconHeight - loadingViewSize) / 2;
         int loadingViewWidthPadding = (iconWidth - loadingViewSize) / 2;
@@ -559,20 +562,9 @@ public class ChipView extends LinearLayout {
         return mPrimaryText;
     }
 
-    private void updateAccessibilityText() {
-        // To provide a tooltip for the chip when it is compact and the text is not visible, we set
-        // the content description and tooltip text to the text of the chip.
-        CharSequence text = mPrimaryText.getText();
-        if (mIsCompact && TextUtils.isEmpty(getContentDescription()) && !TextUtils.isEmpty(text)) {
-            setContentDescription(text);
-            TooltipCompat.setTooltipText(this, text);
-        }
-    }
-
     /** Sets the primary text of the chip. */
     public void setText(CharSequence text) {
         mPrimaryText.setText(text);
-        updateAccessibilityText();
     }
 
     /** Sets the primary text of the chip from a string resource. */
@@ -838,28 +830,88 @@ public class ChipView extends LinearLayout {
     public void setIsCompact(boolean isCompact) {
         if (mIsCompact == isCompact) return;
         mIsCompact = isCompact;
+        updateChipAppearance();
+    }
 
-        int textVisibility = isCompact ? GONE : VISIBLE;
-
-        // If the text views are stacked vertically in a wrapper, update the visibility of the
-        // wrapper. Otherwise, update the visibility of the primary and secondary text views.
-        if (mTextViewsWrapper != null) {
-            mTextViewsWrapper.setVisibility(textVisibility);
+    private void updateChipAppearance() {
+        updatePadding(mIsCompact);
+        if (mIsCompact) {
+            updateTextVisibility(View.GONE);
+            updateEndIconVisibility(View.GONE);
         } else {
-            mPrimaryText.setVisibility(textVisibility);
-            if (mSecondaryText != null) {
-                mSecondaryText.setVisibility(textVisibility);
+            updateTextVisibility(View.VISIBLE);
+            updateEndIconVisibility(View.VISIBLE);
+        }
+    }
+
+    private void updateEndIconVisibility(int visibility) {
+        if (mEndIconWrapper != null && mEndIconWrapper.getVisibility() != visibility) {
+            mEndIconWrapper.setVisibility(visibility);
+        }
+    }
+
+    private void updateTextVisibility(int visibility) {
+        if (mTextViewsWrapper != null) {
+            if (mTextViewsWrapper.getVisibility() != visibility) {
+                mTextViewsWrapper.setVisibility(visibility);
+            }
+        } else {
+            if (mPrimaryText.getVisibility() != visibility) {
+                mPrimaryText.setVisibility(visibility);
+            }
+            if (mSecondaryText != null && mSecondaryText.getVisibility() != visibility) {
+                mSecondaryText.setVisibility(visibility);
             }
         }
+    }
 
-        @Px
-        int compactPadding =
-                getResources().getDimensionPixelSize(R.dimen.chip_view_compact_padding);
-        int startPadding = isCompact ? compactPadding : mChipStartPadding;
-        int endPadding = isCompact ? compactPadding : mChipEndPadding;
-        setPaddingRelative(startPadding, getPaddingTop(), endPadding, getPaddingBottom());
+    private void updatePadding(boolean isCompact) {
+        int startPadding = isCompact ? mChipCompactPadding : mChipStartPadding;
+        int endPadding = isCompact ? mChipCompactPadding : getExpandedEndPadding();
+        if (getPaddingStart() != startPadding || getPaddingEnd() != endPadding) {
+            setPaddingRelative(startPadding, getPaddingTop(), endPadding, getPaddingBottom());
+        }
+    }
 
-        updateAccessibilityText();
+    /** Returns the difference in width between the expanded and compact states. */
+    public @Px int getCompactWidthDelta() {
+        int textWidth = 0;
+        int primaryTextWidth = getTextWidth(mPrimaryText);
+        int secondaryTextWidth = getTextWidth(mSecondaryText);
+        if (mTextViewsWrapper != null) {
+            // Two-line layout: text width is max of both lines
+            if (primaryTextWidth > 0 || secondaryTextWidth > 0) {
+                textWidth = Math.max(primaryTextWidth, secondaryTextWidth) + mTextStartPadding;
+            }
+        } else {
+            // Single-line layout: sum of horizontal views
+            if (primaryTextWidth > 0) textWidth += primaryTextWidth + mTextStartPadding;
+            if (secondaryTextWidth > 0) textWidth += secondaryTextWidth + mTextStartPadding;
+        }
+        int endIconWidth = 0;
+        if (mEndIconWrapper != null) {
+            endIconWidth = mEndIconWidth + mEndIconMarginStart + mEndIconMarginEnd;
+        }
+        int expandedPadding = mChipStartPadding + getExpandedEndPadding();
+        int compactPadding = 2 * mChipCompactPadding;
+        int paddingDelta = expandedPadding - compactPadding;
+        return textWidth + paddingDelta + endIconWidth;
+    }
+
+    private @Px int getTextWidth(@Nullable TextView textView) {
+        if (textView == null) return 0;
+        CharSequence text = textView.getText();
+        if (TextUtils.isEmpty(text)) return 0;
+        return (int) Math.ceil(textView.getPaint().measureText(text, 0, text.length()));
+    }
+
+    /**
+     * In expanded mode, if an end icon wrapper is present (e.g. remove or dropdown button), the
+     * chip's end padding must be 0 so the icon wrapper's touch target extends all the way to the
+     * end of the chip.
+     */
+    private @Px int getExpandedEndPadding() {
+        return mEndIconWrapper != null ? 0 : mChipEndPadding;
     }
 
     /** Returns whether the chip is currently in compact mode. */
