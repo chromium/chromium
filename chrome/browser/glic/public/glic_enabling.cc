@@ -739,7 +739,7 @@ bool GlicGlobalEnabling::IsSystemRequirementMet() const {
   }
   static const bool supported_system_requirements = [] {
     if (base::SysInfo::AmountOfTotalPhysicalMemory() <
-        base::MiBU(base::saturated_cast<uint64_t>(
+        base::MiB(base::saturated_cast<uint64_t>(
             features::kGlicMinRequiredRamMb.Get()))) {
       return false;
     }
@@ -757,7 +757,7 @@ bool GlicGlobalEnabling::IsSystemRequirementMet() const {
     }
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    constexpr base::ByteSize kMinimumMemoryThreshold = base::GiBU(7);
+    constexpr base::ByteSize kMinimumMemoryThreshold = base::GiB(7);
     const bool bypass_cbx_requirement =
         GlicEnabling::IsLikelyDogfoodClient() &&
         base::SysInfo::AmountOfTotalPhysicalMemory() >= kMinimumMemoryThreshold;

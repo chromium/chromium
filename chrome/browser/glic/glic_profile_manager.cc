@@ -309,7 +309,7 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
   }
 
   if (base::SysInfo::AmountOfTotalPhysicalMemory() <
-      base::MiBU(features::kGlicWarmingMinRequiredRamMb.Get())) {
+      base::MiB(features::kGlicWarmingMinRequiredRamMb.Get())) {
     return produce_result(GlicPrewarmingChecksResult::kDeviceLowMemory);
   }
   if (!g_prewarming_enabled_for_testing_) {

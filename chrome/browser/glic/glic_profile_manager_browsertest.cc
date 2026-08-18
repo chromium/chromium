@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerLowMemoryPreloadingTest,
 
   // Set the physical memory override to 2GB (2048MB), which is less than 4GB.
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(2));
+      base::GiB(2));
 
   EXPECT_EQ(WaitForShouldPreload(),
             GlicPrewarmingChecksResult::kDeviceLowMemory);
@@ -443,7 +443,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerLowMemoryPreloadingTest,
   // Set the physical memory override to 8GB (8192MB), which is greater than
   // 4GB.
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(8));
+      base::GiB(8));
 
   EXPECT_EQ(WaitForShouldPreload(), GlicPrewarmingChecksResult::kSuccess);
 }

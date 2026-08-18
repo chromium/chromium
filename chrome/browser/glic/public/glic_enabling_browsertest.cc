@@ -564,24 +564,24 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     GlicEnablingSystemRequirementsTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(SystemRequirementsTestParams{.memory_size = base::GiBU(6),
+    testing::Values(SystemRequirementsTestParams{.memory_size = base::GiB(6),
                                                  .is_dogfood = true,
                                                  .expected_result = false},
-                    SystemRequirementsTestParams{.memory_size = base::GiBU(7),
+                    SystemRequirementsTestParams{.memory_size = base::GiB(7),
                                                  .is_dogfood = true,
                                                  .expected_result = true},
-                    SystemRequirementsTestParams{.memory_size = base::GiBU(8),
+                    SystemRequirementsTestParams{.memory_size = base::GiB(8),
                                                  .is_dogfood = true,
                                                  .expected_result = true},
                     // On ChromeOS, we expect that a non-dogfood client with
                     // >= 8GB RAM doesn't met system requirements since we
                     // explicitly gate Gemini-in-Chrome to Chromebook Plus
                     // devices via FeatureManagementGlic.
-                    SystemRequirementsTestParams{.memory_size = base::GiBU(8),
+                    SystemRequirementsTestParams{.memory_size = base::GiB(8),
                                                  .is_dogfood = false,
                                                  .expected_result = false})
 #else
-    testing::Values(SystemRequirementsTestParams{.memory_size = base::MiBU(256),
+    testing::Values(SystemRequirementsTestParams{.memory_size = base::MiB(256),
                                                  .is_dogfood = false,
                                                  .expected_result = true})
 #endif
