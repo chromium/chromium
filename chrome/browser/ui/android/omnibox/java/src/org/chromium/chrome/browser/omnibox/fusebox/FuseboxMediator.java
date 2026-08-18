@@ -619,9 +619,10 @@ import java.util.function.Supplier;
         }
         updateModelForCurrentTab();
         updateModelForRecentTabs();
-        if (OmniboxFeatures.sShowModelPicker.getValue()) {
-            InputState inputState =
-                    mComposeboxQueryControllerBridge.getInputStateSupplier().get();
+        if (OmniboxFeatures.sShowModelPicker.getValue()
+                && OmniboxFeatures.sModelPickerOptimizations.getValue()
+                && mComposeboxQueryControllerBridge != null) {
+            InputState inputState = mComposeboxQueryControllerBridge.getInputStateSupplier().get();
             if (inputState != null) {
                 updateModelForPopupInputState(inputState);
             }
@@ -1384,7 +1385,8 @@ import java.util.function.Supplier;
         mModel.set(
                 FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, getRequestTypeButtonText(inputState));
 
-        if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
+        if (!OmniboxFeatures.sModelPickerOptimizations.getValue()
+                || mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
             updateModelForPopupInputState(inputState);
         }
     }

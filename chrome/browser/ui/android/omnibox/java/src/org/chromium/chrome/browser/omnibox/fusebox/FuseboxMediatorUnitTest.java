@@ -2909,4 +2909,55 @@ public class FuseboxMediatorUnitTest {
         assertFalse(tools.isEmpty());
         assertEquals(2, models.size());
     }
+
+    @Test
+    public void testOnInputStateChange_eagerWhenOptimizationsDisabled() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        OmniboxFeatures.sModelPickerOptimizations.setForTesting(false);
+        recreateMediator();
+
+        ModelConfig configAuto =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .setMenuLabel("Auto")
+                        .build();
+        ModelConfig configPro =
+                ModelConfig.newBuilder()
+                        .setModelValue(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .setMenuLabel("Pro")
+                        .build();
+        ToolConfig deepSearchConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_DEEP_SEARCH)
+                        .setMenuLabel("Deep Search")
+                        .setChipLabel("Deep Search Chip")
+                        .build();
+
+        InputState state =
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE)
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withModelConfigs(
+                                new byte[][] {configAuto.toByteArray(), configPro.toByteArray()})
+                        .withToolConfigs(new byte[][] {deepSearchConfig.toByteArray()})
+                        .build();
+
+        mInputStateSupplier.set(state);
+
+        // Request type button text is updated eagerly for the toolbar.
+        assertEquals("Deep Search Chip", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+
+        // Popup properties are populated eagerly while popup is hidden when optimizations are
+        // disabled.
+        List<PopupButtonData> tools = mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        List<PopupButtonData> models = mModel.get(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST);
+        assertNotNull(tools);
+        assertNotNull(models);
+        assertFalse(tools.isEmpty());
+        assertEquals(2, models.size());
+    }
 }

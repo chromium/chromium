@@ -167,6 +167,9 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sShowModelPicker =
             newBooleanParam(sOmniboxMultimodalInput, "show_model_picker", false);
 
+    public static final BooleanCachedFeatureParam sModelPickerOptimizations =
+            newBooleanParam(sOmniboxMultimodalInput, "model_picker_optimizations", true);
+
     /**
      * Whether the bottom sheet popup should be shown. This is private to ensure that callers use
      * {@link #shouldShowBottomSheetPopup()} which also checks if the platform is desktop.
