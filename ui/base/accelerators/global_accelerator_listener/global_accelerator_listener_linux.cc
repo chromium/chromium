@@ -286,6 +286,12 @@ void GlobalAcceleratorListenerLinux::OnListShortcuts(
       return;
     }
   }
+
+  // Every command is already registered with the portal, so no bind pass is
+  // needed. Mark the session as bound so that a later OnCommandsChanged() with
+  // new commands re-creates the session and binds them; otherwise no branch of
+  // the state machine would ever do so.
+  bind_state_ = BindState::kBound;
 }
 
 void GlobalAcceleratorListenerLinux::BindShortcuts(DbusShortcuts old_shortcuts,
