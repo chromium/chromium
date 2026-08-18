@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
@@ -81,19 +82,19 @@ TEST_F(NativeThemeTest, CaretBlinkInterval) {
 
 TEST_F(NativeThemeTest, UseOverlayScrollbar) {
   auto* const native_theme = NativeTheme::GetInstanceForNativeUi();
-  if (IsFluentScrollbarEnabled()) {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(features::kOverlayScrollbar);
-    os_settings_provider().SetPrefersOverlayScrollbars(false);
-    EXPECT_FALSE(native_theme->use_overlay_scrollbar());
-    os_settings_provider().SetPrefersOverlayScrollbars(true);
-    EXPECT_TRUE(native_theme->use_overlay_scrollbar());
-  } else {
-    native_theme->set_use_overlay_scrollbar(true);
-    EXPECT_TRUE(native_theme->use_overlay_scrollbar());
-    native_theme->set_use_overlay_scrollbar(false);
-    EXPECT_FALSE(native_theme->use_overlay_scrollbar());
-  }
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kOverlayScrollbar);
+  os_settings_provider().SetPrefersOverlayScrollbars(false);
+  EXPECT_FALSE(native_theme->use_overlay_scrollbar());
+  os_settings_provider().SetPrefersOverlayScrollbars(true);
+  EXPECT_TRUE(native_theme->use_overlay_scrollbar());
+#else
+  native_theme->set_use_overlay_scrollbar(true);
+  EXPECT_TRUE(native_theme->use_overlay_scrollbar());
+  native_theme->set_use_overlay_scrollbar(false);
+  EXPECT_FALSE(native_theme->use_overlay_scrollbar());
+#endif
 }
 
 TEST_F(NativeThemeTest, ColorMode) {

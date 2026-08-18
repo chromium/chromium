@@ -85,6 +85,7 @@
 #include "ui/color/color_transform.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/native_theme/os_settings_provider.h"
 #include "url/gurl.h"
 
 // TODO(b/502297163): Remove this guard once these desktop-only features are
@@ -410,6 +411,8 @@ class NewTabPageHandlerTest : public testing::Test {
   }
 
  protected:
+  ui::OsSettingsProvider os_settings_provider_{
+      ui::OsSettingsProvider::PriorityLevel::kTesting};
   testing::NiceMock<MockPage> mock_page_;
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;

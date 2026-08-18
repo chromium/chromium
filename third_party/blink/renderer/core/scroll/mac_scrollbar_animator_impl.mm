@@ -37,7 +37,7 @@ MacScrollbarImplV2::MacScrollbarImplV2(
     Scrollbar& scrollbar,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : scrollbar_(scrollbar) {
-  if (ScrollbarThemeMac::PreferOverlayScrollerStyle()) {
+  if (ScrollbarThemeMac::OverlayScrollbarsEnabled()) {
     int track_box_width_expanded = 0;
     int track_box_width_unexpanded = 0;
     switch (scrollbar_->CSSScrollbarWidth()) {

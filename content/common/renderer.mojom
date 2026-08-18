@@ -19,18 +19,11 @@ import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "url/mojom/url.mojom";
 
 [EnableIf=is_mac]
-enum ScrollerStyle {
-  kScrollerStyleLegacy,
-  kScrollerStyleOverlay,
-};
-
-[EnableIf=is_mac]
 struct UpdateScrollbarThemeParams {
   float? initial_button_delay;
   float? autoscroll_button_delay;
 
   bool jump_on_track_click;
-  ScrollerStyle preferred_scroller_style;
   bool redraw;
 
   bool scroll_view_rubber_banding;

@@ -181,6 +181,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "content/renderer/theme_helper_mac.h"
+#include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -1459,8 +1460,7 @@ void RenderThreadImpl::UpdateScrollbarTheme(
     mojom::UpdateScrollbarThemeParamsPtr params) {
   blink::WebScrollbarTheme::UpdateScrollbarsWithNSDefaults(
       params->initial_button_delay, params->autoscroll_button_delay,
-      params->preferred_scroller_style, params->redraw,
-      params->jump_on_track_click);
+      params->redraw, params->jump_on_track_click);
   is_elastic_overscroll_enabled_on_root_ = params->scroll_view_rubber_banding;
   is_elastic_overscroll_supported_ = params->scroll_view_rubber_banding;
 }

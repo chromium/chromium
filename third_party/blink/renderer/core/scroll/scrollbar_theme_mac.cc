@@ -31,7 +31,6 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
@@ -47,7 +46,6 @@ namespace blink {
 
 static float s_initial_button_delay = 0.5f;
 static float s_autoscroll_button_delay = 0.05f;
-static bool s_prefer_overlay_scroller_style = false;
 static bool s_jump_on_track_click = false;
 
 typedef HeapHashSet<WeakMember<Scrollbar>> ScrollbarSet;
@@ -96,7 +94,7 @@ const NSScrollerImpValues& GetScrollbarPainterValues(bool overlay,
 const NSScrollerImpValues& GetScrollbarPainterValues(
     const Scrollbar& scrollbar) {
   return GetScrollbarPainterValues(
-      ScrollbarThemeMac::PreferOverlayScrollerStyle(),
+      ScrollbarThemeMac::OverlayScrollbarsEnabled(),
       scrollbar.CSSScrollbarWidth());
 }
 
@@ -330,7 +328,7 @@ int ScrollbarThemeMac::ScrollbarThickness(
 }
 
 bool ScrollbarThemeMac::UsesOverlayScrollbars() const {
-  return PreferOverlayScrollerStyle();
+  return OverlayScrollbarsEnabled();
 }
 
 bool ScrollbarThemeMac::HasThumb(const Scrollbar& scrollbar) const {
@@ -385,17 +383,12 @@ bool ScrollbarThemeMac::JumpOnTrackClick() const {
 void ScrollbarThemeMac::UpdateScrollbarsWithNSDefaults(
     std::optional<float> initial_button_delay,
     std::optional<float> autoscroll_button_delay,
-    bool prefer_overlay_scroller_style,
     bool redraw,
     bool jump_on_track_click) {
   s_initial_button_delay =
       initial_button_delay.value_or(s_initial_button_delay);
   s_autoscroll_button_delay =
       autoscroll_button_delay.value_or(s_autoscroll_button_delay);
-  if (s_prefer_overlay_scroller_style != prefer_overlay_scroller_style) {
-    s_prefer_overlay_scroller_style = prefer_overlay_scroller_style;
-    Page::UsesOverlayScrollbarsChanged();
-  }
   s_jump_on_track_click = jump_on_track_click;
   if (redraw) {
     for (const auto& scrollbar : GetScrollbarSet()) {
@@ -403,13 +396,6 @@ void ScrollbarThemeMac::UpdateScrollbarsWithNSDefaults(
       scrollbar->SetNeedsPaintInvalidation(kAllParts);
     }
   }
-}
-
-// static
-bool ScrollbarThemeMac::PreferOverlayScrollerStyle() {
-  if (OverlayScrollbarsEnabled())
-    return true;
-  return s_prefer_overlay_scroller_style;
 }
 
 }  // namespace blink

@@ -49,9 +49,6 @@ void FillScrollbarThemeParams(
   }
   params->jump_on_track_click =
       [defaults boolForKey:@"AppleScrollerPagingBehavior"];
-  params->preferred_scroller_style =
-      static_cast<blink::ScrollerStyle>([NSScroller preferredScrollerStyle]);
-
   id rubber_band_value = [defaults objectForKey:@"NSScrollViewRubberbanding"];
   params->scroll_view_rubber_banding =
       rubber_band_value ? [rubber_band_value boolValue] : YES;
@@ -186,11 +183,6 @@ SkColor NSColorToSkColor(NSColor* color) {
   // themselves and listening for them here may trigger the DCHECK in Observe().
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
-    [center addObserver:self
-               selector:@selector(behaviorPrefsChanged:)
-                   name:NSPreferredScrollerStyleDidChangeNotification
-                 object:nil];
-
     [center addObserver:self
                selector:@selector(systemColorsChanged:)
                    name:NSSystemColorsDidChangeNotification

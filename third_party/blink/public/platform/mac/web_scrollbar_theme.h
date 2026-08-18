@@ -37,9 +37,6 @@
 
 namespace blink {
 
-// This enum must match NSScrollerStyle in the 10.7 SDK.
-enum ScrollerStyle { kScrollerStyleLegacy = 0, kScrollerStyleOverlay = 1 };
-
 class WebScrollbarTheme {
  public:
   // Updates the scrollbar appearance and behavior.
@@ -47,14 +44,11 @@ class WebScrollbarTheme {
   // NSUserDefaults.
   // |autoscrollButtonDelay| is the current value of NSScrollerButtonPeriod from
   // NSUserDefaults.
-  // |preferredScrollerStyle| is the current value of +[NSScroller
-  // preferredScrollerStyle].
   // |redraw| is true if the update requires a redraw to include the change.
   // |jump_on_track_click| is the current value of AppleScrollerPagingBehavior.
   BLINK_EXPORT static void UpdateScrollbarsWithNSDefaults(
       std::optional<float> initial_button_delay,
       std::optional<float> autoscroll_button_delay,
-      ScrollerStyle preferred_scroller_style,
       bool redraw,
       bool jump_on_track_click);
 };

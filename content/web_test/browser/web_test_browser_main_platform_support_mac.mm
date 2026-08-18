@@ -38,7 +38,6 @@ void SetDefaultsToWebTestValues() {
                forKey:@"AppleOtherHighlightColor"];
   [defaults setObject:@[ @"en" ] forKey:@"AppleLanguages"];
   [defaults setBool:NO forKey:@"NSScrollAnimationEnabled"];
-  [defaults setObject:@"Always" forKey:@"AppleShowScrollBars"];
 
   // Disable AppNap since web tests do not always meet the requirements to
   // avoid "napping" which will cause test timeouts. http://crbug.com/811525.

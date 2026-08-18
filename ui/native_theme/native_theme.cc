@@ -87,6 +87,19 @@ using NativeUiTheme = NativeThemeMobile;
 using WebUiTheme = NativeThemeMobile;
 #endif
 
+bool OsSettingsProviderSuppliesOverlayScrollbarPreference() {
+  // Note: when this function returns true, the native-UI NativeTheme instance
+  // auto-updates the web instance. On ChromeOS, ash::AccessibilityController
+  // sets the overlay-scrollbars bit on both instances separately.
+  // TODO(crbug.com/513603825): Handle the NativeTheme overlay-scrollbars bit
+  // more consistently across platforms.
+#if BUILDFLAG(IS_MAC)
+  return true;
+#else
+  return IsFluentOverlayScrollbarEnabled();
+#endif
+}
+
 }  // namespace
 
 NativeTheme::MenuListExtraParams::MenuListExtraParams() = default;
@@ -407,21 +420,13 @@ bool NativeTheme::UpdateWebInstance() const {
     return false;
   }
 
-  // NOTE: Intentionally does not copy the native "overlay scrollbar" setting to
-  // the web instance, as the web instance often wants to differ there.
-  // TODO(crbug.com/444399080): If we had a notion somewhere about "web wants
-  // overlay scrollbars even when native doesn't", we could probably copy the
-  // setting fearlessly here (and have that override it on the web instance
-  // side), making callers who want to toggle overlay scrollbars on/off globally
-  // simpler and safer.
-
   // TODO(pkasting): The code duplication between this function and
   // `UpdateVariablesForToolkitSettings()` is error-prone; e.g. it's easy to
   // forget to update the web instance properly when adding a new member.
   // Refactor to a settings struct or similar.
 
   bool updated_web_instance = false;
-  if (IsFluentOverlayScrollbarEnabled() &&
+  if (OsSettingsProviderSuppliesOverlayScrollbarPreference() &&
       associated_web_instance_->use_overlay_scrollbar() !=
           use_overlay_scrollbar()) {
     associated_web_instance_->use_overlay_scrollbar_ = use_overlay_scrollbar();
@@ -593,7 +598,7 @@ NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
 }
 
 bool NativeTheme::CalculateUseOverlayScrollbar() const {
-  if (IsFluentScrollbarEnabled()) {
+  if (OsSettingsProviderSuppliesOverlayScrollbarPreference()) {
     return ShouldUseOverlayScrollbar(
         OsSettingsProvider::Get().PrefersOverlayScrollbars());
   }

@@ -17,7 +17,7 @@ constexpr base::FeatureParam<ScrollbarMode>::Option kScrollbarModeOptions[] = {
 };
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
 constexpr base::FeatureState kOverlayScrollbarFeatureState =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #else
@@ -25,15 +25,14 @@ constexpr base::FeatureState kOverlayScrollbarFeatureState =
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
 
-// Controls the scrollbar mode in Blink (i.e. web content) on Windows, Linux,
-// and ChromeOS.
+// Controls the scrollbar mode in Blink (i.e. web content) on desktop
+// platforms.
 // - enabled with mode/overlay: force overlay scrollbars
 // - enabled with mode/device: follow OS setting
 // - enabled with mode/classic: force non-overlay scrollbars
 // - disabled: equivalent to mode/classic
 //
 // On mobile (Android / iOS), scrollbars are always overlay regardless.
-// TODO(crbug.com/513603825): Make this flag work on Mac.
 //
 // Enabled defaults to mode/device. The OS value for mode/device comes from:
 // - AccessibilityController::always_show_scrollbar() on ChromeOS

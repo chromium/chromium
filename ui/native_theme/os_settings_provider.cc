@@ -229,7 +229,11 @@ bool OsSettingsProvider::PrefersInvertedColors() const {
 }
 
 bool OsSettingsProvider::PrefersOverlayScrollbars() const {
-  return true;
+  // Normally a platform-specific subclass will override this method.
+  // The base class (OsSettingsProvider) is directly instantiated by tests;
+  // see e.g. ShellMainDelegate::os_settings_provider_.
+  // Web tests expect non-overlay scrollbars by default.
+  return false;
 }
 
 bool OsSettingsProvider::ForcedColorsActive() const {

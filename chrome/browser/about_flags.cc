@@ -445,6 +445,7 @@ const FeatureEntry::Choice kPullToRefreshChoices[] = {
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kPullToRefresh, "1"},
     {flag_descriptions::kPullToRefreshEnabledTouchscreen,
      switches::kPullToRefresh, "2"}};
+#endif  // USE_AURA
 
 const FeatureEntry::FeatureParam kScrollbarModeOverlay[] = {
     {"mode", "overlay"}};
@@ -456,7 +457,6 @@ const FeatureEntry::FeatureVariation kScrollbarModeVariations[] = {
     {"overlay (with fade out)", kScrollbarModeOverlay, nullptr},
     {"device (follow OS setting)", kScrollbarModeDevice, nullptr},
     {"classic (always show)", kScrollbarModeClassic, nullptr}};
-#endif  // USE_AURA
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 const FeatureEntry::FeatureParam kDefaultBrowserPromptSurfaces_Infobar[] = {
@@ -5096,15 +5096,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFractionalScrollOffsetsName,
      flag_descriptions::kFractionalScrollOffsetsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFractionalScrollOffsets)},
-#if defined(USE_AURA)
     {"overlay-scrollbars", flag_descriptions::kOverlayScrollbarsName,
-     flag_descriptions::kOverlayScrollbarsDescription,
-     // Uses the system preference on Mac (a different implementation).
-     // On Android, this is always enabled.
-     kOsAura,
+     flag_descriptions::kOverlayScrollbarsDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kOverlayScrollbar,
                                     kScrollbarModeVariations,
                                     "OverlayScrollbar")},
+#if defined(USE_AURA)
     {"overlay-scrollbars-flash-when-mouse-enter",
      flag_descriptions::kOverlayScrollbarsFlashWhenMouseEnterName,
      flag_descriptions::kOverlayScrollbarsFlashWhenMouseEnterDescription,
@@ -13826,7 +13823,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableScanCardOptionWhenNoCardsSaved)},
-
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
