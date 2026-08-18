@@ -37,6 +37,7 @@ bool IsNonProdServerVerificationKey(const GURL& url);
 // verification keys for the corresponding environment.
 base::span<const ProcessedKey> GetAutopushKeysForTesting();
 base::span<const ProcessedKey> GetDevKeysForTesting();
+base::span<const ProcessedKey> GetLabsKeysForTesting();
 base::span<const ProcessedKey> GetProdKeysForTesting();
 
 }  // namespace private_ai

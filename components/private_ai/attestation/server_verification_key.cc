@@ -19,6 +19,7 @@ namespace {
 constexpr char kAutopushServerPrefix[] = "autopush";
 constexpr char kDevServerPrefix[] = "dev";
 constexpr char kStagingServerPrefix[] = "staging";
+constexpr char kLabsServerSubstring[] = "-labs";
 
 #include "components/private_ai/attestation/server_verification_key_data.inc"
 
@@ -36,6 +37,9 @@ bool ProcessedKey::operator==(const ProcessedKey& other) const {
 base::span<const ProcessedKey> GetServerVerificationKey(const GURL& url) {
   std::string_view host = url.host();
 
+  if (host.contains(kLabsServerSubstring)) {
+    return kLabsServerVerificationKeys;
+  }
   if (base::StartsWith(host, kAutopushServerPrefix) ||
       base::StartsWith(host, kStagingServerPrefix)) {
     return kAutopushServerVerificationKeys;
@@ -50,7 +54,8 @@ bool IsNonProdServerVerificationKey(const GURL& url) {
   std::string_view host = url.host();
   return base::StartsWith(host, kAutopushServerPrefix) ||
          base::StartsWith(host, kDevServerPrefix) ||
-         base::StartsWith(host, kStagingServerPrefix);
+         base::StartsWith(host, kStagingServerPrefix) ||
+         host.contains(kLabsServerSubstring);
 }
 
 base::span<const ProcessedKey> GetAutopushKeysForTesting() {
@@ -59,6 +64,10 @@ base::span<const ProcessedKey> GetAutopushKeysForTesting() {
 
 base::span<const ProcessedKey> GetDevKeysForTesting() {
   return kDevServerVerificationKeys;
+}
+
+base::span<const ProcessedKey> GetLabsKeysForTesting() {
+  return kLabsServerVerificationKeys;
 }
 
 base::span<const ProcessedKey> GetProdKeysForTesting() {
