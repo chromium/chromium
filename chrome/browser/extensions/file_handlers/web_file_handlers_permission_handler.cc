@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,6 +18,7 @@
 #include "base/i18n/message_formatter.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -42,31 +44,78 @@ namespace extensions {
 
 namespace {
 
+// The remembered choice is stored as a dictionary keyed by extension ID. It
+// records the user's decision together with the set of file extensions and
+// MIME types that were declared by the extension at the time the choice was
+// made, so the choice can be re-evaluated if the declared handlers later
+// change.
 constexpr PrefMap kPrefShouldOpen{"web_file_handlers_should_open",
-                                  PrefType::kBool,
+                                  PrefType::kDictionary,
                                   PrefScope::kExtensionSpecific};
+
+constexpr char kPrefShouldOpenKey[] = "should_open";
+constexpr char kPrefFileExtensionsKey[] = "file_extensions";
+constexpr char kPrefMimeTypesKey[] = "mime_types";
 
 // Get extension prefs for profile.
 ExtensionPrefs* GetExtensionPrefs(Profile* profile) {
   return ExtensionPrefs::Get(profile);
 }
 
-// Get dictionary of extension prefs.
-std::optional<bool> GetExtensionPrefsAsBoolean(
-    ExtensionPrefs* extension_prefs,
-    const ExtensionId& extension_id) {
-  bool out_value = false;
-  if (extension_prefs->ReadPrefAsBoolean(extension_id, kPrefShouldOpen,
-                                         &out_value)) {
-    return out_value;
+// Returns true if every entry in `current` is present in the stored `list`.
+bool StoredListContainsAll(const base::ListValue* list,
+                           const std::set<std::string>& current) {
+  if (!list) {
+    return current.empty();
   }
-  return std::nullopt;
+  for (const std::string& entry : current) {
+    bool found = false;
+    for (const base::Value& stored_val : *list) {
+      if (stored_val.is_string() && stored_val.GetString() == entry) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      return false;
+    }
+  }
+  return true;
 }
 
-// Get extension pref result.
-std::optional<bool> GetExtensionPrefsAsBoolean(const Extension& extension,
-                                               Profile* profile) {
-  return GetExtensionPrefsAsBoolean(GetExtensionPrefs(profile), extension.id());
+base::ListValue SetToListValue(const std::set<std::string>& values) {
+  base::ListValue list;
+  for (const std::string& value : values) {
+    list.Append(value);
+  }
+  return list;
+}
+
+// Returns the remembered choice if one was stored and the file handlers
+// currently declared by the extension are a subset of those that were declared
+// when the choice was made.
+std::optional<bool> GetRememberedChoice(
+    ExtensionPrefs* extension_prefs,
+    const ExtensionId& extension_id,
+    const apps::FileHandlers& current_handlers) {
+  const base::DictValue* dict =
+      extension_prefs->ReadPrefAsDictionary(extension_id, kPrefShouldOpen);
+  if (!dict) {
+    return std::nullopt;
+  }
+  std::optional<bool> should_open = dict->FindBool(kPrefShouldOpenKey);
+  if (!should_open.has_value()) {
+    return std::nullopt;
+  }
+  if (!StoredListContainsAll(
+          dict->FindList(kPrefFileExtensionsKey),
+          apps::GetFileExtensionsFromFileHandlers(current_handlers)) ||
+      !StoredListContainsAll(
+          dict->FindList(kPrefMimeTypesKey),
+          apps::GetMimeTypesFromFileHandlers(current_handlers))) {
+    return std::nullopt;
+  }
+  return should_open;
 }
 
 class WebFileHandlersFileLaunchDialogDelegate : public ui::DialogModelDelegate {
@@ -138,22 +187,27 @@ void WebFileHandlersPermissionHandler::Confirm(
   }
 
   auto apps_file_handlers = GetAppsFileHandlers(extension);
-  const std::vector<std::u16string> file_types =
-      web_app::TransformFileExtensionsForDisplay(
-          apps::GetFileExtensionsFromFileHandlers(apps_file_handlers));
 
   // Get saved preferences that represents previous file opening decisions.
-  const auto current_prefs = GetExtensionPrefsAsBoolean(extension, profile_);
-  if (current_prefs.has_value()) {
-    std::move(launch_callback).Run(current_prefs.value());
+  const auto remembered_choice = GetRememberedChoice(
+      GetExtensionPrefs(profile_), extension.id(), apps_file_handlers);
+  if (remembered_choice.has_value()) {
+    std::move(launch_callback).Run(remembered_choice.value());
     return;
   }
 
+  std::set<std::string> file_extensions =
+      apps::GetFileExtensionsFromFileHandlers(apps_file_handlers);
+  std::set<std::string> mime_types =
+      apps::GetMimeTypesFromFileHandlers(apps_file_handlers);
+  const std::vector<std::u16string> file_types =
+      web_app::TransformFileExtensionsForDisplay(file_extensions);
+
   // Maybe open the file. Maybe remember the decision to open the file.
-  auto callback_after_dialog =
-      base::BindOnce(&WebFileHandlersPermissionHandler::CallbackAfterDialog,
-                     weak_factory_.GetWeakPtr(), extension.id(), file_types,
-                     std::move(launch_callback));
+  auto callback_after_dialog = base::BindOnce(
+      &WebFileHandlersPermissionHandler::CallbackAfterDialog,
+      weak_factory_.GetWeakPtr(), extension.id(), std::move(file_extensions),
+      std::move(mime_types), std::move(launch_callback));
 
   // Present a contextual file launch dialog.
   ShowFileLaunchDialog(std::move(base_names), file_types,
@@ -232,14 +286,19 @@ void WebFileHandlersPermissionHandler::ShowFileLaunchDialog(
 
 void WebFileHandlersPermissionHandler::CallbackAfterDialog(
     const ExtensionId& extension_id,
-    const std::vector<std::u16string>& file_types,
+    const std::set<std::string>& file_extensions,
+    const std::set<std::string>& mime_types,
     CallbackType launch_callback,
     bool should_open,
     bool should_remember) {
   // Maybe remember the decision to open the file.
   if (should_remember) {
-    auto* extension_prefs = GetExtensionPrefs(profile_);
-    extension_prefs->SetBooleanPref(extension_id, kPrefShouldOpen, should_open);
+    base::DictValue dict;
+    dict.Set(kPrefShouldOpenKey, should_open);
+    dict.Set(kPrefFileExtensionsKey, SetToListValue(file_extensions));
+    dict.Set(kPrefMimeTypesKey, SetToListValue(mime_types));
+    GetExtensionPrefs(profile_)->SetDictionaryPref(
+        extension_id, kPrefShouldOpen, std::move(dict));
   }
 
   // Maybe open the file.

@@ -443,8 +443,8 @@ class WebFileHandlersFileLaunchBrowserTest
 // and the other does not. The selection can be remembered through the use of a
 // checkbox. Open, don't open, and escape from the permission dialog. Then,
 // remember opening a file, followed by opening again while bypassing the
-// dialog. `Remember my choice` is stored as a boolean at the extension level,
-// not on a per file type basis.
+// dialog. `Remember my choice` is scoped to the declared file types at the time
+// of acceptance.
 IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
                        WebFileHandlersPermissionHandler) {
   // Install and get extension.
@@ -459,8 +459,8 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
 }
 
 // Clicking `Don't Open` should be remembered for all associated file types.
-// That's because it's stored as a boolean at the extension level, rather than
-// for each file type. `Cancel` and `Close` both dismiss the UI without opening
+// That's because it's scoped to the declared file types at the time of
+// acceptance. `Cancel` and `Close` both dismiss the UI without opening
 // the file. The difference is that `Cancel` will `Remember my choice`, but
 // `Close` will not.
 IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
@@ -471,6 +471,85 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
 
   // Clicking "Don't Open" should remember that choice for the file extension.
   LaunchExtensionAndRememberCancelDialog(*extension);
+}
+
+// A remembered choice applies to the file types declared at the time the
+// choice was made. If an update later declares additional file types, the
+// dialog must be shown again so the user can make a fresh choice.
+IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
+                       RememberedChoiceClearedWhenFileHandlersExpand) {
+  static constexpr char kManifestTemplate[] = R"({
+    "name": "Test",
+    "version": "%s",
+    "manifest_version": 3,
+    "file_handlers": [
+      {
+        "name": "Handler",
+        "action": "/open-csv.html",
+        "accept": %s
+      }
+    ]
+  })";
+
+  extensions::TestExtensionDir extension_dir;
+  extension_dir.WriteFile("open-csv.html", "<body>Test</body>");
+  extension_dir.WriteManifest(
+      base::StringPrintf(kManifestTemplate, "1", R"({"text/csv": [".csv"]})"));
+  const extensions::Extension* extension =
+      InstallExtension(extension_dir.Pack(), /*expected_change=*/1);
+  ASSERT_TRUE(extension);
+  const extensions::ExtensionId extension_id = extension->id();
+
+  const std::vector<base::SafeBaseName> base_names = {
+      *base::SafeBaseName::Create("a.csv")};
+  extensions::WebFileHandlersPermissionHandler handler(profile());
+  auto resetter = extensions::WebFileHandlersPermissionHandler::
+      SetRememberSelectionForTesting(true);
+
+  // First open: accept and remember.
+  {
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "WebFileHandlersFileLaunchDialogView");
+    base::test::TestFuture<bool> result;
+    handler.Confirm(*extension, base_names, result.GetCallback());
+    auto* widget = waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(widget);
+    widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+    EXPECT_TRUE(result.Wait());
+    EXPECT_TRUE(result.Get());
+  }
+
+  // The remembered choice is honoured for the same set of file handlers.
+  {
+    base::test::TestFuture<bool> result;
+    handler.Confirm(*extension, base_names, result.GetCallback());
+    EXPECT_TRUE(result.IsReady());
+    EXPECT_TRUE(result.Get());
+  }
+
+  // Update the extension to additionally declare a new file type.
+  extension_dir.WriteManifest(base::StringPrintf(
+      kManifestTemplate, "2",
+      R"({"text/csv": [".csv"], "application/pdf": [".pdf"]})"));
+  const extensions::Extension* updated_extension = UpdateExtension(
+      extension_id, extension_dir.Pack("v2.crx"), /*expected_change=*/0);
+  ASSERT_TRUE(updated_extension);
+  EXPECT_EQ(extension_id, updated_extension->id());
+
+  // The previous choice no longer covers the declared file handlers, so the
+  // dialog is shown again.
+  {
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "WebFileHandlersFileLaunchDialogView");
+    base::test::TestFuture<bool> result;
+    handler.Confirm(*updated_extension, base_names, result.GetCallback());
+    EXPECT_FALSE(result.IsReady());
+    auto* widget = waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(widget);
+    widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
+    EXPECT_TRUE(result.Wait());
+    EXPECT_FALSE(result.Get());
+  }
 }
 
 // Closing the dialog does not remember that choice, even if selected. An

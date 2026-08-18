@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_FILE_HANDLERS_WEB_FILE_HANDLERS_PERMISSION_HANDLER_H_
 #define CHROME_BROWSER_EXTENSIONS_FILE_HANDLERS_WEB_FILE_HANDLERS_PERMISSION_HANDLER_H_
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -50,7 +51,8 @@ class WebFileHandlersPermissionHandler {
       base::OnceCallback<void(bool, bool)> callback);
 
   void CallbackAfterDialog(const ExtensionId& extension_id,
-                           const std::vector<std::u16string>& file_types,
+                           const std::set<std::string>& file_extensions,
+                           const std::set<std::string>& mime_types,
                            CallbackType launch_callback,
                            bool should_open,
                            bool should_remember);
