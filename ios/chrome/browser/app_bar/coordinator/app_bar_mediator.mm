@@ -7,6 +7,7 @@
 #import <memory>
 #import <set>
 
+#import "base/callback_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -163,6 +164,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   BOOL _initialAssistantButtonStateRecorded;
   raw_ptr<AimEligibilityService> _aimEligibilityService;
+  base::CallbackListSubscription _aimEligibilitySubscription;
 }
 
 - (instancetype)
@@ -233,7 +235,16 @@ inline LayoutStateAssistantPassKey PassKey() {
       _geminiObserver = std::make_unique<GeminiBrowserAgentObserverBridge>(
           self, _geminiBrowserAgent);
     }
+
     _aimEligibilityService = aimEligibilityService;
+    __weak __typeof(self) weakSelf = self;
+    if (_aimEligibilityService) {
+      _aimEligibilitySubscription =
+          _aimEligibilityService->RegisterEligibilityChangedCallback(
+              base::BindRepeating(^{
+                [weakSelf updateAssistantButton];
+              }));
+    }
 
     _tabGridState = tabGridState;
     [_tabGridState addObserver:self];
@@ -397,6 +408,7 @@ inline LayoutStateAssistantPassKey PassKey() {
   _geminiBrowserAgent = nullptr;
   _geminiObserver.reset();
   _URLLoader = nullptr;
+  _aimEligibilitySubscription = {};
   _incognitoState = nil;
   _tabGridState = nil;
   _lensOverlayState = nil;
