@@ -135,33 +135,21 @@ Document* DOMImplementation::createHTMLDocument(const String& title) {
   auto* d = MakeGarbageCollected<HTMLDocument>(init);
   d->setAllowDeclarativeShadowRoots(false);
 
-  if (RuntimeEnabledFeatures::CreateHTMLDocumentReadyStateEnabled()) {
-    auto* html_element = MakeGarbageCollected<HTMLHtmlElement>(*d);
-    auto* head_element = MakeGarbageCollected<HTMLHeadElement>(*d);
-    html_element->AppendChild(head_element);
+  auto* html_element = MakeGarbageCollected<HTMLHtmlElement>(*d);
+  auto* head_element = MakeGarbageCollected<HTMLHeadElement>(*d);
+  html_element->AppendChild(head_element);
 
-    if (!title.IsNull()) {
-      auto* title_element = MakeGarbageCollected<HTMLTitleElement>(*d);
-      title_element->AppendChild(d->createTextNode(title), ASSERT_NO_EXCEPTION);
-      head_element->AppendChild(title_element);
-    }
-
-    auto* body_element = MakeGarbageCollected<HTMLBodyElement>(*d);
-    html_element->AppendChild(body_element);
-
-    d->AppendChild(MakeGarbageCollected<DocumentType>(d, "html", "", ""));
-    d->AppendChild(html_element);
-  } else {
-    d->open();
-    d->write("<!doctype html><html><head></head><body></body></html>");
-    if (!title.IsNull()) {
-      HTMLHeadElement* head_element = d->head();
-      DCHECK(head_element);
-      auto* title_element = MakeGarbageCollected<HTMLTitleElement>(*d);
-      head_element->AppendChild(title_element);
-      title_element->AppendChild(d->createTextNode(title), ASSERT_NO_EXCEPTION);
-    }
+  if (!title.IsNull()) {
+    auto* title_element = MakeGarbageCollected<HTMLTitleElement>(*d);
+    title_element->AppendChild(d->createTextNode(title), ASSERT_NO_EXCEPTION);
+    head_element->AppendChild(title_element);
   }
+
+  auto* body_element = MakeGarbageCollected<HTMLBodyElement>(*d);
+  html_element->AppendChild(body_element);
+
+  d->AppendChild(MakeGarbageCollected<DocumentType>(d, "html", "", ""));
+  d->AppendChild(html_element);
 
   return d;
 }

@@ -1420,13 +1420,6 @@
       origin_trial_feature_name: "CrashReportingStorageAPI",
     },
     {
-      // Makes createHTMLDocument() return a document whose readyState is
-      // "complete" instead of "loading". Shipped in M151, safe to remove in
-      // M153. https://issues.chromium.org/issues/522868200
-      name: "CreateHTMLDocumentReadyState",
-      status: "stable",
-    },
-    {
       name: "CreateInlineContentsAnonymousBlock",
       status: "stable",
     },
