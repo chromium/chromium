@@ -230,9 +230,11 @@ DaemonProcessWin::CreatePeerConnectionProcessLauncherDelegate() {
   target->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),
                            kCopiedSwitchNames);
 
-  return std::make_unique<UnprivilegedProcessDelegate>(
+  auto delegate = std::make_unique<UnprivilegedProcessDelegate>(
       io_task_runner(), std::move(target),
       UnprivilegedProcessDelegate::IntegrityLevel::kUntrusted);
+  delegate->UseAppContainer(L"chromoting.peer_connection");
+  return delegate;
 }
 
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(
