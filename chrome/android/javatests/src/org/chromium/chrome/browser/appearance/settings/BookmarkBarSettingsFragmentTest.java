@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.appearance.settings;
 
-import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -39,10 +39,12 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.prefs.PrefChangeRegistrar;
@@ -74,7 +76,7 @@ public class BookmarkBarSettingsFragmentTest {
     @Mock private UserPrefs.Natives mUserPrefsJni;
 
     private Set<PrefObserver> mBookmarkBarSettingObserverCache;
-    private SettableNonNullObservableSupplier<Boolean> mBookmarkBarSettingSupplier;
+    private SettableNonNullObservableSupplier<Integer> mBookmarkBarSettingSupplier;
     private BookmarkBarSettingsFragment mSettings;
 
     @Before
@@ -94,10 +96,10 @@ public class BookmarkBarSettingsFragmentTest {
         BookmarkBarUtils.setSettingObserverCacheForTesting(mBookmarkBarSettingObserverCache);
 
         // Update bookmark bar setting and notify observers when supplier changes.
-        mBookmarkBarSettingSupplier = ObservableSuppliers.createNonNull(false);
+        mBookmarkBarSettingSupplier =
+                ObservableSuppliers.createNonNull(BookmarkBarVisibilityState.ALWAYS_HIDE);
         mBookmarkBarSettingSupplier.addSyncObserverAndPostIfNonNull(
-                enabled -> {
-                    BookmarkBarUtils.setSettingEnabledForTesting(enabled);
+                state -> {
                     mBookmarkBarSettingObserverCache.stream()
                             .filter(observer -> observer != null)
                             .forEach(PrefObserver::onPreferenceChange);
@@ -106,7 +108,11 @@ public class BookmarkBarSettingsFragmentTest {
         // Update supplier when bookmark bar setting changes.
         doAnswer(runCallbackWithValueAtIndex(mBookmarkBarSettingSupplier::set, 1))
                 .when(mPrefService)
-                .setBoolean(eq(Pref.SHOW_BOOKMARK_BAR), anyBoolean());
+                .setInteger(eq(Pref.BOOKMARK_BAR_VISIBILITY_STATE), anyInt());
+
+        doAnswer(i -> mBookmarkBarSettingSupplier.get())
+                .when(mPrefService)
+                .getInteger(eq(Pref.BOOKMARK_BAR_VISIBILITY_STATE));
     }
 
     @AfterClass
@@ -127,44 +133,72 @@ public class BookmarkBarSettingsFragmentTest {
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_Desktop() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkBarSettingSupplier.set(BookmarkBarVisibilityState.ALWAYS_SHOW));
         launchSettings();
 
         final var bookmarkBarPref = assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
         CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysShowButtonForTesting() != null);
+        CriteriaHelper.pollUiThread(
+                () -> bookmarkBarPref.getOnlyShowOnNtpButtonForTesting() != null);
         CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysHideButtonForTesting() != null);
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
+        Assert.assertFalse(bookmarkBarPref.getOnlyShowOnNtpButtonForTesting().isChecked());
         Assert.assertFalse(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                bookmarkBarPref.getOnlyShowOnNtpButtonForTesting()::performClick);
+        Assert.assertTrue(bookmarkBarPref.getOnlyShowOnNtpButtonForTesting().isChecked());
+        Assert.assertFalse(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
+        Assert.assertFalse(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
+        Assert.assertEquals(
+                (Integer) BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                mBookmarkBarSettingSupplier.get());
 
         ThreadUtils.runOnUiThreadBlocking(
                 bookmarkBarPref.getAlwaysHideButtonForTesting()::performClick);
         Assert.assertTrue(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
+        Assert.assertFalse(bookmarkBarPref.getOnlyShowOnNtpButtonForTesting().isChecked());
         Assert.assertFalse(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
-        Assert.assertFalse(mBookmarkBarSettingSupplier.get());
+        Assert.assertEquals(
+                (Integer) BookmarkBarVisibilityState.ALWAYS_HIDE,
+                mBookmarkBarSettingSupplier.get());
 
         ThreadUtils.runOnUiThreadBlocking(
                 bookmarkBarPref.getAlwaysShowButtonForTesting()::performClick);
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
+        Assert.assertFalse(bookmarkBarPref.getOnlyShowOnNtpButtonForTesting().isChecked());
         Assert.assertFalse(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
-        Assert.assertTrue(mBookmarkBarSettingSupplier.get());
+        Assert.assertEquals(
+                (Integer) BookmarkBarVisibilityState.ALWAYS_SHOW,
+                mBookmarkBarSettingSupplier.get());
     }
 
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.DESKTOP)
     public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_Desktop() {
-        ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkBarSettingSupplier.set(BookmarkBarVisibilityState.ALWAYS_SHOW));
         launchSettings();
 
         final var bookmarkBarPref = assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
         CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysShowButtonForTesting() != null);
+        CriteriaHelper.pollUiThread(
+                () -> bookmarkBarPref.getOnlyShowOnNtpButtonForTesting() != null);
         CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysHideButtonForTesting() != null);
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(false));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkBarSettingSupplier.set(BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP));
+        Assert.assertTrue(bookmarkBarPref.getOnlyShowOnNtpButtonForTesting().isChecked());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkBarSettingSupplier.set(BookmarkBarVisibilityState.ALWAYS_HIDE));
         Assert.assertTrue(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mBookmarkBarSettingSupplier.set(true));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkBarSettingSupplier.set(BookmarkBarVisibilityState.ALWAYS_SHOW));
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
     }
 
@@ -174,27 +208,42 @@ public class BookmarkBarSettingsFragmentTest {
     public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_NonDesktop() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                            true, /* fromKeyboardShortcut= */ false);
+                    BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                            BookmarkBarVisibilityState.ALWAYS_SHOW,
+                            BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
                 });
         launchSettings();
 
         final var bookmarkBarPref = assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
         CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysShowButtonForTesting() != null);
+        CriteriaHelper.pollUiThread(
+                () -> bookmarkBarPref.getOnlyShowOnNtpButtonForTesting() != null);
         CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysHideButtonForTesting() != null);
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(
+                bookmarkBarPref.getOnlyShowOnNtpButtonForTesting()::performClick);
+        Assert.assertTrue(bookmarkBarPref.getOnlyShowOnNtpButtonForTesting().isChecked());
+        Assert.assertEquals(
+                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+        Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefBookmarkBarVisibilityState());
+
+        ThreadUtils.runOnUiThreadBlocking(
                 bookmarkBarPref.getAlwaysHideButtonForTesting()::performClick);
         Assert.assertTrue(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
-        Assert.assertFalse(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-        Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+        Assert.assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+        Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefBookmarkBarVisibilityState());
 
         ThreadUtils.runOnUiThreadBlocking(
                 bookmarkBarPref.getAlwaysShowButtonForTesting()::performClick);
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
-        Assert.assertTrue(BookmarkBarUtils.isDevicePrefShowBookmarksBarEnabled(mProfile));
-        Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefShowBookmarksBar());
+        Assert.assertEquals(
+                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                BookmarkBarUtils.getDevicePrefBookmarkBarVisibilityState(mProfile));
+        Assert.assertTrue(BookmarkBarUtils.hasUserSetDevicePrefBookmarkBarVisibilityState());
     }
 
     @Test
@@ -203,26 +252,38 @@ public class BookmarkBarSettingsFragmentTest {
     public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_NonDesktop() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                            true, /* fromKeyboardShortcut= */ false);
+                    BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                            BookmarkBarVisibilityState.ALWAYS_SHOW,
+                            BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS);
                 });
         launchSettings();
 
         final var bookmarkBarPref = assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
         CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysShowButtonForTesting() != null);
+        CriteriaHelper.pollUiThread(
+                () -> bookmarkBarPref.getOnlyShowOnNtpButtonForTesting() != null);
         CriteriaHelper.pollUiThread(() -> bookmarkBarPref.getAlwaysHideButtonForTesting() != null);
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                false, /* fromKeyboardShortcut= */ true));
+                        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS));
+        Assert.assertTrue(bookmarkBarPref.getOnlyShowOnNtpButtonForTesting().isChecked());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                                BookmarkBarVisibilityState.ALWAYS_HIDE,
+                                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS));
         Assert.assertTrue(bookmarkBarPref.getAlwaysHideButtonForTesting().isChecked());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
-                        BookmarkBarUtils.setDevicePrefShowBookmarksBar(
-                                true, /* fromKeyboardShortcut= */ false));
+                        BookmarkBarUtils.setDevicePrefBookmarkBarVisibilityState(
+                                BookmarkBarVisibilityState.ALWAYS_SHOW,
+                                BookmarkBarSettingChangeOrigin.APPEARANCE_SETTINGS));
         Assert.assertTrue(bookmarkBarPref.getAlwaysShowButtonForTesting().isChecked());
     }
 
