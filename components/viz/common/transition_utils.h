@@ -11,6 +11,11 @@
 #include "base/functional/callback_forward.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/viz_common_export.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+
+namespace gfx {
+class Transform;
+}  // namespace gfx
 
 namespace viz {
 
@@ -35,6 +40,11 @@ class VIZ_COMMON_EXPORT TransitionUtils {
   // If |full_data| is false, only essential information are included.
   static std::string CompositorFrameToString(
       const CompositorFrame& render_passes);
+
+  // Computes subpixel alignment offset from a transform. If the transform is
+  // not a scale or translation, returns a zero vector.
+  static gfx::Vector2dF ComputePixelAlignmentOffset(
+      const gfx::Transform& transform);
 };
 
 }  // namespace viz

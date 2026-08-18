@@ -42,14 +42,14 @@ TransferableResourceTracker::ImportResources(
       if (view_transition_element_resource_id.IsValid()) {
         resource_frame
             .element_id_to_resource[view_transition_element_resource_id] =
-            resource_frame.shared[i]->resource;
+            *resource_frame.shared[i];
       }
     }
   }
 
   for (auto resource_id : frame_result.empty_resource_ids) {
     DCHECK(!resource_frame.element_id_to_resource.contains(resource_id));
-    resource_frame.element_id_to_resource[resource_id] = TransferableResource();
+    resource_frame.element_id_to_resource[resource_id] = PositionedResource();
   }
 
   return resource_frame;
@@ -81,6 +81,7 @@ TransferableResourceTracker::ImportResource(
 
   PositionedResource result;
   result.resource = resource;
+  result.pixel_alignment_offset = output_copy.pixel_alignment_offset;
   return result;
 }
 

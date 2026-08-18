@@ -164,16 +164,17 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
   // If we're using BlitRequests, then we need to create the result bundle
   // immediately, since it can be imported before the copy output results
   // arrive.
-  for (auto& [index, shared_image] : blit_shared_images_) {
+  for (auto& [index, blit_image] : blit_shared_images_) {
     OutputCopyResult* slot = &frame_result_->shared_results[index].emplace();
 
-    slot->sync_token = shared_image->creation_sync_token();
-    slot->shared_image = shared_image;
+    slot->sync_token = blit_image.shared_image->creation_sync_token();
+    slot->shared_image = blit_image.shared_image;
+    slot->pixel_alignment_offset = blit_image.pixel_alignment_offset;
     slot->release_callback = base::BindOnce(
         [](scoped_refptr<gpu::ClientSharedImage> image,
            const gpu::SyncToken& sync_token,
            bool is_lost) { image->UpdateDestructionSyncToken(sync_token); },
-        std::move(shared_image));
+        std::move(blit_image.shared_image));
   }
 
   // DispatchCopyDoneCallback early if that feature is enabled.
@@ -237,8 +238,7 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
                      weak_factory_.GetMutableWeakPtr(), shared_pass_index));
   request->set_result_task_runner(
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  scoped_refptr<gpu::ClientSharedImage>& shared_image =
-      blit_shared_images_[shared_pass_index];
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
 
   const auto& display_color_spaces = directive_.display_color_spaces();
   bool has_transparent_background = render_pass.has_transparent_background;
@@ -271,6 +271,12 @@ std::unique_ptr<CopyOutputRequest> SurfaceSavedFrame::CreateCopyRequestIfNeeded(
       BlitRequest(gfx::Point(), LetterboxingBehavior::kDoNotLetterbox,
                   shared_image, shared_image->creation_sync_token(),
                   /*populates_mappable_shared_image=*/false));
+
+  gfx::Vector2dF orig_pixel_alignment_offset =
+      TransitionUtils::ComputePixelAlignmentOffset(
+          render_pass.transform_to_root_target);
+  blit_shared_images_[shared_pass_index] = {shared_image,
+                                            orig_pixel_alignment_offset};
 
   return request;
 }

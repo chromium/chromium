@@ -48,6 +48,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
     // Release callback used to return a GPU texture.
     ReleaseCallback release_callback;
+
+    gfx::Vector2dF pixel_alignment_offset;
   };
 
   struct FrameResult {
@@ -155,9 +157,13 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   OnViewTransitionResourcesCapturedCallback
       view_transition_resources_captured_callback_;
 
+  struct BlitImageData {
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    gfx::Vector2dF pixel_alignment_offset;
+  };
+
   // Store the blit images while the copy output request is ongoing.
-  base::flat_map<size_t, scoped_refptr<gpu::ClientSharedImage>>
-      blit_shared_images_;
+  base::flat_map<size_t, BlitImageData> blit_shared_images_;
 
   std::optional<FrameResult> frame_result_;
 

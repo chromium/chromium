@@ -318,5 +318,7 @@ bool SendEarlyFinalBeginMainFrameIsEnabled() {
 }
 
 BASE_FEATURE(kVizHitTestRoundedCorners, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kViewTransitionsNewRoundingChange,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -322,6 +322,11 @@ CC_BASE_EXPORT bool SendEarlyFinalBeginMainFrameIsEnabled();
 // (viz side).
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kVizHitTestRoundedCorners);
 
+// When enabled, ViewTransitionContentLayerImpl does not double-apply pixel
+// alignment offsets for live render passes and preserves exact subpixel
+// alignment offsets for snapshot textures.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kViewTransitionsNewRoundingChange);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_

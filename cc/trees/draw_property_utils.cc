@@ -1089,20 +1089,31 @@ void AdjustLayerDrawPropertiesForPixelAlignmentOffset(
     return;
   }
 
-  if (layer->GetLayerType() == mojom::LayerType::kViewTransitionContent &&
-      !layer->draw_properties().target_space_transform.HasPerspective()) {
-    // The view transition content layers get replaced in viz by either RPDQ or
-    // TextureDQ. Both RPDQ and TextureDQs would already account for the
-    // subpixel accumulation in their respective renderings. This means that for
-    // this content layer, we want to align it to the pixel boundary (similar to
-    // how we would align a render surface). Note that the math to round to a
-    // nearest 64th of a pixel is here to compensate for the fact that we lose
-    // transform precision in Blink (ViewTransitionStyleTracker) due to the fact
-    // that we have to round-trip our transform to a CSS transform, which is
-    // recorded at a different scale. Aligning to a 64th of a pixel is what the
-    // resolution of a Blink LayoutUnit is by default.
-    offset.set_x(std::floor(std::round(offset.x() * 64.f) / 64.f));
-    offset.set_y(std::floor(std::round(offset.y() * 64.f) / 64.f));
+  if (!base::FeatureList::IsEnabled(
+          features::kViewTransitionsNewRoundingChange)) {
+    if (layer->GetLayerType() == mojom::LayerType::kViewTransitionContent &&
+        !layer->draw_properties().target_space_transform.HasPerspective()) {
+      // The view transition content layers get replaced in viz by either RPDQ
+      // or TextureDQ. Both RPDQ and TextureDQs would already account for the
+      // subpixel accumulation in their respective renderings. This means that
+      // for this content layer, we want to align it to the pixel boundary
+      // (similar to how we would align a render surface). Note that the math to
+      // round to a nearest 64th of a pixel is here to compensate for the fact
+      // that we lose transform precision in Blink (ViewTransitionStyleTracker)
+      // due to the fact that we have to round-trip our transform to a CSS
+      // transform, which is recorded at a different scale. Aligning to a 64th
+      // of a pixel is what the resolution of a Blink LayoutUnit is by default.
+      //
+      // Note: This doesn't quite work in practice. Specifically, we need to
+      // know both the offset at capture time as well as the offset where the
+      // view transition content layer actually draws. As a result, a better
+      // solution is to propagate the offset to surface animation manager and
+      // do the snapping there, since we know both the original pixel offset
+      // and the drawn offset at that time. See where
+      // features::kViewTransitionsNewRoundingChange is used.
+      offset.set_x(std::floor(std::round(offset.x() * 64.f) / 64.f));
+      offset.set_y(std::floor(std::round(offset.y() * 64.f) / 64.f));
+    }
   }
 
   // Apply the pixel alignment offset to all draw properties that are relative

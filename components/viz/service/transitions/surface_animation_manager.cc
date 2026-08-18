@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -46,6 +47,29 @@
 namespace viz {
 namespace {
 
+constexpr float kSnapErrorTolerance = 0.001f;
+
+void AdjustQuadTransformForPixelAlignment(
+    const gfx::Vector2dF& orig_pixel_alignment_offset,
+    gfx::Transform& quad_to_target_transform) {
+  if (!orig_pixel_alignment_offset.IsZero()) {
+    quad_to_target_transform.PostTranslate(-orig_pixel_alignment_offset);
+  }
+  if (quad_to_target_transform.IsScaleOrTranslation()) {
+    gfx::Vector2dF translation = quad_to_target_transform.To2dTranslation();
+    auto snap = [](float v) -> float {
+      float rounded = std::round(v);
+      return (std::abs(v - rounded) < kSnapErrorTolerance) ? rounded : v;
+    };
+    float sx = snap(translation.x());
+    float sy = snap(translation.y());
+    if (sx != translation.x() || sy != translation.y()) {
+      quad_to_target_transform.PostTranslate(
+          gfx::Vector2dF(sx - translation.x(), sy - translation.y()));
+    }
+  }
+}
+
 // This function swaps a SharedElementDrawQuad with a RenderPassDrawQuad.
 // |target_render_pass| is the render pass where the SharedElementDrawQuad is
 // drawn.
@@ -68,6 +92,21 @@ void ReplaceSharedElementWithRenderPass(
   gfx::Transform transform = GetViewTransitionTransform(
       shared_element_quad.rect, shared_pass_output_rect);
   copied_quad_state->quad_to_target_transform.PreConcat(transform);
+
+  if (base::FeatureList::IsEnabled(
+          features::kViewTransitionsNewRoundingChange)) {
+    // For live content, the shared element is being rendered in
+    // |shared_element_content_pass| in the current frame. Compute its pixel
+    // alignment offset from its current transform to root target so that we can
+    // adjust the quad transform to cancel out raster-time subpixel translation.
+    gfx::Vector2dF orig_pixel_alignment_offset =
+        TransitionUtils::ComputePixelAlignmentOffset(
+            shared_element_content_pass->transform_to_root_target);
+    AdjustQuadTransformForPixelAlignment(
+        orig_pixel_alignment_offset,
+        copied_quad_state->quad_to_target_transform);
+  }
+
   copied_quad_state->quad_layer_rect = shared_pass_output_rect;
   copied_quad_state->visible_quad_layer_rect = shared_pass_output_rect;
 
@@ -101,10 +140,22 @@ void ReplaceSharedElementWithTexture(
     CompositorRenderPass* target_render_pass,
     const SharedElementDrawQuad& shared_element_quad,
     ResourceId resource_id,
-    const gfx::Size& resource_size) {
+    const gfx::Size& resource_size,
+    const gfx::Vector2dF& orig_pixel_alignment_offset) {
   auto* copied_quad_state =
       target_render_pass->CreateAndAppendSharedQuadState();
   *copied_quad_state = *shared_element_quad.shared_quad_state;
+
+  if (base::FeatureList::IsEnabled(
+          features::kViewTransitionsNewRoundingChange)) {
+    // For texture content, |orig_pixel_alignment_offset| was computed and saved
+    // by SurfaceSavedFrame when the texture was captured. Adjust the quad
+    // transform using this saved offset to cancel out raster-time subpixel
+    // translation.
+    AdjustQuadTransformForPixelAlignment(
+        orig_pixel_alignment_offset,
+        copied_quad_state->quad_to_target_transform);
+  }
 
   auto* texture_quad =
       target_render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
@@ -293,17 +344,18 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
         shared_element_quad.element_resource_id);
 
     if (texture_it != saved_textures->element_id_to_resource.end()) {
-      const auto& transferable_resource = texture_it->second;
-      if (transferable_resource.is_empty()) {
+      const auto& positioned_resource = texture_it->second;
+      if (positioned_resource.resource.is_empty()) {
         return true;
       }
 
-      resource_list->push_back(transferable_resource);
-      manager_it->second->RefResources({transferable_resource});
+      resource_list->push_back(positioned_resource.resource);
+      manager_it->second->RefResources({positioned_resource.resource});
 
-      ReplaceSharedElementWithTexture(&copy_pass, shared_element_quad,
-                                      resource_list->back().id,
-                                      resource_list->back().GetSize());
+      ReplaceSharedElementWithTexture(
+          &copy_pass, shared_element_quad, resource_list->back().id,
+          resource_list->back().GetSize(),
+          positioned_resource.pixel_alignment_offset);
       return true;
     }
   }
