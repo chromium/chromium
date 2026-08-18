@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/clock.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_observer_helper_base.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_window_occlusion_helper_base.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
@@ -955,6 +957,19 @@ bool AutoPictureInPictureTabHelper::AreAutoPictureInPicturePreconditionsMet()
   // Note that `auto_picture_in_picture_activation_time_` is not set if all of
   // the other preconditions are not set.
   return clock_->NowTicks() < auto_picture_in_picture_activation_time_;
+}
+
+void AutoPictureInPictureTabHelper::set_auto_blocker_for_testing(
+    permissions::PermissionDecisionAutoBlockerBase* auto_blocker) {
+  auto_blocker_ = auto_blocker;
+  // If we're clearing the auto blocker, then also drop any setting helper we
+  // have, since it might also know about it.  This is intended during test
+  // cleanup to prevent dangling raw ptrs.
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto_pip_setting_helper_ && !auto_blocker) {
+    auto_pip_setting_helper_.reset();
+  }
+#endif  //! BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

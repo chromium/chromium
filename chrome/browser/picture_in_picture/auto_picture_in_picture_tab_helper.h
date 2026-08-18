@@ -8,31 +8,34 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_window_occlusion_helper_base.h"
-#include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "ui/views/bubble/bubble_border.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+namespace base {
+class TickClock;
+}  // namespace base
 
 namespace permissions {
 class PermissionDecisionAutoBlockerBase;
 }  // namespace permissions
 
 class AutoPictureInPictureHatsService;
+class AutoPictureInPictureSafeBrowsingCheckerClient;
 class AutoPictureInPictureTabObserverHelperBase;
+class AutoPipSettingHelper;
 class AutoPipSettingOverlayView;
 class HostContentSettingsMap;
 class MediaEngagementService;
@@ -133,17 +136,7 @@ class AutoPictureInPictureTabHelper
   bool AreAutoPictureInPicturePreconditionsMet() const;
 
   void set_auto_blocker_for_testing(
-      permissions::PermissionDecisionAutoBlockerBase* auto_blocker) {
-    auto_blocker_ = auto_blocker;
-    // If we're clearing the auto blocker, then also drop any setting helper we
-    // have, since it might also know about it.  This is intended during test
-    // cleanup to prevent dangling raw ptrs.
-#if !BUILDFLAG(IS_ANDROID)
-    if (auto_pip_setting_helper_ && !auto_blocker) {
-      auto_pip_setting_helper_.reset();
-    }
-#endif  //! BUILDFLAG(IS_ANDROID)
-  }
+      permissions::PermissionDecisionAutoBlockerBase* auto_blocker);
 
   // Create and return the allow/block overlay view if we should show it for
   // this pip window.  May be called multiple times per pip window instance,
