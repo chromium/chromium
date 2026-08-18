@@ -73,15 +73,15 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     ];
   }
 
-  destination: Destination;
-  firstLoad: boolean;
-  maxSheets: number;
-  sheetCount: number;
-  state: State;
-  isPinValid: boolean;
-  private printButtonEnabled_: boolean;
-  private printButtonLabel_: string;
-  private errorMessage_: string;
+  declare destination: Destination;
+  declare firstLoad: boolean;
+  declare maxSheets: number;
+  declare sheetCount: number;
+  declare state: State;
+  declare isPinValid: boolean;
+  declare private printButtonEnabled_: boolean;
+  declare private printButtonLabel_: string;
+  declare private errorMessage_: string;
 
   private lastState_: State = State.NOT_READY;
 

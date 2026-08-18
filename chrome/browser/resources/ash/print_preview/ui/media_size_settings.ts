@@ -54,11 +54,11 @@ export class PrintPreviewMediaSizeSettingsElement extends
     };
   }
 
-  capability: MediaSizeCapability;
-  disabled: boolean;
-  private disableBorderlessCheckbox_: boolean;
+  declare capability: MediaSizeCapability;
+  declare disabled: boolean;
+  declare private disableBorderlessCheckbox_: boolean;
+  declare private disableSelectionBox_: boolean;
   private lastSelectedValue_: string = '';
-  private disableSelectionBox_: boolean;
 
   static get observers() {
     return [

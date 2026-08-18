@@ -37,7 +37,7 @@ export class PrintPreviewPagesPerSheetSettingsElement extends
     ];
   }
 
-  disabled: boolean;
+  declare disabled: boolean;
 
   /**
    * @param newValue The new value of the pages per sheet setting.

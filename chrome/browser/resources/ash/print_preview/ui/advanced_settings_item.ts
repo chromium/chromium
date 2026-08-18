@@ -48,8 +48,8 @@ export class PrintPreviewAdvancedSettingsItemElement extends
     ];
   }
 
-  capability: VendorCapability;
-  private currentValue_: string;
+  declare capability: VendorCapability;
+  declare private currentValue_: string;
 
   private updateFromSettings_() {
     const settings = this.getSetting('vendorItems').value;

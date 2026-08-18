@@ -41,10 +41,10 @@ export class PrintPreviewSettingsSelectElement extends
     };
   }
 
-  override ariaLabel: string;
-  capability: CapabilityWithReset&{option: SelectOption[]};
-  settingName: keyof Settings;
-  disabled: boolean;
+  declare ariaLabel: string;
+  declare capability: CapabilityWithReset&{option: SelectOption[]};
+  declare settingName: keyof Settings;
+  declare disabled: boolean;
 
   /**
    * @param option Option to check.

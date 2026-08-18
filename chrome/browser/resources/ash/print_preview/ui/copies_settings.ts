@@ -63,11 +63,11 @@ export class PrintPreviewCopiesSettingsElement extends
     return ['onSettingsChanged_(settings.copies.value, settings.collate.*)'];
   }
 
-  capability: CopiesCapability;
-  disabled: boolean;
-  private copiesMax_: number;
-  private currentValue_: string;
-  private inputValid_: boolean;
+  declare capability: CopiesCapability;
+  declare disabled: boolean;
+  declare private copiesMax_: number;
+  declare private currentValue_: string;
+  declare private inputValid_: boolean;
 
   /**
    * @return The maximum number of copies this printer supports.

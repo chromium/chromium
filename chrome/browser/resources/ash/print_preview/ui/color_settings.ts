@@ -42,8 +42,8 @@ export class PrintPreviewColorSettingsElement extends
     return ['onColorSettingChange_(settings.color.*)'];
   }
 
-  disabled: boolean;
-  private disabled_: boolean;
+  declare disabled: boolean;
+  declare private disabled_: boolean;
 
   private onColorSettingChange_() {
     this.selectedValue = this.getSettingValue('color') ? 'color' : 'bw';

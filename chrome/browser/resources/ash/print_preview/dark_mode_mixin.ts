@@ -23,7 +23,7 @@ export const DarkModeMixin = dedupingMixin(
         }
 
         private boundOnChange_: (() => void)|null = null;
-        inDarkMode: boolean;
+        declare inDarkMode: boolean;
 
         override connectedCallback() {
           super.connectedCallback();

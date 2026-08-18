@@ -74,9 +74,9 @@ export class PrintPreviewOtherOptionsSettingsElement extends
     ];
   }
 
-  disabled: boolean;
-  private options_: CheckboxOption[];
-  private firstIndex_: number;
+  declare disabled: boolean;
+  declare private options_: CheckboxOption[];
+  declare private firstIndex_: number;
   private timeouts_: Map<string, number|null> = new Map();
   private previousValues_: Map<string, boolean> = new Map();
 

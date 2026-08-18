@@ -84,25 +84,29 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
 
       initiator: Number,
 
-      showManagePrintersButton: Boolean,
+      showManagePrintersButton: {
+        type: Boolean,
+        value: false,
+      },
 
-      showIllustration: Boolean,
+      showIllustration: {
+        type: Boolean,
+        value: true,
+      },
     };
   }
 
-  messageType: PrinterSetupInfoMessageType;
-  private initiator: PrinterSetupInfoInitiator;
-  private nativeLayer: NativeLayer;
-  private metricsContext: MetricsContext;
-  private showManagePrintersButton: boolean = false;
-  private showIllustration: boolean = true;
-  private resizeObserver: ResizeObserver;
+  declare messageType: PrinterSetupInfoMessageType;
+  declare private initiator: PrinterSetupInfoInitiator;
+  private nativeLayer: NativeLayer = NativeLayerImpl.getInstance();
+  private metricsContext: MetricsContext =
+      MetricsContext.getLaunchPrinterSettingsMetricsContextCros();
+  declare private showManagePrintersButton: boolean;
+  declare private showIllustration: boolean;
+  private resizeObserver: ResizeObserver|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
-    this.nativeLayer = NativeLayerImpl.getInstance();
-    this.metricsContext =
-        MetricsContext.getLaunchPrinterSettingsMetricsContextCros();
     NativeLayerCrosImpl.getInstance().getShowManagePrinters().then(
         (show: boolean) => {
           this.showManagePrintersButton = show;
@@ -119,7 +123,7 @@ export class PrintPreviewPrinterSetupInfoCrosElement extends
     super.disconnectedCallback();
 
     if (this.initiator === PrinterSetupInfoInitiator.PREVIEW_AREA) {
-      this.resizeObserver.disconnect();
+      this.resizeObserver?.disconnect();
     }
   }
 

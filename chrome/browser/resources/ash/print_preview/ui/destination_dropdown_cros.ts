@@ -100,21 +100,21 @@ export class PrintPreviewDestinationDropdownCrosElement extends
     ];
   }
 
-  value: Destination;
-  itemList: Destination[];
-  destinationIcon: string;
-  disabled: boolean;
-  driveDestinationKey: string;
-  noDestinations: boolean;
-  pdfDestinationKey: string;
-  pdfPrinterDisabled: boolean;
-  destinationStatusText: TrustedHTML;
-  private isDarkModeActive_: boolean;
-  private highlightedIndex_: number;
-  private dropdownLength_: number;
-  private pdfPosinset: number;
-  private drivePosinset: number;
-  private seeMorePosinset: number;
+  declare value: Destination;
+  declare itemList: Destination[];
+  declare destinationIcon: string;
+  declare disabled: boolean;
+  declare driveDestinationKey: string;
+  declare noDestinations: boolean;
+  declare pdfDestinationKey: string;
+  declare pdfPrinterDisabled: boolean;
+  declare destinationStatusText: TrustedHTML;
+  declare private isDarkModeActive_: boolean;
+  declare private highlightedIndex_: number;
+  declare private dropdownLength_: number;
+  declare pdfPosinset: number;
+  declare drivePosinset: number;
+  declare seeMorePosinset: number;
 
   private opened_: boolean = false;
   private dropdownRefitPending_: boolean = false;

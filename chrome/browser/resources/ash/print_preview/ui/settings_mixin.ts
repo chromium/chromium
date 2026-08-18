@@ -19,7 +19,7 @@ export const SettingsMixin = dedupingMixin(
           };
         }
 
-        settings: Settings;
+        declare settings: Settings;
 
         getSetting(settingName: keyof Settings): Setting {
           return getInstance().getSetting(settingName);

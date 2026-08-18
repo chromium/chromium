@@ -45,8 +45,8 @@ class PrintPreviewMoreSettingsElement extends PolymerElement {
     };
   }
 
-  settingsExpandedByUser: boolean;
-  disabled: boolean;
+  declare settingsExpandedByUser: boolean;
+  declare disabled: boolean;
   private metrics_: MetricsContext = MetricsContext.printSettingsUi();
 
   /**

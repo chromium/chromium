@@ -174,26 +174,27 @@ export class PrintPreviewDestinationDialogCrosElement extends
     ];
   }
 
-  destinationStore: DestinationStore;
-  private printServerSelected_: string;
-  private destinations_: Destination[];
-  private loadingDestinations_: boolean;
-  private searchQuery_: RegExp|null;
-  private isSingleServerFetchingMode_: boolean;
-  private printServerNames_: string[];
-  private loadingServerPrinters_: boolean;
-  private loadingAnyDestinations_: boolean;
-  private metricsContext_: MetricsContext;
-  private showManagePrintersButton: boolean;
+  declare destinationStore: DestinationStore;
+  declare private printServerSelected_: string;
+  declare private destinations_: Destination[];
+  declare private loadingDestinations_: boolean;
+  declare private searchQuery_: RegExp|null;
+  declare private isSingleServerFetchingMode_: boolean;
+  declare private printServerNames_: string[];
+  declare private loadingServerPrinters_: boolean;
+  declare private loadingAnyDestinations_: boolean;
+  private metricsContext_: MetricsContext =
+      MetricsContext.getLaunchPrinterSettingsMetricsContextCros();
+  declare showManagePrintersButton: boolean;
 
   private tracker_: EventTracker = new EventTracker();
   private destinationInConfiguring_: Destination|null = null;
   private initialized_: boolean = false;
   private printServerStore_: PrintServerStore|null = null;
-  private showManagePrinters: boolean = false;
+  declare private showManagePrinters: boolean;
   private timerDelay_: number = 0;
-  private minLoadingTimeElapsed_: boolean = false;
-  private uiState_: number = UiState.THROBBER;
+  declare private minLoadingTimeElapsed_: boolean;
+  declare private uiState_: number;
 
   override disconnectedCallback() {
     super.disconnectedCallback();
@@ -223,8 +224,6 @@ export class PrintPreviewDestinationDialogCrosElement extends
     if (this.destinationStore) {
       this.printServerStore_.setDestinationStore(this.destinationStore);
     }
-    this.metricsContext_ =
-        MetricsContext.getLaunchPrinterSettingsMetricsContextCros();
     NativeLayerCrosImpl.getInstance().getShowManagePrinters().then(
         (show: boolean) => {
           this.showManagePrinters = show;

@@ -78,12 +78,12 @@ export class PrintPreviewPinSettingsElement extends
     ];
   }
 
-  state: State;
-  disabled: boolean;
-  isPinValid: boolean;
-  private checkboxDisabled_: boolean;
-  private inputString_: string;
-  private pinEnabled_: boolean;
+  declare state: State;
+  declare disabled: boolean;
+  declare isPinValid: boolean;
+  declare private checkboxDisabled_: boolean;
+  declare private inputString_: string;
+  declare private pinEnabled_: boolean;
 
   override ready() {
     super.ready();

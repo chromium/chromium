@@ -129,18 +129,18 @@ export class PrintPreviewMarginControlContainerElement extends
     ];
   }
 
-  pageSize: Size;
-  documentMargins: Margins;
-  previewLoaded: boolean;
-  measurementSystem: MeasurementSystem|null;
-  state: State;
-  private available_: boolean;
-  private invisible_: boolean;
-  private clipSize_: Size;
-  private scaleTransform_: number;
-  private translateTransform_: Coordinate2d;
-  private dragging_: string;
-  private marginSides_: CustomMarginsOrientation[];
+  declare pageSize: Size;
+  declare documentMargins: Margins;
+  declare previewLoaded: boolean;
+  declare measurementSystem: MeasurementSystem|null;
+  declare state: State;
+  declare private available_: boolean;
+  declare private invisible_: boolean;
+  declare private clipSize_: Size;
+  declare private scaleTransform_: number;
+  declare private translateTransform_: Coordinate2d;
+  declare private dragging_: string;
+  declare private marginSides_: CustomMarginsOrientation[];
 
   private pointerStartPositionInPixels_: Coordinate2d = new Coordinate2d(0, 0);
   private marginStartPositionInPixels_: Coordinate2d|null = null;

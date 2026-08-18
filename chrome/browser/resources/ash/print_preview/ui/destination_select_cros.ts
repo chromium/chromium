@@ -104,22 +104,22 @@ export class PrintPreviewDestinationSelectCrosElement extends
     };
   }
 
-  activeUser: string;
-  dark: boolean;
-  destination: Destination;
-  disabled: boolean;
-  driveDestinationKey: string;
-  loaded: boolean;
-  noDestinations: boolean;
-  pdfPrinterDisabled: boolean;
-  recentDestinationList: Destination[];
-  state: State;
-  error: Error;
-  private pdfDestinationKey_: string;
-  private statusText_: TrustedHTML;
-  private destinationIcon_: string;
-  private isCurrentDestinationCrosLocal_: boolean;
-  private isDarkModeActive_: boolean;
+  declare activeUser: string;
+  declare dark: boolean;
+  declare destination: Destination;
+  declare disabled: boolean;
+  declare driveDestinationKey: string;
+  declare loaded: boolean;
+  declare noDestinations: boolean;
+  declare pdfPrinterDisabled: boolean;
+  declare recentDestinationList: Destination[];
+  declare state: State;
+  declare error: Error;
+  declare private pdfDestinationKey_: string;
+  declare private statusText_: TrustedHTML;
+  declare private destinationIcon_: string;
+  declare private isCurrentDestinationCrosLocal_: boolean;
+  declare private isDarkModeActive_: boolean;
 
   override focus() {
     this.shadowRoot!.querySelector(

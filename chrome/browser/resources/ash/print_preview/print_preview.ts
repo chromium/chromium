@@ -51,6 +51,8 @@ export type {LabelledDpiCapability} from './ui/dpi_settings.js';
 export {PrintPreviewDpiSettingsElement} from './ui/dpi_settings.js';
 export {PrintPreviewDuplexSettingsElement} from './ui/duplex_settings.js';
 export {PrintPreviewHeaderElement} from './ui/header.js';
+export type {InputMixinInterface} from './ui/input_mixin.js';
+export {InputMixin} from './ui/input_mixin.js';
 export {PrintPreviewLayoutSettingsElement} from './ui/layout_settings.js';
 export {PrintPreviewMarginControlElement} from './ui/margin_control.js';
 export {PrintPreviewMarginControlContainerElement} from './ui/margin_control_container.js';

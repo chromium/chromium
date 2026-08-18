@@ -93,14 +93,14 @@ export class PrintPreviewDestinationListItemElement extends
     ];
   }
 
-  destination: Destination;
-  searchQuery: RegExp|null;
-  private destinationIcon_: string;
-  private searchHint_: string;
-  private statusText_: string;
-  private isDarkModeActive_: boolean;
-  private isDestinationCrosLocal_: boolean;
-  private configurationStatus_: DestinationConfigStatus;
+  declare destination: Destination;
+  declare searchQuery: RegExp|null;
+  declare private destinationIcon_: string;
+  declare private searchHint_: string;
+  declare private statusText_: string;
+  declare private isDarkModeActive_: boolean;
+  declare private isDestinationCrosLocal_: boolean;
+  declare private configurationStatus_: DestinationConfigStatus;
 
   private highlights_: HTMLElement[] = [];
 

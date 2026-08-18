@@ -133,30 +133,29 @@ export class SearchableDropDownCrosElement extends PolymerElement {
     };
   }
 
-  override autofocus: boolean;
-  readonly: boolean;
-  errorMessageAllowed: boolean;
-  errorMessage: string;
-  loadingMessage: string;
-  placeholder: string;
-  invalid: boolean;
-  items: string[];
-  value: string;
-  label: string;
-  updateValueOnInput: boolean;
-  showLoading: boolean;
+  declare readonly: boolean;
+  declare errorMessageAllowed: boolean;
+  declare errorMessage: string;
+  declare loadingMessage: string;
+  declare placeholder: string;
+  declare invalid: boolean;
+  declare items: string[];
+  declare value: string;
+  declare label: string;
+  declare updateValueOnInput: boolean;
+  declare showLoading: boolean;
 
-  private searchTerm_: string;
-  private dropdownRefitPending_: boolean;
-  private opened_: boolean;
+  declare private searchTerm_: string;
+  declare private dropdownRefitPending_: boolean;
+  declare private opened_: boolean;
   private openDropdownTimeoutId_: number = 0;
   private resizeObserver_: ResizeObserver|null = null;
-  private pointerDownListener_: (e: Event) => void;
+  private pointerDownListener_:
+      (e: Event) => void = (e: Event) => this.onPointerDown_(e);
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this.pointerDownListener_ = this.onPointerDown_.bind(this);
     document.addEventListener('pointerdown', this.pointerDownListener_);
     this.resizeObserver_ = new ResizeObserver(() => {
       this.resizeDropdown_();
