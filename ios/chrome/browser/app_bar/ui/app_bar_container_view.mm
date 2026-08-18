@@ -131,11 +131,12 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
       appBarWidth = windowSize.width;
       heightInAppCoordinates = windowSize.height;
       CGFloat minHeight =
-          (IsAppBarHiddenInFullscreen() && !self.assistantContainerInvoked)
-              ? 0
-              : kAppBarHeightFullscreen;
+          IsAppBarHiddenInFullscreen() ? 0 : kAppBarHeightFullscreen;
+      CGFloat portraitHeight = self.assistantContainerInvoked
+                                   ? kAppBarHeightFullscreen
+                                   : AppBarHeightPortrait();
       extraOffset =
-          (1 - self.fullscreenProgress) * (AppBarHeightPortrait() - minHeight);
+          (1 - self.fullscreenProgress) * (portraitHeight - minHeight);
       break;
     }
 

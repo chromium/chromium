@@ -229,11 +229,7 @@ UIColor* AssistantHighlightBackgroundColor() {
     didChangeAppBarPosition:(AppBarPosition)appBarPosition {
   // Update the alpha with a duration of 0 as it is already in an animation
   // block.
-  CGFloat targetAlpha = self.layoutState.assistantContainerInvoked &&
-                                !IsAppBarHiddenInFullscreen()
-                            ? 0.0
-                            : _fullscreenProgress;
-  [self setButtonsTitleAlpha:targetAlpha animationDuration:0];
+  [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
   [self updateTabSwitcherGuide];
   if (appBarPosition != AppBarPosition::kBottom) {
     _backgroundView.cornerRadius = kAppBarCornerRadius;
@@ -257,11 +253,7 @@ UIColor* AssistantHighlightBackgroundColor() {
     [_tabGridButton setNeedsUpdateConfiguration];
   }
 
-  CGFloat targetAlpha =
-      assistantContainerInvoked && !IsAppBarHiddenInFullscreen()
-          ? 0.0
-          : _fullscreenProgress;
-  [self setButtonsTitleAlpha:targetAlpha animationDuration:0];
+  [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
 
   if (IsAppBarHiddenInFullscreen()) {
     __weak __typeof(self) weakSelf = self;
@@ -649,18 +641,10 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _fullscreenProgress = progress;
-  if (self.layoutState.assistantContainerInvoked &&
-      !IsAppBarHiddenInFullscreen()) {
-    return;
-  }
   [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
-  if (self.layoutState.assistantContainerInvoked &&
-      !IsAppBarHiddenInFullscreen()) {
-    return;
-  }
   [self setButtonsTitleAlpha:animator.finalProgress
            animationDuration:animator.duration];
 }
@@ -669,10 +653,6 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 - (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
   _fullscreenProgress = agent->bottom_progress();
-  if (self.layoutState.assistantContainerInvoked &&
-      !IsAppBarHiddenInFullscreen()) {
-    return;
-  }
   [self setButtonsTitleAlpha:_fullscreenProgress
            animationDuration:agent->animation_duration().InSecondsF()];
 }
