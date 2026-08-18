@@ -596,6 +596,47 @@ TEST_F(AtMemoryEnablementUtilsFeatureCheckedLastTest, NotEligible) {
   EXPECT_EQ(pref_store_->call_count(), 0);
 }
 
+TEST_F(AtMemoryEnablementUtilsTest,
+       IsDeviceOrSubscriptionTierEligibleForAtMemory_Tiers) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAtMemory, {{"at_memory_eligible_tiers", "1,2"}});
+
+  EXPECT_FALSE(IsDeviceOrSubscriptionTierEligibleForAtMemory(nullptr));
+
+  autofill_client().GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 1);
+  EXPECT_TRUE(IsDeviceOrSubscriptionTierEligibleForAtMemory(
+      autofill_client().GetSubscriptionEligibilityService()));
+
+  autofill_client().GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 2);
+  EXPECT_TRUE(IsDeviceOrSubscriptionTierEligibleForAtMemory(
+      autofill_client().GetSubscriptionEligibilityService()));
+
+#if !BUILDFLAG(IS_ANDROID)
+  autofill_client().GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 3);
+  EXPECT_FALSE(IsDeviceOrSubscriptionTierEligibleForAtMemory(
+      autofill_client().GetSubscriptionEligibilityService()));
+#endif
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AtMemoryEnablementUtilsTest,
+       IsDeviceOrSubscriptionTierEligibleForAtMemory_DeviceEligible) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAtMemory,
+      {{"at_memory_eligible_tiers", "1,2"},
+       {"at_memory_enabled_devices", base::SysInfo::HardwareModelName()}});
+  autofill_client().GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 99);
+  EXPECT_TRUE(IsDeviceOrSubscriptionTierEligibleForAtMemory(
+      autofill_client().GetSubscriptionEligibilityService()));
+}
+#endif
+
 #if !BUILDFLAG(IS_FUCHSIA)
 class AtMemoryEnablementUtilsWithGroupsTest
     : public AtMemoryEnablementUtilsTest {

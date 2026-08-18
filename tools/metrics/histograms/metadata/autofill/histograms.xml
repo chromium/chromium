@@ -1966,8 +1966,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Tracks the reason why a user is not eligible for Personal Context. Emitted
     on browser startup (profile initialization) and on any relevant eligibility
     reason change. Emitted with a short delay on browser startup and on any
-    relevant eligibility state change. Note that this metric stacks on top of
-    Autofill.PersonalContext.NonEligibilityReason.
+    relevant eligibility state change.
   </summary>
 </histogram>
 
@@ -2446,6 +2445,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="Unknown" summary="with unknown data type"/>
     <variant name="Vehicle" summary="with vehicle type"/>
   </token>
+</histogram>
+
+<histogram name="Autofill.AtMemory.PersonalContext.NonEligibilityReason"
+    enum="PersonalContextNonEligibilityReason" expires_after="2027-03-09">
+  <owner>picarella@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Tracks the reason why a user is not eligible for Personal Context. Emitted
+    with a short delay on browser startup (profile initialization) and on any
+    relevant eligibility state change.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.AtMemory.QueryCompleted"

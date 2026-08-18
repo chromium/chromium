@@ -807,6 +807,8 @@ static_library("browser") {
     "heuristic_source.h",
     "integrators/address_on_typing/address_on_typing_manager.cc",
     "integrators/address_on_typing/address_on_typing_manager.h",
+    "integrators/at_memory/at_memory_eligibility_metrics_tracker.cc",
+    "integrators/at_memory/at_memory_eligibility_metrics_tracker.h",
     "integrators/at_memory/at_memory_query_service.cc",
     "integrators/at_memory/at_memory_query_service.h",
     "integrators/at_memory/at_memory_string_filtering_util.cc",

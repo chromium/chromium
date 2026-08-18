@@ -141,42 +141,6 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
 #endif
 }
 
-// Returns whether the subscription tier eligibility or device eligibility
-// criteria are met.
-//
-// Eligibility is determined by checking whether the user's tier is configured
-// as eligible by the `kAutofillAtMemoryEligibleTiers` feature parameter, or if
-// the device is a premium device configured as eligible by the
-// `kAutofillAtMemoryEnabledDevices` feature parameter.
-//
-// If the eligible tiers feature parameter is empty (not set or set to an empty
-// list), this is interpreted as having no restrictions, in which case any
-// subscription tier or any device is eligible.
-[[nodiscard]] bool IsSubscriptionOrDeviceEligible(
-    const subscription_eligibility::SubscriptionEligibilityService*
-        subscription_eligibility_service,
-    std::string* debug_message) {
-  const base::flat_set<int32_t> eligible_tiers =
-      GetAutofillAtMemoryEligibleTiers();
-  if (eligible_tiers.empty()) {
-    return true;
-  }
-  if (!subscription_eligibility_service) {
-    MaybeOutputReason(debug_message,
-                      "Subscription eligibility service not available.");
-    return false;
-  }
-  const int32_t tier =
-      subscription_eligibility_service->GetAiSubscriptionTier();
-  if (!eligible_tiers.contains(tier) && !IsAndroidDeviceEligibleForAtMemory()) {
-    MaybeOutputReason(debug_message,
-                      "User subscription tier is not eligible and device is "
-                      "not eligible.");
-    return false;
-  }
-  return true;
-}
-
 // Returns true if AtMemory is supported for the user.
 //
 // Checks that AtMemory feature flags are enabled, At-Memory eligibility
@@ -194,12 +158,8 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
     return false;
   }
 
-  if (!IsSubscriptionOrDeviceEligible(subscription_eligibility_service,
-                                      debug_message)) {
-    return false;
-  }
-
-  return true;
+  return IsDeviceOrSubscriptionTierEligibleForAtMemory(
+      subscription_eligibility_service, debug_message);
 }
 
 [[nodiscard]] bool SatisfiesPersonalContextToggleRequirement(
@@ -439,6 +399,29 @@ bool IsAtMemoryFeatureEnabled(
 #else
   return base::FeatureList::IsEnabled(features::kAutofillAtMemory);
 #endif
+}
+
+[[nodiscard]] bool IsDeviceOrSubscriptionTierEligibleForAtMemory(
+    const subscription_eligibility::SubscriptionEligibilityService*
+        subscription_eligibility_service,
+    std::string* debug_message) {
+  const base::flat_set<int32_t> eligible_tiers =
+      GetAutofillAtMemoryEligibleTiers();
+  if (eligible_tiers.empty()) {
+    return true;
+  }
+  if (subscription_eligibility_service &&
+      eligible_tiers.contains(
+          subscription_eligibility_service->GetAiSubscriptionTier())) {
+    return true;
+  }
+  if (IsAndroidDeviceEligibleForAtMemory()) {
+    return true;
+  }
+  MaybeOutputReason(debug_message,
+                    "User subscription tier is not eligible and device is not "
+                    "eligible.");
+  return false;
 }
 
 }  // namespace autofill

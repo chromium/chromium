@@ -140,6 +140,23 @@ std::optional<AtMemoryAction> ToAtMemoryRetrieveForFillingAction(
 [[nodiscard]] bool IsAtMemoryFeatureEnabled(
     const GoogleGroupsManager* google_groups_manager);
 
+// Returns whether the user's subscription tier or current device is
+// eligible for AtMemory. Note that this does not check other requirements
+// (e.g. user sign-in state or enterprise policy).
+//
+// Eligibility is determined by checking whether the user's tier is configured
+// as eligible by the `kAutofillAtMemoryEligibleTiers` feature parameter, or if
+// the device is a premium device configured as eligible by the
+// `kAutofillAtMemoryEnabledDevices` feature parameter.
+//
+// If the eligible tiers feature parameter is empty (not set or set to an empty
+// list), this is interpreted as having no restrictions, in which case any
+// subscription tier or any device is eligible.
+[[nodiscard]] bool IsDeviceOrSubscriptionTierEligibleForAtMemory(
+    const subscription_eligibility::SubscriptionEligibilityService*
+        subscription_eligibility_service,
+    std::string* debug_message = nullptr);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_ENABLEMENT_UTILS_H_

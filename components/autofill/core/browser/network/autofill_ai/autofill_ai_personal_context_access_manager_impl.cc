@@ -57,13 +57,6 @@ constexpr net::BackoffEntry::Policy kBackoffPolicy = {
     .entry_lifetime_ms = -1,
     .always_use_initial_delay = false};
 
-// Delay before logging the non-eligibility reason on startup. Instead of
-// reporting immediately at startup (which would incorrectly report non-eligible
-// before preferences are loaded from disk), this delay ensures initial
-// preference and device state have been populated.
-constexpr base::TimeDelta kNonEligibilityLoggingDelayOnStartup =
-    base::Seconds(30);
-
 bool IsPersonalContextEligible(
     personal_context::PersonalContextEligibilityState state) {
   using enum personal_context::PersonalContextEligibilityState;

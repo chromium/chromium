@@ -10,17 +10,22 @@
 #import "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/personal_context/core/personal_context_service.h"
+#import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 
 namespace {
 using autofill::AtMemoryQueryService;
 using autofill::AutofillDataProvider;
 using autofill::PersonalDataManagerFactory;
+using personal_context::PersonalContextEligibilityService;
 using personal_context::PersonalContextService;
+using subscription_eligibility::SubscriptionEligibilityService;
 }  // namespace
 
 // static
@@ -42,6 +47,8 @@ IOSAtMemoryQueryServiceFactory::IOSAtMemoryQueryServiceFactory()
   DependsOn(PersonalDataManagerFactory::GetInstance());
   DependsOn(IOSAutofillEntityDataManagerFactory::GetInstance());
   DependsOn(IOSPersonalContextServiceFactory::GetInstance());
+  DependsOn(IOSPersonalContextEligibilityServiceFactory::GetInstance());
+  DependsOn(SubscriptionEligibilityServiceFactory::GetInstance());
 }
 
 IOSAtMemoryQueryServiceFactory::~IOSAtMemoryQueryServiceFactory() = default;
@@ -64,7 +71,13 @@ IOSAtMemoryQueryServiceFactory::BuildServiceInstanceFor(
           PersonalDataManagerFactory::GetForProfile(profile),
           IOSAutofillEntityDataManagerFactory::GetForProfile(profile));
 
+  PersonalContextEligibilityService* personal_context_eligibility_service =
+      IOSPersonalContextEligibilityServiceFactory::GetForProfile(profile);
+  SubscriptionEligibilityService* subscription_eligibility_service =
+      SubscriptionEligibilityServiceFactory::GetForProfile(profile);
+
   return std::make_unique<AtMemoryQueryService>(
       std::move(data_provider), personal_context_service,
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get(),
+      personal_context_eligibility_service, subscription_eligibility_service);
 }

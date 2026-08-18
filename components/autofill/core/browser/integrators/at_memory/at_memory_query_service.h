@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_eligibility_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/core/context_memory_error.h"
@@ -22,11 +23,16 @@
 #include "url/gurl.h"
 
 namespace personal_context {
+class PersonalContextEligibilityService;
 class PersonalContextService;
 }
 
 namespace device_reauth {
 class DeviceAuthenticator;
+}
+
+namespace subscription_eligibility {
+class SubscriptionEligibilityService;
 }
 
 namespace autofill {
@@ -67,7 +73,11 @@ class AtMemoryQueryService : public KeyedService {
   AtMemoryQueryService(
       std::unique_ptr<AutofillDataProvider> data_provider,
       personal_context::PersonalContextService* personal_context_service,
-      const std::string& locale);
+      const std::string& locale,
+      personal_context::PersonalContextEligibilityService*
+          personal_context_eligibility_service,
+      subscription_eligibility::SubscriptionEligibilityService*
+          subscription_eligibility_service);
   AtMemoryQueryService(const AtMemoryQueryService&) = delete;
   AtMemoryQueryService& operator=(const AtMemoryQueryService&) = delete;
   ~AtMemoryQueryService() override;
@@ -129,6 +139,7 @@ class AtMemoryQueryService : public KeyedService {
       nullptr;
   std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
   std::string locale_;
+  AtMemoryEligibilityMetricsTracker eligibility_metrics_tracker_;
   base::WeakPtrFactory<AtMemoryQueryService> query_weak_ptr_factory_{this};
   base::WeakPtrFactory<AtMemoryQueryService> pii_unmasking_weak_ptr_factory_{
       this};

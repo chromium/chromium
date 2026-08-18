@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_eligibility_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_string_filtering_util.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
@@ -781,10 +782,16 @@ std::vector<MemorySearchResult> FilterResults(
 AtMemoryQueryService::AtMemoryQueryService(
     std::unique_ptr<AutofillDataProvider> data_provider,
     personal_context::PersonalContextService* personal_context_service,
-    const std::string& locale)
+    const std::string& locale,
+    personal_context::PersonalContextEligibilityService*
+        personal_context_eligibility_service,
+    subscription_eligibility::SubscriptionEligibilityService*
+        subscription_eligibility_service)
     : data_provider_(std::move(data_provider)),
       personal_context_service_(personal_context_service),
-      locale_(locale) {}
+      locale_(locale),
+      eligibility_metrics_tracker_(personal_context_eligibility_service,
+                                   subscription_eligibility_service) {}
 
 AtMemoryQueryService::~AtMemoryQueryService() = default;
 
