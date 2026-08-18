@@ -444,6 +444,67 @@ class MockTabStripModelObserver : public TabStripModelObserver {
   std::map<tab_groups::TabGroupId, TabGroupUpdate> group_updates_;
 };
 
+class FallbackTabTestDelegate : public TestTabStripModelDelegate {
+ public:
+  struct AddTabCall {
+    GURL url;
+    int index;
+    bool foreground;
+    std::optional<tab_groups::TabGroupId> group;
+    bool pinned;
+    std::optional<tab_groups::TabGroupId> focused_group_at_call_time;
+  };
+
+  void AddTabAt(const GURL& url,
+                int index,
+                bool foreground,
+                std::optional<tab_groups::TabGroupId> group,
+                bool pinned) override {
+    AddTabCall call;
+    call.url = url;
+    call.index = index;
+    call.foreground = foreground;
+    call.group = group;
+    call.pinned = pinned;
+    if (tabstrip_) {
+      call.focused_group_at_call_time = tabstrip_->GetFocusedGroup();
+      if (insert_tab_on_add_) {
+        tabstrip_->AppendWebContents(
+            content::WebContentsTester::CreateTestWebContents(profile_,
+                                                              nullptr),
+            foreground);
+      }
+      if (ungroup_on_add_) {
+        std::vector<int> indices;
+        for (int i = 0; i < tabstrip_->count(); ++i) {
+          if (tabstrip_->GetTabGroupForTab(i).has_value()) {
+            indices.push_back(i);
+          }
+        }
+        tabstrip_->RemoveFromGroup(indices);
+      }
+    }
+    calls_.push_back(std::move(call));
+  }
+
+  void set_tabstrip(TabStripModel* tabstrip, Profile* profile) {
+    tabstrip_ = tabstrip;
+    profile_ = profile;
+  }
+
+  void set_insert_tab_on_add(bool insert) { insert_tab_on_add_ = insert; }
+  void set_ungroup_on_add(bool ungroup) { ungroup_on_add_ = ungroup; }
+
+  const std::vector<AddTabCall>& calls() const { return calls_; }
+
+ private:
+  std::vector<AddTabCall> calls_;
+  bool insert_tab_on_add_ = false;
+  bool ungroup_on_add_ = false;
+  raw_ptr<TabStripModel> tabstrip_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+};
+
 }  // namespace
 
 class TabStripModelTest : public testing::Test {
@@ -1833,6 +1894,77 @@ TEST_F(TabStripModelTest, ClosingFocusedGroupUnsetsFocusAndNotifies) {
 
   EXPECT_EQ(tabstrip()->GetFocusedGroup(), std::nullopt);
   tabstrip()->RemoveObserver(&mock_observer);
+}
+
+TEST_F(TabStripModelTest,
+       CloseAllTabsInGroupAddsFallbackTabWhenClosingLastGroup) {
+  FallbackTabTestDelegate test_delegate;
+  TabStripModel model(&test_delegate, profile());
+  test_delegate.set_tabstrip(&model, profile());
+  test_delegate.set_insert_tab_on_add(true);
+
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+
+  const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
+  model.SetFocusedGroup(group);
+  EXPECT_EQ(model.GetFocusedGroup(), group);
+
+  model.CloseAllTabsInGroup(group);
+
+  // Focus must be unset and AddTabAt must be called with correct arguments.
+  ASSERT_EQ(test_delegate.calls().size(), 1u);
+  EXPECT_EQ(test_delegate.calls()[0].url, GURL());
+  EXPECT_EQ(test_delegate.calls()[0].index, -1);
+  EXPECT_TRUE(test_delegate.calls()[0].foreground);
+  EXPECT_EQ(test_delegate.calls()[0].focused_group_at_call_time, std::nullopt);
+
+  // The fallback tab must remain in the tabstrip outside of any group.
+  EXPECT_EQ(model.count(), 1);
+  EXPECT_EQ(model.GetTabGroupForTab(0), std::nullopt);
+  EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
+}
+
+TEST_F(TabStripModelTest, CloseAllTabsInGroupNoFallbackTabWhenOtherTabsExist) {
+  FallbackTabTestDelegate test_delegate;
+  TabStripModel model(&test_delegate, profile());
+  test_delegate.set_tabstrip(&model, profile());
+
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+
+  const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
+  model.SetFocusedGroup(group);
+
+  model.CloseAllTabsInGroup(group);
+
+  // No fallback tab should be requested when other tabs exist outside the
+  // group.
+  EXPECT_EQ(test_delegate.calls().size(), 0u);
+  EXPECT_EQ(model.count(), 1);
+  EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
+}
+
+TEST_F(TabStripModelTest,
+       CloseAllTabsInGroupHandlesGroupRemovedDuringAddTabAt) {
+  FallbackTabTestDelegate test_delegate;
+  TabStripModel model(&test_delegate, profile());
+  test_delegate.set_tabstrip(&model, profile());
+  test_delegate.set_insert_tab_on_add(true);
+  test_delegate.set_ungroup_on_add(true);
+
+  model.AppendWebContents(CreateWebContents(), true);
+  model.AppendWebContents(CreateWebContents(), true);
+
+  const tab_groups::TabGroupId group = model.AddToNewGroup({0, 1});
+  model.SetFocusedGroup(group);
+
+  // When AddTabAt triggers ungrouping, CloseAllTabsInGroup should not crash.
+  model.CloseAllTabsInGroup(group);
+
+  EXPECT_EQ(test_delegate.calls().size(), 1u);
+  EXPECT_EQ(model.GetFocusedGroup(), std::nullopt);
 }
 
 TEST_F(TabStripModelTest, UngroupingFocusedGroupUnsetsFocusAndNotifies) {

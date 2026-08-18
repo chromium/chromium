@@ -20,12 +20,14 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_delegate_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
@@ -1153,6 +1155,45 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   // Verify that local_id_2 still exists.
   EXPECT_TRUE(browser()->tab_strip_model()->group_model()->ContainsTabGroup(
       local_id_2));
+}
+
+class TabGroupSyncDelegateBrowserTestWithFocusing
+    : public TabGroupSyncDelegateBrowserTest {
+ public:
+  TabGroupSyncDelegateBrowserTestWithFocusing() {
+    feature_list_.InitAndEnableFeature(features::kTabGroupsFocusing);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTestWithFocusing,
+                       DeleteSavedGroupWhenAllTabsInWindowAreInGroupWithFocus) {
+  tab_groups::DeletionDialogController* deletion_dialog_controller =
+      browser()->GetFeatures().tab_group_deletion_dialog_controller();
+  deletion_dialog_controller->SetPrefsPreventShowingDialogForTesting(true);
+
+  // Tab 0 is in the browser. Add to new group.
+  LocalTabGroupID local_id = browser()->tab_strip_model()->AddToNewGroup({0});
+  WaitUntilCallbackReceived();
+
+  const SavedTabGroup* saved_group = model_->Get(local_id);
+  ASSERT_TRUE(saved_group);
+  base::Uuid saved_guid = saved_group->saved_guid();
+
+  // Focus the group.
+  browser()->tab_strip_model()->SetFocusedGroup(local_id);
+  ASSERT_EQ(local_id, browser()->tab_strip_model()->GetFocusedGroup());
+
+  // Delete the saved group.
+  SavedTabGroupUtils::DeleteSavedGroup(browser(), saved_guid);
+
+  // The browser window should not close, the group should be deleted, and a new
+  // ungrouped tab should be present.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(std::nullopt, browser()->tab_strip_model()->GetTabGroupForTab(0));
+  EXPECT_EQ(std::nullopt, browser()->tab_strip_model()->GetFocusedGroup());
 }
 
 }  // namespace

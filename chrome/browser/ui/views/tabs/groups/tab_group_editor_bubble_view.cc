@@ -984,7 +984,7 @@ void TabGroupEditorBubbleView::CloseGroupPressed() {
   bool is_group_shared = IsGroupShared();
   base::WeakPtr<views::Widget> widget = GetWidget()->GetWeakPtr();
 
-  DeleteGroupFromTabstrip();
+  browser_->GetTabStripModel()->CloseAllTabsInGroup(group_);
 
   if (is_group_shared) {
     shared_tab_group_metrics::RecordSharedTabGroupRecallType(
@@ -1100,19 +1100,6 @@ bool TabGroupEditorBubbleView::CanMoveGroupToNewWindow() {
                                                       ->group_model()
                                                       ->GetTabGroup(group_)
                                                       ->tab_count();
-}
-
-void TabGroupEditorBubbleView::DeleteGroupFromTabstrip() {
-  TabStripModel* const model = browser_->GetTabStripModel();
-  const int num_tabs_in_group =
-      model->group_model()->GetTabGroup(group_)->tab_count();
-  if (model->count() == num_tabs_in_group) {
-    // If the group about to be closed has all of the tabs in the browser, add a
-    // new tab outside the group to prevent the browser from closing.
-    model->delegate()->AddTabAt(GURL(), -1, true);
-  }
-
-  model->CloseAllTabsInGroup(group_);
 }
 
 void TabGroupEditorBubbleView::OnBubbleClose() {

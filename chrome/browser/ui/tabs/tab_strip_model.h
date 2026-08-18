@@ -467,8 +467,10 @@ class TabStripModel {
   // notifications this method causes.
   void CloseAllTabs();
 
-  // Close all tabs in the given `group` at once, but sets the focus state
-  // first.
+  // Closes all tabs in the given `group`. If the group is focused, focus is
+  // unset before closing. If all tabs in the tabstrip are in `group`, a new
+  // fallback tab is added outside the group to prevent the browser window from
+  // closing.
   void CloseAllTabsInGroup(const tab_groups::TabGroupId& group);
 
   // Returns true if there are any WebContentses that are currently loading

@@ -1817,16 +1817,6 @@ void CloseTabGroup(BrowserWindowInterface* browser) {
     return;
   }
 
-  const int num_tabs_in_group = browser->GetTabStripModel()
-                                    ->group_model()
-                                    ->GetTabGroup(group_id.value())
-                                    ->tab_count();
-  if (num_tabs_in_group == browser->GetTabStripModel()->count()) {
-    // If the group about to be closed has all of the tabs in the browser, add a
-    // new tab outside the group to prevent the browser from closing.
-    browser->GetTabStripModel()->delegate()->AddTabAt(GURL(), -1, true);
-  }
-
   browser->GetTabStripModel()->CloseAllTabsInGroup(group_id.value());
 }
 

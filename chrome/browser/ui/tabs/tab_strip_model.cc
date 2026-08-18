@@ -1367,8 +1367,7 @@ void TabStripModel::CloseAllTabs() {
 }
 
 void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
-  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  if (!group_model_) {
+  if (!group_model_ || !group_model_->ContainsTabGroup(group)) {
     return;
   }
 
@@ -1378,6 +1377,21 @@ void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
     SetFocusedGroup(std::nullopt);
   }
 
+  const int num_tabs_in_group = group_model_->GetTabGroup(group)->tab_count();
+  if (count() == num_tabs_in_group) {
+    // If the group about to be closed has all of the tabs in the browser, add a
+    // new tab outside the group to prevent the browser from closing.
+    delegate_->AddTabAt(GURL(), -1, /*foreground=*/true);
+  }
+
+  if (!group_model_ || !group_model_->ContainsTabGroup(group)) {
+    return;
+  }
+
+  // The ReentrancyCheck must follow AddTabAt because adding a fallback tab
+  // re-enters TabStripModel to insert the new WebContents before the group is
+  // closed.
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   CloseAllTabsInGroupImpl(group);
 }
 

@@ -131,18 +131,8 @@ void SavedTabGroupUtils::RemoveGroupFromTabstrip(
     return;
   }
 
-  TabStripModel* const tab_strip_model =
-      browser_with_local_group_id->GetTabStripModel();
-
-  const int num_tabs_in_group =
-      tab_strip_model->group_model()->GetTabGroup(local_group)->tab_count();
-  if (tab_strip_model->count() == num_tabs_in_group) {
-    // If the group about to be closed has all of the tabs in the browser, add a
-    // new tab outside the group to prevent the browser from closing.
-    tab_strip_model->delegate()->AddTabAt(GURL(), -1, true);
-  }
-
-  tab_strip_model->CloseAllTabsInGroup(local_group);
+  browser_with_local_group_id->GetTabStripModel()->CloseAllTabsInGroup(
+      local_group);
 }
 
 // static
