@@ -57,5 +57,9 @@ void BindingsManagerFuchsia::Connect(
                                      std::move(message_port))));
 }
 
+void BindingsManagerFuchsia::SetOrigin(std::string origin) {
+  Manager::SetOrigin(std::move(origin));
+}
+
 }  // namespace bindings
 }  // namespace chromecast

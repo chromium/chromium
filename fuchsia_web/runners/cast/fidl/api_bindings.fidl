@@ -5,6 +5,7 @@
 library chromium.cast;
 
 using fuchsia.mem;
+using fuchsia.url;
 using fuchsia.web;
 
 /// Provides Cast platform API binding scripts and methods for connecting those
@@ -22,6 +23,12 @@ closed protocol ApiBindings {
     strict Connect(resource struct {
         port_name string;
         message_port client_end:fuchsia.web.MessagePort;
+    });
+
+    /// Informs the Agent of the origin of the document currently connected
+    /// to this ApiBindings session.
+    strict SetOrigin(struct {
+        origin fuchsia.url.Url;
     });
 };
 

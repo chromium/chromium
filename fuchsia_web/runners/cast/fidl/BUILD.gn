@@ -23,6 +23,7 @@ fidl_library("fidl") {
   public_deps = [
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.sessions2",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.url",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]
 

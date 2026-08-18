@@ -46,6 +46,10 @@ class CAST_COMPONENT_EXPORT Manager {
   virtual void AddBinding(std::string_view binding_name,
                           std::string_view binding_script) = 0;
 
+  // Returns the origin of the document currently connected to the bindings
+  // session, or empty if the origin is opaque or not yet set.
+  const std::string& origin() const { return origin_; }
+
  protected:
   // Called by platform-specific implementations when the content requests a
   // connection to |port_name|.
@@ -54,8 +58,13 @@ class CAST_COMPONENT_EXPORT Manager {
   bool OnPortConnected(std::string_view port_name,
                        std::unique_ptr<cast_api_bindings::MessagePort> port);
 
+  // Sets the origin of the document currently connected to the bindings
+  // session.
+  void SetOrigin(std::string origin);
+
  private:
   base::flat_map<std::string, MessagePortConnectedHandler> port_handlers_;
+  std::string origin_;
 };
 
 }  // namespace cast_api_bindings
