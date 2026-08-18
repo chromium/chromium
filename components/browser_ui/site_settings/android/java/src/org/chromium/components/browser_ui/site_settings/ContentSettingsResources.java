@@ -594,6 +594,32 @@ public class ContentSettingsResources {
                         R.string.website_settings_serial_port_ask,
                         R.string.website_settings_serial_port_block);
 
+            case ContentSettingsType.HID_CHOOSER_DATA:
+                return new ResourceItem(
+                        R.drawable.videogame_asset_24px,
+                        0,
+                        ContentSetting.ASK,
+                        ContentSetting.BLOCK,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0);
+
+            case ContentSettingsType.HID_GUARD:
+                return new ResourceItem(
+                        R.drawable.videogame_asset_24px,
+                        R.string.website_settings_hid_devices,
+                        ContentSetting.ASK,
+                        ContentSetting.BLOCK,
+                        R.string.website_settings_category_hid_devices_ask,
+                        R.string.website_settings_category_hid_devices_blocked,
+                        R.string.website_settings_category_hid_devices_a11y,
+                        R.drawable.videogame_asset_off_24px,
+                        R.string.website_settings_hid_devices_ask,
+                        R.string.website_settings_hid_devices_block);
+
             case ContentSettingsType.SOUND:
                 return new ResourceItem(
                                 R.drawable.ic_volume_up_fill_24dp,

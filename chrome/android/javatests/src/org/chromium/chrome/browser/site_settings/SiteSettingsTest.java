@@ -547,6 +547,32 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    public void testAllowHidDevices() {
+        new SiteSettingsTestHelper.TwoStatePermissionTestCaseWithRadioButton(
+                        "HidDevices",
+                        SiteSettingsCategory.Type.HID_DEVICES,
+                        ContentSettingsType.HID_GUARD,
+                        true)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testBlockHidDevices() {
+        new SiteSettingsTestHelper.TwoStatePermissionTestCaseWithRadioButton(
+                        "HidDevices",
+                        SiteSettingsCategory.Type.HID_DEVICES,
+                        ContentSettingsType.HID_GUARD,
+                        false)
+                .withExpectedPrefKeysAtStart(SingleCategorySettings.INFO_TEXT_KEY)
+                .run();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
     public void testAllowAutomaticDownloads() {
         new SiteSettingsTestHelper.TwoStatePermissionTestCaseWithRadioButton(
                         "AutomaticDownloads",

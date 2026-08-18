@@ -1218,6 +1218,29 @@
     Don't allow sites to connect to serial ports
   </message>
 
+  <!-- HID Devices -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HID_DEVICES_ASK" desc="Summary text explaining that the HID devices permission is set to ask the user for permission to access individual devices. To be shown in the list of permission categories.">
+    Ask before allowing sites to connect to a device (recommended)
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HID_DEVICES_BLOCKED" desc="Summary text explaining that the HID devices permission is set to block all requests for access to devices. To be shown in the list of permission categories.">
+    Block sites from connecting to devices
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_HID_DEVICES_A11Y" desc="The screen reader announcement describing a toggle with two states, controlling sites can request permission to use HID devices. It is important to keep this string as two full sentences terminated by a period.">
+    When on, sites can ask to use HID devices. When off, sites can’t use HID devices.
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_HID_DEVICES" desc="Title for HID device settings, which control which of the user's HID devices can be accessed from websites.">
+    HID devices
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_HID_DEVICES_PAGE_DESCRIPTION" desc="Description of the HID devices content settings">
+    Sites usually connect to HID devices for features that use uncommon keyboards, game controllers, and other devices
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_HID_DEVICES_ASK" desc="Primary text corresponding to the ask button in the HID device permission radio button group.">
+    Sites can ask to connect to HID devices
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_HID_DEVICES_BLOCK" desc="Primary text corresponding to the block button in the HID device permission radio button group.">
+    Don't allow sites to connect to HID devices
+  </message>
+
   <!-- Local Network Access -->
   <message name="IDS_WEBSITE_SETTINGS_LOCAL_NETWORK_PAGE_DESCRIPTION" desc="Description of the local network content setting.">
     Sites can use this feature to access other devices on your local network

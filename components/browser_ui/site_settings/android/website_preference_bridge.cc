@@ -1066,6 +1066,7 @@ static void JNI_WebsitePreferenceBridge_SetContentSettingEnabled(
       case ContentSettingsType::GEOLOCATION:
       case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:
       case ContentSettingsType::HAND_TRACKING:
+      case ContentSettingsType::HID_GUARD:
       case ContentSettingsType::IDLE_DETECTION:
       case ContentSettingsType::LOCAL_NETWORK:
       case ContentSettingsType::LOOPBACK_NETWORK:

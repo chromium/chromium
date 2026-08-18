@@ -128,6 +128,7 @@ public class WebsitePermissionsFetcher {
             case ContentSettingsType.BLUETOOTH_GUARD:
             case ContentSettingsType.SERIAL_GUARD:
             case ContentSettingsType.USB_GUARD:
+            case ContentSettingsType.HID_GUARD:
                 return WebsitePermissionsType.CHOSEN_OBJECT_INFO;
             case ContentSettingsType.GEOLOCATION:
                 if (!PermissionsAndroidFeatureMap.isEnabled(
@@ -365,6 +366,10 @@ public class WebsitePermissionsFetcher {
             if (contentSettingsType == ContentSettingsType.BLUETOOTH_GUARD
                     && !ContentFeatureMap.isEnabled(
                             ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
+                return;
+            }
+            if (contentSettingsType == ContentSettingsType.HID_GUARD
+                    && !ContentFeatureMap.isEnabled(ContentFeatureList.WEB_HID)) {
                 return;
             }
 

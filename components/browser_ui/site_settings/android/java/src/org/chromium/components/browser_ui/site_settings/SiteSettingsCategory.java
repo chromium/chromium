@@ -82,6 +82,7 @@ public class SiteSettingsCategory {
         Type.AUTO_PICTURE_IN_PICTURE,
         Type.LOCAL_NETWORK,
         Type.LOOPBACK_NETWORK,
+        Type.HID_DEVICES,
         Type.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -126,9 +127,10 @@ public class SiteSettingsCategory {
         int AUTO_PICTURE_IN_PICTURE = 35;
         int LOCAL_NETWORK = 36;
         int LOOPBACK_NETWORK = 37;
+        int HID_DEVICES = 38;
 
         /** Number of handled categories used for calculating array sizes. */
-        int NUM_ENTRIES = 38;
+        int NUM_ENTRIES = 39;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -277,6 +279,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.SENSORS;
             case Type.SERIAL_PORT:
                 return ContentSettingsType.SERIAL_GUARD;
+            case Type.HID_DEVICES:
+                return ContentSettingsType.HID_GUARD;
             case Type.STORAGE_ACCESS:
                 return ContentSettingsType.STORAGE_ACCESS;
             case Type.SOUND:
@@ -308,6 +312,8 @@ public class SiteSettingsCategory {
                 return ContentSettingsType.BLUETOOTH_CHOOSER_DATA;
             case ContentSettingsType.SERIAL_GUARD:
                 return ContentSettingsType.SERIAL_CHOOSER_DATA;
+            case ContentSettingsType.HID_GUARD:
+                return ContentSettingsType.HID_CHOOSER_DATA;
             default:
                 return -1; // Conversion unavailable.
         }
@@ -375,6 +381,8 @@ public class SiteSettingsCategory {
                 return "sensors";
             case Type.SERIAL_PORT:
                 return "serial_port";
+            case Type.HID_DEVICES:
+                return "hid_devices";
             case Type.STORAGE_ACCESS:
                 return "storage_access";
             case Type.SOUND:

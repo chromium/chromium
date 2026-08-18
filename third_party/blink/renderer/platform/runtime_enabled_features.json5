@@ -6968,7 +6968,7 @@
     },
     {
       name: "WebHID",
-      status: {"Android": "", "default": "stable"},
+      status: {"Android": "experimental", "default": "stable"},
     },
     {
       // It is only enabled in extension environment for now.

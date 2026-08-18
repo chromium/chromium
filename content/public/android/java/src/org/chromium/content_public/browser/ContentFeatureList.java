@@ -97,6 +97,8 @@ public class ContentFeatureList {
     public static final String WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =
             "WebBluetoothNewPermissionsBackend";
 
+    public static final String WEB_HID = "WebHID";
+
     public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS = "WebIdentityDigitalCredentials";
 
     public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS_CREATION =
