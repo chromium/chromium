@@ -58,7 +58,6 @@ public class RecentActivityListMediatorUnitTest {
     private static final String TEST_DESCRIPTION_1 = "www.foo.com";
     private static final String TEST_TIMESTAMP_1 = "1 day ago";
     private static final String TEST_DESCRIPTION_2 = "user2@gmail.com";
-    private static final String TEST_TIMESTAMP_2 = "1 day ago";
     private static final String TAB_URL1 = "https://google.com";
     private static final int TAB_ID1 = 5;
 

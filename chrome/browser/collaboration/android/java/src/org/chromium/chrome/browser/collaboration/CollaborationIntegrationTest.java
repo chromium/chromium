@@ -119,7 +119,6 @@ public class CollaborationIntegrationTest {
     private static final long WAIT_TIMEOUT_MS = 1000L;
     private static final String TEST_COLLABORATION_ID = "collaboration_id";
     private static final String TEST_ACCESS_TOKEN = "access_token";
-    private static final String TEST_GROUP_TITLE = "group_title";
 
     /** Counts the number of calls from DataSharingService. Only use on UI thread. */
     private static class CountingShareObserver implements DataSharingService.Observer {
