@@ -9,6 +9,8 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasFocus;
@@ -30,7 +32,10 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import static java.util.Map.entry;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.app.Instrumentation.ActivityResult;
+import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -42,12 +47,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -60,6 +68,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -70,12 +79,17 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -92,6 +106,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -104,6 +119,7 @@ import org.chromium.components.extensions.ExtensionsBuildflags;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
@@ -1509,6 +1525,141 @@ public class ManageSyncSettingsTest {
         onView(withId(R.id.recycler_view))
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(withText(textId))));
         onView(withText(textId)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
+    public void testSwitchToIncognitoPreferenceVisibleOnDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        Preference preference =
+                fragment.findPreference(ManageSyncSettings.PREF_SWITCH_TO_INCOGNITO);
+        Assert.assertTrue(preference.isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
+    public void testSwitchToIncognitoPreferenceHiddenOnNonDesktop() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        Preference preference =
+                fragment.findPreference(ManageSyncSettings.PREF_SWITCH_TO_INCOGNITO);
+        Assert.assertFalse(preference.isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
+    public void testSwitchToIncognitoPreferenceHiddenWhenIncognitoDisabledByPolicy() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        IncognitoUtils.setEnabledForTesting(false);
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        Preference preference =
+                fragment.findPreference(ManageSyncSettings.PREF_SWITCH_TO_INCOGNITO);
+        Assert.assertFalse(preference.isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
+    public void testSwitchToIncognitoPreferenceClickOpensIncognitoTab() {
+        assertOpensIncognitoSession(
+                /* openAsWindow= */ false,
+                allOf(
+                        IntentMatchers.hasData(UrlConstantResolver.getOriginalNtpUrl()),
+                        IntentMatchers.hasExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true)));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
+    public void testSwitchToIncognitoPreferenceClickOpensIncognitoWindow() {
+        assertOpensIncognitoSession(
+                /* openAsWindow= */ true,
+                allOf(
+                        IntentMatchers.hasExtra(
+                                IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, true),
+                        IntentMatchers.hasExtra(
+                                IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
+                                NewWindowAppSource.SETTINGS)));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Sync"})
+    @EnableFeatures(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
+    public void testSwitchToIncognitoPreferenceLearnMoreLinkClickOpensHelpPage() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        ManageSyncSettings fragment = startManageSyncPreferences();
+
+        Intents.init();
+        intending(IntentMatchers.anyIntent())
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+        // Scroll to the preference row containing the summary link
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(
+                                        withText(R.string.account_settings_switch_to_incognito))));
+
+        // Click the "Learn more" clickable span in the summary
+        onView(
+                        allOf(
+                                hasSibling(withText(R.string.account_settings_switch_to_incognito)),
+                                withId(android.R.id.summary)))
+                .perform(ViewUtils.clickOnClickableSpan(0));
+
+        // Verify that it opens a normal tab with the help link
+        intended(
+                allOf(
+                        IntentMatchers.hasData(ManageSyncSettings.INCOGNITO_HELP_URL),
+                        IntentMatchers.hasExtra(
+                                IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)));
+        Intents.release();
+    }
+
+    private void assertOpensIncognitoSession(
+            boolean openAsWindow, Matcher<Intent> expectedIntentMatcher) {
+        DeviceInfo.setIsDesktopForTesting(true);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(openAsWindow);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(openAsWindow);
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+
+        startManageSyncPreferences();
+
+        Intents.init();
+        intending(IntentMatchers.anyIntent())
+                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+        // Click the preference row
+        onView(withId(R.id.recycler_view))
+                .perform(
+                        RecyclerViewActions.scrollTo(
+                                hasDescendant(
+                                        withText(R.string.account_settings_switch_to_incognito))));
+        onView(withText(R.string.account_settings_switch_to_incognito)).perform(click());
+
+        intended(expectedIntentMatcher);
+        Intents.release();
     }
 
     /** Returns whether the extensions sync item should be shown. */

@@ -39,6 +39,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.password_manager.GmsUpdateLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
@@ -52,14 +55,18 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.SignoutButtonPreference;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.ClickableSummaryPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
@@ -81,6 +88,9 @@ import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -169,6 +179,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             "account_android_device_accounts";
 
     @VisibleForTesting public static final String PREF_SIGN_OUT = "sign_out_button";
+
+    @VisibleForTesting public static final String PREF_SWITCH_TO_INCOGNITO = "switch_to_incognito";
+
+    @VisibleForTesting
+    public static final String INCOGNITO_HELP_URL = "https://support.google.com/chrome?p=incognito";
 
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
     private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
@@ -334,6 +349,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         }
         setupReviewSyncDataPreference(PREF_ACCOUNT_DATA_DASHBOARD);
         setupAccountManagementPreferences();
+        setupSwitchToIncognitoPreference(profile);
         setupSignOutPreference(profile);
     }
 
@@ -439,6 +455,53 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         manageAccountsOnThisDevice.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(
                         this, () -> SigninUtils.openSettingsForAllAccounts(getActivity())));
+    }
+
+    private void setupSwitchToIncognitoPreference(Profile profile) {
+        ClickableSummaryPreference switchToIncognito =
+                assumeNonNull(findPreference(PREF_SWITCH_TO_INCOGNITO));
+        boolean isVisible = shouldShowSwitchToIncognitoPref(profile);
+        switchToIncognito.setVisible(isVisible);
+        if (!isVisible) {
+            return;
+        }
+
+        ChromeClickableSpan helpLink =
+                new ChromeClickableSpan(
+                        requireContext(),
+                        (view) -> {
+                            new ChromeAsyncTabLauncher(/* incognito= */ false)
+                                    .launchUrl(INCOGNITO_HELP_URL, TabLaunchType.FROM_CHROME_UI);
+                        });
+        switchToIncognito.setSummary(
+                SpanApplier.applySpans(
+                        getString(R.string.account_settings_switch_to_incognito_summary),
+                        new SpanInfo("<link>", "</link>", helpLink)));
+
+        switchToIncognito.setOnPreferenceClickListener(
+                SyncSettingsUtils.toOnClickListener(this, this::openIncognitoSession));
+    }
+
+    private static boolean shouldShowSwitchToIncognitoPref(Profile profile) {
+        return SigninFeatureMap.isEnabled(SigninFeatures.SWITCH_TO_INCOGNITO_IN_SETTINGS)
+                && DeviceInfo.isDesktop()
+                && IncognitoUtils.isIncognitoModeEnabled(profile);
+    }
+
+    private void openIncognitoSession() {
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            MultiInstanceOrchestratorFactory.getInstance()
+                    .createNewWindow(
+                            requireActivity(),
+                            /* isIncognito= */ true,
+                            /* additionalIntentExtras= */ null,
+                            /* startActivityOptions= */ null,
+                            NewWindowAppSource.SETTINGS);
+        } else {
+            new ChromeAsyncTabLauncher(/* incognito= */ true)
+                    .launchUrl(
+                            UrlConstantResolver.getOriginalNtpUrl(), TabLaunchType.FROM_CHROME_UI);
+        }
     }
 
     private void setupSignOutPreference(Profile profile) {
@@ -920,6 +983,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     }
                     if (!shouldShowSignOutPref(profile)) {
                         indexData.removeEntryForKey(frag, PREF_SIGN_OUT);
+                    }
+                    if (!shouldShowSwitchToIncognitoPref(profile)) {
+                        indexData.removeEntryForKey(frag, PREF_SWITCH_TO_INCOGNITO);
                     }
                 }
             };

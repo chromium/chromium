@@ -108,6 +108,11 @@ found in the LICENSE file.
         android:key="account_android_device_accounts"
         android:title="@string/account_android_device_accounts"/>
 
+    <org.chromium.components.browser_ui.settings.ClickableSummaryPreference
+        android:key="switch_to_incognito"
+        android:title="@string/account_settings_switch_to_incognito"
+        android:summary="@string/account_settings_switch_to_incognito_summary"/>
+
     <org.chromium.chrome.browser.ui.signin.SignoutButtonPreference
         android:key="sign_out_button"
         app:allowDividerAbove="false"/>

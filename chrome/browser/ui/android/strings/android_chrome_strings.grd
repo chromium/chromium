@@ -2364,6 +2364,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_ADVANCED_HEADER" desc="Heading of a section with settings related to the user's Google Account and data.">
         Control your data &amp; account
       </message>
+      <message name="IDS_ACCOUNT_SETTINGS_SWITCH_TO_INCOGNITO" desc="Title of the preference to switch to Incognito mode in Account settings. [CHAR_LIMIT=32]">
+        Open new Incognito window
+      </message>
+      <message name="IDS_ACCOUNT_SETTINGS_SWITCH_TO_INCOGNITO_SUMMARY" desc="Summary description for the Switch to Incognito preference in settings. Informs the user that it will open a new incognito window and offers a 'Learn more' link.">
+        Others who use this device won't see your activity, so you can browse more privately. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
       <message name="IDS_SYNC_ENCRYPTION" desc="Preference category name for sync encryption. [CHAR_LIMIT=32]">
         Encryption
       </message>
