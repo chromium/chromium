@@ -1083,17 +1083,8 @@ void PaintOpReader::AlignMemory(size_t alignment) {
 
 // Don't inline this function so that crash reports can show the caller.
 NOINLINE void PaintOpReader::SetInvalid(DeserializationError error) {
-  static crash_reporter::CrashKeyString<4> deserialization_error_crash_key(
-      "PaintOpReader deserialization error");
   base::UmaHistogramEnumeration("GPU.PaintOpReader.DeserializationError",
                                 error);
-  if (valid_ && options_.crash_dump_on_failure &&
-      base::RandIntInclusive(1, 10) == 1) {
-    crash_reporter::ScopedCrashKeyString crash_key_scope(
-        &deserialization_error_crash_key,
-        base::NumberToString(static_cast<int>(error)));
-    base::debug::DumpWithoutCrashing();
-  }
   valid_ = false;
 }
 

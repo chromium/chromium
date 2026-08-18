@@ -157,8 +157,6 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     SkStrikeClient* strike_client = nullptr;
     // Used to memcpy Skia flattenables into to avoid TOCTOU issues.
     std::vector<uint8_t>& scratch_buffer;
-    // Do a DumpWithoutCrashing when serialization fails.
-    bool crash_dump_on_failure = false;
     // True if the deserialization is happening on a privileged gpu channel.
     // e.g. in the case of UI.
     bool is_privileged = false;

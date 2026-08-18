@@ -2996,7 +2996,6 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
       .strike_client = font_manager_->strike_client(),
       .scratch_buffer =
           *shared_context_state_->scratch_deserialization_buffer(),
-      .crash_dump_on_failure = !gpu_preferences_.disable_oopr_debug_crash_dump,
       .is_privileged = is_privileged_,
       .shared_image_provider = paint_op_shared_image_provider_.get()};
 
