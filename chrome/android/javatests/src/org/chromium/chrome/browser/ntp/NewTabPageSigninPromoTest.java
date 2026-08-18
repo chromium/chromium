@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNull;
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
+import static org.chromium.ui.test.util.ViewUtils.waitForVisibleView;
 
 import android.text.format.DateUtils;
 import android.view.ViewGroup;
@@ -330,7 +331,9 @@ public class NewTabPageSigninPromoTest {
         verifySigninPromoShown();
         assertNull(mSigninTestRule.getPrimaryAccount());
 
-        onView(withId(R.id.signin_promo_primary_button)).perform(scrollTo(), click());
+        onView(withId(R.id.signin_promo_primary_button)).perform(scrollTo());
+        waitForVisibleView(withId(R.id.signin_promo_primary_button));
+        onView(withId(R.id.signin_promo_primary_button)).perform(click());
         onView(withId(R.id.signin_promo_primary_button))
                 .check(matches(allOf(isDisplayed(), not(isEnabled()))));
         onView(withId(R.id.signin_promo_dismiss_button))
@@ -355,7 +358,9 @@ public class NewTabPageSigninPromoTest {
         assertNull(mSigninTestRule.getPrimaryAccount());
         // Click the sign-in button.
         // For landscape mode tests, scroll to ensure button is visible.
-        onView(withId(R.id.signin_promo_primary_button)).perform(scrollTo(), click());
+        onView(withId(R.id.signin_promo_primary_button)).perform(scrollTo());
+        waitForVisibleView(withId(R.id.signin_promo_primary_button));
+        onView(withId(R.id.signin_promo_primary_button)).perform(click());
         // Handle Automotive Device Lock (for Automotive Tests).
         SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
         // Wait for promo to disappear.

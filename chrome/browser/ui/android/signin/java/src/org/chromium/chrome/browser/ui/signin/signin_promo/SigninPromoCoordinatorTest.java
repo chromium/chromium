@@ -283,6 +283,7 @@ public class SigninPromoCoordinatorTest {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
+        ViewUtils.waitForVisibleView(withId(primaryButtonId));
 
         onView(withId(primaryButtonId)).perform(click());
 
@@ -350,6 +351,7 @@ public class SigninPromoCoordinatorTest {
             @SigninAccessPoint int accessPoint, @IdRes int primaryButtonId) {
         signinAndOptOutHistorySyncIfNeeded(accessPoint);
         setUpSignInPromo(accessPoint);
+        ViewUtils.waitForVisibleView(withId(primaryButtonId));
 
         onView(withId(primaryButtonId)).perform(click());
 
@@ -437,6 +439,7 @@ public class SigninPromoCoordinatorTest {
         disableBookmarksAndReadingListDataTypes();
         setUpSignInPromo(SigninAccessPoint.BOOKMARK_MANAGER);
         ViewUtils.waitForVisibleView(withText(R.string.sync_promo_title_bookmarks));
+        ViewUtils.waitForVisibleView(withId(primaryButtonId));
 
         onView(withId(primaryButtonId)).perform(click());
 
@@ -470,6 +473,7 @@ public class SigninPromoCoordinatorTest {
                 getPromoImpressionHistogramWatcher(accessPoint, /* hasAccounts= */ true);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         setUpSignInPromo(accessPoint);
+        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_secondary_button));
 
         onView(withId(R.id.signin_promo_secondary_button)).perform(click());
 
@@ -806,6 +810,7 @@ public class SigninPromoCoordinatorTest {
     public void testHistorySyncOptIn_RecentTabs() {
         signinAndOptOutHistorySyncIfNeeded(SigninAccessPoint.RECENT_TABS);
         setUpSignInPromo(SigninAccessPoint.RECENT_TABS);
+        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_primary_button));
 
         onView(withId(R.id.signin_promo_primary_button)).perform(click());
 
