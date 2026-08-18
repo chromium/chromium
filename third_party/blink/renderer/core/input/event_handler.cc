@@ -233,10 +233,9 @@ const ComputedStyle* GetComputedStyleFromScrollbar(
       return nullptr;
     }
 
-    LayoutCustomScrollbarPart* scroll_corner_layout_object =
-        scrollable_area->ScrollCorner();
-    if (scroll_corner_layout_object) {
-      return scroll_corner_layout_object->Style();
+    if (const LayoutCustomScrollbarPart* scroll_corner_layout_object =
+            scrollable_area->ScrollCorner()) {
+      return &scroll_corner_layout_object->StyleRef();
     }
   }
 
