@@ -440,12 +440,9 @@ test("components_unittests") {
       "//components/fullscreen_control:unit_tests",
       "//components/global_media_controls:unit_tests",
       "//components/ui_devtools:unit_tests",
+      "//components/ui_devtools/views:unit_tests",
       "//components/user_education/views:unit_tests",
     ]
-  }
-
-  if (toolkit_views && enable_extensions) {
-    deps += [ "//components/ui_devtools/views:unit_tests" ]
   }
 
   if (is_fuchsia) {
