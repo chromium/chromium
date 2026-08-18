@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -48,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalCommand) {
   // to. It will ignore all of them and allow us test whether the global
   // shortcut really is global in nature and also that the non-global shortcut
   // is non-global.
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
 
   // Try to activate the non-global shortcut (Ctrl+Shift+1) and the
   // non-assignable shortcut (Ctrl+Shift+A) by sending the keystrokes to the
@@ -90,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalDuplicatedMediaKey) {
   ASSERT_TRUE(RunExtensionTest("keybinding/global_media_keys_1")) << message_;
   ASSERT_TRUE(catcher.GetNextResult());
 
-  Browser* incognito_browser = CreateIncognitoBrowser();  // Ditto.
+  BrowserWindowInterface* incognito_browser =
+      CreateIncognitoBrowser();  // Ditto.
   BrowserExtensionWindowController* controller =
       BrowserExtensionWindowController::From(incognito_browser);
 

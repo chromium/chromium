@@ -10,7 +10,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -613,9 +613,9 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerOTRBrowserTest,
             GetWebContents()->GetLastCommittedURL());
 
   // Navigation should not work in the incognito browser.
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   content::WebContents* incognito_web_contents =
-      incognito_browser->tab_strip_model()->GetActiveWebContents();
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url1));
   EXPECT_EQ("about:blank", incognito_web_contents->GetLastCommittedURL());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url2));
@@ -629,9 +629,9 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerOTRBrowserTest,
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kExtensionPath),
                             {.allow_in_incognito = true}));
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   content::WebContents* incognito_web_contents =
-      incognito_browser->tab_strip_model()->GetActiveWebContents();
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser,
                                            GURL("web+ecsearch:cats")));
@@ -683,7 +683,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   ASSERT_FALSE(registry->GetHandlerFor(scheme).IsEmpty());
 
   // Verify is handled in incognito.
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   custom_handlers::ProtocolHandlerRegistry* incognito_registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           incognito_browser->GetProfile());
@@ -704,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   // the new incognito profile loads from those prefs.
   SetExtensionIncognitoEnabledAndWait(extension_id, true);
   // Verify is handled in incognito.
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   custom_handlers::ProtocolHandlerRegistry* incognito_registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           incognito_browser->GetProfile());
@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   SetExtensionIncognitoEnabledAndWait(extension_id, true);
   // Verify is handled in incognito.
   {
-    Browser* incognito_browser = CreateIncognitoBrowser();
+    BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
     custom_handlers::ProtocolHandlerRegistry* incognito_registry =
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
             incognito_browser->GetProfile());
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   // OTR registry would load the still-allowed handler.
   SetExtensionIncognitoEnabledAndWait(extension_id, false);
   // Verify no longer available in incognito.
-  Browser* incognito_browser2 = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser2 = CreateIncognitoBrowser();
   custom_handlers::ProtocolHandlerRegistry* incognito_registry2 =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           incognito_browser2->GetProfile());

@@ -416,11 +416,11 @@ ExternallyManagedAppManager::InstallResult ExternallyManagedAppManagerInstall(
   return result;
 }
 
-void NavigateViaLinkClickToURLAndWait(Browser* browser,
+void NavigateViaLinkClickToURLAndWait(BrowserWindowInterface* browser,
                                       const GURL& url,
                                       bool proceed_through_interstitial) {
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
 
   {
     content::TestNavigationObserver observer(
@@ -440,7 +440,7 @@ void NavigateViaLinkClickToURLAndWait(Browser* browser,
         web_contents, content::MessageLoopRunner::QuitMode::DEFERRED);
     security_interstitials::SecurityInterstitialTabHelper* helper =
         security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
-            browser->tab_strip_model()->GetActiveWebContents());
+            browser->GetTabStripModel()->GetActiveWebContents());
     ASSERT_TRUE(
         helper &&
         helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting());
@@ -452,7 +452,7 @@ void NavigateViaLinkClickToURLAndWait(Browser* browser,
 
 // Performs a navigation and then checks that the toolbar visibility is as
 // expected.
-void NavigateAndCheckForToolbar(Browser* browser,
+void NavigateAndCheckForToolbar(BrowserWindowInterface* browser,
                                 const GURL& url,
                                 bool expected_visibility,
                                 bool proceed_through_interstitial) {

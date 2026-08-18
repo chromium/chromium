@@ -37,7 +37,7 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -283,8 +283,9 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
   // UI's model is sent an event that might change the indicator status.
   class IndicatorChangeObserver : public TabStripModelObserver {
    public:
-    explicit IndicatorChangeObserver(Browser* browser) : browser_(browser) {
-      browser_->tab_strip_model()->AddObserver(this);
+    explicit IndicatorChangeObserver(BrowserWindowInterface* browser)
+        : browser_(browser) {
+      browser_->GetTabStripModel()->AddObserver(this);
     }
 
     void OnTabChangedAt(tabs::TabInterface* tab,
@@ -299,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
     }
 
    private:
-    const raw_ptr<Browser> browser_;
+    const raw_ptr<BrowserWindowInterface> browser_;
     base::OnceClosure on_tab_changed_;
   };
 

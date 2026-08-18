@@ -10,7 +10,7 @@
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -65,7 +65,7 @@ class WindowOpenApiTest : public ExtensionApiTest {
   }
 };
 
-bool WaitForTabsPopupsApps(Browser* browser,
+bool WaitForTabsPopupsApps(BrowserWindowInterface* browser,
                            int num_tabs,
                            int num_popups,
                            int num_app_popups) {
@@ -81,7 +81,7 @@ bool WaitForTabsPopupsApps(Browser* browser,
   while (base::TimeTicks::Now() < end_time) {
     if (extensions::browsertest_util::GetWindowControllerCountInProfile(
             browser->GetProfile()) == num_browsers &&
-        browser->tab_strip_model()->count() == num_tabs) {
+        browser->GetTabStripModel()->count() == num_tabs) {
       break;
     }
 
@@ -91,7 +91,7 @@ bool WaitForTabsPopupsApps(Browser* browser,
   EXPECT_EQ(num_browsers,
             extensions::browsertest_util::GetWindowControllerCountInProfile(
                 browser->GetProfile()));
-  EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
+  EXPECT_EQ(num_tabs, browser->GetTabStripModel()->count());
 
   EXPECT_EQ(num_popups, WindowOpenApiTest::CountBrowsersForType(
                             BrowserWindowInterface::TYPE_POPUP));
@@ -101,7 +101,7 @@ bool WaitForTabsPopupsApps(Browser* browser,
   return ((num_browsers ==
            extensions::browsertest_util::GetWindowControllerCountInProfile(
                browser->GetProfile())) &&
-          (num_tabs == browser->tab_strip_model()->count()) &&
+          (num_tabs == browser->GetTabStripModel()->count()) &&
           (num_popups == WindowOpenApiTest::CountBrowsersForType(
                              BrowserWindowInterface::TYPE_POPUP)) &&
           (num_app_popups == WindowOpenApiTest::CountBrowsersForType(

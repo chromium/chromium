@@ -39,7 +39,7 @@ namespace {
 // Delegate for ExtensionViewHost attached to a specific browser window.
 class ExtensionViewHostBrowserDelegate : public ExtensionViewHost::Delegate {
  public:
-  explicit ExtensionViewHostBrowserDelegate(Browser* browser)
+  explicit ExtensionViewHostBrowserDelegate(BrowserWindowInterface* browser)
       : browser_(browser) {
     DCHECK(browser_);
   }
@@ -75,7 +75,7 @@ class ExtensionViewHostBrowserDelegate : public ExtensionViewHost::Delegate {
   }
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 };
 
 // Delegate for ExtensionViewHost attached to a specific tab.
@@ -94,7 +94,7 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
       const content::OpenURLParams& params,
       base::OnceCallback<void(content::NavigationHandle&)>
           navigation_handle_callback) override {
-    Browser* browser = FindBrowser();
+    BrowserWindowInterface* browser = FindBrowser();
     if (browser == nullptr) {
       return nullptr;
     }
@@ -104,7 +104,7 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
   content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
       content::WebContents* source,
       const input::NativeWebKeyboardEvent& event) override {
-    Browser* browser = FindBrowser();
+    BrowserWindowInterface* browser = FindBrowser();
     if (browser == nullptr) {
       return content::KeyboardEventProcessingResult::NOT_HANDLED;
     }
@@ -115,7 +115,7 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
   std::unique_ptr<content::EyeDropper> OpenEyeDropper(
       content::RenderFrameHost* frame,
       content::EyeDropperListener* listener) override {
-    Browser* browser = FindBrowser();
+    BrowserWindowInterface* browser = FindBrowser();
     if (browser == nullptr) {
       return nullptr;
     }
@@ -124,7 +124,7 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
   }
 
   WindowController* GetExtensionWindowController() override {
-    Browser* browser = FindBrowser();
+    BrowserWindowInterface* browser = FindBrowser();
     if (browser == nullptr) {
       return nullptr;
     }
@@ -132,10 +132,10 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
   }
 
  private:
-  Browser* FindBrowser() const {
+  BrowserWindowInterface* FindBrowser() const {
     auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
         web_contents_);
-    return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
+    return browser;
   }
 
   raw_ptr<content::WebContents> web_contents_;
@@ -259,8 +259,7 @@ std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreatePopupHost(
   DCHECK(browser);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto delegate = std::make_unique<ExtensionViewHostBrowserDelegate>(
-      browser->GetBrowserForMigrationOnly());
+  auto delegate = std::make_unique<ExtensionViewHostBrowserDelegate>(browser);
 #else   // BUILDFLAG(ENABLE_EXTENSIONS)
   auto delegate = std::make_unique<ExtensionViewHostDelegateAndroid>();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -287,8 +286,7 @@ ExtensionViewHostFactory::CreateSidePanelHost(
 
   std::unique_ptr<ExtensionViewHost::Delegate> delegate =
       browser ? static_cast<std::unique_ptr<ExtensionViewHost::Delegate>>(
-                    std::make_unique<ExtensionViewHostBrowserDelegate>(
-                        browser->GetBrowserForMigrationOnly()))
+                    std::make_unique<ExtensionViewHostBrowserDelegate>(browser))
               : std::make_unique<ExtensionViewHostTabDelegate>(
                     tab_interface->GetContents());
 

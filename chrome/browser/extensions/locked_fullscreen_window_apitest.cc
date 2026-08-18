@@ -6,6 +6,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "net/dns/mock_host_resolver.h"
@@ -105,12 +106,11 @@ class LockedFullscreenWindowApiTestChromeOS
     }
   }
 
-  Browser* FindBocaSystemWebAppBrowser() {
+  BrowserWindowInterface* FindBocaSystemWebAppBrowser() {
     ash::BrowserDelegate* delegate = ash::FindSystemWebAppBrowser(
         browser()->GetProfile(), ash::SystemWebAppType::BOCA,
         ash::BrowserType::kApp);
-    return delegate ? delegate->GetBrowser().GetBrowserForMigrationOnly()
-                    : nullptr;
+    return delegate ? &delegate->GetBrowser() : nullptr;
   }
 
  private:
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
 
 IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
                        RemoveLockedFullscreenFromWindow) {
-  Browser* current_browser = browser();
+  BrowserWindowInterface* current_browser = browser();
   ASSERT_THAT(current_browser, NotNull());
 
   // After locking the window, do a LockedFullscreenStateChanged so the
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
 // Make sure that commands disabling code works in locked fullscreen mode.
 IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
                        VerifyCommandsInLockedFullscreen) {
-  Browser* current_browser = browser();
+  BrowserWindowInterface* current_browser = browser();
   ASSERT_THAT(current_browser, NotNull());
 
   // IDC_EXIT is always enabled in regular mode so it's a perfect candidate for
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
 
 IN_PROC_BROWSER_TEST_F(LockedFullscreenWindowApiTestChromeOS,
                        RemoveLockedFullscreenFromWindowWithoutPermission) {
-  Browser* current_browser = browser();
+  BrowserWindowInterface* current_browser = browser();
   ASSERT_THAT(current_browser, NotNull());
 
   // After locking the window, do a LockedFullscreenStateChanged so the

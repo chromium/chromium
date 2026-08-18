@@ -54,7 +54,7 @@
 #include "extensions/test/extension_test_notification_observer.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
@@ -841,8 +841,8 @@ content::WebContents* ExtensionBrowserTest::PlatformOpenURLOffTheRecord(
   (void)content::NavigateToURL(web_contents, url);
   return web_contents;
 #else
-  Browser* otr_browser = OpenURLOffTheRecord(profile, url);
-  return otr_browser->tab_strip_model()->GetActiveWebContents();
+  BrowserWindowInterface* otr_browser = OpenURLOffTheRecord(profile, url);
+  return otr_browser->GetTabStripModel()->GetActiveWebContents();
 #endif
 }
 

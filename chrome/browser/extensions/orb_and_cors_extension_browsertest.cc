@@ -29,9 +29,9 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -440,7 +440,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   // Returns the body of the response.
   std::string FetchViaBackgroundPage(const GURL& url,
                                      const Extension* extension,
-                                     Browser* browser) {
+                                     BrowserWindowInterface* browser) {
     content::WebContents* background_web_contents =
         ProcessManager::Get(browser->GetProfile())
             ->GetBackgroundHostForExtension(extension->id())
@@ -1580,7 +1580,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 
   // Open an incognito window.  (The incognito-specific background host for the
   // extension will be created after creating a window.)
-  Browser* incognito_browser = nullptr;
+  BrowserWindowInterface* incognito_browser = nullptr;
   {
     ExtensionTestMessageListener listener("Ready: incognito");
     incognito_browser = CreateIncognitoBrowser();
@@ -1774,9 +1774,10 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   content::WebContents* incognito_contents = nullptr;
   {
     GURL http_test_page = GetTestPageUrl("fetch-initiator.com");
-    Browser* incognito_browser = OpenURLOffTheRecord(profile(), http_test_page);
+    BrowserWindowInterface* incognito_browser =
+        OpenURLOffTheRecord(profile(), http_test_page);
     incognito_contents =
-        incognito_browser->tab_strip_model()->GetActiveWebContents();
+        incognito_browser->GetTabStripModel()->GetActiveWebContents();
     ASSERT_EQ(http_test_page, incognito_contents->GetLastCommittedURL());
 
     // Open an extension *subframe*.  Spanning-mode extensions cannot load in
@@ -1876,10 +1877,11 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // window.
   GURL extension_page = extension->GetResourceURL("page.html");
   content::WebContents* regular_contents = active_web_contents();
-  Browser* incognito_browser = OpenURLOffTheRecord(profile(), extension_page);
+  BrowserWindowInterface* incognito_browser =
+      OpenURLOffTheRecord(profile(), extension_page);
   ASSERT_TRUE(NavigateToURL(regular_contents, extension_page));
   content::WebContents* incognito_contents =
-      incognito_browser->tab_strip_model()->GetActiveWebContents();
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(extension->origin(),
             regular_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   ASSERT_EQ(
@@ -2752,7 +2754,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   constexpr char kActiveTabHost[] = "active-tab.example";
   GURL original_document_url =
       embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(profile(), original_document_url);
 
   // CORS exception shouldn't be initially granted based on ActiveTab.
@@ -2778,7 +2780,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // extension access to the tab's origin, but only in the incognito profile
   // (since the extension uses "split" mode).
   ExtensionActionRunner::GetForWebContents(
-      incognito_browser->tab_strip_model()->GetActiveWebContents())
+      incognito_browser->GetTabStripModel()->GetActiveWebContents())
       ->RunAction(extension, true);
   {
     SCOPED_TRACE("TEST STEP 2: After granting ActiveTab access.");
@@ -2862,7 +2864,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
       embedded_test_server()->GetURL(kRegularHost, "/title2.html");
   GURL regular_resource_url =
       embedded_test_server()->GetURL(kRegularHost, "/nosniff.xml");
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(profile(), incognito_page_url);
   ASSERT_TRUE(NavigateToURL(active_web_contents(), regular_page_url));
 
@@ -2888,7 +2890,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // extension access to the tab's origin, but only in the incognito profile
   // (since the extension uses "split" mode).
   ExtensionActionRunner::GetForWebContents(
-      incognito_browser->tab_strip_model()->GetActiveWebContents())
+      incognito_browser->GetTabStripModel()->GetActiveWebContents())
       ->RunAction(extension, true);
   {
     SCOPED_TRACE("TEST STEP 2: After granting 'incognito' ActiveTab access.");
@@ -2939,7 +2941,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // still have no access to the `kIncognitoHost` (or, hopefully, the potential
   // leaks of permissions from the previous steps should be fixed/recovered-from
   // at this point).
-  incognito_browser->tab_strip_model()->GetActiveWebContents()->Close();
+  incognito_browser->GetTabStripModel()->GetActiveWebContents()->Close();
   {
     SCOPED_TRACE("TEST STEP 4: After closing the incognito tab.");
     {
@@ -2986,7 +2988,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   constexpr char kActiveTabHost[] = "active-tab.example";
   GURL original_document_url =
       embedded_test_server()->GetURL(kActiveTabHost, "/title1.html");
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(profile(), original_document_url);
 
   // CORS exception shouldn't be initially granted based on ActiveTab.
@@ -3005,7 +3007,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // Granting ActiveTab permission in the incognito window should give the
   // extension access to the tab's origin.
   ExtensionActionRunner::GetForWebContents(
-      incognito_browser->tab_strip_model()->GetActiveWebContents())
+      incognito_browser->GetTabStripModel()->GetActiveWebContents())
       ->RunAction(extension, true);
   {
     SCOPED_TRACE("TEST STEP 2: After granting ActiveTab access.");

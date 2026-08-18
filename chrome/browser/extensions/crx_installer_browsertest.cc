@@ -45,8 +45,8 @@
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -185,14 +185,14 @@ std::unique_ptr<ExtensionInstallPrompt> MockPromptProxy::CreatePrompt() {
 }
 
 std::unique_ptr<MockPromptProxy> CreateMockPromptProxyForBrowserWithConfirmMode(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ScopedTestDialogAutoConfirm::AutoConfirm confirm_mode) {
   return std::make_unique<MockPromptProxy>(
-      browser->tab_strip_model()->GetActiveWebContents(), confirm_mode);
+      browser->GetTabStripModel()->GetActiveWebContents(), confirm_mode);
 }
 
 std::unique_ptr<MockPromptProxy> CreateMockPromptProxyForBrowser(
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   return CreateMockPromptProxyForBrowserWithConfirmMode(
       browser, ScopedTestDialogAutoConfirm::ACCEPT);
 }

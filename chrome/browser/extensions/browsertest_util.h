@@ -9,7 +9,7 @@
 
 #include "build/build_config.h"
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 
@@ -32,10 +32,11 @@ void CreateAndInitializeLocalCache();
 #endif
 
 // Launches a new app window for `app` in `profile`.
-Browser* LaunchAppBrowser(Profile* profile, const Extension* app);
+BrowserWindowInterface* LaunchAppBrowser(Profile* profile,
+                                         const Extension* app);
 
 // Adds a tab to `browser` and returns the newly added WebContents.
-content::WebContents* AddTab(Browser* browser, const GURL& url);
+content::WebContents* AddTab(BrowserWindowInterface* browser, const GURL& url);
 
 // Returns the number of WindowControllers with the Profile `profile`.
 size_t GetWindowControllerCountInProfile(Profile* profile);

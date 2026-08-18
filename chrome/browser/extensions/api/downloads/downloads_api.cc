@@ -96,8 +96,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/safe_browsing/core/common/features.h"
 #endif
 
@@ -1753,7 +1753,7 @@ ExtensionFunction::ResponseAction DownloadsSetShelfEnabledFunction::Run() {
     // using this API is still compatible with the new download bubble. This
     // API will eventually be deprecated (replaced by the SetUiOptions API
     // below).
-    Browser* browser = window->GetBrowser();
+    BrowserWindowInterface* browser = window->GetBrowser();
     BrowserWindow* browser_window = BrowserWindow::FromBrowser(browser);
     if (browser_window->GetDownloadBubbleUIController()) {
       browser_window->GetDownloadBubbleUIController()->HideDownloadUi();
@@ -1804,7 +1804,7 @@ ExtensionFunction::ResponseAction DownloadsSetUiOptionsFunction::Run() {
     }
 
 #if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
-    Browser* browser = window->GetBrowser();
+    BrowserWindowInterface* browser = window->GetBrowser();
     BrowserWindow* browser_window = BrowserWindow::FromBrowser(browser);
     if (browser_window->GetDownloadBubbleUIController()) {
       browser_window->GetDownloadBubbleUIController()->HideDownloadUi();

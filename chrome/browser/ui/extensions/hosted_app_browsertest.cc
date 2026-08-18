@@ -193,11 +193,11 @@ bool TryToLoadImage(const content::ToRenderFrameHost& adapter,
 // potential UI issue on mac. We should fix the issue on mac and remove its
 // dependency on BrowserList::GetLastActive().
 
-void WaitUntilBrowserBecomeLastActive(Browser* browser) {
+void WaitUntilBrowserBecomeLastActive(BrowserWindowInterface* browser) {
   ui_test_utils::WaitForBrowserSetLastActive(browser);
 }
 
-void ExpectBrowserBecomesActiveOrLastActive(Browser* browser) {
+void ExpectBrowserBecomesActiveOrLastActive(BrowserWindowInterface* browser) {
   EXPECT_EQ(browser,
             GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser());
 }
@@ -360,7 +360,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
   std::string app_id_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> app_browser_;
 
   AppType app_type() const { return app_type_; }
 
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
                                 0 /* event_flags */);
             url_observer.Wait();
           },
-          app_browser_->tab_strip_model()->GetActiveWebContents(), url),
+          app_browser_->GetTabStripModel()->GetActiveWebContents(), url),
       url);
 }
 
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
                                         blink::WebMouseEvent::Button::kLeft);
             url_observer.Wait();
           },
-          app_browser_->tab_strip_model()->GetActiveWebContents(), url),
+          app_browser_->GetTabStripModel()->GetActiveWebContents(), url),
       url);
 }
 
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
 IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, WebContentsPrefsOpenApplication) {
   SetupAppWithURL(GURL(kExampleURL));
   CheckWebContentsHasAppPrefs(
-      app_browser_->tab_strip_model()->GetActiveWebContents());
+      app_browser_->GetTabStripModel()->GetActiveWebContents());
 }
 
 // Tests that the WebContents of an app window launched using
@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, WebContentsPrefsOpenInChrome) {
   SetupAppWithURL(GURL(kExampleURL));
 
   content::WebContents* app_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   CheckWebContentsHasAppPrefs(app_contents);
 
   chrome::OpenInChrome(app_browser_);
@@ -578,7 +578,7 @@ class HostedAppTestWithPrerendering : public HostedOrWebAppTest {
   }
 
   content::WebContents* GetAppWebContents() {
-    return app_browser_->tab_strip_model()->GetActiveWebContents();
+    return app_browser_->GetTabStripModel()->GetActiveWebContents();
   }
 
   content::WebContents* GetNonAppWebContents() {
@@ -763,7 +763,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithAutoupgradesDisabled,
 
   // Load mixed content; now the toolbar should be shown.
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(TryToLoadImage(
       web_contents, embedded_test_server()->GetURL("foo.com", kImagePath)));
   EXPECT_TRUE(web_app::AppBrowserController::From(app_browser_)
@@ -1150,7 +1150,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
   SetupApp(test_app_dir.UnpackedPath());
 
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   auto find_frame = [web_contents](const std::string& name) {
@@ -1266,7 +1266,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
   SetupApp(test_app_dir.UnpackedPath());
 
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   RenderFrameHost* app = web_contents->GetPrimaryMainFrame();
@@ -1331,7 +1331,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, PopupsInsideHostedApp) {
   SetupApp(test_app_dir.UnpackedPath());
 
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   auto find_frame = [web_contents](const std::string& name) {
@@ -1418,7 +1418,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, FromOutsideHostedApp) {
   SetupApp(test_app_dir.UnpackedPath());
 
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Starting same-origin but outside the app, popups should swap to the app.
@@ -1611,7 +1611,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelFencedFrameTest,
   SetupApp(test_app_dir.UnpackedPath());
 
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Check that the app loaded properly.
@@ -1681,7 +1681,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
   SetupApp(test_app_dir.UnpackedPath());
 
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Check that the app loaded properly. Even though its URL is from an
@@ -1765,7 +1765,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
   SetupApp(test_app_dir.UnpackedPath());
 
   content::WebContents* web_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // The app URL should have loaded in an app process.
@@ -1839,7 +1839,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
     SetupApp(test_app_dir.UnpackedPath());
   }
   content::WebContents* foo_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(foo_contents));
 
   // Set up and launch a hosted app covering bar.com.
@@ -1851,7 +1851,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
     SetupApp(test_app_dir.UnpackedPath());
   }
   content::WebContents* bar_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(bar_contents));
 
   EXPECT_NE(foo_contents, bar_contents);
@@ -1892,7 +1892,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
     SetupApp(test_app_dir.UnpackedPath());
   }
   content::WebContents* foo_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(foo_contents));
   EXPECT_EQ(foo_app_url, foo_contents->GetLastCommittedURL());
 
@@ -1983,7 +1983,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessPDFTest,
     SetupApp(test_app_dir.UnpackedPath());
   }
   content::WebContents* foo_contents =
-      app_browser_->tab_strip_model()->GetActiveWebContents();
+      app_browser_->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(foo_contents));
   EXPECT_EQ(foo_app_url, foo_contents->GetLastCommittedURL());
 
@@ -2485,7 +2485,7 @@ class HostedAppOriginIsolationTest : public HostedOrWebAppTest {
     SetupApp(test_app_dir.UnpackedPath());
 
     content::WebContents* web_contents =
-        app_browser_->tab_strip_model()->GetActiveWebContents();
+        app_browser_->GetTabStripModel()->GetActiveWebContents();
     // Now wait for that navigation triggered by the app's loading of the launch
     // web_url from the manifest, which is |main_origin_url|.
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));

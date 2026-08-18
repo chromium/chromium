@@ -27,7 +27,7 @@
 #include "extensions/test/test_extension_dir.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -520,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Create an incognito browser and an incognito offscreen document, and
   // validate that the proper context is used.
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito_browser);
   Profile* incognito_profile = incognito_browser->GetProfile();
 #else

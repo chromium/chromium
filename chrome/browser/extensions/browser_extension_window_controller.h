@@ -49,7 +49,7 @@ class BrowserExtensionWindowController : public WindowController {
                          const GURL& extension_url) const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* GetBrowser() const override;
+  BrowserWindowInterface* GetBrowser() const override;
 #endif
   content::WebContents* GetActiveTab() const override;
   int GetTabCount() const override;

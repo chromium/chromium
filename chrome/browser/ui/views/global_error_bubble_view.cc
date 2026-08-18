@@ -80,8 +80,7 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
           // so the error can clear its `bubble_view_` pointer.
           // This is different from the button callbacks below, which require a
           // valid browser to perform their actions.
-          error->BubbleViewDidClose(
-              browser ? browser->GetBrowserForMigrationOnly() : nullptr);
+          error->BubbleViewDidClose(browser.get());
         }
       },
       error_, browser->GetWeakPtr()));
@@ -103,8 +102,7 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
       [](base::WeakPtr<GlobalErrorWithStandardBubble> error,
          base::WeakPtr<BrowserWindowInterface> browser) {
         if (error && browser) {
-          error->BubbleViewAcceptButtonPressed(
-              browser->GetBrowserForMigrationOnly());
+          error->BubbleViewAcceptButtonPressed(browser.get());
         }
       },
       error, browser->GetWeakPtr()));
@@ -112,8 +110,7 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
       [](base::WeakPtr<GlobalErrorWithStandardBubble> error,
          base::WeakPtr<BrowserWindowInterface> browser) {
         if (error && browser) {
-          error->BubbleViewCancelButtonPressed(
-              browser->GetBrowserForMigrationOnly());
+          error->BubbleViewCancelButtonPressed(browser.get());
         }
       },
       error, browser->GetWeakPtr()));
@@ -124,8 +121,7 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
             [](base::WeakPtr<GlobalErrorWithStandardBubble> error,
                base::WeakPtr<BrowserWindowInterface> browser) {
               if (error && browser) {
-                error->BubbleViewDetailsButtonPressed(
-                    browser->GetBrowserForMigrationOnly());
+                error->BubbleViewDetailsButtonPressed(browser.get());
               }
             },
             error_, browser->GetWeakPtr()),

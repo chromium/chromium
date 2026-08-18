@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/url_constants.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -46,7 +47,7 @@ void AppWindowController::SetFullscreenMode(bool is_fullscreen,
   // Full screen not supported by app windows.
 }
 
-Browser* AppWindowController::GetBrowser() const {
+BrowserWindowInterface* AppWindowController::GetBrowser() const {
   return nullptr;
 }
 

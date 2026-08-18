@@ -114,8 +114,7 @@ OpenTabHelper::FindOrCreateBrowser(const GURL& validated_url,
   // back to the dawn of time, AKA the initial implementation in 2014:
   // https://codereview.chromium.org/245933002.
   if (browser && browser->GetType() != BrowserWindowInterface::TYPE_NORMAL &&
-      UnloadController::From(browser->GetBrowserForMigrationOnly())
-          ->is_attempting_to_close_browser()) {
+      UnloadController::From(browser)->is_attempting_to_close_browser()) {
     browser = nullptr;
     fallback_to_tabbed_browser = true;
   }

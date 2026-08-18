@@ -18,7 +18,6 @@
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -54,7 +53,7 @@ using ExtensionTabsTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   // Create a new window which making it the "last focused" window.
   // Note that "last focused" means the "top" most window.
-  Browser* new_browser = CreateBrowser(GetProfile());
+  BrowserWindowInterface* new_browser = CreateBrowser(GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(new_browser));
 
   GURL url("about:blank");
@@ -98,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsApiTest, QueryLastFocusedWindowTabs) {
     CreateBrowser(GetProfile());
   }
 
-  Browser* focused_window = CreateBrowser(GetProfile());
+  BrowserWindowInterface* focused_window = CreateBrowser(GetProfile());
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(focused_window));
 
   GURL url("about:blank");
@@ -184,7 +183,7 @@ class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
 
   void ActivateBrowserWindow(BrowserWindowInterface* browser);
 
-  Browser* CreateBrowserWithEmptyTab(bool as_popup);
+  BrowserWindowInterface* CreateBrowserWithEmptyTab(bool as_popup);
 
   int GetTabId(const base::DictValue& dict) const;
 
@@ -247,17 +246,14 @@ void ExtensionWindowLastFocusedTest::ActivateBrowserWindow(
   waiter.ActivateAndWait();
 }
 
-Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
-    bool as_popup) {
-  Browser* new_browser =
-      as_popup
-          ? CreateBrowserWindow(BrowserWindowCreateParams(
-                                    BrowserWindowInterface::TYPE_POPUP,
-                                    GetProfile(), /*from_user_gesture=*/true))
-                ->GetBrowserForMigrationOnly()
-          : CreateBrowserWindow(BrowserWindowCreateParams(
-                                    GetProfile(), /*from_user_gesture=*/true))
-                ->GetBrowserForMigrationOnly();
+BrowserWindowInterface*
+ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(bool as_popup) {
+  BrowserWindowInterface* new_browser =
+      as_popup ? CreateBrowserWindow(BrowserWindowCreateParams(
+                     BrowserWindowInterface::TYPE_POPUP, GetProfile(),
+                     /*from_user_gesture=*/true))
+               : CreateBrowserWindow(BrowserWindowCreateParams(
+                     GetProfile(), /*from_user_gesture=*/true));
   AddBlankTabAndShow(new_browser);
   return new_browser;
 }
@@ -323,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
                        NoTabIdForDevToolsAndAppWindows) {
-  Browser* normal_browser = CreateBrowserWithEmptyTab(false);
+  BrowserWindowInterface* normal_browser = CreateBrowserWithEmptyTab(false);
   {
     ActivateBrowserWindow(normal_browser);
 
@@ -339,7 +335,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
     EXPECT_EQ("normal", api_test_utils::GetString(result, "type"));
   }
 
-  Browser* popup_browser = CreateBrowserWithEmptyTab(true);
+  BrowserWindowInterface* popup_browser = CreateBrowserWithEmptyTab(true);
   {
     ActivateBrowserWindow(popup_browser);
 

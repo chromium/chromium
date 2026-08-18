@@ -35,8 +35,8 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #else
 static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
 #include "base/functional/callback_forward.h"
@@ -211,9 +211,9 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
     browser_params.initial_bounds = popup_bounds_.value();
   }
 
-  Browser* browser = CreateBrowserWindow(std::move(browser_params))
-                         ->GetBrowserForMigrationOnly();
-  browser->tab_strip_model()->AddWebContents(
+  BrowserWindowInterface* browser =
+      CreateBrowserWindow(std::move(browser_params));
+  browser->GetTabStripModel()->AddWebContents(
       std::move(web_contents_), /*index=*/0,
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
       AddTabTypes::ADD_ACTIVE);

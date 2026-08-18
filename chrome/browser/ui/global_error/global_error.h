@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/models/image_model.h"
 
-class Browser;
 class BrowserWindowInterface;
 class GlobalErrorBubbleViewBase;
 
@@ -87,10 +86,12 @@ class GlobalErrorWithStandardBubble : public GlobalError {
   virtual std::u16string GetBubbleViewDetailsButtonLabel();
 
   // Override these methods to be notified when events happen on the bubble:
-  virtual void OnBubbleViewDidClose(Browser* browser) = 0;
-  virtual void BubbleViewAcceptButtonPressed(Browser* browser) = 0;
-  virtual void BubbleViewCancelButtonPressed(Browser* browser) = 0;
-  virtual void BubbleViewDetailsButtonPressed(Browser* browser);
+  virtual void OnBubbleViewDidClose(BrowserWindowInterface* browser) = 0;
+  virtual void BubbleViewAcceptButtonPressed(
+      BrowserWindowInterface* browser) = 0;
+  virtual void BubbleViewCancelButtonPressed(
+      BrowserWindowInterface* browser) = 0;
+  virtual void BubbleViewDetailsButtonPressed(BrowserWindowInterface* browser);
 
   // Leaf classes must provide a WeakPtr to themselves.
   virtual base::WeakPtr<GlobalErrorWithStandardBubble> AsWeakPtr() = 0;
@@ -104,7 +105,7 @@ class GlobalErrorWithStandardBubble : public GlobalError {
   // This method is used by the View to notify this object that the bubble has
   // closed. Do not call it. It is only virtual for unit tests; do not override
   // it either.
-  virtual void BubbleViewDidClose(Browser* browser);
+  virtual void BubbleViewDidClose(BrowserWindowInterface* browser);
 
  private:
   bool has_shown_bubble_view_ = false;

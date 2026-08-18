@@ -65,13 +65,14 @@ GlobalErrorWithStandardBubble::GetBubbleViewDetailsButtonLabel() {
 }
 
 void GlobalErrorWithStandardBubble::BubbleViewDetailsButtonPressed(
-    Browser* browser) {}
+    BrowserWindowInterface* browser) {}
 
 bool GlobalErrorWithStandardBubble::ShouldAddElevationIconToAcceptButton() {
   return false;
 }
 
-void GlobalErrorWithStandardBubble::BubbleViewDidClose(Browser* browser) {
+void GlobalErrorWithStandardBubble::BubbleViewDidClose(
+    BrowserWindowInterface* browser) {
   bubble_view_ = nullptr;
   OnBubbleViewDidClose(browser);
 }

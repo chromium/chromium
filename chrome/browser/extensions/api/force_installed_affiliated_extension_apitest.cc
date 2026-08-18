@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -102,7 +103,7 @@ ForceInstalledAffiliatedExtensionApiTest::ForceInstallExtension(
 }
 
 void ForceInstalledAffiliatedExtensionApiTest::TestExtension(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const GURL& page_url,
     const base::DictValue& custom_arg_value) {
   DCHECK(page_url.is_valid()) << "page_url must be valid";

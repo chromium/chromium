@@ -355,13 +355,12 @@ void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
                                    bool is_locked_fullscreen) {
   // State will be WINDOW_STATE_NONE if the state parameter wasn't passed from
   // the JS side, and in that case we don't want to change the locked state.
-  Browser* const target_browser = browser->GetBrowserForMigrationOnly();
-  if (target_browser) {
+  if (browser) {
     if (is_locked_fullscreen &&
         params.update_info.state != windows::WindowState::kLockedFullscreen &&
         params.update_info.state != windows::WindowState::kNone) {
       auto* delegate =
-          ash::BrowserController::GetInstance()->GetDelegate(target_browser);
+          ash::BrowserController::GetInstance()->GetDelegate(browser);
       if (delegate && delegate->IsLockedFullscreen()) {
         delegate->LeaveLockedFullscreen();
       }
@@ -369,7 +368,7 @@ void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
                params.update_info.state ==
                    windows::WindowState::kLockedFullscreen) {
       auto* delegate =
-          ash::BrowserController::GetInstance()->GetDelegate(target_browser);
+          ash::BrowserController::GetInstance()->GetDelegate(browser);
       if (delegate && !delegate->IsLockedFullscreen()) {
         delegate->EnterLockedFullscreen(/*focus_toolbar=*/false);
       }
@@ -1312,8 +1311,7 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
       new_window->GetType() == Browser::TYPE_NORMAL) {
     // TODO(crbug.com/452431839) Make a new NewTabTypes value for
     // when new tabs are made because of an empty window.
-    chrome::NewTab(new_window->GetBrowserForMigrationOnly(),
-                   NewTabTypes::kNewTabCommand);
+    chrome::NewTab(new_window, NewTabTypes::kNewTabCommand);
   }
 #endif
 
@@ -1409,7 +1407,7 @@ base::expected<void, std::string> WindowsCreateFunction::ValidateTab(
         ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError);
   }
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* source_browser = source_window->GetBrowser();
+  BrowserWindowInterface* source_browser = source_window->GetBrowser();
   CHECK(source_browser);
   if (web_app::AppBrowserController* controller =
           web_app::AppBrowserController::From(source_browser);

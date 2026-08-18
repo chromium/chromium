@@ -583,8 +583,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     }
     case MANAGE_EXTENSIONS: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      chrome::ShowExtensions(browser_->GetBrowserForMigrationOnly(),
-                             extension->id());
+      chrome::ShowExtensions(browser_, extension->id());
 #else
       const std::string& extension_to_highlight = extension->id();
       GURL url(chrome::kChromeUIExtensionsURL);
@@ -601,8 +600,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     }
     case VIEW_WEB_PERMISSIONS:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      chrome::ShowSiteSettings(browser_->GetBrowserForMigrationOnly(),
-                               extension->url());
+      chrome::ShowSiteSettings(browser_, extension->url());
 #else
       // TODO(crbug.com/441744719): Show site settings page on Desktop Android.
       NOTIMPLEMENTED();

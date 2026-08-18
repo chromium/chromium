@@ -37,7 +37,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"  // nogncheck
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"  // nogncheck
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -152,8 +152,8 @@ BrowserExtensionWindowController::GetBrowserWindowInterface() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-Browser* BrowserExtensionWindowController::GetBrowser() const {
-  return browser_->GetBrowserForMigrationOnly();
+BrowserWindowInterface* BrowserExtensionWindowController::GetBrowser() const {
+  return &browser_.get();
 }
 #endif
 

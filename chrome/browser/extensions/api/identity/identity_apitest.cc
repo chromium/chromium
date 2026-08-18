@@ -114,8 +114,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
@@ -4042,7 +4042,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAuthFlowFunctionTestWithPopupWindow,
 
   gfx::Rect bounds;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  Browser* popup_browser = browser_opened.Wait();
+  BrowserWindowInterface* popup_browser = browser_opened.Wait();
   bounds = popup_browser->GetWindow()->GetBounds();
 #else
   // On Android, wait for the window to be created.

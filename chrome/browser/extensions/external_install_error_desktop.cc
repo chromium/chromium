@@ -129,9 +129,9 @@ class ExternalInstallBubbleAlert final : public GlobalErrorWithStandardBubble {
   std::vector<std::u16string> GetBubbleViewMessages() override;
   std::u16string GetBubbleViewAcceptButtonLabel() override;
   std::u16string GetBubbleViewCancelButtonLabel() override;
-  void OnBubbleViewDidClose(Browser* browser) override;
-  void BubbleViewAcceptButtonPressed(Browser* browser) override;
-  void BubbleViewCancelButtonPressed(Browser* browser) override;
+  void OnBubbleViewDidClose(BrowserWindowInterface* browser) override;
+  void BubbleViewAcceptButtonPressed(BrowserWindowInterface* browser) override;
+  void BubbleViewCancelButtonPressed(BrowserWindowInterface* browser) override;
   base::WeakPtr<GlobalErrorWithStandardBubble> AsWeakPtr() override;
 
   // The owning ExternalInstallErrorDesktop.
@@ -266,18 +266,19 @@ std::u16string ExternalInstallBubbleAlert::GetBubbleViewCancelButtonLabel() {
   return prompt_->GetAbortButtonLabel();
 }
 
-void ExternalInstallBubbleAlert::OnBubbleViewDidClose(Browser* browser) {
+void ExternalInstallBubbleAlert::OnBubbleViewDidClose(
+    BrowserWindowInterface* browser) {
   error_->DidCloseBubbleView();
 }
 
 void ExternalInstallBubbleAlert::BubbleViewAcceptButtonPressed(
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   error_->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
       ExtensionInstallPrompt::Result::ACCEPTED));
 }
 
 void ExternalInstallBubbleAlert::BubbleViewCancelButtonPressed(
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   error_->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
       ExtensionInstallPrompt::Result::USER_CANCELED));
 }

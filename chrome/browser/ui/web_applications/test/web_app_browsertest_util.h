@@ -115,13 +115,13 @@ ExternallyManagedAppManager::InstallResult ExternallyManagedAppManagerInstall(
 // navigation to complete. To ensure the given url is fully loaded, wait for
 // that separately.
 void NavigateViaLinkClickToURLAndWait(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const GURL& url,
     bool proceed_through_interstitial = false);
 
 // Performs a navigation and then checks that the toolbar visibility is as
 // expected.
-void NavigateAndCheckForToolbar(Browser* browser,
+void NavigateAndCheckForToolbar(BrowserWindowInterface* browser,
                                 const GURL& url,
                                 bool expected_visibility,
                                 bool proceed_through_interstitial = false);

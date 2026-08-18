@@ -575,7 +575,7 @@ BookmarkManagerPrivateIsActiveTabInSplitFunction::RunOnReady() {
     return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
   }
 
-  Browser* browser = window_controller->GetBrowser();
+  BrowserWindowInterface* browser = window_controller->GetBrowser();
   if (!browser) {
     return RespondNow(Error(kInvalidBrowserError));
   }
@@ -836,8 +836,7 @@ BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
     BrowserWindowInterface* browser =
         browser_window_util::GetBrowserForTabContents(*new_contents);
     if (browser) {
-      TabStripModel* tab_strip =
-          browser->GetBrowserForMigrationOnly()->tab_strip_model();
+      TabStripModel* tab_strip = browser->GetTabStripModel();
       const int new_tab_index = tab_strip->GetIndexOfWebContents(new_contents);
       // Handle the situation where the bookmark is opened in a different window
       // (happens when opening certain internal pages in incognito mode)
@@ -959,7 +958,7 @@ BookmarkManagerPrivateOpenInNewTabGroupFunction::RunOnReady() {
     return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
   }
 
-  Browser* browser = window_controller->GetBrowser();
+  BrowserWindowInterface* browser = window_controller->GetBrowser();
   if (!browser) {
     return RespondNow(Error(kInvalidBrowserError));
   }

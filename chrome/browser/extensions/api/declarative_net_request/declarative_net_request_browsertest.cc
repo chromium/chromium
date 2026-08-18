@@ -151,8 +151,8 @@
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
@@ -4328,10 +4328,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   // Now create a new browser with the same profile as |browser()| and navigate
   // to |page_url|.
-  Browser* second_browser = CreateBrowser(profile());
+  BrowserWindowInterface* second_browser = CreateBrowser(profile());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(second_browser, page_url));
   content::WebContents* second_browser_contents =
-      second_browser->tab_strip_model()->GetActiveWebContents();
+      second_browser->GetTabStripModel()->GetActiveWebContents();
 
   int second_browser_tab_id =
       ExtensionTabUtil::GetTabId(second_browser_contents);
@@ -4390,12 +4390,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   PrefsHelper helper(*ExtensionPrefs::Get(profile()));
   helper.SetUseActionCountAsBadgeText(extension_id, true);
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(incognito_browser, GURL("http://abc.com")));
 
   content::WebContents* incognito_contents =
-      incognito_browser->tab_strip_model()->GetActiveWebContents();
+      incognito_browser->GetTabStripModel()->GetActiveWebContents();
 
   const Extension* dnr_extension = last_loaded_extension();
   ExtensionAction* incognito_action =

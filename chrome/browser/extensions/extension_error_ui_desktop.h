@@ -11,7 +11,7 @@
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace extensions {
@@ -40,7 +40,7 @@ class ExtensionErrorUIDesktop : public ExtensionErrorUI {
   raw_ptr<Profile> profile_ = nullptr;
 
   // The browser the bubble view was shown into.
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 
   std::unique_ptr<ExtensionGlobalError> global_error_;
 };

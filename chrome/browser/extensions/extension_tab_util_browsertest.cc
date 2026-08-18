@@ -37,7 +37,7 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   ASSERT_TRUE(OptionsPageInfo::HasOptionsPage(options_split_extension));
   GURL options_url = OptionsPageInfo::GetOptionsPage(options_split_extension);
 
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
 
   // There should be two browser windows open, regular and incognito.
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -375,18 +375,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // the incognito window.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito,
                                            chrome::ChromeUINewTabURLAsGURL()));
-  EXPECT_EQ(1, incognito->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito->GetTabStripModel()->count());
 
   EXPECT_TRUE(
       OpenOptionsPageFromAPI(options_split_extension, incognito->GetProfile()));
-  EXPECT_EQ(1, incognito->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito->GetTabStripModel()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
-      incognito->tab_strip_model()->GetActiveWebContents()));
+      incognito->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(incognito));
 
   // Both regular and incognito windows should have one tab each.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(1, incognito->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito->GetTabStripModel()->count());
 
   // Reset the incognito browser.
   CloseBrowserSynchronously(incognito);
@@ -401,24 +401,24 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // extension options page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito,
                                            chrome::ChromeUINewTabURLAsGURL()));
-  EXPECT_EQ(1, incognito->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito->GetTabStripModel()->count());
   EXPECT_TRUE(
       OpenOptionsPageFromAPI(options_split_extension, incognito->GetProfile()));
 
   // Opening the options page should take the new tab and use it, so we should
   // have only one tab, and it should be open to the options page.
-  EXPECT_EQ(1, incognito->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito->GetTabStripModel()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
-      incognito->tab_strip_model()->GetActiveWebContents()));
+      incognito->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(incognito));
 
   // Calling OpenOptionsPage again shouldn't result in any new tabs, since we
   // re-use the existing options page.
   EXPECT_TRUE(
       OpenOptionsPageFromAPI(options_split_extension, incognito->GetProfile()));
-  EXPECT_EQ(1, incognito->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito->GetTabStripModel()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
-      incognito->tab_strip_model()->GetActiveWebContents()));
+      incognito->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(incognito));
 
   // Navigate to google.com (something non-newtab, non-options). Calling
@@ -429,9 +429,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
       ui_test_utils::NavigateToURL(incognito, GURL("http://www.google.com/")));
   EXPECT_TRUE(
       OpenOptionsPageFromAPI(options_split_extension, incognito->GetProfile()));
-  EXPECT_EQ(2, incognito->tab_strip_model()->count());
+  EXPECT_EQ(2, incognito->GetTabStripModel()->count());
   EXPECT_TRUE(content::WaitForLoadStop(
-      incognito->tab_strip_model()->GetActiveWebContents()));
+      incognito->GetTabStripModel()->GetActiveWebContents()));
   EXPECT_EQ(options_url, GetActiveUrl(incognito));
 }
 
@@ -463,10 +463,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   // (non-OTR) profile must be used. If the options page is already opened from
   // a regular window, calling OpenOptionsPage() from an incognito window should
   // refocus to the options page in the regular window.
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito,
                                            chrome::ChromeUINewTabURLAsGURL()));
-  EXPECT_EQ(1, incognito->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito->GetTabStripModel()->count());
   EXPECT_TRUE(OpenOptionsPageFromAPI(options_spanning_extension, profile()));
   // There should be two browser windows open, regular and incognito.
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
       std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito,
                                            chrome::ChromeUINewTabURLAsGURL()));
-  EXPECT_EQ(1, incognito->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito->GetTabStripModel()->count());
   EXPECT_TRUE(OpenOptionsPageFromAPI(options_spanning_extension, profile()));
   Browser* regular = browser_created_observer->Wait();
 
@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   browser_created_observer.emplace();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito,
                                            chrome::ChromeUINewTabURLAsGURL()));
-  EXPECT_EQ(1, incognito->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito->GetTabStripModel()->count());
   // Because the OpenOptionsPage() call originates from an OTR window via, e.g.
   // the action menu, instead of initiated by the extension, the
   // OpenOptionsPage() version that takes a Browser* is used.
