@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -572,22 +573,26 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
       /*sample=*/true, /*expected_count=*/0);
 }
 
-class EventMetricsDispatchToSenderBrowserTest
+class EventMetricsWebRequestDispatchBrowserTest
     : public ExtensionBrowserTest,
       public testing::WithParamInterface<ContextType> {
  public:
-  EventMetricsDispatchToSenderBrowserTest() = default;
+  EventMetricsWebRequestDispatchBrowserTest() = default;
 
-  EventMetricsDispatchToSenderBrowserTest(
-      const EventMetricsDispatchToSenderBrowserTest&) = delete;
-  EventMetricsDispatchToSenderBrowserTest& operator=(
-      const EventMetricsDispatchToSenderBrowserTest&) = delete;
+  EventMetricsWebRequestDispatchBrowserTest(
+      const EventMetricsWebRequestDispatchBrowserTest&) = delete;
+  EventMetricsWebRequestDispatchBrowserTest& operator=(
+      const EventMetricsWebRequestDispatchBrowserTest&) = delete;
+
+ protected:
+  // Triggers a webRequest event for an extension with an active listener and
+  // verifies whether dispatch-to-ack metrics are recorded based on
+  // `expect_dispatch_metrics`.
+  void RunDispatchMetricsTest(bool expect_dispatch_metrics);
 };
 
-// Tests that the we do not emit event dispatch time metrics for webRequest
-// events with active listeners.
-IN_PROC_BROWSER_TEST_P(EventMetricsDispatchToSenderBrowserTest,
-                       DispatchToSenderMetricTest) {
+void EventMetricsWebRequestDispatchBrowserTest::RunDispatchMetricsTest(
+    bool expect_dispatch_metrics) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Load either a persistent background page or a service worker extension
@@ -669,20 +674,33 @@ IN_PROC_BROWSER_TEST_P(EventMetricsDispatchToSenderBrowserTest,
       embedded_test_server()->GetURL("example.com", "/simple.html")));
   EXPECT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
 
-  // We do not emit any dispatch histograms for webRequest events to active
-  // listeners.
+  // Legacy DispatchEventToSender() excludes these events from dispatch
+  // histograms, while per-context DispatchEventToProcess() records them.
+  const int service_worker_count =
+      !persistent_background_extension && expect_dispatch_metrics ? 1 : 0;
+  const int persistent_page_count =
+      persistent_background_extension && expect_dispatch_metrics ? 1 : 0;
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
-      /*expected_count=*/0);
+      service_worker_count);
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DispatchToAckLongTime.ExtensionServiceWorker2",
-      /*expected_count=*/0);
+      service_worker_count);
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker3",
-      /*expected_count=*/0);
+      service_worker_count);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DispatchToAckTime.ExtensionPersistentBackgroundPage",
+      persistent_page_count);
+  // The event page variant is never emitted for these extensions.
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",
       /*expected_count=*/0);
+  // Not gated on the dispatch flow: the persistent background page acks the
+  // event in both flows.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionPersistentPage",
+      persistent_background_extension ? 1 : 0);
 
   // We do always log starting/finishing an external request.
   if (!persistent_background_extension) {  // service worker
@@ -699,11 +717,61 @@ IN_PROC_BROWSER_TEST_P(EventMetricsDispatchToSenderBrowserTest,
   }
 }
 
+// Tests legacy dispatch, where webRequest events to active listeners use
+// EventRouter::DispatchEventToSender() and do not record dispatch-to-ack
+// metrics.
+class EventMetricsLegacyDispatchToSenderBrowserTest
+    : public EventMetricsWebRequestDispatchBrowserTest {
+ public:
+  EventMetricsLegacyDispatchToSenderBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kWebRequestPerContextEventDispatch);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests per-context dispatch, where webRequest events to active listeners
+// use EventRouter::DispatchEventToProcess() and record dispatch-to-ack
+// metrics.
+class EventMetricsPerContextDispatchBrowserTest
+    : public EventMetricsWebRequestDispatchBrowserTest {
+ public:
+  EventMetricsPerContextDispatchBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kWebRequestPerContextEventDispatch);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that webRequest events to active listeners do not emit dispatch
+// time metrics under legacy dispatch.
+IN_PROC_BROWSER_TEST_P(EventMetricsLegacyDispatchToSenderBrowserTest,
+                       DispatchToSenderMetricTest) {
+  RunDispatchMetricsTest(/*expect_dispatch_metrics=*/false);
+}
+
+// Verifies that webRequest events to active listeners emit dispatch time
+// metrics under per-context dispatch.
+IN_PROC_BROWSER_TEST_P(EventMetricsPerContextDispatchBrowserTest,
+                       DispatchMetricsForActiveListeners) {
+  RunDispatchMetricsTest(/*expect_dispatch_metrics=*/true);
+}
+
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         EventMetricsDispatchToSenderBrowserTest,
+                         EventMetricsLegacyDispatchToSenderBrowserTest,
                          ::testing::Values(ContextType::kPersistentBackground));
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         EventMetricsDispatchToSenderBrowserTest,
+                         EventMetricsLegacyDispatchToSenderBrowserTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         EventMetricsPerContextDispatchBrowserTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         EventMetricsPerContextDispatchBrowserTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
 class LazyBackgroundEventMetricsApiTest : public ExtensionApiTest {
