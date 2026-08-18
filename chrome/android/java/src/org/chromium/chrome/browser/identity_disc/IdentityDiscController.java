@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
@@ -291,22 +290,7 @@ public class IdentityDiscController
      */
     private Drawable getProfileImage(@Nullable DisplayableProfileData profileData) {
         if (profileData == null) {
-            Drawable accountCircle =
-                    AppCompatResources.getDrawable(mContext, R.drawable.account_circle);
-            if (SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)) {
-                int aiTierRingThicknessPx =
-                        mContext.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.ai_tier_ring_thickness_identity_disc);
-                int aiTierImageSizePx =
-                        mContext.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.toolbar_identity_disc_size_with_ring);
-
-                return ProfileDataCache.getPlaceholderImageWithAiTierRingPadding(
-                        mContext, accountCircle, aiTierImageSizePx, aiTierRingThicknessPx);
-            }
-            return accountCircle;
+            return assumeNonNull(mProfileDataCache).getPlaceholderImage();
         }
         return profileData.getImage();
     }

@@ -103,6 +103,7 @@ public class ProfileDataCache
     private final @Nullable SubscriptionEligibilityService mSubscriptionEligibilityService;
     private final @Px int mRingThicknessPx;
     private final @Nullable SubscriptionTierBrandingDelegate mBrandingDelegate;
+    private @Nullable Drawable mPlaceholderImageWithAiTierRingPadding;
 
     @VisibleForTesting
     ProfileDataCache(
@@ -241,36 +242,33 @@ public class ProfileDataCache
     }
 
     /**
-     * Generates a placeholder image padded to fit within the AI tier ring dimensions.
-     *
-     * @param context Context of the application to extract resources from.
-     * @param placeholder The original placeholder drawable.
-     * @param imageSize The total size of the image.
-     * @param avatarSize The size of the inner avatar.
-     * @return A {@link Drawable} containing the padded placeholder.
+     * @return A {@link Drawable} containing the placeholder (padded for the AI tier ring if
+     *     enabled).
      */
-    // TODO: Make this method non-static and compute the placeholder image once during
-    // initialization. To be addressed after M152 merge.
-    public static Drawable getPlaceholderImageWithAiTierRingPadding(
-            Context context, Drawable placeholder, @Px int imageSize, @Px int ringThicknessPx) {
-        int ringSpacingPx =
-                context.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.components.browser_ui.util.R.dimen
-                                        .ai_tier_ring_spacing);
-        int padding = ringThicknessPx + ringSpacingPx;
-        int avatarSize = imageSize - 2 * padding;
+    public Drawable getPlaceholderImage() {
+        Drawable accountCircle =
+                AppCompatResources.getDrawable(mContext, R.drawable.account_circle);
+        if (!mAiTierRingEnabled) {
+            return accountCircle;
+        }
+        if (mPlaceholderImageWithAiTierRingPadding == null) {
+            Bitmap paddedPicture =
+                    Bitmap.createBitmap(mImageSize, mImageSize, Bitmap.Config.ARGB_8888);
+            paddedPicture.setDensity(mContext.getResources().getDisplayMetrics().densityDpi);
+            Canvas canvas = new Canvas(paddedPicture);
 
-        Bitmap paddedPicture = Bitmap.createBitmap(imageSize, imageSize, Bitmap.Config.ARGB_8888);
-        paddedPicture.setDensity(context.getResources().getDisplayMetrics().densityDpi);
-        Canvas canvas = new Canvas(paddedPicture);
-
-        Rect oldBounds = placeholder.getBounds();
-        placeholder.setBounds(padding, padding, padding + avatarSize, padding + avatarSize);
-        placeholder.draw(canvas);
-        placeholder.setBounds(oldBounds);
-
-        return new BitmapDrawable(context.getResources(), paddedPicture);
+            Rect oldBounds = accountCircle.getBounds();
+            accountCircle.setBounds(
+                    mTotalPadding,
+                    mTotalPadding,
+                    mImageSize - mTotalPadding,
+                    mImageSize - mTotalPadding);
+            accountCircle.draw(canvas);
+            accountCircle.setBounds(oldBounds);
+            mPlaceholderImageWithAiTierRingPadding =
+                    new BitmapDrawable(mContext.getResources(), paddedPicture);
+        }
+        return mPlaceholderImageWithAiTierRingPadding;
     }
 
     /**
