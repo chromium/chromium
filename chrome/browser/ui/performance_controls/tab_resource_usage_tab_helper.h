@@ -19,7 +19,7 @@ class TabInterface;
 class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
  public:
   // Threshold was selected based on the 99th percentile of tab memory usage.
-  static constexpr base::ByteSize kHighMemoryUsageThreshold = base::MiBU(800);
+  static constexpr base::ByteSize kHighMemoryUsageThreshold = base::MiB(800);
 
   TabResourceUsage();
 

@@ -17,7 +17,7 @@
 
 // Devices with at least 16 GB of total memory should never be shown the memory
 // saver opt-in IPH.
-constexpr base::ByteSize kMemoryCap16GB = base::GiBU(16);
+constexpr base::ByteSize kMemoryCap16GB = base::GiB(16);
 
 DEFINE_USER_DATA(MemorySaverOptInIPHController);
 

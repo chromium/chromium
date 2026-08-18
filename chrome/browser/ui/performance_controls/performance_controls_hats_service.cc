@@ -110,9 +110,9 @@ std::string PerformanceControlsHatsService::GetPPMSurveySegmentName() {
   base::ByteSize system_ram = memory_amount_for_testing_.value_or(
       base::SysInfo::AmountOfTotalPhysicalMemory());
   base::ByteSize max_memory1 =
-      base::GiBU(kPerformanceControlsPPMSurveySegmentMaxMemoryGB1.Get());
+      base::GiB(kPerformanceControlsPPMSurveySegmentMaxMemoryGB1.Get());
   base::ByteSize max_memory2 =
-      base::GiBU(kPerformanceControlsPPMSurveySegmentMaxMemoryGB2.Get());
+      base::GiB(kPerformanceControlsPPMSurveySegmentMaxMemoryGB2.Get());
   if (max_memory1.is_zero() || system_ram <= max_memory1) {
     // Segment 1 has no upper bound, or the system RAM is in its bounds.
     return kPerformanceControlsPPMSurveySegmentName1.Get();
