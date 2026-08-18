@@ -92,7 +92,8 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   void OnUIClosing() override;
 #endif
 
-  void OpenSafeBrowsingHelpCenterPage(const ui::Event* event) override;
+  void OpenSafeBrowsingHelpCenterPage(const ui::Event* event,
+                                      bool is_suspicious_site) override;
 
   std::u16string GetSubjectName(const GURL& url) override;
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoblocker()

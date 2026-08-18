@@ -117,15 +117,15 @@ public class PageInfoConnectionController
      *
      * @param summary Security summary message.
      * @param details Security details message.
-     * @param linkUrl Optional custom link URL destination for <link> tags in details. If null,
-     *     <link> tags are not replaced with a clickable link span.
+     * @param isSuspiciousSite Whether this security description is for a suspicious site warning.
      */
-    public void setSecurityDescription(String summary, String details, @Nullable String linkUrl) {
+    public void setSecurityDescription(String summary, String details, boolean isSuspiciousSite) {
         // Display the appropriate connection message.
         SpannableStringBuilder messageBuilder = new SpannableStringBuilder();
         CharSequence title = null;
         CharSequence subtitle = null;
         boolean hasClickCallback;
+        boolean hasLinkTags = details.contains("<link>") && details.contains("</link>");
 
         assert mRowView.getContext() != null;
         if (mContentPublisher != null) {
@@ -142,16 +142,17 @@ public class PageInfoConnectionController
             if (!summary.isEmpty()) {
                 title = summary;
             }
-            if (details.contains("<link>") && details.contains("</link>")) {
+            if (hasLinkTags) {
                 CharSequence textWithSpans = null;
-                if (linkUrl != null) {
+                if (isSuspiciousSite) {
                     SpanInfo spanInfo =
                             new SpanInfo(
                                     "<link>",
                                     "</link>",
                                     new ChromeClickableSpan(
                                             mRowView.getContext(),
-                                            (view) -> mMainController.openUrl(linkUrl)));
+                                            (view) ->
+                                                    mMainController.openSafeBrowsingHelpCenter()));
                     try {
                         textWithSpans = SpanApplier.applySpans(details, spanInfo);
                     } catch (IllegalArgumentException e) {
@@ -168,8 +169,7 @@ public class PageInfoConnectionController
             }
         }
 
-        boolean hasDetailsLink =
-                details.contains("<link>") && details.contains("</link>") && linkUrl != null;
+        boolean hasDetailsLink = hasLinkTags && isSuspiciousSite;
         if (!hasDetailsLink && isConnectionDetailsLinkVisible() && messageBuilder.length() > 0) {
             messageBuilder.append(" ");
             SpannableString detailsText =

@@ -7,19 +7,42 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/window_android.h"
 
 namespace safe_browsing {
+
+namespace {
+
+class TestWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override {
+    opened_url_ = params.url;
+    return source;
+  }
+  const GURL& opened_url() const { return opened_url_; }
+
+ private:
+  GURL opened_url_;
+};
+
+}  // namespace
 
 class SuspiciousSiteControllerAndroidTest
     : public ChromeRenderViewHostTestHarness {
@@ -260,6 +283,19 @@ TEST_F(SuspiciousSiteControllerAndroidTest,
   EXPECT_TRUE(ui_manager->IsUrlAllowlistedOrPendingForWebContents(
       url2, /*entry=*/nullptr, web_contents(),
       /*allowlist_only=*/false, &threat_type));
+}
+
+TEST_F(SuspiciousSiteControllerAndroidTest, OnHelpCenterLinkClicked) {
+  MakeController();
+  TestWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+
+  SuspiciousSiteControllerAndroid::FromWebContents(web_contents())
+      ->OnHelpCenterLinkClicked();
+
+  EXPECT_EQ(delegate.opened_url(),
+            GURL(chrome::kUnsafeSiteWarningHelpCenterURL));
+  web_contents()->SetDelegate(nullptr);
 }
 
 }  // namespace safe_browsing

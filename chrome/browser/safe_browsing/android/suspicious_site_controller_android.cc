@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/android/safe_browsing/suspicious_site_dialog_view_android.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -30,12 +31,6 @@
 
 namespace safe_browsing {
 namespace {
-
-// TODO(crbug.com/40500621): Update to use a p-link URL (e.g. via
-// chrome::kSafeBrowsingHelpCenterURL).
-const char kHelpCenterLink[] =
-    "https://support.google.com/chrome/answer/"
-    "99020?hl=en&co=GENIE.Platform%3DAndroid";
 
 base::OnceClosure* GetShownCallback() {
   static base::NoDestructor<base::OnceClosure> callback;
@@ -327,10 +322,10 @@ void SuspiciousSiteControllerAndroid::OnContinueButtonClicked() {
 void SuspiciousSiteControllerAndroid::OnHelpCenterLinkClicked() {
   content::WebContents* contents = web_contents();
   CHECK(contents);
-  content::OpenURLParams params(GURL(kHelpCenterLink), content::Referrer(),
-                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                                ui::PAGE_TRANSITION_LINK,
-                                /*is_renderer_initiated=*/false);
+  content::OpenURLParams params(
+      GURL(chrome::kUnsafeSiteWarningHelpCenterURL), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/false);
 
   contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
