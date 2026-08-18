@@ -202,34 +202,33 @@ void OpenPasswordCheckupHomepage(PasswordCheckUIState result_state,
 
 // Verify that the compromised issues page is correctly presented.
 void VerifyCompromisedPasswordIssuesPageIsVisible(int issue_count) {
-  [[EarlGrey
-      selectElementWithMatcher:CompromisedPasswordIssuesPageTitle(issue_count)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      CompromisedPasswordIssuesPageTitle(issue_count)];
   [[EarlGrey selectElementWithMatcher:PasswordIssuesTableView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Verify that the dismissed warnings page is correctly presented.
 void VerifyDismissedWarningsPageIsVisible() {
-  [[EarlGrey selectElementWithMatcher:DismissedWarningsPageTitle()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      DismissedWarningsPageTitle()];
   [[EarlGrey selectElementWithMatcher:PasswordIssuesTableView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Verify that the reused issues page is correctly presented.
 void VerifyReusedPasswordIssuesPageIsVisible(int issue_count) {
-  [[EarlGrey
-      selectElementWithMatcher:ReusedPasswordIssuesPageTitle(issue_count)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ReusedPasswordIssuesPageTitle(issue_count)];
   [[EarlGrey selectElementWithMatcher:PasswordIssuesTableView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Verify that the weak issues page is correctly presented.
 void VerifyWeakPasswordIssuesPageIsVisible(int issue_count) {
-  [[EarlGrey selectElementWithMatcher:WeakPasswordIssuesPageTitle(issue_count)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:WeakPasswordIssuesPageTitle(
+                                                       issue_count)];
   [[EarlGrey selectElementWithMatcher:PasswordIssuesTableView()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
