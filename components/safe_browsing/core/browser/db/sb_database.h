@@ -180,7 +180,7 @@ class SBDatabase {
   friend class ::SafeBrowsingServiceTest;
   friend class ::TestSafeBrowsingDatabaseHelper;
   friend class SBDatabaseFactory;
-  friend class V4EmbeddedTestServerBrowserTest;
+  friend class SBEmbeddedTestServerBrowserTest;
   friend class SBDatabaseTest;
   friend class SBSafeBrowsingServiceTestBase;
   friend class SBSafeBrowsingServiceTest;

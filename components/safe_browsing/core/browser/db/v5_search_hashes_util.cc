@@ -212,9 +212,9 @@ std::string GetResourceUrl(V5::SearchHashesRequest* request) {
                         &request_base64);
 
   std::string url = base::StringPrintf(
-      "https://safebrowsing.googleapis.com/v5/hashes:search"
+      "%s/hashes:search"
       "?$req=%s&$ct=application/x-protobuf",
-      request_base64.c_str());
+      GetSbV5UrlPrefix(), request_base64.c_str());
   auto api_key = google_apis::GetAPIKey();
   if (!api_key.empty()) {
     base::StringAppendF(

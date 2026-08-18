@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_embedded_test_server_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/db/v5_embedded_test_server_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -60,23 +61,32 @@ std::vector<net::CanonicalCookie> GetCookies(
 
 namespace safe_browsing {
 
-// TODO(crbug.com/362791941): Handle v4 references.
 // This harness tests test-only code for correctness. This ensures that other
-// test classes which want to use the V4 interceptor are testing the right
+// test classes which want to use the V4/V5 interceptor are testing the right
 // thing.
-class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
+class SBEmbeddedTestServerBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  V4EmbeddedTestServerBrowserTest() = default;
+  SBEmbeddedTestServerBrowserTest() {
+    if (IsV5()) {
+      feature_list_.InitAndEnableFeature(kLocalListsUseSBv5);
+    } else {
+      feature_list_.InitAndDisableFeature(kLocalListsUseSBv5);
+    }
+  }
 
-  V4EmbeddedTestServerBrowserTest(const V4EmbeddedTestServerBrowserTest&) =
+  SBEmbeddedTestServerBrowserTest(const SBEmbeddedTestServerBrowserTest&) =
       delete;
-  V4EmbeddedTestServerBrowserTest& operator=(
-      const V4EmbeddedTestServerBrowserTest&) = delete;
+  SBEmbeddedTestServerBrowserTest& operator=(
+      const SBEmbeddedTestServerBrowserTest&) = delete;
 
-  ~V4EmbeddedTestServerBrowserTest() override = default;
+  ~SBEmbeddedTestServerBrowserTest() override = default;
+
+  bool IsV5() const { return GetParam(); }
 
   void SetUp() override {
-    // We only need to mock a local database. The tests will use a true real V4
+    // We only need to mock a local database. The tests will use a true real
     // protocol manager.
     SBDatabase::RegisterStoreFactoryForTest(
         std::make_unique<TestV4StoreFactory>());
@@ -107,34 +117,53 @@ class V4EmbeddedTestServerBrowserTest : public InProcessBrowserTest {
     sb_db_factory_->MarkPrefixAsBad(list_id, full_hash);
   }
 
+  void StartRedirectingRequests(const GURL& request_url,
+                                const GURL& match_url,
+                                net::EmbeddedTestServer* test_server,
+                                bool serve_cookies) {
+    if (IsV5()) {
+      V5::FullHash match;
+      match.set_full_hash(SBProtocolManagerUtil::GetFullHash(match_url));
+      match.add_full_hash_details()->set_threat_type(V5::ThreatType::MALWARE);
+      std::map<GURL, V5::FullHash> response_map{{request_url, match}};
+      StartRedirectingV5RequestsForTesting(response_map, test_server,
+                                           /*delay_map=*/{}, serve_cookies);
+    } else {
+      ThreatMatch match;
+      FullHashStr full_hash = SBProtocolManagerUtil::GetFullHash(match_url);
+      match.set_platform_type(GetUrlMalwareId().platform_type());
+      match.set_threat_entry_type(ThreatEntryType::URL);
+      match.set_threat_type(ThreatType::MALWARE_THREAT);
+      match.mutable_threat()->set_hash(full_hash);
+      match.mutable_cache_duration()->set_seconds(serve_cookies ? 0 : 300);
+
+      std::map<GURL, safe_browsing::ThreatMatch> response_map{
+          {request_url, match}};
+      StartRedirectingV4RequestsForTesting(response_map, test_server,
+                                           /*delay_map=*/{}, serve_cookies);
+    }
+  }
+
  protected:
   std::unique_ptr<net::EmbeddedTestServer> secure_embedded_test_server_;
 
  private:
-  std::unique_ptr<net::MappedHostResolver> mapped_host_resolver_;
-
   // Owned by the SBDatabase.
   raw_ptr<TestSBDatabaseFactory, AcrossTasksDanglingUntriaged> sb_db_factory_ =
       nullptr;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, SimpleTest) {
+IN_PROC_BROWSER_TEST_P(SBEmbeddedTestServerBrowserTest, SimpleTest) {
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 
   const char kMalwarePage[] = "/safe_browsing/malware.html";
   const GURL bad_url = embedded_test_server()->GetURL(kMalwarePage);
 
-  ThreatMatch match;
-  FullHashStr full_hash = SBProtocolManagerUtil::GetFullHash(bad_url);
   LocallyMarkPrefixAsBad(bad_url, GetUrlMalwareId());
-  match.set_platform_type(GetUrlMalwareId().platform_type());
-  match.set_threat_entry_type(ThreatEntryType::URL);
-  match.set_threat_type(ThreatType::MALWARE_THREAT);
-  match.mutable_threat()->set_hash(full_hash);
-  match.mutable_cache_duration()->set_seconds(300);
-
-  std::map<GURL, safe_browsing::ThreatMatch> response_map{{bad_url, match}};
-  StartRedirectingV4RequestsForTesting(response_map, embedded_test_server());
+  StartRedirectingRequests(bad_url, bad_url, embedded_test_server(),
+                           /*serve_cookies=*/false);
   embedded_test_server()->StartAcceptingConnections();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
@@ -143,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, SimpleTest) {
   EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 }
 
-IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest,
+IN_PROC_BROWSER_TEST_P(SBEmbeddedTestServerBrowserTest,
                        WrongFullHash_NoInterstitial) {
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
 
@@ -152,18 +181,10 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest,
 
   // Return a different full hash, so there will be no match and no
   // interstitial.
-  ThreatMatch match;
-  FullHashStr full_hash =
-      SBProtocolManagerUtil::GetFullHash(GURL("https://example.test/"));
   LocallyMarkPrefixAsBad(bad_url, GetUrlMalwareId());
-  match.set_platform_type(GetUrlMalwareId().platform_type());
-  match.set_threat_entry_type(ThreatEntryType::URL);
-  match.set_threat_type(ThreatType::MALWARE_THREAT);
-  match.mutable_threat()->set_hash(full_hash);
-  match.mutable_cache_duration()->set_seconds(300);
-
-  std::map<GURL, safe_browsing::ThreatMatch> response_map{{bad_url, match}};
-  StartRedirectingV4RequestsForTesting(response_map, embedded_test_server());
+  StartRedirectingRequests(bad_url, GURL("https://example.test/"),
+                           embedded_test_server(),
+                           /*serve_cookies=*/false);
   embedded_test_server()->StartAcceptingConnections();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), bad_url));
@@ -172,25 +193,14 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest,
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 }
 
-IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, DoesNotSaveCookies) {
+IN_PROC_BROWSER_TEST_P(SBEmbeddedTestServerBrowserTest, DoesNotSaveCookies) {
   ASSERT_TRUE(secure_embedded_test_server_->InitializeAndListen());
   const char kMalwarePage[] = "/safe_browsing/malware.html";
   const GURL bad_url = secure_embedded_test_server_->GetURL(kMalwarePage);
 
-  ThreatMatch match;
-  FullHashStr full_hash = SBProtocolManagerUtil::GetFullHash(bad_url);
   LocallyMarkPrefixAsBad(bad_url, GetUrlMalwareId());
-  match.set_platform_type(GetUrlMalwareId().platform_type());
-  match.set_threat_entry_type(ThreatEntryType::URL);
-  match.set_threat_type(ThreatType::MALWARE_THREAT);
-  match.mutable_threat()->set_hash(full_hash);
-  match.mutable_cache_duration()->set_seconds(0);
-
-  std::map<GURL, safe_browsing::ThreatMatch> response_map{{bad_url, match}};
-  StartRedirectingV4RequestsForTesting(
-      response_map, secure_embedded_test_server_.get(),
-      /*delay_map=*/std::map<GURL, base::TimeDelta>(),
-      /*serve_cookies=*/true);
+  StartRedirectingRequests(bad_url, bad_url, secure_embedded_test_server_.get(),
+                           /*serve_cookies=*/true);
   secure_embedded_test_server_->StartAcceptingConnections();
 
   EXPECT_EQ(
@@ -207,5 +217,9 @@ IN_PROC_BROWSER_TEST_F(V4EmbeddedTestServerBrowserTest, DoesNotSaveCookies) {
           .size(),
       0u);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SBEmbeddedTestServerBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace safe_browsing

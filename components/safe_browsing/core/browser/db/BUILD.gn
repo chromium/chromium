@@ -347,6 +347,7 @@ source_set("sb_store") {
   ]
 }
 
+# TODO(crbug.com/362791941): Handle v4 references
 static_library("v4_test_util") {
   testonly = true
   sources = [
@@ -354,6 +355,8 @@ static_library("v4_test_util") {
     "v4_embedded_test_server_util.h",
     "v4_test_util.cc",
     "v4_test_util.h",
+    "v5_embedded_test_server_util.cc",
+    "v5_embedded_test_server_util.h",
   ]
   deps = [
     ":sb_database",
@@ -361,7 +364,9 @@ static_library("v4_test_util") {
     ":util",
     ":v4_get_hash_protocol_manager",
     ":v4_protocol_manager_util",
+    ":v5_search_hashes_util",
     "//base",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//net:test_support",
     "//services/network/public/cpp",
   ]
