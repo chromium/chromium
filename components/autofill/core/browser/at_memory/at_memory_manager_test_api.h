@@ -18,8 +18,8 @@ class AtMemoryManagerTestApi {
       : manager_(CHECK_DEREF(manager)) {}
 
   AtMemoryMetricsRecorder* at_memory_metrics_recorder() {
-    return manager_->session_state_
-               ? manager_->session_state_->metrics_recorder.get()
+    return manager_->popup_state_
+               ? manager_->popup_state_->metrics_recorder.get()
                : nullptr;
   }
 

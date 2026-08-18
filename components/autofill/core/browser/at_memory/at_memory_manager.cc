@@ -408,7 +408,7 @@ void AtMemoryManager::OnPopupShown(
   if (!IsAtMemoryTriggerSource(trigger_source)) {
     return;
   }
-  if (!parent_suggestion_metadata && !session_state_) {
+  if (!parent_suggestion_metadata && !popup_state_) {
     BrowserAutofillManager* manager =
         GetBrowserAutofillManager(form_id, field_id);
     const auto [form, field] =
@@ -421,25 +421,23 @@ void AtMemoryManager::OnPopupShown(
     if (field) {
       target_field_origin_ = field->origin();
     }
-    session_state_.emplace(SessionState{
-        .trigger_source = trigger_source,
-        .update_callback = std::move(update_callback),
-        .metrics_recorder = std::make_unique<AtMemoryMetricsRecorder>(
-            client_->GetMqlsUploadService(), client_->GetUkmRecorder(),
-            ukm_source_id, client_->GetLastCommittedPrimaryMainFrameURL(),
-            client_->GetPageTitle(), field_id, form_signature, field_signature),
-    });
+    popup_state_.emplace();
+    popup_state_->trigger_source = trigger_source;
+    popup_state_->update_callback = std::move(update_callback);
+    popup_state_->metrics_recorder = std::make_unique<AtMemoryMetricsRecorder>(
+        client_->GetMqlsUploadService(), client_->GetUkmRecorder(),
+        ukm_source_id, client_->GetLastCommittedPrimaryMainFrameURL(),
+        client_->GetPageTitle(), field_id, form_signature, field_signature);
   }
 
-  if (session_state_ && session_state_->metrics_recorder) {
-    session_state_->metrics_recorder->OnPopupShown(trigger_source,
-                                                   parent_suggestion_metadata);
+  if (popup_state_ && popup_state_->metrics_recorder) {
+    popup_state_->metrics_recorder->OnPopupShown(trigger_source,
+                                                 parent_suggestion_metadata);
   }
 }
 
 bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
-  if (!session_state_ ||
-      !IsAtMemoryTriggerSource(session_state_->trigger_source)) {
+  if (!popup_state_ || !IsAtMemoryTriggerSource(popup_state_->trigger_source)) {
     return false;
   }
   if (filter.empty()) {
@@ -452,20 +450,19 @@ bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
 }
 
 bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
-  if (!session_state_ ||
-      !IsAtMemoryTriggerSource(session_state_->trigger_source)) {
+  if (!popup_state_ || !IsAtMemoryTriggerSource(popup_state_->trigger_source)) {
     return false;
   }
-  if (session_state_->metrics_recorder) {
-    session_state_->metrics_recorder->OnQuerySubmitted(filter);
+  if (popup_state_->metrics_recorder) {
+    popup_state_->metrics_recorder->OnQuerySubmitted(filter);
   }
   ExecuteQuery(filter);
   return true;
 }
 
 void AtMemoryManager::OnPopupHidden() {
-  session_state_.reset();
   CancelPendingQueries();
+  popup_state_.reset();
   target_field_origin_ = url::Origin();
   credit_card_fetch_in_progress_ = false;
   ccam_observation_.Reset();
@@ -509,16 +506,16 @@ IsAsync AtMemoryManager::FillSearchResult(
         metadata) {
   const Suggestion::AtMemoryPayload& payload =
       suggestion.GetPayload<Suggestion::AtMemoryPayload>();
-  if (session_state_ && session_state_->metrics_recorder) {
-    session_state_->metrics_recorder->OnSuggestionAccepted(
+  if (popup_state_ && popup_state_->metrics_recorder) {
+    popup_state_->metrics_recorder->OnSuggestionAccepted(
         payload.memory_data_type, payload.sources_bitmask, metadata);
   }
   // Transfer ownership of the metrics session to the filling path.
   // Ensures that the metrics will be properly recorded once the suggestion
   // is filled or one of the async steps in between fails.
   std::unique_ptr<AtMemoryMetricsRecorder> metrics;
-  if (session_state_) {
-    metrics = std::move(session_state_->metrics_recorder);
+  if (popup_state_) {
+    metrics = std::move(popup_state_->metrics_recorder);
   }
 
   switch (payload.memory_data_type) {
@@ -717,7 +714,7 @@ void AtMemoryManager::RecordAutofillAiEntityUse(
 }
 
 bool AtMemoryManager::IsSearching() const {
-  return session_state_ && session_state_->is_searching;
+  return popup_state_ && popup_state_->is_searching;
 }
 
 void AtMemoryManager::MaybeAppendPersonalContextNotice(
@@ -767,9 +764,9 @@ void AtMemoryManager::MaybeAppendPreviouslyFilledSuggestions(
 
 void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
   AtMemoryQueryService* query_service = client_->GetAtMemoryQueryService();
-  if (!query_service || !session_state_ ||
-      !IsAtMemoryTriggerSource(session_state_->trigger_source) ||
-      !session_state_->update_callback) {
+  if (!query_service || !popup_state_ ||
+      !IsAtMemoryTriggerSource(popup_state_->trigger_source) ||
+      !popup_state_->update_callback) {
     return;
   }
 
@@ -782,10 +779,10 @@ void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
     return;
   }
 
-  session_state_->is_searching = true;
-  fetching_string_index_ = 0;
+  popup_state_->is_searching = true;
+  popup_state_->fetching_string_index = 0;
   ShowFetchingStateSuggestions();
-  fetching_timer_.Start(
+  popup_state_->fetching_timer.Start(
       FROM_HERE, kFetchingMessageInterval,
       base::BindRepeating(&AtMemoryManager::AdvanceFetchingSuggestion,
                           query_weak_ptr_factory_.GetWeakPtr()));
@@ -877,29 +874,32 @@ Suggestion AtMemoryManager::CreateNoConnectionSuggestion(std::u16string query) {
 }
 
 void AtMemoryManager::CancelPendingQueries() {
-  fetching_timer_.Stop();
-  fetching_string_index_ = 0;
-  query_weak_ptr_factory_.InvalidateWeakPtrs();
-  if (session_state_) {
-    session_state_->is_searching = false;
+  if (popup_state_) {
+    popup_state_->fetching_timer.Stop();
+    popup_state_->fetching_string_index = 0;
+    popup_state_->is_searching = false;
   }
+  query_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void AtMemoryManager::SendSuggestions(std::vector<Suggestion> suggestions) {
-  if (session_state_ && session_state_->update_callback) {
-    session_state_->update_callback.Run(std::move(suggestions),
-                                        session_state_->trigger_source);
+  if (popup_state_ && popup_state_->update_callback) {
+    popup_state_->update_callback.Run(std::move(suggestions),
+                                      popup_state_->trigger_source);
   }
 }
 
 void AtMemoryManager::AdvanceFetchingSuggestion() {
-  fetching_string_index_++;
+  CHECK(popup_state_);
+  popup_state_->fetching_string_index++;
   ShowFetchingStateSuggestions();
 }
 
 void AtMemoryManager::ShowFetchingStateSuggestions() {
+  CHECK(popup_state_);
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(CreateFetchingSuggestion(fetching_string_index_));
+  suggestions.emplace_back(
+      CreateFetchingSuggestion(popup_state_->fetching_string_index));
   MaybeAppendPersonalContextNotice(suggestions);
   SendSuggestions(std::move(suggestions));
 }
@@ -971,9 +971,8 @@ void AtMemoryManager::ShowNoResultsStateSuggestions(
 
 void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
                                               MemorySearchResults result) {
-  if (!session_state_ ||
-      !IsAtMemoryTriggerSource(session_state_->trigger_source) ||
-      !session_state_->update_callback || !session_state_->is_searching) {
+  if (!popup_state_ || !IsAtMemoryTriggerSource(popup_state_->trigger_source) ||
+      !popup_state_->update_callback || !popup_state_->is_searching) {
     return;
   }
 
@@ -983,8 +982,8 @@ void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
     CancelPendingQueries();
   }
 
-  if (session_state_->metrics_recorder) {
-    session_state_->metrics_recorder->OnQueryResponseReceived(result);
+  if (popup_state_->metrics_recorder) {
+    popup_state_->metrics_recorder->OnQueryResponseReceived(result);
   }
 
   const bool is_context_secure = client_->IsContextSecure();

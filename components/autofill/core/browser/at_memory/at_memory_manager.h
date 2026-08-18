@@ -293,19 +293,24 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id);
 
-  // Encapsulates active session state for an AtMemory UI interaction.
-  struct SessionState {
+  // Encapsulates state for the currently visible AtMemory popup.
+  struct PopupState {
     AutofillSuggestionTriggerSource trigger_source =
         AutofillSuggestionTriggerSource::kUnspecified;
     UpdateSuggestionsCallback update_callback;
+    // TODO(crbug.com/535486238): Reconsider where metrics_recorder should live.
     std::unique_ptr<AtMemoryMetricsRecorder> metrics_recorder;
     // Flag indicating that a search query is in progress.
     bool is_searching = false;
+    // Timer used to rotate the fetching suggestions while searching.
+    base::RepeatingTimer fetching_timer;
+    // Index of the current fetching message to display.
+    size_t fetching_string_index = 0;
   };
 
   const raw_ref<AutofillClient> client_;
 
-  std::optional<SessionState> session_state_;
+  std::optional<PopupState> popup_state_;
 
   base::ScopedObservation<CreditCardAccessManager,
                           CreditCardAccessManager::Observer>
@@ -315,10 +320,6 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
 
   // Origin of the target field for the active search session.
   url::Origin target_field_origin_;
-  // Timer used to rotate the fetching suggestions.
-  base::RepeatingTimer fetching_timer_;
-  // Index of the current fetching message to display.
-  size_t fetching_string_index_ = 0;
   // Factory for search queries, used to identify currently active query and
   // discard the old ones.
   base::WeakPtrFactory<AtMemoryManager> query_weak_ptr_factory_{this};
