@@ -66,9 +66,8 @@ void NativeThemeFluent::SetArrowIconsAvailableForTesting(bool available) {
 }
 
 NativeThemeFluent::NativeThemeFluent() {
-  set_use_overlay_scrollbar(
-      IsFluentOverlayScrollbarEnabled() &&
-      OsSettingsProvider::Get().PrefersOverlayScrollbars());
+  set_use_overlay_scrollbar(ShouldUseOverlayScrollbar(
+      OsSettingsProvider::Get().PrefersOverlayScrollbars()));
 }
 
 NativeThemeFluent::~NativeThemeFluent() = default;

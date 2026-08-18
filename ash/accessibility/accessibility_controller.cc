@@ -2825,6 +2825,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateTabletModeShelfNavigationButtonsFromPref();
   UpdateColorCorrectionFromPrefs();
   UpdateCaretBlinkIntervalFromPrefs();
+  UpdateUseOverlayScrollbarFromPref();
 
   UpdateFaceGazeFromPrefs();
   pref_change_registrar_->Add(
@@ -3318,13 +3319,8 @@ void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
 }
 
 void AccessibilityController::UpdateUseOverlayScrollbarFromPref() const {
-  const bool overlay_scrollbar_enabled_by_feature_flag =
-      ::ui::IsOverlayScrollbarEnabledByFeatureFlag();
-  const bool overlay_scrollbar_enabled_by_os_setting =
-      !always_show_scrollbar().enabled();
   const bool use_overlay_scrollbar =
-      overlay_scrollbar_enabled_by_feature_flag ||
-      overlay_scrollbar_enabled_by_os_setting;
+      ::ui::ShouldUseOverlayScrollbar(!always_show_scrollbar().enabled());
   if (auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
       native_theme->use_overlay_scrollbar() != use_overlay_scrollbar) {
     native_theme->set_use_overlay_scrollbar(use_overlay_scrollbar);

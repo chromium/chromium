@@ -79,12 +79,7 @@ NativeTheme* GetInstanceForWebImpl() {
     return s_web_theme.get();
   }
   static base::NoDestructor<NativeThemeAura> s_web_theme(
-#if BUILDFLAG(IS_CHROMEOS)
-      true
-#else
-      IsOverlayScrollbarEnabledByFeatureFlag()
-#endif
-  );
+      IsOverlayScrollbarEnabledByFeatureFlag());
   return s_web_theme.get();
 }
 #else
@@ -598,8 +593,9 @@ NativeTheme::PreferredContrast NativeTheme::CalculatePreferredContrast() const {
 }
 
 bool NativeTheme::CalculateUseOverlayScrollbar() const {
-  if (IsFluentOverlayScrollbarEnabled()) {
-    return OsSettingsProvider::Get().PrefersOverlayScrollbars();
+  if (IsFluentScrollbarEnabled()) {
+    return ShouldUseOverlayScrollbar(
+        OsSettingsProvider::Get().PrefersOverlayScrollbars());
   }
   return use_overlay_scrollbar_;
 }

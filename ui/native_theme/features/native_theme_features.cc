@@ -5,21 +5,43 @@
 #include "ui/native_theme/features/native_theme_features.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace features {
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
+constexpr base::FeatureParam<ScrollbarMode>::Option kScrollbarModeOptions[] = {
+    {ScrollbarMode::kOverlay, "overlay"},
+    {ScrollbarMode::kDevice, "device"},
+    {ScrollbarMode::kClassic, "classic"},
+};
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
 constexpr base::FeatureState kOverlayScrollbarFeatureState =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #else
 constexpr base::FeatureState kOverlayScrollbarFeatureState =
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
-// Enables or disables overlay scrollbars in Blink (i.e. web content) on Aura
-// or Linux.  The status of native UI overlay scrollbars is determined in
-// PlatformStyle::CreateScrollBar. Does nothing on Mac.
+
+// Controls the scrollbar mode in Blink (i.e. web content) on Windows, Linux,
+// and ChromeOS.
+// - enabled with mode/overlay: force overlay scrollbars
+// - enabled with mode/device: follow OS setting
+// - enabled with mode/classic: force non-overlay scrollbars
+// - disabled: equivalent to mode/classic
+//
+// On mobile (Android / iOS), scrollbars are always overlay regardless.
+// TODO(crbug.com/513603825): Make this flag work on Mac.
+//
+// Enabled defaults to mode/device. The OS value for mode/device comes from:
+// - AccessibilityController::always_show_scrollbar() on ChromeOS
+// - OsSettingsProvider::PrefersOverlayScrollbars() (subclass overrides) on
+//   other platforms
 BASE_FEATURE(kOverlayScrollbar, kOverlayScrollbarFeatureState);
+constinit const base::FeatureParam<ScrollbarMode> kScrollbarMode{
+    &kOverlayScrollbar, "mode", ScrollbarMode::kDevice, &kScrollbarModeOptions};
 
 // Disable to keep scrollbars visible forever once shown, and immediately
 // update scrollbar states instead of animating. This is used to ensure
@@ -54,7 +76,17 @@ bool IsFluentScrollbarEnabled() {
 }
 
 bool IsOverlayScrollbarEnabledByFeatureFlag() {
-  return base::FeatureList::IsEnabled(features::kOverlayScrollbar);
+  return ShouldUseOverlayScrollbar(true);
+}
+
+bool ShouldUseOverlayScrollbar(bool os_prefers_overlay_scrollbars) {
+  if (!base::FeatureList::IsEnabled(features::kOverlayScrollbar)) {
+    return false;
+  }
+  const auto mode = features::kScrollbarMode.Get();
+  return mode == features::ScrollbarMode::kOverlay ||
+         (mode == features::ScrollbarMode::kDevice &&
+          os_prefers_overlay_scrollbars);
 }
 
 }  // namespace ui

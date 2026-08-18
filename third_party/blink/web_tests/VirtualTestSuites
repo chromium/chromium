@@ -134,7 +134,7 @@
       "fullscreen"
     ],
     "args": [
-      "--enable-features=OverlayScrollbar",
+      "--enable-features=OverlayScrollbar:mode/overlay",
       "--enable-threaded-compositing",
       "--enable-prefer-compositing-to-lcd-text",
       "--enable-overscroll-notifications",
@@ -1287,7 +1287,7 @@
       "virtual/overlay-scrollbar/overlay-scrollbar-smoke-test.html"
     ],
     "args": [
-      "--enable-features=OverlayScrollbar",
+      "--enable-features=OverlayScrollbar:mode/overlay",
       "--enable-threaded-compositing",
       "--disable-features=RasterInducingScroll"
     ],
@@ -2208,7 +2208,7 @@
     ],
     "bases": [],
     "args": [
-      "--disable-features=OverlayScrollbar"
+      "--enable-features=OverlayScrollbar:mode/classic"
     ],
     "expires": "never",
     "owners": [
@@ -2438,7 +2438,7 @@
       "external/wpt/css/css-ui/pointer-events-no-scrollbars-002.html"
     ],
     "args": [
-      "--enable-features=OverlayScrollbar"
+      "--enable-features=OverlayScrollbar:mode/overlay"
     ],
     "expires": "never",
     "owners": [

@@ -1,5 +1,6 @@
 The suit contains web tests for Fluent overlay scrollbar that can be
-enabled via the following feature flag: `--enable-features=OverlayScrollbar`.
+enabled via the following feature flag:
+`--enable-features=OverlayScrollbar:mode/overlay`.
 Please see more details here: https://crbug.com/1479156.
 
 If you are trying to rebase Win10 expectations in a Win11 machine, you can
