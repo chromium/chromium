@@ -87,10 +87,6 @@ import java.util.concurrent.atomic.AtomicReference;
         ChromeFeatureList.PRICE_ANNOTATIONS + ":user_managed_notification_max_number/2")
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class PriceDropNotificationManagerTest {
-    private static final String ACTION_APP_NOTIFICATION_SETTINGS =
-            "android.settings.APP_NOTIFICATION_SETTINGS";
-    private static final String EXTRA_APP_PACKAGE = "app_package";
-    private static final String EXTRA_APP_UID = "app_uid";
     private static final String ACTION_ID_VISIT_SITE = "visit_site";
     private static final String ACTION_ID_TURN_OFF_ALERT = "turn_off_alert";
     private static final String TEST_URL = "www.test.com";
@@ -101,7 +97,6 @@ public class PriceDropNotificationManagerTest {
     private NotificationManagerProxy mMockNotificationManager;
 
     private PriceDropNotificationManager mPriceDropNotificationManager;
-    private BookmarkModel mMockBookmarkModel;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

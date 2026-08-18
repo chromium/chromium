@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
@@ -87,19 +86,18 @@ public class PageInfoStoreInfoViewTest {
 
     private final MerchantInfo mFakeMerchantTrustSignals =
             new MerchantInfo(4.5f, 100, new GURL("http://fake/url"), false, 0f, false, false);
-    private WebPageStation mPage;
 
     @Before
     public void setUp() {
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
         doReturn(true).when(mMockShoppingService).isMerchantViewerEnabled();
 
-        mPage = mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
     }
 
     // dialogCheck ensures that a dialog is in focus when checking the view. If not
     // used it can cause flakiness issues for apis >= 30.
-    private void openPageInfoFromStoreIcon(boolean fromStoreIcon, boolean dialogCheck) {
+    private void openPageInfoFromStoreIcon(boolean fromStoreIcon) {
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
@@ -121,7 +119,7 @@ public class PageInfoStoreInfoViewTest {
     @MediumTest
     public void testStoreInfoRowInvisibleWithoutData() {
         mockShoppingServiceResponse(null);
-        openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
+        openPageInfoFromStoreIcon(false); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(false);
     }
 
@@ -130,7 +128,7 @@ public class PageInfoStoreInfoViewTest {
     @Feature({"RenderTest"})
     public void testStoreInfoRowVisibleWithData() throws IOException {
         mockShoppingServiceResponse(mFakeMerchantTrustSignals);
-        openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
+        openPageInfoFromStoreIcon(false); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(true);
         renderTestForStoreInfoRow("page_info_store_info_row");
     }
@@ -141,7 +139,7 @@ public class PageInfoStoreInfoViewTest {
     @DisabledTest(message = "crbug.com/394345850")
     public void testStoreInfoRowVisibleWithData_Highlight() throws IOException {
         mockShoppingServiceResponse(mFakeMerchantTrustSignals);
-        openPageInfoFromStoreIcon(true, false); // fromStoreIcon, dialogCheck
+        openPageInfoFromStoreIcon(true); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(true);
         renderTestForStoreInfoRow("page_info_store_info_row_highlight");
     }
@@ -154,7 +152,7 @@ public class PageInfoStoreInfoViewTest {
                 new MerchantInfo(4.5f, 0, new GURL("http://fake/url"), false, 0f, false, false);
         mockShoppingServiceResponse(fakeMerchantTrustSignals);
 
-        openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
+        openPageInfoFromStoreIcon(false); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(true);
         renderTestForStoreInfoRow("page_info_store_info_row_without_reviews");
     }
@@ -167,7 +165,7 @@ public class PageInfoStoreInfoViewTest {
                 new MerchantInfo(0f, 0, new GURL("http://fake/url"), true, 0f, false, false);
         mockShoppingServiceResponse(fakeMerchantTrustSignals);
 
-        openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
+        openPageInfoFromStoreIcon(false); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(true);
         renderTestForStoreInfoRow("page_info_store_info_row_without_rating");
     }
@@ -176,7 +174,7 @@ public class PageInfoStoreInfoViewTest {
     @MediumTest
     public void testStoreInfoRowClick() {
         mockShoppingServiceResponse(mFakeMerchantTrustSignals);
-        openPageInfoFromStoreIcon(false, true); // fromStoreIcon, dialogCheck
+        openPageInfoFromStoreIcon(false); // fromStoreIcon, dialogCheck
         verifyStoreRowShowing(true);
         onView(withId(PageInfoStoreInfoController.STORE_INFO_ROW_ID)).perform(click());
         onView(withId(R.id.page_info_url_wrapper)).check(doesNotExist());
