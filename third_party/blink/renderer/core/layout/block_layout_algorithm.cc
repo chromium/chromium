@@ -3713,12 +3713,12 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
                 child_style.MaxWidth().HasStretch();
 
   if (has_stretch && !constraint_space.IsNewFormattingContext()) {
-    const LineLogicalBoxSides sides(BorderPadding().block_start == LayoutUnit(),
-                                    /* line_right */ false,
-                                    BorderPadding().block_end == LayoutUnit(),
-                                    /* line_left */ false);
-    builder.SetIgnoreMarginsForStretch(constraint_space.GetWritingMode(),
-                                       sides);
+    builder.SetIgnoreMarginsForStretch(
+        constraint_space.GetWritingDirection(),
+        LogicalBoxSides(/*inline_start=*/false,
+                        /*inline_end=*/false,
+                        BorderPadding().block_start == LayoutUnit(),
+                        BorderPadding().block_end == LayoutUnit()));
   }
 
   return builder.ToConstraintSpace();
