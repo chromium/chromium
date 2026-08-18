@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/mock_paint_timing_callback_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_test_base.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -391,6 +393,27 @@ TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
   EXPECT_EQ(LargestReportedSize(), 9u);
   EXPECT_EQ(LargestImagePaintSize(), 9u);
   EXPECT_FALSE(LargestImagePaintTime().is_null());
+  trace_analyzer::Stop();
+}
+
+TEST_F(LargestContentfulPaintCalculatorTest, OutOfLifecyclePaintsIgnored) {
+  SetMainFrameBodyContent(R"HTML(
+    <!DOCTYPE html>
+    <img id='large' width=100 height=300 />
+  )HTML");
+
+  // Set the content as pending to force the image to be stored as the largest
+  // pending image if it gets painted.
+  SetImageContent("large", 100, 300, 800, ImageStatus::kPending);
+
+  // Paint outside of the normal lifecycle. This should be ignored by
+  // paint timing.
+  PaintRecordBuilder builder;
+  GetFrameView().PaintOutsideOfLifecycle(builder.Context(), PaintFlag::kNoFlag,
+                                         CullRect::Infinite());
+  EXPECT_EQ(GetLargestContentfulPaintCalculator()
+                ->LargestPaintedOrPendingImageForTest(),
+            nullptr);
   trace_analyzer::Stop();
 }
 

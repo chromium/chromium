@@ -179,6 +179,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -4320,6 +4321,16 @@ void LocalFrameView::PaintOutsideOfLifecycle(GraphicsContext& context,
   UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kPrinting);
 
   SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(), LocalFrameUkmAggregator::kPaint);
+
+  // Ignore paint timing while painting outside of the normal lifecycle (e.g.
+  // paint preview, printing, etc.), as it can change LCP and cause spurious
+  // element timings to be reported (see crbug.com/40838402 and
+  // crbug.com/547997751).
+  IgnorePaintTimingScope ignore_paint_timing;
+  if (base::FeatureList::IsEnabled(
+          features::kPaintTimingIngnoreOutOfLifecyclePaints)) {
+    IgnorePaintTimingScope::IncrementIgnoreDepth();
+  }
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInPaint);

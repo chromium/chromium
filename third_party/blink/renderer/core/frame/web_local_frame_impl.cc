@@ -2038,7 +2038,10 @@ bool WebLocalFrameImpl::CapturePaintPreview(const gfx::Rect& bounds,
     // Ignore paint timing while capturing a paint preview as it can change LCP
     // see crbug.com/1323073.
     IgnorePaintTimingScope scope;
-    IgnorePaintTimingScope::IncrementIgnoreDepth();
+    if (!base::FeatureList::IsEnabled(
+            features::kPaintTimingIngnoreOutOfLifecyclePaints)) {
+      IgnorePaintTimingScope::IncrementIgnoreDepth();
+    }
 
     Document::PaintPreviewScope paint_preview(
         *GetFrame()->GetDocument(),
