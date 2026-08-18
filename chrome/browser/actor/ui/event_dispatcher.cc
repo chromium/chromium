@@ -93,6 +93,7 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<NavigateToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,
+    NoUiEvents<TranslatePageToolRequest>,
     [](const TypeToolRequest& tr) {
       auto [pt, source] = ComputeMouseTarget(tr.GetTabHandle(), tr.GetTarget());
       return EventSequence<AsyncUiEvent>{
@@ -127,6 +128,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<NavigateToolRequest>,
     NoUiEvents<ScrollToolRequest>,
     NoUiEvents<SelectToolRequest>,
+    NoUiEvents<TranslatePageToolRequest>,
     NoUiEvents<TypeToolRequest>,
     NoUiEvents<WaitToolRequest>,
     NoUiEvents<AttemptLoginToolRequest>,

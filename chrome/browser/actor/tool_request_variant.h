@@ -44,6 +44,7 @@ using ToolRequestVariant = std::variant<
     ScrollToolRequest,
     ScrollToToolRequest,
     SelectToolRequest,
+    TranslatePageToolRequest,
     TypeToolRequest,
     WaitToolRequest>;
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:ToolRequest)
@@ -84,6 +85,7 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const ScrollToolRequest&) override;
   void Apply(const ScrollToToolRequest&) override;
   void Apply(const SelectToolRequest&) override;
+  void Apply(const TranslatePageToolRequest&) override;
   void Apply(const TypeToolRequest&) override;
   void Apply(const WaitToolRequest&) override;
 

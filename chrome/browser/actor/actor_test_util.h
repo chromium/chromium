@@ -262,6 +262,10 @@ std::unique_ptr<ToolRequest> MakeScriptToolRequest(
 std::unique_ptr<ToolRequest> MakeMediaControlRequest(
     tabs::TabInterface& tab,
     MediaControl media_control);
+std::unique_ptr<ToolRequest> MakeTranslatePageRequest(tabs::TabInterface& tab);
+std::unique_ptr<ToolRequest> MakeTranslatePageRequest(
+    tabs::TabInterface& tab,
+    std::string_view target_language);
 
 // A helper to create a vector of ToolRequests suitable for passing to
 // ExecutionEngine::Act. Note that this will necessarily move the ToolRequest

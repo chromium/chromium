@@ -90,6 +90,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Scroll" summary="Scroll"/>
   <variant name="ScrollTo" summary="Scroll To"/>
   <variant name="Select" summary="Select"/>
+  <variant name="TranslatePage" summary="Translate Page"/>
   <variant name="Type" summary="Type"/>
   <variant name="Wait" summary="Wait"/>
 </variants>
