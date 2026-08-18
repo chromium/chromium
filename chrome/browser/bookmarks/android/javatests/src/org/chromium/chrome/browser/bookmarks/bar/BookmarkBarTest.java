@@ -61,7 +61,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -111,9 +110,9 @@ public class BookmarkBarTest {
     @Before
     public void setUp() {
         mOverrideContextRule.setIsDesktop(true);
+        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
 
         mCtaTestRule.startOnBlankPage();
-        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(() -> setBookmarkBarSetting(/* enabled= */ true));
         waitForBookmarkBarVisibility(/* visible= */ true);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
@@ -131,6 +130,7 @@ public class BookmarkBarTest {
             ThreadUtils.runOnUiThreadBlocking(() -> mItemIds.forEach(mModel::deleteBookmark));
             mItemIds = null;
         }
+        ThreadUtils.runOnUiThreadBlocking(() -> setBookmarkBarSetting(/* enabled= */ false));
     }
 
     @Test
@@ -142,7 +142,6 @@ public class BookmarkBarTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/548183257")
     public void testOnBookmarkBarToggledViaKeyboard() {
         final var activity = mCtaTestRule.getActivity();
         final var evt =
@@ -216,7 +215,6 @@ public class BookmarkBarTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/548183257")
     public void testOnBookmarkFolderClick() throws ExecutionException {
         final String title = "Folder";
         mItemIds = List.of(addFolder(title));
@@ -237,7 +235,6 @@ public class BookmarkBarTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/548183257")
     public void testOnBookmarkItemClick() throws ExecutionException {
         final Tab originalTab = getCurrentTab();
         final String title = "Google";
@@ -316,7 +313,6 @@ public class BookmarkBarTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/548183257")
     public void testOnOverflowButtonClick() {
         final GURL url = getTestServerUrl("/chrome/test/data/android/google.html");
         mItemIds =
