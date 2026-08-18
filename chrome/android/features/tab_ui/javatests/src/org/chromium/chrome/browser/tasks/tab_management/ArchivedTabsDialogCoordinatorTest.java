@@ -113,7 +113,6 @@ import java.util.List;
 @DisableFeatures({
     "IPH_AndroidTabDeclutter",
     ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-    ChromeFeatureList.DRAW_CHROME_PAGES_EDGE_TO_EDGE,
     ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
 })
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287024

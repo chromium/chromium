@@ -6042,11 +6042,6 @@ inline constexpr char kDesktopFlingCurveOnAndroidDescription[] =
     "Enables desktop-like fling curve (exponential decay) and scroll wheel "
     "multipliers on Android.";
 
-inline constexpr char kDrawChromePagesEdgeToEdgeName[] =
-    "Draw Chrome Pages Edge-to-Edge";
-inline constexpr char kDrawChromePagesEdgeToEdgeDescription[] =
-    "Enables drawing more native pages and secondary activities edge-to-edge.";
-
 inline constexpr char kEdgelessTopInsetName[] = "Edgeless Top Inset";
 inline constexpr char kEdgelessTopInsetDescription[] =
     "Enables the prototype edgeless top inset feature, allowing opted-in "

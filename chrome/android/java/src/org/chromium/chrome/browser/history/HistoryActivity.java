@@ -52,13 +52,10 @@ public class HistoryActivity extends SnackbarActivity {
         HistoryUmaRecorder historyUmaRecorder =
                 appSpecificHistory ? new AppHistoryUmaRecorder() : new HistoryUmaRecorder();
         boolean showAppFilter = !appSpecificHistory && !profile.isOffTheRecord();
-        Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator = null;
-        if (ChromeFeatureList.sDrawChromePagesEdgeToEdge.isEnabled()) {
-            edgeToEdgePadAdjusterGenerator =
-                    (view) ->
-                            EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
-                                    view, getEdgeToEdgeSupplier());
-        }
+        Function<View, EdgeToEdgePadAdjuster> edgeToEdgePadAdjusterGenerator =
+                (view) ->
+                        EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                                view, getEdgeToEdgeSupplier());
 
         mHistoryManager =
                 new HistoryManager(

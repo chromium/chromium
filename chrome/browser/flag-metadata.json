@@ -2918,11 +2918,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "draw-chrome-pages-edge-to-edge",
-    "owners": [ "clhager@google.com", "wenyufu@chromium.org", "edge-to-edge@chromium.org"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "drive-fs-mirroring",
     "owners": ["wenbojie@chromium.org", "simmonsjosh@google.com"],
     "expiry_milestone": 150

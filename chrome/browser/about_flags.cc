@@ -6013,10 +6013,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(data_controls::kEnableClipboardDataControlsAndroid)},
 
     // Android Edge to edge
-    {"draw-chrome-pages-edge-to-edge",
-     flag_descriptions::kDrawChromePagesEdgeToEdgeName,
-     flag_descriptions::kDrawChromePagesEdgeToEdgeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kDrawChromePagesEdgeToEdge)},
     {"edgeless-top-inset", flag_descriptions::kEdgelessTopInsetName,
      flag_descriptions::kEdgelessTopInsetDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEdgelessTopInset)},

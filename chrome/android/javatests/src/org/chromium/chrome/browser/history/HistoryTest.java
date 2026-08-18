@@ -233,10 +233,7 @@ public class HistoryTest {
 
     @MediumTest
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.DRAW_CHROME_PAGES_EDGE_TO_EDGE,
-        ChromeFeatureList.EDGE_TO_EDGE_MONITOR_CONFIGURATIONS
-    })
+    @Features.EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_MONITOR_CONFIGURATIONS})
     @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testDrawsEdgeToEdge() {
         mActivityTestRule.startOnBlankPage();
