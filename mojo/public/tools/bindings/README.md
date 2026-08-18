@@ -645,6 +645,7 @@ bindings API documentation for that language:
 * [C++ Bindings](/mojo/public/cpp/bindings/README.md)
 * [JavaScript Bindings](/mojo/public/js/README.md)
 * [Java Bindings](/mojo/public/java/bindings/README.md)
+* [Rust Bindings](/mojo/public/rust/bindings/README.md)
 
 ## Message Validation
 
@@ -708,10 +709,11 @@ manually encode their own bindings messages.
 ### Custom Validation
 
 It's also possible for developers to define custom validation logic for specific
-Mojom struct types by exploiting the
-[type mapping](/mojo/public/cpp/bindings/README.md#Type-Mapping) system for C++
-bindings. Messages rejected by custom validation logic trigger the same
-validation failure behavior as the built-in type validation routines.
+Mojom struct types by exploiting the type mapping system for
+[C++](/mojo/public/cpp/bindings/README.md#Type-Mapping) or
+[Rust](/mojo/public/rust/bindings/README.md#type-mapping) bindings. Messages
+rejected by custom validation logic trigger the same validation failure behavior
+as the built-in type validation routines.
 
 ## Associated Interfaces
 

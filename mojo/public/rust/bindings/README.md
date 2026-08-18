@@ -352,12 +352,69 @@ Nullable types in Mojom (e.g. `int8?`) correspond to `std::Option`s in Rust
 
 ## Other Mojom Features
 
-The Rust Mojo bindings are still in active development, and most additional
-features are not yet complete.
+The Rust Mojo bindings are still in active development; if there's a feature
+you'd like to see supported, contact the Rust-in-Chrome team
+(<rust-in-chrome@google.com>, or <dloehr@google.com>/<flowerhack@google.com>).
 
 ### Type Mapping
 
-<https://crbug.com/493197810>
+By default, each Mojom struct, enum, or union will generate a _new_ Rust type
+which exactly matches the Mojom definition. However, many of these types already
+have natural representations in Chrome. For example, it can be inconvenient
+to receive a
+[mojom::Url](https://source.chromium.org/chromium/chromium/src/+/main:url/mojom/url.mojom;l=18;drc=7e4e4023dfeb5be7ae4390d5307e544ad92e726f)
+when what you really want is a
+[GURL](https://source.chromium.org/chromium/chromium/src/+/main:url/gurl.rs;l=17;drc=56bd8374da2a6d20fa857cd851e6087287ed6190).
+
+To make this easier, you can configure the Rust bindings to use your custom type
+in place of the automatically-generated Mojom type. To do so, you'll need to
+specify the conversion logic between your types by defining the `From` and
+`TryFrom` traits:
+
+```Rust
+impl From<GURL> for mojom::Url { ... }
+impl TryFrom<mojom::Url> for GURL { ... }
+```
+
+It's possible that the value in the Mojom message will be malformed in some way,
+violating invariants of your type that can't be expressed in Mojom. This is why
+the Mojom to Rust conversion uses `TryFrom`; if the conversion returns an error,
+the message will automatically be reported as malformed.
+
+These definitions should be included in a separate file, typically called
+something like `traits.rs`. As a technical detail, this file will be compiled
+into the auto-generated Mojom crate (to work around the
+[orphan rule](https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait.orphan-rule)).
+
+Once that is done, simply add a `rust_typemaps` entry variable in your `mojom()`
+GN target:
+
+```text
+mojom("my_service") {
+  sources = [ "my_service.mojom" ]
+  generate_rust = true
+  rust_typemaps = [
+    {
+      types = [
+        {
+          mojom = "my_service.mojom.MojomStruct"
+          rust = "RustStruct"
+        },
+      ]
+      traits_file = "my_traits.rs"
+    },
+  ]
+}
+```
+
+Once that's done, any references to `MojomStruct` in generated `interface` code
+will be replaced with `RustStruct`. All conversions will happen automatically,
+behind the scenes.
+
+For a simple working example, see the test suite:
+[test_traits.rs](https://source.chromium.org/chromium/chromium/src/+/main:mojo/public/rust/bindings/test/test_traits.rs).
+
+TODO(crbug.com/547988937): link to an in-production use case instead/as well.
 
 ### Associated Interfaces
 

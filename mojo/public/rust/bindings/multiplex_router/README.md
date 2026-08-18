@@ -8,7 +8,7 @@ observable behavior as the C++ version, but its internals may work differently.
 
 This directory exists to explain the _implementation details_ of multiplex
 routers and associated interfaces. For usage examples, see the higher-level
-Rust Mojo docs.
+[Rust Mojo docs](/mojo/public/rust/bindings/README.md#Associated-Interfaces).
 
 The `MultiplexRouter` code is a submodule of the bindings crate because it is
 fairly complex, but provides a relatively small API to the rest of the crate. We
