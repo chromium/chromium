@@ -89,6 +89,7 @@ ResourceResponse::ResourceResponse()
       was_fetched_via_spdy_(false),
       was_fetched_via_service_worker_(false),
       from_synthetic_response_(false),
+      intercepted_by_plugin_(false),
       did_service_worker_navigation_preload_(false),
       did_use_shared_dictionary_(false),
       async_revalidation_requested_(false),
