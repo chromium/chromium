@@ -142,7 +142,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
     }
 
     /**
-     * Returns true iff {@param accountInfo} contains an
+     * Returns true iff {@code accountInfo} contains an
      * CanShowHistorySyncOptInsWithoutMinorModeRestrictions capability.
      */
     private static boolean hasCapabilities(AccountInfo accountInfo) {

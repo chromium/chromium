@@ -486,7 +486,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /**
-     * Shows {@param snackbar} now if there are no dialogs, or waits until the last dialog is
+     * Shows {@code snackbar} now if there are no dialogs, or waits until the last dialog is
      * dismissed and then shows it.
      *
      * @param snackbar The {@link Snackbar} to show.
@@ -656,7 +656,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     /**
      * @param profile The {@link Profile}.
      * @param settings The settings to check.
-     * @return whether the user's current settings are different from {@param settings}.
+     * @return whether the user's current settings are different from {@code settings}.
      */
     private boolean importedSettingsHavePreferenceChange(
             Profile profile, SyncedSetupSettings settings) {
@@ -699,7 +699,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
 
     /**
      * @param preferences The preferences to check.
-     * @return whether the user's settings differ from {@param preferences} in a way that affects
+     * @return whether the user's settings differ from {@code preferences} in a way that affects
      *     non-NTP pages.
      */
     private boolean importedSettingsAffectNonNtp(Map<String, Object> preferences) {
@@ -733,8 +733,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      * @param preferences The preferences to check.
      * @param userPrefs The user's current preferences.
      * @param key The key of the preference to check.
-     * @return whether the user's current settings are different from {@param preferences} for the
-     *     given {@param key}.
+     * @return whether the user's current settings are different from {@code preferences} for the
+     *     given {@code key}.
      */
     private boolean importedSettingHasPreferenceChange(
             Map<String, Object> preferences, PrefService userPrefs, String key) {
@@ -748,7 +748,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /**
-     * Applies the given {@param settingsToApply}.
+     * Applies the given {@code settingsToApply}.
      *
      * @param profile The {@link Profile}.
      * @param settingsToApply The settings to apply.
@@ -759,7 +759,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /**
-     * Applies the user pref settings from {@param preferencesToApply}.
+     * Applies the user pref settings from {@code preferencesToApply}.
      *
      * @param profile The {@link Profile}.
      * @param preferencesToApply The preferences to apply.
@@ -794,7 +794,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /**
-     * Applies the local state settings from {@param preferencesToApply}.
+     * Applies the local state settings from {@code preferencesToApply}.
      *
      * <p>NOTE: currently, the ONLY local state setting is the omnibox position setting. Refactoring
      * will be required if more local state settings are added in the future.
@@ -841,8 +841,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /**
-     * Logs UMA with suffix {@param suffix} (if {@param nonNtp}, adds a suffix specifying that we
-     * are only working with preferences that affect non-NTP pages).
+     * Logs UMA with suffix {@code suffix} (if {@code nonNtp}, adds a suffix specifying that we are
+     * only working with preferences that affect non-NTP pages).
      */
     private void recordAction(boolean nonNtp, String suffix) {
         StringBuilder action = new StringBuilder("Android.CrossDeviceSettingImport");

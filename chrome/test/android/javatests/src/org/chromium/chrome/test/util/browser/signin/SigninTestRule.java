@@ -157,7 +157,7 @@ public class SigninTestRule implements TestRule {
     }
 
     /**
-     * Resolves the minor mode of {@param accountInfo} to restricted, so that the UI will be safe to
+     * Resolves the minor mode of {@code accountInfo} to restricted, so that the UI will be safe to
      * show to minors.
      */
     public void resolveMinorModeToRestricted(CoreAccountId accountId) {
