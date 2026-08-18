@@ -575,13 +575,13 @@ void ContextHubService::OnFirstPartyAutoTodosFetched(
     return;
   }
 
-  // TODO(crbug.com/540562062): Remove this once state management is handled.
-  auto_todos_store_->Clear(base::DoNothing());
-
   std::vector<AutoTodoEntry> entries;
   entries.reserve(response.todos_size());
   for (const personal_context::proto::AutoTodoItem& todo : response.todos()) {
     AutoTodoEntry entry;
+    if (!todo.id().empty()) {
+      entry.id = todo.id();
+    }
     entry.title = todo.title();
     entry.description = todo.description();
     entry.importance_score = todo.importance_score();

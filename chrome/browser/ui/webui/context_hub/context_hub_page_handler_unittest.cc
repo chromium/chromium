@@ -216,8 +216,6 @@ TEST_F(ContextHubPageHandlerTest, GenerateFirstPartyAutoTodos_Success) {
           base::ok(std::move(any_response)))));
 
   EXPECT_CALL(mock_page_, OnFirstPartyAutoTodosGenerationStateChanged(true));
-  // Initial clearing of the store.
-  EXPECT_CALL(mock_page_, OnAutoTodosChanged(IsEmpty()));
   // Notification after adding the todos.
   EXPECT_CALL(mock_page_, OnAutoTodosChanged(Not(IsEmpty())))
       .WillOnce([](const std::vector<context_hub::AutoTodoEntry>& todos) {
@@ -271,8 +269,6 @@ TEST_F(ContextHubPageHandlerTest,
           base::ok(std::move(any_response)))));
 
   EXPECT_CALL(mock_page_, OnFirstPartyAutoTodosGenerationStateChanged(true));
-  // Initial clearing of the store.
-  EXPECT_CALL(mock_page_, OnAutoTodosChanged(IsEmpty()));
   // Notification after adding the todos.
   EXPECT_CALL(mock_page_, OnAutoTodosChanged(Not(IsEmpty())))
       .WillOnce([](const std::vector<context_hub::AutoTodoEntry>& todos) {
@@ -335,7 +331,7 @@ TEST_F(ContextHubPageHandlerTest, GenerateFirstPartyAutoTodos_Empty) {
           base::ok(std::move(any_response)))));
 
   EXPECT_CALL(mock_page_, OnFirstPartyAutoTodosGenerationStateChanged(true));
-  EXPECT_CALL(mock_page_, OnAutoTodosChanged(IsEmpty())).Times(2);
+  EXPECT_CALL(mock_page_, OnAutoTodosChanged(IsEmpty()));
   EXPECT_CALL(mock_page_, OnFirstPartyAutoTodosGenerationStateChanged(false));
 
   base::test::TestFuture<bool> future;

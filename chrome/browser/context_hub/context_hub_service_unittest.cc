@@ -61,6 +61,7 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::FieldsAre;
 using ::testing::IsEmpty;
+using ::testing::UnorderedElementsAre;
 
 class MockServiceObserver : public ContextHubService::Observer {
  public:
@@ -242,8 +243,6 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
   observation.Observe(&service_);
 
   EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(true));
-  // Initial clearing of the store.
-  EXPECT_CALL(observer, OnAutoTodosChanged(IsEmpty()));
   // Notification after adding the todos.
   EXPECT_CALL(observer,
               OnAutoTodosChanged(ElementsAre(AllOf(
@@ -259,7 +258,7 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
 }
 
 TEST_F(ContextHubServiceTest,
-       GenerateFirstPartyAutoTodos_PopulatesExistingTodosInRequest) {
+       GenerateFirstPartyAutoTodos_UpdatesExistingTodoWithId) {
   // Add an existing first-party todo to the cache.
   AutoTodoEntry first_party_entry;
   first_party_entry.id = "todo_1";
@@ -277,7 +276,8 @@ TEST_F(ContextHubServiceTest,
                           add_fp_future.GetCallback());
   EXPECT_TRUE(add_fp_future.Get());
 
-  // Add an existing third-party tab todo to verify it is filtered out.
+  // Add an existing third-party tab todo to verify it is filtered out from the
+  // request, but preserved in the cache.
   AutoTodoEntry third_party_entry;
   third_party_entry.id = "todo_2";
   third_party_entry.title = "Tab Todo";
@@ -288,14 +288,29 @@ TEST_F(ContextHubServiceTest,
                           add_tp_future.GetCallback());
   EXPECT_TRUE(add_tp_future.Get());
 
+  // Prepare a mock response returning todo_1 with its existing metadata
+  // preserved with the addition of a second source reference.
   personal_context::proto::AutoTodosResponse expected_response;
   auto* todo = expected_response.add_todos();
-  todo->set_title("New Todo");
-  todo->set_description("New Description");
+  todo->set_id("todo_1");
+  todo->set_title("Existing First Party Todo");
+  todo->set_description("Existing Description");
+  todo->set_importance_score(0.85f);
+  todo->set_actionable_url("https://example.com/action");
+  personal_context::proto::GmailReference* ref1 =
+      todo->add_source_references()->mutable_gmail();
+  ref1->set_message_url("https://mail.google.com/123");
+  ref1->set_subject("Test Subject");
+  personal_context::proto::GmailReference* ref2 =
+      todo->add_source_references()->mutable_gmail();
+  ref2->set_message_url("https://mail.google.com/456");
+  ref2->set_subject("Additional Subject");
 
   personal_context::proto::Any any_response;
   expected_response.SerializeToString(any_response.mutable_value());
 
+  // Verify that the request correctly populates existing first-party todos with
+  // all their fields, and excludes third-party todos.
   EXPECT_CALL(
       mock_personal_context_service_,
       FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
@@ -332,9 +347,106 @@ TEST_F(ContextHubServiceTest,
                 base::ok(std::move(any_response))));
           });
 
+  // Set up observers to verify generation state changes and updated todo list.
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(true));
+  EXPECT_CALL(
+      observer,
+      OnAutoTodosChanged(UnorderedElementsAre(
+          AllOf(Field(&AutoTodoEntry::id, "todo_1"),
+                Field(&AutoTodoEntry::title, "Existing First Party Todo"),
+                Field(&AutoTodoEntry::description, "Existing Description"),
+                Field(&AutoTodoEntry::importance_score, 0.85f)),
+          AllOf(Field(&AutoTodoEntry::id, "todo_2"),
+                Field(&AutoTodoEntry::title, "Tab Todo")))));
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(false));
+
+  // Trigger generation and verify completion.
   base::test::TestFuture<bool> future;
   service_.GenerateFirstPartyAutoTodos(future.GetCallback());
   EXPECT_TRUE(future.Get());
+
+  // Verify the cache contains both the updated 1p todo (including the
+  // updated source references) and unchanged 3p todo.
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service_.GetAutoTodos(get_future.GetCallback());
+  auto items = get_future.Get();
+  ASSERT_EQ(items.size(), 2u);
+
+  EXPECT_EQ(items[0].id, "todo_1");
+  EXPECT_EQ(items[0].title, "Existing First Party Todo");
+  EXPECT_EQ(items[0].description, "Existing Description");
+  EXPECT_FLOAT_EQ(items[0].importance_score, 0.85f);
+  ASSERT_TRUE(items[0].is_first_party());
+  const auto* fp_data = std::get_if<FirstPartyData>(&items[0].data);
+  ASSERT_TRUE(fp_data);
+  EXPECT_EQ(fp_data->actionable_url, GURL("https://example.com/action"));
+  ASSERT_EQ(fp_data->source_references.size(), 2u);
+  EXPECT_EQ(fp_data->source_references[0].url,
+            GURL("https://mail.google.com/123"));
+  EXPECT_EQ(fp_data->source_references[0].subject, "Test Subject");
+  EXPECT_EQ(fp_data->source_references[1].url,
+            GURL("https://mail.google.com/456"));
+  EXPECT_EQ(fp_data->source_references[1].subject, "Additional Subject");
+}
+
+TEST_F(ContextHubServiceTest,
+       GenerateFirstPartyAutoTodos_AddsNewTodoWithoutId) {
+  // Add an existing first-party todo to the cache (store will assign "todo_1"
+  // and advance the auto-id counter).
+  AutoTodoEntry first_party_entry;
+  first_party_entry.title = "Existing First Party Todo";
+
+  base::test::TestFuture<bool> add_fp_future;
+  service_.UpdateAutoTodo(std::move(first_party_entry),
+                          add_fp_future.GetCallback());
+  EXPECT_TRUE(add_fp_future.Get());
+
+  // Response returns a new todo without an ID.
+  personal_context::proto::AutoTodosResponse expected_response;
+  auto* todo = expected_response.add_todos();
+  todo->set_title("New Auto Todo");
+  todo->set_description("New Description");
+
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(std::move(any_response)))));
+
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(true));
+  EXPECT_CALL(
+      observer,
+      OnAutoTodosChanged(UnorderedElementsAre(
+          AllOf(Field(&AutoTodoEntry::id, "todo_1"),
+                Field(&AutoTodoEntry::title, "Existing First Party Todo")),
+          AllOf(Field(&AutoTodoEntry::id, "todo_2"),
+                Field(&AutoTodoEntry::title, "New Auto Todo"),
+                Field(&AutoTodoEntry::description, "New Description")))));
+  EXPECT_CALL(observer, OnFirstPartyAutoTodosGenerationStateChanged(false));
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+
+  // Verify that the new todo is in the cache, along with the existing todo.
+  base::test::TestFuture<std::vector<AutoTodoEntry>> get_future;
+  service_.GetAutoTodos(get_future.GetCallback());
+  auto items = get_future.Get();
+  EXPECT_EQ(items.size(), 2u);
 }
 
 TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceError) {
