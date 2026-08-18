@@ -226,15 +226,6 @@ content::WebContents* GetActiveWebContents() {
   return tab->GetContents();
 }
 
-ContentInfoBarManager* GetActiveTabInfoBarManager() {
-  content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents) {
-    return nullptr;
-  }
-
-  return ContentInfoBarManager::FromWebContents(web_contents);
-}
-
 // Keeps `infobar` from reporting a result when it goes away. Every infobar
 // here was created by this manager, so the cast is safe.
 void SuppressInfoBarResult(infobars::InfoBar* infobar) {
@@ -282,43 +273,45 @@ bool BrowserInfoBarManager::IsRegistered(
   return registered_specs_.contains(identifier);
 }
 
-void BrowserInfoBarManager::Show(
+infobars::InfoBar* BrowserInfoBarManager::Show(
     tabs::TabInterface* tab,
     infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
   auto it = registered_specs_.find(identifier);
   if (it == registered_specs_.end()) {
-    return;
+    return nullptr;
   }
   CHECK(tab);
   CHECK(it->second.scope() == InfoBarScope::kTab);
 
   auto* contents = tab->GetContents();
   if (!contents) {
-    return;
+    return nullptr;
   }
 
   auto* manager = ContentInfoBarManager::FromWebContents(contents);
   if (!manager) {
-    return;
+    return nullptr;
   }
-  if (manager->AddInfoBar(CreateConfirmInfoBar(
+  if (auto* added_infobar = manager->AddInfoBar(CreateConfirmInfoBar(
           std::make_unique<RegistryInfoBarDelegate>(it->second, contents)))) {
     base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
+    return added_infobar;
   }
+  return nullptr;
 }
 
-void BrowserInfoBarManager::ShowGlobally(
+bool BrowserInfoBarManager::ShowGlobally(
     infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
   auto it = registered_specs_.find(identifier);
   if (it == registered_specs_.end()) {
-    return;
+    return false;
   }
   CHECK(it->second.scope() == InfoBarScope::kGlobal);
 
   const InfoBarSpec& spec = it->second;
 
   if (active_global_infobars_.contains(identifier)) {
-    return;
+    return false;
   }
   active_global_infobars_[identifier] = GlobalInfoBarContext{.spec = spec};
 
@@ -356,6 +349,40 @@ void BrowserInfoBarManager::ShowGlobally(
   if (added_any_infobars) {
     base::UmaHistogramSparse("InfoBar.Centralized.Show", identifier);
   }
+  return added_any_infobars;
+}
+
+void BrowserInfoBarManager::Hide(
+    content::WebContents* web_contents,
+    infobars::InfoBarDelegate::InfoBarIdentifier identifier) {
+  auto it = registered_specs_.find(identifier);
+  if (it == registered_specs_.end()) {
+    return;
+  }
+  CHECK(web_contents);
+
+  auto* manager = ContentInfoBarManager::FromWebContents(web_contents);
+  if (!manager) {
+    return;
+  }
+
+  for (infobars::InfoBar* infobar : manager->infobars()) {
+    if (infobar->delegate()->GetIdentifier() != identifier ||
+        IsTrackedGlobalInstance(infobar)) {
+      continue;
+    }
+    RemoveInfoBarWithoutResult(manager, infobar);
+    break;
+  }
+}
+
+void BrowserInfoBarManager::Hide(infobars::InfoBar* infobar) {
+  CHECK(infobar);
+  infobars::InfoBarManager* owner = infobar->owner();
+  if (!owner) {
+    return;
+  }
+  RemoveInfoBarWithoutResult(owner, infobar);
 }
 
 void BrowserInfoBarManager::Hide(
@@ -368,17 +395,11 @@ void BrowserInfoBarManager::Hide(
   const InfoBarSpec& spec = it->second;
 
   if (spec.scope() == InfoBarScope::kTab) {
-    auto* manager = GetActiveTabInfoBarManager();
-    if (!manager) {
+    content::WebContents* active_contents = GetActiveWebContents();
+    if (!active_contents) {
       return;
     }
-
-    for (infobars::InfoBar* infobar : manager->infobars()) {
-      if (infobar->delegate()->GetIdentifier() == identifier) {
-        RemoveInfoBarWithoutResult(manager, infobar);
-        break;
-      }
-    }
+    Hide(active_contents, identifier);
   } else if (spec.scope() == InfoBarScope::kGlobal) {
     auto active_it = active_global_infobars_.find(identifier);
     if (active_it != active_global_infobars_.end()) {
@@ -536,6 +557,20 @@ bool BrowserInfoBarManager::IsGlobal(
   auto it = registered_specs_.find(identifier);
   return it != registered_specs_.end() &&
          it->second.scope() == InfoBarScope::kGlobal;
+}
+
+bool BrowserInfoBarManager::IsTrackedGlobalInstance(
+    infobars::InfoBar* infobar) const {
+  auto it = active_global_infobars_.find(infobar->delegate()->GetIdentifier());
+  if (it == active_global_infobars_.end()) {
+    return false;
+  }
+  for (const auto& [manager, tracked] : it->second.active_instances) {
+    if (tracked == infobar) {
+      return true;
+    }
+  }
+  return false;
 }
 
 BrowserWindowInterface* BrowserInfoBarManager::FindBrowserWithWebContents(

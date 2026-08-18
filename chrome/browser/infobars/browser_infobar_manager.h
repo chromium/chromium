@@ -43,21 +43,36 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
 
   static BrowserInfoBarManager* From(BrowserProcess* browser_process);
 
-  // Registers an InfoBarSpec with the manager.
+  // Registers a spec. Each identifier can only be registered once.
   void Register(InfoBarSpec spec);
 
   // Returns true if an InfoBarSpec with the given identifier is registered.
   bool IsRegistered(
       infobars::InfoBarDelegate::InfoBarIdentifier identifier) const;
 
-  // Shows the InfoBar with the given identifier for a specific Tab.
-  void Show(tabs::TabInterface* tab,
+  // Shows the infobar in `tab`. Returns the added infobar, or null if none
+  // was added. The infobar can be closed (and destroyed) at any time; a
+  // caller that retains the pointer must hold it via InfoBar::AsWeakPtr().
+  infobars::InfoBar* Show(
+      tabs::TabInterface* tab,
+      infobars::InfoBarDelegate::InfoBarIdentifier identifier);
+
+  // Shows the infobar in every browser. Returns true if any instance was
+  // added.
+  bool ShowGlobally(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
+
+  // Hides the infobar in `web_contents`. Removes tab-scoped instances;
+  // instances tracked by the global machinery are skipped (use the
+  // identifier-only overload).
+  void Hide(content::WebContents* web_contents,
             infobars::InfoBarDelegate::InfoBarIdentifier identifier);
 
-  // Shows the InfoBar with the given identifier globally.
-  void ShowGlobally(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
+  // Removes an infobar returned by Show() without reporting a result. No-op
+  // if the infobar is already closing.
+  void Hide(infobars::InfoBar* infobar);
 
-  // Hides the InfoBar with the given identifier.
+  // Hides the infobar. For kTab scope this only reaches the last-active
+  // browser's active tab; prefer the WebContents overload.
   void Hide(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
 
   // BrowserCollectionObserver:
@@ -75,6 +90,7 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
 
   void OnActiveTabChanged(BrowserWindowInterface* browser);
   bool IsGlobal(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
+  bool IsTrackedGlobalInstance(infobars::InfoBar* infobar) const;
   BrowserWindowInterface* FindBrowserWithWebContents(
       content::WebContents* web_contents);
 

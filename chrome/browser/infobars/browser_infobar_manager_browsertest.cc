@@ -609,6 +609,74 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
   EXPECT_EQ(InfoBarResult::kDismissed, results[0]);
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, IsRegistered) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  EXPECT_FALSE(manager()->IsRegistered(identifier));
+
+  manager()->Register(
+      InfoBarSpec::Builder(identifier).SetMessageText(u"Test Message").Build());
+  EXPECT_TRUE(manager()->IsRegistered(identifier));
+  EXPECT_FALSE(
+      manager()->IsRegistered(InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       ShowReturnsWhetherInfoBarWasAdded) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+
+  // Not registered yet.
+  EXPECT_FALSE(manager()->Show(tab, identifier));
+
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Test Message")
+                          .SetScope(InfoBarScope::kTab)
+                          .Build());
+
+  infobars::InfoBar* infobar = manager()->Show(tab, identifier);
+  ASSERT_TRUE(infobar);
+
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(tab->GetContents());
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  EXPECT_EQ(infobar, infobar_manager->infobars()[0]);
+
+  // An equal infobar is already showing, so the second call is a no-op.
+  EXPECT_FALSE(manager()->Show(tab, identifier));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       HideForWebContentsRemovesFromBackgroundTab) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  std::vector<InfoBarResult> results;
+  manager()->Register(InfoBarSpec::Builder(identifier)
+                          .SetMessageText(u"Test Message")
+                          .SetScope(InfoBarScope::kTab)
+                          .SetResultCallback(base::BindLambdaForTesting(
+                              [&](content::WebContents*, InfoBarResult result) {
+                                results.push_back(result);
+                              }))
+                          .Build());
+
+  // Show on a tab, then background it by opening a new active tab. The old
+  // Hide(identifier) overload could not reach infobars on background tabs.
+  tabs::TabInterface* background_tab =
+      browser()->tab_strip_model()->GetActiveTab();
+  content::WebContents* background_contents = background_tab->GetContents();
+  manager()->Show(background_tab, identifier);
+
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(background_contents);
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+
+  manager()->Hide(background_contents, identifier);
+  EXPECT_EQ(0u, infobar_manager->infobars().size());
+
+  // A programmatic hide is not a terminal outcome, so nothing is reported.
+  EXPECT_TRUE(results.empty());
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, CentralizedMetrics) {
   base::HistogramTester histogram_tester;
   const auto identifier = InfoBarDelegate::TEST_INFOBAR;
