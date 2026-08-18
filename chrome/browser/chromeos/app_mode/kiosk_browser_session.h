@@ -29,6 +29,10 @@ namespace extensions {
 class AppWindow;
 }
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 namespace chromeos {
 
 class KioskSessionPluginHandler;

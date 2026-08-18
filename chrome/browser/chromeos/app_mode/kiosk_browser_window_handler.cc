@@ -21,11 +21,10 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller_ash.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_init_state.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -37,6 +36,10 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
+namespace aura {
+class Window;
+}
+
 namespace chromeos {
 
 namespace {
@@ -45,9 +48,8 @@ constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
 
 #define WINDOW_ALLOWED true
 
-void MakeWindowResizable(BrowserWindow* window) {
-  views::Widget* widget =
-      views::Widget::GetWidgetForNativeWindow(window->GetNativeWindow());
+void MakeWindowResizable(aura::Window* window) {
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   if (widget) {
     widget->widget_delegate()->SetCanResize(true);
   }
@@ -228,7 +230,7 @@ bool KioskBrowserWindowHandler::PreTriageNewBrowserWindowWithoutUrl(
   }
 
   if (IsDevToolsAllowedBrowser(browser)) {
-    MakeWindowResizable(BrowserWindow::FromBrowser(browser));
+    MakeWindowResizable(browser->GetWindow()->GetNativeWindow());
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
         KioskBrowserWindowType::kOpenedDevToolsBrowser);
@@ -237,7 +239,7 @@ bool KioskBrowserWindowHandler::PreTriageNewBrowserWindowWithoutUrl(
   }
 
   if (IsNormalTroubleshootingBrowserAllowed(browser)) {
-    MakeWindowResizable(BrowserWindow::FromBrowser(browser));
+    MakeWindowResizable(browser->GetWindow()->GetNativeWindow());
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
         KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
