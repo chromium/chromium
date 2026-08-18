@@ -409,6 +409,11 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
       }
     }
 
+    // `handler_` must be reset before the profile is destroyed (via
+    // `TearDownGlobalFeaturesForTesting()`) because it holds a pointer to the
+    // profile and may access profile-owned services during destruction.
+    handler_.reset();
+
 #if BUILDFLAG(IS_CHROMEOS)
     scoped_user_manager_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS)

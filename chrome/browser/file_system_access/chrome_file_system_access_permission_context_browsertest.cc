@@ -166,10 +166,17 @@ class ChromeFileSystemAccessPermissionContextBrowserTestBase
                                                   permission_context_.get());
   }
 
+  void TearDownOnMainThread() override {
+    content::SetFileSystemAccessPermissionContext(
+        browser()->GetProfile(),
+        /*permission_context=*/nullptr);
+    permission_context_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   void TearDown() override {
     InProcessBrowserTest::TearDown();
     ASSERT_TRUE(temp_dir_.Delete());
-    permission_context_.reset();
   }
 
  protected:

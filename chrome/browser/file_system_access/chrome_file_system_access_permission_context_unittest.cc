@@ -544,10 +544,15 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   base::ScopedTempDir profile_dir_;
-  std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<WebContents> web_contents_;
+  // `permission_context_` must be declared after `profile_` (and
+  // `web_contents_`) so that it is destroyed BEFORE them. The base class
+  // `ObjectPermissionContextBase` holds a raw pointer to
+  // `HostContentSettingsMap` (owned by `profile_`) and accesses it during
+  // destruction, so the profile must outlive the context.
+  std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
