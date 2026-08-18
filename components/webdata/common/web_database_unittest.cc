@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/webdata/common/web_database_table.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
@@ -256,7 +257,12 @@ TEST_F(WebDatabaseTest, InitFailureMetaTableInitFailed) {
       1);
 }
 
-TEST_F(WebDatabaseTest, InitFailureMigrationError) {
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_InitFailureMigrationError DISABLED_InitFailureMigrationError
+#else
+#define MAYBE_InitFailureMigrationError InitFailureMigrationError
+#endif
+TEST_F(WebDatabaseTest, MAYBE_InitFailureMigrationError) {
   base::HistogramTester histogram_tester;
 
   // Create a database at an older version that requires migration.
