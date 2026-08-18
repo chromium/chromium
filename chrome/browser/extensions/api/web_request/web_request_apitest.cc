@@ -5,6 +5,7 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -772,6 +774,62 @@ class ExtensionWebRequestApiTestWithContextType
   base::test::ScopedFeatureList feature_background_resource_fetch_;
 };
 
+// Runs tests for each background context type and kBackgroundResourceFetch
+// state, with kWebRequestPerContextEventDispatch disabled (legacy) and
+// enabled (per-context).
+class ExtensionWebRequestApiDispatchModeTestWithContextType
+    : public ExtensionWebRequestApiTest,
+      public testing::WithParamInterface<
+          std::tuple<ContextType, BackgroundResourceFetchTestCase, bool>> {
+ public:
+  ExtensionWebRequestApiDispatchModeTestWithContextType()
+      : ExtensionWebRequestApiTest(GetContextType()) {
+    // Same kLocalNetworkAccessChecks and kBackgroundResourceFetch setup as
+    // ExtensionWebRequestApiTestWithContextType; see the TODO there.
+    feature_list_.InitWithFeatureStates(
+        {{network::features::kLocalNetworkAccessChecks, false},
+         {blink::features::kBackgroundResourceFetch,
+          IsBackgroundResourceFetchEnabled()},
+         {extensions_features::kWebRequestPerContextEventDispatch,
+          IsPerContextDispatch()}});
+  }
+  ExtensionWebRequestApiDispatchModeTestWithContextType(
+      const ExtensionWebRequestApiDispatchModeTestWithContextType&) = delete;
+  ExtensionWebRequestApiDispatchModeTestWithContextType& operator=(
+      const ExtensionWebRequestApiDispatchModeTestWithContextType&) = delete;
+  ~ExtensionWebRequestApiDispatchModeTestWithContextType() override = default;
+
+  // Names a test instance after its kBackgroundResourceFetch state and dispatch
+  // mode, e.g. "BackgroundResourceFetchEnabled_LegacyDispatch". The
+  // instantiation prefix names the context type.
+  struct PrintToStringParamName {
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      const auto& [context_type, background_resource_fetch,
+                   per_context_dispatch] = info.param;
+      const bool background_resource_fetch_enabled =
+          background_resource_fetch ==
+          BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled;
+      return base::StrCat(
+          {background_resource_fetch_enabled
+               ? "BackgroundResourceFetchEnabled"
+               : "BackgroundResourceFetchDisabled",
+           per_context_dispatch ? "_PerContextDispatch" : "_LegacyDispatch"});
+    }
+  };
+
+ protected:
+  static ContextType GetContextType() { return std::get<0>(GetParam()); }
+  static bool IsBackgroundResourceFetchEnabled() {
+    return std::get<1>(GetParam()) ==
+           BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled;
+  }
+  static bool IsPerContextDispatch() { return std::get<2>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that use this class are checking for a sub-resource HSTS upgrade.
 // Because kHstsTopLevelNavigationsOnly explicitly disallows sub-resource
 // upgrades it needs to be disabled for these tests to pass.
@@ -877,6 +935,32 @@ INSTANTIATE_TEST_SUITE_P(
             BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
     ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
 
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackground,
+    ExtensionWebRequestApiDispatchModeTestWithContextType,
+    ::testing::Combine(
+        ::testing::Values(ContextType::kPersistentBackground),
+        ::testing::Values(
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled,
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled),
+        /*per_context_dispatch=*/::testing::Bool()),
+    ExtensionWebRequestApiDispatchModeTestWithContextType::
+        PrintToStringParamName());
+
+// These tests use webRequestBlocking and/or declarativeWebRequest.
+// See crbug.com/332512510.
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    ExtensionWebRequestApiDispatchModeTestWithContextType,
+    ::testing::Combine(
+        ::testing::Values(ContextType::kServiceWorkerMV2),
+        ::testing::Values(
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled,
+            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled),
+        /*per_context_dispatch=*/::testing::Bool()),
+    ExtensionWebRequestApiDispatchModeTestWithContextType::
+        PrintToStringParamName());
+
 // These tests use webRequestBlocking and/or declarativeWebRequest.
 // See crbug.com/332512510.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -979,14 +1063,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsFrontendInWebRequestApiTest, HiddenRequests) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiDispatchModeTestWithContextType,
                        WebRequestApi) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_api")) << message_;
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiDispatchModeTestWithContextType,
                        WebRequestSimple) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_simple")) << message_;
@@ -1547,7 +1631,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTestVariousContext,
   RunAuthRequiredTestForSubResource();
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiDispatchModeTestWithContextType,
                        WebRequestBlocking) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_blocking",
@@ -1577,7 +1661,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest("webrequest/test_blocking_cookie")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiDispatchModeTestWithContextType,
                        WebRequestExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_extra_headers")) << message_;
@@ -1598,80 +1682,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       << message_;
 }
 
-// Fixtures that pin the dispatch mode so the CORS test runs under both legacy
-// and per-context dispatch for each configuration.
-class ExtensionWebRequestApiLegacyDispatchTestWithContextType
-    : public ExtensionWebRequestApiTestWithContextType {
- public:
-  ExtensionWebRequestApiLegacyDispatchTestWithContextType() {
-    feature_list_.InitAndDisableFeature(
-        extensions_features::kWebRequestPerContextEventDispatch);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class ExtensionWebRequestApiPerContextDispatchTestWithContextType
-    : public ExtensionWebRequestApiTestWithContextType {
- public:
-  ExtensionWebRequestApiPerContextDispatchTestWithContextType() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kWebRequestPerContextEventDispatch);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    PersistentBackground,
-    ExtensionWebRequestApiLegacyDispatchTestWithContextType,
-    ::testing::Values(
-        std::make_pair(
-            ContextType::kPersistentBackground,
-            BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled),
-        std::make_pair(
-            ContextType::kPersistentBackground,
-            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
-    ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
-
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    ExtensionWebRequestApiLegacyDispatchTestWithContextType,
-    ::testing::Values(
-        std::make_pair(
-            ContextType::kServiceWorkerMV2,
-            BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled),
-        std::make_pair(
-            ContextType::kServiceWorkerMV2,
-            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
-    ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
-
-INSTANTIATE_TEST_SUITE_P(
-    PersistentBackground,
-    ExtensionWebRequestApiPerContextDispatchTestWithContextType,
-    ::testing::Values(
-        std::make_pair(
-            ContextType::kPersistentBackground,
-            BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled),
-        std::make_pair(
-            ContextType::kPersistentBackground,
-            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
-    ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
-
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    ExtensionWebRequestApiPerContextDispatchTestWithContextType,
-    ::testing::Values(
-        std::make_pair(
-            ContextType::kServiceWorkerMV2,
-            BackgroundResourceFetchTestCase::kBackgroundResourceFetchEnabled),
-        std::make_pair(
-            ContextType::kServiceWorkerMV2,
-            BackgroundResourceFetchTestCase::kBackgroundResourceFetchDisabled)),
-    ExtensionWebRequestApiTestWithContextType::PrintToStringParamName());
-
 // TODO: crbug.com/40915577 - Re-enable tests on Mac and CrOS.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_WebRequestCORSWithExtraHeaders \
@@ -1679,15 +1689,8 @@ INSTANTIATE_TEST_SUITE_P(
 #else
 #define MAYBE_WebRequestCORSWithExtraHeaders WebRequestCORSWithExtraHeaders
 #endif
-IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiLegacyDispatchTestWithContextType,
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiDispatchModeTestWithContextType,
                        MAYBE_WebRequestCORSWithExtraHeaders) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunExtensionTest("webrequest/test_cors")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_P(
-    ExtensionWebRequestApiPerContextDispatchTestWithContextType,
-    MAYBE_WebRequestCORSWithExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_cors")) << message_;
 }
@@ -6797,7 +6800,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, WebRequestBlocking) {
 // Tests an extension returning a promise from a webRequest blocking handler to
 // deliver an async response. This is only available to policy-installed
 // extensions.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
                        WebRequestBlockingWithPromises_PromiseResolves) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
@@ -6856,7 +6859,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 
 // Tests an extension returning a promise that rejects from a webRequest
 // blocking handler. The request should proceed.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
                        WebRequestBlockingWithPromises_PromiseRejects) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
@@ -6917,7 +6920,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests an extension returning a promise that never resolves from a webRequest
 // blocking handler. The request should hang forever.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
                        WebRequestBlockingWithPromises_PromiseHangs) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
@@ -6972,10 +6975,10 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests a service worker-based extension registering multiple webRequest events
-// in multiple contexts. This ensures the subevent name logic for service worker
-// extensions doesn't result in any collisions of listener IDs, similar to the
-// issue found in https://crbug.com/40215092.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+// in multiple contexts. This ensures listener identities (sub-event names under
+// legacy dispatch, tracked listener IDs under per-context dispatch) don't
+// collide, similar to the issue found in https://crbug.com/40215092.
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
                        MultipleListenersAndContexts) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
@@ -7086,7 +7089,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 
 // Tests that a service worker-based extension with webRequestBlocking can
 // intercept requests after the service worker stops.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
                        WebRequestBlocking_AfterWorkerShutdown) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
@@ -7154,7 +7157,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 // Tests that a service worker-based extension with webRequestBlocking that
 // registers listeners conditionally doesn't hang the browser.
 // Regression test for crbug.com/467448815.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
                        WebRequestBlocking_ListenersRegisteredConditionally) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
@@ -7264,7 +7267,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
 // versa). This test verifies that lazy events are properly scoped to the
 // originating browser context and neither service worker is unnecessarily
 // woken up.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
                        LazyDispatchDoesNotWakeIncognitoSplitModeWorker) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -8014,7 +8017,7 @@ IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
 }
 
 // Tests listeners in multiple contexts with lazy event dispatching.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
                        ListenersInMultipleContextsWithLazyDispatch) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
@@ -8230,7 +8233,8 @@ IN_PROC_BROWSER_TEST_F(
 // TODO(crbug.com/371324825): Port to desktop Android. The navigation to the
 // auth URL fails. Perhaps the webRequestAuthProvider permission isn't working,
 // or Android handles http auth differently than desktop platforms.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequiredTab) {
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
+                       TestOnAuthRequiredTab) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   static constexpr char kManifest[] =
@@ -8568,7 +8572,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAuthTest,
 // asynchronously.
 // Regression test for https://crbug.com/40882914 and
 // https://crbug.com/40904083.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
+                       AsyncListenerRegistration) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
       R"({
@@ -8803,7 +8808,7 @@ IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestServiceWorkerAutoPreloadTest,
 }
 
 // Tests behavior when a service worker is stopped while processing an event.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
                        ServiceWorkerGoesAwayWhileHandlingRequest) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
