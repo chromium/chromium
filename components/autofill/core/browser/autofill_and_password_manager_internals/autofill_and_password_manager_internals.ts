@@ -697,6 +697,7 @@ function setUpScopeCheckboxes() {
     {id: 'AutofillAi'},
     {id: 'AutofillActor'},
     {id: 'OneTimeTokens'},
+    {id: 'AtMemory'},
   ];
 
   interface ScopeCheckbox {
