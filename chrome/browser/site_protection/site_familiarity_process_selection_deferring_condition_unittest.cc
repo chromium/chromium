@@ -1036,6 +1036,31 @@ TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest, SearchUrl) {
   CheckSiteFamiliar(navigation_handle);
 }
 
+// Test that an insecure HTTP navigation matching the DSE search URL is deferred
+// and is unfamiliar, rather than taking the DSE fast-path.
+TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest,
+       InsecureHttpSearchUrl) {
+  GURL kHttpSearchUrl("http://www.example.com/search?q=test2");
+  SetSiteEngagementScore(kHttpSearchUrl,
+                         kMinSiteEngagementScoreForFamiliarity - 1);
+  content::MockNavigationHandle navigation_handle(kHttpSearchUrl, main_rfh());
+  base::HistogramTester histogram_tester;
+  MockConditionCallback callback;
+  SiteFamiliarityProcessSelectionDeferringCondition condition(
+      navigation_handle);
+
+  EXPECT_EQ(content::ProcessSelectionDeferringCondition::Result::kDefer,
+            condition.OnWillSelectFinalProcess(callback.Get()));
+
+  // Complete history fetch.
+  raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
+      static_cast<ManualCallbackEmptyHistoryService*>(history_service());
+  mock_history_service->RunNextCallback();
+  CheckSiteUnfamiliar(navigation_handle);
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationDurationHistogram, 1);
+}
+
 // Test that a navigation to a non-search page on the DSE's origin is deferred
 // and is unfamiliar.
 TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest,

@@ -114,6 +114,12 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
 
   if (base::FeatureList::IsEnabled(
           kSkipSiteFamiliarityDeferralForDefaultSearchEngine) &&
+      // TemplateURLRef::ExtractSearchTermsFromURL only compares host, port and
+      // path; it never compares scheme. Restrict the fast-path to cryptographic
+      // schemes so an on-path attacker serving http://<dse-host>/<dse-path>
+      // cannot inherit the DSE's "familiar" verdict and obtain a renderer with
+      // the V8 optimizing tiers enabled.
+      fetch_url_.SchemeIsCryptographic() &&
       IsDefaultSearchEngineUrl(fetch_url_, profile_)) {
     // Assume the default search engine search results are familiar to the user.
     CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
