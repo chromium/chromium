@@ -765,6 +765,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Length of the buffer passed in Read().
   int read_buf_len_ = 0;
 
+  scoped_refptr<IOBuffer> cache_buf_;
   int io_buf_len_ = 0;
   int read_offset_ = 0;
   // Disk offset for reads on the compressed cache path. Advances by the
