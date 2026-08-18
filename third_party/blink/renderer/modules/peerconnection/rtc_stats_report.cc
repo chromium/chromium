@@ -54,14 +54,11 @@ T StatsConversionHelper(const T& value) {
 String StatsConversionHelper(const std::string& value) {
   return String::FromUtf8(value);
 }
-uint32_t StatsConversionHelper(const uint64_t& value) {
-  return base::saturated_cast<uint32_t>(value);
-}
 
 // Macro to reduce the transformation between WebRTC and v8 values
 // to a single line. Arguments are the webrtc stat and the equivalent
 // v8 setter function. Uses StatsConversionHelper to specialize for
-// std::string -> String::FromUtf8 and uint64_t -> uint32_t.
+// std::string -> String::FromUtf8.
 #define SET_STAT(webrtc_stat, v8_setter)            \
   if (webrtc_stat.has_value()) {                    \
     v8_setter(StatsConversionHelper(*webrtc_stat)); \
@@ -420,8 +417,6 @@ RTCAudioPlayoutStats* ToV8Stat(
     v8_stat->setSynthesizedSamplesEvents(base::saturated_cast<uint32_t>(
         *webrtc_stat.synthesized_samples_events));
   }
-  SET_STAT(webrtc_stat.synthesized_samples_events,
-           v8_stat->setSynthesizedSamplesEvents);
   SET_STAT(webrtc_stat.total_samples_duration,
            v8_stat->setTotalSamplesDuration);
   SET_STAT(webrtc_stat.total_playout_delay, v8_stat->setTotalPlayoutDelay);
