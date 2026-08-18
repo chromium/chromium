@@ -1,0 +1,26 @@
+Name: Multimedia Redirection API
+Short Name: multimedia-redirection
+URL: https://github.com/microsoft/multimedia-redirection
+Version: N/A
+Revision: 8b1d8893d126547309f1bab8d8232418aa7c7109
+Update Mechanism: Autoroll
+License: MIT
+License File: src/LICENSE
+Security Critical: no
+Shipped: yes
+CPEPrefix: unknown
+
+Description:
+Multimedia redirection (MMR) is an optional Windows component available on
+virtual machines. When present, applications can use this API to redirect audio
+and video playback from the virtual machine to the client that is accessing it
+remotely, which saves resources on the VM and improves playback quality.
+
+This dependency provides the API surface only: api/Mmr.idl, the MIDL-generated
+api/Mmr_h.h declaring the IMMR* COM interfaces, and api/Mmr_i.c defining the
+matching IID_* GUIDs. The samples/ directory is not compiled into Chromium.
+The code compiled into Chromium is therefore limited to interface declarations
+and GUID constants, with no executable logic and no input parsing, and the MMR
+implementation itself is a Windows component reached over COM.
+
+Local Modifications: None.

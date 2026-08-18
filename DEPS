@@ -2691,6 +2691,11 @@ deps = {
     'condition': 'checkout_win',
   },
 
+  'src/third_party/microsoft_multimedia_redirection/src': {
+    'url': Var('chromium_git') + '/external/github.com/microsoft/multimedia-redirection.git' + '@' + '8b1d8893d126547309f1bab8d8232418aa7c7109',
+    'condition': 'checkout_win',
+  },
+
   'src/third_party/microsoft_webauthn/src': {
     'url': Var('chromium_git') + '/external/github.com/microsoft/webauthn.git' + '@' + 'ef82c157125a0490e05f6ea82a7adb1b8e1bad08',
     'condition': 'checkout_win',

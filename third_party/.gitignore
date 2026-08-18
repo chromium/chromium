@@ -93,6 +93,7 @@
 /llvm-libclang
 /mesa/src
 /microsoft_dxheaders/src
+/microsoft_multimedia_redirection/src
 /webauthn/src
 /mingw-w64
 /mkl

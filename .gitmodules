@@ -432,6 +432,10 @@
 	path = third_party/microsoft_dxheaders/src
 	url = https://chromium.googlesource.com/external/github.com/microsoft/DirectX-Headers
 	gclient-condition = checkout_win
+[submodule "third_party/microsoft_multimedia_redirection/src"]
+	path = third_party/microsoft_multimedia_redirection/src
+	url = https://chromium.googlesource.com/external/github.com/microsoft/multimedia-redirection
+	gclient-condition = checkout_win
 [submodule "third_party/microsoft_webauthn/src"]
 	path = third_party/microsoft_webauthn/src
 	url = https://chromium.googlesource.com/external/github.com/microsoft/webauthn

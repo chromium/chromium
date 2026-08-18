@@ -1,0 +1,6 @@
+monorail: {
+  component: "Internals>Media"
+}
+buganizer_public: {
+  component_id: 1456190
+}
