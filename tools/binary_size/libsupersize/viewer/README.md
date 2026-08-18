@@ -16,23 +16,15 @@ To run the viewer locally:
 The WebAssembly files are fetched from the deployed instance if you have not
 built them locally. To build them, see [caspian/README.md].
 
-*** note
-**Note:** `index.html` dropdowns are not populated when running locally due to
-CORS restrictions. We should fix this by having `index.html` use the JSON api to
-perform authenticated fetches, like `viewer.html` does.
-***
-
 [Firebase CLI]: https://firebase.google.com/docs/cli#install_the_firebase_cli
 [caspian/README.md]: /tools/binary_size/libsupersize/viewer/caspian/README.md
 
 ## Deployment Info
 
-1. Test your change on a staging instance (which also does not support
-   authenticated fetches)
+1. Test your change on a staging instance:
    ```sh
    ./upload_html_viewer.py --staging
    ```
-   * `index.html` dropdowns don't work due to CORS (same as for `--local`).
    * `viewer.html` authenticated fetches (`?load_url=` of
      non-`chromium-binary-size-trybot-results` URLs) do not work due to us being
      unable to allowlist the staging domain (which is random each time).

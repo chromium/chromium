@@ -258,18 +258,17 @@ def _DownloadSizeFiles(base_url, reports):
     shutil.rmtree(temp_dir)
 
 
-def _WriteMilestonesJson(path):
-  with open(path, 'w') as out_file:
-    # TODO(agrieve): Record the full list of reports rather than three arrays
-    #    so that the UI can prevent selecting non-existent entries.
-    pushed_reports_obj = {
-      'pushed': {
-        'apk': _DESIRED_APKS,
-        'cpu': _DESIRED_CPUS,
-        'version': _DESIRED_VERSIONS,
-      },
-    }
-    json.dump(pushed_reports_obj, out_file, sort_keys=True, indent=2)
+def _WriteMilestonesJson(path, reports):
+  with open(path, 'w', encoding='utf-8', newline='') as out_file:
+    pushed = [
+      {
+        'cpu': r.cpu,
+        'version': r.version,
+        'apk': r.apk,
+      }
+      for r in sorted(reports)
+    ]
+    json.dump({'pushed': pushed}, out_file, indent=2)
 
 
 def _BuildOneReport(report, output_directory, size_file_directory):
@@ -321,7 +320,9 @@ def main():
     for r in reports_to_make:
       _BuildOneReport(r, staging_dir, sizes_dir)
 
-    _WriteMilestonesJson(os.path.join(staging_dir, 'milestones.json'))
+    _WriteMilestonesJson(
+      os.path.join(staging_dir, 'milestones.json'), reports_to_make
+    )
 
     if args.sync:
       subprocess.check_call(

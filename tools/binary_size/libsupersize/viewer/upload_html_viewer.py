@@ -61,15 +61,15 @@ def _FirebaseInitProjectDir(project_dir):
       "**/.*"
     ],
     "headers": [
-      {
-    "source": "/sw.js",
+      {{
+        "source": "/sw.js",
         "headers": [
-          {
-      "key": "Cache-Control",
+          {{
+            "key": "Cache-Control",
             "value": "no-cache, no-store, must-revalidate"
-          }
+          }}
         ]
-      }
+      }}
     ]
   }}
 }}
