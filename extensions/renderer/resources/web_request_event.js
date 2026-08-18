@@ -173,15 +173,20 @@ function maybeReportEventHandlingDone(dispatch) {
 // Decrements the block count, reporting `response` if the listener produced
 // one; may send the completion signal.
 function decrementBlockCount(dispatch, response, extraInfoSpec) {
-  if (response !== undefined && response !== null) {
-    // TODO(crbug.com/494684626): Drop the subEventName parameter with the
-    // legacy per-listener path. Until then, pass `eventName` for both.
-    webRequestInternal.eventHandled(
-        dispatch.eventName, dispatch.eventName, dispatch.requestId,
-        dispatch.instanceId, response, extraInfoSpec || []);
+  try {
+    if (response !== undefined && response !== null) {
+      // TODO(crbug.com/494684626): Drop the subEventName parameter with the
+      // legacy per-listener path. Until then, pass `eventName` for both.
+      webRequestInternal.eventHandled(
+          dispatch.eventName, dispatch.eventName, dispatch.requestId,
+          dispatch.instanceId, response, extraInfoSpec || []);
+    }
+  } finally {
+    // Decrement the block count even if `eventHandled()` throws (e.g., on an
+    // invalid response) so the request does not hang.
+    dispatch.blockCount--;
+    maybeReportEventHandlingDone(dispatch);
   }
-  dispatch.blockCount--;
-  maybeReportEventHandlingDone(dispatch);
 }
 
 // Reports `response` and decrements the block count. Does nothing if the
