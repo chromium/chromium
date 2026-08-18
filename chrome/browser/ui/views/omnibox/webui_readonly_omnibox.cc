@@ -837,6 +837,7 @@ void WebUIReadOnlyOmnibox::OnContextMenuReady(
     views::Widget* widget,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
+  menu_runner_.reset();
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   AddTextfieldItems(toolbar_delegate_->GetWebContents()->GetWeakPtr(),
                     menu_params_, menu_model_.get());

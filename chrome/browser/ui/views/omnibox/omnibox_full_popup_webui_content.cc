@@ -109,6 +109,7 @@ void OmniboxFullPopupWebUIContent::ShowContextMenuComplete(
     const content::ContextMenuParams& params) {
   params_ = params;
 
+  menu_runner_.reset();
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
   content::WebContents* web_contents = GetWebContents();
