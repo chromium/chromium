@@ -62,6 +62,13 @@ void SigninForContext(URLContext* context,
                       AuthenticationService* authentication_service,
                       SceneState* scene_state,
                       base::OnceClosure closure) {
+  // Sign-in can become disabled due to this method being executed
+  // asynchronously. Don't perform sign-in if sign-in is disabled.
+  if (!authentication_service->SigninEnabled()) {
+    std::move(closure).Run();
+    return;
+  }
+
   // Iterate over all identities on device because the newGaia could
   // be in a different profile.
   id<SystemIdentity> new_identity = nil;
