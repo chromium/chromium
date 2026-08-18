@@ -68,6 +68,7 @@ void ConvertContentNodesToMojo(
         mojo_node->text = attrs.text_data().text_content();
       }
       if (attrs.has_anchor_data()) {
+        mojo_node->tag_name = "a";
         mojo_node->url = GURL(attrs.anchor_data().url());
         mojo_node->is_interactive = true;
         mojo_node->role = ai_overlay_dialog::mojom::NodeRole::kLink;
