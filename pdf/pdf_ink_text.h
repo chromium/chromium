@@ -9,7 +9,6 @@
 
 #include <map>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "pdf/mojom/pdf.mojom.h"
@@ -56,22 +55,6 @@ std::string TextTypefaceToString(TextTypeface typeface);
 std::string TextAlignmentToString(TextAlignment alignment);
 
 struct InkTextBoxAttributes {
-  InkTextBoxAttributes(gfx::RectF rect,
-                       SkColor color,
-                       float css_font_size,
-                       TextTypeface typeface,
-                       TextAlignment alignment,
-                       int orientation,
-                       PageOrientation viewport_orientation,
-                       bool is_bold,
-                       bool is_italic,
-                       std::string_view text);
-  InkTextBoxAttributes(const InkTextBoxAttributes&) = delete;
-  InkTextBoxAttributes& operator=(const InkTextBoxAttributes&) = delete;
-  InkTextBoxAttributes(InkTextBoxAttributes&&) noexcept;
-  InkTextBoxAttributes& operator=(InkTextBoxAttributes&&) noexcept;
-  ~InkTextBoxAttributes();
-
   // `rect` is in CSS screen coordinates.
   gfx::RectF rect;
   SkColor color;

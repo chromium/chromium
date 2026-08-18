@@ -3882,17 +3882,18 @@ TEST_P(PdfViewWebPluginInkTest, DrawText) {
   EXPECT_CALL(*engine_ptr_,
               DrawText(kPageIndex, kTextId, _, kAscent, kZoom, _));
 
-  const InkTextBoxAttributes text_box_attributes(
-      /*rect=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
-      /*color=*/SK_ColorBLACK,
-      /*css_font_size=*/10.0f,
-      /*typeface=*/TextTypeface::kSansSerif,
-      /*alignment=*/TextAlignment::kLeft,
-      /*orientation=*/0,
-      /*viewport_orientation=*/PageOrientation::kOriginal,
-      /*is_bold=*/true,
-      /*is_italic=*/false,
-      /*text=*/"Hello");
+  const InkTextBoxAttributes text_box_attributes{
+      .rect = gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
+      .color = SK_ColorBLACK,
+      .css_font_size = 10.0f,
+      .typeface = TextTypeface::kSansSerif,
+      .alignment = TextAlignment::kLeft,
+      .orientation = 0,
+      .viewport_orientation = PageOrientation::kOriginal,
+      .is_bold = true,
+      .is_italic = false,
+      .text = "Hello",
+  };
   plugin_->ink_module_client_for_testing()->DrawText(
       kPageIndex, kTextId, {}, kAscent, kZoom, text_box_attributes);
 }

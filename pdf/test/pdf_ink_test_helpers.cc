@@ -139,17 +139,19 @@ InkTextBoxAttributes SampleInkTextBoxAttributes() {
   return SampleInkTextBoxAttributesWithText("Box 0");
 }
 
-InkTextBoxAttributes SampleInkTextBoxAttributesWithText(std::string_view text) {
-  return InkTextBoxAttributes(
-      /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 50.0f),
-      /*color=*/SkColorSetRGB(0, 0, 255),
-      /*css_font_size=*/12.0f,
-      /*typeface=*/TextTypeface::kMonospace,
-      /*alignment=*/TextAlignment::kCenter,
-      /*orientation=*/1,
-      /*viewport_orientation=*/PageOrientation::kOriginal,
-      /*is_bold=*/false,
-      /*is_italic=*/true, text);
+InkTextBoxAttributes SampleInkTextBoxAttributesWithText(std::string text) {
+  return InkTextBoxAttributes{
+      .rect = gfx::RectF(10.0f, 20.0f, 100.0f, 50.0f),
+      .color = SkColorSetRGB(0, 0, 255),
+      .css_font_size = 12.0f,
+      .typeface = TextTypeface::kMonospace,
+      .alignment = TextAlignment::kCenter,
+      .orientation = 1,
+      .viewport_orientation = PageOrientation::kOriginal,
+      .is_bold = false,
+      .is_italic = true,
+      .text = std::move(text),
+  };
 }
 
 testing::Matcher<const InkTextBoxAttributes&>

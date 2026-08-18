@@ -191,10 +191,18 @@ InkTextBoxAttributes GetTextBoxAttributesFromDict(const base::DictValue& data) {
   bool is_bold = styles.FindBool("bold").value();
   bool is_italic = styles.FindBool("italic").value();
 
-  return InkTextBoxAttributes(
-      textbox, GetColorFromDict(text_attributes), css_font_size, typeface,
-      alignment, orientation, viewport_orientation,
-      /*is_bold=*/is_bold, /*is_italic=*/is_italic, *data.FindString("text"));
+  return InkTextBoxAttributes{
+      .rect = textbox,
+      .color = GetColorFromDict(text_attributes),
+      .css_font_size = css_font_size,
+      .typeface = typeface,
+      .alignment = alignment,
+      .orientation = orientation,
+      .viewport_orientation = viewport_orientation,
+      .is_bold = is_bold,
+      .is_italic = is_italic,
+      .text = *data.FindString("text"),
+  };
 }
 
 ink::Rect GetEraserRect(const gfx::PointF& center) {

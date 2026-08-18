@@ -3691,17 +3691,18 @@ class PDFiumEngineInkDrawTextTest : public PDFiumTestBase {
   }
 
   static InkTextBoxAttributes SampleInkTextBoxAttributes() {
-    return InkTextBoxAttributes(
-        /*rect=*/gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
-        /*color=*/SK_ColorBLACK,
-        /*css_font_size=*/10.0f,
-        /*typeface=*/TextTypeface::kSansSerif,
-        /*alignment=*/TextAlignment::kLeft,
-        /*orientation=*/0,
-        /*viewport_orientation=*/PageOrientation::kOriginal,
-        /*is_bold=*/false,
-        /*is_italic=*/false,
-        /*text=*/"Hello!");
+    return InkTextBoxAttributes{
+        .rect = gfx::RectF(20.0f, 20.0f, 100.0f, 100.0f),
+        .color = SK_ColorBLACK,
+        .css_font_size = 10.0f,
+        .typeface = TextTypeface::kSansSerif,
+        .alignment = TextAlignment::kLeft,
+        .orientation = 0,
+        .viewport_orientation = PageOrientation::kOriginal,
+        .is_bold = false,
+        .is_italic = false,
+        .text = "Hello!",
+    };
   }
 
   float FontAscent(PDFiumEngine* engine, FontId font_id, float css_font_size) {
@@ -3893,17 +3894,18 @@ TEST_P(PDFiumEngineInkDrawTextTest, StrokeTextStrokeOverlap) {
 
   // Place the text box such that it overlaps the first stroke (which is at
   // y=25). The text box rect will be from y=15 to y=35.
-  InkTextBoxAttributes attributes(
-      /*rect=*/gfx::RectF(10.0f, 15.0f, 80.0f, 20.0f),
-      /*color=*/SK_ColorBLACK,
-      /*css_font_size=*/20.0f,
-      /*typeface=*/TextTypeface::kSansSerif,
-      /*alignment=*/TextAlignment::kLeft,
-      /*orientation=*/0,
-      /*viewport_orientation=*/PageOrientation::kOriginal,
-      /*is_bold=*/false,
-      /*is_italic=*/false,
-      /*text=*/kTextToDraw);
+  InkTextBoxAttributes attributes{
+      .rect = gfx::RectF(10.0f, 15.0f, 80.0f, 20.0f),
+      .color = SK_ColorBLACK,
+      .css_font_size = 20.0f,
+      .typeface = TextTypeface::kSansSerif,
+      .alignment = TextAlignment::kLeft,
+      .orientation = 0,
+      .viewport_orientation = PageOrientation::kOriginal,
+      .is_bold = false,
+      .is_italic = false,
+      .text = kTextToDraw,
+  };
   engine->DrawText(
       kPageIndex, InkTextId(0),
       {InkTextInfo(font_id, text_data.glyphs, text_data.glyph_positions,

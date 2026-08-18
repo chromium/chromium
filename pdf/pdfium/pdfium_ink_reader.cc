@@ -264,12 +264,18 @@ std::optional<InkTextBoxAttributes> ExtractAttributesFromMark(
 
   const bool is_bold = bold.value() != 0;
   const bool is_italic = italic.value() != 0;
-  return InkTextBoxAttributes(bounds, SkColorSetRGB(r, g, b), css_font_size,
-                              static_cast<TextTypeface>(typeface.value()),
-                              static_cast<TextAlignment>(alignment.value()),
-                              orientation.value(), PageOrientation::kOriginal,
-                              is_bold, is_italic,
-                              base::UTF16ToUTF8(text.value()));
+  return InkTextBoxAttributes{
+      .rect = bounds,
+      .color = SkColorSetRGB(r, g, b),
+      .css_font_size = css_font_size,
+      .typeface = static_cast<TextTypeface>(typeface.value()),
+      .alignment = static_cast<TextAlignment>(alignment.value()),
+      .orientation = orientation.value(),
+      .viewport_orientation = PageOrientation::kOriginal,
+      .is_bold = is_bold,
+      .is_italic = is_italic,
+      .text = base::UTF16ToUTF8(text.value()),
+  };
 }
 
 }  // namespace

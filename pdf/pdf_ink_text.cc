@@ -175,31 +175,6 @@ std::string TextAlignmentToString(TextAlignment alignment) {
   NOTREACHED();
 }
 
-InkTextBoxAttributes::InkTextBoxAttributes(gfx::RectF rect,
-                                           SkColor color,
-                                           float css_font_size,
-                                           TextTypeface typeface,
-                                           TextAlignment alignment,
-                                           int orientation,
-                                           PageOrientation viewport_orientation,
-                                           bool is_bold,
-                                           bool is_italic,
-                                           std::string_view text)
-    : rect(rect),
-      color(color),
-      css_font_size(css_font_size),
-      typeface(typeface),
-      alignment(alignment),
-      orientation(orientation),
-      viewport_orientation(viewport_orientation),
-      is_bold(is_bold),
-      is_italic(is_italic),
-      text(text) {}
-InkTextBoxAttributes::InkTextBoxAttributes(InkTextBoxAttributes&&) noexcept =
-    default;
-InkTextBoxAttributes& InkTextBoxAttributes::operator=(
-    InkTextBoxAttributes&&) noexcept = default;
-InkTextBoxAttributes::~InkTextBoxAttributes() = default;
 
 InkTextBox::InkTextBox(int id, InkTextBoxAttributes attributes)
     : id(id), attributes(std::move(attributes)) {}
