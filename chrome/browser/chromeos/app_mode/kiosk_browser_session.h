@@ -63,11 +63,10 @@ class KioskBrowserSession {
   void InitForChromeAppKiosk(const std::string& app_id);
 
   // Initializes an app session for Web kiosk.
-  // `web_app_name` is std::nullopt for ash-side of the web kiosk with Lacros.
-  void InitForWebKiosk(const std::optional<std::string>& web_app_name);
+  void InitForWebKiosk(const webapps::AppId& web_app_id);
 
   // Initializes an app session for Isolated Web App Kiosk.
-  void InitForIwaKiosk(const std::optional<std::string>& app_name);
+  void InitForIwaKiosk(const webapps::AppId& app_id);
 
   // Invoked when GuestViewManager adds a guest web contents.
   void OnGuestAdded(content::WebContents* guest_web_contents);
@@ -95,7 +94,7 @@ class KioskBrowserSession {
 
   // Create a `browser_window_handler_` object.
   void CreateBrowserWindowHandler(
-      const std::optional<std::string>& web_app_name);
+      const std::optional<webapps::AppId>& web_app_id);
 
   Profile* profile() const { return profile_; }
 

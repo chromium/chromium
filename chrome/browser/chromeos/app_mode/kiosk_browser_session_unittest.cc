@@ -84,8 +84,8 @@ namespace {
 using ::chromeos::FakePowerManagerClient;
 
 constexpr char kTestAppId[] = "aaaabbbbaaaabbbbaaaabbbbaaaabbbb";
-constexpr char kTestWebAppName1[] = "test_web_app_name1";
-constexpr char kTestWebAppName2[] = "test_web_app_name2";
+constexpr char kTestWebAppId1[] = "test_web_app_id1";
+constexpr char kTestWebAppId2[] = "test_web_app_id2";
 constexpr char kTestUrl[] = "www.test.com";
 constexpr base::TimeDelta kCloseBrowserTimeout = base::Seconds(2);
 
@@ -274,11 +274,12 @@ class KioskBrowserSessionBaseTest
   }
 
   std::unique_ptr<FakeBrowser> CreateBrowserForWebApp(
-      const std::string& web_app_name,
+      const std::string& web_app_id,
       std::optional<BrowserWindowInterface::Type> browser_type = std::nullopt) {
     BrowserWindowCreateParams params =
         BrowserWindowCreateParams::CreateForAppPopup(
-            /*app_name=*/web_app_name, /*trusted_source=*/true,
+            /*app_name=*/web_app::GenerateApplicationNameFromAppId(web_app_id),
+            /*trusted_source=*/true,
             /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),
             /*user_gesture=*/true);
     if (browser_type.has_value()) {
@@ -290,35 +291,35 @@ class KioskBrowserSessionBaseTest
 
   // Create the main kiosk browser window, which is normally auto-created when a
   // web kiosk session starts.
-  void CreateWebKioskMainBrowser(const std::string& web_app_name) {
+  void CreateWebKioskMainBrowser(const std::string& web_app_id) {
     web_kiosk_main_browser_ = CreateBrowserWithFullscreenTestWindowForParams(
         BrowserWindowCreateParams::CreateForApp(
-            /*app_name=*/web_app_name, /*trusted_source=*/true,
+            /*app_name=*/web_app::GenerateApplicationNameFromAppId(web_app_id),
+            /*trusted_source=*/true,
             /*window_bounds=*/gfx::Rect(), /*profile=*/profile(),
             /*user_gesture=*/true),
         profile(), /*is_main_browser=*/true);
   }
 
   // Simulate starting a web kiosk session.
-  void StartWebKioskSession(
-      const std::string& web_app_name = kTestWebAppName1) {
-    CreateWebKioskMainBrowser(web_app_name);
+  void StartWebKioskSession(const std::string& web_app_id = kTestWebAppId1) {
+    CreateWebKioskMainBrowser(web_app_id);
 
     kiosk_browser_session_ = KioskBrowserSession::CreateForTesting(
         profile(), base::DoNothing(), local_state(), {crash_path().value()});
-    kiosk_browser_session_->InitForWebKiosk(web_app_name);
+    kiosk_browser_session_->InitForWebKiosk(web_app_id);
 
     task_environment_.RunUntilIdle();
   }
 
   // Simulate starting an IWA kiosk session.
-  void StartIwaKioskSession(const std::string& iwa_name = kTestWebAppName1) {
+  void StartIwaKioskSession(const std::string& iwa_id = kTestWebAppId1) {
     // IWAs are launched same as web apps, reusing web kiosk routines.
-    CreateWebKioskMainBrowser(iwa_name);
+    CreateWebKioskMainBrowser(iwa_id);
 
     kiosk_browser_session_ = KioskBrowserSession::CreateForTesting(
         profile(), base::DoNothing(), local_state(), {crash_path().value()});
-    kiosk_browser_session_->InitForIwaKiosk(iwa_name);
+    kiosk_browser_session_->InitForIwaKiosk(iwa_id);
   }
 
   // Simulate starting a chrome app kiosk session.
@@ -565,35 +566,34 @@ TEST_F(KioskBrowserSessionTest, WebKioskLastDaySessions) {
 }
 
 TEST_F(KioskBrowserSessionTest, DoNotOpenSecondBrowserInWebKiosk) {
-  StartWebKioskSession(kTestWebAppName1);
+  StartWebKioskSession(kTestWebAppId1);
 
-  EXPECT_TRUE(
-      DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName1)));
+  EXPECT_TRUE(DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppId1)));
 }
 
 TEST_F(KioskBrowserSessionTest, DoNotCrashIfBrowserClosedSuccessfully) {
-  StartWebKioskSession(kTestWebAppName1);
+  StartWebKioskSession(kTestWebAppId1);
 
-  auto browser = CreateBrowserForWebApp(kTestWebAppName1);
+  auto browser = CreateBrowserForWebApp(kTestWebAppId1);
 
   task_environment()->FastForwardBy(kCloseBrowserTimeout);
 }
 
 TEST_F(KioskBrowserSessionTest, OpenSecondBrowserInWebKioskIfAllowed) {
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
-  StartWebKioskSession(kTestWebAppName1);
+  StartWebKioskSession(kTestWebAppId1);
 
   EXPECT_FALSE(
-      DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName1)));
+      DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppId1)));
 }
 
 TEST_F(KioskBrowserSessionTest, EnsureSecondBrowserIsFullscreenInWebKiosk) {
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
-  StartWebKioskSession(kTestWebAppName1);
+  StartWebKioskSession(kTestWebAppId1);
   EXPECT_TRUE(IsMainBrowserFullscreen());
 
   std::unique_ptr<FakeBrowser> second_browser =
-      CreateBrowserForWebApp(kTestWebAppName1);
+      CreateBrowserForWebApp(kTestWebAppId1);
   DidSessionCloseNewWindow(*second_browser);
 
   EXPECT_TRUE(second_browser->IsFullscreen());
@@ -610,16 +610,16 @@ TEST_F(KioskBrowserSessionTest,
   };
 
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
-  StartWebKioskSession(kTestWebAppName1);
+  StartWebKioskSession(kTestWebAppId1);
 
   for (auto browser_type : not_app_popup_browser_types) {
     EXPECT_TRUE(DidSessionCloseNewWindow(
-        CreateBrowserForWebApp(kTestWebAppName1, browser_type)));
+        CreateBrowserForWebApp(kTestWebAppId1, browser_type)));
   }
 }
 
 TEST_F(KioskBrowserSessionTest,
-       DoNotOpenSecondBrowserInWebKioskWithEmptyWebAppName) {
+       DoNotOpenSecondBrowserInWebKioskWithEmptyWebAppId) {
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession();
 
@@ -627,12 +627,11 @@ TEST_F(KioskBrowserSessionTest,
 }
 
 TEST_F(KioskBrowserSessionTest,
-       DoNotOpenSecondBrowserInWebKioskWithDifferentWebAppName) {
+       DoNotOpenSecondBrowserInWebKioskWithDifferentWebAppId) {
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
-  StartWebKioskSession(kTestWebAppName1);
+  StartWebKioskSession(kTestWebAppId1);
 
-  EXPECT_TRUE(
-      DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName2)));
+  EXPECT_TRUE(DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppId2)));
 }
 
 TEST_F(KioskBrowserSessionTest, DoNotOpenSecondBrowserInChromeAppKiosk) {
@@ -641,15 +640,14 @@ TEST_F(KioskBrowserSessionTest, DoNotOpenSecondBrowserInChromeAppKiosk) {
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
   StartChromeAppKioskSession();
 
-  EXPECT_TRUE(
-      DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName2)));
+  EXPECT_TRUE(DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppId2)));
 }
 
 TEST_F(KioskBrowserSessionTest, NewOpenedRegularBrowserMetrics) {
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
-  StartWebKioskSession(kTestWebAppName1);
+  StartWebKioskSession(kTestWebAppId1);
 
-  DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName1));
+  DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppId1));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kOpenedRegularBrowser,
@@ -659,9 +657,9 @@ TEST_F(KioskBrowserSessionTest, NewOpenedRegularBrowserMetrics) {
 
 TEST_F(KioskBrowserSessionTest, NewClosedRegularBrowserMetrics) {
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, false);
-  StartWebKioskSession(kTestWebAppName1);
+  StartWebKioskSession(kTestWebAppId1);
 
-  DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppName1));
+  DidSessionCloseNewWindow(CreateBrowserForWebApp(kTestWebAppId1));
 
   histogram()->ExpectBucketCount(kKioskNewBrowserWindowHistogram,
                                  KioskBrowserWindowType::kClosedRegularBrowser,
@@ -674,7 +672,7 @@ TEST_F(KioskBrowserSessionTest,
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession();
 
-  auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
+  auto second_browser = CreateBrowserForWebApp(kTestWebAppId1);
   EXPECT_FALSE(DidSessionCloseNewWindow(*second_browser));
 
   CloseMainBrowser();
@@ -689,7 +687,7 @@ TEST_F(KioskBrowserSessionTest, InitialBrowserShouldBeHandledAsRegularBrowser) {
   GetPrefs()->SetBoolean(ash::prefs::kNewWindowsInKioskAllowed, true);
   StartWebKioskSession();
 
-  auto second_browser = CreateBrowserForWebApp(kTestWebAppName1);
+  auto second_browser = CreateBrowserForWebApp(kTestWebAppId1);
   EXPECT_FALSE(DidSessionCloseNewWindow(*second_browser));
 
   second_browser.reset();

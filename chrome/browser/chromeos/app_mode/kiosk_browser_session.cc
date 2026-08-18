@@ -230,15 +230,13 @@ void KioskBrowserSession::InitForChromeAppKiosk(const std::string& app_id) {
   metrics_service_->RecordKioskSessionStarted();
 }
 
-void KioskBrowserSession::InitForWebKiosk(
-    const std::optional<std::string>& web_app_name) {
-  CreateBrowserWindowHandler(web_app_name);
+void KioskBrowserSession::InitForWebKiosk(const webapps::AppId& web_app_id) {
+  CreateBrowserWindowHandler(web_app_id);
   metrics_service_->RecordKioskSessionWebStarted();
 }
 
-void KioskBrowserSession::InitForIwaKiosk(
-    const std::optional<std::string>& app_name) {
-  CreateBrowserWindowHandler(app_name);
+void KioskBrowserSession::InitForIwaKiosk(const webapps::AppId& app_id) {
+  CreateBrowserWindowHandler(app_id);
   metrics_service_->RecordKioskSessionIwaStarted();
 }
 
@@ -266,9 +264,9 @@ KioskBrowserSession::KioskBrowserSession(
 }
 
 void KioskBrowserSession::CreateBrowserWindowHandler(
-    const std::optional<std::string>& web_app_name) {
+    const std::optional<webapps::AppId>& web_app_id) {
   browser_window_handler_ = std::make_unique<KioskBrowserWindowHandler>(
-      profile(), web_app_name,
+      profile(), web_app_id,
       base::BindRepeating(&KioskBrowserSession::OnHandledNewBrowserWindow,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&KioskBrowserSession::Shutdown,

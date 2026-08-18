@@ -93,15 +93,16 @@ class KioskControllerImpl : public KioskController,
 
   void OnAppLaunched(const KioskAppId& kiosk_app_id,
                      Profile* profile,
-                     const std::optional<std::string>& app_name);
+                     const std::optional<webapps::AppId>& app_id);
   void OnLaunchComplete(KioskAppLaunchError::Error error);
   void OnLaunchCompleteAfterCrash(const KioskAppId& app,
                                   Profile* profile,
                                   bool success,
-                                  const std::optional<std::string>& app_name);
-  void InitializeKioskSystemSession(const KioskAppId& kiosk_app_id,
-                                    Profile* profile,
-                                    const std::optional<std::string>& app_name);
+                                  const std::optional<webapps::AppId>& app_id);
+  void InitializeKioskSystemSession(
+      const KioskAppId& kiosk_app_id,
+      Profile* profile,
+      const std::optional<webapps::AppId>& app_id);
 
   void DeleteLaunchControllerAsync();
   void DeleteLaunchController();

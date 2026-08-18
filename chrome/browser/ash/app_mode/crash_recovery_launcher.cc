@@ -68,9 +68,9 @@ void CrashRecoveryLauncher::Start(OnDoneCallback callback) {
 
 void CrashRecoveryLauncher::InvokeDoneCallback(
     bool success,
-    const std::optional<std::string>& app_name) {
+    const std::optional<webapps::AppId>& app_id) {
   if (done_callback_) {
-    std::move(done_callback_).Run(success, app_name);
+    std::move(done_callback_).Run(success, app_id);
   }
 }
 
@@ -92,9 +92,9 @@ void CrashRecoveryLauncher::OnAppPrepared() {
 void CrashRecoveryLauncher::OnAppLaunched() {}
 
 void CrashRecoveryLauncher::OnAppWindowCreated(
-    const std::optional<std::string>& app_name) {
+    const std::optional<webapps::AppId>& app_id) {
   SYSLOG(INFO) << "Crash recovery flow succeeded";
-  InvokeDoneCallback(true, app_name);
+  InvokeDoneCallback(true, app_id);
 }
 
 void CrashRecoveryLauncher::OnLaunchFailed(KioskAppLaunchError::Error error) {

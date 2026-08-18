@@ -200,13 +200,13 @@ std::optional<KioskApp> KioskControllerImpl::GetAutoLaunchApp() const {
 void KioskControllerImpl::InitializeKioskSystemSession(
     const KioskAppId& kiosk_app_id,
     Profile* profile,
-    const std::optional<std::string>& app_name) {
+    const std::optional<webapps::AppId>& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK(!system_session_.has_value())
       << "KioskSystemSession is already initialized";
 
-  system_session_.emplace(local_state_.get(), profile, kiosk_app_id, app_name);
+  system_session_.emplace(local_state_.get(), profile, kiosk_app_id, app_id);
 
   switch (kiosk_app_id.type) {
     case KioskAppType::kWebApp:
@@ -385,8 +385,8 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
 void KioskControllerImpl::OnAppLaunched(
     const KioskAppId& kiosk_app_id,
     Profile* profile,
-    const std::optional<std::string>& app_name) {
-  InitializeKioskSystemSession(kiosk_app_id, profile, app_name);
+    const std::optional<webapps::AppId>& app_id) {
+  InitializeKioskSystemSession(kiosk_app_id, profile, app_id);
 }
 
 void KioskControllerImpl::OnLaunchComplete(KioskAppLaunchError::Error error) {
@@ -419,14 +419,14 @@ void KioskControllerImpl::OnLaunchCompleteAfterCrash(
     const KioskAppId& app,
     Profile* profile,
     bool success,
-    const std::optional<std::string>& app_name) {
+    const std::optional<webapps::AppId>& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (success) {
     if (auto* input_controller =
             ui::OzonePlatform::GetInstance()->GetInputController()) {
       input_controller->DisableKeyboardImposterCheck();
     }
-    InitializeKioskSystemSession(app, profile, app_name);
+    InitializeKioskSystemSession(app, profile, app_id);
   } else {
     session_manager::SessionManager::Get()->RequestSignOut();
   }

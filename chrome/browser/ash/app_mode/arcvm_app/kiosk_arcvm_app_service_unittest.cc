@@ -59,7 +59,8 @@ class FakeController : public KioskAppLauncher::NetworkDelegate,
   // KioskAppLauncher::Delegate:
   bool IsNetworkReady() const override { return true; }
 
-  void OnAppWindowCreated(const std::optional<std::string>& app_name) override {
+  void OnAppWindowCreated(
+      const std::optional<webapps::AppId>& app_id) override {
     window_created_signal_.SetValue();
   }
 

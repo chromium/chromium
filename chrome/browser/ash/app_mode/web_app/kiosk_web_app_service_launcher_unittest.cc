@@ -87,7 +87,7 @@ class MockAppLauncherObserver : public KioskAppLauncher::Observer {
   MOCK_METHOD0(OnAppInstalling, void());
   MOCK_METHOD0(OnAppPrepared, void());
   MOCK_METHOD0(OnAppLaunched, void());
-  MOCK_METHOD(void, OnAppWindowCreated, (const std::optional<std::string>&));
+  MOCK_METHOD(void, OnAppWindowCreated, (const std::optional<webapps::AppId>&));
   MOCK_METHOD1(OnLaunchFailed, void(KioskAppLaunchError::Error));
 };
 

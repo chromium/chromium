@@ -723,17 +723,17 @@ void KioskLaunchController::OnAppLaunched() {
 }
 
 void KioskLaunchController::OnAppWindowCreated(
-    const std::optional<std::string>& app_name) {
+    const std::optional<webapps::AppId>& app_id) {
   SYSLOG(INFO) << "App window created, closing splash screen.";
 
-  app_window_name_ = app_name;
+  app_window_id_ = app_id;
 
   // Not receiving the `OnAppLaunched` event before we come here leads to bugs
   // like b/335158496.
   DUMP_WILL_BE_CHECK_EQ(app_state_, AppState::kLaunched);
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
-  std::move(app_launched_callback_).Run(kiosk_app_id(), profile_, app_name);
+  std::move(app_launched_callback_).Run(kiosk_app_id(), profile_, app_id);
 
   // If timer is running, do not remove splash screen for a few
   // more seconds to give the user ability to exit kiosk session.

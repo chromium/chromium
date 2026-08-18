@@ -115,7 +115,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   using AppLaunchedCallback =
       base::OnceCallback<void(const KioskAppId& app,
                               Profile* profile,
-                              const std::optional<std::string>& app_name)>;
+                              const std::optional<webapps::AppId>& app_id)>;
 
   // Callback invoked when the launch finished, either successfully or aborted
   // due to an error.
@@ -214,7 +214,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   void OnAppLaunching() override;
   void OnAppLaunched() override;
   void OnAppDataUpdated() override;
-  void OnAppWindowCreated(const std::optional<std::string>& app_name) override;
+  void OnAppWindowCreated(const std::optional<webapps::AppId>& app_id) override;
 
   void StartAppLaunch(Profile& profile);
   void HandleProfileLoadError(KioskAppLaunchError::Error error);
@@ -260,8 +260,8 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   raw_ptr<AppLaunchSplashScreen> splash_screen_ = nullptr;
   // Current app. Present once `Start` is called.
   std::optional<KioskApp> kiosk_app_;
-  // Current app browser window name. Present once the app window is created.
-  std::optional<std::string> app_window_name_;
+  // Current app browser window id. Present once the app window is created.
+  std::optional<webapps::AppId> app_window_id_;
   // Kiosk profile. Non-null after profile load handler has finished.
   raw_ptr<Profile> profile_ = nullptr;
   const KioskAppLauncherFactory app_launcher_factory_;

@@ -25,7 +25,6 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
@@ -168,12 +167,12 @@ class NavigationWaiter : public content::WebContentsObserver,
 
 KioskBrowserWindowHandler::KioskBrowserWindowHandler(
     Profile* profile,
-    const std::optional<std::string>& web_app_name,
+    const std::optional<webapps::AppId>& web_app_id,
     base::RepeatingCallback<void(bool is_closing)>
         on_browser_window_added_callback,
     base::OnceClosure shutdown_kiosk_browser_session_callback)
     : profile_(profile),
-      web_app_name_(web_app_name),
+      web_app_id_(web_app_id),
       on_browser_window_added_callback_(on_browser_window_added_callback),
       shutdown_kiosk_browser_session_callback_(
           std::move(shutdown_kiosk_browser_session_callback)),
@@ -300,14 +299,16 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
 
 void KioskBrowserWindowHandler::CloseAllUnexpectedBrowserWindows() {
   CloseBrowserWindowsIf(
-      [&web_app_name = web_app_name_](
+      [&web_app_id = web_app_id_](
           const BrowserWindowInterface& browser_window_interface) {
         // Do not close the main web app window (if any).
-        bool is_web_app = web_app_name.has_value();
+        bool is_web_app = web_app_id.has_value();
         bool is_web_app_window =
-            is_web_app && (BrowserInitState::From(&browser_window_interface)
-                               ->create_params()
-                               .app_name == web_app_name);
+            is_web_app &&
+            (ash::BrowserController::GetInstance()
+                 ->GetDelegate(const_cast<BrowserWindowInterface*>(
+                     &browser_window_interface))
+                 ->GetAppId() == web_app_id);
         return !is_web_app_window;
       });
 }
@@ -376,9 +377,10 @@ bool KioskBrowserWindowHandler::IsNewBrowserWindowAllowed(
     Browser* browser) const {
   return kiosk_policies_.IsWindowCreationAllowed() &&
          browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP &&
-         web_app_name_.has_value() &&
-         BrowserInitState::From(browser)->create_params().app_name ==
-             web_app_name_.value();
+         web_app_id_.has_value() &&
+         ash::BrowserController::GetInstance()
+                 ->GetDelegate(browser)
+                 ->GetAppId() == web_app_id_.value();
 }
 
 bool KioskBrowserWindowHandler::IsDevToolsAllowedBrowser(
@@ -396,7 +398,7 @@ bool KioskBrowserWindowHandler::IsNormalTroubleshootingBrowserAllowed(
 }
 
 bool KioskBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved() const {
-  return web_app_name_.has_value();
+  return web_app_id_.has_value();
 }
 
 bool KioskBrowserWindowHandler::IsOnlySettingsBrowserRemainOpen() const {
@@ -419,9 +421,10 @@ void KioskBrowserWindowHandler::CloseBrowserWindowsIf(
           LOG(WARNING) << "kiosk: Closing unexpected browser window with url "
                        << GetUrlOfActiveTab(browser_window_interface)
                        << " of app "
-                       << BrowserInitState::From(browser_window_interface)
-                              ->create_params()
-                              .app_name;
+                       << ash::BrowserController::GetInstance()
+                              ->GetDelegate(browser_window_interface)
+                              ->GetAppId()
+                              .value_or("<none>");
           CloseBrowserAndSetTimer(browser_window_interface);
         }
         return true;

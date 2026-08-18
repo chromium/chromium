@@ -31,10 +31,11 @@ class NetworkConnectivityMetricsService;
 // Example services are accessibility, metrics and browser crash recovery.
 class KioskSystemSession {
  public:
-  KioskSystemSession(PrefService& local_state,
-                     Profile* profile,
-                     const KioskAppId& kiosk_app_id,
-                     const std::optional<std::string>& app_name = std::nullopt);
+  KioskSystemSession(
+      PrefService& local_state,
+      Profile* profile,
+      const KioskAppId& kiosk_app_id,
+      const std::optional<webapps::AppId>& app_id = std::nullopt);
   KioskSystemSession(const KioskSystemSession&) = delete;
   KioskSystemSession& operator=(const KioskSystemSession&) = delete;
   ~KioskSystemSession();
@@ -59,8 +60,8 @@ class KioskSystemSession {
 
  private:
   void InitForChromeAppKiosk();
-  void InitForWebKiosk(const std::optional<std::string>& app_name);
-  void InitForIwaKiosk(const std::optional<std::string>& app_name);
+  void InitForWebKiosk(const webapps::AppId& app_id);
+  void InitForIwaKiosk(const webapps::AppId& app_id);
 
   void InitCommon();
 

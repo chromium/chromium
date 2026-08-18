@@ -16,6 +16,7 @@
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Browser;
 class BrowserWindowInterface;
@@ -44,7 +45,7 @@ enum class KioskBrowserWindowType {
 
 // This class monitors for the addition and removal of new browser windows
 // during the kiosk session. On construction for web kiosk sessions, it gets a
-// web app name stored as `web_app_name_`.
+// web app id stored as `web_app_id_`.
 //
 //
 // If a new browser window is opened, this gets closed immediately, unless it's
@@ -57,7 +58,7 @@ class KioskBrowserWindowHandler : public BrowserCollectionObserver {
  public:
   KioskBrowserWindowHandler(
       Profile* profile,
-      const std::optional<std::string>& web_app_name,
+      const std::optional<webapps::AppId>& web_app_id,
       base::RepeatingCallback<void(bool is_closing)>
           on_browser_window_added_callback,
       base::OnceClosure shutdown_kiosk_browser_session_callback);
@@ -126,8 +127,8 @@ class KioskBrowserWindowHandler : public BrowserCollectionObserver {
 
   // Owned by `ProfileManager`.
   const raw_ptr<Profile, DanglingUntriaged> profile_;
-  // `web_app_name_` is set only for web kiosk sessions.
-  const std::optional<std::string> web_app_name_;
+  // `web_app_id_` is set only for web kiosk sessions.
+  const std::optional<webapps::AppId> web_app_id_;
   base::RepeatingCallback<void(bool is_closing)>
       on_browser_window_added_callback_;
   base::OnceClosure shutdown_kiosk_browser_session_callback_;

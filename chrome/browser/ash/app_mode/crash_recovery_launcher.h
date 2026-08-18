@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/webapps/common/web_app_id.h"
 
 class PrefService;
 
@@ -26,7 +27,7 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
  public:
   using OnDoneCallback =
       base::OnceCallback<void(bool success,
-                              const std::optional<std::string>& app_name)>;
+                              const std::optional<webapps::AppId>& app_id)>;
 
   // `local_state` must be non-null, and must outlive `this`.
   CrashRecoveryLauncher(PrefService* local_state,
@@ -40,7 +41,7 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
 
  private:
   void InvokeDoneCallback(bool success,
-                          const std::optional<std::string>& app_name);
+                          const std::optional<webapps::AppId>& app_id);
 
   // KioskAppLauncher::NetworkDelegate:
   void InitializeNetwork() override;
@@ -50,7 +51,7 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
   void OnAppInstalling() override;
   void OnAppPrepared() override;
   void OnAppLaunched() override;
-  void OnAppWindowCreated(const std::optional<std::string>& app_name) override;
+  void OnAppWindowCreated(const std::optional<webapps::AppId>& app_id) override;
   void OnLaunchFailed(KioskAppLaunchError::Error error) override;
 
   const raw_ref<PrefService> local_state_;
