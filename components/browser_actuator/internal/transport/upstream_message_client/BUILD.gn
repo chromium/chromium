@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("upstream_message_client") {
+  sources = [
+    "upstream_message_client.cc",
+    "upstream_message_client.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/browser_actuator/public",
+    "//net",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
+  deps = [
+    "//components/browser_actuator/internal/proto",
+    "//components/endpoint_fetcher",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "upstream_message_client_unittest.cc" ]
+
+  deps = [
+    ":upstream_message_client",
+    "//base",
+    "//base/test:test_support",
+    "//components/browser_actuator/internal/proto",
+    "//components/browser_actuator/public",
+    "//components/signin/public/identity_manager:test_support",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  visibility = [ "//components/browser_actuator/internal:unit_tests" ]
+}

@@ -2,4 +2,9 @@ include_rules = [
   "+base",
   "+components/keyed_service/core",
   "+third_party/protobuf",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+net/traffic_annotation",
+  "+components/endpoint_fetcher",
+  "+components/signin/public",
 ]

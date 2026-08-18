@@ -58,7 +58,8 @@ class TestOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
   }
 
   signin::OAuthConsumer GetOAuthConsumerForBrowserActuator() const override {
-    NOTREACHED();
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kBrowserActuatorName, {});
   }
 
   signin::OAuthConsumer GetOAuthConsumerForSiteTokenProvider() const override {
