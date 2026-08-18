@@ -65,7 +65,9 @@ class ChildCallStackProfileCollector {
           parent_collector);
 
   // Collects |profile| whose collection start time is |start_timestamp|.
-  void Collect(base::TimeTicks start_timestamp, SampledProfile profile);
+  void Collect(base::TimeTicks start_timestamp,
+               mojom::ProfileType profile_type,
+               SampledProfile profile);
 
  private:
   friend class ChildCallStackProfileCollectorTest;

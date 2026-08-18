@@ -280,7 +280,12 @@ class BASE_EXPORT InsecureRandomGenerator {
   friend class MetricsSubSampler;
   // test::InsecureRandomGenerator can be used for testing.
   friend class test::InsecureRandomGenerator;
-
+  // Uses the generator to subsample allocations randomly. Must use
+  // InsecureRandomGenerator both because it can re-enter into the allocator,
+  // which is not permitted, but also because the normal (crypto-safe) call
+  // invokes system calls (~500x the cost, and is thus too high-overhead for
+  // allocator-hooking code).
+  friend class SamplingHeapChurnProfiler;
   friend class gwp_asan::internal::ExtremeLightweightDetectorQuarantineBranch;
 
   FRIEND_TEST_ALL_PREFIXES(RandUtilTest,

@@ -20,6 +20,7 @@ struct SampledProfile {
 enum ProfileType {
   kCPU,
   kHeap,
+  kHeapChurn,
 };
 
 // Passes SampledProfile reports from a sampling profiler running in a child
@@ -32,9 +33,10 @@ interface CallStackProfileCollector {
   // `profile_type` is the type of sampled data in the report.
   //
   // Note that the `trigger_event` field of the SampledProfile proto should be
-  // PERIODIC_HEAP_COLLECTION iff `profile_type` is kHeap. But the profile
-  // comes from an untrusted process so the implementation must not depend on
-  // this.
+  // PERIODIC_HEAP_COLLECTION iff `profile_type` is kHeap, or
+  // PERIODIC_HEAP_CHURN_COLLECTION iff `profile_type` is kHeapChurn. But the
+  // profile comes from an untrusted process so the implementation must not
+  // depend on this.
   Collect(mojo_base.mojom.TimeTicks start_timestamp,
           ProfileType profile_type,
           SampledProfile profile);

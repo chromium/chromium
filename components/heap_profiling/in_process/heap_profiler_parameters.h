@@ -20,6 +20,13 @@ namespace heap_profiling {
 // reporting is enabled.
 BASE_DECLARE_FEATURE(kHeapProfilerReporting);
 
+// If this is enabled, the client will collect heap churn profiles (alloc-free
+// churn) in addition to live heap profiles.
+BASE_DECLARE_FEATURE(kHeapProfilerChurnReporting);
+
+// Subsampling probability for heap churn profiling (alloc-free memory).
+extern const base::FeatureParam<double> kHeapChurnSubsamplingChance;
+
 // Chance that this client will report heap samples through a metrics
 // provider if it's on the stable channel.
 extern const base::FeatureParam<double> kStableProbability;

@@ -126,6 +126,10 @@ constexpr base::FeatureParam<double> kUtilityHashSetLoadFactor{
 }  // namespace
 
 BASE_FEATURE(kHeapProfilerReporting, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kHeapProfilerChurnReporting, base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<double> kHeapChurnSubsamplingChance{
+    &kHeapProfilerChurnReporting, "subsampling-chance", 0.005};
 
 const base::FeatureParam<double> kStableProbability{
     &kHeapProfilerReporting, "stable-probability", kDefaultStableProbability};

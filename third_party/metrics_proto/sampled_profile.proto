@@ -60,6 +60,9 @@ message SampledProfile {
     // between trigger events conform to the Poisson process with certain mean
     // interval between collections.
     PERIODIC_HEAP_COLLECTION = 7;
+
+    // The heap churn profile was triggered by periodic sampling of alloc-frees.
+    PERIODIC_HEAP_CHURN_COLLECTION = 8;
   }
 
   TriggerEvent trigger_event = 1;
