@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.ui.side_panel;
 
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
-import android.app.Activity;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
 /** Factory for creating a {@link SidePanelContainerCoordinator}. */
 @NullMarked
@@ -19,21 +19,18 @@ public final class SidePanelContainerCoordinatorFactory {
 
     private SidePanelContainerCoordinatorFactory() {}
 
-    /**
-     * Factory method to create a new SidePanelContainerCoordinator implementation.
-     *
-     * @param parentActivity Parent Activity that will own this instance.
-     * @param sideUiCoordinator Coordinator for the Side Panel UI anchoring view.
-     * @return SidePanelContainerCoordinator implementation.
-     */
+    /** Factory method to create a new SidePanelContainerCoordinator implementation. */
     @Nullable
     public static SidePanelContainerCoordinator create(
-            Activity parentActivity, SideUiCoordinator sideUiCoordinator) {
-        log(TAG, "create", parentActivity, sideUiCoordinator);
+            ActivityWindowAndroid windowAndroid,
+            SideUiCoordinator sideUiCoordinator,
+            TabModelSelector tabModelSelector) {
+        log(TAG, "create");
         if (!AndroidSidePanelEnabledFn.isEnabled()) {
             return null;
         }
 
-        return new SidePanelContainerCoordinatorImpl(parentActivity, sideUiCoordinator);
+        return new SidePanelContainerCoordinatorImpl(
+                windowAndroid, sideUiCoordinator, tabModelSelector);
     }
 }

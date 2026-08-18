@@ -16,6 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature;
 
 /** JNI bridge for communicating with the native {@code SidePanelCoordinatorAndroid}. */
@@ -26,17 +27,16 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
     /** Sentinel value for invalid or unset coordinates. */
     private static final int INVALID_COORDINATE = -1;
 
-    private final SidePanelContainerCoordinatorImpl mSidePanelContainerCoordinator;
+    private final SidePanelNativeBridgeSelector mNativeBridgeSelector;
 
     /** Address of the native {@code SidePanelCoordinatorAndroid}. */
     private long mNativeSidePanelCoordinatorAndroid;
 
     private boolean mDisableAnimationsForTesting;
 
-    SidePanelCoordinatorAndroidBridge(
-            SidePanelContainerCoordinatorImpl sidePanelContainerCoordinator) {
-        log(TAG, "constructor", sidePanelContainerCoordinator);
-        mSidePanelContainerCoordinator = sidePanelContainerCoordinator;
+    SidePanelCoordinatorAndroidBridge(SidePanelNativeBridgeSelector nativeBridgeSelector) {
+        log(TAG, "constructor");
+        mNativeBridgeSelector = nativeBridgeSelector;
     }
 
     @Override
@@ -151,12 +151,13 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
     }
 
     @CalledByNative
-    private boolean canShow() {
-        return mSidePanelContainerCoordinator.canShow();
+    private boolean canShow(@JniType("Profile*") Profile profile) {
+        return mNativeBridgeSelector.canShow(profile);
     }
 
     @CalledByNative
     private void startOpeningPanel(
+            @JniType("Profile*") Profile profile,
             View sidePanelNativeView,
             @JniType("std::u16string_view") String title,
             boolean shouldShowHeader,
@@ -165,58 +166,62 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
             int width,
             int height,
             boolean suppressAnimations) {
-        log(TAG, "startOpeningPanel", sidePanelNativeView, title, x, y, width, height);
-        mSidePanelContainerCoordinator.startOpeningPanel(
+        log(TAG, "startOpeningPanel", profile, sidePanelNativeView, title, x, y, width, height);
+        mNativeBridgeSelector.startOpeningPanel(
+                profile,
                 new SidePanelContent(sidePanelNativeView, title, shouldShowHeader),
                 createRectFromCoordinates(x, y, width, height),
                 suppressAnimations || mDisableAnimationsForTesting);
     }
 
     @CalledByNative
-    private void startClosingPanel(boolean suppressAnimations) {
-        log(TAG, "startClosingPanel", suppressAnimations);
-        mSidePanelContainerCoordinator.startClosingPanel(
-                suppressAnimations || mDisableAnimationsForTesting);
+    private void startClosingPanel(
+            @JniType("Profile*") Profile profile, boolean suppressAnimations) {
+        log(TAG, "startClosingPanel", profile, suppressAnimations);
+        mNativeBridgeSelector.startClosingPanel(
+                profile, suppressAnimations || mDisableAnimationsForTesting);
     }
 
     @CalledByNative
     private void startReplacingPanelContent(
+            @JniType("Profile*") Profile profile,
             View sidePanelNativeView,
             @JniType("std::u16string_view") @Nullable String title,
             boolean shouldShowHeader) {
-        log(TAG, "startReplacingPanelContent", sidePanelNativeView, title);
-        mSidePanelContainerCoordinator.startReplacingPanelContent(
-                new SidePanelContent(sidePanelNativeView, title, shouldShowHeader));
+        log(TAG, "startReplacingPanelContent", profile, sidePanelNativeView, title);
+        mNativeBridgeSelector.startReplacingPanelContent(
+                profile, new SidePanelContent(sidePanelNativeView, title, shouldShowHeader));
     }
 
     @CalledByNative
-    private void endAnimations() {
-        log(TAG, "endAnimations");
-        mSidePanelContainerCoordinator.endAnimations();
+    private void endAnimations(@JniType("Profile*") Profile profile) {
+        log(TAG, "endAnimations", profile);
+        mNativeBridgeSelector.endAnimations(profile);
     }
 
     @CalledByNative
-    private void completePendingContentReplacement() {
-        log(TAG, "completePendingContentReplacement");
-        mSidePanelContainerCoordinator.completePendingContentReplacement();
+    private void completePendingContentReplacement(@JniType("Profile*") Profile profile) {
+        log(TAG, "completePendingContentReplacement", profile);
+        mNativeBridgeSelector.completePendingContentReplacement(profile);
     }
 
     @CalledByNativeForTesting
-    private void configDeferredViewReplacementForTesting(boolean enable) {
-        log(TAG, "configDeferredViewReplacementForTesting", enable);
-        mSidePanelContainerCoordinator.configDeferredViewReplacementForTesting(enable); // IN-TEST
+    private void configDeferredViewReplacementForTesting(
+            @JniType("Profile*") Profile profile, boolean enable) {
+        log(TAG, "configDeferredViewReplacementForTesting", profile, enable);
+        mNativeBridgeSelector.configDeferredViewReplacementForTesting(profile, enable); // IN-TEST
     }
 
     @CalledByNativeForTesting
-    private void simulateAutoCloseConditionForTesting() {
-        log(TAG, "simulateAutoCloseConditionForTesting");
-        mSidePanelContainerCoordinator.simulateAutoCloseConditionForTesting(); // IN-TEST
+    private void simulateAutoCloseConditionForTesting(@JniType("Profile*") Profile profile) {
+        log(TAG, "simulateAutoCloseConditionForTesting", profile);
+        mNativeBridgeSelector.simulateAutoCloseConditionForTesting(profile); // IN-TEST
     }
 
     @CalledByNativeForTesting
-    private void simulateAutoRestoreConditionForTesting() {
-        log(TAG, "simulateAutoRestoreConditionForTesting");
-        mSidePanelContainerCoordinator.simulateAutoRestoreConditionForTesting(); // IN-TEST
+    private void simulateAutoRestoreConditionForTesting(@JniType("Profile*") Profile profile) {
+        log(TAG, "simulateAutoRestoreConditionForTesting", profile);
+        mNativeBridgeSelector.simulateAutoRestoreConditionForTesting(profile); // IN-TEST
     }
 
     @CalledByNativeForTesting
@@ -226,8 +231,8 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
     }
 
     @CalledByNativeForTesting
-    private int getContainerWidthForTesting() {
-        View view = mSidePanelContainerCoordinator.getView(); // IN-TEST
+    private int getContainerWidthForTesting(@JniType("Profile*") Profile profile) {
+        View view = mNativeBridgeSelector.getView(profile); // IN-TEST
         if (view == null || !view.isAttachedToWindow()) {
             return 0;
         }

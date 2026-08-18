@@ -2311,14 +2311,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         mSidePanelContainerCoordinator =
-                SidePanelContainerCoordinatorFactory.create(mActivity, mSideUiCoordinator);
+                SidePanelContainerCoordinatorFactory.create(
+                        mWindowAndroid,
+                        mSideUiCoordinator,
+                        mTabModelSelectorSupplier.asNonNull().get());
         if (mSidePanelContainerCoordinator != null) {
+            mSidePanelContainerCoordinator.init();
+
             var chromeAndroidTask = mChromeAndroidTaskSupplier.get();
             assert chromeAndroidTask != null
                     : "ChromeAndroidTask shouldn't be null when side panel is enabled";
-
-            mSidePanelContainerCoordinator.init(
-                    chromeAndroidTask, currentlySelectedProfile, mWindowAndroid);
 
             // TODO(crbug.com/489548570): Remove SidePanelDevFeature when it's not needed.
             mSidePanelDevFeature =

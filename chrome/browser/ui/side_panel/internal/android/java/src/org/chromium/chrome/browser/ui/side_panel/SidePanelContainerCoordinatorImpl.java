@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.ui.side_panel;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.chrome.browser.ui.side_panel.SidePanelUtils.log;
 
-import android.app.Activity;
 import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +25,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeatureKey;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
@@ -49,12 +47,9 @@ final class SidePanelContainerCoordinatorImpl
 
     private static final @AnchorSide int SIDE_PANEL_DEFAULT_ANCHOR_SIDE = AnchorSide.RIGHT;
 
-    private final Activity mParentActivity;
     private final LinearLayout mContainerView;
+    private final SidePanelNativeBridgeSelector mNativeBridgeSelector;
     private final SideUiCoordinator mSideUiCoordinator;
-
-    /** JNI bridge to read/write C++ side panel states. */
-    private @Nullable SidePanelCoordinatorAndroidBridge mSidePanelCoordinatorAndroidBridge;
 
     private @Nullable SidePanelContent mCurrentContent;
 
@@ -91,21 +86,22 @@ final class SidePanelContainerCoordinatorImpl
     private boolean mEnableDeferredViewReplacementForTesting;
     private boolean mSimulateAutoCloseConditionForTesting;
 
-    /**
-     * Constructs a concrete implementation of the SidePanelContainerCoordinator interface.
-     *
-     * @param parentActivity Parent Activity that will own this instance.
-     * @param sideUiCoordinator Coordinator for the Side Panel UI anchoring view.
-     */
     SidePanelContainerCoordinatorImpl(
-            Activity parentActivity, SideUiCoordinator sideUiCoordinator) {
-        log(TAG, "constructor", parentActivity, sideUiCoordinator);
-        mParentActivity = parentActivity;
-        mSideUiCoordinator = sideUiCoordinator;
+            ActivityWindowAndroid windowAndroid,
+            SideUiCoordinator sideUiCoordinator,
+            TabModelSelector tabModelSelector) {
+        log(TAG, "constructor");
+
+        var activity = assertNonNull(windowAndroid.getActivity().get());
         mContainerView =
                 (LinearLayout)
-                        LayoutInflater.from(mParentActivity)
+                        LayoutInflater.from(activity)
                                 .inflate(R.layout.side_panel_container, /* root= */ null);
+
+        mNativeBridgeSelector =
+                new SidePanelNativeBridgeSelector(
+                        windowAndroid, /* sidePanelContainerCoordinator= */ this, tabModelSelector);
+        mSideUiCoordinator = sideUiCoordinator;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,46 +109,11 @@ final class SidePanelContainerCoordinatorImpl
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void init(
-            ChromeAndroidTask chromeAndroidTask,
-            Profile profile,
-            ActivityWindowAndroid windowAndroid) {
+    public void init() {
         log(TAG, "init");
         ThreadUtils.assertOnUiThread();
         mSideUiCoordinator.registerSideUiContainer(this);
-
-        // Initialize the window-scoped SidePanelRegistry and SidePanelCoordinatorAndroid, and
-        // associate them with a ChromeAndroidTask.
-        //
-        // This will allow SidePanelRegistry and SidePanelCoordinatorAndroid to access the
-        // native BrowserWindowInterface and ensure the lifecycle and destruction order for both
-        // are correct.
-        //
-        // Note:
-        //
-        // The lifecycles of SidePanelCoordinatorAndroid and the window-scoped SidePanelRegistry are
-        // in sync with a native BrowserWindowInterface, but SidePanelCoordinatorAndroid doesn't own
-        // the SidePanelRegistry, or vice versa. This matches the WML implementation.
-        //
-        // TODO(crbug.com/540949995): Support more than one window-scoped SidePanelRegistry /
-        //  SidePanelCoordinatorAndroid. SidePanelContainerCoordinator is scoped to ChromeActivity,
-        // but one ChromeActivity can have more than one BrowserWindowInterface, e.g., when the
-        // Activity supports both regular tabs and incognito tabs, there will be 2
-        // BrowserWindowInterfaces, one for each tab model's profile.
-        chromeAndroidTask.addFeature(
-                new ChromeAndroidTaskFeatureKey(
-                        WindowScopedSidePanelRegistryBridge.class, profile, windowAndroid),
-                WindowScopedSidePanelRegistryBridge::new);
-        mSidePanelCoordinatorAndroidBridge =
-                (SidePanelCoordinatorAndroidBridge)
-                        chromeAndroidTask.addFeature(
-                                new ChromeAndroidTaskFeatureKey(
-                                        SidePanelCoordinatorAndroidBridge.class,
-                                        profile,
-                                        windowAndroid),
-                                () -> new SidePanelCoordinatorAndroidBridge(this));
-        assert mSidePanelCoordinatorAndroidBridge != null;
-        mSidePanelCoordinatorAndroidBridge.init();
+        mNativeBridgeSelector.init();
     }
 
     /**
@@ -269,9 +230,8 @@ final class SidePanelContainerCoordinatorImpl
                         mRan = true;
 
                         contentContainer.removeView(oldContentView);
-                        if (mSidePanelCoordinatorAndroidBridge != null) {
-                            mSidePanelCoordinatorAndroidBridge.onPanelContentReplaced();
-                        }
+                        assertNonNull(mNativeBridgeSelector.getCurrentCoordinatorBridge())
+                                .onPanelContentReplaced();
 
                         notifyAccessibilityStateChanged(
                                 AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_TITLE,
@@ -344,7 +304,7 @@ final class SidePanelContainerCoordinatorImpl
         // (2) a crash when the content View is added to another container instance.
         getContentContainer().removeAllViews();
         mCurrentContent = null;
-        mSidePanelCoordinatorAndroidBridge = null;
+        mNativeBridgeSelector.destroy();
     }
 
     /**
@@ -442,12 +402,13 @@ final class SidePanelContainerCoordinatorImpl
             return new SideUiSize(0, HeightType.NOT_APPLICABLE);
         }
 
-        int availableWidthDp = ViewUtils.pxToDp(mParentActivity, availableWidth);
-        int windowWidthDp = ViewUtils.pxToDp(mParentActivity, windowWidth);
+        var context = mContainerView.getContext();
+        int availableWidthDp = ViewUtils.pxToDp(context, availableWidth);
+        int windowWidthDp = ViewUtils.pxToDp(context, windowWidth);
 
         int horizontalPaddingDp =
                 ViewUtils.pxToDp(
-                        mParentActivity,
+                        context,
                         mContainerView.getPaddingLeft() + mContainerView.getPaddingRight());
         int minSidePanelContainerWidthDp = horizontalPaddingDp + MIN_SIDE_PANEL_CONTENT_WIDTH_DP;
 
@@ -457,18 +418,17 @@ final class SidePanelContainerCoordinatorImpl
         @HeightType
         int heightType =
                 determineHeightType(
-                        showableWidthDp, VerticalTabUtils.isVerticalTabsEnabled(mParentActivity));
+                        showableWidthDp, VerticalTabUtils.isVerticalTabsEnabled(context));
 
-        return new SideUiSize(ViewUtils.dpToPx(mParentActivity, showableWidthDp), heightType);
+        return new SideUiSize(ViewUtils.dpToPx(context, showableWidthDp), heightType);
     }
 
     @Override
     public boolean hasContentToShow() {
         ThreadUtils.assertOnUiThread();
-        if (mSidePanelCoordinatorAndroidBridge != null) {
-            return mSidePanelCoordinatorAndroidBridge.hasContentToShow();
-        }
-        return false;
+        var sidePanelCoordinatorAndroidBridge = mNativeBridgeSelector.getCurrentCoordinatorBridge();
+        return sidePanelCoordinatorAndroidBridge != null
+                && sidePanelCoordinatorAndroidBridge.hasContentToShow();
     }
 
     @Override
@@ -502,9 +462,8 @@ final class SidePanelContainerCoordinatorImpl
             @Px int newWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
-        if (mSidePanelCoordinatorAndroidBridge != null) {
-            mSidePanelCoordinatorAndroidBridge.onPanelContainerUpdated(oldWidth, newWidth);
-        }
+        assertNonNull(mNativeBridgeSelector.getCurrentCoordinatorBridge())
+                .onPanelContainerUpdated(oldWidth, newWidth);
 
         // Accessibility support for opening/closing the panel.
         if (oldWidth == 0 && newWidth > 0) {
@@ -555,20 +514,16 @@ final class SidePanelContainerCoordinatorImpl
 
     @Override
     public void onWillAutoClose() {
-        if (mSidePanelCoordinatorAndroidBridge != null) {
-            mIsPreparingForAutoClose = true;
-            mSidePanelCoordinatorAndroidBridge.onWillAutoClose();
-            mIsPreparingForAutoClose = false;
-        }
+        mIsPreparingForAutoClose = true;
+        assertNonNull(mNativeBridgeSelector.getCurrentCoordinatorBridge()).onWillAutoClose();
+        mIsPreparingForAutoClose = false;
     }
 
     @Override
     public void onWillAutoRestore() {
-        if (mSidePanelCoordinatorAndroidBridge != null) {
-            mIsPreparingForAutoRestore = true;
-            mSidePanelCoordinatorAndroidBridge.onWillAutoRestore();
-            mIsPreparingForAutoRestore = false;
-        }
+        mIsPreparingForAutoRestore = true;
+        assertNonNull(mNativeBridgeSelector.getCurrentCoordinatorBridge()).onWillAutoRestore();
+        mIsPreparingForAutoRestore = false;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -628,12 +583,6 @@ final class SidePanelContainerCoordinatorImpl
         return null;
     }
 
-    private void onCloseButtonClicked() {
-        if (mSidePanelCoordinatorAndroidBridge != null) {
-            mSidePanelCoordinatorAndroidBridge.closePanel();
-        }
-    }
-
     private void configureHeader(SidePanelContent content) {
         int vis;
         if (!content.mShowHeader) {
@@ -645,7 +594,12 @@ final class SidePanelContainerCoordinatorImpl
             titleView.setText(content.mTitle);
             mContainerView
                     .findViewById(R.id.side_panel_close_button)
-                    .setOnClickListener(v -> onCloseButtonClicked());
+                    .setOnClickListener(
+                            v ->
+                                    assertNonNull(
+                                                    mNativeBridgeSelector
+                                                            .getCurrentCoordinatorBridge())
+                                            .closePanel());
         }
         View headerView = mContainerView.findViewById(R.id.side_panel_header);
         headerView.setVisibility(vis);

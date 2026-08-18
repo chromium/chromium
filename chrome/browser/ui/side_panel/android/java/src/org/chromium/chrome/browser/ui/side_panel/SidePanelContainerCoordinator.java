@@ -8,9 +8,6 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
-import org.chromium.ui.base.ActivityWindowAndroid;
 
 /** Coordinator of the side panel container UI. */
 @NullMarked
@@ -55,19 +52,12 @@ public interface SidePanelContainerCoordinator {
      * <ul>
      *   <li>Register {@link SidePanelContainerCoordinator} with {@link
      *       org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator},
-     *   <li>Allow {@link SidePanelContainerCoordinator} to listen for events,
-     *   <li>Initialize the {@code SidePanelCoordinatorAndroidBridge},
+     *   <li>Register {@link SidePanelContainerCoordinator} as a listener/observer of other objects,
+     *   <li>Initialize native bridges,
      *   <li>etc.
      * </ul>
-     *
-     * @param chromeAndroidTask For associating task-scoped features.
-     * @param profile The currently selected Profile.
-     * @param windowAndroid The ActivityWindowAndroid.
      */
-    void init(
-            ChromeAndroidTask chromeAndroidTask,
-            Profile profile,
-            ActivityWindowAndroid windowAndroid);
+    void init();
 
     /** Returns the content View currently shown in the side panel container, or null. */
     @Nullable View getContentView();
