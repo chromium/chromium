@@ -2154,6 +2154,17 @@ suite('OmniboxComposeboxTest', () => {
       voiceSearchButton.click();
       await microtasksFinished();
       await omniboxComposebox.updateComplete;
+
+      const animatedGlow =
+          omniboxComposebox.shadowRoot.querySelector('search-animated-glow');
+      if (animatedGlow) {
+        await animatedGlow.updateComplete;
+      }
+      const voiceSearch = omniboxComposebox.shadowRoot.querySelector(
+          'cr-composebox-voice-search');
+      if (voiceSearch) {
+        await voiceSearch.updateComplete;
+      }
     }
 
     async function submitVoiceSearch() {
