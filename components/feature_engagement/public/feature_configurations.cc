@@ -1318,7 +1318,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHAdaptiveButtonPinGlicToolbarButtonFeature.name == feature->name) {
     // A config that defines when the Glic adaptive toolbar button should be
     // auto-pinned:
-    // * If no other adaptive toolbar button has been used in the last 90 days.
+    // * If no other adaptive toolbar button has been used in the last 7 days.
     // * If the Glic button itself hasn't been used.
     // * Only once in its lifetime.
     // * Other IPHs do not impact triggering.
@@ -1333,28 +1333,28 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("adaptive_toolbar_glic_iph_trigger", Comparator(EQUAL, 0),
                     k10YearsInDays, k10YearsInDays);
     config.used = EventConfig("adaptive_toolbar_customization_glic_clicked",
-                              Comparator(EQUAL, 0), 90, 360);
+                              Comparator(EQUAL, 0), 7, 360);
     config.event_configs.insert(
         EventConfig("adaptive_toolbar_customization_new_tab_opened",
-                    Comparator(EQUAL, 0), 90, 360));
+                    Comparator(EQUAL, 0), 7, 360));
     config.event_configs.insert(
         EventConfig("adaptive_toolbar_customization_open_in_browser_opened",
-                    Comparator(EQUAL, 0), 90, 360));
+                    Comparator(EQUAL, 0), 7, 360));
     config.event_configs.insert(
         EventConfig("adaptive_toolbar_customization_share_opened",
-                    Comparator(EQUAL, 0), 90, 360));
+                    Comparator(EQUAL, 0), 7, 360));
     config.event_configs.insert(
         EventConfig("adaptive_toolbar_customization_voice_search_opened",
-                    Comparator(EQUAL, 0), 90, 360));
+                    Comparator(EQUAL, 0), 7, 360));
     config.event_configs.insert(
         EventConfig("adaptive_toolbar_customization_translate_opened",
-                    Comparator(EQUAL, 0), 90, 360));
+                    Comparator(EQUAL, 0), 7, 360));
     config.event_configs.insert(
         EventConfig("adaptive_toolbar_customization_read_aloud_clicked",
-                    Comparator(EQUAL, 0), 90, 360));
+                    Comparator(EQUAL, 0), 7, 360));
     config.event_configs.insert(
         EventConfig("adaptive_toolbar_customization_add_to_bookmarks_opened",
-                    Comparator(EQUAL, 0), 90, 360));
+                    Comparator(EQUAL, 0), 7, 360));
     return config;
   }
   if (kIPHMenuAddToGroup.name == feature->name) {
