@@ -232,8 +232,9 @@ bool RenderFrameProxyHost::InitRenderFrameProxy(
   DCHECK(!render_frame_proxy_created_);
   // We shouldn't be creating proxies for subframes of frames in
   // BackForwardCache.
-  CHECK(!frame_tree_node_->current_frame_host()->IsInBackForwardCache(),
-        base::NotFatalUntil::M152);
+  // TODO(crbug.com/547219514): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!frame_tree_node_->current_frame_host()->IsInBackForwardCache());
 
   // If the current RenderFrameHost is pending deletion, no new proxies should
   // be created for it, since this frame should no longer be visible from other
