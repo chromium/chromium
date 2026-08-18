@@ -223,6 +223,36 @@ class LitTemplateFormatterTest(unittest.TestCase):
     )
     node.RunNode([test_script])
 
+  def testMultipleFiles(self):
+    filenames = [
+      "test_basic_expressions.html.ts",
+      "test_comments_no_whitespace.html.ts",
+      "test_multiline_attribute_expression.html.ts",
+      "retain_newlines.html.ts",
+    ]
+    dest_paths = []
+    expected_contents = []
+    for filename in filenames:
+      src_path = os.path.join(
+        _HERE_DIR, "tests", "lit_template_formatter", filename
+      )
+      expected_path = os.path.join(
+        _HERE_DIR, "tests", "lit_template_formatter", "expected", filename
+      )
+      if not os.path.exists(expected_path):
+        expected_path = src_path
+      dest_path = os.path.join(self._out_dir, filename)
+      shutil.copy(src_path, dest_path)
+      dest_paths.append(dest_path)
+      expected_contents.append(self._read_file(expected_path))
+
+    # Format multiple files
+    self._run_formatter(dest_paths)
+
+    for dest_path, expected in zip(dest_paths, expected_contents):
+      actual = self._read_file(dest_path)
+      self.assertMultiLineEqual(expected, actual)
+
 
 if __name__ == "__main__":
   unittest.main()
