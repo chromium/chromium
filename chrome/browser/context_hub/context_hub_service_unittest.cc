@@ -258,6 +258,85 @@ TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceSuccess) {
   EXPECT_TRUE(future.Get());
 }
 
+TEST_F(ContextHubServiceTest,
+       GenerateFirstPartyAutoTodos_PopulatesExistingTodosInRequest) {
+  // Add an existing first-party todo to the cache.
+  AutoTodoEntry first_party_entry;
+  first_party_entry.id = "todo_1";
+  first_party_entry.title = "Existing First Party Todo";
+  first_party_entry.description = "Existing Description";
+  first_party_entry.importance_score = 0.85f;
+  first_party_entry.status = AutoTodoEntry::Status::kCompleted;
+  first_party_entry.data = FirstPartyData{
+      .source_references = {{.url = GURL("https://mail.google.com/123"),
+                             .subject = "Test Subject"}},
+      .actionable_url = GURL("https://example.com/action")};
+
+  base::test::TestFuture<bool> add_fp_future;
+  service_.UpdateAutoTodo(std::move(first_party_entry),
+                          add_fp_future.GetCallback());
+  EXPECT_TRUE(add_fp_future.Get());
+
+  // Add an existing third-party tab todo to verify it is filtered out.
+  AutoTodoEntry third_party_entry;
+  third_party_entry.id = "todo_2";
+  third_party_entry.title = "Tab Todo";
+  third_party_entry.data = ThirdPartyData{.tab_id = 42};
+
+  base::test::TestFuture<bool> add_tp_future;
+  service_.UpdateAutoTodo(std::move(third_party_entry),
+                          add_tp_future.GetCallback());
+  EXPECT_TRUE(add_tp_future.Get());
+
+  personal_context::proto::AutoTodosResponse expected_response;
+  auto* todo = expected_response.add_todos();
+  todo->set_title("New Todo");
+  todo->set_description("New Description");
+
+  personal_context::proto::Any any_response;
+  expected_response.SerializeToString(any_response.mutable_value());
+
+  EXPECT_CALL(
+      mock_personal_context_service_,
+      FetchContext(personal_context::proto::CONTEXT_MEMORY_FEATURE_AUTO_TODOS,
+                   _, _, _))
+      .WillOnce(
+          [&](personal_context::proto::ContextMemoryFeature feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const personal_context::ContextMemoryRequestOptions& options,
+              personal_context::FetchContextCallback callback) {
+            const auto& auto_todos_request =
+                static_cast<const personal_context::proto::AutoTodosRequest&>(
+                    request_metadata);
+            EXPECT_EQ(auto_todos_request.existing_todos_size(), 1);
+            if (auto_todos_request.existing_todos_size() == 1) {
+              const auto& existing = auto_todos_request.existing_todos(0);
+              EXPECT_EQ(existing.id(), "todo_1");
+              EXPECT_EQ(existing.title(), "Existing First Party Todo");
+              EXPECT_EQ(existing.description(), "Existing Description");
+              EXPECT_FLOAT_EQ(existing.importance_score(), 0.85f);
+              EXPECT_EQ(
+                  existing.status(),
+                  personal_context::proto::AutoTodoItem::STATUS_COMPLETED);
+              EXPECT_EQ(existing.actionable_url(),
+                        "https://example.com/action");
+              EXPECT_EQ(existing.source_references_size(), 1);
+              if (existing.source_references_size() == 1) {
+                EXPECT_EQ(existing.source_references(0).gmail().message_url(),
+                          "https://mail.google.com/123");
+                EXPECT_EQ(existing.source_references(0).gmail().subject(),
+                          "Test Subject");
+              }
+            }
+            std::move(callback).Run(personal_context::FetchContextResult(
+                base::ok(std::move(any_response))));
+          });
+
+  base::test::TestFuture<bool> future;
+  service_.GenerateFirstPartyAutoTodos(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
 TEST_F(ContextHubServiceTest, GenerateFirstPartyAutoTodos_ServiceError) {
   personal_context::ContextMemoryError expected_error =
       personal_context::ContextMemoryError::FromExecutionError(

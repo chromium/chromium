@@ -276,6 +276,12 @@ class ContextHubService : public KeyedService,
                          const std::string& user_command,
                          GroupTabsCallback callback);
 
+  // Handles the async response when all auto todos are fetched to populate
+  // existing first party todos in the CMS request.
+  void OnCachedFirstPartyAutoTodosFetched(
+      AutoTodosStore::OperationCallback callback,
+      std::vector<AutoTodoEntry> stored_todos);
+
   // Handles the async response from the AutoTodos fetch.
   void OnFirstPartyAutoTodosFetched(
       AutoTodosStore::OperationCallback callback,
