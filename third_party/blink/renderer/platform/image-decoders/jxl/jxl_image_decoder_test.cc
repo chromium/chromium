@@ -259,6 +259,56 @@ TEST_F(JXLImageDecoderTest, SmallestValidBitstream) {
   EXPECT_FALSE(decoder->Failed());
 }
 
+// A truncated animation must fail decoding, also when the final
+// "all data received" notification arrives without any new bytes (the
+// scanner has already consumed the whole buffer in an earlier call).
+TEST_F(JXLImageDecoderTest, TruncatedAnimationFlagOnlyFinalSetData) {
+  scoped_refptr<SharedBuffer> full_data =
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
+  ASSERT_TRUE(full_data);
+  const Vector<char> full = full_data->CopyAs<Vector<char>>();
+
+  // Cut the file mid-stream, past the header but before the last frames.
+  scoped_refptr<SharedBuffer> truncated_data =
+      SharedBuffer::Create(base::span(full).first(full.size() / 2));
+
+  auto decoder = CreateJXLDecoder();
+  // Stream in the truncated data; the scanner consumes all of it.
+  decoder->SetData(truncated_data.get(), false);
+  decoder->FrameCount();
+  EXPECT_FALSE(decoder->Failed());
+
+  // End of stream: same buffer, only the all-data-received flag flips.
+  decoder->SetData(truncated_data.get(), true);
+  decoder->FrameCount();
+  decoder->DecodeFrameBufferAtIndex(0);
+  EXPECT_TRUE(decoder->Failed());
+}
+
+// A file truncated before basic info must fail decoding, also when the
+// final "all data received" notification arrives without any new bytes.
+TEST_F(JXLImageDecoderTest, HeaderTruncatedFlagOnlyFinalSetData) {
+  scoped_refptr<SharedBuffer> full_data =
+      ReadFileToSharedBuffer(kImagesDir, "5_frames_numbered.jxl");
+  ASSERT_TRUE(full_data);
+  const Vector<char> full = full_data->CopyAs<Vector<char>>();
+
+  // Keep only a prefix that contains the codestream signature but ends
+  // before the basic info can be parsed.
+  scoped_refptr<SharedBuffer> truncated_data =
+      SharedBuffer::Create(base::span(full).first(3u));
+
+  auto decoder = CreateJXLDecoder();
+  decoder->SetData(truncated_data.get(), false);
+  decoder->FrameCount();
+  EXPECT_FALSE(decoder->IsSizeAvailable());
+
+  decoder->SetData(truncated_data.get(), true);
+  decoder->FrameCount();
+  decoder->DecodeFrameBufferAtIndex(0);
+  EXPECT_TRUE(decoder->Failed());
+}
+
 // Regression test: a 12-byte valid naked JXL codestream must decode to a
 // 256x128 black image, at any partial/full data split. See
 // crbug.com/507903802.
@@ -954,6 +1004,44 @@ TEST_F(JXLImageDecoderTest, ProgressiveRenderingFramePartialStatus) {
   ASSERT_TRUE(frame);
   EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus())
       << "Frame should be complete after all data is provided";
+  EXPECT_FALSE(decoder->Failed());
+}
+
+// Regression test: progressive rendering must not stall on the first 4096
+// bytes. The jxl-rs codestream parser reads input eagerly into a 4096-byte
+// internal buffer while parsing headers, so the first process() call can
+// consume all available input without decoding any sections. The decoder
+// must keep processing (with empty input) to drain that internal buffer;
+// otherwise nothing renders until the total input exceeds the buffer size,
+// no matter how much DC data has already arrived.
+TEST_F(JXLImageDecoderTest, ProgressiveRenderingWithin4096Bytes) {
+  scoped_refptr<SharedBuffer> full_data =
+      ReadFileToSharedBuffer(kImagesDir, "fox-progressive.jxl");
+  ASSERT_TRUE(full_data);
+  Vector<char> full_data_vec = full_data->CopyAs<Vector<char>>();
+  ASSERT_GT(full_data_vec.size(), 4096u);
+
+  auto decoder = CreateJXLDecoder();
+
+  // Deliver the first 4096 bytes in a single chunk and then stall, like a
+  // slow network stream. The DC data of this image fits well within these
+  // bytes, so a partial image must be rendered.
+  scoped_refptr<SharedBuffer> partial_data =
+      SharedBuffer::Create(base::span(full_data_vec).first(4096u));
+  decoder->SetData(partial_data.get(), false);
+
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFramePartial, frame->GetStatus())
+      << "Expected a partial frame from the first 4096 bytes";
+  EXPECT_FALSE(decoder->Failed());
+
+  // Completing the stream must produce a complete frame.
+  decoder->SetData(full_data.get(), true);
+  frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
   EXPECT_FALSE(decoder->Failed());
 }
 
