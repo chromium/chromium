@@ -5078,8 +5078,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "cancel_previous_attempt_on_retry": "true"
+                    },
                     "enable_features": [
-                        "ChromeEnableDnsPlatform"
+                        "ChromeEnableDnsPlatform",
+                        "DnsPlatformFailFastAndRetry"
                     ]
                 }
             ]
