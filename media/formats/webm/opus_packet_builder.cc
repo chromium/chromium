@@ -51,12 +51,8 @@ OpusPacket::OpusPacket(uint8_t config, uint8_t frame_count, bool is_VBR) {
 
 OpusPacket::~OpusPacket() = default;
 
-const uint8_t* OpusPacket::data() const {
-  return &(data_[0]);
-}
-
-int OpusPacket::size() const {
-  return data_.size();
+base::span<const uint8_t> OpusPacket::data() const {
+  return data_;
 }
 
 double OpusPacket::duration_ms() const {

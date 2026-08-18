@@ -433,10 +433,7 @@ class ChunkDemuxerTest : public ::testing::Test {
 
   bool AppendCluster(const std::string& source_id,
                      std::unique_ptr<Cluster> cluster) {
-    return AppendData(
-        source_id,
-        UNSAFE_TODO(base::span(cluster->data(),
-                               static_cast<size_t>(cluster->bytes_used()))));
+    return AppendData(source_id, cluster->AsSpan());
   }
 
   bool AppendCluster(std::unique_ptr<Cluster> cluster) {
@@ -559,9 +556,7 @@ class ChunkDemuxerTest : public ::testing::Test {
     DCHECK_GT(blocks.size(), 0u);
     ClusterBuilder cb;
 
-    // Ensure we can obtain a valid pointer to a region of data of |block_size_|
-    // length.
-    std::vector<uint8_t> data(block_size_ ? block_size_ : 1);
+    std::vector<uint8_t> data(block_size_);
 
     for (size_t i = 0; i < blocks.size(); ++i) {
       if (i == 0)
@@ -570,11 +565,10 @@ class ChunkDemuxerTest : public ::testing::Test {
       if (blocks[i].duration) {
         cb.AddBlockGroup(blocks[i].track_number, blocks[i].timestamp_in_ms,
                          blocks[i].duration, blocks[i].flags,
-                         blocks[i].flags & kWebMFlagKeyframe, &data[0],
-                         block_size_);
+                         blocks[i].flags & kWebMFlagKeyframe, data);
       } else {
         cb.AddSimpleBlock(blocks[i].track_number, blocks[i].timestamp_in_ms,
-                          blocks[i].flags, &data[0], block_size_);
+                          blocks[i].flags, data);
       }
     }
 
@@ -954,7 +948,7 @@ class ChunkDemuxerTest : public ::testing::Test {
 
   void AddSimpleBlock(ClusterBuilder* cb, int track_num, int64_t timecode) {
     uint8_t data[] = {0x00};
-    cb->AddSimpleBlock(track_num, timecode, 0, data, sizeof(data));
+    cb->AddSimpleBlock(track_num, timecode, 0, data);
   }
 
   std::unique_ptr<Cluster> GenerateCluster(int timecode, int block_count) {
@@ -1027,23 +1021,19 @@ class ChunkDemuxerTest : public ::testing::Test {
                                                        int block_duration) {
     CHECK_GT(end_timecode, timecode);
 
-    // Ensure we can obtain a valid pointer to a region of data of |block_size_|
-    // length.
-    std::vector<uint8_t> data(block_size_ ? block_size_ : 1);
+    std::vector<uint8_t> data(block_size_);
 
     ClusterBuilder cb;
     cb.SetClusterTimecode(timecode);
 
     // Create simple blocks for everything except the last block.
     while (timecode < (end_timecode - block_duration)) {
-      cb.AddSimpleBlock(track_number, timecode, kWebMFlagKeyframe, &data[0],
-                        block_size_);
+      cb.AddSimpleBlock(track_number, timecode, kWebMFlagKeyframe, data);
       timecode += block_duration;
     }
 
     cb.AddBlockGroup(track_number, timecode, block_duration, kWebMFlagKeyframe,
-                     static_cast<bool>(kWebMFlagKeyframe), &data[0],
-                     block_size_);
+                     static_cast<bool>(kWebMFlagKeyframe), data);
 
     return cb.Finish();
   }
@@ -1609,10 +1599,8 @@ TEST_F(ChunkDemuxerTest, SeekWhileParsingCluster) {
   std::unique_ptr<Cluster> cluster_a(GenerateCluster(0, 6));
 
   // Split the cluster into two appends at an arbitrary point near the end.
-  const auto cluster_size = static_cast<size_t>(cluster_a->bytes_used());
   const auto [first, second] =
-      UNSAFE_TODO(base::span(cluster_a->data(), cluster_size))
-          .split_at(cluster_size - 11);
+      cluster_a->AsSpan().split_at(cluster_a->bytes_used() - 11u);
 
   // Append the first part of the cluster.
   ASSERT_TRUE(AppendData(first));
@@ -1757,8 +1745,7 @@ TEST_F(ChunkDemuxerTest, OutOfOrderClusters) {
   // Verify that AppendData() can still accept more data.
   std::unique_ptr<Cluster> cluster_c(GenerateCluster(45, 2));
   EXPECT_MEDIA_LOG(TrimmedSpliceOverlap(45000, 28000, 6000));
-  ASSERT_TRUE(AppendData(UNSAFE_TODO(base::span(
-      cluster_c->data(), static_cast<size_t>(cluster_c->bytes_used())))));
+  ASSERT_TRUE(AppendData(cluster_c->AsSpan()));
   Seek(base::Milliseconds(45));
   CheckExpectedBuffers(audio_stream, "45K");
   CheckExpectedBuffers(video_stream, "45K");
@@ -1786,8 +1773,7 @@ TEST_F(ChunkDemuxerTest, NonMonotonicButAboveClusterTimecode) {
 
   // Verify that AppendData() ignores data after the error.
   std::unique_ptr<Cluster> cluster_b(GenerateCluster(20, 2));
-  ASSERT_FALSE(AppendData(UNSAFE_TODO(base::span(
-      cluster_b->data(), static_cast<size_t>(cluster_b->bytes_used())))));
+  ASSERT_FALSE(AppendData(cluster_b->AsSpan()));
 }
 
 TEST_F(ChunkDemuxerTest, BeforeClusterTimecode) {
@@ -1803,13 +1789,12 @@ TEST_F(ChunkDemuxerTest, BeforeClusterTimecode) {
   // should make them appear as if they are precisely those in
   // kDefaultSecondCluster().
   cb.SetClusterTimecode(1000);  // In the future relative to the next blocks.
-  cb.AddSimpleBlock(kAudioTrackNum, 46, kWebMFlagKeyframe, data, sizeof(data));
-  cb.AddSimpleBlock(kVideoTrackNum, 66, kWebMFlagKeyframe, data, sizeof(data));
-  cb.AddSimpleBlock(kAudioTrackNum, 69, kWebMFlagKeyframe, data, sizeof(data));
+  cb.AddSimpleBlock(kAudioTrackNum, 46, kWebMFlagKeyframe, data);
+  cb.AddSimpleBlock(kVideoTrackNum, 66, kWebMFlagKeyframe, data);
+  cb.AddSimpleBlock(kAudioTrackNum, 69, kWebMFlagKeyframe, data);
   cb.AddBlockGroup(kAudioTrackNum, 92, kAudioBlockDuration, kWebMFlagKeyframe,
-                   true, data, sizeof(data));
-  cb.AddBlockGroup(kVideoTrackNum, 99, kVideoBlockDuration, 0, false, data,
-                   sizeof(data));
+                   true, data);
+  cb.AddBlockGroup(kVideoTrackNum, 99, kVideoBlockDuration, 0, false, data);
 
   ASSERT_TRUE(AppendCluster(cb.Finish()));
   GenerateExpectedReads(0, 9);
@@ -1825,9 +1810,9 @@ TEST_F(ChunkDemuxerTest, NonMonotonicButBeforeClusterTimecode) {
   // Test timecodes going backwards and including values less than the cluster
   // timecode.
   cb.SetClusterTimecode(1000);
-  cb.AddSimpleBlock(kAudioTrackNum, 69, kWebMFlagKeyframe, data, sizeof(data));
-  cb.AddSimpleBlock(kVideoTrackNum, 99, kWebMFlagKeyframe, data, sizeof(data));
-  cb.AddSimpleBlock(kAudioTrackNum, 46, kWebMFlagKeyframe, data, sizeof(data));
+  cb.AddSimpleBlock(kAudioTrackNum, 69, kWebMFlagKeyframe, data);
+  cb.AddSimpleBlock(kVideoTrackNum, 99, kWebMFlagKeyframe, data);
+  cb.AddSimpleBlock(kAudioTrackNum, 46, kWebMFlagKeyframe, data);
 
   EXPECT_MEDIA_LOG(WebMOutOfOrderTimecode());
   EXPECT_MEDIA_LOG(StreamParsingFailed());
@@ -1837,8 +1822,7 @@ TEST_F(ChunkDemuxerTest, NonMonotonicButBeforeClusterTimecode) {
 
   // Verify that AppendData() ignores data after the error.
   std::unique_ptr<Cluster> cluster_b(GenerateCluster(6, 2));
-  ASSERT_FALSE(AppendData(UNSAFE_TODO(base::span(
-      cluster_b->data(), static_cast<size_t>(cluster_b->bytes_used())))));
+  ASSERT_FALSE(AppendData(cluster_b->AsSpan()));
 }
 
 TEST_F(ChunkDemuxerTest, PerStreamMonotonicallyIncreasingTimestamps) {
@@ -2111,14 +2095,9 @@ TEST_F(ChunkDemuxerTest, AppendingInPieces) {
       info_tracks.size() + cluster_a->bytes_used() + cluster_b->bytes_used();
   auto buffer = base::HeapArray<uint8_t>::Uninit(buffer_size);
   base::span<uint8_t> dst = buffer;
-  UNSAFE_TODO(memcpy(dst.data(), info_tracks.data(), info_tracks.size()));
-  dst = dst.subspan(info_tracks.size());
-
-  UNSAFE_TODO(memcpy(dst.data(), cluster_a->data(), cluster_a->bytes_used()));
-  dst = dst.subspan(base::checked_cast<size_t>(cluster_a->bytes_used()));
-
-  UNSAFE_TODO(memcpy(dst.data(), cluster_b->data(), cluster_b->bytes_used()));
-  dst = dst.subspan(base::checked_cast<size_t>(cluster_b->bytes_used()));
+  dst.take_first(info_tracks.size()).copy_from(info_tracks);
+  dst.take_first(cluster_a->AsSpan().size()).copy_from(cluster_a->AsSpan());
+  dst.take_first(cluster_b->AsSpan().size()).copy_from(cluster_b->AsSpan());
 
   ExpectInitMediaLogs(HAS_AUDIO | HAS_VIDEO);
   EXPECT_CALL(*this, InitSegmentReceivedMock(_));
@@ -2253,17 +2232,17 @@ TEST_F(ChunkDemuxerTest, IncrementalClusterParsing) {
   EXPECT_FALSE(video_read_done);
 
   // Append data one byte at a time until one or both reads complete.
-  int i = 0;
-  for (; i < cluster->bytes_used() && !(audio_read_done || video_read_done);
+  const base::span<const uint8_t> cluster_data = cluster->AsSpan();
+  size_t i = 0;
+  for (; i < cluster_data.size() && !(audio_read_done || video_read_done);
        ++i) {
-    ASSERT_TRUE(
-        AppendData(base::span_from_ref(UNSAFE_TODO(cluster->data()[i]))));
+    ASSERT_TRUE(AppendData(cluster_data.subspan(i, 1u)));
     base::RunLoop().RunUntilIdle();
   }
 
   EXPECT_TRUE(audio_read_done || video_read_done);
-  EXPECT_GT(i, 0);
-  EXPECT_LT(i, cluster->bytes_used());
+  EXPECT_GT(i, 0u);
+  EXPECT_LT(i, cluster_data.size());
 
   audio_read_done = false;
   video_read_done = false;
@@ -2277,12 +2256,8 @@ TEST_F(ChunkDemuxerTest, IncrementalClusterParsing) {
   EXPECT_FALSE(video_read_done);
 
   // Append the remaining data.
-  ASSERT_LT(i, cluster->bytes_used());
-  ASSERT_TRUE(AppendData(
-      UNSAFE_TODO(base::span(cluster->data(),
-                             static_cast<size_t>(cluster->bytes_used())))
-          .split_at(static_cast<size_t>(i))
-          .second));
+  ASSERT_LT(i, cluster_data.size());
+  ASSERT_TRUE(AppendData(cluster_data.subspan(i)));
 
   base::RunLoop().RunUntilIdle();
 
@@ -3314,8 +3289,7 @@ TEST_F(ChunkDemuxerTest, IsParsingMediaSegmentMidMediaSegment) {
 
   std::unique_ptr<Cluster> cluster = GenerateCluster(0, 2);
   // Append only part of the cluster data.
-  ASSERT_TRUE(AppendData(
-      UNSAFE_TODO(base::span(cluster->data(), cluster->bytes_used() - 13u))));
+  ASSERT_TRUE(AppendData(cluster->AsSpan().first(cluster->bytes_used() - 13u)));
 
   // Confirm we're in the middle of parsing a media segment.
   ASSERT_TRUE(demuxer_->IsParsingMediaSegment(kSourceId));
@@ -4316,13 +4290,10 @@ TEST_F(ChunkDemuxerTest, CuesBetweenClustersWithUnknownSize) {
 
   // Add two clusters separated by Cues in a single Append() call.
   std::unique_ptr<Cluster> cluster = GenerateCluster(0, 0, 4, true);
-  std::vector<uint8_t> data(
-      cluster->data(), UNSAFE_TODO(cluster->data() + cluster->bytes_used()));
-  data.insert(data.end(), kCuesHeader,
-              UNSAFE_TODO(kCuesHeader + sizeof(kCuesHeader)));
+  std::vector<uint8_t> data(cluster->AsSpan().begin(), cluster->AsSpan().end());
+  data.insert(data.end(), std::begin(kCuesHeader), std::end(kCuesHeader));
   cluster = GenerateCluster(46, 66, 5, true);
-  data.insert(data.end(), cluster->data(),
-              UNSAFE_TODO(cluster->data() + cluster->bytes_used()));
+  data.insert(data.end(), cluster->AsSpan().begin(), cluster->AsSpan().end());
   ASSERT_TRUE(AppendData(base::span(data)));
 
   CheckExpectedRanges("{ [0,115) }");
@@ -4590,11 +4561,12 @@ TEST_F(ChunkDemuxerTest,
   // emitted from the parser, and only the first 3 audio blocks are expected to
   // be buffered by and available from the demuxer.
   ASSERT_EQ(kVideoTrackNum, 1);
-  int video_start = 0;
+  const base::span<const uint8_t> cluster_data = cluster->AsSpan();
+  size_t video_start = 0;
   bool found = false;
-  while (video_start < cluster->bytes_used() - 10) {
-    if (UNSAFE_TODO(cluster->data()[video_start]) == 0xA3 &&
-        UNSAFE_TODO(cluster->data()[video_start + 9]) == 0x81) {
+  while (video_start + 10u < cluster_data.size()) {
+    if (cluster_data[video_start] == 0xA3 &&
+        cluster_data[video_start + 9u] == 0x81) {
       found = true;
       break;
     }
@@ -4602,13 +4574,10 @@ TEST_F(ChunkDemuxerTest,
   }
 
   ASSERT_TRUE(found);
-  ASSERT_GT(video_start, 0);
-  ASSERT_LT(video_start, cluster->bytes_used() - 3);
+  ASSERT_GT(video_start, 0u);
+  ASSERT_LT(video_start, cluster_data.size() - 3u);
 
-  const auto [audio, video] =
-      UNSAFE_TODO(base::span(cluster->data(),
-                             static_cast<size_t>(cluster->bytes_used())))
-          .split_at(static_cast<size_t>(video_start));
+  const auto [audio, video] = cluster_data.split_at(video_start);
   ASSERT_TRUE(AppendData(kSourceId, audio));
   CheckExpectedRanges(DemuxerStream::AUDIO, "{ [0,30) }");
   CheckExpectedRanges(DemuxerStream::VIDEO, "{ }");

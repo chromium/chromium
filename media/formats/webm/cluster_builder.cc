@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
-#include "media/base/data_buffer.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/formats/webm/webm_constants.h"
 
 namespace media {
@@ -76,31 +76,27 @@ void ClusterBuilder::SetClusterTimecode(int64_t cluster_timecode) {
   cluster_timecode_ = cluster_timecode;
 
   // Write the timecode into the header.
-  uint8_t* buf = UNSAFE_TODO(buffer_.data() + kClusterTimecodeOffset);
-  for (int i = 7; i >= 0; --i) {
-    UNSAFE_TODO(buf[i]) = cluster_timecode & 0xff;
-    cluster_timecode >>= 8;
-  }
+  buffer_.subspan(kClusterTimecodeOffset, sizeof(cluster_timecode))
+      .copy_from(base::I64ToBigEndian(cluster_timecode));
 }
 
 void ClusterBuilder::AddSimpleBlock(int track_num,
                                     int64_t timecode,
                                     int flags,
-                                    const uint8_t* data,
-                                    int size) {
-  int block_size = size + 4;
-  size_t bytes_needed = sizeof(kSimpleBlockHeader) + block_size;
+                                    base::span<const uint8_t> data) {
+  const size_t block_size = data.size() + 4u;
+  const size_t bytes_needed = sizeof(kSimpleBlockHeader) + block_size;
   if (bytes_needed > (buffer_.size() - bytes_used_)) {
     ExtendBuffer(bytes_needed);
   }
 
-  uint8_t* buf = UNSAFE_TODO(buffer_.data() + bytes_used_);
-  int block_offset = bytes_used_;
-  UNSAFE_TODO(memcpy(buf, kSimpleBlockHeader, sizeof(kSimpleBlockHeader)));
-  UpdateUInt64(block_offset + kSimpleBlockSizeOffset, block_size);
-  UNSAFE_TODO(buf += sizeof(kSimpleBlockHeader));
-
-  WriteBlock(buf, track_num, timecode, flags, data, size);
+  const size_t block_offset = bytes_used_;
+  base::SpanWriter writer(buffer_.subspan(block_offset, bytes_needed));
+  CHECK(writer.Write(kSimpleBlockHeader));
+  UpdateUInt64(block_offset + kSimpleBlockSizeOffset,
+               base::checked_cast<int64_t>(block_size));
+  WriteBlock(writer, track_num, timecode, flags, data);
+  CHECK_EQ(writer.remaining(), 0u);
 
   bytes_used_ += bytes_needed;
 }
@@ -110,20 +106,19 @@ void ClusterBuilder::AddBlockGroup(int track_num,
                                    int duration,
                                    int flags,
                                    bool is_key_frame,
-                                   const uint8_t* data,
-                                   int size) {
+                                   base::span<const uint8_t> data) {
   AddBlockGroupInternal(track_num, timecode, true, duration, flags,
-                        is_key_frame, data, size);
+                        is_key_frame, data);
 }
 
-void ClusterBuilder::AddBlockGroupWithoutBlockDuration(int track_num,
-                                                       int64_t timecode,
-                                                       int flags,
-                                                       bool is_key_frame,
-                                                       const uint8_t* data,
-                                                       int size) {
+void ClusterBuilder::AddBlockGroupWithoutBlockDuration(
+    int track_num,
+    int64_t timecode,
+    int flags,
+    bool is_key_frame,
+    base::span<const uint8_t> data) {
   AddBlockGroupInternal(track_num, timecode, false, 0, flags, is_key_frame,
-                        data, size);
+                        data);
 }
 
 void ClusterBuilder::AddBlockGroupInternal(int track_num,
@@ -132,9 +127,8 @@ void ClusterBuilder::AddBlockGroupInternal(int track_num,
                                            int duration,
                                            int flags,
                                            bool is_key_frame,
-                                           const uint8_t* data,
-                                           int size) {
-  int block_size = size + 4;
+                                           base::span<const uint8_t> data) {
+  const size_t block_size = data.size() + 4u;
   size_t bytes_needed = block_size;
   if (include_block_duration) {
     bytes_needed += sizeof(kBlockGroupHeader);
@@ -145,68 +139,62 @@ void ClusterBuilder::AddBlockGroupInternal(int track_num,
     bytes_needed += sizeof(kBlockGroupReferenceBlock);
   }
 
-  int block_group_size = bytes_needed - 9;
+  const size_t block_group_size = bytes_needed - 9u;
 
   if (bytes_needed > (buffer_.size() - bytes_used_)) {
     ExtendBuffer(bytes_needed);
   }
 
-  uint8_t* buf = UNSAFE_TODO(buffer_.data() + bytes_used_);
-  int block_group_offset = bytes_used_;
+  const size_t block_group_offset = bytes_used_;
+  base::SpanWriter writer(buffer_.subspan(block_group_offset, bytes_needed));
   if (include_block_duration) {
-    UNSAFE_TODO(memcpy(buf, kBlockGroupHeader, sizeof(kBlockGroupHeader)));
+    CHECK(writer.Write(kBlockGroupHeader));
     UpdateUInt64(block_group_offset + kBlockGroupDurationOffset, duration);
-    UpdateUInt64(block_group_offset + kBlockGroupBlockSizeOffset, block_size);
-    UNSAFE_TODO(buf += sizeof(kBlockGroupHeader));
+    UpdateUInt64(block_group_offset + kBlockGroupBlockSizeOffset,
+                 base::checked_cast<int64_t>(block_size));
   } else {
-    UNSAFE_TODO(memcpy(buf, kBlockGroupHeaderWithoutBlockDuration,
-                       sizeof(kBlockGroupHeaderWithoutBlockDuration)));
+    CHECK(writer.Write(kBlockGroupHeaderWithoutBlockDuration));
     UpdateUInt64(
         block_group_offset + kBlockGroupWithoutBlockDurationBlockSizeOffset,
-        block_size);
-    UNSAFE_TODO(buf += sizeof(kBlockGroupHeaderWithoutBlockDuration));
+        base::checked_cast<int64_t>(block_size));
   }
 
-  UpdateUInt64(block_group_offset + kBlockGroupSizeOffset, block_group_size);
+  UpdateUInt64(block_group_offset + kBlockGroupSizeOffset,
+               base::checked_cast<int64_t>(block_group_size));
 
   // Make sure the 4 most-significant bits are 0.
   // http://www.matroska.org/technical/specs/index.html#block_structure
   flags &= 0x0f;
 
-  WriteBlock(buf, track_num, timecode, flags, data, size);
-  UNSAFE_TODO(buf += size + 4);
+  WriteBlock(writer, track_num, timecode, flags, data);
 
   if (!is_key_frame) {
-    UNSAFE_TODO(memcpy(buf, kBlockGroupReferenceBlock,
-                       sizeof(kBlockGroupReferenceBlock)));
+    CHECK(writer.Write(kBlockGroupReferenceBlock));
   }
+  CHECK_EQ(writer.remaining(), 0u);
 
   bytes_used_ += bytes_needed;
 }
 
-void ClusterBuilder::WriteBlock(uint8_t* buf,
+void ClusterBuilder::WriteBlock(base::SpanWriter<uint8_t>& writer,
                                 int track_num,
                                 int64_t timecode,
                                 int flags,
-                                const uint8_t* data,
-                                int size) {
+                                base::span<const uint8_t> data) {
   DCHECK_GE(track_num, 0);
   DCHECK_LE(track_num, 126);
   DCHECK_GE(flags, 0);
   DCHECK_LE(flags, 0xff);
-  DCHECK(data);
-  DCHECK_GE(size, 0);  // For testing, allow 0-byte coded frames.
   DCHECK_NE(cluster_timecode_, -1);
 
-  int64_t timecode_delta = timecode - cluster_timecode_;
+  const int64_t timecode_delta = timecode - cluster_timecode_;
   DCHECK_GE(timecode_delta, -32768);
   DCHECK_LE(timecode_delta, 32767);
 
-  buf[0] = 0x80 | (track_num & 0x7F);
-  UNSAFE_TODO(buf[1]) = (timecode_delta >> 8) & 0xff;
-  UNSAFE_TODO(buf[2]) = timecode_delta & 0xff;
-  UNSAFE_TODO(buf[3]) = flags & 0xff;
-  UNSAFE_TODO(memcpy(buf + 4, data, size));
+  CHECK(writer.Write(static_cast<uint8_t>(0x80 | (track_num & 0x7F))));
+  CHECK(writer.WriteI16BigEndian(base::checked_cast<int16_t>(timecode_delta)));
+  CHECK(writer.Write(base::checked_cast<uint8_t>(flags)));
+  CHECK(writer.Write(data));
 }
 
 std::unique_ptr<Cluster> ClusterBuilder::Finish() {
@@ -231,7 +219,7 @@ std::unique_ptr<Cluster> ClusterBuilder::FinishWithUnknownSize() {
 
 void ClusterBuilder::Reset() {
   buffer_ = base::HeapArray<uint8_t>::Uninit(kInitialBufferSize);
-  UNSAFE_TODO(memcpy(buffer_.data(), kClusterHeader, sizeof(kClusterHeader)));
+  buffer_.copy_prefix_from(kClusterHeader);
   bytes_used_ = sizeof(kClusterHeader);
   cluster_timecode_ = -1;
 }
@@ -239,24 +227,21 @@ void ClusterBuilder::Reset() {
 void ClusterBuilder::ExtendBuffer(size_t bytes_needed) {
   size_t new_buffer_size = 2 * buffer_.size();
 
-  while ((new_buffer_size - bytes_used_) < bytes_needed)
+  while ((new_buffer_size - bytes_used_) < bytes_needed) {
     new_buffer_size *= 2;
+  }
 
   auto new_buffer = base::HeapArray<uint8_t>::Uninit(new_buffer_size);
-
-  UNSAFE_TODO(memcpy(new_buffer.data(), buffer_.data(), bytes_used_));
+  new_buffer.copy_prefix_from(buffer_.first(bytes_used_));
   buffer_ = std::move(new_buffer);
 }
 
-void ClusterBuilder::UpdateUInt64(int offset, int64_t value) {
-  DCHECK_LE(offset + 7u, buffer_.size());
-  uint8_t* buf = UNSAFE_TODO(buffer_.data() + offset);
+void ClusterBuilder::UpdateUInt64(size_t offset, int64_t value) {
+  DCHECK_LE(offset + 8u, buffer_.size());
 
   // Fill the last 7 bytes of size field in big-endian order.
-  for (int i = 7; i > 0; i--) {
-    UNSAFE_TODO(buf[i]) = value & 0xff;
-    value >>= 8;
-  }
+  const auto bytes = base::I64ToBigEndian(value);
+  buffer_.subspan(offset + 1u, 7u).copy_from(base::span(bytes).last<7u>());
 }
 
 }  // namespace media

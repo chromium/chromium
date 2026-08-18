@@ -51,7 +51,7 @@ static std::unique_ptr<Cluster> CreateCluster(int block_count) {
 
   for (int i = 0; i < block_count; i++) {
     uint8_t data[] = {0x00};
-    cb.AddSimpleBlock(0, i, 0, data, sizeof(data));
+    cb.AddSimpleBlock(0, i, 0, data);
   }
 
   return cb.Finish();

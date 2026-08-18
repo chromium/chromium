@@ -10,6 +10,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
+
 namespace media {
 
 // From Opus RFC. See https://tools.ietf.org/html/rfc6716#page-14
@@ -28,8 +30,7 @@ class OpusPacket {
 
   ~OpusPacket();
 
-  const uint8_t* data() const;
-  int size() const;
+  base::span<const uint8_t> data() const;
   double duration_ms() const;
 
  private:
