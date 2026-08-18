@@ -2243,6 +2243,7 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoChecked:
     case CSSSelector::kPseudoDefault:
     case CSSSelector::kPseudoDefined:
+    case CSSSelector::kPseudoDialogInTopLayer:
     case CSSSelector::kPseudoDir:
     case CSSSelector::kPseudoDisabled:
     case CSSSelector::kPseudoDrag:
@@ -2291,6 +2292,7 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoPictureInPicture:
     case CSSSelector::kPseudoPlaceholderShown:
     case CSSSelector::kPseudoPlaying:
+    case CSSSelector::kPseudoPopoverInTopLayer:
     case CSSSelector::kPseudoPopoverOpen:
     case CSSSelector::kPseudoReadOnly:
     case CSSSelector::kPseudoReadWrite:
