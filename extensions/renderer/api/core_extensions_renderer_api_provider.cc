@@ -14,6 +14,7 @@
 #include "extensions/renderer/api/file_system_natives.h"
 #include "extensions/renderer/api/i18n_hooks_delegate.h"
 #include "extensions/renderer/api/messaging/messaging_bindings.h"
+#include "extensions/renderer/api/public_suffix_hooks_delegate.h"
 #include "extensions/renderer/api/runtime_hooks_delegate.h"
 #include "extensions/renderer/api/web_request_hooks.h"
 #include "extensions/renderer/api/web_request_natives.h"
@@ -154,6 +155,8 @@ void CoreExtensionsRendererAPIProvider::AddBindingsSystemHooks(
   bindings->RegisterHooksDelegate("dom", std::make_unique<DOMHooksDelegate>());
   bindings->RegisterHooksDelegate("i18n",
                                   std::make_unique<I18nHooksDelegate>());
+  bindings->RegisterHooksDelegate(
+      "publicSuffix", std::make_unique<PublicSuffixHooksDelegate>());
   bindings->RegisterHooksDelegate("runtime",
                                   std::make_unique<RuntimeHooksDelegate>(
                                       bindings_system->messaging_service()));

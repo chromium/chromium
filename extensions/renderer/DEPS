@@ -71,5 +71,16 @@ specific_include_rules = {
 
   "native_extension_bindings_system.cc": [
     "+third_party/blink/public/common/features_generated.h",
-  ]
+  ],
+
+  "public_suffix_util.cc": [
+    "+components/url_formatter/url_formatter.h",
+    "+net/base/registry_controlled_domains/registry_controlled_domain.h",
+    "+net/base/url_util.h",
+  ],
+
+  "public_suffix_util_unittest.cc": [
+    "+net/base/registry_controlled_domains/effective_tld_names_unittest1-reversed-inc.cc",
+    "+net/base/registry_controlled_domains/registry_controlled_domain.h",
+  ],
 }

@@ -583,6 +583,10 @@
     "extension_types": ["platform_app"],
     "platforms": ["chromeos"]
   }],
+  "publicSuffix": {
+    "channel": "stable",
+    "extension_types": ["extension"]
+  },
   // Note: runtime is not actually a permission, but some systems check these
   // values to verify restrictions.
   "runtime": {

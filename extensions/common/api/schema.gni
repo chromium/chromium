@@ -47,6 +47,7 @@ extensions_types_only_schema_files_ = [
   "mime_handlers.webidl",
   "oauth2.webidl",
   "protocol_handlers.webidl",
+  "public_suffix.webidl",
   "requirements.json",
   "shared_module.webidl",
   "types.json",

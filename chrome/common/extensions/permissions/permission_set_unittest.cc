@@ -788,6 +788,7 @@ TEST(PermissionsTest, PermissionMessages) {
 #endif
   skip.insert(APIPermissionID::kPower);
   skip.insert(APIPermissionID::kPrinterProvider);
+  skip.insert(APIPermissionID::kPublicSuffix);
   skip.insert(APIPermissionID::kSearch);
   skip.insert(APIPermissionID::kSessions);
   skip.insert(APIPermissionID::kSidePanel);

@@ -3321,6 +3321,7 @@ Called by update_extension_permission.py.-->
   <int value="270" label="kBluetoothSocket"/>
   <int value="271" label="kBluetoothLowEnergy"/>
   <int value="272" label="kBluetoothPeripheral"/>
+  <int value="273" label="kPublicSuffix"/>
 </enum>
 
 <enum name="ExtensionPinReason">

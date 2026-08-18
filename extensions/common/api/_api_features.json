@@ -588,6 +588,10 @@
     "dependencies": ["permission:proxy"],
     "contexts": ["privileged_extension"]
   },
+  "publicSuffix": {
+    "dependencies": ["permission:publicSuffix"],
+    "contexts": ["privileged_extension"]
+  },
   "runtime": {
     "channel": "stable",
     "extension_types": [

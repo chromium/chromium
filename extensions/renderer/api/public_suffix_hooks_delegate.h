@@ -1,0 +1,52 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef EXTENSIONS_RENDERER_API_PUBLIC_SUFFIX_HOOKS_DELEGATE_H_
+#define EXTENSIONS_RENDERER_API_PUBLIC_SUFFIX_HOOKS_DELEGATE_H_
+
+#include <string>
+
+#include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
+#include "extensions/renderer/bindings/api_signature.h"
+#include "v8/include/v8-forward.h"
+
+namespace extensions {
+
+class ScriptContext;
+
+// Custom native hooks for the publicSuffix API.
+class PublicSuffixHooksDelegate : public APIBindingHooksDelegate {
+ public:
+  PublicSuffixHooksDelegate();
+
+  PublicSuffixHooksDelegate(const PublicSuffixHooksDelegate&) = delete;
+  PublicSuffixHooksDelegate& operator=(const PublicSuffixHooksDelegate&) =
+      delete;
+
+  ~PublicSuffixHooksDelegate() override;
+
+  // APIBindingHooksDelegate:
+  APIBindingHooks::RequestResult HandleRequest(
+      const std::string& method_name,
+      const APISignature* signature,
+      v8::Local<v8::Context> context,
+      v8::LocalVector<v8::Value>* arguments,
+      const APITypeReferenceMap& refs) override;
+
+ private:
+  // Method handlers:
+  APIBindingHooks::RequestResult HandleIsKnownSuffix(
+      ScriptContext* script_context,
+      const APISignature::V8ParseResult& parse_result);
+  APIBindingHooks::RequestResult HandleGetKnownSuffix(
+      ScriptContext* script_context,
+      const APISignature::V8ParseResult& parse_result);
+  APIBindingHooks::RequestResult HandleGetDomain(
+      ScriptContext* script_context,
+      const APISignature::V8ParseResult& parse_result);
+};
+
+}  // namespace extensions
+
+#endif  // EXTENSIONS_RENDERER_API_PUBLIC_SUFFIX_HOOKS_DELEGATE_H_
