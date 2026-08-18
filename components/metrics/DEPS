@@ -4,6 +4,7 @@ include_rules = [
   "-components",
   "+components/background_task_scheduler",
   "+components/country_codes",
+  "+components/crash/core/common",
   "+components/regional_capabilities",
   "+components/component_updater",
   "+components/keep_alive_registry",
