@@ -53,7 +53,7 @@ class CustomizeButtonsHandler
   void SetCustomizeChromeSidePanelVisible(
       bool visible,
       CustomizeChromeSection section,
-      customize_buttons::mojom::SidePanelOpenTrigger triger) override;
+      customize_buttons::mojom::SidePanelOpenTrigger trigger) override;
 
  private:
   tabs::TabInterface* GetActiveTab();

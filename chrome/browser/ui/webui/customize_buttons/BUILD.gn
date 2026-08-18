@@ -46,28 +46,18 @@ source_set("impl") {
   ]
 }
 
-if (!is_android) {
-  source_set("test_support") {
-    testonly = true
-    public_deps = [
-      ":customize_buttons",
-      "//base/test:test_support",
-      "//chrome/test:test_support",
-    ]
-  }
-
-  source_set("browser_tests") {
-    testonly = true
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    sources = [ "customize_buttons_handler_browsertest.cc" ]
-    deps = [
-      ":test_support",
-      "//chrome/browser/tab_list",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/customize_chrome",
-      "//chrome/browser/ui/tabs:tabs_public",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome",
-      "//ui/base/unowned_user_data",
-    ]
-  }
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "customize_buttons_handler_browsertest.cc" ]
+  deps = [
+    ":customize_buttons",
+    "//base/test:test_support",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/customize_chrome",
+    "//chrome/browser/ui/webui/side_panel/customize_chrome",
+    "//chrome/test:test_support",
+    "//ui/base/unowned_user_data",
+  ]
 }
