@@ -48,7 +48,8 @@ class AudioManagerMac;
 // new audio samples from the `AudioSourceCallback` provided in `Start()`,
 // package them into a `CMSampleBuffer`, and enqueue them for playback.
 
-class MEDIA_EXPORT AVFoundationOutputStream : public AudioOutputStream {
+class MEDIA_EXPORT API_AVAILABLE(macos(27)) AVFoundationOutputStream
+    : public AudioOutputStream {
  public:
   // `manager` creates this object.
   // `device_uid` is required for the renderer to properly attach to the correct

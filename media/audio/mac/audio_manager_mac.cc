@@ -896,13 +896,16 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
   }
 
   // Use AVFoundationOutputStream for kPlayback audio output streams as it is
-  // able to tell the OS to use Spatial Audio.
-  if (base::FeatureList::IsEnabled(features::kMacAVFoundationPlayback) &&
-      params.latency_tag() == AudioLatency::Type::kPlayback) {
-    DVLOG(1) << __func__ << ": Creating AVFoundationOutputStream for "
-             << ChannelLayoutToString(params.channel_layout()) << " layout.";
-    auto* stream = new AVFoundationOutputStream(this, params, device_id);
-    return stream;
+  // able to tell the OS to use Spatial Audio. Robust support for Spatial Audio
+  // playback via AVFoundation in third-party applications requires macOS 27+.
+  if (__builtin_available(macOS 27, *)) {
+    if (base::FeatureList::IsEnabled(features::kMacAVFoundationPlayback) &&
+        params.latency_tag() == AudioLatency::Type::kPlayback) {
+      DVLOG(1) << __func__ << ": Creating AVFoundationOutputStream for "
+               << ChannelLayoutToString(params.channel_layout()) << " layout.";
+      auto* stream = new AVFoundationOutputStream(this, params, device_id);
+      return stream;
+    }
   }
 
   AUHALStream* stream = new AUHALStream(this, params, device, log_callback);
@@ -1028,9 +1031,12 @@ AudioParameters AudioManagerMac::GetPreferredOutputStreamParameters(
   // The AVFoundation backend can handle multichannel audio and perform mixing
   // itself. In this case, we can pass the original layout to the OS instead of
   // downmixing. This is only done for playback streams.
-  const bool use_avf_streams =
-      base::FeatureList::IsEnabled(features::kMacAVFoundationPlayback) &&
-      input_params.latency_tag() == AudioLatency::Type::kPlayback;
+  bool use_avf_streams = false;
+  if (__builtin_available(macOS 27, *)) {
+    use_avf_streams =
+        base::FeatureList::IsEnabled(features::kMacAVFoundationPlayback) &&
+        input_params.latency_tag() == AudioLatency::Type::kPlayback;
+  }
 
   if (!has_valid_input_params ||
       (base::checked_cast<uint32_t>(output_channels) > hardware_channels &&
