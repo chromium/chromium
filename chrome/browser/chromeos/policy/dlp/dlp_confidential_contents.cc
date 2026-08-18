@@ -173,6 +173,8 @@ void DlpConfidentialContentsCache::Cache(
   entries_.push_front(std::move(entry));
   if (entries_.size() > cache_size_limit_) {
     entries_.pop_back();
+    data_controls::DlpBooleanHistogram(
+        data_controls::dlp::kConfidentialContentsCacheEvictedOnFull, true);
   }
   data_controls::DlpCountHistogram(
       data_controls::dlp::kConfidentialContentsCount, entries_.size(),
