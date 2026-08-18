@@ -475,7 +475,13 @@ TEST_F(TranslateBubbleViewTest, TargetResetButton) {
   EXPECT_FALSE(bubble_->advanced_reset_button_target_->GetEnabled());
 }
 
-TEST_F(TranslateBubbleViewTest, LazyViewInitialization) {
+// TODO(crbug.com/548467453): Re-enable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LazyViewInitialization DISABLED_LazyViewInitialization
+#else
+#define MAYBE_LazyViewInitialization LazyViewInitialization
+#endif
+TEST_F(TranslateBubbleViewTest, MAYBE_LazyViewInitialization) {
   base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
   CreateAndShowBubble();
 
