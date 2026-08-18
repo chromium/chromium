@@ -274,6 +274,43 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/indexeddb/indexeddb.mojom:IDBTransactionMode) -->
 
+<!-- LINT.IfChange(IndexedDBBadMessageReason) -->
+
+<enum name="IndexedDBBadMessageReason">
+  <int value="0" label="kBucketContextOpenInvalidVersion"/>
+  <int value="1" label="kConnectionCreateTransactionInvalidMode"/>
+  <int value="2" label="kConnectionCreateTransactionAlreadyExists"/>
+  <int value="3" label="kConnectionGetAllInvalidMaxCount"/>
+  <int value="4" label="kConnectionOpenCursorInvalidTaskType"/>
+  <int value="5" label="kConnectionOpenCursorInvalidIteration"/>
+  <int value="6" label="kConnectionCreateIndexInvalidMetadata"/>
+  <int value="7" label="kConnectionWrongTransactionMode"/>
+  <int value="8" label="kCursorAdvanceInvalidCount"/>
+  <int value="9" label="kCursorContinueInvalidPrimaryKey"/>
+  <int value="10" label="kCursorPrefetchResetInvalidCount"/>
+  <int value="11" label="kCursorPrefetchResetFailedToReset"/>
+  <int value="12" label="kCursorPrefetchResetInvalidUsedPrefetches"/>
+  <int value="13" label="kTransactionCreateObjectStoreInvalidId"/>
+  <int value="14" label="kTransactionPutReadOnly"/>
+  <int value="15" label="kTransactionPutInvalidValue"/>
+  <int value="16" label="kTransactionPutInvalidExternalObjects"/>
+  <int value="17" label="kTransactionDoPutInvalidObjectStoreId"/>
+  <int value="18" label="kTransactionDoPutInvalidIndexId"/>
+  <int value="19" label="kTransactionDoPutInvalidKey"/>
+  <int value="20" label="kTransactionDoPutInvalidIndexKey"/>
+  <int value="21" label="kTransactionDoPutInvalidRecord"/>
+  <int value="22" label="kTransactionSetIndexKeysWrongMode"/>
+  <int value="23" label="kTransactionSetIndexKeysInvalidKey"/>
+  <int value="24" label="kTransactionSetIndexKeysDoneWrongMode"/>
+  <int value="25" label="kTransactionSetIndexKeysDoneWithoutIndexing"/>
+  <int value="26" label="kTransactionObjectStoreMustExistInvalidId"/>
+  <int value="27"
+      label="kTransactionObjectStoreAndIndexMustExistInvalidIndexId"/>
+  <int value="28" label="kTransactionObjectStoreAndIndexMustExistInvalidIds"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/indexed_db/indexed_db_reporting.h:BadMessageReason) -->
+
 <!-- LINT.IfChange(IndexedDbSqliteSpecificEvent) -->
 
 <enum name="IndexedDbSqliteSpecificEvent">

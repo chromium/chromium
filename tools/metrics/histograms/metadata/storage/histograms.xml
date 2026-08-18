@@ -405,6 +405,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IndexedDB.BadMessageReason" enum="IndexedDBBadMessageReason"
+    expires_after="2027-08-08">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the reason that an IndexedDB Mojo request was reported as a bad
+    message. Recorded immediately before the bad message is reported to the Mojo
+    framework.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.ClientKeepActiveRemotesCount" units="count"
     expires_after="2027-02-07">
   <owner>pmonette@chromium.org</owner>

@@ -120,4 +120,16 @@ void ReportLevelDBError(const std::string& histogram_name,
     ParseAndReportCorruptionDetails(histogram_name, s);
 }
 
+void ReportBadMessage(
+    BadMessageReason reason,
+    std::string_view message,
+    base::OnceCallback<void(std::string_view)> report_bad_message_callback) {
+  base::UmaHistogramEnumeration("IndexedDB.BadMessageReason", reason);
+  if (report_bad_message_callback) {
+    std::move(report_bad_message_callback).Run(message);
+  } else {
+    mojo::ReportBadMessage(message);
+  }
+}
+
 }  // namespace content::indexed_db
