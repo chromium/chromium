@@ -8450,12 +8450,12 @@
   {
     "name": "prompt-api",
    "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 154
+    "expiry_milestone": 160
   },
   {
     "name": "prompt-api-multimodal-input",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 154
+    "expiry_milestone": 160
   },
   {
     "name": "prompt-api-sampling-mode",
@@ -8785,7 +8785,7 @@
   {
     "name": "rewriter-api",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 154
+    "expiry_milestone": 160
   },
   {
     "name": "robust-window-management-experimental",
@@ -10554,7 +10554,7 @@
   {
     "name": "writer-api",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 154
+    "expiry_milestone": 160
   },
   {
     "name": "xplat-synced-setup-themes",
