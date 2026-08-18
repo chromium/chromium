@@ -24,6 +24,9 @@ import "url_param.proto";
 // LINT.IfChange(ToolConfig)
 message ToolConfig {
   // The tool mode.
+  // Note: Clients should use the *Value accessor variant (e.g. getToolValue())
+  // rather than enum accessors to be future-proof against new open enum values
+  // served by the backend without requiring client updates.
   ToolMode tool = 1;
   // Disable model selection state when the tool is selected (e.g. no check mark
   // on model selection when the tool is selected). Some tools are not

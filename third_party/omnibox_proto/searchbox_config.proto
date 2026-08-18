@@ -48,6 +48,4 @@ message SearchboxConfig {
   // Default Searchbox input text field hint text.
   // Current active tools/models takes precedence
   optional string hint_text = 9;
-
-
 }
