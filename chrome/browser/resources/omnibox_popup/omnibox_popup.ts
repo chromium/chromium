@@ -20,3 +20,5 @@ export {browserProxyFactory as aimBrowserProxyFactory, PageCallbackRouter as Omn
 export {OmniboxPopupContextualEntrypointElement} from './omnibox_popup_contextual_entrypoint.js';
 export {OmniboxPopupContextualEntrypointButtonElement} from './omnibox_popup_contextual_entrypoint_button.js';
 export {OmniboxPopupSearchboxElement} from './omnibox_popup_searchbox.js';
+export {DeleteEdit, InsertEdit, MergeType, ReplaceEdit, TextfieldModel} from './textfield_model.js';
+export type {Edit, SelectionRange} from './textfield_model.js';

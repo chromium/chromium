@@ -30,6 +30,7 @@ build_webui("build") {
     "omnibox_popup_contextual_entrypoint_button.ts",
     "omnibox_popup_searchbox.html.ts",
     "omnibox_popup_searchbox.ts",
+    "textfield_model.ts",
   ]
   css_files = [
     "aim_app.css",

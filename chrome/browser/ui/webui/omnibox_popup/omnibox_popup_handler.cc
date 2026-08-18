@@ -352,3 +352,8 @@ void OmniboxPopupHandler::OnCutOrCopy(uint32_t sequence_number,
     controller_->edit_model()->OnChanged();
   }
 }
+
+void OmniboxPopupHandler::SetEditHistoryState(bool can_undo, bool can_redo) {
+  can_undo_ = can_undo;
+  can_redo_ = can_redo;
+}

@@ -58,6 +58,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
                    bool is_cut,
                    const std::string& full_text,
                    const gfx::Range& selection) override;
+  void SetEditHistoryState(bool can_undo, bool can_redo) override;
 
   // omnibox_popup::mojom::Page:
   void OnShow();
@@ -77,6 +78,8 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
 
   const gfx::Range& latest_selection() const { return latest_selection_; }
   bool show_full_url() const { return show_full_url_; }
+  bool can_undo() const { return can_undo_; }
+  bool can_redo() const { return can_redo_; }
 
  private:
   mojo::Receiver<omnibox_popup::mojom::PageHandler> receiver_;
@@ -88,6 +91,8 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
   // synchronous access on tab switches.
   gfx::Range latest_selection_;
   bool show_full_url_ = false;
+  bool can_undo_ = false;
+  bool can_redo_ = false;
   // Monotonically increasing sequence number sent to the WebUI to reject stale
   // selection reports that arrive asynchronously.
   uint32_t current_sequence_number_ = 0;

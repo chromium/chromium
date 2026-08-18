@@ -19,6 +19,7 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {isMac} from '//resources/js/platform.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -31,6 +32,8 @@ import type {OmniboxPopupContextualEntrypointElement} from './omnibox_popup_cont
 import type {OmniboxPopupContextualEntrypointButtonElement} from './omnibox_popup_contextual_entrypoint_button.js';
 import {getCss} from './omnibox_popup_searchbox.css.js';
 import {getHtml} from './omnibox_popup_searchbox.html.js';
+import {TextfieldModel} from './textfield_model.js';
+import type {SelectionRange} from './textfield_model.js';
 
 /**
  * Focus actions deferred when `document.visibilityState` is hidden.
@@ -259,6 +262,20 @@ export class OmniboxPopupSearchboxElement extends
   // Used to signify that on mouseup, the default action of `unselect()`
   // should be ignored.
   private selectAllOnMouseRelease_: boolean = false;
+  private textfieldModel_: TextfieldModel = new TextfieldModel();
+  // Stores the input text prior to the latest edit or selection change event.
+  // Paired with `lastInputSelection_` to compute character diffs and offsets
+  // for `textfieldModel_`.
+  private lastInputText_: string = '';
+  // Stores the selection range prior to the latest edit or selection change
+  // event. Paired with `lastInputText_` to determine cursor placement and
+  // selection replacements for `textfieldModel_`.
+  private lastInputSelection_: SelectionRange = {start: 0, end: 0};
+  // True while an undo or redo operation (`undo_()` / `redo_()`) is actively
+  // executing. Used to suppress recording spurious history edits when input
+  // text updates programmatically during undo/redo execution.
+  private isUndoRedo_: boolean = false;
+
 
   constructor() {
     super();
@@ -305,6 +322,8 @@ export class OmniboxPopupSearchboxElement extends
         document, 'selectionchange', this.onSelectionChanged_.bind(this));
     this.eventTracker_.add(
         document, 'visibilitychange', this.onVisibilityChange_.bind(this));
+    this.eventTracker_.add(
+        this.$.input, 'beforeinput', this.onBeforeInput_.bind(this));
     // TODO(b/522957982): Establish closer IME parity with the native Views
     // Omnibox (e.g., render inline autocompletion in a separate overlaid span
     // rather than modifying input value during active composition).
@@ -514,6 +533,31 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   override async onInputWrapperKeydown(e: KeyboardEvent) {
+    const modifier = isMac ? e.metaKey && !e.ctrlKey : e.ctrlKey && !e.metaKey;
+
+    if (modifier) {
+      const key = e.key.toLowerCase();
+      if (key === 'z') {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.shiftKey) {
+          // Cmd/Ctrl + Shift + Z -> Redo
+          this.redo_();
+        } else {
+          // Cmd/Ctrl + Z -> Undo
+          this.undo_();
+        }
+        return;
+      }
+      if (!isMac && key === 'y') {
+        // Ctrl + Y -> Redo (Windows / Linux)
+        e.preventDefault();
+        e.stopPropagation();
+        this.redo_();
+        return;
+      }
+    }
+
     // If the input is already selected, 'ArrowLeft', 'ArrowRight', 'Home',
     // 'End' should collapse the selection. If `Shift` is held, skip this
     // behavior and let Blink handle it.
@@ -530,6 +574,7 @@ export class OmniboxPopupSearchboxElement extends
         }
       }
     }
+
     await super.onInputWrapperKeydown(e);
   }
 
@@ -555,13 +600,21 @@ export class OmniboxPopupSearchboxElement extends
     const input = this.getInputElement().inputElement;
     const start = input.selectionStart || 0;
     const end = input.selectionEnd || 0;
+    const oldSelection = {start, end};
     const newValue = input.value.substring(0, start) + sanitizedText +
         input.value.substring(end);
+
+    this.textfieldModel_.selectRange(oldSelection);
+    this.textfieldModel_.paste(sanitizedText);
+    this.lastInputText_ = newValue;
+    this.lastInputSelection_ = this.textfieldModel_.selection;
+    this.updateEditHistoryState_();
+
+    const cursorPos = this.lastInputSelection_.end;
 
     this.userInputInProgress_ = true;
     this.hasUserInput_ = !!newValue.trim();
     this.getInputElement().setInput({text: newValue, inline: ''});
-    const cursorPos = start + sanitizedText.length;
     this.getInputElement().setSelectionRange(cursorPos, cursorPos);
 
     const selectionRange = {start: cursorPos, end: cursorPos};
@@ -662,9 +715,29 @@ export class OmniboxPopupSearchboxElement extends
       return;
     }
 
+    const start = input.selectionStart || 0;
+    const end = input.selectionEnd || 0;
+
+    // When inline autocomplete is active and the user moves the caret or
+    // changes selection away from the default inline selection range, accept
+    // the inline autocomplete as user input and commit the current edit.
+    const lastInput = this.getInputElement().lastInput();
+    if (lastInput && lastInput.inline && !this.isUndoRedo_) {
+      const fullText = lastInput.text + lastInput.inline;
+      const isInlineSelection =
+          start === lastInput.text.length && end === fullText.length;
+      if (!isInlineSelection) {
+        this.getInputElement().setInput({text: fullText, inline: ''});
+        this.getInputElement().setSelectionRange(start, end);
+        this.lastInputText_ = fullText;
+      }
+      this.textfieldModel_.commitCurrentEdit();
+    }
+
+    this.lastInputSelection_ = {start, end};
+
     this.popupPageHandler_.onSelectionChanged(
-        {start: input.selectionStart || 0, end: input.selectionEnd || 0},
-        this.currentSequenceNum_, this.fullUrlShown_);
+        {start, end}, this.currentSequenceNum_, this.fullUrlShown_);
   }
 
   /**
@@ -681,6 +754,15 @@ export class OmniboxPopupSearchboxElement extends
     this.permanentDisplayText_ = state.permanentDisplayText;
     this.isComposing_ = false;
     this.inputKeywordModel = state.keywordModel;
+    this.lastInputText_ = state.text;
+    this.lastInputSelection_ = state.selection;
+    // Clear edit history and set baseline text on hard state resets (e.g. tab
+    // switch, revert), but preserve active edit history if the user is in the
+    // middle of typing when state handoff IPC arrives.
+    if (!state.userInputInProgress || !this.userInputInProgress_) {
+      this.textfieldModel_.setInitialText(state.text, state.selection);
+    }
+    this.updateEditHistoryState_();
 
     // Clear any stale results and close the dropdown on a hard state reset.
     // Clear results here since focusout event may not fire.
@@ -796,11 +878,16 @@ export class OmniboxPopupSearchboxElement extends
   }
 
   private maybeShowFullUrl_() {
-    this.fullUrlShown_ = true;
-    if (this.userInputInProgress_) {
+    if (this.fullUrlShown_ || this.userInputInProgress_) {
       return;
     }
+    this.fullUrlShown_ = true;
     this.$.input.setInputText(this.fullUrl_);
+    this.lastInputText_ = this.fullUrl_;
+    const len = this.fullUrl_.length;
+    this.lastInputSelection_ = {start: len, end: len};
+    this.textfieldModel_.setInitialText(this.fullUrl_, {start: len, end: len});
+    this.updateEditHistoryState_();
   }
 
   protected onInputFocusin_() {
@@ -824,10 +911,97 @@ export class OmniboxPopupSearchboxElement extends
     }
   }
 
+  /**
+   * Updates `textfieldModel_` with text modifications (insertion, deletion,
+   * replacement) for undo/redo history tracking.
+   */
+  private updateTextfieldModel_(newValue: string, isComposing: boolean) {
+    if (isComposing || this.isUndoRedo_) {
+      return;
+    }
+
+    const lastInput = this.getInputElement().lastInput();
+    const hasInline = !!lastInput?.inline;
+    const oldText = this.lastInputText_;
+    const oldSelection = hasInline ?
+        {start: oldText.length, end: oldText.length} :
+        this.lastInputSelection_;
+
+    const start = oldSelection.start;
+    const end = oldSelection.end;
+    const oldLen = oldText.length;
+    const newLen = newValue.length;
+
+    this.textfieldModel_.selectRange(oldSelection);
+
+    if (start !== end) {
+      // User selected a non-empty span of text...
+      const insertedLength = newLen - (oldLen - (end - start));
+      const insertedText = insertedLength > 0 ?
+          newValue.substring(start, start + insertedLength) :
+          '';
+
+      if (insertedText) {
+        // ...then replaced it with a new non-empty string.
+        const mergeable = insertedText.length === 1;
+        this.textfieldModel_.insertText(insertedText, mergeable);
+        if (hasInline) {
+          this.textfieldModel_.commitCurrentEdit();
+        }
+      } else {
+        // ...then deleted the selected text.
+        this.textfieldModel_.backspace();
+      }
+    } else {
+      // User had an empty selection range (i.e. only the caret was present at
+      // a specific index)...
+      if (newLen > oldLen) {
+        // ...then inserted some text.
+        const insertedLength = newLen - oldLen;
+        const insertedText = newValue.substring(start, start + insertedLength);
+        if (insertedText) {
+          const mergeable = insertedText.length === 1;
+          this.textfieldModel_.insertText(insertedText, mergeable);
+          if (hasInline) {
+            this.textfieldModel_.commitCurrentEdit();
+          }
+        }
+      } else if (newLen < oldLen) {
+        // ...then deleted some text.
+        const inputEl = this.getInputElement().inputElement;
+        const currentCursorPos = inputEl.selectionStart || 0;
+        const isBackward = currentCursorPos < start;
+        if (isBackward) {
+          const delStart = currentCursorPos;
+          const delEnd = start;
+          if (delEnd - delStart > 1) {
+            // Word or multi-character backspace (e.g. Alt/Ctrl + Backspace).
+            this.textfieldModel_.selectRange({start: delStart, end: delEnd});
+          }
+          this.textfieldModel_.backspace();
+        } else {
+          const delStart = start;
+          const delEnd = start + (oldLen - newLen);
+          if (delEnd - delStart > 1) {
+            // Word or multi-character delete (e.g. Alt/Ctrl + Delete).
+            this.textfieldModel_.selectRange({start: delStart, end: delEnd});
+          }
+          this.textfieldModel_.delete();
+        }
+      }
+    }
+    this.lastInputSelection_ = this.textfieldModel_.selection;
+    this.updateEditHistoryState_();
+  }
+
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
     this.userInputInProgress_ = true;
     this.hasUserInput_ = !!e.detail.value.trim();
+
+    this.updateTextfieldModel_(e.detail.value, e.detail.isComposing);
+    this.lastInputText_ = e.detail.value;
+
     if (!e.detail.value.trim()) {
       // Notify the backend when the user clears all input (`onInputCleared`) so
       // it knows the draft was manually cleared and can revert empty drafts on
@@ -857,6 +1031,7 @@ export class OmniboxPopupSearchboxElement extends
 
     const isOutside = !this.getWrapperElement().contains(newlyFocusedEl);
     if (isOutside) {
+      this.textfieldModel_.commitCurrentEdit();
       this.handleFocusLost_();
     }
   }
@@ -881,6 +1056,62 @@ export class OmniboxPopupSearchboxElement extends
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
     this.canShowSecondarySide = e.matches;
+  }
+
+  private onBeforeInput_(e: InputEvent) {
+    if (e.inputType === 'historyUndo') {
+      e.preventDefault();
+      this.undo_();
+    } else if (e.inputType === 'historyRedo') {
+      e.preventDefault();
+      this.redo_();
+    }
+  }
+
+  protected undo_(): boolean {
+    return this.undoRedoInternal_(/*isRedo=*/ false);
+  }
+
+  protected redo_(): boolean {
+    return this.undoRedoInternal_(/*isRedo=*/ true);
+  }
+
+  private undoRedoInternal_(isRedo: boolean): boolean {
+    const result =
+        isRedo ? this.textfieldModel_.redo() : this.textfieldModel_.undo();
+    if (!result) {
+      return false;
+    }
+
+    this.isUndoRedo_ = true;
+    try {
+      this.userInputInProgress_ = true;
+      this.hasUserInput_ = !!result.text.trim();
+      this.lastInputText_ = result.text;
+      this.lastInputSelection_ = result.selection;
+
+      const inputEl = this.getInputElement();
+      inputEl.setInput({text: result.text, inline: '', isDeletingInput: false});
+      inputEl.setSelectionRange(result.selection.start, result.selection.end);
+
+      if (!result.text.trim()) {
+        this.clearAutocompleteMatches();
+        this.popupPageHandler_.onInputCleared(this.currentSequenceNum_);
+      } else {
+        this.queryAutocomplete(
+            result.text, /*preventInlineAutocomplete=*/ false,
+            /*isOnFocus=*/ false);
+      }
+      this.updateEditHistoryState_();
+    } finally {
+      this.isUndoRedo_ = false;
+    }
+    return true;
+  }
+
+  private updateEditHistoryState_() {
+    this.popupPageHandler_.setEditHistoryState(
+        this.textfieldModel_.canUndo(), this.textfieldModel_.canRedo());
   }
 
   override handleKeyNavigation(e: KeyboardEvent) {
