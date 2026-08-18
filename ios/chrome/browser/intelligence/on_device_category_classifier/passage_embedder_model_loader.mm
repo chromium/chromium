@@ -56,7 +56,9 @@ PassageEmbedderModelLoader::PassageEmbedderModelLoader(
   model_provider_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_PASSAGE_EMBEDDER,
       /*model_metadata=*/std::nullopt,
-      base::SequencedTaskRunner::GetCurrentDefault(), this);
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
+      this);
 }
 
 PassageEmbedderModelLoader::~PassageEmbedderModelLoader() {
