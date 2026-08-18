@@ -24532,7 +24532,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_WebView_20260629",
+                    "name": "EnabledWithDispatch_WebView_20260818",
+                    "enable_features": [
+                        "UpdateScrollPredictorInputMapping",
+                        "WaitForLateScrollEvents"
+                    ]
+                },
+                {
+                    "name": "Enabled_WebView_20260818",
                     "params": {
                         "mode": "UseScrollPredictorForEmptyQueue"
                     },
