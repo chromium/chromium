@@ -174,7 +174,7 @@ TEST_F(TaskGroupTest, NetworkBytesSentReadZero) {
 // Test the task has correct network usage rate when only having read bytes.
 TEST_F(TaskGroupTest, NetworkBytesRead) {
   CreateTaskGroup(false);
-  constexpr base::ByteSize read_bytes = base::KiBU(1);
+  constexpr base::ByteSize read_bytes = base::KiB(1);
   FakeTask fake_task(base::Process::Current().Pid(), Task::RENDERER,
                      false /* is_running_in_vm */);
   fake_task.OnNetworkBytesRead(read_bytes);
@@ -205,7 +205,7 @@ TEST_F(TaskGroupTest, NetworkBytesRead2SecRefresh) {
   CreateTaskGroup(false);
   const int refresh_secs = 2;
   constexpr base::ByteSize read_bytes =
-      base::KiBU(1) * refresh_secs;  // for integer division
+      base::KiB(1) * refresh_secs;  // for integer division
   FakeTask fake_task(base::Process::Current().Pid(), Task::RENDERER,
                      false /* is_running_in_vm */);
   fake_task.OnNetworkBytesRead(read_bytes);
@@ -265,7 +265,7 @@ TEST_F(TaskGroupTest, NetworkBytesSentThenRead) {
 // refresh with no traffic and that cumulative is still correct.
 TEST_F(TaskGroupTest, NetworkBytesReadRefreshNone) {
   CreateTaskGroup(false);
-  constexpr base::ByteSize read_bytes = base::KiBU(1);
+  constexpr base::ByteSize read_bytes = base::KiB(1);
   FakeTask fake_task(base::Process::Current().Pid(), Task::RENDERER,
                      false /* is_running_in_vm */);
   fake_task.OnNetworkBytesRead(read_bytes);
@@ -280,7 +280,7 @@ TEST_F(TaskGroupTest, NetworkBytesReadRefreshNone) {
 // refresh with no traffic and that cumulative is still correct.
 TEST_F(TaskGroupTest, NetworkBytesSentRefreshNone) {
   CreateTaskGroup(false);
-  constexpr base::ByteSize sent_bytes = base::KiBU(1);
+  constexpr base::ByteSize sent_bytes = base::KiB(1);
   FakeTask fake_task(base::Process::Current().Pid(), Task::RENDERER,
                      false /* is_running_in_vm */);
   fake_task.OnNetworkBytesSent(sent_bytes);
@@ -295,7 +295,7 @@ TEST_F(TaskGroupTest, NetworkBytesSentRefreshNone) {
 // and that cumulative is still correct.
 TEST_F(TaskGroupTest, NetworkBytesTransferredRefreshNone) {
   CreateTaskGroup(false);
-  constexpr base::ByteSize read_bytes = base::KiBU(1);
+  constexpr base::ByteSize read_bytes = base::KiB(1);
   constexpr base::ByteSize sent_bytes = base::ByteSize(1);
   const int number_of_cycles = 2;
   FakeTask fake_task(base::Process::Current().Pid(), Task::RENDERER,
@@ -342,7 +342,7 @@ TEST_F(TaskGroupTest, NetworkBytesReadAsGroup) {
 // called and that the cumulative is as up to date as possible.
 TEST_F(TaskGroupTest, NetworkBytesTransferredRefreshOutOfOrder) {
   CreateTaskGroup(false);
-  constexpr base::ByteSize read_bytes = base::KiBU(1);
+  constexpr base::ByteSize read_bytes = base::KiB(1);
   constexpr base::ByteSize sent_bytes = base::ByteSize(1);
   const int number_of_cycles = 4;
   base::ByteSize number_of_bytes_transferred;

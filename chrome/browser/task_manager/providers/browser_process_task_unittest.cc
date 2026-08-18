@@ -77,7 +77,7 @@ TEST_F(BrowserProcessTaskProviderTest, TestProvidedTask) {
             provided_task_->title());
   EXPECT_EQ(Task::BROWSER, provided_task_->GetType());
   EXPECT_EQ(0, provided_task_->GetChildProcessUniqueID());
-  constexpr base::ByteSize received_bytes = base::KiBU(1);
+  constexpr base::ByteSize received_bytes = base::KiB(1);
   EXPECT_TRUE(provided_task_->GetNetworkUsageRate().is_zero());
   provided_task_->OnNetworkBytesRead(received_bytes);
   // Do a refresh with a 1-second update time.
