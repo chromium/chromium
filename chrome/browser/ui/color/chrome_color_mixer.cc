@@ -304,7 +304,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
     mixer[params.dialog_id] = {params.context_menu_id};
   }
 
-  mixer[kColorActorUiHandoffButtonBackground] = {ui::kColorSysSurface2};
+  mixer[kColorActorUiHandoffButtonBackground] = {ui::kColorSysSurface};
   mixer[kColorActorUiHandoffButtonBorder] =
       SelectActorUiColorBasedOnNearWhiteInput();
   mixer[kColorActorUiHandoffButtonForeground] = {ui::kColorSysOnSurface};
