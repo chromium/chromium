@@ -3703,22 +3703,33 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     }
   }
 
-  const bool has_stretch =
-      IsHorizontalWritingMode(constraint_space.GetWritingMode())
-          ? child_style.Height().HasStretch() ||
-                child_style.MinHeight().HasStretch() ||
-                child_style.MaxHeight().HasStretch()
-          : child_style.Width().HasStretch() ||
-                child_style.MinWidth().HasStretch() ||
-                child_style.MaxWidth().HasStretch();
+  if (!constraint_space.IsNewFormattingContext()) {
+    if (Node().IsAnonymousBlockFlow()) {
+      // If we are anonymous propagate our "ignore-margins" flags to our child.
+      builder.SetIgnoreMarginsForStretch(
+          constraint_space.GetWritingDirection(),
+          constraint_space.IgnoreMarginsForStretch());
+    } else {
+      const bool has_stretch =
+          IsHorizontalWritingMode(constraint_space.GetWritingMode())
+              ? child_style.Height().HasStretch() ||
+                    child_style.MinHeight().HasStretch() ||
+                    child_style.MaxHeight().HasStretch()
+              : child_style.Width().HasStretch() ||
+                    child_style.MinWidth().HasStretch() ||
+                    child_style.MaxWidth().HasStretch();
 
-  if (has_stretch && !constraint_space.IsNewFormattingContext()) {
-    builder.SetIgnoreMarginsForStretch(
-        constraint_space.GetWritingDirection(),
-        LogicalBoxSides(/*inline_start=*/false,
-                        /*inline_end=*/false,
-                        BorderPadding().block_start == LayoutUnit(),
-                        BorderPadding().block_end == LayoutUnit()));
+      if (has_stretch || child.IsAnonymousBlockFlow() || child.IsInline()) {
+        // If we have no block start/end border-padding and don't establish a
+        // new formatting context, ignore margins for stretch sizing purposes.
+        builder.SetIgnoreMarginsForStretch(
+            constraint_space.GetWritingDirection(),
+            LogicalBoxSides(/*inline_start=*/false,
+                            /*inline_end=*/false,
+                            BorderPadding().block_start == LayoutUnit(),
+                            BorderPadding().block_end == LayoutUnit()));
+      }
+    }
   }
 
   return builder.ToConstraintSpace();
