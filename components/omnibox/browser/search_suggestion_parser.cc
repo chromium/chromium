@@ -30,6 +30,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/brave_search_suggestion_parser.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/url_prefix.h"
@@ -772,6 +773,24 @@ bool SearchSuggestionParser::ParseSuggestResults(
     return false;
   }
   const auto& results_list = root_list[1].GetList();
+
+  // A few engines answer with a response format of their own, in which the
+  // suggestions list is not a list of strings.
+
+  // NOTE: The engine type is not a guarantee that the suggestion response
+  // matches the expected format. For example, this could be bypassed with a
+  // user-defined engine that has a different suggest URL or an existing profile
+  // which has an old suggest URL. Let's only parse the alternate format
+  // when the response appears to contain it, and fall back to the default
+  // parsing logic otherwise.
+  if (options.search_engine_type == SEARCH_ENGINE_BRAVE &&
+      !results_list.empty() && results_list.front().is_dict()) {
+    omnibox::brave_search::ParseSuggestResults(results_list, input_text,
+                                               default_result_relevance,
+                                               is_keyword_result, results);
+    // For Brave, it's safe to exit here once results are processed.
+    return true;
+  }
 
   // 3rd element: Ignore the optional description list for now.
   // 4th element: Disregard the query URL list.

@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
+#include "components/search_engines/search_engine_type.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
@@ -418,6 +419,11 @@ class SearchSuggestionParser {
   // The options struct for ParseSuggestResultsWithOptions
   struct ParseSuggestResultsOptions {
     bool allow_empty_suggestion = false;
+
+    // The engine that produced the response. Most engines answer with the
+    // default response format, but a few use a format of their own; see
+    // ParseSuggestResults(). SEARCH_ENGINE_OTHER selects the default format.
+    SearchEngineType search_engine_type = SEARCH_ENGINE_OTHER;
   };
 
   // Parses results from the suggest server and updates the appropriate suggest
