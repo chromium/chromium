@@ -633,7 +633,7 @@ CountryId RegionalCapabilitiesService::GetCountryIdInternal() {
 void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
   // The cache initialisation and associated logging should not run if override
   // flags are present.
-  CHECK(!HasSearchEngineCountryListOverride(), base::NotFatalUntil::M149);
+  CHECK(!HasSearchEngineCountryListOverride());
 
   // The regional scope cache is made of these 2 values, their presence has to
   // be consistent.
