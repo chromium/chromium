@@ -128,6 +128,14 @@ class MockDelegate : public StreamingWebSocketClient::Delegate {
     NotifyEvent();
   }
 
+  std::vector<network::mojom::HttpHeaderPtr> GetAdditionalHeaders() override {
+    std::vector<network::mojom::HttpHeaderPtr> headers;
+    for (const auto& header : additional_headers) {
+      headers.push_back(header.Clone());
+    }
+    return headers;
+  }
+
   struct ConnectionError {
     std::string message;
     int net_error;
@@ -152,6 +160,7 @@ class MockDelegate : public StreamingWebSocketClient::Delegate {
   std::optional<DropChannel> drop_channel;
   std::optional<std::string> error_message;
   bool closed = false;
+  std::vector<network::mojom::HttpHeaderPtr> additional_headers;
   base::RepeatingClosure on_event_callback;
 };
 
@@ -298,6 +307,17 @@ TEST_F(StreamingWebSocketClientTest, NoXClientDataHeader) {
             "application/x-protobuf");
   EXPECT_FALSE(network_context_.GetHeader("X-Client-Data").has_value());
   EXPECT_FALSE(network_context_.GetHeader("x-client-data").has_value());
+}
+
+TEST_F(StreamingWebSocketClientTest, AdditionalHeaders) {
+  delegate_.additional_headers.push_back(
+      network::mojom::HttpHeader::New("Custom-Header", "custom-value"));
+  client_.Send(std::vector<uint8_t>{1});
+
+  EXPECT_TRUE(network_context_.create_called);
+  EXPECT_EQ(network_context_.GetHeader("X-WebChannel-Content-Type"),
+            "application/x-protobuf");
+  EXPECT_EQ(network_context_.GetHeader("Custom-Header"), "custom-value");
 }
 
 TEST_F(StreamingWebSocketClientTest, InvalidFrameType) {
@@ -453,6 +473,10 @@ TEST_F(StreamingWebSocketClientTest, DataPipeWriteFailure) {
   EXPECT_TRUE(future.Wait());
   ASSERT_TRUE(delegate_.error_message.has_value());
   EXPECT_EQ(*delegate_.error_message, "Failed to write to WebSocket.");
+}
+
+TEST_F(StreamingWebSocketClientTest, ServiceUrl) {
+  EXPECT_EQ(client_.service_url(), GURL("wss://example.com/websocket"));
 }
 
 }  // namespace

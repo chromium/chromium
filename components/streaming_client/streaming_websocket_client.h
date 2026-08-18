@@ -69,6 +69,9 @@ class StreamingWebSocketClient
 
     // Called when the Mojo pipe disconnects.
     virtual void OnClose() = 0;
+
+    // Called when establishing the connection to get additional HTTP headers.
+    virtual std::vector<network::mojom::HttpHeaderPtr> GetAdditionalHeaders();
   };
 
   StreamingWebSocketClient(const GURL& service_url,
@@ -86,6 +89,8 @@ class StreamingWebSocketClient
 
   // Closes the connection and resets internal state.
   void Close();
+
+  const GURL& service_url() const { return service_url_; }
 
  private:
   enum class State {

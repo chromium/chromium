@@ -54,6 +54,7 @@ class WebSocketClient
                      std::optional<base::TimeDelta> elapsed) override;
   void OnError(const std::string& message) override;
   void OnClose() override;
+  std::vector<network::mojom::HttpHeaderPtr> GetAdditionalHeaders() override;
 
  private:
   enum class State {

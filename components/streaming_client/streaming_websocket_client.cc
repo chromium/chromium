@@ -29,6 +29,11 @@ constexpr size_t kMaxIncomingMessageSize = 1 << 20;
 
 }  // namespace
 
+std::vector<network::mojom::HttpHeaderPtr>
+StreamingWebSocketClient::Delegate::GetAdditionalHeaders() {
+  return {};
+}
+
 StreamingWebSocketClient::StreamingWebSocketClient(
     const GURL& service_url,
     network::mojom::NetworkContext* network_context,
@@ -84,7 +89,8 @@ void StreamingWebSocketClient::Connect() {
 
   std::vector<std::string> requested_protocols;
 
-  std::vector<network::mojom::HttpHeaderPtr> additional_headers{};
+  std::vector<network::mojom::HttpHeaderPtr> additional_headers =
+      delegate_->GetAdditionalHeaders();
   additional_headers.push_back(network::mojom::HttpHeader::New(
       "X-WebChannel-Content-Type", "application/x-protobuf"));
 

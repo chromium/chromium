@@ -53,4 +53,15 @@ TEST_F(ServerVerificationKeyTest, GetStagingKeys) {
   // EXPECT_NE(keys, GetProdKeysForTesting());
 }
 
+TEST_F(ServerVerificationKeyTest, IsNonProdServerVerificationKey) {
+  EXPECT_TRUE(IsNonProdServerVerificationKey(
+      GURL("https://autopush-private-ai.example.com")));
+  EXPECT_TRUE(IsNonProdServerVerificationKey(
+      GURL("https://dev-private-ai.example.com")));
+  EXPECT_TRUE(IsNonProdServerVerificationKey(
+      GURL("https://staging-private-ai.example.com")));
+  EXPECT_FALSE(
+      IsNonProdServerVerificationKey(GURL("https://private-ai.example.com")));
+}
+
 }  // namespace private_ai

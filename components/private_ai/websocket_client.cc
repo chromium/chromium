@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/private_ai/attestation/server_verification_key.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/proto_utils/google_rpc_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -192,6 +193,16 @@ void WebSocketClient::OnError(const std::string& message) {
 void WebSocketClient::OnClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClosePipe(TransportError::kSocketClosed);
+}
+
+std::vector<network::mojom::HttpHeaderPtr>
+WebSocketClient::GetAdditionalHeaders() {
+  std::vector<network::mojom::HttpHeaderPtr> additional_headers;
+  if (IsNonProdServerVerificationKey(streaming_client_.service_url())) {
+    additional_headers.push_back(network::mojom::HttpHeader::New(
+        "X-Client-Verification-Key-Variant", "nonprod"));
+  }
+  return additional_headers;
 }
 
 void WebSocketClient::ClosePipe(TransportError status) {

@@ -4,7 +4,9 @@
 
 #include "components/private_ai/websocket_client.h"
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -52,11 +54,22 @@ class MockNetworkContext : public network::TestNetworkContext {
       network::mojom::IPAddressSpace target_address_space) override {
     create_called_ = true;
     pending_handshake_client_ = std::move(handshake_client);
+    additional_headers_ = std::move(additional_headers);
+  }
+
+  std::optional<std::string> GetHeader(std::string_view name) const {
+    for (const auto& header : additional_headers_) {
+      if (header->name == name) {
+        return header->value;
+      }
+    }
+    return std::nullopt;
   }
 
   bool create_called_ = false;
   mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
       pending_handshake_client_;
+  std::vector<network::mojom::HttpHeaderPtr> additional_headers_;
 };
 
 struct TestConnection {
@@ -169,6 +182,35 @@ TEST_F(WebSocketClientTest, SuccessfulResponse) {
   EXPECT_EQ(result.value().encrypted_message().ciphertext(), "hello world");
 }
 
+TEST_F(WebSocketClientTest, NonProdVerificationKeyVariantHeader) {
+  GURL url("wss://dev-private-ai.example.com/websocket");
+  MockNetworkContext network_context;
+
+  WebSocketClient client(url, &network_context, &logger_);
+  client.SetResponseCallback(base::DoNothing());
+  client.Send(oak::session::v1::SessionRequest());
+
+  EXPECT_TRUE(network_context.create_called_);
+  EXPECT_EQ(network_context.GetHeader("X-WebChannel-Content-Type"),
+            "application/x-protobuf");
+  EXPECT_EQ(network_context.GetHeader("X-Client-Verification-Key-Variant"),
+            "nonprod");
+}
+
+TEST_F(WebSocketClientTest, ProdVerificationKeyVariantHeader) {
+  GURL url("wss://example.com/websocket");
+  MockNetworkContext network_context;
+
+  WebSocketClient client(url, &network_context, &logger_);
+  client.SetResponseCallback(base::DoNothing());
+  client.Send(oak::session::v1::SessionRequest());
+
+  EXPECT_TRUE(network_context.create_called_);
+  EXPECT_EQ(network_context.GetHeader("X-WebChannel-Content-Type"),
+            "application/x-protobuf");
+  EXPECT_FALSE(network_context.GetHeader("X-Client-Verification-Key-Variant")
+                   .has_value());
+}
 }  // namespace
 
 }  // namespace private_ai
