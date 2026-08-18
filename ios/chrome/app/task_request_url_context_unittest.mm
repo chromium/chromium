@@ -8,6 +8,7 @@
 
 #import <optional>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -204,6 +206,57 @@ TEST_F(TaskRequestForURLContextTest, TestXCallbackURLMetrics) {
     histogram_tester.ExpectUniqueSample(kAppLaunchSource,
                                         AppLaunchSource::X_CALLBACK, 1);
   }
+}
+
+// Tests that X-Callback app-group-command URLs log the application group
+// command delay metric.
+TEST_F(TaskRequestForURLContextTest, TestXCallbackAppGroupCommandDelayMetric) {
+  base::HistogramTester histogram_tester;
+
+  // Prepare app group command parameters in defaults.
+  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
+  NSString* commandDictionaryPreference =
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandPreference);
+  NSString* commandTimePreference =
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandTimePreference);
+  NSString* commandCallerPreference =
+      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandAppPreference);
+  NSString* commandPreference = base::SysUTF8ToNSString(
+      app_group::kChromeAppGroupCommandCommandPreference);
+
+  NSDate* commandTime =
+      [NSDate dateWithTimeIntervalSinceNow:-5.0];  // 5 seconds ago
+  NSDictionary* commandDictionary = @{
+    commandTimePreference : commandTime,
+    commandCallerPreference : @"some-extension",
+    commandPreference : @"open-url-command"
+  };
+  [sharedDefaults setObject:commandDictionary
+                     forKey:commandDictionaryPreference];
+
+  NSURL* url =
+      [NSURL URLWithString:@"googlechrome://x-callback-url/app-group-command"];
+  UIOpenURLContext* context = CreateMockURLContext(url);
+
+  TaskRequestForURLContext* request =
+      [TaskRequestForURLContext taskRequestWithURLContext:context
+                                               sceneState:scene_state_
+                                              isColdStart:YES];
+  EXPECT_NE(request, nil);
+
+  histogram_tester.ExpectUniqueSample(kUMAMobileSessionStartActionHistogram,
+                                      START_ACTION_XCALLBACK_APPGROUP_COMMAND,
+                                      1);
+  histogram_tester.ExpectUniqueSample(kAppLaunchSource,
+                                      AppLaunchSource::X_CALLBACK, 1);
+
+  // Verify that the command delay was recorded.
+  histogram_tester.ExpectTotalCount("Startup.ApplicationGroupCommandDelay", 1);
+  histogram_tester.ExpectUniqueSample("Startup.ApplicationGroupCommandDelay", 5,
+                                      1);
+
+  // Clean up.
+  [sharedDefaults removeObjectForKey:commandDictionaryPreference];
 }
 
 // Tests that standard HTTP/HTTPS, File, and External Action URLs log launch

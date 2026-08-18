@@ -10,6 +10,12 @@
 // Subclass of TaskRequestForURLContext for handling X-Callback URLs
 // (googlechrome://x-callback-url/).
 @interface TaskRequestForXCallbackURLContext : TaskRequestForURLContext
+
+// The time when the app group command was written to shared defaults by the
+// extension. Returns nil if the request is not an app group command or if the
+// dispatch timestamp is missing.
+@property(nonatomic, strong, readonly) NSDate* commandTime;
+
 @end
 
 #endif  // IOS_CHROME_APP_TASK_REQUEST_FOR_XCALLBACK_URL_CONTEXT_H_
