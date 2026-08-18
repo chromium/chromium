@@ -2,7 +2,7 @@
   const {dp, page} = await testRunner.startBlank(
     'Tests receiving static router rules from the service worker.');
 
-  async function waitForServiceWorkerActivation() {
+  async function waitForServiceWorkerInstallation() {
     let versions = [];
     do {
       const result = await dp.ServiceWorker.onceWorkerVersionUpdated();
@@ -13,7 +13,7 @@
 
   await dp.Runtime.enable();
 
-  const versionsPromise = waitForServiceWorkerActivation();
+  const versionsPromise = waitForServiceWorkerInstallation();
   await dp.ServiceWorker.enable();
   await page.navigate('resources/service-worker-with-static-router.html');
 
