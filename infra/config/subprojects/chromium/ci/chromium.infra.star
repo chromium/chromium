@@ -80,8 +80,8 @@ packager_builder(
 packager_builder(
     name = "3pp-mac-amd64-packager",
     executable = "recipe:chromium_3pp",
-    # TODO(crbug.com/40204454): Trigger builds routinely once works fine.
-    schedule = "triggered",
+    # Every 6 hours starting at 5am UTC.
+    schedule = "0 5/6 * * * *",
     triggered_by = [],
     builderless = True,
     cores = None,
@@ -104,8 +104,8 @@ packager_builder(
     name = "3pp-mac-arm64-packager",
     description_html = "chromium 3pp packager on Mac ARM64 platform.",
     executable = "recipe:chromium_3pp",
-    # TODO(crbug.com/40864598): Trigger builds routinely once works fine.
-    schedule = "triggered",
+    # Every 6 hours starting at 5am UTC.
+    schedule = "0 5/6 * * * *",
     triggered_by = [],
     builderless = True,
     cores = None,
