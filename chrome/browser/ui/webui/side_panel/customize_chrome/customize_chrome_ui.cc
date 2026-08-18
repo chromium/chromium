@@ -327,7 +327,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
     }
   }
   bool action_chips_eligible =
-      base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChips)
+      (base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChips) ||
+       base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChipsSmall))
           ? ntp_next_features_enabled
           : (aim_eligibility_service &&
              aim_eligibility_service->IsAimEligible() &&
