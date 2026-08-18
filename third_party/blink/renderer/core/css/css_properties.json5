@@ -469,6 +469,14 @@
     typedom_keywords: {
     },
 
+    // If true, the property accepts an arbitrary <custom-ident> as a
+    // CSSKeywordValue when set on StylePropertyMap (in addition to any
+    // enumerated typedom_keywords).
+    typedom_custom_ident: {
+      default: false,
+      valid_type: "bool",
+    },
+
     separator: {
       valid_values: [",", " ", "/"],
     },
@@ -1038,6 +1046,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      typedom_custom_ident: true,
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
@@ -3224,6 +3233,7 @@
       converter: "ConvertContainerName",
       keywords: ["none"],
       typedom_types: ["Keyword"],
+      typedom_custom_ident: true,
       valid_for_permission_element: true,
       is_animation_affecting: true,
     },
@@ -5184,6 +5194,7 @@
       field_template: "external",
       keywords: ["auto"],
       typedom_types: ["Keyword"],
+      typedom_custom_ident: true,
       computable: false,
       valid_for_permission_element: true,
     },

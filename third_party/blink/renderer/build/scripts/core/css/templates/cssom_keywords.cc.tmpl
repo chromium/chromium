@@ -13,16 +13,38 @@
 
 namespace blink {
 
+bool CSSOMKeywords::PropertyTakesCustomIdent(CSSPropertyID id) {
+  switch (id) {
+  {% for property in properties if property.typedom_custom_ident %}
+  case CSSPropertyID::{{property.enum_key}}:
+  {% endfor %}
+    return true;
+  default:
+    return false;
+  }
+}
+
 bool CSSOMKeywords::ValidKeywordForProperty(CSSPropertyID id,
                                             const CSSKeywordValue& keyword) {
   CSSValueID valueID = keyword.KeywordValueID();
-  if (!IsValidCSSValueID(valueID)) {
-    return false;
-  }
-
   if (css_parsing_utils::IsCSSWideKeyword(valueID)) {
     // TODO(crbug.com/1310761): Support CSS-wide keywords in custom props.
     return id != CSSPropertyID::kVariable;
+  }
+
+  if (PropertyTakesCustomIdent(id)) {
+    // Any identifier may be a <custom-ident>, including one that happens to
+    // name a keyword of some other property ('auto', say). Per css-values-4 a
+    // <custom-ident> excludes only the CSS-wide keywords (handled above) and
+    // 'default'. Identifiers that an individual property excludes -- 'not',
+    // 'and' and 'or' for container-name -- are not CSSValueIDs, so they cannot
+    // be enumerated here; they are rejected when the value is parsed against
+    // the property's grammar in StyleValueToCSSValue().
+    return valueID != CSSValueID::kDefault;
+  }
+
+  if (!IsValidCSSValueID(valueID)) {
+    return false;
   }
 
   switch (id) {

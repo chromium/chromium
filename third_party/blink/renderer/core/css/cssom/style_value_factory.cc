@@ -163,6 +163,21 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       }
       return nullptr;
     }
+    case CSSPropertyID::kContainerName: {
+      // 'none' is stored as an identifier.
+      if (value.IsIdentifierValue()) {
+        return CreateStyleValue(value);
+      }
+
+      // A single <custom-ident> is stored as a single element list. Only
+      // single values are supported in level 1.
+      if (const auto* value_list = DynamicTo<CSSValueList>(value)) {
+        if (value_list->length() == 1U) {
+          return CreateStyleValue(value_list->Item(0));
+        }
+      }
+      return nullptr;
+    }
     case CSSPropertyID::kFontVariantEastAsian:
     case CSSPropertyID::kFontVariantLigatures:
     case CSSPropertyID::kFontVariantNumeric: {

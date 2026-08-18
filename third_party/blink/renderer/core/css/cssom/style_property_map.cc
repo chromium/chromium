@@ -12,12 +12,15 @@
 #include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
+#include "third_party/blink/renderer/core/css/cssom/cssom_keywords.h"
 #include "third_party/blink/renderer/core/css/cssom/cssom_types.h"
 #include "third_party/blink/renderer/core/css/cssom/style_value_factory.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -85,6 +88,21 @@ const CSSValue* StyleValueToCSSValue(
   if (style_value.GetType() == CSSStyleValue::kUnknownType) {
     return CSSParser::ParseSingleValue(
         property.PropertyID(), style_value.toString(),
+        MakeGarbageCollected<CSSParserContext>(execution_context));
+  }
+
+  // For properties that take a <custom-ident>, CSSOMKeywords accepts any
+  // identifier, because an identifier that names a keyword of some other
+  // property ('auto', say) is still a perfectly good custom ident here. Let the
+  // property's own grammar decide instead: parsing rejects the identifiers the
+  // property excludes ('not', 'and' and 'or' for container-name) and yields the
+  // CSSValue shape the property stores, which for container-name is a
+  // space-separated list.
+  if (const auto* keyword_value = DynamicTo<CSSKeywordValue>(style_value);
+      keyword_value && CSSOMKeywords::PropertyTakesCustomIdent(property_id) &&
+      !css_parsing_utils::IsCSSWideKeyword(keyword_value->KeywordValueID())) {
+    return CSSParser::ParseSingleValue(
+        property_id, style_value.toString(),
         MakeGarbageCollected<CSSParserContext>(execution_context));
   }
 

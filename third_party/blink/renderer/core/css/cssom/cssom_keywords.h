@@ -23,6 +23,11 @@ class CSSOMKeywords {
  public:
   static CORE_EXPORT bool ValidKeywordForProperty(CSSPropertyID,
                                                   const CSSKeywordValue&);
+
+  // Whether the property accepts a <custom-ident> via Typed OM, i.e. whether a
+  // CSSKeywordValue set on it must be validated by parsing it against the
+  // property's grammar rather than against an enumerated keyword list.
+  static CORE_EXPORT bool PropertyTakesCustomIdent(CSSPropertyID);
 };
 
 }  // namespace blink
