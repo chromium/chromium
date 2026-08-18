@@ -80,7 +80,7 @@ std::u16string ProfileDownloader::GetProfileGivenName() const {
 }
 
 std::string ProfileDownloader::GetProfileLocale() const {
-  return account_info_.locale;
+  return std::string(account_info_.GetLocale().value_or(""));
 }
 
 SkBitmap ProfileDownloader::GetProfilePicture() const {

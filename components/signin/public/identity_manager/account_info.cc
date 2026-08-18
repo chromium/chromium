@@ -196,15 +196,15 @@ signin::Tribool AccountInfo::IsChildAccount() const {
 }
 
 std::optional<std::string_view> AccountInfo::GetLocale() const {
-  if (locale.empty()) {
+  if (locale_.empty()) {
     return std::nullopt;
   }
-  return locale;
+  return locale_;
 }
 
 bool AccountInfo::IsEmpty() const {
   return CoreAccountInfo::IsEmpty() && hosted_domain_.empty() &&
-         full_name_.empty() && given_name_.empty() && locale.empty() &&
+         full_name_.empty() && given_name_.empty() && locale_.empty() &&
          picture_url_.empty();
 }
 
@@ -227,7 +227,7 @@ bool AccountInfo::UpdateWith(const AccountInfo& other) {
   modified |= UpdateField(&given_name_, other.given_name_, nullptr);
   modified |=
       UpdateField(&hosted_domain_, other.hosted_domain_, kNoHostedDomainFound);
-  modified |= UpdateField(&locale, other.locale, nullptr);
+  modified |= UpdateField(&locale_, other.locale_, nullptr);
   modified |=
       UpdateField(&picture_url_, other.picture_url_, kNoPictureURLFound);
   modified |= UpdateField(&is_child_account_, other.is_child_account_);
@@ -369,7 +369,7 @@ AccountInfo::Builder& AccountInfo::Builder::SetAvatarImage(
 AccountInfo::Builder& AccountInfo::Builder::SetLocale(
     std::string_view locale_val) {
   CHECK(!locale_val.empty());
-  account_info_.locale = std::string(locale_val);
+  account_info_.locale_ = std::string(locale_val);
   return *this;
 }
 

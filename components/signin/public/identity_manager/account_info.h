@@ -220,9 +220,6 @@ struct AccountInfo : public CoreAccountInfo {
   // The value is set consistently only on DICE platforms.
   std::optional<signin_metrics::AccessPoint> access_point;
 
-  // Deprecated: Use GetLocale() instead.
-  std::string locale;
-
  private:
   friend class Builder;
   friend class AccountCapabilitiesTestMutator;
@@ -233,6 +230,7 @@ struct AccountInfo : public CoreAccountInfo {
   std::string hosted_domain_;
   std::string picture_url_;
 
+  std::string locale_;
   std::string last_downloaded_image_url_with_size_;
   signin::Tribool is_child_account_ = signin::Tribool::kUnknown;
   AccountCapabilities capabilities_;
