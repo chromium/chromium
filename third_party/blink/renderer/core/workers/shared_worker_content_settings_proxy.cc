@@ -38,9 +38,7 @@ void SharedWorkerContentSettingsProxy::AllowStorageAccess(
       GetService()->AllowWebLocks(std::move(callback));
       return;
     case StorageType::kFileSystem:
-      // TODO(crbug.com/503624894): Rename RequestFileSystemAccessSync to
-      // AllowFileSystem in a follow-up.
-      GetService()->RequestFileSystemAccessSync(std::move(callback));
+      GetService()->AllowFileSystem(std::move(callback));
       return;
     default:
       // TODO(crbug.com/40103756): Revisit this default in the future.
@@ -65,7 +63,7 @@ bool SharedWorkerContentSettingsProxy::AllowStorageAccessSync(
       GetService()->AllowWebLocks(&result);
       break;
     case StorageType::kFileSystem:
-      GetService()->RequestFileSystemAccessSync(&result);
+      GetService()->AllowFileSystem(&result);
       break;
     default:
       // TODO(crbug.com/40103756): Revisit this default in the future.

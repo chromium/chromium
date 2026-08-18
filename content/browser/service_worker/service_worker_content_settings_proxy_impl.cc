@@ -97,8 +97,8 @@ void ServiceWorkerContentSettingsProxyImpl::AllowWebLocks(
       storage_key_));
 }
 
-void ServiceWorkerContentSettingsProxyImpl::RequestFileSystemAccessSync(
-    RequestFileSystemAccessSyncCallback callback) {
+void ServiceWorkerContentSettingsProxyImpl::AllowFileSystem(
+    AllowFileSystemCallback callback) {
   mojo::ReportBadMessage(
       "The FileSystem API is not exposed to service workers "
       "but somehow a service worker requested access.");

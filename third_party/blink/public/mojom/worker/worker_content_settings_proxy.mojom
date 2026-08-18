@@ -24,7 +24,6 @@ interface WorkerContentSettingsProxy {
   AllowWebLocks() => (bool result);
 
   // Returns whether the worker is allowed access to the file system.
-  // TODO(crbug.com/503624894): Rename to AllowFileSystem in a follow-up.
   [Sync]
-  RequestFileSystemAccessSync() => (bool result);
+  AllowFileSystem() => (bool result);
 };

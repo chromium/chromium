@@ -47,8 +47,7 @@ class MockWorkerContentSettingsProxy
   void AllowWebLocks(AllowWebLocksCallback callback) override {
     std::move(callback).Run(allow_web_locks_);
   }
-  void RequestFileSystemAccessSync(
-      RequestFileSystemAccessSyncCallback callback) override {
+  void AllowFileSystem(AllowFileSystemCallback callback) override {
     std::move(callback).Run(false);
   }
 

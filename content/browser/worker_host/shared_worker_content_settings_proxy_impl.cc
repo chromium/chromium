@@ -50,8 +50,8 @@ void SharedWorkerContentSettingsProxyImpl::AllowWebLocks(
   }
 }
 
-void SharedWorkerContentSettingsProxyImpl::RequestFileSystemAccessSync(
-    RequestFileSystemAccessSyncCallback callback) {
+void SharedWorkerContentSettingsProxyImpl::AllowFileSystem(
+    AllowFileSystemCallback callback) {
   if (!origin_.opaque()) {
     owner_->AllowFileSystem(origin_.GetURL(), std::move(callback));
   } else {
