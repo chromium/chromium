@@ -666,12 +666,14 @@ TEST_P(UnexportableKeyTest, FakeAttestationWorkflows) {
       crypto::AttestationStatement statement,
       attestation_key->CertifySlowly(*signing_key, kChallenge));
   EXPECT_EQ(statement.format, crypto::AttestationStatement::kTpm);
+  EXPECT_EQ(statement.statement.size(), 105u);
 
   std::vector<uint8_t> fake_resp =
       ConstructFakeTpmResponse(statement.statement, statement.signature);
 
   // Use C++ type-safe parser.
-  EXPECT_THAT(crypto::tpm::ParseCertifyResponse(fake_resp, kChallenge),
+  EXPECT_THAT(crypto::tpm::ParseCertifyResponse(
+                  fake_resp, crypto::hash::Sha256(kChallenge)),
               base::test::ValueIs(crypto::tpm::CertifyResponse{
                   .statement = statement.statement,
                   .signature = statement.signature,
@@ -681,6 +683,30 @@ TEST_P(UnexportableKeyTest, FakeAttestationWorkflows) {
   EXPECT_OK(
       crypto::tpm::VerifySignature(attestation_key->GetSubjectPublicKeyInfo(),
                                    statement.statement, statement.signature));
+
+  // Verify statement generation with arbitrary challenge sizes (empty and
+  // large vectors). The resulting statement size should always be 105 bytes
+  // because the challenge is hashed with SHA-256 into extraData.
+  for (const std::vector<uint8_t>& challenge :
+       {std::vector<uint8_t>{}, std::vector<uint8_t>(1024, 0x42)}) {
+    ASSERT_OK_AND_ASSIGN(
+        crypto::AttestationStatement arbitrary_statement,
+        attestation_key->CertifySlowly(*signing_key, challenge));
+    EXPECT_EQ(arbitrary_statement.format, crypto::AttestationStatement::kTpm);
+    EXPECT_EQ(arbitrary_statement.statement.size(), 105u);
+
+    std::vector<uint8_t> arbitrary_resp = ConstructFakeTpmResponse(
+        arbitrary_statement.statement, arbitrary_statement.signature);
+    EXPECT_THAT(crypto::tpm::ParseCertifyResponse(
+                    arbitrary_resp, crypto::hash::Sha256(challenge)),
+                base::test::ValueIs(crypto::tpm::CertifyResponse{
+                    .statement = arbitrary_statement.statement,
+                    .signature = arbitrary_statement.signature,
+                }));
+    EXPECT_OK(crypto::tpm::VerifySignature(
+        attestation_key->GetSubjectPublicKeyInfo(),
+        arbitrary_statement.statement, arbitrary_statement.signature));
+  }
 
   std::vector<uint8_t> wrapped_attestation = attestation_key->GetWrappedKey();
   auto loaded_attestation_key =

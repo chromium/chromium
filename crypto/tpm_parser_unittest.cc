@@ -42,7 +42,7 @@ constexpr ByteArray<N> ToByteArray(const uint8_t (&arr)[N]) {
   return std::to_array(arr);
 }
 
-constexpr auto kChallenge = ToByteArray({1, 2, 3, 4});
+constexpr auto kExtraData = ToByteArray({1, 2, 3, 4});
 
 // Builds a serialized TPMT_SIGNATURE containing an RSASSA signature.
 // TPMT_SIGNATURE layout (TPM 2.0 Part 2, Section 11.1.1):
@@ -98,9 +98,9 @@ std::vector<uint8_t> BuildTpmEcdsaSignature(TpmAlg hash_alg,
 // - magic (TPM_GENERATED): 4 bytes (uint32_t, e.g. magic)
 // - type (TPMI_ST_ATTEST): 2 bytes (uint16_t, e.g. type)
 // - qualifiedSigner (TPM2B_NAME): 2 bytes size + 0 bytes buffer = 2 bytes
-// - extraData (TPM2B_DATA, holds challenge):
+// - extraData (TPM2B_DATA, holds extraData):
 //   - size (uint16_t): 2 bytes
-//   - buffer (bytes): challenge.size() bytes
+//   - buffer (bytes): extra_data.size() bytes
 // - clockInfo (TPMS_CLOCK_INFO): 17 bytes (8 clock + 4 reset + 4 restart + 1
 // safe)
 // - firmwareVersion (uint64_t): 8 bytes
@@ -109,17 +109,17 @@ std::vector<uint8_t> BuildTpmEcdsaSignature(TpmAlg hash_alg,
 //   - name (TPM2B_NAME): 2 bytes size + 0 bytes buffer = 2 bytes
 //   - qualifiedName (TPM2B_NAME): 2 bytes size + 0 bytes buffer = 2 bytes
 std::vector<uint8_t> BuildFakeCertifyStatement(
-    base::span<const uint8_t> challenge,
+    base::span<const uint8_t> extra_data,
     TpmConstant magic = TPM_GENERATED_VALUE,
     TpmSt type = TPM_ST_ATTEST_CERTIFY) {
-  size_t size = 4 + 2 + 2 + 2 + challenge.size() + 17 + 8 + 2 + 2;
+  size_t size = 4 + 2 + 2 + 2 + extra_data.size() + 17 + 8 + 2 + 2;
   std::vector<uint8_t> statement(size);
   base::SpanWriter<uint8_t> writer(statement);
   writer.WriteEnumBigEndian(magic);
   writer.WriteEnumBigEndian(type);
   writer.WriteU16BigEndian(0);  // qualified_signer size = 0
-  writer.WriteU16BigEndian(challenge.size());
-  writer.Write(challenge);
+  writer.WriteU16BigEndian(extra_data.size());
+  writer.Write(extra_data);
 
   ByteArray<17> clock_info = {0};
   writer.Write(clock_info);
@@ -147,13 +147,13 @@ std::vector<uint8_t> BuildFakeCertifyStatement(
 //     - buffer (bytes): statement.size() bytes
 //   - signature (TPMT_SIGNATURE): signature.size() bytes
 std::vector<uint8_t> BuildFakeCertifyResponse(
-    base::span<const uint8_t> challenge,
+    base::span<const uint8_t> extra_data,
     base::span<const uint8_t> signature,
     uint32_t response_code = 0,
     TpmConstant magic = TPM_GENERATED_VALUE,
     TpmSt type = TPM_ST_ATTEST_CERTIFY) {
   std::vector<uint8_t> statement =
-      BuildFakeCertifyStatement(challenge, magic, type);
+      BuildFakeCertifyStatement(extra_data, magic, type);
 
   uint32_t resp_size = 10;
   if (response_code == 0) {
@@ -509,14 +509,14 @@ TEST(TpmCppParserTest, GetSignatureAlgorithms_UnsupportedHashAlgorithm) {
 
 TEST(TpmCppParserTest, ParseCertifyResponse_Success) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
-  std::vector<uint8_t> statement = BuildFakeCertifyStatement(kChallenge);
+  std::vector<uint8_t> statement = BuildFakeCertifyStatement(kExtraData);
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
   auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
-  auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob);
+  auto resp = BuildFakeCertifyResponse(kExtraData, sig_blob);
 
-  EXPECT_THAT(ParseCertifyResponse(resp, kChallenge),
+  EXPECT_THAT(ParseCertifyResponse(resp, kExtraData),
               ValueIs(CertifyResponse{
                   .statement = statement,
                   .signature = sig_blob,
@@ -526,45 +526,70 @@ TEST(TpmCppParserTest, ParseCertifyResponse_Success) {
 TEST(TpmCppParserTest, ParseCertifyResponse_BadMagic) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
   std::vector<uint8_t> statement = BuildFakeCertifyStatement(
-      kChallenge, static_cast<TpmConstant>(0x11223344));  // Bad magic
+      kExtraData, static_cast<TpmConstant>(0x11223344));  // Bad magic
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
   auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
-  auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob, 0,
+  auto resp = BuildFakeCertifyResponse(kExtraData, sig_blob, 0,
                                        static_cast<TpmConstant>(0x11223344));
 
-  EXPECT_THAT(ParseCertifyResponse(resp, kChallenge),
+  EXPECT_THAT(ParseCertifyResponse(resp, kExtraData),
               ErrorIs(TpmParseError(TpmParseError::Type::kBadMagicNumber)));
 }
 
 TEST(TpmCppParserTest, ParseCertifyResponse_ChallengeMismatch) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
-  std::vector<uint8_t> statement = BuildFakeCertifyStatement(kChallenge);
+  std::vector<uint8_t> statement = BuildFakeCertifyStatement(kExtraData);
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
   auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
-  auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob);
+  auto resp = BuildFakeCertifyResponse(kExtraData, sig_blob);
 
-  static constexpr auto kWrongChallenge = ToByteArray({9, 9, 9, 9});
-  EXPECT_THAT(ParseCertifyResponse(resp, kWrongChallenge),
+  static constexpr auto kWrongExtraData = ToByteArray({9, 9, 9, 9});
+  EXPECT_THAT(ParseCertifyResponse(resp, kWrongExtraData),
               ErrorIs(TpmParseError(TpmParseError::Type::kChallengeMismatch)));
 }
 
 TEST(TpmCppParserTest, ParseCertifyResponse_TpmError) {
   auto rsa_priv = test::FixedRsa2048PrivateKeyForTesting();
-  std::vector<uint8_t> statement = BuildFakeCertifyStatement(kChallenge);
+  std::vector<uint8_t> statement = BuildFakeCertifyStatement(kExtraData);
   auto sig_bytes =
       sign::Sign(sign::SignatureKind::RSA_PKCS1_SHA256, rsa_priv, statement);
 
   auto sig_blob = BuildTpmRsaSignature(TPM_ALG_SHA256, sig_bytes);
-  auto resp = BuildFakeCertifyResponse(kChallenge, sig_blob,
+  auto resp = BuildFakeCertifyResponse(kExtraData, sig_blob,
                                        0x100);  // TPM error code 0x100
 
   EXPECT_THAT(
-      ParseCertifyResponse(resp, kChallenge),
+      ParseCertifyResponse(resp, kExtraData),
       ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
+}
+
+TEST(TpmCppParserTest, BuildCertifyCommand) {
+  uint32_t object_handle = 0x81000001;
+  uint32_t sign_handle = 0x81000002;
+  static constexpr auto kQualifyingData = ToByteArray({1, 2, 3, 4});
+
+  std::vector<uint8_t> cmd =
+      BuildCertifyCommand(object_handle, sign_handle, kQualifyingData);
+  EXPECT_EQ(cmd.size(), 48u);
+
+  base::SpanReader<const uint8_t> reader(cmd);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmSt>(), TPM_ST_SESSIONS);
+  EXPECT_EQ(reader.ReadU32BigEndian(), 48u);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmCc>(), TPM_CC_CERTIFY);
+
+  EXPECT_EQ(reader.ReadU32BigEndian(), object_handle);
+  EXPECT_EQ(reader.ReadU32BigEndian(), sign_handle);
+
+  EXPECT_EQ(reader.ReadU32BigEndian(), 18u);  // Auth size: 2 * 9
+  EXPECT_TRUE(reader.Read<18>().has_value());
+
+  EXPECT_EQ(reader.ReadU16BigEndian(), 4u);
+  EXPECT_EQ(reader.Read<4>(), kQualifyingData);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmAlg>(), TPM_ALG_NULL);
 }
 
 TEST(TpmCppParserTest, BuildHashCommand) {

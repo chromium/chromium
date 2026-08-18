@@ -11,7 +11,7 @@ chromium::import! {
 const OBJECT_HANDLE: u32 = 0x81000001;
 const SIGN_HANDLE: u32 = 0x81000002;
 const QUALIFYING_DATA: &[u8] = &[1, 2, 3, 4];
-const WRONG_CHALLENGE: &[u8] = &[5, 6, 7, 8];
+const WRONG_EXTRA_DATA: &[u8] = &[5, 6, 7, 8];
 
 fn build_test_ticket(tag: u16, hierarchy: u32, digest: &[u8]) -> Vec<u8> {
     let mut writer = tpm::Writer::new();
@@ -200,8 +200,8 @@ fn test_build_certify_command_null_scheme() {
 #[gtest(TpmParserTest, EmptyBuffer)]
 fn test_empty_buffer() {
     let empty: &[u8] = &[];
-    let challenge: &[u8] = &[];
-    let result = tpm::parse_certify_response(empty, challenge);
+    let expected_extra_data: &[u8] = &[];
+    let result = tpm::parse_certify_response(empty, expected_extra_data);
     expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::BufferTooSmall));
 }
 
@@ -209,8 +209,8 @@ fn test_empty_buffer() {
 fn test_bad_magic() {
     let bad_magic = ResponseBuilder::new().with_magic(0xBAADBEEF).build();
 
-    let challenge: &[u8] = &[];
-    let result = tpm::parse_certify_response(&bad_magic, challenge);
+    let expected_extra_data: &[u8] = &[];
+    let result = tpm::parse_certify_response(&bad_magic, expected_extra_data);
     expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::BadMagicNumber));
 }
 
@@ -218,8 +218,8 @@ fn test_bad_magic() {
 fn test_tpm_error_response() {
     let error_resp = ResponseBuilder::new().with_rc(0x100).build();
 
-    let challenge: &[u8] = &[];
-    let result = tpm::parse_certify_response(&error_resp, challenge);
+    let expected_extra_data: &[u8] = &[];
+    let result = tpm::parse_certify_response(&error_resp, expected_extra_data);
     expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::TpmErrorResponse));
     expect_eq!(result.status.tpm_response_code, 0x100);
 }
@@ -228,8 +228,8 @@ fn test_tpm_error_response() {
 fn test_wrong_tag() {
     let wrong_tag = ResponseBuilder::new().with_tag(0x8003).build();
 
-    let challenge: &[u8] = &[];
-    let result = tpm::parse_certify_response(&wrong_tag, challenge);
+    let expected_extra_data: &[u8] = &[];
+    let result = tpm::parse_certify_response(&wrong_tag, expected_extra_data);
     expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::WrongType));
 }
 
@@ -237,8 +237,8 @@ fn test_wrong_tag() {
 fn test_wrong_attest_type() {
     let wrong_type = ResponseBuilder::new().with_type(0x8018).build();
 
-    let challenge: &[u8] = &[];
-    let result = tpm::parse_certify_response(&wrong_type, challenge);
+    let expected_extra_data: &[u8] = &[];
+    let result = tpm::parse_certify_response(&wrong_type, expected_extra_data);
     expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::WrongType));
 }
 
@@ -246,8 +246,8 @@ fn test_wrong_attest_type() {
 fn test_challenge_mismatch() {
     let challenge_mismatch = ResponseBuilder::new().with_extra_data(QUALIFYING_DATA).build();
 
-    let challenge: &[u8] = WRONG_CHALLENGE;
-    let result = tpm::parse_certify_response(&challenge_mismatch, challenge);
+    let expected_extra_data: &[u8] = WRONG_EXTRA_DATA;
+    let result = tpm::parse_certify_response(&challenge_mismatch, expected_extra_data);
     expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::ChallengeMismatch));
 }
 

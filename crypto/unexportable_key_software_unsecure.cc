@@ -44,22 +44,22 @@ std::vector<uint8_t> CreateTpm2bAttestationStatement(
     base::span<const uint8_t> challenge) {
   // TPM_ALG_SHA256 + hash
   static constexpr size_t kNameBufSize = 2 + hash::kSha256Size;
+  static constexpr size_t kExtraDataBufSize = 2 + hash::kSha256Size;
 
-  // TPMS_ATTEST structure size without the extraData (challenge) payload:
+  // TPMS_ATTEST structure size:
   // - magic: 4 bytes (TPM_GENERATED)
   // - type: 2 bytes (TPMI_ST_ATTEST)
   // - qualifiedSigner: 2 bytes (TPM2B_NAME header, empty name)
-  // - extraData header: 2 bytes (TPM2B_DATA header)
+  // - extraData: 34 bytes (TPM2B_DATA with 32-byte SHA-256 digest of challenge)
   // - clockInfo: 17 bytes (TPMS_CLOCK_INFO)
   // - firmwareVersion: 8 bytes (uint64_t)
   // - attested (TPMS_CERTIFY_INFO):
   //   - name: 36 bytes (TPM2B_NAME with SHA-256 algorithm ID + 32-byte digest)
   //   - qualifiedName: 2 bytes (TPM2B_NAME header, empty name)
   static constexpr size_t kAttestationStatementFixedSize =
-      4 + 2 + 2 + 2 + 17 + 8 + (2 + kNameBufSize) + 2;
+      4 + 2 + 2 + kExtraDataBufSize + 17 + 8 + (2 + kNameBufSize) + 2;
 
-  std::vector<uint8_t> attestation_statement(kAttestationStatementFixedSize +
-                                             challenge.size());
+  std::vector<uint8_t> attestation_statement(kAttestationStatementFixedSize);
   base::SpanWriter<uint8_t> attest_writer(attestation_statement);
   attest_writer.WriteEnumBigEndian(tpm::TPM_GENERATED_VALUE);
   attest_writer.WriteEnumBigEndian(tpm::TPM_ST_ATTEST_CERTIFY);
@@ -67,7 +67,7 @@ std::vector<uint8_t> CreateTpm2bAttestationStatement(
   attest_writer.WriteU16BigEndian(0);
 
   // extraData
-  WriteTpm2b(attest_writer, challenge);
+  WriteTpm2b(attest_writer, hash::Sha256(challenge));
 
   // TPMS_CLOCK_INFO (17 bytes)
   attest_writer.WriteU64BigEndian(0);  // clock

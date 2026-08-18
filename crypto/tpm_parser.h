@@ -211,28 +211,38 @@ struct CRYPTO_EXPORT SignatureAlgorithms {
 
 // Builds a serialized TPM2_Certify command buffer.
 //
+// TPM2_Certify takes a `TPM2B_DATA qualifyingData` parameter to ensure
+// freshness and prevent replay attacks (which for key attestation protocols is
+// typically the SHA-256 digest of the challenge).
+//
 // * `object_handle` - The TPM handle of the key to be certified.
 // * `sign_handle` - The TPM handle of the attestation key used to sign the
 // certification.
-// * `challenge` - A security challenge/nonce to prevent replay attacks.
+// * `qualifying_data` - Data provided by the caller to ensure freshness (e.g.,
+// the SHA-256 digest of the challenge).
 CRYPTO_EXPORT std::vector<uint8_t> BuildCertifyCommand(
     uint32_t object_handle,
     uint32_t sign_handle,
-    base::span<const uint8_t> challenge);
+    base::span<const uint8_t> qualifying_data);
 
 // Parses a serialized TPM2_Certify response and extracts the certified
 // statement and signature.
 //
+// TPM2_Certify operates on `TPM2B_DATA qualifyingData` (which for key
+// attestation protocols is typically the SHA-256 digest of the challenge),
+// returned in the `extraData` field of the `TPMS_ATTEST` structure.
+//
 // * `response_blob` - The raw byte response from the TPM2_Certify command.
-// * `challenge` - The challenge expected in the attestation's extra data to
-// prevent replay.
+// * `expected_extra_data` - The extra data expected in the attestation's
+// `extraData` field (e.g., the SHA-256 digest of the challenge) to prevent
+// replay attacks.
 //
 // If the TPM returns an error code, an error of type `kTpmErrorResponse` will
 // be returned containing the error code, and no statement or signature will be
 // extracted.
 CRYPTO_EXPORT TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
     base::span<const uint8_t> response_blob,
-    base::span<const uint8_t> challenge);
+    base::span<const uint8_t> expected_extra_data);
 
 // Builds a serialized TPM2_FlushContext command buffer.
 //

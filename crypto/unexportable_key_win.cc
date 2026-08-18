@@ -950,8 +950,9 @@ class AttestationKeyWin : public WinKeyImpl<UnexportableAttestationKey> {
                              Algorithm()));
 
     // 3. Construct Command
+    const auto qualifying_data = hash::Sha256(challenge);
     std::vector<uint8_t> cmd =
-        tpm::BuildCertifyCommand(object_handle, sign_handle, challenge);
+        tpm::BuildCertifyCommand(object_handle, sign_handle, qualifying_data);
 
     // 4. Submit Command
     ASSIGN_OR_RETURN(std::vector<uint8_t> resp,
@@ -961,7 +962,7 @@ class AttestationKeyWin : public WinKeyImpl<UnexportableAttestationKey> {
     // 5. Parse in Rust by going through the C++ shim.
     ASSIGN_OR_RETURN(tpm::CertifyResponse parsed,
                      ToOptionalAndRecordParseMetrics(
-                         tpm::ParseCertifyResponse(resp, challenge)));
+                         tpm::ParseCertifyResponse(resp, qualifying_data)));
 
     // 6. Verify in C++. C++ supports a wider range of signature algorithms than
     // Rust.

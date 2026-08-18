@@ -300,21 +300,25 @@ pub mod ffi {
         /// validates the headers, and extracts the attestation
         /// statement and signature. It also verifies that the response
         /// is for a certify command, checks the magic number,
-        /// and ensures the provided challenge matches the one in the
-        /// attestation's extra data to prevent replay attacks.
+        /// and ensures the provided `expected_extra_data` matches the one in
+        /// the attestation's extra data to prevent replay attacks
+        /// (TPM2_Certify operates on `TPM2B_DATA qualifyingData`, which
+        /// for key attestation protocols is typically the SHA-256
+        /// digest of the challenge).
         ///
         /// # Arguments
         ///
         /// * `resp` - The raw byte response from the TPM2_Certify command.
-        /// * `challenge` - The challenge expected in the attestation's
-        ///   `extra_data` field.
+        /// * `expected_extra_data` - The extra data expected in the
+        ///   attestation's `extra_data` field (e.g., the SHA-256 digest of the
+        ///   challenge).
         ///
         /// # Returns
         ///
         /// A `CertifyResponse` containing the parsing result, any TPM error
         /// code, the serialized `TPMS_ATTEST` statement, and the
         /// serialized `TPMT_SIGNATURE`.
-        fn parse_certify_response(resp: &[u8], challenge: &[u8]) -> CertifyResponse;
+        fn parse_certify_response(resp: &[u8], expected_extra_data: &[u8]) -> CertifyResponse;
 
         /// Builds a TPM2_FlushContext command buffer.
         fn build_flush_context_command(handle: u32) -> Vec<u8>;
@@ -791,7 +795,7 @@ struct CertifyData<'a> {
 /// for a general overview of the structure of a TPM response.
 fn parse_certify_response_impl<'a>(
     resp: &'a [u8],
-    challenge: &[u8],
+    expected_extra_data: &[u8],
 ) -> Result<CertifyData<'a>, TpmParseError> {
     let mut reader = Reader::new(resp);
     let header = reader.read_response_header(resp.len())?;
@@ -844,8 +848,8 @@ fn parse_certify_response_impl<'a>(
     if attest_info.type_ != TpmSt::TPM_ST_ATTEST_CERTIFY {
         return Err(TpmParseError::WrongType);
     }
-    // Verify the challenge matches to prevent replay attacks
-    if attest_info.extra_data != challenge {
+    // Verify the extra data matches to prevent replay attacks
+    if attest_info.extra_data != expected_extra_data {
         return Err(TpmParseError::ChallengeMismatch);
     }
 
@@ -876,21 +880,23 @@ impl<'a> From<Result<CertifyData<'a>, TpmParseError>> for ffi::CertifyResponse {
 /// This function reads the response buffer from a TPM2_Certify command,
 /// validates the headers, and extracts the attestation statement and signature.
 /// It also verifies that the response is for a certify command, checks the
-/// magic number, and ensures the provided challenge matches the one in the
-/// attestation's extra data to prevent replay attacks.
+/// magic number, and ensures `expected_extra_data` matches the `extra_data`
+/// field in the attestation to prevent replay attacks (TPM2_Certify operates on
+/// `TPM2B_DATA qualifyingData`, which for key attestation protocols is
+/// typically the SHA-256 digest of the challenge).
 ///
 /// # Arguments
 ///
 /// * `resp` - The raw byte response from the TPM2_Certify command.
-/// * `challenge` - The challenge expected in the attestation's `extra_data`
-///   field.
+/// * `expected_extra_data` - The extra data expected in the attestation's
+///   `extra_data` field (e.g., the SHA-256 digest of the challenge).
 ///
 /// # Returns
 ///
 /// A `CertifyResponse` containing the parsing result, any TPM error code,
 /// the serialized `TPMS_ATTEST` statement, and the serialized `TPMT_SIGNATURE`.
-pub fn parse_certify_response(resp: &[u8], challenge: &[u8]) -> ffi::CertifyResponse {
-    parse_certify_response_impl(resp, challenge).into()
+pub fn parse_certify_response(resp: &[u8], expected_extra_data: &[u8]) -> ffi::CertifyResponse {
+    parse_certify_response_impl(resp, expected_extra_data).into()
 }
 
 /// Enum representing the signature data for different algorithms.

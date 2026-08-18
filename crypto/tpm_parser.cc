@@ -141,18 +141,20 @@ SignatureErrorOr<void> VerifyEcdsaSignature(
 
 }  // namespace
 
-std::vector<uint8_t> BuildCertifyCommand(uint32_t object_handle,
-                                         uint32_t sign_handle,
-                                         base::span<const uint8_t> challenge) {
+std::vector<uint8_t> BuildCertifyCommand(
+    uint32_t object_handle,
+    uint32_t sign_handle,
+    base::span<const uint8_t> qualifying_data) {
   return base::ToVector(build_certify_command(
-      object_handle, sign_handle, base::SpanToRustSlice(challenge)));
+      object_handle, sign_handle, base::SpanToRustSlice(qualifying_data)));
 }
 
 TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
     base::span<const uint8_t> response_blob,
-    base::span<const uint8_t> challenge) {
-  RawCertifyResponse raw_response = parse_certify_response(
-      base::SpanToRustSlice(response_blob), base::SpanToRustSlice(challenge));
+    base::span<const uint8_t> expected_extra_data) {
+  RawCertifyResponse raw_response =
+      parse_certify_response(base::SpanToRustSlice(response_blob),
+                             base::SpanToRustSlice(expected_extra_data));
 
   return MapResponseStatus(raw_response.status).transform([&] {
     return CertifyResponse{
