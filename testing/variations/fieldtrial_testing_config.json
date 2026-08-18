@@ -14085,6 +14085,21 @@
             ]
         }
     ],
+    "IOSComposeboxAimRichAPCExtraction": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ComposeboxAimRichAPCExtraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSComposeboxDriveContextMenuOption": [
         {
             "platforms": [
