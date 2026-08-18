@@ -986,7 +986,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeErrorSite{SyncDataType}"
-    enum="SyncDataTypeErrorSite" expires_after="2026-09-27">
+    enum="SyncDataTypeErrorSite" expires_after="2027-09-27">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
