@@ -1046,7 +1046,6 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
        StartQueryFlow_RoutesToContextualTasks) {
-  SignInUser();
   lens::GrantLensOverlayNeededPermissions(profile_.get());
 
   // Arrange: Set up and create the router.
@@ -1103,10 +1102,12 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
                         ui_scale_factor, invocation_time);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
-       StartQueryFlow_RoutesToContextualTasks_OnlyViewport_WhenSignedOut) {
-  SignOutUser();
+TEST_F(
+    LensQueryFlowRouterContextualTaskEnabledTest,
+    StartQueryFlow_RoutesToContextualTasks_OnlyViewport_WhenContextualSearchboxDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      lens::features::kLensOverlayContextualSearchbox);
 
   // Arrange: Set up and create the router.
   EXPECT_CALL(*mock_lens_search_controller_,
@@ -1157,19 +1158,7 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 }
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
-       ShouldPopulateFullPageContext_SignedOut_ReturnsFalse) {
-  SignOutUser();
-  lens::GrantLensOverlayNeededPermissions(profile_.get());
-  TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
-                                 mock_context_controller_.get(),
-                                 profile_.get());
-  EXPECT_FALSE(router.ShouldPopulateFullPageContext());
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
-       ShouldPopulateFullPageContext_SignedIn_PermissionsGranted_ReturnsTrue) {
-  SignInUser();
+       ShouldPopulateFullPageContext_PermissionsGranted_ReturnsTrue) {
   lens::GrantLensOverlayNeededPermissions(profile_.get());
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
                                  mock_context_controller_.get(),
@@ -1179,7 +1168,6 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
        ShouldPopulateFullPageContext_PermissionsNotGranted_ReturnsFalse) {
-  SignInUser();
   profile_->GetPrefs()->SetBoolean(lens::prefs::kLensSharingPageContentEnabled,
                                    false);
   TestLensQueryFlowRouter router(mock_lens_search_controller_.get(),
