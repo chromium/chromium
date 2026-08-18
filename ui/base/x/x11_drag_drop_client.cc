@@ -234,8 +234,12 @@ std::vector<x11::Atom> XDragDropClient::GetOfferedDragOperations() const {
 
 void XDragDropClient::CompleteXdndPosition(x11::Window source_window,
                                            const gfx::Point& screen_point) {
+  base::WeakPtr<XDragDropClient> alive = weak_factory_.GetWeakPtr();
   DragOperation drag_operation =
       PreferredDragOperation(delegate_->UpdateDrag(screen_point));
+  if (!alive) {
+    return;
+  }
 
   // Sends an XdndStatus message back to the source_window. l[2,3]
   // theoretically represent an area in the window where the current action is
@@ -428,7 +432,11 @@ void XDragDropClient::OnXdndStatus(const x11::ClientMessageEvent& event) {
 
 void XDragDropClient::OnXdndLeave(const x11::ClientMessageEvent& event) {
   DVLOG(1) << "OnXdndLeave";
+  base::WeakPtr<XDragDropClient> alive = weak_factory_.GetWeakPtr();
   delegate_->OnBeforeDragLeave();
+  if (!alive) {
+    return;
+  }
   ResetDragContext();
 }
 
@@ -437,7 +445,11 @@ void XDragDropClient::OnXdndDrop(const x11::ClientMessageEvent& event) {
 
   auto source_window = static_cast<x11::Window>(event.data.data32[0]);
 
+  base::WeakPtr<XDragDropClient> alive = weak_factory_.GetWeakPtr();
   DragOperation drag_operation = delegate_->PerformDrop();
+  if (!alive) {
+    return;
+  }
 
   auto xev = PrepareXdndClientMessage(kXdndFinished, source_window);
   xev.data.data32[1] = (drag_operation != DragOperation::kNone) ? 1 : 0;
