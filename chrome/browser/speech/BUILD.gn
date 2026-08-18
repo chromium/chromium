@@ -265,6 +265,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//content/test:test_support",
       "//media",
