@@ -468,12 +468,12 @@
   {
     "name": "android-tips-notifications",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 154
+    "expiry_milestone": 158
   },
   {
     "name": "android-tips-notifications-v2",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 154
+    "expiry_milestone": 158
   },
   {
     "name": "android-use-correct-display-work-area",
@@ -7256,7 +7256,7 @@
   {
     "name": "notification-scheduler",
     "owners": [ "//chrome/browser/notifications/scheduler/OWNERS" ],
-    "expiry_milestone": 154
+    "expiry_milestone": 158
   },
   {
     "name": "notification-scheduler-debug-options",
@@ -9550,7 +9550,7 @@
       "wylieb@google.com",
       "clank-tab-dev@google.com"
     ],
-    "expiry_milestone": 154
+    "expiry_milestone": 158
   },
   {
     "name": "tab-sharing-toolbar-android",
@@ -9687,7 +9687,7 @@
   {
     "name": "tips-self-service",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 154
+    "expiry_milestone": 158
   },
   {
     "name": "tls-trust-anchor-ids",
