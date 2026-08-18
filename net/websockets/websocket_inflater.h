@@ -47,7 +47,9 @@ class NET_EXPORT_PRIVATE WebSocketInflater {
   // staying compressed.
   bool AddBytes(base::span<const uint8_t> data);
 
-  // Flushes the input.
+  // Completes decompression of a message by appending the 4-byte DEFLATE tail
+  // block (0x00 0x00 0xff 0xff) per RFC 7692 Section 7.2.1, flushing remaining
+  // decompressed output from the stream.
   // Returns true if there is no error.
   bool Finish();
 

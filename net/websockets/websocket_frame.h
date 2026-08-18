@@ -126,11 +126,11 @@ struct NET_EXPORT_PRIVATE WebSocketFrame {
   WebSocketFrameHeader header;
 
   // |payload| is always unmasked even if the frame is masked.
-  // The lifetime of |payload| is not defined by WebSocketFrameChunk. It is the
+  // The lifetime of |payload| is not defined by WebSocketFrame. It is the
   // responsibility of the creator to ensure it remains valid for the lifetime
   // of this object. This should be documented in the code that creates this
   // object.
-  // TODO(crbug.com/40646382): Find more better way to clarify the life cycle.
+  // TODO(crbug.com/40646382): Find a better way to clarify the life cycle.
   // TODO(crbug.com/377222393): Remove `DanglingUntriaged`.
   base::raw_span<const uint8_t, DanglingUntriaged> payload;
 };
@@ -167,8 +167,8 @@ struct NET_EXPORT WebSocketFrameChunk {
   // Indicates this part is the last chunk of a frame.
   bool final_chunk = false;
 
-  // |payload| is always unmasked even if the frame is masked. |payload| might
-  // be empty in the first chunk.
+  // |payload| contains raw frame data and is not unmasked by the parser.
+  // |payload| might be empty in the first chunk.
   // The lifetime of |payload| is not defined by WebSocketFrameChunk. It is the
   // responsibility of the creator to ensure it remains valid for the lifetime
   // of this object. This should be documented in the code that creates this

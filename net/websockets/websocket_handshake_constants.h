@@ -5,16 +5,13 @@
 // A set of common constants that are needed for the WebSocket handshake.
 // In general, you should prefer using these constants to literal strings,
 // except in tests.
-//
-// These constants cannot be used in files that are compiled on iOS, because
-// this file is not compiled on iOS.
 
 #ifndef NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_CONSTANTS_H_
 #define NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_CONSTANTS_H_
 
 #include <stddef.h>
 
-// This file plases constants inside the ::net::websockets namespace to avoid
+// This file places constants inside the ::net::websockets namespace to avoid
 // risk of collisions with other symbols in libnet.
 namespace net::websockets {
 
@@ -23,7 +20,7 @@ namespace net::websockets {
 // other than 1.1 should not occur in a WebSocket handshake.
 inline constexpr char kHttpProtocolVersion[] = "HTTP/1.1";
 
-// The Sec-WebSockey-Key challenge is 16 random bytes, base64 encoded.
+// The Sec-WebSocket-Key challenge is 16 random bytes, base64 encoded.
 inline constexpr size_t kRawChallengeLength = 16;
 
 // "Sec-WebSocket-Protocol"

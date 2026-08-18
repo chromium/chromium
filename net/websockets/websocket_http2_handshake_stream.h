@@ -192,8 +192,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // The extension(s) selected by the server.
   std::string extensions_;
 
-  // The extension parameters. The class is defined in the implementation file
-  // to avoid including extension-related header files here.
+  // The extension parameters negotiated during the handshake.
   std::unique_ptr<WebSocketExtensionParams> extension_params_;
 
   // Stores any DNS aliases for the remote endpoint. Includes all known aliases,

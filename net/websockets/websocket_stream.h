@@ -27,7 +27,6 @@ class GURL;
 
 namespace base {
 class OneShotTimer;
-class Time;
 }
 
 namespace url {
@@ -89,10 +88,9 @@ class NET_EXPORT_PRIVATE WebSocketStreamRequestAPI
 // WebSocketStream is a transport-agnostic interface for reading and writing
 // WebSocket frames. This class provides an abstraction for WebSocket streams
 // based on various transport layers, such as normal WebSocket connections
-// (WebSocket protocol upgraded from HTTP handshake), SPDY transports, or
-// WebSocket connections with multiplexing extension. Subtypes of
-// WebSocketStream are responsible for managing the underlying transport
-// appropriately.
+// (WebSocket protocol upgraded from HTTP/1.1 handshake), HTTP/2 streams
+// (RFC 8441), or HTTP/3 streams (RFC 9220). Subtypes of WebSocketStream are
+// responsible for managing the underlying transport appropriately.
 //
 // All functions except Close() can be asynchronous. If an operation cannot
 // be finished synchronously, the function returns ERR_IO_PENDING, and
@@ -157,18 +155,16 @@ class NET_EXPORT_PRIVATE WebSocketStream {
         std::optional<AuthCredentials>* credentials) = 0;
   };
 
-  // Create and connect a WebSocketStream of an appropriate type. The actual
-  // concrete type returned depends on whether multiplexing or SPDY are being
-  // used to communicate with the remote server. If the handshake completed
-  // successfully, then connect_delegate->OnSuccess() is called with a
-  // WebSocketStream instance. If it failed, then connect_delegate->OnFailure()
-  // is called with a WebSocket result code corresponding to the error. Deleting
-  // the returned WebSocketStreamRequest object will cancel the connection, in
-  // which case the |connect_delegate| object that the caller passed will be
-  // deleted without any of its methods being called. Unless cancellation is
-  // required, the caller should keep the WebSocketStreamRequest object alive
-  // until connect_delegate->OnSuccess() or OnFailure() have been called, then
-  // it is safe to delete.
+  // Create and connect a WebSocketStream of an appropriate type. If the
+  // handshake completed successfully, then connect_delegate->OnSuccess() is
+  // called with a WebSocketStream instance. If it failed, then
+  // connect_delegate->OnFailure() is called with a WebSocket result code
+  // corresponding to the error. Deleting the returned WebSocketStreamRequest
+  // object will cancel the connection, in which case the |connect_delegate|
+  // object that the caller passed will be deleted without any of its methods
+  // being called. Unless cancellation is required, the caller should keep the
+  // WebSocketStreamRequest object alive until connect_delegate->OnSuccess() or
+  // OnFailure() have been called, then it is safe to delete.
   static std::unique_ptr<WebSocketStreamRequest> CreateAndConnectStream(
       const GURL& socket_url,
       const std::vector<std::string>& requested_subprotocols,
@@ -298,17 +294,6 @@ class NET_EXPORT_PRIVATE WebSocketStream {
  protected:
   WebSocketStream();
 };
-
-// A helper function used in the implementation of CreateAndConnectStream() and
-// WebSocketBasicHandshakeStream. It creates a WebSocketHandshakeResponseInfo
-// object and dispatches it to the OnFinishOpeningHandshake() method of the
-// supplied |connect_delegate|.
-void WebSocketDispatchOnFinishOpeningHandshake(
-    WebSocketStream::ConnectDelegate* connect_delegate,
-    const GURL& gurl,
-    const scoped_refptr<HttpResponseHeaders>& headers,
-    const IPEndPoint& remote_endpoint,
-    base::Time response_time);
 
 }  // namespace net
 

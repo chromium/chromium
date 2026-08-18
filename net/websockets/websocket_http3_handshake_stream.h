@@ -173,8 +173,8 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
 
   NetLogWithSource net_log_;
 
-  // WebSocketQuicStreamAdapter holding a WeakPtr to `stream_`.
-  // This can be passed on to WebSocketBasicStream when created.
+  // The adapter for the QUIC stream. This can be passed on to
+  // WebSocketBasicStream when created.
   std::unique_ptr<WebSocketQuicStreamAdapter> stream_adapter_;
 
   CompletionOnceCallback callback_;
@@ -185,8 +185,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
   // The extension(s) selected by the server.
   std::string extensions_;
 
-  // The extension parameters. The class is defined in the implementation file
-  // to avoid including extension-related header files here.
+  // The extension parameters negotiated during the handshake.
   std::unique_ptr<WebSocketExtensionParams> extension_params_;
 
   std::set<std::string> dns_aliases_;

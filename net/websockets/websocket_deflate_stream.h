@@ -40,7 +40,7 @@ class NetLogWithSource;
 // a message m1 is read / written before the last frame of a message m2,
 // WebSocketDeflateStream will respect the order.
 //
-// [1]: http://tools.ietf.org/html/draft-ietf-hybi-permessage-compression-12
+// [1]: https://www.rfc-editor.org/rfc/rfc7692
 class NET_EXPORT_PRIVATE WebSocketDeflateStream : public WebSocketStream {
  public:
   static constexpr size_t kChunkSize = 32 * 1024;

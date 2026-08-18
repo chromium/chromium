@@ -282,20 +282,17 @@ WebSocketHttp3HandshakeStream::RenewStreamForAuth() {
   return nullptr;
 }
 
-// TODO(momoka): Implement this.
 const std::set<std::string>& WebSocketHttp3HandshakeStream::GetDnsAliases()
     const {
   return dns_aliases_;
 }
 
-// TODO(momoka): Implement this.
 std::string_view WebSocketHttp3HandshakeStream::GetAcceptChViaAlps() const {
   return {};
 }
 
 // WebSocketHandshakeStreamBase methods.
 
-// TODO(momoka): Implement this.
 std::unique_ptr<WebSocketStream> WebSocketHttp3HandshakeStream::Upgrade() {
   DCHECK(extension_params_.get());
 
@@ -441,7 +438,6 @@ int WebSocketHttp3HandshakeStream::ValidateUpgradeResponse(
   return rv;
 }
 
-// TODO(momoka): Implement this.
 void WebSocketHttp3HandshakeStream::OnFailure(
     const std::string& message,
     int net_error,

@@ -102,17 +102,15 @@ class NET_EXPORT WebSocketChannel {
       WebSocketPriorityHint priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation);
 
-  // Sends a data frame to the remote side. It is the responsibility of the
-  // caller to ensure that they have sufficient send quota to send this data,
-  // otherwise the connection will be closed without sending. |fin| indicates
-  // the last frame in a message, equivalent to "FIN" as specified in section
-  // 5.2 of RFC6455. |buffer->data()| is the "Payload Data". If |op_code| is
-  // kOpCodeText, or it is kOpCodeContinuation and the type the message is
-  // Text, then |buffer->data()| must be a chunk of a valid UTF-8 message,
-  // however there is no requirement for |buffer->data()| to be split on
-  // character boundaries. Calling SendFrame may result in synchronous calls to
-  // |event_interface_| which may result in this object being deleted. In that
-  // case, the return value will be CHANNEL_DELETED.
+  // Sends a data frame to the remote side. |fin| indicates the last frame in a
+  // message, equivalent to "FIN" as specified in section 5.2 of RFC6455.
+  // |buffer->data()| is the "Payload Data". If |op_code| is kOpCodeText, or it
+  // is kOpCodeContinuation and the type the message is Text, then
+  // |buffer->data()| must be a chunk of a valid UTF-8 message, however there is
+  // no requirement for |buffer->data()| to be split on character boundaries.
+  // Calling SendFrame may result in synchronous calls to |event_interface_|
+  // which may result in this object being deleted. In that case, the return
+  // value will be CHANNEL_DELETED.
   [[nodiscard]] ChannelState SendFrame(bool fin,
                                        WebSocketFrameHeader::OpCode op_code,
                                        scoped_refptr<IOBuffer> buffer,
@@ -148,12 +146,12 @@ class NET_EXPORT WebSocketChannel {
       NetworkTrafficAnnotationTag traffic_annotation,
       WebSocketStreamRequestCreationCallback callback);
 
-  // The default timout for the closing handshake is a sensible value (see
+  // The default timeout for the closing handshake is a sensible value (see
   // kClosingHandshakeTimeoutSeconds in websocket_channel.cc). However, we can
   // set it to a very small value for testing purposes.
   void SetClosingHandshakeTimeoutForTesting(base::TimeDelta delay);
 
-  // The default timout for the underlying connection close is a sensible value
+  // The default timeout for the underlying connection close is a sensible value
   // (see kUnderlyingConnectionCloseTimeoutSeconds in websocket_channel.cc).
   // However, we can set it to a very small value for testing purposes.
   void SetUnderlyingConnectionCloseTimeoutForTesting(base::TimeDelta delay);
@@ -192,7 +190,7 @@ class NET_EXPORT WebSocketChannel {
     SEND_CLOSED,  // A Close frame has been sent but not received.
     RECV_CLOSED,  // Used briefly between receiving a Close frame and sending
                   // the response. Once the response is sent, the state changes
-                  // to CLOSED.
+                  // to CLOSE_WAIT.
     CLOSE_WAIT,   // The Closing Handshake has completed, but the remote server
                   // has not yet closed the connection.
     CLOSED,       // The Closing Handshake has completed and the connection
@@ -301,9 +299,10 @@ class NET_EXPORT WebSocketChannel {
       bool final,
       base::span<const char> payload);
 
-  // Forwards a received data frame to the renderer, if connected. If
-  // |expecting_continuation| is not equal to |expecting_to_read_continuation_|,
-  // will fail the channel. Also checks the UTF-8 validity of text frames.
+  // Forwards a received data frame to the event interface, if connected.
+  // Fails the channel if continuation frame state is inconsistent with
+  // |expecting_to_handle_continuation_|. Also checks the UTF-8 validity of
+  // text frames.
   [[nodiscard]] ChannelState HandleDataFrame(
       WebSocketFrameHeader::OpCode opcode,
       bool final,
@@ -328,13 +327,10 @@ class NET_EXPORT WebSocketChannel {
       uint64_t buffer_size);
 
   // Performs the "Fail the WebSocket Connection" operation as defined in
-  // RFC6455. A NotifyFailure message is sent to the renderer with |message|.
-  // The renderer will log the message to the console but not expose it to
-  // Javascript. Javascript will see a Close code of AbnormalClosure (1006) with
-  // an empty reason string. If state_ is CONNECTED then a Close message is sent
-  // to the remote host containing the supplied |code| and |reason|. If the
-  // stream is open, closes it and sets state_ to CLOSED. This function deletes
-  // |this|.
+  // RFC6455. Fails the channel and notifies the event interface with |message|.
+  // If state_ is CONNECTED then a Close frame may be sent to the remote host
+  // containing the supplied |code| and |reason|. If the stream is open, closes
+  // it and sets state_ to CLOSED. This function deletes |this|.
   void FailChannel(const std::string& message,
                    uint16_t code,
                    const std::string& reason);
@@ -347,11 +343,11 @@ class NET_EXPORT WebSocketChannel {
                                        const std::string& reason);
 
   // Parses a Close frame payload. If no status code is supplied, then |code| is
-  // set to 1005 (No status code) with empty |reason|. If the reason text is not
-  // valid UTF-8, then |reason| is set to an empty string. If the payload size
-  // is 1, or the supplied code is not permitted to be sent over the network,
-  // then false is returned and |message| is set to an appropriate console
-  // message.
+  // set to 1005 (kWebSocketErrorNoStatusReceived) with empty |reason|. If the
+  // reason text is not valid UTF-8, or the payload size is 1, or the supplied
+  // code is not permitted to be sent over the network, then false is returned,
+  // |code| is set to kWebSocketErrorProtocolError, and |message| is set to an
+  // appropriate console message.
   bool ParseClose(base::span<const char> payload,
                   uint16_t* code,
                   std::string* reason,

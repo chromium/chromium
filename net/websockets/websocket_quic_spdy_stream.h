@@ -61,9 +61,9 @@ class NET_EXPORT_PRIVATE WebSocketQuicSpdyStream
   void OnCanWriteNewData() override;
 
   // Decouples the delegate from this stream and cancels the underlying QUIC
-  // stream. This allows the delegate to be destroyed independently while
-  // ensuring the stream is properly terminated. The stream is reset with
-  // QUIC_STREAM_CANCELLED to signal intentional closure to the peer.
+  // stream. Must only be called when neither the read nor write side is closed.
+  // The stream is reset with QUIC_STREAM_CANCELLED to signal intentional
+  // closure to the peer.
   void DetachDelegate();
 
  private:

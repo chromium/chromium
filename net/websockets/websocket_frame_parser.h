@@ -60,20 +60,19 @@ class NET_EXPORT WebSocketFrameParser {
 
  private:
   // Tries to decode a frame header from |data|.
-  // If successful, this function updates
-  // |current_frame_header_|, and |masking_key_| (if available) and returns
-  // the number of consumed bytes in |data|.
-  // If there is not enough data in the remaining buffer to parse a frame
-  // header, this function returns 0 without doing anything.
-  // This function may update |websocket_error_| if it observes a corrupt frame.
+  // If successful, this function updates |current_frame_header_| and returns
+  // the number of consumed bytes in |data|. If there is not enough data in the
+  // remaining buffer to parse a frame header, this function returns 0 without
+  // doing anything. This function may update |websocket_error_| if it observes
+  // a corrupt frame.
   size_t DecodeFrameHeader(base::span<const uint8_t> data);
 
   // Decodes frame payload and creates a WebSocketFrameChunk object.
-  // This function updates |frame_offset_| after
-  // parsing. This function returns a frame object even if no payload data is
-  // available at this moment, so the receiver could make use of frame header
-  // information. If the end of frame is reached, this function clears
-  // |current_frame_header_|, |frame_offset_| and |masking_key_|.
+  // This function updates |frame_offset_| after parsing. This function returns
+  // a frame object even if no payload data is available at this moment, so the
+  // receiver could make use of frame header information. If the end of frame is
+  // reached, this function clears |current_frame_header_| and resets
+  // |frame_offset_|.
   std::unique_ptr<WebSocketFrameChunk> DecodeFramePayload(
       bool first_chunk,
       base::span<uint8_t>* data);
@@ -81,8 +80,7 @@ class NET_EXPORT WebSocketFrameParser {
   // Internal buffer to store the data to parse header.
   std::vector<uint8_t> incomplete_header_buffer_;
 
-  // Frame header and masking key of the current frame.
-  // |masking_key_| is filled with zeros if the current frame is not masked.
+  // Frame header of the current frame (includes the masking key if masked).
   std::unique_ptr<WebSocketFrameHeader> current_frame_header_;
 
   // Amount of payload data read so far for the current frame.
