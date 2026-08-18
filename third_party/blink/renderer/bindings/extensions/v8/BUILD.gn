@@ -6,25 +6,6 @@ import("//third_party/blink/renderer/extensions/extensions.gni")
 
 visibility = [ "//third_party/blink/renderer/*" ]
 
-if (use_blink_extensions_chromeos) {
-  import(
-      "//third_party/blink/renderer/bindings/generated_in_extensions_chromeos.gni")
-
-  blink_extensions_chromeos_sources("v8_chromeos") {
-    visibility = []  # Allow re-assignment of list.
-    visibility = [ "//third_party/blink/renderer/extensions/chromeos" ]
-
-    sources = generated_dictionary_sources_in_extensions_chromeos +
-              generated_interface_sources_in_extensions_chromeos
-
-    deps = [
-      "//third_party/blink/renderer/bindings:generate_bindings_all",
-      "//third_party/blink/renderer/platform",
-      "//v8",
-    ]
-  }
-}
-
 if (use_blink_extensions_webview) {
   import(
       "//third_party/blink/renderer/bindings/generated_in_extensions_webview.gni")

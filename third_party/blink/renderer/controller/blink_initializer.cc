@@ -70,10 +70,6 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "v8/include/v8.h"
 
-#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
-#include "third_party/blink/renderer/extensions/chromeos/chromeos_extensions.h"
-#endif
-
 #if defined(USE_BLINK_EXTENSIONS_WEBVIEW)
 #include "third_party/blink/renderer/extensions/webview/webview_extensions.h"
 #endif
@@ -145,9 +141,6 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   // These Initialize() methods for renderer extensions initialize strings which
   // must be done before calling CoreInitializer::Initialize() which is called
   // by GetBlinkInitializer().Initialize() below.
-#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
-  ChromeOSExtensions::Initialize();
-#endif
 #if defined(USE_BLINK_EXTENSIONS_WEBVIEW)
   WebViewExtensions::Initialize();
 #endif
@@ -352,9 +345,6 @@ void BlinkInitializer::InitLocalFrame(LocalFrame& frame) const {
 
 void BlinkInitializer::InitServiceWorkerGlobalScope(
     ServiceWorkerGlobalScope& worker_global_scope) const {
-#if defined(USE_BLINK_EXTENSIONS_CHROMEOS)
-  ChromeOSExtensions::InitServiceWorkerGlobalScope(worker_global_scope);
-#endif
 }
 
 void BlinkInitializer::OnClearWindowObjectInMainWorld(

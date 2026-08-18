@@ -17,8 +17,7 @@ import web_idl
 from idl_parser import idl_parser
 from idl_parser import idl_lexer
 
-_VALID_COMPONENTS = ('core', 'modules', 'extensions_chromeos',
-                     'extensions_webview')
+_VALID_COMPONENTS = ('core', 'modules', 'extensions_webview')
 
 
 def parse_options():

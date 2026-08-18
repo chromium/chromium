@@ -894,10 +894,6 @@
       depends_on: ["BidiCaretAffinity"],
     },
     {
-      name: "BlinkExtensionChromeOS",
-      browser_process_read_write_access: true,
-    },
-    {
       name: "BlinkExtensionWebView",
       public: true,
     },

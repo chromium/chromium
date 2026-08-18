@@ -7,12 +7,9 @@ import("//build/config/python.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
 import("//third_party/blink/renderer/bindings/generated_in_core.gni")
 import(
-    "//third_party/blink/renderer/bindings/generated_in_extensions_chromeos.gni")
-import(
     "//third_party/blink/renderer/bindings/generated_in_extensions_webview.gni")
 import("//third_party/blink/renderer/bindings/generated_in_modules.gni")
 import("//third_party/blink/renderer/bindings/idl_in_core.gni")
-import("//third_party/blink/renderer/bindings/idl_in_extensions_chromeos.gni")
 import("//third_party/blink/renderer/bindings/idl_in_extensions_webview.gni")
 import("//third_party/blink/renderer/bindings/idl_in_modules.gni")
 import("//third_party/blink/renderer/bindings/scripts/web_idl/web_idl.gni")
@@ -75,14 +72,6 @@ collect_idl_files("web_idl_in_core_for_testing") {
   output = "${bindings_gen_dir}/web_idl_in_core_for_testing.pickle"
 }
 
-collect_idl_files("web_idl_in_extensions_chromeos") {
-  component = "extensions_chromeos"
-
-  inputs = static_idl_files_in_extensions_chromeos
-
-  output = "${bindings_gen_dir}/web_idl_in_extensions_chromeos.pickle"
-}
-
 collect_idl_files("web_idl_in_extensions_webview") {
   component = "extensions_webview"
 
@@ -128,10 +117,6 @@ action_with_pydeps("web_idl_database") {
     ":web_idl_in_modules",
     ":web_idl_in_modules_for_testing",
   ]
-  if (use_blink_extensions_chromeos) {
-    input_data_files += get_target_outputs(":web_idl_in_extensions_chromeos")
-    deps += [ ":web_idl_in_extensions_chromeos" ]
-  }
   if (use_blink_extensions_webview) {
     input_data_files += get_target_outputs(":web_idl_in_extensions_webview")
     deps += [ ":web_idl_in_extensions_webview" ]
@@ -181,14 +166,6 @@ template("generate_bindings") {
       "--output_reldir",
       "modules=" + rebase_path("${bindings_gen_dir}/modules/v8/", root_gen_dir),
     ]
-    if (use_blink_extensions_chromeos) {
-      args += [
-        "--output_reldir",
-        "extensions_chromeos=" +
-            rebase_path("${bindings_gen_dir}/extensions_chromeos/v8/",
-                        root_gen_dir),
-      ]
-    }
     if (use_blink_extensions_webview) {
       args += [
         "--output_reldir",
@@ -236,9 +213,6 @@ generate_bindings("generate_bindings_dictionary") {
             generated_dictionary_sources_in_modules +
             generated_dictionary_sources_for_testing_in_core +
             generated_dictionary_sources_for_testing_in_modules
-  if (use_blink_extensions_chromeos) {
-    outputs += generated_dictionary_sources_in_extensions_chromeos
-  }
   if (use_blink_extensions_webview) {
     outputs += generated_dictionary_sources_in_extensions_webview
   }
@@ -250,9 +224,6 @@ generate_bindings("generate_bindings_enumeration") {
             generated_enumeration_sources_in_modules +
             generated_enumeration_sources_for_testing_in_core +
             generated_enumeration_sources_for_testing_in_modules
-  if (use_blink_extensions_chromeos) {
-    outputs += generated_enumeration_sources_in_extensions_chromeos
-  }
   if (use_blink_extensions_webview) {
     outputs += generated_enumeration_sources_in_extensions_webview
   }
@@ -266,9 +237,6 @@ generate_bindings("generate_bindings_interface") {
             generated_interface_sources_for_testing_in_core +
             generated_interface_sources_for_testing_in_modules +
             generated_interface_extra_sources_for_testing_in_modules
-  if (use_blink_extensions_chromeos) {
-    outputs += generated_interface_sources_in_extensions_chromeos
-  }
   if (use_blink_extensions_webview) {
     outputs += generated_interface_sources_in_extensions_webview
   }
@@ -334,11 +302,9 @@ action_with_pydeps("check_generated_file_list") {
              web_idl_database,
              "//third_party/blink/renderer/bindings/union_name_map.conf",
              "//third_party/blink/renderer/bindings/generated_in_core.gni",
-             "//third_party/blink/renderer/bindings/generated_in_extensions_chromeos.gni",
              "//third_party/blink/renderer/bindings/generated_in_extensions_webview.gni",
              "//third_party/blink/renderer/bindings/generated_in_modules.gni",
              "//third_party/blink/renderer/bindings/idl_in_core.gni",
-             "//third_party/blink/renderer/bindings/idl_in_extensions_chromeos.gni",
              "//third_party/blink/renderer/bindings/idl_in_extensions_webview.gni",
              "//third_party/blink/renderer/bindings/idl_in_modules.gni",
            ]
@@ -370,9 +336,6 @@ action_with_pydeps("check_generated_file_list") {
   ]
   file_list += generated_dictionary_sources_in_core +
                generated_dictionary_sources_in_modules
-  if (use_blink_extensions_chromeos) {
-    file_list += generated_dictionary_sources_in_extensions_chromeos
-  }
   if (use_blink_extensions_webview) {
     file_list += generated_dictionary_sources_in_extensions_webview
   }
@@ -382,9 +345,6 @@ action_with_pydeps("check_generated_file_list") {
   ]
   file_list += generated_enumeration_sources_in_core +
                generated_enumeration_sources_in_modules
-  if (use_blink_extensions_chromeos) {
-    file_list += generated_enumeration_sources_in_extensions_chromeos
-  }
   if (use_blink_extensions_webview) {
     file_list += generated_enumeration_sources_in_extensions_webview
   }
@@ -394,9 +354,6 @@ action_with_pydeps("check_generated_file_list") {
   ]
   file_list += generated_interface_sources_in_core +
                generated_interface_sources_in_modules
-  if (use_blink_extensions_chromeos) {
-    file_list += generated_interface_sources_in_extensions_chromeos
-  }
   if (use_blink_extensions_webview) {
     file_list += generated_interface_sources_in_extensions_webview
   }
@@ -472,14 +429,6 @@ action_with_pydeps("check_generated_file_list") {
     "--output_reldir",
     "modules=" + rebase_path("${bindings_gen_dir}/modules/v8/", root_gen_dir),
   ]
-  if (use_blink_extensions_chromeos) {
-    args += [
-      "--output_reldir",
-      "extensions_chromeos=" +
-          rebase_path("${bindings_gen_dir}/extensions_chromeos/v8/",
-                      root_gen_dir),
-    ]
-  }
   if (use_blink_extensions_webview) {
     args += [
       "--output_reldir",

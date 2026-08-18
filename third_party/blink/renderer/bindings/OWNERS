@@ -7,10 +7,8 @@ mlippautz@chromium.org
 yukishiino@chromium.org
 
 per-file generated_in_core.gni=*
-per-file generated_in_extensions_chromeos.gni=*
 per-file generated_in_extensions_webview.gni=*
 per-file generated_in_modules.gni=*
 per-file idl_in_core.gni=*
-per-file idl_in_extensions_chromeos.gni=*
 per-file idl_in_extensions_webview.gni=*
 per-file idl_in_modules.gni=*

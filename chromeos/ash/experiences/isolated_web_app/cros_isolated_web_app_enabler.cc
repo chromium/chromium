@@ -38,7 +38,6 @@ void CrosIsolatedWebAppEnabler::ReadyToCommitNavigation(
 
   blink::RuntimeFeatureStateContext& context =
       navigation_handle->GetMutableRuntimeFeatureStateContext();
-  context.SetBlinkExtensionChromeOSEnabled(true);
   context.SetSetShapeEnabled(true);
 }
 
