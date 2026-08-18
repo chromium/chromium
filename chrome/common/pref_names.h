@@ -1106,15 +1106,6 @@ inline constexpr char kGCMProductCategoryForSubtypes[] =
 // Whether a user is allowed to use Easy Unlock.
 inline constexpr char kEasyUnlockAllowed[] = "easy_unlock.allowed";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Used to indicate whether or not the toolbar redesign bubble has been shown
-// and acknowledged, and the last time the bubble was shown.
-inline constexpr char kToolbarIconSurfacingBubbleAcknowledged[] =
-    "toolbar_icon_surfacing_bubble_acknowledged";
-inline constexpr char kToolbarIconSurfacingBubbleLastShowTime[] =
-    "toolbar_icon_surfacing_bubble_show_time";
-#endif
-
 // Define the IP handling policy override that WebRTC should follow. When not
 // set, it defaults to "default".
 inline constexpr char kWebRTCIPHandlingPolicy[] = "webrtc.ip_handling_policy";
