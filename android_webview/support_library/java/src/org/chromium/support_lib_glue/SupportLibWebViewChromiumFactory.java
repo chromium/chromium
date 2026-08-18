@@ -132,7 +132,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.EXTRA_HEADER_FOR_ORIGINS,
                 Features.BACK_FORWARD_CACHE_SETTINGS,
                 Features.PRECONNECT,
-                Features.HYPERLINK_CONTEXT_MENU_ITEMS + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS,
                 Features.CUSTOM_REQUEST_HEADERS,
                 Features.ASYNC_WEBVIEW_STARTUP_V2,
@@ -175,7 +174,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                     Features.ENQUEUE_PRECONNECT,
                     AwFeatures.WEBVIEW_PROFILE_STORE_NOT_TRIGGER_STARTUP,
                     Features.CROSS_ORIGIN_ISOLATED_ALLOW_LIST,
-                    AwFeatures.WEBVIEW_CROSS_ORIGIN_ALLOWLIST_API);
+                    AwFeatures.WEBVIEW_CROSS_ORIGIN_ALLOWLIST_API,
+                    Features.HYPERLINK_CONTEXT_MENU_ITEMS,
+                    AwFeatures.WEBVIEW_HYPERLINK_CONTEXT_MENU);
 
     // mAwInit.getLazyInitLock() guards access to fields that are lazily initialized.
     // This lock is shared across WebViewChromiumAwInit, WebViewChromiumFactoryProvider,
