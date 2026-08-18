@@ -805,7 +805,6 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
       // has been dispatched in the SVG document).
       svg_image->CheckLoaded();
       svg_image->UpdateUseCountersAfterLoad(GetElement()->GetDocument());
-      svg_image->MaybeRecordSvgImageProcessingTime(GetElement()->GetDocument());
     }
   }
 

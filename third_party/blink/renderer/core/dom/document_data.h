@@ -68,10 +68,6 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   // during preload scanning.
   bool lcpp_encountered_lcp_in_html = false;
 
-  // Measures SVGImage performance per document.
-  int svg_image_processed_count_ = 0;
-  base::TimeDelta accumulated_svg_image_elapsed_time_;
-
   // Start time of XML parser. Used for benchmarking XML parsing performance.
   std::optional<base::TimeTicks> xml_parser_start_time_;
   // Whether the Rust XML parser is used.

@@ -819,15 +819,6 @@ void SVGImage::UpdateUseCountersAfterLoad(const Document& document) const {
   }
 }
 
-void SVGImage::MaybeRecordSvgImageProcessingTime(const Document& document) {
-  if (data_change_count_ > 0) {
-    document.MaybeRecordSvgImageProcessingTime(data_change_count_,
-                                               data_change_elapsed_time_);
-    data_change_count_ = 0;
-    data_change_elapsed_time_ = base::TimeDelta();
-  }
-}
-
 Element* SVGImage::GetResourceElement(
     base::PassKey<ExternalSVGResourceImageContent>,
     const AtomicString& id) const {
@@ -893,7 +884,6 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
     return document_host_ ? kSizeAvailable : kSizeUnavailable;
 
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.SVGImage.DataChanged");
-  base::ElapsedTimer elapsed_timer;
 
   CHECK(!document_host_);
   chrome_client_ = MakeGarbageCollected<SVGImageChromeClient>(this);
@@ -931,9 +921,6 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   intrinsic_size_ = PhysicalSize::FromSizeFFloor(
       gfx::SizeF(root_element->IntrinsicWidth().value_or(0),
                  root_element->IntrinsicHeight().value_or(0)));
-
-  ++data_change_count_;
-  data_change_elapsed_time_ += elapsed_timer.Elapsed();
 
   if (!document_host_->IsLoaded()) {
     return kSizeAvailableAndLoadingAsynchronously;

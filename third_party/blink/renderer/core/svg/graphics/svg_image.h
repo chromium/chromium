@@ -132,8 +132,6 @@ class CORE_EXPORT SVGImage final : public Image {
   // in that document.
   void UpdateUseCountersAfterLoad(const Document&) const;
 
-  void MaybeRecordSvgImageProcessingTime(const Document&);
-
   PaintImage PaintImageForCurrentFrame() override;
 
   void SetPreferredColorScheme(
@@ -284,9 +282,6 @@ class CORE_EXPORT SVGImage final : public Image {
   PhysicalSize intrinsic_size_;
   bool has_pending_timeline_rewind_;
   mutable AnimationState animation_state_ = AnimationState::kUnknown;
-
-  int data_change_count_ = 0;
-  base::TimeDelta data_change_elapsed_time_;
 
   bool did_encounter_xsl_ = false;
 
