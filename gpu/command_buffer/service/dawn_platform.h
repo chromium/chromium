@@ -31,21 +31,7 @@ class GPU_GLES2_EXPORT DawnPlatform : public dawn::platform::Platform {
       bool record_cache_count_uma);
   ~DawnPlatform() override;
 
-  const unsigned char* GetTraceCategoryEnabledFlag(
-      dawn::platform::TraceCategory category) override;
-
   double MonotonicallyIncreasingTime() override;
-
-  uint64_t AddTraceEvent(char phase,
-                         const unsigned char* category_group_enabled,
-                         const char* name,
-                         uint64_t id,
-                         double timestamp,
-                         int num_args,
-                         const char** arg_names,
-                         const unsigned char* arg_types,
-                         const uint64_t* arg_values,
-                         unsigned char flags) override;
 
   void HistogramCustomCounts(const char* name,
                              int sample,

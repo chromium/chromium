@@ -18,7 +18,6 @@
 #include "base/task/post_job.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -242,38 +241,8 @@ DawnPlatform::DawnPlatform(
 
 DawnPlatform::~DawnPlatform() = default;
 
-const unsigned char* DawnPlatform::GetTraceCategoryEnabledFlag(
-    dawn::platform::TraceCategory category) {
-  // For now, all Dawn trace categories are put under "gpu.dawn"
-  return TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-      TRACE_DISABLED_BY_DEFAULT("gpu.dawn"));
-}
-
 double DawnPlatform::MonotonicallyIncreasingTime() {
   return (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
-}
-
-uint64_t DawnPlatform::AddTraceEvent(
-    char phase,
-    const unsigned char* category_group_enabled,
-    const char* name,
-    uint64_t id,
-    double timestamp,
-    int num_args,
-    const char** arg_names,
-    const unsigned char* arg_types,
-    const uint64_t* arg_values,
-    unsigned char flags) {
-  base::TimeTicks timestamp_tt = base::TimeTicks() + base::Seconds(timestamp);
-
-  base::trace_event::TraceArguments args(
-      num_args, arg_names, arg_types,
-      reinterpret_cast<const unsigned long long*>(arg_values));
-
-      TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(
-          phase, category_group_enabled, name, id,
-          base::PlatformThread::CurrentId(), timestamp_tt, &args, flags);
-      return 0;
 }
 
 void DawnPlatform::HistogramCacheCountHelper(std::string_view name,

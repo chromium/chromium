@@ -30,7 +30,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
@@ -351,19 +350,6 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
 
   return features;
 }
-
-class Platform : public webgpu::DawnPlatform {
- public:
-  using webgpu::DawnPlatform::DawnPlatform;
-
-  ~Platform() override = default;
-
-  const unsigned char* GetTraceCategoryEnabledFlag(
-      dawn::platform::TraceCategory category) override {
-    return TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-        TRACE_DISABLED_BY_DEFAULT("gpu.graphite.dawn"));
-  }
-};
 
 #if BUILDFLAG(IS_WIN)
 bool GetANGLED3D11DeviceLUID(LUID* luid) {
@@ -731,7 +717,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
   scoped_refptr<GpuPersistentCache> persistent_cache_;
   raw_ptr<dawn::platform::CachingInterface> caching_interface_ = nullptr;
 
-  Platform platform_;
+  webgpu::DawnPlatform platform_;
   std::unique_ptr<webgpu::DawnInstance> instance_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;
