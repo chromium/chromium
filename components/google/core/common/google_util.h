@@ -46,6 +46,7 @@ enum class GoogleSearchMode {
 };
 
 extern const char kGoogleHomepageURL[];
+extern const char kGoogleSearchPrewarmPath[];
 
 // True iff |str| contains a "q=" or "as_q=" query parameter with a non-empty
 // value. |str| should be a query or a hash fragment, without the ? or # (as
@@ -127,6 +128,9 @@ bool IsGoogleHomePageUrl(const GURL& url);
 
 // True if |url| represents a valid Google search URL.
 bool IsGoogleSearchUrl(const GURL& url);
+
+// True if |url| represents a valid Google Search prewarm URL.
+bool IsGoogleSearchPrewarmUrl(const GURL& url);
 
 // True if |url| is a valid youtube.<TLD> URL.  If |port_permission| is
 // DISALLOW_NON_STANDARD_PORTS, this also requires |url| to use the standard

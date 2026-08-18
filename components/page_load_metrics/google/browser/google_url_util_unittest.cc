@@ -274,4 +274,28 @@ TEST_F(PageLoadMetricsUtilTest, IsGoogleSearchRedirectorUrl) {
   }
 }
 
+TEST_F(PageLoadMetricsUtilTest, IsGoogleSearchPrewarmUrl) {
+  struct {
+    bool expected_result;
+    const char* url;
+  } test_cases[] = {
+      {true, "https://www.google.com/search/warmup.html"},
+      {true, "https://www.google.com/search/warmup.html?q=test"},
+      {true, "https://www.google.co.uk/search/warmup.html"},
+      {true, "https://www.google.co.jp/search/warmup.html?param=value"},
+      {false, "https://www.google.com/prewarm.html"},
+      {false, "https://www.google.com/"},
+      {false, "https://www.google.com/search"},
+      {false, "https://www.google.com/search?q=test"},
+      {false, "https://example.com/search/warmup.html"},
+      {true, "https://google.com/search/warmup.html"},
+      {false, "https://other.google.com/search/warmup.html"},
+  };
+  for (const auto& test : test_cases) {
+    EXPECT_EQ(test.expected_result,
+              page_load_metrics::IsGoogleSearchPrewarmUrl(GURL(test.url)))
+        << "for URL: " << test.url;
+  }
+}
+
 }  // namespace page_load_metrics

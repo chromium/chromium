@@ -563,3 +563,27 @@ TEST(GoogleUtilTest, GoogleSearchMode) {
                 GURL("https://www.google.com/search?q=foo&tbm=lcl&tbm=nws")),
             google_util::GoogleSearchMode::kUnknown);
 }
+
+TEST(GoogleUtilTest, IsGoogleSearchPrewarmUrl) {
+  EXPECT_TRUE(google_util::IsGoogleSearchPrewarmUrl(
+      GURL("https://www.google.com/search/warmup.html")));
+  EXPECT_TRUE(google_util::IsGoogleSearchPrewarmUrl(
+      GURL("https://google.com/search/warmup.html")));
+  EXPECT_TRUE(google_util::IsGoogleSearchPrewarmUrl(
+      GURL("https://www.google.co.uk/search/warmup.html")));
+  EXPECT_TRUE(google_util::IsGoogleSearchPrewarmUrl(
+      GURL("https://www.google.co.jp/search/warmup.html")));
+  EXPECT_TRUE(google_util::IsGoogleSearchPrewarmUrl(
+      GURL("http://www.google.com/search/warmup.html")));
+
+  EXPECT_FALSE(google_util::IsGoogleSearchPrewarmUrl(
+      GURL("https://www.google.com/search")));
+  EXPECT_FALSE(google_util::IsGoogleSearchPrewarmUrl(
+      GURL("https://www.google.com/search?q=test")));
+  EXPECT_FALSE(
+      google_util::IsGoogleSearchPrewarmUrl(GURL("https://www.google.com/")));
+  EXPECT_FALSE(google_util::IsGoogleSearchPrewarmUrl(
+      GURL("https://www.example.com/search/warmup.html")));
+  EXPECT_FALSE(google_util::IsGoogleSearchPrewarmUrl(
+      GURL("https://subdomain.google.com/search/warmup.html")));
+}

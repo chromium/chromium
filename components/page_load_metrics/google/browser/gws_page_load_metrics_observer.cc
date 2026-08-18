@@ -247,7 +247,7 @@ const char kHistogramGWSWarmUpType[] = HISTOGRAM_PREFIX "WarmUpType";
 const char kHistogramPrerenderSuffix[] = ".Prerender";
 const char kHistogramNonPrerenderSuffix[] = ".NonPrerender";
 
-const char kHistogramGWSHttpStatusCode[] = HISTOGRAM_PREFIX "HttpStatusCode";
+const char kHistogramGWSHttpStatusCode2[] = HISTOGRAM_PREFIX "HttpStatusCode2";
 
 const char kHistogramGWSHttpStatusCodePrewarm[] = ".Prewarm";
 const char kHistogramGWSHttpStatusCodeNonPrewarm[] = ".NonPrewarm";
@@ -422,12 +422,12 @@ void RecordHttpStatusCode(int http_status_code,
     return;
   }
   base::UmaHistogramSparse(
-      base::StrCat({internal::kHistogramGWSHttpStatusCode, suffix}),
+      base::StrCat({internal::kHistogramGWSHttpStatusCode2, suffix}),
       http_status_code);
 
   if (is_incognito) {
     base::UmaHistogramBoolean(
-        base::StrCat({internal::kHistogramGWSHttpStatusCode, suffix,
+        base::StrCat({internal::kHistogramGWSHttpStatusCode2, suffix,
                       internal::kHistogramIncognitoSuffix}),
         http_status_code);
   }

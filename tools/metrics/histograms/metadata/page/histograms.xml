@@ -2121,7 +2121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.HttpStatusCode{NavigationType}{IncognitoSuffix}"
+    name="PageLoad.Clients.GoogleSearch.HttpStatusCode2{NavigationType}{IncognitoSuffix}"
     enum="HttpResponseCode" expires_after="2027-01-03">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>

@@ -151,6 +151,7 @@ BASE_FEATURE(kIsViewerGoogleSearchUrl, base::FEATURE_ENABLED_BY_DEFAULT);
 // Global functions -----------------------------------------------------------
 
 const char kGoogleHomepageURL[] = "https://www.google.com/";
+const char kGoogleSearchPrewarmPath[] = "/search/warmup.html";
 
 bool HasGoogleSearchQueryParam(std::string_view str) {
   url::Component query(0, static_cast<int>(str.length())), key, value;
@@ -287,6 +288,17 @@ bool IsGoogleSearchUrl(const GURL& url) {
   // the path type.
   return HasGoogleSearchQueryParam(url.ref()) ||
          (!is_home_page_base && HasGoogleSearchQueryParam(url.query()));
+}
+
+bool IsGoogleSearchPrewarmUrl(const GURL& url) {
+  if (!IsGoogleDomainUrl(url, DISALLOW_SUBDOMAIN,
+                         DISALLOW_NON_STANDARD_PORTS) &&
+      !IsGoogleSearchSubdomainUrl(url)) {
+    return false;
+  }
+
+  return base::EndsWith(url.path(), kGoogleSearchPrewarmPath,
+                        base::CompareCase::INSENSITIVE_ASCII);
 }
 
 bool IsYoutubeDomainUrl(const GURL& url,

@@ -12,7 +12,7 @@
 
 namespace page_load_metrics {
 
-// TODO(375343470): Merge following Google specific URL checks to
+// TODO(crbug.com/375343470): Merge following Google specific URL checks to
 // //components/google/core/common/google_util.h.
 
 // If the given hostname is a google hostname, returns the portion of the
@@ -89,7 +89,15 @@ bool IsGoogleSearchHomepageUrl(const GURL& url);
 // Whether the given url is a Google Search redirector URL.
 bool IsGoogleSearchRedirectorUrl(const GURL& url);
 
+// TODO(crbug.com/375343470): This is a temporary forwarding function that
+// delegates to google_util::IsGoogleSearchPrewarmUrl. Callers should eventually
+// be migrated to call google_util directly.
+//
 // Whether the given url is a Google Search prewarm URL.
+// Examples:
+//   https://www.google.com/search/warmup.html -> true
+//   https://www.google.co.uk/search/warmup.html -> true
+//   https://www.google.com/ -> false
 bool IsGoogleSearchPrewarmUrl(const GURL& url);
 
 }  // namespace page_load_metrics

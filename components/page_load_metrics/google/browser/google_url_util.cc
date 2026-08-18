@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/strings/string_util.h"
+#include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
@@ -128,13 +129,11 @@ bool IsGoogleSearchRedirectorUrl(const GURL& url) {
   return url.path() == "/searchurl/r.html" && url.has_ref();
 }
 
+// TODO(crbug.com/375343470): This is a trampoline to
+// google_util::IsGoogleSearchPrewarmUrl. Remove this once callers are migrated
+// to use google_util directly.
 bool IsGoogleSearchPrewarmUrl(const GURL& url) {
-  if (!IsGoogleSearchHostname(url)) {
-    return false;
-  }
-
-  return base::EndsWith(url.path(), "/prewarm.html",
-                        base::CompareCase::INSENSITIVE_ASCII);
+  return google_util::IsGoogleSearchPrewarmUrl(url);
 }
 
 }  // namespace page_load_metrics
