@@ -25,10 +25,10 @@ namespace device_signals {
 namespace {
 
 // Max plist file size.
-constexpr base::ByteSize kMaxFileSize = base::MiBU(500);
+constexpr base::ByteSize kMaxFileSize = base::MiB(500);
 
 // Max size of the setting element.
-constexpr base::ByteSize kMaxStringSize = base::KiBU(1);
+constexpr base::ByteSize kMaxStringSize = base::KiB(1);
 
 // Parses the `data_obj` for the item at the given key `path`. Returns the
 // object in the event of a successful parse, and nil otherwise.
