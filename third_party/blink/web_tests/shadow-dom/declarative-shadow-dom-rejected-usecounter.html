@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<body>
+<script>
+const kDeclarativeShadowDomRejectedByNormalParser = 5988; // From web_feature.mojom
+const kDeclarativeShadowDomRejectedByFragmentParser = 5989; // From web_feature.mojom
+
+promise_test(async () => {
+    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByNormalParser);
+    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByFragmentParser);
+
+    // Test XHR parsing (which does not parse DSD by default)
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', 'data:text/html,<template shadowrootmode="open"></template>');
+    xhr.responseType = 'document';
+
+    await new Promise((resolve) => {
+        xhr.onload = resolve;
+        xhr.send();
+    });
+
+    assert_true(internals.isUseCounted(xhr.response, kDeclarativeShadowDomRejectedByNormalParser) ||
+                internals.isUseCounted(document, kDeclarativeShadowDomRejectedByNormalParser),
+                'NormalParser use counter should trigger for XHR document parsing DSD');
+
+    assert_false(internals.isUseCounted(xhr.response, kDeclarativeShadowDomRejectedByFragmentParser), 'FragmentParser use counter should NOT trigger');
+    assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByFragmentParser), 'FragmentParser use counter should NOT trigger');
+}, 'XHR parsing of DSD should be use counted as rejected by NormalParser');
+
+test(() => {
+    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByNormalParser);
+    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByFragmentParser);
+
+    const doc = document.implementation.createHTMLDocument();
+    doc.write('<template shadowrootmode="open"></template>');
+
+    assert_true(internals.isUseCounted(doc, kDeclarativeShadowDomRejectedByNormalParser) ||
+                internals.isUseCounted(document, kDeclarativeShadowDomRejectedByNormalParser),
+                'NormalParser use counter should trigger for document.write on detached document');
+
+    assert_false(internals.isUseCounted(doc, kDeclarativeShadowDomRejectedByFragmentParser), 'FragmentParser use counter should NOT trigger');
+    assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByFragmentParser), 'FragmentParser use counter should NOT trigger');
+}, 'document.write parsing of DSD should be use counted as rejected by NormalParser');
+
+test(() => {
+    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByNormalParser);
+    internals.clearUseCounter(document, kDeclarativeShadowDomRejectedByFragmentParser);
+
+    const div = document.createElement('div');
+    div.innerHTML = '<template shadowrootmode="open"></template>';
+
+    assert_true(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByFragmentParser),
+                 'FragmentParser use counter should trigger for innerHTML');
+
+    assert_false(internals.isUseCounted(document, kDeclarativeShadowDomRejectedByNormalParser),
+                 'NormalParser use counter should NOT trigger for innerHTML');
+}, 'innerHTML parsing of DSD should be use counted as rejected by FragmentParser');
+</script>

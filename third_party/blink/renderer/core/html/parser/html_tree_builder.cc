@@ -1215,14 +1215,21 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
 
 namespace {
 String DeclarativeShadowRootModeFromToken(AtomicHTMLToken* token,
-                                          const Document& document,
-                                          bool include_shadow_roots) {
+                                          Document& document,
+                                          bool include_shadow_roots,
+                                          bool is_fragment_context) {
   Attribute* mode_attribute =
       token->GetAttributeItem(html_names::kShadowrootmodeAttr);
   if (!mode_attribute) {
     return String();
   }
   if (!include_shadow_roots) {
+    UseCounter::Count(
+        document,
+        is_fragment_context
+            ? WebFeature::kDeclarativeShadowDomRejectedByFragmentParser
+            : WebFeature::kDeclarativeShadowDomRejectedByNormalParser);
+
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
@@ -1238,9 +1245,9 @@ String DeclarativeShadowRootModeFromToken(AtomicHTMLToken* token,
 void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
   tree_.ActiveFormattingElements()->AppendMarker();
   tree_.InsertHTMLTemplateElement(
-      token,
-      DeclarativeShadowRootModeFromToken(
-          token, tree_.OwnerDocumentForCurrentNode(), include_shadow_roots_));
+      token, DeclarativeShadowRootModeFromToken(
+                 token, tree_.OwnerDocumentForCurrentNode(),
+                 include_shadow_roots_, !!fragment_context_.FragmentTarget()));
   frameset_ok_ = false;
   template_insertion_modes_.push_back(kTemplateContentsMode);
   SetInsertionMode(kTemplateContentsMode);

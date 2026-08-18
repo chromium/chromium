@@ -5302,6 +5302,8 @@ enum WebFeature {
   kV8ModuleNamespaceMissingDefaultWithStarExport = 5985,
   kV8WasmGCAllocation = 5986,
   kOffscreenCanvasTransferToWorker = 5987,
+  kDeclarativeShadowDomRejectedByNormalParser = 5988,
+  kDeclarativeShadowDomRejectedByFragmentParser = 5989,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
