@@ -101,6 +101,7 @@ if (!is_android) {
       "//chrome/browser/net:storage_test_utils",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/webid",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

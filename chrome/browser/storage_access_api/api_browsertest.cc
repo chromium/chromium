@@ -30,7 +30,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/storage_access_api/storage_access_grant_permission_context.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -362,11 +362,11 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   }
 
   std::unique_ptr<permissions::MockPermissionPromptFactory> MakePromptFactory(
-      Browser* browser_ptr) {
+      BrowserWindowInterface* browser_ptr) {
     CHECK(browser_ptr);
     return std::make_unique<permissions::MockPermissionPromptFactory>(
         permissions::PermissionRequestManager::FromWebContents(
-            browser_ptr->tab_strip_model()->GetActiveWebContents()));
+            browser_ptr->GetTabStripModel()->GetActiveWebContents()));
   }
 
   void TearDownOnMainThread() override { prompt_factory_.reset(); }
@@ -426,7 +426,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   }
 
   void NavigateToPageWithFrame(std::string_view host,
-                               Browser* browser_ptr = nullptr,
+                               BrowserWindowInterface* browser_ptr = nullptr,
                                bool credentialless = false) {
     GURL main_url(https_server_.GetURL(
         host, credentialless ? "/iframe_credentialless.html" : "/iframe.html"));
@@ -459,10 +459,10 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   }
 
   void NavigateFrameTo(const GURL& url,
-                       Browser* browser_ptr = nullptr,
+                       BrowserWindowInterface* browser_ptr = nullptr,
                        std::string_view iframe_id = "test") {
     content::WebContents* web_contents = (browser_ptr ? browser_ptr : browser())
-                                             ->tab_strip_model()
+                                             ->GetTabStripModel()
                                              ->GetActiveWebContents();
     EXPECT_TRUE(NavigateIframeToURL(web_contents, iframe_id, url));
   }
@@ -570,18 +570,20 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   }
 
   content::RenderFrameHost* GetPrimaryMainFrame(
-      Browser* browser_ptr = nullptr) {
+      BrowserWindowInterface* browser_ptr = nullptr) {
     content::WebContents* web_contents = (browser_ptr ? browser_ptr : browser())
-                                             ->tab_strip_model()
+                                             ->GetTabStripModel()
                                              ->GetActiveWebContents();
     return web_contents->GetPrimaryMainFrame();
   }
 
-  content::RenderFrameHost* GetFrame(Browser* browser_ptr = nullptr) {
+  content::RenderFrameHost* GetFrame(
+      BrowserWindowInterface* browser_ptr = nullptr) {
     return ChildFrameAt(GetPrimaryMainFrame(browser_ptr), 0);
   }
 
-  content::RenderFrameHost* GetNestedFrame(Browser* browser_ptr = nullptr) {
+  content::RenderFrameHost* GetNestedFrame(
+      BrowserWindowInterface* browser_ptr = nullptr) {
     return ChildFrameAt(GetFrame(browser_ptr), 0);
   }
 
@@ -592,7 +594,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   }
 
   void EnsureUserInteractionOn(std::string_view host,
-                               Browser* browser_ptr = nullptr) {
+                               BrowserWindowInterface* browser_ptr = nullptr) {
     if (browser_ptr == nullptr) {
       browser_ptr = browser();
     }
@@ -601,7 +603,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     // ExecJs runs with a synthetic user interaction (by default), which is all
     // we need, so our script is a no-op.
     ASSERT_TRUE(content::ExecJs(
-        browser_ptr->tab_strip_model()->GetActiveWebContents(), ""));
+        browser_ptr->GetTabStripModel()->GetActiveWebContents(), ""));
   }
 
   void OpenConnectToPage(content::RenderFrameHost* frame) {
@@ -2998,12 +3000,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
   // Even though there was previous interaction in the regular profile, requests
   // made by incognito profiles should be denied, due to the top-level user
   // interaction requirement.
-  Browser* incognito_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-                              browser()->GetProfile()->GetPrimaryOTRProfile(
-                                  /*create_if_needed=*/true),
-                              /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                    /*create_if_needed=*/true),
+                                /*from_user_gesture=*/true));
 
   NavigateToURLWithDisposition(incognito_browser,
                                https_server().GetURL(kHostA, "/iframe.html"),
@@ -3016,12 +3016,10 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIBrowserTest, IncognitoCanUseAPI) {
-  Browser* incognito_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-                              browser()->GetProfile()->GetPrimaryOTRProfile(
-                                  /*create_if_needed=*/true),
-                              /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                    /*create_if_needed=*/true),
+                                /*from_user_gesture=*/true));
 
   NavigateToURLWithDisposition(incognito_browser,
                                https_server().GetURL(kHostA, "/empty.html"),

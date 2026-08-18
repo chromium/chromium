@@ -23,7 +23,7 @@
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -209,7 +209,7 @@ class SupervisedUserNavigationThrottleTestBase
                                                       host, /*allowlist=*/true);
   }
 
-  bool IsInterstitialBeingShownInMainFrame(Browser* browser);
+  bool IsInterstitialBeingShownInMainFrame(BrowserWindowInterface* browser);
 
   content::test::PrerenderTestHelper& prerender_helper() {
     return prerender_helper_;
@@ -233,8 +233,8 @@ class SupervisedUserNavigationThrottleTestBase
 };
 
 bool SupervisedUserNavigationThrottleTestBase::
-    IsInterstitialBeingShownInMainFrame(Browser* browser) {
-  WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
+    IsInterstitialBeingShownInMainFrame(BrowserWindowInterface* browser) {
+  WebContents* tab = browser->GetTabStripModel()->GetActiveWebContents();
   std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser, &title);
   return tab->GetController().GetLastCommittedEntry()->GetPageType() ==

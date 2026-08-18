@@ -8,7 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/browser_user.h"
@@ -41,11 +41,11 @@ constexpr std::string_view kInterstitialBodyClass =
 // interstitial. Note that the interstitial's presence is validated by looking
 // for a specific class in the inner HTML of the iframe rather than parsing the
 // DOM structure.
-bool IsYouTubeInterstitialDisplayedInIframe(Browser& browser,
+bool IsYouTubeInterstitialDisplayedInIframe(BrowserWindowInterface& browser,
                                             std::u16string_view tab_title,
                                             std::string_view iframe_name) {
   content::WebContents* web_contents = nullptr;
-  TabStripModel* const tab_strip_model = browser.tab_strip_model();
+  TabStripModel* const tab_strip_model = browser.GetTabStripModel();
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
     const std::u16string wc_title = TabUIHelper::From(tab)->GetTitle();
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_P(KidsProfileUiTest, DisplayInterstitialInPendingState) {
   GURL url_with_youtube_iframes =
       TestServer().GetURL("/supervised_user/with_embedded_youtube_videos.html");
 
-  Browser& child_browser = child().browser();
+  BrowserWindowInterface& child_browser = child().browser();
 
   RunTestSequence(
       AddInstrumentedTab(kYouTubeTab, url_with_youtube_iframes, std::nullopt,

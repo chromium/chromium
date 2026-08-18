@@ -23,7 +23,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -90,8 +90,8 @@ class FamilyLinkUrlFilterTestBase : public MixinBasedInProcessBrowserTest {
   }
   ~FamilyLinkUrlFilterTestBase() override { feature_list_.Reset(); }
 
-  bool ShownPageIsInterstitial(Browser* browser) {
-    WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
+  bool ShownPageIsInterstitial(BrowserWindowInterface* browser) {
+    WebContents* tab = browser->GetTabStripModel()->GetActiveWebContents();
     EXPECT_FALSE(tab->IsCrashed());
     std::u16string title;
     ui_test_utils::GetCurrentTabTitle(browser, &title);
