@@ -79,10 +79,10 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuViewsBrowserTest,
   menu.Init();
 
   EXPECT_TRUE(menu.menu_model()
-                  .GetIndexOfCommandId(kWritingDirectionMenuId)
+                  .GetIndexOfCommandId(IDC_WRITING_DIRECTION_MENU)
                   .has_value());
-  EXPECT_TRUE(menu.IsCommandIdEnabled(kWritingDirectionDefaultId));
-  EXPECT_TRUE(menu.IsCommandIdChecked(kWritingDirectionDefaultId));
+  EXPECT_TRUE(menu.IsCommandIdEnabled(IDC_WRITING_DIRECTION_DEFAULT));
+  EXPECT_TRUE(menu.IsCommandIdChecked(IDC_WRITING_DIRECTION_DEFAULT));
   EXPECT_TRUE(menu.IsCommandIdEnabled(IDC_WRITING_DIRECTION_LTR));
   EXPECT_FALSE(menu.IsCommandIdChecked(IDC_WRITING_DIRECTION_LTR));
   EXPECT_TRUE(menu.IsCommandIdEnabled(IDC_WRITING_DIRECTION_RTL));
@@ -106,9 +106,9 @@ IN_PROC_BROWSER_TEST_F(RenderViewContextMenuViewsBrowserTest,
   menu.Init();
 
   EXPECT_FALSE(menu.menu_model()
-                   .GetIndexOfCommandId(kWritingDirectionMenuId)
+                   .GetIndexOfCommandId(IDC_WRITING_DIRECTION_MENU)
                    .has_value());
-  EXPECT_FALSE(menu.IsCommandIdEnabled(kWritingDirectionDefaultId));
+  EXPECT_FALSE(menu.IsCommandIdEnabled(IDC_WRITING_DIRECTION_DEFAULT));
   EXPECT_FALSE(menu.IsCommandIdEnabled(IDC_WRITING_DIRECTION_LTR));
   EXPECT_FALSE(menu.IsCommandIdEnabled(IDC_WRITING_DIRECTION_RTL));
 }

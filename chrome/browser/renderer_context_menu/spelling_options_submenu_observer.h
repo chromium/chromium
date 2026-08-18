@@ -21,7 +21,7 @@ class RenderViewContextMenuProxy;
 // creates the submenu, adds it to the parent menu, and handles events.
 class SpellingOptionsSubMenuObserver : public RenderViewContextMenuObserver {
  public:
-  static constexpr int kSubMenuPlaceholder = kSpellcheckMenuId;
+  static constexpr int kSubMenuPlaceholder = IDC_SPELLCHECK_MENU;
 
   SpellingOptionsSubMenuObserver(RenderViewContextMenuProxy* proxy,
                                  ui::SimpleMenuModel::Delegate* delegate,

@@ -28,8 +28,9 @@
 // (Pure ActionItems added without legacy IDC_* commands are allowed).
 //
 // NOTE: For non-actionable structural menu containers or submenus that do not
-// trigger actions, do not add an IDC_* command or ActionItem. Instead, add a
-// positive constexpr int mapping at the bottom of this file growing downwards.
+// trigger actions, do not add an ActionItem. Instead, add a positive
+// placeholder IDC_* command mapping at the bottom of this file growing
+// downwards.
 //
 // Quick Guide:
 // 1. Map ID in //chrome/browser/ui/actions/chrome_action_id.h: E(kActionFoo, IDC_FOO)
@@ -567,59 +568,57 @@
 #define IDC_FIRST_UNBOUNDED_MENU COMMAND_ID_FIRST_UNBOUNDED
 // LINT.ThenChange(//chrome/browser/ui/actions/chrome_action_id.h)
 
-// // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // Centralized Placeholder Command IDs for Non-Actionable Menu Containers
 // -----------------------------------------------------------------------------
-// These positive integer constants replace legacy positive IDC_* command IDs
-// for structural menu containers, submenus, and wrapper menus.
+// These command IDs provide centralized placeholder values for structural menu
+// containers, submenus, and wrapper menus.
 // We grow downwards starting from the max possible IDC command (57343).
 
-#ifndef RC_INVOKED
 // App Menu submenus and containers
-constexpr int kEditMenuId = 57343;
-constexpr int kZoomMenuId = 57342;
-constexpr int kPasswordsAndAutofillMenuId = 57341;
-constexpr int kFindAndEditMenuId = 57340;
-constexpr int kSaveAndShareMenuId = 57339;
-constexpr int kRecentTabsMenuId = 57338;
-constexpr int kSharingHubMenuId = 57337;
-constexpr int kProfileMenuId = 57336;
-constexpr int kReadingListMenuId = 57335;
-constexpr int kExtensionsSubMenuId = 57334;
-constexpr int kBookmarksMenuId = 57333;
-constexpr int kSavedTabGroupsMenuId = 57332;
-constexpr int kMoreToolsMenuId = 57331;
-constexpr int kHelpMenuId = 57330;
+#define IDC_EDIT_MENU 57343
+#define IDC_ZOOM_MENU 57342
+#define IDC_PASSWORDS_AND_AUTOFILL_MENU 57341
+#define IDC_FIND_AND_EDIT_MENU 57340
+#define IDC_SAVE_AND_SHARE_MENU 57339
+#define IDC_RECENT_TABS_MENU 57338
+#define IDC_SHARING_HUB_MENU 57337
+#define IDC_PROFILE_MENU_IN_APP_MENU 57336
+#define IDC_READING_LIST_MENU 57335
+#define IDC_EXTENSIONS_SUBMENU 57334
+#define IDC_BOOKMARKS_MENU 57333
+#define IDC_SAVED_TAB_GROUPS_MENU 57332
+#define IDC_MORE_TOOLS_MENU 57331
+#define IDC_HELP_MENU 57330
 
 // Context Menu submenus
-constexpr int kSpellcheckMenuId = 57329;
-constexpr int kWritingDirectionMenuId = 57328;
+#define IDC_SPELLCHECK_MENU 57329
+#define IDC_WRITING_DIRECTION_MENU 57328
 
 // macOS Top-Level Menu Bar containers
-constexpr int kMacViewMenuId = 57327;
-constexpr int kMacFileMenuId = 57326;
-constexpr int kMacChromeMenuId = 57325;
-constexpr int kMacHistoryMenuId = 57324;
-constexpr int kMacTabMenuId = 57323;
-constexpr int kMacProfileMainMenuId = 57322;
-constexpr int kMacWindowMenuId = 57321;
-constexpr int kMacAllWindowsMenuId = 57320;
+#define IDC_VIEW_MENU 57327
+#define IDC_FILE_MENU 57326
+#define IDC_CHROME_MENU 57325
+#define IDC_HISTORY_MENU 57324
+#define IDC_TAB_MENU 57323
+#define IDC_PROFILE_MAIN_MENU 57322
+#define IDC_WINDOW_MENU 57321
+#define IDC_ALL_WINDOWS_FRONT 57320
 
 // Linux System menu containers
-constexpr int kLinuxInputMethodsMenuId = 57319;
+#define IDC_INPUT_METHODS_MENU 57319
 
 // Developer / Tools submenus
-constexpr int kDeveloperMenuId = 57318;
-constexpr int kFindMenuId = 57317;
+#define IDC_DEVELOPER_MENU 57318
+#define IDC_FIND_MENU 57317
 
 // Context Menu submenus
-constexpr int kOpenLinkWithMenuId = 57316;
-constexpr int kClickToCallMultipleDevicesMenuId = 57315;
-constexpr int kAccessibilityLabelsMenuId = 57314;
-constexpr int kNoSpellingSuggestionsId = 57313;
-constexpr int kRecentTabsNoDeviceTabsId = 57312;
-constexpr int kWritingDirectionDefaultId = 57311;
-#endif  // RC_INVOKED
+#define IDC_CONTENT_CONTEXT_OPENLINKWITH 57316
+#define IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES 57315
+#define IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS 57314
+#define IDC_CONTENT_CONTEXT_NO_SPELLING_SUGGESTIONS 57313
+#define IDC_RECENT_TABS_NO_DEVICE_TABS 57312
+#define IDC_WRITING_DIRECTION_DEFAULT 57311
 
 
 #endif  // CHROME_APP_CHROME_COMMAND_IDS_H_

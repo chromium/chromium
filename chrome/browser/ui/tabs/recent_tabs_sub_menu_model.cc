@@ -236,7 +236,7 @@ bool RecentTabsSubMenuModel::IsCommandIdChecked(int command_id) const {
 
 bool RecentTabsSubMenuModel::IsCommandIdEnabled(int command_id) const {
   return command_id != kDisabledRecentlyClosedHeaderCommandId &&
-         command_id != kRecentTabsNoDeviceTabsId;
+         command_id != IDC_RECENT_TABS_NO_DEVICE_TABS;
 }
 
 bool RecentTabsSubMenuModel::GetAcceleratorForCommandId(
@@ -342,7 +342,7 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (ExecuteCustomCommand(command_id, event_flags)) {
     return;
   }
-  DCHECK_NE(kRecentTabsNoDeviceTabsId, command_id);
+  DCHECK_NE(IDC_RECENT_TABS_NO_DEVICE_TABS, command_id);
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
@@ -579,7 +579,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
       sessions;
   if (!open_tabs || !open_tabs->GetAllForeignSessions(&sessions)) {
     if (open_tabs) {
-      AddItemWithStringId(kRecentTabsNoDeviceTabsId,
+      AddItemWithStringId(IDC_RECENT_TABS_NO_DEVICE_TABS,
                           IDS_RECENT_TABS_NO_DEVICE_TABS);
     } else if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
       AddItemWithStringIdAndIcon(

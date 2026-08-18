@@ -646,7 +646,7 @@ bool BrowserNativeWidgetMac::ExecuteCommand(
     if (auto* controller =
             tabs::VerticalTabStripStateController::From(browser)) {
       const bool is_view_menu = IsCommandTriggeredFromMacMenu(
-          kMacViewMenuId, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE);
+          IDC_VIEW_MENU, IDC_TOGGLE_VERTICAL_TABS_COLLAPSE);
 
       if (is_view_menu) {
         if (controller->IsCollapsed()) {
@@ -668,7 +668,7 @@ bool BrowserNativeWidgetMac::ExecuteCommand(
     }
   } else if (command == IDC_NEW_SPLIT_TAB) {
     const bool is_tab_menu =
-        IsCommandTriggeredFromMacMenu(kMacTabMenuId, IDC_NEW_SPLIT_TAB);
+        IsCommandTriggeredFromMacMenu(IDC_TAB_MENU, IDC_NEW_SPLIT_TAB);
 
     split_tabs::SplitTabCreatedSource source =
         is_tab_menu ? split_tabs::SplitTabCreatedSource::kMacMenuBar

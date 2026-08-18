@@ -62,7 +62,7 @@ NSMenuItem* BuildAppMenu(NSApplication* nsapp,
       // determine what is displayed in bold in the menu bar as the app menu
       // title. The Info.plist's CFBundleName value is what is actually used.
       Item(IDS_APP_MENU_PRODUCT_NAME)
-          .tag(kMacChromeMenuId)
+          .tag(IDC_CHROME_MENU)
           .submenu({
               Item(IDS_ABOUT_MAC)
                   .string_format_1(product_name)
@@ -131,7 +131,7 @@ NSMenuItem* BuildFileMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_FILE_MENU_MAC)
-          .tag(kMacFileMenuId)
+          .tag(IDC_FILE_MENU)
           .submenu({
               Item(IDS_NEW_TAB_MAC)
                   .command_id(IDC_NEW_TAB)
@@ -193,7 +193,7 @@ NSMenuItem* BuildEditMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_EDIT_MENU_MAC)
-          .tag(kEditMenuId)
+          .tag(IDC_EDIT_MENU)
           .submenu({
               Item(IDS_EDIT_UNDO_MAC)
                   .tag(IDC_CONTENT_CONTEXT_UNDO)
@@ -227,7 +227,7 @@ NSMenuItem* BuildEditMenu(NSApplication* nsapp,
                   .action(@selector(selectAll:)),
               Item().is_separator(),
               Item(IDS_EDIT_FIND_SUBMENU_MAC)
-                  .tag(kFindMenuId)
+                  .tag(IDC_FIND_MENU)
                   .submenu({
                       Item(IDS_EDIT_SEARCH_WEB_MAC)
                           .command_id(IDC_FOCUS_SEARCH),
@@ -246,7 +246,7 @@ NSMenuItem* BuildEditMenu(NSApplication* nsapp,
                           .key_equivalent(@"j", NSEventModifierFlagCommand),
               }),
               Item(IDS_EDIT_SPELLING_GRAMMAR_MAC)
-                  .tag(kSpellcheckMenuId)
+                  .tag(IDC_SPELLCHECK_MENU)
                   .submenu({
                       Item(IDS_EDIT_SHOW_SPELLING_GRAMMAR_MAC)
                           .action(@selector(showGuessPanel:))
@@ -304,7 +304,7 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_VIEW_MENU_MAC)
-          .tag(kMacViewMenuId)
+          .tag(IDC_VIEW_MENU)
           .submenu({
               Item(IDS_BOOKMARK_BAR_ALWAYS_SHOW_MAC)
                   .command_id(IDC_SHOW_BOOKMARK_BAR)
@@ -360,7 +360,7 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                   .command_id(IDC_ROUTE_MEDIA),
               Item().is_separator(),
               Item(IDS_DEVELOPER_MENU_MAC)
-                  .tag(kDeveloperMenuId)
+                  .tag(IDC_DEVELOPER_MENU)
                   .submenu({
                       Item(IDS_VIEW_SOURCE_MAC)
                           .command_id(IDC_VIEW_SOURCE),
@@ -387,7 +387,7 @@ NSMenuItem* BuildHistoryMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_HISTORY_MENU_MAC)
-          .tag(kMacHistoryMenuId)
+          .tag(IDC_HISTORY_MENU)
           .submenu({
               Item(IDS_HISTORY_HOME_MAC)
                   .command_id(IDC_HOME)
@@ -466,7 +466,7 @@ NSMenuItem* BuildPeopleMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_PROFILES_MENU_NAME)
-          .tag(kMacProfileMainMenuId)
+          .tag(IDC_PROFILE_MAIN_MENU)
           .submenu({})
           .Build();
   // clang-format on
@@ -481,7 +481,7 @@ NSMenuItem* BuildWindowMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_WINDOW_MENU_MAC)
-          .tag(kMacWindowMenuId)
+          .tag(IDC_WINDOW_MENU)
           .submenu({
               Item(IDS_MINIMIZE_WINDOW_MAC)
                   .tag(IDC_MINIMIZE_WINDOW)
@@ -510,7 +510,7 @@ NSMenuItem* BuildWindowMenu(NSApplication* nsapp,
               Item().is_separator()
                   .remove_if(is_pwa),
               Item(IDS_ALL_WINDOWS_FRONT_MAC)
-                  .tag(kMacAllWindowsMenuId)
+                  .tag(IDC_ALL_WINDOWS_FRONT)
                   .action(@selector(arrangeInFront:)),
               Item().is_separator(),
           })
@@ -532,7 +532,7 @@ NSMenuItem* BuildTabMenu(NSApplication* nsapp,
   // clang-format off
   NSMenuItem* item =
       Item(IDS_TAB_MENU_MAC)
-          .tag(kMacTabMenuId)
+          .tag(IDC_TAB_MENU)
           .submenu({
               Item(is_rtl ? IDS_TAB_CXMENU_NEWTABTOLEFT
                           : IDS_TAB_CXMENU_NEWTABTORIGHT)

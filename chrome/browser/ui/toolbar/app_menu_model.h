@@ -218,21 +218,22 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHelpMenuItem);
 
   // Internal placeholder container command IDs.
-  static constexpr int kEditMenuPlaceholder = kEditMenuId;
-  static constexpr int kZoomMenuPlaceholder = kZoomMenuId;
+  static constexpr int kEditMenuPlaceholder = IDC_EDIT_MENU;
+  static constexpr int kZoomMenuPlaceholder = IDC_ZOOM_MENU;
   static constexpr int kPasswordsAndAutofillMenuPlaceholder =
-      kPasswordsAndAutofillMenuId;
-  static constexpr int kFindAndEditMenuPlaceholder = kFindAndEditMenuId;
-  static constexpr int kSaveAndShareMenuPlaceholder = kSaveAndShareMenuId;
-  static constexpr int kRecentTabsMenuPlaceholder = kRecentTabsMenuId;
-  static constexpr int kSharingHubMenuPlaceholder = kSharingHubMenuId;
-  static constexpr int kProfileMenuPlaceholder = kProfileMenuId;
-  static constexpr int kReadingListMenuPlaceholder = kReadingListMenuId;
-  static constexpr int kExtensionsSubmenuPlaceholder = kExtensionsSubMenuId;
-  static constexpr int kBookmarksMenuPlaceholder = kBookmarksMenuId;
-  static constexpr int kSavedTabGroupsMenuPlaceholder = kSavedTabGroupsMenuId;
-  static constexpr int kMoreToolsMenuPlaceholder = kMoreToolsMenuId;
-  static constexpr int kHelpMenuPlaceholder = kHelpMenuId;
+      IDC_PASSWORDS_AND_AUTOFILL_MENU;
+  static constexpr int kFindAndEditMenuPlaceholder = IDC_FIND_AND_EDIT_MENU;
+  static constexpr int kSaveAndShareMenuPlaceholder = IDC_SAVE_AND_SHARE_MENU;
+  static constexpr int kRecentTabsMenuPlaceholder = IDC_RECENT_TABS_MENU;
+  static constexpr int kSharingHubMenuPlaceholder = IDC_SHARING_HUB_MENU;
+  static constexpr int kProfileMenuPlaceholder = IDC_PROFILE_MENU_IN_APP_MENU;
+  static constexpr int kReadingListMenuPlaceholder = IDC_READING_LIST_MENU;
+  static constexpr int kExtensionsSubmenuPlaceholder = IDC_EXTENSIONS_SUBMENU;
+  static constexpr int kBookmarksMenuPlaceholder = IDC_BOOKMARKS_MENU;
+  static constexpr int kSavedTabGroupsMenuPlaceholder =
+      IDC_SAVED_TAB_GROUPS_MENU;
+  static constexpr int kMoreToolsMenuPlaceholder = IDC_MORE_TOOLS_MENU;
+  static constexpr int kHelpMenuPlaceholder = IDC_HELP_MENU;
 
   // Number of menus within the app menu with an arbitrarily high (variable)
   // number of menu items. For example, the number of bookmarks menu items

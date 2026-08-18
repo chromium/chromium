@@ -56,7 +56,7 @@ bool ShowAndFocusNativeWindow(gfx::NativeWindow native_window) {
   // events are sent via ui_test_utils::SendKeyPressSync.
   BOOL notification_observed = [async_waiter wait];
   base::RunLoop().RunUntilIdle();  // There may be other events queued. Flush.
-  NSMenu* file_menu = [[NSApp.mainMenu itemWithTag:kMacFileMenuId] submenu];
+  NSMenu* file_menu = [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
   [file_menu.delegate menuNeedsUpdate:file_menu];
 
   return !async_waiter || notification_observed;

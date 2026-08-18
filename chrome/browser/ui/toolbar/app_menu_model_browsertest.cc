@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelTest, ModelHasIcons) {
   // Skip the items that are either not supposed to have an icon, or are not
   // ready to be tested. Remove items once they're ready for testing.
   const std::vector<int> skip_commands = {
-      kRecentTabsNoDeviceTabsId,
+      IDC_RECENT_TABS_NO_DEVICE_TABS,
       IDC_ABOUT,
       RecentTabsSubMenuModel::GetDisabledRecentlyClosedHeaderCommandId(),
       IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
