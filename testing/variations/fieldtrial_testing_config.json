@@ -25032,6 +25032,30 @@
             ]
         }
     ],
+    "UniversalOptOut": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "target_locations": "us-tx,us-ut,us-nv"
+                    },
+                    "enable_features": [
+                        "ReadIsSubjectToUniversalOptOutCapability",
+                        "UniversalOptOut"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPhase2ChromeOS": [
         {
             "platforms": [
