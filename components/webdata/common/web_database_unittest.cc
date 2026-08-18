@@ -143,7 +143,7 @@ TEST_F(WebDatabaseTest, InitFailureCouldNotOpenIfWriteLockHeld) {
       "WebDatabase.InitResult", WebDatabase::InitResult::kCouldNotOpen, 1);
 }
 
-TEST_F(WebDatabaseTest, InitFailureDatabaseLockedIfReadLockHeld) {
+TEST_F(WebDatabaseTest, InitFailureCommitFailsIfReadLockHeld) {
   // Create a raw sqlite3 database connection holding a read lock.
   sql::EnsureSqliteInitialized();
   std::unique_ptr<sqlite3, Sqlite3Close> raw_sqlite_db;
@@ -163,7 +163,38 @@ TEST_F(WebDatabaseTest, InitFailureDatabaseLockedIfReadLockHeld) {
   WebDatabase db;
   EXPECT_EQ(db.Init(db_path_), sql::INIT_FAILURE);
   histogram_tester.ExpectUniqueSample(
-      "WebDatabase.InitResult", WebDatabase::InitResult::kDatabaseLocked, 1);
+      "WebDatabase.InitResult",
+      WebDatabase::InitResult::kFailedToCommitInitTransaction, 1);
+}
+
+TEST_F(WebDatabaseTest, InitSharesReadLockIfDbExists) {
+  // Create a table on disk.
+  {
+    WebDatabase db;
+    ASSERT_EQ(db.Init(db_path_), sql::INIT_OK);
+  }
+
+  // Create a raw sqlite3 database connection holding a read lock.
+  std::unique_ptr<sqlite3, Sqlite3Close> raw_sqlite_db;
+  ASSERT_EQ(sqlite3_open(db_path_.AsUTF8Unsafe().c_str(),
+                         std::out_ptr(raw_sqlite_db)),
+            SQLITE_OK);
+  ASSERT_EQ(
+      sqlite3_exec(raw_sqlite_db.get(), "SELECT COUNT(*) FROM sqlite_schema;",
+                   nullptr, nullptr, nullptr),
+      SQLITE_OK);
+
+  // `WebDatabase` connection will share the read lock.
+  base::HistogramTester histogram_tester;
+  WebDatabase db;
+  EXPECT_EQ(db.Init(db_path_), sql::INIT_OK);
+
+  // Writing fails because write lock can't be acquired.
+  EXPECT_FALSE(db.GetSQLConnection()->Execute("BEGIN EXCLUSIVE"));
+
+  // `WebDatabase` can grab the write lock if it becomes available.
+  raw_sqlite_db.reset();
+  EXPECT_TRUE(db.GetSQLConnection()->Execute("BEGIN EXCLUSIVE"));
 }
 
 TEST_F(WebDatabaseTest, InitFailureDatabaseLockedIfDriveIsFull) {
@@ -178,7 +209,8 @@ TEST_F(WebDatabaseTest, InitFailureDatabaseLockedIfDriveIsFull) {
   vfs.set_drive_full(false);
 
   histogram_tester.ExpectUniqueSample(
-      "WebDatabase.InitResult", WebDatabase::InitResult::kDatabaseLocked, 1);
+      "WebDatabase.InitResult", WebDatabase::InitResult::kMetaTableInitFailed,
+      1);
 }
 
 TEST_F(WebDatabaseTest, InitFailureCouldNotRazeIncompatibleVersion) {
