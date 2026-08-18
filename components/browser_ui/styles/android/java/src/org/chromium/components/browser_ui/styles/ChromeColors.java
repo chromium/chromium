@@ -156,7 +156,7 @@ public class ChromeColors {
         return SemanticColorUtils.getColorSurfaceInverse(context);
     }
 
-    /** {@return The {@link ColorInt} keyboard focus ring color} */
+    /** Returns the {@link ColorInt} keyboard focus ring color. */
     public static @ColorInt int getKeyboardFocusRingColor(Context context, boolean isIncognito) {
         return isIncognito
                 ? context.getColor(R.color.baseline_neutral_90)

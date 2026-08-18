@@ -24,15 +24,15 @@ public class SelectableListUtils {
     }
 
     /**
-     * Text that represents the item this menu button is related to.  This will affect the content
-     * description of the view {@see #setContentDescription(CharSequence)}.
+     * Text that represents the item this menu button is related to. This will affect the content
+     * description of the view {@link #setContentDescription(CharSequence)}.
      *
      * @param context The current Android context.
      * @param view The view to set the accessibility description on.
      * @param accessibilityContext The string representation of the list item this button
-     *         represents.
+     *     represents.
      * @param source The description source which indicates what kind of accessibility string to
-     *         add.
+     *     add.
      */
     public static void setContentDescriptionContext(
             Context context,
