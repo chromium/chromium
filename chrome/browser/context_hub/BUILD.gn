@@ -46,9 +46,18 @@ source_set("context_hub") {
     "//components/tab_groups",
   ]
 
+  if (!is_android) {
+    public_deps += [
+      "//chrome/browser/ui:browser_tab_strip",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    ]
+  }
+
   deps = [
     "//chrome/browser/tab_group_sync",
     "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window",
     "//components/prefs",
     "//components/saved_tab_groups/public",
     "//components/sessions",
@@ -68,6 +77,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/page_content_annotations",
+    "//chrome/browser/tab_list",
     "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
@@ -80,4 +90,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip_model_observer" ]
+  }
 }

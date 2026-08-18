@@ -1,4 +1,9 @@
 include_rules = [
+  "+chrome/browser/tab_list",
+  "+chrome/browser/ui/browser_tab_strip_tracker.h",
+  "+chrome/browser/ui/browser_tab_strip_tracker_delegate.h",
+  "+chrome/browser/ui/browser_window/public",
+  "+chrome/browser/ui/tabs",
   "+components/database_utils",
   "+components/optimization_guide/core",
   "+components/page_content_annotations/content",
