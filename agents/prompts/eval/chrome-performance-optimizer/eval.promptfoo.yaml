@@ -1,0 +1,16 @@
+description: Verify the chrome-performance-optimizer skill workflows and profile analysis.
+owner: bikineev@chromium.org
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      skills:
+        - chrome-performance-optimizer
+tests:
+  - vars:
+      query: "Analyze this Speedometer 3 performance profile: http://pprof/?id=test_sp3_profile"
+    assert:
+      - type: contains
+        value: "analyze_profile.py"
