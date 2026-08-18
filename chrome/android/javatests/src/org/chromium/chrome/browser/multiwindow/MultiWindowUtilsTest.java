@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -208,14 +209,16 @@ public class MultiWindowUtilsTest {
         }
         ChromeTabbedActivity activity2 =
                 createSecondChromeTabbedActivity(mActivityTestRule.getActivity());
-        Assert.assertTrue(MultiWindowUtils.getInstance().getTabbedActivity2TaskRunning());
+        Assert.assertEquals(
+                TriState.TRUE, MultiWindowUtils.getInstance().getTabbedActivity2TaskRunning());
 
         activity2.finishAndRemoveTask();
         MultiWindowUtils.getInstance()
                 .getTabbedActivityForIntent(
                         mActivityTestRule.getActivity().getIntent(),
                         mActivityTestRule.getActivity());
-        Assert.assertFalse(MultiWindowUtils.getInstance().getTabbedActivity2TaskRunning());
+        Assert.assertEquals(
+                TriState.FALSE, MultiWindowUtils.getInstance().getTabbedActivity2TaskRunning());
     }
 
     /**

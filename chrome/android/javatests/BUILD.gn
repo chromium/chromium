@@ -1773,6 +1773,7 @@ android_library("chrome_test_java_various") {
     ":chrome_test_java_helper",
     "//base:base_java_test_support",
     "//base:holder_java",
+    "//base:tristate_java",
     "//base/test:leak_canary_java",
     "//chrome/browser/actor/android:java",
     "//chrome/browser/educational_tip:java",
