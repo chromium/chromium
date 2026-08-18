@@ -119,6 +119,12 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // override in the generic IS_ANDROID block below, guarded by an appropriate
   // runtime check.
 
+  // Enable the "Ask Gemini" context-menu and text-selection entry points on
+  // desktop Android (AL); disabled by default on other Android form factors.
+  // TODO(crbug.com/545717789): Remove when rollout to phones/tablets is
+  // complete.
+  feature_overrides.EnableFeature(chrome::android::kClankGlicContextMenu);
+
   // Enables media capture (tab+window+screen sharing).
   // TODO(crbug.com/352187279): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(kAndroidMediaPicker);

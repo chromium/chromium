@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.gsa.GSAUtils;
 import org.chromium.chrome.browser.media.PictureInPicture;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
@@ -131,7 +132,13 @@ import java.util.concurrent.atomic.AtomicReference;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.GOOGLE_BASE_URL + "=http://example.com/"
 })
-@DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
+@DisableFeatures({
+    ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING,
+    // Keep the exhaustive menu-structure assertions deterministic. The "Ask Gemini"
+    // entry is covered by ChromeContextMenuPopulatorTest and
+    // testContextMenuAddsAskGeminiForLink below.
+    ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU
+})
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288174
 public class ContextMenuTest {
@@ -743,6 +750,27 @@ public class ContextMenuTest {
                         new Integer[] {R.id.contextmenu_open_in_ephemeral_tab});
         expectedItems = maybeAddInspectElementItem(expectedItems);
         assertMenuItemsAreEqual(mMenuCoordinator, expectedItems);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Browser", "ContextMenu"})
+    @EnableFeatures({
+        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
+        ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL
+    })
+    public void testContextMenuAddsAskGeminiForLink() throws TimeoutException {
+        // With ClankGlicContextMenu enabled and Glic available via the side panel, the link
+        // context menu should include the "Ask Gemini" entry.
+        GlicEnabling.setEnabledForTesting(true);
+        Tab tab = mActivityTestRule.getActivityTab();
+        mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testLink");
+
+        if (!DeviceInfo.isAutomotive()) {
+            Assert.assertNotNull(
+                    "Ask Gemini item should be present in the link context menu.",
+                    getMenuTitleFromItem(mMenuCoordinator, R.id.contextmenu_ask_gemini));
+        }
     }
 
     @Test
