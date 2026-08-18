@@ -342,16 +342,22 @@ std::optional<SodaInstaller::ErrorCode> SodaInstaller::GetSodaInstallErrorCode(
 }
 
 bool SodaInstaller::IsAnyFeatureUsingSodaEnabled(PrefService* prefs) const {
+  // Both standard UI and headless Live Caption use Small Expert Model instead
+  // of SODA when kLiveCaptionSpeechRecognitionSmallExpertModel is enabled.
+  const bool live_or_headless_caption_uses_soda =
+      (prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
+       prefs->GetBoolean(prefs::kHeadlessCaptionEnabled)) &&
+      !base::FeatureList::IsEnabled(
+          media::kLiveCaptionSpeechRecognitionSmallExpertModel);
+
 #if BUILDFLAG(IS_CHROMEOS)
-  return prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
-         prefs->GetBoolean(prefs::kHeadlessCaptionEnabled) ||
+  return live_or_headless_caption_uses_soda ||
          prefs->GetBoolean(ash::prefs::kAccessibilityDictationEnabled) ||
          prefs->GetBoolean(ash::prefs::kProjectorCreationFlowEnabled) ||
          prefs->GetString(
              ash::prefs::kClassManagementToolsAvailabilitySetting) == "teacher";
 #else  // !BUILDFLAG(IS_CHROMEOS)
-  return prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
-         prefs->GetBoolean(prefs::kHeadlessCaptionEnabled);
+  return live_or_headless_caption_uses_soda;
 #endif
 }
 
@@ -453,4 +459,5 @@ bool SodaInstaller::IsLanguageActiveDefault(std::string_view language,
          profile_prefs->GetString(prefs::kLiveCaptionLanguageCode) == language;
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace speech

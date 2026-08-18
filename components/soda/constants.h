@@ -20,6 +20,8 @@ namespace speech {
 
 extern const char kUsEnglishLocale[];
 extern const char kEnglishLocaleNoCountry[];
+inline constexpr char kSpeechRecognitionSmallExpertModelLanguage[] =
+    "speech_recognition_small_expert_model";
 
 // Metrics names for keeping track of SODA installation.
 extern const char kSodaPreemptiveDownloadStarted[];
