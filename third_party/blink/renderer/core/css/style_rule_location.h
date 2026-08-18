@@ -18,11 +18,20 @@ class Document;
 class CORE_EXPORT StyleRuleLocation : public StyleRuleBase {
  public:
   StyleRuleLocation(const String& name, CSSPropertyValueSet*);
-  StyleRuleLocation(const StyleRuleLocation&);
+  StyleRuleLocation(const StyleRuleLocation&) = default;
 
   void TraceAfterDispatch(Visitor*) const;
 
   const String& GetName() const { return name_; }
+
+  const CSSURLPatternValue* GetPattern() const { return pattern_.Get(); }
+  const CSSStringValue* GetProtocol() const { return protocol_.Get(); }
+  const CSSStringValue* GetHostname() const { return hostname_.Get(); }
+  const CSSStringValue* GetPort() const { return port_.Get(); }
+  const CSSStringValue* GetPathname() const { return pathname_.Get(); }
+  const CSSStringValue* GetSearch() const { return search_.Get(); }
+  const CSSStringValue* GetHash() const { return hash_.Get(); }
+  const CSSStringValue* GetBaseUrl() const { return base_url_.Get(); }
 
   void CreateRouteIfNeeded(Document*) const;
 

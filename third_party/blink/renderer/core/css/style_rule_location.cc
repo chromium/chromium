@@ -39,9 +39,6 @@ StyleRuleLocation::StyleRuleLocation(const String& name,
   DCHECK(name.starts_with("--"));
 }
 
-StyleRuleLocation::StyleRuleLocation(const StyleRuleLocation& other)
-    : StyleRuleBase(other), name_(other.name_) {}
-
 void StyleRuleLocation::TraceAfterDispatch(Visitor* v) const {
   v->Trace(pattern_);
   v->Trace(protocol_);

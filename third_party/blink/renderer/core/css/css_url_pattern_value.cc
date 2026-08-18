@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/css_url_pattern_value.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -15,17 +15,15 @@ CSSURLPatternValue::CSSURLPatternValue(const AtomicString& url_string)
 CSSURLPatternValue::~CSSURLPatternValue() = default;
 
 String CSSURLPatternValue::CustomCSSText() const {
-  // TODO(crbug.com/436805487): Implement.
-  return "FIXME";
+  StringBuilder builder;
+  builder.Append("url-pattern(");
+  SerializeString(url_string_, builder);
+  builder.Append(')');
+  return builder.ReleaseString();
 }
 
 bool CSSURLPatternValue::Equals(const CSSURLPatternValue& other) const {
   return url_string_ == other.url_string_;
-}
-
-void CSSURLPatternValue::TraceAfterDispatch(blink::Visitor* visitor) const {
-  // FIXME: If this is all, we can omit it.
-  CSSValue::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink
