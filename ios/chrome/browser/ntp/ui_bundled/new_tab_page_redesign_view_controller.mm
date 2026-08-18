@@ -60,9 +60,6 @@ constexpr CGFloat kMVTContainerBottomPadding = 10.0;
 
 // Corner radius for the MVT container when rendered with squircle styling.
 constexpr CGFloat kMVTContainerCornerRadius = 24.0;
-
-// Top margin of the Google logo view.
-constexpr CGFloat kLogoTopMargin = 40.0;
 constexpr CGFloat kLandscapeLogoTopMargin = 8.0;
 
 // Width dimensions for Doodle and Google logo layouts.
@@ -804,11 +801,7 @@ const CGFloat kMinDragHandleHeight = 24.0;
   if ([self isCompactHeight]) {
     return kLandscapeLogoTopMargin;
   }
-  if (base::FeatureList::IsEnabled(kNewTabPageUICleanup)) {
-    return content_suggestions::LogoTopPadding(_logoState,
-                                               self.traitCollection);
-  }
-  return kLogoTopMargin;
+  return content_suggestions::LogoTopPadding(_logoState, self.traitCollection);
 }
 
 - (CGFloat)centeredFakeOmniboxTop {
@@ -829,9 +822,8 @@ const CGFloat kMinDragHandleHeight = 24.0;
   [self updateLogoConstraints];
   _fakeLocationBarTopConstraint.constant = [self centeredFakeOmniboxTop];
   if (_bottomSheetViewController) {
-    CGFloat currentTopOffset = _bottomSheetViewController.view.frame.origin.y;
-    [self bottomSheetViewController:_bottomSheetViewController
-                 didUpdateTopOffset:currentTopOffset];
+    [_bottomSheetViewController
+        updateBottomSheetPositionAnimated:self.viewDidAppear];
   }
 }
 

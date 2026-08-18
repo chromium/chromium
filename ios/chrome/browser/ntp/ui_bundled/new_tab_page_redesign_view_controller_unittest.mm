@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
@@ -29,6 +30,7 @@ const CGFloat kMinDragHandleHeight = 24.0;
 - (CGFloat)restingOffsetForBottomSheetViewController:
     (NewTabPageBottomSheetViewController*)viewController;
 - (CGFloat)topContentHeight;
+- (CGFloat)centeredFakeOmniboxTop;
 - (BOOL)isCompactHeight;
 @end
 
@@ -353,4 +355,31 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   }
   ASSERT_TRUE(collection_view != nil);
   EXPECT_TRUE(collection_view.onContentSizeChanged == nil);
+}
+
+// Tests that centeredFakeOmniboxTop and restingOffset remain identical between
+// Logo and Doodle when kConsistentLogoDoodleHeight is enabled.
+TEST_F(NewTabPageRedesignViewControllerTest, TestConsistentLogoDoodleHeight) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kConsistentLogoDoodleHeight);
+
+  [view_controller_ loadViewIfNeeded];
+
+  [view_controller_
+      searchEngineLogoStateDidChange:SearchEngineLogoState::kLogo];
+  CGFloat omnibox_top_with_logo = [view_controller_ centeredFakeOmniboxTop];
+  CGFloat resting_offset_with_logo =
+      [view_controller_ restingOffsetForBottomSheetViewController:nil];
+
+  [view_controller_
+      searchEngineLogoStateDidChange:SearchEngineLogoState::kDoodle];
+  CGFloat omnibox_top_with_doodle = [view_controller_ centeredFakeOmniboxTop];
+  CGFloat resting_offset_with_doodle =
+      [view_controller_ restingOffsetForBottomSheetViewController:nil];
+
+  EXPECT_EQ(omnibox_top_with_logo, omnibox_top_with_doodle);
+  EXPECT_EQ(resting_offset_with_logo, resting_offset_with_doodle);
 }

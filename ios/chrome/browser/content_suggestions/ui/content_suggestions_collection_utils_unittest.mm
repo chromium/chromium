@@ -297,6 +297,40 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, SameLogoAndDoodleHeight) {
   EXPECT_EQ(height_with_logo, height_with_doodle);
 }
 
+// Tests that the total vertical space for Logo and Doodle is the same across
+// all kNewTabPageUICleanup experiment arms when kConsistentLogoDoodleHeight is
+// enabled.
+TEST_F(ContentSuggestionsCollectionUtilsTest,
+       SameLogoAndDoodleHeightWithUICleanup) {
+  if (IsIPad()) {
+    GTEST_SKIP() << "Test unsupported on iPad";
+  }
+  for (const char* arm : {"1", "2", "3"}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kConsistentLogoDoodleHeight, {}},
+         {kNewTabPageUICleanup, {{kNewTabPageUICleanupArmParam, arm}}}},
+        {});
+
+    CGFloat total_logo = LogoTopPadding(SearchEngineLogoState::kLogo,
+                                        IPhonePortraitTraitCollection()) +
+                         DoodleHeight(SearchEngineLogoState::kLogo,
+                                      IPhonePortraitTraitCollection()) +
+                         LogoToFakeboxPadding(SearchEngineLogoState::kLogo);
+
+    CGFloat total_doodle = LogoTopPadding(SearchEngineLogoState::kDoodle,
+                                          IPhonePortraitTraitCollection()) +
+                           DoodleHeight(SearchEngineLogoState::kDoodle,
+                                        IPhonePortraitTraitCollection()) +
+                           LogoToFakeboxPadding(SearchEngineLogoState::kDoodle);
+
+    // Extra height for logo when AIM is enabled (50pt vs 36pt standard logo).
+    constexpr CGFloat kAimLogoHeightGain = 14.0;
+    CGFloat gain_for_aim = IsAimEnabledInNtp() ? kAimLogoHeightGain : 0;
+    EXPECT_EQ(total_logo, total_doodle + gain_for_aim);
+  }
+}
+
 // Test padding helpers for kNewTabPageUICleanup experiment arms.
 TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
   // Control (Disabled).

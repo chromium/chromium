@@ -79,6 +79,8 @@ constexpr CGFloat kDoodleBottomMarginAdjustment = 10;
 constexpr CGFloat kLogoTopMarginAdjustment = kDoodleLogoDelta -
                                              kDoodleTopMarginAdjustment -
                                              kDoodleBottomMarginAdjustment;
+constexpr CGFloat kCleanupDoodleTopMarginAdjustment = 4;
+constexpr CGFloat kCleanupDoodleBottomMarginAdjustment = 4;
 
 // The size of the symbol image.
 const CGFloat kSymbolContentSuggestionsPointSize = 18;
@@ -353,53 +355,54 @@ CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
   if (IsRegularXRegularSizeClass(trait_collection)) {
     return kDoodleTopMarginRegularXRegular;
   }
-  if (logo_state == SearchEngineLogoState::kDoodle) {
-    switch (GetNewTabPageUICleanupVariation()) {
-      case NTPUICleanupVariation::kTightPadding:
-        return FakeToolbarHeight() + kDoodleTopPaddingTight;
-      case NTPUICleanupVariation::kMediumPadding:
-        return FakeToolbarHeight() + kDoodleTopPaddingMedium;
-      case NTPUICleanupVariation::kPreferredPadding:
-        return FakeToolbarHeight() + kDoodleTopPaddingPreferred;
-      case NTPUICleanupVariation::kDisabled:
-        return DoodleTopMargin(logo_state, trait_collection);
-    }
-  }
+  const bool is_doodle = (logo_state == SearchEngineLogoState::kDoodle);
+  CGFloat padding = 0;
   switch (GetNewTabPageUICleanupVariation()) {
     case NTPUICleanupVariation::kTightPadding:
-      return FakeToolbarHeight() + kLogoTopPaddingTight;
+      padding = is_doodle ? kDoodleTopPaddingTight : kLogoTopPaddingTight;
+      break;
     case NTPUICleanupVariation::kMediumPadding:
-      return FakeToolbarHeight() + kLogoTopPaddingMedium;
+      padding = is_doodle ? kDoodleTopPaddingMedium : kLogoTopPaddingMedium;
+      break;
     case NTPUICleanupVariation::kPreferredPadding:
-      return FakeToolbarHeight() + kLogoTopPaddingPreferred;
+      padding =
+          is_doodle ? kDoodleTopPaddingPreferred : kLogoTopPaddingPreferred;
+      break;
     case NTPUICleanupVariation::kDisabled:
       return DoodleTopMargin(logo_state, trait_collection);
   }
+  padding += FakeToolbarHeight();
+  if (IsConsistentLogoDoodleHeightEnabled() &&
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET && is_doodle) {
+    padding -= kCleanupDoodleTopMarginAdjustment;
+  }
+  return padding;
 }
 
 CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state) {
-  if (logo_state == SearchEngineLogoState::kDoodle) {
-    switch (GetNewTabPageUICleanupVariation()) {
-      case NTPUICleanupVariation::kTightPadding:
-        return kDoodleToFakeboxPaddingTight;
-      case NTPUICleanupVariation::kMediumPadding:
-        return kDoodleToFakeboxPaddingMedium;
-      case NTPUICleanupVariation::kPreferredPadding:
-        return kDoodleToFakeboxPaddingPreferred;
-      case NTPUICleanupVariation::kDisabled:
-        return SearchFieldTopMargin(logo_state);
-    }
-  }
+  const bool is_doodle = (logo_state == SearchEngineLogoState::kDoodle);
+  CGFloat padding = 0;
   switch (GetNewTabPageUICleanupVariation()) {
     case NTPUICleanupVariation::kTightPadding:
-      return kLogoToFakeboxPaddingTight;
+      padding =
+          is_doodle ? kDoodleToFakeboxPaddingTight : kLogoToFakeboxPaddingTight;
+      break;
     case NTPUICleanupVariation::kMediumPadding:
-      return kLogoToFakeboxPaddingMedium;
+      padding = is_doodle ? kDoodleToFakeboxPaddingMedium
+                          : kLogoToFakeboxPaddingMedium;
+      break;
     case NTPUICleanupVariation::kPreferredPadding:
-      return kLogoToFakeboxPaddingPreferred;
+      padding = is_doodle ? kDoodleToFakeboxPaddingPreferred
+                          : kLogoToFakeboxPaddingPreferred;
+      break;
     case NTPUICleanupVariation::kDisabled:
       return SearchFieldTopMargin(logo_state);
   }
+  if (IsConsistentLogoDoodleHeightEnabled() &&
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET && is_doodle) {
+    padding -= kCleanupDoodleBottomMarginAdjustment;
+  }
+  return padding;
 }
 
 CGFloat QuickActionsTopPadding() {
