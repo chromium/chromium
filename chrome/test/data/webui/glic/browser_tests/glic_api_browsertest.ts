@@ -50,15 +50,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
   }
 
-  async testGetContextFromFocusedTabWithoutPermission() {
-    assertDefined(this.host.getContextFromFocusedTab);
-    await this.host.setTabContextPermissionState(false);
-
-    await assertRejects(this.host.getContextFromFocusedTab({}), {
-      withErrorMessage: 'tabContext failed: permission denied:' +
-          ' context permission not enabled',
-    });
-  }
 
   async testGetContextFromPinnedTabWithoutPermission() {
     assertDefined(this.host.getContextFromTab);

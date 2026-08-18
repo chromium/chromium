@@ -1806,6 +1806,27 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
   histogram_tester.ExpectTotalCount("Glic.Api.GetContextFromTab.Error.Text", 1);
 }
 
+// Glic floaty/detached and live (Audio) modes are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextDisabled,
+                       testGetContextFromFocusedTabWithoutPermission) {
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
+  // Wait for the panel opening handshake to complete. Otherwise, the delayed
+  // startup mode (TEXT) response from the guest can race with and overwrite
+  // the test's runtime mode switch (AUDIO), causing metrics flakiness.
+  ASSERT_OK(WaitForPanelWillOpenComplete(instance));
+  glic::GlicHistogramTester histogram_tester;
+  ExecuteJsTest();
+
+  ASSERT_OK(histogram_tester.WaitForBucketCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio",
+      GlicGetContextFromTabError::kPermissionDeniedContextPermissionNotEnabled,
+      1));
+  histogram_tester.ExpectTotalCount(
+      "Glic.Api.GetContextFromFocusedTab.Error.Audio", 1);
+}
+#endif
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
                        testGetContextFromTabFailsIfDoesNotExist) {
   ASSERT_OK(OpenGlicForActiveTab());

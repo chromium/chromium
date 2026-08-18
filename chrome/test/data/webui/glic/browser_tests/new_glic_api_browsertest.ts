@@ -625,6 +625,21 @@ class ApiTests extends ApiTestFixtureBase {
     }
     throw new Error(`Unknown capability: ${capability}`);
   }
+
+  async testGetContextFromFocusedTabWithoutPermission() {
+    assertDefined(this.host.onModeChange);
+    this.host.onModeChange(WebClientMode.AUDIO);
+
+    assertDefined(this.host.unpinTabs);
+    const tabId = this.getFocusedTabId();
+    await this.host.unpinTabs([tabId]);
+
+    assertDefined(this.host.getContextFromFocusedTab);
+    await assertRejects(this.host.getContextFromFocusedTab({}), {
+      withErrorMessage: 'tabContext failed: permission denied:' +
+          ' context permission not enabled',
+    });
+  }
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

@@ -752,23 +752,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetContextFromFocusedTabWithoutPermission) {
-  // In multi-instance mode, we only fetch context from pinned tabs.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  ExecuteJsTest();
-
-  // Should record the respective error to the text mode histogram.
-  EXPECT_THAT(
-      histogram_tester->GetAllSamplesForPrefix(
-          "Glic.Api.GetContextFromFocusedTab.Error"),
-      UnorderedElementsAre(Pair(
-          "Glic.Api.GetContextFromFocusedTab.Error.Text",
-          BucketsAre(Bucket(GlicGetContextFromTabError::
-                                kPermissionDeniedContextPermissionNotEnabled,
-                            1)))));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromPinnedTabWithoutPermission) {
   ExecuteJsTest();
 

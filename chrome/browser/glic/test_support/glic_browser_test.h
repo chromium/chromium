@@ -584,6 +584,15 @@ class GlicBrowserTestMixin : public T {
     return blink::ZoomLevelToZoomFactor(zoom_level);
   }
 
+  [[nodiscard]] TestResult<> WaitForPanelWillOpenComplete(
+      GlicInstanceImpl* instance) {
+    if (base::test::RunUntil(
+            [&]() { return instance->host().IsPrimaryClientOpen(); })) {
+      return base::ok();
+    }
+    return base::unexpected("Timeout waiting for PanelWillOpen to complete");
+  }
+
   [[nodiscard]] TestResult<> WaitForGuestFrameSubmission(
       GlicInstanceImpl* instance = nullptr) {
     if (!instance) {
