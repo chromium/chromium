@@ -236,8 +236,8 @@ class CORE_EXPORT LocalFrameView final
   void UpdateStyleAndLayout();
 
   // Marks this frame, and ancestor frames, as needing one intersection
-  // observervation. This overrides throttling for one frame, up to
-  // kLayoutClean. The order of these enums is important - they must proceed
+  // observation. This overrides throttling for one frame through
+  // kPrePaintClean. The order of these enums is important - they must proceed
   // from "least required to most required".
   enum IntersectionObservationState {
     // The next painting frame does not need an intersection observation.

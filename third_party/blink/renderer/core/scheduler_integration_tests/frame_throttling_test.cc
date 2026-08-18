@@ -368,9 +368,8 @@ TEST_P(FrameThrottlingTest,
         DocumentLifecycle::kUninitialized);
   }
 
-  // A lifecycle update can update the throttled frame to just LayoutClean but
-  // the frame should still be considered throttled outside the lifecycle
-  // because it is not fully running the lifecycle.
+  // A required observation advances the throttled frame through pre-paint.
+  // The frame becomes throttled again outside the lifecycle update.
   frame_document->View()->GetLayoutView()->SetNeedsLayout("test");
   frame_document->View()->ScheduleAnimation();
   frame_document->View()->GetLayoutView()->Layer()->SetNeedsRepaint();
