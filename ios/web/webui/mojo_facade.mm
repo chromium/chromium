@@ -208,7 +208,7 @@ void MojoFacade::HandleMojoMessage(
     action_outcome = WebUIMojoActions::kFailure;
   }
 
-  std::string action_name = "Unknown";
+  std::string action_name = "Mojo.Unknown";
   if (name) {
     action_name = *name;
   }
@@ -299,7 +299,9 @@ base::Value MojoFacade::HandleMojoHandleWriteMessage(
 
 base::Value MojoFacade::ReadMessageFromPipe(int pipe_id) {
   mojo::MessagePipeHandle pipe = GetPipeFromId(pipe_id);
+  WebUIMojoActions mojo_outcome = WebUIMojoActions::kFailure;
   if (!pipe.is_valid()) {
+    RecordWebUIMojoActionOutcome("MojoHandle.readMessage", mojo_outcome);
     base::DictValue result;
     result.Set("result", static_cast<int>(MOJO_RESULT_INVALID_ARGUMENT));
     return base::Value(std::move(result));
@@ -313,6 +315,7 @@ base::Value MojoFacade::ReadMessageFromPipe(int pipe_id) {
 
   base::DictValue result;
   if (mojo_result == MOJO_RESULT_OK) {
+    mojo_outcome = WebUIMojoActions::kSuccess;
     base::ListValue handles_list;
     for (uint32_t i = 0; i < handles.size(); i++) {
       handles_list.Append(AllocatePipeId(mojo::ScopedMessagePipeHandle(
@@ -327,6 +330,7 @@ base::Value MojoFacade::ReadMessageFromPipe(int pipe_id) {
     result.Set("buffer", std::move(buffer));
   }
   result.Set("result", static_cast<int>(mojo_result));
+  RecordWebUIMojoActionOutcome("MojoHandle.readMessage", mojo_outcome);
   return base::Value(std::move(result));
 }
 

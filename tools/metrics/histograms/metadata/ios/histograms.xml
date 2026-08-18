@@ -8507,13 +8507,13 @@ chromium-metrics-reviews@google.com.
   <token key="Action">
     <variant name="Mojo.bindInterface"/>
     <variant name="Mojo.createMessagePipe"/>
+    <variant name="Mojo.Unknown"
+        summary="An unrecognized or malformed Mojo message"/>
     <variant name="MojoHandle.close"/>
     <variant name="MojoHandle.readMessage"/>
     <variant name="MojoHandle.watch"/>
     <variant name="MojoHandle.writeMessage"/>
     <variant name="MojoWatcher.cancel"/>
-    <variant name="Unknown"
-        summary="An unrecognized or malformed Mojo message"/>
   </token>
 </histogram>
 
