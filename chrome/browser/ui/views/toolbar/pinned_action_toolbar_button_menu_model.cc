@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/common/pref_names.h"
@@ -176,7 +175,8 @@ bool PinnedActionToolbarButtonMenuModel::IsEnabledAt(size_t index) const {
     // ActionItem's enabled property.
     tabs::TabInterface* tab = browser_->GetTabStripModel()->GetActiveTab();
     customize_chrome::SidePanelController* side_panel_controller =
-        tab->GetTabFeatures()->customize_chrome_side_panel_controller();
+        customize_chrome::SidePanelController::Get(
+            tab->GetUnownedUserDataHost());
     return side_panel_controller &&
            side_panel_controller->IsCustomizeChromeEntryAvailable();
   }

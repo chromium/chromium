@@ -37,18 +37,13 @@ source_set("impl") {
   deps = [
     ":customize_buttons",
     "//chrome/browser/profiles",
+    "//chrome/browser/tab_list",
     "//chrome/browser/ui/customize_chrome",
     "//chrome/browser/ui/side_panel",
-    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/webui:webui_util",
     "//components/feature_engagement/public:feature_constants",
+    "//components/tabs:public",
   ]
-  if (is_android) {
-    deps += [
-      "//chrome/android:chrome_jni_headers",
-      "//chrome/browser/android:tabs_public",
-    ]
-  }
 }
 
 if (!is_android) {
@@ -67,7 +62,12 @@ if (!is_android) {
     sources = [ "customize_buttons_handler_browsertest.cc" ]
     deps = [
       ":test_support",
-      "//chrome/browser/ui/views/side_panel/customize_chrome",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/customize_chrome",
+      "//chrome/browser/ui/tabs:tabs_public",
+      "//chrome/browser/ui/webui/side_panel/customize_chrome",
+      "//ui/base/unowned_user_data",
     ]
   }
 }

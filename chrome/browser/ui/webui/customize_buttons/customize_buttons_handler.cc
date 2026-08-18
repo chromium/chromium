@@ -15,13 +15,8 @@
 #include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_features.h"
-#else
-#include "chrome/browser/ui/tabs/public/tab_features.h"
-#endif
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeButtonsHandler,
                                       kCustomizeChromeButtonElementId);
@@ -64,11 +59,11 @@ CustomizeButtonsHandler::SetCustomizeChromeEntryChangedCallback() {
     return nullptr;
   }
 
-  auto* tab_features = tab->GetTabFeatures();
-  if (!tab_features) {
+  auto* controller =
+      customize_chrome::SidePanelController::Get(tab->GetUnownedUserDataHost());
+  if (!controller) {
     return nullptr;
   }
-  auto* controller = tab_features->customize_chrome_side_panel_controller();
   controller->SetEntryChangedCallback(base::BindRepeating(
       &CustomizeButtonsHandler::NotifyCustomizeChromeSidePanelVisibilityChanged,
       weak_ptr_factory_.GetWeakPtr()));

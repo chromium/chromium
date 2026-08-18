@@ -5,7 +5,6 @@
 #include <optional>
 
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "ui/webui/buildflags.h"
 
@@ -21,11 +20,8 @@ namespace ntp_customization {
 static void JNI_NtpCustomizationSidePanel_Show(TabAndroid* tab) {
   CHECK(tab);
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
-  auto* tab_features = tab->GetTabFeatures();
-  if (!tab_features) {
-    return;
-  }
-  auto* controller = tab_features->customize_chrome_side_panel_controller();
+  auto* controller =
+      customize_chrome::SidePanelController::Get(tab->GetUnownedUserDataHost());
   if (!controller) {
     return;
   }

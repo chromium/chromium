@@ -4,14 +4,17 @@
 
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 
+#include <optional>
+
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -20,6 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class MockFeaturePromoHelper : public NewTabPageFeaturePromoHelper {
  public:
@@ -62,6 +66,8 @@ class MockCustomizeButtonsDocument
 class MockCustomizeChromeTabHelper
     : public customize_chrome::SidePanelController {
  public:
+  explicit MockCustomizeChromeTabHelper(ui::UnownedUserDataHost& host)
+      : scoped_unowned_user_data_(host, *this) {}
   ~MockCustomizeChromeTabHelper() override = default;
 
   MOCK_METHOD(bool, IsCustomizeChromeEntryAvailable, (), (const, override));
@@ -75,29 +81,32 @@ class MockCustomizeChromeTabHelper
               (SidePanelOpenTrigger, std::optional<CustomizeChromeSection>),
               (override));
   MOCK_METHOD(void, CloseSidePanel, (), (override));
+
+ private:
+  ui::ScopedUnownedUserData<customize_chrome::SidePanelController>
+      scoped_unowned_user_data_;
 };
 
-class CustomizeButtonsHandlerBrowserTestBase : public InProcessBrowserTest {
+class CustomizeButtonsHandlerBrowserTestBase : public PlatformBrowserTest {
  public:
   void SetUpOnMainThread() override {
     web_ui_ = std::make_unique<content::TestWebUI>();
-    web_ui_->set_web_contents(
-        browser()->tab_strip_model()->GetActiveWebContents());
+    web_ui_->set_web_contents(GetActiveTab()->GetContents());
 
-    auto mock_controller_ptr = std::make_unique<MockCustomizeChromeTabHelper>();
+    tabs::TabInterface* tab = GetActiveTab();
+    tabs::TabFeatures* tab_features = tab->GetTabFeatures();
+    tab_features->SetCustomizeChromeSidePanelControllerForTesting(nullptr);
+    auto mock_controller_ptr = std::make_unique<MockCustomizeChromeTabHelper>(
+        tab->GetUnownedUserDataHost());
     mock_controller_ = mock_controller_ptr.get();
-    browser()
-        ->tab_strip_model()
-        ->GetActiveTab()
-        ->GetTabFeatures()
-        ->SetCustomizeChromeSidePanelControllerForTesting(
-            std::move(mock_controller_ptr));
+    tab_features->SetCustomizeChromeSidePanelControllerForTesting(
+        std::move(mock_controller_ptr));
   }
 
   void CreateHandler(bool set_tab_interface) {
     tabs::TabInterface* tab = nullptr;
     if (set_tab_interface) {
-      tab = browser()->tab_strip_model()->GetActiveTab();
+      tab = GetActiveTab();
     }
 
     auto promo_helper_ptr = std::make_unique<MockFeaturePromoHelper>();
@@ -110,13 +119,17 @@ class CustomizeButtonsHandlerBrowserTestBase : public InProcessBrowserTest {
         std::move(promo_helper_ptr));
   }
 
-  Profile* profile() { return browser()->GetProfile(); }
+  Profile* profile() { return GetBrowserWindowInterface()->GetProfile(); }
+
+  tabs::TabInterface* GetActiveTab() {
+    return GetTabListInterface()->GetActiveTab();
+  }
 
   void TearDownOnMainThread() override {
     promo_helper_ = nullptr;
     handler_.reset();
     mock_controller_ = nullptr;
-    InProcessBrowserTest::TearDownOnMainThread();
+    PlatformBrowserTest::TearDownOnMainThread();
   }
 
   MockFeaturePromoHelper* GetMockFeaturePromoHelper() {
@@ -147,8 +160,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerBrowserTest, OpenSidePanelTwice) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveTab()->GetContents();
   SidePanelOpenTrigger trigger;
   std::optional<CustomizeChromeSection> section;
   bool visible;
@@ -276,8 +288,7 @@ INSTANTIATE_TEST_SUITE_P(
         customize_buttons::mojom::SidePanelOpenTrigger::kNewTabFooter));
 
 IN_PROC_BROWSER_TEST_P(CustomizeButtonsHandlerTriggerParamTest, OpenSidePanel) {
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveTab()->GetContents();
   std::optional<CustomizeChromeSection> section;
   SidePanelOpenTrigger trigger;
 
