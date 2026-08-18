@@ -34,7 +34,7 @@ class WEBDATA_EXPORT WebDatabase {
     kCouldNotRazeIncompatibleVersion = 3,
     kFailedToBeginInitTransaction = 4,
     kMetaTableInitFailed = 5,
-    kCurrentVersionTooNew = 6,
+    // kCurrentVersionTooNew = 6,  // No longer used.
     kMigrationError = 7,
     kFailedToCreateTable = 8,
     kFailedToCommitInitTransaction = 9,

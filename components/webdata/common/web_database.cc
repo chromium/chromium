@@ -180,11 +180,6 @@ sql::InitStatus WebDatabase::Init(
     LogInitResult(InitResult::kMetaTableInitFailed);
     return sql::INIT_FAILURE;
   }
-  if (meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
-    LogInitResult(InitResult::kCurrentVersionTooNew);
-    LOG(WARNING) << "Web database is too new.";
-    return sql::INIT_TOO_NEW;
-  }
 
   // Initialize the tables.
   for (const auto& table : tables_) {

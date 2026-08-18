@@ -28159,7 +28159,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="3" label="kCouldNotRazeIncompatibleVersion"/>
   <int value="4" label="kFailedToBeginInitTransaction"/>
   <int value="5" label="kMetaTableInitFailed"/>
-  <int value="6" label="kCurrentVersionTooNew"/>
+  <int value="6" label="(Obsolete) kCurrentVersionTooNew. Removed in 2026/08."/>
   <int value="7" label="kMigrationError"/>
   <int value="8" label="kFailedToCreateTable"/>
   <int value="9" label="kFailedToCommitInitTransaction"/>
