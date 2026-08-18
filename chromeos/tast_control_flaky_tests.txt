@@ -14,10 +14,6 @@ tast.crostini.AppAndroidStudio.bookworm_clamshell_stable@volteer
 # b/537158036
 tast.flex.HWIS
 
-# b/542361822
-tast.shimlessrma.CancelFlow.select_components_none_next_cancel_critical@octopus
-
 # b/542363235
 tast.apps.LaunchHelpAppOnManagedDevice.logged_in_stable_fieldtrial_testing_config_on@octopus
 tast.apps.LaunchHelpAppOnManagedDevice.logged_in_stable_fieldtrial_testing_config_off@octopus
-
