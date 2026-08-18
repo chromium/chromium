@@ -94,6 +94,15 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   void AskGeminiWithContext(const std::string& user_command,
                             const std::vector<int64_t>& memory_bank_entry_ids,
                             AskGeminiWithContextCallback callback) override;
+  void ConfirmAllTabGroups(ConfirmAllTabGroupsCallback callback) override;
+  void GetConfirmedTabGroups(GetConfirmedTabGroupsCallback callback) override;
+  void RemoveConfirmedTabGroup(
+      const base::Uuid& saved_guid,
+      RemoveConfirmedTabGroupCallback callback) override;
+  void CloseConfirmedTabGroup(const base::Uuid& saved_guid,
+                              CloseConfirmedTabGroupCallback callback) override;
+  void RemoveAllConfirmedTabGroups(
+      RemoveAllConfirmedTabGroupsCallback callback) override;
 
  private:
   mojo::Remote<browser::context_hub::mojom::Page> page_;

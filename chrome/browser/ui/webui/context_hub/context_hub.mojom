@@ -5,6 +5,7 @@
 module browser.context_hub.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 import "url/mojom/url.mojom";
 
 feature kAutoTabGroups {
@@ -106,6 +107,9 @@ struct TabInfo {
 struct TabGroup {
   string label;
   array<TabInfo> tabs;
+  // Unique identifier for the saved group managed by TabGroupSyncService,
+  // present for confirmed saved groups only.
+  mojo_base.mojom.Uuid? saved_guid;
 };
 
 enum ChatRole {
@@ -234,4 +238,28 @@ interface PageHandler {
   AskGeminiWithContext(
       string user_command, array<int64> memory_bank_entry_ids)
       => (ChatMessage response);
+
+  // Confirms all suggested tab groups to the browser window and saves them
+  // to TabGroupSyncService.
+  [RuntimeFeature=kAutoTabGroups]
+  ConfirmAllTabGroups() => (bool success);
+
+  // Returns list of confirmed tab groups currently open or saved.
+  [RuntimeFeature=kAutoTabGroups]
+  GetConfirmedTabGroups() => (array<TabGroup> groups);
+
+  // Removes a confirmed tab group from TabGroupSyncService and ungroups its
+  // open tabs in the browser window without closing them.
+  [RuntimeFeature=kAutoTabGroups]
+  RemoveConfirmedTabGroup(mojo_base.mojom.Uuid saved_guid) => ();
+
+  // Closes an open confirmed tab group from the browser window without removing
+  // its saved state from TabGroupSyncService.
+  [RuntimeFeature=kAutoTabGroups]
+  CloseConfirmedTabGroup(mojo_base.mojom.Uuid saved_guid) => ();
+
+  // Removes all confirmed tab groups from TabGroupSyncService and ungroups
+  // their open tabs in the browser window.
+  [RuntimeFeature=kAutoTabGroups]
+  RemoveAllConfirmedTabGroups() => ();
 };

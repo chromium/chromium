@@ -21,6 +21,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,6 +30,10 @@
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -118,6 +123,11 @@ class ContextHubPageHandlerTest : public testing::Test {
     profile->GetPrefs()->SetTime(prefs::kContextHubLastAutoTodosGenerationTime,
                                  base::Time::Now());
 
+    tab_groups::TabGroupSyncServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_, base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+        }));
     PersonalContextServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         browser_context,
         base::BindRepeating([](content::BrowserContext* context)
@@ -189,6 +199,10 @@ class ContextHubPageHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   base::CallbackListSubscription create_services_subscription_;
+
+  struct EnsureFactories {
+    EnsureFactories() { ContextHubServiceFactory::GetInstance(); }
+  } ensure_factories_;
   TestingProfile profile_;
 #if !BUILDFLAG(IS_ANDROID)
   raw_ptr<MockTabProvider> mock_tab_provider_ = nullptr;
@@ -1502,6 +1516,96 @@ TEST_F(ContextHubPageHandlerTest, DeleteTodoFeedback) {
   EXPECT_EQ("todo_2", feedbacks[0]->todo_id);
   EXPECT_FALSE(feedbacks[0]->liked);
 }
+
+TEST_F(ContextHubPageHandlerTest, GetConfirmedTabGroups) {
+  auto* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_);
+  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kBlue, {},
+                                  /*position=*/std::nullopt, uuid);
+  sync_service->AddGroup(group);
+
+  base::test::TestFuture<std::vector<browser::context_hub::mojom::TabGroupPtr>>
+      future;
+  handler_->GetConfirmedTabGroups(future.GetCallback());
+  auto groups = future.Take();
+  ASSERT_EQ(1u, groups.size());
+  EXPECT_EQ(uuid, groups[0]->saved_guid);
+  EXPECT_EQ("Test Group", groups[0]->label);
+}
+
+TEST_F(ContextHubPageHandlerTest, RemoveConfirmedTabGroup_InvalidGuid) {
+  base::Uuid invalid_uuid;
+  base::test::TestFuture<void> future;
+  handler_->RemoveConfirmedTabGroup(invalid_uuid, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(ContextHubPageHandlerTest, CloseConfirmedTabGroup_InvalidGuid) {
+  base::Uuid invalid_uuid;
+  base::test::TestFuture<void> future;
+  handler_->CloseConfirmedTabGroup(invalid_uuid, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextHubPageHandlerTest, ConfirmAllTabGroups) {
+  EXPECT_CALL(*mock_tab_provider_, ConfirmTabGroups(_))
+      .WillOnce(testing::Return(true));
+  base::test::TestFuture<bool> future;
+  handler_->ConfirmAllTabGroups(future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest, RemoveConfirmedTabGroup) {
+  auto* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_);
+  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kBlue, {},
+                                  /*position=*/std::nullopt, uuid);
+  sync_service->AddGroup(group);
+
+  EXPECT_CALL(*mock_tab_provider_, UngroupGroupFromTabstripIfOpen(uuid));
+
+  base::test::TestFuture<void> future;
+  handler_->RemoveConfirmedTabGroup(uuid, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(ContextHubPageHandlerTest, CloseConfirmedTabGroup) {
+  auto* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_);
+  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kBlue, {},
+                                  /*position=*/std::nullopt, uuid);
+  sync_service->AddGroup(group);
+
+  EXPECT_CALL(*mock_tab_provider_, RemoveGroupFromTabstripIfOpen(uuid));
+
+  base::test::TestFuture<void> future;
+  handler_->CloseConfirmedTabGroup(uuid, future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(ContextHubPageHandlerTest, RemoveAllConfirmedTabGroups) {
+  auto* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(&profile_);
+  base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroup group(u"Test Group",
+                                  tab_groups::TabGroupColorId::kBlue, {},
+                                  /*position=*/std::nullopt, uuid);
+  sync_service->AddGroup(group);
+
+  EXPECT_CALL(*mock_tab_provider_, UngroupGroupFromTabstripIfOpen(uuid));
+
+  base::test::TestFuture<void> future;
+  handler_->RemoveAllConfirmedTabGroups(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace context_hub

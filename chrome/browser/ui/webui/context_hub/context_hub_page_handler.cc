@@ -7,9 +7,11 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
 #include "chrome/browser/context_hub/context_hub_service.h"
@@ -312,6 +314,8 @@ void ContextHubPageHandler::RetrieveAndGroupTabs(
     return;
   }
 
+  // TODO(crbug.com/546564997): Include confirmed tab groups in the request
+  // payload for model execution workflow for regrouping.
   service->GroupTabs(
       GetOpenUngroupedTabs(tab_provider_.get()), user_command,
       base::BindOnce(
@@ -463,4 +467,115 @@ void ContextHubPageHandler::AskGeminiWithContext(
             std::move(callback).Run(std::move(response));
           },
           std::move(callback)));
+}
+
+void ContextHubPageHandler::ConfirmAllTabGroups(
+    ConfirmAllTabGroupsCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service || !tab_provider_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  service->GetTabGroups(base::BindOnce(
+      [](base::WeakPtr<ContextHubPageHandler> handler,
+         base::WeakPtr<context_hub::ContextHubService> service,
+         ConfirmAllTabGroupsCallback callback,
+         std::vector<context_hub::TabGroupEntry> groups) {
+        if (!handler || !service) {
+          std::move(callback).Run(false);
+          return;
+        }
+        bool success = handler->tab_provider_->ConfirmTabGroups(groups);
+        service->DeleteAllTabGroups(
+            base::BindOnce(std::move(callback), success));
+      },
+      weak_factory_.GetWeakPtr(), service->GetWeakPtr(), std::move(callback)));
+}
+
+void ContextHubPageHandler::GetConfirmedTabGroups(
+    GetConfirmedTabGroupsCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::vector<context_hub::TabGroupEntry> entries =
+      service->GetConfirmedTabGroups();
+  std::vector<browser::context_hub::mojom::TabGroupPtr> groups;
+  groups.reserve(entries.size());
+  for (const auto& entry : entries) {
+    auto mojo_group = browser::context_hub::mojom::TabGroup::New();
+    base::Uuid parsed_guid = base::Uuid::ParseCaseInsensitive(entry.id);
+    if (parsed_guid.is_valid()) {
+      mojo_group->saved_guid = parsed_guid;
+    }
+    mojo_group->label = entry.label;
+    mojo_group->tabs = ToMojoTabs(entry.tabs);
+    groups.push_back(std::move(mojo_group));
+  }
+  std::move(callback).Run(std::move(groups));
+}
+
+void ContextHubPageHandler::RemoveConfirmedTabGroup(
+    const base::Uuid& saved_guid,
+    RemoveConfirmedTabGroupCallback callback) {
+  if (!saved_guid.is_valid()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service || !tab_provider_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  tab_provider_->UngroupGroupFromTabstripIfOpen(saved_guid);
+  service->RemoveConfirmedTabGroup(saved_guid);
+  std::move(callback).Run();
+}
+
+void ContextHubPageHandler::CloseConfirmedTabGroup(
+    const base::Uuid& saved_guid,
+    CloseConfirmedTabGroupCallback callback) {
+  if (!saved_guid.is_valid()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service || !tab_provider_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  tab_provider_->RemoveGroupFromTabstripIfOpen(saved_guid);
+  std::move(callback).Run();
+}
+
+void ContextHubPageHandler::RemoveAllConfirmedTabGroups(
+    RemoveAllConfirmedTabGroupsCallback callback) {
+  context_hub::ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(profile_);
+  if (!service || !tab_provider_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  for (const context_hub::TabGroupEntry& entry :
+       service->GetConfirmedTabGroups()) {
+    base::Uuid guid = base::Uuid::ParseCaseInsensitive(entry.id);
+    if (guid.is_valid()) {
+      tab_provider_->UngroupGroupFromTabstripIfOpen(guid);
+    }
+  }
+
+  service->RemoveAllConfirmedTabGroups();
+  std::move(callback).Run();
 }
