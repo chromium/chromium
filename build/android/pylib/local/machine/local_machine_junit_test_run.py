@@ -143,6 +143,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
             '-Drobolectric.offline=true',
             '-Drobolectric.resourcesMode=binary',
             '-Drobolectric.logging=stdout',
+            '-Drobolectric.enforceViewMethodsCalledOnMainThread=true',
             '-Djava.library.path=%s' % self._test_instance.native_libs_dir,
         ]
         if self._test_instance.run_disabled:
