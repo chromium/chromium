@@ -40,15 +40,8 @@ void GeminiStepEligibilityChecker::CheckEligibility(
   }
 
   identity_manager_observation_.Observe(identity_manager);
-
-  // TODO(crbug.com/524959454): Remove this workaround once Finch country
-  // available in the first run is ready.
-  // `base::Unretained(this)` is safe here because `this` owns the timer,
-  // which will be destroyed with `this`, cancelling any pending callbacks.
-  variations_country_timer_.Start(
-      FROM_HERE, base::Milliseconds(500),
-      base::BindRepeating(&GeminiStepEligibilityChecker::CheckCountry,
-                          base::Unretained(this)));
+  variations_service_observation_.Observe(
+      g_browser_process->variations_service());
 
   CheckCountry();
   CheckAccountInfo();
@@ -77,9 +70,13 @@ void GeminiStepEligibilityChecker::OnIdentityManagerShutdown(
   }
 }
 
+void GeminiStepEligibilityChecker::OnSeedFetched() {
+  CheckCountry();
+}
+
 void GeminiStepEligibilityChecker::StopWaiting() {
   identity_manager_observation_.Reset();
-  variations_country_timer_.Stop();
+  variations_service_observation_.Reset();
 }
 
 void GeminiStepEligibilityChecker::CheckCountry() {
@@ -100,7 +97,7 @@ void GeminiStepEligibilityChecker::CheckCountry() {
   country_data_ =
       CountryData{.stored_permanent_country = stored_permanent_country,
                   .latest_country = latest_country};
-  variations_country_timer_.Stop();
+  variations_service_observation_.Reset();
   MaybeResolveEligibility();
 }
 

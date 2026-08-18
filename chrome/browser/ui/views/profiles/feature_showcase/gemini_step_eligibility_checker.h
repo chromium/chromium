@@ -6,17 +6,19 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_FEATURE_SHOWCASE_GEMINI_STEP_ELIGIBILITY_CHECKER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_constants.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/variations/service/variations_service.h"
 
 class GeminiStepEligibilityChecker
     : public FeatureShowcaseStepEligibilityChecker,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public variations::VariationsService::Observer {
  public:
   GeminiStepEligibilityChecker();
   GeminiStepEligibilityChecker(const GeminiStepEligibilityChecker&) = delete;
@@ -35,6 +37,9 @@ class GeminiStepEligibilityChecker
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
+  // variations::VariationsService::Observer:
+  void OnSeedFetched() override;
+
  private:
   struct CountryData {
     std::string stored_permanent_country;
@@ -51,7 +56,9 @@ class GeminiStepEligibilityChecker
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-  base::RepeatingTimer variations_country_timer_;
+  base::ScopedObservation<variations::VariationsService,
+                          variations::VariationsService::Observer>
+      variations_service_observation_{this};
 
   std::optional<CountryData> country_data_;
   std::optional<AccountInfo> account_info_;
