@@ -96,6 +96,8 @@ const safeDefineProperty = Object.defineProperty;
 const safeGetOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
 const safeOwnKeys = Reflect.ownKeys;
 const arrayIncludes = safeGetMethod(Array.prototype, 'includes');
+const safeJsonStringify = JSON.stringify;
+const safeJsonParse = JSON.parse;
 
 
 // Reuse existing namespaces if they exist to maintain compatibility with other
@@ -185,6 +187,8 @@ const portConnectorInstance = new class {
   constructor() {
     /** @private {MessagePort} */
     this.controlPort_ = null;
+    /** @private {string} */
+    this.token_ = '';
 
     // A map of ports waiting to be published to the controlPort_, keyed by
     // string IDs.
@@ -230,7 +234,8 @@ const portConnectorInstance = new class {
    */
   sendPort(portId, port) {
     // Use the securely cached postMessage method to prevent interception.
-    postMessage(this.controlPort_, portId, [port]);
+    const payload = safeJsonStringify({portId: portId, token: this.token_});
+    postMessage(this.controlPort_, payload, [port]);
   }
 
   /**
@@ -250,9 +255,20 @@ const portConnectorInstance = new class {
     }
 
     // Only process window.onmessage events which are intended for this class.
-    if (getData(messageEvent) !== 'cast.master.connect') {
+    const rawData = getData(messageEvent);
+    if (typeof rawData !== 'string') {
       return;
     }
+    let obj;
+    try {
+      obj = safeJsonParse(rawData);
+    } catch (e) {
+      return;
+    }
+    if (!obj || obj.action !== 'cast.master.connect') {
+      return;
+    }
+    this.token_ = obj.token;
 
     const ports = getPorts(messageEvent);
     if (!ports || ports.length !== 1) {

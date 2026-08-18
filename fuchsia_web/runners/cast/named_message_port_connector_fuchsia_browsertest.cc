@@ -16,15 +16,16 @@
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
 #include "content/public/test/browser_test.h"
-#include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/url_constants.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 using CastMessagePort = std::unique_ptr<cast_api_bindings::MessagePort>;
 
@@ -71,25 +72,39 @@ class NamedMessagePortConnectorFuchsiaTest : public WebEngineBrowserTest {
       const fuchsia::web::NavigationState& change,
       fuchsia::web::NavigationEventListener::OnNavigationStateChangedCallback
           callback) {
-    if (change.has_is_main_document_loaded() &&
-        change.is_main_document_loaded()) {
-      std::string connect_message;
-      CastMessagePort connect_port;
-      connector_->GetConnectMessage(&connect_message, &connect_port);
-      frame_->PostMessage(
-          "*", CreateWebMessage(connect_message, std::move(connect_port)),
-          [](fuchsia::web::Frame_PostMessage_Result result) {
-            EXPECT_TRUE(result.is_response());
-          });
+    if (change.has_url()) {
+      committed_origin_ = url::Origin::Create(GURL(change.url()));
     }
+    MaybeConnectPortConnector(change);
 
     // Allow the TestNavigationListener's usual navigation event processing flow
     // to continue.
     callback();
   }
 
+  void MaybeConnectPortConnector(const fuchsia::web::NavigationState& change) {
+    if (!change.has_is_main_document_loaded() ||
+        !change.is_main_document_loaded()) {
+      return;
+    }
+    if (committed_origin_.opaque()) {
+      return;
+    }
+
+    std::string connect_message;
+    CastMessagePort connect_port;
+    connector_->GetConnectMessage(&connect_message, &connect_port);
+    frame_->PostMessage(
+        committed_origin_.Serialize(),
+        CreateWebMessage(connect_message, std::move(connect_port)),
+        [](fuchsia::web::Frame_PostMessage_Result result) {
+          EXPECT_TRUE(result.is_response());
+        });
+  }
+
   FrameForTest frame_;
   std::unique_ptr<NamedMessagePortConnectorFuchsia> connector_;
+  url::Origin committed_origin_;
 };
 
 IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, EndToEnd) {

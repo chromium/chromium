@@ -95,6 +95,8 @@ class CastComponent final
       fuchsia::web::NavigationState change,
       OnNavigationStateChangedCallback callback) override;
 
+  void MaybeConnectPortConnector(const fuchsia::web::NavigationState& change);
+
   // fuchsia::ui::app::ViewProvider implementation.
   void CreateViewWithViewRef(zx::eventpair view_token,
                              fuchsia::ui::views::ViewRefControl control_ref,
@@ -118,6 +120,7 @@ class CastComponent final
   std::vector<fuchsia::web::UrlRequestRewriteRule> initial_url_rewrite_rules_;
 
   bool constructor_active_ = false;
+  std::string current_url_;
   std::unique_ptr<NamedMessagePortConnectorFuchsia> connector_;
   std::unique_ptr<ApiBindingsClient> api_bindings_client_;
   std::unique_ptr<ApplicationControllerImpl> application_controller_;

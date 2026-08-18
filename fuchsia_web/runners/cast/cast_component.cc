@@ -20,12 +20,15 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/task/current_thread.h"
+#include "base/unguessable_token.h"
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "fuchsia_web/runners/cast/cast_runner.h"
 #include "fuchsia_web/runners/cast/cast_streaming.h"
 #include "fuchsia_web/runners/common/web_component.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -240,22 +243,38 @@ void CastComponent::OnRewriteRulesReceived(
 void CastComponent::OnNavigationStateChanged(
     fuchsia::web::NavigationState change,
     OnNavigationStateChangedCallback callback) {
-  if (change.has_is_main_document_loaded() &&
-      change.is_main_document_loaded()) {
-    std::string connect_message;
-    std::unique_ptr<cast_api_bindings::MessagePort> connect_port;
-    connector_->GetConnectMessage(&connect_message, &connect_port);
-
-    // Send the NamedMessagePortConnector handshake to the page.
-    frame()->PostMessage(
-        "*", CreateWebMessage(connect_message, std::move(connect_port)),
-        [](fuchsia::web::Frame_PostMessage_Result result) {
-          DCHECK(result.is_response());
-        });
+  if (change.has_url()) {
+    current_url_ = change.url();
   }
+  MaybeConnectPortConnector(change);
 
   WebComponent::OnNavigationStateChanged(std::move(change),
                                          std::move(callback));
+}
+
+void CastComponent::MaybeConnectPortConnector(
+    const fuchsia::web::NavigationState& change) {
+  if (!change.has_is_main_document_loaded() ||
+      !change.is_main_document_loaded()) {
+    return;
+  }
+
+  url::Origin committed_origin = url::Origin::Create(GURL(current_url_));
+  if (committed_origin.opaque()) {
+    return;
+  }
+
+  std::string connect_message;
+  std::unique_ptr<cast_api_bindings::MessagePort> connect_port;
+  connector_->GetConnectMessage(&connect_message, &connect_port);
+
+  // Send the NamedMessagePortConnector handshake to the page.
+  frame()->PostMessage(
+      committed_origin.Serialize(),
+      CreateWebMessage(connect_message, std::move(connect_port)),
+      [](fuchsia::web::Frame_PostMessage_Result result) {
+        DCHECK(result.is_response());
+      });
 }
 
 void CastComponent::CreateViewWithViewRef(

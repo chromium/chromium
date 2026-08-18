@@ -234,6 +234,7 @@ test("cast_runner_browsertests") {
     "//fuchsia_web/common/test:test_support",
     "//fuchsia_web/runners/cast/test:test_support",
     "//fuchsia_web/webengine:browsertest_core",
+    "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/ozone",
