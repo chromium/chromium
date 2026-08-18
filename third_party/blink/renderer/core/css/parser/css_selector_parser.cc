@@ -97,6 +97,18 @@ bool NeedsImplicitCombinatorForMatching(const CSSSelector& selector) {
          CSSSelector::RelationType::kSubSelector;
 }
 
+// Reverses the order of the given selectors. Equivalent to
+// std::ranges::reverse(), but that generates surprisingly poor code here
+// (it materializes checked iterators on the stack, causing store-forwarding
+// stalls in what is a very hot loop for large stylesheets), so we spell it
+// out; swap(CSSSelector&, CSSSelector&) is a plain byte swap.
+ALWAYS_INLINE void ReverseSelectors(base::span<CSSSelector> selectors) {
+  for (wtf_size_t i = 0, j = static_cast<wtf_size_t>(selectors.size());
+       i + 1 < j; ++i, --j) {
+    swap(selectors[i], selectors[j - 1]);
+  }
+}
+
 // Marks the end of parsing a complex selector. (In many cases, there may
 // be more complex selectors after this, since we are often dealing with
 // lists of complex selectors. Those are marked using SetLastInSelectorList(),
@@ -680,14 +692,14 @@ unsigned ExtractCompoundFlags(const CSSSelector& simple_selector,
 
 unsigned ExtractCompoundFlags(const base::span<CSSSelector> compound_selector,
                               CSSParserMode parser_mode) {
-  unsigned compound_flags = 0;
-  for (const CSSSelector& simple : compound_selector) {
-    if (compound_flags) {
-      break;
+  // (Indexed loop rather than a span range-for; see ReverseSelectors().)
+  for (wtf_size_t i = 0; i < compound_selector.size(); ++i) {
+    if (unsigned flags =
+            ExtractCompoundFlags(compound_selector[i], parser_mode)) {
+      return flags;
     }
-    compound_flags |= ExtractCompoundFlags(simple, parser_mode);
   }
-  return compound_flags;
+  return 0;
 }
 
 }  // namespace
@@ -716,7 +728,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeRelativeSelector(
   }
 
   // See ConsumeComplexSelector().
-  std::ranges::reverse(reset_vector.AddedElements());
+  ReverseSelectors(reset_vector.AddedElements());
 
   MarkAsEntireComplexSelector(reset_vector.AddedElements());
   return reset_vector.CommitAddedElements();
@@ -856,7 +868,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
     return {};
   }
 
-  std::ranges::reverse(reset_vector.AddedElements());
+  ReverseSelectors(reset_vector.AddedElements());
 
   MarkAsEntireComplexSelector(reset_vector.AddedElements());
   return reset_vector.CommitAddedElements();
@@ -882,7 +894,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
 
   // Reverse the compound selector, so that it comes out properly
   // after we reverse everything below.
-  std::ranges::reverse(compound_selector);
+  ReverseSelectors(compound_selector);
 
   if (CSSSelector::RelationType combinator = ConsumeCombinator(stream)) {
     result_flags |= kContainsComplexSelector;
@@ -915,7 +927,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
   // The boundaries between the compound selectors are implicit; they are given
   // by having a Relation() not equal to kSubSelector, so they follow
   // automatically when we do the reversal.
-  std::ranges::reverse(reset_vector.AddedElements());
+  ReverseSelectors(reset_vector.AddedElements());
 
   if (nesting_type != CSSNestingType::kNone) {
     // In nested top-level rules, if we do not have a & anywhere in the list,
@@ -962,7 +974,7 @@ bool CSSSelectorParser::ConsumePartialComplexSelector(
     compound_selector.back().SetRelation(combinator);
 
     // See ConsumeComplexSelector().
-    std::ranges::reverse(compound_selector);
+    ReverseSelectors(compound_selector);
 
     if (previous_compound_flags & kHasPseudoElementForRightmostCompound) {
       // If we've already seen a compound that needs to be rightmost, and still
@@ -1410,9 +1422,9 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
                               start_pos);
 
   // The relationship between all of these are that they are sub-selectors.
-  for (CSSSelector& selector : reset_vector.AddedElements().first(
-           reset_vector.AddedElements().size() - 1)) {
-    selector.SetRelation(CSSSelector::kSubSelector);
+  // (Indexed loop rather than a span range-for; see ReverseSelectors().)
+  for (wtf_size_t i = start_pos; i + 1 < output_.size(); ++i) {
+    output_[i].SetRelation(CSSSelector::kSubSelector);
   }
 
   SplitCompoundAtImplicitCombinator(reset_vector.AddedElements());
