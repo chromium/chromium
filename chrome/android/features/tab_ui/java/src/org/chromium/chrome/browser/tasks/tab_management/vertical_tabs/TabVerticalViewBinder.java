@@ -195,7 +195,6 @@ class TabVerticalViewBinder {
                 TabListViewBinderUtils.bindActionButton(
                         model, menuButton, model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
             }
-        } else if (TabProperties.TAB_HOVER_CARD_LISTENER == propertyKey) {
             setupTabGroupHeaderHoverListener(model, view);
         }
     }
@@ -757,8 +756,6 @@ class TabVerticalViewBinder {
         if (menuButton != null) {
             ImageViewCompat.setImageTintList(menuButton, ColorStateList.valueOf(foregroundColor));
         }
-
-        setupTabGroupHeaderHoverListener(model, view);
     }
 
     private static void updateTabItemSize(

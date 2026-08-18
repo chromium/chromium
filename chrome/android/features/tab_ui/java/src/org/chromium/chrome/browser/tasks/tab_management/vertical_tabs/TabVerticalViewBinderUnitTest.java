@@ -1091,8 +1091,13 @@ public class TabVerticalViewBinderUnitTest {
     public void testTabGroupHeaderHover_MenuButtonVisibility() {
         ViewGroup headerView = inflateGroupHeaderView();
         mModel.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED);
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_GROUP_CARD_COLOR);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
 
         int expectedBackgroundColor =
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
@@ -1131,12 +1136,17 @@ public class TabVerticalViewBinderUnitTest {
     @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
     public void testTabGroupHeaderHover_MenuButtonVisibility_Incognito() {
         ViewGroup headerView = inflateGroupHeaderView();
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
         PropertyModel model =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
                         .with(TabProperties.IS_INCOGNITO, true)
                         .with(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED)
+                        .with(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData)
                         .build();
         TabVerticalViewBinder.bindTabGroupHeader(model, headerView, TabProperties.IS_INCOGNITO);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                model, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
 
         int expectedBackgroundColor =
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
@@ -1177,8 +1187,13 @@ public class TabVerticalViewBinderUnitTest {
         ViewGroup headerView = inflateGroupHeaderView();
         mModel.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED);
         mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_GROUP_CARD_COLOR);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.RAIL_COLLAPSE_STATE);
 
@@ -1200,8 +1215,13 @@ public class TabVerticalViewBinderUnitTest {
     public void testTabGroupHeaderHover_MenuButtonDirectHover() {
         ViewGroup headerView = inflateGroupHeaderView();
         mModel.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED);
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
         TabVerticalViewBinder.bindTabGroupHeader(
                 mModel, headerView, TabProperties.TAB_GROUP_CARD_COLOR);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
 
         ImageView menuButton = headerView.findViewById(R.id.menu_button);
         assertEquals(View.GONE, menuButton.getVisibility());
@@ -1258,9 +1278,12 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TAB_ID, TEST_HEADER_TAB_ID);
         mModel.set(TabProperties.TAB_GROUP_HEADER_ID, TEST_TAB_GROUP_ID);
         mModel.set(TabProperties.TAB_HOVER_CARD_LISTENER, mTabHoverCardListener);
+        TabActionButtonData actionButtonData =
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener);
+        mModel.set(TabProperties.TAB_ACTION_BUTTON_DATA, actionButtonData);
 
         TabVerticalViewBinder.bindTabGroupHeader(
-                mModel, headerView, TabProperties.TAB_HOVER_CARD_LISTENER);
+                mModel, headerView, TabProperties.TAB_ACTION_BUTTON_DATA);
 
         // Hover enter.
         MotionEvent enterEvent =
