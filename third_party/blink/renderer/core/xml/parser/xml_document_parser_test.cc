@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/core/xml/parser/xml_document_parser_rs.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -219,6 +220,33 @@ TEST(XMLDocumentParserTest, ReproICUFlushCrash) {
   }
   EXPECT_EQ(ctxt->errNo, XML_ERR_OK);
   xmlFreeParserCtxt(ctxt);
+}
+
+TEST(XMLDocumentParserTest, ChunkedParsingWithPauseRust) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  execution_context.GetExecutionContext().SetUpSecurityContextForTesting();
+  auto& doc = *Document::CreateForTest(execution_context.GetExecutionContext());
+
+  ScopedXMLParsingRustForTest scoped_rust(true);
+
+  ScriptableDocumentParser* parser =
+      MakeGarbageCollected<XMLDocumentParserRs>(doc, nullptr);
+
+  // 1. Append first incomplete chunk. This sets carry_unbalanced_root_error_.
+  parser->Append("<root><child>");
+
+  // 2. Simulate a pending stylesheet that blocks the parser.
+  parser->DidAddPendingParserBlockingStylesheet();
+
+  // 3. Append second chunk that closes elements.
+  // This will trigger EndElementNs, which calls
+  // CheckIfBlockingStyleSheetAdded() and pauses the parser.
+  parser->Append("</child></root>");
+
+  parser->Finish();
+
+  EXPECT_TRUE(parser->WellFormed());
 }
 
 }  // namespace blink

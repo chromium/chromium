@@ -251,6 +251,11 @@ void XMLDocumentParserRs::HandleError(XMLErrors::ErrorType type,
 }
 
 void XMLDocumentParserRs::Append(const String& xml_string) {
+  if (!xml_string.empty()) {
+    // Resume parsing, recover from unbalanced root error at previous chunk
+    // boundary.
+    carry_unbalanced_root_error_ = std::nullopt;
+  }
   if (RuntimeEnabledFeatures::XMLParserReplaceLoneSurrogatesEnabled()) {
     // Replace lone surrogates with U+FFFD so the parser does a best-effort
     // parse instead of rejecting the whole input (crbug.com/40814739).
