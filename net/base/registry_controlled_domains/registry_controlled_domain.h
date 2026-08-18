@@ -129,8 +129,6 @@ namespace url {
 class Origin;
 }
 
-struct DomainRule;
-
 namespace net::registry_controlled_domains {
 
 // This enum is a required parameter to all public methods declared for this
@@ -309,8 +307,6 @@ NET_EXPORT size_t
 PermissiveGetHostRegistryLength(std::u16string_view host,
                                 UnknownRegistryFilter unknown_filter,
                                 PrivateRegistryFilter private_filter);
-
-typedef const struct DomainRule* (*FindDomainPtr)(const char*, unsigned int);
 
 // Used for unit tests. Uses default domains.
 NET_EXPORT_PRIVATE void ResetFindDomainGraphForTesting();
