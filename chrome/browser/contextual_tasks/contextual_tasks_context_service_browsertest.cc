@@ -1135,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_)).Times(0);
   EXPECT_CALL(*page_content_extraction_service(),
               GetServerUploadEligibilityForPage)
-      .WillOnce(Return(false));
+      .WillRepeatedly(Return(false));
 
   base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
       future;
