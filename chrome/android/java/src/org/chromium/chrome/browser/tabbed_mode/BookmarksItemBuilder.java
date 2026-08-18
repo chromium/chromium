@@ -422,7 +422,7 @@ public class BookmarksItemBuilder implements Destroyable {
                                     mContext,
                                     getProfileFromTabModel(),
                                     mXrSpaceModeObservableSupplier.get());
-                    List<ListItem> items = new ArrayList<>(2);
+                    List<ListItem> items = new ArrayList<>(3);
                     items.add(
                             buildBookmarkBarStateItem(
                                     R.id.bookmark_bar_state_always_hide_menu_id,
@@ -433,6 +433,12 @@ public class BookmarksItemBuilder implements Destroyable {
                                     R.id.bookmark_bar_state_always_show_menu_id,
                                     R.string.bookmark_bar_setting_always_show,
                                     visibilityState == BookmarkBarVisibilityState.ALWAYS_SHOW));
+                    items.add(
+                            buildBookmarkBarStateItem(
+                                    R.id.bookmark_bar_state_only_ntp_menu_id,
+                                    R.string.bookmark_bar_setting_only_show_bookmarks_bar_on_ntp,
+                                    visibilityState
+                                            == BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP));
                     return items;
                 };
 
