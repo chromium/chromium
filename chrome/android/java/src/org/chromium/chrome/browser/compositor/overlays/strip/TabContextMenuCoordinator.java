@@ -81,7 +81,7 @@ import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.collaboration.CollaborationService;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -922,10 +922,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             GURL url = tab.getUrl();
             if (url.isEmpty()) continue;
 
-            String scheme = url.getScheme();
-            boolean isChromeScheme =
-                    UrlConstants.CHROME_SCHEME.equals(scheme)
-                            || UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme);
+            boolean isChromeScheme = UrlUtilities.isChromeScheme(url);
 
             if (isChromeScheme && tab.getWebContents() == null) continue;
 

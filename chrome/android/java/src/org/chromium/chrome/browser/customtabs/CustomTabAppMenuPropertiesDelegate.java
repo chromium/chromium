@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -236,10 +237,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         if (CustomTabIntentDataProvider.isOpenInBrowserDisallowed(mUiType, mIsIncognitoBranded)) {
             openInChromeItemVisible = false;
         }
-        boolean isNativePage =
-                url.getScheme().equals(UrlConstants.CHROME_SCHEME)
-                        || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)
-                        || currentTab.isNativePage();
+        boolean isNativePage = UrlUtilities.isChromeScheme(url) || currentTab.isNativePage();
         boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
         boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
         // TODO(crbug.com/384992232): Hide open in Chrome for blob and data url until such view

@@ -14,6 +14,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.extensions.ExtensionsBuildflags;
 import org.chromium.url.GURL;
 
@@ -275,12 +276,11 @@ public interface NativePage {
      */
     private static @NativePageType int chromePageType(
             GURL url, @Nullable NativePage candidatePage, boolean isIncognito) {
-        String host = url.getHost();
-        String scheme = url.getScheme();
-        if (!UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme)
-                && !UrlConstants.CHROME_SCHEME.equals(scheme)) {
+        if (!UrlUtilities.isChromeScheme(url)) {
             return NativePageType.NONE;
         }
+
+        String host = url.getHost();
 
         if (candidatePage != null && candidatePage.getHost().equals(host)) {
             return NativePageType.CANDIDATE;

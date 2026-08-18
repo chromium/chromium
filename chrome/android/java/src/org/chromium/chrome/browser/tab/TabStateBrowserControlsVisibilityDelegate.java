@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
@@ -273,8 +273,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         GURL url = mTab.getUrl();
         boolean enableHidingBrowserControls = true;
         int flags = 0;
-        if (url.getScheme().equals(UrlConstants.CHROME_SCHEME)
-                || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)) {
+        if (UrlUtilities.isChromeScheme(url)) {
             enableHidingBrowserControls = false;
             flags |= (1 << (int) LockReason.CHROME_URL);
         }

@@ -34,7 +34,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -708,10 +708,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         }
 
         GURL url = tab.getUrl();
-        String scheme = url.getScheme();
-        if (url.isEmpty()
-                || UrlConstants.CHROME_SCHEME.equals(scheme)
-                || UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme)) {
+        if (url.isEmpty() || UrlUtilities.isChromeScheme(url)) {
             // Chrome URLs don't have content settings, so default to false when WebContents are not
             // available.
             return false;

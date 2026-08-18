@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -289,11 +288,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
         GURL pageUrl = mTab.getUrl();
         if (pageUrl == null || !pageUrl.isValid()) return false;
 
-        String scheme = pageUrl.getScheme();
-        boolean isChromeOrNativePage =
-                UrlConstants.CHROME_SCHEME.equals(scheme)
-                        || UrlConstants.CHROME_NATIVE_SCHEME.equals(scheme)
-                        || mTab.isNativePage();
+        boolean isChromeOrNativePage = UrlUtilities.isChromeScheme(pageUrl) || mTab.isNativePage();
         return !isChromeOrNativePage
                 && !DomDistillerUrlUtils.isDistilledPage(pageUrl)
                 && menuType == MenuType.DROPDOWN;

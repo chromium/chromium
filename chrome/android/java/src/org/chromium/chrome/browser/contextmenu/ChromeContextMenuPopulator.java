@@ -614,10 +614,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     maybeRecordUkmLensShown();
                 }
                 boolean isChromeOrNativePage =
-                        mParams.getPageUrl().getScheme().equals(UrlConstants.CHROME_SCHEME)
-                                || mParams.getPageUrl()
-                                        .getScheme()
-                                        .equals(UrlConstants.CHROME_NATIVE_SCHEME)
+                        UrlUtilities.isChromeScheme(mParams.getPageUrl())
                                 || (getTab() != null && getTab().isNativePage());
                 if (!isChromeOrNativePage
                         && !DomDistillerUrlUtils.isDistilledPage(mParams.getPageUrl())) {

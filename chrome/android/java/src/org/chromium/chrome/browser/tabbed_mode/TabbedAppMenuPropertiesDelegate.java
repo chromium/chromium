@@ -317,8 +317,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         GURL url = currentTab != null ? currentTab.getUrl() : GURL.emptyGURL();
         final boolean isNativePage =
-                url.getScheme().equals(UrlConstants.CHROME_SCHEME)
-                        || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)
+                UrlUtilities.isChromeScheme(url)
                         || (currentTab != null && currentTab.isNativePage());
         final boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
         final boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);

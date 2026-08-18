@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -91,9 +90,7 @@ public class MoreToolsItemBuilder {
 
         GURL url = currentTab.getUrl();
         boolean isChromeOrNativePage =
-                url.getScheme().equals(UrlConstants.CHROME_SCHEME)
-                        || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)
-                        || currentTab.isNativePage();
+                UrlUtilities.isChromeScheme(url) || currentTab.isNativePage();
 
         if (isChromeOrNativePage) {
             return false;

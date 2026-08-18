@@ -58,6 +58,7 @@ import org.chromium.components.browser_ui.site_settings.CookieSettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -237,8 +238,7 @@ public class SettingsFragmentRegistry {
 
         // Strict scheme validation prevents cross-origin or local file
         // scheme injection.
-        if (!UrlConstants.CHROME_SCHEME.equalsIgnoreCase(scheme)
-                && !UrlConstants.CHROME_NATIVE_SCHEME.equalsIgnoreCase(scheme)) {
+        if (!UrlUtilities.isChromeScheme(scheme)) {
             return null;
         }
 

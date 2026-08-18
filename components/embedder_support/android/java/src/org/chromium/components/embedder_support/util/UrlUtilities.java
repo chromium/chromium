@@ -126,8 +126,26 @@ public class UrlUtilities {
     }
 
     /**
-     * @param url A URL.
+     * Returns whether the URL's scheme is for a chrome page.
      *
+     * @param gurl A GURL.
+     */
+    public static boolean isChromeScheme(@Nullable GURL gurl) {
+        return gurl != null && isChromeScheme(gurl.getScheme());
+    }
+
+    /**
+     * Returns whether the scheme represented by the given string is for a chrome page.
+     *
+     * @param scheme A scheme string.
+     */
+    public static boolean isChromeScheme(@Nullable String scheme) {
+        return UrlConstants.CHROME_SCHEME.equalsIgnoreCase(scheme)
+                || UrlConstants.CHROME_NATIVE_SCHEME.equalsIgnoreCase(scheme);
+    }
+
+    /**
+     * @param url A URL.
      * @return Whether the URL's scheme is HTTP or HTTPS.
      */
     public static boolean isHttpOrHttps(GURL url) {
