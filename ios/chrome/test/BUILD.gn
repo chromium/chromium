@@ -267,6 +267,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/autofill/wallet_reminder_notice/coordinator:unit_tests",
     "//ios/chrome/browser/autofill/wallet_reminder_notice/ui:unit_tests",
     "//ios/chrome/browser/backend_promo/model:unit_tests",
+    "//ios/chrome/browser/backend_promo/ui_bundled:unit_tests",
     "//ios/chrome/browser/badges/ui_bundled:unit_tests",
     "//ios/chrome/browser/banner_promo/model:unit_tests",
     "//ios/chrome/browser/bookmarks/editor/ui:unit_tests",
