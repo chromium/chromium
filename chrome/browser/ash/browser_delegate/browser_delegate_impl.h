@@ -43,6 +43,8 @@ class BrowserDelegateImpl : public BrowserDelegate {
   bool IsActive() const override;
   bool IsMinimized() const override;
   bool IsVisible() const override;
+  bool IsFullscreen() const override;
+  void SetFullscreen(bool fullscreen) override;
   void Show() override;
   void ShowInactive() override;
   void Activate() override;

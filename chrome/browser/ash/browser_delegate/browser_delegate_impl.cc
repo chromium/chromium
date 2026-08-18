@@ -168,6 +168,16 @@ bool BrowserDelegateImpl::IsVisible() const {
   return browser_->GetWindow()->IsVisible();
 }
 
+bool BrowserDelegateImpl::IsFullscreen() const {
+  return browser_->GetWindow()->IsFullscreen();
+}
+
+void BrowserDelegateImpl::SetFullscreen(bool fullscreen) {
+  if (IsFullscreen() != fullscreen) {
+    chrome::ToggleFullscreenMode(&*browser_, /*user_initiated=*/false);
+  }
+}
+
 void BrowserDelegateImpl::Show() {
   browser_->GetWindow()->Show();
 }

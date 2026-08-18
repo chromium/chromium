@@ -33,6 +33,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
@@ -384,6 +385,7 @@ class KioskBrowserSessionBaseTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
   ash::AshTestHelper ash_test_helper_;
+  ash::BrowserControllerImpl browser_controller_;
 
   // `RenderViewHostTestEnabled` is required to make the navigation work that
   // happens in the tab added to `TestBrowserWindow` in `FakeBrowser`.

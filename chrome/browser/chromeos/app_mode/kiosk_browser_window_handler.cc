@@ -18,12 +18,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/base_window.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -224,7 +226,8 @@ bool KioskBrowserWindowHandler::PreTriageNewBrowserWindowWithoutUrl(
         KioskBrowserWindowType::kOpenedRegularBrowser);
     LOG(WARNING)
         << "Open additional fullscreen browser window in kiosk session";
-    chrome::ToggleFullscreenMode(browser, /*user_initiated=*/false);
+    ash::BrowserController::GetInstance()->GetDelegate(browser)->SetFullscreen(
+        true);
     on_browser_window_added_callback_.Run(/*is_closing=*/false);
     return WINDOW_ALLOWED;
   }
