@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -329,14 +328,6 @@ const AtomicString& MouseEvent::InterfaceName() const {
 
 bool MouseEvent::IsMouseEvent() const {
   return true;
-}
-
-void MouseEvent::SetRelatedTarget(EventTarget* related_target) {
-  if ((IsWheelEvent() || IsDragEvent()) &&
-      !RuntimeEnabledFeatures::DontLeakShadowTreesInDragEventsEnabled()) {
-    return;
-  }
-  related_target_ = related_target;
 }
 
 int16_t MouseEvent::button() const {
