@@ -16,11 +16,11 @@ namespace {
 // We use a threshold of 512 MB to end the video recording due to low disk
 // space, which is the same threshold as that used by the low disk space
 // notification (See low_disk_notification.cc).
-constexpr base::ByteSize kLowDiskSpaceThreshold = base::MiBU(512);
+constexpr base::ByteSize kLowDiskSpaceThreshold = base::MiB(512);
 
 // To avoid checking the remaining disk space after every write operation, we do
 // it only once every 10 MB written of encoder data.
-constexpr base::ByteSize kMinDataBetweenDiskSpaceChecks = base::MiBU(10);
+constexpr base::ByteSize kMinDataBetweenDiskSpaceChecks = base::MiB(10);
 
 }  // namespace
 
