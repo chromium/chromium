@@ -173,6 +173,7 @@
 #include "components/os_crypt/async/browser/dpapi_key_provider.h"
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/chrome_browser_main_mac.h"
+#include "chrome/browser/shutdown_watchdog_mac.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -578,6 +579,10 @@ BrowserProcessImpl::~BrowserProcessImpl() {
 
 #if !BUILDFLAG(IS_ANDROID)
 void BrowserProcessImpl::StartTearDown() {
+#if BUILDFLAG(IS_MAC)
+  // Emergency bound on UI-initiated shutdown; see shutdown_watchdog_mac.h.
+  shutdown_watchdog::OnBrowserTearDownStarted();
+#endif
   TRACE_EVENT0("shutdown", "BrowserProcessImpl::StartTearDown");
   // TODO(crbug.com/41222012): Fix the tests that make the check of
   // |tearing_down_| necessary in IsShuttingDown().
@@ -646,6 +651,14 @@ void BrowserProcessImpl::StartTearDown() {
     // because the background mode manager does not stop observing profile
     // changes at destruction (notifying the observers would cause a use-after-
     // free).
+#if BUILDFLAG(IS_MAC)
+    // Scoped: the key must clear when this phase completes so later dumps
+    // don't misattribute hangs to a finished phase.
+    static crash_reporter::CrashKeyString<64> mac_teardown_phase_key(
+        "mac_teardown_phase");
+    crash_reporter::ScopedCrashKeyString scoped_teardown_phase(
+        &mac_teardown_phase_key, "profile_manager_reset");
+#endif
     profile_manager_.reset();
   }
 

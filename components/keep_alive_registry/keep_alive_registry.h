@@ -94,8 +94,14 @@ class KeepAliveRegistry {
   void OnKeepAliveStateChanged(bool new_keeping_alive);
   void OnRestartAllowedChanged(bool new_restart_allowed);
 
-  // Unregisters one occurrence of the provided |origin| from |keep_alive_map|
+  // Unregisters one occurrence of the provided `origin` from `keep_alive_map`.
   void DecrementCount(KeepAliveOrigin origin, OriginMap* keep_alive_map);
+
+  // Mirrors the registry state into the "keep_alive_registry" crash key so
+  // hang/watchdog dumps taken from other threads carry the set of live
+  // KeepAlives (the registry itself is main-thread-only). Cleared when no
+  // KeepAlives remain.
+  void UpdateCrashKey();
 
   // Tracks the registered KeepAlives, storing the origin and the number of
   // registered KeepAlives for each.

@@ -7,10 +7,20 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "components/crash/core/common/crash_buildflags.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !BUILDFLAG(USE_CRASH_KEY_STUBS)
+using ::testing::AllOf;
+using ::testing::HasSubstr;
+using ::testing::IsEmpty;
+using ::testing::Not;
+#endif
 
 class KeepAliveRegistryTest : public testing::Test,
                               public KeepAliveStateObserver {
@@ -21,6 +31,9 @@ class KeepAliveRegistryTest : public testing::Test,
         start_keep_alive_call_count_(0),
         stop_keep_alive_call_count_(0),
         registry_(KeepAliveRegistry::GetInstance()) {
+#if !BUILDFLAG(USE_CRASH_KEY_STUBS)
+    crash_reporter::InitializeCrashKeysForTesting();
+#endif
     registry_->AddObserver(this);
 
     EXPECT_FALSE(registry_->IsKeepingAlive());
@@ -32,6 +45,9 @@ class KeepAliveRegistryTest : public testing::Test,
 
     EXPECT_FALSE(registry_->IsKeepingAlive());
     EXPECT_FALSE(registry_->IsRestarting());
+#if !BUILDFLAG(USE_CRASH_KEY_STUBS)
+    crash_reporter::ResetCrashKeysForTesting();
+#endif
   }
 
   void OnKeepAliveStateChanged(bool is_keeping_alive) override {
@@ -263,3 +279,38 @@ TEST_F(KeepAliveRegistryTest, WouldRestartWithoutTest) {
   EXPECT_EQ(registry_->IsRestartAllowed(),
             registry_->WouldRestartWithout(empty_vector));
 }
+
+#if !BUILDFLAG(USE_CRASH_KEY_STUBS)
+TEST_F(KeepAliveRegistryTest, CrashKeyTest) {
+  // Initially, the crash key should be empty (no keep-alive).
+  EXPECT_THAT(crash_reporter::GetCrashKeyValue("keep_alive_registry"),
+              IsEmpty());
+
+  {
+    // Register one KeepAlive.
+    ScopedKeepAlive keep_alive_1(KeepAliveOrigin::CHROME_APP_DELEGATE,
+                                 KeepAliveRestartOption::DISABLED);
+    EXPECT_THAT(crash_reporter::GetCrashKeyValue("keep_alive_registry"),
+                AllOf(HasSubstr("CHROME_APP_DELEGATE"),
+                      HasSubstr("registered_count_=1")));
+
+    {
+      // Register second KeepAlive with a different origin.
+      ScopedKeepAlive keep_alive_2(KeepAliveOrigin::PANEL,
+                                   KeepAliveRestartOption::ENABLED);
+      EXPECT_THAT(crash_reporter::GetCrashKeyValue("keep_alive_registry"),
+                  AllOf(HasSubstr("CHROME_APP_DELEGATE"), HasSubstr("PANEL"),
+                        HasSubstr("registered_count_=2")));
+    }
+
+    // After destroying the second one, it should update.
+    EXPECT_THAT(crash_reporter::GetCrashKeyValue("keep_alive_registry"),
+                AllOf(HasSubstr("CHROME_APP_DELEGATE"), Not(HasSubstr("PANEL")),
+                      HasSubstr("registered_count_=1")));
+  }
+
+  // After all are destroyed, the crash key should be empty again.
+  EXPECT_THAT(crash_reporter::GetCrashKeyValue("keep_alive_registry"),
+              IsEmpty());
+}
+#endif

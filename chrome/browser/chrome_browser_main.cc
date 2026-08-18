@@ -225,6 +225,7 @@
 #include <Security/Security.h>
 
 #include "chrome/browser/mac/chrome_browser_main_extra_parts_mac.h"
+#include "chrome/browser/shutdown_watchdog_mac.h"
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 
@@ -876,6 +877,12 @@ ChromeBrowserMainParts::~ChromeBrowserMainParts() {
   while (!chrome_extra_parts_.empty()) {
     chrome_extra_parts_.pop_back();
   }
+#if BUILDFLAG(IS_MAC)
+  // As late as //chrome/browser gets: after ~BrowserProcessImpl and the
+  // browser_shutdown::ShutdownPostThreadsStop() I/O. The remaining
+  // content-layer exit path is short and not worth a false-positive kill.
+  shutdown_watchdog::OnShutdownComplete();
+#endif
 }
 
 void ChromeBrowserMainParts::SetupMetrics() {

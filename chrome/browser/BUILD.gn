@@ -1511,6 +1511,8 @@ source_set("core") {
       "platform_util_mac.mm",
       "process_singleton_mac.mm",
       "shell_integration_mac.mm",
+      "shutdown_watchdog_mac.cc",
+      "shutdown_watchdog_mac.h",
     ]
 
     deps += [

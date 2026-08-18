@@ -4,10 +4,13 @@
 
 #include "components/keep_alive_registry/keep_alive_registry.h"
 
+#include <sstream>
+
 #include "base/auto_reset.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 
@@ -152,6 +155,7 @@ void KeepAliveRegistry::Register(KeepAliveOrigin origin,
     OnRestartAllowedChanged(new_restart_allowed);
 
   DVLOG(1) << "New state of the KeepAliveRegistry: " << *this;
+  UpdateCrashKey();
 }
 
 void KeepAliveRegistry::Unregister(KeepAliveOrigin origin,
@@ -180,6 +184,7 @@ void KeepAliveRegistry::Unregister(KeepAliveOrigin origin,
     OnRestartAllowedChanged(new_restart_allowed);
 
   DVLOG(1) << "New state of the KeepAliveRegistry:" << *this;
+  UpdateCrashKey();
 }
 
 void KeepAliveRegistry::OnKeepAliveStateChanged(bool new_keeping_alive) {
@@ -216,4 +221,18 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveRegistry& registry) {
   }
   out << "]}";
   return out;
+}
+
+void KeepAliveRegistry::UpdateCrashKey() {
+  // 512 fits roughly 18 origins; the map is enum-ordered rather than
+  // blame-ordered, so generous headroom keeps truncation from hiding the
+  // origin that is actually blocking shutdown.
+  static crash_reporter::CrashKeyString<512> crash_key("keep_alive_registry");
+  if (registered_count_ == 0) {
+    crash_key.Clear();
+    return;
+  }
+  std::ostringstream os;
+  os << *this;
+  crash_key.Set(os.str());
 }

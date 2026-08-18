@@ -19,4 +19,12 @@ void InstallShutdownSignalHandlers(
     base::OnceCallback<void(int)> shutdown_callback,
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
 
+// Terminates the process so that the wait status reports death by `signal`
+// (WIFSIGNALED), the way supervisors like launchd expect. Restores SIG_DFL
+// defensively (GracefulShutdownHandler already did on first delivery),
+// unblocks `signal` on the calling thread, and raises it. Falls back to
+// _exit(signal | (1 << 7)), a shell-only convention, if delivery somehow
+// fails. Never returns.
+[[noreturn]] void ReraiseSignalAndExit(int signal);
+
 #endif  // CHROME_BROWSER_SHUTDOWN_SIGNAL_HANDLERS_POSIX_H_
