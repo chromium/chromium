@@ -909,6 +909,39 @@ TEST_P(ArtificialV5SearchHashesCacheTest, TestCachePopulated) {
   EXPECT_EQ(cache_results[hash_prefix][0].full_hash(), full_hash);
 }
 
+TEST_P(V5SearchHashesCacheTest, CacheArtificialVerdictWithThreatType) {
+  auto cache =
+      std::make_unique<V5SearchHashesCache>(/*history_service=*/nullptr);
+  GURL test_url("https://example.com/malware.html");
+
+  cache->CacheArtificialV5SearchHashesLookupVerdict(test_url,
+                                                    V5::ThreatType::MALWARE);
+  FullHashStr full_hash = SBProtocolManagerUtil::GetFullHash(test_url);
+  std::string hash_prefix = SBProtocolManagerUtil::GetHashPrefix(full_hash);
+
+  auto cache_results = cache->SearchCache({hash_prefix});
+  ASSERT_EQ(cache_results.size(), 1u);
+  ASSERT_EQ(cache_results[hash_prefix].size(), 1u);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash(), full_hash);
+  ASSERT_EQ(cache_results[hash_prefix][0].full_hash_details_size(), 1);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash_details(0).threat_type(),
+            V5::ThreatType::MALWARE);
+
+  // Cache a second threat type for the same URL and verify both details
+  // persist.
+  cache->CacheArtificialV5SearchHashesLookupVerdict(
+      test_url, V5::ThreatType::UNWANTED_SOFTWARE);
+  cache_results = cache->SearchCache({hash_prefix});
+  ASSERT_EQ(cache_results[hash_prefix].size(), 1u);
+  EXPECT_EQ(cache_results[hash_prefix][0].full_hash_details_size(), 2);
+
+  // Caching a safe verdict clears prior threat details.
+  cache->CacheArtificialV5SearchHashesLookupVerdict(
+      test_url, V5::ThreatType::THREAT_TYPE_UNSPECIFIED);
+  cache_results = cache->SearchCache({hash_prefix});
+  EXPECT_TRUE(cache_results.empty() || cache_results[hash_prefix].empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, V5SearchHashesCacheTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          ArtificialV5SearchHashesCacheTest,

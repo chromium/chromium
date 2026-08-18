@@ -226,36 +226,80 @@ void V5SearchHashesCache::ScheduleNextCleanUp() {
 }
 
 void V5SearchHashesCache::CacheArtificialV5SearchHashesLookupVerdict(
-    const std::string& url_spec,
-    bool is_unsafe) {
-  if (url_spec.empty()) {
-    return;
-  }
-
-  GURL artificial_unsafe_url(url_spec);
-  if (!artificial_unsafe_url.is_valid()) {
+    const GURL& url,
+    V5::ThreatType threat_type) {
+  if (!url.is_valid()) {
     return;
   }
 
   has_artificial_cached_url_ = true;
 
   std::vector<FullHashStr> full_hashes;
-  SBProtocolManagerUtil::UrlToFullHashes(artificial_unsafe_url, &full_hashes);
+  SBProtocolManagerUtil::UrlToFullHashes(url, &full_hashes);
+
   std::vector<std::string> hash_prefixes;
+  std::vector<V5::FullHash> full_hash_objects;
+
   for (const auto& full_hash : full_hashes) {
-    auto hash_prefix = SBProtocolManagerUtil::GetHashPrefix(full_hash);
-    hash_prefixes.emplace_back(hash_prefix);
+    std::string prefix = SBProtocolManagerUtil::GetHashPrefix(full_hash);
+    hash_prefixes.push_back(prefix);
+
+    V5::FullHash full_hash_proto;
+    full_hash_proto.set_full_hash(full_hash);
+
+    // Cache the caller's threat type. For the "safe" case, the absence of full
+    // hash details communicates it's safe.
+    if (threat_type != V5::ThreatType::THREAT_TYPE_UNSPECIFIED) {
+      auto* details = full_hash_proto.add_full_hash_details();
+      details->set_threat_type(threat_type);
+    }
+
+    // Look up existing cache entries under this prefix to preserve other
+    // full hashes or existing threat details for this full hash.
+    std::unordered_map<std::string, std::vector<V5::FullHash>> existing =
+        SearchCache({prefix});
+    if (auto it = existing.find(prefix); it != existing.end()) {
+      for (const auto& fh : it->second) {
+        if (fh.full_hash() != full_hash) {
+          // Preserve other full hashes under the same prefix.
+          full_hash_objects.push_back(fh);
+          continue;
+        }
+        if (threat_type == V5::ThreatType::THREAT_TYPE_UNSPECIFIED) {
+          // Don't keep the existing cached full hash details around if the
+          // caller wants to cache "safe"; we instead want to replace "unsafe"
+          // with "safe".
+          continue;
+        }
+        for (const auto& detail : fh.full_hash_details()) {
+          // Copy over the existing threat types, except for the caller's threat
+          // type which has already been added separately.
+          if (detail.threat_type() != threat_type) {
+            *full_hash_proto.add_full_hash_details() = detail;
+          }
+        }
+      }
+    }
+    full_hash_objects.push_back(full_hash_proto);
   }
-  FullHashStr sample_full_hash = full_hashes[0];
-  V5::FullHash full_hash_object;
-  full_hash_object.set_full_hash(sample_full_hash);
-  if (is_unsafe) {
-    auto* details = full_hash_object.add_full_hash_details();
-    details->set_threat_type(V5::ThreatType::SOCIAL_ENGINEERING);
-  }
+
   V5::Duration cache_duration;
   cache_duration.set_seconds(3000);
-  CacheSearchHashesResponse(hash_prefixes, {full_hash_object}, cache_duration);
+  CacheSearchHashesResponse(hash_prefixes, full_hash_objects, cache_duration);
+}
+
+void V5SearchHashesCache::CacheArtificialV5SearchHashesLookupVerdict(
+    const std::string& url_spec,
+    bool is_unsafe) {
+  if (url_spec.empty()) {
+    return;
+  }
+
+  GURL url(url_spec);
+  V5::ThreatType threat_type = is_unsafe
+                                   ? V5::ThreatType::SOCIAL_ENGINEERING
+                                   : V5::ThreatType::THREAT_TYPE_UNSPECIFIED;
+  CacheArtificialV5SearchHashesLookupVerdict(url, threat_type);
 }
 
 void V5SearchHashesCache::
