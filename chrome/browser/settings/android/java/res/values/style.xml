@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <style name="SettingsToolbarStyle" parent="Widget.Material3Expressive.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
+        <item name="titleTextColor">?attr/colorOnSurface</item>
+        <item name="navigationIconTint">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- SettingsInTab must overlay its theme on top of the ChromeTabbedActivity theme in order to
+         support dynamic colors correctly. crbug.com/547646410 -->
+    <style name="ThemeOverlay.Chromium.Settings" parent="">
+        <item name="appBarLayoutStyle">@style/Widget.MaterialComponents.AppBarLayout.Surface</item>
+        <item name="toolbarStyle">@style/SettingsToolbarStyle</item>
+        <item name="preferenceTheme">@style/PreferenceTheme</item>
+        <item name="alertDialogTheme">@style/ThemeOverlay.BrowserUI.AlertDialog</item>
+        <item name="searchViewStyle">@style/Widget.AppCompat.SearchView.ActionBar</item>
+
+        <!-- Text style attributes used by the preference_material.xml layout. -->
+        <item name="android:textAppearanceListItem">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:textAppearanceListItemSmall">@style/TextAppearance.TextSmall.Primary</item>
+        <item name="android:textAppearanceListItemSecondary">@style/TextAppearance.TextMedium.Secondary</item>
+        <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
+    </style>
+</resources>

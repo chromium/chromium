@@ -52,7 +52,7 @@ public abstract class ChromeBaseSettingsFragment extends PreferenceFragmentCompa
 
         // Ensure settings fragments inherit the same Chromium Settings theme used by
         // SettingsActivity, even though they are hosted in ChromeTabbedActivity.
-        mThemedContext = new ContextThemeWrapper(context, R.style.Theme_Chromium_Settings);
+        mThemedContext = new ContextThemeWrapper(context, R.style.ThemeOverlay_Chromium_Settings);
         super.onAttach(mThemedContext);
     }
 

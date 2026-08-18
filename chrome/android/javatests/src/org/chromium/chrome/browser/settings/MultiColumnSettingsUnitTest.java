@@ -480,13 +480,13 @@ public class MultiColumnSettingsUnitTest {
                             detailFragment instanceof TestFragment);
 
                     // Verify that settings.requireContext() (which was passed to
-                    // Fragment.instantiate) carries R.style.Theme_Chromium_Settings by checking
-                    // that preferenceTheme resolves.
+                    // Fragment.instantiate) carries R.style.ThemeOverlay_Chromium_Settings by
+                    // checking that preferenceTheme resolves.
                     Context context = settings.requireContext();
                     TypedValue tv = new TypedValue();
                     assertTrue(
                             "Theme should resolve preferenceTheme attribute from"
-                                    + " Theme_Chromium_Settings",
+                                    + " ThemeOverlay_Chromium_Settings",
                             context.getTheme().resolveAttribute(R.attr.preferenceTheme, tv, true));
                 });
     }

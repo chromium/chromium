@@ -86,6 +86,7 @@ android_library("java") {
     ":search_java",
   ]
   deps = [
+    ":java_resources",
     ":settings_in_tab_java",
     "//base:base_java",
     "//chrome/android:chrome_app_java_resources",
@@ -171,7 +172,19 @@ android_library("junit_test_support") {
   resources_package = "org.chromium.chrome.browser.settings"
 }
 
+android_resources("java_resources") {
+  sources = [ "android/java/res/values/style.xml" ]
+  deps = [
+    "//components/browser_ui/settings/android:java_resources",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+  ]
+}
+
 android_resources("junit_test_resources") {
   testonly = true
-  sources = [ "android/java/res/xml/test_settings_fragment.xml" ]
+  sources = [ "android/java/res_test/xml/test_settings_fragment.xml" ]
 }

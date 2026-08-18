@@ -157,7 +157,7 @@ public class SettingsHostFragment extends Fragment
     public void onAttach(Context context) {
         // Ensure child fragments inherit the same Chromium Settings theme used by SettingsActivity.
         // For example, this ensures the left column category labels are styled correctly.
-        mThemedContext = new ContextThemeWrapper(context, R.style.Theme_Chromium_Settings);
+        mThemedContext = new ContextThemeWrapper(context, R.style.ThemeOverlay_Chromium_Settings);
         super.onAttach(mThemedContext);
 
         mContainmentHelper = new SettingsContainmentHelper(mThemedContext, this);

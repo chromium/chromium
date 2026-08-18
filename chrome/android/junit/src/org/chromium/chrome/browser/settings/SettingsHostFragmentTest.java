@@ -18,7 +18,9 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources.Theme;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
@@ -136,7 +138,30 @@ public class SettingsHostFragmentTest {
         attachHostFragment();
         Context context = mSettingsHostFragment.getContext();
         assertNotNull(context);
-        assertEquals(R.style.Theme_Chromium_Settings, context.getThemeResId());
+        assertEquals(R.style.ThemeOverlay_Chromium_Settings, context.getThemeResId());
+    }
+
+    @Test
+    public void testContextPreservesThemeAttributes() {
+        // Record the default attribute value on the activity theme.
+        TypedValue defaultTv = new TypedValue();
+        mActivity.getTheme().resolveAttribute(android.R.attr.colorAccent, defaultTv, true);
+
+        // Apply a theme overlay to the activity and verify the attribute changes.
+        mActivity.getTheme().applyStyle(R.style.ThemeOverlay_Chromium_Settings_Containment, true);
+        TypedValue customTv = new TypedValue();
+        mActivity.getTheme().resolveAttribute(android.R.attr.colorAccent, customTv, true);
+        assertNotEquals(defaultTv.data, customTv.data);
+
+        // Verify that SettingsHostFragment's themed context preserves the overlaid attribute.
+        attachHostFragment();
+        Context context = mSettingsHostFragment.getContext();
+        assertNotNull(context);
+
+        Theme theme = context.getTheme();
+        TypedValue contextTv = new TypedValue();
+        assertTrue(theme.resolveAttribute(android.R.attr.colorAccent, contextTv, true));
+        assertEquals(customTv.data, contextTv.data);
     }
 
     @Test

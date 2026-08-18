@@ -173,7 +173,8 @@ public class SettingsPageFragmentDelegateImpl
         // Inflate the settings layout into the container view. Ensure it has the right theme.
         // TODO(crbug.com/521895796): Rename settings_activity.xml since with settings-in-a-tab it
         // doesn't map directly to its own activity.
-        Context themedContext = new ContextThemeWrapper(mActivity, R.style.Theme_Chromium_Settings);
+        Context themedContext =
+                new ContextThemeWrapper(mActivity, R.style.ThemeOverlay_Chromium_Settings);
         View settingsView =
                 LayoutInflater.from(themedContext).inflate(R.layout.settings_activity, null);
 

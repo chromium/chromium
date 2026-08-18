@@ -116,7 +116,7 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             return;
         }
         // Settings in a tab must apply the theme at a fragment level.
-        mThemedContext = new ContextThemeWrapper(context, R.style.Theme_Chromium_Settings);
+        mThemedContext = new ContextThemeWrapper(context, R.style.ThemeOverlay_Chromium_Settings);
         super.onAttach(mThemedContext);
     }
 
