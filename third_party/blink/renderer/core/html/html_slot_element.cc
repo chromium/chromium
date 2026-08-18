@@ -359,7 +359,9 @@ AtomicString HTMLSlotElement::GetName() const {
 }
 
 void HTMLSlotElement::AttachLayoutTreeForSlotChildren(AttachContext& context) {
-  for (Node* child : flat_tree_children_) {
+  // Defensive copy to prevent UAF from sync recalc. See crbug.com/520167277.
+  const HeapVector<Member<Node>> flat_tree_children = flat_tree_children_;
+  for (Node* child : flat_tree_children) {
     child->AttachLayoutTree(context);
   }
 }
@@ -392,7 +394,9 @@ void HTMLSlotElement::RebuildDistributedChildrenLayoutTrees(
 
   // This loop traverses the nodes from right to left for the same reason as the
   // one described in ContainerNode::RebuildChildrenLayoutTrees().
-  for (const auto& child : base::Reversed(flat_tree_children_)) {
+  // Defensive copy to prevent UAF from sync recalc. See crbug.com/520167277.
+  const HeapVector<Member<Node>> flat_tree_children = flat_tree_children_;
+  for (const auto& child : base::Reversed(flat_tree_children)) {
     RebuildLayoutTreeForChild(child, whitespace_attacher);
   }
 }
@@ -501,7 +505,9 @@ void HTMLSlotElement::RemovedFrom(ContainerNode& insertion_point) {
 void HTMLSlotElement::RecalcStyleForSlotChildren(
     const StyleRecalcChange change,
     const StyleRecalcContext& style_recalc_context) {
-  for (auto& node : flat_tree_children_) {
+  // Defensive copy to prevent UAF from sync recalc. See crbug.com/520167277.
+  const HeapVector<Member<Node>> flat_tree_children = flat_tree_children_;
+  for (auto& node : flat_tree_children) {
     if (!change.TraverseChild(*node))
       continue;
     if (auto* element = DynamicTo<Element>(node.Get()))
