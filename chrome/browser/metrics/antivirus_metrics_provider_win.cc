@@ -32,8 +32,6 @@ bool ShouldReportFullNames() {
 
 BASE_FEATURE(kReportFullAVProductDetails, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReportEmptyAVMetricsOnFailure, base::FEATURE_DISABLED_BY_DEFAULT);
-
 AntiVirusMetricsProvider::AntiVirusMetricsProvider() = default;
 
 AntiVirusMetricsProvider::~AntiVirusMetricsProvider() = default;
@@ -63,16 +61,11 @@ void AntiVirusMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
       base::BindOnce(&AntiVirusMetricsProvider::GotAntiVirusProducts,
                      weak_ptr_factory_.GetWeakPtr());
 
-  if (base::FeatureList::IsEnabled(kReportEmptyAVMetricsOnFailure)) {
-    remote_util_win_->GetAntiVirusProducts(
-        ShouldReportFullNames(),
-        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-            std::move(callback),
-            std::vector<metrics::SystemProfileProto::AntiVirusProduct>()));
-  } else {
-    remote_util_win_->GetAntiVirusProducts(ShouldReportFullNames(),
-                                           std::move(callback));
-  }
+  remote_util_win_->GetAntiVirusProducts(
+      ShouldReportFullNames(),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback),
+          std::vector<metrics::SystemProfileProto::AntiVirusProduct>()));
 }
 
 void AntiVirusMetricsProvider::GotAntiVirusProducts(
