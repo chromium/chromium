@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -516,20 +517,18 @@ AccountPreviewDataServiceImpl::ComputePreferredAccount() const {
       continue;
     }
 
-    AccountPreviewHeuristicContext context;
-    context.gaia_id = account.gaia;
-    context.is_managed = account.IsManaged() == signin::Tribool::kTrue;
-    context.is_child = account.IsChildAccount() == signin::Tribool::kTrue;
-    context.preview_data = &cache_it->second;
-
+    contexts.push_back(AccountPreviewHeuristicContext{
+        .gaia_id = account.gaia,
+        .preview_data = raw_ref(cache_it->second),
+        .is_managed = account.IsManaged() == signin::Tribool::kTrue,
+        .is_child = account.IsChildAccount() == signin::Tribool::kTrue,
 #if BUILDFLAG(IS_ANDROID)
-    context.is_external_app_primary = external_app_account.has_value() &&
-                                      *external_app_account == account.gaia;
+        .is_external_app_primary = external_app_account.has_value() &&
+                                   *external_app_account == account.gaia,
 #else
-    context.is_external_app_primary = false;
+        .is_external_app_primary = false,
 #endif
-
-    contexts.push_back(std::move(context));
+    });
   }
 
   return ComputePreferredAccountForPromo(contexts);

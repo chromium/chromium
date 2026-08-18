@@ -211,60 +211,34 @@ bool HasStrictlyMoreSyncData(const AccountPreviewData& candidate,
   return CalculateSyncDataScore(candidate) > CalculateSyncDataScore(base);
 }
 
-bool IsCandidatePreferredOverDefault(
+bool IsCandidatePreferredOverCurrentBest(
     const AccountPreviewHeuristicContext& candidate,
-    const AccountPreviewHeuristicContext& default_account) {
-  if (!candidate.is_eligible_for_preferred_account()) {
-    return false;
-  }
-
-  if (!default_account.is_eligible_for_preferred_account()) {
-    return true;
-  }
-
-  // Comparison involving the external app (AGA) primary account on Android.
-  // The AGA primary account is always preferred, UNLESS the competing account
-  // is cross-device AND has strictly more sync data.
-  if (candidate.is_external_app_primary) {
-    if (default_account.has_other_devices() &&
-        HasStrictlyMoreSyncData(*default_account.preview_data,
-                                *candidate.preview_data)) {
-      return false;
-    }
-    return true;
-  }
-
-  if (default_account.is_external_app_primary) {
-    if (candidate.has_other_devices() &&
-        HasStrictlyMoreSyncData(*candidate.preview_data,
-                                *default_account.preview_data)) {
-      return true;
-    }
-    return false;
-  }
+    const AccountPreviewHeuristicContext& current_best) {
+  CHECK(candidate.is_regular_account());
+  CHECK(current_best.is_regular_account());
 
   bool candidate_cross_device = candidate.has_other_devices();
-  bool default_cross_device = default_account.has_other_devices();
+  bool best_cross_device = current_best.has_other_devices();
 
-  // Candidate is cross-device, Default is single-device.
-  if (candidate_cross_device && !default_cross_device) {
+  // Candidate is cross-device, Current Best is single-device.
+  if (candidate_cross_device && !best_cross_device) {
     return HasEqualOrMoreSyncData(*candidate.preview_data,
-                                  *default_account.preview_data);
+                                  *current_best.preview_data);
   }
 
-  // Candidate is cross-device, Default is cross-device.
-  if (candidate_cross_device && default_cross_device) {
+  // Candidate is cross-device, Current Best is cross-device.
+  if (candidate_cross_device && best_cross_device) {
     return HasStrictlyMoreSyncData(*candidate.preview_data,
-                                   *default_account.preview_data);
+                                   *current_best.preview_data);
   }
 
-  // Candidate is single-device, Default is single-device.
-  if (!candidate_cross_device && !default_cross_device) {
+  // Candidate is single-device, Current Best is single-device.
+  if (!candidate_cross_device && !best_cross_device) {
     return HasStrictlyMoreSyncData(*candidate.preview_data,
-                                   *default_account.preview_data);
+                                   *current_best.preview_data);
   }
 
-  // Candidate is single-device, Default is cross-device.
+  // Candidate is single-device, Current Best is cross-device.
   return false;
 }
 
@@ -297,20 +271,41 @@ ComputePreferredAccountForPromo(
     return std::nullopt;
   }
 
-  size_t best_index = 0;
-  for (size_t i = 1; i < accounts.size(); ++i) {
-    if (IsCandidatePreferredOverDefault(accounts[i], accounts[best_index])) {
-      best_index = i;
+  // The first account in the list (`accounts[0]`) is the default account (the
+  // account that would be promoted by default in the absence of previews).
+  // Priority 1: If the default account is not a regular account, select it.
+  const AccountPreviewHeuristicContext& default_account = accounts[0];
+  if (!default_account.is_regular_account()) {
+    return ComputeAccountPreviewPreference(default_account.gaia_id,
+                                           *default_account.preview_data);
+  }
+
+  // Priority 2: If an AGA (external app primary) account exists, select it.
+  for (const auto& account : accounts) {
+    if (account.is_external_app_primary && account.is_regular_account()) {
+      return ComputeAccountPreviewPreference(account.gaia_id,
+                                             *account.preview_data);
     }
   }
 
-  const AccountPreviewHeuristicContext& chosen = accounts[best_index];
-  // This may happen if all accounts in the list are ineligible.
-  if (!chosen.is_eligible_for_preferred_account()) {
+  // Priority 3: Compare sync data between all regular accounts.
+  const AccountPreviewHeuristicContext* best_candidate = nullptr;
+  for (const auto& account : accounts) {
+    if (!account.is_regular_account()) {
+      continue;
+    }
+    if (!best_candidate ||
+        IsCandidatePreferredOverCurrentBest(account, *best_candidate)) {
+      best_candidate = &account;
+    }
+  }
+
+  if (!best_candidate) {
     return std::nullopt;
   }
 
-  return ComputeAccountPreviewPreference(chosen.gaia_id, *chosen.preview_data);
+  return ComputeAccountPreviewPreference(best_candidate->gaia_id,
+                                         *best_candidate->preview_data);
 }
 
 }  // namespace signin
