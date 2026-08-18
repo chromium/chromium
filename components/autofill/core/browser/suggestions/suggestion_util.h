@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace autofill {
@@ -39,6 +40,11 @@ AutocompleteUnrecognizedBehavior GetAcUnrecognizedBehavior(
 bool SuppressSuggestionsForAutocompleteUnrecognizedField(
     const AutofillField& field,
     AutocompleteUnrecognizedBehavior behavior);
+
+// Returns the main filling product based on the `trigger_source` and `types`.
+FillingProduct GetFillingProductFromSuggestionTypes(
+    base::span<const SuggestionType> types,
+    AutofillSuggestionTriggerSource trigger_source);
 
 // Updates and returns `current_suggestions` such that a root-level suggestion
 // is marked as "loading" if either it is `selected_suggestion` or any of its

@@ -1419,16 +1419,8 @@ void AutofillExternalDelegate::ClearPreviewedForm() {
 }
 
 FillingProduct AutofillExternalDelegate::GetMainFillingProduct() const {
-  if (IsAtMemoryTriggerSource(trigger_source_)) {
-    return FillingProduct::kAtMemory;
-  }
-  for (SuggestionType type : shown_suggestion_types_) {
-    if (FillingProduct product = GetFillingProductFromSuggestionType(type);
-        product != FillingProduct::kNone) {
-      return product;
-    }
-  }
-  return FillingProduct::kNone;
+  return GetFillingProductFromSuggestionTypes(shown_suggestion_types_,
+                                              trigger_source_);
 }
 
 base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {

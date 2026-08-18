@@ -9,8 +9,10 @@
 
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -57,6 +59,21 @@ bool SuppressSuggestionsForAutocompleteUnrecognizedField(
 #else
   return field.ShouldSuppressSuggestionsAndFillingByDefault(behavior);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
+FillingProduct GetFillingProductFromSuggestionTypes(
+    base::span<const SuggestionType> types,
+    AutofillSuggestionTriggerSource trigger_source) {
+  if (IsAtMemoryTriggerSource(trigger_source)) {
+    return FillingProduct::kAtMemory;
+  }
+  for (SuggestionType type : types) {
+    if (FillingProduct product = GetFillingProductFromSuggestionType(type);
+        product != FillingProduct::kNone) {
+      return product;
+    }
+  }
+  return FillingProduct::kNone;
 }
 
 std::vector<Suggestion> PrepareLoadingStateSuggestions(
