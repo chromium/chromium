@@ -4285,7 +4285,7 @@
   {
     "name": "enable-process-isolation-ui",
     "owners": [ "wfh@chromium.org", "chrome-platform-security@google.com" ],
-    "expiry_milestone": 152
+    "expiry_milestone": 162
   },
   {
     "name": "enable-process-per-site-up-to-main-frame-threshold",
