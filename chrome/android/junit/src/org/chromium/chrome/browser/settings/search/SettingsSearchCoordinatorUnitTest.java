@@ -35,12 +35,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -116,6 +120,28 @@ public class SettingsSearchCoordinatorUnitTest {
     public void tearDown() {
         // Avoid runnable pollution between tests.
         ShadowLooper.idleMainLooper();
+    }
+
+    /**
+     * Sets up the mock {@link MultiColumnSettings} with a valid child {@link FragmentManager} and
+     * {@link SlidingPaneLayout}, and measures/lays out the root view so search UI initialization
+     * and width calculations can execute properly.
+     */
+    private void setUpMultiColumnSettings() {
+        FragmentManager childFragmentManager = mock(FragmentManager.class);
+        when(mMultiColumnSettings.getChildFragmentManagerOrNull()).thenReturn(childFragmentManager);
+
+        SlidingPaneLayout slidingPaneLayout = new SlidingPaneLayout(mActivity);
+        when(mMultiColumnSettings.getView()).thenReturn(slidingPaneLayout);
+        when(mMultiColumnSettings.requireView()).thenReturn(slidingPaneLayout);
+        when(mMultiColumnSettings.getSlidingPaneLayout()).thenReturn(slidingPaneLayout);
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+
+        View rootView = mActivity.findViewById(R.id.settings_activity);
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(1000, View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(600, View.MeasureSpec.EXACTLY);
+        rootView.measure(widthSpec, heightSpec);
+        rootView.layout(0, 0, 1000, 600);
     }
 
     @Test
@@ -324,5 +350,29 @@ public class SettingsSearchCoordinatorUnitTest {
         // In results state (FS_RESULTS), navigation icon should be shown (as a back button).
         mCoordinator.setFragmentState(SettingsSearchCoordinator.FS_RESULTS);
         assertTrue(mCoordinator.shouldShowNavigationIcon());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    @Config(qualifiers = "sw600dp")
+    public void testInitializeSearchUi_withSettingsInTab_setsSearchBoxFocusable() {
+        setUpMultiColumnSettings();
+        mCoordinator.initializeSearchUi(null);
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+        assertTrue(searchBox.isFocusable());
+        assertTrue(searchBox.isFocusableInTouchMode());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+    public void testInitializeSearchUi_withoutSettingsInTab_doesNotSetSearchBoxFocusable() {
+        setUpMultiColumnSettings();
+        mCoordinator.initializeSearchUi(null);
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        assertNotNull(searchBox);
+        assertFalse(searchBox.isFocusableInTouchMode());
     }
 }

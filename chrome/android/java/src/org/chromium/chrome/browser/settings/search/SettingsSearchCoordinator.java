@@ -9,6 +9,7 @@ import static androidx.annotation.VisibleForTesting.PRIVATE;
 import static org.chromium.base.CallbackUtils.emptyRunnable;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -69,6 +71,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsMenuHelper;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
@@ -336,6 +339,20 @@ public class SettingsSearchCoordinator
         TooltipCompat.setTooltipText(
                 searchBox.requireViewById(R.id.search_icon),
                 mActivity.getString(R.string.search_in_settings_hint));
+        if (shouldAutoFocusSearchBox()) {
+            searchBox.setFocusable(true);
+            searchBox.setFocusableInTouchMode(true);
+            searchBox.addOnAttachStateChangeListener(
+                    new View.OnAttachStateChangeListener() {
+                        @Override
+                        public void onViewAttachedToWindow(View v) {
+                            requestAccessibilityFocus(v);
+                        }
+
+                        @Override
+                        public void onViewDetachedFromWindow(View v) {}
+                    });
+        }
 
         View query = requireViewById(R.id.search_query_container);
         Drawable bg = ContextCompat.getDrawable(mActivity, R.drawable.pill_background);
@@ -519,7 +536,11 @@ public class SettingsSearchCoordinator
         mHandler.post(
                 () -> {
                     if (mFragmentState != FS_SETTINGS) return;
-                    searchBox.setVisibility(isShowingMainSettings() ? View.VISIBLE : View.GONE);
+                    boolean showingMain = isShowingMainSettings();
+                    searchBox.setVisibility(showingMain ? View.VISIBLE : View.GONE);
+                    if (showingMain && shouldAutoFocusSearchBox()) {
+                        requestAccessibilityFocus(searchBox);
+                    }
                 });
 
         // Controls search UI visibility in single-column mode.
@@ -641,6 +662,9 @@ public class SettingsSearchCoordinator
     private void observeFragmentForVisibilityChange() {
         View searchBox = requireViewById(R.id.search_box);
         searchBox.setVisibility(View.VISIBLE);
+        if (shouldAutoFocusSearchBox()) {
+            requestAccessibilityFocus(searchBox);
+        }
         assumeNonNull(getSettingsFragmentManager())
                 .registerFragmentLifecycleCallbacks(
                         new FragmentManager.FragmentLifecycleCallbacks() {
@@ -685,6 +709,30 @@ public class SettingsSearchCoordinator
         var parentView = (ViewGroup) findViewById(R.id.settings_activity);
         TransitionManager.beginDelayedTransition(parentView, transition);
         searchBox.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show && shouldAutoFocusSearchBox()) {
+            requestAccessibilityFocus(searchBox);
+        }
+    }
+
+    /**
+     * Requests view focus and notifies the accessibility framework to move screen reader (TalkBack)
+     * accessibility focus to the search box. Accessibility QA specifically requested this behavior,
+     * see https://crbug.com/547995740.
+     */
+    @SuppressLint("AccessibilityFocus")
+    private void requestAccessibilityFocus(View searchBox) {
+        searchBox.requestFocus();
+        searchBox.performAccessibilityAction(
+                AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+        searchBox.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    }
+
+    /**
+     * Whether the search box should automatically receive accessibility focus on page load or tab
+     * switch. Anchors TalkBack focus to the search box when Settings is opened in a tab.
+     */
+    private boolean shouldAutoFocusSearchBox() {
+        return SettingsInTab.isEnabled();
     }
 
     private boolean isShowingMainSettings() {
