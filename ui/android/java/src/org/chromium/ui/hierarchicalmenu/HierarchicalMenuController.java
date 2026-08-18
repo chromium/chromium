@@ -11,7 +11,6 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,7 +27,6 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -716,7 +714,6 @@ public class HierarchicalMenuController<T> {
             @Nullable ModelList headerModelList,
             ModelList contentModelList,
             Runnable dismissDialog) {
-        long time = SystemClock.elapsedRealtime();
         if (headerModelList != null) {
             for (ListItem listItem : headerModelList) {
                 setupCallbacksForItem(
@@ -737,9 +734,6 @@ public class HierarchicalMenuController<T> {
                     /* levelOfHoveredItem= */ 0,
                     new ArrayList<ListItem>());
         }
-        RecordHistogram.recordTimesHistogram(
-                "ListMenuUtils.SetupCallbacksRecursively.Duration",
-                SystemClock.elapsedRealtime() - time);
     }
 
     /**

@@ -8,9 +8,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -51,7 +48,6 @@ void MenuModelBridge::AddExtensionItems() {
   if (!menu_model_) {
     return;
   }
-  base::ElapsedTimer timer;
   JNIEnv* env = base::android::AttachCurrentThread();
   for (size_t i = 0; i < menu_model_->GetItemCount(); ++i) {
     if (!menu_model_->IsVisibleAt(i)) {
@@ -117,11 +113,6 @@ void MenuModelBridge::AddExtensionItems() {
         /* Do nothing. */
     }
   }
-
-  base::UmaHistogramCustomMicrosecondsTimes(
-      "MenuModelBridge.AddExtensionItems.Duration",
-      base::Microseconds(timer.Elapsed().InMicrosecondsF()),
-      base::Microseconds(1), base::Microseconds(2000), 100);
 }
 
 }  // namespace ui
