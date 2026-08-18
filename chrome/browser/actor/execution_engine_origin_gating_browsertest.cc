@@ -631,12 +631,10 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingUserPromptingBrowserTest,
   RunTestSequence(CreateMockWebClientRequest(
       content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  RunTestSequence(VerifyUserConfirmationDialogRequest(base::test::ParseJsonDict(
-      content::JsReplace(R"({
-    "navigationOrigin": $1,
-    "forBlocklistedOrigin": false
-  })",
-                         url::Origin::Create(start_url)))));
+  // Note: we expect *no* user confirmation dialog when navigating back to
+  // `start_url`, because the actor has already actuated on that origin (the
+  // `ClickTarget` call above) so such a confirmation would be confusing at best
+  // (or misleading).
 
   // Now this should proceed without a user confirmation or a server
   // confirmation, since the user has already confirmed it.
@@ -690,12 +688,10 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingUserPromptingBrowserTest,
   RunTestSequence(CreateMockWebClientRequest(
       content::JsReplace(kHandleUserConfirmationDialogTempl, true)));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
-  RunTestSequence(VerifyUserConfirmationDialogRequest(base::test::ParseJsonDict(
-      content::JsReplace(R"({
-    "navigationOrigin": $1,
-    "forBlocklistedOrigin": false
-  })",
-                         url::Origin::Create(start_url)))));
+  // Note: we expect *no* user confirmation dialog when navigating back to
+  // `start_url`, because the actor has already actuated on that origin (the
+  // `ClickTarget` call above) so such a confirmation would be confusing at best
+  // (or misleading).
 
   // Now this should proceed without a user confirmation or a server
   // confirmation, since the user has already confirmed it.
@@ -1644,8 +1640,8 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingParamBrowserTest,
   // Trigger ExecutionEngine destructor for metrics.
   StopAllTasks();
 
-  // Should add the origin to the allowlist.
-  histogram_tester.ExpectBucketCount("Actor.NavigationGating.AllowListSize", 1,
+  // Should have added both origins to the allowlist.
+  histogram_tester.ExpectBucketCount("Actor.NavigationGating.AllowListSize", 2,
                                      1);
 }
 

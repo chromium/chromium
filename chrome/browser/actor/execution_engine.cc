@@ -936,8 +936,7 @@ void ExecutionEngine::OnNoVerdict(
 
   if (!requires_user_confirmation) {
     if (event == GateableEvent::kPageAction) {
-      std::move(callback).Run(
-          {.is_allowed = true, .did_prompt_user = false, .bypass_cache = true});
+      std::move(callback).Run({.is_allowed = true, .did_prompt_user = false});
       return;
     }
     CHECK(navigation_response_context);
