@@ -63,6 +63,7 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "icons.html.ts",
     "trace_recorder.html.ts",
     "trace_recorder.ts",
     "trace_report.html.ts",
@@ -86,8 +87,6 @@ build_webui("build") {
     "tracing_scenario.css",
     "tracing_scenarios_config.css",
   ]
-
-  icons_html_files = [ "icons.html" ]
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
