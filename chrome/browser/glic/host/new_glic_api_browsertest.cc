@@ -1080,6 +1080,23 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetOsHotkeyState) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetFocusedTabStateV2WithNavigation) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // Navigate the active tab.
+  auto* active_tab = GetTabListInterface()->GetActiveTab();
+  NavigateTab(*active_tab, GetTestUrl("page2.html"));
+  ContinueJsTest();
+
+  // Create and activate a second tab.
+  auto* second_tab = CreateAndActivateTab(
+      embedded_test_server()->GetURL("/glic/browser_tests/test.html"));
+  // Pin the tab so that it is eligible for sharing and focused.
+  GetOnlyGlicInstance()->GetSharingManager()->PinTabs(
+      {second_tab->GetHandle()});
+  ContinueJsTest();
+}
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetZoomLevel) {
   // Confirm that the observer is notified through getZoomLevel of the initial
   // state, i.e. zoom level of 1.0.

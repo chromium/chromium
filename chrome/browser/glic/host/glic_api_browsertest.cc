@@ -954,31 +954,6 @@ IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetFocusedTabStateV2WithNavigation) {
-  // Confirm that the observer is notified through getFocusedTabState of the
-  // initial state, i.e. the first page navigation.
-  ExecuteJsTest();
-
-  // Navigate to another page in the existing tab.
-  RunTestSequence(NavigateWebContents(
-      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
-                     "/scrollable_page_with_content.html")));
-
-  // Confirm that the observer is notified through getFocusedTabState of the
-  // second page navigation.
-  ContinueJsTest();
-
-  // Open a new tab and navigate to a another page.
-  RunTestSequence(AddInstrumentedTabAndOpenSidePanel(
-      kSecondTab, InProcessBrowserTest::embedded_test_server()->GetURL(
-                      "/glic/browser_tests/test.html")));
-
-  // Confirm that the observer is notified through getFocusedTabState that due
-  // to a page navigation in a new tab, a new tab has gained focus.
-  ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetFocusedTabStateV2WithNavigationWhenInactive) {
   SKIP_TEST_FOR_MULTI_INSTANCE();
   TrackGlicInstanceWithId(GetGlicInstance()->id());

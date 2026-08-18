@@ -50,49 +50,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
   }
 
-  async testGetFocusedTabStateV2WithNavigation() {
-    // Initial state.
-    assertDefined(this.host.getFocusedTabStateV2);
-    const sequence =
-        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
-    const focus = await sequence.next();
-    assertDefined(focus.hasFocus);
-    assertEquals(
-        new URL(focus.hasFocus.tabData.url).pathname,
-        '/glic/browser_tests/test.html', `url=${focus.hasFocus.tabData.url}`);
-    assertFalse(!!focus.hasNoFocus);
-
-    // After a second navigation occurs.
-    await this.advanceToNextStep();
-    const focus2 = await sequence.next();
-    assertDefined(focus2.hasFocus);
-    assertEquals(
-        new URL(focus2.hasFocus.tabData.url).pathname,
-        '/scrollable_page_with_content.html',
-        `url=${focus2.hasFocus.tabData.url}`);
-
-    await this.advanceToNextStep();
-    let focus3 = await sequence.next();
-
-    // After a navigation occurs in a new tab, there could first exist a
-    // transitory states where the focus is not yet available, is empty, or
-    // still previous page.
-    while (focus3.hasNoFocus ||
-           (!!focus3.hasFocus &&
-            (focus3.hasFocus.tabData.url === '' ||
-             focus3.hasFocus.tabData.url.endsWith(
-                 'scrollable_page_with_content.html')))) {
-      focus3 = await sequence.next();
-    }
-
-    // Final state, after the tab is fully loaded.
-    assertDefined(focus3.hasFocus);
-    assertEquals(
-        new URL(focus3.hasFocus.tabData.url).pathname,
-        '/glic/browser_tests/test.html', `url=${focus3.hasFocus.tabData.url}`);
-    assertFalse(!!focus3.hasNoFocus);
-  }
-
   async testGetFocusedTabStateV2WithNavigationWhenInactive() {
     // Initial state.
     assertDefined(this.host.getFocusedTabStateV2);
