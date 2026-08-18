@@ -122,6 +122,7 @@ class MockSessionManager : public BocaSessionManager {
       : BocaSessionManager(session_client_impl,
                            /*pref_service=*/nullptr,
                            AccountId::FromUserEmail("useremail"),
+                           /*identity_manager=*/nullptr,
                            /*=is_producer*/ false) {}
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
   MOCK_METHOD(void, UpdateTabActivity, (const std::u16string&), (override));

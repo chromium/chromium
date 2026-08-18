@@ -70,6 +70,7 @@ class MockSessionManager : public BocaSessionManager {
             session_client_impl,
             /*pref_service=*/nullptr,
             AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaId)),
+            /*identity_manager=*/nullptr,
             /*=is_producer*/ false) {}
   MOCK_METHOD(void,
               UpdateCurrentSession,

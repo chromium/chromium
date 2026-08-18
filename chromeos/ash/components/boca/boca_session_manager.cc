@@ -14,6 +14,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -74,6 +75,7 @@ BocaSessionManager::BocaSessionManager(
     SessionClientImpl* session_client_impl,
     const PrefService* pref_service,
     AccountId account_id,
+    signin::IdentityManager* identity_manager,
     bool is_producer,
     std::unique_ptr<SpotlightRemotingClientManager> remoting_client_manager)
     : is_producer_(is_producer),
@@ -100,11 +102,12 @@ BocaSessionManager::BocaSessionManager(
   cros_network_config_->AddObserver(
       cros_network_config_observer_.BindNewPipeAndPassRemote());
   //  Register BocaSessionManager for the current profile.
-  if (BocaAppClient::HasInstance()) {
-    identity_manager_ = BocaAppClient::Get()->GetIdentityManager();
-    if (identity_manager_) {
-      identity_manager_->AddObserver(this);
-    }
+  if (identity_manager) {
+    identity_manager_observation_.Observe(identity_manager);
+  } else {
+    // TODO: Consider getting rid of this CHECK_IS_TEST after resolving
+    // testing complexity.
+    CHECK_IS_TEST();
   }
   if (user_manager::UserManager::IsInitialized()) {
     user_manager::UserManager::Get()->AddSessionStateObserver(this);
@@ -123,9 +126,6 @@ BocaSessionManager::BocaSessionManager(
 }
 
 BocaSessionManager::~BocaSessionManager() {
-  if (identity_manager_) {
-    identity_manager_->RemoveObserver(this);
-  }
   if (indefinite_timer_.IsRunning()) {
     indefinite_timer_.Stop();
   }
@@ -605,8 +605,7 @@ void BocaSessionManager::OnRefreshTokenUpdatedForAccount(
 
 void BocaSessionManager::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
-  identity_manager_->RemoveObserver(this);
-  identity_manager_ = nullptr;
+  identity_manager_observation_.Reset();
 }
 
 void BocaSessionManager::ActiveUserChanged(user_manager::User* active_user) {

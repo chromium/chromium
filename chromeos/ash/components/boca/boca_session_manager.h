@@ -119,6 +119,7 @@ class BocaSessionManager
   BocaSessionManager(SessionClientImpl* session_client_impl,
                      const PrefService* pref_service,
                      AccountId account_id,
+                     signin::IdentityManager* identity_manager,
                      bool is_producer,
                      std::unique_ptr<SpotlightRemotingClientManager>
                          remoting_client_manager = nullptr);
@@ -392,10 +393,14 @@ class BocaSessionManager
   std::unique_ptr<ScreenPresenterFactory> screen_presenter_factory_;
   std::unique_ptr<StudentScreenPresenter> student_screen_presenter_;
   std::unique_ptr<TeacherScreenPresenter> teacher_screen_presenter_;
+  std::optional<GeminiTab> gemini_tab_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
-  std::optional<GeminiTab> gemini_tab_;
   base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};
 };
 }  // namespace ash::boca

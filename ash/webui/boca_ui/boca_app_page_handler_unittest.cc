@@ -321,6 +321,7 @@ class MockSessionManager : public BocaSessionManager {
       : BocaSessionManager(session_client_impl,
                            /*pref_service=*/nullptr,
                            AccountId::FromUserEmail(kUserEmail),
+                           /*identity_manager=*/nullptr,
                            /*=is_producer*/ false) {}
   MOCK_METHOD(void,
               NotifyLocalCaptionEvents,

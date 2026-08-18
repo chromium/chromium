@@ -9,7 +9,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
@@ -30,21 +29,13 @@ constexpr char kTestEmail1[] = "test1@gmail.com";
 constexpr char kTestEmail2[] = "test2@gmail.com";
 constexpr char kTestEmail3[] = "test3@gmail.com";
 
-class MockBocaAppClient : public BocaAppClient {
- public:
-  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
-  MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
-              GetURLLoaderFactory,
-              (),
-              (override));
-};
-
 class MockSessionManager : public BocaSessionManager {
  public:
   MockSessionManager()
       : BocaSessionManager(/*session_client_impl=*/nullptr,
                            /*pref_service=*/nullptr,
                            AccountId::FromUserEmail(kTestEmail1),
+                           /*identity_manager=*/nullptr,
                            /*is_producer=*/true) {}
   ~MockSessionManager() override = default;
   MOCK_METHOD(::boca::Session*, GetPreviousSession, (), (override));
@@ -53,17 +44,11 @@ class MockSessionManager : public BocaSessionManager {
 
 class BocaMetricsManagerTest : public testing::Test {
  protected:
-  void SetUp() override {
-    ON_CALL(boca_app_client_, GetIdentityManager())
-        .WillByDefault(Return(nullptr));
-  }
-
   const base::TimeDelta fast_forward_timeskip =
       base::Seconds(60) + base::Seconds(1);
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
-  NiceMock<MockBocaAppClient> boca_app_client_;
   NiceMock<MockSessionManager> session_manager_;
 };
 

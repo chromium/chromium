@@ -166,6 +166,7 @@ BocaManager::BocaManager(Profile* profile,
   }
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
       session_client_impl_.get(), user->GetProfilePrefs(), user->GetAccountId(),
+      IdentityManagerFactory::GetForProfile(profile),
       /*is_producer=*/!is_consumer, std::move(remoting_client_manager));
   if (!is_consumer && (ash::features::IsBocaScreenSharingStudentEnabled() ||
                        ash::features::IsBocaScreenSharingTeacherEnabled())) {

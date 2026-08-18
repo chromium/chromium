@@ -88,11 +88,13 @@ class MockBocaAppClient : public BocaAppClient {
 
 class MockSessionManager : public BocaSessionManager {
  public:
-  explicit MockSessionManager(SessionClientImpl* session_client_impl)
+  MockSessionManager(SessionClientImpl* session_client_impl,
+                     signin::IdentityManager* identity_manager)
       : BocaSessionManager(
             session_client_impl,
             /*pref_service=*/nullptr,
             AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId(kGaiaId)),
+            identity_manager,
             /*=is_producer*/ false) {}
   MOCK_METHOD((::boca::Session*), GetCurrentSession, (), (override));
   MOCK_METHOD((std::string), GetDeviceRobotEmail, (), (override));
@@ -111,8 +113,8 @@ class SpotlightServiceTest : public testing::Test {
         .WillByDefault(Return(identity_test_env_.identity_manager()));
 
     ON_CALL(boca_app_client_, GetDeviceId()).WillByDefault(Return(kDeviceId));
-    boca_session_manager_ =
-        std::make_unique<StrictMock<MockSessionManager>>(nullptr);
+    boca_session_manager_ = std::make_unique<StrictMock<MockSessionManager>>(
+        nullptr, identity_test_env_.identity_manager());
     test_server_.RegisterRequestHandler(
         base::BindRepeating(&MockRequestHandler::HandleRequest,
                             base::Unretained(&request_handler_)));
