@@ -7,7 +7,12 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library_factory("factory_java") {
-  deps = [ "//components/browser_ui/settings/android:java" ]
+  deps = [
+    ":settings_in_tab_java",
+    "//base:tasks_java",
+    "//chrome/browser/flags:java",
+    "//components/browser_ui/settings/android:java",
+  ]
 
   sources = [ "android/java/src/org/chromium/chrome/browser/settings/SettingsNavigationFactory.java" ]
 }
@@ -41,7 +46,10 @@ generate_jni("jni_headers") {
 
 android_library("internal_java") {
   deps = [
+    ":settings_in_tab_java",
     "//base:resetters_java",
+    "//base:tasks_java",
+    "//chrome/browser/flags:java",
 
     # Exception: depends on :chrome_java for SettingsNavigationImpl.
     "//chrome/android:chrome_java",

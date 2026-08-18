@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -58,6 +59,7 @@ public class SettingsHostFragment extends Fragment
     private @Nullable FragmentDependencyProvider mDependencyProvider;
     private @Nullable SettingsContainmentHelper mContainmentHelper;
     private @Nullable WideDisplayPaddingApplier mWideDisplayPaddingApplier;
+    private @Nullable SettingsNavigation mSettingsNavigation;
     private int mPendingPopBackCount;
 
     /** Public constructor needed for Fragment re-instantiation. */
@@ -281,6 +283,16 @@ public class SettingsHostFragment extends Fragment
             multiColumnSettings.setPendingFragmentIntent(intent);
         }
         return multiColumnSettings;
+    }
+
+    /** Sets the tab-scoped {@link SettingsNavigation} delegate for this host fragment. */
+    public void setSettingsNavigation(@Nullable SettingsNavigation settingsNavigation) {
+        mSettingsNavigation = settingsNavigation;
+    }
+
+    /** Returns the tab-scoped {@link SettingsNavigation} delegate bound to this host fragment. */
+    public @Nullable SettingsNavigation getSettingsNavigation() {
+        return mSettingsNavigation;
     }
 
     @Override

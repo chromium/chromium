@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -52,6 +53,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.sync.SyncService;
@@ -493,6 +495,39 @@ public class SettingsHostFragmentTest {
         mSettingsHostFragment.onConfigurationChanged(new Configuration());
 
         verify(mockHelper).updateContainmentForAttachedFragments(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testSettingsNavigationFactory_createSettingsNavigation() {
+        attachHostFragment();
+        SettingsNavigation mockNavigation = mock(SettingsNavigation.class);
+        mSettingsHostFragment.setSettingsNavigation(mockNavigation);
+
+        SettingsNavigation resolved = SettingsNavigationFactory.createSettingsNavigation(mActivity);
+        assertEquals(
+                "Should resolve the tab-scoped SettingsNavigation when host is attached and URL nav"
+                        + " is enabled",
+                mockNavigation,
+                resolved);
+
+        SettingsNavigation nullResolved = SettingsNavigationFactory.createSettingsNavigation(null);
+        assertNotNull("Should fallback to default instance when context is null", nullResolved);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testSettingsNavigationFactory_createSettingsNavigation_urlNavDisabled() {
+        attachHostFragment();
+        SettingsNavigation mockNavigation = mock(SettingsNavigation.class);
+        mSettingsHostFragment.setSettingsNavigation(mockNavigation);
+
+        SettingsNavigation resolved = SettingsNavigationFactory.createSettingsNavigation(mActivity);
+        assertNotNull(resolved);
+        assertNotEquals(
+                "Should not resolve tab-scoped delegate when URL nav is disabled",
+                mockNavigation,
+                resolved);
     }
 
     /** A test PreferenceFragmentCompat subclass. */
