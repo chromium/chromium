@@ -190,7 +190,7 @@ def CreateStderrFilter(filters):
         # All missing definitions are logged as a single warning, but start on a
         # new line like "Missing class ...".
         warnings = re.split(
-            r'^(?=Warning|Error|Missing (?:class|field|method))',
+            r'(?i)^(?=warning|error|missing (?:class|field|method))',
             output,
             flags=re.MULTILINE,
         )

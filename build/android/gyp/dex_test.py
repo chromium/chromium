@@ -56,6 +56,16 @@ Warning: PublicStopClientEvent is hungry.
         expected = ''
         self.assertEqual(filter_func(output), expected)
 
+        # Test uppercase WARNING line (e.g. JVM Unsafe warning) does not mask preceding warning
+        output = """\
+Warning: Missing class com.example.Foo
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+"""
+        expected = """\
+Warning: Missing class com.example.Foo
+"""
+        self.assertEqual(filter_func(output), expected)
+
     def testClassFileNestPrefix(self):
         cases = {
             'pkg/Top.class': 'pkg/Top',
