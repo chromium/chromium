@@ -857,6 +857,12 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
     return;
   }
 
+  // Always clear the active popup ID on hide, even if subsequent accessibility
+  // node lookups fail (e.g., during frame teardown or navigation).
+  if (!is_show) {
+    ui::ClearActivePopupAxUniqueId();
+  }
+
   // In order to get the AXPlatformNode for the ax node id, we first need
   // the AXPlatformNode for the web contents.
   ui::AXPlatformNode* root_platform_node =
@@ -868,8 +874,14 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   // Retrieve the ax tree id associated with the current web contents.
   ui::AXPlatformNodeDelegate* root_platform_node_delegate =
       root_platform_node->GetDelegate();
+  if (!root_platform_node_delegate) {
+    return;
+  }
   ui::AXTreeID tree_id =
       root_platform_node_delegate->GetTreeData().focused_tree_id;
+  if (tree_id == ui::AXTreeIDUnknown()) {
+    return;
+  }
 
   // Now get the target node from its tree ID and node ID.
   ui::AXPlatformNode* target_node =
@@ -888,8 +900,6 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
   // popup ax unique id.
   if (is_show) {
     ui::SetActivePopupAxUniqueId(popup_ax_id);
-  } else {
-    ui::ClearActivePopupAxUniqueId();
   }
 
   target_node->NotifyAccessibilityEvent(ax::mojom::Event::kControlsChanged);

@@ -1497,6 +1497,11 @@ class MockAxPlatformNodeDelegate : public ui::AXPlatformNodeDelegate {
               GetFromTreeIDAndNodeID,
               (const ui::AXTreeID& tree_id, int32_t id),
               (override));
+  const ui::AXTreeData& GetTreeData() const override { return tree_data_; }
+  ui::AXTreeData& tree_data() { return tree_data_; }
+
+ private:
+  ui::AXTreeData tree_data_;
 };
 
 class MockAxPlatformNode : public ui::AXPlatformNodeBase {
@@ -1538,6 +1543,7 @@ class AutofillPopupControllerImplTestAccessibility
     ON_CALL(mock_ax_platform_node_, IsDestroyed).WillByDefault(Return(false));
     ON_CALL(mock_ax_platform_node_, GetDelegate)
         .WillByDefault(Return(&mock_ax_platform_node_delegate_));
+    mock_ax_platform_node_delegate_.tree_data().focused_tree_id = test_tree_id_;
     ON_CALL(*client().popup_view(), GetAxUniqueId)
         .WillByDefault(Return(std::optional<int32_t>(kAxUniqueId)));
     ON_CALL(mock_ax_platform_node_delegate_, GetFromTreeIDAndNodeID)
@@ -1600,6 +1606,34 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
   // in the fire controls changed event not being sent.
   client().suggestion_controller(manager()).FireControlsChangedEvent(true);
   EXPECT_EQ(std::nullopt, ui::GetActivePopupAxUniqueId());
+}
+
+// Test for attempting to fire controls changed event on hide when ax tree
+// manager fails to retrieve the ax platform node associated with the popup.
+// The global active popup ax unique id should still be cleared.
+TEST_F(AutofillPopupControllerImplTestAccessibility,
+       FireControlsChangedEventHideClearsActivePopupAxUniqueId) {
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+  client().suggestion_controller(manager()).FireControlsChangedEvent(true);
+  EXPECT_EQ(ui::GetActivePopupAxUniqueId(), kAxUniqueId);
+
+  // Simulate failure to retrieve the target node on hide.
+  EXPECT_CALL(mock_ax_platform_node_delegate_, GetFromTreeIDAndNodeID)
+      .WillOnce(Return(nullptr));
+
+  client().suggestion_controller(manager()).DoHide();
+  EXPECT_EQ(ui::GetActivePopupAxUniqueId(), std::nullopt);
+}
+
+// Test for attempting to fire controls changed event when focused tree ID is
+// unknown.
+TEST_F(AutofillPopupControllerImplTestAccessibility,
+       FireControlsChangedEventUnknownTreeId) {
+  mock_ax_platform_node_delegate_.tree_data().focused_tree_id =
+      ui::AXTreeIDUnknown();
+  ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
+  client().suggestion_controller(manager()).FireControlsChangedEvent(true);
+  EXPECT_EQ(ui::GetActivePopupAxUniqueId(), std::nullopt);
 }
 #endif
 

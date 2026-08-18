@@ -100,13 +100,7 @@ class PasswordManagerInteractiveTest
   }
 };
 
-// TODO(crbug.com/534101064): Failing on Linux A11y builder.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_UsernameChanged DISABLED_UsernameChanged
-#else
-#define MAYBE_UsernameChanged UsernameChanged
-#endif  // BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, MAYBE_UsernameChanged) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   // At first let us save a credential to the password store.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
       GetDefaultPasswordStore(browser()->GetProfile());
@@ -672,18 +666,9 @@ class PasswordManagerInteractiveTestWithSigninInterception
   PasswordManagerSigninInterceptTestHelper helper_;
 };
 
-// TODO(crbug.com/534101064): Failing on Linux A11y builder.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_InterceptionBubbleSuppressedByPendingPasswordUpdate \
-  DISABLED_InterceptionBubbleSuppressedByPendingPasswordUpdate
-#else
-#define MAYBE_InterceptionBubbleSuppressedByPendingPasswordUpdate \
-  InterceptionBubbleSuppressedByPendingPasswordUpdate
-#endif  // BUILDFLAG(IS_LINUX)
 // Checks that password update suppresses signin interception.
-IN_PROC_BROWSER_TEST_F(
-    PasswordManagerInteractiveTestWithSigninInterception,
-    MAYBE_InterceptionBubbleSuppressedByPendingPasswordUpdate) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTestWithSigninInterception,
+                       InterceptionBubbleSuppressedByPendingPasswordUpdate) {
   Profile* profile = browser()->GetProfile();
   helper_.SetupProfilesForInterception(profile);
   // Prepopulate Gaia credentials to trigger an update bubble.
