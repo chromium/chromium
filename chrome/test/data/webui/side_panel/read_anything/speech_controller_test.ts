@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {BrowserProxy, ContentPositionSource, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, ReadAloudNode, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {Segment} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {Segment, SpeechListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setContent} from './common.js';
@@ -1171,4 +1171,40 @@ suite('SpeechController', () => {
 
     assertFalse(onPlayingFromPosition);
   });
+
+  test(
+      'highlightAndPlayMessage highlights before notifying word boundary when line focus is enabled',
+      async () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        const text = 'Testing highlight order with line focus.';
+        setContent(text, readAloudModel);
+        const element = document.createElement('p');
+        element.textContent = text;
+
+        const events: string[] = [];
+        const highlighter = ReadAloudHighlighter.getInstance();
+        const originalHighlight = highlighter.highlightCurrentGranularity;
+        highlighter.highlightCurrentGranularity = (...args) => {
+          events.push('highlight');
+          originalHighlight.apply(highlighter, args);
+        };
+
+        const testListener: SpeechListener = {
+          onWordBoundary: () => events.push('word_boundary'),
+          onIsSpeechActiveChange: () => {},
+          onIsAudioCurrentlyPlayingChange: () => {},
+          onEngineStateChange: () => {},
+          onPreviewVoicePlaying: () => {},
+          onPlayingFromSelection: () => {},
+        };
+        speechController.addListener(testListener);
+
+        speechController.onPlayPauseToggle(element);
+        await speech.whenCalled('speak');
+
+        assertEquals('highlight', events[0]);
+        assertEquals('word_boundary', events[1]);
+
+        highlighter.highlightCurrentGranularity = originalHighlight;
+      });
 });

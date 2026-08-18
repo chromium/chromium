@@ -526,15 +526,34 @@ export class SpeechController {
         return skippedPosition;
 
       } else {
-        this.notifyWordBoundary_(resumeBoundary);
-        this.playText_(utteranceTextForWordBoundary);
+        if (chrome.readingMode.isLineFocusEnabled) {
+          // When line focus is enabled, highlight and position the current
+          // granularity before notifying word boundaries and playing audio so
+          // line focus is properly aligned to the text before speech starts.
+          this.highlightCurrentGranularity_(segments);
+          this.notifyWordBoundary_(resumeBoundary);
+          this.playText_(utteranceTextForWordBoundary);
+        } else {
+          this.notifyWordBoundary_(resumeBoundary);
+          this.playText_(utteranceTextForWordBoundary);
+          this.highlightCurrentGranularity_(segments);
+        }
       }
     } else {
-      this.notifyWordBoundary_(0);
-      this.playText_(utteranceText);
+      if (chrome.readingMode.isLineFocusEnabled) {
+        // When line focus is enabled, highlight and position the current
+        // granularity before notifying word boundaries and playing audio so
+        // line focus is properly aligned to the text before speech starts.
+        this.highlightCurrentGranularity_(segments);
+        this.notifyWordBoundary_(0);
+        this.playText_(utteranceText);
+      } else {
+        this.notifyWordBoundary_(0);
+        this.playText_(utteranceText);
+        this.highlightCurrentGranularity_(segments);
+      }
     }
 
-    this.highlightCurrentGranularity_(segments);
     return true;
   }
 
