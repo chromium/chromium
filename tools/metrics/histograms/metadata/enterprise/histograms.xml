@@ -4345,14 +4345,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.Delete.Retry" units="count"
-    expires_after="2026-10-01">
+    expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>Recorded when SkyVault deletion of local files is retried.</summary>
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.Reset" enum="Boolean"
-    expires_after="2026-10-01">
+    expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4363,7 +4363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.Retry" units="count"
-    expires_after="2026-10-01">
+    expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4382,7 +4382,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.FailureDuration"
-    units="ms" expires_after="2026-10-01">
+    units="ms" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4394,7 +4394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.Misconfigured"
-    enum="Boolean" expires_after="2026-10-01">
+    enum="Boolean" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4407,7 +4407,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SkyVault.Migration.{CloudProvider}.ReconnectionDuration"
-    units="ms" expires_after="2026-10-01">
+    units="ms" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4420,7 +4420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.SuccessDuration"
-    units="ms" expires_after="2026-10-01">
+    units="ms" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4432,7 +4432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.{CloudProvider}.UploadError"
-    enum="EnterpriseSkyVaultMigrationUploadError" expires_after="2026-10-01">
+    enum="EnterpriseSkyVaultMigrationUploadError" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4444,7 +4444,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SkyVault.Migration.{CloudProvider}.WaitForConnection"
-    enum="Boolean" expires_after="2026-10-01">
+    enum="Boolean" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4457,7 +4457,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SkyVault.Migration.{MigrationDestination}.CleanupError"
-    enum="Boolean" expires_after="2026-10-01">
+    enum="Boolean" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4471,7 +4471,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SkyVault.Migration.{MigrationDestination}.DialogAction"
-    enum="EnterpriseSkyVaultMigrationDialogAction" expires_after="2026-10-01">
+    enum="EnterpriseSkyVaultMigrationDialogAction" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4485,7 +4485,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SkyVault.Migration.{MigrationDestination}.DialogShown"
-    enum="Boolean" expires_after="2026-10-01">
+    enum="Boolean" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4513,7 +4513,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.{MigrationDestination}.Failed"
-    enum="Boolean" expires_after="2026-10-01">
+    enum="Boolean" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4528,7 +4528,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SkyVault.Migration.{MigrationDestination}.ScheduledTimeInPast.InformUser"
-    enum="Boolean" expires_after="2026-10-01">
+    enum="Boolean" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4543,7 +4543,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SkyVault.Migration.{MigrationDestination}.ScheduledTimeInPast.ScheduleMigration"
-    enum="Boolean" expires_after="2026-10-01">
+    enum="Boolean" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4559,7 +4559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.Migration.{MigrationDestination}.Stopped"
-    enum="Boolean" expires_after="2026-10-01">
+    enum="Boolean" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4573,7 +4573,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SkyVault.Migration.{MigrationDestination}.WrongState"
-    enum="EnterpriseSkyVaultMigrationState" expires_after="2026-10-01">
+    enum="EnterpriseSkyVaultMigrationState" expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4588,7 +4588,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.SkyVault.Migration.{MigrationDestination}.WrongStateContext"
     enum="EnterpriseSkyVaultMigrationStateErrorContext"
-    expires_after="2026-10-01">
+    expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
@@ -4601,7 +4601,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.SkyVault.{Action}.DeleteError" enum="Boolean"
-    expires_after="2026-10-01">
+    expires_after="2027-10-01">
   <owner>aidazolic@google.com</owner>
   <owner>src/chrome/browser/ash/policy/skyvault/OWNERS</owner>
   <summary>
