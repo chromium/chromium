@@ -18,7 +18,8 @@
 
 namespace autofill {
 
-// Command line flags that enable importing AutofillProfiles for manual testing:
+// Command line flags that enable importing AutofillProfiles, credit cards and
+// AutofillAi entities for manual testing:
 //   --autofill-profiles-content-for-manual-testing
 //       Expects profile, credit card and entity descriptions as a string in
 //       JSON format.
@@ -95,7 +96,7 @@ namespace autofill {
 //         "Delivery zip code": "94043",
 //         "Carrier name": "Carrier X",
 //         "Carrier domain": "carrierx.com",
-//         "Estimated delivery date": "2025-05-15",
+//         "Shipped date": "2025-05-15",
 //         "Order ids": "12345",
 //         "Order dates": "2025-05-12",
 //         "Merchant name": "Example Store",
