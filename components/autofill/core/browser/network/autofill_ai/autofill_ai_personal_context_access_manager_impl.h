@@ -37,6 +37,10 @@ namespace personal_context {
 class PersonalContextService;
 }  // namespace personal_context
 
+namespace syncer {
+class DeviceInfoSyncService;
+}  // namespace syncer
+
 namespace autofill {
 
 // Manages fetching masked and unmasked pContext entities. In particular:
@@ -69,7 +73,8 @@ class AutofillAiPersonalContextAccessManagerImpl
           personal_context_eligibility_service,
       subscription_eligibility::SubscriptionEligibilityService*
           subscription_eligibility_service,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      syncer::DeviceInfoSyncService* device_info_sync_service);
 
   AutofillAiPersonalContextAccessManagerImpl(
       const AutofillAiPersonalContextAccessManagerImpl&) = delete;
@@ -211,6 +216,7 @@ class AutofillAiPersonalContextAccessManagerImpl
   const raw_ref<personal_context::PersonalContextEligibilityService>
       personal_context_eligibility_service_;
   const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service_;
 
   // Map from EntityId to the original proto Entity received during prefetch.
   absl::flat_hash_map<EntityInstance::EntityId, personal_context::proto::Entity>

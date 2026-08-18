@@ -22,7 +22,6 @@ source_set("sync") {
     "device_info_sync_client_impl.cc",
     "device_info_sync_client_impl.h",
     "device_info_sync_service_factory.cc",
-    "device_info_sync_service_factory.h",
     "glue/extensions_activity_monitor.cc",
     "glue/extensions_activity_monitor.h",
     "glue/sync_start_util.cc",
@@ -299,7 +298,10 @@ source_set("sync") {
 # to pick up the implementations. The reason for this target separation is
 # because KeyedServiceFactories mix the interface and implementation.
 source_set("factories") {
-  sources = [ "sync_service_factory.h" ]
+  sources = [
+    "device_info_sync_service_factory.h",
+    "sync_service_factory.h",
+  ]
   public_deps = [
     ":data_type_store_service_factory",
     "//base",

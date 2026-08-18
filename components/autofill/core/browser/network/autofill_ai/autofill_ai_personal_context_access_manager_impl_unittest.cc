@@ -35,6 +35,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
+#include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,6 +87,22 @@ MATCHER_P2(MatchContextFetchRequest, expected_types, expected_presence, "") {
                             req.requested_types(), result_listener);
 }
 
+// Checks that ContextMemoryAmbientAutofillRequest matches the `expected_types`,
+// `expected_presence`, and `expected_client_id`.
+MATCHER_P3(MatchContextFetchRequestWithClientId,
+           expected_types,
+           expected_presence,
+           expected_client_id,
+           "") {
+  const auto& req = static_cast<
+      const personal_context::proto::ContextMemoryAmbientAutofillRequest&>(arg);
+
+  return req.return_spii_presence() == expected_presence &&
+         req.client_id() == expected_client_id &&
+         ExplainMatchResult(ElementsAreArray(expected_types),
+                            req.requested_types(), result_listener);
+}
+
 template <size_t I = 0, typename T>
 auto SaveOptSpanToVector(std::vector<T>* vector_ptr) {
   return [vector_ptr](auto&&... args) {
@@ -129,7 +146,8 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
     access_manager_ =
         std::make_unique<AutofillAiPersonalContextAccessManagerImpl>(
             &mock_personal_context_service_, &mock_eligibility_service_,
-            subscription_eligibility_service_.get(), &pref_service_);
+            subscription_eligibility_service_.get(), &pref_service_,
+            &fake_device_info_sync_service_);
     ON_CALL(mock_eligibility_service_, GetEligibilityState)
         .WillByDefault(testing::Return(
             personal_context::PersonalContextEligibilityState::kEligible));
@@ -142,6 +160,10 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
 
   AutofillAiPersonalContextAccessManagerImpl& access_manager() {
     return *access_manager_;
+  }
+
+  syncer::FakeDeviceInfoSyncService& fake_device_info_sync_service() {
+    return fake_device_info_sync_service_;
   }
 
   MockPersonalContextService& mock_personal_context_service() {
@@ -274,6 +296,7 @@ class AutofillAiPersonalContextAccessManagerImplTest : public testing::Test {
   MockPersonalContextEligibilityService mock_eligibility_service_;
   std::unique_ptr<subscription_eligibility::SubscriptionEligibilityService>
       subscription_eligibility_service_;
+  syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
   std::unique_ptr<AutofillAiPersonalContextAccessManagerImpl> access_manager_;
   MockAutofillAiPersonalContextAccessManagerObserver mock_observer_;
   base::ScopedObservation<AutofillAiPersonalContextAccessManagerImpl,
@@ -1873,6 +1896,53 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
       personal_context::PersonalContextNonEligibilityReason::kEligible, 1);
 }
 #endif
+
+// Tests that `PrefetchContext` populates the `client_id` field of
+// `ContextMemoryAmbientAutofillRequest` using the cache GUID retrieved from
+// `DeviceInfoSyncService`.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchContext_PopulatesClientIdFromCacheGuid) {
+  const EntityType kOrderType = EntityType(EntityTypeName::kOrder);
+
+  EXPECT_CALL(
+      mock_personal_context_service(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
+          MatchContextFetchRequestWithClientId(
+              std::vector<personal_context::proto::EntityType>{
+                  AutofillEntityTypeToPersonalContextEntityType(kOrderType)},
+              /*expected_presence=*/false,
+              /*expected_client_id=*/
+              fake_device_info_sync_service()
+                  .GetLocalDeviceInfoProvider()
+                  ->GetLocalDeviceInfo()
+                  ->guid()),
+          _, _));
+
+  access_manager().PrefetchContext({kOrderType});
+}
+
+// Tests that `PrefetchContext` populates an empty `client_id` when local device
+// info is unavailable.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchContext_EmptyClientIdWhenLocalDeviceInfoUnavailable) {
+  fake_device_info_sync_service().GetLocalDeviceInfoProvider()->SetReady(false);
+
+  const EntityType kOrderType = EntityType(EntityTypeName::kOrder);
+
+  EXPECT_CALL(
+      mock_personal_context_service(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
+          MatchContextFetchRequestWithClientId(
+              std::vector<personal_context::proto::EntityType>{
+                  AutofillEntityTypeToPersonalContextEntityType(kOrderType)},
+              /*expected_presence=*/false,
+              /*expected_client_id=*/""),
+          _, _));
+
+  access_manager().PrefetchContext({kOrderType});
+}
 
 }  // namespace
 }  // namespace autofill

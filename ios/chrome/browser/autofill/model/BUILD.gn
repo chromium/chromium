@@ -98,6 +98,7 @@ source_set("model") {
     "//ios/chrome/browser/subscription_eligibility/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common/ui/colors",
     "//ios/web/common",

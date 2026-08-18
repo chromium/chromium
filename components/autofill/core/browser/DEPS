@@ -35,6 +35,7 @@ include_rules = [
   "+components/strings",
   "+components/subscription_eligibility",
   "+components/sync",
+  "+components/sync_device_info",
   "+components/sync_preferences",
   "+components/translate/core/browser",
   "+components/translate/core/common",

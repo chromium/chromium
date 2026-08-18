@@ -36,6 +36,9 @@
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/personal_context/proto/features/ambient_autofill.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/local_device_info_provider.h"
 #include "net/base/backoff_entry.h"
 
 namespace autofill {
@@ -70,13 +73,15 @@ bool IsPersonalContextEligible(
 
 personal_context::proto::ContextMemoryAmbientAutofillRequest
 CreateAmbientAutofillRequest(base::span<const EntityType> types,
-                             bool return_spii_presence) {
+                             bool return_spii_presence,
+                             std::string client_id) {
   personal_context::proto::ContextMemoryAmbientAutofillRequest request;
   for (const EntityType& type : types) {
     request.add_requested_types(
         AutofillEntityTypeToPersonalContextEntityType(type));
   }
   request.set_return_spii_presence(return_spii_presence);
+  request.set_client_id(std::move(client_id));
   return request;
 }
 
@@ -110,6 +115,23 @@ void LogRequestLatency(
   }
 }
 
+std::string GetLocalDeviceGuid(
+    syncer::DeviceInfoSyncService* device_info_sync_service) {
+  if (!device_info_sync_service) {
+    return std::string();
+  }
+  const syncer::LocalDeviceInfoProvider* provider =
+      device_info_sync_service->GetLocalDeviceInfoProvider();
+  if (!provider) {
+    return std::string();
+  }
+  const syncer::DeviceInfo* device_info = provider->GetLocalDeviceInfo();
+  if (!device_info) {
+    return std::string();
+  }
+  return device_info->guid();
+}
+
 }  // namespace
 
 AutofillAiPersonalContextAccessManagerImpl::
@@ -119,11 +141,13 @@ AutofillAiPersonalContextAccessManagerImpl::
             personal_context_eligibility_service,
         subscription_eligibility::SubscriptionEligibilityService*
             subscription_eligibility_service,
-        PrefService* pref_service)
+        PrefService* pref_service,
+        syncer::DeviceInfoSyncService* device_info_sync_service)
     : personal_context_service_(CHECK_DEREF(personal_context_service)),
       personal_context_eligibility_service_(
           CHECK_DEREF(personal_context_eligibility_service)),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      device_info_sync_service_(device_info_sync_service) {
   eligibility_service_observation_.Observe(
       personal_context_eligibility_service);
   if (subscription_eligibility_service) {
@@ -194,13 +218,15 @@ void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
   }
 
   const bool has_spii_types = !spii_to_request.empty();
+  const std::string client_id = GetLocalDeviceGuid(device_info_sync_service_);
 
   // Request 1: collects non-spii entities and asks for spii presence if any of
   // the requested_types contains SPII types.
   {
     personal_context::proto::ContextMemoryAmbientAutofillRequest request =
         CreateAmbientAutofillRequest(non_spii_and_presence_to_request,
-                                     /*return_spii_presence=*/has_spii_types);
+                                     /*return_spii_presence=*/has_spii_types,
+                                     client_id);
     personal_context_service_->FetchContext(
         personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
         request,
@@ -217,7 +243,7 @@ void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
   if (has_spii_types) {
     personal_context::proto::ContextMemoryAmbientAutofillRequest request =
         CreateAmbientAutofillRequest(spii_to_request,
-                                     /*return_spii_presence=*/false);
+                                     /*return_spii_presence=*/false, client_id);
     personal_context_service_->FetchContext(
         personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
         request,
