@@ -1228,7 +1228,6 @@ public final class ProductionSupportedFlagList {
                         + " through it to receive IPCs directly."),
 
         // Features for PerfCombined2025_WebView study
-        Flag.baseFeature("AsyncSetCookie"),
         Flag.baseFeature("ReducePPMs"),
         Flag.baseFeature("GCOnArrayBufferAllocationFailure"),
         Flag.baseFeature("RemoveCancelledScriptedIdleTasks"),
