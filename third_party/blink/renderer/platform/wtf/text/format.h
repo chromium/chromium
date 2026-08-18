@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -45,9 +46,13 @@ consteval void FormatStringError(const char* message) {
 class WTF_EXPORT FormatArg {
  public:
   using Value =
-      std::variant<int64_t, uint64_t, StringView, const void*, double>;
+      std::variant<int64_t, uint64_t, StringView, const void*, double, UChar>;
 
   // NOLINTBEGIN(google-explicit-constructor)
+  FormatArg(char v)
+      : value_(static_cast<UChar>(static_cast<unsigned char>(v))) {}
+  FormatArg(LChar v) : value_(static_cast<UChar>(v)) {}
+  FormatArg(UChar v) : value_(v) {}
   FormatArg(int v) : value_(static_cast<int64_t>(v)) {}
   FormatArg(unsigned int v) : value_(static_cast<uint64_t>(v)) {}
   FormatArg(long v) : value_(static_cast<int64_t>(v)) {}
@@ -126,7 +131,7 @@ constexpr std::optional<ParsedInteger> ParseInteger(
 }
 
 struct ParsedFormatSpec {
-  uint32_t width = 0;
+  std::optional<uint32_t> width;
   std::optional<uint32_t> precision;
   char type = '\0';
   size_t next_index = 0;
@@ -143,7 +148,10 @@ constexpr std::optional<ParsedFormatSpec> ParseFormatSpec(
   if (!width_parsed.has_value()) {
     return std::nullopt;
   }
-  uint32_t width = width_parsed->value;
+  std::optional<uint32_t> width;
+  if (width_parsed->next_index > start_index) {
+    width = width_parsed->value;
+  }
   SizeType i = static_cast<SizeType>(width_parsed->next_index);
   auto len = format.length();
 
@@ -172,7 +180,7 @@ constexpr std::optional<ParsedFormatSpec> ParseFormatSpec(
 
   if (type != '\0' && type != 'd' && type != 'x' && type != 'X' &&
       type != 's' && type != 'p' && type != 'P' && type != 'e' && type != 'E' &&
-      type != 'f' && type != 'F' && type != 'g' && type != 'G') {
+      type != 'f' && type != 'F' && type != 'g' && type != 'G' && type != 'c') {
     return std::nullopt;
   }
 
@@ -213,8 +221,10 @@ class FormatString {
             FormatStringError(
                 "Invalid format string: invalid format specifier");
           }
-          if (parsed->precision.has_value() || parsed->type != '\0') {
+          if (parsed->width.has_value() || parsed->precision.has_value() ||
+              parsed->type != '\0') {
             if (!CheckArgTypeAtIndex(brace_count, parsed->type,
+                                     parsed->width.has_value(),
                                      parsed->precision.has_value())) {
               FormatStringError(
                   "Invalid format string: argument type mismatch for type "
@@ -248,13 +258,20 @@ class FormatString {
  private:
   static consteval bool CheckArgTypeAtIndex(size_t index,
                                             char type,
+                                            bool has_width,
                                             bool has_precision) {
     size_t current = 0;
     bool valid = true;
     auto check = [&](auto dummy) {
       using RawT = std::remove_cvref_t<typename decltype(dummy)::type>;
       if (current == index) {
+        bool is_uchar = std::is_same_v<RawT, char> ||
+                        std::is_same_v<RawT, LChar> ||
+                        std::is_same_v<RawT, UChar>;
+
         if (type == 'd' || type == 'x' || type == 'X') {
+          valid = std::is_integral_v<RawT> || std::is_enum_v<RawT>;
+        } else if (type == 'c') {
           valid = std::is_integral_v<RawT> || std::is_enum_v<RawT>;
         } else if (type == 's') {
           valid = std::convertible_to<const RawT&, StringView> ||
@@ -267,6 +284,12 @@ class FormatString {
         } else if (type == 'e' || type == 'E' || type == 'f' || type == 'F' ||
                    type == 'g' || type == 'G') {
           valid = std::is_floating_point_v<RawT>;
+        }
+
+        if (type == 'c' || (is_uchar && type == '\0')) {
+          if (has_width || has_precision) {
+            valid = false;
+          }
         }
 
         if (has_precision) {

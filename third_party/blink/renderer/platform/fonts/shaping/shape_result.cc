@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -2079,7 +2080,7 @@ void ShapeResult::ToString(StringBuilder* output) const {
     output->AppendNumber(run.num_characters_);
     output->Append(", dir=");
     output->AppendNumber(run.hb_direction_);
-    output->AppendFormat(", script=%c%c%c%c", HB_UNTAG(run.script_));
+    FormatTo(*output, ", script={}{}{}{}", HB_UNTAG(run.script_));
     output->Append(", glyphs[");
     output->AppendNumber(run.glyph_data_.size());
     output->Append("]{");

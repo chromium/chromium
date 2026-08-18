@@ -69,8 +69,8 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
   }
 
   static String TestResultToString(CheckPseudoHasResult test_result) {
-    return String::Format(
-        "0b%c%c%c%c",
+    return Format(
+        "0b{}{}{}{}",
         (test_result & kCheckPseudoHasResultSomeChildrenChecked ? '1' : '0'),
         (test_result & kCheckPseudoHasResultAllDescendantsOrNextSiblingsChecked
              ? '1'

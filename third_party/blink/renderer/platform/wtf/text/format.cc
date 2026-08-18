@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/third_party/double_conversion/double-conversion/double-conversion.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -57,6 +58,23 @@ void FormatHex(uint64_t abs_val,
     append_hex(IntegerToStringConverter<uint64_t, 16, true>(abs_val));
   } else {
     append_hex(IntegerToStringConverter<uint64_t, 16, false>(abs_val));
+  }
+}
+
+void FormatUnsignedInteger(uint64_t val,
+                           char type,
+                           bool zero_pad,
+                           uint32_t width,
+                           StringBuilder& builder) {
+  if (type == 'x' || type == 'X') {
+    FormatHex(val, /*is_negative=*/false, type == 'X', zero_pad, width,
+              builder);
+  } else if (type == 'd' || type == '\0') {
+    String num_str = String::Number(val);
+    Pad(zero_pad ? '0' : ' ', width, num_str.length(), builder);
+    builder.Append(num_str);
+  } else {
+    NOTREACHED() << "Invalid type specifier for unsigned integer argument";
   }
 }
 
@@ -171,7 +189,7 @@ StringBuilder& VFormatTo(StringBuilder& builder,
       } else if (i + 1 < len && (UNSAFE_BUFFERS(format[i + 1]) == '}' ||
                                  UNSAFE_BUFFERS(format[i + 1]) == ':')) {
         ++i;
-        uint32_t width = 0;
+        std::optional<uint32_t> optional_width;
         bool zero_pad = false;
         std::optional<uint32_t> precision;
         char type = '\0';
@@ -185,7 +203,7 @@ StringBuilder& VFormatTo(StringBuilder& builder,
           }
           auto parsed = internal::ParseFormatSpec(format, i);
           CHECK(parsed.has_value()) << "Invalid format specifier";
-          width = parsed->width;
+          optional_width = parsed->width;
           precision = parsed->precision;
           type = parsed->type;
           i = static_cast<wtf_size_t>(parsed->next_index);
@@ -197,22 +215,35 @@ StringBuilder& VFormatTo(StringBuilder& builder,
         if (arg_index < args.size()) {
           const FormatArg& arg = args[arg_index++];
           std::visit(
-              [&builder, width, zero_pad, precision, type](const auto& val) {
+              [&builder, optional_width, zero_pad, precision,
+               type](const auto& val) {
                 using T = std::decay_t<decltype(val)>;
-                if constexpr (std::is_same_v<T, int64_t>) {
+                uint32_t width = optional_width.value_or(0);
+                if constexpr (std::is_same_v<T, UChar>) {
                   CHECK(!precision.has_value())
                       << "Precision specified for non-floating-point type";
-                  CHECK(type == '\0' || type == 'd' || type == 'x' ||
-                        type == 'X')
-                      << "Invalid type specifier for integer argument";
-                  if (type == 'x' || type == 'X') {
+                  if (type == '\0' || type == 'c') {
+                    CHECK(!optional_width.has_value());
+                    builder.Append(val);
+                  } else {
+                    FormatUnsignedInteger(val, type, zero_pad, width, builder);
+                  }
+                } else if constexpr (std::is_same_v<T, int64_t>) {
+                  CHECK(!precision.has_value())
+                      << "Precision specified for non-floating-point type";
+                  if (type == 'c') {
+                    CHECK(!optional_width.has_value());
+                    CHECK_GE(val, 0);
+                    CHECK_LE(val, static_cast<int64_t>(uchar::kMaxCodepoint));
+                    builder.Append(static_cast<UChar32>(val));
+                  } else if (type == 'x' || type == 'X') {
                     bool is_negative = val < 0;
-                    uint64_t abs_val =
-                        is_negative ? (0u - static_cast<uint64_t>(val))
-                                    : static_cast<uint64_t>(val);
+                    uint64_t abs_val = is_negative
+                                           ? (0u - static_cast<uint64_t>(val))
+                                           : static_cast<uint64_t>(val);
                     FormatHex(abs_val, is_negative, type == 'X', zero_pad,
                               width, builder);
-                  } else {
+                  } else if (type == '\0' || type == 'd') {
                     if (val < 0 && zero_pad) {
                       String num_str = String::Number(val);
                       if (width > num_str.length()) {
@@ -224,23 +255,23 @@ StringBuilder& VFormatTo(StringBuilder& builder,
                       }
                     } else {
                       String num_str = String::Number(val);
-                      Pad(zero_pad ? '0' : ' ', width, num_str.length(), builder);
+                      Pad(zero_pad ? '0' : ' ', width, num_str.length(),
+                          builder);
                       builder.Append(num_str);
                     }
+                  } else {
+                    NOTREACHED()
+                        << "Invalid type specifier for integer argument";
                   }
                 } else if constexpr (std::is_same_v<T, uint64_t>) {
                   CHECK(!precision.has_value())
                       << "Precision specified for non-floating-point type";
-                  CHECK(type == '\0' || type == 'd' || type == 'x' ||
-                        type == 'X')
-                      << "Invalid type specifier for unsigned integer argument";
-                  if (type == 'x' || type == 'X') {
-                    FormatHex(val, /*is_negative=*/false, type == 'X', zero_pad,
-                              width, builder);
+                  if (type == 'c') {
+                    CHECK(!optional_width.has_value());
+                    CHECK_LE(val, static_cast<uint64_t>(uchar::kMaxCodepoint));
+                    builder.Append(static_cast<UChar32>(val));
                   } else {
-                    String num_str = String::Number(val);
-                    Pad(zero_pad ? '0' : ' ', width, num_str.length(), builder);
-                    builder.Append(num_str);
+                    FormatUnsignedInteger(val, type, zero_pad, width, builder);
                   }
                 } else if constexpr (std::is_same_v<T, double>) {
                   CHECK(type == '\0' || type == 'e' || type == 'E' ||

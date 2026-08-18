@@ -290,4 +290,46 @@ TEST(FormatTest, TypeSpecifierDeathTest) {
   EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.}", FormatArgs(double_args)), "");
 }
 
+TEST(FormatTest, Character) {
+  // UChar with no type specifies
+  EXPECT_EQ("a", Format("{}", 'a'));
+  EXPECT_EQ("A", Format("{}", static_cast<LChar>('A')));
+  EXPECT_EQ("b", Format("{}", static_cast<UChar>('b')));
+
+  // c type specifier
+  EXPECT_EQ("C", Format("{:c}", 'C'));
+  EXPECT_EQ("D", Format("{:c}", 68));   // int (mapped to int64_t)
+  EXPECT_EQ("E", Format("{:c}", 69u));  // unsigned int (mapped to uint64_t)
+
+  // UChar with d, x, X types
+  EXPECT_EQ("65", Format("{:d}", static_cast<UChar>('A')));
+  EXPECT_EQ("41", Format("{:x}", static_cast<UChar>('A')));
+  EXPECT_EQ("   41", Format("{:5x}", static_cast<UChar>('A')));
+  EXPECT_EQ("00041", Format("{:05x}", static_cast<UChar>('A')));
+
+  // Large code points
+  // U+10437 (Deseret Small Letter O) -> D801 DC37
+  EXPECT_EQ(String(Vector<UChar>{0xD801, 0xDC37}), Format("{:c}", 0x10437));
+
+  // Max valid code point
+  EXPECT_EQ(String(Vector<UChar>{0xDBFF, 0xDFFF}), Format("{:c}", 0x10FFFF));
+}
+
+TEST(FormatTest, CharacterDeathTest) {
+  FormatArg uchar_args[] = {FormatArg(static_cast<UChar>('A'))};
+  FormatArg int_args[] = {FormatArg(65)};
+
+  // Width and precision are invalid for 'c' and UChar with no type
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:5c}", FormatArgs(int_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2c}", FormatArgs(int_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:5}", FormatArgs(uchar_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:.2}", FormatArgs(uchar_args)), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:5c}", FormatArgs(uchar_args)), "");
+
+  // Out of bounds values
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:c}", FormatArgs({FormatArg(-1)})), "");
+  EXPECT_DEATH_IF_SUPPORTED(VFormat("{:c}", FormatArgs({FormatArg(0x110000)})),
+                            "");
+}
+
 }  // namespace blink
