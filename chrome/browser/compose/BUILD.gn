@@ -54,6 +54,7 @@ source_set("impl") {
     "//chrome/browser/signin",
     "//chrome/browser/translate",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:chrome_pages",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/hats",
@@ -79,15 +80,6 @@ source_set("impl") {
     "//ui/base:types",
     "//ui/gfx/geometry",
     "//url",
-
-    # TODO(crbug.com/353332589): The following headers are included and cause a
-    # dependency against //c/b/ui:ui. Because of them, the `:impl` target is
-    # needed. Unify `:compose` and `:impl` targets and these inclusions are
-    # gone.
-    # - c/b/ui/browser.h"
-    # - c/b/ui/browser_dialogs.h"
-    "//chrome/browser/ui",
-    "//chrome/browser/ui:chrome_pages",
   ]
 }
 
