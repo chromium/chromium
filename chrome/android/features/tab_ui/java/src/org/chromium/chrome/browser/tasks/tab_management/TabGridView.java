@@ -206,7 +206,17 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
 
     void setTabActionButtonTint(ColorStateList actionButtonTint) {
         mActionButtonTint = actionButtonTint;
-        setTabActionButtonDrawable();
+        applyActionButtonTint();
+    }
+
+    void updateActionButtonBackground(boolean isSelected, boolean isIncognito) {
+        if (mTabActionState != TabActionState.CLOSABLE) return;
+        if (mTabActionButtonType == TabActionButtonType.PIN) return;
+
+        mActionButton.setBackgroundResource(
+                isSelected && !isIncognito
+                        ? R.drawable.small_icon_background_on_primary
+                        : R.drawable.small_icon_background);
     }
 
     void setTabActionState(@TabActionState int tabActionState) {
@@ -297,6 +307,7 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
         mActionButton.setImageDrawable(
                 ResourcesCompat.getDrawable(
                         getResources(), R.drawable.ic_more_vert_24dp, getContext().getTheme()));
+        mActionButton.setBackgroundResource(R.drawable.small_icon_background);
         mActionButton.setFocusable(true);
     }
 

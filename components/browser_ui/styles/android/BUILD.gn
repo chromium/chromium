@@ -45,6 +45,8 @@ android_resources("java_resources") {
     "java/res/color-night/interactable_chip_bg_color.xml",
     "java/res/color/bottom_sheet_bg_color.xml",
     "java/res/color/chip_text_color_secondary_list.xml",
+    "java/res/color/color_on_primary_with_alpha_12.xml",
+    "java/res/color/color_on_primary_with_alpha_8.xml",
     "java/res/color/color_on_surface_with_alpha_10.xml",
     "java/res/color/color_on_surface_with_alpha_12.xml",
     "java/res/color/color_on_surface_with_alpha_16.xml",

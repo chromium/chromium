@@ -112,6 +112,8 @@ public class TabGridViewBinder {
             TabCardViewBinderUtils.detachTabGroupColorView(container);
 
             tabGridView.clearHighlight();
+            tabGridView.updateActionButtonBackground(
+                    /* isSelected= */ false, /* isIncognito= */ false);
         }
     }
 
@@ -251,13 +253,16 @@ public class TabGridViewBinder {
         } else if (TabProperties.IS_SELECTED == propertyKey
                 || TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey
                 || TabProperties.TAB_GROUP_CARD_COLOR == propertyKey) {
+            boolean isSelected = model.get(TabProperties.IS_SELECTED);
+            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
             ((TabGridView) view)
                     .setTabActionButtonTint(
                             TabCardThemeUtil.getActionButtonTintList(
                                     view.getContext(),
-                                    model.get(TabProperties.IS_INCOGNITO),
-                                    model.get(TabProperties.IS_SELECTED),
+                                    isIncognito,
+                                    isSelected,
                                     model.get(TabProperties.TAB_GROUP_CARD_COLOR)));
+            ((TabGridView) view).updateActionButtonBackground(isSelected, isIncognito);
         } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
             updateTabCardLabel(view, model.get(TabProperties.TAB_CARD_LABEL_DATA));
         } else if (TabProperties.HIGHLIGHT_STATE == propertyKey) {

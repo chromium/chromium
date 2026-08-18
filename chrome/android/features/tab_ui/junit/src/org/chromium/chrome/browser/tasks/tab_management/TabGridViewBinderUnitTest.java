@@ -489,6 +489,7 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mTabGroupColorViewContainer).removeAllViews();
         verify(mTabGroupColorViewContainer).setVisibility(View.GONE);
+        verify(mViewGroup).updateActionButtonBackground(eq(false), eq(false));
     }
 
     @Test
@@ -497,6 +498,7 @@ public final class TabGridViewBinderUnitTest {
         TabGridViewBinder.bindTab(mModel, mViewGroup, TabProperties.TAB_ACTION_BUTTON_DATA);
 
         verify(mViewGroup).setTabActionButtonTint(any());
+        verify(mViewGroup).updateActionButtonBackground(eq(true), eq(false));
     }
 
     @Test
