@@ -1117,16 +1117,27 @@ String StylePropertySerializer::TimelineValue(
     CHECK_NE(inset_list->length(), 0u);
   }
 
-  // Per https://drafts.csswg.org/css-values-4/#linked-properties,
-  // the *-name property is the coordinating list base property, which
-  // determines the length of the coordinated value list. Other properties
-  // cycle if shorter or are truncated if longer.
+  const bool axis_is_initial =
+      axis_list.length() == 1u &&
+      IsIdentifier(axis_list.Item(0), CSSValueID::kBlock);
+  const bool inset_is_initial =
+      inset_list && inset_list->length() == 1u &&
+      IsIdentifierPair(inset_list->Item(0), CSSValueID::kAuto);
+
+  // Non-initial longhands must have the same length so serialization exactly
+  // represents their values.
+  if ((!axis_is_initial && axis_list.length() != name_list.length()) ||
+      (inset_list && !inset_is_initial &&
+       inset_list->length() != name_list.length())) {
+    return String();
+  }
+
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
 
   for (wtf_size_t i = 0; i < name_list.length(); ++i) {
-    const CSSValue& axis = axis_list.Item(i % axis_list.length());
+    const CSSValue& axis = axis_list.Item(axis_is_initial ? 0u : i);
     const CSSValue* inset =
-        inset_list ? &inset_list->Item(i % inset_list->length()) : nullptr;
+        inset_list ? &inset_list->Item(inset_is_initial ? 0u : i) : nullptr;
     list->Append(*TimelineValueItem(name_list.Item(i), axis, inset));
   }
 

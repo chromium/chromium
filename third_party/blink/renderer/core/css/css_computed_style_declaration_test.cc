@@ -125,6 +125,57 @@ TEST_F(CSSComputedStyleDeclarationTest,
   // Don't crash.
 }
 
+TEST_F(CSSComputedStyleDeclarationTest,
+       TimelineShorthandWithMismatchedListLengths) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="scroll" style="scroll-timeline-name: --a, --b, --c;
+                            scroll-timeline-axis: inline, inline"></div>
+    <div id="scroll-extra-axis" style="scroll-timeline-name: --a, --b;
+                                       scroll-timeline-axis: inline, inline, inline"></div>
+    <div id="view" style="view-timeline-name: --a, --b;
+                          view-timeline-axis: inline, inline;
+                          view-timeline-inset: auto, auto, auto"></div>
+  )HTML");
+
+  auto* scroll = MakeGarbageCollected<CSSComputedStyleDeclaration>(
+      GetElementById("scroll"));
+  EXPECT_EQ("", scroll->GetPropertyValue(CSSPropertyID::kScrollTimeline));
+
+  auto* scroll_extra_axis = MakeGarbageCollected<CSSComputedStyleDeclaration>(
+      GetElementById("scroll-extra-axis"));
+  EXPECT_EQ(
+      "", scroll_extra_axis->GetPropertyValue(CSSPropertyID::kScrollTimeline));
+
+  auto* view =
+      MakeGarbageCollected<CSSComputedStyleDeclaration>(GetElementById("view"));
+  EXPECT_EQ("", view->GetPropertyValue(CSSPropertyID::kViewTimeline));
+}
+
+TEST_F(CSSComputedStyleDeclarationTest, TimelineShorthandWithInitialLonghands) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="scroll" style="scroll-timeline-name: --a, --b"></div>
+    <div id="view-axis" style="view-timeline-name: --a, --b;
+                               view-timeline-inset: 1px, 2px"></div>
+    <div id="view-inset" style="view-timeline-name: --a, --b;
+                                view-timeline-axis: inline, inline"></div>
+  )HTML");
+
+  auto* scroll = MakeGarbageCollected<CSSComputedStyleDeclaration>(
+      GetElementById("scroll"));
+  EXPECT_EQ("--a, --b",
+            scroll->GetPropertyValue(CSSPropertyID::kScrollTimeline));
+
+  auto* view_axis = MakeGarbageCollected<CSSComputedStyleDeclaration>(
+      GetElementById("view-axis"));
+  EXPECT_EQ("--a 1px, --b 2px",
+            view_axis->GetPropertyValue(CSSPropertyID::kViewTimeline));
+
+  auto* view_inset = MakeGarbageCollected<CSSComputedStyleDeclaration>(
+      GetElementById("view-inset"));
+  EXPECT_EQ("--a inline, --b inline",
+            view_inset->GetPropertyValue(CSSPropertyID::kViewTimeline));
+}
+
 // https://crbug.com/1115877
 TEST_F(CSSComputedStyleDeclarationTest, SVGBlockSizeLayoutDependent) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(

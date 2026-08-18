@@ -96,16 +96,12 @@ test_shorthand_contraction('scroll-timeline', {
 }, 'none, none');
 
 // Longhands with different lengths:
-// https://drafts.csswg.org/css-values-4/#linked-properties
-// When the longhand sizes are different, the amount of created elements
-// should be equal to the "base" longhand attribute, which in this case
-// is the timeline name. If a coordinating list property has too few
-// values specified, its value list is repeated to add more used values.
-// If it has too many values, the list will be truncated to match the
-// base property's length. However, the computed style for the shorthand
-// property should serialized to an empty string since round-tripping
-// wouldn't work otherwise.
-// https://github.com/w3c/csswg-drafts/issues/13500
+// A longhand with its initial value can be omitted from the shorthand, so its
+// list length does not prevent shorthand serialization.
+test_shorthand_contraction('scroll-timeline', {
+  'scroll-timeline-name': '--a, --b, --c',
+  'scroll-timeline-axis': 'block',
+}, '--a, --b, --c');
 
 test_shorthand_contraction('scroll-timeline', {
   'scroll-timeline-name': '--a, --b, --c',

@@ -90,6 +90,73 @@ TEST_F(CSSPropertyValueSetTest, ConflictingLonghandAndShorthand) {
       rule->Properties().AsText());
 }
 
+TEST_F(CSSPropertyValueSetTest, TimelineShorthandWithMismatchedListLengths) {
+  auto* properties =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+
+  auto set_property = [&](CSSPropertyID property, const String& value) {
+    return properties->ParseAndSetProperty(property, value, /*important=*/false,
+                                           SecureContextMode::kInsecureContext,
+                                           /*context_style_sheet=*/nullptr);
+  };
+
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kScrollTimelineName, "--a, --b, --c"));
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kScrollTimelineAxis, "inline, inline"));
+  EXPECT_EQ("", properties->GetPropertyValue(CSSPropertyID::kScrollTimeline));
+
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kScrollTimelineName, "--a, --b"));
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kScrollTimelineAxis,
+                         "inline, inline, inline"));
+  EXPECT_EQ("", properties->GetPropertyValue(CSSPropertyID::kScrollTimeline));
+
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kViewTimelineName, "--a, --b"));
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kViewTimelineAxis, "inline, inline"));
+  ASSERT_NE(
+      MutableCSSPropertyValueSet::kParseError,
+      set_property(CSSPropertyID::kViewTimelineInset, "auto, auto, auto"));
+  EXPECT_EQ("", properties->GetPropertyValue(CSSPropertyID::kViewTimeline));
+}
+
+TEST_F(CSSPropertyValueSetTest, TimelineShorthandWithInitialLonghands) {
+  auto* properties =
+      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+
+  auto set_property = [&](CSSPropertyID property, const String& value) {
+    return properties->ParseAndSetProperty(property, value, /*important=*/false,
+                                           SecureContextMode::kInsecureContext,
+                                           /*context_style_sheet=*/nullptr);
+  };
+
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kScrollTimelineName, "--a, --b"));
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kScrollTimelineAxis, "block"));
+  EXPECT_EQ("--a, --b",
+            properties->GetPropertyValue(CSSPropertyID::kScrollTimeline));
+
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kViewTimelineName, "--a, --b"));
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kViewTimelineAxis, "block"));
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kViewTimelineInset, "1px, 2px"));
+  EXPECT_EQ("--a 1px, --b 2px",
+            properties->GetPropertyValue(CSSPropertyID::kViewTimeline));
+
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kViewTimelineAxis, "inline, inline"));
+  ASSERT_NE(MutableCSSPropertyValueSet::kParseError,
+            set_property(CSSPropertyID::kViewTimelineInset, "auto"));
+  EXPECT_EQ("--a inline, --b inline",
+            properties->GetPropertyValue(CSSPropertyID::kViewTimeline));
+}
+
 TEST_F(CSSPropertyValueSetTest, SetPropertyReturnValue) {
   MutableCSSPropertyValueSet* properties =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
