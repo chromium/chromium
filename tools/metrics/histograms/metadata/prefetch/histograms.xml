@@ -170,6 +170,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-12-13">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records duration from when `PrefetchContainer` is added to `PrefetchService`
     to when `PrefetchContainer` received non-redirect header.
@@ -187,6 +188,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-12-13">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records duration from when `PrefetchContainer` is added to `PrefetchService`
     to when `PrefetchContainer` received initial eligibility.
@@ -204,6 +206,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-12-13">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records duration from when `PrefetchContainer` is added to `PrefetchService`
     to when `PrefetchContainer` finished load successfully.
@@ -221,6 +224,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2026-12-13">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records duration from when `PrefetchContainer` is added to `PrefetchService`
     to when `PrefetchService` starts its loading process (i.e.,
@@ -240,6 +244,7 @@ chromium-metrics-reviews@google.com.
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the duration from when `PrefetchContainer` is added to
     `PrefetchService` to when its URLRequest is started in //net layer (i.e.,
@@ -379,6 +384,7 @@ chromium-metrics-reviews@google.com.
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the duration from when `PrefetchService` starts its loading process
     (i.e., `PrefetchService::StartSinglePrefetch` is called) to when
@@ -398,6 +404,7 @@ chromium-metrics-reviews@google.com.
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the duration from when `PrefetchService` starts its loading process
     (i.e., `PrefetchService::StartSinglePrefetch` is called) to when
@@ -417,6 +424,7 @@ chromium-metrics-reviews@google.com.
   <owner>taiyo@chromium.org</owner>
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Records the duration from when `PrefetchService` starts its loading process
     (i.e., `PrefetchService::StartSinglePrefetch` is called) to when its
