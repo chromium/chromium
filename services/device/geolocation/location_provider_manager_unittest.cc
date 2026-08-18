@@ -199,9 +199,9 @@ class GeolocationLocationProviderManagerTest : public testing::Test {
 
   const std::unique_ptr<MockLocationObserver> observer_;
   std::unique_ptr<TestingLocationProviderManager> location_provider_manager_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 // Basic test of the text fixture.

@@ -51,6 +51,7 @@ class VideoCaptureServiceTest : public testing::Test {
   mojo::PendingRemote<mojom::TextureVirtualDevice> AddTextureVirtualDevice(
       const std::string& device_id);
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<VideoCaptureServiceImpl> service_impl_;
@@ -59,7 +60,6 @@ class VideoCaptureServiceTest : public testing::Test {
   base::MockCallback<mojom::VideoSourceProvider::GetSourceInfosCallback>
       device_info_receiver_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   media::VideoCaptureParams requestable_settings_;
 };
 

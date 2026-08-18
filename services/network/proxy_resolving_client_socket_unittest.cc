@@ -81,8 +81,8 @@ class ProxyResolvingClientSocketTest
     return builder;
   }
 
-  base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  base::test::TaskEnvironment task_environment_;
   net::MockClientSocketFactory mock_client_socket_factory_;
   const bool use_tls_;
 };

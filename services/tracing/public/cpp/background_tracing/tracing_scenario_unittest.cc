@@ -1024,10 +1024,10 @@ class TracingScenarioSystemBackendTest : public testing::Test {
  protected:
   // Not inheriting from TracingScenarioTest because initialization of
   // |traced_process_| depends on feature flags and environment variables.
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<tracing::TracedProcessForTesting> traced_process_;
   TestTracingScenarioDelegate delegate;
-  base::test::ScopedFeatureList scoped_feature_list_;
   FakeTracingAgentObserverManager tracing_manager_delegate_;
   FakeNamedTriggerManager named_trigger_manager_;
 
