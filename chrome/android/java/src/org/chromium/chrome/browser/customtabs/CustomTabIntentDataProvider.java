@@ -261,6 +261,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXPERIMENTS_DISABLE =
             "org.chromium.chrome.browser.customtabs.EXPERIMENTS_DISABLE";
 
+    /** Extra that contains the verified FileHandlingData bundle. */
+    public static final String EXTRA_VERIFIED_FILE_HANDLING_DATA =
+            "org.chromium.chrome.browser.customtabs.EXTRA_VERIFIED_FILE_HANDLING_DATA";
+
+    /** Extra that contains the boolean array indicating write permissions for verified files. */
+    public static final String EXTRA_VERIFIED_FILE_CAN_WRITE =
+            "org.chromium.chrome.browser.customtabs.EXTRA_VERIFIED_FILE_CAN_WRITE";
+
     /**
      * Extra that, if set, makes the Custom Tab Activity's height to be x pixels, the Custom Tab
      * will behave as a bottom sheet. x will be clamped between 50% and 100% of screen height.
