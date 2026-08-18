@@ -41,6 +41,7 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -67,6 +68,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/signin/account_preview_utils.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -106,6 +108,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/test_account_preview_data_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -147,9 +150,11 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -371,6 +376,12 @@ class ProfileMenuViewTestBase {
                 syncer::UserSelectableType::kSavedTabGroups,
                 /*is_type_on=*/false);
             return service;
+          }));
+
+      AccountPreviewDataServiceFactory::GetInstance()->SetTestingFactory(
+          context, base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+            return std::make_unique<signin::TestAccountPreviewDataService>();
           }));
     }
   }
@@ -1078,6 +1089,44 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered.WithDefault",
                                       expected_access_point,
                                       /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, AccountPreferenceSubtitle) {
+  signin::AccountPreviewDataService::AccountPreviewPreference pref{
+      .gaia_id = GaiaId(account_info_.gaia),
+      .preferred_data_types =
+          {
+              {syncer::PASSWORDS, signin::SyncDataQuartile::kAboveQ3},
+          },
+      .other_device_form_factor =
+          sync_pb::SyncEnums_DeviceFormFactor_DEVICE_FORM_FACTOR_DESKTOP,
+  };
+
+  auto* test_service = static_cast<signin::TestAccountPreviewDataService*>(
+      AccountPreviewDataServiceFactory::GetForProfile(browser()->GetProfile()));
+  test_service->SetPreferredAccountForPromo(pref);
+
+  OpenProfileMenu();
+
+  std::optional<std::string> expected_subtitle =
+      signin::GetAccountPreviewPromoSubtitle(pref);
+  ASSERT_TRUE(expected_subtitle.has_value());
+
+  auto get_labels = [](views::View* root,
+                       auto& self) -> std::vector<std::u16string> {
+    std::vector<std::u16string> labels;
+    for (views::View* child : root->children()) {
+      if (auto* label = views::AsViewClass<views::Label>(child)) {
+        labels.emplace_back(label->GetText());
+      }
+      auto child_labels = self(child, self);
+      labels.insert(labels.end(), child_labels.begin(), child_labels.end());
+    }
+    return labels;
+  };
+  std::vector<std::u16string> labels =
+      get_labels(profile_menu_view(), get_labels);
+  EXPECT_THAT(labels, testing::Contains(base::UTF8ToUTF16(*expected_subtitle)));
 }
 
 // The user has a primary web account that cannot be used to sign in due to a
