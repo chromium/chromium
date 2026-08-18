@@ -606,6 +606,183 @@ public class MediaNotificationManagerTest extends MediaNotificationTestBase {
         assertFalse(controller1.isForeground());
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideNonActiveTab_PreservesActiveFgsOwnershipAndControllerState()
+            throws Exception {
+        startAndRegisterService();
+
+        // 1. Tab 1 plays (initial active FGS).
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+        int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
+        assertNotNull(controller1);
+        controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+
+        assertTrue(controller1.isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(uniqueId1));
+
+        // 2. Tab 2 plays and becomes the new active FGS owner (Tab 1 moves to background).
+        MediaNotificationInfo info2 =
+                mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info2);
+        int uniqueId2 = MediaNotificationManager.getUniqueId(2, getNotificationId());
+        MediaNotificationController controller2 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId2);
+        assertNotNull(controller2);
+        controller2.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+
+        assertTrue(controller2.isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(uniqueId2));
+        assertFalse(controller1.isForeground());
+
+        // 3. Tab 3 is shown and paused (e.g. video transition).
+        MediaNotificationInfo info3 =
+                mMediaNotificationInfoBuilder.setInstanceId(3).setPaused(true).build();
+        ChromeMediaNotificationManager.show(info3);
+        int uniqueId3 = MediaNotificationManager.getUniqueId(3, getNotificationId());
+        MediaNotificationController controller3 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId3);
+        assertNotNull(controller3);
+        controller3.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+
+        // Tab 2 should still be the active FGS owner.
+        assertTrue(controller2.isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(uniqueId2));
+        assertEquals(3, getControllers().size());
+
+        // 4. Tab 3 delayed hide timer expires -> hide(3)
+        MediaNotificationManager.hide(3, getNotificationId());
+        advanceTimeByMillis(500);
+
+        // Verify Tab 3 is removed, but Tab 2 remains active FGS owner without churn.
+        assertNull(MediaNotificationManager.getControllerByNotificationId(uniqueId3));
+        assertNotNull(MediaNotificationManager.getControllerByNotificationId(uniqueId1));
+        assertNotNull(MediaNotificationManager.getControllerByNotificationId(uniqueId2));
+        assertTrue(controller2.isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(uniqueId2));
+        assertFalse(controller1.isForeground());
+        assertEquals(2, getControllers().size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideActiveTab_PromotesFallbackPlayingTab() throws Exception {
+        startAndRegisterService();
+
+        // 1. Tab 1 plays in background.
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder.setInstanceId(1).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info1);
+        int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
+        assertNotNull(controller1);
+        controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+
+        // 2. Tab 2 plays and becomes the active FGS owner.
+        MediaNotificationInfo info2 =
+                mMediaNotificationInfoBuilder.setInstanceId(2).setPaused(false).build();
+        ChromeMediaNotificationManager.show(info2);
+        int uniqueId2 = MediaNotificationManager.getUniqueId(2, getNotificationId());
+        MediaNotificationController controller2 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId2);
+        assertNotNull(controller2);
+        controller2.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+
+        // Verify Tab 2 is active FGS.
+        assertTrue(controller2.isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(uniqueId2));
+
+        // 3. Tab 2 is hidden.
+        MediaNotificationManager.hide(2, getNotificationId());
+        advanceTimeByMillis(500);
+
+        // Verify Tab 2 is removed, and Tab 1 is promoted to active FGS.
+        assertNull(MediaNotificationManager.getControllerByNotificationId(uniqueId2));
+        assertNotNull(MediaNotificationManager.getControllerByNotificationId(uniqueId1));
+        assertTrue(controller1.isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(uniqueId1));
+        assertEquals(1, getControllers().size());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testHideWhenActiveTabIsNonSwipeablePaused_PreservesNonSwipeableFgsOwnership()
+            throws Exception {
+        startAndRegisterService();
+
+        // 1. Tab 1 is non-swipeable (e.g. Cast) and active.
+        MediaNotificationInfo info1 =
+                mMediaNotificationInfoBuilder
+                        .setInstanceId(1)
+                        .setPaused(false)
+                        .setActions(
+                                MediaNotificationInfo.ACTION_STOP
+                                        | MediaNotificationInfo.ACTION_PLAY_PAUSE)
+                        .build();
+        ChromeMediaNotificationManager.show(info1);
+        int uniqueId1 = MediaNotificationManager.getUniqueId(1, getNotificationId());
+        MediaNotificationController controller1 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId1);
+        assertNotNull(controller1);
+        controller1.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+
+        assertTrue(controller1.isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(uniqueId1));
+
+        // Pause Tab 1 (non-swipeable should remain in FGS when paused).
+        MediaNotificationInfo info1Paused =
+                mMediaNotificationInfoBuilder
+                        .setInstanceId(1)
+                        .setPaused(true)
+                        .setActions(
+                                MediaNotificationInfo.ACTION_STOP
+                                        | MediaNotificationInfo.ACTION_PLAY_PAUSE)
+                        .build();
+        ChromeMediaNotificationManager.show(info1Paused);
+        advanceTimeByMillis(500);
+
+        assertTrue(controller1.isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(uniqueId1));
+
+        // 2. Tab 2 is non-swipeable and paused.
+        MediaNotificationInfo info2 =
+                mMediaNotificationInfoBuilder
+                        .setInstanceId(2)
+                        .setPaused(true)
+                        .setActions(
+                                MediaNotificationInfo.ACTION_STOP
+                                        | MediaNotificationInfo.ACTION_PLAY_PAUSE)
+                        .build();
+        ChromeMediaNotificationManager.show(info2);
+        int uniqueId2 = MediaNotificationManager.getUniqueId(2, getNotificationId());
+        MediaNotificationController controller2 =
+                MediaNotificationManager.getControllerByNotificationId(uniqueId2);
+        assertNotNull(controller2);
+        controller2.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+
+        // 3. Tab 2 is hidden.
+        MediaNotificationManager.hide(2, getNotificationId());
+        advanceTimeByMillis(500);
+
+        // Verify Tab 1 (paused non-swipeable) retains FGS ownership.
+        assertNull(MediaNotificationManager.getControllerByNotificationId(uniqueId2));
+        assertNotNull(MediaNotificationManager.getControllerByNotificationId(uniqueId1));
+        assertTrue(controller1.isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(uniqueId1));
+    }
+
     private void startAndRegisterService() {
         ensureService();
         MediaNotificationManager.setService(getNotificationId(), mService);

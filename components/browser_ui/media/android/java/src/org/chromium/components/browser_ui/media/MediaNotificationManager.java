@@ -286,8 +286,16 @@ public class MediaNotificationManager {
         Pair<Integer, Integer> mapKey = Pair.create(tabId, mediaTypeId);
         sUniqueIdMap.remove(mapKey);
 
-        // Clear the active ID; tryFallbackPromotion will set sActiveNotificationIds correctly if
-        // there is a fallback playing controller that already is or becomes promoted to FGS.
+        // Only trigger fallback promotion if the tab being hidden was the active FGS owner,
+        // or if there is currently no active foreground controller.
+        int activeId = sActiveNotificationIds.get(mediaTypeId, MediaNotificationInfo.INVALID_ID);
+        MediaNotificationController activeController = sControllers.get(activeId);
+        if (notificationId != activeId
+                && activeController != null
+                && activeController.isForeground()) {
+            return;
+        }
+
         sActiveNotificationIds.delete(mediaTypeId);
         tryFallbackPromotion(mediaTypeId, notificationId);
     }
