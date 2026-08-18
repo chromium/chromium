@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view_layout.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_strip_overflow_indicator_view.h"
+#include "chrome/browser/ui/views/tabs/horizontal/tab_scroll_button_container.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_scroll_bar.h"
 #include "components/tabs/public/tab_collection_types.h"
@@ -191,6 +193,13 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
       views::ScrollView::ScrollWithLayers::kEnabled));
   SetScrollViewProperties(unpinned_tabs_scroll_view_);
 
+  if (!IsVerticalOrientation(collection_node_)) {
+    tab_scroll_button_container_ =
+        AddChildView(std::make_unique<TabScrollButtonContainer>(
+            collection_node_->GetController()->GetBrowserView()->browser()));
+    tab_scroll_button_container_->SetScrollView(unpinned_tabs_scroll_view_);
+  }
+
   collection_node->set_add_child_to_node(base::BindRepeating(
       &TabStripView::AddScrollViewContents, base::Unretained(this)));
 
@@ -205,7 +214,11 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
   UpdateColors();
 }
 
-TabStripView::~TabStripView() = default;
+TabStripView::~TabStripView() {
+  if (tab_scroll_button_container_) {
+    tab_scroll_button_container_->SetScrollView(nullptr);
+  }
+}
 
 void TabStripView::AddedToWidget() {
   views::Widget* const widget = GetWidget();
@@ -434,6 +447,10 @@ UnpinnedTabContainerView* TabStripView::GetUnpinnedTabsContainer() const {
   return unpinned_tabs_container_view_;
 }
 
+TabScrollButtonContainer* TabStripView::GetScrollButtonContainer() const {
+  return tab_scroll_button_container_;
+}
+
 void TabStripView::SetCollapsedState(bool is_collapsed) {
   if (is_collapsed != is_collapsed_) {
     is_collapsed_ = is_collapsed;
@@ -465,6 +482,11 @@ bool TabStripView::IsPositionInWindowCaption(const gfx::Point& point) {
     ConvertPointToTarget(this, child, &point_in_child);
     if (!child->HitTestPoint(point_in_child)) {
       continue;
+    }
+
+    if (TabScrollButtonContainer* scroll_button_container =
+            views::AsViewClass<TabScrollButtonContainer>(child)) {
+      return scroll_button_container->IsPositionInWindowCaption(point_in_child);
     }
 
     auto* scroll_view = views::AsViewClass<views::ScrollView>(child);

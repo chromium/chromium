@@ -341,8 +341,10 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
   ASSERT_EQ(root_node()->children().size(), 2u);
 
   // The root_node_view should have three children, the pinned and unpinned
-  // views and a separator.
-  ASSERT_EQ(root_node_view()->children().size(), 3u);
+  // views and a separator. In horizontal, it should also have the tab
+  // scroll button container.
+  ASSERT_EQ(root_node_view()->children().size(),
+            3u + (is_horizontal() ? 1u : 0u));
   const auto pinned_node_scroll_view = root_node_view()->children()[0];
   ASSERT_TRUE(
       views::IsViewClass<views::Separator>(root_node_view()->children()[1]));
@@ -376,8 +378,10 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest, GetDirectChildren) {
   ASSERT_EQ(root_node()->children().size(), 2u);
 
   // The root_node_view should have three children, the pinned and unpinned
-  // views and a separator.
-  ASSERT_EQ(root_node_view()->children().size(), 3u);
+  // views and a separator. In horizontal, it should also have the tab
+  // scroll button container.
+  ASSERT_EQ(root_node_view()->children().size(),
+            3u + (is_horizontal() ? 1u : 0u));
   const auto pinned_node_scroll_view = root_node_view()->children()[0];
   ASSERT_TRUE(
       views::IsViewClass<views::Separator>(root_node_view()->children()[1]));

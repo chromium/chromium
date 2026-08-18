@@ -318,18 +318,13 @@ class HorizontalTabStripRegionViewNewInteractiveUiTest
         browser_view->tab_strip_view());
   }
 
-  views::View* scroll_button_container() {
-    return horizontal_tab_strip_region_view()
-               ? horizontal_tab_strip_region_view()
-                     ->scroll_button_container_for_testing()
-               : nullptr;
-  }
   TabStripView* tab_strip_view() {
-    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    auto* const region_view =
-        views::AsViewClass<HorizontalTabStripRegionViewNew>(
-            browser_view->tab_strip_view());
-    return views::AsViewClass<TabStripView>(region_view->GetTabStripView());
+    return views::AsViewClass<TabStripView>(
+        horizontal_tab_strip_region_view()->GetTabStripView());
+  }
+
+  views::View* scroll_button_container() {
+    return tab_strip_view()->GetScrollButtonContainer();
   }
 
   // Adds unpinned tabs until the unpinned tab container is scrollable. Will

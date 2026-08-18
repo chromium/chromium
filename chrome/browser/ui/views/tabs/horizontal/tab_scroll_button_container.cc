@@ -27,6 +27,7 @@ namespace {
 // TODO(b/523328731): Validate animation parameters with design.
 constexpr base::TimeDelta kScrollAnimationTime = base::Milliseconds(300);
 constexpr int kScrollButtonSpacing = 1;
+constexpr int kScrollButtonHorizontalPadding = 4;
 }  // namespace
 
 TabScrollButtonContainer::TabScrollButtonContainer(
@@ -36,7 +37,8 @@ TabScrollButtonContainer::TabScrollButtonContainer(
   std::unique_ptr<views::BoxLayout> box_layout =
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          /*inside_border_insets=*/gfx::Insets(),
+          /*inside_border_insets=*/
+          gfx::Insets::VH(0, kScrollButtonHorizontalPadding),
           /*between_child_spacing_=*/kScrollButtonSpacing,
           /*collapse_margins_spacing=*/false);
   box_layout->set_cross_axis_alignment(views::LayoutAlignment::kCenter);

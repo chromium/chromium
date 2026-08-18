@@ -15,6 +15,7 @@
 class TabCollectionNode;
 class PinnedTabContainerView;
 class UnpinnedTabContainerView;
+class TabScrollButtonContainer;
 
 namespace views {
 class ScrollView;
@@ -39,6 +40,7 @@ class TabStripView final : public views::View,
 
   PinnedTabContainerView* GetPinnedTabsContainer() const;
   UnpinnedTabContainerView* GetUnpinnedTabsContainer() const;
+  TabScrollButtonContainer* GetScrollButtonContainer() const;
 
   views::ScrollView* pinned_tabs_scroll_view() const {
     return pinned_tabs_scroll_view_;
@@ -133,6 +135,7 @@ class TabStripView final : public views::View,
   raw_ptr<views::Separator> tabs_separator_ = nullptr;
   raw_ptr<views::ScrollView> unpinned_tabs_scroll_view_ = nullptr;
   raw_ptr<UnpinnedTabContainerView> unpinned_tabs_container_view_ = nullptr;
+  raw_ptr<TabScrollButtonContainer> tab_scroll_button_container_ = nullptr;
   bool is_collapsed_ = false;
 
   // Used for seek time metrics from the time the mouse enters the tabstrip.
