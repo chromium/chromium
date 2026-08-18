@@ -136,6 +136,11 @@ class ImageCandidate {
   OriginAttribute origin_attribute_;
 };
 
+void ParseImageCandidatesFromSrcsetAttribute(
+    const String& attribute,
+    Vector<ImageCandidate>& image_candidates,
+    Document* document = nullptr);
+
 ImageCandidate BestFitSourceForSrcsetAttribute(float device_scale_factor,
                                                float source_size,
                                                const String& srcset_attribute,

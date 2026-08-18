@@ -360,7 +360,7 @@ static void ParseImageCandidatesFromSrcsetAttribute(
   }
 }
 
-static void ParseImageCandidatesFromSrcsetAttribute(
+void ParseImageCandidatesFromSrcsetAttribute(
     const String& attribute,
     Vector<ImageCandidate>& image_candidates,
     Document* document) {

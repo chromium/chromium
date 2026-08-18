@@ -32,8 +32,7 @@ class HTMLPictureElement final : public HTMLElement {
     return ElementType::kHTMLPictureElement;
   }
 
-  void SourceChanged(ImageSourceChangeType,
-                     HTMLImageElement::ShouldResetImageReplacement);
+  void SourceChanged(ImageSourceChangeType);
   void SourceDimensionChanged();
   void RemoveListenerFromSourceChildren();
   void AddListenerToSourceChildren();
