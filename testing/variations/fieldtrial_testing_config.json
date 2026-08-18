@@ -14942,6 +14942,21 @@
             ]
         }
     ],
+    "IdentityAwareness": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IdentityAwareness"
+                    ]
+                }
+            ]
+        }
+    ],
     "IgnoreDiscardAttemptMarker": [
         {
             "platforms": [
