@@ -59,6 +59,7 @@ class WebUIContentsPreloadManagerTest : public ChromeRenderViewHostTestHarness {
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    test_api().ReregisterMemoryConsumer();
     // Always preload Tab Search.
     auto preload_candidate_selector =
         std::make_unique<testing::NiceMock<MockPreloadCandidateSelector>>();
@@ -69,6 +70,8 @@ class WebUIContentsPreloadManagerTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(Return(GURL(chrome::kChromeUITabSearchURL)));
   }
   void TearDown() override {
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+        base::MemoryConsumer::kDefaultMemoryLimit);
     preload_candidate_selector_ = nullptr;
     // The mock object does not expect itself to leak outside of the test.
     // Clearing it from the preload manager to destroy it.

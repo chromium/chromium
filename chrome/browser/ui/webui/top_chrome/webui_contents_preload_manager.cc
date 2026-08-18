@@ -279,6 +279,7 @@ constexpr base::MemoryConsumerTraits kWebUIContentsPreloadManagerTraits(
 
 WebUIContentsPreloadManager::WebUIContentsPreloadManager()
     : memory_consumer_registration_(
+          std::in_place,
           /*consumer_name=*/"WebUIContentsPreloadManager",
           kWebUIContentsPreloadManagerTraits,
           this,
@@ -301,6 +302,13 @@ WebUIContentsPreloadManager::WebUIContentsPreloadManager()
     SetPreloadCandidateSelector(std::make_unique<FixedCandidateSelector>(
         GURL(chrome::kChromeUITabSearchURL)));
   }
+}
+
+void WebUIContentsPreloadManager::ReregisterMemoryConsumerForTesting() {
+  memory_consumer_registration_.emplace(
+      /*consumer_name=*/"WebUIContentsPreloadManager",
+      kWebUIContentsPreloadManagerTraits, this,
+      base::MemoryConsumerRegistration::CheckUnregister::kDisabled);
 }
 
 WebUIContentsPreloadManager::~WebUIContentsPreloadManager() = default;

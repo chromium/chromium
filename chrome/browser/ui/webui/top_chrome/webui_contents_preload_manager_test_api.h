@@ -54,6 +54,8 @@ class WebUIContentsPreloadManagerTestAPI {
       std::unique_ptr<webui::PreloadCandidateSelector>
           preload_candidate_selector);
 
+  void ReregisterMemoryConsumer();
+
   WebUIContentsPreloadManager* preload_manager() {
     return WebUIContentsPreloadManager::GetInstance();
   }

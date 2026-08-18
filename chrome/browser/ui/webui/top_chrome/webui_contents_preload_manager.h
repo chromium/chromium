@@ -224,7 +224,9 @@ class WebUIContentsPreloadManager : public ProfileObserver,
   // Observation of destroy of preload content's profile.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
-  base::MemoryConsumerRegistration memory_consumer_registration_;
+  void ReregisterMemoryConsumerForTesting();
+
+  std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_TOP_CHROME_WEBUI_CONTENTS_PRELOAD_MANAGER_H_
