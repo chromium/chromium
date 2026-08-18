@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UNIVERSAL_OPTOUT_UNIVERSAL_OPTOUT_SERVICE_H_
 #define COMPONENTS_UNIVERSAL_OPTOUT_UNIVERSAL_OPTOUT_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
@@ -80,6 +81,7 @@ class UniversalOptOutService : public KeyedService,
 
   // variations::VariationsService::Observer:
   void OnSeedFetched() override;
+  void OnVariationsServiceDestroyed() override;
 
   // Returns whether the profile is eligible for Universal Opt Out.
   // For signed-in users, this uses the AccountCapabilities signal (falling back
@@ -116,7 +118,7 @@ class UniversalOptOutService : public KeyedService,
   base::Time GetCurrentDay() const;
 
   raw_ref<PrefService> pref_service_;
-  raw_ref<variations::VariationsService> variations_service_;
+  raw_ptr<variations::VariationsService> variations_service_;
   raw_ref<signin::IdentityManager> identity_manager_;
   raw_ref<const base::Clock> clock_;
 
