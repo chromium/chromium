@@ -6017,6 +6017,12 @@ const FeatureEntry kFeatureEntries[] = {
          "AndroidNavigationBlurTransitionAnimation")},
 
     // Tab closure methods refactor.
+    {"tab-closure-committed-method-refactor",
+     flag_descriptions::kTabClosureCommittedMethodRefactorName,
+     flag_descriptions::kTabClosureCommittedMethodRefactorDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabClosureCommittedMethodRefactor)},
+
     {"tab-closure-method-refactor",
      flag_descriptions::kTabClosureMethodRefactorName,
      flag_descriptions::kTabClosureMethodRefactorDescription, kOsAndroid,

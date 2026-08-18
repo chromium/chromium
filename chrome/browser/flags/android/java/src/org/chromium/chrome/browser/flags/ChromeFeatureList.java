@@ -780,6 +780,8 @@ public abstract class ChromeFeatureList {
     public static final String TAB_BOTTOM_SHEET_FULL_HEIGHT = "TabBottomSheetFullHeight";
     public static final String TAB_BOTTOM_SHEET_HALF_HEIGHT = "TabBottomSheetHalfHeight";
     public static final String TAB_BOTTOM_SHEET_RESIZE_WEBVIEW = "TabBottomSheetResizeWebview";
+    public static final String TAB_CLOSURE_COMMITTED_METHOD_REFACTOR =
+            "TabClosureCommittedMethodRefactor";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
     public static final String TAB_OPENER_TRACKING = "TabOpenerTracking";
     public static final String TAB_SEARCH_FOR_DESKTOP = "TabSearchForDesktop";
@@ -1330,6 +1332,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sSyncRestoreOnStartupPref =
             newCachedFlag(SYNC_RESTORE_ON_STARTUP_PREF, /* defaultValue= */ false);
+    public static final CachedFlag sTabClosureCommittedMethodRefactor =
+            newCachedFlag(TAB_CLOSURE_COMMITTED_METHOD_REFACTOR, false);
     public static final CachedFlag sTabClosureMethodRefactor =
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
     public static final CachedFlag sTabSharingToolbarAndroid =
@@ -1601,6 +1605,7 @@ public abstract class ChromeFeatureList {
                     sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sSyncRestoreOnStartupPref,
+                    sTabClosureCommittedMethodRefactor,
                     sTabClosureMethodRefactor,
                     sTabSharingToolbarAndroid,
                     sTabStorageSqlitePrototype,

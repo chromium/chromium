@@ -6493,6 +6493,14 @@ inline constexpr char kTabBottomSheetResizeWebviewName[] =
 inline constexpr char kTabBottomSheetResizeWebviewDescription[] =
     "Enables the tab bottom sheet to resize the WebView when opened.";
 
+inline constexpr char kTabClosureCommittedMethodRefactorName[] =
+    "Tab closure committed method refactor";
+inline constexpr char kTabClosureCommittedMethodRefactorDescription[] =
+    "Consolidates legacy TabModelObserver closure finalization callbacks "
+    "(tabClosureCommitted, allTabsClosureCommitted, onFinishingTabClosure, "
+    "and onFinishingMultipleTabClosure) into the unified onTabCloseCommitted "
+    "method.";
+
 inline constexpr char kTabClosureMethodRefactorName[] =
     "Tab closure method refactor";
 inline constexpr char kTabClosureMethodRefactorDescription[] =
