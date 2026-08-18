@@ -673,17 +673,15 @@ LogicalRect PhysicalFragment::ConvertChildToLogical(
 
 String PhysicalFragment::ToString() const {
   StringBuilder output;
-  output.AppendFormat("Type: '%d' Size: '%s'", Type(),
-                      Size().ToString().Ascii().c_str());
+  FormatTo(output, "Type: '{}' Size: '{}'", Type(), Size().ToString());
   switch (Type()) {
     case kFragmentBox:
-      output.AppendFormat(", BoxType: '%s'",
-                          StringForBoxType(*this).Ascii().c_str());
+      FormatTo(output, ", BoxType: '{}'", StringForBoxType(*this));
       break;
     case kFragmentLineBox:
       break;
   }
-  return output.ToString();
+  return output.ReleaseString();
 }
 
 String PhysicalFragment::DumpFragmentTree(

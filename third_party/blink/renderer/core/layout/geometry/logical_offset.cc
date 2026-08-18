@@ -21,8 +21,7 @@ PhysicalOffset LogicalOffset::ConvertToPhysical(
 }
 
 String LogicalOffset::ToString() const {
-  return String::Format("%s,%s", inline_offset.ToString().Ascii().c_str(),
-                        block_offset.ToString().Ascii().c_str());
+  return StrCat({inline_offset.ToString(), ",", block_offset.ToString()});
 }
 
 std::ostream& operator<<(std::ostream& os, const LogicalOffset& value) {

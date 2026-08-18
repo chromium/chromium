@@ -2763,8 +2763,8 @@ void LayoutObject::DumpLayoutObject(StringBuilder& string_builder,
     FormatTo(string_builder, " {}", this);
 
   if (IsText() && To<LayoutText>(this)->IsTextFragment()) {
-    string_builder.AppendFormat(
-        " \"%s\" ", To<LayoutText>(this)->TransformedText().Ascii().c_str());
+    FormatTo(string_builder, " \"{}\" ",
+             To<LayoutText>(this)->TransformedText());
   }
 
   if (GetNode()) {

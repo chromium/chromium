@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 
 #include <algorithm>
+
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -49,11 +51,9 @@ void LogicalRect::UniteEvenIfEmpty(const LogicalRect& other) {
 }
 
 String LogicalRect::ToString() const {
-  return String::Format("%s,%s %sx%s",
-                        offset.inline_offset.ToString().Ascii().c_str(),
-                        offset.block_offset.ToString().Ascii().c_str(),
-                        size.inline_size.ToString().Ascii().c_str(),
-                        size.block_size.ToString().Ascii().c_str());
+  return Format("{},{} {}x{}", offset.inline_offset.ToString(),
+                offset.block_offset.ToString(), size.inline_size.ToString(),
+                size.block_size.ToString());
 }
 
 std::ostream& operator<<(std::ostream& os, const LogicalRect& value) {

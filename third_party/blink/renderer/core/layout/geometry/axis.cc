@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -24,8 +25,7 @@ String ToString(LogicalAxes axes) {
     return "kLogicalAxesBoth";
   }
 
-  // Fallback: cast .value() to int so it prints a number, not an invisible char
-  return String::Format("LogicalAxes(%d)", static_cast<int>(axes.value()));
+  return Format("LogicalAxes({:d})", axes.value());
 }
 
 String ToString(PhysicalAxes axes) {
@@ -41,8 +41,7 @@ String ToString(PhysicalAxes axes) {
   if (axes == kPhysicalAxesBoth) {
     return "kPhysicalAxesBoth";
   }
-  // Fallback: cast .value() to int so it prints a number, not an invisible char
-  return String::Format("PhysicalAxes(%d)", static_cast<int>(axes.value()));
+  return Format("PhysicalAxes({:d})", axes.value());
 }
 
 std::ostream& operator<<(std::ostream& os, LogicalAxes axes) {

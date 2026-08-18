@@ -5,11 +5,14 @@
 #include "third_party/blink/renderer/core/layout/traced_layout_object.h"
 
 #include <inttypes.h>
+
 #include <memory>
+
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -18,9 +21,8 @@ namespace {
 void DumpToTracedValue(const LayoutObject& object,
                        bool trace_geometry,
                        TracedValue* traced_value) {
-  traced_value->SetString(
-      "address",
-      String::Format("%" PRIxPTR, reinterpret_cast<uintptr_t>(&object)));
+  traced_value->SetString("address",
+                          Format("{:x}", reinterpret_cast<uintptr_t>(&object)));
   traced_value->SetString("name", object.GetName());
   if (Node* node = object.GetNode()) {
     traced_value->SetString("tag", node->nodeName());

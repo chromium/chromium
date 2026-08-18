@@ -6,16 +6,15 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 String BoxStrut::ToString() const {
-  return String::Format("Inline: (%s %s) Block: (%s %s)",
-                        inline_start.ToString().Ascii().c_str(),
-                        inline_end.ToString().Ascii().c_str(),
-                        block_start.ToString().Ascii().c_str(),
-                        block_end.ToString().Ascii().c_str());
+  return Format("Inline: ({} {}) Block: ({} {})", inline_start.ToString(),
+                inline_end.ToString(), block_start.ToString(),
+                block_end.ToString());
 }
 
 std::ostream& operator<<(std::ostream& stream, const BoxStrut& value) {
