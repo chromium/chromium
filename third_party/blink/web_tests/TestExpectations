@@ -1300,6 +1300,14 @@ crbug.com/494341468 external/wpt/quirks/tables-inherit-color-from-body-quirk-005
 
 crbug.com/537801217 external/wpt/css/selectors/active-observable.html [ Failure Pass Timeout ]
 
+# var() argument grammar
+crbug.com/491166375 external/wpt/css/css-variables/variable-declaration-29.html [ Failure ]
+crbug.com/491166375 external/wpt/css/css-variables/variable-supports-30.html [ Failure ]
+crbug.com/491166375 external/wpt/css/css-variables/variable-supports-64.html [ Failure ]
+
+# ident() function
+crbug.com/384930424 [ Win ] external/wpt/css/css-values/ident-function-substitution.html [ Pass Timeout ]
+
 # ====== Style team owned tests to here ======
 
 crbug.com/384523570 fast/animation/scroll-animations/scroll-timeline-snapshotting.html [ Failure ]
@@ -2724,11 +2732,7 @@ crbug.com/545678290 external/wpt/css/css-overflow/line-clamp/block-ellipsis-040.
 crbug.com/545678290 external/wpt/css/css-overflow/line-clamp/block-ellipsis-041.html [ Failure ]
 crbug.com/545678290 external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-011.html [ Failure ]
 crbug.com/545692281 [ Win ] external/wpt/css/css-values/acos-asin-atan-atan2-computed.html [ Pass Timeout ]
-crbug.com/545692281 [ Win ] external/wpt/css/css-values/ident-function-substitution.html [ Pass Timeout ]
 crbug.com/545692281 external/wpt/css/css-values/progress-computed.html [ Failure ]
-crbug.com/545692281 external/wpt/css/css-variables/variable-declaration-29.html [ Failure ]
-crbug.com/545692281 external/wpt/css/css-variables/variable-supports-30.html [ Failure ]
-crbug.com/545692281 external/wpt/css/css-variables/variable-supports-64.html [ Failure ]
 crbug.com/545676304 [ Win ] external/wpt/html/semantics/popovers/popover-top-layer-nesting-hints.html [ Pass Timeout ]
 crbug.com/545718484 external/wpt/mathml/relations/html5-tree/href-target-base.html [ Failure Pass Timeout ]
 crbug.com/545678290 virtual/disable-css-line-clamp-line-breaking-ellipsis/external/wpt/css/css-overflow/line-clamp/block-ellipsis-038.html [ Failure ]
