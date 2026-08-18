@@ -10,8 +10,10 @@ import android.view.ViewGroup;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -61,7 +63,8 @@ class OptionalButtonProperties {
     public static final WritableIntPropertyKey ICON_BACKGROUND_ALPHA = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey PADDING_START = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey COLLAPSED_STATE_WIDTH = new WritableIntPropertyKey();
-    public static final WritableIntPropertyKey BRANDED_COLOR_SCHEME = new WritableIntPropertyKey();
+    public static final WritableIntDefPropertyKey<BrandedColorScheme> BRANDED_COLOR_SCHEME =
+            new WritableIntDefPropertyKey<>(BrandedColorScheme.APP_DEFAULT);
     public static final WritableBooleanPropertyKey TRANSITION_CANCELLATION_REQUESTED =
             new WritableBooleanPropertyKey();
     public static final WritableObjectPropertyKey<BooleanSupplier> IS_ANIMATION_ALLOWED_PREDICATE =
