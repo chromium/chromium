@@ -807,6 +807,11 @@ inline constexpr char
         "When enabled, feedback entry points require the can_submit_feedback "
         "capability. The entry points are either removed or ignored.";
 
+inline constexpr char kFetchDeviceAuthorizationKeysName[] =
+    "Fetch device authorization keys";
+inline constexpr char kFetchDeviceAuthorizationKeysDescription[] =
+    "Enables fetching device authorization keys for password manager passkeys.";
+
 inline constexpr char kForceStartupSigninPromoName[] =
     "Display the startup sign-in promo";
 inline constexpr char kForceStartupSigninPromoDescription[] =

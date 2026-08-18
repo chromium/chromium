@@ -93,6 +93,7 @@
 #import "components/variations/net/variations_command_line.h"
 #import "components/variations/variations_switches.h"
 #import "components/wallet/core/common/wallet_features.h"
+#import "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webui/flags/feature_entry.h"
 #import "components/webui/flags/feature_entry_macros.h"
@@ -2945,6 +2946,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kNewGeolocationPermissionDelegateDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kNewGeolocationPermissionDelegate)},
+    {"fetch-device-authorization-keys",
+     flag_descriptions::kFetchDeviceAuthorizationKeysName,
+     flag_descriptions::kFetchDeviceAuthorizationKeysDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(webauthn::features::kFetchDeviceAuthorizationKeys)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

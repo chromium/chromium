@@ -77,6 +77,7 @@ source_set("flags") {
     "//components/variations/net",
     "//components/variations/service",
     "//components/wallet/core/common:features",
+    "//components/webauthn/core/browser/device_authorization:features",
     "//components/webauthn/ios:features",
     "//components/webui/flags",
     "//components/webui/flags:switches",

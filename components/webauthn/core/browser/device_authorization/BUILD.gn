@@ -22,6 +22,15 @@ source_set("device_authorization") {
   ]
 }
 
+source_set("features") {
+  sources = [
+    "device_authorization_features.cc",
+    "device_authorization_features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "device_authorization_keys_fetcher_unittest.cc" ]
