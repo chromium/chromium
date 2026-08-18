@@ -2173,6 +2173,9 @@ chromium-metrics-reviews@google.com.
     <variant name="Accept" summary="Accept/OK button click action"/>
     <variant name="Cancel" summary="Cancel button click action"/>
     <variant name="Dismiss" summary="Dismissal action"/>
+    <variant name="Ignored"
+        summary="Infobar went away without any user interaction, e.g. on tab
+                 close or navigation expiry"/>
     <variant name="LinkClicked" summary="Link click action"/>
     <variant name="Show" summary="Show/display action"/>
   </token>
