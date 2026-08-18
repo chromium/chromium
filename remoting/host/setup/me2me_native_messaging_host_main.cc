@@ -14,6 +14,7 @@
 #include "base/files/file.h"
 #include "base/i18n/icu_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory_coordinator/dummy_memory_consumer_registry.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,7 +26,6 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/gaia_oauth_client.h"
 #include "remoting/base/logging.h"
-#include "remoting/base/memory_consumer_registry.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
@@ -70,7 +70,7 @@ using remoting::protocol::PairingRegistry;
 namespace remoting {
 
 int Me2MeNativeMessagingHostMain(int argc, char** argv) {
-  base::ScopedMemoryConsumerRegistry<remoting::MemoryConsumerRegistry>
+  base::ScopedMemoryConsumerRegistry<base::DummyMemoryConsumerRegistry>
       memory_consumer_registry;
 
   // This object instance is required by Chrome code (such as

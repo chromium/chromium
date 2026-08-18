@@ -9,6 +9,7 @@
 #include "base/linux_util.h"
 #include "base/logging.h"
 #include "base/logging/logging_settings.h"
+#include "base/memory_coordinator/dummy_memory_consumer_registry.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
@@ -17,7 +18,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "mojo/core/embedder/embedder.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "remoting/base/memory_consumer_registry.h"
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/client/cli/logging_audio_stream_consumer.h"
 #include "remoting/client/cli/logging_frame_consumer.h"
@@ -27,7 +27,7 @@
 #include "services/network/transitional_url_loader_factory_owner.h"
 
 int main(int argc, char const* argv[]) {
-  base::ScopedMemoryConsumerRegistry<remoting::MemoryConsumerRegistry>
+  base::ScopedMemoryConsumerRegistry<base::DummyMemoryConsumerRegistry>
       memory_consumer_registry;
 
   base::AtExitManager exitManager;

@@ -33,7 +33,7 @@
 #include "remoting/base/file_path_util_linux.h"
 #endif  // BUILDFLAG(IS_LINUX)
 
-#include "remoting/base/memory_consumer_registry.h"
+#include "base/memory_coordinator/dummy_memory_consumer_registry.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/evaluate_capability.h"
@@ -220,7 +220,7 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
 }  // namespace
 
 int HostMain(int argc, char** argv) {
-  base::ScopedMemoryConsumerRegistry<remoting::MemoryConsumerRegistry>
+  base::ScopedMemoryConsumerRegistry<base::DummyMemoryConsumerRegistry>
       memory_consumer_registry;
 
 #if BUILDFLAG(IS_APPLE)
