@@ -76,6 +76,8 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
   void DidFailLoading(const blink::WebURLError& error) override;
   bool SupportsKeyboardFocus() const override;
 
+  class AccessibilityObserver;
+
  private:
   // Destroy via ->Destroy().
   ~SurfaceEmbedWebPlugin() override;
@@ -91,6 +93,10 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
 
   // Called when the mojo channels disconnect.
   void OnHostDisconnected();
+
+  void SendAccessibilityInfo();
+
+  void OnAccessibilityModeEnabled();
 
   // mojom::SurfaceEmbed implementation:
   void SetFrameSinkId(const ::viz::FrameSinkId& frame_sink_id,
@@ -136,6 +142,8 @@ class SurfaceEmbedWebPlugin : public blink::WebPlugin,
 
   mojo::AssociatedRemote<mojom::SurfaceEmbedHost> host_;
   mojo::AssociatedReceiver<mojom::SurfaceEmbed> receiver_{this};
+
+  std::unique_ptr<AccessibilityObserver> accessibility_observer_;
 };
 
 }  // namespace surface_embed

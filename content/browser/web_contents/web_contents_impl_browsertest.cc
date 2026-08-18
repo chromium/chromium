@@ -128,6 +128,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/color/color_provider_manager.h"
@@ -7309,6 +7310,52 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
 
   // End the test, there should be no CHECK when everything is unregistered
   // properly.
+}
+
+// A subframe of a surface-embedded WebContents is not the accessibility root:
+// the per-WebContents SurfaceEmbedConnector only applies to the outermost
+// frame. Accessibility is enabled programmatically so this is covered without
+// --force-renderer-accessibility. See crbug.com/534306599.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
+                       EmbeddedOOPIFSubframeIsNotAccessibilityRoot) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL outer_url(
+      embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  const GURL inner_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+
+  // Setup outer WebContents.
+  ASSERT_TRUE(NavigateToURL(shell(), outer_url));
+  WebContentsImpl* outer_wc =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Setup inner WebContents embedded via a SurfaceEmbedConnector.
+  WebContents::CreateParams inner_params(
+      shell()->web_contents()->GetBrowserContext());
+  std::unique_ptr<WebContents> inner_wc = WebContents::Create(inner_params);
+  WebContentsImpl* inner_wc_impl =
+      static_cast<WebContentsImpl*>(inner_wc.get());
+  inner_wc->SetDelegate(outer_wc->GetDelegate());
+
+  auto connector = CreateConnector(inner_wc_impl, outer_wc);
+  inner_wc_impl->SetSurfaceEmbedConnector(std::move(connector));
+
+  // Navigate to a page with an out-of-process iframe.
+  ASSERT_TRUE(NavigateToURL(inner_wc.get(), inner_url));
+  auto* rfh_a =
+      static_cast<RenderFrameHostImpl*>(inner_wc_impl->GetPrimaryMainFrame());
+  ASSERT_TRUE(rfh_a);
+  auto* rfh_b = static_cast<RenderFrameHostImpl*>(ChildFrameAt(rfh_a, 0));
+  ASSERT_TRUE(rfh_b);
+
+  // Enable accessibility so a BrowserAccessibilityManager is built per frame.
+  inner_wc_impl->SetAccessibilityMode(ui::kAXModeComplete);
+
+  // Both frames are embedded: the outermost frame is surface-embedded into the
+  // outer WebContents, and the out-of-process subframe has a frame-tree parent.
+  // Neither is the AX root.
+  EXPECT_FALSE(rfh_a->AccessibilityIsRootFrame());
+  EXPECT_FALSE(rfh_b->AccessibilityIsRootFrame());
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,

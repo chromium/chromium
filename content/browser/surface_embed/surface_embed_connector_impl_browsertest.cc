@@ -15,6 +15,7 @@
 #include "components/input/cursor_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/pointer_lock_browsertest.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/visibility.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fake_frame_widget.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/dns/mock_host_resolver.h"
@@ -33,6 +35,8 @@
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
+#include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_manager.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -62,6 +66,25 @@ class MockSurfaceEmbedConnectorDelegate
   MOCK_METHOD(void, AdvanceFocusFromEmbedElement, (bool), (override));
 };
 
+// Returns the embed parent AX tree id for `rfh` by querying the
+// SurfaceEmbedConnector of the WebContents that owns it. This mirrors how
+// RenderFrameHostImpl derives the value internally and returns
+// ui::AXTreeIDUnknown() when the WebContents is not surface-embedded.
+ui::AXTreeID GetEmbedParentAXTreeID(RenderFrameHost* rfh) {
+  SurfaceEmbedConnector* connector =
+      WebContents::FromRenderFrameHost(rfh)->GetSurfaceEmbedConnector();
+  return connector ? connector->GetParentAXTreeID() : ui::AXTreeIDUnknown();
+}
+
+// Returns the parent AX tree id cached in the frame's own accessibility tree
+// data, which is what accessibility clients observe. Unlike
+// GetEmbedParentAXTreeID() this does not consult the connector, so it detects a
+// stale id left behind after the connector is gone.
+ui::AXTreeID CachedParentAXTreeID(RenderFrameHost* rfh) {
+  ui::AXTreeManager* manager = ui::AXTreeManager::FromID(rfh->GetAXTreeID());
+  return manager ? manager->GetParentTreeID() : ui::AXTreeIDUnknown();
+}
+
 }  // namespace
 
 class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
@@ -87,6 +110,12 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
   RenderWidgetHostViewChildFrame* GetView(
       SurfaceEmbedConnectorImpl* connector) {
     return connector->view_;
+  }
+
+  // Clears the connector's stored embed parent AX tree id so a subsequent
+  // stitch (or its absence) can be observed in tests.
+  void ClearEmbedParentAXTreeID(SurfaceEmbedConnectorImpl* connector) {
+    connector->embed_parent_ax_tree_id_ = ui::AXTreeIDUnknown();
   }
 
  protected:
@@ -151,8 +180,19 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
     raw_ptr<SurfaceEmbedConnectorImpl> connector = nullptr;
   };
 
+  // Creates a parent and child WebContents and attaches a connector between
+  // them. The parent is navigated here so that it has a valid AX tree ID by the
+  // time Attach() runs.
+  //
+  // Tests must NOT navigate `context.parent_web_contents` after this returns:
+  // SurfaceEmbedConnectorImpl holds the embedder RenderFrameHost as a WeakPtr
+  // and CHECKs it (see SetFocusedFrameTree() and OnAttachedToParent()). A
+  // cross-document navigation of the parent replaces that RenderFrameHost,
+  // which in production detaches the child WebContents but here just
+  // invalidates the WeakPtr and crashes the test's mock delegate.
   ConnectorTestContext SetupConnectorTest(
-      MockSurfaceEmbedConnectorDelegate* delegate) {
+      MockSurfaceEmbedConnectorDelegate* delegate,
+      bool navigate_child_before_attach = false) {
     ConnectorTestContext context;
 
     context.parent_shell =
@@ -169,6 +209,11 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
         static_cast<WebContentsImpl*>(context.child_web_contents.get());
 
     EXPECT_TRUE(NavigateToURL(parent_web_contents_impl, GURL("about:blank")));
+    // Optionally navigate the child before Attach() so it already has a valid
+    // AX tree ID when the connector is attached.
+    if (navigate_child_before_attach) {
+      EXPECT_TRUE(NavigateToURL(child_web_contents_impl, GURL("about:blank")));
+    }
     // Expect SetView of connector to be called during Attach, which calls
     // delegate's SetFrameSinkId.
     EXPECT_CALL(*delegate,
@@ -1191,6 +1236,370 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   EXPECT_EQ(false, fake_frame_widget.IsThrottled());
   EXPECT_EQ(true, fake_frame_widget.IsSubtreeThrottled());
   EXPECT_EQ(false, fake_frame_widget.IsDisplayLocked());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       SetParentAccessibilityInfoStitchesTrees) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  // The child still needs to navigate to obtain a valid AX tree ID.
+  ASSERT_TRUE(
+      NavigateToURL(context.child_web_contents.get(), GURL("about:blank")));
+
+  auto* parent_rfh = context.parent_web_contents->GetPrimaryMainFrame();
+  auto* child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+
+  auto parent_ax_tree_id = parent_rfh->GetAXTreeID();
+  ASSERT_NE(parent_ax_tree_id, ui::AXTreeIDUnknown());
+
+  EXPECT_EQ(GetEmbedParentAXTreeID(child_rfh), ui::AXTreeIDUnknown());
+
+  // Node ID 1 is used as a placeholder container node; the action will be
+  // dispatched to the parent frame regardless of whether the node exists.
+  context.connector->SetParentAccessibilityInfo(1, parent_ax_tree_id);
+
+  EXPECT_EQ(GetEmbedParentAXTreeID(child_rfh), parent_ax_tree_id);
+}
+
+// Verifies that accessibility stitching is set up correctly when
+// SurfaceEmbedConnector::Attach() happens after both the parent and child
+// WebContents have already navigated and have valid AX tree IDs.
+IN_PROC_BROWSER_TEST_F(
+    SurfaceEmbedConnectorImplBrowserTest,
+    SetParentAccessibilityInfoStitchesTreesWhenChildNavigatedBeforeAttach) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context =
+      SetupConnectorTest(&delegate, /*navigate_child_before_attach=*/true);
+
+  auto* parent_rfh = context.parent_web_contents->GetPrimaryMainFrame();
+  auto* child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+
+  // Both parent and child were navigated before Attach(), so both already have
+  // valid AX tree IDs.
+  auto parent_ax_tree_id = parent_rfh->GetAXTreeID();
+  ASSERT_NE(parent_ax_tree_id, ui::AXTreeIDUnknown());
+  ASSERT_NE(child_rfh->GetAXTreeID(), ui::AXTreeIDUnknown());
+
+  EXPECT_EQ(GetEmbedParentAXTreeID(child_rfh), ui::AXTreeIDUnknown());
+
+  // Because the child already has a valid AX tree ID, stitching completes as
+  // soon as the parent accessibility info is provided.
+  context.connector->SetParentAccessibilityInfo(1, parent_ax_tree_id);
+
+  EXPECT_EQ(GetEmbedParentAXTreeID(child_rfh), parent_ax_tree_id);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SurfaceEmbedConnectorImplBrowserTest,
+    SetParentAccessibilityInfoCachedUntilChildTreeAvailable) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  // The child must NOT be navigated so that it still has AXTreeIDUnknown().
+
+  auto* parent_rfh = context.parent_web_contents->GetPrimaryMainFrame();
+  auto parent_ax_tree_id = parent_rfh->GetAXTreeID();
+  ASSERT_NE(parent_ax_tree_id, ui::AXTreeIDUnknown());
+
+  // The child has not been navigated, so its AX tree ID is still unknown.
+  ASSERT_EQ(context.child_web_contents->GetPrimaryMainFrame()->GetAXTreeID(),
+            ui::AXTreeIDUnknown());
+
+  // The connector stores the values but UpdateAccessibilityTree() returns early
+  // because the child AX tree ID is unknown.
+  context.connector->SetParentAccessibilityInfo(1, parent_ax_tree_id);
+
+  auto* child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+  EXPECT_EQ(GetEmbedParentAXTreeID(child_rfh), ui::AXTreeIDUnknown());
+
+  // Navigate the child. AXTreeIDForMainFrameHasChanged() fires and completes
+  // the stitching.
+  ASSERT_TRUE(
+      NavigateToURL(context.child_web_contents.get(), GURL("about:blank")));
+
+  auto* new_child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetEmbedParentAXTreeID(new_child_rfh) == parent_ax_tree_id;
+  }));
+}
+
+// Verifies that SetParentAccessibilityInfo() stitches the trees correctly even
+// when the parent WebContents has full accessibility mode enabled, exercising
+// the AccessibilityPerformAction(kStitchChildTree) dispatch to a live AX tree.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       SetParentAccessibilityInfoWithAccessibilityEnabled) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  ASSERT_TRUE(
+      NavigateToURL(context.child_web_contents.get(), GURL("about:blank")));
+
+  // Enable full accessibility on the parent WebContents so that the parent
+  // frame owns a live BrowserAccessibilityManager when kStitchChildTree is
+  // dispatched.
+  auto* parent_wci =
+      static_cast<WebContentsImpl*>(context.parent_web_contents.get());
+  parent_wci->SetAccessibilityMode(ui::kAXModeComplete);
+
+  auto* parent_rfh = context.parent_web_contents->GetPrimaryMainFrame();
+  auto parent_ax_tree_id = parent_rfh->GetAXTreeID();
+  ASSERT_NE(parent_ax_tree_id, ui::AXTreeIDUnknown());
+
+  auto* child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+  EXPECT_EQ(GetEmbedParentAXTreeID(child_rfh), ui::AXTreeIDUnknown());
+
+  // Stitch with a live AX tree backing the parent. The action is dispatched
+  // to the parent frame's accessibility handler without crashing.
+  context.connector->SetParentAccessibilityInfo(1, parent_ax_tree_id);
+
+  EXPECT_EQ(GetEmbedParentAXTreeID(child_rfh), parent_ax_tree_id);
+}
+
+// Verifies the "late accessibility enable" path: accessibility mode is enabled
+// on the parent WebContents only after the connector is already attached and
+// the trees have been stitched, confirming the existing relationship is
+// unaffected.
+IN_PROC_BROWSER_TEST_F(
+    SurfaceEmbedConnectorImplBrowserTest,
+    AccessibilityEnabledAfterStitchingDoesNotBreakRelationship) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  ASSERT_TRUE(
+      NavigateToURL(context.child_web_contents.get(), GURL("about:blank")));
+
+  auto* parent_rfh = context.parent_web_contents->GetPrimaryMainFrame();
+  auto parent_ax_tree_id = parent_rfh->GetAXTreeID();
+  ASSERT_NE(parent_ax_tree_id, ui::AXTreeIDUnknown());
+
+  // Stitch the trees before accessibility is enabled.
+  context.connector->SetParentAccessibilityInfo(1, parent_ax_tree_id);
+
+  auto* child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+  ASSERT_EQ(GetEmbedParentAXTreeID(child_rfh), parent_ax_tree_id);
+
+  // Enable full accessibility. AXTreeIDForMainFrameHasChanged() re-runs
+  // UpdateAccessibilityTree(); the embed parent must remain the same.
+  auto* parent_wci =
+      static_cast<WebContentsImpl*>(context.parent_web_contents.get());
+  parent_wci->SetAccessibilityMode(ui::kAXModeComplete);
+
+  EXPECT_EQ(GetEmbedParentAXTreeID(child_rfh), parent_ax_tree_id);
+}
+
+// Verifies that calling SetParentAccessibilityInfo() with the same values a
+// second time is a no-op and does not trigger a redundant
+// UpdateAccessibilityTree() (i.e. no extra AccessibilityPerformAction call).
+// This guards against a compromised renderer flooding the browser-side handler.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       SetParentAccessibilityInfoDeduplicatesIdenticalValues) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  ASSERT_TRUE(
+      NavigateToURL(context.child_web_contents.get(), GURL("about:blank")));
+
+  auto* parent_rfh = context.parent_web_contents->GetPrimaryMainFrame();
+  auto parent_ax_tree_id = parent_rfh->GetAXTreeID();
+  ASSERT_NE(parent_ax_tree_id, ui::AXTreeIDUnknown());
+
+  // First call stitches the trees.
+  context.connector->SetParentAccessibilityInfo(1, parent_ax_tree_id);
+
+  auto* child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+  ASSERT_EQ(GetEmbedParentAXTreeID(child_rfh), parent_ax_tree_id);
+
+  // Manually clear the relationship so we can detect a second stitch attempt.
+  ClearEmbedParentAXTreeID(context.connector);
+  ASSERT_EQ(GetEmbedParentAXTreeID(child_rfh), ui::AXTreeIDUnknown());
+
+  // Second call with identical values is a no-op (deduplication).
+  context.connector->SetParentAccessibilityInfo(1, parent_ax_tree_id);
+
+  EXPECT_EQ(GetEmbedParentAXTreeID(child_rfh), ui::AXTreeIDUnknown());
+}
+
+// Verifies AccessibilityIsRootFrame() is correct for two-level nested embeds
+// (A contains B contains C). B and C are top-level WebContents with no
+// frame-tree parent, so without the embed_parent_ax_tree_id_ check they would
+// incorrectly report themselves as the AX root.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       NestedEmbedAccessibilityIsRootFrameIsCorrect) {
+  MockSurfaceEmbedConnectorDelegate delegate_a_b;
+  auto context_a_b = SetupConnectorTest(&delegate_a_b);
+
+  ASSERT_TRUE(
+      NavigateToURL(context_a_b.child_web_contents.get(), GURL("about:blank")));
+
+  auto* rfh_a = static_cast<RenderFrameHostImpl*>(
+      context_a_b.parent_web_contents->GetPrimaryMainFrame());
+  auto* rfh_b = static_cast<RenderFrameHostImpl*>(
+      context_a_b.child_web_contents->GetPrimaryMainFrame());
+
+  auto ax_tree_id_a = rfh_a->GetAXTreeID();
+  ASSERT_NE(ax_tree_id_a, ui::AXTreeIDUnknown());
+
+  // Node ID 1 is used as a placeholder container node; the action will be
+  // dispatched to the parent frame regardless of whether the node exists.
+  context_a_b.connector->SetParentAccessibilityInfo(1, ax_tree_id_a);
+  ASSERT_EQ(GetEmbedParentAXTreeID(rfh_b), ax_tree_id_a);
+
+  // Attach a second level: C is surface-embedded inside B.
+  MockSurfaceEmbedConnectorDelegate delegate_b_c;
+  WebContents::CreateParams create_params(
+      context_a_b.child_web_contents->GetBrowserContext());
+  auto child_c_web_contents = WebContents::Create(create_params);
+  SurfaceEmbedConnector::Attach(
+      child_c_web_contents.get(),
+      context_a_b.child_web_contents->GetPrimaryMainFrame(), &delegate_b_c);
+  ASSERT_TRUE(NavigateToURL(child_c_web_contents.get(), GURL("about:blank")));
+
+  auto* connector_b_c = static_cast<SurfaceEmbedConnectorImpl*>(
+      child_c_web_contents->GetSurfaceEmbedConnector());
+  ASSERT_TRUE(connector_b_c);
+
+  auto* rfh_c = static_cast<RenderFrameHostImpl*>(
+      child_c_web_contents->GetPrimaryMainFrame());
+
+  auto ax_tree_id_b = rfh_b->GetAXTreeID();
+  ASSERT_NE(ax_tree_id_b, ui::AXTreeIDUnknown());
+
+  connector_b_c->SetParentAccessibilityInfo(1, ax_tree_id_b);
+  ASSERT_EQ(GetEmbedParentAXTreeID(rfh_c), ax_tree_id_b);
+
+  EXPECT_TRUE(rfh_a->AccessibilityIsRootFrame());
+  EXPECT_FALSE(rfh_b->AccessibilityIsRootFrame());
+  EXPECT_FALSE(rfh_c->AccessibilityIsRootFrame());
+  EXPECT_EQ(GetEmbedParentAXTreeID(rfh_b), ax_tree_id_a);
+  EXPECT_EQ(GetEmbedParentAXTreeID(rfh_c), ax_tree_id_b);
+
+  // After detaching C, its embed parent is cleared and it is a root again.
+  SurfaceEmbedConnector::Detach(child_c_web_contents.get());
+  EXPECT_TRUE(rfh_c->AccessibilityIsRootFrame());
+  EXPECT_EQ(GetEmbedParentAXTreeID(rfh_c), ui::AXTreeIDUnknown());
+}
+
+// Verifies the embed-parent relationship stays consistent across a
+// cross-document navigation (which swaps the child's main RenderFrameHost) and
+// the subsequent teardown of the child, with full accessibility enabled so each
+// frame owns a live BrowserAccessibilityManager. AccessibilityIsRootFrame()
+// must always agree with the manager's cached parent_tree_id.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       CrossDocumentNavigationWithAccessibilityIsConsistent) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  context.rwhvcf = nullptr;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Enable full accessibility on both WebContents so each frame owns a live
+  // BrowserAccessibilityManager that caches the embed-parent tree id.
+  static_cast<WebContentsImpl*>(context.parent_web_contents.get())
+      ->SetAccessibilityMode(ui::kAXModeComplete);
+  static_cast<WebContentsImpl*>(context.child_web_contents.get())
+      ->SetAccessibilityMode(ui::kAXModeComplete);
+
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(context.child_web_contents.get(), url_a));
+
+  auto* parent_rfh = context.parent_web_contents->GetPrimaryMainFrame();
+  auto parent_ax_tree_id = parent_rfh->GetAXTreeID();
+  ASSERT_NE(parent_ax_tree_id, ui::AXTreeIDUnknown());
+
+  // Stitch the trees so the child main frame reports the parent as its embed AX
+  // parent and is therefore not an AX root.
+  auto* old_child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+  RenderFrameDeletedObserver old_rfh_deleted_observer(old_child_rfh);
+  context.connector->SetParentAccessibilityInfo(1, parent_ax_tree_id);
+  ASSERT_EQ(GetEmbedParentAXTreeID(old_child_rfh), parent_ax_tree_id);
+  ASSERT_FALSE(old_child_rfh->AccessibilityIsRootFrame());
+
+  // Navigate cross-site so the child's main RenderFrameHost is swapped. The new
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(context.child_web_contents.get(), url_b));
+
+  auto* new_child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetEmbedParentAXTreeID(new_child_rfh) == parent_ax_tree_id;
+  }));
+  EXPECT_FALSE(new_child_rfh->AccessibilityIsRootFrame());
+
+  // If the outgoing RenderFrameHost was cached rather than deleted, it shares
+  // the connector's re-stitched embed parent and remains a non-root frame.
+  if (!old_rfh_deleted_observer.deleted()) {
+    EXPECT_FALSE(old_child_rfh->AccessibilityIsRootFrame());
+  }
+
+  // Destroy the still-stitched child. The connector is torn down before the
+  // frame tree, so the child's cached AX data and AccessibilityIsRootFrame()
+  // must remain in agreement as the manager is destroyed.
+  context.connector = nullptr;  // Avoid a dangling raw_ptr across the reset.
+  context.child_web_contents.reset();
+}
+
+// Verifies that a detached child does not keep reporting an embed parent, even
+// across a subsequent cross-document navigation that swaps its main
+// RenderFrameHost. Detach() clears the stitch before the connector is freed, so
+// neither the surviving RenderFrameHost nor a newly created one may inherit the
+// stale embedder AX tree id.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       DetachThenNavigateClearsEmbedParent) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  // Detach() destroys the child frame view, so drop the test's raw_ptr to it.
+  context.rwhvcf = nullptr;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Enable full accessibility on both WebContents so each frame owns a live
+  // BrowserAccessibilityManager that caches the embed-parent tree id.
+  static_cast<WebContentsImpl*>(context.parent_web_contents.get())
+      ->SetAccessibilityMode(ui::kAXModeComplete);
+  static_cast<WebContentsImpl*>(context.child_web_contents.get())
+      ->SetAccessibilityMode(ui::kAXModeComplete);
+
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(context.child_web_contents.get(), url_a));
+
+  auto parent_ax_tree_id =
+      context.parent_web_contents->GetPrimaryMainFrame()->GetAXTreeID();
+  ASSERT_NE(parent_ax_tree_id, ui::AXTreeIDUnknown());
+
+  auto* child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+  context.connector->SetParentAccessibilityInfo(1, parent_ax_tree_id);
+  // The stitch is established.
+  ASSERT_EQ(GetEmbedParentAXTreeID(child_rfh), parent_ax_tree_id);
+  ASSERT_FALSE(child_rfh->AccessibilityIsRootFrame());
+
+  // Detach. The stitch must be dropped immediately.
+  context.connector = nullptr;  // Freed by Detach().
+  SurfaceEmbedConnector::Detach(context.child_web_contents.get());
+  EXPECT_EQ(GetEmbedParentAXTreeID(child_rfh), ui::AXTreeIDUnknown());
+  EXPECT_TRUE(child_rfh->AccessibilityIsRootFrame());
+
+  // Navigating cross-site swaps the main RenderFrameHost. The replacement must
+  // not resurrect the embed parent from the now-detached connector.
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(context.child_web_contents.get(), url_b));
+
+  auto* new_child_rfh = static_cast<RenderFrameHostImpl*>(
+      context.child_web_contents->GetPrimaryMainFrame());
+  EXPECT_EQ(GetEmbedParentAXTreeID(new_child_rfh), ui::AXTreeIDUnknown());
+  EXPECT_TRUE(new_child_rfh->AccessibilityIsRootFrame());
+  EXPECT_EQ(CachedParentAXTreeID(new_child_rfh), ui::AXTreeIDUnknown());
 }
 
 }  // namespace content

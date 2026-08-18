@@ -60,6 +60,7 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
                              blink::mojom::FocusType focus_type) override;
   void OnEmbedElementThrottlingStatusChanged(
       mojom::RenderThrottlingStatusPtr status) override;
+  void SetParentAccessibilityInfo(ui::AXNodeID ax_node_id) override;
 
   // content::SurfaceEmbedConnector::Delegate implementation:
   void SetFrameSinkId(const viz::FrameSinkId& frame_sink_id,
@@ -78,6 +79,10 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
 
   void SetDestructionCallbackForTesting(base::OnceClosure callback);
 
+  bool HasReceivedParentAccessibilityInfoForTesting() const {
+    return container_accessibility_node_id_ != ui::kInvalidAXNodeID;
+  }
+
  private:
   friend class SurfaceEmbedHostCollection;
 
@@ -91,6 +96,10 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   // May return null.
   content::SurfaceEmbedConnector* GetConnector() const;
 
+  // Derives the parent AX tree token from the embedder RenderFrameHost and
+  // forwards it, with the stored node id, to the connector.
+  void ForwardParentAccessibilityInfo();
+
   raw_ref<SurfaceEmbedHostCollection> collection_;
   base::OnceClosure destruction_callback_for_testing_;
 
@@ -98,6 +107,8 @@ class SurfaceEmbedHost : public mojom::SurfaceEmbedHost,
   base::WeakPtr<content::WebContents> child_contents_ = nullptr;
 
   bool pending_request_focus_on_embed_element_ = false;
+
+  ui::AXNodeID container_accessibility_node_id_ = ui::kInvalidAXNodeID;
 
   mojo::AssociatedRemote<mojom::SurfaceEmbed> surface_embed_;
   mojo::AssociatedReceiver<mojom::SurfaceEmbedHost> receiver_{this};

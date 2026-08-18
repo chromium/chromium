@@ -3626,7 +3626,32 @@ void WebContentsImpl::ClearSurfaceEmbedConnector() {
     view_ = nullptr;
   }
 
+  // The child main frame derives its embed-parent AX tree id from the
+  // connector. Clear that id from the child's AX tree data *before* freeing the
+  // connector. AccessibilityIsRootFrame() consults the connector, so if the
+  // connector were freed first the frame would report itself as the AX root
+  // while its tree data still carried the embedder's parent tree id.
+  // Serializing in that window trips
+  // BrowserAccessibilityManager::IsRootFrameManager()'s invariant that a root
+  // tree has no parent tree id. Note AXTree::Unserialize() notifies observers
+  // before it applies the new tree data, so the clear must happen while the
+  // connector still makes the frame a non-root. This runs even during
+  // destruction because the BrowserAccessibilityManagers are torn down after
+  // this point and cannot have a stale embedder parent tree id.
+  const bool had_embed_parent_ax_tree_id =
+      surface_embed_connector_->GetParentAXTreeID() != ui::AXTreeIDUnknown();
+  if (had_embed_parent_ax_tree_id) {
+    primary_frame_tree_.root()->current_frame_host()->ClearEmbedderAXTreeData();
+  }
+
   surface_embed_connector_.reset();
+
+  // The frame is now a true AX root. Refresh so the renderer and platform
+  // managers observe the final state. The tree data no longer carries the
+  // embedder's parent tree id, so this no longer sees an inconsistent state.
+  if (had_embed_parent_ax_tree_id && !IsBeingDestroyed()) {
+    primary_frame_tree_.root()->current_frame_host()->UpdateAXTreeData();
+  }
 
   // Recreate and register RenderWidgetHostView.
   if (!IsBeingDestroyed()) {

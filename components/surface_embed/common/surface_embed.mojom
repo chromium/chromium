@@ -91,5 +91,11 @@ interface SurfaceEmbedHost {
   // WebContents (e.g. it may reject throttling when the child WebContents is
   // being screen-captured).
   OnEmbedElementThrottlingStatusChanged(RenderThrottlingStatus status);
+
+  // Sends the parent HTML element accessibility node ID from the render process
+  // to the browser process to stitch together accessibility trees in the
+  // browser process. This may happen during creation or later
+  // if accessibility is not yet enabled.
+  SetParentAccessibilityInfo(int32 ax_node_id);
 };
 

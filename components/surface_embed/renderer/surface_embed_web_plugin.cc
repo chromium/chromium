@@ -12,6 +12,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -26,9 +27,32 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace surface_embed {
+
+class SurfaceEmbedWebPlugin::AccessibilityObserver
+    : public content::RenderFrameObserver {
+ public:
+  AccessibilityObserver(content::RenderFrame* render_frame,
+                        SurfaceEmbedWebPlugin* plugin)
+      : content::RenderFrameObserver(render_frame), plugin_(plugin) {}
+  AccessibilityObserver(const AccessibilityObserver&) = delete;
+  AccessibilityObserver& operator=(const AccessibilityObserver&) = delete;
+  ~AccessibilityObserver() override = default;
+
+  void AccessibilityModeChanged(const ui::AXMode& mode) override {
+    if (mode.has_mode(ui::AXMode::kWebContents)) {
+      plugin_->OnAccessibilityModeEnabled();
+    }
+  }
+
+  void OnDestruct() override {}
+
+ private:
+  raw_ptr<SurfaceEmbedWebPlugin> plugin_;
+};
 
 namespace {
 
@@ -65,6 +89,8 @@ SurfaceEmbedWebPlugin::SurfaceEmbedWebPlugin(
     const blink::WebPluginParams& params)
     : contents_id_(contents_id) {
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(&host_);
+  accessibility_observer_ =
+      std::make_unique<AccessibilityObserver>(render_frame, this);
 }
 
 SurfaceEmbedWebPlugin::~SurfaceEmbedWebPlugin() = default;
@@ -89,7 +115,57 @@ bool SurfaceEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
     host_->AttachConnector(contents_id_);
   }
 
+  // If accessibility was already enabled before the plugin was created,
+  // send the info now. AccessibilityModeChanged only fires on transitions.
+  SendAccessibilityInfo();
+
   return true;
+}
+
+void SurfaceEmbedWebPlugin::OnAccessibilityModeEnabled() {
+  SendAccessibilityInfo();
+}
+
+void SurfaceEmbedWebPlugin::SendAccessibilityInfo() {
+  if (!container_ || !host_) {
+    return;
+  }
+
+  content::RenderFrame* render_frame =
+      accessibility_observer_ ? accessibility_observer_->render_frame()
+                              : nullptr;
+  if (!render_frame || !render_frame->GetRenderAccessibility()) {
+    return;
+  }
+
+  // The embed element's AX ID identifies the parent-side node that the child
+  // accessibility tree is stitched onto.
+  //
+  // Note the plugin is always created before the AX tree is fully built, so we
+  // can't fetch the AX ID at this time. However, AX ID always maps to DOM Node
+  // ID so we can use this as a substitute. AXObjectCacheImpl keys every
+  // DOM-backed AXObject by its DOMNodeId and derives the AXID from
+  // DOMNodeIds::ExistingIdForNode(), so the id read here is exactly the AXID
+  // the object will have once it is created.
+  //
+  // The alternative, blink::WebAXObject::FromWebNode(), cannot be used here: it
+  // calls AXObjectCache::UpdateAXForAllDocuments(), which forces the *parent*
+  // renderer to synchronously serialize its entire AX tree. That serialization
+  // re-emits the persisted parent->child stitch link, so the parent->child link
+  // reaches the browser ahead of the child->parent link being requested here.
+  // A child->parent link arriving first is harmless (AX clients traverse from
+  // parent to child), but a parent->child link with no reciprocal child->parent
+  // link is a transient half-stitched state that crashes AX consumers.
+  //
+  // TODO(accessibility): Expose a supported way to obtain the AX ID for a node
+  // without forcing a full AX tree update, and use it here instead of relying
+  // on the DOM Node ID / AX ID equivalence.
+  ui::AXNodeID ax_id = container_->GetElement().GetDomNodeId();
+  if (ax_id == ui::kInvalidAXNodeID) {
+    return;
+  }
+
+  host_->SetParentAccessibilityInfo(ax_id);
 }
 
 void SurfaceEmbedWebPlugin::Destroy() {

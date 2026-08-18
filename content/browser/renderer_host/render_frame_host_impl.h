@@ -1516,6 +1516,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // a renderer.
   void UpdateAXTreeData();
 
+  // Clears the embedder parent AX tree id from this frame's
+  // BrowserAccessibilityManager. Unlike UpdateAXTreeData() this does not
+  // re-derive the id from the surface-embed connector, so it can be called
+  // while the connector is still alive to drop the id before the connector goes
+  // away.
+  void ClearEmbedderAXTreeData();
+
   // Updating focus in the presence of multiple frame trees requires multiple
   // focus changes. The existence of this class will defer UpdateAXTreeData()
   // until this process has finished and the focus states are consistent.
