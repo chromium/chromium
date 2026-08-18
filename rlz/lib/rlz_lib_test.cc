@@ -1094,7 +1094,17 @@ TEST_F(ReadonlyRlzDirectoryTest, SupplementaryBrandingDoesNotCrash) {
 }
 
 // Regression test for http://crbug.com/141108
-TEST_F(RlzLibTest, ConcurrentStoreAccessWithProcessExitsWhileLockHeld) {
+#if BUILDFLAG(IS_MAC)
+// Calling fork() without exec() in a multi-threaded process is not supported on
+// macOS by Apple's Foundation/libdispatch runtime and causes child processes
+// calling Cocoa APIs to crash or deadlock.
+#define MAYBE_ConcurrentStoreAccessWithProcessExitsWhileLockHeld \
+  DISABLED_ConcurrentStoreAccessWithProcessExitsWhileLockHeld
+#else
+#define MAYBE_ConcurrentStoreAccessWithProcessExitsWhileLockHeld \
+  ConcurrentStoreAccessWithProcessExitsWhileLockHeld
+#endif
+TEST_F(RlzLibTest, MAYBE_ConcurrentStoreAccessWithProcessExitsWhileLockHeld) {
   // See the comment at the top of WriteFails.
   if (!rlz_lib::SupplementaryBranding::GetBrand().empty())
     return;
