@@ -75,7 +75,7 @@ template <>
 struct BLINK_COMMON_EXPORT StructTraits<
     blink::mojom::RecordContentToVisibleTimeRequestDataView,
     blink::RecordContentToVisibleTimeRequest> {
-  static std::vector<blink::VisibleTimeEvent> events(
+  static const std::vector<blink::VisibleTimeEvent>& events(
       const blink::RecordContentToVisibleTimeRequest& request) {
     return request.events;
   }
