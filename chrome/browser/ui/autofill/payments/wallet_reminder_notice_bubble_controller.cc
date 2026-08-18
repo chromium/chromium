@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
@@ -88,14 +87,14 @@ void WalletReminderNoticeBubbleController::DoShowBubble() {
   if (!browser) {
     return;
   }
-  BrowserWindow* browser_window = BrowserWindow::FromBrowser(browser);
-  if (!browser_window) {
+  AutofillBubbleHandler* autofill_bubble_handler =
+      AutofillBubbleHandler::Get(browser->GetUnownedUserDataHost());
+  if (!autofill_bubble_handler) {
     return;
   }
   if (AutofillBubbleBase* bubble_view =
-          browser_window->GetAutofillBubbleHandler()
-              ->ShowWalletReminderNoticeBubble(web_contents(), this,
-                                               is_reshow_)) {
+          autofill_bubble_handler->ShowWalletReminderNoticeBubble(
+              web_contents(), this, is_reshow_)) {
     SetBubbleView(*bubble_view);
   }
 }
