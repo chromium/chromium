@@ -74,7 +74,7 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
   if (!is_visible_credit_card_form) {
     autofill_metrics::LogPaymentsChurnedUsersBubbleShowResult(
         autofill_metrics::PaymentsChurnedUsersBubbleShowResult::
-            kFormNotVisible);
+            kNoVisibleCreditCardForm);
     return;
   }
 

@@ -5711,7 +5711,7 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Off The Record"/>
   <int value="2" label="No Cached Form"/>
   <int value="3" label="Strike Database Blocked"/>
-  <int value="4" label="Form Not Visible"/>
+  <int value="4" label="No visible credit card form is present"/>
   <int value="5" label="Pref Already Turned On"/>
   <int value="6" label="Pref Not User Controlled"/>
   <int value="7" label="No Account Info Present"/>

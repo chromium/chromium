@@ -21,7 +21,7 @@ enum class PaymentsChurnedUsersBubbleShowResult {
   kOffTheRecord = 1,
   kNoCachedForm = 2,
   kStrikeDatabaseBlocked = 3,
-  kFormNotVisible = 4,
+  kNoVisibleCreditCardForm = 4,
   kPrefAlreadyTurnedOn = 5,
   kPrefNotUserControlled = 6,
   kNoAccountInfoPresent = 7,
