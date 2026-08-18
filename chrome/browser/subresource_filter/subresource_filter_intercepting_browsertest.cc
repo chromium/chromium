@@ -16,6 +16,9 @@
 #include "components/safe_browsing/core/browser/db/v4_embedded_test_server_util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/db/v5_embedded_test_server_util.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "content/public/browser/web_contents.h"
@@ -26,14 +29,23 @@
 #include "url/gurl.h"
 namespace subresource_filter {
 
-// This test harness intercepts URLRequests going to the SafeBrowsing V4 server.
+// This test harness intercepts URLRequests going to the SafeBrowsing server.
 // It allows the tests to mock out proto responses.
 class SubresourceFilterInterceptingBrowserTest
-    : public SubresourceFilterBrowserTest {
+    : public SubresourceFilterBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   SubresourceFilterInterceptingBrowserTest()
       : safe_browsing_test_server_(
-            std::make_unique<net::test_server::EmbeddedTestServer>()) {}
+            std::make_unique<net::test_server::EmbeddedTestServer>()) {
+    if (UseV5()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          safe_browsing::kLocalListsUseSBv5);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          safe_browsing::kLocalListsUseSBv5);
+    }
+  }
 
   SubresourceFilterInterceptingBrowserTest(
       const SubresourceFilterInterceptingBrowserTest&) = delete;
@@ -42,12 +54,14 @@ class SubresourceFilterInterceptingBrowserTest
 
   ~SubresourceFilterInterceptingBrowserTest() override = default;
 
+  bool UseV5() const { return GetParam(); }
+
   net::test_server::EmbeddedTestServer* safe_browsing_test_server() {
     return safe_browsing_test_server_.get();
   }
 
-  safe_browsing::ThreatMatch GetBetterAdsMatch(const GURL& url,
-                                               const std::string& bas_value) {
+  safe_browsing::ThreatMatch GetBetterAdsMatchV4(const GURL& url,
+                                                 const std::string& bas_value) {
     safe_browsing::ThreatMatch threat_match;
     threat_match.set_threat_type(safe_browsing::SUBRESOURCE_FILTER);
     threat_match.set_platform_type(
@@ -66,6 +80,20 @@ class SubresourceFilterInterceptingBrowserTest
     return threat_match;
   }
 
+  safe_browsing::V5::FullHash GetBetterAdsMatchV5(const GURL& url,
+                                                  bool is_warn_only) {
+    safe_browsing::V5::FullHash full_hash;
+    full_hash.set_full_hash(
+        safe_browsing::SBProtocolManagerUtil::GetFullHash(url));
+    auto* detail = full_hash.add_full_hash_details();
+    detail->set_threat_type(
+        safe_browsing::V5::ThreatType::BETTER_ADS_VIOLATION);
+    if (is_warn_only) {
+      detail->add_attributes(safe_browsing::V5::ThreatAttribute::CANARY);
+    }
+    return full_hash;
+  }
+
   // Creates a redirect chain to the final redirect_url from the initial host
   // where the SafeBrowsing result from the intial host is delayed. Returns
   // the initial url.
@@ -77,20 +105,32 @@ class SubresourceFilterInterceptingBrowserTest
         initial_host, "/server-redirect?" + redirect_url.spec()));
 
     // Mark the prefixes as bad so that safe browsing will request full hashes
-    // from the v4 server.
+    // from the server.
     database_helper()->LocallyMarkPrefixAsBad(
         url, safe_browsing::GetUrlSubresourceFilterId());
     database_helper()->LocallyMarkPrefixAsBad(
         redirect_url, safe_browsing::GetUrlSubresourceFilterId());
 
-    // Map URLs to policies, enforce on the initial, and warn on the redirect.
-    std::map<GURL, safe_browsing::ThreatMatch> response_map{
-        {url, GetBetterAdsMatch(url, "enforce")},
-        {redirect_url, safe_browsing::ThreatMatch()}};
     std::map<GURL, base::TimeDelta> delay_map{{url, initial_delay}};
-    // Delay the initial response , so it arrives after the final.
-    safe_browsing::StartRedirectingV4RequestsForTesting(
-        response_map, safe_browsing_test_server(), delay_map);
+    if (UseV5()) {
+      // Map URLs to policies: enforce on the initial URL, and safe (no match)
+      // on the redirect URL.
+      std::map<GURL, safe_browsing::V5::FullHash> response_map{
+          {url, GetBetterAdsMatchV5(url, /*is_warn_only=*/false)},
+          {redirect_url, safe_browsing::V5::FullHash()}};
+      // Delay the initial response, so it arrives after the final.
+      safe_browsing::StartRedirectingV5RequestsForTesting(
+          response_map, safe_browsing_test_server(), delay_map);
+    } else {
+      // Map URLs to policies: enforce on the initial URL, and safe (no match)
+      // on the redirect URL.
+      std::map<GURL, safe_browsing::ThreatMatch> response_map{
+          {url, GetBetterAdsMatchV4(url, "enforce")},
+          {redirect_url, safe_browsing::ThreatMatch()}};
+      // Delay the initial response, so it arrives after the final.
+      safe_browsing::StartRedirectingV4RequestsForTesting(
+          response_map, safe_browsing_test_server(), delay_map);
+    }
     safe_browsing_test_server()->StartAcceptingConnections();
     return url;
   }
@@ -108,14 +148,15 @@ class SubresourceFilterInterceptingBrowserTest
     ASSERT_TRUE(safe_browsing_test_server()->InitializeAndListen());
     SubresourceFilterBrowserTest::SetUp();
   }
-  // This class needs some specific test server managing to intercept V4 hash
+  // This class needs some specific test server managing to intercept hash
   // requests, so just use another server for that rather than try to use the
   // parent class' server.
   std::unique_ptr<net::test_server::EmbeddedTestServer>
       safe_browsing_test_server_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterInterceptingBrowserTest,
                        BetterAdsMetadata) {
   ResetConfiguration(Configuration::MakePresetForLiveRunForBetterAds());
   ASSERT_NO_FATAL_FAILURE(
@@ -129,19 +170,27 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
       "/subresource_filter/frame_with_included_script.html"));
 
   // Mark the prefixes as bad so that safe browsing will request full hashes
-  // from the v4 server.
+  // from the server.
   database_helper()->LocallyMarkPrefixAsBad(
       enforce_url, safe_browsing::GetUrlSubresourceFilterId());
   database_helper()->LocallyMarkPrefixAsBad(
       warn_url, safe_browsing::GetUrlSubresourceFilterId());
 
-  // Register the V4 server to handle full hash requests for the two URLs, with
-  // the given ThreatMatches, then start accepting connections on the v4 server.
-  std::map<GURL, safe_browsing::ThreatMatch> response_map{
-      {enforce_url, GetBetterAdsMatch(enforce_url, "enforce")},
-      {warn_url, GetBetterAdsMatch(warn_url, "warn")}};
-  safe_browsing::StartRedirectingV4RequestsForTesting(
-      response_map, safe_browsing_test_server());
+  // Register the test server to handle full hash requests for the two URLs
+  // with the given matches, then start accepting connections on the server.
+  if (UseV5()) {
+    std::map<GURL, safe_browsing::V5::FullHash> response_map{
+        {enforce_url, GetBetterAdsMatchV5(enforce_url, /*is_warn_only=*/false)},
+        {warn_url, GetBetterAdsMatchV5(warn_url, /*is_warn_only=*/true)}};
+    safe_browsing::StartRedirectingV5RequestsForTesting(
+        response_map, safe_browsing_test_server());
+  } else {
+    std::map<GURL, safe_browsing::ThreatMatch> response_map{
+        {enforce_url, GetBetterAdsMatchV4(enforce_url, "enforce")},
+        {warn_url, GetBetterAdsMatchV4(warn_url, "warn")}};
+    safe_browsing::StartRedirectingV4RequestsForTesting(
+        response_map, safe_browsing_test_server());
+  }
   safe_browsing_test_server()->StartAcceptingConnections();
 
   {
@@ -169,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
 
 // Verify that the navigation waits on all safebrowsing results to be retrieved,
 // and doesn't just return after the final (used) result.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterInterceptingBrowserTest,
                        SafeBrowsingNotificationsWaitOnAllRedirects) {
   // TODO(ericrobinson): If servers are slow for this test, the test will pass
   //   by default (the delay will be high due to server time rather than due
@@ -192,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
 // Verify that the correct safebrowsing result is reported when there is a
 // redirect chain. The
 // last result should be used.
-IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SubresourceFilterInterceptingBrowserTest,
                        SafeBrowsingNotificationsCheckLastResult) {
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
@@ -204,5 +253,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterInterceptingBrowserTest,
   EXPECT_TRUE(
       WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SubresourceFilterInterceptingBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace subresource_filter
