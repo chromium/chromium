@@ -1186,6 +1186,67 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   WaitForDestruction(std::move(tracker));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    UnboundedElementBrowserTest,
+    WindowResizeWithScrolledPageUpdatesBoundsInViewportCoordinates) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <style>
+        body { margin: 0; padding: 0; }
+        #spacer { height: 3000px; }
+        #target {
+          position: absolute;
+          top: 1000px;
+          left: 100px;
+          width: 100px;
+          height: 100px;
+        }
+      </style>
+      <div id="spacer"></div>
+      <div id="target" unbounded></div>
+    `;
+    window.scrollTo(0, 500);
+    document.getElementById('target').showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
+      primary_main_frame_host()->GetRenderWidgetHost()->GetView());
+  ASSERT_TRUE(view);
+
+  gfx::Rect initial_bounds = window->GetBounds();
+  gfx::Vector2d initial_offset =
+      initial_bounds.origin() - view->GetViewBounds().origin();
+  EXPECT_EQ(100, initial_offset.x());
+  EXPECT_EQ(500, initial_offset.y());
+  EXPECT_EQ(100, initial_bounds.width());
+  EXPECT_EQ(100, initial_bounds.height());
+
+  // Trigger UpdateVisualProperties via browser window / view resize.
+  gfx::Size current_size = view->GetVisibleViewportSize();
+  view->SetSize(gfx::Size(current_size.width() == 800 ? 700 : 800,
+                          current_size.height() == 600 ? 500 : 600));
+
+  WaitForFrameReady();
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  // Verify that after resize, the bounds are still in viewport coordinates
+  // (y=500), not raw document coordinates (y=1000).
+  gfx::Rect updated_bounds = window->GetBounds();
+  gfx::Vector2d updated_offset =
+      updated_bounds.origin() - view->GetViewBounds().origin();
+  EXPECT_EQ(100, updated_offset.x());
+  EXPECT_EQ(500, updated_offset.y());
+  EXPECT_EQ(100, updated_bounds.width());
+  EXPECT_EQ(100, updated_bounds.height());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, UnboundedElementBrowserTest, testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(All,

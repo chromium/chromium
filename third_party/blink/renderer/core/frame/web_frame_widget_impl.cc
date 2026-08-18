@@ -2084,11 +2084,21 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
       gfx::Rect bounds;
       if (auto* layout_object = active_element->GetLayoutObject()) {
         bounds = layout_object->AbsoluteBoundingBoxRectForUnboundedElement();
+        if (auto* frame = active_element->GetDocument().GetFrame()) {
+          if (auto* view = frame->View()) {
+            bounds = view->FrameToViewport(bounds);
+            if (auto* widget = frame->GetWidgetForLocalRoot()) {
+              bounds = gfx::ToRoundedRect(
+                  widget->BlinkSpaceToDIPs(gfx::RectF(bounds)));
+            }
+          }
+        }
       }
       // Unbounded elements must have a minimum size of 1x1 to prevent
       // empty-bounds compositor and platform window issues.
       bounds.set_width(std::max(1, bounds.width()));
       bounds.set_height(std::max(1, bounds.height()));
+      active_element->SetLastSentUnboundedBounds(bounds);
       unbounded_surface_state_->host_->UpdateBounds(bounds);
     }
   }
