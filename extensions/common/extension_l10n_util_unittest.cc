@@ -763,5 +763,45 @@ TEST(ExtensionL10nUtil,
   EXPECT_TRUE(extension_l10n_util::ShouldRelocalizeManifest(manifest));
 }
 
+// Tests that "zh_CN" and "zh_TW" are not skipped for validation.
+TEST(ExtensionL10nUtil, ShouldNotSkipValidationForChineseLocales) {
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+
+  base::FilePath src_path = temp.GetPath().Append(kLocaleFolder);
+  ASSERT_TRUE(base::CreateDirectory(src_path));
+
+  std::set<std::string> all_locales;
+  extension_l10n_util::GetAllLocales(&all_locales);
+
+  // Neither "zh_CN" nor "zh_TW" should be skipped for validation.
+  EXPECT_FALSE(extension_l10n_util::ShouldSkipValidation(
+      src_path, src_path.AppendASCII("zh_CN"), all_locales));
+  EXPECT_FALSE(extension_l10n_util::ShouldSkipValidation(
+      src_path, src_path.AppendASCII("zh_TW"), all_locales));
+}
+
+// Tests that extensions with "zh_CN" default locale can be validated.
+TEST(ExtensionL10nUtil, ValidateLocalesWithChineseLocale) {
+  base::ScopedTempDir temp;
+  ASSERT_TRUE(temp.CreateUniqueTempDir());
+
+  base::FilePath src_path = temp.GetPath().Append(kLocaleFolder);
+  ASSERT_TRUE(base::CreateDirectory(src_path));
+
+  // Add valid default localization file for "zh_CN".
+  base::FilePath zh_locale = src_path.AppendASCII("zh_CN");
+  ASSERT_TRUE(base::CreateDirectory(zh_locale));
+  base::FilePath zh_messages_file = zh_locale.Append(kMessagesFilename);
+  const std::string zh_data = R"({ "name": { "message": "default" } })";
+  ASSERT_TRUE(base::WriteFile(zh_messages_file, zh_data));
+
+  const auto manifest = base::DictValue().Set(keys::kDefaultLocale, "zh_CN");
+  std::u16string error;
+  EXPECT_TRUE(extension_l10n_util::ValidateExtensionLocales(temp.GetPath(),
+                                                            manifest, &error))
+      << base::UTF16ToUTF8(error);
+}
+
 }  // namespace
 }  // namespace extensions
