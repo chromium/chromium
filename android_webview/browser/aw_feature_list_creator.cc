@@ -69,7 +69,7 @@ namespace {
 bool g_signature_verification_enabled = true;
 
 // A list of Finch study names that should use the nonembedded low entropy
-// source.
+// source. IMPORTANT: Any experiment listed here must not be part of a layer.
 const char* const kNonembeddedLowEntropySourceAllowlist[] = {
     "DefaultPassthroughCommandDecoder",
     "WebViewFasterGetDefaultUserAgent",
