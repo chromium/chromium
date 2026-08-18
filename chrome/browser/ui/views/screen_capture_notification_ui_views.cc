@@ -343,6 +343,10 @@ class ScreenCaptureNotificationUIImpl : public ScreenCaptureNotificationUI {
   std::u16string text_;
   base::WeakPtr<content::WebContents> capturing_web_contents_;
   std::unique_ptr<views::Widget> widget_;
+#if BUILDFLAG(IS_MAC)
+  // Ensure the notification bar appears active without needing focus.
+  std::unique_ptr<views::Widget::PaintAsActiveLock> paint_as_active_lock_;
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 ScreenCaptureNotificationUIImpl::ScreenCaptureNotificationUIImpl(
@@ -394,6 +398,11 @@ gfx::NativeViewId ScreenCaptureNotificationUIImpl::OnStarted(
 
   widget_->set_frame_type(views::Widget::FrameType::kForceCustom);
   widget_->Init(std::move(params));
+
+#if BUILDFLAG(IS_MAC)
+  // Prevents the notification bar from appearing inactive on macOS
+  paint_as_active_lock_ = widget_->LockPaintAsActive();
+#endif  // BUILDFLAG(IS_MAC)
 
   display::Screen* screen = display::Screen::Get();
   // TODO(sergeyu): Move the notification to the display being captured when
