@@ -29,18 +29,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram
-    name="AccessibilityAnnotator.AtMemoryQueryService.ProviderResultCount.AutofillDataProvider"
-    units="count" expires_after="2026-08-01">
-  <owner>victorshu@google.com</owner>
-  <owner>zelarabaty@google.com</owner>
-  <summary>
-    Records the number of search results returned by the Autofill data provider.
-    Recorded when the at-memory query service finishes retrieving data from a
-    provider.
-  </summary>
-</histogram>
-
-<histogram
     name="AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing"
     enum="ContentAnnotatorDependentInformationTypes" expires_after="2026-12-06">
   <owner>qiaoli@google.com</owner>

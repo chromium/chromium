@@ -1164,7 +1164,7 @@ TEST_F(AtMemoryQueryServiceTest, RecordsProviderResultCountMetric) {
   ASSERT_TRUE(future.Wait());
 
   histogram_tester.ExpectUniqueSample(
-      "AccessibilityAnnotator.AtMemoryQueryService.ProviderResultCount."
+      "Autofill.AtMemory.ProviderResultCount."
       "AutofillDataProvider",
       /*sample=*/2, /*expected_bucket_count=*/1);
 }

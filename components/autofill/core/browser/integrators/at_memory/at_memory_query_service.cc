@@ -980,8 +980,7 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
     std::string server_request_id,
     std::vector<MemorySearchResult> local_results) {
   base::UmaHistogramCounts1000(
-      "AccessibilityAnnotator.AtMemoryQueryService.ProviderResultCount."
-      "AutofillDataProvider",
+      "Autofill.AtMemory.ProviderResultCount.AutofillDataProvider",
       local_results.size());
 
   std::vector<MemorySearchResult> filtered_local_results =

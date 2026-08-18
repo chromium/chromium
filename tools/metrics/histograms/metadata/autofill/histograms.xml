@@ -2458,6 +2458,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.ProviderResultCount.AutofillDataProvider"
+    units="count" expires_after="2027-03-09">
+  <owner>sygiet@google.com</owner>
+  <owner>victorshu@google.com</owner>
+  <owner>zelarabaty@google.com</owner>
+  <summary>
+    Records the number of search results returned by the Autofill data provider.
+    Recorded when the at-memory query service finishes retrieving data from a
+    provider.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AtMemory.QueryCompleted"
     enum="AutofillAtMemoryQueryCompletedStatus" expires_after="2027-03-09">
   <owner>tobson@google.com</owner>
