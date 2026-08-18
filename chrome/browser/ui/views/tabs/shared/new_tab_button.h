@@ -6,33 +6,47 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_SHARED_NEW_TAB_BUTTON_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
+#include "ui/views/context_menu_controller.h"
 
 class BrowserWindowInterface;
+class NewTabButtonMenuModel;
 
 namespace views {
 class ActionViewController;
+class MenuRunner;
 }  // namespace views
 
 namespace shared {
 
-class NewTabButton : public TabStripFlatEdgeButton {
+class NewTabButton : public TabStripFlatEdgeButton,
+                     public views::ContextMenuController {
   METADATA_HEADER(NewTabButton, TabStripFlatEdgeButton)
  public:
   NewTabButton(BrowserWindowInterface* browser,
                const int button_size,
-               const int icon_size);
+               const int icon_size,
+               std::optional<float> corner_radius = std::nullopt);
   ~NewTabButton() override;
+
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // views::View:
   void OnMouseEvent(ui::MouseEvent* event) override;
 
  private:
   std::unique_ptr<views::ActionViewController> action_view_controller_;
+  std::unique_ptr<NewTabButtonMenuModel> context_menu_model_;
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
 
   raw_ptr<BrowserWindowInterface> browser_;
 };

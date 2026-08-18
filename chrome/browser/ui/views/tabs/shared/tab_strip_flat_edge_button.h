@@ -37,6 +37,7 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   bool GetHitTestMask(SkPath* mask) const override;
 
   void SetFlatEdge(FlatEdge flat_edge);
+  void SetCornerRadius(float corner_radius);
   void SetIconSize(int icon_size);
   void UpdateIcon(const ui::ImageModel& icon_image);
   void SetInsets(const gfx::Insets& insets);
@@ -60,6 +61,9 @@ class TabStripFlatEdgeButton : public views::LabelButton,
   void NotifyWillInvokeAction();
 
   FlatEdge flat_edge_for_testing() const { return flat_edge_; }
+  gfx::RoundedCornersF GetButtonCornerRadiiForTesting() const {
+    return GetButtonCornerRadii();
+  }
 
  private:
   // views::View:
@@ -86,6 +90,7 @@ class TabStripFlatEdgeButton : public views::LabelButton,
       views::LayoutOrientation::kHorizontal;
   float flat_edge_factor_ = 1.0f;
   FlatEdge flat_edge_ = FlatEdge::kNone;
+  std::optional<float> corner_radius_;
   base::CallbackListSubscription paint_as_active_subscription_;
 
   base::RepeatingClosureList will_invoke_action_callback_list_;

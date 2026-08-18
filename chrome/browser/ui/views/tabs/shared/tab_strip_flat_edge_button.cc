@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -152,9 +153,11 @@ void TabStripFlatEdgeButton::SetFlatEdgeFactor(float factor) {
   SetProperty(views::kHighlightPathGeneratorKey,
               std::make_unique<views::RoundRectHighlightPathGenerator>(
                   gfx::Insets(), GetButtonCornerRadii()));
-  // The ink drop doesn't automatically pick up on rounded corner changes, so │
+  // The ink drop doesn't automatically pick up on rounded corner changes, so
   // we need to manually notify it here.
-  views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
+  if (GetWidget() && views::InkDrop::Get(this)->HasInkDrop()) {
+    views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
+  }
 
   SchedulePaint();
 }
@@ -180,6 +183,9 @@ void TabStripFlatEdgeButton::NotifyWillInvokeAction() {
 }
 
 void TabStripFlatEdgeButton::OnPaintBackground(gfx::Canvas* canvas) {
+  if (features::IsGlassFrameEnabled()) {
+    return;
+  }
   const SkColor color = GetColorProvider()->GetColor(GetBackgroundColor());
 
   cc::PaintFlags flags;
@@ -216,6 +222,25 @@ void TabStripFlatEdgeButton::SetFlatEdge(FlatEdge flat_edge) {
   SetProperty(views::kHighlightPathGeneratorKey,
               std::make_unique<views::RoundRectHighlightPathGenerator>(
                   gfx::Insets(), GetButtonCornerRadii()));
+  if (GetWidget() && views::InkDrop::Get(this)->HasInkDrop()) {
+    views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
+  }
+
+  SchedulePaint();
+}
+
+void TabStripFlatEdgeButton::SetCornerRadius(float corner_radius) {
+  if (corner_radius_ == corner_radius) {
+    return;
+  }
+  corner_radius_ = corner_radius;
+
+  SetProperty(views::kHighlightPathGeneratorKey,
+              std::make_unique<views::RoundRectHighlightPathGenerator>(
+                  gfx::Insets(), GetButtonCornerRadii()));
+  if (GetWidget() && views::InkDrop::Get(this)->HasInkDrop()) {
+    views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
+  }
 
   SchedulePaint();
 }
@@ -269,26 +294,26 @@ ui::ColorId TabStripFlatEdgeButton::GetBackgroundColor() const {
 
 gfx::RoundedCornersF TabStripFlatEdgeButton::GetButtonCornerRadii() const {
   constexpr float kFlatRadius = 2.0f;
-  constexpr float kRoundedRadius = 10.0f;
-  float flat_radius = kFlatRadius + ((kRoundedRadius - kFlatRadius) *
+  const float rounded_radius = corner_radius_.value_or(10.0f);
+  float flat_radius = kFlatRadius + ((rounded_radius - kFlatRadius) *
                                      (1.0f - flat_edge_factor_));
 
   switch (flat_edge_) {
     case FlatEdge::kNone:
-      return gfx::RoundedCornersF(kRoundedRadius, kRoundedRadius,
-                                  kRoundedRadius, kRoundedRadius);
+      return gfx::RoundedCornersF(rounded_radius, rounded_radius,
+                                  rounded_radius, rounded_radius);
     case FlatEdge::kTop:
-      return gfx::RoundedCornersF(flat_radius, flat_radius, kRoundedRadius,
-                                  kRoundedRadius);
+      return gfx::RoundedCornersF(flat_radius, flat_radius, rounded_radius,
+                                  rounded_radius);
     case FlatEdge::kLeft:
-      return gfx::RoundedCornersF(flat_radius, kRoundedRadius, kRoundedRadius,
+      return gfx::RoundedCornersF(flat_radius, rounded_radius, rounded_radius,
                                   flat_radius);
     case FlatEdge::kBottom:
-      return gfx::RoundedCornersF(kRoundedRadius, kRoundedRadius, flat_radius,
+      return gfx::RoundedCornersF(rounded_radius, rounded_radius, flat_radius,
                                   flat_radius);
     case FlatEdge::kRight:
-      return gfx::RoundedCornersF(kRoundedRadius, flat_radius, flat_radius,
-                                  kRoundedRadius);
+      return gfx::RoundedCornersF(rounded_radius, flat_radius, flat_radius,
+                                  rounded_radius);
   }
 }
 
