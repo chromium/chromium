@@ -660,7 +660,7 @@ external/wpt/pointerevents/crashtests/longpress-crash.html
 # Tests that exhibit antialiasing differences only on headless shell, not on
 # content_shell, when run under Fontations.
 # See crbug.com/397880053 and crbug.com/339041663.
-external/wpt/css/css-break/*
+external/wpt/css/css-break/grid/grid-lanes/grid-lanes-fragmentation-003.html
 external/wpt/css/css-overflow/keyboard-scroll.html
 external/wpt/css/css-page/*
 external/wpt/css/css-shapes/shape-outside/shape-box/shape-outside-border-box-001.html
