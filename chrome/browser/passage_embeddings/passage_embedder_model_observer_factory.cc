@@ -70,7 +70,7 @@ PassageEmbedderModelObserverFactory::BuildServiceInstanceForBrowserContext(
 #if BUILDFLAG(IS_ANDROID)
   // Restrict Android to "higher-end" devices.
   if (base::SysInfo::AmountOfTotalPhysicalMemory() <
-      base::MiBU(static_cast<uint32_t>(
+      base::MiB(static_cast<uint32_t>(
           std::max(0, kPassageEmbedderMinRequiredRamMb.Get())))) {
     return nullptr;
   }
