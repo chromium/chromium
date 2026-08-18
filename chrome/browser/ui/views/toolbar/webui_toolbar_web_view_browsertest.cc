@@ -3374,8 +3374,14 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, FrameCacheUsage) {
   EXPECT_EQ(baseline_locked, content::GetLockedCompositorFrameCount());
 }
 
+// TODO(crbug.com/548333350): Flaky on Mac ARM64.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#define MAYBE_EndToEndTabSwitchMitigation DISABLED_EndToEndTabSwitchMitigation
+#else
+#define MAYBE_EndToEndTabSwitchMitigation EndToEndTabSwitchMitigation
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest,
-                       EndToEndTabSwitchMitigation) {
+                       MAYBE_EndToEndTabSwitchMitigation) {
   // Set max saved frames to 2 (1 for the active tab + 1 for 1 background tab).
   content::SetMaxUnlockedCompositorFramesForTesting(2);
 
