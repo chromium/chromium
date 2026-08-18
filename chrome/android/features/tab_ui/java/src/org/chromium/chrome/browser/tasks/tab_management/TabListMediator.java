@@ -1135,44 +1135,10 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     @Override
                     public void didRemoveTabForClosure(Tab tab) {
-                        onTabClose(tab);
-                    }
-
-                    private void onTabClose(Tab tab) {
                         assert mShowingTabs;
 
                         removeObserversForTab(tab);
-
-                        TabModel tabModel = mCurrentTabModelSupplier.get();
-                        Token tabGroupId = tab.getTabGroupId();
-                        if (tabModel != null
-                                && tabGroupId != null
-                                && tabModel.tabGroupExists(tabGroupId)) {
-                            if (mLayoutType == TabListLayoutType.GROUPED) {
-                                // If the tab closed was part of a tab group and the closure was
-                                // triggered from a grouped layout, update the group to reflect the
-                                // closure instead of closing the tab.
-                                int groupIndex = tabModel.representativeIndexOf(tab);
-                                Tab groupTab = tabModel.getRepresentativeTabAt(groupIndex);
-                                assumeNonNull(groupTab);
-                                if (!groupTab.isClosing()) {
-                                    updateTab(
-                                            mModelList.indexOfNthTabCard(groupIndex),
-                                            groupTab,
-                                            /* isUpdatingId= */ true,
-                                            /* quickMode= */ false);
-                                    return;
-                                }
-                            } else if (mLayoutType == TabListLayoutType.NESTED) {
-                                updateTabGroupHeaderId(tabGroupId);
-                                updateTabGroupTitle(tabGroupId);
-                            }
-                        }
-
-                        int index = mModelList.indexFromTabId(tab.getId());
-                        if (index == TabModel.INVALID_TAB_INDEX) return;
-
-                        mModelList.removeAt(index);
+                        mTabListLayoutDelegate.onTabClose(tab);
                     }
 
                     @Override

@@ -97,6 +97,18 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
         mMediator.updateFaviconForTab(model, updatedTab, icon, iconUrl);
     }
 
+    /**
+     * Handles UI model updates when a tab is removed for closure.
+     *
+     * @param tab The {@link Tab} being removed for closure.
+     */
+    void onTabClose(Tab tab) {
+        int index = mModelList.indexFromTabId(tab.getId());
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+
+        mModelList.removeAt(index);
+    }
+
     @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
         mMediator.updateTabGroupTitle(tabGroupId);

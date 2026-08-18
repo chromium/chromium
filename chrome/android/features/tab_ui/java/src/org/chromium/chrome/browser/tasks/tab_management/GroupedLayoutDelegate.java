@@ -122,6 +122,30 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
+    void onTabClose(Tab tab) {
+        TabModel tabModel = mMediator.getCurrentTabModelChecked();
+        Token tabGroupId = tab.getTabGroupId();
+        if (tabGroupId != null && tabModel.tabGroupExists(tabGroupId)) {
+            // If the tab closed was part of a tab group and the closure was
+            // triggered from a grouped layout, update the group to reflect the
+            // closure instead of closing the tab.
+            int groupIndex = tabModel.representativeIndexOf(tab);
+            Tab groupTab = tabModel.getRepresentativeTabAt(groupIndex);
+            assumeNonNull(groupTab);
+            if (!groupTab.isClosing()) {
+                mMediator.updateTab(
+                        mModelList.indexOfNthTabCard(groupIndex),
+                        groupTab,
+                        /* isUpdatingId= */ true,
+                        /* quickMode= */ false);
+                return;
+            }
+        }
+
+        super.onTabClose(tab);
+    }
+
+    @Override
     public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
         @Nullable Pair<Integer, Tab> indexAndTab =
                 mMediator.getIndexAndTabForTabGroupId(tabGroupId);

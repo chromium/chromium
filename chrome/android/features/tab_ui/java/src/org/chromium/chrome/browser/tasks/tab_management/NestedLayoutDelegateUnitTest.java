@@ -185,6 +185,40 @@ public class NestedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testOnTabClose_InGroup() {
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        addTabToModelList(TAB1_ID, TAB_GROUP_ID);
+
+        mDelegate.onTabClose(mTab1);
+
+        verify(mMediator).updateTabGroupHeaderId(TAB_GROUP_ID);
+        verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
+        assertEquals(0, mModelList.size());
+    }
+
+    @Test
+    public void testOnTabClose_NotInGroup() {
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        addTabToModelList(TAB1_ID, null);
+
+        mDelegate.onTabClose(mTab1);
+
+        verify(mMediator, never()).updateTabGroupHeaderId(any());
+        verify(mMediator, never()).updateTabGroupTitle(any());
+        assertEquals(0, mModelList.size());
+    }
+
+    @Test
+    public void testOnTabClose_NotFound() {
+        when(mTab1.getTabGroupId()).thenReturn(null);
+
+        mDelegate.onTabClose(mTab1);
+
+        assertEquals(0, mModelList.size());
+    }
+
+    @Test
     public void testDidChangeTabGroupTitle() {
         mDelegate.didChangeTabGroupTitle(TAB_GROUP_ID, "New Title");
         verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);

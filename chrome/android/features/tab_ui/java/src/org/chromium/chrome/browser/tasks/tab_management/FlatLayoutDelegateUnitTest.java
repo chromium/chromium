@@ -143,6 +143,24 @@ public class FlatLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testOnTabClose() {
+        addTabsToModelList(TAB1_ID, TAB2_ID);
+
+        mDelegate.onTabClose(mTab1);
+
+        assertModelListTabIds(TAB2_ID);
+    }
+
+    @Test
+    public void testOnTabClose_NotFound() {
+        addTabsToModelList(TAB1_ID);
+
+        mDelegate.onTabClose(mTab2);
+
+        assertModelListTabIds(TAB1_ID);
+    }
+
+    @Test
     public void testDidChangeTabGroupTitle_NoOp() {
         mDelegate.didChangeTabGroupTitle(TAB_GROUP_ID, "New Title");
 

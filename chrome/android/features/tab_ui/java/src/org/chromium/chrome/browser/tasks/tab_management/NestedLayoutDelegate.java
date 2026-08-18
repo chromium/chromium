@@ -154,6 +154,18 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
+    void onTabClose(Tab tab) {
+        TabModel tabModel = mMediator.getCurrentTabModelChecked();
+        Token tabGroupId = tab.getTabGroupId();
+        if (tabGroupId != null && tabModel.tabGroupExists(tabGroupId)) {
+            mMediator.updateTabGroupHeaderId(tabGroupId);
+            mMediator.updateTabGroupTitle(tabGroupId);
+        }
+
+        super.onTabClose(tab);
+    }
+
+    @Override
     public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
         int headerIndex = mModelList.indexFromTabGroupId(tabGroupId);
         if (headerIndex != TabModel.INVALID_TAB_INDEX) {

@@ -268,6 +268,56 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testOnTabClose_InGroup_NotClosing() {
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.representativeIndexOf(mTab1)).thenReturn(0);
+        when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab2);
+        when(mTab2.isClosing()).thenReturn(false);
+        createAndAddPropertyModel(TAB2_ID);
+
+        mDelegate.onTabClose(mTab1);
+
+        verify(mMediator).updateTab(0, mTab2, true, false);
+        assertEquals(1, mModelList.size());
+    }
+
+    @Test
+    public void testOnTabClose_InGroup_Closing() {
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.representativeIndexOf(mTab1)).thenReturn(0);
+        when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab2);
+        when(mTab2.isClosing()).thenReturn(true);
+        createAndAddPropertyModel(TAB1_ID);
+
+        mDelegate.onTabClose(mTab1);
+
+        verify(mMediator, never()).updateTab(anyInt(), any(), anyBoolean(), anyBoolean());
+        assertEquals(0, mModelList.size());
+    }
+
+    @Test
+    public void testOnTabClose_NotInGroup() {
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        createAndAddPropertyModel(TAB1_ID);
+
+        mDelegate.onTabClose(mTab1);
+
+        assertEquals(0, mModelList.size());
+    }
+
+    @Test
+    public void testOnTabClose_NotFound() {
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        createAndAddPropertyModel(TAB2_ID);
+
+        mDelegate.onTabClose(mTab1);
+
+        assertEquals(1, mModelList.size());
+    }
+
+    @Test
     public void testDidChangeTabGroupTitle() {
         String newTitle = "New Title";
         mDelegate.didChangeTabGroupTitle(TAB_GROUP_ID, newTitle);
