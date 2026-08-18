@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import unittest
+import unittest.mock
 import xml.dom.minidom
 
 import setup_modules  # pylint: disable=unused-import
@@ -108,9 +109,8 @@ class HistogramUtilsTest(unittest.TestCase):
 </histograms>
 </histogram-configuration>
 """
-    from unittest.mock import patch
 
-    with patch.object(
+    with unittest.mock.patch.object(
       histogram_utils, '_path_contents', return_value=content
     ) as mock_read:
       files = histogram_utils.find_files_using_variants(

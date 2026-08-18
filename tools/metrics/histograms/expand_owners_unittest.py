@@ -7,19 +7,15 @@ import shutil
 import tempfile
 import unittest
 import xml.dom.minidom
-from pathlib import Path
 
 import mock  # type: ignore
 import setup_modules  # pylint: disable=unused-import
 
-from chromium_src.tools.metrics.common.path_util import (
-  CHROMIUM_SRC_PATH,
-  METRICS_TOOLS_PATH,
-)
+from chromium_src.tools.metrics.common import path_util
 import chromium_src.tools.metrics.histograms.expand_owners as expand_owners
 
 
-def _GetFileDirective(path):
+def _GetFileDirective(path: str) -> str:
   """Returns a file directive line.
 
   Args:
@@ -29,10 +25,10 @@ def _GetFileDirective(path):
     A file directive that can be used in an OWNERS file, e.g.
     file://tools/OWNERS.
   """
-  return ''.join(['file://', path[len(str(CHROMIUM_SRC_PATH)) + 1 :]])
+  return ''.join(['file://', path[len(str(path_util.CHROMIUM_SRC_PATH)) + 1 :]])
 
 
-def _GetSrcRelativePath(path):
+def _GetSrcRelativePath(path: str) -> str:
   """Returns a(n) src-relative path for the given file path.
 
   Args:
@@ -41,11 +37,11 @@ def _GetSrcRelativePath(path):
   Returns:
     A src-relative path, e.g.'src/tools/OWNERS'.
   """
-  assert path.startswith(str(CHROMIUM_SRC_PATH))
-  return expand_owners.SRC + path[len(str(CHROMIUM_SRC_PATH)) + 1 :]
+  assert path.startswith(str(path_util.CHROMIUM_SRC_PATH))
+  return expand_owners.SRC + path[len(str(path_util.CHROMIUM_SRC_PATH)) + 1 :]
 
 
-def _MakeOwnersFile(filename, directory):
+def _MakeOwnersFile(filename: str, directory: str) -> str:
   """Makes a temporary file in this directory and returns its absolute path.
 
   Args:
@@ -56,7 +52,7 @@ def _MakeOwnersFile(filename, directory):
     The temporary file's absolute path.
   """
   if not directory:
-    directory = str(METRICS_TOOLS_PATH / 'histograms')
+    directory = str(path_util.METRICS_TOOLS_PATH / 'histograms')
   owners_file = tempfile.NamedTemporaryFile(suffix=filename, dir=directory)
   return os.path.abspath(owners_file.name)
 
@@ -64,7 +60,7 @@ def _MakeOwnersFile(filename, directory):
 class ExpandOwnersTest(unittest.TestCase):
   def setUp(self):
     super(ExpandOwnersTest, self).setUp()
-    self.temp_dir = tempfile.mkdtemp(dir=str(METRICS_TOOLS_PATH / 'histograms'))
+    self.temp_dir = tempfile.mkdtemp(dir=str(path_util.METRICS_TOOLS_PATH / 'histograms'))
 
     # The below construction is used rather than __file__.endswith() because
     # the file extension could be .py or .pyc.
@@ -674,7 +670,7 @@ class ExpandOwnersTest(unittest.TestCase):
     # The condition is true when the tools directory's parent directory is src,
     # which is generally the case locally. However, the parent directory is not
     # always src, e.g. on various testing bots.
-    if os.path.basename(str(CHROMIUM_SRC_PATH)) == 'src':
+    if os.path.basename(str(path_util.CHROMIUM_SRC_PATH)) == 'src':
       self.assertRegex(result, r'.*OWNERS')
     else:
       self.assertEqual(result, '')

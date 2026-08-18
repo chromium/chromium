@@ -8,11 +8,10 @@ import logging
 import os
 import sys
 import xml.dom.minidom
-from pathlib import Path
 
 import setup_modules  # pylint: disable=unused-import
 
-from chromium_src.tools.metrics.common.path_util import METRICS_TOOLS_PATH
+from chromium_src.tools.metrics.common import path_util
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 
 
@@ -20,7 +19,7 @@ def _LoadGlobalVariants() -> list[str]:
   """Loads the global variants from `variants.xml`, if it exists."""
   global_variants_list: list[str] = []
   global_variants_path: str = str(
-    METRICS_TOOLS_PATH / 'histograms' / 'variants.xml'
+    path_util.METRICS_TOOLS_PATH / 'histograms' / 'variants.xml'
   )
   if os.path.exists(global_variants_path):
     global_tree: xml.dom.minidom.Document = xml.dom.minidom.parse(

@@ -2,12 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 import pathlib
 import unittest
-import xml.dom.minidom
-
 from unittest import mock
+import xml.dom.minidom
 
 import setup_modules  # pylint: disable=unused-import
 

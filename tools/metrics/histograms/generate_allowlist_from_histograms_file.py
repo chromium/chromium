@@ -4,14 +4,14 @@
 # found in the LICENSE file.
 
 import argparse
-import os
+import pathlib
 import sys
 import xml.dom.minidom
-from pathlib import Path
 
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
+
 
 _SCRIPT_NAME = 'generate_allowlist_from_histograms_file.py'
 _FILE = """// Generated from {script_name}. Do not edit!
@@ -117,7 +117,7 @@ def _GenerateFile(arguments):
   static_check_header_file_content = _GenerateStaticFile(
     arguments.file, arguments.namespace, values, arguments.allow_list_name
   )
-  output_path = Path(arguments.output_dir) / arguments.file
+  output_path = pathlib.Path(arguments.output_dir) / arguments.file
   with open(output_path, 'w') as generated_file:
     generated_file.write(static_check_header_file_content)
 
