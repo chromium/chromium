@@ -7,6 +7,7 @@
 
 #include <map>
 #include <set>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
@@ -108,6 +109,17 @@ class VIEWS_EXPORT OccludedWidgetInputProtector : public views::WidgetObserver {
 
   // Returns true if `record` is older than the double-click interval.
   bool IsRecordExpired(const HistoricalOcclusion& record) const;
+
+  // Returns true if the `target` point is occluded by any tracked always-on-top
+  // widgets or historical occlusion records.
+  bool CheckPointOcclusion(const gfx::Point& target) const;
+
+  // Returns true if the `target` rects are occluded by any tracked
+  // always-on-top widgets or historical occlusion records. If
+  // `check_intersection` is true, checks for partial occlusion (intersection);
+  // otherwise, checks for full occlusion (containment).
+  bool CheckRectsOcclusion(const std::vector<gfx::Rect>& target,
+                           bool check_intersection = true) const;
 
   // The set of always-on-top widgets currently being tracked, mapped to their
   // last known non-decorated client area bounds in screen coordinates.

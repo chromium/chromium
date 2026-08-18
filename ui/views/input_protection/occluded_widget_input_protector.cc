@@ -4,10 +4,13 @@
 
 #include "ui/views/input_protection/occluded_widget_input_protector.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/input_protection/input_protection_specification.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view.h"
 #include "ui/views/views_features.h"
@@ -33,6 +36,58 @@ bool IsViewAssociatedWithTrackedWidget(
   return tracked_widgets.contains(const_cast<Widget*>(primary));
 }
 
+// Returns true if the `occluding_rect` contains the `target_point` (used for
+// located events like clicks).
+bool Occludes(const gfx::Rect& occluding_rect, const gfx::Point& target_point) {
+  return occluding_rect.Contains(target_point);
+}
+
+// Returns true if the `occluding_rect` occludes any of the `target_rects`
+// (used for non-located events like keys). If `check_intersection` is true,
+// checks for intersection (partial occlusion); otherwise requires the
+// `occluding_rect` to fully contain the target rect.
+bool Occludes(const gfx::Rect& occluding_rect,
+              const std::vector<gfx::Rect>& target_rects,
+              bool check_intersection = true) {
+  return std::ranges::any_of(target_rects, [&](const auto& rect) {
+    return check_intersection ? occluding_rect.Intersects(rect)
+                              : occluding_rect.Contains(rect);
+  });
+}
+
+// Walks up the view tree to gather and accumulate all input protection bounds.
+std::vector<gfx::Rect> GetViewProtectedBounds(const View& target_view) {
+  std::vector<gfx::Rect> accumulated_bounds;
+  for (const View* view = &target_view; view; view = view->parent()) {
+    InputProtectionSpecification* spec = view->GetProperty(kInputProtectionKey);
+    if (spec) {
+      std::vector<gfx::Rect> bounds = spec->GetProtectedBoundsInScreen(*view);
+      accumulated_bounds.insert(accumulated_bounds.end(), bounds.begin(),
+                                bounds.end());
+    }
+  }
+  return accumulated_bounds;
+}
+
+// Returns true if `point` is inside any of the `rects`.
+bool ContainsPoint(const std::vector<gfx::Rect>& rects,
+                   const gfx::Point& point) {
+  return std::ranges::any_of(
+      rects, [&point](const auto& rect) { return rect.Contains(point); });
+}
+
+// Returns true if the widget associated with `view` (or its primary window
+// widget) has input protection enabled.
+bool NeedsInputEventActivationProtection(const View& view) {
+  const Widget* widget = view.GetWidget();
+  if (!widget) {
+    return false;
+  }
+  const Widget* primary = widget->GetPrimaryWindowWidget();
+  return widget->IsInputEventActivationProtectionEnabled() ||
+         (primary && primary->IsInputEventActivationProtectionEnabled());
+}
+
 }  // namespace
 
 // static
@@ -43,6 +98,50 @@ OccludedWidgetInputProtector* OccludedWidgetInputProtector::GetInstance() {
 OccludedWidgetInputProtector::OccludedWidgetInputProtector() = default;
 
 OccludedWidgetInputProtector::~OccludedWidgetInputProtector() = default;
+
+bool OccludedWidgetInputProtector::CheckPointOcclusion(
+    const gfx::Point& target) const {
+  // Current (live) Occlusion: Block if any visible always-on-top widget
+  // currently occludes the target area.
+  for (const auto& [widget, widget_bounds] : always_on_top_widgets_) {
+    if (Occludes(widget_bounds, target)) {
+      return true;
+    }
+  }
+
+  // Historical Occlusion: Protects non always-on-top widgets from programmatic
+  // state changes (e.g. pop-away attacks where an AOT window is hidden).
+  for (const auto& record : occlusion_history_) {
+    if (!IsRecordExpired(record) && Occludes(record.bounds, target)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool OccludedWidgetInputProtector::CheckRectsOcclusion(
+    const std::vector<gfx::Rect>& target,
+    bool check_intersection) const {
+  // Current (live) Occlusion: Block if any visible always-on-top widget
+  // currently occludes the target area.
+  for (const auto& [widget, widget_bounds] : always_on_top_widgets_) {
+    if (Occludes(widget_bounds, target, check_intersection)) {
+      return true;
+    }
+  }
+
+  // Historical Occlusion: Protects non always-on-top widgets from programmatic
+  // state changes (e.g. pop-away attacks where an AOT window is hidden).
+  for (const auto& record : occlusion_history_) {
+    if (!IsRecordExpired(record) &&
+        Occludes(record.bounds, target, check_intersection)) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 bool OccludedWidgetInputProtector::ShouldBlockEvent(
     const ui::Event& event,
@@ -57,33 +156,40 @@ bool OccludedWidgetInputProtector::ShouldBlockEvent(
     return false;
   }
 
-  if (!event.IsLocatedEvent()) {
-    // TODO(crbug.com/467460499): Determine how to handle non-located events
-    // (e.g. keyboard events) once an acceptable accessibility solution is
-    // identified.
+  // Only protect against non-located events if the target widget (or its
+  // primary window) has explicitly opted-in to input event activation
+  // protection.
+  if (!event.IsLocatedEvent() &&
+      !NeedsInputEventActivationProtection(target_view)) {
     return false;
   }
 
-  gfx::Point screen_location = event.AsLocatedEvent()->location();
-  View::ConvertPointToScreen(&target_view, &screen_location);
-
-  // Current (live) Occlusion: Block if any visible always-on-top widget
-  // currently occludes the location.
-  for (const auto& [widget, bounds] : always_on_top_widgets_) {
-    if (bounds.Contains(screen_location)) {
-      return true;
-    }
+  std::vector<gfx::Rect> screen_bounds = GetViewProtectedBounds(target_view);
+  const bool has_protected_bounds = !screen_bounds.empty();
+  if (!has_protected_bounds) {
+    screen_bounds = {target_view.GetBoundsInScreen()};
   }
 
-  // Historical Occlusion: Protects non always-on-top widgets from programmatic
-  // state changes (e.g. pop-away attacks where an AOT window is hidden).
-  for (const auto& record : occlusion_history_) {
-    if (!IsRecordExpired(record) && record.bounds.Contains(screen_location)) {
-      return true;
-    }
+  if (event.IsLocatedEvent()) {
+    gfx::Point screen_location = event.AsLocatedEvent()->location();
+    View::ConvertPointToScreen(&target_view, &screen_location);
+
+    // Verify the event target. We only block the located event if it landed
+    // inside a protected area (view-defined protected bounds or default view
+    // bounds) and that area is currently or was recently occluded by an
+    // always-on-top window. Located events targeting non-protected areas are
+    // never blocked.
+    return ContainsPoint(screen_bounds, screen_location) &&
+           CheckPointOcclusion(screen_location);
   }
 
-  return false;
+  // Since non-located events do not target a specific point, we must check the
+  // occlusion of the target area. If the view defines protected bounds, we
+  // block the event if any part of them is occluded. Otherwise (for views
+  // without explicitly defined protected bounds), we only block if the view is
+  // fully occluded.
+  return CheckRectsOcclusion(screen_bounds,
+                             /*check_intersection=*/has_protected_bounds);
 }
 
 void OccludedWidgetInputProtector::UpdateTracking(base::PassKey<views::Widget>,

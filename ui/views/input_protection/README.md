@@ -64,25 +64,163 @@ state:
 - `OnProtectionReset()`: Called when a UI change (e.g., layout or window
   stationarity change) requires restarting the cooldown.
 
+### View-Defined Protected Bounds (InputProtectionSpecification)
+
+To declare specific regions within a view that require input protection, you can
+install an `InputProtectionSpecification` on the view (e.g., a Dialog).
+
+This is done using the `InputProtectionSpecification::Install` helper:
+
+```cpp
+InputProtectionSpecification::Install(
+    *view, base::BindRepeating(&MyView::GetLocalProtectedBounds));
+```
+
+The callback must return a vector of `gfx::Rect` in the **local coordinates** of
+the view on which it is installed.
+
+This is implemented using the property `kInputProtectionKey`. When an event is
+processed, the system walks up the parent chain starting from the target view to
+gather and **accumulate** the bounds from all `InputProtectionSpecification`s it
+finds. This ensures that parent-level protection is additive and cannot be
+bypassed by descendant views.
+
+The framework automatically handles:
+
+- **Clipping**: The returned bounds are clipped to the boundaries of the view
+  that holds the specification (preventing views from declaring bounds outside
+  themselves).
+- **Coordinate Conversion**: The valid bounds are automatically converted from
+  the local coordinate space of the owner view to screen coordinates.
+
+The `InputProtectionSpecification` is currently only used by the
+[Occlusion-Aware Input Protection Policy](#occlusion-aware-input-protection-policy)
+during event evaluation. Other policies (such as default cooldown or window
+activation policies) do not query these bounds.
+
+> [!NOTE] Installing this specification only defines the bounds to protect. It
+> does not automatically enable input protection. To enforce occlusion
+> protection, the containing widget (or its primary window widget) must enable
+> protection by calling `Widget::EnableInputEventActivationProtection()`. For
+> details, see [How to Use](#how-to-use).
+
 ______________________________________________________________________
 
 ## Existing Policies
 
-1. **`DefaultInputProtectionPolicy`**:
-   - **Show Cooldown**: Blocks all input events for a short period (cooldown)
-     immediately after the view becomes visible. It can automatically observe
-     the protected `View`'s visibility when initialized with the view, or rely
-     on manual visibility forwarding from the protector otherwise.
-   - **Click-Spam Protection**: Blocks rapid successive clicks (key repeats or
-     click-spam) by enforcing a minimum delay between interactions.
-2. **`WindowActivationInputProtectionPolicy`**:
-   - **Sudden Activation**: Triggered when a widget becomes active, but its
-     parent window was previously invisible. This protects against cases where a
-     dialog suddenly appears and steals focus just as the user is clicking.
-3. **`OcclusionAwareInputProtectionPolicy`**:
-   - **Current/Recent Occlusion**: Blocks inputs if the target area is currently
-     covered, or was recently covered, by an always-on-top window (managed by
-     `OccludedWidgetInputProtector`).
+### Default Input Protection Policy
+
+Implemented by `DefaultInputProtectionPolicy`:
+
+- **Show Cooldown**: Blocks all input events for a short period (cooldown)
+  immediately after the view becomes visible. It can automatically observe the
+  protected `View`'s visibility when initialized with the view, or rely on
+  manual visibility forwarding from the protector otherwise.
+- **Click-Spam Protection**: Blocks rapid successive clicks (key repeats or
+  click-spam) by enforcing a minimum delay between interactions.
+
+### Window Activation Input Protection Policy
+
+Implemented by `WindowActivationInputProtectionPolicy`:
+
+- **Sudden Activation**: Triggered when a widget becomes active, but its parent
+  window was previously invisible. This protects against cases where a dialog
+  suddenly appears and steals focus just as the user is clicking.
+
+### Occlusion-Aware Input Protection Policy
+
+Implemented by `OcclusionAwareInputProtectionPolicy`:
+
+- **Current/Recent Occlusion**: Blocks inputs if the target area is currently
+  covered, or was recently covered, by an always-on-top window (managed by
+  `OccludedWidgetInputProtector`).
+
+______________________________________________________________________
+
+## Always-On-Top Occlusion Tracking (OccludedWidgetInputProtector)
+
+`OccludedWidgetInputProtector` is a singleton that tracks always-on-top widgets
+to prevent occlusion-based attacks.
+
+While it operates as a tracker for occlusion by always-on-top windows, it is
+primarily queried by the `OcclusionAwareInputProtectionPolicy` to check if a
+sensitive interaction is occluded.
+
+### Tracking State
+
+The protector maintains two types of tracking data:
+
+1. **Live Always-On-Top Widgets**: Currently visible always-on-top widgets and
+   their screen bounds.
+2. **Historical Occlusions**: Cooldown records of recently hidden or moved
+   always-on-top widgets. These records are kept for the duration of the
+   **system double-click interval (typically 500ms)** to prevent "pop-away"
+   attacks (where an always-on-top window is suddenly dismissed to trigger a
+   click on the window underneath).
+
+### Evaluation Logic (`ShouldBlockEvent`)
+
+When a client calls the `ShouldBlockEvent(event, target_view)` method, the
+protector checks the target against both live and historical tracking state.
+
+#### Protected Bounds Gathering
+
+The protector determines the bounds that need to be protected by gathering
+specifications from the target view itself and all its ancestors, falling back
+to the target view's own physical bounds if no specifications are found:
+
+1. It walks up the view hierarchy starting from the `target_view` itself.
+2. For each view in the chain, it queries `kInputProtectionKey` to find any
+   installed `InputProtectionSpecification`.
+3. For each specification found, it calls `GetProtectedBoundsInScreen()`, which
+   runs the callback, clips the bounds to the owner view's boundaries, converts
+   them to screen coordinates, and returns them.
+4. It **accumulates** all of these screen bounds into a single list of protected
+   regions.
+5. If the accumulated list is empty (no specifications were found in the chain),
+   the protector falls back to using the physical screen bounds of the
+   `target_view` itself (`{target_view.GetBoundsInScreen()}`).
+
+```
+   ┌────────────────────────────┐
+   │OccludedWidgetInputProtector│
+   └─────────────┬──────────────┘
+                 │
+                 │ Walks parent chain and accumulates bounds
+                 ▼
+     (Walks up parent chain)
+                 │
+                 ├─► [Target View] (If spec found) ──► GetProtectedBoundsInScreen() ──┐
+                 │                                                                    │
+                 ├─► [Parent View] (If spec found) ──► GetProtectedBoundsInScreen() ──┼─► [Accumulated Screen Bounds]
+                 │                                                                    │
+                 └─► [Ancestor View] (If spec found) ─► GetProtectedBoundsInScreen() ─┘
+```
+
+#### Event Occlusion Checking
+
+The gathered bounds are then checked for occlusion depending on the event type:
+
+- **Located Events (Mouse/Touch/Clicks)**:
+  - The event is **only** blocked if the event coordinate falls *inside* the
+    gathered protected bounds (either view-defined bounds or default view
+    bounds) **and** that coordinate is occluded by an always-on-top window (live
+    or historical).
+  - Events landing outside the gathered protected bounds (even if inside the
+    view's default bounds) are never blocked.
+- **Non-Located Events (Keyboard Interactions)**:
+  - **Opt-In Required**: Only evaluated if the target widget (or its primary
+    window widget) has explicitly enabled protection via
+    `Widget::EnableInputEventActivationProtection()`.
+  - **Occlusion Check Mode**:
+    - **Strict Check (For View-Defined Bounds)**: If the target view or its
+      ancestors have view-defined bounds, the event is blocked if *any part* of
+      those bounds is occluded (i.e., if an always-on-top window intersects with
+      any of the view-defined bounds).
+    - **Lenient Check (For Default Bounds)**: If no view-defined bounds exist
+      and we fell back to the default view bounds, the event is only blocked if
+      the default view bounds are *fully occluded* (i.e., if an always-on-top
+      window completely covers the view's screen bounds).
 
 ______________________________________________________________________
 
@@ -146,6 +284,37 @@ void MyView::OnButtonPressed(const ui::Event& event) {
     return; // Block the event
   }
   // Handle the event...
+}
+```
+
+### Step 3: Specify View-Defined Protected Bounds (Optional)
+
+If a view requires localized input protection (e.g., only protecting a specific
+button rather than the entire view), you can install an
+`InputProtectionSpecification` on the view. This is currently only queried by
+the
+[Occlusion-Aware Input Protection Policy](#occlusion-aware-input-protection-policy).
+
+To do this, call `InputProtectionSpecification::Install` during your view's
+initialization:
+
+```cpp
+// In your View subclass initialization:
+InputProtectionSpecification::Install(
+    *this, base::BindRepeating(&MyView::GetLocalProtectedBounds));
+```
+
+And implement the callback method to return the bounds in **local coordinates**
+of the view:
+
+```cpp
+std::vector<gfx::Rect> MyView::GetLocalProtectedBounds() const {
+  // If the protected button exists, protect only that button's region.
+  // Note: returned bounds must be local to `MyView` (e.g., relative to 0,0 of MyView).
+  if (protected_button_) {
+    return {protected_button_->bounds()};
+  }
+  return {};
 }
 ```
 
