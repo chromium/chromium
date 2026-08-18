@@ -5,9 +5,20 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
+import type {Skill} from '../skill.mojom-webui.js';
+
+export interface SkillPreview {
+  id: string;
+  name: string;
+  icon: string|undefined;
+  imageUrl: string|undefined;
+  description: string|undefined;
+  category: string|undefined;
+}
+
 import type {PendingEditorData} from '../skills.mojom-webui.js';
 
-import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, HISTOGRAM_WRITE_LATENCY, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_DIALOG_INFO_TYPE, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_LOG_UMA_ENUM, SKILLS_OPEN_FULL_PAGE_EDITOR, SKILLS_OPEN_URL, SKILLS_SEND_PROMPT, SKILLS_SHOW_TOAST, SKILLS_TOAST_CLOSED_TYPE, SKILLS_UNDO_TYPE} from './skills_webview_bridge_constants.js';
+import {getLoadingStageHistogramName, getPrimarySkillsOrigin, getSkillsApiAllowedOrigins, HANDSHAKE_PING_INTERVAL_MS, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, HISTOGRAM_WRITE_LATENCY, LoadingStage, SKILLS_CLOSE_DIALOG, SKILLS_DIALOG_INFO_TYPE, SKILLS_GEMINI_PROMPT_TYPE, SKILLS_GET_PROVIDED_SKILL, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_LOG_UMA_ENUM, SKILLS_OPEN_FULL_PAGE_EDITOR, SKILLS_OPEN_URL, SKILLS_PROVIDED_SKILL_INFO_TYPE, SKILLS_SEND_PROMPT, SKILLS_SEND_PROVIDED_SKILLS_TYPE, SKILLS_SHOW_TOAST, SKILLS_TOAST_CLOSED_TYPE, SKILLS_UNDO_TYPE} from './skills_webview_bridge_constants.js';
 
 /**
  * Returns a URLPattern given an origin pattern string that has the syntax:
@@ -70,6 +81,7 @@ export interface SkillsWebviewBridgeDelegate {
   onCloseDialogAndOpenEditor(data: PendingEditorData): void;
   onHandshakeComplete(): void;
   onSendPrompt(prompt: string): void;
+  onGetProvidedSkill(skillId: string): void;
 }
 
 /**
@@ -231,6 +243,8 @@ export class SkillsWebviewBridge {
       this.handleSendPromptMessage(e.data);
     } else if (e.data.type === SKILLS_OPEN_FULL_PAGE_EDITOR) {
       this.handleOpenFullPageEditorMessage(e.data);
+    } else if (e.data.type === SKILLS_GET_PROVIDED_SKILL) {
+      this.handleGetProvidedSkillMessage(e.data);
     }
   }
 
@@ -395,12 +409,50 @@ export class SkillsWebviewBridge {
     }
   }
 
+  private handleGetProvidedSkillMessage(data: {skillId: string}) {
+    if (data.skillId) {
+      this.delegate_.onGetProvidedSkill(data.skillId);
+    }
+  }
+
   sendGeminiPrompt(prompt: string) {
     if (this.webview_.contentWindow && this.targetOrigin_) {
       this.webview_.contentWindow.postMessage(
           {
             type: SKILLS_GEMINI_PROMPT_TYPE,
             prompt: prompt,
+          },
+          this.targetOrigin_);
+    }
+  }
+
+  sendProvidedSkills(skills: Skill[]) {
+    if (this.webview_.contentWindow && this.targetOrigin_) {
+      const payload: SkillPreview[] =
+          skills.map(skill => ({
+                       id: skill.id,
+                       name: skill.name,
+                       icon: skill.icon,
+                       imageUrl: skill.imageUrl ? skill.imageUrl : undefined,
+                       description: skill.description,
+                       category: skill.category ? skill.category : undefined,
+                     }));
+
+      this.webview_.contentWindow.postMessage(
+          {
+            type: SKILLS_SEND_PROVIDED_SKILLS_TYPE,
+            payload: payload,
+          },
+          this.targetOrigin_);
+    }
+  }
+
+  sendProvidedSkillInfo(skill: Skill|null) {
+    if (this.webview_.contentWindow && this.targetOrigin_) {
+      this.webview_.contentWindow.postMessage(
+          {
+            type: SKILLS_PROVIDED_SKILL_INFO_TYPE,
+            payload: skill ?? null,
           },
           this.targetOrigin_);
     }

@@ -49,9 +49,16 @@ mojom::SkillPreviewPtr ToMojomSkillPreview(const skills::proto::Skill& skill) {
   if (skill.has_category()) {
     category = skill.category();
   }
+  std::optional<GURL> image_url;
+  if (skill.has_image_url() && !skill.image_url().empty()) {
+    GURL url(skill.image_url());
+    if (url.is_valid()) {
+      image_url = std::move(url);
+    }
+  }
   return mojom::SkillPreview::New(
       skill.id(), skill.name(), skill.icon(), mojom::SkillSource::kFirstParty,
-      skill.description(), curated_by, /*image_url=*/std::nullopt, category,
+      skill.description(), curated_by, image_url, category,
       /*creation_time=*/std::nullopt);
 }
 

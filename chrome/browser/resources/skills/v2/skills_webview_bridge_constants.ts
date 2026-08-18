@@ -29,6 +29,14 @@ export const SKILLS_OPEN_FULL_PAGE_EDITOR = 'open-full-page-editor';
 
 /** Message type used by the host to send skill dialog info to the guest. */
 export const SKILLS_DIALOG_INFO_TYPE = 'skills-dialog-info';
+/** Message type used by the host to send provided skills. */
+export const SKILLS_SEND_PROVIDED_SKILLS_TYPE = 'send-provided-skills';
+
+/** Message type used by the guest to fetch an provided skill. */
+export const SKILLS_GET_PROVIDED_SKILL = 'get-provided-skill';
+
+/** Message type used by the host to send provided skill info. */
+export const SKILLS_PROVIDED_SKILL_INFO_TYPE = 'provided-skill-info';
 
 /** Message type used by the host to send the Gemini prompt. */
 export const SKILLS_GEMINI_PROMPT_TYPE = 'skills-gemini-prompt';

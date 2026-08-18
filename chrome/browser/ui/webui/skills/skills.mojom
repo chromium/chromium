@@ -142,8 +142,24 @@ struct PendingEditorData {
   url.mojom.Url url;
 };
 
+// Called from C++ side of chrome://skills (Browser -> Renderer)
+interface SkillsPageV2 {
+  // Notifies the UI that provided skills changed and need refreshing.
+  LoadProvidedSkills(array<skills.mojom.Skill> skills);
+};
+
 // Called from TS side of chrome://skills (Renderer -> Browser).
 interface SkillsPageHandler {
+  // Sets the page remote for Chrome -> WebUI communication.
+  SetPage(pending_remote<SkillsPageV2> page);
+
+  // Gets the full skill details for the given provided skill id (sent to client
+  // when requested). Returns null if no skill with the given id is found.
+  GetProvidedSkill(string skill_id) => (skills.mojom.Skill? skill);
+
+  // Gets the list of provided skills (sent to client on load).
+  GetProvidedSkills() => (array<skills.mojom.Skill> skills);
+
   // Sync necessary cookies to the webview partition.
   SyncCookies() => (bool success);
 

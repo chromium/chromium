@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
+import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import type {PendingEditorData} from 'chrome://skills/skills.mojom-webui.js';
 import {SkillsWebview} from 'chrome://skills/v2/skills_webview.js';
 import type {SkillsWebviewBridgeDelegate} from 'chrome://skills/v2/skills_webview_bridge.js';
 import {SkillsWebviewBridge} from 'chrome://skills/v2/skills_webview_bridge.js';
-import {getChromePathForRemoteUrl, getLoadingStageHistogramName, getPrimarySkillsOrigin, getRemoteUrlForChromePath, getSkillsRemoteUrl, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, LoadingStage, SKILLS_DIALOG_INFO_TYPE, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_LOG_UMA_ENUM, SKILLS_OPEN_FULL_PAGE_EDITOR, SKILLS_OPEN_URL, SKILLS_SEND_PROMPT, SKILLS_SHOW_TOAST, SKILLS_TOAST_CLOSED_TYPE, SKILLS_UNDO_TYPE} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
+import {getChromePathForRemoteUrl, getLoadingStageHistogramName, getPrimarySkillsOrigin, getRemoteUrlForChromePath, getSkillsRemoteUrl, HANDSHAKE_TIMEOUT_MS, HISTOGRAM_HANDSHAKE_RESULT, LoadingStage, SKILLS_DIALOG_INFO_TYPE, SKILLS_GET_PROVIDED_SKILL, SKILLS_HANDSHAKE_ACK, SKILLS_HANDSHAKE_TYPE, SKILLS_INVOKE_SKILL, SKILLS_LOG_METRIC, SKILLS_LOG_UMA_ENUM, SKILLS_OPEN_FULL_PAGE_EDITOR, SKILLS_OPEN_URL, SKILLS_PROVIDED_SKILL_INFO_TYPE, SKILLS_SEND_PROMPT, SKILLS_SEND_PROVIDED_SKILLS_TYPE, SKILLS_SHOW_TOAST, SKILLS_TOAST_CLOSED_TYPE, SKILLS_UNDO_TYPE} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 
@@ -28,6 +30,33 @@ suite('SkillsWebviewBridgeTest', () => {
   let onPostMessage: (message: {type?: string}) => void;
   let recordedHistograms: RecordedHistogram[] = [];
 
+  function createSkill(overrides: Partial<Skill> = {}): Skill {
+    return {
+      id: '1',
+      sourceSkillId: null,
+      name: 'Default Skill',
+      icon: '',
+      prompt: '',
+      description: '',
+      curatedBy: '',
+      imageUrl: '',
+      source: SkillSource.kEnterprise,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+      category: '',
+      ...overrides,
+    };
+  }
+
+  const MOCK_ENTERPRISE_SKILL = createSkill({
+    id: 'skill-1',
+    name: 'Enterprise Skill 1',
+    icon: '🏢',
+    prompt: 'Summarize internal doc',
+    description: 'Enterprise skill description',
+    curatedBy: 'Admin',
+  });
+
   function createMockDelegate(overrides?: Partial<SkillsWebviewBridgeDelegate>):
       SkillsWebviewBridgeDelegate {
     return {
@@ -42,6 +71,7 @@ suite('SkillsWebviewBridgeTest', () => {
       onCloseDialogAndOpenEditor: (_data: PendingEditorData) => {},
       onHandshakeComplete: () => {},
       onSendPrompt: (_prompt: string) => {},
+      onGetProvidedSkill: (_skillId: string) => {},
       ...overrides,
     };
   }
@@ -840,5 +870,78 @@ suite('SkillsWebviewBridgeTest', () => {
     assertEquals('test description', msg.skillDescription);
     assertEquals('test instructions', msg.skillInstructions);
     assertEquals('test icon', msg.skillIcon);
+  });
+
+  test('HostReceivesGetProvidedSkillMessage', () => {
+    let requestedSkillId: string|null = null;
+    const delegate = createMockDelegate({
+      onGetProvidedSkill: (skillId: string) => {
+        requestedSkillId = skillId;
+      },
+    });
+    bridge = new SkillsWebviewBridge(webview, delegate);
+
+    triggerLoadCommit();
+
+    const ackEvent = new MessageEvent('message', {
+      data: {type: SKILLS_HANDSHAKE_ACK},
+      origin: new URL(getSkillsRemoteUrl()).origin,
+      source: window,
+    });
+    window.dispatchEvent(ackEvent);
+
+    assertTrue(bridge.isConnected());
+
+    const getSkillEvent = new MessageEvent('message', {
+      data: {
+        type: SKILLS_GET_PROVIDED_SKILL,
+        skillId: 'enterprise-skill-123',
+      },
+      origin: new URL(getSkillsRemoteUrl()).origin,
+      source: window,
+    });
+    window.dispatchEvent(getSkillEvent);
+
+    assertEquals('enterprise-skill-123', requestedSkillId);
+  });
+
+  test('HostSendsProvidedSkills', () => {
+    bridge = new SkillsWebviewBridge(webview, createMockDelegate());
+    triggerLoadCommit();
+
+    const ackEvent = new MessageEvent('message', {
+      data: {type: SKILLS_HANDSHAKE_ACK},
+      origin: new URL(getSkillsRemoteUrl()).origin,
+      source: window,
+    });
+    window.dispatchEvent(ackEvent);
+
+    assertTrue(bridge.isConnected());
+
+    bridge.sendProvidedSkills([MOCK_ENTERPRISE_SKILL]);
+
+    const sentMessage = postedMessages.find(
+        msg => msg.type === SKILLS_SEND_PROVIDED_SKILLS_TYPE);
+    assertTrue(!!sentMessage);
+  });
+
+  test('HostSendsProvidedSkillInfo', () => {
+    bridge = new SkillsWebviewBridge(webview, createMockDelegate());
+    triggerLoadCommit();
+
+    const ackEvent = new MessageEvent('message', {
+      data: {type: SKILLS_HANDSHAKE_ACK},
+      origin: new URL(getSkillsRemoteUrl()).origin,
+      source: window,
+    });
+    window.dispatchEvent(ackEvent);
+
+    assertTrue(bridge.isConnected());
+
+    bridge.sendProvidedSkillInfo(MOCK_ENTERPRISE_SKILL);
+
+    const sentMessage = postedMessages.find(
+        msg => msg.type === SKILLS_PROVIDED_SKILL_INFO_TYPE);
+    assertTrue(!!sentMessage);
   });
 });
