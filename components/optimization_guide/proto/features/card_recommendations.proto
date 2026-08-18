@@ -36,11 +36,10 @@ message CardRecommendationRequest {
   // The URL of the merchant site.
   string merchant_url = 2 [features = { field_presence: EXPLICIT }];
 
-  // The total checkout amount.
-  string total_checkout_amount = 3 [features = { field_presence: EXPLICIT }];
-
   // The annotated page content of the checkout page.
   AnnotatedPageContent annotated_page_content = 4 [features = { field_presence: EXPLICIT }];
+
+  reserved 3;
 }
 
 message CardContext {
