@@ -28,6 +28,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kClipboardConfusedDeputyDefenseText,
     &ui::kClipboardConfusedDeputyDefenseImages,
     &ui::kClipboardConfusedDeputyDefenseFiles,
+    &ui::kClipboardOversizedPayloadProvider,
     &ui::kDeprecatedExternalPickerFunction,
     &ui::kDisablePhotoPickerForVideoCapture,
     &ui::kMaximumWindowForGestureNavDetection,

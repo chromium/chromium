@@ -28,6 +28,7 @@ import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.PersistableBundle;
+import android.os.TransactionTooLargeException;
 import android.provider.OpenableColumns;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
@@ -41,6 +42,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -76,15 +78,18 @@ public class ClipboardTest {
     @Mock private Context mMockContext;
     @Mock private PackageManager mMockPm;
     @Mock private ClipboardManager mMockClipboardManager;
+    @Captor private ArgumentCaptor<ClipData> mClipDataCaptor;
 
     private static final String PLAIN_TEXT = "plain";
     private static final String HTML_TEXT = "<span style=\"color: red;\">HTML</span>";
     private Uri mTempImageUri;
+    private ClipboardImpl mClipboard;
 
     @Before
     public void setup() {
         mTempImageUri = Uri.parse("content://tmp/test/image.jpg");
         ClipboardImpl.setSkipImageMimeTypeCheckForTesting(true);
+        mClipboard = (ClipboardImpl) Clipboard.getInstance();
     }
 
     @After
@@ -423,6 +428,59 @@ public class ClipboardTest {
         when(assetFileDescriptor.createInputStream()).thenReturn(new FileInputStream(file));
 
         assertEquals(oversizedHtml, clipboard.getHTMLText());
+    }
+
+    @Test
+    public void testSetClipboardTextCoercesPlainText() {
+        mClipboard.overrideClipboardManagerForTesting(mMockClipboardManager);
+        mClipboard.setClipboardText(
+                Map.of(ClipDescription.MIMETYPE_TEXT_HTML, "<b>Hello World</b>"));
+
+        verify(mMockClipboardManager).setPrimaryClip(mClipDataCaptor.capture());
+        ClipData clipData = mClipDataCaptor.getValue();
+        assertEquals("<b>Hello World</b>", clipData.getItemAt(0).getHtmlText());
+        assertEquals("Hello World", clipData.getItemAt(0).getText().toString());
+    }
+
+    @Test
+    @EnableFeatures({UiAndroidFeatures.CLIPBOARD_OVERSIZED_PAYLOAD_PROVIDER})
+    public void testSetPrimaryClipOversizedFallbackHtmlOnly() {
+        mockPrimaryClipTransactionTooLarge(1);
+
+        mClipboard.setHTMLText(HTML_TEXT, PLAIN_TEXT);
+
+        verify(mMockClipboardManager, Mockito.times(2)).setPrimaryClip(mClipDataCaptor.capture());
+
+        // Second attempt has inline text and HTML stored in ClipboardTextDataProvider URI.
+        ClipData secondClip = mClipDataCaptor.getAllValues().get(1);
+        assertEquals(PLAIN_TEXT, secondClip.getItemAt(0).getText().toString());
+        assertNull(secondClip.getItemAt(0).getHtmlText());
+        assertNotNull(secondClip.getItemAt(0).getUri());
+    }
+
+    @Test
+    @EnableFeatures({UiAndroidFeatures.CLIPBOARD_OVERSIZED_PAYLOAD_PROVIDER})
+    public void testSetPrimaryClipOversizedFallbackBothToUri() {
+        mockPrimaryClipTransactionTooLarge(2);
+
+        mClipboard.setHTMLText(HTML_TEXT, PLAIN_TEXT);
+
+        verify(mMockClipboardManager, Mockito.times(3)).setPrimaryClip(mClipDataCaptor.capture());
+
+        // Third attempt has both text and HTML offloaded to ClipboardTextDataProvider URI.
+        ClipData thirdClip = mClipDataCaptor.getAllValues().get(2);
+        assertNull(thirdClip.getItemAt(0).getText());
+        assertNull(thirdClip.getItemAt(0).getHtmlText());
+        assertNotNull(thirdClip.getItemAt(0).getUri());
+    }
+
+    private void mockPrimaryClipTransactionTooLarge(int failureCount) {
+        mClipboard.overrideClipboardManagerForTesting(mMockClipboardManager);
+        var stub = Mockito.doThrow(new RuntimeException(new TransactionTooLargeException()));
+        for (int i = 1; i < failureCount; i++) {
+            stub = stub.doThrow(new RuntimeException(new TransactionTooLargeException()));
+        }
+        stub.doNothing().when(mMockClipboardManager).setPrimaryClip(any(ClipData.class));
     }
 
     private void registerMockFileUri(String uriString) {
