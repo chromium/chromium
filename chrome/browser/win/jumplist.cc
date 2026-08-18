@@ -35,11 +35,14 @@
 #include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/win/jumplist_file_util.h"
 #include "chrome/browser/win/jumplist_update_util.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_icon_resources_win.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/install_static/install_util.h"
+#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/settings.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/top_sites.h"
@@ -164,6 +167,7 @@ bool CreateIconFile(const gfx::ImageSkia& image_skia,
 bool UpdateTaskCategory(
     JumpListUpdater* jumplist_updater,
     policy::IncognitoModeAvailability incognito_availability,
+    bool isolated_mode_enabled,
     const base::FilePath& cmd_line_profile_dir) {
   base::FilePath chrome_path;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_path))
@@ -187,9 +191,21 @@ bool UpdateTaskCategory(
     items.push_back(chrome);
   }
 
-  // Create an IShellLink object which launches Chrome in incognito mode, and
-  // add it to the collection.
-  if (incognito_availability != policy::IncognitoModeAvailability::kDisabled) {
+  // Create an IShellLink object which launches Chrome in isolated mode or
+  // incognito mode, and add it to the collection.
+  if (isolated_mode_enabled) {
+    scoped_refptr<ShellLinkItem> isolated =
+        CreateShellLink(cmd_line_profile_dir);
+    isolated->GetCommandLine()->AppendSwitch(switches::kIncognito);
+    std::u16string isolated_title =
+        l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_WINDOW);
+    base::ReplaceSubstringsAfterOffset(&isolated_title, 0, u"&",
+                                       std::u16string_view());
+    isolated->set_title(isolated_title);
+    isolated->set_icon(chrome_path, icon_resources::kIncognitoIndex);
+    items.push_back(isolated);
+  } else if (incognito_availability !=
+             policy::IncognitoModeAvailability::kDisabled) {
     scoped_refptr<ShellLinkItem> incognito =
         CreateShellLink(cmd_line_profile_dir);
     incognito->GetCommandLine()->AppendSwitch(switches::kIncognito);
@@ -266,7 +282,9 @@ JumpList::JumpList(Profile* profile)
   // recently closed tabs have changes.
   tab_restore_service->AddObserver(this);
 
-  // kIncognitoModeAvailability is monitored for changes on Incognito mode.
+  // kIncognitoModeAvailability and kEnterpriseIsolatedModeSettings are
+  // monitored for changes. The isolated launch item replaces the incognito
+  // item when it's enabled by policy.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile_->GetPrefs());
   // base::Unretained is safe since |this| is guaranteed to outlive
@@ -275,6 +293,12 @@ JumpList::JumpList(Profile* profile)
       policy::policy_prefs::kIncognitoModeAvailability,
       base::BindRepeating(&JumpList::OnIncognitoAvailabilityChanged,
                           base::Unretained(this)));
+  pref_change_registrar_->Add(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      base::BindRepeating(&JumpList::OnIncognitoAvailabilityChanged,
+                          base::Unretained(this)));
+
+  ProcessNotifications();
 }
 
 JumpList::~JumpList() {
@@ -608,6 +632,10 @@ void JumpList::PostRunUpdate() {
   policy::IncognitoModeAvailability incognito_availability =
       IncognitoModePrefs::GetAvailability(profile_->GetPrefs());
 
+  bool isolated_mode_enabled =
+      enterprise_isolated_mode::IsolatedModeReplacesIncognito(
+          *profile_->GetPrefs(), chrome::GetChannel());
+
   auto update_transaction = std::make_unique<UpdateTransaction>();
   if (most_visited_should_update_)
     update_transaction->most_visited_icons = std::move(most_visited_icons_);
@@ -623,7 +651,7 @@ void JumpList::PostRunUpdate() {
       &JumpList::RunUpdateJumpList, app_id_, profile_dir, most_visited_pages_,
       recently_closed_pages_, GetCmdLineProfileDir(),
       most_visited_should_update_, recently_closed_should_update_,
-      incognito_availability, update_transaction.get());
+      incognito_availability, isolated_mode_enabled, update_transaction.get());
 
   // Post a task to update the JumpList, which consists of 1) create new icons,
   // 2) notify the OS, 3) delete old icons.
@@ -725,6 +753,7 @@ void JumpList::RunUpdateJumpList(
     bool most_visited_should_update,
     bool recently_closed_should_update,
     policy::IncognitoModeAvailability incognito_availability,
+    bool isolated_mode_enabled,
     UpdateTransaction* update_transaction) {
   DCHECK(update_transaction);
 
@@ -737,7 +766,7 @@ void JumpList::RunUpdateJumpList(
       app_id, most_visited_icon_dir, recently_closed_icon_dir,
       most_visited_pages, recently_closed_pages, cmd_line_profile_dir,
       most_visited_should_update, recently_closed_should_update,
-      incognito_availability, update_transaction);
+      incognito_availability, isolated_mode_enabled, update_transaction);
 
   // Delete any obsolete icon files.
   if (most_visited_should_update) {
@@ -761,6 +790,7 @@ void JumpList::CreateNewJumpListAndNotifyOS(
     bool most_visited_should_update,
     bool recently_closed_should_update,
     policy::IncognitoModeAvailability incognito_availability,
+    bool isolated_mode_enabled,
     UpdateTransaction* update_transaction) {
   DCHECK(update_transaction);
 
@@ -841,8 +871,9 @@ void JumpList::CreateNewJumpListAndNotifyOS(
 
   // Update the "Tasks" category of the JumpList.
   if (!UpdateTaskCategory(&jumplist_updater, incognito_availability,
-                          cmd_line_profile_dir))
+                          isolated_mode_enabled, cmd_line_profile_dir)) {
     return;
+  }
 
   base::ElapsedTimer commit_update_timer;
 
