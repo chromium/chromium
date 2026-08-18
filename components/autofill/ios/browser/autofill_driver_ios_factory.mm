@@ -149,6 +149,14 @@ AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
   return driver.get();
 }
 
+AutofillDriverIOS* AutofillDriverIOSFactory::DriverForMainFrame() {
+  if (web_state_destroyed_) {
+    return nullptr;
+  }
+  web::WebFrame* main_frame = GetWebFramesManager().GetMainWebFrame();
+  return main_frame ? DriverForFrame(main_frame) : nullptr;
+}
+
 std::vector<AutofillDriver*> AutofillDriverIOSFactory::GetExistingDrivers() {
   std::vector<AutofillDriver*> drivers;
   drivers.reserve(driver_map_.size());

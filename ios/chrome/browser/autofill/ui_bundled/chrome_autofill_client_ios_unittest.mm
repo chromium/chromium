@@ -164,6 +164,18 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
   SceneState* scene_state_;
 };
 
+// Tests that GetAutofillManagerForPrimaryMainFrame() returns the main frame's
+// AutofillManager.
+TEST_F(ChromeAutofillClientIOSTest, GetAutofillManagerForPrimaryMainFrame) {
+  ASSERT_TRUE(LoadHtmlAndWaitForFormsSeen(
+      @"<form>"
+       "<input name='username' autocomplete='username'>"
+       "</form>",
+      1));
+  EXPECT_EQ(client().GetAutofillManagerForPrimaryMainFrame(),
+            main_frame_manager());
+}
+
 // Tests that ClassifyAsPasswordForm correctly classifies a login form.
 TEST_F(ChromeAutofillClientIOSTest, ClassifyAsPasswordForm) {
   ASSERT_TRUE(LoadHtmlAndWaitForFormsSeen(

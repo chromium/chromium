@@ -71,6 +71,10 @@ class AutofillDriverIOSFactory final
   // necessary.
   AutofillDriverIOS* DriverForFrame(web::WebFrame* web_frame);
 
+  // Returns the `AutofillDriverIOS` for the main frame. Creates the driver if
+  // necessary, or returns `nullptr` if no main frame exists.
+  AutofillDriverIOS* DriverForMainFrame();
+
   AutofillDriverRouter& router() { return router_; }
 
   std::vector<AutofillDriver*> GetExistingDrivers() override;

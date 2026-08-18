@@ -145,6 +145,8 @@ class AutofillDriverIOSFactoryTest : public web::WebTest {
     return client_->GetAutofillDriverFactory();
   }
 
+  TestAutofillClientIOS& client() { return *client_; }
+
   MockWebFramesManagerObserver& pre_factory() { return pre_factory_; }
 
   MockWebFramesManagerObserver& post_factory() { return post_factory_; }
@@ -472,6 +474,44 @@ TEST_F(AutofillDriverIOSFactoryTest, DriverForFrameAfterUnavailable2) {
   checkpoint.Call("Unavailable");
   RemoveFrame(frame->GetFrameId());
   checkpoint.Call("Finish");
+}
+
+// Tests that DriverForMainFrame() returns the driver for the main frame, and
+// nullptr when no main frame exists.
+TEST_F(AutofillDriverIOSFactoryTest, DriverForMainFrame) {
+  EXPECT_EQ(factory().DriverForMainFrame(), nullptr);
+
+  std::unique_ptr<web::WebFrame> child_frame = CreateChildFrame();
+  AddFrame(std::move(child_frame));
+  EXPECT_EQ(factory().DriverForMainFrame(), nullptr);
+
+  std::unique_ptr<web::WebFrame> main_frame = CreateMainFrame();
+  web::WebFrame* raw_main_frame = AddFrame(std::move(main_frame));
+  EXPECT_EQ(factory().DriverForMainFrame(),
+            factory().DriverForFrame(raw_main_frame));
+
+  RemoveFrame(raw_main_frame->GetFrameId());
+  EXPECT_EQ(factory().DriverForMainFrame(), nullptr);
+}
+
+// Tests that GetAutofillManagerForPrimaryMainFrame() returns the main frame's
+// AutofillManager, and nullptr when no main frame exists.
+TEST_F(AutofillDriverIOSFactoryTest, GetAutofillManagerForPrimaryMainFrame) {
+  EXPECT_EQ(client().GetAutofillManagerForPrimaryMainFrame(), nullptr);
+
+  std::unique_ptr<web::WebFrame> child_frame = CreateChildFrame();
+  AddFrame(std::move(child_frame));
+  EXPECT_EQ(client().GetAutofillManagerForPrimaryMainFrame(), nullptr);
+
+  std::unique_ptr<web::WebFrame> main_frame = CreateMainFrame();
+  web::WebFrame* raw_main_frame = AddFrame(std::move(main_frame));
+  AutofillManager* manager = client().GetAutofillManagerForPrimaryMainFrame();
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(manager,
+            &factory().DriverForFrame(raw_main_frame)->GetAutofillManager());
+
+  RemoveFrame(raw_main_frame->GetFrameId());
+  EXPECT_EQ(client().GetAutofillManagerForPrimaryMainFrame(), nullptr);
 }
 
 }  // namespace
