@@ -44,15 +44,17 @@ PushProvider* PushProvider::From(ServiceWorkerRegistration* registration) {
   return provider;
 }
 
-// static
 mojom::blink::PushMessaging* PushProvider::GetPushMessagingRemote() {
   if (!push_messaging_manager_.is_bound()) {
-    GetSupplementable()
-        ->GetExecutionContext()
-        ->GetBrowserInterfaceBroker()
-        .GetInterface(push_messaging_manager_.BindNewPipeAndPassReceiver(
-            GetSupplementable()->GetExecutionContext()->GetTaskRunner(
-                TaskType::kMiscPlatformAPI)));
+    ExecutionContext* execution_context =
+        GetSupplementable()->GetExecutionContext();
+    if (!execution_context) {
+      return nullptr;
+    }
+
+    execution_context->GetBrowserInterfaceBroker().GetInterface(
+        push_messaging_manager_.BindNewPipeAndPassReceiver(
+            execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
   return push_messaging_manager_.get();
@@ -64,10 +66,18 @@ void PushProvider::Subscribe(
     ScriptPromiseResolver<PushSubscription>* resolver) {
   DCHECK(resolver);
 
+  auto* push_messaging_remote = GetPushMessagingRemote();
+  if (!push_messaging_remote) {
+    resolver->Reject(PushError::CreateException(
+        mojom::blink::PushErrorType::ABORT,
+        "The service worker context is not available."));
+    return;
+  }
+
   mojom::blink::PushSubscriptionOptionsPtr content_options_ptr =
       mojo::ConvertTo<mojom::blink::PushSubscriptionOptionsPtr>(options);
 
-  GetPushMessagingRemote()->Subscribe(
+  push_messaging_remote->Subscribe(
       GetSupplementable()->RegistrationId(), std::move(content_options_ptr),
       user_gesture,
       BindOnce(&PushProvider::DidSubscribe, WrapPersistent(this),
@@ -99,7 +109,15 @@ void PushProvider::DidSubscribe(
 void PushProvider::Unsubscribe(ScriptPromiseResolver<IDLBoolean>* resolver) {
   DCHECK(resolver);
 
-  GetPushMessagingRemote()->Unsubscribe(
+  auto* push_messaging_remote = GetPushMessagingRemote();
+  if (!push_messaging_remote) {
+    resolver->Reject(PushError::CreateException(
+        mojom::blink::PushErrorType::ABORT,
+        "The service worker context is not available."));
+    return;
+  }
+
+  push_messaging_remote->Unsubscribe(
       GetSupplementable()->RegistrationId(),
       BindOnce(&PushProvider::DidUnsubscribe, WrapPersistent(this),
                WrapPersistent(resolver)));
@@ -123,7 +141,13 @@ void PushProvider::GetSubscription(
     ScriptPromiseResolver<IDLNullable<PushSubscription>>* resolver) {
   DCHECK(resolver);
 
-  GetPushMessagingRemote()->GetSubscription(
+  auto* push_messaging_remote = GetPushMessagingRemote();
+  if (!push_messaging_remote) {
+    resolver->Resolve(nullptr);
+    return;
+  }
+
+  push_messaging_remote->GetSubscription(
       GetSupplementable()->RegistrationId(),
       BindOnce(&PushProvider::DidGetSubscription, WrapPersistent(this),
                WrapPersistent(resolver)));
