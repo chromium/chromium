@@ -58,6 +58,7 @@ constexpr char kUserActionId[] = "123";
 constexpr char kTabTitle[] = "tab_title";
 constexpr char kContentTransferMethod[] = "CONTENT_TRANSFER_METHOD_FILE_PICKER";
 constexpr char kTestUrl[] = "http://example.com/";
+constexpr int64_t kLargeFileSize = 250 * 1024 * 1024 + 1;
 base::TimeDelta kResponseDelay = base::Seconds(0);
 
 constexpr char kBlockingScansForDlpAndMalware[] = R"(
@@ -428,6 +429,16 @@ class FilesRequestHandlerTest : public BaseTest {
 
   bool was_upload_performed() { return upload_performed_; }
 
+  base::FilePath CreateLargeFile(const base::ScopedTempDir& temp_dir) {
+    base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
+    base::File file(file_path,
+                    base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+    EXPECT_TRUE(file.IsValid());
+    EXPECT_TRUE(file.SetLength(kLargeFileSize));
+    file.Close();
+    return file_path;
+  }
+
  private:
   ScopedSetDMToken scoped_dm_token_{
       policy::DMToken::CreateValidToken(kDmToken)};
@@ -659,10 +670,7 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
-  std::string contents(250 * 1024 * 1024 + 1, 'a');
-  base::WriteFile(file_path, contents);
-  paths.emplace_back(file_path);
+  paths.emplace_back(CreateLargeFile(temp_dir));
   SetExpectedUserActionRequestsCount(1);
 
   auto results = ScanUpload(paths);
@@ -693,10 +701,7 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_LocalAnalysis) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
-  std::string contents(250 * 1024 * 1024 + 1, 'a');
-  base::WriteFile(file_path, contents);
-  paths.emplace_back(file_path);
+  paths.emplace_back(CreateLargeFile(temp_dir));
   SetExpectedUserActionRequestsCount(1);
 
   auto results = ScanUpload(paths);
@@ -708,13 +713,7 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_LocalAnalysis) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-// TODO(crbug.com/538549149): Flaky on Linux TSan.
-#if defined(THREAD_SANITIZER) && BUILDFLAG(IS_LINUX)
-#define MAYBE_FileIsLarge_PolicyAllows DISABLED_FileIsLarge_PolicyAllows
-#else
-#define MAYBE_FileIsLarge_PolicyAllows FileIsLarge_PolicyAllows
-#endif
-TEST_F(FilesRequestHandlerTest, MAYBE_FileIsLarge_PolicyAllows) {
+TEST_F(FilesRequestHandlerTest, FileIsLarge_PolicyAllows) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       enterprise_connectors::kEnableNewUploadSizeLimit,
@@ -741,10 +740,7 @@ TEST_F(FilesRequestHandlerTest, MAYBE_FileIsLarge_PolicyAllows) {
 
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
-  std::string contents(250 * 1024 * 1024 + 1, 'a');
-  base::WriteFile(file_path, contents);
-  paths.emplace_back(file_path);
+  paths.emplace_back(CreateLargeFile(temp_dir));
   SetExpectedUserActionRequestsCount(1);
 
   auto results = ScanUpload(paths);
