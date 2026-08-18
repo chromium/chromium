@@ -40,7 +40,7 @@ namespace content {
 class CONTENT_EXPORT GpuDataManagerImplPrivate {
  public:
   static constexpr bool kSupportsGpuModeHardwareGL =
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
       false;
 #else
       true;
