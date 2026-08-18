@@ -314,11 +314,9 @@ void WebEngineBrowserMainParts::WillRunMainMessageLoop(
 }
 
 void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
-  // Main loop should quit only after all Context instances have been destroyed.
-  DCHECK_EQ(context_bindings_.size(), 0u);
-
-  // FrameHost channels may still be active and contain live Frames. Close them
-  // here so that they are torn-down before their dependent resources.
+  // Context and FrameHost channels may still be active. Close them here so
+  // that they are torn-down before their dependent resources.
+  context_bindings_.CloseAll();
   frame_host_bindings_.CloseAll();
 
   // These resources must be freed while a MessageLoop is still available, so

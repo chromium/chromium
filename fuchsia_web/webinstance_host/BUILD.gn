@@ -20,7 +20,7 @@ source_set("webinstance_host") {
     # WebEngine clients that instantiate WebInstances directly.
     "//fuchsia_web/runners/*",
     "//fuchsia_web/shell:*",
-    "//fuchsia_web/webengine:context_provider",
+    "//fuchsia_web/webengine:*",
   ]
   sources = [
     "fuchsia_web_debug_proxy.cc",

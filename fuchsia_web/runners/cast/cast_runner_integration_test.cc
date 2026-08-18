@@ -44,6 +44,7 @@
 #include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
+#include "fuchsia_web/common/test/test_component_crash_observer.h"
 #include "fuchsia_web/common/test/test_debug_listener.h"
 #include "fuchsia_web/common/test/test_devtools_list_fetcher.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
@@ -451,6 +452,8 @@ class CastRunnerIntegrationTest : public testing::Test {
     ASSERT_TRUE(test_server_.Start());
   }
 
+  void TearDown() override { crash_observer_.VerifyNoCrashes(); }
+
   // Returns the services exposed by the `CastRunnerLauncher` test Realm,
   // including those exposed by the `cast_runner` component under test.
   const sys::ServiceDirectory& test_realm_services() {
@@ -479,6 +482,7 @@ class CastRunnerIntegrationTest : public testing::Test {
 
   test::CastRunnerLauncher cast_runner_;
   net::EmbeddedTestServer test_server_;
+  test::TestComponentCrashObserver crash_observer_;
 };
 
 }  // namespace

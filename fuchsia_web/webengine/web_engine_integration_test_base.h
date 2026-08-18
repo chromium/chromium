@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/fuchsia/filtered_service_directory.h"
 #include "base/test/task_environment.h"
+#include "fuchsia_web/common/test/test_component_crash_observer.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +29,7 @@ class WebEngineIntegrationTestBase : public testing::Test {
       delete;
 
   void SetUp() override;
+  void TearDown() override;
 
   virtual void StartWebEngine(base::CommandLine command_line) = 0;
   virtual fuchsia::web::ContextProvider* GetContextProvider() = 0;
@@ -120,6 +122,7 @@ class WebEngineIntegrationTestBase : public testing::Test {
       navigation_listener_binding_;
 
   base::FilteredServiceDirectory filtered_service_directory_;
+  test::TestComponentCrashObserver crash_observer_;
 };
 
 #endif  // FUCHSIA_WEB_WEBENGINE_WEB_ENGINE_INTEGRATION_TEST_BASE_H_

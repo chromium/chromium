@@ -17,6 +17,8 @@ source_set("test_support") {
     "frame_for_test.h",
     "frame_test_util.cc",
     "frame_test_util.h",
+    "test_component_crash_observer.cc",
+    "test_component_crash_observer.h",
     "test_debug_listener.cc",
     "test_debug_listener.h",
     "test_devtools_list_fetcher.cc",
@@ -31,6 +33,7 @@ source_set("test_support") {
   public_deps = [
     "//base",
     "//third_party/abseil-cpp:absl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component:fuchsia.component_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback:fuchsia.feedback_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem:fuchsia.mem_hlcpp",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web:fuchsia.web_hlcpp",
