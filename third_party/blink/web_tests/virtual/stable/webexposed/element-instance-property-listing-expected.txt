@@ -27,9 +27,13 @@ namespace http://www.w3.org/1999/xhtml
     property activeViewTransition
     property addEventListener
     property after
+    property afterHTML
+    property afterHTMLUnsafe
     property animate
     property append
     property appendChild
+    property appendHTML
+    property appendHTMLUnsafe
     property ariaActionsElements
     property ariaActiveDescendantElement
     property ariaAtomic
@@ -92,6 +96,8 @@ namespace http://www.w3.org/1999/xhtml
     property autofocus
     property baseURI
     property before
+    property beforeHTML
+    property beforeHTMLUnsafe
     property blur
     property checkVisibility
     property childElementCount
@@ -302,6 +308,8 @@ namespace http://www.w3.org/1999/xhtml
     property popover
     property prefix
     property prepend
+    property prependHTML
+    property prependHTMLUnsafe
     property previousElementSibling
     property previousSibling
     property pseudo
@@ -317,6 +325,8 @@ namespace http://www.w3.org/1999/xhtml
     property replaceChild
     property replaceChildren
     property replaceWith
+    property replaceWithHTML
+    property replaceWithHTMLUnsafe
     property requestFullscreen
     property requestPointerLock
     property role
@@ -341,6 +351,18 @@ namespace http://www.w3.org/1999/xhtml
     property slot
     property spellcheck
     property startViewTransition
+    property streamAfterHTML
+    property streamAfterHTMLUnsafe
+    property streamAppendHTML
+    property streamAppendHTMLUnsafe
+    property streamBeforeHTML
+    property streamBeforeHTMLUnsafe
+    property streamHTML
+    property streamHTMLUnsafe
+    property streamPrependHTML
+    property streamPrependHTMLUnsafe
+    property streamReplaceWithHTML
+    property streamReplaceWithHTMLUnsafe
     property style
     property tabIndex
     property tagName
@@ -1321,9 +1343,13 @@ namespace http://www.w3.org/2000/svg
     property activeViewTransition
     property addEventListener
     property after
+    property afterHTML
+    property afterHTMLUnsafe
     property animate
     property append
     property appendChild
+    property appendHTML
+    property appendHTMLUnsafe
     property ariaActionsElements
     property ariaActiveDescendantElement
     property ariaAtomic
@@ -1383,6 +1409,8 @@ namespace http://www.w3.org/2000/svg
     property autofocus
     property baseURI
     property before
+    property beforeHTML
+    property beforeHTMLUnsafe
     property blur
     property checkVisibility
     property childElementCount
@@ -1574,6 +1602,8 @@ namespace http://www.w3.org/2000/svg
     property part
     property prefix
     property prepend
+    property prependHTML
+    property prependHTMLUnsafe
     property previousElementSibling
     property previousSibling
     property pseudo
@@ -1589,6 +1619,8 @@ namespace http://www.w3.org/2000/svg
     property replaceChild
     property replaceChildren
     property replaceWith
+    property replaceWithHTML
+    property replaceWithHTMLUnsafe
     property requestFullscreen
     property requestPointerLock
     property role
@@ -1611,6 +1643,18 @@ namespace http://www.w3.org/2000/svg
     property shadowRoot
     property slot
     property startViewTransition
+    property streamAfterHTML
+    property streamAfterHTMLUnsafe
+    property streamAppendHTML
+    property streamAppendHTMLUnsafe
+    property streamBeforeHTML
+    property streamBeforeHTMLUnsafe
+    property streamHTML
+    property streamHTMLUnsafe
+    property streamPrependHTML
+    property streamPrependHTMLUnsafe
+    property streamReplaceWithHTML
+    property streamReplaceWithHTMLUnsafe
     property style
     property tabIndex
     property tagName

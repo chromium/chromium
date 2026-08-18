@@ -1236,14 +1236,26 @@ interface CharacterData : Node
     getter nextElementSibling
     getter previousElementSibling
     method after
+    method afterHTML
+    method afterHTMLUnsafe
     method appendData
     method before
+    method beforeHTML
+    method beforeHTMLUnsafe
     method constructor
     method deleteData
     method insertData
     method remove
     method replaceData
     method replaceWith
+    method replaceWithHTML
+    method replaceWithHTMLUnsafe
+    method streamAfterHTML
+    method streamAfterHTMLUnsafe
+    method streamBeforeHTML
+    method streamBeforeHTMLUnsafe
+    method streamReplaceWithHTML
+    method streamReplaceWithHTMLUnsafe
     method substringData
     setter data
 interface Clipboard : EventTarget
@@ -2187,10 +2199,22 @@ interface DocumentType : Node
     getter publicId
     getter systemId
     method after
+    method afterHTML
+    method afterHTMLUnsafe
     method before
+    method beforeHTML
+    method beforeHTMLUnsafe
     method constructor
     method remove
     method replaceWith
+    method replaceWithHTML
+    method replaceWithHTMLUnsafe
+    method streamAfterHTML
+    method streamAfterHTMLUnsafe
+    method streamBeforeHTML
+    method streamBeforeHTMLUnsafe
+    method streamReplaceWithHTML
+    method streamReplaceWithHTMLUnsafe
 interface DragEvent : MouseEvent
     attribute @@toStringTag
     getter dataTransfer
@@ -2324,11 +2348,17 @@ interface Element : Node
     getter slot
     getter tagName
     method after
+    method afterHTML
+    method afterHTMLUnsafe
     method animate
     method append
+    method appendHTML
+    method appendHTMLUnsafe
     method ariaNotify
     method attachShadow
     method before
+    method beforeHTML
+    method beforeHTMLUnsafe
     method checkVisibility
     method closest
     method computedStyleMap
@@ -2355,6 +2385,8 @@ interface Element : Node
     method matches
     method moveBefore
     method prepend
+    method prependHTML
+    method prependHTMLUnsafe
     method pseudo
     method querySelector
     method querySelectorAll
@@ -2365,6 +2397,8 @@ interface Element : Node
     method removeAttributeNode
     method replaceChildren
     method replaceWith
+    method replaceWithHTML
+    method replaceWithHTMLUnsafe
     method requestFullscreen
     method requestPointerLock
     method scroll
@@ -2380,6 +2414,18 @@ interface Element : Node
     method setHTMLUnsafe
     method setPointerCapture
     method startViewTransition
+    method streamAfterHTML
+    method streamAfterHTMLUnsafe
+    method streamAppendHTML
+    method streamAppendHTMLUnsafe
+    method streamBeforeHTML
+    method streamBeforeHTMLUnsafe
+    method streamHTML
+    method streamHTMLUnsafe
+    method streamPrependHTML
+    method streamPrependHTMLUnsafe
+    method streamReplaceWithHTML
+    method streamReplaceWithHTMLUnsafe
     method toggleAttribute
     method webkitMatchesSelector
     method webkitRequestFullScreen
@@ -9269,14 +9315,24 @@ interface ShadowRoot : DocumentFragment
     getter serializable
     getter slotAssignment
     getter styleSheets
+    method appendHTML
+    method appendHTMLUnsafe
     method constructor
     method elementFromPoint
     method elementsFromPoint
     method getAnimations
     method getHTML
     method getSelection
+    method prependHTML
+    method prependHTMLUnsafe
     method setHTML
     method setHTMLUnsafe
+    method streamAppendHTML
+    method streamAppendHTMLUnsafe
+    method streamHTML
+    method streamHTMLUnsafe
+    method streamPrependHTML
+    method streamPrependHTMLUnsafe
     setter adoptedStyleSheets
     setter fullscreenElement
     setter innerHTML
@@ -9870,6 +9926,11 @@ interface TrustedHTML
     method constructor
     method toJSON
     method toString
+interface TrustedParserOptions
+    attribute @@toStringTag
+    getter runScripts
+    method constructor
+    method sanitizer
 interface TrustedScript
     attribute @@toStringTag
     method constructor
@@ -9885,6 +9946,7 @@ interface TrustedTypePolicy
     getter name
     method constructor
     method createHTML
+    method createParserOptions
     method createScript
     method createScriptURL
 interface TrustedTypePolicyFactory
