@@ -1486,6 +1486,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   ui::ColorProviderKey GetColorProviderKeyForTesting() const;
 
+  // Schedules an asynchronous theme changed update. Multiple calls within the
+  // same task or event loop turn are coalesced into a single ThemeChanged()
+  // run.
+  void ScheduleThemeChanged();
+
   // Resets the cached ColorProviderKey, ensuring the next call to
   // ThemeChanged() does not short-circuit.
   void ResetLastColorProviderKey();
@@ -1864,6 +1869,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Observes the parent widget's ColorProviderSource to propagate theme
   // changes.
   std::unique_ptr<ui::ColorProviderSourceObserver> parent_theme_observer_;
+
+  void ProcessScheduledThemeChanged();
+
+  // True if a ThemeChanged() run has been scheduled and is pending.
+  bool theme_update_scheduled_ = false;
 
   // Indicates whether there is an autosize task in the task queue. Also used to
   // cancel the autosize task in testing.

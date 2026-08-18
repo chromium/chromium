@@ -1159,7 +1159,7 @@ void NativeWidgetMacNSWindowHost::OnSpaceActivationChanged(
 void NativeWidgetMacNSWindowHost::OnWindowNativeThemeChanged() {
   if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
     if (Widget* widget = GetWidget()) {
-      widget->ThemeChanged();
+      widget->ScheduleThemeChanged();
     }
   } else {
     ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();

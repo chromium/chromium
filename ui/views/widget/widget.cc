@@ -97,7 +97,7 @@ class ParentThemeObserver : public ui::ColorProviderSourceObserver {
 
   void OnColorProviderChanged() override {
     widget_->ResetLastColorProviderKey();
-    widget_->ThemeChanged();
+    widget_->ScheduleThemeChanged();
   }
 
  private:
@@ -1594,7 +1594,31 @@ FocusTraversable* Widget::GetFocusTraversable() {
   return static_cast<internal::RootView*>(root_view_.get());
 }
 
+void Widget::ScheduleThemeChanged() {
+  if (!base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
+    ThemeChanged();
+    return;
+  }
+  if (theme_update_scheduled_) {
+    return;
+  }
+  theme_update_scheduled_ = true;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&Widget::ProcessScheduledThemeChanged,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void Widget::ProcessScheduledThemeChanged() {
+  if (!theme_update_scheduled_) {
+    return;
+  }
+  theme_update_scheduled_ = false;
+  ThemeChanged();
+}
+
 void Widget::ThemeChanged() {
+  theme_update_scheduled_ = false;
+
   if (base::FeatureList::IsEnabled(::features::kThemeChangeOptimization)) {
     const ui::ColorProviderKey current_key = GetColorProviderKey();
     if (last_color_provider_key_ && *last_color_provider_key_ == current_key) {
@@ -2625,7 +2649,7 @@ View* Widget::GetFocusTraversableParentView() {
 
 void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   TRACE_EVENT0("ui", "Widget::OnNativeThemeUpdated");
-  ThemeChanged();
+  ScheduleThemeChanged();
 }
 
 void Widget::OnAXModeAdded(ui::AXMode mode) {
@@ -2645,14 +2669,14 @@ void Widget::SetColorModeOverride(
     std::optional<ui::ColorProviderKey::ColorMode> color_mode) {
   if (color_mode != color_mode_override_) {
     color_mode_override_ = color_mode;
-    ThemeChanged();
+    ScheduleThemeChanged();
   }
 }
 
 void Widget::SetUserColorOverride(std::optional<SkColor> user_color) {
   if (user_color != user_color_override_) {
     user_color_override_ = user_color;
-    ThemeChanged();
+    ScheduleThemeChanged();
   }
 }
 
