@@ -1160,6 +1160,38 @@ TEST_F(RegionalCapabilitiesServiceTest,
   }
 }
 
+TEST_F(RegionalCapabilitiesServiceTest, GetRegionalVariants) {
+  // Explicitly disable the feature.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        switches::kPrepopulatedEnginesShadowVariants);
+
+    std::unique_ptr<RegionalCapabilitiesService> service = InitService();
+    SetCommandLineCountry("JP");
+    EXPECT_TRUE(service->GetRegionalVariants().empty());
+  }
+
+  // Now enable the feature.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        switches::kPrepopulatedEnginesShadowVariants);
+
+    std::unique_ptr<RegionalCapabilitiesService> service = InitService();
+
+    // For US, it should return empty.
+    SetCommandLineCountry("US");
+    EXPECT_TRUE(service->GetRegionalVariants().empty());
+
+    // For JP, it should return yahoo_jp.
+    SetCommandLineCountry("JP");
+    auto jp_variants = service->GetRegionalVariants();
+    ASSERT_EQ(jp_variants.size(), 1u);
+    EXPECT_EQ(jp_variants[0]->id, TemplateURLPrepopulateData::yahoo_jp.id);
+  }
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 TEST(ClientIsInSearchEngineChoiceScreenRegionTest, FetchedCountryInRegion) {
   AsyncRegionalCapabilitiesServiceClient client;

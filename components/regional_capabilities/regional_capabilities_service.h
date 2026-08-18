@@ -110,6 +110,9 @@ class RegionalCapabilitiesService : public KeyedService {
   std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
   GetRegionalPrepopulatedEngines();
 
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+  GetRegionalVariants();
+
   // Returns whether the profile is associated with a region in which we can
   // show a search engine choice screen.
   bool IsInSearchEngineChoiceScreenRegion();

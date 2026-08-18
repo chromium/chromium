@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_switches.h"
@@ -30,6 +31,7 @@
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/regional_capabilities/regional_capabilities_test_utils.h"
 #include "components/regional_capabilities/regional_capabilities_utils.h"
+#include "components/search_engines/keyword_table.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -62,13 +64,17 @@ namespace TemplateURLPrepopulateData {
 bool operator==(const BuiltinKeywordsMetadata& lhs,
                 const BuiltinKeywordsMetadata& rhs) {
   return lhs.data_version == rhs.data_version &&
-         lhs.country_id == rhs.country_id;
+         lhs.country_id == rhs.country_id &&
+         lhs.prepopulated_engines_migration_state ==
+             rhs.prepopulated_engines_migration_state;
 }
 
 std::ostream& operator<<(std::ostream& os,
                          const BuiltinKeywordsMetadata& value) {
   return os << "{country_id=" << value.country_id.GetForTesting().Serialize()
-            << ", data_version=" << value.data_version << "}";
+            << ", data_version=" << value.data_version
+            << ", prepopulated_engines_migration_state="
+            << value.prepopulated_engines_migration_state.ToString() << "}";
 }
 
 }  // namespace TemplateURLPrepopulateData
@@ -829,6 +835,159 @@ TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineFromFullList) {
   ExpectSimilar(expected_engine.get(), found_engine_by_keyword.get());
 }
 
+TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEngineWithVariants) {
+  constexpr int kTestEngineId = 9999;
+  constexpr TemplateURLPrepopulateData::PrepopulatedEngine test_variant_a = {
+      .name = u"test_variant_a",
+      .keyword = u"test",
+      .search_url = "http://test-a.com/search?q={searchTerms}",
+      .id = kTestEngineId,
+  };
+  constexpr TemplateURLPrepopulateData::PrepopulatedEngine test_variant_b = {
+      .name = u"test_variant_b",
+      .keyword = u"test",
+      .search_url = "http://test-b.com/search?q={searchTerms}",
+      .id = kTestEngineId,
+  };
+
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      regional_engines = {&TemplateURLPrepopulateData::google};
+
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      variants = {&test_variant_b};
+
+  // Inject both engines into the full known set. `other_known_engines` are
+  // ordered before `regional_engines` in `all_engines`.
+  regional_capabilities::ScopedPrepopulatedEnginesOverride scoped_override =
+      regional_capabilities::SetPrepopulatedEnginesOverrideForTesting(
+          /*regional_engines=*/regional_engines,
+          /*other_known_engines=*/{&test_variant_a, &test_variant_b});
+
+  // `GetPrepopulatedEngine()` operates ONLY on the current regional set.
+  // Neither variant is in `regional_engines`, so it returns `nullptr`.
+  EXPECT_EQ(TemplateURLPrepopulateData::GetPrepopulatedEngine(
+                *pref_service(), regional_engines, kTestEngineId),
+            nullptr);
+
+  // Without variants, `GetPrepopulatedEngineFromFullList()` falls back to
+  // `all_engines` and picks the first matching definition (`test_variant_a`).
+  std::unique_ptr<TemplateURLData> resolved_without_variants =
+      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+          *pref_service(), regional_engines, /*regional_variants=*/{},
+          kTestEngineId);
+  ASSERT_TRUE(resolved_without_variants);
+  EXPECT_EQ(resolved_without_variants->prepopulate_id, kTestEngineId);
+  EXPECT_EQ(resolved_without_variants->url(), test_variant_a.search_url);
+
+  std::unique_ptr<TemplateURLData> resolved_by_keyword_without_variants =
+      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+          *pref_service(), regional_engines, /*regional_variants=*/{},
+          test_variant_a.keyword);
+  ASSERT_TRUE(resolved_by_keyword_without_variants);
+  EXPECT_EQ(resolved_by_keyword_without_variants->prepopulate_id,
+            kTestEngineId);
+  EXPECT_EQ(resolved_by_keyword_without_variants->url(),
+            test_variant_a.search_url);
+
+  // With `variants` provided, `GetPrepopulatedEngineFromFullList()` uses the
+  // regional variant (`test_variant_b`) to disambiguate, rather than picking
+  // the first definition from `all_engines`.
+  std::unique_ptr<TemplateURLData> resolved_with_variants =
+      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+          *pref_service(), regional_engines, variants, kTestEngineId);
+  ASSERT_TRUE(resolved_with_variants);
+  EXPECT_EQ(resolved_with_variants->prepopulate_id, kTestEngineId);
+  EXPECT_EQ(resolved_with_variants->url(), test_variant_b.search_url);
+
+  std::unique_ptr<TemplateURLData> resolved_by_keyword_with_variants =
+      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+          *pref_service(), regional_engines, variants, test_variant_b.keyword);
+  ASSERT_TRUE(resolved_by_keyword_with_variants);
+  EXPECT_EQ(resolved_by_keyword_with_variants->prepopulate_id, kTestEngineId);
+  EXPECT_EQ(resolved_by_keyword_with_variants->url(),
+            test_variant_b.search_url);
+
+  // If a variant is in `regional_engines`, it takes precedence over `variants`.
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      regional_engines_with_a = {&TemplateURLPrepopulateData::google,
+                                 &test_variant_a};
+  std::unique_ptr<TemplateURLData> resolved_from_regional =
+      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+          *pref_service(), regional_engines_with_a, variants, kTestEngineId);
+  ASSERT_TRUE(resolved_from_regional);
+  EXPECT_EQ(resolved_from_regional->prepopulate_id, kTestEngineId);
+  EXPECT_EQ(resolved_from_regional->url(), test_variant_a.search_url);
+
+  std::unique_ptr<TemplateURLData> resolved_by_keyword_from_regional =
+      TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
+          *pref_service(), regional_engines_with_a, variants,
+          test_variant_a.keyword);
+  ASSERT_TRUE(resolved_by_keyword_from_regional);
+  EXPECT_EQ(resolved_by_keyword_from_regional->prepopulate_id, kTestEngineId);
+  EXPECT_EQ(resolved_by_keyword_from_regional->url(),
+            test_variant_a.search_url);
+}
+
+class TemplateURLPrepopulateDataShadowVariantsTest
+    : public base::test::WithFeatureOverride,
+      public TemplateURLPrepopulateDataTest {
+ public:
+  TemplateURLPrepopulateDataShadowVariantsTest()
+      : base::test::WithFeatureOverride(
+            switches::kPrepopulatedEnginesShadowVariants) {}
+};
+
+TEST_P(TemplateURLPrepopulateDataShadowVariantsTest, JPVariants) {
+  regional_capabilities::RegionalCapabilitiesService& service =
+      search_engines_test_environment_.regional_capabilities_service();
+
+  // Override country to JP.
+  OverrideCountryId(CountryId("JP"));
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      jp_variants = service.GetRegionalVariants();
+
+  if (IsParamFeatureEnabled()) {
+    // If feature enabled, we should get yahoo_jp.
+    ASSERT_EQ(jp_variants.size(), 1u);
+    EXPECT_EQ(jp_variants[0]->id, TemplateURLPrepopulateData::yahoo_jp.id);
+
+    // `GetPrepopulatedEngine()` only checks the regional list. In JP with
+    // migration enabled, `yahoo_jp` (id 2) is migrated to `yahoo_jp_next`
+    // (id 116), so it's not found in the regional list.
+    std::unique_ptr<TemplateURLData> resolved_yahoo_jp =
+        prepopulate_data_resolver().GetPrepopulatedEngine(
+            TemplateURLPrepopulateData::yahoo_jp.id);
+    EXPECT_FALSE(resolved_yahoo_jp);
+
+    // GetEngineFromFullList SHOULD find yahoo_jp (since it checks variants).
+    std::unique_ptr<TemplateURLData> resolved_yahoo_jp_full =
+        prepopulate_data_resolver().GetEngineFromFullList(
+            TemplateURLPrepopulateData::yahoo_jp.id);
+    ASSERT_TRUE(resolved_yahoo_jp_full);
+    EXPECT_EQ(resolved_yahoo_jp_full->prepopulate_id,
+              TemplateURLPrepopulateData::yahoo_jp.id);
+  } else {
+    // If feature disabled, we should get nothing.
+    EXPECT_TRUE(jp_variants.empty());
+
+    // GetEngineFromFullList should STILL find yahoo_jp because it falls back to
+    // all_engines, and yahoo_jp is in all_engines.
+    std::unique_ptr<TemplateURLData> resolved_yahoo_jp_full =
+        prepopulate_data_resolver().GetEngineFromFullList(
+            TemplateURLPrepopulateData::yahoo_jp.id);
+    ASSERT_TRUE(resolved_yahoo_jp_full);
+  }
+
+  // Override country to US.
+  OverrideCountryId(CountryId("US"));
+  std::vector<raw_ptr<const TemplateURLPrepopulateData::PrepopulatedEngine>>
+      us_variants = service.GetRegionalVariants();
+  EXPECT_TRUE(us_variants.empty());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    TemplateURLPrepopulateDataShadowVariantsTest);
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(TemplateURLPrepopulateDataTest, GetLocalPrepopulatedEngines) {
   constexpr char sample_country[] = "US";
@@ -1106,16 +1265,17 @@ struct UpdateRequirementsTestParams {
   std::string test_case_name;
   std::string db_country;
   int db_version;
-  bool db_has_engine_migration_enabled;
+  KeywordTable::PrepopulatedEngineMigrationSet db_migration_state;
   std::string profile_country;
 
   // TODO(crbug.com/530597465): Remove these test cases during cleanup.
   std::optional<int> pref_override_version;
 
-  bool is_engine_migration_enabled;
+  bool is_engine_migration_enabled = false;
+  bool is_shadow_variants_enabled = false;
 
   // Indicates that the call should CHECK on most builds.
-  bool hits_dcheck;
+  bool hits_dcheck = false;
 
   // Expected output of the call.
   //
@@ -1128,8 +1288,7 @@ std::ostream& operator<<(std::ostream& os,
                          const UpdateRequirementsTestParams& value) {
   os << "{db_country=" << value.db_country
      << ", db_version=" << value.db_version
-     << ", db_has_engine_migration_enabled="
-     << value.db_has_engine_migration_enabled
+     << ", db_migration_state=" << value.db_migration_state.ToString()
      << ", profile_country=" << value.profile_country;
 
   if (value.pref_override_version.has_value()) {
@@ -1137,6 +1296,7 @@ std::ostream& operator<<(std::ostream& os,
   }
 
   os << ", is_engine_migration_enabled=" << value.is_engine_migration_enabled;
+  os << ", is_shadow_variants_enabled=" << value.is_shadow_variants_enabled;
   os << ", expected_output=";
   if (value.expected_output.has_value()) {
     os << value.expected_output.value();
@@ -1169,17 +1329,33 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
       disabled_features.push_back(switches::kPrepopulatedEnginesMigration);
     }
 
+    if (GetParam().is_shadow_variants_enabled) {
+      enabled_features.push_back(switches::kPrepopulatedEnginesShadowVariants);
+    } else {
+      disabled_features.push_back(switches::kPrepopulatedEnginesShadowVariants);
+    }
+
     disabled_features.push_back(switches::kIgnoreSearchProviderOverrides);
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   static auto Cases() {
+    KeywordTable::PrepopulatedEngineMigrationSet no_migration;
+    KeywordTable::PrepopulatedEngineMigrationSet migration_only(
+        {KeywordTable::PrepopulatedEngineMigration::kMigration});
+    KeywordTable::PrepopulatedEngineMigrationSet shadow_variants_only(
+        {KeywordTable::PrepopulatedEngineMigration::kShadowVariants});
+    KeywordTable::PrepopulatedEngineMigrationSet both(
+        {KeywordTable::PrepopulatedEngineMigration::kMigration,
+         KeywordTable::PrepopulatedEngineMigration::kShadowVariants});
+
     return ::testing::ValuesIn({
         UpdateRequirementsTestParams{
             .test_case_name = "UpToDateMetadata",
             .db_country = "DE",
             .db_version = kCurrentDataVersion,
+            .db_migration_state = no_migration,
             .profile_country = "DE",
             .expected_output = std::nullopt,  // Update not needed.
         },
@@ -1187,32 +1363,34 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .test_case_name = "DifferentCountry",
             .db_country = "DE",
             .db_version = kCurrentDataVersion,
+            .db_migration_state = no_migration,
             .profile_country = "FR",
-            .expected_output =
-                BuildMetadata(CountryId("FR"), kCurrentDataVersion,
-                              /* did_migration = */ false),
+            .expected_output = BuildMetadata(CountryId("FR"),
+                                             kCurrentDataVersion, no_migration),
         },
         {
             .test_case_name = "DbCountryMissing",
             .db_country = "",
             .db_version = kCurrentDataVersion,
+            .db_migration_state = no_migration,
             .profile_country = "FR",
-            .expected_output =
-                BuildMetadata(CountryId("FR"), kCurrentDataVersion,
-                              /* did_migration = */ false),
+            .expected_output = BuildMetadata(CountryId("FR"),
+                                             kCurrentDataVersion, no_migration),
         },
         {
             .test_case_name = "CountryOverride",
             .db_country = "DE",
             .db_version = kCurrentDataVersion,
+            .db_migration_state = no_migration,
             .profile_country = switches::kEeaListCountryOverride,
-            .expected_output = BuildMetadata(CountryId(), kCurrentDataVersion,
-                                             /* did_migration = */ false),
+            .expected_output =
+                BuildMetadata(CountryId(), kCurrentDataVersion, no_migration),
         },
         {
             .test_case_name = "DbMoreRecent",
             .db_country = "DE",
             .db_version = kCurrentDataVersion + 1,
+            .db_migration_state = no_migration,
             .profile_country = "DE",
             .expected_output = std::nullopt,  // Update suppressed.
         },
@@ -1220,37 +1398,36 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .test_case_name = "DbOlder",
             .db_country = "DE",
             .db_version = kCurrentDataVersion - 1,
+            .db_migration_state = no_migration,
             .profile_country = "DE",
-            .expected_output =
-                BuildMetadata(CountryId("DE"), kCurrentDataVersion,
-                              /* did_migration = */ false),
+            .expected_output = BuildMetadata(CountryId("DE"),
+                                             kCurrentDataVersion, no_migration),
         },
         {
             .test_case_name = "PrefOverride",
             .db_country = "DE",
             .db_version = kCurrentDataVersion,
+            .db_migration_state = no_migration,
             .profile_country = "DE",
             .pref_override_version = kCurrentDataVersion + 42,
-            .expected_output =
-                BuildMetadata(CountryId("DE"), kCurrentDataVersion + 42,
-                              /* did_migration = */ false),
+            .expected_output = BuildMetadata(
+                CountryId("DE"), kCurrentDataVersion + 42, no_migration),
         },
         UpdateRequirementsTestParams{
             .test_case_name = "UpToDateMetadataWithEngineMigration",
             .db_country = "DE",
             .db_version = kCurrentDataVersion,
-            .db_has_engine_migration_enabled = false,
+            .db_migration_state = no_migration,
             .profile_country = "DE",
             .is_engine_migration_enabled = true,
-            .expected_output =
-                BuildMetadata(CountryId("DE"), kCurrentDataVersion,
-                              /* did_migration = */ true),
+            .expected_output = BuildMetadata(
+                CountryId("DE"), kCurrentDataVersion, migration_only),
         },
         UpdateRequirementsTestParams{
             .test_case_name = "UpToDateMetadataWithEngineMigrationDowngrade",
             .db_country = "DE",
             .db_version = kCurrentDataVersion,
-            .db_has_engine_migration_enabled = true,
+            .db_migration_state = migration_only,
             .profile_country = "DE",
             .is_engine_migration_enabled = false,
             .hits_dcheck = true,
@@ -1260,13 +1437,54 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
             .test_case_name = "DifferentCountryWithEngineMigrationDowngrade",
             .db_country = "DE",
             .db_version = kCurrentDataVersion,
-            .db_has_engine_migration_enabled = true,
+            .db_migration_state = migration_only,
             .profile_country = "JP",
             .is_engine_migration_enabled = false,
             .hits_dcheck = true,
+            .expected_output = BuildMetadata(CountryId("JP"),
+                                             kCurrentDataVersion, no_migration),
+        },
+        UpdateRequirementsTestParams{
+            .test_case_name = "UpToDateMetadataWithShadowVariants",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion,
+            .db_migration_state = no_migration,
+            .profile_country = "DE",
+            .is_shadow_variants_enabled = true,
+            .expected_output = BuildMetadata(
+                CountryId("DE"), kCurrentDataVersion, shadow_variants_only),
+        },
+        UpdateRequirementsTestParams{
+            .test_case_name = "UpToDateMetadataWithBothMigrations",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion,
+            .db_migration_state = no_migration,
+            .profile_country = "DE",
+            .is_engine_migration_enabled = true,
+            .is_shadow_variants_enabled = true,
             .expected_output =
-                BuildMetadata(CountryId("JP"), kCurrentDataVersion,
-                              /* did_migration = */ false),
+                BuildMetadata(CountryId("DE"), kCurrentDataVersion, both),
+        },
+        UpdateRequirementsTestParams{
+            .test_case_name = "ShadowVariantsRollback",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion,
+            .db_migration_state = shadow_variants_only,
+            .profile_country = "DE",
+            .is_shadow_variants_enabled = false,
+            .hits_dcheck = true,
+            .expected_output = std::nullopt,
+        },
+        UpdateRequirementsTestParams{
+            .test_case_name = "UpgradeToBoth",
+            .db_country = "DE",
+            .db_version = kCurrentDataVersion,
+            .db_migration_state = migration_only,
+            .profile_country = "DE",
+            .is_engine_migration_enabled = true,
+            .is_shadow_variants_enabled = true,
+            .expected_output =
+                BuildMetadata(CountryId("DE"), kCurrentDataVersion, both),
         },
     });
   }
@@ -1276,13 +1494,14 @@ class TemplateURLPrepopulateDataUpdateRequirementsTest
     return info.param.test_case_name;
   }
 
-  static BuiltinKeywordsMetadata BuildMetadata(CountryId country_id,
-                                               int version,
-                                               bool did_migration) {
+  static BuiltinKeywordsMetadata BuildMetadata(
+      CountryId country_id,
+      int version,
+      KeywordTable::PrepopulatedEngineMigrationSet migration_state) {
     return {
         .country_id = regional_capabilities::CountryIdHolder(country_id),
         .data_version = version,
-        .prepopulated_engines_migration_enabled = did_migration,
+        .prepopulated_engines_migration_state = migration_state,
     };
   }
 
@@ -1293,8 +1512,8 @@ TEST_P(TemplateURLPrepopulateDataUpdateRequirementsTest,
        ComputeDatabaseUpdateRequirements) {
   WDKeywordsResult::Metadata database_metadata;
   database_metadata.builtin_keyword_data_version = GetParam().db_version;
-  database_metadata.prepopulated_engines_migration_enabled =
-      GetParam().db_has_engine_migration_enabled;
+  database_metadata.prepopulated_engines_migration_state =
+      GetParam().db_migration_state;
   database_metadata.builtin_keyword_country =
       GetParam().db_country.empty()
           ? std::nullopt

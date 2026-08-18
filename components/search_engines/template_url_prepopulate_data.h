@@ -76,6 +76,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService& prefs,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants,
     int prepopulated_id);
 
 // Returns the prepopulated search engine with the given `keyword`
@@ -88,6 +89,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService& prefs,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants,
     std::u16string_view keyword);
 
 // Returns the prepopulated search engine with the given `prepopulated_id`
@@ -101,7 +103,8 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
 const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
     int prepopulated_id,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
-        regional_prepopulated_engines);
+        regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants);
 
 // Returns the prepopulated search engine with the given `keyword`
 // from the full list of known prepopulated search engines, or `nullptr` if
@@ -111,7 +114,8 @@ const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
 const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
     std::u16string_view keyword,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
-        regional_prepopulated_engines);
+        regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants);
 
 #if BUILDFLAG(IS_ANDROID)
 // Returns the prepopulated URLs associated with `country_code`.

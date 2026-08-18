@@ -311,7 +311,15 @@ CountryId CountryOverrideToCountryId(
 // post-migration ones. No-op if the migration feature is disabled.
 void ApplyPrepopulatedEnginesMigration(
     std::vector<raw_ptr<const PrepopulatedEngine>>& engines) {
-  if (!base::FeatureList::IsEnabled(switches::kPrepopulatedEnginesMigration)) {
+  bool is_migrated_set_needed =
+      // Main migration feature: if enabled, use the post-migration set.
+      base::FeatureList::IsEnabled(switches::kPrepopulatedEnginesMigration) ||
+      // More subtle version of the migration: use the post-migration set, but
+      // instead of migrating the data of the pre-migration set users, the
+      // feature puts them in some sort of "compatibility" mode.
+      switches::ArePrepopulatedEnginesShadowVariantsEnabled();
+
+  if (!is_migrated_set_needed) {
     return;
   }
 
@@ -400,6 +408,19 @@ RegionalCapabilitiesService::GetRegionalPrepopulatedEngines() {
   ApplyPrepopulatedEnginesMigration(engines);
 
   return engines;
+}
+
+std::vector<raw_ptr<const PrepopulatedEngine>>
+RegionalCapabilitiesService::GetRegionalVariants() {
+  if (!switches::ArePrepopulatedEnginesShadowVariantsEnabled()) {
+    return std::vector<raw_ptr<const PrepopulatedEngine>>();
+  }
+
+  if (GetCountryIdInternal() == CountryId("JP")) {
+    return {&TemplateURLPrepopulateData::yahoo_jp};
+  }
+
+  return std::vector<raw_ptr<const PrepopulatedEngine>>();
 }
 
 bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion() {

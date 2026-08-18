@@ -392,18 +392,22 @@ CountryId KeywordTable::GetBuiltinKeywordCountry() {
              : CountryId();
 }
 
-bool KeywordTable::SetPrepopulatedEnginesMigrationEnabled(
-    bool is_migration_enabled) {
-  return meta_table()->SetValue(kIsPrepopulatedEnginesMigrationEnabled,
-                                is_migration_enabled);
+bool KeywordTable::SetPrepopulatedEnginesMigrationState(
+    PrepopulatedEngineMigrationSet migration_state) {
+  return meta_table()->SetValue(
+      kIsPrepopulatedEnginesMigrationEnabled,
+      static_cast<int64_t>(migration_state.ToEnumBitmask()));
 }
 
-bool KeywordTable::IsPrepopulatedEnginesMigrationEnabled() {
-  int is_migration_enabled = false;
-  return meta_table()->GetValue(kIsPrepopulatedEnginesMigrationEnabled,
-                                &is_migration_enabled)
-             ? is_migration_enabled
-             : false;
+KeywordTable::PrepopulatedEngineMigrationSet
+KeywordTable::GetPrepopulatedEnginesMigrationState() {
+  int64_t migration_state = 0;
+  if (meta_table()->GetValue(kIsPrepopulatedEnginesMigrationEnabled,
+                             &migration_state)) {
+    return PrepopulatedEngineMigrationSet::FromEnumBitmask(
+        static_cast<uint64_t>(migration_state));
+  }
+  return PrepopulatedEngineMigrationSet();
 }
 
 bool KeywordTable::SetStarterPackKeywordVersion(int version) {

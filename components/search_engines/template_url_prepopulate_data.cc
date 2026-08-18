@@ -136,7 +136,8 @@ template <typename EngineMatcher>
 constexpr const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInDataImpl(
     EngineMatcher engine_matcher,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
-        regional_prepopulated_engines) {
+        regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants) {
   // Locate region-specific search engine first to avoid more thorough
   // scanning. In most cases this should offer the correct match.
   if (auto iter =
@@ -145,8 +146,13 @@ constexpr const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInDataImpl(
     return *iter;
   }
 
+  // Check regional variants next.
+  if (auto iter = std::ranges::find_if(regional_variants, engine_matcher);
+      iter != regional_variants.end()) {
+    return *iter;
+  }
+
   // Fallback: just grab the first matching entry from the complete list.
-  // This is fine as keywords are unique.
   const auto& all_engines = regional_capabilities::GetAllPrepopulatedEngines();
   if (auto iter = std::ranges::find_if(all_engines, engine_matcher);
       iter != all_engines.end()) {
@@ -222,29 +228,32 @@ std::vector<std::unique_ptr<TemplateURLData>> GetLocalPrepopulatedEngines(
 const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
     int prepopulated_id,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
-        regional_prepopulated_engines) {
+        regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants) {
   return GetPrepopulatedEngineFromBuiltInDataImpl(
       [prepopulated_id](const PrepopulatedEngine* engine) {
         return engine->id == prepopulated_id;
       },
-      regional_prepopulated_engines);
+      regional_prepopulated_engines, regional_variants);
 }
 
 const PrepopulatedEngine* GetPrepopulatedEngineFromBuiltInData(
     std::u16string_view keyword,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
-        regional_prepopulated_engines) {
+        regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants) {
   return GetPrepopulatedEngineFromBuiltInDataImpl(
       [keyword](const PrepopulatedEngine* engine) {
         return keyword == engine->keyword;
       },
-      regional_prepopulated_engines);
+      regional_prepopulated_engines, regional_variants);
 }
 
 std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService& prefs,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants,
     int prepopulated_id) {
   // TODO(crbug.com/530597465): Refactor to better share code with
   // `GetPrepopulatedEngine()` once the SearchProvidersOverride logic is
@@ -260,7 +269,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
   }
 
   if (auto* matched_engine = GetPrepopulatedEngineFromBuiltInData(
-          prepopulated_id, regional_prepopulated_engines);
+          prepopulated_id, regional_prepopulated_engines, regional_variants);
       matched_engine) {
     return PrepopulatedEngineToTemplateURLData(matched_engine);
   }
@@ -272,6 +281,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
     PrefService& prefs,
     const std::vector<raw_ptr<const PrepopulatedEngine>>&
         regional_prepopulated_engines,
+    const std::vector<raw_ptr<const PrepopulatedEngine>>& regional_variants,
     std::u16string_view keyword) {
   // TODO(crbug.com/530597465): Refactor to better share code with
   // `GetPrepopulatedEngine()` once the SearchProvidersOverride logic is
@@ -287,7 +297,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
   }
 
   if (auto* matched_engine = GetPrepopulatedEngineFromBuiltInData(
-          keyword, regional_prepopulated_engines);
+          keyword, regional_prepopulated_engines, regional_variants);
       matched_engine) {
     return PrepopulatedEngineToTemplateURLData(matched_engine);
   }

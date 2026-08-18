@@ -89,6 +89,8 @@ WDKeywordsResult::Metadata ComputeMergeEnginesRequirements(
         builtin_keywords_metadata->data_version;
     out_metadata.builtin_keyword_country =
         builtin_keywords_metadata->country_id;
+    out_metadata.prepopulated_engines_migration_state =
+        builtin_keywords_metadata->prepopulated_engines_migration_state;
   }
 
   const int starter_pack_data_version =

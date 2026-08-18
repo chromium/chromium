@@ -119,6 +119,16 @@ class KeywordTableTest : public testing::Test {
     statement->Assign(table_->db()->GetUniqueStatement(sql));
   }
 
+  void ManuallySetMigrationEnabledInDb(int value) const {
+    sql::Statement s;
+    GetStatement(
+        "INSERT OR REPLACE INTO meta (key, value) VALUES ('Is Prepopulated "
+        "Engines Migration Enabled', ?)",
+        &s);
+    s.BindInt64(0, value);
+    EXPECT_TRUE(s.Run());
+  }
+
   KeywordTable* GetTable() { return table_.get(); }
 
   base::FilePath file_;
@@ -465,4 +475,43 @@ TEST_F(KeywordTableTest, MigrateVersion152ExpandHashColumnRetainsData) {
   // and that its fields were retained.
   KeywordTable::Keywords keywords(GetKeywords());
   EXPECT_THAT(keywords, ::testing::ContainerEq(keywords_no_hash.value()));
+}
+
+TEST_F(KeywordTableTest, MigrationState) {
+  KeywordTable* table = GetTable();
+
+  // Initially, it should be empty.
+  EXPECT_TRUE(table->GetPrepopulatedEnginesMigrationState().empty());
+
+  // Set some state.
+  KeywordTable::PrepopulatedEngineMigrationSet state;
+  state.Put(KeywordTable::PrepopulatedEngineMigration::kMigration);
+  EXPECT_TRUE(table->SetPrepopulatedEnginesMigrationState(state));
+
+  // Read it back.
+  EXPECT_EQ(state, table->GetPrepopulatedEnginesMigrationState());
+
+  // Set both.
+  state.Put(KeywordTable::PrepopulatedEngineMigration::kShadowVariants);
+  EXPECT_TRUE(table->SetPrepopulatedEnginesMigrationState(state));
+  EXPECT_EQ(state, table->GetPrepopulatedEnginesMigrationState());
+
+  // Clear.
+  state.Clear();
+  EXPECT_TRUE(table->SetPrepopulatedEnginesMigrationState(state));
+  EXPECT_TRUE(table->GetPrepopulatedEnginesMigrationState().empty());
+}
+
+TEST_F(KeywordTableTest, MigrationStateCompatibility) {
+  // Simulate old DB with migration enabled (bool true -> 1).
+  ManuallySetMigrationEnabledInDb(1);
+
+  // It should be read as containing only kMigration.
+  KeywordTable::PrepopulatedEngineMigrationSet expected_state;
+  expected_state.Put(KeywordTable::PrepopulatedEngineMigration::kMigration);
+  EXPECT_EQ(expected_state, GetTable()->GetPrepopulatedEnginesMigrationState());
+
+  // Simulate old DB with migration disabled (bool false -> 0).
+  ManuallySetMigrationEnabledInDb(0);
+  EXPECT_TRUE(GetTable()->GetPrepopulatedEnginesMigrationState().empty());
 }

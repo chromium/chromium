@@ -1992,7 +1992,8 @@ std::optional<std::string_view> TemplateURL::GetBaseBuiltinResourceId() const {
         reference_builtin_engine =
             TemplateURLPrepopulateData::GetPrepopulatedEngineFromBuiltInData(
                 data().keyword(),
-                /*regional_prepopulated_engines=*/{});
+                /*regional_prepopulated_engines=*/{},
+                /*regional_variants=*/{});
 
     if (!reference_builtin_engine) {
       // 2. Attempt to identify the definition by prepopulate_id.
@@ -2003,7 +2004,8 @@ std::optional<std::string_view> TemplateURL::GetBaseBuiltinResourceId() const {
       reference_builtin_engine =
           TemplateURLPrepopulateData::GetPrepopulatedEngineFromBuiltInData(
               data().prepopulate_id,
-              /*regional_prepopulated_engines=*/{});
+              /*regional_prepopulated_engines=*/{},
+              /*regional_variants=*/{});
     }
 
     if (reference_builtin_engine &&
