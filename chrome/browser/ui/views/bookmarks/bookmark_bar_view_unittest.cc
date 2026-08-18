@@ -20,12 +20,10 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -91,21 +89,18 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
     BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get())
         ->LoadForTesting({});
 
-    BrowserWindowCreateParams params(profile(), true);
-    auto browser_window = std::make_unique<TestBrowserWindow>();
-    params.window = browser_window.release();
-    browser_ = DeprecatedCreateOwnedBrowserWindowForTesting(std::move(params));
+    ON_CALL(browser_window_interface_, GetProfile())
+        .WillByDefault(testing::Return(profile_.get()));
   }
 
   void TearDown() override {
-    browser_->GetWindow()->Close();
     ChromeViewsTestBase::TearDown();
   }
 
   virtual BookmarkBarView* bookmark_bar_view() = 0;
 
   TestingProfile* profile() { return profile_.get(); }
-  Browser* browser() { return browser_.get(); }
+  BrowserWindowInterface* browser() { return &browser_window_interface_; }
 
  protected:
   // Returns a string containing the label of each of the *visible* buttons on
@@ -200,7 +195,7 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   base::test::ScopedFeatureList feature_list_{
       switches::kSyncEnableBookmarksInTransportMode};
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<Browser> browser_;
+  testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
   std::unique_ptr<BookmarkBarViewTestHelper> test_helper_;
 };
 
@@ -870,7 +865,7 @@ TEST_F(BookmarkBarViewTest, MAYBE_AccessibleRoleDescription) {
 // implementation.
 class BookmarkBarViewWithCounter : public BookmarkBarView {
  public:
-  explicit BookmarkBarViewWithCounter(Browser* browser)
+  explicit BookmarkBarViewWithCounter(BrowserWindowInterface* browser)
       : BookmarkBarView(browser, nullptr) {}
 
   size_t GetSchedulePaintCount() const { return schedule_paint_count_; }
