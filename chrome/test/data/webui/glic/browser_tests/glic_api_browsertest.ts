@@ -101,17 +101,6 @@ class ApiTests extends ApiTestFixtureBase {
     });
   }
 
-  async testGetContextForActorFromTabWithoutPermission() {
-    await this.host.setTabContextPermissionState(true);
-    assertDefined(this.host.getFocusedTabStateV2);
-    const focusedTab = await this.host.getFocusedTabStateV2().getCurrentValue();
-    assertDefined(focusedTab?.hasFocus?.tabData?.tabId);
-    await this.host.setTabContextPermissionState(false);
-    const result = await this.host.getContextForActorFromTab?.(
-        focusedTab.hasFocus.tabData.tabId, {});
-    assertDefined(result);
-  }
-
   async testGetContextForActorFromTabWithRestrictedUrl() {
     await this.host.setTabContextPermissionState(true);
     assertDefined(this.host.getFocusedTabStateV2);

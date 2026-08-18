@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, FileUploadPolicyState, FormFactor, HostCapability, InvocationSource, PanelStateKind, Platform, SbThreatType, ScreenshotEncryptionScheme, ScrollToErrorReason, SkillSource, SkillsWebClientEvent, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import type {AdditionalContext, CounterAbuseVerdict, ExperimentalTriggeringUpdate, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, ScrollToError, TabContextResult, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -432,6 +432,20 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(
         new URL(result.tabData.url).pathname, '/test_data/page.html',
         `Tab data has unexpected url ${result.tabData.url}`);
+  }
+
+  async testGetContextForActorFromTabWithoutPermission() {
+    assertDefined(this.host.getContextForActorFromTab);
+    assertDefined(this.host.getFocusedTabStateV2);
+    await this.host.setTabContextPermissionState(true);
+    const focusSequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
+    const focus = await focusSequence.next();
+    const tabId: string = checkDefined(focus?.hasFocus?.tabData.tabId);
+    await this.host.setTabContextPermissionState(false);
+    const result: TabContextResult =
+        await this.host.getContextForActorFromTab(tabId, {});
+    assertDefined(result);
   }
 
   async testIsOnboardingCompleted() {

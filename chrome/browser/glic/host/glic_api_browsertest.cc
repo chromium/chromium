@@ -751,17 +751,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
   ExecuteJsTest();
 }
 
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetContextForActorFromTabWithoutPermission) {
-  ExecuteJsTest();
-
-  // No context error should have been recorded.
-  EXPECT_THAT(histogram_tester->GetAllSamplesForPrefix(
-                  "Glic.Api.GetContextForActorFromTab.Error"),
-              testing::IsEmpty());
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextForActorFromTabWithRestrictedUrl) {
   // Navigate to an un-focusable internal page.
