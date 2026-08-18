@@ -1529,8 +1529,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.FileTypeUpdate.DynamicUpdateVersion"
-    units="FileTypePolicies Version" expires_after="2026-09-27">
-  <owner>drubery@chromium.org</owner>
+    units="FileTypePolicies Version" expires_after="2027-09-27">
+  <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Integer version number citing which version of the proto data chrome just
