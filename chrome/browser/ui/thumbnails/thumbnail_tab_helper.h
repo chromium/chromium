@@ -15,19 +15,32 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BackgroundThumbnailCapturer;
 class ThumbnailScheduler;
 
-class ThumbnailTabHelper
-    : public content::WebContentsUserData<ThumbnailTabHelper>,
-      public content::WebContentsObserver {
+namespace tabs {
+class TabInterface;
+}
+
+// Maintains the thumbnail image shown in e.g. tab hover cards. Owned by the
+// tab's TabFeatures; only created when a feature that needs thumbnails is
+// enabled.
+class ThumbnailTabHelper : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(ThumbnailTabHelper);
+
+  // `contents` is passed explicitly because during a discard the helper is
+  // recreated for the incoming WebContents before `tab` swaps its contents.
+  ThumbnailTabHelper(tabs::TabInterface& tab, content::WebContents* contents);
+
   ThumbnailTabHelper(const ThumbnailTabHelper&) = delete;
   ThumbnailTabHelper& operator=(const ThumbnailTabHelper&) = delete;
 
   ~ThumbnailTabHelper() override;
+
+  static ThumbnailTabHelper* From(tabs::TabInterface* tab);
 
   scoped_refptr<ThumbnailImage> thumbnail() const { return thumbnail_; }
 
@@ -40,12 +53,9 @@ class ThumbnailTabHelper
 
  private:
   class TabStateTracker;
-  friend class content::WebContentsUserData<ThumbnailTabHelper>;
 
   // Metrics enums and helper functions:
   enum class CaptureType;
-
-  explicit ThumbnailTabHelper(content::WebContents* contents);
 
   static ThumbnailScheduler& GetScheduler();
 
@@ -98,15 +108,12 @@ class ThumbnailTabHelper
   // Times for computing metrics.
   base::TimeTicks start_video_capture_time_;
 
-  // Whether the first frame has been received after StartVideoCapture().
-  bool got_first_frame_ = false;
-
   // The thumbnail maintained by this instance.
   scoped_refptr<ThumbnailImage> thumbnail_;
 
   bool is_tab_discarded_ = false;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  ui::ScopedUnownedUserData<ThumbnailTabHelper> scoped_unowned_user_data_;
 
   base::WeakPtrFactory<ThumbnailTabHelper>
       weak_factory_for_thumbnail_on_tab_hidden_{this};

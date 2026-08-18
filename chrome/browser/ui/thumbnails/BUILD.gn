@@ -31,12 +31,14 @@ if (!is_android) {
       "//components/viz/host",
       "//content/public/browser",
       "//skia",
+      "//ui/base/unowned_user_data",
       "//ui/gfx",
       "//ui/gfx/geometry",
     ]
 
     deps = [
       "//chrome/browser/ui/tabs",
+      "//components/tabs:public",
       "//media/capture/mojom:video_capture_buffer",
       "//ui/gfx/codec",
       "//ui/gfx/geometry:geometry_skia",
@@ -85,6 +87,7 @@ if (!is_android) {
         "//chrome/common",
         "//chrome/test:test_support",
         "//chrome/test:test_support_ui",
+        "//components/tabs:public",
         "//content/public/browser",
         "//content/test:test_support",
         "//ui/base:test_support",

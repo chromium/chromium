@@ -351,8 +351,7 @@ IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, Thumbnail) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
-  content::WebContents* wc = tab_interface->GetContents();
-  auto* thumbnail_tab_helper = ThumbnailTabHelper::FromWebContents(wc);
+  auto* thumbnail_tab_helper = ThumbnailTabHelper::From(tab_interface);
   ASSERT_NE(nullptr, thumbnail_tab_helper);
 
   // Initial data should reference the helper's thumbnail and have no data.

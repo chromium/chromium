@@ -93,6 +93,7 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -528,6 +529,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   intent_picker_tab_helper_ =
       std::make_unique<IntentPickerTabHelper>(tab, tab.GetContents());
 
+  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages)) {
+    thumbnail_tab_helper_ =
+        GetUserDataFactory().CreateInstance<ThumbnailTabHelper>(
+            tab, tab, tab.GetContents());
+  }
+
   from_gws_navigation_and_keep_alive_request_observer_ =
       FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreate(
           tab.GetContents());
@@ -739,6 +746,18 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   intent_picker_tab_helper_.reset();
   intent_picker_tab_helper_ =
       std::make_unique<IntentPickerTabHelper>(*tab, new_contents);
+
+  if (thumbnail_tab_helper_) {
+    // The old helper stashed its thumbnail data on `new_contents` from
+    // AboutToBeDiscarded(); the new helper picks it up in its constructor.
+    // The reset() must happen first so that the old instance deregisters
+    // itself from the UnownedUserDataHost before the new instance registers
+    // itself.
+    thumbnail_tab_helper_.reset();
+    thumbnail_tab_helper_ =
+        GetUserDataFactory().CreateInstance<ThumbnailTabHelper>(*tab, *tab,
+                                                                new_contents);
+  }
 
   sync_sessions_router_.reset();
   sync_sessions_router_ =

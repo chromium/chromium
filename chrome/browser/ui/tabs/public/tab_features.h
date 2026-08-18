@@ -66,6 +66,7 @@ class SecurityStateEventObserver;
 class SidePanelRegistry;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
+class ThumbnailTabHelper;
 class TranslatePageActionController;
 class ZeroSuggestPrefetchTabHelper;
 
@@ -692,6 +693,10 @@ class TabFeatures {
 
   // Controls the visibility of the intent picker page action.
   std::unique_ptr<IntentPickerTabHelper> intent_picker_tab_helper_;
+
+  // Maintains the thumbnail shown in e.g. tab hover cards. Null when no
+  // feature that needs thumbnails is enabled.
+  std::unique_ptr<ThumbnailTabHelper> thumbnail_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

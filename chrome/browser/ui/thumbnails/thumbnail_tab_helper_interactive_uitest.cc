@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+
 #include <optional>
 
 #include "base/callback_list.h"
@@ -22,12 +24,12 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
-#include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/state_observer.h"
@@ -37,8 +39,8 @@ namespace {
 class ThumbnailObserver : public ui::test::StateObserver<bool> {
  public:
   explicit ThumbnailObserver(content::WebContents* web_contents) {
-    auto* const thumbnail_tab_helper =
-        ThumbnailTabHelper::FromWebContents(web_contents);
+    auto* const thumbnail_tab_helper = ThumbnailTabHelper::From(
+        tabs::TabInterface::GetFromContents(web_contents));
     auto* thumbnail = thumbnail_tab_helper->thumbnail().get();
 
     subscription_ = thumbnail->Subscribe();
@@ -118,8 +120,8 @@ class ThumbnailTabHelperUpdatedInteractiveTest
   auto CheckTabHasThumbnailData(int tab_index, bool has_data) {
     return CheckResult(
         [=, this]() {
-          return ThumbnailTabHelper::FromWebContents(
-                     target_browser_->GetTabStripModel()->GetWebContentsAt(
+          return ThumbnailTabHelper::From(
+                     target_browser_->GetTabStripModel()->GetTabAtIndex(
                          tab_index))
               ->thumbnail()
               ->has_data();

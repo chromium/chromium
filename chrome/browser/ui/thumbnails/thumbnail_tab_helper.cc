@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_readiness_tracker.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler_impl.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -29,6 +30,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/native_theme.h"
@@ -271,9 +273,11 @@ void ThumbnailTabHelper::CaptureThumbnailOnTabBackgrounded() {
                      time_of_call));
 }
 
-ThumbnailTabHelper::ThumbnailTabHelper(content::WebContents* contents)
-    : content::WebContentsUserData<ThumbnailTabHelper>(*contents),
-      content::WebContentsObserver(contents),
+DEFINE_USER_DATA(ThumbnailTabHelper);
+
+ThumbnailTabHelper::ThumbnailTabHelper(tabs::TabInterface& tab,
+                                       content::WebContents* contents)
+    : content::WebContentsObserver(contents),
       state_(std::make_unique<TabStateTracker>(this, contents)),
       background_capturer_(std::make_unique<BackgroundThumbnailVideoCapturer>(
           contents,
@@ -282,12 +286,18 @@ ThumbnailTabHelper::ThumbnailTabHelper(content::WebContents* contents)
               base::Unretained(this)))),
       thumbnail_(base::MakeRefCounted<ThumbnailImage>(
           state_.get(),
-          DiscardedTabThumbnailData::TakeThumbnailDataIfAvailable(contents))) {
+          DiscardedTabThumbnailData::TakeThumbnailDataIfAvailable(contents))),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   is_tab_discarded_ = contents->WasDiscarded();
 }
 
 ThumbnailTabHelper::~ThumbnailTabHelper() {
   StopVideoCapture();
+}
+
+// static
+ThumbnailTabHelper* ThumbnailTabHelper::From(tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
 }
 
 // static
@@ -443,5 +453,3 @@ void ThumbnailTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   is_tab_discarded_ = false;
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ThumbnailTabHelper);
