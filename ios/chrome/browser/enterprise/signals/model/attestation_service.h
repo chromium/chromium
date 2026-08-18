@@ -8,30 +8,37 @@
 #import <map>
 #import <string>
 
+#import "base/callback_list.h"
 #import "base/functional/callback.h"
 
-// Service interface for device attestation evaluations.
+// Interface for retrieving device attestation snapshots on iOS.
 class AttestationService {
  public:
-  using InitializeCallback = base::OnceCallback<void(bool success)>;
-  using SnapshotCallback =
-      base::OnceCallback<void(const std::string& snapshot)>;
+  using ContentBinding = std::map<std::string, std::string>;
+  using InitializeCallback = base::OnceCallback<void(bool)>;
+  using SnapshotCallback = base::OnceCallback<void(std::string)>;
 
+  AttestationService() = default;
   virtual ~AttestationService() = default;
 
-  // Initializes attestation features and fetches any required challenges.
-  virtual void Initialize(InitializeCallback callback) = 0;
+  AttestationService(const AttestationService&) = delete;
+  AttestationService& operator=(const AttestationService&) = delete;
 
-  // Returns whether the attestation challenge is ready for snapshots.
-  virtual bool IsReady() const = 0;
+  // Initializes the attestation service asynchronously.
+  // Runs `callback` when initialization is complete with a boolean indicating
+  // success or failure. Returns a subscription to manage the callback lifetime.
+  virtual base::CallbackListSubscription Initialize(
+      InitializeCallback callback) = 0;
 
-  // Produces a cryptographic snapshot of the attestation challenge, bound to
-  // the given `content_binding` key-value pairs. Invokes `callback` with the
-  // snapshot data, or an empty string on failure.
-  virtual void GetSnapshot(
-      const std::map<std::string, std::string>& content_binding,
+  // Returns true if the service is initialized and ready to create snapshots.
+  virtual bool IsReady() = 0;
+
+  // Requests an attestation snapshot with `content_binding`. If the service is
+  // not ready, it will asynchronously initialize first. Returns a subscription
+  // to manage the callback lifetime.
+  virtual base::CallbackListSubscription GetSnapshot(
+      const ContentBinding& content_binding,
       SnapshotCallback callback) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_MODEL_ATTESTATION_SERVICE_H_
-
