@@ -39,6 +39,12 @@ public class MimeTypeUtils {
     /** The MIME type for plain text. */
     public static final String TEXT_PLAIN_MIME_TYPE = "text/plain";
 
+    /** The MIME type for HTML text. */
+    public static final String TEXT_HTML_MIME_TYPE = "text/html";
+
+    /** The MIME type for any text file. */
+    public static final String TEXT_ANY_MIME_TYPE = "text/*";
+
     /** The MIME type prefix for any image. */
     public static final String IMAGE_PREFIX_MIME_TYPE = "image/";
 

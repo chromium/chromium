@@ -1443,6 +1443,13 @@ by a child template that "extends" this file.
           android:grantUriPermissions="true">
       </provider>
 
+      <!-- Provider for oversized clipboard payloads, e.g. large HTML or text. -->
+      <provider android:name="org.chromium.ui.base.ClipboardTextDataProvider"
+          android:authorities="{{ manifest_package }}.ClipboardTextDataProvider"
+          android:exported="false"
+          android:grantUriPermissions="true">
+      </provider>
+
        <!-- Provider for incognito pdf page. -->
       <provider android:name="org.chromium.chrome.browser.pdf.PdfContentProvider"
           android:authorities="{{ manifest_package }}.PdfContentProvider"
