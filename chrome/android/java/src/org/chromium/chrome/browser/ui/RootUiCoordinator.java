@@ -777,6 +777,15 @@ public class RootUiCoordinator
                             }
 
                             @Override
+                            public boolean isPageZoomSupported() {
+                                Tab tab = mActivityTabProvider.get();
+                                if (tab == null || tab.isNativePage()) {
+                                    return false;
+                                }
+                                return true;
+                            }
+
+                            @Override
                             public boolean canShowPopupWindow() {
                                 if (ApplicationStatus.getLastTrackedFocusedActivity()
                                         != mActivity) {

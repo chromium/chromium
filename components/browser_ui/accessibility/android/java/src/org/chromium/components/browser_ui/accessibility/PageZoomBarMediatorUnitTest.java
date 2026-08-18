@@ -88,6 +88,7 @@ public class PageZoomBarMediatorUnitTest {
         when(mPageZoomManagerDelegateMock.getWebContents()).thenReturn(mWebContentsMock);
         when(mPageZoomManagerDelegateMock.getBrowserContextHandle())
                 .thenReturn(mBrowserContextHandleMock);
+        when(mPageZoomManagerDelegateMock.isPageZoomSupported()).thenReturn(true);
 
         mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
         mModel.set(PageZoomProperties.DEFAULT_ZOOM_FACTOR, 0.0);

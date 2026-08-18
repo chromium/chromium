@@ -70,6 +70,7 @@ public class PageZoomManagerUnitTest {
         when(mPageZoomManagerDelegateMock.getWebContents()).thenReturn(mWebContentsMock);
         when(mPageZoomManagerDelegateMock.getBrowserContextHandle())
                 .thenReturn(mBrowserContextHandleMock);
+        when(mPageZoomManagerDelegateMock.isPageZoomSupported()).thenReturn(true);
 
         mManager = new PageZoomManager(mPageZoomManagerDelegateMock);
     }
@@ -208,6 +209,22 @@ public class PageZoomManagerUnitTest {
         when(mWebContentsMock.getLastCommittedUrl()).thenReturn(currentGurl);
 
         Assert.assertTrue(mManager.canShowPopupWindow("pending.com"));
+        Assert.assertFalse(mManager.canShowPopupWindow("example.com"));
+    }
+
+    @Test
+    public void testIsPageZoomSupported_ReturnsDelegateValue() {
+        when(mPageZoomManagerDelegateMock.isPageZoomSupported()).thenReturn(true);
+        Assert.assertTrue(mManager.isPageZoomSupported());
+
+        when(mPageZoomManagerDelegateMock.isPageZoomSupported()).thenReturn(false);
+        Assert.assertFalse(mManager.isPageZoomSupported());
+    }
+
+    @Test
+    public void testCanShowPopupWindow_UnsupportedPageZoom() {
+        when(mPageZoomManagerDelegateMock.isPageZoomSupported()).thenReturn(false);
+        when(mPageZoomManagerDelegateMock.canShowPopupWindow()).thenReturn(true);
         Assert.assertFalse(mManager.canShowPopupWindow("example.com"));
     }
 }

@@ -129,13 +129,18 @@ public class PageZoomManager {
         return mDelegate.isCurrentTabNull();
     }
 
+    /** Returns true if page zoom is supported for the current tab. */
+    public boolean isPageZoomSupported() {
+        return mDelegate.isPageZoomSupported();
+    }
+
     /**
      * Returns true if the window/activity for this manager currently has window focus, the current
      * tab is not a native page, the overflow menu is not showing, and the zoom event host matches
      * the current/pending tab.
      */
-    public boolean canShowPopupWindow(String eventHost) {
-        if (!mDelegate.canShowPopupWindow()) return false;
+    public boolean canShowPopupWindow(@Nullable String eventHost) {
+        if (!isPageZoomSupported() || !mDelegate.canShowPopupWindow()) return false;
 
         WebContents webContents = getWebContents();
         if (webContents == null) return false;

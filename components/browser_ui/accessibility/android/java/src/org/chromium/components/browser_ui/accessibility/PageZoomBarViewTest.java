@@ -164,6 +164,11 @@ public class PageZoomBarViewTest {
                     }
 
                     @Override
+                    public boolean isPageZoomSupported() {
+                        return true;
+                    }
+
+                    @Override
                     public boolean canShowPopupWindow() {
                         return true;
                     }

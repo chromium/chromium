@@ -105,6 +105,7 @@ public class PageZoomIndicatorCoordinator {
     }
 
     private void showInternal(boolean shouldHaveDismissalTimer) {
+        if (!mManager.isPageZoomSupported()) return;
         View anchorView = mZoomIndicatorViewSupplier.get();
         if (anchorView == null
                 || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(anchorView.getContext())) {
@@ -177,6 +178,7 @@ public class PageZoomIndicatorCoordinator {
 
     /** Returns true if the given zoom level is the default zoom level for the current Profile. */
     public boolean isZoomLevelDefault() {
+        if (!mManager.isPageZoomSupported()) return true;
         if (mMediator.isCurrentTabNull()) return true;
         return mMediator.isZoomLevelDefault();
     }
@@ -188,6 +190,7 @@ public class PageZoomIndicatorCoordinator {
 
     /** Sets the tooltip to the current zoom level. */
     public void setTooltip() {
+        if (!mManager.isPageZoomSupported()) return;
         if (mOnZoomLevelChangedCallback != null) {
             WebContents webContents = mManager.getWebContents();
             // Depending on when getZoomLevel is called, the web contents may be transitioning
