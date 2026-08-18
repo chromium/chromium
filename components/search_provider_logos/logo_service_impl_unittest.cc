@@ -375,6 +375,7 @@ class LogoServiceImplTest : public ::testing::Test {
     // a background sequence after the LogoService's destruction. Ensure that
     // |logo_cache_| is actually destroyed before the test ends to make gmock
     // happy.
+    logo_cache_ = nullptr;
     logo_service_->Shutdown();
     logo_service_.reset();
     task_environment_.RunUntilIdle();
@@ -423,7 +424,7 @@ class LogoServiceImplTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   base::SimpleTestClock test_clock_;
-  raw_ptr<NiceMock<MockLogoCache>, AcrossTasksDanglingUntriaged> logo_cache_;
+  raw_ptr<NiceMock<MockLogoCache>> logo_cache_;
 
   // Used for mocking |logo_service_| URLs.
   network::TestURLLoaderFactory test_url_loader_factory_;
