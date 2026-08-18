@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_BUILTINS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_BUILTINS_H_
 
+#include <memory>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
@@ -28,6 +31,20 @@ class CORE_EXPORT SanitizerBuiltins {
 // The builtin configs are generated. The methods below may do non-trivial work.
 // Callers should go through the SanitizerBuiltins static methods above.
 namespace sanitizer_generated_builtins {
+
+// Helpers for the generated builtin configs below: build a SanitizerNameSet /
+// SanitizerNameMap from static tables of QualifiedName pointers.
+CORE_EXPORT std::unique_ptr<SanitizerNameSet> MakeNameSet(
+    base::span<const QualifiedName* const> names);
+
+struct ElementAttrs {
+  const QualifiedName* element;
+  base::span<const QualifiedName* const> attrs;
+};
+
+CORE_EXPORT SanitizerNameMap
+MakeNameMap(base::span<const ElementAttrs> entries);
+
 // Default safe + baseline configs.
 //
 // Manually re-generate with:

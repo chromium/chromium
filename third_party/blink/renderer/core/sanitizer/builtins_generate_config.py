@@ -47,74 +47,119 @@ def bool(value):
     return "true" if value else "false"
 
 
-def generate_nameset(name, default_config, formatter_fn, output):
-    if name in default_config:
-        print("  /* %s */" % name, file=output)
-        print("  std::make_unique<SanitizerNameSet>(", file=output)
-        print("    std::initializer_list<SanitizerNameSet::ValueType>({",
-              file=output)
+def table_name(name):
+    return f"k{name[0].upper()}{name[1:]}"
+
+
+def generate_nameset_table(name, default_config, formatter_fn, output):
+    if default_config.get(name):
+        print(
+            f"  static const QualifiedName* const {table_name(name)}[] = "
+            "{",
+            file=output)
         for item in default_config.get(name):
-            print("      %s," % formatter_fn(item), file=output)
-        print("    })", file=output)
-        print("  ),", file=output)
+            print(f"      &{formatter_fn(item)},", file=output)
+        print("  };\n", file=output)
+
+
+def generate_nameset_arg(name, default_config, output):
+    if name not in default_config:
+        print(f"  /* {name} */ nullptr,", file=output)
+    elif not default_config.get(name):
+        print(f"  /* {name} */ std::make_unique<SanitizerNameSet>(),",
+              file=output)
     else:
-        print("  /* %s */ nullptr," % name, file=output)
+        print(f"  /* {name} */ MakeNameSet({table_name(name)}),", file=output)
 
 
-def generate_namemap(key, subkey, default_config, output):
-    print("  /* %s[%s] */" % (key, subkey), file=output)
-    print("  SanitizerNameMap(", file=output)
-    print("    std::initializer_list<SanitizerNameMap::ValueType>({",
-          file=output)
-    for elem in default_config.get(key, []):
-        if subkey in elem:
-            print("      SanitizerNameMap::ValueType(", file=output)
-            print("        %s," % element(elem), file=output)
+def namemap_table_name(key, subkey):
+    # Upper-case only the first letter. (str.capitalize() would lower-case
+    # the remainder, e.g. "removeAttributes" -> "Removeattributes".)
+    return f"k{key[0].upper()}{key[1:]}{subkey[0].upper()}{subkey[1:]}"
+
+
+def generate_namemap_tables(key, subkey, default_config, output):
+    entries = [elem for elem in default_config.get(key, []) if subkey in elem]
+    if not entries:
+        return
+    table = namemap_table_name(key, subkey)
+    for index, elem in enumerate(entries):
+        if elem.get(subkey):
+            print(f"  /* {elem['name']} */", file=output)
             print(
-                "        SanitizerNameMap::MappedType("
-                "std::initializer_list<"
-                "SanitizerNameMap::MappedType::ValueType>"
-                "({",
+                f"  static const QualifiedName* const {table}_{index}[] = "
+                "{",
                 file=output)
-            for attr in elem.get(subkey, {}):
-                print("          %s," % attribute(attr), file=output)
-            print("      }))),", file=output)
-    print("    })", file=output)
-    print("  ),", file=output)
+            for attr in elem.get(subkey):
+                print(f"      &{attribute(attr)},", file=output)
+            print("  };\n", file=output)
+    print(f"  static const ElementAttrs {table}[] = {{", file=output)
+    for index, elem in enumerate(entries):
+        if elem.get(subkey):
+            print(f"      {{&{element(elem)}, {table}_{index}}},", file=output)
+        else:
+            print(f"      {{&{element(elem)}, {{}}}},", file=output)
+    print("  };\n", file=output)
+
+
+def generate_namemap_arg(key, subkey, default_config, output):
+    entries = [elem for elem in default_config.get(key, []) if subkey in elem]
+    if entries:
+        print(
+            f"  /* {key}[{subkey}] */ "
+            f"MakeNameMap({namemap_table_name(key, subkey)}),",
+            file=output)
+    else:
+        print(f"  /* {key}[{subkey}] */ SanitizerNameMap(),", file=output)
 
 
 def generate_stringset(name, default_config, output):
     if name in default_config:
-        print("  /* %s */" % name, file=output)
+        print(f"  /* {name} */", file=output)
         print("  std::make_unique<HashSet<AtomicString>>(", file=output)
         print("    std::initializer_list<AtomicString>({", file=output)
         for item in default_config.get(name):
-            print("      \"%s\"," % item, file=output)
+            print(f"      \"{item}\",", file=output)
         print("    })", file=output)
         print("  ),", file=output)
     else:
-        print("  /* %s */ nullptr," % name, file=output)
+        print(f"  /* {name} */ nullptr,", file=output)
+
+
+def generate_tables(default_config, output):
+    generate_nameset_table("elements", default_config, element, output)
+    generate_nameset_table("removeElements", default_config, element, output)
+    generate_nameset_table("replaceWithChildrenElements", default_config,
+                           element, output)
+    generate_nameset_table("attributes", default_config, attribute, output)
+    generate_nameset_table("removeAttributes", default_config, attribute,
+                           output)
+    generate_namemap_tables("elements", "attributes", default_config, output)
+    generate_namemap_tables("elements", "removeAttributes", default_config,
+                            output)
+
 
 def generate_config(default_config, output):
-    generate_nameset("elements", default_config, element, output)
-    generate_nameset("removeElements", default_config, element, output)
-    generate_nameset("replaceWithChildrenElements", default_config, element,
-                     output)
-    generate_nameset("attributes", default_config, attribute, output)
-    generate_nameset("removeAttributes", default_config, attribute, output)
-    generate_namemap("elements", "attributes", default_config, output)
-    generate_namemap("elements", "removeAttributes", default_config, output)
+    generate_nameset_arg("elements", default_config, output)
+    generate_nameset_arg("removeElements", default_config, output)
+    generate_nameset_arg("replaceWithChildrenElements", default_config, output)
+    generate_nameset_arg("attributes", default_config, output)
+    generate_nameset_arg("removeAttributes", default_config, output)
+    generate_namemap_arg("elements", "attributes", default_config, output)
+    generate_namemap_arg("elements", "removeAttributes", default_config,
+                         output)
     generate_stringset("processingInstructions", default_config, output)
     generate_stringset("removeProcessingInstructions", default_config, output)
-    print("  /* comments */ %s," % bool(default_config.get("comments")),
+    print(f"  /* comments */ {bool(default_config.get('comments'))},",
           file=output)
-    print("  /* dataAttributes */ %s" %
-          bool(default_config.get("dataAttributes")),
-          file=output)
+    print(
+        "  /* dataAttributes */ "
+        f"{bool(default_config.get('dataAttributes'))}",
+        file=output)
 
 
 def generate_file(name, default_config, output):
-    print(lstrip("""
+    print(lstrip(f"""
         // Copyright 2024 The Chromium Authors
         // Use of this source code is governed by a BSD-style license that can be
         // found in the LICENSE file.
@@ -134,11 +179,13 @@ def generate_file(name, default_config, output):
         #include "third_party/blink/renderer/core/xml_names.h"
         #include "third_party/blink/renderer/core/xmlns_names.h"
 
-        namespace blink {
-        namespace sanitizer_generated_builtins {
+        namespace blink {{
+        namespace sanitizer_generated_builtins {{
 
-        Sanitizer* %s() {
-          Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>(""" % name),
+        Sanitizer* {name}() {{"""),
+          file=output)
+    generate_tables(default_config, output)
+    print("  Sanitizer* sanitizer = MakeGarbageCollected<Sanitizer>(",
           file=output)
     generate_config(default_config, output)
     print(lstrip("""
@@ -169,7 +216,7 @@ def set_elements_cpp_mapping(all_known):
             cppname = "FE" + cppname[2:]
         cppname = cppname[0].upper() + cppname[1:]
         ELEMENT_CPP_MAP[(elem["namespace"], elem["name"])] = (
-            "%s_names::k%sTag" % (elem["cppnamespace"].lower(), cppname))
+            f"{elem['cppnamespace'].lower()}_names::k{cppname}Tag")
 
 
 def set_attributes_cpp_mapping(all_known):
@@ -184,7 +231,7 @@ def set_attributes_cpp_mapping(all_known):
             cppname = cppname[0:pos] + cppname[pos + 1].upper() + cppname[pos +
                                                                           2:]
         ATTRIBUTE_CPP_MAP[(attr["namespace"], attr["name"].lower())] = (
-            "%s_names::k%sAttr" % (attr["cppnamespace"].lower(), cppname))
+            f"{attr['cppnamespace'].lower()}_names::k{cppname}Attr")
 
 
 def set_cpp_mapping(all_known):

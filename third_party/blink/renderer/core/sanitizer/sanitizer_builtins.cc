@@ -26,6 +26,31 @@ const SanitizerNameSet BuildNonReplaceableElements() {
 
 }  // anonymous namespace
 
+namespace sanitizer_generated_builtins {
+
+std::unique_ptr<SanitizerNameSet> MakeNameSet(
+    base::span<const QualifiedName* const> names) {
+  auto set = std::make_unique<SanitizerNameSet>();
+  for (const QualifiedName* name : names) {
+    set->insert(*name);
+  }
+  return set;
+}
+
+SanitizerNameMap MakeNameMap(base::span<const ElementAttrs> entries) {
+  SanitizerNameMap map;
+  for (const ElementAttrs& entry : entries) {
+    SanitizerNameSet attrs;
+    for (const QualifiedName* attr : entry.attrs) {
+      attrs.insert(*attr);
+    }
+    map.insert(*entry.element, std::move(attrs));
+  }
+  return map;
+}
+
+}  // namespace sanitizer_generated_builtins
+
 const Sanitizer* SanitizerBuiltins::GetDefaultUnsafe() {
   DEFINE_STATIC_LOCAL(Persistent<Sanitizer>, default_unsafe_,
                       (Sanitizer::CreateEmpty()));
