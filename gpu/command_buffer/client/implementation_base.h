@@ -161,6 +161,14 @@ class GLES2_IMPL_EXPORT ImplementationBase
   base::WeakPtrFactory<ImplementationBase> weak_ptr_factory_{this};
 };
 
+// Helper for copying 2D pixel data without touching the padding between rows.
+GLES2_IMPL_EXPORT void RelaxedAtomicWriteMemcpyImageRowsSkippingPadding(
+    base::span<uint8_t> dst,
+    base::span<uint8_t> src,
+    size_t row_bytes,
+    size_t height,
+    size_t stride);
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_CLIENT_IMPLEMENTATION_BASE_H_

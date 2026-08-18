@@ -427,4 +427,24 @@ void ImplementationBase::RunIfContextNotLost(base::OnceClosure callback) {
   }
 }
 
+void RelaxedAtomicWriteMemcpyImageRowsSkippingPadding(base::span<uint8_t> dst,
+                                                      base::span<uint8_t> src,
+                                                      size_t row_bytes,
+                                                      size_t height,
+                                                      size_t stride) {
+  // We need to use `RelaxedAtomicWriteMemcpy` because we might be writing into
+  // memory observed by JS at the same time.
+  if (row_bytes == stride) {
+    base::subtle::RelaxedAtomicWriteMemcpy(dst, src);
+  } else {
+    // If there's padding between rows, copy each row separately to leave
+    // padding untouched
+    for (size_t y = 0; y < height; ++y) {
+      base::subtle::RelaxedAtomicWriteMemcpy(
+          dst.subspan(y * stride, row_bytes),
+          src.subspan(y * stride, row_bytes));
+    }
+  }
+}
+
 }  // namespace gpu

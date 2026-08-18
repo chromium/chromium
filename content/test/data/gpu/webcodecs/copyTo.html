@@ -198,6 +198,78 @@ Take frames coming from various sources and read them using copyTo().
       worker.terminate();
     }
 
+    // Test that padding bytes (stride/offset padding) are not overwritten.
+    {
+      const PAD = 0xAA;
+      const options = {
+        layout: [
+          {offset: 5, stride: frame.displayWidth * 4 + 16}, // plenty of padding
+        ],
+      };
+      if (frame.format === 'I420' || frame.format === 'I420A') {
+        options.layout = [
+          {offset: 5, stride: frame.displayWidth + 16},
+          {offset: (frame.displayWidth + 16) * frame.displayHeight + 10, stride: frame.displayWidth / 2 + 16},
+          {offset: (frame.displayWidth + 16) * frame.displayHeight + (frame.displayWidth / 2 + 16) * (frame.displayHeight / 2) + 20, stride: frame.displayWidth / 2 + 16},
+        ];
+        if (frame.format === 'I420A') {
+          options.layout.push({
+            offset: (frame.displayWidth + 16) * frame.displayHeight + (frame.displayWidth / 2 + 16) * (frame.displayHeight / 2) * 2 + 30,
+            stride: frame.displayWidth + 16
+          });
+        }
+      } else if (frame.format === 'NV12') {
+        options.layout = [
+          {offset: 5, stride: frame.displayWidth + 16},
+          {offset: (frame.displayWidth + 16) * frame.displayHeight + 10, stride: frame.displayWidth + 16},
+        ];
+      }
+
+      let size_with_padding = frame.allocationSize(options);
+      let buf = new ArrayBuffer(size_with_padding);
+      let view = new Uint8Array(buf);
+      view.fill(PAD);
+
+      let layout = await frame.copyTo(buf, options);
+
+      // Verify that the layout matches what we specified
+      for (let plane = 0; plane < layout.length; plane++) {
+        TEST.assert(layout[plane].offset === options.layout[plane].offset, "offset mismatch");
+        TEST.assert(layout[plane].stride === options.layout[plane].stride, "stride mismatch");
+      }
+
+      // We want to verify that the bytes between rows (the padding bytes) are untouched (still PAD).
+      for (let plane = 0; plane < layout.length; plane++) {
+        let plane_offset = layout[plane].offset;
+        let stride = layout[plane].stride;
+        let plane_height = frame.displayHeight;
+        let plane_width = frame.displayWidth;
+        if (plane > 0 && (frame.format === 'I420' || frame.format === 'I420A' || frame.format === 'NV12')) {
+          plane_height /= 2;
+          if (frame.format === 'I420' || frame.format === 'I420A') {
+            plane_width /= 2;
+          }
+        }
+        let bytes_per_pixel = 1;
+        if (frame.format === 'RGBA' || frame.format === 'RGBX' || frame.format === 'BGRA' || frame.format === 'BGRX') {
+          bytes_per_pixel = 4;
+        } else if (frame.format === 'NV12' && plane === 1) {
+          bytes_per_pixel = 2; // UV interleaved
+        }
+
+        let row_bytes = plane_width * bytes_per_pixel;
+        for (let y = 0; y < plane_height; ++y) {
+          let row_start = plane_offset + y * stride;
+          for (let x = row_bytes; x < stride; ++x) {
+            let pad_idx = row_start + x;
+            if (pad_idx < size_with_padding) {
+              TEST.assert(view[pad_idx] === PAD, `Padding byte overwritten at index ${pad_idx} for plane ${plane}, row ${y}, x ${x}. Expected ${PAD}, got ${view[pad_idx]}`);
+            }
+          }
+        }
+      }
+    }
+
     // Validate pixels
     if (!arg.validate_camera_frames && source_type == 'camera') {
       TEST.log("Skip copyTo result validation");
