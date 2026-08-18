@@ -954,31 +954,6 @@ IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetFocusedTabStateV2WithNavigationWhenInactive) {
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  TrackGlicInstanceWithId(GetGlicInstance()->id());
-  // Confirm that the observer is notified through getFocusedTabState of the
-  // initial state, i.e. the first page navigation. It should then hide.
-  ExecuteJsTest();
-
-  // Navigate to another page in the existing tab.
-  RunTestSequence(NavigateWebContents(
-      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
-                     "/scrollable_page_with_content.html")));
-
-  // Open a new tab, navigate to a another page, and open the glic window.
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab,
-                         InProcessBrowserTest::embedded_test_server()->GetURL(
-                             "/glic/browser_tests/test.html")),
-      OpenGlic(GlicInstrumentMode::kHostAndContents));
-
-  // Confirm that the observer only notified of this last state.
-  ContinueJsTest();
-}
-
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithoutPermission) {
   // In multi-instance mode, we only fetch context from pinned tabs.
   SKIP_TEST_FOR_MULTI_INSTANCE();

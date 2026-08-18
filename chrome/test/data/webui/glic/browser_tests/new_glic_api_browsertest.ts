@@ -458,6 +458,32 @@ class ApiTests extends ApiTestFixtureBase {
     assertFalse(!!focus3.hasNoFocus);
   }
 
+  async testGetFocusedTabStateV2WithNavigationWhenInactive() {
+    assertDefined(this.host.getFocusedTabStateV2);
+    const sequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
+    const focus: FocusedTabData = await sequence.next();
+    assertDefined(focus.hasFocus);
+    assertEquals(
+        new URL(focus.hasFocus.tabData.url).pathname, '/test_data/page.html',
+        `url=${focus.hasFocus.tabData.url}`);
+    assertFalse(!!focus.hasNoFocus);
+
+    // After Glic is closed, navigation occurs.
+    await this.advanceToNextStep();
+
+    // The client should receive the updated state even while closed (since it's
+    // kept alive).
+    const focus2: FocusedTabData = await sequence.next();
+    assertDefined(focus2.hasFocus);
+    assertEquals(
+        new URL(focus2.hasFocus.tabData.url).pathname, '/test_data/page2.html',
+        `url=${focus2.hasFocus.tabData.url}`);
+
+    // Reopen the panel.
+    await this.advanceToNextStep();
+  }
+
   async testGetZoomLevel() {
     assertDefined(this.host.getZoomLevel);
     const zoomLevelSequence = observeSequence(this.host.getZoomLevel());

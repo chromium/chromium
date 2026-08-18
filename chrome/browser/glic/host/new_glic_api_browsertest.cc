@@ -1097,6 +1097,25 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetFocusedTabStateV2WithNavigation) {
       {second_tab->GetHandle()});
   ContinueJsTest();
 }
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testGetFocusedTabStateV2WithNavigationWhenInactive) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  // Prevent the instance from being deleted when closed.
+  PreventDeletionOnClose();
+  ExecuteJsTest();
+
+  // Close the panel.
+  auto* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK(CloseGlicForTabAndWait(tab));
+
+  // Navigate the tab.
+  NavigateTab(*tab, GetTestUrl("page2.html"));
+  ContinueJsTest();
+
+  // Reopen Glic.
+  ASSERT_OK(OpenGlicForActiveTab());
+  ContinueJsTest();
+}
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetZoomLevel) {
   // Confirm that the observer is notified through getZoomLevel of the initial
   // state, i.e. zoom level of 1.0.

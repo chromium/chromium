@@ -50,50 +50,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
   }
 
-  async testGetFocusedTabStateV2WithNavigationWhenInactive() {
-    // Initial state.
-    assertDefined(this.host.getFocusedTabStateV2);
-    await this.closePanelAndWaitUntilInactive();
-    const sequence =
-        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
-    const focus = await sequence.next();
-    assertDefined(focus.hasFocus);
-    assertEquals(
-        new URL(focus.hasFocus.tabData.url).pathname,
-        '/glic/browser_tests/test.html', `url=${focus.hasFocus.tabData.url}`);
-    assertFalse(!!focus.hasNoFocus);
-
-    await this.closePanelAndWaitUntilInactive();
-
-    // After we hide, two navigations will occur. The second in a new tab.
-    await this.advanceToNextStep();
-
-    const focus2 = await runUntil(async () => {
-      const nextFocus = await sequence.next();
-
-      // After a navigation occurs in a new tab, there could first exist a
-      // transitory states where the focus is not yet available, is empty, or
-      // still previous page.
-      if (!nextFocus || !!nextFocus.hasNoFocus || !nextFocus.hasFocus) {
-        return undefined;
-      }
-
-      const focused_url = nextFocus.hasFocus.tabData.url;
-      if (focused_url === '' ||
-          focused_url.endsWith('scrollable_page_with_content.html')) {
-        return undefined;
-      }
-      return nextFocus;
-    });
-
-    // Final state, after the tab is fully loaded.
-    assertDefined(focus2.hasFocus);
-    assertEquals(
-        new URL(focus2.hasFocus.tabData.url).pathname,
-        '/glic/browser_tests/test.html', `url=${focus2.hasFocus.tabData.url}`);
-    assertFalse(!!focus2.hasNoFocus);
-  }
-
   async testSingleFocusedTabUpdatesOnTabEvents() {
     assertDefined(this.host.getFocusedTabStateV2);
     const sequence =
