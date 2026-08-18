@@ -4,11 +4,9 @@
 
 'use strict';
 
-function isRec709(colorSpace, fullRange) {
-  return colorSpace.primaries === 'bt709' &&
-      (colorSpace.transfer === 'bt709' ||
-       colorSpace.transfer === 'iec61966-2-1') &&
-      colorSpace.matrix === 'bt709' && colorSpace.fullRange === fullRange;
+function isRec709(colorSpace) {
+  return colorSpace.primaries === 'bt709' && colorSpace.transfer === 'bt709' &&
+      colorSpace.matrix === 'bt709' && colorSpace.fullRange === false;
 }
 
 function isSRGB(colorSpace) {
@@ -17,11 +15,11 @@ function isSRGB(colorSpace) {
       colorSpace.fullRange === true;
 }
 
-function isRec601(colorSpace, fullRange) {
+function isRec601(colorSpace) {
   return colorSpace.primaries === 'smpte170m' &&
       (colorSpace.transfer === 'smpte170m' ||
        colorSpace.transfer === 'bt709') &&
-      colorSpace.matrix === 'smpte170m' && colorSpace.fullRange === fullRange;
+      colorSpace.matrix === 'smpte170m' && colorSpace.fullRange === false;
 }
 
 function makePixelArray(byteLength) {
@@ -51,23 +49,11 @@ function makeFrame(type, timestamp) {
     case 'I420': {
       const yuvByteLength = 1.5 * FRAME_WIDTH * FRAME_HEIGHT;
       let data = makePixelArray(yuvByteLength);
-      init.colorSpace = {
-        matrix: 'smpte170m',
-        primaries: 'smpte170m',
-        transfer: 'smpte170m',
-        fullRange: false
-      };
       return new VideoFrame(data, {...init, format: 'I420'});
     }
     case 'RGBA': {
       const rgbaByteLength = 4 * FRAME_WIDTH * FRAME_HEIGHT;
       let data = makePixelArray(rgbaByteLength);
-      init.colorSpace = {
-        matrix: 'rgb',
-        primaries: 'bt709',
-        transfer: 'iec61966-2-1',
-        fullRange: true
-      };
       return new VideoFrame(data, {...init, format: 'RGBA'});
     }
   }
@@ -94,6 +80,7 @@ async function main(arg) {
 
   const frameDuration = 16666;
   let inputFrames = [
+    // Use I420/BT.709 first since default macOS colorspace is sRGB.
     makeFrame('I420', 0 * frameDuration),
     makeFrame('I420', 1 * frameDuration),
     makeFrame('RGBA', 2 * frameDuration),
@@ -102,16 +89,6 @@ async function main(arg) {
   let outputChunks = [];
   let outputMetadata = [];
   let errors = 0;
-
-  const origReportFailure = TEST.reportFailure.bind(TEST);
-  TEST.reportFailure = function(error) {
-    for (let i = 0; i < outputMetadata.length; i++) {
-      TEST.log(
-          `outputMetadata[${i}].decoderConfig.colorSpace: ` +
-          JSON.stringify(outputMetadata[i]?.decoderConfig?.colorSpace));
-    }
-    origReportFailure(error);
-  };
 
   const init = {
     output(chunk, metadata) {
@@ -138,36 +115,30 @@ async function main(arg) {
   TEST.assert_eq(
       outputMetadata.length, 4, 'Unexpected number of output metadata');
 
-  // I420 input should preserve rec601 limited range.
+  // I420 passthrough should preserve default rec709 color space.
   TEST.assert_eq(inputFrames[0].format, 'I420', 'inputs[0] is I420');
-  TEST.assert(
-      isRec601(inputFrames[0].colorSpace, /*fullRange=*/ false),
-      'inputs[0] is rec601 limited');
+  TEST.assert(isRec709(inputFrames[0].colorSpace), 'inputs[0] is rec709');
   TEST.assert_eq(outputChunks[0].type, 'key', 'outputs[0] is key');
   TEST.assert(
       'decoderConfig' in outputMetadata[0], 'metadata[0] has decoderConfig');
   TEST.assert(
-      isRec601(
-          outputMetadata[0].decoderConfig.colorSpace, /*fullRange=*/ false),
-      'metadata[0] is rec601 limited');
+      isRec709(outputMetadata[0].decoderConfig.colorSpace),
+      'metadata[0] is rec709');
 
   // Next output may or may not be a key frame w/ metadata (up to
-  // encoder). Corresponding input is still I420 rec601, so if metadata is
+  // encoder). Corresponding input is still I420 rec709, so if metadata is
   // given, we expect same colorSpace as for the previous frame.
   TEST.assert_eq(inputFrames[1].format, 'I420', 'inputs[1] is I420');
-  TEST.assert(
-      isRec601(inputFrames[1].colorSpace, /*fullRange=*/ false),
-      'inputs[1] is rec601 limited');
+  TEST.assert(isRec709(inputFrames[1].colorSpace, 'inputs[1] is rec709'));
   if ('decoderConfig' in outputMetadata[1]) {
     TEST.assert(
-        isRec601(
-            outputMetadata[1].decoderConfig.colorSpace, /*fullRange=*/ false),
-        'metadata[1] is rec601 limited');
+        isRec709(outputMetadata[1].decoderConfig.colorSpace),
+        'metadata[1] is rec709');
   }
 
   // Next output should be a key frame and have accompanying metadata
-  // because the corresponding input format changed to RGBA (sRGB), which
-  // converts to YUV w/ rec709 full range during encoding.
+  // because the corresponding input format changed to RGBA, which means
+  // we libyuv will convert to I420 w/ rec601 during encoding.
   TEST.assert_eq(inputFrames[2].format, 'RGBA', 'inputs[2] is RGBA');
   TEST.assert(isSRGB(inputFrames[2].colorSpace), 'inputs[2] is sRGB');
 
@@ -175,8 +146,8 @@ async function main(arg) {
   TEST.assert(
       'decoderConfig' in outputMetadata[2], 'metadata[2] has decoderConfig');
   TEST.assert(
-      isRec709(outputMetadata[2].decoderConfig.colorSpace, /*fullRange=*/ true),
-      'metadata[2] is rec709 full');
+      isRec601(outputMetadata[2].decoderConfig.colorSpace),
+      'metadata[2] is rec601');
 
   // Next output may or may not be a key frame w/ metadata (up to
   // encoder). Corresponding input is still RGBA sRGB, so if metadata is
@@ -185,16 +156,126 @@ async function main(arg) {
   TEST.assert(isSRGB(inputFrames[3].colorSpace), 'inputs[3] is sRGB');
   if ('decoderConfig' in outputMetadata[3]) {
     TEST.assert(
-        isRec709(
-            outputMetadata[3].decoderConfig.colorSpace, /*fullRange=*/ true),
-        'metadata[3] is rec709 full');
+        isRec601(outputMetadata[3].decoderConfig.colorSpace),
+        'metadata[3] is rec601');
   }
 
   for (let frame of inputFrames) {
     frame.close();
   }
 
-  if (TEST.success) {
+  // Now decode the frames and ensure the encoder embedded the right color
+  // space information in the bitstream.
+
+  // VP8 doesn't have embedded color space information in the bitstream.
+  if (arg.codec == 'vp8') {
     TEST.reportSuccess();
+    return;
   }
+
+  let decodedFrames = [];
+  const decoderInit = {
+    output(frame) {
+      decodedFrames.push(frame);
+    },
+    error(e) {
+      errors++;
+      TEST.log(e);
+    }
+  };
+
+  let decoder = new VideoDecoder(decoderInit);
+  for (var i = 0; i < outputChunks.length; ++i) {
+    // Multiple configs may be emitted during encoding, they should all be the
+    // same since we drop the color space though.
+    if ('decoderConfig' in outputMetadata[i] && i == 0) {
+      let config = {...outputMetadata[i].decoderConfig};
+
+      // Removes the color space provided by the encoder so that color space
+      // information in the underlying bitstream is exposed during decode.
+      config.colorSpace = {};
+
+      config.hardwareAcceleration = arg.acceleration;
+      let support = await VideoDecoder.isConfigSupported(config);
+      if (!support.supported) {
+        config.hardwareAcceleration = 'no-preference';
+      }
+
+      decoder.configure(config);
+    }
+    let chunk = outputChunks[i];
+    let buffer = new ArrayBuffer(chunk.byteLength);
+    chunk.copyTo(buffer);
+    try {
+      decoder.decode(chunk);
+    } catch (e) {
+      TEST.reportFailure(e);
+      TEST.log(`Chunk index: ${i}`);
+      if (outputMetadata[i].decoderConfig) {
+        TEST.log('Config: ' + JSON.stringify(outputMetadata[i].decoderConfig));
+      }
+      TEST.log('Data: ' + arrayBufferToBase64(buffer));
+      return;
+    }
+  }
+  await decoder.flush();
+  decoder.close();
+
+  TEST.assert_eq(
+      errors, 0, 'Encoding errors occurred during the decoding test');
+  TEST.assert_eq(
+      decodedFrames.length, outputChunks.length,
+      'Unexpected number of decoded outputs');
+
+  let colorSpace = {};
+  for (var i = 0; i < decodedFrames.length; ++i) {
+    if ('decoderConfig' in outputMetadata[i]) {
+      colorSpace = outputMetadata[i].decoderConfig.colorSpace;
+    }
+
+    // It's acceptable to have no bitstream color space information.
+    if (decodedFrames[i].colorSpace.primaries != null) {
+      TEST.assert_eq(
+          decodedFrames[i].colorSpace.primaries, colorSpace.primaries,
+          `Frame ${i} color primaries mismatch`);
+    }
+
+    if (decodedFrames[i].colorSpace.matrix != null) {
+      if (decodedFrames[i].colorSpace.matrix != colorSpace.matrix) {
+        // Allow functionally equivalent matches.
+        TEST.assert(
+            colorSpace.matrix == 'smpte170m' &&
+                decodedFrames[i].colorSpace.matrix == 'bt470bg',
+            `Frame ${i} color matrix mismatch`);
+      } else {
+        TEST.assert_eq(
+            decodedFrames[i].colorSpace.matrix, colorSpace.matrix,
+            `Frame ${i} color matrix mismatch`);
+      }
+    }
+
+    if (decodedFrames[i].colorSpace.transfer != null) {
+      if (decodedFrames[i].colorSpace.transfer != colorSpace.transfer) {
+        // Allow functionally equivalent matches.
+        TEST.assert(
+            (colorSpace.transfer == 'smpte170m' &&
+             decodedFrames[i].colorSpace.transfer == 'bt709') ||
+                (colorSpace.transfer == 'bt709' &&
+                 decodedFrames[i].colorSpace.transfer == 'smpte170m'),
+            `Frame ${i} color transfer mismatch`)
+      } else {
+        TEST.assert_eq(
+            decodedFrames[i].colorSpace.transfer, colorSpace.transfer,
+            `Frame ${i} color transfer mismatch`);
+      }
+    }
+
+    if (decodedFrames[i].colorSpace.fullRange != null) {
+      TEST.assert_eq(
+          decodedFrames[i].colorSpace.fullRange, colorSpace.fullRange,
+          `Frame ${i} color fullRange mismatch`);
+    }
+    decodedFrames[i].close();
+  }
+  TEST.reportSuccess();
 }

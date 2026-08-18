@@ -25,7 +25,6 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
-#include "media/base/video_frame_converter_internals.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -185,21 +184,21 @@ void FillFourColorsFrameYUV(VideoFrame& dest_frame,
   uint8_t y, u, v, a;
 
   // Yellow top left.
-  std::tie(y, u, v, a) = RGBToYUV(yellow, dest_frame.ColorSpace());
+  std::tie(y, u, v, a) = RGBToYUV(yellow);
   I4xxxRect(output_frame, 0, 0, half_width, half_height, y, u, v, a);
 
   // Red top right.
-  std::tie(y, u, v, a) = RGBToYUV(red, dest_frame.ColorSpace());
+  std::tie(y, u, v, a) = RGBToYUV(red);
   I4xxxRect(output_frame, half_width, 0, remaining_width, half_height, y, u, v,
             a);
 
   // Blue bottom left.
-  std::tie(y, u, v, a) = RGBToYUV(blue, dest_frame.ColorSpace());
+  std::tie(y, u, v, a) = RGBToYUV(blue);
   I4xxxRect(output_frame, 0, half_height, half_width, remaining_height, y, u, v,
             a);
 
   // Green bottom right.
-  std::tie(y, u, v, a) = RGBToYUV(green, dest_frame.ColorSpace());
+  std::tie(y, u, v, a) = RGBToYUV(green);
   I4xxxRect(output_frame, half_width, half_height, remaining_width,
             remaining_height, y, u, v, a);
 
@@ -936,16 +935,12 @@ void FillFourColors(VideoFrame& dest_frame, std::optional<uint32_t> xor_mask) {
   }
 }
 
-std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> RGBToYUV(
-    uint32_t argb,
-    const gfx::ColorSpace& cs) {
+std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> RGBToYUV(uint32_t argb) {
   // We're not trying to test the quality of Y, U, V, A conversion, just that
   // it happened. So use the same internal method to convert ARGB to YUV values.
   uint8_t y, u, v, a;
-  const libyuv::ArgbConstants* matrix =
-      internals::GetArgbConstantsForColorSpace(cs, false);
-  libyuv::ARGBToI444Matrix(reinterpret_cast<const uint8_t*>(&argb), 4, &y, 1,
-                           &u, 1, &v, 1, matrix, 1, 1);
+  libyuv::ARGBToI444(reinterpret_cast<const uint8_t*>(&argb), 1, &y, 1, &u, 1,
+                     &v, 1, 1, 1);
   a = argb >> 24;
   return std::tie(y, u, v, a);
 }

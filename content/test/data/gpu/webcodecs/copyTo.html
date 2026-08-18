@@ -21,20 +21,6 @@ Take frames coming from various sources and read them using copyTo().
     return { r: r, g: g, b: b };
   }
 
-  function yuv_to_rgb601_full(y, u, v) {
-    let r = y + 1.402 * (v - 128);
-    let g = y - 0.344136 * (u - 128) - 0.714136 * (v - 128);
-    let b = y + 1.772 * (u - 128);
-    return { r: r, g: g, b: b };
-  }
-
-  function yuv_to_rgb709_full(y, u, v) {
-    let r = y + 1.5748 * (v - 128);
-    let g = y - 0.1873 * (u - 128) - 0.4681 * (v - 128);
-    let b = y + 1.8556 * (u - 128);
-    return { r: r, g: g, b: b };
-  }
-
   function compareArrayBuffers(buffer1, buffer2) {
     const view1 = new DataView(buffer1);
     const view2 = new DataView(buffer2);
@@ -81,16 +67,9 @@ Take frames coming from various sources and read them using copyTo().
       let view = new DataView(buffer);
       let rgb = null;
 
-      let yuv_to_rgb = null;
-      if (frame.colorSpace.fullRange) {
-        yuv_to_rgb = yuv_to_rgb601_full;
-        if (frame.colorSpace.matrix == "bt709")
-          yuv_to_rgb = yuv_to_rgb709_full;
-      } else {
-        yuv_to_rgb = yuv_to_rgb601;
-        if (frame.colorSpace.matrix == "bt709")
-          yuv_to_rgb = yuv_to_rgb709;
-      }
+      let yuv_to_rgb = yuv_to_rgb601;
+      if (frame.colorSpace.matrix == "bt709")
+        yuv_to_rgb = yuv_to_rgb709;
 
       switch (frame.format) {
         case "I420":

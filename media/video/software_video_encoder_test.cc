@@ -132,7 +132,6 @@ class SoftwareVideoEncoderTest
     if (xor_mask) {
       auto frame = frame_pool_.CreateFrame(format, size, gfx::Rect(size), size,
                                            timestamp);
-      frame->set_color_space(gfx::ColorSpace::CreateREC601());
       FillFourColors(*frame, xor_mask);
       return frame;
     }
@@ -142,7 +141,6 @@ class SoftwareVideoEncoderTest
       four_colors_frame_.reset();
       four_colors_frame_ = frame_pool_.CreateFrame(
           format, size, gfx::Rect(size), size, timestamp);
-      four_colors_frame_->set_color_space(gfx::ColorSpace::CreateREC601());
       FillFourColors(*four_colors_frame_);
     }
 

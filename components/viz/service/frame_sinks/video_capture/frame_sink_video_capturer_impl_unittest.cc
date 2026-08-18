@@ -193,7 +193,7 @@ struct YUVColor {
 };
 
 YUVColor RGBToYUV(uint32_t argb) {
-  auto yuv = media::RGBToYUV(argb, gfx::ColorSpace::CreateREC709());
+  auto yuv = media::RGBToYUV(argb);
   return {std::get<0>(yuv), std::get<1>(yuv), std::get<2>(yuv)};
 }
 

@@ -101,8 +101,6 @@ class VideoEncodeAcceleratorAdapterTest
         .WillRepeatedly(Return(vea_.get()));
     EXPECT_CALL(*gpu_factories_.get(), GetTaskRunner())
         .WillRepeatedly(Return(vea_runner_));
-    EXPECT_CALL(*sii_.get(), DoCreateSharedImage(_, _, _, _))
-        .Times(testing::AnyNumber());
 
     auto media_log = std::make_unique<NullMediaLog>();
     callback_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
@@ -233,10 +231,9 @@ class VideoEncodeAcceleratorAdapterTest
       return kYUVColorSpace;
     }
 
-    // We now use matrix-based conversion, so RGB to YUV uses the source
-    // frame's primary to select the matrix. For sRGB, this is BT.709.
+    // libyuv's RGB to YUV methods always output BT.601.
     if (IsRGB(src_format) && IsYuvPlanar(dst_format)) {
-      return kYUVFullColorSpace;
+      return gfx::ColorSpace::CreateREC601();
     }
 
     EXPECT_TRUE(false) << "unexpected formats: src=" << src_format
@@ -290,11 +287,6 @@ class VideoEncodeAcceleratorAdapterTest
       gfx::ColorSpace::CreateSRGB();
   static constexpr gfx::ColorSpace kYUVColorSpace =
       gfx::ColorSpace::CreateREC709();
-  const gfx::ColorSpace kYUVFullColorSpace =
-      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                      gfx::ColorSpace::TransferID::SRGB,
-                      gfx::ColorSpace::MatrixID::BT709,
-                      gfx::ColorSpace::RangeID::FULL);
   std::vector<VideoEncodeAccelerator::SupportedProfile> supported_profiles_;
   base::test::TaskEnvironment task_environment_;
   raw_ptr<FakeVideoEncodeAccelerator, AcrossTasksDanglingUntriaged>

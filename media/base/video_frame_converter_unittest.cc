@@ -9,8 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/test/scoped_feature_list.h"
-#include "media/base/media_switches.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -207,67 +205,44 @@ TEST_P(VideoFrameConverterTest, ConvertAndScale) {
       dest_format_, dest_coded_size_, dest_visible_rect_,
       dest_visible_rect_.size(), base::TimeDelta());
 
+  FillFourColors(*src_frame);
+
   if (!IsConversionSupported(src_format_, dest_format_)) {
-    src_frame->set_color_space(gfx::ColorSpace::CreateREC601());
     EXPECT_FALSE(converter_.ConvertAndScale(*src_frame, *dest_frame).is_ok());
     return;
   }
 
-  std::vector<gfx::ColorSpace> color_spaces_to_test;
-  if (IsRGB(src_format_)) {
-    for (auto p : {gfx::ColorSpace::PrimaryID::BT709,
-                   gfx::ColorSpace::PrimaryID::SMPTE170M,
-                   gfx::ColorSpace::PrimaryID::BT2020}) {
-      for (auto r : {gfx::ColorSpace::RangeID::FULL,
-                     gfx::ColorSpace::RangeID::LIMITED}) {
-        color_spaces_to_test.emplace_back(p, gfx::ColorSpace::TransferID::SRGB,
-                                          gfx::ColorSpace::MatrixID::RGB, r);
-      }
-    }
-  } else {
-    color_spaces_to_test.push_back(gfx::ColorSpace::CreateREC709());
-  }
+  ASSERT_TRUE(converter_.ConvertAndScale(*src_frame, *dest_frame).is_ok());
 
+  // Recreate the ideal frame at the destination size.
+  DCHECK(IsYuvPlanar(dest_format_));
   auto expected_dest_frame = VideoFrame::CreateZeroInitializedFrame(
       dest_format_, dest_coded_size_, dest_visible_rect_,
       dest_visible_rect_.size(), base::TimeDelta());
+  FillFourColors(*expected_dest_frame);
 
-  for (const auto& cs : color_spaces_to_test) {
-    src_frame->set_color_space(cs);
-    FillFourColors(*src_frame);
+  auto dest_visible_size = expected_dest_frame->visible_rect().size();
+  for (size_t i = 0; i < VideoFrame::NumPlanes(expected_dest_frame->format());
+       ++i) {
+    SCOPED_TRACE(base::StringPrintf(
+        "%s -> %s, plane=%d, (%s -> %s)",
+        VideoPixelFormatToString(src_format_).c_str(),
+        VideoPixelFormatToString(dest_format_).c_str(), static_cast<int>(i),
+        src_frame->visible_rect().size().ToString().c_str(),
+        expected_dest_frame->visible_rect().size().ToString().c_str()));
 
-    ASSERT_TRUE(converter_.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-
-    // Recreate the ideal frame at the destination size.
-    DCHECK(IsYuvPlanar(dest_format_));
-    expected_dest_frame->set_color_space(
-        VideoFrameConverter::GetDestinationColorSpace(*src_frame));
-    FillFourColors(*expected_dest_frame);
-
-    auto dest_visible_size = expected_dest_frame->visible_rect().size();
-    for (size_t i = 0; i < VideoFrame::NumPlanes(expected_dest_frame->format());
-         ++i) {
-      SCOPED_TRACE(base::StringPrintf(
-          "%s -> %s, cs=%s, plane=%d, (%s -> %s)",
-          VideoPixelFormatToString(src_format_).c_str(),
-          VideoPixelFormatToString(dest_format_).c_str(), cs.ToString().c_str(),
-          static_cast<int>(i),
-          src_frame->visible_rect().size().ToString().c_str(),
-          expected_dest_frame->visible_rect().size().ToString().c_str()));
-
-      auto plane_size = VideoFrame::PlaneSize(expected_dest_frame->format(), i,
-                                              dest_visible_size);
-      auto ssim = libyuv::CalcFrameSsim(
-          dest_frame->visible_data(i), dest_frame->stride(i),
-          expected_dest_frame->visible_data(i), expected_dest_frame->stride(i),
-          plane_size.width(), plane_size.height());
-      auto psnr = libyuv::CalcFramePsnr(
-          dest_frame->visible_data(i), dest_frame->stride(i),
-          expected_dest_frame->visible_data(i), expected_dest_frame->stride(i),
-          plane_size.width(), plane_size.height());
-      EXPECT_DOUBLE_EQ(ssim, 1.0);
-      EXPECT_EQ(psnr, libyuv::kMaxPsnr);
-    }
+    auto plane_size = VideoFrame::PlaneSize(expected_dest_frame->format(), i,
+                                            dest_visible_size);
+    auto ssim = libyuv::CalcFrameSsim(
+        dest_frame->visible_data(i), dest_frame->stride(i),
+        expected_dest_frame->visible_data(i), expected_dest_frame->stride(i),
+        plane_size.width(), plane_size.height());
+    auto psnr = libyuv::CalcFramePsnr(
+        dest_frame->visible_data(i), dest_frame->stride(i),
+        expected_dest_frame->visible_data(i), expected_dest_frame->stride(i),
+        plane_size.width(), plane_size.height());
+    EXPECT_DOUBLE_EQ(ssim, 1.0);
+    EXPECT_EQ(psnr, libyuv::kMaxPsnr);
   }
 
   // Ensure memory pool is functioning correctly by running conversions which
@@ -431,139 +406,6 @@ TEST_P(VideoFrameConverterExtentsTest, ConvertAndScaleExtents) {
     EXPECT_EQ(dest_y[(dest_h - 1) * stride + (dest_w - 1)],
               static_cast<uint8_t>(dest_max));
   }
-}
-
-TEST(VideoFrameConverterColorSpaceTest, ColorSpaceConversion) {
-  base::test::ScopedFeatureList features(
-      kAccurateVideoFrameConverterColorSpace);
-
-  constexpr gfx::Size kTestSize(64, 64);
-  auto src_frame = VideoFrame::CreateZeroInitializedFrame(
-      PIXEL_FORMAT_ARGB, kTestSize, gfx::Rect(kTestSize), kTestSize,
-      base::TimeDelta());
-  auto dest_frame = VideoFrame::CreateZeroInitializedFrame(
-      PIXEL_FORMAT_I420, kTestSize, gfx::Rect(kTestSize), kTestSize,
-      base::TimeDelta());
-
-  // sRGB source (Full Range BT.709)
-  src_frame->set_color_space(gfx::ColorSpace::CreateSRGB());
-  VideoFrameConverter converter;
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(),
-            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
-                            gfx::ColorSpace::TransferID::SRGB,
-                            gfx::ColorSpace::MatrixID::BT709,
-                            gfx::ColorSpace::RangeID::FULL));
-
-  // Limited Range BT.709 source
-  src_frame->set_color_space(gfx::ColorSpace::CreateREC709());
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(), gfx::ColorSpace::CreateREC709());
-
-  // Limited Range BT.601 source
-  src_frame->set_color_space(gfx::ColorSpace::CreateREC601());
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(), gfx::ColorSpace::CreateREC601());
-
-  // BT.2020 Limited Range source
-  auto bt2020_limited = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                                        gfx::ColorSpace::TransferID::BT2020_10,
-                                        gfx::ColorSpace::MatrixID::BT2020_NCL,
-                                        gfx::ColorSpace::RangeID::LIMITED);
-  src_frame->set_color_space(bt2020_limited);
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(), bt2020_limited);
-
-  // BT.2020 Full Range source
-  auto bt2020_full = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                                     gfx::ColorSpace::TransferID::BT2020_10,
-                                     gfx::ColorSpace::MatrixID::BT2020_NCL,
-                                     gfx::ColorSpace::RangeID::FULL);
-  src_frame->set_color_space(bt2020_full);
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(), bt2020_full);
-
-  // HDR10 (BT.2020 with PQ transfer function) source
-  src_frame->set_color_space(gfx::ColorSpace::CreateHDR10());
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(),
-            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                            gfx::ColorSpace::TransferID::PQ,
-                            gfx::ColorSpace::MatrixID::BT2020_NCL,
-                            gfx::ColorSpace::RangeID::FULL));
-
-  // HLG (BT.2020 with HLG transfer function) source
-  src_frame->set_color_space(gfx::ColorSpace::CreateHLG());
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(),
-            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
-                            gfx::ColorSpace::TransferID::HLG,
-                            gfx::ColorSpace::MatrixID::BT2020_NCL,
-                            gfx::ColorSpace::RangeID::FULL));
-
-  // Display P3 SDR source
-  src_frame->set_color_space(gfx::ColorSpace::CreateDisplayP3D65());
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(),
-            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::P3,
-                            gfx::ColorSpace::TransferID::SRGB,
-                            gfx::ColorSpace::MatrixID::BT709,
-                            gfx::ColorSpace::RangeID::FULL));
-
-  // Display P3 with PQ transfer function source
-  src_frame->set_color_space(gfx::ColorSpace(
-      gfx::ColorSpace::PrimaryID::P3, gfx::ColorSpace::TransferID::PQ,
-      gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL));
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(),
-            gfx::ColorSpace(gfx::ColorSpace::PrimaryID::P3,
-                            gfx::ColorSpace::TransferID::PQ,
-                            gfx::ColorSpace::MatrixID::BT2020_NCL,
-                            gfx::ColorSpace::RangeID::FULL));
-
-  // BT.601 source
-  src_frame->set_color_space(gfx::ColorSpace::CreateREC601());
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(), gfx::ColorSpace::CreateREC601());
-
-  // HDR metadata propagation for HDR sources
-  skhdr::ContentLightLevelInformation clli;
-  clli.fMaxCLL = 1000.f;
-  clli.fMaxFALL = 400.f;
-  gfx::HDRMetadata hdr_metadata(clli);
-  src_frame->set_color_space(gfx::ColorSpace::CreateHDR10());
-  src_frame->set_hdr_metadata(hdr_metadata);
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->hdr_metadata(), hdr_metadata);
-
-  // HDR metadata is not propagated to SDR destinations
-  src_frame->set_color_space(gfx::ColorSpace::CreateSRGB());
-  src_frame->set_hdr_metadata(hdr_metadata);
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->hdr_metadata(), gfx::HDRMetadata());
-
-  // Invalid color space
-  src_frame->set_color_space(gfx::ColorSpace());
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(), gfx::ColorSpace::CreateREC709());
-}
-
-TEST(VideoFrameConverterColorSpaceTest, DisabledFeatureFallsBackToRec601) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(kAccurateVideoFrameConverterColorSpace);
-
-  constexpr gfx::Size kTestSize(64, 64);
-  auto src_frame = VideoFrame::CreateZeroInitializedFrame(
-      PIXEL_FORMAT_ARGB, kTestSize, gfx::Rect(kTestSize), kTestSize,
-      base::TimeDelta());
-  auto dest_frame = VideoFrame::CreateZeroInitializedFrame(
-      PIXEL_FORMAT_I420, kTestSize, gfx::Rect(kTestSize), kTestSize,
-      base::TimeDelta());
-
-  src_frame->set_color_space(gfx::ColorSpace::CreateSRGB());
-  VideoFrameConverter converter;
-  ASSERT_TRUE(converter.ConvertAndScale(*src_frame, *dest_frame).is_ok());
-  EXPECT_EQ(dest_frame->ColorSpace(), gfx::ColorSpace::CreateREC601());
 }
 
 std::string PrintTestParams(const testing::TestParamInfo<TestParams>& info) {

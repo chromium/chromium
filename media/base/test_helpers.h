@@ -269,9 +269,7 @@ int CountDifferentPixels(const VideoFrame& frame1,
                          int tolerance);
 
 // Convert RGB color to YUV.
-std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> RGBToYUV(
-    uint32_t argb,
-    const gfx::ColorSpace& cs);
+std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> RGBToYUV(uint32_t argb);
 
 // Compares two media::Status by StatusCode only.  Also allows the ok helper to
 // match kOk.  It's a special case because we don't know the TypedStatus traits
