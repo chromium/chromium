@@ -4929,8 +4929,11 @@ void RenderViewContextMenu::ExecSaveToMemoryBanks() {
   std::string selected_text = base::UTF16ToUTF8(params_.selection_text);
 
   if (!selected_text.empty()) {
-    context_hub_service->SaveTextSelection(params_.page_url, tab_title,
-                                           selected_text, base::DoNothing());
+    context_hub_service->SaveMemoryBankEntry(
+        context_hub::MemoryBankEntry(
+            context_hub::MemoryBankType::kTextSelection, params_.page_url,
+            std::move(tab_title), std::move(selected_text)),
+        base::DoNothing());
     return;
   }
 
@@ -4946,8 +4949,11 @@ void RenderViewContextMenu::ExecSaveToMemoryBanks() {
              std::string title,
              std::unique_ptr<content_extraction::InnerTextResult> result) {
             if (service && result && !result->inner_text.empty()) {
-              service->SaveTab(url, title, result->inner_text,
-                               base::DoNothing());
+              service->SaveMemoryBankEntry(
+                  context_hub::MemoryBankEntry(
+                      context_hub::MemoryBankType::kTab, std::move(url),
+                      std::move(title), std::move(result->inner_text)),
+                  base::DoNothing());
             }
           },
           context_hub_service->GetWeakPtr(), params_.page_url, tab_title));

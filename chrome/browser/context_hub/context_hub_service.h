@@ -189,16 +189,9 @@ class ContextHubService : public KeyedService,
 
   // Memory bank wrappers that forward operations to the underlying storage
   // backend.
-  // Saves a tab to the memory bank.
-  void SaveTab(const GURL& url,
-               std::string_view tab_title,
-               std::string_view page_text,
-               MemoryBank::OperationCompleteCallback callback);
-  // Saves a text selection to the memory bank.
-  void SaveTextSelection(const GURL& url,
-                         std::string_view tab_title,
-                         std::string_view selected_text,
-                         MemoryBank::OperationCompleteCallback callback);
+  // Saves an entry in the memory bank.
+  void SaveMemoryBankEntry(MemoryBankEntry entry,
+                           MemoryBank::OperationCompleteCallback callback);
   // Deletes an entry from the memory bank.
   void DeleteEntries(base::span<const int64_t> ids,
                      MemoryBank::OperationCompleteCallback callback);

@@ -731,10 +731,12 @@ TEST_F(ContextHubServiceTest, GenerateTabBasedTodos_EmptyTitleSkipped) {
   EXPECT_TRUE(todos_future.Get().empty());
 }
 
-TEST_F(ContextHubServiceTest, SaveTab) {
+TEST_F(ContextHubServiceTest, SaveMemoryBankEntry_Tab) {
   base::test::TestFuture<void> save_tab_future;
-  service_.SaveTab(GURL("https://example.com"), "Title", "Page text",
-                   save_tab_future.GetCallback());
+  service_.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
+                      "Title", "Page text"),
+      save_tab_future.GetCallback());
   EXPECT_TRUE(save_tab_future.Wait());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
@@ -746,10 +748,12 @@ TEST_F(ContextHubServiceTest, SaveTab) {
   EXPECT_EQ(MemoryBankType::kTab, entries[0].type);
 }
 
-TEST_F(ContextHubServiceTest, SaveTextSelection) {
+TEST_F(ContextHubServiceTest, SaveMemoryBankEntry_TextSelection) {
   base::test::TestFuture<void> save_selection_future;
-  service_.SaveTextSelection(GURL("https://example.com"), "Title", "Selection",
-                             save_selection_future.GetCallback());
+  service_.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTextSelection,
+                      GURL("https://example.com"), "Title", "Selection"),
+      save_selection_future.GetCallback());
   EXPECT_TRUE(save_selection_future.Wait());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
@@ -761,10 +765,14 @@ TEST_F(ContextHubServiceTest, SaveTextSelection) {
 }
 
 TEST_F(ContextHubServiceTest, DeleteEntries) {
-  service_.SaveTab(GURL("https://example1.com"), "Title1", "Page text 1",
-                   base::DoNothing());
-  service_.SaveTab(GURL("https://example2.com"), "Title2", "Page text 2",
-                   base::DoNothing());
+  service_.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example1.com"),
+                      "Title1", "Page text 1"),
+      base::DoNothing());
+  service_.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example2.com"),
+                      "Title2", "Page text 2"),
+      base::DoNothing());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
   service_.GetAllEntries(get_entries_future.GetCallback());
@@ -782,10 +790,14 @@ TEST_F(ContextHubServiceTest, DeleteEntries) {
 }
 
 TEST_F(ContextHubServiceTest, GetEntriesByIds) {
-  service_.SaveTab(GURL("https://example1.com"), "Title1", "Page text 1",
-                   base::DoNothing());
-  service_.SaveTab(GURL("https://example2.com"), "Title2", "Page text 2",
-                   base::DoNothing());
+  service_.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example1.com"),
+                      "Title1", "Page text 1"),
+      base::DoNothing());
+  service_.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example2.com"),
+                      "Title2", "Page text 2"),
+      base::DoNothing());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
   service_.GetAllEntries(get_entries_future.GetCallback());
@@ -1075,14 +1087,17 @@ TEST_F(ContextHubServiceTest, DeleteTodoFeedback) {
 
 TEST_F(ContextHubServiceTest, ExecuteMemoryBankChat_Success) {
   base::test::TestFuture<void> save_tab_future1;
-  service_.SaveTab(GURL("https://example.com/1"), "Title 1", "Page text 1",
-                   save_tab_future1.GetCallback());
+  service_.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com/1"),
+                      "Title 1", "Page text 1"),
+      save_tab_future1.GetCallback());
   ASSERT_TRUE(save_tab_future1.Wait());
 
   base::test::TestFuture<void> save_tab_future2;
-  service_.SaveTextSelection(GURL("https://example.com/2"), "Title 2",
-                             "Some selected text",
-                             save_tab_future2.GetCallback());
+  service_.SaveMemoryBankEntry(MemoryBankEntry(MemoryBankType::kTextSelection,
+                                               GURL("https://example.com/2"),
+                                               "Title 2", "Some selected text"),
+                               save_tab_future2.GetCallback());
   ASSERT_TRUE(save_tab_future2.Wait());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;

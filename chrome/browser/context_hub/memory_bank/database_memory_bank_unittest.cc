@@ -31,10 +31,12 @@ class DatabaseMemoryBankTest : public testing::Test {
   std::unique_ptr<DatabaseMemoryBank> memory_bank_;
 };
 
-TEST_F(DatabaseMemoryBankTest, SaveTabAndRetrieve) {
+TEST_F(DatabaseMemoryBankTest, SaveMemoryBankEntryAndRetrieve) {
   base::test::TestFuture<void> save_future;
-  memory_bank_->SaveTab(GURL("https://example.com"), "Example", "Page content",
-                        save_future.GetCallback());
+  memory_bank_->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
+                      "Example", "Page content"),
+      save_future.GetCallback());
   EXPECT_TRUE(save_future.Wait());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_future;
@@ -48,10 +50,12 @@ TEST_F(DatabaseMemoryBankTest, SaveTabAndRetrieve) {
   EXPECT_EQ("Page content", entries[0].selected_text.value());
 }
 
-TEST_F(DatabaseMemoryBankTest, SaveTextSelectionAndDelete) {
+TEST_F(DatabaseMemoryBankTest, SaveMemoryBankEntryAndDelete) {
   base::test::TestFuture<void> save_future;
-  memory_bank_->SaveTextSelection(GURL("https://google.com"), "Google",
-                                  "Search text", save_future.GetCallback());
+  memory_bank_->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTextSelection,
+                      GURL("https://google.com"), "Google", "Search text"),
+      save_future.GetCallback());
   EXPECT_TRUE(save_future.Wait());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_future;
@@ -72,13 +76,17 @@ TEST_F(DatabaseMemoryBankTest, SaveTextSelectionAndDelete) {
 
 TEST_F(DatabaseMemoryBankTest, GetEntriesByIds) {
   base::test::TestFuture<void> save_future1;
-  memory_bank_->SaveTab(GURL("https://example.com/1"), "Tab 1", "Content 1",
-                        save_future1.GetCallback());
+  memory_bank_->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com/1"),
+                      "Tab 1", "Content 1"),
+      save_future1.GetCallback());
   EXPECT_TRUE(save_future1.Wait());
 
   base::test::TestFuture<void> save_future2;
-  memory_bank_->SaveTab(GURL("https://example.com/2"), "Tab 2", "Content 2",
-                        save_future2.GetCallback());
+  memory_bank_->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com/2"),
+                      "Tab 2", "Content 2"),
+      save_future2.GetCallback());
   EXPECT_TRUE(save_future2.Wait());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> all_future;

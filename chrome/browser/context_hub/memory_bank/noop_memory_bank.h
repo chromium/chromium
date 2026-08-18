@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_NOOP_MEMORY_BANK_H_
 #define CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_NOOP_MEMORY_BANK_H_
 
-#include <string_view>
+#include <cstdint>
 
 #include "base/containers/span.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
@@ -23,14 +23,8 @@ class NoOpMemoryBank : public MemoryBank {
   ~NoOpMemoryBank() override;
 
   // MemoryBank:
-  void SaveTab(const GURL& url,
-               std::string_view tab_title,
-               std::string_view page_text,
-               OperationCompleteCallback callback) override;
-  void SaveTextSelection(const GURL& url,
-                         std::string_view tab_title,
-                         std::string_view selected_text,
-                         OperationCompleteCallback callback) override;
+  void SaveMemoryBankEntry(MemoryBankEntry entry,
+                           OperationCompleteCallback callback) override;
   void GetAllEntries(GetEntriesCallback callback) const override;
   void GetEntriesByIds(base::span<const int64_t> ids,
                        GetEntriesCallback callback) const override;

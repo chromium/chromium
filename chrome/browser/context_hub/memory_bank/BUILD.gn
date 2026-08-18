@@ -5,6 +5,7 @@
 source_set("memory_bank") {
   sources = [
     "memory_bank.h",
+    "memory_bank_entry.cc",
     "memory_bank_entry.h",
   ]
 

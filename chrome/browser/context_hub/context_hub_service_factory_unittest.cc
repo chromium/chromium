@@ -98,8 +98,10 @@ TEST_F(ContextHubServiceFactoryTest,
   ASSERT_NE(nullptr, service);
 
   base::test::TestFuture<void> save_future;
-  service->SaveTab(GURL("https://example.com"), "Title", "Page text",
-                   save_future.GetCallback());
+  service->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
+                      "Title", "Page text"),
+      save_future.GetCallback());
   ASSERT_TRUE(save_future.Wait());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
@@ -118,8 +120,10 @@ TEST_F(ContextHubServiceFactoryTest,
   ASSERT_NE(nullptr, service);
 
   base::test::TestFuture<void> save_future;
-  service->SaveTab(GURL("https://example.com"), "Title", "Page text",
-                   save_future.GetCallback());
+  service->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
+                      "Title", "Page text"),
+      save_future.GetCallback());
   ASSERT_TRUE(save_future.Wait());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
@@ -143,8 +147,10 @@ TEST_F(ContextHubServiceFactoryTest,
   ASSERT_NE(nullptr, service);
 
   base::test::TestFuture<void> save_future;
-  service->SaveTab(GURL("https://example.com"), "Title", "Page text",
-                   save_future.GetCallback());
+  service->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
+                      "Title", "Page text"),
+      save_future.GetCallback());
   ASSERT_TRUE(save_future.Wait());
 
   base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
@@ -168,8 +174,10 @@ TEST_F(ContextHubServiceFactoryTest,
   ASSERT_NE(nullptr, service);
 
   base::test::TestFuture<void> save_future;
-  service->SaveTab(GURL("https://example.com"), "Title", "Page text",
-                   save_future.GetCallback());
+  service->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
+                      "Title", "Page text"),
+      save_future.GetCallback());
   ASSERT_TRUE(save_future.Wait());
 
   // Memory Banks feature is disabled so NoOpMemoryBank returns empty entries.

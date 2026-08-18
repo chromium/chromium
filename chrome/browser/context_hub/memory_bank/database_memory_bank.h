@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_DATABASE_MEMORY_BANK_H_
 #define CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_DATABASE_MEMORY_BANK_H_
 
-#include <string_view>
+#include <cstdint>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 
@@ -24,14 +25,8 @@ class DatabaseMemoryBank : public MemoryBank {
   ~DatabaseMemoryBank() override;
 
   // MemoryBank implementation:
-  void SaveTab(const GURL& url,
-               std::string_view tab_title,
-               std::string_view page_text,
-               OperationCompleteCallback callback) override;
-  void SaveTextSelection(const GURL& url,
-                         std::string_view tab_title,
-                         std::string_view selected_text,
-                         OperationCompleteCallback callback) override;
+  void SaveMemoryBankEntry(MemoryBankEntry entry,
+                           OperationCompleteCallback callback) override;
   void DeleteEntries(base::span<const int64_t> ids,
                      OperationCompleteCallback callback) override;
   void GetAllEntries(GetEntriesCallback callback) const override;

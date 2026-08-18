@@ -649,21 +649,10 @@ void ContextHubService::ClearTabGroupChatHistory() {
   tab_group_chat_history_cache_.Clear();
 }
 
-void ContextHubService::SaveTab(
-    const GURL& url,
-    std::string_view tab_title,
-    std::string_view page_text,
+void ContextHubService::SaveMemoryBankEntry(
+    MemoryBankEntry entry,
     MemoryBank::OperationCompleteCallback callback) {
-  memory_bank_->SaveTab(url, tab_title, page_text, std::move(callback));
-}
-
-void ContextHubService::SaveTextSelection(
-    const GURL& url,
-    std::string_view tab_title,
-    std::string_view selected_text,
-    MemoryBank::OperationCompleteCallback callback) {
-  memory_bank_->SaveTextSelection(url, tab_title, selected_text,
-                                  std::move(callback));
+  memory_bank_->SaveMemoryBankEntry(std::move(entry), std::move(callback));
 }
 
 void ContextHubService::DeleteEntries(
