@@ -177,7 +177,12 @@ class ChromeAccountManagerService : public KeyedService,
   // Used to listen pref change.
   PrefChangeRegistrar registrar_;
 
-  base::ObserverList<Observer, true> observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observer_list_;
 
   const std::string profile_name_;
 

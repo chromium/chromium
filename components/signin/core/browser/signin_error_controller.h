@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -98,7 +99,16 @@ class SigninErrorController : public KeyedService,
   // The last detected auth error.
   GoogleServiceAuthError auth_error_;
 
+#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observer_list_;
+#else
   base::ObserverList<Observer, false>::Unchecked observer_list_;
+#endif
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_ERROR_CONTROLLER_H_

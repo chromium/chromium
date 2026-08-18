@@ -450,7 +450,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       shared_tab_groups_waiting_for_collaboration_;
 
   // Obsevers of the model.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
   base::ObserverList<
       TabGroupSyncService::Observer,

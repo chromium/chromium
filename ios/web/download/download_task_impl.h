@@ -112,7 +112,12 @@ class DownloadTaskImpl : public DownloadTask {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // A list of observers. Weak references.
-  base::ObserverList<DownloadTaskObserver, true> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      DownloadTaskObserver,
+      true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   // Back up corresponding public methods of DownloadTask interface.
   State state_ = State::kNotStarted;

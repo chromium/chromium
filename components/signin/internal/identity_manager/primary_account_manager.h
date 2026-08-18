@@ -29,6 +29,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -271,7 +272,16 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // this field.
   std::optional<PrimaryAccount> primary_account_;
 
+#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
+#else
   base::ObserverList<Observer> observers_;
+#endif
   base::ScopedObservation<ProfileOAuth2TokenService,
                           ProfileOAuth2TokenServiceObserver>
       token_service_observation_{this};

@@ -272,7 +272,12 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   void OnTopToolbarHeightChanged() override;
   void OnBottomToolbarHeightChanged() override;
   // The observers for this model.
-  base::ObserverList<FullscreenModelObserver, true> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      FullscreenModelObserver,
+      true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
   // The percentage of the toolbar that should be visible, where 1.0 denotes a
   // fully visible toolbar and 0.0 denotes a completely hidden one.
   CGFloat progress_ = 0.0;

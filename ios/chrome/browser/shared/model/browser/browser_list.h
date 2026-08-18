@@ -78,7 +78,12 @@ class BrowserList final : public KeyedService, public BrowserObserver {
 
  private:
   // The list of observers.
-  base::ObserverList<BrowserListObserver, true> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      BrowserListObserver,
+      true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   // The set of registered Browsers.
   std::set<Browser*> browsers_;

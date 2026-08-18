@@ -388,8 +388,12 @@ class SystemIdentityManager {
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
-  // Registered observers.
-  base::ObserverList<SystemIdentityManagerObserver, true> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      SystemIdentityManagerObserver,
+      true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SYSTEM_IDENTITY_MANAGER_H_

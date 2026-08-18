@@ -72,7 +72,12 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   std::unique_ptr<Browser> inactive_browser_;
 
   // The list of observers.
-  base::ObserverList<BrowserObserver, /*check_empty=*/true> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      BrowserObserver,
+      /*check_empty=*/true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   // Needs to be the last member field to ensure all weak pointers are
   // invalidated before the other internal objects are destroyed.

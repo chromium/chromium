@@ -541,7 +541,16 @@ class AccountReconcilor : public KeyedService,
   // StartReconcile() should be started when the reconcilor is unblocked.
   bool reconcile_on_unblock_ = false;
 
+#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observer_list_;
+#else
   base::ObserverList<Observer, true>::Unchecked observer_list_;
+#endif
 
   // A timer to set off reconciliation timeout handlers, if account
   // reconciliation does not happen in a given |timeout_| duration.

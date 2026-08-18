@@ -90,7 +90,12 @@ class DownloadRecordServiceImpl : public DownloadRecordService,
   // even after `this` is gone on the main thread.
   base::SequenceBound<DownloadRecordStore> store_;
 
-  base::ObserverList<DownloadRecordObserver, /*check_empty=*/true> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      DownloadRecordObserver,
+      /*check_empty=*/true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
   base::ScopedMultiSourceObservation<web::DownloadTask,
                                      web::DownloadTaskObserver>
       download_task_observations_{this};

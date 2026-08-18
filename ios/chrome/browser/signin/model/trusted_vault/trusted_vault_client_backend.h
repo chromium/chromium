@@ -135,7 +135,12 @@ class TrustedVaultClientBackend : public KeyedService {
 
  private:
   // List of observers per security domain path.
-  std::map<trusted_vault::SecurityDomainId, base::ObserverList<Observer>>
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  std::map<trusted_vault::SecurityDomainId,
+           base::ObserverList<
+               Observer,
+               false,
+               base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>>
       observer_lists_per_security_domain_id_;
 };
 

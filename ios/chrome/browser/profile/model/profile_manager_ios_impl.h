@@ -133,7 +133,12 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   ProfileDeleterIOS profile_deleter_;
 
   // The list of registered observers.
-  base::ObserverList<ProfileManagerObserverIOS, true> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ProfileManagerObserverIOS,
+      true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   // Record whether the manager will soon be destroyed and loading
   // profile is now forbidden.
