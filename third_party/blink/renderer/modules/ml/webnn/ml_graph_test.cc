@@ -419,7 +419,8 @@ class FakeWebNNTensor : public blink_mojom::WebNNTensor {
     NOTIMPLEMENTED();
   }
 
-  void ImportTensor(uint64_t flow_id, uint64_t release_count) override {
+  void ImportTensor(uint64_t flow_id,
+                    const gpu::SyncToken& sync_token_fence) override {
     NOTIMPLEMENTED();
   }
 
