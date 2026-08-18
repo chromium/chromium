@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -48,7 +49,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/omnibox_proto/aim_eligibility_client_request.pb.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
-#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 namespace {
@@ -541,16 +541,18 @@ bool AimEligibilityService::IsAimHost(
     const GURL& url,
     std::optional<std::string> host_override) const {
   OMNIBOX_LOG("aim_url_check") << "IsAimHost: Checking host...";
-  if (host_override && host_override.value() == url.host()) {
+  if (host_override &&
+      base::EqualsCaseInsensitiveASCII(host_override.value(), url.host())) {
     OMNIBOX_LOG("aim_url_check") << "Found overridden host!";
     return true;
   }
   OMNIBOX_LOG("aim_url_check")
       << "IsAimHost: Available hosts: "
       << GetMostRecentResponse().interception_allowed_hosts().size();
+  std::string lower_url_host = base::ToLowerASCII(url.host());
   for (const auto& host_pattern :
        GetMostRecentResponse().interception_allowed_hosts()) {
-    if (re2::RE2::FullMatch(url.host(), host_pattern)) {
+    if (base::MatchPattern(lower_url_host, base::ToLowerASCII(host_pattern))) {
       OMNIBOX_LOG("aim_url_check") << "IsAimHost: Matched : " << host_pattern;
       return true;
     }
