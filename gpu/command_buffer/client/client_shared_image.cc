@@ -1066,7 +1066,7 @@ std::vector<SyncToken> ClientSharedImage::VerifyAndCollectSyncTokens() {
   auto sii = GetSharedImageInterface();
   if (sii) {
     sii->VerifySyncTokens(sync_token_map_, [](auto& entry) -> gpu::SyncToken& {
-      return const_cast<gpu::SyncToken&>(entry.second);
+      return entry.second;
     });
   }
 

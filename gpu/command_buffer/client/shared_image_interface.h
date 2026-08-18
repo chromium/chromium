@@ -298,7 +298,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT SharedImageInterface
         gpu::SyncToken&>
   void VerifySyncTokens(Range&& sync_token_range, Proj proj = {}) {
     bool flush_required = false;
-    for (auto const& element : sync_token_range) {
+    for (auto& element : sync_token_range) {
       gpu::SyncToken& sync_token = proj(element);
       if (sync_token.verified_flush()) {
         continue;
