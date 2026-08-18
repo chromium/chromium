@@ -19,11 +19,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** A custom binder used to bind the zoom menu item. */
+/** A custom binder used to bind the zoom indicator popup. */
 @NullMarked
-public class PageZoomIndicatorViewBinder {
+class PageZoomIndicatorViewBinder {
     /** Handles binding the view and models changes. */
-    public static void bind(PropertyModel model, View view, PropertyKey key) {
+    static void bind(PropertyModel model, View view, PropertyKey key) {
         if (key == INCREASE_ZOOM_CALLBACK) {
             View zoomInButton = view.findViewById(R.id.zoom_in_button);
             zoomInButton.setOnClickListener(v -> model.get(INCREASE_ZOOM_CALLBACK).run());

@@ -37,7 +37,7 @@ public class PageZoomManager {
      *     direction from the current zoom factor.
      */
     @VisibleForTesting
-    public int decrementZoomLevel() {
+    int decrementZoomLevel() {
         // When decreasing zoom, "snap" to the greatest preset value that is less than the current.
         double currentZoomFactor = getZoomLevel();
         int index = PageZoomUtils.getNextIndex(true, currentZoomFactor);
@@ -56,7 +56,7 @@ public class PageZoomManager {
      *     direction from the current zoom factor.
      */
     @VisibleForTesting
-    public int incrementZoomLevel() {
+    int incrementZoomLevel() {
         // When increasing zoom, "snap" to the smallest preset value that is more than the current.
         double currentZoomFactor = getZoomLevel();
         int index = PageZoomUtils.getNextIndex(false, currentZoomFactor);
@@ -74,7 +74,7 @@ public class PageZoomManager {
 
     /** Returns the zoom level of the current WebContents. */
     @VisibleForTesting
-    public double getZoomLevel() {
+    double getZoomLevel() {
         WebContents webContents = mDelegate.getWebContents();
         if (webContents == null) {
             return 0.00;
@@ -84,13 +84,13 @@ public class PageZoomManager {
 
     /** Returns the default zoom level of the current Profile. */
     @VisibleForTesting
-    public double getDefaultZoomLevel() {
+    double getDefaultZoomLevel() {
         return HostZoomMap.getDefaultZoomLevel(mDelegate.getBrowserContextHandle());
     }
 
     /** Returns the WebContents of the current tab. */
     @VisibleForTesting
-    public @Nullable WebContents getWebContents() {
+    @Nullable WebContents getWebContents() {
         return mDelegate.getWebContents();
     }
 
@@ -100,7 +100,7 @@ public class PageZoomManager {
      * @param newZoomLevel The new zoom level to set the current WebContents to.
      */
     @VisibleForTesting
-    public void setZoomLevel(double newZoomLevel) {
+    void setZoomLevel(double newZoomLevel) {
         WebContents webContents = mDelegate.getWebContents();
         assert webContents != null;
         HostZoomMap.setZoomLevel(webContents, newZoomLevel);

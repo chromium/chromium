@@ -42,7 +42,7 @@ class PageZoomMenuItemMediator {
 
     /** Initializes the mediator. */
     @Initializer
-    protected void pushProperties() {
+    void pushProperties() {
         // We must first fetch the current zoom factor for the given web contents.
         double currentZoomFactor = mManager.getZoomLevel();
         mDefaultZoomFactor = mManager.getDefaultZoomLevel();

@@ -48,7 +48,7 @@ class PageZoomIndicatorMediator {
     }
 
     /** Sets the initial state of the model. */
-    protected void pushProperties() {
+    void pushProperties() {
         updateZoomPercentage();
     }
 
@@ -129,7 +129,7 @@ class PageZoomIndicatorMediator {
     }
 
     // Testing
-    public PropertyModel getModelForTesting() {
+    PropertyModel getModelForTesting() {
         return mModel;
     }
 }
