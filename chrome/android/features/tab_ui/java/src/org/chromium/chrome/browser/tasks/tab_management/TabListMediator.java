@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.Size;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
@@ -147,7 +148,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -372,7 +372,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     private static final String TAG = "TabListMediator";
-    private static final Map<Integer, Integer> sTabClosedFromMap = new HashMap<>();
+    private final SparseIntArray mTabClosedFrom = new SparseIntArray();
 
     private final Callback<@Nullable TabModel> mOnTabModelChanged =
             new ValueChangedCallback<>(this::onTabModelChanged);
@@ -1006,7 +1006,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     @Override
                     public void tabClosureCommitted(Tab tab) {
-                        sTabClosedFromMap.remove(tab.getId());
+                        mTabClosedFrom.delete(tab.getId());
                     }
 
                     @Override
@@ -1015,33 +1015,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
                         addObserversForTab(tab);
                         mTabListLayoutDelegate.onTabAdded(tab);
-
-                        if (sTabClosedFromMap.containsKey(tab.getId())) {
-                            @TabClosedFrom int from = sTabClosedFromMap.get(tab.getId());
-                            switch (from) {
-                                case TabClosedFrom.TAB_STRIP:
-                                    RecordUserAction.record("TabStrip.UndoCloseTab");
-                                    break;
-                                case TabClosedFrom.GRID_TAB_SWITCHER:
-                                    RecordUserAction.record("GridTabSwitch.UndoCloseTab");
-                                    break;
-                                case TabClosedFrom.GRID_TAB_SWITCHER_GROUP:
-                                    RecordUserAction.record("GridTabSwitcher.UndoCloseTabGroup");
-                                    break;
-                                case TabClosedFrom.VERTICAL_TABS:
-                                    RecordUserAction.record("Android.VerticalTabs.UndoCloseTab");
-                                    break;
-                                case TabClosedFrom.VERTICAL_TABS_GROUP:
-                                    RecordUserAction.record(
-                                            "Android.VerticalTabs.UndoCloseTabGroup");
-                                    break;
-                                default:
-                                    assert false
-                                            : "tabClosureUndone for tab that closed from an unknown"
-                                                    + " UI";
-                            }
-                            sTabClosedFromMap.remove(tab.getId());
-                        }
+                        recordUndoCloseMetrics(tab.getId());
                         // TODO(yuezhanggg): clean up updateTab() calls in this class.
                         if (mLayoutType == TabListLayoutType.GROUPED) {
                             TabModel tabModel = getCurrentTabModelChecked();
@@ -1530,6 +1504,33 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
+    private void recordUndoCloseMetrics(int tabId) {
+        int fromIndex = mTabClosedFrom.indexOfKey(tabId);
+        if (fromIndex < 0) return;
+
+        @TabClosedFrom int from = mTabClosedFrom.valueAt(fromIndex);
+        switch (from) {
+            case TabClosedFrom.TAB_STRIP:
+                RecordUserAction.record("TabStrip.UndoCloseTab");
+                break;
+            case TabClosedFrom.GRID_TAB_SWITCHER:
+                RecordUserAction.record("GridTabSwitch.UndoCloseTab");
+                break;
+            case TabClosedFrom.GRID_TAB_SWITCHER_GROUP:
+                RecordUserAction.record("GridTabSwitcher.UndoCloseTabGroup");
+                break;
+            case TabClosedFrom.VERTICAL_TABS:
+                RecordUserAction.record("Android.VerticalTabs.UndoCloseTab");
+                break;
+            case TabClosedFrom.VERTICAL_TABS_GROUP:
+                RecordUserAction.record("Android.VerticalTabs.UndoCloseTabGroup");
+                break;
+            default:
+                assert false : "tabClosureUndone for tab that closed from an unknown UI";
+        }
+        mTabClosedFrom.removeAt(fromIndex);
+    }
+
     private void onTabClosedFrom(int tabId, @TabComponentId int componentId) {
         @TabClosedFrom int from;
         if (componentId == TabComponentId.TAB_STRIP) {
@@ -1542,7 +1543,7 @@ public class TabListMediator implements TabListNotificationHandler {
             Log.w(TAG, "Attempting to close tab from Unknown UI: " + componentId);
             return;
         }
-        sTabClosedFromMap.put(tabId, from);
+        mTabClosedFrom.put(tabId, from);
     }
 
     private void onGroupClosedFrom(int tabId) {
@@ -1555,7 +1556,7 @@ public class TabListMediator implements TabListNotificationHandler {
             Log.w(TAG, "Attempting to close tab group from Unknown UI: " + mComponentId);
             return;
         }
-        sTabClosedFromMap.put(tabId, from);
+        mTabClosedFrom.put(tabId, from);
     }
 
     /**
@@ -1981,6 +1982,8 @@ public class TabListMediator implements TabListNotificationHandler {
         if (mTabUnderlineManager != null) {
             mTabUnderlineManager.removeObserver(mTabUnderlineObserver);
         }
+
+        mTabClosedFrom.clear();
     }
 
     void setTabActionState(@TabActionState int tabActionState) {
@@ -3522,7 +3525,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
         return (didClose) -> {
             if (!didClose) {
-                sTabClosedFromMap.remove(tabId);
+                mTabClosedFrom.delete(tabId);
                 setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ false);
                 int modelIndex = mModelList.indexFromTabId(tabId);
                 if (modelIndex != TabModel.INVALID_TAB_INDEX) {

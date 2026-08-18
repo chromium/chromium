@@ -2554,6 +2554,62 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void tabClosureUndone_RecordsUserAction_GridTabSwitcher() {
+        var userActionTester = new UserActionTester();
+        initAndAssertAllProperties();
+
+        mModelList
+                .get(1)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
+                .run(mItemView2, TAB2_ID, /* triggeringMotion= */ null);
+
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
+        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab2);
+
+        assertTrue(userActionTester.getActions().contains("GridTabSwitch.UndoCloseTab"));
+    }
+
+    @Test
+    public void tabClosureUndone_RecordsUserAction_VerticalTabs() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        var userActionTester = new UserActionTester();
+        initAndAssertAllProperties();
+
+        mModelList
+                .get(1)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
+                .run(mItemView2, TAB2_ID, /* triggeringMotion= */ null);
+
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab2);
+        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab2);
+
+        assertTrue(userActionTester.getActions().contains("Android.VerticalTabs.UndoCloseTab"));
+    }
+
+    @Test
+    public void destroy_ClearsTabClosedFromTracking() {
+        var userActionTester = new UserActionTester();
+        initAndAssertAllProperties();
+
+        mModelList
+                .get(1)
+                .model
+                .get(TabProperties.TAB_ACTION_BUTTON_DATA)
+                .tabActionListener
+                .run(mItemView2, TAB2_ID, /* triggeringMotion= */ null);
+
+        mMediator.destroy();
+
+        mTabModelObserverCaptor.getValue().tabClosureUndone(mTab2);
+
+        assertFalse(userActionTester.getActions().contains("GridTabSwitch.UndoCloseTab"));
+    }
+
+    @Test
     public void testCloseTabInGroup_withArchivedTabsMessagePresent() {
         when(mTabModel.tabGroupExists(any())).thenReturn(true);
 
