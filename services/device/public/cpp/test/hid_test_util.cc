@@ -5,8 +5,8 @@
 #include "services/device/public/cpp/test/hid_test_util.h"
 
 #include "base/uuid.h"
+#include "services/device/hid/hid_report_descriptor.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
-#include "services/device/public/cpp/hid/hid_report_descriptor.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/device/hid/hid_report_descriptor.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -10,7 +12,6 @@
 #include <unordered_map>
 #include <utility>
 
-#include "services/device/public/cpp/hid/hid_report_descriptor.h"
 #include "services/device/public/cpp/hid/hid_report_type.h"
 #include "services/device/public/cpp/hid/hid_report_utils.h"
 #include "services/device/public/cpp/test/test_report_descriptors.h"
@@ -297,8 +298,9 @@ class HidReportDescriptorTest : public testing::Test {
     HidItemStateTable state;
     state.global_stack.push_back(globals_);
     state.report_id = report_id_;
-    for (const HidCollection* c = collection; c; c = c->GetParent())
+    for (const HidCollection* c = collection; c; c = c->GetParent()) {
       const_cast<HidCollection*>(c)->AddReportItem(tag, report_info, state);
+    }
   }
 
   // Add a report item for one or more usages with the same size. The size of
@@ -311,8 +313,9 @@ class HidReportDescriptorTest : public testing::Test {
     state.global_stack.push_back(globals_);
     state.report_id = report_id_;
     state.local.usages = usage_ids;
-    for (const HidCollection* c = collection; c; c = c->GetParent())
+    for (const HidCollection* c = collection; c; c = c->GetParent()) {
       const_cast<HidCollection*>(c)->AddReportItem(tag, report_info, state);
+    }
   }
 
   // Add a report item for a range of usages. The item may be a variable or an
@@ -327,8 +330,9 @@ class HidReportDescriptorTest : public testing::Test {
     state.report_id = report_id_;
     state.local.usage_minimum = usage_minimum;
     state.local.usage_maximum = usage_maximum;
-    for (const HidCollection* c = collection; c; c = c->GetParent())
+    for (const HidCollection* c = collection; c; c = c->GetParent()) {
       const_cast<HidCollection*>(c)->AddReportItem(tag, report_info, state);
+    }
   }
 
   void ValidateDetails(const bool expected_has_report_id,
@@ -1875,8 +1879,9 @@ TEST_F(HidReportDescriptorTest, HighlyNestedReportLimitsDepth) {
   // innermost collection should be propagated to all its parents even though
   // the depth limit has been reached.
   auto* parent = AddTopCollection(0, kCollectionTypePhysical);
-  for (size_t i = 1; i < 50; ++i)
+  for (size_t i = 1; i < 50; ++i) {
     parent = AddChild(parent, 0, kCollectionTypePhysical);
+  }
   SetReportSizeAndCount(8, 1);
   AddReportConstant(parent, kOutput, kNonNullableArray);
   ValidateCollections(report_descriptor_data);
@@ -1900,12 +1905,14 @@ TEST_F(HidReportDescriptorTest, ExtraEndCollectionIgnored) {
   // Collection item was ignored, the depth limit should have prevented the
   // innermost collection from being created.
   auto* parent = AddTopCollection(0, kCollectionTypePhysical);
-  for (size_t i = 1; i < 50; ++i)
+  for (size_t i = 1; i < 50; ++i) {
     parent = AddChild(parent, 0, kCollectionTypePhysical);
+  }
   ValidateCollections(base::span(kExtraEndCollectionDescriptor));
 }
 
 TEST_F(HidReportDescriptorTest, ZeroByteLogicalMinMax) {
+  // clang-format off
   static const uint8_t kZeroByteLogicalMinMaxDescriptor[] = {
       0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
       0x09, 0x04,  // Usage (Joystick)
@@ -1921,6 +1928,7 @@ TEST_F(HidReportDescriptorTest, ZeroByteLogicalMinMax) {
                    //   Null Position)
       0xC0,        // End Collection
   };
+  // clang-format on
 
   auto* top = AddTopCollection(kUsageGenericDesktopJoystick,
                                kCollectionTypeApplication);
@@ -1931,6 +1939,7 @@ TEST_F(HidReportDescriptorTest, ZeroByteLogicalMinMax) {
 }
 
 TEST_F(HidReportDescriptorTest, OneByteLogicalMinMax) {
+  // clang-format off
   static const uint8_t kOneByteLogicalMinMaxDescriptor[] = {
       0x05, 0x01,  // Usage Page (Generic Desktop Ctrls)
       0x09, 0x04,  // Usage (Joystick)
@@ -1946,6 +1955,7 @@ TEST_F(HidReportDescriptorTest, OneByteLogicalMinMax) {
                    //   Null Position)
       0xC0,        // End Collection
   };
+  // clang-format on
 
   auto* top = AddTopCollection(kUsageGenericDesktopJoystick,
                                kCollectionTypeApplication);
@@ -1956,6 +1966,7 @@ TEST_F(HidReportDescriptorTest, OneByteLogicalMinMax) {
 }
 
 TEST_F(HidReportDescriptorTest, TwoByteLogicalMinMax) {
+  // clang-format off
   static const uint8_t kTwoByteLogicalMinMaxDescriptor[] = {
       0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
       0x09, 0x04,        // Usage (Joystick)
@@ -1971,6 +1982,7 @@ TEST_F(HidReportDescriptorTest, TwoByteLogicalMinMax) {
                          //   State,No Null Position)
       0xC0,              // End Collection
   };
+  // clang-format on
 
   auto* top = AddTopCollection(kUsageGenericDesktopJoystick,
                                kCollectionTypeApplication);
@@ -1981,6 +1993,7 @@ TEST_F(HidReportDescriptorTest, TwoByteLogicalMinMax) {
 }
 
 TEST_F(HidReportDescriptorTest, FourByteLogicalMinMax) {
+  // clang-format off
   static const uint8_t kFourByteLogicalMinMaxDescriptor[] = {
       0x05, 0x01,                    // Usage Page (Generic Desktop Ctrls)
       0x09, 0x04,                    // Usage (Joystick)
@@ -1996,6 +2009,7 @@ TEST_F(HidReportDescriptorTest, FourByteLogicalMinMax) {
                                      //   Preferred State,No Null Position)
       0xC0,                          // End Collection
   };
+  // clang-format on
 
   auto* top = AddTopCollection(kUsageGenericDesktopJoystick,
                                kCollectionTypeApplication);

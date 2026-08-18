@@ -6,8 +6,8 @@
 
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "services/device/hid/hid_report_descriptor.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
-#include "services/device/public/cpp/hid/hid_report_descriptor.h"
 
 namespace device {
 

@@ -7,14 +7,24 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("hid") {
   sources = [
+    "hid_collection.cc",
+    "hid_collection.h",
     "hid_connection.cc",
     "hid_connection.h",
     "hid_connection_impl.cc",
     "hid_connection_impl.h",
     "hid_device_info.cc",
     "hid_device_info.h",
+    "hid_item_state_table.cc",
+    "hid_item_state_table.h",
     "hid_manager_impl.cc",
     "hid_manager_impl.h",
+    "hid_report_descriptor.cc",
+    "hid_report_descriptor.h",
+    "hid_report_descriptor_item.cc",
+    "hid_report_descriptor_item.h",
+    "hid_report_item.cc",
+    "hid_report_item.h",
     "hid_service.cc",
     "hid_service.h",
   ]
@@ -83,7 +93,7 @@ source_set("hid") {
 fuzzer_test("hid_report_descriptor_fuzzer") {
   sources = [ "hid_report_descriptor_fuzzer.cc" ]
   deps = [
-    "//services/device/public/cpp/hid",
+    ":hid",
     "//services/device/public/mojom",
   ]
   seed_corpus = "fuzz_corpus"

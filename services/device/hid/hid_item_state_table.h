@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DEVICE_PUBLIC_CPP_HID_HID_ITEM_STATE_TABLE_H_
-#define SERVICES_DEVICE_PUBLIC_CPP_HID_HID_ITEM_STATE_TABLE_H_
+#ifndef SERVICES_DEVICE_HID_HID_ITEM_STATE_TABLE_H_
+#define SERVICES_DEVICE_HID_HID_ITEM_STATE_TABLE_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "services/device/public/cpp/hid/hid_report_descriptor_item.h"
+#include "services/device/hid/hid_report_descriptor_item.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {
@@ -85,4 +85,4 @@ class HidItemStateTable {
 
 }  // namespace device
 
-#endif  // SERVICES_DEVICE_PUBLIC_CPP_HID_HID_ITEM_STATE_TABLE_H_
+#endif  // SERVICES_DEVICE_HID_HID_ITEM_STATE_TABLE_H_

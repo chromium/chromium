@@ -287,8 +287,8 @@ source_set("tests") {
   if ((!is_linux && !is_chromeos) || use_udev) {
     sources += [
       "hid/hid_connection_impl_unittest.cc",
+      "hid/hid_report_descriptor_unittest.cc",
       "public/cpp/hid/hid_device_filter_unittest.cc",
-      "public/cpp/hid/hid_report_descriptor_unittest.cc",
     ]
     if (is_linux || is_chromeos) {
       sources += [

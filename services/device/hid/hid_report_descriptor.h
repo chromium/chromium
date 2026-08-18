@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_DEVICE_PUBLIC_CPP_HID_HID_REPORT_DESCRIPTOR_H_
-#define SERVICES_DEVICE_PUBLIC_CPP_HID_HID_REPORT_DESCRIPTOR_H_
+#ifndef SERVICES_DEVICE_HID_HID_REPORT_DESCRIPTOR_H_
+#define SERVICES_DEVICE_HID_HID_REPORT_DESCRIPTOR_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "services/device/public/cpp/hid/hid_collection.h"
+#include "services/device/hid/hid_collection.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {
@@ -45,4 +45,4 @@ class HidReportDescriptor {
 
 }  // namespace device
 
-#endif  // SERVICES_DEVICE_PUBLIC_CPP_HID_HID_REPORT_DESCRIPTOR_H_
+#endif  // SERVICES_DEVICE_HID_HID_REPORT_DESCRIPTOR_H_

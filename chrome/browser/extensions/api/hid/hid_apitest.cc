@@ -17,8 +17,8 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/hid/hid_device_manager.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "services/device/public/cpp/hid/hid_report_descriptor.h"
 #include "services/device/public/cpp/test/fake_hid_manager.h"
+#include "services/device/public/cpp/test/hid_test_util.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 // This API is not supported on Android.
@@ -29,7 +29,6 @@ namespace extensions {
 namespace {
 
 using ::device::FakeHidManager;
-using ::device::HidReportDescriptor;
 
 const char* const kTestDeviceGuids[] = {"A", "B", "C", "D", "E"};
 const char* const kTestPhysicalDeviceIds[] = {"1", "2", "3", "4", "5"};
@@ -125,26 +124,14 @@ class HidApiTest : public ExtensionApiTest {
                                std::end(kReportDescriptor));
     }
 
-    std::vector<device::mojom::HidCollectionInfoPtr> collections;
-    bool has_report_id;
-    size_t max_input_report_size;
-    size_t max_output_report_size;
-    size_t max_feature_report_size;
-
-    HidReportDescriptor descriptor_parser(report_descriptor);
-    descriptor_parser.GetDetails(
-        &collections, &has_report_id, &max_input_report_size,
-        &max_output_report_size, &max_feature_report_size);
-
-    auto device = device::mojom::HidDeviceInfo::New(
-        device_guid, physical_device_id, vendor_id, product_id, "Test Device",
-        serial_number, device::mojom::HidBusType::kHIDBusTypeUSB,
-        report_descriptor, std::move(collections), has_report_id,
-        max_input_report_size, max_output_report_size, max_feature_report_size,
-        /*device_path=*/"",
-        /*protected_input_report_ids=*/std::vector<uint8_t>{},
-        /*protected_output_report_ids=*/std::vector<uint8_t>{},
-        /*protected_feature_report_ids=*/std::vector<uint8_t>{});
+    auto device = device::CreateDeviceFromReportDescriptor(
+        vendor_id, product_id, report_descriptor);
+    device->guid = device_guid;
+    device->physical_device_id = physical_device_id;
+    device->serial_number = serial_number;
+    device->protected_input_report_ids = std::vector<uint8_t>{};
+    device->protected_output_report_ids = std::vector<uint8_t>{};
+    device->protected_feature_report_ids = std::vector<uint8_t>{};
 
     fake_hid_manager_->AddDevice(std::move(device));
   }

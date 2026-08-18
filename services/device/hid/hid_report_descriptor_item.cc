@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/public/cpp/hid/hid_report_descriptor_item.h"
+#include "services/device/hid/hid_report_descriptor_item.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -32,15 +32,17 @@ HidReportDescriptorItem::HidReportDescriptorItem(
 
   if (IsLong()) {
     // In a long item, payload size is the second byte.
-    if (bytes.size() >= 2)
+    if (bytes.size() >= 2) {
       payload_size_ = bytes[1];
+    }
   } else {
     // As per HID spec, a bSize value of 3 means 4 bytes.
     payload_size_ = header->size == 0x3 ? 4 : header->size;
     DCHECK_LE(payload_size_, sizeof(shortData_));
-    if (GetHeaderSize() + payload_size() <= bytes.size())
+    if (GetHeaderSize() + payload_size() <= bytes.size()) {
       UNSAFE_TODO(
           memcpy(&shortData_, bytes.data() + GetHeaderSize(), payload_size()));
+    }
   }
 }
 

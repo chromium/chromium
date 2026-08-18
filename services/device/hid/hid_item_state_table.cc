@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/public/cpp/hid/hid_item_state_table.h"
+#include "services/device/hid/hid_item_state_table.h"
 
 #include <limits>
 
@@ -33,11 +33,13 @@ uint32_t MaybeCombineUsageAndUsagePage(
     uint32_t usage,
     const std::vector<HidItemStateTable::HidGlobalItemState>& global_stack) {
   // Check if the usage value already has a usage page in the upper bytes.
-  if (usage > std::numeric_limits<uint16_t>::max())
+  if (usage > std::numeric_limits<uint16_t>::max()) {
     return usage;
+  }
   // No global state, just return the usage value.
-  if (global_stack.empty())
+  if (global_stack.empty()) {
     return usage;
+  }
   // Combine the global usage page with the usage value.
   return (global_stack.back().usage_page << (sizeof(uint16_t) * 8)) | usage;
 }
@@ -46,14 +48,17 @@ uint32_t MaybeCombineUsageAndUsagePage(
 // wide. The value is returned as a 32-bit signed integer, extending the sign
 // bit as needed.
 int32_t Int32FromValueAndSize(uint32_t value, size_t payload_size) {
-  if (payload_size == 0)
+  if (payload_size == 0) {
     return 0;
+  }
 
-  if (payload_size == 1)
+  if (payload_size == 1) {
     return static_cast<int8_t>(value & 0xFF);
+  }
 
-  if (payload_size == 2)
+  if (payload_size == 2) {
     return static_cast<int16_t>(value & 0xFFFF);
+  }
 
   DCHECK_EQ(payload_size, 4u);
   return value;
@@ -68,8 +73,9 @@ void HidItemStateTable::SetItemValue(HidReportDescriptorItem::Tag tag,
                                      uint32_t value,
                                      size_t payload_size) {
   if (IsGlobalItem(tag)) {
-    if (global_stack.empty())
+    if (global_stack.empty()) {
       global_stack.emplace_back();
+    }
     auto& global = global_stack.back();
     switch (tag) {
       case HidReportDescriptorItem::kTagUsagePage:

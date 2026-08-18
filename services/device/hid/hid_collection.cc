@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/public/cpp/hid/hid_collection.h"
+#include "services/device/hid/hid_collection.h"
 
 #include <algorithm>
 #include <limits>
@@ -14,7 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
-#include "services/device/public/cpp/hid/hid_item_state_table.h"
+#include "services/device/hid/hid_item_state_table.h"
 
 namespace device {
 
@@ -59,20 +59,23 @@ std::vector<std::unique_ptr<HidCollection>> HidCollection::BuildCollections(
         // devices. Nested components represent logical collections of fields
         // within a report.
         ++depth;
-        if (depth <= kMaxReasonableCollectionDepth)
+        if (depth <= kMaxReasonableCollectionDepth) {
           AddCollection(*current_item, collections, state);
+        }
         state.local.Reset();
         break;
       case HidReportDescriptorItem::kTagEndCollection:
         if (depth <= kMaxReasonableCollectionDepth) {
           // Mark the end of the current collection. Subsequent items describe
           // reports associated with the parent collection.
-          if (state.collection)
+          if (state.collection) {
             state.collection = state.collection->parent_;
+          }
         }
         state.local.Reset();
-        if (depth > 0)
+        if (depth > 0) {
           --depth;
+        }
         break;
       case HidReportDescriptorItem::kTagInput:
       case HidReportDescriptorItem::kTagOutput:
@@ -95,15 +98,17 @@ std::vector<std::unique_ptr<HidCollection>> HidCollection::BuildCollections(
       case HidReportDescriptorItem::kTagPush:
         // Push a copy of the current global state onto the stack. If there is
         // no global state, the push has no effect and is ignored.
-        if (!state.global_stack.empty())
+        if (!state.global_stack.empty()) {
           state.global_stack.push_back(state.global_stack.back());
+        }
         break;
       case HidReportDescriptorItem::kTagPop:
         // Pop the top item of the global state stack, returning to the
         // previously pushed state. If there is no such item, the pop has no
         // effect and is ignored.
-        if (!state.global_stack.empty())
+        if (!state.global_stack.empty()) {
           state.global_stack.pop_back();
+        }
         break;
       case HidReportDescriptorItem::kTagReportId:
         // Update the current report ID. The report ID is global, but is not
@@ -160,8 +165,9 @@ void HidCollection::AddCollection(
   // precedence.
   uint32_t usage = state.local.usages.empty() ? 0 : state.local.usages.front();
   uint32_t usage_page = (usage >> 16) & 0xffff;
-  if (usage_page == 0 && !state.global_stack.empty())
+  if (usage_page == 0 && !state.global_stack.empty()) {
     usage_page = state.global_stack.back().usage_page;
+  }
   // Create the new collection. If it is a child of another collection, append
   // it to that collection's list of children. Otherwise, append it to the list
   // of top-level collections in |collections|.
@@ -188,14 +194,15 @@ void HidCollection::AddReportItem(HidReportDescriptorItem::Tag tag,
   // Get the correct report map for the current report item (input, output,
   // or feature). The new item will be appended to a report in this report map.
   std::unordered_map<uint8_t, HidReport>* reports = nullptr;
-  if (tag == HidReportDescriptorItem::kTagInput)
+  if (tag == HidReportDescriptorItem::kTagInput) {
     reports = &input_reports_;
-  else if (tag == HidReportDescriptorItem::kTagOutput)
+  } else if (tag == HidReportDescriptorItem::kTagOutput) {
     reports = &output_reports_;
-  else if (tag == HidReportDescriptorItem::kTagFeature)
+  } else if (tag == HidReportDescriptorItem::kTagFeature) {
     reports = &feature_reports_;
-  else
+  } else {
     return;
+  }
   // Fetch the report with the |report_id| matching this item, or insert a new
   // report into the map if it does not yet exist.
   HidReport* report = nullptr;
@@ -298,14 +305,16 @@ mojom::HidCollectionInfoPtr HidCollection::ToMojo() const {
     for (const auto& report : *report_list.in) {
       auto report_description = mojom::HidReportDescription::New();
       report_description->report_id = report.first;
-      for (const auto& item : report.second)
+      for (const auto& item : report.second) {
         report_description->items.push_back(item->ToMojo());
+      }
       report_list.out->push_back(std::move(report_description));
     }
   }
 
-  for (const auto& child : children_)
+  for (const auto& child : children_) {
     collection->children.push_back(child->ToMojo());
+  }
 
   return collection;
 }

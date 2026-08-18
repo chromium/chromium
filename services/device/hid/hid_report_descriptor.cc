@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/public/cpp/hid/hid_report_descriptor.h"
+#include "services/device/hid/hid_report_descriptor.h"
 
 #include <algorithm>
 #include <limits>
 #include <utility>
 
 #include "base/stl_util.h"
-#include "services/device/public/cpp/hid/hid_report_descriptor_item.h"
+#include "services/device/hid/hid_report_descriptor_item.h"
 
 namespace device {
 
@@ -58,8 +58,9 @@ void HidReportDescriptor::GetDetails(
     size_t feature_bits;
     collection->GetMaxReportSizes(&input_bits, &output_bits, &feature_bits);
     top_level_collections->push_back(collection->ToMojo());
-    if (collection->HasReportId())
+    if (collection->HasReportId()) {
       *has_report_id = true;
+    }
     max_input_report_bits = std::max(max_input_report_bits, input_bits);
     max_output_report_bits = std::max(max_output_report_bits, output_bits);
     max_feature_report_bits = std::max(max_feature_report_bits, feature_bits);

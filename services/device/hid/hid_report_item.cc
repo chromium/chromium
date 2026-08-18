@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/public/cpp/hid/hid_report_item.h"
+#include "services/device/hid/hid_report_item.h"
 
 #include "services/device/public/mojom/hid.mojom.h"
 
@@ -58,8 +58,9 @@ mojom::HidReportItemPtr HidReportItem::ToMojo() const {
   report_item->is_buffered_bytes = report_info_.bit_field_or_buffer;
 
   // Local items.
-  for (const auto& item : local_.usages)
+  for (const auto& item : local_.usages) {
     report_item->usages.push_back(ConvertUsageToMojo(item));
+  }
   report_item->usage_minimum = ConvertUsageToMojo(local_.usage_minimum);
   report_item->usage_maximum = ConvertUsageToMojo(local_.usage_maximum);
   report_item->designator_minimum = local_.designator_minimum;
