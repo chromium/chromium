@@ -170,7 +170,7 @@ def _EnumerateReports():
       if apk == 'TrichromeGoogle':
         versions = [v for v in versions if _VersionMajor(v) >= 126]
       elif apk in ('AndroidWebview.apk', 'Chrome.apk'):
-        versions = [v for v in versions if _VersionMajor(v) >= 150]
+        versions = [v for v in versions if _VersionMajor(v) >= 151]
       else:
         continue
     if apk == 'Chrome.apk':
@@ -186,7 +186,7 @@ def _EnumerateReports():
     # Switched to high-end only.
     if cpu == 'arm_64':
       versions = [v for v in versions if _VersionMajor(v) < 127]
-    elif cpu == 'high-arm_64':
+    elif cpu == 'high-arm_64' and apk == 'TrichromeGoogle':
       # crbug.com/531774881
       versions = [v for v in versions if _VersionMajor(v) < 149]
 
@@ -203,10 +203,7 @@ class Report(collections.namedtuple('Report', 'cpu,apk,version')):
       and _VersionMajor(self.version) < 91
     ):
       template = '{version}/{cpu}/for-signing-only/{apk}.size'
-    elif self.cpu == 'high-arm_64' and self.apk in (
-      'AndroidWebview.apk',
-      'TrichromeGoogle',
-    ):
+    elif self.cpu == 'high-arm_64' and self.apk == 'TrichromeGoogle':
       template = '{version}/{cpu}/{apk}6432.size'
     else:
       template = '{version}/{cpu}/{apk}.size'
