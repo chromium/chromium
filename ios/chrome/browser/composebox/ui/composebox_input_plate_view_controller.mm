@@ -1710,7 +1710,7 @@ UIImage* SendButtonImage(BOOL highlighted,
     UIAction* regularModelOption = [self
         actionWithTitle:[_state.strings
                             menuLabelForModel:ComposeboxModelOption::kRegular]
-                  image:SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize)
+                  image:SymbolWithPointSize(SymbolAcute, kSymbolActionPointSize)
                  hidden:regularHidden
                disabled:[_state isModelDisabled:ComposeboxModelOption::kRegular]
                selected:_state.activeModel == ComposeboxModelOption::kRegular
@@ -1764,7 +1764,7 @@ UIImage* SendButtonImage(BOOL highlighted,
     UIAction* flashModelOption = [self
         actionWithTitle:[_state.strings
                             menuLabelForModel:ComposeboxModelOption::kFlash]
-                  image:SymbolWithPointSize(SymbolAcute, kSymbolActionPointSize)
+                  image:SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize)
                  hidden:[_state isModelHidden:ComposeboxModelOption::kFlash]
                disabled:[_state isModelDisabled:ComposeboxModelOption::kFlash]
                selected:_state.activeModel == ComposeboxModelOption::kFlash
