@@ -2839,6 +2839,37 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFastTimeout,
 #endif
 }
 
+// TODO(crbug.com/410881522): Re-enable this test
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFastTimeout,
+                       DISABLED_testNavigateToBadPage) {
+#if defined(SLOW_BINARY)
+  GTEST_SKIP() << "skip timeout test for slow binary";
+#else
+  // Client loads, and navigates to a new URL. We try to load the client again,
+  // but it fails.
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  PreventDeletionOnClose(instance);
+  WebUIStateListener listener(&instance->host());
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+
+  ExecuteJsTest({.params = base::Value(
+                     base::DictValue().Set("step", "trigger_navigation"))});
+  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
+  listener.WaitForWebUiState(mojom::WebUiState::kError);
+
+  // Close Glic.
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+
+  // Open Glic again. This time the client should load, falling back to the
+  // original URL.
+  ASSERT_OK_AND_ASSIGN(auto* reopened_instance, OpenGlicForActiveTab());
+  ASSERT_EQ(reopened_instance, instance);
+  listener.WaitForWebUiState(mojom::WebUiState::kReady);
+  ExecuteJsTest({.params = base::Value(
+                     base::DictValue().Set("step", "verify_fallback"))});
+#endif
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFails) {
   service()->enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
   glic::GlicHistogramTester histogram_tester;

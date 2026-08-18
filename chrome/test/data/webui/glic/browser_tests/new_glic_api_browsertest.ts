@@ -52,6 +52,25 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(url.searchParams.get('foobar'), '1');
   }
 
+  async testNavigateToBadPage() {
+    const params = this.testParams as {step: string};
+    const url = new URL(window.location.href);
+
+    if (params.step === 'trigger_navigation') {
+      // A regular web page with no client.
+      url.pathname = '/test_data/page.html';
+      (async () => {
+        await sleep(100);
+        location.href = url.toString();
+      })();
+      return;
+    }
+
+    if (params.step === 'verify_fallback') {
+      assertEquals(url.pathname, '/glic/browser_tests/test.html');
+    }
+  }
+
   async testGetModelQualityClientIdFeatureDisabled() {
     assertDefined(this.host.getHostCapabilities);
     const capabilities: Set<HostCapability> =

@@ -314,37 +314,6 @@ class ApiTests extends ApiTestFixtureBase {
     metrics.onClosedCaptionsShown();
   }
 
-
-
-
-
-
-
-  // Test navigating unsuccessfully after client connection.
-  async testNavigateToBadPage() {
-    // This test function is run twice.
-    const runCount: number = this.testParams;
-
-    const url = new URL(window.location.href);
-    // First time:
-    if (runCount === 0) {
-      // Close the panel so that it can be opened again later to trigger
-      // loading the client.
-      await this.host.closePanel!();
-      // A regular web page with no client.
-      url.pathname = '/test_data/page.html';
-      (async () => {
-        await sleep(100);
-        location.href = url.toString();
-      })();
-      return;
-    }
-
-    // Second time:
-    assertEquals(runCount, 1);
-    assertEquals(url.pathname, '/glic/browser_tests/test.html');
-  }
-
   async testNavigateToAboutBlank() {
     // Navigation to about:blank will destroy this test client, so the code
     // below will first allow this test function to return, and then navigate.

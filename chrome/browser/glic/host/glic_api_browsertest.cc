@@ -1113,28 +1113,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
 }
 
 // TODO(crbug.com/410881522): Re-enable this test
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
-                       DISABLED_testNavigateToBadPage) {
-#if defined(SLOW_BINARY)
-  GTEST_SKIP() << "skip timeout test for slow binary";
-#else
-  // Client loads, and navigates to a new URL. We try to load the client again,
-  // but it fails.
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  RegisterConversation("test-id"));
-  WebUIStateListener listener(GetHost());
-  listener.WaitForWebUiState(mojom::WebUiState::kReady);
-  ExecuteJsTest({.params = base::Value(0)});
-  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
-  listener.WaitForWebUiState(mojom::WebUiState::kError);
-
-  // Open the glic window to trigger reloading the client.
-  // This time the client should load, falling back to the original URL.
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest({.params = base::Value(1)});
-#endif
-}
-
 
 // TODO(crbug.com/454001121): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(GlicApiTest,
