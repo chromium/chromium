@@ -1180,8 +1180,7 @@
                         "use_heuristic": "false"
                     },
                     "enable_features": [
-                        "ReaderModeDistillInApp",
-                        "ReaderModeUseReadability"
+                        "ReaderModeDistillInApp"
                     ]
                 }
             ]
@@ -5634,10 +5633,7 @@
                     "name": "TimeOfDayEnabledM117AndBeyond",
                     "enable_features": [
                         "FeatureManagementTimeOfDayScreenSaver",
-                        "FeatureManagementTimeOfDayWallpaper",
-                        "Jelly",
-                        "TimeOfDayScreenSaver",
-                        "TimeOfDayWallpaper"
+                        "FeatureManagementTimeOfDayWallpaper"
                     ]
                 }
             ]
@@ -5721,8 +5717,7 @@
                         "period": "10"
                     },
                     "enable_features": [
-                        "ArcVmMemoryPSIReports",
-                        "MemoryPressureMetricsDetail"
+                        "ArcVmMemoryPSIReports"
                     ]
                 }
             ]
@@ -5741,8 +5736,7 @@
                     ],
                     "disable_features": [
                         "WelcomeTourCounterfactualArm",
-                        "WelcomeTourHoldbackArm",
-                        "WelcomeTourV2"
+                        "WelcomeTourHoldbackArm"
                     ]
                 }
             ]
@@ -6510,83 +6504,10 @@
                         "autodismiss_enabled": "true",
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
-                        "enable_price_tracking": "true",
-                        "use_root_bookmark_as_default": "true"
+                        "enable_price_tracking": "true"
                     },
                     "enable_features": [
-                        "CommercePriceTracking",
-                        "OptimizationGuidePushNotifications",
-                        "ReadLater",
                         "ShoppingList"
-                    ]
-                },
-                {
-                    "name": "Default_1__M100_C_v5",
-                    "params": {
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "ReadLater"
-                    ]
-                },
-                {
-                    "name": "ReadLater_CCT_non_US__NoCustomTab_M100_C_v5",
-                    "params": {
-                        "use_cct": "false",
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "ReadLater"
-                    ]
-                },
-                {
-                    "name": "ReadLater_SaveFlow_non_US__SemiIntegratedRedux_M100_C_v5",
-                    "params": {
-                        "allow_bookmark_type_swapping": "true",
-                        "autodismiss_enabled": "true",
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "ReadLater"
-                    ]
-                },
-                {
-                    "name": "Default_1__M100_A_v5",
-                    "params": {
-                        "enable_persisted_tab_data_maintenance": "true",
-                        "enable_price_tracking": "true",
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "CommercePriceTracking",
-                        "ReadLater"
-                    ]
-                },
-                {
-                    "name": "ReadLater_CCT_US__NoCustomTab_M100_A_v5",
-                    "params": {
-                        "enable_persisted_tab_data_maintenance": "true",
-                        "enable_price_tracking": "true",
-                        "use_cct": "false",
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "CommercePriceTracking",
-                        "ReadLater"
-                    ]
-                },
-                {
-                    "name": "ReadLater_SaveFlow_US__SemiIntegratedRedux_M100_A_v5",
-                    "params": {
-                        "allow_bookmark_type_swapping": "true",
-                        "autodismiss_enabled": "true",
-                        "enable_persisted_tab_data_maintenance": "true",
-                        "enable_price_tracking": "true",
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "CommercePriceTracking",
-                        "ReadLater"
                     ]
                 },
                 {
@@ -6596,26 +6517,10 @@
                         "bookmark_compact_visuals_enabled": "true",
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
-                        "enable_price_tracking": "true",
-                        "use_root_bookmark_as_default": "true"
+                        "enable_price_tracking": "true"
                     },
                     "enable_features": [
-                        "CommercePriceTracking",
-                        "OptimizationGuidePushNotifications",
-                        "ReadLater",
                         "ShoppingList"
-                    ]
-                },
-                {
-                    "name": "ReadLater_SaveFlow_non_US__SemiIntegrated_NoCCT_M100_C_v7",
-                    "params": {
-                        "allow_bookmark_type_swapping": "true",
-                        "autodismiss_enabled": "true",
-                        "use_cct": "false",
-                        "use_root_bookmark_as_default": "true"
-                    },
-                    "enable_features": [
-                        "ReadLater"
                     ]
                 },
                 {
@@ -6626,13 +6531,9 @@
                         "bookmark_compact_visuals_enabled": "true",
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
-                        "enable_price_tracking": "true",
-                        "use_root_bookmark_as_default": "true"
+                        "enable_price_tracking": "true"
                     },
                     "enable_features": [
-                        "CommercePriceTracking",
-                        "OptimizationGuidePushNotifications",
-                        "ReadLater",
                         "ShoppingList"
                     ]
                 },
@@ -6645,13 +6546,9 @@
                         "enable_persisted_tab_data_maintenance": "true",
                         "enable_price_notification": "true",
                         "enable_price_tracking": "true",
-                        "use_cct": "false",
-                        "use_root_bookmark_as_default": "true"
+                        "use_cct": "false"
                     },
                     "enable_features": [
-                        "CommercePriceTracking",
-                        "OptimizationGuidePushNotifications",
-                        "ReadLater",
                         "ShoppingList"
                     ]
                 }
@@ -6690,16 +6587,12 @@
                 {
                     "name": "Enabled_Dogfood",
                     "enable_features": [
-                        "CompareConfirmationToast",
-                        "ProductSpecifications",
                         "ProductSpecificationsMqlsLogging"
                     ]
                 },
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "CompareConfirmationToast",
-                        "ProductSpecifications",
                         "ProductSpecificationsMqlsLogging"
                     ]
                 }
@@ -6834,7 +6727,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "OptimizationGuideComposeOnDeviceEval",
                         "OptimizationGuideOnDeviceModel"
                     ]
                 }
@@ -8994,7 +8886,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DevToolsAiPromptApi",
                         "DevToolsConsoleInsightsTeasers"
                     ]
                 }
@@ -9020,7 +8911,6 @@
                         "EnableChromeRefreshTokenBinding",
                         "EnableOAuthMultiloginStandardCookiesBinding",
                         "EnableOAuthMultiloginStandardCookiesBindingForSecondaryPartitions",
-                        "PersistDeviceBoundSessions",
                         "UnexportableKeyDeletion",
                         "UseUnexportableKeyServiceInBrowserProcess"
                     ]
@@ -13411,9 +13301,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "enable_features": [
-                        "EnableReaderModeInUS"
-                    ],
                     "disable_features": [
                         "EnableReaderModeOmniboxEntryPointInUS"
                     ]
@@ -13579,7 +13466,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "HorizontalTabStripComboButton",
                         "IPH_TabSearchComboButton"
                     ]
                 }
@@ -14341,10 +14227,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "enable_features": [
-                        "EnableReadabilityHeuristic",
-                        "EnableReaderModeOptimizationGuideEligibility"
-                    ],
                     "disable_features": [
                         "ReaderModeIgnoreBadgeThreshold"
                     ]
@@ -19149,9 +19031,7 @@
                 {
                     "name": "EnabledConservative",
                     "enable_features": [
-                        "AsyncSetCookie",
                         "AvoidCloneArgsOnExtensionFunctionDispatch",
-                        "AvoidUnnecessaryGetMinimizeButtonOffset",
                         "AvoidUnnecessaryShouldRenderRichAnimation",
                         "GCOnArrayBufferAllocationFailure",
                         "MvcUpdateViewWhenModelChanged",
@@ -21307,9 +21187,7 @@
                 {
                     "name": "RoundedWindowsEnabled",
                     "enable_features": [
-                        "ArcRoundedWindowCompat",
-                        "FeatureManagementRoundedWindows",
-                        "RoundedWindows"
+                        "FeatureManagementRoundedWindows"
                     ]
                 }
             ]
@@ -27076,8 +26954,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FencedFrames",
-                        "FencedFramesAPIChanges",
-                        "SharedStorageAPI"
+                        "FencedFramesAPIChanges"
                     ]
                 }
             ]
