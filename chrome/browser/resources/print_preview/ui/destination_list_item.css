@@ -72,3 +72,15 @@ cr-icon {
   margin-inline-start: 1em;
   width: 24px;
 }
+
+@media (forced-colors: active) {
+  :host(:hover) span {
+    color: HighlightText;
+    /* The default application of forced colors does not work here. */
+    forced-color-adjust: none;
+  }
+
+  :host(:hover) cr-icon {
+    fill: HighlightText;
+  }
+}

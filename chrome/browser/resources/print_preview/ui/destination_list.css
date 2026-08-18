@@ -53,3 +53,15 @@
   outline: solid 2px var(--cr-focus-outline-color);
   outline-offset: -2px;
 }
+
+@media (forced-colors: active) {
+  .list-item:hover {
+    background: Highlight;
+    /* The default application of forced colors does not work here. */
+    forced-color-adjust: none;
+  }
+
+  .list-item:hover:focus {
+    outline: solid 2px transparent;
+  }
+}
