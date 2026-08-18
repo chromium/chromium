@@ -553,6 +553,7 @@ android_library("cronet_impl_platform_java") {
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  proguard_configs = [ "cronet_impl_platform_proguard.cfg" ]
 }
 
 # cronet_impl_fake_java.jar - Fake implementation of Cronet.
@@ -576,6 +577,7 @@ android_library("cronet_impl_fake_java") {
     "//base:log_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+  proguard_configs = [ "cronet_impl_fake_proguard.cfg" ]
 }
 
 android_library("cronet_urlconnection_impl_java") {
@@ -717,6 +719,7 @@ android_library("httpengine_native_provider_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
+  proguard_configs = [ "httpengine_native_provider_proguard.cfg" ]
 }
 
 # Groups all Cronet code (API and impl) into a single Java dependency.
