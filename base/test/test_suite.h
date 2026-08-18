@@ -14,6 +14,7 @@
 
 #include "base/at_exit.h"
 #include "base/check.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/tracing/trace_to_file.h"
 #include "base/tracing_buildflags.h"
@@ -103,6 +104,7 @@ class TestSuite {
   raw_ptr<XmlUnitTestResultPrinter, DanglingUntriaged> printer_ = nullptr;
 
   std::unique_ptr<logging::ScopedLogAssertHandler> assert_handler_;
+  std::optional<i18n::ScopedDefaultIcuLocale> icu_locale_;
 
   bool initialized_command_line_ = false;
   bool check_for_leaked_globals_ = true;
