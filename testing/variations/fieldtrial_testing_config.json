@@ -13884,6 +13884,26 @@
             ]
         }
     ],
+    "HttpCacheZstdCompression": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HttpCacheZstdCompression",
+                        "HttpCacheZstdDecompression"
+                    ]
+                }
+            ]
+        }
+    ],
     "HttpsFirstBalancedModeAutoEnable": [
         {
             "platforms": [
