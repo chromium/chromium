@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.PositionAssertions.isLeftOf;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isActivated;
@@ -19,6 +20,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -67,6 +69,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -1244,5 +1247,31 @@ public class ExtensionsToolbarTest {
                     }
                 },
                 "IPH bubble was not displayed in a popup");
+    }
+
+    @Test
+    @LargeTest
+    public void testClickingInsidePopupDoesNotDismiss() throws IOException {
+        String extensionId = loadPopupExtension("extension", "Extension", "Action", "popup opened");
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, true);
+        ViewUtils.onViewWaiting(withContentDescription("Action")).check(matches(isDisplayed()));
+
+        // Click on the action button to open the popup.
+        try (ExtensionTestMessageListener listener =
+                new ExtensionTestMessageListener("popup opened")) {
+            clickViewWithContentDescription("Action");
+            assertTrue(listener.waitUntilSatisfied());
+        }
+
+        // Verify the popup is open.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
+                "Popup did not open");
+
+        // Click in the middle of the popup's content view.
+        onView(instanceOf(ContentView.class)).inRoot(isPlatformPopup()).perform(click());
+
+        // Confirm that the popup is still open after being clicked.
+        assertEquals(1, ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId));
     }
 }

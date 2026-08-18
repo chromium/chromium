@@ -162,8 +162,7 @@ class ExtensionActionPopup implements Destroyable {
 
         // The popup should close on focus loss only if it's not being inspected. Otherwise,
         // opening the devtools window would automatically close the popup.
-        // Note: calling setDismissOnTouchInteraction() implicitly also calls setOutsideTouchable().
-        mPopupWindow.setDismissOnTouchInteraction(!inspectWithDevTools);
+        mPopupWindow.setOutsideTouchable(!inspectWithDevTools);
         mPopupWindow.setDismissOnScreenSizeChange(!inspectWithDevTools);
         mPopupWindow.setAllowNonTouchableSize(true);
 
