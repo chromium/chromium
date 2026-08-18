@@ -61,9 +61,6 @@
 // Stops the Lottie animation.
 - (void)stopAnimation;
 
-// Resets the animation to its first frame.
-- (void)resetToFirstFrame;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_GEMINI_FIRST_RUN_CAROUSEL_SLIDE_VIEW_H_

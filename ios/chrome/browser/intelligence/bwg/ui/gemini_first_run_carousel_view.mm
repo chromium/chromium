@@ -310,7 +310,7 @@ const base::TimeDelta kAutoScrollInterval = base::Seconds(3);
     ]];
     [_slideStack layoutIfNeeded];
   }
-  [_dummyFirstSlideView resetToFirstFrame];
+  [_dummyFirstSlideView stopAnimation];
 }
 
 - (void)setupSubviews {
@@ -411,7 +411,7 @@ const base::TimeDelta kAutoScrollInterval = base::Seconds(3);
 }
 
 - (void)resetSlideToFirstFrame:(NSInteger)slideIndex {
-  [_slideViews[slideIndex] resetToFirstFrame];
+  [_slideViews[slideIndex] stopAnimation];
 }
 
 - (void)playCurrentSlideAnimation {

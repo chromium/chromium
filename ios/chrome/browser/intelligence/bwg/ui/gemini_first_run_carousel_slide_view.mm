@@ -100,10 +100,6 @@ const CGFloat kSlideTitleMaxFontSize = 40.0;
   [_lottieAnimation stop];
 }
 
-- (void)resetToFirstFrame {
-  [_lottieAnimation stop];
-}
-
 #pragma mark - Private
 
 - (BOOL)isRTL {
