@@ -35,27 +35,29 @@ std::vector<int> CalculateProportionalChildWidths(
     // Otherwise proportionally shrink children between their preferred and
     // minimum sizes.
   } else {
-    int remaining_available = available_width;
-    int total_shrink_needed = total_preferred_width - available_width;
-    int total_shrink_capacity = total_preferred_width - total_min_width;
+    int accumulated_allocated = 0;
+    int accumulated_shrink_capacity = 0;
+    int accumulated_preferred = 0;
+    const int total_shrink_capacity = total_preferred_width - total_min_width;
+    const int total_shrink_needed = total_preferred_width - available_width;
 
     for (size_t i = 0; i < num_children; ++i) {
-      int shrink_capacity = child_preferred_widths[i] - child_min_widths[i];
-      int child_shrink = 0;
-      if (total_shrink_capacity > 0 && total_shrink_needed > 0) {
-        child_shrink =
-            (total_shrink_needed * shrink_capacity) / total_shrink_capacity;
-        child_shrink = std::min(
-            child_shrink, child_preferred_widths[i] - child_min_widths[i]);
-      }
-      int child_width = child_preferred_widths[i] - child_shrink;
-      // The last child gets all remaining space to absorb rounding errors.
-      if (i == num_children - 1) {
-        child_width = remaining_available;
-      }
+      accumulated_shrink_capacity +=
+          child_preferred_widths[i] - child_min_widths[i];
+      accumulated_preferred += child_preferred_widths[i];
+
+      int target_cumulative_shrink =
+          (static_cast<int64_t>(total_shrink_needed) *
+               accumulated_shrink_capacity +
+           total_shrink_capacity / 2) /
+          total_shrink_capacity;
+
+      int target_cumulative_allocated =
+          accumulated_preferred - target_cumulative_shrink;
+      int child_width = target_cumulative_allocated - accumulated_allocated;
 
       allocated_widths[i] = child_width;
-      remaining_available -= child_width;
+      accumulated_allocated += child_width;
     }
   }
 

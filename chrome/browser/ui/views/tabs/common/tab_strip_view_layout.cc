@@ -74,30 +74,17 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   int x = 0;
   const int container_height = TabStyle::Get()->GetStandardHeight();
 
+  const auto* unpinned_container = tab_strip_view->GetUnpinnedTabsContainer();
   const int pinned_preferred_width =
       pinned_tabs_scroll_view->GetPreferredSize(size_bounds).width();
+  // Use target preferred size so the layout accounts for the target bounds
+  // during animations. The unpinned container may not be set yet so fallback to
+  // 0 if it doesn't exist.
   const int unpinned_preferred_width =
-      unpinned_tabs_scroll_view->GetPreferredSize(size_bounds).width();
+      unpinned_container ? unpinned_container->GetTargetPreferredSize().width()
+                         : 0;
 
-  int unpinned_target_preferred_width = unpinned_preferred_width;
-  if (const auto* unpinned_container =
-          tab_strip_view->GetUnpinnedTabsContainer()) {
-    unpinned_target_preferred_width =
-        unpinned_container->GetTargetPreferredSize().width();
-  }
-
-  // Query the parent layout manager (e.g. FlexLayout in the region view) for
-  // the total space available for the tab strip in the window. Avoid querying
-  // the parent when size_bounds has a width of 0 (e.g. when calculating minimum
-  // size) so we do not report the live window width as the minimum size.
-  const views::SizeBounds available_for_tabstrip =
-      (tab_strip_view->parent() && size_bounds.width() != 0)
-          ? tab_strip_view->parent()->GetAvailableSize(tab_strip_view)
-          : size_bounds;
-  const views::SizeBound available_width =
-      available_for_tabstrip.width().is_bounded()
-          ? available_for_tabstrip.width()
-          : size_bounds.width();
+  const views::SizeBound available_width = size_bounds.width();
 
   // Place the pinned container.
   int pinned_width = pinned_preferred_width;
@@ -108,7 +95,7 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
       min_pinned_width = pinned_container->GetMinimumSize().width();
     }
     pinned_width = CalculatePinnedContainerMainAxisSize(
-        pinned_preferred_width, unpinned_target_preferred_width,
+        pinned_preferred_width, unpinned_preferred_width,
         available_width.value(), min_pinned_width);
   }
 
