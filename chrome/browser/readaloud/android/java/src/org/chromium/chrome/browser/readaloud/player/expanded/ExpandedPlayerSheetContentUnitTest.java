@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -63,8 +62,6 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Mock private PlaybackModeIphController mPlaybackModeIphController;
 
     private Context mContext;
-    private Drawable mPlayDrawable;
-    private Drawable mPauseDrawable;
     private ExpandedPlayerSheetContent mContent;
     private TextView mSpeedView;
     private TextView mTitleView;
@@ -86,8 +83,6 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mPlayDrawable = mContext.getDrawable(R.drawable.play_button);
-        mPauseDrawable = mContext.getDrawable(R.drawable.pause_button);
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         // Need to set theme before inflating layout.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);

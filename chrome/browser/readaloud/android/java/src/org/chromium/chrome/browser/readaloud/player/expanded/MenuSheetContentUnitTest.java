@@ -17,7 +17,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,8 +41,6 @@ public class MenuSheetContentUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ExpandedPlayerSheetContent mBottomSheetContent;
     private Activity mActivity;
-    private Context mContext;
-    private Menu mMenu;
 
     static class TestMenuSheetContent extends MenuSheetContent {
         TestMenuSheetContent(
@@ -73,7 +70,6 @@ public class MenuSheetContentUnitTest {
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         // Need to set theme before inflating layout.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
