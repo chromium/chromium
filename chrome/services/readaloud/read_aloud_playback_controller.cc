@@ -112,6 +112,7 @@ void ReadAloudPlaybackController::InitializeAudio(
           params, resources.audio_segment_queue.get())) {
     return;
   }
+  resources.audio_renderer->SetPlaybackRate(playback_rate_);
 
   resources.audio_output_stream.Bind(std::move(stream));
 
@@ -194,12 +195,16 @@ void ReadAloudPlaybackController::SetTextContent(
 
 void ReadAloudPlaybackController::Play() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/527526634): Start reading from icu_chunker and pushing audio frames.
+  if (audio_resources_ && audio_resources_->audio_output_stream.is_bound()) {
+    audio_resources_->audio_output_stream->Play();
+  }
 }
 
 void ReadAloudPlaybackController::Pause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/527526634): Pause audio stream and suspend playback timer.
+  if (audio_resources_ && audio_resources_->audio_output_stream.is_bound()) {
+    audio_resources_->audio_output_stream->Pause();
+  }
 }
 
 void ReadAloudPlaybackController::SeekToWord(uint32_t segment_index,
@@ -255,10 +260,10 @@ void ReadAloudPlaybackController::SetPlaybackRate(float rate) {
         "and > 0.0)");
     return;
   }
-  float clamped_rate = std::clamp(rate, kMinPlaybackRate, kMaxPlaybackRate);
-  playback_rate_ = clamped_rate;
-  // TODO(b/527526021): Apply playback_rate_ to active audio output stream /
-  // synthesis parameters.
+  playback_rate_ = std::clamp(rate, kMinPlaybackRate, kMaxPlaybackRate);
+  if (audio_resources_ && audio_resources_->audio_renderer) {
+    audio_resources_->audio_renderer->SetPlaybackRate(playback_rate_);
+  }
 }
 
 void ReadAloudPlaybackController::FlushBuffers() {

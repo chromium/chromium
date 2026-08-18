@@ -110,11 +110,6 @@ class FakePlaybackController
     : public read_aloud::mojom::ReadAloudPlaybackController {
  public:
   FakePlaybackController() = default;
-  explicit FakePlaybackController(
-      mojo::PendingReceiver<read_aloud::mojom::ReadAloudPlaybackController>
-          receiver)
-      : receiver_(this, std::move(receiver)) {}
-
   ~FakePlaybackController() override = default;
 
   void Bind(
@@ -124,7 +119,10 @@ class FakePlaybackController
     receiver_.Bind(std::move(receiver));
   }
 
-  void Reset() { receiver_.reset(); }
+  void Reset() {
+    receiver_.reset();
+    received_segments_.clear();
+  }
 
   void InitializeAudio(
       mojo::PendingRemote<media::mojom::AudioOutputStream> stream,
@@ -139,28 +137,63 @@ class FakePlaybackController
     }
   }
 
-  void Play() override {}
-  void Pause() override {}
+  void Play() override {
+    play_count_++;
+    if (play_callback_) {
+      std::move(play_callback_).Run();
+    }
+  }
+  void Pause() override {
+    pause_count_++;
+    if (pause_callback_) {
+      std::move(pause_callback_).Run();
+    }
+  }
   void SeekToWord(uint32_t segment_index, uint32_t character_offset) override {}
   void SeekToTime(base::TimeDelta position) override {}
   void SetVoice(const std::string& voice_id) override {}
-  void SetPlaybackRate(float rate) override {}
+  void SetPlaybackRate(float rate) override {
+    last_playback_rate_ = rate;
+    if (set_playback_rate_callback_) {
+      std::move(set_playback_rate_callback_).Run();
+    }
+  }
   void FlushBuffers() override {}
 
   void set_text_content_callback(base::OnceClosure callback) {
     set_text_content_callback_ = std::move(callback);
   }
+  void set_play_callback(base::OnceClosure callback) {
+    play_callback_ = std::move(callback);
+  }
+  void set_pause_callback(base::OnceClosure callback) {
+    pause_callback_ = std::move(callback);
+  }
+  void set_playback_rate_callback(base::OnceClosure callback) {
+    set_playback_rate_callback_ = std::move(callback);
+  }
 
-  const std::vector<read_aloud::mojom::TextSegmentPtr>& received_segments() const {
+  const std::vector<read_aloud::mojom::TextSegmentPtr>& received_segments()
+      const {
     return received_segments_;
   }
 
+  int play_count() const { return play_count_; }
+  int pause_count() const { return pause_count_; }
+  float last_playback_rate() const { return last_playback_rate_; }
+
  private:
-  mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackController> receiver_{this};
+  mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackController> receiver_{
+      this};
   std::vector<read_aloud::mojom::TextSegmentPtr> received_segments_;
   base::OnceClosure set_text_content_callback_;
+  base::OnceClosure play_callback_;
+  base::OnceClosure pause_callback_;
+  base::OnceClosure set_playback_rate_callback_;
+  int play_count_ = 0;
+  int pause_count_ = 0;
+  float last_playback_rate_ = 1.0f;
 };
-
 }  // namespace
 
 class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
@@ -665,6 +698,39 @@ TEST_F(ReadAloudServiceTest,
   // parameters.
   service()->SetVoice("es-ES-Wavenet-B");
   service()->SetLanguageCode("es");
+}
+
+TEST_F(ReadAloudServiceTest, PlayForwardedToUtility) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  base::RunLoop run_loop;
+  fake_controller()->set_play_callback(run_loop.QuitClosure());
+  service()->Play(web_contents());
+  run_loop.Run();
+  EXPECT_EQ(fake_controller()->play_count(), 1);
+}
+
+TEST_F(ReadAloudServiceTest, PauseForwardedToUtility) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  base::RunLoop run_loop;
+  fake_controller()->set_pause_callback(run_loop.QuitClosure());
+  service()->Pause();
+  run_loop.Run();
+  EXPECT_EQ(fake_controller()->pause_count(), 1);
+}
+
+TEST_F(ReadAloudServiceTest, SetPlaybackRateForwardedToUtility) {
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  service()->Initialize(web_contents());
+
+  base::RunLoop run_loop;
+  fake_controller()->set_playback_rate_callback(run_loop.QuitClosure());
+  service()->SetPlaybackRate(1.5f);
+  run_loop.Run();
+  EXPECT_FLOAT_EQ(fake_controller()->last_playback_rate(), 1.5f);
 }
 
 }  // namespace readaloud

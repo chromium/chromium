@@ -373,6 +373,33 @@ TEST_F(ReadAloudPlaybackControllerTest, SetPlaybackRateNaNReportsBadMessage) {
             "ReadAloudPlaybackController: Invalid playback rate (must be finite and > 0.0)");
 }
 
+TEST_F(ReadAloudPlaybackControllerTest, SetPlaybackRateClampsBelowMinimum) {
+  CreateSession();
+  controller_remote_->SetPlaybackRate(0.1f);
+  controller_remote_.FlushForTesting();
+
+  EXPECT_FLOAT_EQ(controller_impl_->playback_rate(), kMinPlaybackRate);
+  EXPECT_TRUE(controller_remote_.is_connected());
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, SetPlaybackRateClampsAboveMaximum) {
+  CreateSession();
+  controller_remote_->SetPlaybackRate(10.0f);
+  controller_remote_.FlushForTesting();
+
+  EXPECT_FLOAT_EQ(controller_impl_->playback_rate(), kMaxPlaybackRate);
+  EXPECT_TRUE(controller_remote_.is_connected());
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, SetPlaybackRateValidWithinRange) {
+  CreateSession();
+  controller_remote_->SetPlaybackRate(1.5f);
+  controller_remote_.FlushForTesting();
+
+  EXPECT_FLOAT_EQ(controller_impl_->playback_rate(), 1.5f);
+  EXPECT_TRUE(controller_remote_.is_connected());
+}
+
 TEST_F(ReadAloudPlaybackControllerTest, SeekToTimeNegativeReportsBadMessage) {
   CreateSession();
   mojo::test::BadMessageObserver bad_message_observer;

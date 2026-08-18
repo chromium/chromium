@@ -50,6 +50,8 @@ class ReadAloudPlaybackController
 
   ~ReadAloudPlaybackController() override;
 
+  float playback_rate() const { return playback_rate_; }
+
  private:
   // read_aloud::mojom::ReadAloudPlaybackControllerFactory:
   void CreateController(
