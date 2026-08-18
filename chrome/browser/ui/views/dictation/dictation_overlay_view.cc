@@ -11,10 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/dictation/waveform_view.h"
 #include "chrome/browser/ui/views/dictation/waveform_view_button.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -61,12 +63,12 @@ class DictationOverlayContentsView : public views::View {
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(6));
     SetLayoutManager(std::move(layout));
 
-    // TODO(b/525859277): Use non-placeholder values.
     auto mic_button = views::CreateVectorImageButtonWithNativeTheme(
         toggle_active_stream_callback_, vector_icons::kMicIcon, 20,
         ui::kColorSysOnSurface, ui::kColorIconDisabled, ui::kColorSysOnSurface);
     mic_button->SetBorder(nullptr);
-    mic_button->SetAccessibleName(u"Dictation");
+    mic_button->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_DICTATION_ACCNAME_OVERLAY_MIC_BUTTON));
     mic_button->SetPreferredSize(gfx::Size(20, 20));
     mic_button->SetProperty(
         views::kElementIdentifierKey,

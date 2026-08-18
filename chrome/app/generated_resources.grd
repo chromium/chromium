@@ -19319,6 +19319,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DICTATION_BUTTON_START" desc="Button label on the dictation UI that turns on the microphone to start dictating text." translateable="false">
         Start
       </message>
+      <message name="IDS_DICTATION_ACCNAME_OVERLAY_MIC_BUTTON" desc="The accessible name for the microphone button on the dictation overlay UI that starts dictating text." translateable="false">
+        Start microphone
+      </message>
+      <message name="IDS_DICTATION_ACCNAME_OVERLAY_WAVEFORM_BUTTON" desc="The accessible name for the waveform button on the dictation overlay UI that stops dictating text." translateable="false">
+        Stop microphone
+      </message>
     </if>
 
     <if expr="is_android">
