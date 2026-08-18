@@ -78,7 +78,7 @@ import java.util.function.Supplier;
  * for simplicity. This means that the bottom of the screen is 0 on the Y axis.
  */
 @NullMarked
-class BottomSheet extends FrameLayout
+class BottomSheet extends BottomSheetView
         implements BottomSheetSwipeDetector.SwipeableBottomSheet, View.OnLayoutChangeListener {
     private static final String TAG = "BottomSheet";
 
@@ -298,41 +298,6 @@ class BottomSheet extends FrameLayout
     private int mBottomMargin;
     private @ColorInt int mSheetBgColor;
     private @SheetLayoutMode int mLayoutMode = SheetLayoutMode.STANDARD;
-
-    /**
-     * A view used to render a shadow behind the sheet and extends outside the bounds of its parent
-     * view.
-     */
-    public static class ShadowLayerView extends View {
-        /** The length of the shadow in any direction. */
-        private int mShadowLength;
-
-        /** Constructor to inflate from XML. */
-        public ShadowLayerView(Context context, AttributeSet atts) {
-            super(context, atts);
-            setShadowLength(
-                    context.getResources()
-                            .getDimensionPixelSize(R.dimen.bottom_sheet_shadow_length));
-        }
-
-        public void setShadowLength(int length) {
-            mShadowLength = length;
-            setTranslationX((LocalizationUtils.isLayoutRtl() ? 1 : -1) * mShadowLength);
-            setTranslationY(-mShadowLength);
-            requestLayout();
-        }
-
-        @Override
-        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            super.onMeasure(
-                    MeasureSpec.makeMeasureSpec(
-                            MeasureSpec.getSize(widthMeasureSpec) + 2 * mShadowLength,
-                            MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(
-                            MeasureSpec.getSize(heightMeasureSpec) + mShadowLength,
-                            MeasureSpec.EXACTLY));
-        }
-    }
 
     @Override
     public boolean shouldGestureMoveSheet(MotionEvent initialEvent, MotionEvent currentEvent) {

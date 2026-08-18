@@ -13,7 +13,7 @@ found in the LICENSE file.
     android:clipChildren="false" >
 
     <view
-        class="org.chromium.components.browser_ui.bottomsheet.BottomSheet$ShadowLayerView"
+        class="org.chromium.components.browser_ui.bottomsheet.BottomSheetView$ShadowLayerView"
         android:id="@+id/desktop_fallback_shadow"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

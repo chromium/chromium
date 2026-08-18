@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -46,10 +47,10 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheet.ShadowLayerView;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.ShadowLayerView;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
@@ -494,8 +495,8 @@ public class BottomSheetUnitTest {
         // backgroundBottom = backgroundTop + visibleHeight = 20 + 100 = 120.
         // shadowBottom = shadowTop + visibleHeight + shadowPaddingTop + shadowPaddingBottom
         //              = 10 + 100 + 10 + 20 = 140.
-        verify(mSheetBackground, org.mockito.Mockito.atLeastOnce()).setBottom(120);
-        verify(mShadowLayerView, org.mockito.Mockito.atLeastOnce()).setBottom(140);
+        verify(mSheetBackground, atLeastOnce()).setBottom(120);
+        verify(mShadowLayerView, atLeastOnce()).setBottom(140);
     }
 
     @Test
@@ -536,8 +537,7 @@ public class BottomSheetUnitTest {
         verify(mShadowLayerView).setBackgroundResource(R.drawable.popup_bg_shadow_16dp);
         ArgumentCaptor<ViewGroup.LayoutParams> captor =
                 ArgumentCaptor.forClass(ViewGroup.LayoutParams.class);
-        verify(mShadowLayerView, org.mockito.Mockito.atLeastOnce())
-                .setLayoutParams(captor.capture());
+        verify(mShadowLayerView, atLeastOnce()).setLayoutParams(captor.capture());
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) captor.getValue();
         assertEquals(-expectedSize, params.leftMargin);
         assertEquals(-expectedSize, params.topMargin);
