@@ -10,7 +10,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/metadata/view_factory.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ContentsWebView;
 
 namespace gfx {
@@ -30,7 +30,7 @@ class ContextSharingBorderView : public AnimatedEffectView {
    public:
     static std::unique_ptr<ContextSharingBorderView> Create(
         std::unique_ptr<ContextSharingBorderViewController> controller,
-        Browser*,
+        BrowserWindowInterface*,
         ContentsWebView*);
     static void set_factory(Factory* factory) { factory_ = factory; }
 
@@ -41,7 +41,7 @@ class ContextSharingBorderView : public AnimatedEffectView {
     // For tests to override.
     virtual std::unique_ptr<ContextSharingBorderView> CreateBorderView(
         std::unique_ptr<ContextSharingBorderViewController> controller,
-        Browser* browser,
+        BrowserWindowInterface* browser,
         ContentsWebView* contents_web_view) = 0;
 
    private:
@@ -60,7 +60,7 @@ class ContextSharingBorderView : public AnimatedEffectView {
   friend class Factory;
   explicit ContextSharingBorderView(
       std::unique_ptr<ContextSharingBorderViewController> controller,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ContentsWebView* contents_web_view,
       std::unique_ptr<Tester> tester);
 
@@ -83,7 +83,7 @@ class ContextSharingBorderView : public AnimatedEffectView {
   // Returns the rounded corner radius to use for the border.
   gfx::RoundedCornersF GetContentBorderRadius() const;
 
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
 
   // The controller to notify the view about various browser UI status change.
   const std::unique_ptr<ContextSharingBorderViewController> controller_;

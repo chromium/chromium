@@ -20,10 +20,9 @@
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
-#include "extensions/common/extension_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -32,6 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,7 +109,7 @@ std::unique_ptr<KeyedService> CreateMockGlicKeyedService(
       actor::ActorKeyedServiceFactory::GetActorKeyedService(context));
 }
 
-void NavigateToURL(Browser* browser, const GURL& url) {
+void NavigateToURL(BrowserWindowInterface* browser, const GURL& url) {
   content::TestNavigationObserver observer(
       browser->tab_strip_model()->GetActiveWebContents());
   content::NavigationController::LoadURLParams params(url);
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest, Incognito) {
   GURL target_url("https://www.google.com/");
   GURL continue_url = BuildContinueUrl(target_url, "123", std::nullopt);
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
 
   NavigateToURL(incognito_browser, continue_url);
 

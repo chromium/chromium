@@ -145,6 +145,7 @@ if (!is_android) {
       "//chrome/browser/actor/ui",
       "//chrome/browser/glic",
       "//chrome/browser/themes",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/user_education",
       "//components/contextual_tasks/public:feature_list",

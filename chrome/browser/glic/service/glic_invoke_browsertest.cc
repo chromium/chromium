@@ -35,7 +35,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
@@ -1104,11 +1103,10 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
                        ResolveTargetSurfaceSkipsAppWindow) {
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
-                              "test_app", /*trusted_source=*/true, gfx::Rect(),
-                              GetProfile(), /*user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+          "test_app", /*trusted_source=*/true, gfx::Rect(), GetProfile(),
+          /*user_gesture=*/true));
   app_browser->GetWindow()->Show();
 
   // 1. DefaultSurface targeting app_browser falls back to a normal browser.

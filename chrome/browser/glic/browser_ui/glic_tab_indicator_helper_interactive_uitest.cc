@@ -46,8 +46,9 @@ bool kTestDisabledForVirtualMachineMac =
     (base::mac::MacOSMajorVersion() == 15) && base::mac::IsVirtualMachine();
 #endif  // BUILDFLAG(IS_MAC)
 
-tabs::TabAlertController* GetTabAlertControllerForTab(Browser* browser,
-                                                      int tab_index) {
+tabs::TabAlertController* GetTabAlertControllerForTab(
+    BrowserWindowInterface* browser,
+    int tab_index) {
   return tabs::TabAlertController::From(
       browser->tab_strip_model()->GetTabAtIndex(tab_index));
 }
@@ -55,7 +56,7 @@ tabs::TabAlertController* GetTabAlertControllerForTab(Browser* browser,
 class TabAlertStateObserver
     : public ui::test::StateObserver<std::optional<tabs::TabAlert>> {
  public:
-  TabAlertStateObserver(Browser* browser, int tab_index) {
+  TabAlertStateObserver(BrowserWindowInterface* browser, int tab_index) {
     alert_to_show_changed_subscription_ =
         GetTabAlertControllerForTab(browser, tab_index)
             ->AddAlertToShowChangedCallback(base::BindRepeating(
@@ -298,7 +299,7 @@ IN_PROC_BROWSER_TEST_P(GlicTabIndicatorHelperMultiInstanceUiTest,
   }
 #endif
 
-  Browser* const browser1 = browser();
+  BrowserWindowInterface* const browser1 = browser();
   TrackOnlyGlicInstance();
   RunTestSequence(
       LoadStartingPage(), AddInstrumentedTab(kSecondTabId, GetTestUrl()),
@@ -306,7 +307,8 @@ IN_PROC_BROWSER_TEST_P(GlicTabIndicatorHelperMultiInstanceUiTest,
       ClickMockGlicContextAccessButtonIfLiveMode(),
       WaitForState(kTab1AlertState, ExpectedAlertState()),
       Do([this, browser1]() {
-        Browser* const browser2 = CreateBrowser(browser1->GetProfile());
+        BrowserWindowInterface* const browser2 =
+            CreateBrowser(browser1->GetProfile());
         RunTestSequence(
             ObserveState(kTab1AlertState, browser1, 0),
             ObserveState(kTab2AlertState, browser1, 1),

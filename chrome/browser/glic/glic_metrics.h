@@ -24,7 +24,7 @@
 #include "ui/display/display.h"
 
 class Profile;
-class Browser;
+class BrowserWindowInterface;
 
 namespace glic {
 class GlicEnabling;
@@ -236,7 +236,7 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // client, etc).
   void OnGlicWindowOpenInterrupted();
   // Called just after the glic window has been loaded into the UI.
-  void OnGlicWindowShown(Browser* browser,
+  void OnGlicWindowShown(BrowserWindowInterface* browser,
                          std::optional<display::Display> glic_display,
                          const gfx::Rect& glic_bounds);
   // Called when the glic window has been opened and is ready.
@@ -248,7 +248,7 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when the glic window stops being resized by the user.
   void OnWidgetUserResizeEnded();
   // Called when the detached glic window finishes closing.
-  void OnGlicWindowClose(Browser* last_active_browser,
+  void OnGlicWindowClose(BrowserWindowInterface* last_active_browser,
                          std::optional<display::Display> display,
                          const gfx::Rect& glic_bounds);
 
@@ -333,7 +333,7 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Returns the area relative to the given chrome browser a given center point
   // is.
   ChromeRelativePosition GetChromeRelativePositionOfPoint(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const gfx::Point& glic_center_point);
 #endif
 

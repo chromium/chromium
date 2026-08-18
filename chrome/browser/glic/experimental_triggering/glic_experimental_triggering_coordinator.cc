@@ -43,7 +43,6 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"           // nogncheck
 #include "chrome/browser/ui/browser_commands.h"  // nogncheck
 #include "chrome/browser/ui/browser_window.h"    // nogncheck
 #endif

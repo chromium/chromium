@@ -15,8 +15,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -35,7 +35,7 @@ using ::testing::_;
 using ::testing::SaveArg;
 
 // Helper to get the WebContents.
-content::WebContents* GetActiveWebContents(Browser* browser) {
+content::WebContents* GetActiveWebContents(BrowserWindowInterface* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 

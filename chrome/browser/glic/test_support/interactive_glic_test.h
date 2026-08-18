@@ -44,7 +44,6 @@
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -824,7 +823,7 @@ class InteractiveGlicTestMixin : public T {
         Api::WithElement(
             ui::test::internal::kInteractiveTestPivotElementId,
             base::BindLambdaForTesting([this, url](ui::TrackedElement* el) {
-              Browser* const browser_ptr = browser();
+              BrowserWindowInterface* const browser_ptr = browser();
               CHECK(browser_ptr) << "No browser";
               CHECK(GetHost());
               GetHost()->instance_delegate().CreateTab(
@@ -953,14 +952,14 @@ class InteractiveGlicTestMixin : public T {
   // `InteractiveGlicTestMixin` is configured to operate a single browser, but
   // it can change which browser it operates. This changes the browser to be
   // used in functions of `InteractiveGlicTestMixin`.
-  void SetActiveBrowser(Browser* browser) {
+  void SetActiveBrowser(BrowserWindowInterface* browser) {
     active_browser_ = browser->GetWeakPtr();
   }
 
   // Returns the active browser.
-  Browser* browser() {
+  BrowserWindowInterface* browser() {
     if (active_browser_) {
-      return active_browser_->GetBrowserForMigrationOnly();
+      return active_browser_.get();
     } else {
       CHECK(!active_browser_.WasInvalidated())
           << "SetActiveBrowser() was called, but that browser no longer "

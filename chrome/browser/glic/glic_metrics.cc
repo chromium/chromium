@@ -49,7 +49,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/widget/browser_conditions.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/widget.h"
@@ -635,7 +634,7 @@ void GlicMetrics::OnGlicWindowOpenAndReady() {
 }
 
 void GlicMetrics::OnGlicWindowShown(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::optional<display::Display> glic_display,
     const gfx::Rect& glic_bounds) {
   GlicMetrics::OnGlicWindowSizeTimerFired();
@@ -671,7 +670,7 @@ void GlicMetrics::OnWidgetUserResizeEnded() {
                                 size_on_user_resize_ended.height());
 }
 
-void GlicMetrics::OnGlicWindowClose(Browser* last_active_browser,
+void GlicMetrics::OnGlicWindowClose(BrowserWindowInterface* last_active_browser,
                                     std::optional<display::Display> display,
                                     const gfx::Rect& glic_bounds) {
   base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
@@ -982,7 +981,7 @@ DisplayPosition GlicMetrics::GetDisplayPositionOfPoint(
 
 #if !BUILDFLAG(IS_ANDROID)
 ChromeRelativePosition GlicMetrics::GetChromeRelativePositionOfPoint(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const gfx::Point& glic_center_point) {
   if (!IsBrowserVisible(browser)) {
     return ChromeRelativePosition::kNoVisibleChromeBrowser;

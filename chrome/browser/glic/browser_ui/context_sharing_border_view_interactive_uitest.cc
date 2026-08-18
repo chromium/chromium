@@ -19,9 +19,9 @@
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -72,7 +72,8 @@ static constexpr float kFloatComparisonTolerance = 0.001f;
 
 class WidgetShowStateObserver : public views::WidgetObserver {
  public:
-  WidgetShowStateObserver(Browser* browser, bool should_be_minimized)
+  WidgetShowStateObserver(BrowserWindowInterface* browser,
+                          bool should_be_minimized)
       : browser_(browser), should_be_minimized_(should_be_minimized) {
     widget_observation_.Observe(
         BrowserElementsViews::From(browser)->GetPrimaryWindowWidget());
@@ -93,17 +94,17 @@ class WidgetShowStateObserver : public views::WidgetObserver {
  private:
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   bool should_be_minimized_ = false;
   base::RunLoop run_loop_;
 };
 
-void WaitForUnminimize(Browser* browser) {
+void WaitForUnminimize(BrowserWindowInterface* browser) {
   WidgetShowStateObserver observer(browser, /*should_be_minimized=*/false);
   observer.Wait();
 }
 
-void WaitForMinimize(Browser* browser) {
+void WaitForMinimize(BrowserWindowInterface* browser) {
   WidgetShowStateObserver observer(browser, /*should_be_minimized=*/true);
   observer.Wait();
 }
@@ -190,7 +191,7 @@ class TesterImpl : public ContextSharingBorderView::Tester {
 class TestBorderView : public ContextSharingBorderView {
  public:
   TestBorderView(std::unique_ptr<ContextSharingBorderViewController> controller,
-                 Browser* browser,
+                 BrowserWindowInterface* browser,
                  ContentsWebView* contents_web_view,
                  std::unique_ptr<Tester> tester)
       : ContextSharingBorderView(std::move(controller),
@@ -210,7 +211,7 @@ class TestFactory : public ContextSharingBorderView::Factory {
  protected:
   std::unique_ptr<ContextSharingBorderView> CreateBorderView(
       std::unique_ptr<ContextSharingBorderViewController> controller,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ContentsWebView* contents_web_view) override {
     ContextSharingBorderView* new_border =
         new TestBorderView(std::move(controller), browser, contents_web_view,
@@ -291,12 +292,12 @@ class ContextSharingBorderViewUiTestBase : public test::InteractiveGlicTest {
         ExecuteJsAt(kGlicContentsElementId, kShutdownWindowButton, kClickFn));
   }
 
-  void ClickGlicButtonInBrowser(Browser* browser) {
+  void ClickGlicButtonInBrowser(BrowserWindowInterface* browser) {
     RunTestSequenceInContext(BrowserElements::From(browser)->GetContext(),
                              PressButton(kGlicButtonElementId));
   }
 
-  void AppendTabAndNavigate(Browser* browser, const GURL& url) {
+  void AppendTabAndNavigate(BrowserWindowInterface* browser, const GURL& url) {
     auto new_tab_index = browser->tab_strip_model()->active_index() + 1;
     content::TestNavigationObserver navigation_observer(url);
     navigation_observer.StartWatchingNewWebContents();
@@ -675,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewUiTest, FocusedWindowChange) {
   ASSERT_TRUE(border);
   TesterImpl* tester = static_cast<TesterImpl*>(border->tester());
 
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   ContextSharingBorderView* border2 =
       BrowserView::GetBrowserViewForBrowser(browser2)
           ->GetActiveContentsContainerView()

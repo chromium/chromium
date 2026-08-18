@@ -32,8 +32,6 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/native_ui_types.h"
 
-class Browser;
-
 namespace content {
 class RenderFrameHost;
 }

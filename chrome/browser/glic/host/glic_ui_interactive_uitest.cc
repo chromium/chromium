@@ -668,7 +668,7 @@ class GlicWithMultipleProfilesTest : public GlicUiInteractiveUiTestBase {
   GlicWithMultipleProfilesTest() : GlicUiInteractiveUiTestBase({}) {}
   ~GlicWithMultipleProfilesTest() override = default;
 
-  Browser* CreateBrowserWithNewProfile() {
+  BrowserWindowInterface* CreateBrowserWithNewProfile() {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     base::FilePath new_path =
         profile_manager->GenerateNextProfileDirectoryPath();
@@ -686,8 +686,8 @@ IN_PROC_BROWSER_TEST_F(GlicWithMultipleProfilesTest, OpenGlicInEachProfile) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
   }
-  Browser* first_browser = browser();
-  Browser* second_browser = CreateBrowserWithNewProfile();
+  BrowserWindowInterface* first_browser = browser();
+  BrowserWindowInterface* second_browser = CreateBrowserWithNewProfile();
   SetActiveBrowser(second_browser);
 
   RunTestSequence(

@@ -10,7 +10,7 @@
 #include "base/debug/crash_logging.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller.h"
 #include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_capture_border_view.h"
@@ -67,7 +67,7 @@ ContextSharingBorderView::Factory* ContextSharingBorderView::Factory::factory_ =
 std::unique_ptr<ContextSharingBorderView>
 ContextSharingBorderView::Factory::Create(
     std::unique_ptr<ContextSharingBorderViewController> controller,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ContentsWebView* contents_web_view) {
   if (factory_) [[unlikely]] {
     return factory_->CreateBorderView(std::move(controller), browser,
@@ -80,7 +80,7 @@ ContextSharingBorderView::Factory::Create(
 
 ContextSharingBorderView::ContextSharingBorderView(
     std::unique_ptr<ContextSharingBorderViewController> controller,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ContentsWebView* contents_web_view,
     std::unique_ptr<Tester> tester)
     : AnimatedEffectView(browser->GetProfile(), std::move(tester)),

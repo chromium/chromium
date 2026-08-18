@@ -12,7 +12,6 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
@@ -294,12 +293,11 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuArm3BrowserTest, GlicInvokeArm3) {
 
 IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest, GlicItemAbsentInAppWindow) {
   // Create an app browser window.
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
-                              "test_app", /*trusted_source=*/false, gfx::Rect(),
-                              browser()->GetProfile(),
-                              /*user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+          "test_app", /*trusted_source=*/false, gfx::Rect(),
+          browser()->GetProfile(),
+          /*user_gesture=*/true));
 
   // Add a tab and navigate to a test page.
   content::WebContents* blank_tab = chrome::AddSelectedTabWithURL(

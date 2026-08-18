@@ -99,8 +99,8 @@ void OpenWebUiWithGuestView(const GURL& host_url) {
                                    /*profile=*/&GetProfile(),
                                    /*from_user_gesture=*/true);
 
-  Browser& new_browser = CHECK_DEREF(
-      CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly());
+  BrowserWindowInterface& new_browser =
+      CHECK_DEREF(CreateBrowserWindow(std::move(params)));
   new_browser.GetWindow()->Show();
 
   ui_test_utils::NavigateToURLWithDisposition(

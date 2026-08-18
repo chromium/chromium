@@ -31,7 +31,7 @@ namespace {
 class TabAlertControllerObserver
     : public ui::test::StateObserver<std::optional<tabs::TabAlert>> {
  public:
-  TabAlertControllerObserver(Browser* browser, int tab_index) {
+  TabAlertControllerObserver(BrowserWindowInterface* browser, int tab_index) {
     callback_subscription_ =
         tabs::TabAlertController::From(
             browser->tab_strip_model()->GetTabAtIndex(tab_index))
@@ -117,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(DISABLED_TabAlertControllerInteractiveUiTest,
   }
 #endif
 
-  Browser* const browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* const browser2 =
+      CreateBrowser(browser()->GetProfile());
   RunTestSequence(
       LoadStartingPage(kFirstTabId, 0, browser()),
       LoadStartingPage(kSecondTabId, 0, browser2),

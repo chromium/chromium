@@ -42,8 +42,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-class Browser;
-
 namespace tabs {
 class TabInterface;
 }

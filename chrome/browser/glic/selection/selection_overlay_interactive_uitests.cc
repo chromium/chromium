@@ -72,7 +72,7 @@ views::View* GetOverlayView(content::WebContents* tab_contents) {
   return controller->GetOverlayViewForTesting();
 }
 
-views::View* GetOverlayView(Browser* browser, int index) {
+views::View* GetOverlayView(BrowserWindowInterface* browser, int index) {
   auto* tab_contents = browser->tab_strip_model()->GetWebContentsAt(index);
   if (!tab_contents) {
     return nullptr;

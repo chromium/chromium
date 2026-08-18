@@ -12,7 +12,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 
 namespace glic {
@@ -25,7 +25,7 @@ ContextSharingBorderViewControllerImpl::
 void ContextSharingBorderViewControllerImpl::Initialize(
     ContextSharingBorderView* border_view,
     ContentsWebView* contents_web_view,
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
   border_view_ = border_view;
   contents_web_view_ = contents_web_view;
   glic_service_ =

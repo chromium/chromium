@@ -33,9 +33,9 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
@@ -223,7 +223,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
                        HotkeyDetachedWithNotNormalBrowser) {
   RunTestSequence(
       Do([&]() {
-        Browser* const pwa = CreateBrowserForApp("app name", GetProfile());
+        BrowserWindowInterface* const pwa =
+            CreateBrowserForApp("app name", GetProfile());
         pwa->GetWindow()->Activate();
       }),
       SimulateGlicHotkey(),
@@ -695,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
   ProfileManager* const profile_manager = g_browser_process->profile_manager();
   Profile& profile1 = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
-  Browser* const browser1 = CreateBrowser(&profile1);
+  BrowserWindowInterface* const browser1 = CreateBrowser(&profile1);
   GlicKeyedService* const service1 =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser1->GetProfile());
   ::glic::SetFRECompletion(browser1->GetProfile(),
@@ -872,7 +873,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
         std::move(conversation_info), base::DoNothing());
   }
 
-  Browser* window_b =
+  BrowserWindowInterface* window_b =
       ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(GetProfile());
   ASSERT_TRUE(window_b);
 

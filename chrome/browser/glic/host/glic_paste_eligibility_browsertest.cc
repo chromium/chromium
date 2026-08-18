@@ -9,7 +9,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
@@ -317,7 +317,8 @@ IN_PROC_BROWSER_TEST_F(GlicPasteEligibilityBrowserTest,
   content::WebContents* glic_guest = GetReadyGuest();
   ASSERT_TRUE(glic_guest);
 
-  Browser* incognito_browser = InProcessBrowserTest::CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser =
+      InProcessBrowserTest::CreateIncognitoBrowser();
   tabs::TabInterface* incognito_tab =
       incognito_browser->tab_strip_model()->GetActiveTab();
   const GURL url = embedded_test_server()->GetURL("/title1.html");

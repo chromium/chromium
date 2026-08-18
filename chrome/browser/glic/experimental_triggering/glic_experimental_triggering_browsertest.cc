@@ -14,7 +14,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -38,11 +37,10 @@ IN_PROC_BROWSER_TEST_F(
   glic_service->enabling().SetExperimentalTriggeringEnabled(true);
 
   // 1. Create and show a PWA app window.
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       CreateBrowserWindow(BrowserWindowCreateParams::CreateForApp(
-                              "test_app", /*trusted_source=*/true, gfx::Rect(),
-                              GetProfile(), /*user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+          "test_app", /*trusted_source=*/true, gfx::Rect(), GetProfile(),
+          /*user_gesture=*/true));
   app_browser->GetWindow()->Show();
 
   // 2. Experimental triggering request fires while PWA window is focused.

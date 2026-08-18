@@ -128,7 +128,6 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"  // nogncheck
 #include "chrome/test/base/ui_test_utils.h"
 #include "ui/display/screen.h"
@@ -1818,7 +1817,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenIncognitoWindow) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
 
   // Open a new incognito window.
-  Browser* incognito = PlatformBrowserTest::CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito =
+      PlatformBrowserTest::CreateIncognitoBrowser();
   tabs::TabInterface* incognito_tab =
       TabListInterface::From(incognito)->OpenTab(
           embedded_test_server()->GetURL("/browser_tests/test.html"), 1,

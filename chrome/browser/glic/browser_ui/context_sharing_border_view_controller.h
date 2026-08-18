@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ContentsWebView;
 
 namespace glic {
@@ -22,7 +22,7 @@ class ContextSharingBorderViewController {
   // Initialization. Starts observing the state of the browser.
   virtual void Initialize(ContextSharingBorderView* border_view,
                           ContentsWebView* contents_web_view,
-                          Browser* browser) = 0;
+                          BrowserWindowInterface* browser) = 0;
 
   // Returns the ContentWebView around which the border is to be created.
   virtual ContentsWebView* contents_web_view() = 0;

@@ -31,8 +31,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
@@ -250,7 +250,7 @@ class GlicPolicyTest : public PolicyTest {
     profile_2_ = nullptr;
   }
 
-  bool IsGlicButtonVisible(Browser* browser) {
+  bool IsGlicButtonVisible(BrowserWindowInterface* browser) {
     views::LabelButton* button =
         glic::GlicButtonInterface::FromBrowser(browser);
     return button && button->GetVisible();
@@ -383,12 +383,12 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
 
   {
     // A new window in profile 1 shouldn't have the Glic button.
-    Browser* new_window_profile_1 = CreateBrowser(profile_1_);
+    BrowserWindowInterface* new_window_profile_1 = CreateBrowser(profile_1_);
     EXPECT_FALSE(IsGlicButtonVisible(new_window_profile_1));
 
     // A new window in profile 2 should continue to have the Glic button since
     // only profile 1 disabled Glic.
-    Browser* new_window_profile_2 = CreateBrowser(profile_2_);
+    BrowserWindowInterface* new_window_profile_2 = CreateBrowser(profile_2_);
     EXPECT_TRUE(IsGlicButtonVisible(new_window_profile_2));
   }
 
@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyAffectsGlicButtonInNewWindows) {
   {
     // A new window in profile 1 should again get the Glic button now that the
     // policy is re-enabled.
-    Browser* new_window_profile_1 = CreateBrowser(profile_1_);
+    BrowserWindowInterface* new_window_profile_1 = CreateBrowser(profile_1_);
     EXPECT_TRUE(IsGlicButtonVisible(new_window_profile_1));
   }
 }
@@ -411,10 +411,10 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, GlicButtonInExistingWindows) {
   ASSERT_NE(profile_1_, profile_2_);
 
   // Create two windows in each profile.
-  Browser* profile_1_window_1 = browser();
-  Browser* profile_1_window_2 = CreateBrowser(profile_1_);
-  Browser* profile_2_window_1 = CreateBrowser(profile_2_);
-  Browser* profile_2_window_2 = CreateBrowser(profile_2_);
+  BrowserWindowInterface* profile_1_window_1 = browser();
+  BrowserWindowInterface* profile_1_window_2 = CreateBrowser(profile_1_);
+  BrowserWindowInterface* profile_2_window_1 = CreateBrowser(profile_2_);
+  BrowserWindowInterface* profile_2_window_2 = CreateBrowser(profile_2_);
 
   // Ensure the button was created in each window.
   EXPECT_TRUE(IsGlicButtonVisible(profile_1_window_1));
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PolicyDisablesBackgroundMode) {
   ASSERT_EQ(browser()->GetProfile(), profile_1_);
   ASSERT_NE(profile_1_, profile_2_);
 
-  Browser* new_window_profile_2 = CreateBrowser(profile_2_);
+  BrowserWindowInterface* new_window_profile_2 = CreateBrowser(profile_2_);
   ASSERT_TRUE(new_window_profile_2);
 
   GlicBackgroundModeManager* background_mode_manager =
