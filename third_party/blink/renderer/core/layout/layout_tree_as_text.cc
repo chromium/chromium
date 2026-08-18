@@ -179,8 +179,9 @@ void WriteLayoutObject(StringBuilder& ts,
   if (behavior & kLayoutAsTextShowAddresses)
     FormatTo(ts, " {}", &o);
 
-  if (o.Style() && o.StyleRef().ZIndex())
+  if (o.StyleRef().ZIndex()) {
     ts << " zI: " << o.StyleRef().ZIndex();
+  }
 
   if (o.GetNode()) {
     String tag_name = GetTagName(o.GetNode());
