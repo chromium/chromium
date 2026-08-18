@@ -6,15 +6,12 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_LOCAL_IMAGE_SEARCH_IMAGE_CONTENT_ANNOTATOR_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-namespace base {
-class FilePath;
-}
 
 namespace app_list {
 
@@ -30,7 +27,7 @@ class ImageContentAnnotator {
   void EnsureAnnotatorIsConnected();
   void DisconnectAnnotator();
   void AnnotateEncodedImage(
-      const base::FilePath& image_path,
+      base::ReadOnlySharedMemoryRegion region,
       base::OnceCallback<
           void(chromeos::machine_learning::mojom::ImageAnnotationResultPtr)>
           callback);

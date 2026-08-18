@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/file_search_result.h"
@@ -49,6 +50,8 @@ struct ImageInfo {
   // Width and height of image.
   int width;
   int height;
+  // Shared memory region containing the image data.
+  base::ReadOnlySharedMemoryRegion region;
 
   ImageInfo(std::set<std::string> annotations,
             base::FilePath path,
@@ -57,7 +60,7 @@ struct ImageInfo {
 
   ~ImageInfo();
   ImageInfo(const ImageInfo&);
-  ImageInfo& operator=(const ImageInfo&) = delete;
+  ImageInfo& operator=(const ImageInfo&);
 };
 
 // The current status of Image retrieved from the database.

@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ash/app_list/search/local_image_search/image_content_annotator.h"
 
-#include "base/containers/span.h"
-#include "base/files/file_path.h"
-#include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -130,23 +127,11 @@ void ImageContentAnnotator::OnIcaDisconnected() {
 }
 
 void ImageContentAnnotator::AnnotateEncodedImage(
-    const base::FilePath& image_path,
+    base::ReadOnlySharedMemoryRegion region,
     base::OnceCallback<void(ImageAnnotationResultPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "Making a MemoryMappedFile.";
   LogIcaUma(IcaStatus::kAnnotateStart);
-  base::MemoryMappedFile data;
-  if (!data.Initialize(image_path)) {
-    LogIcaUma(IcaStatus::kDataInitFailed);
-    LOG(ERROR) << "Could not create a memory mapped file for an "
-                  "image file to generate annotations";
-  }
-  base::MappedReadOnlyRegion mapped_region =
-      base::ReadOnlySharedMemoryRegion::Create(data.bytes().size());
-  // It's safe to early return here as we have triggered
-  // `ica_disconnected_callback_` and `image_annotation_worker` will continue
-  // the process.
-  if (!mapped_region.IsValid()) {
+  if (!region.IsValid()) {
     LogIcaUma(IcaStatus::kMappedRegionInvalid);
     LOG(ERROR) << "Mapped region is not valid";
 
@@ -154,12 +139,11 @@ void ImageContentAnnotator::AnnotateEncodedImage(
     ica_disconnected_callback_.Run();
     return;
   }
-  base::span(mapped_region.mapping).copy_from(data.bytes());
 
   EnsureAnnotatorIsConnected();
   LogIcaUma(IcaStatus::kRequestSent);
-  image_content_annotator_->AnnotateEncodedImage(
-      std::move(mapped_region.region), std::move(callback));
+  image_content_annotator_->AnnotateEncodedImage(std::move(region),
+                                                 std::move(callback));
 }
 
 }  // namespace app_list

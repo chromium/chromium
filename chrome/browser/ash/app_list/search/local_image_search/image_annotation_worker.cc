@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -14,6 +13,8 @@
 
 #include "ash/public/cpp/image_util.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -21,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -100,25 +102,19 @@ void LogIndexingUma(IndexingStatus status) {
 }
 
 // Exclude animated WebPs.
-bool IsStaticWebp(const base::FilePath& path) {
-  std::ifstream file(path.value(), std::ios::binary);
-  if (!file) {
-    LOG(ERROR) << "Unable to open file: " << path;
+bool IsStaticWebp(base::span<const uint8_t> bytes) {
+  if (bytes.size() < 21) {
     return false;
   }
 
-  char buffer[30];
-  file.read(buffer, sizeof(buffer));
-  file.close();
-
   // Checking for RIFF header and WebP identifier as in the
   // https://developers.google.com/speed/webp/docs/riff_container
-  if (std::string(buffer, 4) == "RIFF" &&
-      std::string(UNSAFE_TODO(buffer + 8), 4) == "WEBP") {
+  if (base::as_string_view(bytes.subspan<0, 4>()) == "RIFF" &&
+      base::as_string_view(bytes.subspan<8, 4>()) == "WEBP") {
     // Checking the VP8X chunk for animation
-    if (std::string(UNSAFE_TODO(buffer + 12), 4) == "VP8X") {
+    if (base::as_string_view(bytes.subspan<12, 4>()) == "VP8X") {
       // VP8X header is 8 bytes then the flags byte.
-      const char flags = buffer[20];
+      const char flags = static_cast<char>(bytes[20]);
       // The second bit indicates if it's animated.
       return !static_cast<bool>(flags & 0x02);
     }
@@ -129,43 +125,27 @@ bool IsStaticWebp(const base::FilePath& path) {
   return false;
 }
 
-bool IsJpeg(const base::FilePath& path) {
-  std::ifstream file(path.value(), std::ios::binary);
-  if (!file) {
-    LOG(ERROR) << "Unable to open file: " << path;
+bool IsJpeg(base::span<const uint8_t> bytes) {
+  if (bytes.size() < 4) {
     return false;
   }
-
-  char buffer[4];
-  file.read(buffer, sizeof(buffer));
-  file.close();
 
   // Check for JPEG magic numbers
-  return (buffer[0] == (char)0xFF && buffer[1] == (char)0xD8 &&
-          buffer[2] == (char)0xFF &&
-          (buffer[3] == (char)0xE0 || buffer[3] == (char)0xE1));
+  return (bytes[0] == static_cast<uint8_t>(0xFF) &&
+          bytes[1] == static_cast<uint8_t>(0xD8) &&
+          bytes[2] == static_cast<uint8_t>(0xFF) &&
+          (bytes[3] == static_cast<uint8_t>(0xE0) ||
+           bytes[3] == static_cast<uint8_t>(0xE1)));
 }
 
-bool IsPng(const base::FilePath& path) {
-  std::ifstream file(path.value(), std::ios::binary);
-  if (!file) {
-    LOG(ERROR) << "Unable to open file: " << path;
+bool IsPng(base::span<const uint8_t> bytes) {
+  static constexpr uint8_t kPngSignature[8] = {0x89, 0x50, 0x4E, 0x47,
+                                               0x0D, 0x0A, 0x1A, 0x0A};
+  if (bytes.size() < 8) {
     return false;
   }
 
-  uint8_t buffer[8];
-  file.read(reinterpret_cast<char*>(buffer), sizeof(buffer));
-  file.close();
-
-  const uint8_t pngSignature[8] = {0x89, 0x50, 0x4E, 0x47,
-                                   0x0D, 0x0A, 0x1A, 0x0A};
-  for (int i = 0; i < 8; ++i) {
-    if (UNSAFE_TODO(buffer[i]) != UNSAFE_TODO(pngSignature[i])) {
-      return false;
-    }
-  }
-
-  return true;
+  return bytes.first<8>() == base::span(kPngSignature);
 }
 
 // Checks for supported extensions.
@@ -179,15 +159,16 @@ bool IsImage(const base::FilePath& path) {
 }
 
 // Check headers for correctness.
-bool IsSupportedImage(const base::FilePath& path) {
+bool IsSupportedImage(base::span<const uint8_t> bytes,
+                      const base::FilePath& path) {
   DVLOG(1) << "IsSupportedImage? " << path.Extension();
   const std::string extension = base::ToLowerASCII(path.Extension());
   if (extension == ".jpeg" || extension == ".jpg") {
-    return IsJpeg(path);
+    return IsJpeg(bytes);
   } else if (extension == ".png") {
-    return IsPng(path);
+    return IsPng(bytes);
   } else if (extension == ".webp") {
-    return IsStaticWebp(path);
+    return IsStaticWebp(bytes);
   } else {
     return false;
   }
@@ -466,13 +447,18 @@ bool ImageAnnotationWorker::ProcessNextImage(const base::FilePath& image_path) {
     LOG(ERROR) << "ProcessNextImage " << image_path;
   }
 
-  auto file_info = std::make_unique<base::File::Info>();
-  if (!base::GetFileInfo(image_path, file_info.get()) || file_info->size == 0 ||
-      file_info->size > kMaxFileSizeBytes || !IsSupportedImage(image_path)) {
+  base::File file(image_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!file.IsValid()) {
     annotation_storage_->Remove(image_path);
     return false;
   }
-  DCHECK(file_info);
+
+  base::File::Info file_info;
+  if (!file.GetInfo(&file_info) || file_info.size == 0 ||
+      file_info.size > kMaxFileSizeBytes) {
+    annotation_storage_->Remove(image_path);
+    return false;
+  }
 
   // If all conditions meet:
   //  1. The image exists in the database and has not been modified since
@@ -486,18 +472,33 @@ bool ImageAnnotationWorker::ProcessNextImage(const base::FilePath& image_path) {
       annotation_storage_->GetImageStatus(image_path);
   bool ocr_up_to_date = !use_ocr_ || image_status.ocr_version == kOcrVersion;
   bool ica_up_to_date = !use_ica_ || image_status.ica_version == kIcaVersion;
-  if (file_info->last_modified ==
+  if (file_info.last_modified ==
           image_status.last_modified.value_or(base::Time()) &&
       ocr_up_to_date && ica_up_to_date &&
       !image_processing_delay_for_test_.has_value()) {
     return false;
   }
 
-  DVLOG(1) << "Processing new " << image_path << " "
-           << file_info->last_modified;
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(
+          static_cast<size_t>(file_info.size));
+  if (!mapped_region.IsValid() ||
+      !file.ReadAndCheck(0, mapped_region.mapping.GetMemoryAsSpan<uint8_t>())) {
+    annotation_storage_->Remove(image_path);
+    return false;
+  }
+
+  auto bytes_span = mapped_region.mapping.GetMemoryAsSpan<uint8_t>();
+  if (!IsSupportedImage(bytes_span, image_path)) {
+    annotation_storage_->Remove(image_path);
+    return false;
+  }
+
+  DVLOG(1) << "Processing new " << image_path << " " << file_info.last_modified;
   annotation_storage_->Remove(image_path);
-  ImageInfo image_info(/*annotations=*/{}, image_path, file_info->last_modified,
-                       file_info->size);
+  ImageInfo image_info(/*annotations=*/{}, image_path, file_info.last_modified,
+                       file_info.size);
+  image_info.region = std::move(mapped_region.region);
 
   // Early return if:
   // 1. Reaching the indexing limit.
@@ -534,10 +535,11 @@ bool ImageAnnotationWorker::ProcessNextImage(const base::FilePath& image_path) {
 
   if (use_ocr_ || use_ica_) {
     LogIndexingUma(IndexingStatus::kStart);
-    ash::image_util::DecodeImageFile(
+    std::string image_data(base::as_string_view(bytes_span));
+    ash::image_util::DecodeImageData(
         base::BindOnce(&ImageAnnotationWorker::OnDecodeImageFile,
-                       weak_ptr_factory_.GetWeakPtr(), image_info),
-        image_info.path);
+                       weak_ptr_factory_.GetWeakPtr(), std::move(image_info)),
+        data_decoder::mojom::ImageCodec::kDefault, image_data);
     return true;
   }
   return false;
@@ -604,8 +606,9 @@ void ImageAnnotationWorker::OnDecodeImageFile(
     CHECK(!ica_in_use_);
 
     ica_in_use_ = true;
+    base::ReadOnlySharedMemoryRegion region = std::move(image_info.region);
     image_content_annotator_->AnnotateEncodedImage(
-        image_info.path,
+        std::move(region),
         base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
                        weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
     return;
@@ -659,8 +662,9 @@ void ImageAnnotationWorker::OnPerformOcr(
     image_info.annotations.clear();
 
     ica_in_use_ = true;
+    base::ReadOnlySharedMemoryRegion region = std::move(image_info.region);
     image_content_annotator_->AnnotateEncodedImage(
-        image_info.path,
+        std::move(region),
         base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
                        weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
   } else {
