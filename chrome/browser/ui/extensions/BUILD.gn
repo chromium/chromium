@@ -28,10 +28,16 @@ source_set("extensions") {
   sources = [
     "controlled_home_dialog_controller.h",
     "controlled_home_dialog_controller_interface.h",
+    "download_danger_dialog.h",
+    "download_open_dialog.h",
     "extension_action_view_model.h",
     "extension_dialog_utils.h",
+    "extension_install_ask_parent_dialog.h",
+    "extension_install_blocked_dialog.h",
+    "extension_install_friction_dialog.h",
     "extension_install_ui.h",
     "extension_installed_watcher.h",
+    "extension_multiple_uninstall_dialog.h",
     "extension_post_install_dialog.h",
     "extension_post_install_dialog_model.h",
     "extensions_container.h",
@@ -41,6 +47,7 @@ source_set("extensions") {
     "icon_with_badge_image_source.h",
     "reload_page_dialog_controller.h",
     "settings_overridden_dialog.h",
+    "upload_extension_to_account_dialog.h",
   ]
 
   public_deps = []

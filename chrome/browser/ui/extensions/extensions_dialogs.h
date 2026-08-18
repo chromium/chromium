@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
-#include "chrome/browser/download/download_danger_prompt.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -18,19 +17,11 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_ui_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/files/safe_base_name.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ControlledHomeDialogControllerInterface;
 class SettingsOverriddenDialogController;
 class Profile;
-
-namespace base {
-class FilePath;
-}
 
 namespace content {
 class WebContents;
@@ -39,10 +30,6 @@ class WebContents;
 namespace custom_handlers {
 class ProtocolHandler;
 }  // namespace custom_handlers
-
-namespace download {
-class DownloadItem;
-}  // namespace download
 
 namespace gfx {
 class ImageSkia;
@@ -58,14 +45,8 @@ class Origin;
 
 namespace extensions {
 
-class Extension;
-
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kControlledHomeDialogCancelButtonElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kDownloadDangerDialogCancelButtonElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kDownloadDangerDialogKeepButtonElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionInstallFrictionLearnMoreLink);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2KeepDialogOkButtonElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kConfirmProtocolHandlerDialogHandlerRedirection);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
@@ -75,17 +56,6 @@ void ShowConstrainedDeviceChooserDialog(
     content::WebContents* web_contents,
     std::unique_ptr<permissions::ChooserController> controller);
 
-// Shows a dialog to notify the user that the extension installation is
-// blocked due to policy. It also shows additional information from
-// administrator if it exists.
-void ShowExtensionInstallBlockedDialog(
-    const ExtensionId& extension_id,
-    const std::string& extension_name,
-    const std::u16string& custom_error_message,
-    const gfx::ImageSkia& icon,
-    content::WebContents* web_contents,
-    base::OnceClosure done_callback);
-
 // Shows a dialog to notify the user when an extension has changed the home
 // page.
 void ShowControlledHomeDialog(
@@ -93,77 +63,11 @@ void ShowControlledHomeDialog(
     gfx::NativeWindow parent,
     std::unique_ptr<ControlledHomeDialogControllerInterface> controller);
 
-// Shows a dialog that prompts the user for whether to open a DownloadItem using
-// native UI. This step is necessary to prevent a malicious extension from
-// opening any downloaded file.
-void ShowDownloadOpenConfirmationDialog(
-    content::WebContents* web_contents,
-    const std::string& extension_name,
-    const base::FilePath& file_path,
-    base::OnceCallback<void(bool)> open_callback);
-
-// Shows a dialog that prompts the user for whether to accept a dangerous
-// DownloadItem using native UI. This step is necessary to prevent a malicious
-// extension from accepting a dangerous download.
-void ShowDownloadDangerDialog(
-    download::DownloadItem* download_item,
-    content::WebContents* web_contents,
-    base::OnceCallback<void(DownloadDangerPrompt::Action)> done_callback);
-
-// Shows a modal dialog to Enhanced Safe Browsing users before the extension
-// install dialog if the extension is not included in the Safe Browsing CRX
-// allowlist. `callback` will be invoked with `true` if the user accepts or
-// `false` if the user cancels the dialog.
-void ShowExtensionInstallFrictionDialog(
-    content::WebContents* contents,
-    base::OnceCallback<void(bool)> callback);
-
-// Shows a model dialog to users when they uninstall multiple extensions.
-// When the dialog is accepted, `accept_callback` is invoked.
-// When the dialog is canceled, `cancel_callback` is invoked.
-void ShowExtensionMultipleUninstallDialog(
-    Profile* profile,
-    gfx::NativeWindow parent,
-    const std::vector<ExtensionId>& extension_ids,
-    base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback);
-
 // Shows a dialog with a warning to the user that their settings have been
 // overridden by an extension.
 void ShowSettingsOverriddenDialog(
     std::unique_ptr<SettingsOverriddenDialogController> controller,
     gfx::NativeWindow parent);
-
-// The type of action that the ExtensionInstalledBlockedByParentDialog
-// is being shown in reaction to.
-enum class ExtensionInstalledBlockedByParentDialogAction {
-  kAdd,     // The user attempted to add the extension.
-  kEnable,  // The user attempted to enable the extension.
-};
-
-// Displays a dialog to notify the user that the extension installation is
-// blocked by a parent
-void ShowExtensionInstallBlockedByParentDialog(
-    ExtensionInstalledBlockedByParentDialogAction action,
-    const Extension* extension,
-    content::WebContents* web_contents,
-    base::OnceClosure done_callback);
-
-#if BUILDFLAG(IS_ANDROID)
-// Shows a dialog to notify the user that they need to ask their parent for
-// approval to install an extension. This is the first of a set of dialogs for
-// supervised user accounts on Android.
-void ShowExtensionInstallAskParentDialog(content::WebContents* web_contents,
-                                         base::OnceClosure cancel_callback,
-                                         base::OnceClosure approve_callback);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-// Shows a dialog when the user tries to upload an extension to their account.
-void ShowUploadExtensionToAccountDialog(Profile* profile,
-                                        gfx::NativeWindow parent,
-                                        const Extension& extension,
-                                        base::OnceClosure accept_callback,
-                                        base::OnceClosure cancel_callback);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Shows a dialog when the user tries to perform a navigation and the target url

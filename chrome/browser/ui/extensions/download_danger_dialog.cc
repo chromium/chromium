@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/extensions/download_danger_dialog.h"
+
 #include <memory>
 #include <utility>
 
@@ -15,7 +17,6 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_item.h"

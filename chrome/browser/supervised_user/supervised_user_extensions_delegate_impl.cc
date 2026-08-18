@@ -13,7 +13,7 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_manager.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#include "chrome/browser/ui/supervised_user/extension_install_blocked_by_parent_dialog.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/features.h"

@@ -13,7 +13,7 @@
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
+#include "chrome/browser/ui/supervised_user/extension_install_blocked_by_parent_dialog.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/interaction/interactive_browser_test.h"

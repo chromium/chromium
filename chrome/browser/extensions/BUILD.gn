@@ -2076,6 +2076,7 @@ source_set("unit_tests") {
     "//chrome/browser/supervised_user:test_support",
     "//chrome/browser/sync",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/supervised_user",
     "//chrome/browser/update_client",
     "//chrome/test:test_support",
     "//components/bookmarks/managed",

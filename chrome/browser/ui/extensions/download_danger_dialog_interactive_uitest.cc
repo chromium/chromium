@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/extensions/download_danger_dialog.h"
+
 #include <optional>
 
 #include "base/functional/bind.h"
@@ -9,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "content/public/test/browser_test.h"
