@@ -847,6 +847,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/insets/InsetObserverTest.java",
     "junit/src/org/chromium/ui/insets/InsetsRectProviderTest.java",
     "junit/src/org/chromium/ui/insets/WindowInsetsUtilsUnitTest.java",
+    "junit/src/org/chromium/ui/listmenu/KeyboardAccessibleListViewUnitTest.java",
     "junit/src/org/chromium/ui/listmenu/ListMenuHostUnitTest.java",
     "junit/src/org/chromium/ui/listmenu/ListMenuItemViewBinderUnitTest.java",
     "junit/src/org/chromium/ui/listmenu/ListMenuItemWithSubmenuViewBinderUnitTest.java",

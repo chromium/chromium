@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 @NullMarked
 public class KeyboardAccessibleListView extends ListView {
@@ -55,11 +56,7 @@ public class KeyboardAccessibleListView extends ListView {
         if (keyEvent.hasNoModifiers()
                 && (keyCode == KeyEvent.KEYCODE_TAB || keyCode == KeyEvent.KEYCODE_DPAD_DOWN)) {
             if (mSelectedItemPosition >= getCount() - 1) {
-                View nextView = getFocusedChild().focusSearch(FOCUS_DOWN);
-                // We focus the next item when there is a next item. If there's no next item, stop.
-                if (nextView != null) {
-                    nextView.requestFocus();
-                }
+                searchAndRequestNextFocus(FOCUS_DOWN);
             } else {
                 mSelectedItemPosition =
                         MathUtils.clamp(mSelectedItemPosition, 0, getCount() - 1) + 1;
@@ -70,11 +67,7 @@ public class KeyboardAccessibleListView extends ListView {
         if ((keyEvent.hasModifiers(KeyEvent.META_SHIFT_ON) && keyCode == KeyEvent.KEYCODE_TAB)
                 || (keyEvent.hasNoModifiers() && (keyCode == KeyEvent.KEYCODE_DPAD_UP))) {
             if (mSelectedItemPosition <= 0) {
-                View nextView = getFocusedChild().focusSearch(FOCUS_UP);
-                // We focus the next item when there is a next item. If there's no next item, stop.
-                if (nextView != null) {
-                    nextView.requestFocus();
-                }
+                searchAndRequestNextFocus(FOCUS_UP);
             } else {
                 mSelectedItemPosition =
                         MathUtils.clamp(mSelectedItemPosition, 0, getCount() - 1) - 1;
@@ -83,5 +76,26 @@ public class KeyboardAccessibleListView extends ListView {
             return true;
         }
         return super.onKeyDown(keyCode, keyEvent);
+    }
+
+    /**
+     * Searches for the next focusable view in the specified direction and requests focus on it if
+     * found. Searches from the focused child if one exists, otherwise falls back to searching from
+     * this {@link ListView} to avoid {@link NullPointerException}.
+     *
+     * @param direction The direction in which to search for focus (e.g. {@link View#FOCUS_DOWN} or
+     *     {@link View#FOCUS_UP}).
+     */
+    private void searchAndRequestNextFocus(int direction) {
+        // If a child currently has focus, search from that child; otherwise search from
+        // the ListView container itself. If getFocusedChild() is null, calling focusSearch
+        // on it directly would throw a NullPointerException.
+        @Nullable View focusedChild = getFocusedChild();
+        @Nullable View nextView =
+                focusedChild != null ? focusedChild.focusSearch(direction) : focusSearch(direction);
+        // We focus the next item when there is a next item. If there's no next item, stop.
+        if (nextView != null) {
+            nextView.requestFocus();
+        }
     }
 }
