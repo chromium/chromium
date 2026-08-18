@@ -794,4 +794,50 @@ TEST_F(URLDatabaseTest, CreateTemporaryURLTableDropsExistingTable) {
   }
 }
 
+TEST_F(URLDatabaseTest, GetURLCountAndLastVisitForPrefix) {
+  base::Time now = base::Time::Now();
+  base::Time yesterday = now - base::Days(1);
+  base::Time last_week = now - base::Days(7);
+
+  URLRow row1(GURL("http://google.com/intl"));
+  row1.set_last_visit(yesterday);
+  EXPECT_TRUE(AddURL(row1));
+
+  URLRow row2(GURL("http://google.com/us"));
+  row2.set_last_visit(last_week);
+  EXPECT_TRUE(AddURL(row2));
+
+  URLRow row3(GURL("http://google.com/ny"));
+  row3.set_last_visit(now);
+  EXPECT_TRUE(AddURL(row3));
+
+  URLRow row4(GURL("https://google.com/intl"));
+  row4.set_last_visit(yesterday);
+  EXPECT_TRUE(AddURL(row4));
+
+  URLRow row5(GURL("http://google.com:8080/path"));
+  row5.set_last_visit(yesterday);
+  EXPECT_TRUE(AddURL(row5));
+
+  URLCountAndLastVisitRow row;
+  EXPECT_TRUE(GetURLCountAndLastVisitForPrefix("http://google.com/", &row));
+  EXPECT_EQ((URLCountAndLastVisitRow{.count = 3, .last_visit_time = now}), row);
+
+  EXPECT_TRUE(GetURLCountAndLastVisitForPrefix("https://google.com/", &row));
+  EXPECT_EQ((URLCountAndLastVisitRow{.count = 1, .last_visit_time = yesterday}),
+            row);
+
+  EXPECT_TRUE(
+      GetURLCountAndLastVisitForPrefix("http://google.com:8080/", &row));
+  EXPECT_EQ((URLCountAndLastVisitRow{.count = 1, .last_visit_time = yesterday}),
+            row);
+
+  EXPECT_TRUE(GetURLCountAndLastVisitForPrefix("http://example.com/", &row));
+  EXPECT_EQ(
+      (URLCountAndLastVisitRow{.count = 0, .last_visit_time = base::Time()}),
+      row);
+
+  EXPECT_FALSE(GetURLCountAndLastVisitForPrefix("", &row));
+}
+
 }  // namespace history

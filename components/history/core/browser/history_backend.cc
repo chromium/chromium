@@ -927,30 +927,21 @@ OriginCountAndLastVisitMap HistoryBackend::GetCountsAndLastVisitForOrigins(
   if (!db_) {
     return OriginCountAndLastVisitMap();
   }
-  if (origins.empty()) {
-    return OriginCountAndLastVisitMap();
-  }
-
-  URLDatabase::URLEnumerator it;
-  if (!db_->InitURLEnumeratorForEverything(&it)) {
-    return OriginCountAndLastVisitMap();
-  }
 
   OriginCountAndLastVisitMap origin_count_map;
   for (const GURL& origin : origins) {
     origin_count_map[origin] = std::make_pair(0, base::Time());
-  }
+    if (!origin.is_valid()) {
+      continue;
+    }
+    std::string prefix = origin.DeprecatedGetOriginAsURL().spec();
+    if (prefix.empty()) {
+      continue;
+    }
 
-  URLRow row;
-  while (it.GetNextURL(&row)) {
-    GURL origin = row.url().DeprecatedGetOriginAsURL();
-    auto iter = origin_count_map.find(origin);
-    if (iter != origin_count_map.end()) {
-      std::pair<int, base::Time>& value = iter->second;
-      ++(value.first);
-      if (value.second.is_null() || value.second < row.last_visit()) {
-        value.second = row.last_visit();
-      }
+    URLCountAndLastVisitRow row;
+    if (db_->GetURLCountAndLastVisitForPrefix(prefix, &row)) {
+      origin_count_map[origin] = std::make_pair(row.count, row.last_visit_time);
     }
   }
 

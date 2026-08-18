@@ -32,6 +32,13 @@ namespace history {
 class KeywordSearchTermVisitEnumerator;
 struct KeywordSearchTermRow;
 
+struct URLCountAndLastVisitRow {
+  bool operator==(const URLCountAndLastVisitRow&) const = default;
+
+  int count = 0;
+  base::Time last_visit_time;
+};
+
 class VisitDatabase;  // For friend statement.
 
 // Encapsulates an SQL database that holds URL info.  This is a subset of the
@@ -189,6 +196,12 @@ class URLDatabase {
                                URLRow* info);
 
   // History search ------------------------------------------------------------
+
+  // Returns the number of URLs and the latest visit time for URLs whose URL
+  // begins with `prefix`. Fills `row` with the data and returns true on
+  // success, or false if `prefix` is empty or the query fails.
+  bool GetURLCountAndLastVisitForPrefix(const std::string& prefix,
+                                        URLCountAndLastVisitRow* row);
 
   // Performs a brute force search over the database to find any URLs or titles
   // which match the `query` string, using the default text matching algorithm.

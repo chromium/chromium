@@ -412,6 +412,34 @@ bool URLDatabase::FindShortestURLFromBase(const std::string& base,
   return false;
 }
 
+bool URLDatabase::GetURLCountAndLastVisitForPrefix(
+    const std::string& prefix,
+    URLCountAndLastVisitRow* row) {
+  if (prefix.empty()) {
+    return false;
+  }
+
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "SELECT COUNT(*), MAX(last_visit_time) "
+                                 "FROM urls "
+                                 "WHERE url >= ? AND url < ?"));
+
+  std::string end_query = database_utils::UpperBoundString(prefix);
+  statement.BindString(0, prefix);
+  statement.BindString(1, end_query);
+
+  if (!statement.Step()) {
+    return false;
+  }
+
+  if (row) {
+    row->count = statement.ColumnInt(0);
+    row->last_visit_time = statement.ColumnTime(1);
+  }
+  return true;
+}
+
 URLRows URLDatabase::GetTextMatches(const std::u16string& query) {
   return GetTextMatchesWithAlgorithm(query,
                                      query_parser::MatchingAlgorithm::DEFAULT);
