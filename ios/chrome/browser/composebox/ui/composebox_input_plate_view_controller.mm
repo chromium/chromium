@@ -275,6 +275,10 @@ UIImage* SendButtonImage(BOOL highlighted,
   /// The constraint pinning the container's trailing to the plus button.
   NSLayoutConstraint* _containerTrailingToPlusButtonConstraint;
 
+  /// Whether a tab attachment animation is pending completion of accordion
+  /// loading.
+  BOOL _pendingTabAttachmentAnimation;
+
   /// All items attached to the composebox query context
   /// (including media, files, and tab attachments). Serves as the single source
   /// of truth for input plate attachments.
@@ -396,6 +400,13 @@ UIImage* SendButtonImage(BOOL highlighted,
   if (_entrypoint != ComposeboxEntrypoint::kCobrowse || self.compact) {
     return;
   }
+
+  if (_tabsAccordionStackView.isLoading) {
+    _pendingTabAttachmentAnimation = YES;
+    return;
+  }
+
+  _pendingTabAttachmentAnimation = NO;
 
   _plusButtonContainer.backgroundColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
@@ -1372,6 +1383,14 @@ UIImage* SendButtonImage(BOOL highlighted,
     _tabsAccordionLeadingConstraint.active = NO;
     _tabsAccordionTrailingConstraint.active = YES;
     _containerTrailingToPlusButtonConstraint.active = YES;
+  }
+
+  // Force UIKit to complete the current layout pass synchronously to ensure
+  // loaded favicon subviews are displayed before scheduling animations.
+  if (!isLoading && _pendingTabAttachmentAnimation) {
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+    [self performTabAttachmentAnimationIfNeeded];
   }
 }
 
