@@ -116,6 +116,10 @@ export class CrInfiniteListElement<T> extends CrLitElement {
     assert(list);
 
     const renderedItems = list.domItems();
+    if (renderedItems.length < this.focusedIndex - 1) {
+      return false;
+    }
+
     return renderedItems[this.focusedIndex]!.matches(':focus-within');
   }
 
