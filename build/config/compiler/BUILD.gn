@@ -1918,10 +1918,14 @@ config("default_warnings") {
       # TODO(thakis): Push this to the (few) targets that need it,
       # instead of having a global flag.
       "-Wno-psabi",
-
-      # TODO(crbug.com/526996813): Figure out what to do about this.
-      "-Wno-stringop-overread",
     ]
+
+    if (!is_wasm) {
+      cflags += [
+        # TODO(crbug.com/526996813): Figure out what to do about this.
+        "-Wno-stringop-overread",
+      ]
+    }
 
     cflags_cc += [
       # Disables for C++ only
