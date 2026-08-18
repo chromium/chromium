@@ -919,7 +919,7 @@ CSSValue* ComputedStyleUtils::ValueForItemPositionWithOverflowAlignment(
     DCHECK(data.GetPosition() == ItemPosition::kLeft ||
            data.GetPosition() == ItemPosition::kRight ||
            data.GetPosition() == ItemPosition::kCenter)
-        << "Unexpected position: " << (unsigned)data.GetPosition();
+        << "Unexpected position: " << static_cast<unsigned>(data.GetPosition());
     DCHECK_EQ(data.Overflow(), OverflowAlignment::kDefault);
     return MakeGarbageCollected<CSSValuePair>(
         CSSIdentifierValue::Create(CSSValueID::kLegacy),
@@ -1473,8 +1473,7 @@ CSSValue* ComputedStyleUtils::ValueForFontFeatureSettings(
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (wtf_size_t i = 0; i < feature_settings->size(); ++i) {
-    const FontFeature& feature = feature_settings->at(i);
+  for (const FontFeature& feature : *feature_settings) {
     auto* feature_value = MakeGarbageCollected<cssvalue::CSSFontFeatureValue>(
         feature.TagString(),
         CSSNumericLiteralValue::Create(feature.Value(),
@@ -1492,8 +1491,7 @@ CSSValue* ComputedStyleUtils::ValueForFontVariationSettings(
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (wtf_size_t i = 0; i < variation_settings->size(); ++i) {
-    const FontVariationAxis& variation_axis = variation_settings->at(i);
+  for (const FontVariationAxis& variation_axis : *variation_settings) {
     cssvalue::CSSFontVariationValue* variation_value =
         MakeGarbageCollected<cssvalue::CSSFontVariationValue>(
             variation_axis.TagString(),
@@ -2555,7 +2553,7 @@ CSSValue* CreateAnimationValueList(const Vector<T, C>& values,
                                    Args&&... args) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   for (const T& value : values) {
-    list->Append(*item_func(value, std::forward<Args>(args)...));
+    list->Append(*item_func(value, args...));
   }
   return list;
 }
@@ -3451,9 +3449,9 @@ CSSValue* ComputedStyleUtils::ValueForTransitionProperty(
     const CSSTransitionData* transition_data) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   if (transition_data) {
-    for (wtf_size_t i = 0; i < transition_data->PropertyList().size(); ++i) {
-      list->Append(
-          *CreateTransitionPropertyValue(transition_data->PropertyList()[i]));
+    for (const CSSTransitionData::TransitionProperty& property :
+         transition_data->PropertyList()) {
+      list->Append(*CreateTransitionPropertyValue(property));
     }
   } else {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kAll));
