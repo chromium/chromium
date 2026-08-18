@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/cert/x509_util.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
@@ -211,7 +211,7 @@ bool ServerCertificateDatabase::DeleteCertificate(
 ServerCertificateDatabase::CertInformation::CertInformation(
     base::span<const uint8_t> cert) {
   der_cert = base::ToVector(cert);
-  sha256hash_hex = base::HexEncodeLower(crypto::SHA256Hash(cert));
+  sha256hash_hex = base::HexEncodeLower(crypto::hash::Sha256(cert));
 }
 ServerCertificateDatabase::CertInformation::CertInformation() = default;
 ServerCertificateDatabase::CertInformation::~CertInformation() = default;

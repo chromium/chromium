@@ -11,7 +11,6 @@
 #include "base/task/thread_pool.h"
 #include "components/server_certificate_database/server_certificate_database_service.h"
 #include "crypto/scoped_nss_types.h"
-#include "crypto/sha2.h"
 #include "net/cert/internal/trust_store_nss.h"
 
 namespace net {
