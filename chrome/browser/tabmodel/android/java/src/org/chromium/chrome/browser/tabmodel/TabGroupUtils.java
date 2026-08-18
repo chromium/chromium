@@ -258,7 +258,7 @@ public class TabGroupUtils {
         return tabGroupId;
     }
 
-    /** Creates a new group containing {@param tabs} ({@param tabs} must be non-empty). */
+    /** Creates a new group containing {@code tabs} ({@code tabs} must be non-empty). */
     public static void createNewGroupForTabs(
             List<Tab> tabs,
             TabModel tabModel,

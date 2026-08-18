@@ -221,37 +221,37 @@ public class TabUiThemeUtil {
         return SemanticColorUtils.getDividerColor(context);
     }
 
-    /** {@return The {@link DrawableRes} for the keyboard focus ring for tabs} */
+    /** Returns the {@link DrawableRes. for the keyboard focus ring for tabs} */
     public static @DrawableRes int getTabKeyboardFocusDrawableRes() {
         return R.drawable.tabstrip_keyfocus_8dp;
     }
 
-    /** {@return The {@link DrawableRes} for the keyboard focus ring for selected tab w/ outline} */
+    /** Returns the {@link DrawableRes. for the keyboard focus ring for selected tab w/ outline} */
     public static @DrawableRes int getSelectedTabInTabGroupKeyboardFocusDrawableRes() {
         return R.drawable.tabstrip_keyfocus_10dp;
     }
 
-    /** {@return The {@link DrawableRes} for the tab group indicator keyboard focus ring} */
+    /** Returns the {@link DrawableRes. for the tab group indicator keyboard focus ring} */
     public static @DrawableRes int getTabGroupIndicatorKeyboardFocusDrawableRes() {
         return R.drawable.tabstrip_keyfocus_11dp;
     }
 
-    /** {@return The {@link DrawableRes} for the close button keyboard focus ring} */
+    /** Returns the {@link DrawableRes. for the close button keyboard focus ring} */
     public static @DrawableRes int getCircularButtonKeyboardFocusDrawableRes() {
         return R.drawable.circular_button_keyfocus;
     }
 
-    /** {@return The {@link DrawableRes} for the Glic button keyboard focus ring} */
+    /** Returns the {@link DrawableRes. for the Glic button keyboard focus ring} */
     public static @DrawableRes int getGlicButtonKeyboardFocusDrawableRes(boolean isSplit) {
         return isSplit ? R.drawable.glic_split_button_keyfocus : R.drawable.glic_button_keyfocus;
     }
 
-    /** {@return The keyboard focus ring's offset in px} */
+    /** Returns the keyboard focus ring's offset in px. */
     public static int getFocusRingOffset(Context context) {
         return context.getResources().getDimensionPixelSize(R.dimen.tabstrip_keyfocus_offset);
     }
 
-    /** {@return The width of the keyboard focus ring stroke and tab group color line in px} */
+    /** Returns the width of the keyboard focus ring stroke and tab group color line in px. */
     public static int getLineWidth(Context context) {
         return context.getResources().getDimensionPixelSize(R.dimen.tabstrip_strokewidth);
     }

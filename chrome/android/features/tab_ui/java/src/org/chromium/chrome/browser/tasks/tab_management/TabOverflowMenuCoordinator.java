@@ -403,7 +403,7 @@ public abstract class TabOverflowMenuCoordinator<T>
     }
 
     /**
-     * @return The DP measure {@param dimenRes}, converted to px.
+     * @return The DP measure {@code dimenRes}, converted to px.
      */
     protected int getDimensionPixelSize(@DimenRes int dimenRes) {
         assert mActivity != null : "Activity needs to be non-null to get pixel size";
@@ -580,11 +580,11 @@ public abstract class TabOverflowMenuCoordinator<T>
         multiInstanceManager.closeChromeWindowIfEmpty(multiInstanceManager.getCurrentInstanceId());
     }
 
-    /** Creates a new window and moves item with ID {@param id} to it. */
+    /** Creates a new window and moves item with ID {@code id} to it. */
     @RequiresNonNull("mMultiInstanceManager")
     protected void moveToNewWindow(T id) {}
 
-    /** Moves item with ID {@param id} to window with instance info {@param instanceInfo}. */
+    /** Moves item with ID {@code id} to window with instance info {@code instanceInfo}. */
     @RequiresNonNull("mMultiInstanceManager")
     protected void moveToWindow(InstanceInfo instanceInfo, T id) {}
 

@@ -341,7 +341,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
      * @param parent the parent tab, if present.
      * @param position the requested position (index in the tab model)
      * @param intent the source of the url if it isn't null.
-     * @param copyHistory Whether the new tab should have the same history stack as {@param parent}.
+     * @param copyHistory Whether the new tab should have the same history stack as {@code parent}.
      * @return The new tab or null if the tab is not created in current window.
      */
     @Nullable Tab createNewTab(

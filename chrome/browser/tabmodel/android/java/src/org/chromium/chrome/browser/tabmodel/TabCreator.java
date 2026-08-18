@@ -161,7 +161,7 @@ public interface TabCreator {
             CompletableFuture<Boolean> addTabToModel);
 
     /**
-     * Creates a {@link Tab} with the same history stack as {@param parent}.
+     * Creates a {@link Tab} with the same history stack as {@code parent}.
      *
      * @param parent The tab to copy.
      * @param type The {@code TabLaunchType} (should be {@code FROM_HISTORY_NAVIGATION_FOREGROUND}

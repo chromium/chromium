@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 public class TabModelFactory {
     private TabModelFactory() {}
 
-    /** Creates a regular mode {@link TabModelInternal}, {@see TabModelImpl}'s constructor. */
+    /** Creates a regular mode {@link TabModelInternal}, {@link TabModelImpl}'s constructor. */
     public static TabModelInternal createTabModel(
             Profile profile,
             @ActivityType int activityType,
@@ -65,7 +65,7 @@ public class TabModelFactory {
     }
 
     /**
-     * Creates an incognito mode {@link IncognitoTabModelInternal}, {@see
+     * Creates an incognito mode {@link IncognitoTabModelInternal}, {@link *
      * IncognitoTabModelImplCreator}'s constructor.
      */
     public static IncognitoTabModelInternal createIncognitoTabModel(
