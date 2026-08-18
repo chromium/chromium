@@ -3015,7 +3015,7 @@ the browser and content area. -->
 
 <histogram name="Signin.ManagedUserProfileCreationConflict" enum="BooleanHit"
     expires_after="2027-01-03">
-  <owner>anthie@chromium.org</owner>
+  <owner>anthie@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
   <summary>
     Recorded when during a flow that requires the creation of a managed profile
@@ -3875,7 +3875,7 @@ OAuth Multilogin call. -->
 <histogram name="Signin.SigninManager.SetPrimaryAccountSigninInStage"
     enum="GaiaIntegrationState" expires_after="2027-02-14">
   <owner>droger@chromium.org</owner>
-  <owner>anthie@chromium.org</owner>
+  <owner>anthie@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Recorded when setting set the browser's primary account for non-automatic
@@ -3889,7 +3889,7 @@ OAuth Multilogin call. -->
 <histogram name="Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst"
     units="ms" expires_after="2026-12-27">
   <owner>droger@chromium.org</owner>
-  <owner>anthie@chromium.org</owner>
+  <owner>anthie@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the elapsed time between the handling of the LST token and the
@@ -3909,9 +3909,9 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SigninManager.SyncHeaderTimeout" enum="BooleanTimedOut"
-    expires_after="2026-08-23">
+    expires_after="2027-02-23">
   <owner>droger@chromium.org</owner>
-  <owner>anthie@chromium.org</owner>
+  <owner>anthie@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Recorded when the user signs in to their Google Account through a Chrome
@@ -3937,9 +3937,9 @@ OAuth Multilogin call. -->
 <!-- TODO(crbug.com/429524688): Remove this histogram after fixing this bug.-->
 
 <histogram name="Signin.SigninManager.UnexpectedSyncHeaderProcessingBeforeLST"
-    enum="BooleanHit" expires_after="2026-08-23">
+    enum="BooleanHit" expires_after="2027-02-23">
   <owner>droger@chromium.org</owner>
-  <owner>anthie@chromium.org</owner>
+  <owner>anthie@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Recorded when the user signs in to their Google Account through a Chrome
