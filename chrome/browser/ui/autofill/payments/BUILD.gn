@@ -57,6 +57,7 @@ source_set("payments") {
       "payments_churned_users_page_action_controller.h",
       "wallet_reminder_notice_bubble_controller.h",
       "wallet_reminder_notice_page_action_controller.h",
+      "wallet_reminder_notice_ui_delegate_desktop.h",
       "webauthn_dialog.h",
       "webauthn_dialog_controller.h",
       "webauthn_dialog_controller_impl.h",
@@ -159,6 +160,7 @@ source_set("impl") {
       "payments_churned_users_page_action_controller.cc",
       "wallet_reminder_notice_bubble_controller.cc",
       "wallet_reminder_notice_page_action_controller.cc",
+      "wallet_reminder_notice_ui_delegate_desktop.cc",
       "webauthn_dialog_controller_impl.cc",
       "webauthn_dialog_model.cc",
     ]
