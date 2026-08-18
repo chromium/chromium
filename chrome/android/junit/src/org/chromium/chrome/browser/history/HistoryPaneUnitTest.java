@@ -23,6 +23,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.LoadHint;
@@ -63,6 +64,7 @@ import java.util.function.Supplier;
  * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_HISTORY_LAYOUT)
 @EnableFeatures({
     ChromeFeatureList.HISTORY_PANE_ANDROID,
     ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,

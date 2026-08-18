@@ -28,17 +28,17 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/bookmark_desktop_navigation_header_top_margin"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="@dimen/bookmark_desktop_navigation_header_start_margin"
             android:layout_marginEnd="@dimen/bookmark_desktop_navigation_header_end_margin"
             android:layout_marginBottom="@dimen/bookmark_desktop_navigation_header_bottom_margin"
             android:gravity="center_vertical"
-            android:text="@string/bookmarks"
+            android:text="@string/menu_history"
             android:textAppearance="@style/TextAppearance.Headline.Primary"
             android:drawableStart="@drawable/chrome_logo_24dp"
             android:drawablePadding="16dp"
             android:accessibilityHeading="true"/>
 
-        <!-- Folder List -->
+        <!-- Navigation List -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/navigation_recycler_view"
             android:layout_width="match_parent"
@@ -49,27 +49,23 @@ found in the LICENSE file.
     </LinearLayout>
 
     <!-- Right Main Content Pane -->
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/content_pane"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical"
         android:background="@macro/bookmark_desktop_content_pane_bg">
-
-        <include
-            layout="@layout/bookmark_search_box_row"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/bookmark_desktop_navigation_header_top_margin"
-            android:layout_marginBottom="@dimen/bookmark_desktop_search_box_bottom_margin"
-            android:id="@+id/desktop_search_box_row" />
 
         <org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout
             android:id="@+id/selectable_list"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:focusable="false"
-            android:background="@android:color/transparent" />
-    </LinearLayout>
+            android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/recent_tabs_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </FrameLayout>
+
 </LinearLayout>

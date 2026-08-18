@@ -4384,6 +4384,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CHROME_HISTORY" desc="Menu item for opening the CCT history page. [CHAR_LIMIT=27]">
         Chrome history
       </message>
+      <message name="IDS_HISTORY_MANAGER_TABS_FROM_OTHER_DEVICES" desc="Menu item for opening tabs from other devices. [CHAR_LIMIT=27]">
+        Tabs from other devices
+      </message>
       <message name="IDS_MENU_PASSWORDS_AND_AUTOFILL" desc="Menu item for showing menus related to passwords and autofill. [CHAR_LIMIT=27]">
         Passwords and autofill
       </message>

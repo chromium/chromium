@@ -79,6 +79,15 @@ public class SearchBoxViewBinderUnitTest {
     }
 
     @Test
+    public void testSearchLoupeVisibility() {
+        mModel.set(SearchBoxProperties.SEARCH_LOUPE_VISIBILITY, View.VISIBLE);
+        assertEquals(View.VISIBLE, mView.findViewById(R.id.search_loupe).getVisibility());
+
+        mModel.set(SearchBoxProperties.SEARCH_LOUPE_VISIBILITY, View.GONE);
+        assertEquals(View.GONE, mView.findViewById(R.id.search_loupe).getVisibility());
+    }
+
+    @Test
     public void testClearButtonVisibility() {
         mModel.set(SearchBoxProperties.CLEAR_BUTTON_VISIBILITY, true);
         assertEquals(View.VISIBLE, mClearButton.getVisibility());

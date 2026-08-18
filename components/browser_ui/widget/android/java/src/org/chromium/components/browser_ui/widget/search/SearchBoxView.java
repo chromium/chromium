@@ -47,13 +47,7 @@ public class SearchBoxView extends LinearLayout {
         setupView();
     }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-    }
-
     private void setupView() {
-
         mSearchText = findViewById(R.id.search_text);
         mClearButton = findViewById(R.id.clear_text_button);
         mSearchLoupe = findViewById(R.id.search_loupe);

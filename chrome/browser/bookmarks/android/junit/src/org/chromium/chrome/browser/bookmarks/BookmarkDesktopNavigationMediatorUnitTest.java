@@ -262,7 +262,7 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
                             return null;
                         })
                 .when(mBookmarkDelegate)
-                .addUiObserver(any());
+                .addUiObserver(any(BookmarkUiObserver.class));
 
         // Create a new mediator instance, which will trigger the init redirection.
         new BookmarkDesktopNavigationMediator(
@@ -283,7 +283,7 @@ public class BookmarkDesktopNavigationMediatorUnitTest {
                             return null;
                         })
                 .when(mBookmarkDelegate)
-                .addUiObserver(any());
+                .addUiObserver(any(BookmarkUiObserver.class));
 
         new BookmarkDesktopNavigationMediator(
                 mContext, mBookmarkModel, mModelList, mBookmarkDelegate);
