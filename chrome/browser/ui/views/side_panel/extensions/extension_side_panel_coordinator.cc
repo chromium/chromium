@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_action_item_util.h"
 #include "chrome/common/extensions/api/side_panel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -81,9 +82,6 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
   if (service) {
     scoped_service_observation_.Observe(service);
     LoadExtensionIcon();
-    if (IsGlobalCoordinator()) {
-      UpdateActionItemIcon();
-    }
 
     auto options =
         IsGlobalCoordinator()
@@ -100,6 +98,14 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
   if (tab_interface_) {
     tab_subscriptions_.push_back(tab_interface_->RegisterWillDiscardContents(
         base::BindRepeating(&ExtensionSidePanelCoordinator::WillDiscardContents,
+                            weak_factory_.GetWeakPtr())));
+    // Keep this coordinator's action item reference on the window the tab
+    // currently belongs to as the tab moves between windows.
+    tab_subscriptions_.push_back(tab_interface_->RegisterWillDetach(
+        base::BindRepeating(&ExtensionSidePanelCoordinator::WillDetach,
+                            weak_factory_.GetWeakPtr())));
+    tab_subscriptions_.push_back(tab_interface_->RegisterDidInsert(
+        base::BindRepeating(&ExtensionSidePanelCoordinator::DidInsert,
                             weak_factory_.GetWeakPtr())));
   }
 }
@@ -137,7 +143,11 @@ bool ExtensionSidePanelCoordinator::IsGlobalCoordinator() const {
 
 void ExtensionSidePanelCoordinator::DeregisterEntry() {
   scoped_entry_observation_.Reset();
-  registry_->Deregister(GetEntryKey());
+  // Deregister synchronously closes the side panel if this entry is showing.
+  // Release the action item reference only when an entry was actually removed.
+  if (registry_->Deregister(GetEntryKey())) {
+    ReleaseActionItemReference();
+  }
 }
 
 void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
@@ -239,6 +249,9 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
   // not be null.
   DCHECK(extension_icon_);
 
+  // Reference the shared action item for as long as this entry is registered.
+  AcquireActionItemReference();
+
   // Use a `WeakPtr` for the creation callback to safely handle cases where
   // this coordinator is destroyed before the view is created. Use a
   // `ScopedObservation` to watch the entry, which lets us track when the panel
@@ -257,7 +270,9 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
       /*default_content_width_callback=*/base::NullCallback());
 
   scoped_entry_observation_.Observe(entry.get());
-  registry_->Register(std::move(entry));
+  // This is only called when no entry is registered for this key, so the
+  // reference acquired above always pairs with a registered entry.
+  CHECK(registry_->Register(std::move(entry)));
 }
 
 std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(
@@ -439,11 +454,10 @@ void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
 }
 
 void ExtensionSidePanelCoordinator::UpdateActionItemIcon() {
-  CHECK(IsGlobalCoordinator());
   std::optional<actions::ActionId> extension_action_id =
       actions::ActionIdMap::StringToActionId(GetEntryKey().ToString());
   CHECK(extension_action_id.has_value());
-  BrowserActions* browser_actions = BrowserActions::From(browser_);
+  BrowserActions* browser_actions = BrowserActions::From(GetBrowser());
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
       extension_action_id.value(), browser_actions->root_action_item());
   if (action_item) {
@@ -460,6 +474,56 @@ void ExtensionSidePanelCoordinator::WillDiscardContents(
   // As this is a tab that is about to be discarded there are not yet any panel
   // options. The entry will be reregistered in OnPanelOptionsChanged if
   // necessary.
+}
+
+void ExtensionSidePanelCoordinator::WillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  switch (reason) {
+    case tabs::TabInterface::DetachReason::kDelete:
+      // The tab and its entry are being destroyed. Deregister the entry before
+      // its reference is released so the shared action item is never removed
+      // while a registered entry still references it.
+      DeregisterEntry();
+      break;
+    case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
+      // The entry moves with the tab. Release the reference on the window the
+      // tab is leaving; DidInsert reacquires it on the destination window.
+      ReleaseActionItemReference();
+      break;
+  }
+}
+
+void ExtensionSidePanelCoordinator::DidInsert(tabs::TabInterface* tab) {
+  // Reacquire on the window the tab now belongs to. No entry is registered yet
+  // on the tab's initial insertion, so this is a no-op then.
+  if (GetEntry()) {
+    AcquireActionItemReference();
+  }
+}
+
+void ExtensionSidePanelCoordinator::AcquireActionItemReference() {
+  if (holds_action_item_reference_) {
+    return;
+  }
+  // A tab that is between windows has no browser; DidInsert acquires the
+  // reference once the tab is inserted into a window.
+  BrowserWindowInterface* browser = GetBrowser();
+  if (!browser) {
+    return;
+  }
+  side_panel_action_item_util::AcquireActionItem(browser, *extension_);
+  holds_action_item_reference_ = true;
+  UpdateActionItemIcon();
+}
+
+void ExtensionSidePanelCoordinator::ReleaseActionItemReference() {
+  if (!holds_action_item_reference_) {
+    return;
+  }
+  side_panel_action_item_util::ReleaseActionItem(GetBrowser(),
+                                                 extension_->id());
+  holds_action_item_reference_ = false;
 }
 
 BrowserWindowInterface* ExtensionSidePanelCoordinator::GetBrowser() {

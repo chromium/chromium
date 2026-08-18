@@ -13,6 +13,8 @@ source_set("side_panel") {
     "bookmarks/bookmarks_side_panel_coordinator.h",
     "comments/comments_side_panel_coordinator.cc",
     "comments/comments_side_panel_coordinator.h",
+    "extensions/extension_side_panel_action_item_util.cc",
+    "extensions/extension_side_panel_action_item_util.h",
     "extensions/extension_side_panel_coordinator.cc",
     "extensions/extension_side_panel_coordinator.h",
     "extensions/extension_side_panel_manager.cc",

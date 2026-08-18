@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
+#include "components/tabs/public/tab_interface.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_icon_image.h"
@@ -21,10 +22,6 @@
 class BrowserWindowInterface;
 class SidePanelEntryScope;
 class SidePanelRegistry;
-
-namespace tabs {
-class TabInterface;
-}
 
 namespace content {
 class WebContents;
@@ -133,6 +130,22 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
                            content::WebContents* old_contents,
                            content::WebContents* new_contents);
 
+  // Called when a tab-scoped coordinator's tab is about to leave its window.
+  // Releases the reference held on the current window's shared action item.
+  void WillDetach(tabs::TabInterface* tab,
+                  tabs::TabInterface::DetachReason reason);
+
+  // Called when a tab-scoped coordinator's tab is inserted into a window.
+  // Reacquires a reference on the (possibly new) window's shared action item.
+  void DidInsert(tabs::TabInterface* tab);
+
+  // Acquires or releases this coordinator's single reference to the extension's
+  // shared action item, no-op if the reference is already held / not held. The
+  // reference keeps the action item alive while this coordinator's entry is
+  // registered.
+  void AcquireActionItemReference();
+  void ReleaseActionItemReference();
+
   // Returns `browser_` if it is a global coordinator and otherwise it returns
   // the browser associated with `web_contents_`.
   BrowserWindowInterface* GetBrowser();
@@ -177,6 +190,13 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   // Track whether the onOpened event has been dispatched.
   bool on_opened_dispatched_ = false;
+
+  // Whether this coordinator currently holds a reference to the extension's
+  // shared action item. This usually mirrors whether its SidePanelEntry is
+  // registered, but the two diverge while the tab is detached between windows:
+  // the entry stays registered while the reference is dropped (no window owns
+  // the action item) and is reacquired on the destination window in DidInsert.
+  bool holds_action_item_reference_ = false;
 
   // The ID of the browser window in which the panel is shown.
   std::optional<int> window_id_;

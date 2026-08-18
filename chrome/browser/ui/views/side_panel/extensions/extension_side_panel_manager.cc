@@ -4,28 +4,15 @@
 
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 
-#include "base/memory/scoped_refptr.h"
-#include "base/strings/utf_string_conversions.h"
+#include <memory>
+
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/actions/chrome_actions.h"
-#include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
-#include "chrome/browser/ui/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "third_party/abseil-cpp/absl/memory/memory.h"
-#include "ui/actions/actions.h"
-#include "ui/base/ui_base_features.h"
 
 namespace extensions {
 
@@ -37,7 +24,6 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
       tab_interface_(nullptr),
       registry_(registry),
       for_tab_(false) {
-  InitializeActions();
   RegisterExtensionEntries();
 }
 
@@ -50,7 +36,6 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
       tab_interface_(tab_interface),
       registry_(tab_registry),
       for_tab_(true) {
-  InitializeActions();
   RegisterExtensionEntries();
 }
 
@@ -72,81 +57,10 @@ void ExtensionSidePanelManager::RegisterExtensionEntries() {
   }
 }
 
-void ExtensionSidePanelManager::InitializeActions() {
-  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
-  for (const auto& extension : extension_registry->enabled_extensions()) {
-    MaybeCreateActionItemForExtension(extension.get());
-  }
-}
-
 void ExtensionSidePanelManager::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  MaybeCreateActionItemForExtension(extension);
   MaybeCreateExtensionSidePanelCoordinator(extension);
-}
-
-void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
-    const Extension* extension) {
-  if (!browser_ || !extension->permissions_data()->HasAPIPermission(
-                       mojom::APIPermissionID::kSidePanel)) {
-    return;
-  }
-
-  actions::ActionId extension_action_id =
-      GetOrCreateActionIdForExtension(extension);
-  BrowserActions* browser_actions = BrowserActions::From(browser_);
-  actions::ActionItem* extension_action_item =
-      actions::ActionManager::Get().FindAction(
-          extension_action_id, browser_actions->root_action_item());
-
-  // Mark the action item as pinnable if it already exists.
-  if (extension_action_item) {
-    return;
-  }
-
-  // Create a new action item.
-  actions::ActionItem* root_action_item = browser_actions->root_action_item();
-  root_action_item->AddChild(
-      actions::ActionItem::Builder(
-          CreateToggleSidePanelActionCallback(
-              SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
-                                  extension->id()),
-              browser_))
-          .SetText(base::UTF8ToUTF16(extension->short_name()))
-          .SetActionId(extension_action_id)
-          .SetProperty(actions::kActionItemPinnableKey,
-                       std::underlying_type_t<actions::ActionPinnableState>(
-                           actions::ActionPinnableState::kPinnable))
-          .Build());
-}
-
-actions::ActionId ExtensionSidePanelManager::GetOrCreateActionIdForExtension(
-    const Extension* extension) {
-  return actions::ActionIdMap::CreateActionId(
-             SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
-                                 extension->id())
-                 .ToString())
-      .first;
-}
-
-void ExtensionSidePanelManager::MaybeRemoveActionItemForExtension(
-    const Extension* extension) {
-  if (browser_ && extension->permissions_data()->HasAPIPermission(
-                      mojom::APIPermissionID::kSidePanel)) {
-    BrowserActions* browser_actions = BrowserActions::From(browser_);
-    std::optional<actions::ActionId> extension_action_id =
-        actions::ActionIdMap::StringToActionId(
-            SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())
-                .ToString());
-    CHECK(extension_action_id.has_value());
-    actions::ActionItem* actionItem = actions::ActionManager::Get().FindAction(
-        extension_action_id.value(), browser_actions->root_action_item());
-
-    if (actionItem) {
-      browser_actions->root_action_item()->RemoveChild(actionItem).reset();
-    }
-  }
 }
 
 void ExtensionSidePanelManager::OnExtensionUnloaded(
@@ -158,7 +72,6 @@ void ExtensionSidePanelManager::OnExtensionUnloaded(
     it->second->DeregisterEntry();
     coordinators_.erase(extension->id());
   }
-  MaybeRemoveActionItemForExtension(extension);
 }
 
 void ExtensionSidePanelManager::MaybeCreateExtensionSidePanelCoordinator(

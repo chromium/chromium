@@ -232,6 +232,12 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     return SidePanelRegistry::From(browser()->GetActiveTabInterface());
   }
 
+  int GetTabIdAt(int index) {
+    return sessions::SessionTabHelper::IdForTab(
+               browser()->tab_strip_model()->GetWebContentsAt(index))
+        .id();
+  }
+
   // Calls chrome.sidePanel.setOptions() for the given `extension`, `path` and
   // `enabled` and returns when the API call is complete.
   void RunSetOptions(const extensions::Extension& extension,
@@ -1864,11 +1870,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
       ->ActivateTabAt(0);
   // Add extension
   scoped_refptr<const extensions::Extension> extension =
-      LoadSidePanelExtension("extension");
+      AddExtensionWithSidePanel("extension", /*tab_id=*/std::nullopt);
   SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
                                     extension->id());
-  global_registry()->Register(CreateEntry(extension_key));
-  contextual_registries_[0]->Register(CreateEntry(extension_key));
+  RunSetOptions(*extension, GetTabIdAt(0), /*path=*/"panel.html",
+                /*enabled=*/true);
 
   coordinator()->Show(extension_key);
   EXPECT_TRUE(
@@ -1938,13 +1944,17 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, DeregisterExtensionEntries) {
 
   // Add extension.
   scoped_refptr<const extensions::Extension> extension =
-      LoadSidePanelExtension("extension");
+      AddExtensionWithSidePanel("extension", /*tab_id=*/std::nullopt);
   SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
                                     extension->id());
 
   // Registers an entry in the global and active contextual registry.
-  GetActiveTabRegistry()->Register(CreateEntry(extension_key));
-  global_registry()->Register(CreateEntry(extension_key));
+  const int active_tab_id =
+      sessions::SessionTabHelper::IdForTab(
+          browser()->GetActiveTabInterface()->GetContents())
+          .id();
+  RunSetOptions(*extension, active_tab_id, /*path=*/"panel.html",
+                /*enabled=*/true);
 
   // The contextual entry should be shown.
   coordinator()->Show(extension_key);
@@ -1953,7 +1963,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, DeregisterExtensionEntries) {
 
   // If the contextual entry is deregistered while there exists a global entry,
   // the global entry is not shown.
-  GetActiveTabRegistry()->Deregister(extension_key);
+  RunSetOptions(*extension, active_tab_id, /*path=*/std::nullopt,
+                /*enabled=*/false);
   EXPECT_FALSE(global_registry()->GetActiveEntry().has_value());
   EXPECT_FALSE(GetSidePanel()->GetVisible());
 }
@@ -1971,10 +1982,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
       ->ActivateTabAt(0);
   // Add extension.
   scoped_refptr<const extensions::Extension> extension =
-      LoadSidePanelExtension("extension");
+      AddExtensionWithSidePanel("extension", /*tab_id=*/GetTabIdAt(0));
   SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
                                     extension->id());
-  contextual_registries_[0]->Register(CreateEntry(extension_key));
   coordinator()->Show(extension_key);
 
   EXPECT_TRUE(
@@ -1998,11 +2008,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   Init();
   // Add extension.
   scoped_refptr<const extensions::Extension> extension =
-      LoadSidePanelExtension("extension");
+      AddExtensionWithSidePanel("extension", /*tab_id=*/std::nullopt);
   SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
                                     extension->id());
-  contextual_registries_[0]->Register(CreateEntry(extension_key));
-  global_registry()->Register(CreateEntry(extension_key));
+  RunSetOptions(*extension, GetTabIdAt(0), /*path=*/"panel.html",
+                /*enabled=*/true);
 
   // Switching from a tab showing the extension's active entry to a
   // tab with no active contextual entry should show the extension's entry
@@ -2082,11 +2092,11 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   SidePanelEntry::Key shopping_key(SidePanelEntry::Id::kShoppingInsights);
   // Add extension.
   scoped_refptr<const extensions::Extension> extension =
-      LoadSidePanelExtension("extension");
+      AddExtensionWithSidePanel("extension", /*tab_id=*/std::nullopt);
   SidePanelEntry::Key extension_key(SidePanelEntry::Id::kExtension,
                                     extension->id());
-  contextual_registries_[0]->Register(CreateEntry(extension_key));
-  global_registry()->Register(CreateEntry(extension_key));
+  RunSetOptions(*extension, GetTabIdAt(0), /*path=*/"panel.html",
+                /*enabled=*/true);
 
   BrowserView::GetBrowserViewForBrowser(browser())
       ->browser()
