@@ -92,7 +92,7 @@ constexpr int kUICompositorMemoryLimitDisplaySizeThreshold = 3500;
 // The RAM capacity threshold. When the device has 16GB+ of memory,
 // configure the compositor to use a higher memory limit.
 constexpr base::ByteSize kUICompositorMemoryLimitRamCapacityThreshold =
-    base::GiBU(16);
+    base::GiB(16);
 
 // An UMA signal for the current effective resolution/dpi is sent at this rate.
 // This keeps track of the effective resolution/dpi most used on
