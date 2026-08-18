@@ -168,7 +168,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                             groupTitles.get(0),
                             groupColors[0],
                             allTabs,
-                            byteBuffers.toArray(new ByteBuffer[0]),
+                            byteBuffers,
                             savedStateVersions);
             return;
         }
@@ -186,7 +186,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                         groupColors,
                         perTabTabGroupId,
                         allTabs,
-                        byteBuffers.toArray(new ByteBuffer[0]),
+                        byteBuffers,
                         savedStateVersions);
     }
 
@@ -297,7 +297,8 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 @JniType("std::u16string") String title,
                 int color,
                 @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
-                ByteBuffer[] byteBuffers,
+                @JniType("std::vector<base::android::ScopedJavaLocalRef<jobject>>")
+                        List<ByteBuffer> byteBuffers,
                 @JniType("std::vector<int32_t>") int[] savedStateVersions);
 
         void createHistoricalBulkClosure(
@@ -308,7 +309,8 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
                 @JniType("std::vector<int>") int[] colors,
                 @JniType("std::vector<std::optional<base::Token>>") List<Token> perTabTabGroupId,
                 @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
-                ByteBuffer[] byteBuffers,
+                @JniType("std::vector<base::android::ScopedJavaLocalRef<jobject>>")
+                        List<ByteBuffer> byteBuffers,
                 @JniType("std::vector<int32_t>") int[] savedStateVersions);
     }
 }

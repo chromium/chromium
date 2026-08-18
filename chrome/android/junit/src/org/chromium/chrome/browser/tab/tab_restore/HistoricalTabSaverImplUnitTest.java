@@ -162,7 +162,7 @@ public class HistoricalTabSaverImplUnitTest {
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
-        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf};
+        List<ByteBuffer> buffers = List.of(buf, buf);
         int[] versions = new int[] {-1, -1};
         verify(mHistoricalTabSaverJni)
                 .createHistoricalGroup(
@@ -191,7 +191,7 @@ public class HistoricalTabSaverImplUnitTest {
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
-        ByteBuffer[] buffers = new ByteBuffer[] {buf};
+        List<ByteBuffer> buffers = List.of(buf);
         int[] versions = new int[] {-1};
         verify(mHistoricalTabSaverJni)
                 .createHistoricalGroup(
@@ -217,7 +217,7 @@ public class HistoricalTabSaverImplUnitTest {
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
-        ByteBuffer[] buffers = new ByteBuffer[] {buf};
+        List<ByteBuffer> buffers = List.of(buf);
         int[] versions = new int[] {-1};
         verify(mHistoricalTabSaverJni)
                 .createHistoricalGroup(
@@ -247,7 +247,7 @@ public class HistoricalTabSaverImplUnitTest {
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
-        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf};
+        List<ByteBuffer> buffers = List.of(buf, buf);
         int[] versions = new int[] {-1, -1};
         verify(mHistoricalTabSaverJni)
                 .createHistoricalGroup(
@@ -275,7 +275,7 @@ public class HistoricalTabSaverImplUnitTest {
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
-        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf};
+        List<ByteBuffer> buffers = List.of(buf, buf, buf);
         int[] versions = new int[] {-1, -1, -1};
         verify(mHistoricalTabSaverJni)
                 .createHistoricalGroup(
@@ -306,7 +306,7 @@ public class HistoricalTabSaverImplUnitTest {
 
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
-        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf};
+        List<ByteBuffer> buffers = List.of(buf, buf, buf);
         int[] versions = new int[] {-1, -1, -1};
         verify(mHistoricalTabSaverJni)
                 .createHistoricalBulkClosure(
@@ -395,7 +395,7 @@ public class HistoricalTabSaverImplUnitTest {
         List<String> savedTabGroupIds = List.of("", "", "");
         byte[] bytes = new byte[0];
         ByteBuffer buf = ByteBuffer.wrap(bytes);
-        ByteBuffer[] buffers = new ByteBuffer[] {buf, buf, buf, buf, buf, buf, buf};
+        List<ByteBuffer> buffers = List.of(buf, buf, buf, buf, buf, buf, buf);
         int[] versions = new int[] {-1, -1, -1, -1, -1, -1, -1};
         verify(mHistoricalTabSaverJni)
                 .createHistoricalBulkClosure(
