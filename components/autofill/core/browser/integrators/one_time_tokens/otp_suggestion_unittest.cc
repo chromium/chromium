@@ -117,4 +117,62 @@ TEST_F(OtpSuggestionTest, TriggerFieldIsNotOtpFieldAnymore) {
   EXPECT_EQ(u"1234", fill_data.at(field_id(4)));
 }
 
+// If a form contains visible OTP digit fields AND a hidden OTP field,
+// the hidden field is counted as an OTP field in the current implementation.
+// When filling is triggered from the second field, the OTP value is shifted by
+// one field, resulting in the first digit being duplicated in the second box.
+TEST_F(OtpSuggestionTest, DuplicateFirstDigitWithHiddenField) {
+  FormDescription form_description = {.fields = {
+                                          {.server_type = ONE_TIME_CODE,
+                                           .is_focusable = true,
+                                           .is_visible = true,
+                                           .name = u"digit1"},
+                                          {.server_type = ONE_TIME_CODE,
+                                           .is_focusable = true,
+                                           .is_visible = true,
+                                           .name = u"digit2"},
+                                          {.server_type = ONE_TIME_CODE,
+                                           .is_focusable = true,
+                                           .is_visible = true,
+                                           .name = u"digit3"},
+                                          {.server_type = ONE_TIME_CODE,
+                                           .is_focusable = true,
+                                           .is_visible = true,
+                                           .name = u"digit4"},
+                                          {.server_type = ONE_TIME_CODE,
+                                           .is_focusable = true,
+                                           .is_visible = true,
+                                           .name = u"digit5"},
+                                          {.server_type = ONE_TIME_CODE,
+                                           .is_focusable = true,
+                                           .is_visible = true,
+                                           .name = u"digit6"},
+                                          {.server_type = ONE_TIME_CODE,
+                                           .is_focusable = false,
+                                           .is_visible = false,
+                                           .name = u"hidden_tan"},
+                                      }};
+  FormData form = test::GetFormData(form_description);
+  auto form_structure = std::make_unique<FormStructure>(form);
+  test_api(*form_structure)
+      .SetFieldTypes(GetHeuristicTypes(form_description),
+                     GetServerTypes(form_description));
+
+  // Trigger filling with focus on the second box (`digit2`).
+  const AutofillField& trigger_field = *form_structure->fields()[1];
+  OtpFillData fill_data =
+      CreateFillDataForOtpSuggestion(*form_structure, trigger_field, u"123456");
+
+  EXPECT_EQ(6u, fill_data.size());
+  // First digit is empty.
+  EXPECT_FALSE(fill_data.contains(form_structure->fields()[0]->global_id()));
+  EXPECT_EQ(u"1", fill_data.at(form_structure->fields()[1]->global_id()));
+  EXPECT_EQ(u"2", fill_data.at(form_structure->fields()[2]->global_id()));
+  EXPECT_EQ(u"3", fill_data.at(form_structure->fields()[3]->global_id()));
+  EXPECT_EQ(u"4", fill_data.at(form_structure->fields()[4]->global_id()));
+  EXPECT_EQ(u"5", fill_data.at(form_structure->fields()[5]->global_id()));
+  // Last digit is inserted into the hidden field.
+  EXPECT_EQ(u"6", fill_data.at(form_structure->fields()[6]->global_id()));
+}
+
 }  // namespace autofill
