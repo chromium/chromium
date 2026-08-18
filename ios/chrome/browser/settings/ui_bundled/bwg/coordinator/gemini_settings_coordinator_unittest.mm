@@ -26,9 +26,10 @@ class GeminiSettingsCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
 };
 
-// Tests that personalContextViewControllerDidRequestDismissal: calls
+// Tests that settingsViewControllerDidRequestDismissal: calls
 // closeSettings on SettingsNavigationController.
-TEST_F(GeminiSettingsCoordinatorTest, PersonalContextDidRequestDismissal) {
+TEST_F(GeminiSettingsCoordinatorTest,
+       SettingsViewControllerDidRequestDismissal) {
   id base_navigation_controller =
       OCMPartialMock([[SettingsNavigationController alloc] init]);
 
@@ -38,10 +39,9 @@ TEST_F(GeminiSettingsCoordinatorTest, PersonalContextDidRequestDismissal) {
 
   OCMExpect([base_navigation_controller closeSettings]);
 
-  id<GeminiPersonalContextDelegate> personalContextDelegate =
-      static_cast<id<GeminiPersonalContextDelegate>>(coordinator);
-  [personalContextDelegate
-      personalContextViewControllerDidRequestDismissal:nil];
+  id<GeminiSettingsDismissalDelegate> dismissalDelegate =
+      static_cast<id<GeminiSettingsDismissalDelegate>>(coordinator);
+  [dismissalDelegate settingsViewControllerDidRequestDismissal:nil];
 
   EXPECT_OCMOCK_VERIFY(base_navigation_controller);
 }

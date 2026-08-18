@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
-@interface GeminiSettingsCoordinator () <GeminiPersonalContextDelegate>
+@interface GeminiSettingsCoordinator () <GeminiSettingsDismissalDelegate>
 @end
 
 @implementation GeminiSettingsCoordinator {
@@ -52,7 +52,7 @@
   _viewController = [[GeminiSettingsViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   _viewController.mutator = _mediator;
-  _viewController.personalContextDelegate = self;
+  _viewController.geminiSettingsDismissalDelegate = self;
   _mediator.consumer = _viewController;
 
   [self.baseNavigationController pushViewController:_viewController
@@ -65,9 +65,9 @@
   _viewController = nil;
 }
 
-#pragma mark - GeminiPersonalContextDelegate
+#pragma mark - GeminiSettingsDismissalDelegate
 
-- (void)personalContextViewControllerDidRequestDismissal:
+- (void)settingsViewControllerDidRequestDismissal:
     (UIViewController*)viewController {
   SettingsNavigationController* settingsNav =
       base::apple::ObjCCast<SettingsNavigationController>(

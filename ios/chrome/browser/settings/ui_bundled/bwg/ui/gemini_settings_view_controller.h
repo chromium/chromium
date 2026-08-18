@@ -11,9 +11,9 @@
 
 @protocol GeminiSettingsMutator;
 
-// Delegate for Personal Context dismissal events.
-@protocol GeminiPersonalContextDelegate <NSObject>
-- (void)personalContextViewControllerDidRequestDismissal:
+// Delegate for settings dismissal events requested by child view controllers.
+@protocol GeminiSettingsDismissalDelegate <NSObject>
+- (void)settingsViewControllerDidRequestDismissal:
     (UIViewController*)viewController;
 @end
 
@@ -23,8 +23,8 @@
                                        SettingsControllerProtocol>
 
 @property(nonatomic, weak) id<GeminiSettingsMutator> mutator;
-@property(nonatomic, weak) id<GeminiPersonalContextDelegate>
-    personalContextDelegate;
+@property(nonatomic, weak) id<GeminiSettingsDismissalDelegate>
+    geminiSettingsDismissalDelegate;
 
 @end
 
