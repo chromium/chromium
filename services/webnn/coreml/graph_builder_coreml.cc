@@ -2007,15 +2007,7 @@ GraphBuilderCoreml::AddOperationForArgMinMax(
       MILDataTypeToOperandType(output_operand_info.mil_data_type)));
 
   OperandId input_operand_id = operation.input_operand_id;
-  // CoreML doesn't support scalar input, in this case reshape to 1D then
-  // reshape back.
-  if (input_operand_info.dimensions.empty()) {
-    ASSIGN_OR_RETURN(input_operand_id, GenerateInternalOperandInfo(
-                                           input_operand_info.mil_data_type,
-                                           base::span<const uint32_t>({1})));
-    RETURN_IF_ERROR(AddOperationForReshape(operation.input_operand_id,
-                                           input_operand_id, block));
-  }
+
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   switch (operation.kind) {
     case mojom::ArgMinMax_Kind::kMin:
@@ -2037,19 +2029,8 @@ GraphBuilderCoreml::AddOperationForArgMinMax(
            CreateScalarImmediateValue(operation.keep_dimensions)},
       });
 
-  // No need to add a reshape when keep_dimensions=false as the output is
-  // already scalar.
-  if (input_operand_info.dimensions.empty() && operation.keep_dimensions) {
-    ASSIGN_OR_RETURN(
-        OperandId intermediate_output_operand_id,
-        GenerateInternalOperandInfo(output_operand_info.mil_data_type,
-                                    base::span<const uint32_t>({1})));
-    PopulateNamedValueType(intermediate_output_operand_id, *op->add_outputs());
-    RETURN_IF_ERROR(AddOperationForReshape(intermediate_output_operand_id,
-                                           operation.output_operand_id, block));
-  } else {
-    PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
-  }
+
+  PopulateNamedValueType(operation.output_operand_id, *op->add_outputs());
   return base::ok();
 }
 
