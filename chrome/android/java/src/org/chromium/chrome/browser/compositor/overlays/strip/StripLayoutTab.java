@@ -1113,12 +1113,12 @@ public class StripLayoutTab extends StripLayoutView {
                 Math.round((getDrawY() + getHeight()) * dpToPx));
     }
 
-    /** {@return The keyboard focus ring's offset (how far it is inside the tab outline) in DP} */
+    /** Returns the keyboard focus ring's offset (how far it is inside the tab outline) in DP. */
     public int getKeyboardFocusRingOffset() {
         return TabUiThemeUtil.getFocusRingOffset(mContext);
     }
 
-    /** {@return The width of the keyboard focus ring stroke and tab group color line in px} */
+    /** Returns the width of the keyboard focus ring stroke and tab group color line in px. */
     public int getLineWidth() {
         return TabUiThemeUtil.getLineWidth(mContext);
     }

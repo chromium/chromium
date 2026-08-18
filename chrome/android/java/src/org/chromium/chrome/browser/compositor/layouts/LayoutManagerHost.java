@@ -112,14 +112,14 @@ public interface LayoutManagerHost {
     void resetKeyboardFocus();
 
     /**
-     * Requests keyboard focus for {@param SceneOverlay}.
+     * Requests keyboard focus for {@link SceneOverlay}.
      *
      * @param sceneOverlay The {@link SceneOverlay} to request keyboard focus for.
      */
     void requestKeyboardFocus(SceneOverlay sceneOverlay);
 
     /**
-     * Requests keyboard focus for {@param view} (within {@param SceneOverlay}).
+     * Requests keyboard focus for {@code view} (within {@link SceneOverlay}).
      *
      * @param sceneOverlay The {@link SceneOverlay} to request keyboard focus for.
      * @param view The {@link VirtualView} to focus on.
@@ -127,7 +127,7 @@ public interface LayoutManagerHost {
     void requestKeyboardFocus(SceneOverlay sceneOverlay, VirtualView view);
 
     /**
-     * @return Whether {@param SceneOverlay} contains keyboard focus.
+     * @return Whether {@link SceneOverlay} contains keyboard focus.
      */
     boolean containsKeyboardFocus(SceneOverlay sceneOverlay);
 }

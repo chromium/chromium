@@ -1311,7 +1311,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 isIncognito);
     }
 
-    /** Ungroups any tabs in {@param tabs} which are currently in a group. */
+    /** Ungroups any tabs in {@code tabs} which are currently in a group. */
     private void ungroupTabs(List<Tab> tabs) {
         List<Tab> groupedTabs = TabGroupUtils.getGroupedTabs(getTabModel(), tabs);
         if (!groupedTabs.isEmpty()) {
