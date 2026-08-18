@@ -27078,18 +27078,21 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithSurfaceSync_20260609",
+                    "name": "EnabledWithSurfaceSync_20260813",
                     "params": {
                         "WebUIReloadButtonDeferBrowserViewShow": "false",
                         "WebUIReloadButtonKeepVisibleUntilPaint": "true",
-                        "config": "",
+                        "WebUIReloadButtonRestartUnresponsive": "true",
+                        "WebUIReloadButtonRestartUnresponsiveRenderersTimeout": "5s",
+                        "config": "CjsKOUV2ZW50TGF0ZW5jeS5HZXN0dXJlU2Nyb2xsVXBkYXRlLlRvdWNoc2NyZWVuLlRvdGFsTGF0ZW5jeQooCiZQYWdlTG9hZC5JbnRlcmFjdGl2ZVRpbWluZy5JbnB1dERlbGF5Mwo4CjZHcmFwaGljcy5TbW9vdGhuZXNzLlBlcmNlbnREcm9wcGVkRnJhbWVzMy5BbGxTZXF1ZW5jZXM=",
                         "high_stream_priority": "true",
-                        "without_spellcheck": "true"
+                        "renderer_commit_delay_ms": "100000"
                     },
                     "enable_features": [
                         "BypassOutdatedSurfaceActivation",
                         "InitialWebUI",
                         "InitialWebUISurfaceSync",
+                        "InitialWebUISyncNavStartToCommit",
                         "InitialWebUIWithoutExtensions",
                         "PrioritizeResizeTaskRunnerOnStartup",
                         "SendGPUChannelEarly",
