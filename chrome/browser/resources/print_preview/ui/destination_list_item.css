@@ -13,25 +13,9 @@
   align-items: center;
   cursor: default;
   display: flex;
-  font-size: calc(12/13 * 1em);
   min-height: var(--destination-item-height);
   padding-inline-end: 2px;
   padding-inline-start: 0;
-  vertical-align: middle;
-}
-
-:host > * {
-  align-items: center;
-  color: var(--cr-secondary-text-color);
-  font-size: calc(10/12 * 1em);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-:host > span {
-  margin-inline-start: 1em;
 }
 
 cr-icon {
@@ -51,7 +35,23 @@ cr-icon {
   }
 }
 
-:host .name {
+.name,
+.search-hint,
+.extension-controlled-indicator {
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-hint,
+.extension-controlled-indicator {
+  color: var(--cr-secondary-text-color);
+  font-size: calc(10/12 * 1em);
+  margin-inline-start: 1em;
+}
+
+.name {
   color: var(--cr-primary-text-color);
   font-size: 1em;
   margin-inline-start: 0;
