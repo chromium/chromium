@@ -2330,8 +2330,10 @@ void StyleCascade::FlattenFunctionBody(
     } else if (auto* navigation_rule =
                    DynamicTo<StyleRuleNavigation>(child.Get())) {
       state_.StyleBuilder().SetAffectedByFunctionalNavigation();
-      // TODO(crbug.com/493044687): Implement
-      (void)navigation_rule;
+      if (navigation_rule->GetNavigationQuery().Evaluate(&GetDocument())) {
+        FlattenFunctionBody(*navigation_rule, function_tree_scope, result,
+                            locals);
+      }
     }
   }
 }
@@ -3074,7 +3076,7 @@ bool StyleCascade::TreatAsRevertLayer(CascadePriority priority) const {
                                       state_.StyleBuilder().GetPosition());
 }
 
-const Document& StyleCascade::GetDocument() const {
+Document& StyleCascade::GetDocument() const {
   return state_.GetDocument();
 }
 

@@ -804,7 +804,7 @@ class CORE_EXPORT StyleCascade {
   // never happens.
   bool TreatAsRevertLayer(CascadePriority) const;
 
-  const Document& GetDocument() const;
+  Document& GetDocument() const;
   const TreeScope* GetTreeScope(CascadePriority) const;
   const MixinParameterBindings* GetMixinParameterBindings(
       CascadePriority) const;
