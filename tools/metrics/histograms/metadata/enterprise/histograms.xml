@@ -4996,6 +4996,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Watermark.TimestampTimezoneType"
+    enum="WatermarkTimestampTimezoneType" expires_after="2027-08-01">
+  <owner>adamkl@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records the timezone evaluation type used when rendering enterprise DLP
+    watermarks.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.{ContentAnalysisProtocol}Request.{ContentAnalysisRequestType}.Duration"
     units="ms" expires_after="2027-02-07">

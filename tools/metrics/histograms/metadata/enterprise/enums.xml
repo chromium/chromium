@@ -3175,6 +3175,19 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Explore"/>
 </enum>
 
+<enum name="WatermarkTimestampTimezoneType">
+  <int value="0" label="Default">Default local wall-clock time.</int>
+  <int value="1" label="UserDevice">
+    Admin-configured local wall-clock time.
+  </int>
+  <int value="2" label="ValidIANATimeZone">
+    Admin-configured valid time zone.
+  </int>
+  <int value="3" label="InvalidFallback">
+    Invalid string received, fell back to local device time.
+  </int>
+</enum>
+
 <enum name="WindowsProfileType">
   <int value="0" label="API Failed">The API call to GetProfileType failed.</int>
   <int value="1" label="Invalid">

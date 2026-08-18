@@ -7,6 +7,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -797,6 +798,53 @@ IN_PROC_BROWSER_TEST_F(WatermarkSettingsCommandLineBrowserTest, GetColors) {
                                              PercentageToSkAlpha(50)));
   EXPECT_EQ(GetOutlineColor(prefs), SkColorSetA(SkColorSetRGB(0xff, 0xff, 0xff),
                                                 PercentageToSkAlpha(60)));
+}
+
+class WatermarkTimestampTimezoneBrowserTest : public InProcessBrowserTest {
+ public:
+  WatermarkTimestampTimezoneBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        enterprise_data_protection::kEnableWatermarkTimestampTimezone);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WatermarkTimestampTimezoneBrowserTest,
+                       TimestampTimezoneTypeHistogram) {
+  base::HistogramTester histogram_tester;
+  PrefService* prefs = GetProfile()->GetPrefs();
+
+  // 0. Default (unmanaged / unset pref)
+  EXPECT_EQ(GetTimestampTimezone(prefs), "user_device");
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.Watermark.TimestampTimezoneType",
+      TimestampTimezoneType::kDefault, 1);
+
+  // 1. UserDevice (admin explicitly set to "user_device")
+  prefs->SetString(enterprise_connectors::kWatermarkStyleTimestampTimezonePref,
+                   "user_device");
+  EXPECT_EQ(GetTimestampTimezone(prefs), "user_device");
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.Watermark.TimestampTimezoneType",
+      TimestampTimezoneType::kUserDevice, 1);
+
+  // 2. ValidIANATimeZone (admin set to valid IANA timezone)
+  prefs->SetString(enterprise_connectors::kWatermarkStyleTimestampTimezonePref,
+                   "America/Toronto");
+  EXPECT_EQ(GetTimestampTimezone(prefs), "America/Toronto");
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.Watermark.TimestampTimezoneType",
+      TimestampTimezoneType::kValidIANATimeZone, 1);
+
+  // 3. InvalidFallback (admin set to invalid timezone string)
+  prefs->SetString(enterprise_connectors::kWatermarkStyleTimestampTimezonePref,
+                   "Invalid/Timezone");
+  EXPECT_EQ(GetTimestampTimezone(prefs), "user_device");
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.Watermark.TimestampTimezoneType",
+      TimestampTimezoneType::kInvalidFallback, 1);
 }
 
 }  // namespace enterprise_watermark
