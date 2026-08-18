@@ -35,6 +35,7 @@ if (!is_chromeos) {
     sources = [ "idle_dialog_view.cc" ]
     public_deps = [
       "//base",
+      "//chrome/browser/ui:idle_dialog",
       "//ui/views",
     ]
     deps = [

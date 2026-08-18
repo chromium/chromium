@@ -333,6 +333,7 @@ source_set("enterprise") {
       "webstore/chrome_web_store_navigation_throttle.h",
       "webstore/features.h",
     ]
+    public_deps += [ "//chrome/browser/ui:idle_dialog" ]
   }
 
   if (!is_android && !is_chromeos) {

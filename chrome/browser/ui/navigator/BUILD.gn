@@ -71,10 +71,6 @@ source_set("impl") {
     "//url",
   ]
 
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
-  }
-
   if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/boca/on_task",
@@ -91,10 +87,12 @@ source_set("impl") {
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:status_bubble",
       "//chrome/browser/ui/browser_ui_controller",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/window_feature_controller",
@@ -143,6 +141,7 @@ if (!is_android) {
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/prefs",
       "//chrome/browser/renderer_host",
+      "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/page_info",

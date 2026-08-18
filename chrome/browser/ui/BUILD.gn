@@ -926,7 +926,10 @@ static_library("ui") {
   }
 
   if (is_win) {
-    deps += [ "//chrome/browser/ui/webui/default_browser:visual_guided_setter" ]
+    deps += [
+      ":accessibility_util",
+      "//chrome/browser/ui/webui/default_browser:visual_guided_setter",
+    ]
   }
 
   # //chrome/browser/ui/views/relaunch_notification:impl sources include
@@ -1278,8 +1281,6 @@ static_library("ui") {
       "browser_commands.h",
       "browser_content_setting_bubble_model_delegate.cc",
       "browser_content_setting_bubble_model_delegate.h",
-      "browser_init_state.cc",
-      "browser_init_state.h",
       "browser_live_tab_context.cc",
       "browser_live_tab_context.h",
       "browser_manager_service.cc",
@@ -2920,6 +2921,8 @@ static_library("ui") {
     ]
 
     deps += [
+      ":browser_init_state",
+      ":idle_dialog",
       "//base",
       "//chrome/browser:resources",
       "//chrome/browser/accessibility",
@@ -3441,10 +3444,7 @@ static_library("ui") {
     }
 
     if (is_win) {
-      sources += [
-        "accessibility_util.h",
-        "views/chrome_views_delegate_win.cc",
-      ]
+      sources += [ "views/chrome_views_delegate_win.cc" ]
     }
 
     if (use_aura && is_linux) {
@@ -3469,7 +3469,6 @@ static_library("ui") {
       ]
     } else {
       sources += [
-        "idle_dialog.h",
         "views/frame/opaque_browser_frame_view.cc",
         "views/frame/opaque_browser_frame_view.h",
         "views/frame/opaque_browser_frame_view_layout.cc",
@@ -3486,11 +3485,6 @@ static_library("ui") {
         "//ui/views/window/vector_icons",
       ]
       allow_circular_includes_from += [
-        # Circular dependency exists because the following header is not yet
-        # componentized: c/b/ui/idle_dialog.h (IdleDialogView implements
-        # IdleDialog::Show and includes idle_dialog.h)
-        "//chrome/browser/ui/views/policy:idle_dialog",
-
         # Circular dependency exists because the following headers are not yet
         # componentized:
         # - c/b/ui/browser.h
@@ -3855,6 +3849,23 @@ source_set("ui_features") {
 }
 
 if (!is_android) {
+  source_set("browser_init_state") {
+    public = [ "browser_init_state.h" ]
+    sources = [ "browser_init_state.cc" ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//components/tab_groups",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/base/unowned_user_data",
+      "//ui/gfx/geometry",
+    ]
+    deps = [
+      "//build:buildflag_header_h",
+      "//chrome/browser/ui/browser_window",
+    ]
+  }
+
   source_set("browser_tab_strip") {
     sources = [
       "browser_tab_strip_model_delegate.h",
@@ -4041,6 +4052,14 @@ static_library("browser_element_identifiers") {
 }
 
 if (toolkit_views) {
+  source_set("idle_dialog") {
+    public = [ "idle_dialog.h" ]
+    public_deps = [
+      "//base",
+      "//ui/gfx",
+    ]
+  }
+
   source_set("toolbar_controller_util") {
     sources = [
       "toolbar_controller_util.cc",
@@ -4178,6 +4197,12 @@ if (use_aura) {
       "//components/prefs",
       "//content/public/browser",
     ]
+  }
+}
+
+if (is_win) {
+  source_set("accessibility_util") {
+    public = [ "accessibility_util.h" ]
   }
 }
 

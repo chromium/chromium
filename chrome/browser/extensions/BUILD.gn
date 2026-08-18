@@ -708,6 +708,7 @@ source_set("extensions") {
     ]
     deps += [
       "//chrome/browser/indigo",
+      "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/web_applications:launch_utils",
@@ -1708,6 +1709,7 @@ static_library("test_support") {
     sources += [ "extension_browsertest_platform_delegate_non_android.cc" ]
     deps += [
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/ui:browser_init_state",
       "//chrome/test:test_support_ui",
     ]
   }

@@ -75,6 +75,7 @@ source_set("impl") {
   deps = [
     ":overlay",
     "//chrome/browser/media",
+    "//chrome/browser/ui:browser_init_state",
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/global_media_controls",
     "//chrome/browser/ui/views:layout_provider",

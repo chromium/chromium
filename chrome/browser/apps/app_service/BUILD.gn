@@ -47,6 +47,7 @@ source_set("app_service") {
     "//chrome/browser/component_updater",
     "//chrome/browser/metrics",
     "//chrome/browser/notifications",
+    "//chrome/browser/ui:browser_init_state",
     "//chrome/browser/ui:browser_tab_strip_tracker",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/browser_window:create_browser_window",

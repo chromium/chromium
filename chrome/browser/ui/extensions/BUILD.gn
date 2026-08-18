@@ -250,6 +250,7 @@ source_set("impl") {
       "//chrome/browser/infobars",
       "//chrome/browser/search_engines",
       "//chrome/browser/tab_list",
+      "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/startup",

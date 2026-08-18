@@ -93,6 +93,7 @@ static_library("app_mode") {
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/extensions:external_loader",
     "//chrome/browser/lifetime",
+    "//chrome/browser/ui:browser_init_state",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/web_applications:launch_utils",

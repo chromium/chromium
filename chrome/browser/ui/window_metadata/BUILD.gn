@@ -24,6 +24,7 @@ source_set("window_metadata") {
     "//chrome/app:generated_resources",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/sessions",
+    "//chrome/browser/ui:browser_init_state",
     "//chrome/browser/ui/tab_contents",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/web_applications",

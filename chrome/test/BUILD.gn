@@ -547,6 +547,7 @@ static_library("test_support") {
       "//chrome/app:test_support",
       "//chrome/browser:test_support",
       "//chrome/browser/themes:theme_service_changed_waiter",
+      "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/profiles:test_support",
@@ -9223,6 +9224,7 @@ if (!is_android && !is_chromeos_device) {
         deps += [
           "//chrome/browser/accessibility:test_support",
           "//chrome/browser/profiles",
+          "//chrome/browser/ui:browser_init_state",
           "//chrome/browser/ui/views/status_icons:interactive_ui_tests",
           "//chrome/browser/web_applications/extensions",
         ]
@@ -9240,6 +9242,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/media/router:test_support",
         "//chrome/browser/printing:test_support",
         "//chrome/browser/smart_card:interactive_ui_tests",
+        "//chrome/browser/ui:browser_init_state",
         "//chrome/browser/ui/ash:test_support",
         "//chrome/browser/ui/ash/privacy_hub:interactive_ui_tests",
         "//chrome/browser/ui/ash/system_web_apps",

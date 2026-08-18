@@ -60,7 +60,10 @@ source_set("impl") {
 
   if (is_win) {
     sources += [ "accessibility_util.cc" ]
-    deps += [ "//chrome/browser/ui/waap:manager" ]
+    deps += [
+      "//chrome/browser/ui:accessibility_util",
+      "//chrome/browser/ui/waap:manager",
+    ]
   }
 
   if (!is_chromeos) {

@@ -92,6 +92,7 @@ source_set("impl") {
     "//chrome/browser/resources/webui_toolbar_shared:resources",
     "//chrome/browser/themes",
     "//chrome/browser/ui:accelerator_table",
+    "//chrome/browser/ui:browser_init_state",
     "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/browser_active_state_manager",
     "//chrome/browser/ui/browser_web_contents_delegate",

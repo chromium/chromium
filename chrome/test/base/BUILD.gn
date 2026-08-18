@@ -645,6 +645,7 @@ if (!is_android) {
     ]
     deps = [
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/tabs:tab_strip",

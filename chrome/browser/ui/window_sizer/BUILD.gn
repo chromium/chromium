@@ -33,6 +33,7 @@ source_set("impl") {
     ":window_sizer",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_init_state",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/web_applications",
     "//chrome/common:non_code_constants",
@@ -89,6 +90,7 @@ source_set("unit_tests") {
     deps += [
       "//ash",
       "//ash/public/cpp",
+      "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support_unit",
