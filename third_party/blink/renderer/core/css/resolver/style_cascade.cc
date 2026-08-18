@@ -2369,17 +2369,12 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
 
   CSSVariableData* data =
       GetEnvironmentVariable(variable_name, std::move(indices));
-  if (data) {
-    return out.Append(data, data->IsAttrTainted());
-  }
 
-  // Fallback.
-  if (ConsumeComma(stream)) {
-    return ResolveTokensInto(stream, tree_scope, resolver, context,
-                             /* function_context */ nullptr,
-                             /* stop_type */ kEOFToken, out);
-  }
-  return false;
+  // Appending the fallback (if any) through the same path as var() gives it
+  // the same treatment: the whitespace and comments surrounding it are not
+  // part of the substitution value.
+  return AppendDataWithFallback(data, stream, tree_scope, resolver, context,
+                                /*function_context=*/nullptr, out);
 }
 
 bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,

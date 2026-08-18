@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>How Blink trims the trailing part of an env() fallback</title>
+    <link rel="help" href="https://drafts.csswg.org/css-env-1/#env-function">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <style>
+      /* Keeping the whitespace that *follows the comma* out of the fallback is
+         required by the argument grammar, and env() agreeing with var() on the
+         *trailing* whitespace and comments is required of any implementation;
+         both are asserted in css-env/env-fallback-substitution.html.
+
+         What is left here is the one part that no spec pins down: which
+         normalization that agreed-upon result actually is. Blink strips the
+         trailing whitespace and comments, so the fallback below computes to
+         "10px" and not "10px   ". Another engine could reasonably preserve
+         them and still pass the WPT. We keep it asserted because env() and
+         var() used to disagree here, and a regression would otherwise only
+         show up as the two drifting apart again. */
+      #t1 {
+        --trailing-space: env(unknown-env-name, 10px   );
+        --trailing-comment: env(unknown-env-name, 10px /* comment */);
+        --followed-by: env(unknown-env-name, 10px   ) 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="t1"></div>
+    <script>
+      test(() => {
+        const style = getComputedStyle(t1);
+        assert_equals(style.getPropertyValue('--trailing-space'), '10px');
+        assert_equals(style.getPropertyValue('--trailing-comment'), '10px');
+        assert_equals(style.getPropertyValue('--followed-by'), '10px 5px');
+      }, 'Blink strips the whitespace and comments trailing an env() fallback');
+    </script>
+  </body>
+</html>
