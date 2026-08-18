@@ -12,6 +12,9 @@
 
 namespace web_app {
 
+// Returns whether macOS applies its own app icon masking.
+bool ShouldUseSystemAppIconMasking();
+
 // Creates a shortcut for a web application. The shortcut is a stub app
 // that simply loads the browser framework and runs the given app.
 class WebAppShortcutCreator {

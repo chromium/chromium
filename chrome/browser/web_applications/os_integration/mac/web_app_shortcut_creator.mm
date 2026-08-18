@@ -93,6 +93,10 @@ OSStatus SecCodeSignerAddSignatureWithErrors(SecCodeSignerRef signer,
 
 namespace web_app {
 
+bool ShouldUseSystemAppIconMasking() {
+  return base::mac::MacOSMajorVersion() >= 26;
+}
+
 BASE_FEATURE(kWebAppMaskableIconsOnMac, base::FEATURE_ENABLED_BY_DEFAULT);
 
 class WebAppShortcutCopierSyncCallHelper {
@@ -1028,11 +1032,14 @@ bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
 
   IcnsEncoder icns_encoder;
   bool has_valid_icons = false;
+  const bool system_masks_icons = ShouldUseSystemAppIconMasking();
   if (!info_->favicon_maskable.empty() &&
       base::FeatureList::IsEnabled(kWebAppMaskableIconsOnMac)) {
     for (gfx::ImageFamily::const_iterator it = info_->favicon_maskable.begin();
          it != info_->favicon_maskable.end(); ++it) {
-      if (icns_encoder.AddImage(CreateAppleMaskedAppIcon(*it))) {
+      const gfx::Image& icon =
+          system_masks_icons ? *it : CreateAppleMaskedAppIcon(*it);
+      if (icns_encoder.AddImage(icon)) {
         has_valid_icons = true;
       }
     }
@@ -1041,7 +1048,7 @@ bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
   if (!has_valid_icons) {
     for (gfx::ImageFamily::const_iterator it = info_->favicon.begin();
          it != info_->favicon.end(); ++it) {
-      if (info_->is_diy_app) {
+      if (info_->is_diy_app && !system_masks_icons) {
         if (icns_encoder.AddImage(MaskDiyAppIcon(*it))) {
           has_valid_icons = true;
         }

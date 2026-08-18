@@ -70,6 +70,10 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -1157,7 +1161,18 @@ class UniversalInstallComboTest
 
   SkBitmap GetExpectedPlatformIconAtSize(int width) {
 #if BUILDFLAG(IS_MAC)
-    if (IsDiyApp()) {
+    if (IsDiyApp() && ShouldUseSystemAppIconMasking()) {
+      auto favicon_path = GetFaviconFilePath();
+      if ((!GetIcon().has_value() ||
+           GetIcon()->src.spec().contains("not_found")) &&
+          favicon_path && favicon_path->contains("pattern3")) {
+        return web_app::test::LoadTestImageFromDisk(
+                   base::FilePath(FILE_PATH_LITERAL(
+                       "chrome/test/data/web_apps/pattern3-256.png")))
+            .AsBitmap();
+      }
+    }
+    if (IsDiyApp() && !ShouldUseSystemAppIconMasking()) {
       if (GetIcon().has_value() &&
           !GetIcon()->src.spec().contains("not_found") &&
           !GetIcon()->src.spec().contains("Absent")) {

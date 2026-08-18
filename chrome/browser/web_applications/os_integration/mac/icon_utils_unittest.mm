@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/mac/mac_util.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
