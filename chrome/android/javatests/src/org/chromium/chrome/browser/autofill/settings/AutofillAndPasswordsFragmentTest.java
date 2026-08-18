@@ -198,6 +198,7 @@ public class AutofillAndPasswordsFragmentTest {
                 + "/seamless-signin-string-type/continueButton",
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AND_PASSWORDS_REMOVE_SIGN_IN_PROMO)
     public void testSignInPromoVisible_noAccount() {
         signInPromoDeclined(false);
 
@@ -219,11 +220,29 @@ public class AutofillAndPasswordsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_AND_PASSWORDS_REMOVE_SIGN_IN_PROMO,
         SigninFeatures.ENABLE_SEAMLESS_SIGNIN
                 + ":seamless-signin-promo-type/compact"
                 + "/seamless-signin-string-type/continueButton",
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
+    public void testSignInPromoNotVisible_promoRemovalEnabled() {
+        signInPromoDeclined(false);
+
+        mSettingsTestRule.startSettingsActivity(createFragmentArgs());
+
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/continueButton",
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AND_PASSWORDS_REMOVE_SIGN_IN_PROMO)
     public void testSignInPromoNotSelectable() {
         signInPromoDeclined(false);
 
@@ -244,6 +263,7 @@ public class AutofillAndPasswordsFragmentTest {
                 + "/seamless-signin-string-type/continueButton",
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AND_PASSWORDS_REMOVE_SIGN_IN_PROMO)
     public void testSignInPromoVisible_withAccount() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         signInPromoDeclined(false);
@@ -266,7 +286,10 @@ public class AutofillAndPasswordsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
-    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    @DisableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        ChromeFeatureList.AUTOFILL_AND_PASSWORDS_REMOVE_SIGN_IN_PROMO
+    })
     public void testSignInPromoVisible_seamlessDisabled() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         signInPromoDeclined(false);
@@ -290,6 +313,7 @@ public class AutofillAndPasswordsFragmentTest {
                 + "/seamless-signin-string-type/continueButton",
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AND_PASSWORDS_REMOVE_SIGN_IN_PROMO)
     public void testSignInPromoDismiss() {
         signInPromoDeclined(false);
 
@@ -314,6 +338,7 @@ public class AutofillAndPasswordsFragmentTest {
                 + "/seamless-signin-string-type/continueButton",
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AND_PASSWORDS_REMOVE_SIGN_IN_PROMO)
     public void testSignInPromoClick() {
         signInPromoDeclined(false);
 
@@ -332,6 +357,7 @@ public class AutofillAndPasswordsFragmentTest {
                 + "/seamless-signin-string-type/continueButton",
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AND_PASSWORDS_REMOVE_SIGN_IN_PROMO)
     public void testSignInPromoMaxImpressions() {
         signInPromoDeclined(false);
         ChromeSharedPreferences.getInstance()
@@ -354,6 +380,7 @@ public class AutofillAndPasswordsFragmentTest {
                 + "/seamless-signin-string-type/continueButton",
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AND_PASSWORDS_REMOVE_SIGN_IN_PROMO)
     public void testSignInPromoNotVisible_whenLaunchedFromSearch() {
         signInPromoDeclined(false);
 

@@ -313,7 +313,14 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
 
     private void updateSignInPromo() {
         SigninPromoPreference promoPreference = findPreference(PREF_SIGNIN_PROMO);
-        // TODO(crbug.com/542166217): Remove the sign-in promo.
+
+        // TODO(crbug.com/542166217): Remove the sign-in promo code.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_AND_PASSWORDS_REMOVE_SIGN_IN_PROMO)) {
+            promoPreference.setVisible(false);
+            return;
+        }
+
         // The sign-in promo is not shown when the user enters the settings page via search due to
         // async update of the screen, which would lead to incorrect highlighting.
         if (mReferrer != AutofillSettingsReferrer.SETTINGS_SEARCH
