@@ -39,7 +39,7 @@ public class BoundaryInterfaceReflectionUtil {
     }
 
     /**
-     * Utility method for fetching a method from {@param delegateLoader}, with the same signature
+     * Utility method for fetching a method from {@code delegateLoader}, with the same signature
      * (package + class + method name + parameters) as a given method defined in another
      * classloader.
      */
@@ -209,7 +209,7 @@ public class BoundaryInterfaceReflectionUtil {
     }
 
     /**
-     * Check whether a set of features {@param features} contains a certain feature {@param
+     * Check whether a set of features {@code features} contains a certain feature {@param
      * soughtFeature}.
      */
     public static boolean containsFeature(Collection<String> features, String soughtFeature) {

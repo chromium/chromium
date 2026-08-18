@@ -270,7 +270,7 @@ public class MinidumpUploadJobTest {
 
     /**
      * MinidumpUploaderDelegate sub-class that uses MinidumpUploaderDelegate's implementation of
-     * {@see CrashReportingPermissionManager#isUsageAndCrashReportingPermitted()}.
+     * {@link CrashReportingPermissionManager#isUsageAndCrashReportingPermitted()}.
      */
     private static class TestCrashSamplingMinidumpUploaderDelegate
             extends AwMinidumpUploaderDelegate {
@@ -361,7 +361,7 @@ public class MinidumpUploadJobTest {
 
     /**
      * MinidumpUploaderDelegate sub-class that uses MinidumpUploaderDelegate's implementation of
-     * {@see CrashReportingPermissionManager#isUsageAndCrashReportingPermitted()}.
+     * {@link CrashReportingPermissionManager#isUsageAndCrashReportingPermitted()}.
      */
     private static class WebViewUserConsentMinidumpUploaderDelegate
             extends AwMinidumpUploaderDelegate {
@@ -505,8 +505,8 @@ public class MinidumpUploadJobTest {
     }
 
     /**
-     * Copy and upload {@param minidumps} by one array at a time - i.e. the minidumps in a single
-     * array in {@param minidumps} will all be copied in the same call into CrashReceiverService.
+     * Copy and upload {@code minidumps} by one array at a time - i.e. the minidumps in a single
+     * array in {@code minidumps} will all be copied in the same call into CrashReceiverService.
      *
      * @param fileManager the CrashFileManager to use when copying/renaming minidumps.
      * @param minidumps an array of arrays of minidumps to copy and upload, by copying one array at

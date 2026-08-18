@@ -101,10 +101,10 @@ public class CrashReceiverService extends Service {
     }
 
     /**
-     * Copy minidumps from the {@param fileDescriptors} to the directory where WebView stores its
+     * Copy minidumps from the {@code fileDescriptors} to the directory where WebView stores its
      * minidump files. Also writes a new log file for each mindump, the log file contains a JSON
-     * object with info from {@param crashesInfo}. The log file name is: <copied-file-name> +
-     * {@code "_log.json"} suffix.
+     * object with info from {@code crashesInfo}. The log file name is: <copied-file-name> + {@code
+     * "_log.json"} suffix.
      *
      * @return whether any minidump was copied.
      */
