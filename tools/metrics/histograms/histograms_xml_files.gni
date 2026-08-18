@@ -39,6 +39,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/browser/histograms.xml",
   "//tools/metrics/histograms/metadata/browser_actuator/histograms.xml",
   "//tools/metrics/histograms/metadata/bruschetta/histograms.xml",
+  "//tools/metrics/histograms/metadata/cbor/enums.xml",
+  "//tools/metrics/histograms/metadata/cbor/histograms.xml",
   "//tools/metrics/histograms/metadata/chrome/enums.xml",
   "//tools/metrics/histograms/metadata/chrome/histograms.xml",
   "//tools/metrics/histograms/metadata/chromeos/enums.xml",

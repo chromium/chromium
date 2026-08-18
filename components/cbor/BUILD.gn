@@ -57,6 +57,7 @@ source_set("unit_tests") {
     ":buildflags",
     ":cbor",
     "//base",
+    "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuzztest",

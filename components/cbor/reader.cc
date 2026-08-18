@@ -27,11 +27,16 @@
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
+#include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/cbor/cbor_buildflags.h"
 #include "components/cbor/constants.h"
 
@@ -127,6 +132,36 @@ Value ConvertRustMapKeyToCpp(const cbor::rust::MapKey& rust_key) {
 }
 #endif
 
+class [[nodiscard]] ScopedMetricsReporter {
+ public:
+  ScopedMetricsReporter(bool is_rust,
+                        size_t payload_size,
+                        const Reader::DecoderError& error_code)
+      : backend_(is_rust ? ".Rust" : ".Cpp"),
+        payload_size_(payload_size),
+        error_code_(error_code) {}
+  ~ScopedMetricsReporter() {
+    base::UmaHistogramEnumeration(base::StrCat({"CBOR.ReadResult", backend_}),
+                                  *error_code_);
+    base::UmaHistogramCounts10M(base::StrCat({"CBOR.Read.Size", backend_}),
+                                payload_size_);
+    if (base::TimeTicks::IsHighResolution()) {
+      base::UmaHistogramCustomMicrosecondsTimes(
+          base::StrCat({"CBOR.Read.Duration", backend_}), timer_.Elapsed(),
+          base::Microseconds(1), base::Milliseconds(100), 50);
+    }
+  }
+
+  explicit ScopedMetricsReporter(ScopedMetricsReporter&&) = delete;
+  ScopedMetricsReporter& operator=(ScopedMetricsReporter&&) = delete;
+
+ private:
+  const std::string_view backend_;
+  const size_t payload_size_;
+  const base::raw_ref<const Reader::DecoderError> error_code_;
+  base::ElapsedTimer timer_;
+};
+
 }  // namespace
 
 Reader::Config::Config()
@@ -204,6 +239,12 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
 // static
 std::optional<Value> Reader::Read(base::span<uint8_t const> data,
                                   const Config& config) {
+  DecoderError ignored_error_code_out = DecoderError::CBOR_NO_ERROR;
+  DecoderError& error_code_out =
+      config.error_code_out ? *config.error_code_out : ignored_error_code_out;
+
+  ScopedMetricsReporter reporter(config.use_rust, data.size(), error_code_out);
+
 #if BUILDFLAG(USE_CBOR_RUST)
   if (config.use_rust) {
     cbor::rust::Config rust_config;
@@ -214,9 +255,6 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
     size_t& num_bytes_consumed = config.num_bytes_consumed
                                      ? *config.num_bytes_consumed
                                      : ignored_num_bytes_consumed;
-    DecoderError ignored_error_code_out;
-    DecoderError& error_code_out =
-        config.error_code_out ? *config.error_code_out : ignored_error_code_out;
 
     auto result = cbor::rust::parse_with_config(data, rust_config);
 
@@ -248,20 +286,16 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
   std::optional<Value> value =
       reader.DecodeCompleteDataItem(config, config.max_nesting_level);
 
-  auto error = reader.GetErrorCode();
+  error_code_out = reader.GetErrorCode();
   const bool success = value.has_value();
-  DCHECK_EQ(success, error == DecoderError::CBOR_NO_ERROR);
+  DCHECK_EQ(success, error_code_out == DecoderError::CBOR_NO_ERROR);
 
   if (config.num_bytes_consumed) {
     *config.num_bytes_consumed =
         success ? data.size() - reader.num_bytes_remaining() : 0;
   } else if (success && reader.num_bytes_remaining() > 0) {
-    error = DecoderError::EXTRANEOUS_DATA;
+    error_code_out = DecoderError::EXTRANEOUS_DATA;
     value.reset();
-  }
-
-  if (config.error_code_out) {
-    *config.error_code_out = error;
   }
 
   return value;

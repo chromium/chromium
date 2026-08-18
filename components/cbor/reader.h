@@ -81,6 +81,8 @@ class CBOR_EXPORT Reader {
   // TODO(crbug.com/536539387): Once Crubit fixes -Wnullability-completeness, we
   // can include cbor_rust.h in reader.h and assign the values of DecoderError
   // directly from the Rust Tag enum.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class DecoderError {
     // LINT.IfChange(DecoderError)
     CBOR_NO_ERROR = 0,
@@ -98,7 +100,8 @@ class CBOR_EXPORT Reader {
     OUT_OF_RANGE_INTEGER_VALUE = 12,
     DUPLICATE_KEY = 13,
     UNKNOWN_ERROR = 14,
-    // LINT.ThenChange(//components/cbor/rust/reader.rs:ErrorCode,//components/cbor/reader.cc:DecoderErrorAsserts)
+    // LINT.ThenChange(//components/cbor/rust/reader.rs:ErrorCode,//components/cbor/reader.cc:DecoderErrorAsserts,//tools/metrics/histograms/metadata/cbor/enums.xml:CBORDecoderError)
+    kMaxValue = UNKNOWN_ERROR,
   };
 
   // CBOR nested depth sufficient for most use cases.

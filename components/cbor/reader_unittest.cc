@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/cbor/cbor_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1464,6 +1465,38 @@ TEST_P(CBORReaderTest, TestDefaultMaxNestingLevelBoundary) {
 
   // Depth 17 should fail with TOO_MUCH_NESTING under default max_nesting_level
   VerifyDecoderError(depth_17, Reader::DecoderError::TOO_MUCH_NESTING);
+}
+
+TEST_P(CBORReaderTest, MetricsRecordedOnSuccess) {
+  base::HistogramTester histograms;
+  const std::vector<uint8_t> valid_cbor = {0x01};  // Integer 1
+
+  std::optional<Value> cbor = DoRead(valid_cbor);
+  ASSERT_TRUE(cbor.has_value());
+
+  std::string backend = GetParam() ? ".Rust" : ".Cpp";
+  histograms.ExpectUniqueSample("CBOR.ReadResult" + backend,
+                                Reader::DecoderError::CBOR_NO_ERROR, 1);
+  histograms.ExpectTotalCount("CBOR.Read.Duration" + backend, 1);
+  histograms.ExpectUniqueSample("CBOR.Read.Size" + backend, valid_cbor.size(),
+                                1);
+}
+
+TEST_P(CBORReaderTest, MetricsRecordedOnError) {
+  base::HistogramTester histograms;
+  const std::vector<uint8_t> invalid_cbor = {0x18};  // Incomplete 1-byte int
+
+  Reader::DecoderError error;
+  std::optional<Value> cbor = DoRead(invalid_cbor, &error);
+  EXPECT_FALSE(cbor.has_value());
+  EXPECT_EQ(Reader::DecoderError::INCOMPLETE_CBOR_DATA, error);
+
+  std::string backend = GetParam() ? ".Rust" : ".Cpp";
+  histograms.ExpectUniqueSample("CBOR.ReadResult" + backend,
+                                Reader::DecoderError::INCOMPLETE_CBOR_DATA, 1);
+  histograms.ExpectTotalCount("CBOR.Read.Duration" + backend, 1);
+  histograms.ExpectUniqueSample("CBOR.Read.Size" + backend, invalid_cbor.size(),
+                                1);
 }
 
 #if BUILDFLAG(USE_CBOR_RUST)
