@@ -9,6 +9,8 @@
 
 @class LocationBarBadgeConfiguration;
 
+enum class CustomLeadingViewType;
+
 // Protocol for location bar badge commands.
 @protocol LocationBarBadgeCommands
 
@@ -20,6 +22,9 @@
 
 // Whether to display a blue dot indicating an unread badge.
 - (void)markDisplayedBadgeAsUnread:(BOOL)read;
+
+// Sets the type of custom leading view to display in the location bar.
+- (void)setBadgeCustomLeadingViewType:(CustomLeadingViewType)type;
 
 @end
 

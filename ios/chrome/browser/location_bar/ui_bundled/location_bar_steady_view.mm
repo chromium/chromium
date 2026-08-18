@@ -203,6 +203,12 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
 
 - (void)updateCustomLeadingViewVisibility:(BOOL)visible
                                  animated:(BOOL)animated {
+  CGFloat targetAlpha = visible ? 1.0 : 0.0;
+  if (_customLeadingView.hidden == !visible &&
+      _customLeadingView.alpha == targetAlpha) {
+    return;
+  }
+
   CGFloat priorSpacing =
       [self shouldShowIncognitoBadge] ? kIncognitoImageToLocationSpacing : 0.0;
   CGFloat targetWidth = visible ? _customLeadingViewTargetWidth : 0.0;
@@ -211,7 +217,6 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
   CGAffineTransform targetTransform =
       visible ? CGAffineTransformIdentity
               : CGAffineTransformMakeScale(0.01, 0.01);
-  CGFloat targetAlpha = visible ? 1.0 : 0.0;
 
   if (!animated) {
     _customLeadingView.hidden = !visible;

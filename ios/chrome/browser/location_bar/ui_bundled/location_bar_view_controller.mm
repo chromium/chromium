@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/custom_leading_view_type.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -197,6 +198,13 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 
   // The placeholder view that holds the DSE icon.
   UIImageView* _defaultSearchEngineIconView;
+
+  // The current fullscreen progress, ranging from 1.0 (toolbar fully visible)
+  // to 0.0 (toolbar fully collapsed / fullscreen).
+  CGFloat _fullscreenProgress;
+
+  // The type of custom leading view to display.
+  CustomLeadingViewType _customLeadingViewType;
 }
 
 #pragma mark - public
@@ -205,6 +213,8 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   self = [super init];
   if (self) {
     _locationBarSteadyView = [[LocationBarSteadyView alloc] init];
+    _fullscreenProgress = 1.0;
+    _customLeadingViewType = CustomLeadingViewType::kNone;
   }
   return self;
 }
@@ -476,6 +486,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
+  _fullscreenProgress = progress;
   CGFloat alphaValue = fmax((progress - 0.85) / 0.15, 0);
   CGFloat scaleValue =
       IsChromeNextIaEnabled()
@@ -493,6 +504,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
       setFullScreenCollapsedMode:badgeViewShouldCollapse];
   self.locationBarSteadyView.transform =
       CGAffineTransformMakeScale(scaleValue, scaleValue);
+  [self updateCustomLeadingViewVisibilityAnimated:YES];
 }
 
 - (void)updateForFullscreenEnabled:(BOOL)enabled {
@@ -1477,7 +1489,18 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   return copyView;
 }
 
-- (void)setCustomLeadingViewVisible:(BOOL)visible animated:(BOOL)animated {
+- (void)setCustomLeadingViewType:(CustomLeadingViewType)type {
+  if (_customLeadingViewType == type) {
+    return;
+  }
+  _customLeadingViewType = type;
+  [self updateCustomLeadingViewVisibilityAnimated:YES];
+}
+
+- (void)updateCustomLeadingViewVisibilityAnimated:(BOOL)animated {
+  // Only show the custom leading view when the location bar is in fullscreen.
+  BOOL visible = (_customLeadingViewType != CustomLeadingViewType::kNone) &&
+                 (_fullscreenProgress < 0.1);
   [self.locationBarSteadyView updateCustomLeadingViewVisibility:visible
                                                        animated:animated];
 }

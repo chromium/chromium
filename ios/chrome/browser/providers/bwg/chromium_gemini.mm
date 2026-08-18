@@ -75,6 +75,10 @@ GeminiPageContextAttachmentState GetCurrentPageContextAttachmentState() {
 
 void SwitchToMode(GeminiViewMode mode, bool animated) {}
 
+void SwitchToMode(GeminiViewMode mode,
+                  GeminiViewState target_state,
+                  bool animated) {}
+
 GeminiViewMode GetCurrentMode() {
   return GeminiViewMode::kUnknown;
 }
