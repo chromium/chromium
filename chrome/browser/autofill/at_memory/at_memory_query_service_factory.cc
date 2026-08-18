@@ -82,7 +82,3 @@ AtMemoryQueryServiceFactory::BuildServiceInstanceForBrowserContext(
 bool AtMemoryQueryServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
-
-bool AtMemoryQueryServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
-}

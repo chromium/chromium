@@ -31,7 +31,6 @@ class AtMemoryQueryServiceFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-  bool ServiceIsNULLWhileTesting() const override;
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_AT_MEMORY_AT_MEMORY_QUERY_SERVICE_FACTORY_H_

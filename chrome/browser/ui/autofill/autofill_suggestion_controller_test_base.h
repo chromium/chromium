@@ -105,13 +105,17 @@ class AutofillSuggestionControllerTestBase
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~AutofillSuggestionControllerTestBase() override = default;
 
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory(
+        PersonalDataManagerFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<TestPersonalDataManager>();
+        }))};
+  }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating([](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-          return std::make_unique<TestPersonalDataManager>();
-        }));
     NavigateAndCommit(GURL("https://foo.com/"));
     FocusWebContentsOnMainFrame();
     ASSERT_TRUE(web_contents()->GetFocusedFrame());
