@@ -110,7 +110,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                 'sdk = %s' % sdk_string,
                 (
                     'shadows = org.chromium.testing.local.'
-                    'CustomShadowApplicationPackageManager'
+                    'CustomShadowApplicationPackageManager,'
+                    'org.chromium.testing.local.ShadowTextView'
                 ),
             ]
 
