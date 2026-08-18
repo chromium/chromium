@@ -22,6 +22,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
@@ -36,6 +37,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
+#include "base/android/jni_android.h"
+#include "base/android/locale_utils.h"
 #endif
 
 #if BUILDFLAG(IS_IOS)
@@ -363,6 +366,20 @@ bool DoCommonInitialization() {
   // add a boolean argument to this function to init the default tz only
   // when requested.
   InitializeIcuTimeZone();
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, ICU's default locale ID comes from POSIX environment variables
+  // (LC_ALL, etc.), which are not set for Android apps, resulting in
+  // "en_US_POSIX". That is not a real locale and causes break iterators and
+  // other ICU operations to fail if called before SetICUDefaultLocale() is run
+  // in PostEarlyInitialization. Initialize the default ICU locale using the
+  // system default.
+  if (base::android::IsJavaAvailable()) {
+    SetICUDefaultLocale(base::android::GetDefaultLocaleString());
+  } else {
+    SetICUDefaultLocale("en-US");
+  }
+#endif
 
   utrace_setLevel(UTRACE_VERBOSE);
   return true;
