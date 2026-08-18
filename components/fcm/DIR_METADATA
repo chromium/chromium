@@ -1,0 +1,6 @@
+monorail: {
+  component: "Services>CloudMessaging"
+}
+buganizer_public: {
+  component_id: 1456167
+}

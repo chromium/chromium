@@ -242,6 +242,7 @@ test("components_unittests") {
     "//components/facilitated_payments/core/validation:unit_tests",
     "//components/favicon/core:unit_tests",
     "//components/favicon_base:unit_tests",
+    "//components/fcm:unit_tests",
     "//components/feature_engagement:unit_tests",
     "//components/filename_generation:unit_tests",
     "//components/gcm_driver:unit_tests",

@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/keyed_service/core",
+
+  # Dependency on legacy gcm_driver is not allowed.
+  "-components/gcm_driver",
+]

@@ -1,0 +1,35 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("fcm") {
+  sources = [
+    "fcm_app_handler.h",
+    "fcm_driver.cc",
+    "fcm_driver.h",
+    "fcm_message.cc",
+    "fcm_message.h",
+    "fcm_service.cc",
+    "fcm_service.h",
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fcm_driver_unittest.cc" ]
+
+  deps = [
+    ":fcm",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
