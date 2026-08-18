@@ -8,7 +8,7 @@ typedef (DOMString or CSSKeywordValue) CSSKeywordish;
 // example "initial".
 // https://drafts.css-houdini.org/css-typed-om/#keywordvalue-objects
 [
-    Exposed=(Window,LayoutWorklet,PaintWorklet)
+    Exposed=(Window,Worker,LayoutWorklet,PaintWorklet)
 ] interface CSSKeywordValue : CSSStyleValue {
     [RaisesException] constructor(CSSOMString keyword);
     [RaisesException=Setter] attribute CSSOMString value;

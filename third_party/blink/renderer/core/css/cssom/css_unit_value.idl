@@ -6,7 +6,7 @@
 // unit (or a naked number or percentage).
 // https://drafts.css-houdini.org/css-typed-om/#cssunitvalue
 [
-  Exposed=(Window,LayoutWorklet,PaintWorklet)
+  Exposed=(Window,Worker,LayoutWorklet,PaintWorklet)
 ] interface CSSUnitValue : CSSNumericValue {
   [RaisesException] constructor(double value, CSSOMString unit);
   attribute double value;

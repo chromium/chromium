@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Don't crash when serializing empty CSSUnparsedValue
-  CSSUnparsedValue is not defined
-Harness: the test ran to completion.
-

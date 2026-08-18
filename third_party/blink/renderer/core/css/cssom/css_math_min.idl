@@ -5,7 +5,7 @@
 // Represents the minimum of one or more CSSNumericValues.
 // https://drafts.css-houdini.org/css-typed-om/#cssmathsum
 [
-  Exposed=(Window,LayoutWorklet,PaintWorklet)
+  Exposed=(Window,Worker,LayoutWorklet,PaintWorklet)
 ] interface CSSMathMin : CSSMathValue {
   [RaisesException] constructor(CSSNumberish... args);
   readonly attribute CSSNumericArray values;

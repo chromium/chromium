@@ -90,6 +90,67 @@ interface ByteLengthQueuingStrategy
     getter highWaterMark
     getter size
     method constructor
+interface CSSKeywordValue : CSSStyleValue
+    attribute @@toStringTag
+    getter value
+    method constructor
+    setter value
+interface CSSMathClamp : CSSMathValue
+    attribute @@toStringTag
+    getter lower
+    getter upper
+    getter value
+    method constructor
+interface CSSMathInvert : CSSMathValue
+    attribute @@toStringTag
+    getter value
+    method constructor
+interface CSSMathMax : CSSMathValue
+    attribute @@toStringTag
+    getter values
+    method constructor
+interface CSSMathMin : CSSMathValue
+    attribute @@toStringTag
+    getter values
+    method constructor
+interface CSSMathNegate : CSSMathValue
+    attribute @@toStringTag
+    getter value
+    method constructor
+interface CSSMathProduct : CSSMathValue
+    attribute @@toStringTag
+    getter values
+    method constructor
+interface CSSMathSum : CSSMathValue
+    attribute @@toStringTag
+    getter values
+    method constructor
+interface CSSMathValue : CSSNumericValue
+    attribute @@toStringTag
+    getter operator
+    method constructor
+interface CSSNumericArray
+    attribute @@toStringTag
+    getter length
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method keys
+    method values
+interface CSSNumericValue : CSSStyleValue
+    attribute @@toStringTag
+    method add
+    method constructor
+    method div
+    method equals
+    method max
+    method min
+    method mul
+    method sub
+    method to
+    method toSum
+    method type
 interface CSSSkewX : CSSTransformComponent
     attribute @@toStringTag
     getter ax
@@ -100,6 +161,25 @@ interface CSSSkewY : CSSTransformComponent
     getter ay
     method constructor
     setter ay
+interface CSSStyleValue
+    attribute @@toStringTag
+    method constructor
+    method toString
+interface CSSUnitValue : CSSNumericValue
+    attribute @@toStringTag
+    getter unit
+    getter value
+    method constructor
+    setter value
+interface CSSUnparsedValue : CSSStyleValue
+    attribute @@toStringTag
+    getter length
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method keys
+    method values
 interface Cache
     attribute @@toStringTag
     method add

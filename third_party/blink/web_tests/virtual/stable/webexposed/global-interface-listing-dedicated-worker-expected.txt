@@ -122,6 +122,67 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter highWaterMark
 [Worker]     getter size
 [Worker]     method constructor
+[Worker] interface CSSKeywordValue : CSSStyleValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter value
+[Worker]     method constructor
+[Worker]     setter value
+[Worker] interface CSSMathClamp : CSSMathValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter lower
+[Worker]     getter upper
+[Worker]     getter value
+[Worker]     method constructor
+[Worker] interface CSSMathInvert : CSSMathValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter value
+[Worker]     method constructor
+[Worker] interface CSSMathMax : CSSMathValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter values
+[Worker]     method constructor
+[Worker] interface CSSMathMin : CSSMathValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter values
+[Worker]     method constructor
+[Worker] interface CSSMathNegate : CSSMathValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter value
+[Worker]     method constructor
+[Worker] interface CSSMathProduct : CSSMathValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter values
+[Worker]     method constructor
+[Worker] interface CSSMathSum : CSSMathValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter values
+[Worker]     method constructor
+[Worker] interface CSSMathValue : CSSNumericValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter operator
+[Worker]     method constructor
+[Worker] interface CSSNumericArray
+[Worker]     attribute @@toStringTag
+[Worker]     getter length
+[Worker]     method @@iterator
+[Worker]     method constructor
+[Worker]     method entries
+[Worker]     method forEach
+[Worker]     method keys
+[Worker]     method values
+[Worker] interface CSSNumericValue : CSSStyleValue
+[Worker]     attribute @@toStringTag
+[Worker]     method add
+[Worker]     method constructor
+[Worker]     method div
+[Worker]     method equals
+[Worker]     method max
+[Worker]     method min
+[Worker]     method mul
+[Worker]     method sub
+[Worker]     method to
+[Worker]     method toSum
+[Worker]     method type
 [Worker] interface CSSSkewX : CSSTransformComponent
 [Worker]     attribute @@toStringTag
 [Worker]     getter ax
@@ -132,6 +193,25 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter ay
 [Worker]     method constructor
 [Worker]     setter ay
+[Worker] interface CSSStyleValue
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
+[Worker]     method toString
+[Worker] interface CSSUnitValue : CSSNumericValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter unit
+[Worker]     getter value
+[Worker]     method constructor
+[Worker]     setter value
+[Worker] interface CSSUnparsedValue : CSSStyleValue
+[Worker]     attribute @@toStringTag
+[Worker]     getter length
+[Worker]     method @@iterator
+[Worker]     method constructor
+[Worker]     method entries
+[Worker]     method forEach
+[Worker]     method keys
+[Worker]     method values
 [Worker] interface Cache
 [Worker]     attribute @@toStringTag
 [Worker]     method add

@@ -6,7 +6,7 @@
 // They represent a list of string fragments and variable references.
 // Spec: https://drafts.css-houdini.org/css-typed-om/#unparsedvalue-objects
 [
-  Exposed=(Window,LayoutWorklet,PaintWorklet)
+  Exposed=(Window,Worker,LayoutWorklet,PaintWorklet)
 ] interface CSSUnparsedValue : CSSStyleValue {
     constructor(sequence<CSSUnparsedSegment> members);
     iterable<CSSUnparsedSegment>;

@@ -16,7 +16,7 @@ enum CSSMathOperator {
 };
 
 [
-  Exposed=(Window,LayoutWorklet,PaintWorklet)
+  Exposed=(Window,Worker,LayoutWorklet,PaintWorklet)
 ] interface CSSMathValue : CSSNumericValue {
   [ImplementedAs=getOperator] readonly attribute CSSMathOperator operator;
 };
