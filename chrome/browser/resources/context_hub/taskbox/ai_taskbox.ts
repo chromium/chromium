@@ -33,6 +33,15 @@ function getTabTodoPriority(item: AutoTodoItem): number {
   return 2;
 }
 
+function compareFirstPartyTodos(a: AutoTodoItem, b: AutoTodoItem): number {
+  return b.score - a.score || a.title.localeCompare(b.title);
+}
+
+function compareThirdPartyTodos(a: AutoTodoItem, b: AutoTodoItem): number {
+  return getTabTodoPriority(a) - getTabTodoPriority(b) ||
+      a.title.localeCompare(b.title);
+}
+
 export class AiTaskboxElement extends CrLitElement {
   static get is() {
     return 'ai-taskbox';
@@ -86,7 +95,6 @@ export class AiTaskboxElement extends CrLitElement {
 
   // Tab-based property accessors.
   protected accessor isGeneratingTabTodos_: boolean = false;
-  // TODO(crbug.com/539697847): Use this to show an error message to the user.
   protected accessor hasTabGenerationError_: boolean = false;
   protected accessor hasGeneratedTab_: boolean = false;
   protected accessor isCompletedTabExpanded_: boolean = false;
@@ -105,13 +113,13 @@ export class AiTaskboxElement extends CrLitElement {
                             .filter(
                                 todo => !!todo.data.firstParty &&
                                     todo.status === AutoTodoStatus.kActive)
-                            .sort((a, b) => b.score - a.score);
+                            .sort(compareFirstPartyTodos);
                     this.completedTodos =
                         todos
                             .filter(
                                 todo => !!todo.data.firstParty &&
                                     todo.status === AutoTodoStatus.kCompleted)
-                            .sort((a, b) => b.score - a.score);
+                            .sort(compareFirstPartyTodos);
                     this.tabTodos =
                         todos
                             .filter(
@@ -119,9 +127,7 @@ export class AiTaskboxElement extends CrLitElement {
                                     todo.data.thirdParty.groupType !==
                                         AutoTodoGroup.kReadingList &&
                                     todo.status === AutoTodoStatus.kActive)
-                            .sort(
-                                (a, b) => getTabTodoPriority(a) -
-                                    getTabTodoPriority(b));
+                            .sort(compareThirdPartyTodos);
                     this.completedTabTodos =
                         todos
                             .filter(
@@ -129,9 +135,7 @@ export class AiTaskboxElement extends CrLitElement {
                                     todo.data.thirdParty.groupType !==
                                         AutoTodoGroup.kReadingList &&
                                     todo.status === AutoTodoStatus.kCompleted)
-                            .sort(
-                                (a, b) => getTabTodoPriority(a) -
-                                    getTabTodoPriority(b));
+                            .sort(compareThirdPartyTodos);
                     this.readingListTodos =
                         todos
                             .filter(
@@ -139,9 +143,7 @@ export class AiTaskboxElement extends CrLitElement {
                                     todo.data.thirdParty.groupType ===
                                         AutoTodoGroup.kReadingList &&
                                     todo.status !== AutoTodoStatus.kDismissed)
-                            .sort(
-                                (a, b) => getTabTodoPriority(a) -
-                                    getTabTodoPriority(b));
+                            .sort(compareThirdPartyTodos);
                   }));
       this.listenerIds_.push(
           browserProxyFactory.getInstance()
@@ -165,20 +167,19 @@ export class AiTaskboxElement extends CrLitElement {
           await browserProxyFactory.getInstance().handler.getAutoTodos();
       this.todos =
           firstPartyTodos.filter(todo => todo.status === AutoTodoStatus.kActive)
-              .sort((a, b) => b.score - a.score) ??
+              .sort(compareFirstPartyTodos) ??
           null;
       this.completedTodos =
           firstPartyTodos
               .filter(todo => todo.status === AutoTodoStatus.kCompleted)
-              .sort((a, b) => b.score - a.score) ??
+              .sort(compareFirstPartyTodos) ??
           null;
-      this.tabTodos =
-          thirdPartyTodos
-              .filter(
-                  todo => todo.data.thirdParty?.groupType !==
-                          AutoTodoGroup.kReadingList &&
-                      todo.status === AutoTodoStatus.kActive)
-              .sort((a, b) => getTabTodoPriority(a) - getTabTodoPriority(b)) ??
+      this.tabTodos = thirdPartyTodos
+                          .filter(
+                              todo => todo.data.thirdParty?.groupType !==
+                                      AutoTodoGroup.kReadingList &&
+                                  todo.status === AutoTodoStatus.kActive)
+                          .sort(compareThirdPartyTodos) ??
           null;
       this.completedTabTodos =
           thirdPartyTodos
@@ -186,7 +187,7 @@ export class AiTaskboxElement extends CrLitElement {
                   todo => todo.data.thirdParty?.groupType !==
                           AutoTodoGroup.kReadingList &&
                       todo.status === AutoTodoStatus.kCompleted)
-              .sort((a, b) => getTabTodoPriority(a) - getTabTodoPriority(b)) ??
+              .sort(compareThirdPartyTodos) ??
           null;
       this.readingListTodos =
           thirdPartyTodos
@@ -194,7 +195,7 @@ export class AiTaskboxElement extends CrLitElement {
                   todo => todo.data.thirdParty?.groupType ===
                           AutoTodoGroup.kReadingList &&
                       todo.status !== AutoTodoStatus.kDismissed)
-              .sort((a, b) => getTabTodoPriority(a) - getTabTodoPriority(b)) ??
+              .sort(compareThirdPartyTodos) ??
           null;
     } catch (e) {
       console.error('Failed to fetch auto todos:', e);

@@ -150,7 +150,9 @@ export function getHtml(this: AiTaskboxElement) {
             <section class="todo-column">
                 <div class="column-header">
                     <h2>Browser Todos</h2>
-                    <cr-button class="tonal-button" disabled
+                    <cr-button class="tonal-button"
+                        ?disabled="${
+      !this.autoTodosEnabled_ || this.isGeneratingTabTodos_}"
                         @click="${this.onGenerateTabTodosClick_}">
                       ${
       this.isGeneratingTabTodos_ ? 'Generating...' : 'Generate Browser Todos'}
