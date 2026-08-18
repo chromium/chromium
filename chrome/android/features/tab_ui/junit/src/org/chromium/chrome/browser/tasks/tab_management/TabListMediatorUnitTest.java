@@ -99,7 +99,6 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
-import org.chromium.base.TriState;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -6515,9 +6514,6 @@ public class TabListMediatorUnitTest {
         @TabListLayoutType int layoutType = TabListLayoutType.FLAT;
         if (type == TabListMediatorType.VERTICAL_TABS) {
             layoutType = TabListLayoutType.NESTED;
-            doReturn(TriState.FALSE)
-                    .when(mTabListItemOnClickListenerProvider)
-                    .isTabGroupSelected(any(), any());
         } else if (type == TabListMediatorType.TAB_SWITCHER) {
             layoutType = TabListLayoutType.GROUPED;
         }

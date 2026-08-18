@@ -47,7 +47,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
-import org.chromium.base.TriState;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -239,11 +238,10 @@ public class TabListMediator implements TabListNotificationHandler {
         @Nullable TabActionListener onTabGroupClicked(String syncId);
 
         /**
-         * Returns whether the given tab group card should show as selected. If this returns {@link
-         * TriState#NOT_SET}, falls back to the default selection behavior.
+         * Returns whether the given tab group card should show as selected. If this returns null,
+         * falls back to the default selection behavior.
          */
-        @TriState
-        int isTabGroupSelected(Tab tab, PropertyModel model);
+        @Nullable Boolean isTabGroupSelected(Tab tab, PropertyModel model);
 
         /**
          * Returns the {@link TabActionButtonData} for a tab group card. If this returns null, the
@@ -2200,11 +2198,10 @@ public class TabListMediator implements TabListNotificationHandler {
             // can override this behavior.
             if (TabProperties.isTabGroupHeader(model) && tab.getTabGroupId() != null) {
                 if (mTabListItemOnClickListenerProvider != null) {
-                    @TriState
-                    int selectedOverride =
+                    @Nullable Boolean selectedOverride =
                             mTabListItemOnClickListenerProvider.isTabGroupSelected(tab, model);
-                    if (selectedOverride != TriState.NOT_SET) {
-                        return selectedOverride == TriState.TRUE;
+                    if (selectedOverride != null) {
+                        return selectedOverride;
                     }
                 }
 
