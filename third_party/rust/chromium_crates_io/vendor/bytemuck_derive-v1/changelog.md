@@ -1,6 +1,12 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.12
+
+* Updated the `syn` version from 2 to 3. Because  `syn` is not a public
+  dependency of the crate this should not cause any change to users of the
+  crate. Please report any problems. MSRV is now 1.71
+
 ## 1.11
 
 * [Make derive(NoUninit) have the same constraints as Pod](https://github.com/Lokathor/bytemuck/pull/341)
