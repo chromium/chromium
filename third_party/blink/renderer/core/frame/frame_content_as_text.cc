@@ -55,9 +55,8 @@ void FrameContentAsText(wtf_size_t max_chars,
     PhysicalSize size = layout_view->StitchedSize();
     if (!size.width || !size.height || (location.left + size.width <= 0) ||
         (location.top + size.height <= 0) ||
-        (owner_layout_object && owner_layout_object->Style() &&
-         owner_layout_object->StyleRef().Visibility() !=
-             EVisibility::kVisible)) {
+        (owner_layout_object && owner_layout_object->StyleRef().Visibility() !=
+                                    EVisibility::kVisible)) {
       continue;
     }
 
