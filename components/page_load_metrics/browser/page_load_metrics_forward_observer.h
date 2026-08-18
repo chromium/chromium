@@ -72,7 +72,10 @@ class PageLoadMetricsForwardObserver final
   ObservePolicy ShouldObserveScheme(const GURL& url) const override;
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override;
-  void OnSoftNavigation() override;
+  void OnSoftNavigationCommit(
+      const mojom::SoftNavigationMetrics& soft_navigation_metrics) override;
+  void OnSoftNavigationCompleted(
+      const SoftNavigationData& soft_navigation_data) override;
   void OnSoftNavigationLargestContentfulPaint(uint64_t num_soft_lcps) override;
   void OnEventTimingUpdate(
       content::RenderFrameHost* subframe_rfh,

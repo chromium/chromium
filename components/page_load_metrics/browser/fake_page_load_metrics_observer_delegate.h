@@ -65,12 +65,8 @@ class FakePageLoadMetricsObserverDelegate
   // returned.
   const NormalizedCLSData& GetNormalizedCLSData(
       BfcacheStrategy bfcache_strategy) const override;
-  const NormalizedCLSData& GetSoftNavigationIntervalNormalizedCLSData()
-      const override;
   const InteractionToNextPaintCalculator& GetInteractionToNextPaintCalculator()
       const override;
-  const InteractionToNextPaintCalculator&
-  GetSoftNavigationIntervalInteractionToNextPaintCalculator() const override;
   const std::optional<blink::SubresourceLoadMetrics>&
   GetSubresourceLoadMetrics() const override;
   const mojom::FontLoadingMetricsPtr& GetFontLoadingMetrics() const override;
@@ -81,11 +77,7 @@ class FakePageLoadMetricsObserverDelegate
       const override;
   const LargestContentfulPaintHandler&
   GetExperimentalLargestContentfulPaintHandler() const override;
-  const ContentfulPaintTimingInfo& GetSoftNavigationLargestContentfulPaint()
-      const override;
   ukm::SourceId GetPageUkmSourceId() const override;
-  mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const override;
-  uint64_t GetSoftNavigationCount() const override;
   ukm::SourceId GetUkmSourceIdForSameDocumentNavigation(
       base::UnguessableToken same_document_metrics_token) const override;
   bool IsFirstNavigationInWebContents() const override;

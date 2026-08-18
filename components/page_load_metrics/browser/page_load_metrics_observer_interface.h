@@ -41,6 +41,8 @@ struct LoadTimingInfo;
 
 namespace page_load_metrics {
 
+struct SoftNavigationData;
+
 // Storage types reported to page load metrics observers on storage accesses.
 enum class StorageType {
   kLocalStorage,
@@ -346,9 +348,15 @@ class PageLoadMetricsObserverInterface {
   virtual void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                               const mojom::PageLoadTiming& timing) = 0;
 
-  // The callback is invoked when a soft navigation is detected.
+  // The callback is invoked when a soft navigation commit is observed.
   // See https://github.com/WICG/soft-navigations for more details.
-  virtual void OnSoftNavigation() = 0;
+  virtual void OnSoftNavigationCommit(
+      const mojom::SoftNavigationMetrics& soft_navigation_metrics) = 0;
+
+  // The callback is invoked when a soft navigation has completed.
+  // See https://github.com/WICG/soft-navigations for more details.
+  virtual void OnSoftNavigationCompleted(
+      const SoftNavigationData& soft_navigation_data) = 0;
 
   // The callback is invoked when one or more soft largest contentful
   // paint candidates arrive in the browser process.

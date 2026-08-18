@@ -35,7 +35,9 @@ ReadAnythingSoftNavigationObserver::OnPrerenderStart(
   return CONTINUE_OBSERVING;
 }
 
-void ReadAnythingSoftNavigationObserver::OnSoftNavigation() {
+void ReadAnythingSoftNavigationObserver::OnSoftNavigationCommit(
+    const page_load_metrics::mojom::SoftNavigationMetrics&
+        soft_navigation_metrics) {
   if (!features::IsImmersiveReadAnythingEnabled()) {
     return;
   }

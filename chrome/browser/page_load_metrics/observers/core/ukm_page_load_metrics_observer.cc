@@ -671,8 +671,7 @@ void UkmPageLoadMetricsObserver::
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
   const page_load_metrics::InteractionToNextPaintCalculator&
       interaction_to_next_paint_calculator_before_soft_nav =
-          GetDelegate()
-              .GetSoftNavigationIntervalInteractionToNextPaintCalculator();
+          GetDelegate().GetInteractionToNextPaintCalculator();
   std::optional<
       page_load_metrics::InteractionToNextPaintCalculator::InteractionData>
       inp_data = interaction_to_next_paint_calculator_before_soft_nav
@@ -706,8 +705,7 @@ void UkmPageLoadMetricsObserver::
 
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
 
-  const std::optional<float> cwv_cls_value =
-      GetCoreWebVitalsSoftNavigationIntervalCLS();
+  const std::optional<float> cwv_cls_value = GetCoreWebVitalsCLS();
 
   if (cwv_cls_value.has_value()) {
     builder
@@ -724,7 +722,9 @@ void UkmPageLoadMetricsObserver::
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void UkmPageLoadMetricsObserver::OnSoftNavigation() {
+void UkmPageLoadMetricsObserver::OnSoftNavigationCommit(
+    const page_load_metrics::mojom::SoftNavigationMetrics&
+        soft_navigation_metrics) {
   CHECK_GE(soft_navigation_count_, 0);
   soft_navigation_count_++;
   // When the 1st soft navigation comes in, we record the CWVs before then;
@@ -734,12 +734,6 @@ void UkmPageLoadMetricsObserver::OnSoftNavigation() {
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
     RecordLayoutShiftBeforeSoftNavigationForMainFrame();
   }
-}
-
-const page_load_metrics::ContentfulPaintTimingInfo&
-UkmPageLoadMetricsObserver::GetSoftNavigationLargestContentfulPaint() const {
-  return GetDelegate()
-      .GetSoftNavigationLargestContentfulPaint();
 }
 
 const page_load_metrics::ContentfulPaintTimingInfo&
@@ -1294,16 +1288,6 @@ std::optional<float> UkmPageLoadMetricsObserver::GetCoreWebVitalsCLS() {
       GetDelegate().GetNormalizedCLSData(
           page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
               ACCUMULATE);
-  if (!normalized_cls_data.data_tainted) {
-    return normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
-  }
-  return std::nullopt;
-}
-
-std::optional<float>
-UkmPageLoadMetricsObserver::GetCoreWebVitalsSoftNavigationIntervalCLS() {
-  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
-      GetDelegate().GetSoftNavigationIntervalNormalizedCLSData();
   if (!normalized_cls_data.data_tainted) {
     return normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
   }

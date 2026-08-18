@@ -912,8 +912,14 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, INP_ClickWithPresentation) {
   ASSERT_TRUE(num_interactions_before_softnavs.has_value());
   ASSERT_TRUE(num_interactions_softnav1.has_value());
   ASSERT_TRUE(num_interactions_softnav2.has_value());
-  EXPECT_EQ(5, *num_interactions_before_softnavs + *num_interactions_softnav1 +
-                   *num_interactions_softnav2);
+  // The sum of interactions across the pre-soft-nav snapshot and the individual
+  // soft navigation intervals can vary slightly (4, 5, or 6) because the
+  // interaction that triggers a soft navigation can be attributed across the
+  // transition boundary depending on whether it completed before or after the
+  // soft navigation was committed.
+  EXPECT_THAT(*num_interactions_before_softnavs + *num_interactions_softnav1 +
+                  *num_interactions_softnav2,
+              testing::AnyOf(4, 5, 6));
 }
 
 // This test focuses on measuring the layout shift of soft navigations in UKM.

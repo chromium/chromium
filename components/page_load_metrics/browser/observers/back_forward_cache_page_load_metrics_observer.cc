@@ -273,7 +273,7 @@ void BackForwardCachePageLoadMetricsObserver::
 void BackForwardCachePageLoadMetricsObserver::
     RecordResponsivenessMetricsBeforeSoftNavigation() {
   const page_load_metrics::InteractionToNextPaintCalculator& calculator =
-      GetDelegate().GetSoftNavigationIntervalInteractionToNextPaintCalculator();
+      GetDelegate().GetInteractionToNextPaintCalculator();
   std::optional<
       page_load_metrics::InteractionToNextPaintCalculator::InteractionData>
       inp_data = calculator.ApproximateHighPercentile();
@@ -295,7 +295,9 @@ void BackForwardCachePageLoadMetricsObserver::
 void BackForwardCachePageLoadMetricsObserver::
     RecordLayoutShiftBeforeSoftNavigation() {
   const page_load_metrics::NormalizedCLSData& normalized_cls_data =
-      GetDelegate().GetSoftNavigationIntervalNormalizedCLSData();
+      GetDelegate().GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              RESET);
   if (normalized_cls_data.data_tainted) {
     return;
   }
@@ -309,7 +311,9 @@ void BackForwardCachePageLoadMetricsObserver::
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void BackForwardCachePageLoadMetricsObserver::OnSoftNavigation() {
+void BackForwardCachePageLoadMetricsObserver::OnSoftNavigationCommit(
+    const page_load_metrics::mojom::SoftNavigationMetrics&
+        soft_navigation_metrics) {
   if (!has_ever_entered_back_forward_cache_) {
     // This is a soft navigation after a prerender (see
     // PrerenderPageLoadMetricsObserver) or a traditional navigation (See

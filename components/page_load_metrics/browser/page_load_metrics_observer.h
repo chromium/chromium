@@ -151,8 +151,12 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   ObservePolicy ShouldObserveScheme(const GURL& url) const override;
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override {}
-  void OnSoftNavigation() override {}
-  void OnSoftNavigationLargestContentfulPaint(uint64_t num_soft_lcps) override {}
+  void OnSoftNavigationCommit(
+      const mojom::SoftNavigationMetrics& soft_navigation_metrics) override {}
+  void OnSoftNavigationCompleted(
+      const SoftNavigationData& soft_navigation_data) override {}
+  void OnSoftNavigationLargestContentfulPaint(uint64_t num_soft_lcps) override {
+  }
   void OnEventTimingUpdate(
       content::RenderFrameHost* subframe_rfh,
       const std::vector<mojom::EventTimingPtr>& event_timings) override {}

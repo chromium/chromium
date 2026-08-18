@@ -90,6 +90,8 @@ source_set("browser") {
     "protocol_util.h",
     "resource_tracker.cc",
     "resource_tracker.h",
+    "soft_navigation_data.cc",
+    "soft_navigation_data.h",
     "soft_navigation_tracker.cc",
     "soft_navigation_tracker.h",
   ]

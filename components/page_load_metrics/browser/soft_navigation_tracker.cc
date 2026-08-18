@@ -6,208 +6,210 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace page_load_metrics {
-//
-// SoftNavigationTracker
-//
-SoftNavigationTracker::SoftNavigationTracker()
-    : current_soft_navigation_(mojom::SoftNavigationMetrics::New()) {}
+
+SoftNavigationTracker::SoftNavigationTracker(Client* client) : client_(client) {
+  CHECK(client_);
+}
 
 SoftNavigationTracker::~SoftNavigationTracker() = default;
 
-bool SoftNavigationTracker::UpdateAndValidateMetrics(
-    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics) {
-  // We require each successful UpdateAndValidateMetrics call to be followed by
-  // a loop that calls AdvanceToNextSoftNavigation() until all soft navigations
-  // are processed; therefore soft_navigations_to_process_ should be empty.
-  CHECK(soft_navigations_to_process_.empty());
+void SoftNavigationTracker::CompleteActiveNavigation() {
+  // Complete the previously active navigation. Because an entry only becomes
+  // `active_navigation_` upon receiving a valid commit (assigned below),
+  // `active_navigation_->metrics` is guaranteed to be non-null.
+  if (active_navigation_) {
+    CHECK(active_navigation_->metrics);
+    client_->OnSoftNavigationCompleted(*active_navigation_);
+    active_navigation_.reset();
+  }
+}
+
+bool SoftNavigationTracker::UpdateMainFrameMetrics(
+    content::GlobalRenderFrameHostToken frame_token,
+    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+    base::span<const mojom::EventTimingPtr> event_timings,
+    base::span<const mojom::LayoutShiftPtr> layout_shifts,
+    base::span<const mojom::LargestContentfulPaintTimingPtr> soft_lcps) {
+  // Add all new performance entries first. These entries are keyed by
+  // performance timeline navigation ID and accumulate directly into the
+  // active navigation or pending uncommitted buckets even if the soft
+  // navigation commit has not arrived yet or fails validation.
+  AddMainFrameEventTimings(frame_token, event_timings);
+  AddMainFrameLayoutShifts(layout_shifts);
+  AddMainFrameLargestContentfulPaints(soft_lcps);
+
+  if (soft_navigation_metrics.empty()) {
+    return true;
+  }
+
+  // Validate soft navigation commit data specifically for consistency (e.g.
+  // non-empty tokens, strictly increasing navigation IDs and slicing times).
+  // If validation fails, we discard this part of the update only.
+  if (!ValidateMetrics(soft_navigation_metrics)) {
+    return false;
+  }
+
+  // Process incoming soft navigations in chronological order.
+  // Each new commit completes the previously active navigation, promoting the
+  // new navigation to active.
   for (auto& soft_navigation : soft_navigation_metrics) {
-    if (!ValidateIncoming(soft_navigation)) {
-      soft_navigations_to_process_.clear();
-      return false;
+    CompleteActiveNavigation();
+
+    uint64_t nav_id = soft_navigation->performance_timeline_navigation_id;
+
+    // Prune uncommitted pending navigations with ID < nav_id.
+    // These represent navigation IDs from performance entries where the soft
+    // navigation commit was either canceled, aborted, or arrived after a
+    // bfcache restore.
+    while (!pending_navigations_.empty() &&
+           pending_navigations_.begin()->first < nav_id) {
+      pending_navigations_.erase(pending_navigations_.begin());
     }
-    soft_navigations_to_process_.emplace_back(std::move(soft_navigation));
+
+    auto it = pending_navigations_.find(nav_id);
+    if (it != pending_navigations_.end()) {
+      active_navigation_ = std::move(it->second);
+      pending_navigations_.erase(it);
+    } else {
+      active_navigation_ = std::make_unique<SoftNavigationData>();
+    }
+    active_navigation_->metrics = std::move(soft_navigation);
     ++soft_navigation_count_;
+    client_->OnSoftNavigationCommit(*active_navigation_->metrics);
   }
   return true;
 }
 
-bool SoftNavigationTracker::ValidateIncoming(
-    const mojom::SoftNavigationMetricsPtr& soft_navigation) {
-  // TODO(johannes): Report invalid soft navigation metrics. crbug.com/490096674
-  if (soft_navigation->performance_timeline_navigation_id <
-          kFirstSoftNavigationPerformanceTimelineNavigationId ||
-      soft_navigation->start_time.is_zero() ||
-      soft_navigation->soft_navigation_slicing_time.is_null() ||
-      soft_navigation->same_document_metrics_token.is_empty()) {
-    return false;
-  }
-  // We expect the slicing time to be strictly monotonically increasing.
-  base::TimeTicks previous_slicing_time =
-      soft_navigations_to_process_.empty()
-          ? current_soft_navigation_->soft_navigation_slicing_time
-          : soft_navigations_to_process_.back()->soft_navigation_slicing_time;
-  if (!previous_slicing_time.is_null() &&
-      soft_navigation->soft_navigation_slicing_time <= previous_slicing_time) {
-    return false;
-  }
-  // We expect the token to be different from the previous soft navigation.
-  return soft_navigation->same_document_metrics_token !=
-         current_soft_navigation_->same_document_metrics_token;
+void SoftNavigationTracker::CompleteActiveNavigationAndFlush() {
+  // Finalize the active navigation. Any uncommitted pending buckets in
+  // `pending_navigations_` that never received a commit are cleared below
+  // without notifying observers.
+  CompleteActiveNavigation();
+  pending_navigations_.clear();
 }
 
-bool SoftNavigationTracker::HasNextSoftNavigation() const {
-  return !soft_navigations_to_process_.empty();
-}
-
-void SoftNavigationTracker::AdvanceToNextSoftNavigation() {
-  CHECK(!soft_navigations_to_process_.empty());
-  current_soft_navigation_ = std::move(soft_navigations_to_process_.front());
-  soft_navigations_to_process_.pop_front();
-}
-
-base::TimeTicks SoftNavigationTracker::SoftNavigationSlicingTime() const {
-  return soft_navigations_to_process_.empty()
-             ? base::TimeTicks()
-             : soft_navigations_to_process_.front()
-                   ->soft_navigation_slicing_time;
-}
-
-namespace {
-// This template function is used to process the metrics that are associated
-// with a soft navigation. It is used to process event timings, layout shifts,
-// and LCP candidates.
-// The template parameter T is a struct that contains the following:
-// - MeasurementPtr: The pointer type of the metrics to process.
-// - LimitType: The type of the limit that is used to determine whether a
-// metric should be processed.
-// - Calculator: The type of the calculator that is used to process the
-// metrics.
-// - ShouldProcess: A static function that returns true if the metric should be
-// processed.
-// - AddNewMeasurements: A static function that adds the metrics to the
-// calculator.
-template <typename T>
-size_t ProcessTmpl(typename T::LimitType limit,
-                 base::span<const typename T::MeasurementPtr>* measurements,
-                 typename T::Calculator* calculator) {
-  if (measurements->empty()) {
-    return 0;
+SoftNavigationData* SoftNavigationTracker::GetOrCreateNavigation(
+    uint64_t navigation_id) {
+  if (navigation_id < kFirstSoftNavigationPerformanceTimelineNavigationId) {
+    return nullptr;
   }
-  size_t ii = 0;
-  while (ii < measurements->size() &&
-         T::ShouldProcess(limit, (*measurements)[ii])) {
-    ++ii;
-  }
-  auto measurements_to_process = measurements->first(ii);
-  *measurements = measurements->subspan(ii);
-  if (!measurements_to_process.empty()) {
-    T::AddNewMeasurements(calculator, measurements_to_process);
-  }
-  return measurements_to_process.size();
-}
-
-// This struct is used to process event timings, for InteractionToNextPaint.
-struct InteractionToNextPaintAdapter {
-  using MeasurementPtr = mojom::EventTimingPtr;
-  using LimitType = base::TimeTicks;
-  using Calculator = InteractionToNextPaintCalculator;
-  static bool ShouldProcess(base::TimeTicks limit,
-                            const mojom::EventTimingPtr& measurement) {
-    return limit.is_null() || measurement->processing_start <= limit;
-  }
-  static void AddNewMeasurements(
-      InteractionToNextPaintCalculator* calculator,
-      base::span<const mojom::EventTimingPtr> measurements) {
-    calculator->AddNewEventTimings(content::GlobalRenderFrameHostToken(),
-                                   measurements);
-  }
-};
-
-// This struct is used to process layout shifts, for CumulativeLayoutShift.
-struct LayoutShiftAdapter {
-  using MeasurementPtr = mojom::LayoutShiftPtr;
-  using LimitType = base::TimeTicks;
-  using Calculator = LayoutShiftNormalization;
-  static bool ShouldProcess(base::TimeTicks limit,
-                            const mojom::LayoutShiftPtr& measurement) {
-    return limit.is_null() || measurement->layout_shift_time <= limit;
-  }
-  static void AddNewMeasurements(
-      LayoutShiftNormalization* calculator,
-      base::span<const MeasurementPtr> measurements) {
-    calculator->AddNewLayoutShifts(measurements, base::TimeTicks::Now());
-  }
-};
-
-// This struct is used to process LCP candidates, for LargestContentfulPaint.
-struct LargestContentfulPaintAdapter {
-  using MeasurementPtr = mojom::LargestContentfulPaintTimingPtr;
-  using LimitType = uint64_t;
-  using Calculator = ContentfulPaint;
-  static bool ShouldProcess(
-      uint64_t limit,
-      const mojom::LargestContentfulPaintTimingPtr& measurement) {
-    return measurement->performance_timeline_navigation_id <= limit;
-  }
-  static void AddNewMeasurements(
-      ContentfulPaint* calculator,
-      base::span<const mojom::LargestContentfulPaintTimingPtr> measurements) {
-    for (const auto& measurement : measurements) {
-      if (measurement->largest_text_paint.has_value()) {
-        // Image load start/end are not applicable to text LCP elements.
-        calculator->Text().Reset(
-            measurement->largest_text_paint,
-            measurement->largest_text_paint_size,
-            static_cast<blink::LargestContentfulPaintType>(measurement->type),
-            /*image_bpp=*/0.0,
-            /*image_request_priority=*/std::nullopt,
-            /*image_discovery_time=*/std::nullopt,
-            /*image_load_start=*/std::nullopt,
-            /*image_load_end=*/std::nullopt);
-      }
-      if (measurement->largest_image_paint.has_value()) {
-        std::optional<net::RequestPriority> request_priority;
-        if (measurement->image_request_priority_valid) {
-          request_priority = measurement->image_request_priority_value;
-        }
-        calculator->Image().Reset(
-            measurement->largest_image_paint,
-            measurement->largest_image_paint_size,
-            static_cast<blink::LargestContentfulPaintType>(measurement->type),
-            measurement->image_bpp, request_priority,
-            measurement->resource_load_timings->discovery_time,
-            measurement->resource_load_timings->load_start,
-            measurement->resource_load_timings->load_end);
-      }
+  if (active_navigation_) {
+    CHECK(active_navigation_->metrics);
+    uint64_t active_id =
+        active_navigation_->metrics->performance_timeline_navigation_id;
+    if (navigation_id == active_id) {
+      return active_navigation_.get();
+    }
+    if (navigation_id < active_id) {
+      // Belongs to a completed soft navigation that has already been dispatched
+      // and pruned.
+      return nullptr;
     }
   }
-};
-}  // namespace
-
-size_t SoftNavigationTracker::Process(
-    base::span<const mojom::EventTimingPtr>* event_timings,
-    InteractionToNextPaintCalculator* calculator) const {
-  return ProcessTmpl<InteractionToNextPaintAdapter>(SoftNavigationSlicingTime(),
-                                             event_timings, calculator);
+  auto it = pending_navigations_.find(navigation_id);
+  if (it != pending_navigations_.end()) {
+    return it->second.get();
+  }
+  if (pending_navigations_.size() >= kMaxSoftNavigations) {
+    return nullptr;
+  }
+  return pending_navigations_
+      .emplace(navigation_id, std::make_unique<SoftNavigationData>())
+      .first->second.get();
 }
 
-size_t SoftNavigationTracker::Process(
-    base::span<const mojom::LayoutShiftPtr>* layout_shifts,
-    LayoutShiftNormalization* layout_shift_normalization) const {
-  return ProcessTmpl<LayoutShiftAdapter>(SoftNavigationSlicingTime(), layout_shifts,
-                                  layout_shift_normalization);
+const SoftNavigationData*
+SoftNavigationTracker::GetSoftNavigationDataForTest(  // IN-TEST
+    uint64_t navigation_id) const {
+  if (active_navigation_ &&
+      CHECK_DEREF(active_navigation_->metrics.get())
+              .performance_timeline_navigation_id == navigation_id) {
+    return active_navigation_.get();
+  }
+  auto it = pending_navigations_.find(navigation_id);
+  return it != pending_navigations_.end() ? it->second.get() : nullptr;
 }
 
-size_t SoftNavigationTracker::Process(
-    base::span<const mojom::LargestContentfulPaintTimingPtr>* soft_lcps,
-    ContentfulPaint* soft_lcp_candidate) const {
-  return ProcessTmpl<LargestContentfulPaintAdapter>(
-      current_soft_navigation().performance_timeline_navigation_id, soft_lcps,
-      soft_lcp_candidate);
+bool SoftNavigationTracker::ValidateMetrics(
+    const std::vector<mojom::SoftNavigationMetricsPtr>& soft_navigation_metrics)
+    const {
+  base::TimeTicks last_validated_slicing_time;
+  base::UnguessableToken last_validated_token;
+  uint64_t last_validated_id =
+      kFirstSoftNavigationPerformanceTimelineNavigationId - 1;
+
+  if (active_navigation_ && active_navigation_->metrics) {
+    last_validated_id =
+        active_navigation_->metrics->performance_timeline_navigation_id;
+    last_validated_slicing_time =
+        active_navigation_->metrics->soft_navigation_slicing_time;
+    last_validated_token =
+        active_navigation_->metrics->same_document_metrics_token;
+  }
+
+  for (const auto& soft_navigation : soft_navigation_metrics) {
+    // TODO(crbug.com/490096674): Report invalid soft navigation metrics.
+    if (soft_navigation->performance_timeline_navigation_id <=
+            last_validated_id ||
+        soft_navigation->start_time.is_zero() ||
+        soft_navigation->soft_navigation_slicing_time.is_null() ||
+        soft_navigation->same_document_metrics_token.is_empty()) {
+      return false;
+    }
+    if (!last_validated_slicing_time.is_null() &&
+        soft_navigation->soft_navigation_slicing_time <=
+            last_validated_slicing_time) {
+      return false;
+    }
+    if (!last_validated_token.is_empty() &&
+        soft_navigation->same_document_metrics_token == last_validated_token) {
+      return false;
+    }
+    last_validated_id = soft_navigation->performance_timeline_navigation_id;
+    last_validated_slicing_time = soft_navigation->soft_navigation_slicing_time;
+    last_validated_token = soft_navigation->same_document_metrics_token;
+  }
+  return true;
+}
+
+void SoftNavigationTracker::AddMainFrameEventTimings(
+    content::GlobalRenderFrameHostToken frame_token,
+    base::span<const mojom::EventTimingPtr> event_timings) {
+  for (const auto& event : event_timings) {
+    if (SoftNavigationData* nav =
+            GetOrCreateNavigation(event->performance_timeline_navigation_id)) {
+      nav->inp_calculator.AddNewEventTimings(frame_token,
+                                             base::span_from_ref(event));
+    }
+  }
+}
+
+void SoftNavigationTracker::AddMainFrameLayoutShifts(
+    base::span<const mojom::LayoutShiftPtr> layout_shifts) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  for (const auto& shift : layout_shifts) {
+    if (SoftNavigationData* nav =
+            GetOrCreateNavigation(shift->performance_timeline_navigation_id)) {
+      nav->cls_calculator.AddNewLayoutShifts(base::span_from_ref(shift), now);
+    }
+  }
+}
+
+void SoftNavigationTracker::AddMainFrameLargestContentfulPaints(
+    base::span<const mojom::LargestContentfulPaintTimingPtr> soft_lcps) {
+  for (const auto& lcp : soft_lcps) {
+    if (SoftNavigationData* nav =
+            GetOrCreateNavigation(lcp->performance_timeline_navigation_id)) {
+      nav->lcp_handler.RecordMainFrameTiming(
+          *lcp, /*first_input_or_scroll_notified_timestamp=*/std::nullopt);
+    }
+  }
 }
 
 }  // namespace page_load_metrics

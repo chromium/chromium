@@ -87,7 +87,9 @@ class BackForwardCachePageLoadMetricsObserver
   void OnFirstInputAfterBackForwardCacheRestoreInPage(
       const page_load_metrics::mojom::BackForwardCacheTiming& timing,
       size_t index) override;
-  void OnSoftNavigation() override;
+  void OnSoftNavigationCommit(
+      const page_load_metrics::mojom::SoftNavigationMetrics&
+          soft_navigation_metrics) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnComplete(

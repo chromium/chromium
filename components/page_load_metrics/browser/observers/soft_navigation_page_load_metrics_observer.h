@@ -79,25 +79,24 @@ class SoftNavigationPageLoadMetricsObserver
 
   ObservePolicy OnShown() override;
 
-  void OnSoftNavigation() override;
+  void OnSoftNavigationCompleted(const page_load_metrics::SoftNavigationData&
+                                     soft_navigation_data) override;
 
  private:
   bool FromForegroundOptionalEventInForeground(
       const std::optional<base::TimeDelta>& event);
-  void RecordSoftNavigationEventIfPending();
-  void RecordSoftLcp(ukm::builders::SoftNavigation& builder);
-  void RecordSoftInp(ukm::builders::SoftNavigation& builder);
-  void RecordSoftCls(ukm::builders::SoftNavigation& builder);
+  void RecordSoftLcp(
+      ukm::builders::SoftNavigation& builder,
+      const page_load_metrics::SoftNavigationData& soft_navigation_data);
+  void RecordSoftInp(
+      ukm::builders::SoftNavigation& builder,
+      const page_load_metrics::SoftNavigationData& soft_navigation_data);
+  void RecordSoftCls(
+      ukm::builders::SoftNavigation& builder,
+      const page_load_metrics::SoftNavigationData& soft_navigation_data);
 
   using State = SoftNavigationPageLoadMetricsObserverState;
   State state_ = State::kInitial;
-  // We record soft navigations after they complete: (1) when the next soft
-  // navigation arrives, (2) when the (hard) navigation completes, or *eagerly*
-  // (3) when the app moves to the background (See
-  // ::FlushMetricsOnAppEnterBackground). To not double record after recording
-  // eagerly, this variable indicates that a soft navigation has been detected
-  // but not yet been recorded.
-  bool pending_soft_navigation_ = false;
   // Only record soft CLS if we were ever in the foreground.
   bool should_record_soft_cls_ = false;
 };

@@ -745,6 +745,7 @@ void PageLoadTracker::OnInputEvent(const blink::WebInputEvent& event) {
 
 void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
   metrics_update_dispatcher()->FlushPendingTimingUpdates();
+  metrics_update_dispatcher()->FlushSoftNavigationMetrics();
 
   InvokeAndPruneObservers(
       "PageLoadMetricsObserver::FlushMetricsOnAppEnterBackground",
@@ -1088,14 +1089,17 @@ void PageLoadTracker::OnSubframeMetadataChanged(
   }
 }
 
-void PageLoadTracker::OnSoftNavigation() {
-  // Notify the observers - including and in particular, this will notify
-  // UkmPageLoadMetricsObserver. Usually, these observers will then process the
-  // previous soft navigation, and access the previous soft navigation data
-  // including LCP, CLS, and INP via the PageLoadMetricsObserverDelegate
-  // interface, which the PageLoadTracker implements.
+void PageLoadTracker::OnSoftNavigationCommit(
+    const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
   for (const auto& observer : observers_) {
-    observer->OnSoftNavigation();
+    observer->OnSoftNavigationCommit(soft_navigation_metrics);
+  }
+}
+
+void PageLoadTracker::OnSoftNavigationCompleted(
+    const SoftNavigationData& soft_navigation_data) {
+  for (const auto& observer : observers_) {
+    observer->OnSoftNavigationCompleted(soft_navigation_data);
   }
 }
 
@@ -1274,21 +1278,9 @@ const NormalizedCLSData& PageLoadTracker::GetNormalizedCLSData(
   return metrics_update_dispatcher_.normalized_cls_data(bfcache_strategy);
 }
 
-const NormalizedCLSData&
-PageLoadTracker::GetSoftNavigationIntervalNormalizedCLSData() const {
-  return metrics_update_dispatcher_
-      .soft_navigation_layout_shift_normalization();
-}
-
 const InteractionToNextPaintCalculator&
 PageLoadTracker::GetInteractionToNextPaintCalculator() const {
   return metrics_update_dispatcher_.interaction_to_next_paint_calculator();
-}
-
-const InteractionToNextPaintCalculator&
-PageLoadTracker::GetSoftNavigationIntervalInteractionToNextPaintCalculator()
-    const {
-  return metrics_update_dispatcher_.soft_navigation_interaction_to_next_paint();
 }
 
 const std::optional<blink::SubresourceLoadMetrics>&
@@ -1324,25 +1316,11 @@ PageLoadTracker::GetExperimentalLargestContentfulPaintHandler() const {
   return experimental_largest_contentful_paint_handler_;
 }
 
-const ContentfulPaintTimingInfo&
-PageLoadTracker::GetSoftNavigationLargestContentfulPaint() const {
-  return metrics_update_dispatcher_.soft_navigation_largest_contentful_paint();
-}
-
 ukm::SourceId PageLoadTracker::GetPageUkmSourceId() const {
   DCHECK_NE(ukm::kInvalidSourceId, source_id_)
       << "GetPageUkmSourceId was called on a prerendered page before its "
          "activation. We should not collect UKM while prerendering pages.";
   return source_id_;
-}
-
-const mojom::SoftNavigationMetrics& PageLoadTracker::GetSoftNavigationMetrics()
-    const {
-  return metrics_update_dispatcher_.soft_navigation_metrics();
-}
-
-uint64_t PageLoadTracker::GetSoftNavigationCount() const {
-  return metrics_update_dispatcher_.soft_navigation_count();
 }
 
 ukm::SourceId PageLoadTracker::GetUkmSourceIdForSameDocumentNavigation(
@@ -1384,6 +1362,8 @@ void PageLoadTracker::RecordLinkNavigation() {
 }
 
 void PageLoadTracker::OnEnterBackForwardCache() {
+  metrics_update_dispatcher_.FlushPendingTimingUpdates();
+  metrics_update_dispatcher_.FlushSoftNavigationMetrics();
   // In case of BackForwardCache, invoke and update the
   // PageLoadMetricsUpdateDispatcher before the page is hidden to enable
   // recording metrics that requires the page to be in foreground before
