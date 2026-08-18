@@ -732,8 +732,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mIsAutoDisableAccessibilityCandidate = isAutoDisableAccessibilityCandidate;
     }
 
-    public static void suppressLoadCompleteEventForTesting() {
-        sSuppressLoadCompleteEventForTesting = true;
+    public static void suppressLoadCompleteEventForTesting(boolean suppress) {
+        sSuppressLoadCompleteEventForTesting = suppress;
     }
 
     public void setThrottleDelayForTesting(Map<Integer, Integer> eventThrottleDelays) {
@@ -980,6 +980,32 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         TraceEvent.end("WebContentsAccessibilityImpl.onWindowAndroidChanged");
+    }
+
+    @Override
+    public void onViewFocusChanged(boolean gainFocus, boolean hideKeyboardOnBlur) {
+        if (!isNativeInitialized()) {
+            return;
+        }
+        if (!ContentFeatureMap.isEnabled(
+                ContentFeatures.ACCESSIBILITY_SYNC_FOCUS_ON_VIEW_FOCUS_GAIN)) {
+            return;
+        }
+        if (!gainFocus || sSuppressLoadCompleteEventForTesting) {
+            return;
+        }
+        if (mShouldFocusOnPageLoad) {
+            return;
+        }
+
+        int focusedId = WebContentsAccessibilityImplJni.get().getFocus(mNativeObj);
+        if (focusedId == View.NO_ID || focusedId == 0) return;
+
+        if (mAccessibilityFocusId == View.NO_ID) {
+            // TODO(crbug.com/520514823): Remove this workaround once TalkBack
+            // automatically syncs accessibility focus to system focus on WebView focus gain.
+            moveAccessibilityFocusToId(focusedId);
+        }
     }
 
     @Override

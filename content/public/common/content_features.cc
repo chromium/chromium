@@ -1376,6 +1376,10 @@ BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
 BASE_FEATURE(kAccessibilityExtendedSelection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, syncs accessibility focus when WebView gains focus.
+BASE_FEATURE(kAccessibilitySyncFocusOnViewFocusGain,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When this feature is enabled, the InputConnection will request
 // formatted text from the TextInputState.
 BASE_FEATURE(kAccessibilityImeGetFormattedText,

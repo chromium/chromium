@@ -47,6 +47,16 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEM
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_PARAGRAPH;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_WORD;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.NODE_TIMEOUT_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sClassNameMatcher;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sInputTypeMatcher;
@@ -91,6 +101,7 @@ import static org.chromium.ui.accessibility.AccessibilityState.EVENT_TYPE_MASK_N
 import static org.chromium.ui.accessibility.AccessibilityState.KNOWN_SCREEN_READER_SERVICE_IDS;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.graphics.Rect;
@@ -113,12 +124,17 @@ import android.text.style.SuggestionSpan;
 import android.text.style.SuperscriptSpan;
 import android.text.style.TypefaceSpan;
 import android.text.style.UnderlineSpan;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+import android.widget.Button;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.common.truth.Expect;
 
@@ -144,7 +160,11 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
 import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
@@ -245,7 +265,7 @@ public class WebContentsAccessibilityTest {
     /* @Before */
     protected void setupTestWithHTML(String html) {
         // To prevent flakes, suppress window content change events from page load.
-        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting();
+        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting(true);
 
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
@@ -257,7 +277,7 @@ public class WebContentsAccessibilityTest {
     protected void setupTestWithHTMLForFormControlsMode(
             String html, boolean includeEventMaskByDefault) {
         // To prevent flakes, suppress window content change events from page load.
-        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting();
+        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting(true);
 
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
@@ -268,7 +288,7 @@ public class WebContentsAccessibilityTest {
     /* @Before */
     protected void setupTestWithHTMLForBasicMode(String html, boolean includeEventMaskByDefault) {
         // To prevent flakes, suppress window content change events from page load.
-        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting();
+        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting(true);
 
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
@@ -280,7 +300,7 @@ public class WebContentsAccessibilityTest {
     protected void setupTestWithHTMLForCompleteMode(
             String html, boolean includeEventMaskByDefault) {
         // To prevent flakes, suppress window content change events from page load.
-        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting();
+        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting(true);
 
         mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
@@ -6165,5 +6185,108 @@ public class WebContentsAccessibilityTest {
         // Force recording of UMA histograms.
         mActivityTestRule.mWcax.forceRecordUMAHistogramsForTesting();
         mActivityTestRule.mWcax.forceRecordCacheUMAHistogramsForTesting();
+    }
+
+    private Button addFocusedNativeButtonBeforeWebView() {
+        Button button =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Activity activity = mActivityTestRule.getActivity();
+                            ViewGroup rootView = activity.findViewById(android.R.id.content);
+                            Button btn = new Button(activity);
+                            btn.setId(View.generateViewId());
+                            btn.setText("Native Button");
+                            btn.setFocusable(true);
+                            btn.setFocusableInTouchMode(true);
+                            rootView.addView(btn, 0);
+
+                            View containerView = mActivityTestRule.getContainerView();
+                            containerView.setFocusable(true);
+                            containerView.setFocusableInTouchMode(true);
+                            int containerId = containerView.getId();
+                            if (containerId == View.NO_ID) {
+                                containerId = View.generateViewId();
+                                containerView.setId(containerId);
+                            }
+                            btn.setNextFocusForwardId(containerId);
+
+                            btn.requestFocus();
+                            return btn;
+                        });
+        CriteriaHelper.pollUiThread(() -> button.isFocused());
+        return button;
+    }
+
+    private void loadUrlMidTest(String targetHtml) throws Throwable {
+        WebContents webContents = mActivityTestRule.getWebContents();
+        NavigationController navigationController = webContents.getNavigationController();
+        TestCallbackHelperContainer testCallbackHelperContainer =
+                new TestCallbackHelperContainer(webContents);
+        String url = UrlUtils.encodeHtmlDataUri(targetHtml);
+
+        mActivityTestRule.loadUrl(
+                navigationController, testCallbackHelperContainer, new LoadUrlParams(url));
+    }
+
+    @Test
+    @LargeTest
+    public void testFocusSyncFromNativeToWebView() throws Throwable {
+        // Boot the activity with a simple blank page.
+        setupTestWithHTML("<html><body></body></html>");
+        WebContentsAccessibilityImpl.suppressLoadCompleteEventForTesting(false);
+
+        // Setup a focused native button in front of the WebView.
+        final Button nativeButton = addFocusedNativeButtonBeforeWebView();
+
+        try {
+            // Clear the initial boot focus invocation records to avoid false verification failures.
+            clearInvocations(mActivityTestRule.getWebContentsAccessibility());
+
+            // Navigate to target page.
+            loadUrlMidTest("<input id='input' type='text' value='Focus me'>");
+
+            // Wait for C++ manager connection.
+            CriteriaHelper.pollUiThread(
+                    () -> mActivityTestRule.mWcax.getAccessibilityNodeProviderCompat() != null,
+                    "Timed out waiting for root manager to connect after navigation");
+
+            int inputVvId = waitForNodeMatching(sClassNameMatcher, "android.widget.EditText");
+            assertNotEquals(View.NO_ID, inputVvId);
+
+            // VERIFY: Focus is still on the native button, not the WebView.
+            assertTrue(nativeButton.isFocused());
+            assertFalse(mActivityTestRule.getContainerView().hasFocus());
+
+            // VERIFY: No focus events have been sent yet.
+            verify(mActivityTestRule.getWebContentsAccessibility(), never())
+                    .sendAccessibilityEvent(anyInt(), eq(AccessibilityEvent.TYPE_VIEW_FOCUSED));
+            verify(mActivityTestRule.getWebContentsAccessibility(), never())
+                    .sendAccessibilityEvent(
+                            anyInt(), eq(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED));
+
+            // ACT: Tab into WebView.
+            InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_TAB);
+
+            // Wait for WebView to gain focus.
+            CriteriaHelper.pollUiThread(() -> mActivityTestRule.getContainerView().hasFocus());
+            int rootId =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> mActivityTestRule.mWcax.getRootIdForTesting());
+
+            // VERIFY: We expect TYPE_VIEW_ACCESSIBILITY_FOCUSED to be sent.
+            verify(
+                            mActivityTestRule.getWebContentsAccessibility(),
+                            timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                    .sendAccessibilityEvent(
+                            eq(rootId), eq(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED));
+        } finally {
+            // Clean up views.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        ViewGroup rootView =
+                                mActivityTestRule.getActivity().findViewById(android.R.id.content);
+                        rootView.removeView(nativeButton);
+                    });
+        }
     }
 }
