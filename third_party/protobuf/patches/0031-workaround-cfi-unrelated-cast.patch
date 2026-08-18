@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/descriptor.cc b/src/google/protobuf/descriptor.cc
-index 7456d3c3d6653..7731a9405e031 100644
+index 9e093c9..9c936d9 100644
 --- a/src/google/protobuf/descriptor.cc
 +++ b/src/google/protobuf/descriptor.cc
-@@ -343,22 +343,16 @@ class FlatAllocation {
+@@ -347,22 +347,16 @@ class FlatAllocation {
      return ends_.template Get<U>();
    }
  
@@ -30,10 +30,10 @@ index 7456d3c3d6653..7731a9405e031 100644
  
    template <typename U>
 diff --git a/src/google/protobuf/map.h b/src/google/protobuf/map.h
-index 71abcb9b80564..2d3ef18139e2f 100644
+index d384d2a..659f2c8 100644
 --- a/src/google/protobuf/map.h
 +++ b/src/google/protobuf/map.h
-@@ -320,6 +320,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
+@@ -321,6 +321,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
    UntypedMapBase& operator=(const UntypedMapBase&) = delete;
  
    template <typename T>
@@ -41,7 +41,7 @@ index 71abcb9b80564..2d3ef18139e2f 100644
    T* GetKey(NodeBase* node) const {
      // Debug check that `T` matches what we expect from the type info.
      ABSL_DCHECK_EQ(static_cast<int>(StaticTypeKind<T>()),
-@@ -332,6 +333,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
+@@ -333,6 +334,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
    }
  
    template <typename T>
@@ -50,10 +50,10 @@ index 71abcb9b80564..2d3ef18139e2f 100644
      // Debug check that `T` matches what we expect from the type info.
      ABSL_DCHECK_EQ(static_cast<int>(StaticTypeKind<T>()),
 diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
-index a12a49e9971af..8b2ebe31195d2 100644
+index 3c7c91f..4334a6e 100644
 --- a/src/google/protobuf/port_def.inc
 +++ b/src/google/protobuf/port_def.inc
-@@ -601,6 +601,16 @@ static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
+@@ -572,6 +572,16 @@
  #define PROTOBUF_PREFETCH_WITH_OFFSET(base, offset)
  #endif
  
@@ -69,4 +69,4 @@ index a12a49e9971af..8b2ebe31195d2 100644
 +
  // ThreadSafeArenaz is turned off completely in opensource builds.
  
- 
+ #include "google/protobuf/os_macros_undef.inc"

@@ -81,13 +81,13 @@ void EmitFuncs(const FieldDescriptor* field, io::Printer* p) {
 
 class Map : public FieldGeneratorBase {
  public:
-  Map(const FieldDescriptor* field, const Options& opts,
-      MessageSCCAnalyzer* scc)
-      : FieldGeneratorBase(field, opts, scc),
+  Map(const FieldDescriptor* field, const Options& opts)
+      : FieldGeneratorBase(field, opts),
         key_(field->message_type()->map_key()),
         val_(field->message_type()->map_value()),
         opts_(&opts),
-        has_required_(scc->HasRequiredFields(field->message_type())),
+        has_required_(
+            opts.scc_analyzer->HasRequiredFields(field->message_type())),
         lite_(!HasDescriptorMethods(field->file(), opts)) {}
   ~Map() override = default;
 
@@ -114,7 +114,6 @@ class Map : public FieldGeneratorBase {
   }
 
   void GenerateCopyConstructorCode(io::Printer* p) const override {
-    GenerateConstructorCode(p);
     GenerateMergingCode(p);
   }
 
@@ -159,8 +158,6 @@ class Map : public FieldGeneratorBase {
     }
   }
 
-  void GenerateConstructorCode(io::Printer* p) const override {}
-
   void GenerateDestructorCode(io::Printer* p) const override {
     if (should_split()) {
       p->Emit(R"cc(
@@ -177,7 +174,6 @@ class Map : public FieldGeneratorBase {
   void GenerateByteSize(io::Printer* p) const override;
 
  private:
-
   const FieldDescriptor* key_;
   const FieldDescriptor* val_;
   const Options* opts_;
@@ -197,10 +193,7 @@ void Map::GeneratePrivateMembers(io::Printer* p) const {
              {"kValType",
               absl::AsciiStrToUpper(DeclaredTypeMethodName(val_->type()))}},
             R"cc(
-              $pbi$::$MapField$<$Entry$, $Key$, $Val$,
-                                $pbi$::WireFormatLite::TYPE_$kKeyType$,
-                                $pbi$::WireFormatLite::TYPE_$kValType$>
-                  $name$_;
+              $pbi$::$MapField$<$Entry$, $Key$, $Val$> $name$_;
             )cc");
   }
 }
@@ -326,9 +319,8 @@ void Map::GenerateByteSize(io::Printer* p) const {
 }  // namespace
 
 std::unique_ptr<FieldGeneratorBase> MakeMapGenerator(
-    const FieldDescriptor* desc, const Options& options,
-    MessageSCCAnalyzer* scc) {
-  return std::make_unique<Map>(desc, options, scc);
+    const FieldDescriptor* desc, const Options& options) {
+  return std::make_unique<Map>(desc, options);
 }
 
 }  // namespace cpp

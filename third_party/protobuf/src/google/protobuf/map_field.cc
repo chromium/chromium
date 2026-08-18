@@ -19,6 +19,7 @@
 #include "google/protobuf/arena.h"
 #include "google/protobuf/descriptor.h"
 #include "google/protobuf/map.h"
+#include "google/protobuf/message_lite.h"
 #include "google/protobuf/port.h"
 #include "google/protobuf/raw_ptr.h"
 #include "google/protobuf/repeated_ptr_field.h"
@@ -32,25 +33,28 @@ namespace internal {
 
 MapFieldBase::~MapFieldBase() { delete maybe_payload(); }
 
-void MapFieldBase::MergeFrom(const MapFieldBase& other) {
-  MutableMap()->UntypedMergeFrom(other.GetMap());
+void MapFieldBase::MergeFrom(Arena* arena, const MapFieldBase& other) {
+  MutableMap()->UntypedMergeFrom(arena, other.GetMap());
 }
 
-void MapFieldBase::Swap(MapFieldBase* other) {
-  if (arena() == other->arena()) {
+void MapFieldBase::Swap(Arena* arena, MapFieldBase* other, Arena* other_arena) {
+  ABSL_DCHECK_EQ(arena, this->arena());
+  ABSL_DCHECK_EQ(other_arena, other->arena());
+
+  if (arena == other_arena) {
     InternalSwap(other);
     return;
   }
   MapFieldBase::SwapPayload(*this, *other);
-  GetMapRaw().UntypedSwap(other->GetMapRaw());
+  GetMapRaw().UntypedSwap(arena, other->GetMapRaw(), other_arena);
 }
 
 const Message* MapFieldBase::GetPrototype() const {
-  const void* p = prototype_or_payload_.load(std::memory_order_acquire);
+  const void* p = globals_or_payload_.load(std::memory_order_acquire);
   if (IsPayload(p)) {
     return ToPayload(p)->prototype();
   }
-  return reinterpret_cast<const Message*>(p);
+  return MessageGlobalsBase::ToDefaultInstance<Message>(p);
 }
 
 template <typename Map, typename F>
@@ -83,26 +87,31 @@ bool MapFieldBase::InsertOrLookupMapValueNoSync(const MapKey& map_key,
   }
 
   auto& map = GetMapRaw();
+  Arena* arena = map.arena();
 
-  NodeBase* node = map.AllocNode();
+  NodeBase* node = map.AllocNode(arena);
   map.VisitValue(node, [&](auto* v) { InitializeKeyValue(v); });
   val->SetValue(map.GetVoidValue(node));
 
   return VisitMapKey(map_key, map, [&](auto& map, const auto& key) {
     InitializeKeyValue(map.GetKey(node), key);
     map.InsertOrReplaceNode(
+        arena,
         static_cast<typename std::decay_t<decltype(map)>::KeyNode*>(node));
     return true;
   });
 }
 
-bool MapFieldBase::DeleteMapValue(const MapKey& map_key) {
-  return VisitMapKey(map_key, *MutableMap(), [](auto& map, const auto& key) {
-    return map.EraseImpl(key);
-  });
+bool MapFieldBase::DeleteMapValue(Arena* arena, const MapKey& map_key) {
+  return VisitMapKey(map_key, *MutableMap(),
+                     [arena](auto& map, const auto& key) {
+                       return map.EraseImpl(arena, key);
+                     });
 }
 
-void MapFieldBase::ClearMapNoSync() { GetMapRaw().ClearTable(true); }
+void MapFieldBase::ClearMapNoSync() {
+  GetMapRaw().ClearTable(arena(), /*reset=*/true);
+}
 
 template <bool kIsMutable>
 void MapFieldBase::SetMapIteratorValue(
@@ -205,7 +214,7 @@ static void SwapRelaxed(std::atomic<T>& a, std::atomic<T>& b) {
 }
 
 MapFieldBase::ReflectionPayload& MapFieldBase::PayloadSlow() const {
-  const void* p = prototype_or_payload_.load(std::memory_order_acquire);
+  const void* p = globals_or_payload_.load(std::memory_order_acquire);
   if (!IsPayload(p)) {
     // Inject the sync callback.
     sync_map_with_repeated.store(
@@ -216,12 +225,12 @@ MapFieldBase::ReflectionPayload& MapFieldBase::PayloadSlow() const {
         },
         std::memory_order_relaxed);
 
-    const Message* prototype = static_cast<const Message*>(p);
+    const auto* prototype = MessageGlobalsBase::ToDefaultInstance<Message>(p);
     auto* payload =
         Arena::Create<ReflectionPayload>(arena(), arena(), prototype);
 
     auto new_p = ToTaggedPtr(payload);
-    if (prototype_or_payload_.compare_exchange_strong(
+    if (globals_or_payload_.compare_exchange_strong(
             p, new_p, std::memory_order_acq_rel)) {
       // We were able to store it.
       p = new_p;
@@ -236,7 +245,7 @@ MapFieldBase::ReflectionPayload& MapFieldBase::PayloadSlow() const {
 
 void MapFieldBase::SwapPayload(MapFieldBase& lhs, MapFieldBase& rhs) {
   if (lhs.arena() == rhs.arena()) {
-    SwapRelaxed(lhs.prototype_or_payload_, rhs.prototype_or_payload_);
+    SwapRelaxed(lhs.globals_or_payload_, rhs.globals_or_payload_);
     return;
   }
   auto* p1 = lhs.maybe_payload();
@@ -338,9 +347,13 @@ void MapFieldBase::SyncRepeatedFieldWithMapNoLock() {
   SetMapIteratorValue(&it);
   end.iter_ = UntypedMapBase::EndIterator();
 
+  Arena* arena = this->arena();
   for (; !EqualIterator(it, end); IncreaseIterator(&it)) {
-    Message* new_entry = prototype->New(arena());
-    rep.AddAllocated(new_entry);
+    Message* new_entry = reinterpret_cast<Message*>(
+        rep.AddInternal(arena, [prototype](Arena* arena, void*& ptr) {
+          ptr = prototype->New(arena);
+        }));
+
     const MapKey& map_key = it.GetKey();
     switch (key_des->cpp_type()) {
       case FieldDescriptor::CPPTYPE_STRING:

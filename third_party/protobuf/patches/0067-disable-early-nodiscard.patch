@@ -1,0 +1,326 @@
+diff --git a/src/google/protobuf/compiler/cpp/field_generators/cord_field.cc b/src/google/protobuf/compiler/cpp/field_generators/cord_field.cc
+index 2f004a1..af137d1 100644
+--- a/src/google/protobuf/compiler/cpp/field_generators/cord_field.cc
++++ b/src/google/protobuf/compiler/cpp/field_generators/cord_field.cc
+@@ -170,7 +170,7 @@ void CordFieldGenerator::GenerateAccessorDeclarations(io::Printer* p) const {
+       p->WithVars(AnnotatedAccessors(field_, {"mutable_"}, Semantic::kAlias));
+ 
+   p->Emit(R"cc(
+-    [[nodiscard]] $deprecated_attr$const ::absl::Cord& $name$() const;
++    $deprecated_attr$const ::absl::Cord& $name$() const;
+     $deprecated_attr$void $set_name$(const ::absl::Cord& value);
+     $deprecated_attr$void $set_name$(::absl::string_view value);
+ 
+diff --git a/src/google/protobuf/compiler/cpp/field_generators/enum_field.cc b/src/google/protobuf/compiler/cpp/field_generators/enum_field.cc
+index e8e34f5..998129c 100644
+--- a/src/google/protobuf/compiler/cpp/field_generators/enum_field.cc
++++ b/src/google/protobuf/compiler/cpp/field_generators/enum_field.cc
+@@ -149,7 +149,7 @@ void SingularEnum::GenerateAccessorDeclarations(io::Printer* p) const {
+       AnnotatedAccessors(field_, {"", "_internal_", "_internal_set_"}));
+   auto vs = p->WithVars(AnnotatedAccessors(field_, {"set_"}, Semantic::kSet));
+   p->Emit(R"cc(
+-    [[nodiscard]] $DEPRECATED$ $Enum$ $name$() const;
++    $DEPRECATED$ $Enum$ $name$() const;
+     $DEPRECATED$ void $set_name$($Enum$ value);
+ 
+     private:
+@@ -393,16 +393,16 @@ void RepeatedEnum::GenerateAccessorDeclarations(io::Printer* p) const {
+     switch (cpp_repeated_type_) {
+       case FieldDescriptor::CppRepeatedType::kRepeated:
+         p->Emit(R"cc(
+-          [[nodiscard]] $DEPRECATED$ const $pb$::RepeatedField<int>& $name$()
++          $DEPRECATED$ const $pb$::RepeatedField<int>& $name$()
+               const;
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedField<int>* $nonnull$ $mutable_name$();
++          $DEPRECATED$ $pb$::RepeatedField<int>* $nonnull$ $mutable_name$();
+         )cc");
+         break;
+       case FieldDescriptor::CppRepeatedType::kProxy:
+         p->Emit(R"cc(
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedFieldProxy<const int>
++          $DEPRECATED$ $pb$::RepeatedFieldProxy<const int>
+           $name$() const;
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedFieldProxy<int> $mutable_name$();
++          $DEPRECATED$ $pb$::RepeatedFieldProxy<int> $mutable_name$();
+         )cc");
+         break;
+     }
+@@ -410,7 +410,7 @@ void RepeatedEnum::GenerateAccessorDeclarations(io::Printer* p) const {
+ 
+   p->Emit({{"decl_field_accessors", decl_field_accessors}}, R"cc(
+     public:
+-    [[nodiscard]] $DEPRECATED$ $Enum$ $name$(int index) const;
++    $DEPRECATED$ $Enum$ $name$(int index) const;
+     $DEPRECATED$ void $set_name$(int index, $Enum$ value);
+     $DEPRECATED$ void $add_name$($Enum$ value);
+     $decl_field_accessors$;
+diff --git a/src/google/protobuf/compiler/cpp/field_generators/map_field.cc b/src/google/protobuf/compiler/cpp/field_generators/map_field.cc
+index 753da70..1ec67e9 100644
+--- a/src/google/protobuf/compiler/cpp/field_generators/map_field.cc
++++ b/src/google/protobuf/compiler/cpp/field_generators/map_field.cc
+@@ -204,8 +204,8 @@ void Map::GenerateAccessorDeclarations(io::Printer* p) const {
+   auto v2 = p->WithVars(AnnotatedAccessors(field_, {"mutable_"},
+                                            io::AnnotationCollector::kAlias));
+   p->Emit(R"cc(
+-    [[nodiscard]] $DEPRECATED$ const $Map$& $name$() const;
+-    [[nodiscard]] $DEPRECATED$ $Map$* $nonnull$ $mutable_name$();
++    $DEPRECATED$ const $Map$& $name$() const;
++    $DEPRECATED$ $Map$* $nonnull$ $mutable_name$();
+ 
+     private:
+     const $Map$& $_internal_name$() const;
+diff --git a/src/google/protobuf/compiler/cpp/field_generators/message_field.cc b/src/google/protobuf/compiler/cpp/field_generators/message_field.cc
+index e2e0cb9..616dabb 100644
+--- a/src/google/protobuf/compiler/cpp/field_generators/message_field.cc
++++ b/src/google/protobuf/compiler/cpp/field_generators/message_field.cc
+@@ -160,8 +160,8 @@ void SingularMessage::GenerateAccessorDeclarations(io::Printer* p) const {
+       AnnotatedAccessors(field_, {"mutable_"}, AnnotationCollector::kAlias));
+ 
+   p->Emit(R"cc(
+-    $DEPRECATED$ [[nodiscard]] const $Submsg$& $name$() const;
+-    $DEPRECATED$ [[nodiscard]] $Submsg$* $nullable$ $release_name$();
++    $DEPRECATED$ const $Submsg$& $name$() const;
++    $DEPRECATED$ $Submsg$* $nullable$ $release_name$();
+     $DEPRECATED$ $Submsg$* $nonnull$ $mutable_name$();
+     $DEPRECATED$ void $set_allocated_name$($Submsg$* $nullable$ value);
+     $DEPRECATED$ void $unsafe_arena_set_allocated_name$($Submsg$* $nullable$ value);
+@@ -765,17 +765,17 @@ void RepeatedMessage::GenerateAccessorDeclarations(io::Printer* p) const {
+     switch (cpp_repeated_type_) {
+       case FieldDescriptor::CppRepeatedType::kRepeated:
+         p->Emit(R"cc(
+-          [[nodiscard]] $DEPRECATED$ const $pb$::RepeatedPtrField<$Submsg$>&
++          $DEPRECATED$ const $pb$::RepeatedPtrField<$Submsg$>&
+           $name$() const;
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedPtrField<$Submsg$>* $nonnull$
++          $DEPRECATED$ $pb$::RepeatedPtrField<$Submsg$>* $nonnull$
+           $mutable_name$();
+         )cc");
+         break;
+       case FieldDescriptor::CppRepeatedType::kProxy:
+         p->Emit(R"cc(
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedFieldProxy<const $Submsg$>
++          $DEPRECATED$ $pb$::RepeatedFieldProxy<const $Submsg$>
+           $name$() const;
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedFieldProxy<$Submsg$> $mutable_name$();
++          $DEPRECATED$ $pb$::RepeatedFieldProxy<$Submsg$> $mutable_name$();
+         )cc");
+         break;
+     }
+@@ -793,8 +793,8 @@ void RepeatedMessage::GenerateAccessorDeclarations(io::Printer* p) const {
+   p->Emit({{"decl_field_accessors", decl_field_accessors},
+            {"maybe_weak_internal_accessors", maybe_weak_internal_accessors}},
+           R"cc(
+-            [[nodiscard]] $DEPRECATED$ const $Submsg$& $name$(int index) const;
+-            [[nodiscard]] $DEPRECATED$ $Submsg$* $nonnull$ $mutable_name$(int index);
++            $DEPRECATED$ const $Submsg$& $name$(int index) const;
++            $DEPRECATED$ $Submsg$* $nonnull$ $mutable_name$(int index);
+             $DEPRECATED$ $Submsg$* $nonnull$ $add_name$();
+             $decl_field_accessors$;
+ 
+diff --git a/src/google/protobuf/compiler/cpp/field_generators/primitive_field.cc b/src/google/protobuf/compiler/cpp/field_generators/primitive_field.cc
+index 4ae39d0..7cf1be6 100644
+--- a/src/google/protobuf/compiler/cpp/field_generators/primitive_field.cc
++++ b/src/google/protobuf/compiler/cpp/field_generators/primitive_field.cc
+@@ -166,7 +166,7 @@ void SingularPrimitive::GenerateAccessorDeclarations(io::Printer* p) const {
+       AnnotatedAccessors(field_, {"", "_internal_", "_internal_set_"}));
+   auto vs = p->WithVars(AnnotatedAccessors(field_, {"set_"}, Semantic::kSet));
+   p->Emit(R"cc(
+-    [[nodiscard]] $DEPRECATED$ $Type$ $name$() const;
++    $DEPRECATED$ $Type$ $name$() const;
+     $DEPRECATED$ void $set_name$($Type$ value);
+ 
+     private:
+@@ -461,16 +461,16 @@ void RepeatedPrimitive::GenerateAccessorDeclarations(io::Printer* p) const {
+     switch (cpp_repeated_type_) {
+       case FieldDescriptor::CppRepeatedType::kRepeated:
+         p->Emit(R"cc(
+-          [[nodiscard]] $DEPRECATED$ const $pb$::RepeatedField<$Type$>& $name$()
++          $DEPRECATED$ const $pb$::RepeatedField<$Type$>& $name$()
+               const;
+           $DEPRECATED$ $pb$::RepeatedField<$Type$>* $nonnull$ $mutable_name$();
+         )cc");
+         break;
+       case FieldDescriptor::CppRepeatedType::kProxy:
+         p->Emit(R"cc(
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedFieldProxy<const $Type$>
++          $DEPRECATED$ $pb$::RepeatedFieldProxy<const $Type$>
+           $name$() const;
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedFieldProxy<$Type$> $mutable_name$();
++          $DEPRECATED$ $pb$::RepeatedFieldProxy<$Type$> $mutable_name$();
+         )cc");
+         break;
+     }
+@@ -478,7 +478,7 @@ void RepeatedPrimitive::GenerateAccessorDeclarations(io::Printer* p) const {
+ 
+   p->Emit({{"decl_field_accessors", decl_field_accessors}},
+           R"cc(
+-            [[nodiscard]] $DEPRECATED$ $Type$ $name$(int index) const;
++            $DEPRECATED$ $Type$ $name$(int index) const;
+             $DEPRECATED$ void $set_name$(int index, $Type$ value);
+             $DEPRECATED$ void $add_name$($Type$ value);
+             $decl_field_accessors$;
+diff --git a/src/google/protobuf/compiler/cpp/field_generators/string_field.cc b/src/google/protobuf/compiler/cpp/field_generators/string_field.cc
+index b1d6f3f..cbe3fad 100644
+--- a/src/google/protobuf/compiler/cpp/field_generators/string_field.cc
++++ b/src/google/protobuf/compiler/cpp/field_generators/string_field.cc
+@@ -234,7 +234,7 @@ void SingularString::GenerateAccessorDeclarations(io::Printer* p) const {
+       AnnotatedAccessors(field_, {"mutable_"}, AnnotationCollector::kAlias));
+ 
+   p->Emit(R"cc(
+-    [[nodiscard]] $DEPRECATED$ const ::std::string& $name$() const;
++    $DEPRECATED$ const ::std::string& $name$() const;
+     //~ Using `Arg_ = const std::string&` will make the type of `arg`
+     //~ default to `const std::string&`, due to reference collapse. This
+     //~ is necessary because there are a handful of users that rely on
+@@ -242,7 +242,7 @@ void SingularString::GenerateAccessorDeclarations(io::Printer* p) const {
+     template <typename Arg_ = const ::std::string&, typename... Args_>
+     $DEPRECATED$ void $set_name$(Arg_&& arg, Args_... args);
+     $DEPRECATED$ ::std::string* $nonnull$ $mutable_name$();
+-    $DEPRECATED$ [[nodiscard]] ::std::string* $nullable$ $release_name$();
++    $DEPRECATED$ ::std::string* $nullable$ $release_name$();
+     $DEPRECATED$ void $set_allocated_name$(::std::string* $nullable$ value);
+ 
+     private:
+@@ -772,20 +772,20 @@ void RepeatedString::GenerateAccessorDeclarations(io::Printer* p) const {
+     switch (cpp_repeated_type_) {
+       case FieldDescriptor::CppRepeatedType::kRepeated:
+         p->Emit(R"cc(
+-          [[nodiscard]] $DEPRECATED$ const
++          $DEPRECATED$ const
+               $pb$::RepeatedPtrField<::std::string>&
+               $name$() const;
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedPtrField<::std::string>*
++          $DEPRECATED$ $pb$::RepeatedPtrField<::std::string>*
+               $nonnull$
+               $mutable_name$();
+         )cc");
+         break;
+       case FieldDescriptor::CppRepeatedType::kProxy:
+         p->Emit(R"cc(
+-          [[nodiscard]] $DEPRECATED$
++          $DEPRECATED$
+               $pb$::RepeatedFieldProxy<const ::std::string>
+               $name$() const;
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedFieldProxy<::std::string>
++          $DEPRECATED$ $pb$::RepeatedFieldProxy<::std::string>
+           $mutable_name$();
+         )cc");
+         break;
+@@ -793,7 +793,7 @@ void RepeatedString::GenerateAccessorDeclarations(io::Printer* p) const {
+   };
+ 
+   p->Emit({{"decl_field_accessors", decl_field_accessors}}, R"cc(
+-    [[nodiscard]] $DEPRECATED$ const ::std::string& $name$(int index) const;
++    $DEPRECATED$ const ::std::string& $name$(int index) const;
+     $DEPRECATED$ ::std::string* $nonnull$ $mutable_name$(int index);
+     template <typename Arg_ = const ::std::string&, typename... Args_>
+     $DEPRECATED$ void set_$name$(int index, Arg_&& value, Args_... args);
+diff --git a/src/google/protobuf/compiler/cpp/field_generators/string_view_field.cc b/src/google/protobuf/compiler/cpp/field_generators/string_view_field.cc
+index 1fcee37..3a6b139 100644
+--- a/src/google/protobuf/compiler/cpp/field_generators/string_view_field.cc
++++ b/src/google/protobuf/compiler/cpp/field_generators/string_view_field.cc
+@@ -228,7 +228,7 @@ void SingularStringView::GenerateAccessorDeclarations(io::Printer* p) const {
+       AnnotatedAccessors(field_, {"set_"}, AnnotationCollector::kSet));
+ 
+   p->Emit(R"cc(
+-    [[nodiscard]] $DEPRECATED$ ::absl::string_view $name$() const;
++    $DEPRECATED$ ::absl::string_view $name$() const;
+     template <typename Arg_ = ::std::string&&>
+     $DEPRECATED$ void $set_name$(Arg_&& arg);
+ 
+@@ -653,20 +653,20 @@ void RepeatedStringView::GenerateAccessorDeclarations(io::Printer* p) const {
+     switch (cpp_repeated_type_) {
+       case FieldDescriptor::CppRepeatedType::kRepeated:
+         p->Emit(R"cc(
+-          [[nodiscard]] $DEPRECATED$ const
++          $DEPRECATED$ const
+               $pb$::RepeatedPtrField<::std::string>&
+               $name$() const;
+-          [[nodiscard]] $DEPRECATED$ $pb$::RepeatedPtrField<::std::string>*
++          $DEPRECATED$ $pb$::RepeatedPtrField<::std::string>*
+               $nonnull$
+               $mutable_name$();
+         )cc");
+         break;
+       case FieldDescriptor::CppRepeatedType::kProxy:
+         p->Emit(R"cc(
+-          [[nodiscard]] $DEPRECATED$
++          $DEPRECATED$
+               $pb$::RepeatedFieldProxy<const ::absl::string_view>
+               $name$() const;
+-          [[nodiscard]] $DEPRECATED$
++          $DEPRECATED$
+               $pb$::RepeatedFieldProxy<::absl::string_view>
+               $mutable_name$();
+         )cc");
+@@ -675,7 +675,7 @@ void RepeatedStringView::GenerateAccessorDeclarations(io::Printer* p) const {
+   };
+ 
+   p->Emit({{"decl_field_accessors", decl_field_accessors}}, R"cc(
+-    [[nodiscard]] $DEPRECATED$ ::absl::string_view $name$(int index) const;
++    $DEPRECATED$ ::absl::string_view $name$(int index) const;
+     template <typename Arg_ = ::std::string&&>
+     $DEPRECATED$ void set_$name$(int index, Arg_&& value);
+     template <typename Arg_ = ::std::string&&>
+diff --git a/src/google/protobuf/compiler/cpp/message.cc b/src/google/protobuf/compiler/cpp/message.cc
+index f9a26a9..cf4a531 100644
+--- a/src/google/protobuf/compiler/cpp/message.cc
++++ b/src/google/protobuf/compiler/cpp/message.cc
+@@ -604,7 +604,7 @@ std::vector<Sub> ClassVars(const Descriptor* desc, Options opts) {
+       {"full_name", desc->full_name()},
+       {"superclass", SuperClassName(desc, opts)},
+       // TODO: Enable this everywhere.
+-      {"nodiscard", opts.opensource_runtime ? "[[nodiscard]]" : ""},
++      {"nodiscard", ""},
+       {"unused",
+        opts.opensource_runtime ? "PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED" : ""},
+       {"globals", MsgGlobalsInstanceName(desc, opts)},
+@@ -794,7 +794,7 @@ void MessageGenerator::GenerateFieldAccessorDeclarations(io::Printer* p) {
+                 p->Emit({Sub("name_size", absl::StrCat(name, "_size"))
+                              .AnnotatedAs(field)},
+                         R"cc(
+-                          [[nodiscard]] $deprecated_attr $int $name_size$()
++                          $deprecated_attr $int $name_size$()
+                               $const_impl$;
+                         )cc");
+ 
+@@ -814,7 +814,7 @@ void MessageGenerator::GenerateFieldAccessorDeclarations(io::Printer* p) {
+                 p->Emit({Sub("has_name", absl::StrCat("has_", name))
+                              .AnnotatedAs(field)},
+                         R"cc(
+-                          [[nodiscard]] $deprecated_attr $bool $has_name$()
++                          $deprecated_attr $bool $has_name$()
+                               $const_impl$;
+                         )cc");
+               }},
+@@ -976,7 +976,7 @@ void MessageGenerator::GenerateFieldAccessorDeclarations(io::Printer* p) {
+       }
+       template <typename _proto_TypeTraits, $pbi$::FieldType _field_type,
+                 bool _is_packed>
+-      [[nodiscard]] inline typename _proto_TypeTraits::Singular::MutableType
++      inline typename _proto_TypeTraits::Singular::MutableType
+       ReleaseExtension(const $pbi$::ExtensionIdentifier<
+                        $Msg$, _proto_TypeTraits, _field_type, _is_packed>& id) {
+         $WeakDescriptorSelfPin$;
+@@ -2124,7 +2124,7 @@ void MessageGenerator::GenerateClassDefinition(io::Printer* p) {
+           // Generate oneof function declarations
+           for (auto oneof : OneOfRange(descriptor_)) {
+             p->Emit({{"oneof_name", oneof->name()}}, R"cc(
+-              [[nodiscard]] inline bool has_$oneof_name$() const;
++              inline bool has_$oneof_name$() const;
+               inline void clear_has_$oneof_name$();
+             )cc");
+           }
+diff --git a/src/google/protobuf/port_def.inc b/src/google/protobuf/port_def.inc
+index 4334a6e..fd5aa42 100644
+--- a/src/google/protobuf/port_def.inc
++++ b/src/google/protobuf/port_def.inc
+@@ -138,7 +138,7 @@
+ 
+ #endif
+ 
+-#define PROTOBUF_FUTURE_ADD_EARLY_NODISCARD [[nodiscard]]
++#define PROTOBUF_FUTURE_ADD_EARLY_NODISCARD
+ #if !defined(__clang__) && defined(__GNUC__) && __GNUC__ < 13
+ // GCC < 13 doesn't support mixing [[]] attributes with __attribute__, and this
+ // is used with PROTOBUF_EXPORT for shared library visibility.

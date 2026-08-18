@@ -18,7 +18,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <new>
-#include <optional>
 #include <string>
 #include <type_traits>
 #include <typeinfo>
@@ -32,8 +31,8 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
-#include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/optional.h"
 
 #if defined(ABSL_HAVE_ADDRESS_SANITIZER)
 #include <sanitizer/asan_interface.h>
@@ -134,6 +133,18 @@ inline void SetAllocateAtLeastHook(AllocateAtLeastHookFn fn, void* context) {}
 
 #endif  // !NDEBUG && ABSL_HAVE_THREAD_LOCAL && __cpp_inline_variables
 
+// Allocates `size` bytes. This wrapper allows memory allocations to be
+// optimized by the compiler since `operator new` is considered observable.
+inline void* Allocate(size_t size) {
+#if ABSL_HAVE_BUILTIN(__builtin_operator_new)
+  // Allows the compiler to merge or optimize away the allocation even if it
+  // would violate the observability guarantees of ::operator new.
+  return __builtin_operator_new(size);
+#else
+  return ::operator new(size);
+#endif
+}
+
 // Allocates at least `size` bytes. This function follows the c++ language
 // proposal from D0901R10 (http://wg21.link/D0901R10) and will be implemented
 // in terms of the new operator new semantics when available. The allocated
@@ -145,7 +156,7 @@ inline SizedPtr AllocateAtLeast(size_t size) {
     return allocate_at_least_hook(size, allocate_at_least_hook_context);
   }
 #endif  // !NDEBUG && ABSL_HAVE_THREAD_LOCAL && __cpp_inline_variables
-  return {::operator new(size), size};
+  return {Allocate(size), size};
 }
 
 inline void SizedDelete(void* p, size_t size) {
@@ -210,38 +221,41 @@ inline ToRef DownCast(From& f) {
 
 // Looks up the name of `T` via RTTI, if RTTI is available.
 template <typename T>
-inline std::optional<absl::string_view> RttiTypeName() {
+inline absl::optional<absl::string_view> RttiTypeName() {
 #if PROTOBUF_RTTI
   return typeid(T).name();
 #else
-  return std::nullopt;
+  return absl::nullopt;
 #endif
 }
 
 // Helpers for identifying our supported types.
 template <typename T>
 struct is_supported_integral_type
-    : absl::disjunction<std::is_same<T, int32_t>, std::is_same<T, uint32_t>,
-                        std::is_same<T, int64_t>, std::is_same<T, uint64_t>,
-                        std::is_same<T, bool>> {};
+    : std::disjunction<std::is_same<T, int>, std::is_same<T, unsigned int>,
+                       std::is_same<T, long>,                // NOLINT
+                       std::is_same<T, unsigned long>,       // NOLINT
+                       std::is_same<T, long long>,           // NOLINT
+                       std::is_same<T, unsigned long long>,  // NOLINT
+                       std::is_same<T, bool>> {};
 
 template <typename T>
 struct is_supported_floating_point_type
-    : absl::disjunction<std::is_same<T, float>, std::is_same<T, double>> {};
+    : std::disjunction<std::is_same<T, float>, std::is_same<T, double>> {};
 
 template <typename T>
 struct is_supported_string_type
-    : absl::disjunction<std::is_same<T, std::string>> {};
+    : std::disjunction<std::is_same<T, std::string>> {};
 
 template <typename T>
 struct is_supported_scalar_type
-    : absl::disjunction<is_supported_integral_type<T>,
-                        is_supported_floating_point_type<T>,
-                        is_supported_string_type<T>> {};
+    : std::disjunction<is_supported_integral_type<T>,
+                       is_supported_floating_point_type<T>,
+                       is_supported_string_type<T>> {};
 
 template <typename T>
 struct is_supported_message_type
-    : absl::disjunction<std::is_base_of<MessageLite, T>> {
+    : std::disjunction<std::is_base_of<MessageLite, T>> {
   static constexpr auto force_complete_type = sizeof(T);
 };
 
@@ -284,14 +298,6 @@ inline constexpr bool ForceSplitFieldsInProtoc() {
 #else
   return false;
 #endif
-}
-
-// Returns true if hasbits for repeated fields are enabled (b/391445226). This
-// flag-gates the rollout of the feature, and if disabled will disable the
-// feature. This will be removed once the feature is fully rolled out and
-// verified.
-inline constexpr bool EnableExperimentalHintHasBitsForRepeatedFields() {
-  return true;
 }
 
 // Returns true if debug hardening for clearing oneof message on arenas is
@@ -652,6 +658,38 @@ inline bool IsMemoryPoisoned([[maybe_unused]] const void* p) {
 #endif
 }
 
+inline constexpr bool ShouldBatchSingularString() {
+#ifdef PROTOBUF_INTERNAL_BATCH_SINGULAR_STRING
+  return true;
+#else
+  return false;
+#endif
+}
+
+inline constexpr bool ShouldBatchRepeatedString() {
+#ifdef PROTOBUF_INTERNAL_BATCH_REPEATED_STRING
+  return true;
+#else
+  return false;
+#endif
+}
+
+inline constexpr bool ShouldBatchRepeatedNumeric() {
+#ifdef PROTOBUF_INTERNAL_BATCH_REPEATED_NUMERIC
+  return true;
+#else
+  return false;
+#endif
+}
+
+inline constexpr bool UseBatchOffset() {
+#ifdef PROTOBUF_INTERNAL_USE_BATCH_OFFSET
+  return true;
+#else
+  return false;
+#endif
+}
+
 #if defined(ABSL_HAVE_THREAD_SANITIZER)
 // TODO: it would be preferable to use __tsan_external_read/
 // __tsan_external_write, but they can cause dlopen issues.
@@ -741,6 +779,9 @@ class NoopDebugCounter {
   constexpr void Inc() {}
 };
 
+// Pretty random large number that seems like a safe allocation on most systems.
+inline constexpr size_t kSafeStringSize = 50000000;
+
 // Default empty string object. Don't use this directly. Instead, call
 // GetEmptyString() to get the reference. This empty string is aligned with a
 // minimum alignment of 8 bytes to match the requirement of ArenaStringPtr.
@@ -752,11 +793,12 @@ class alignas(8) GlobalEmptyStringConstexpr {
   // Nothing to init, or destroy.
   std::string* Init() const { return nullptr; }
 
-  // Disable the optimization for MSVC.
+  // Disable the optimization for MSVC and Xtensa.
   // There are some builds where the default constructed string can't be used as
   // `constinit` even though the constructor is `constexpr` and can be used
   // during constant evaluation.
-#if !defined(_MSC_VER)
+#if !defined(_MSC_VER) && !defined(__XTENSA__)
+  // Compilation fails on Xtensa: b/467129751
   template <typename T = std::string, bool = (T(), true)>
   static constexpr std::true_type HasConstexprDefaultConstructor(int) {
     return {};
@@ -789,10 +831,29 @@ using GlobalEmptyString = std::conditional_t<
 
 PROTOBUF_EXPORT extern GlobalEmptyString fixed_address_empty_string;
 
+PROTOBUF_EXPORT ABSL_ATTRIBUTE_NORETURN PROTOBUF_NOINLINE void
+HandleAddOverflow(int a, int b);
+
+inline int CheckedAdd(int a, int b) {
+  int sum;
+#if ABSL_HAVE_BUILTIN(__builtin_add_overflow)
+  bool overflow = __builtin_add_overflow(a, b, &sum);
+#else
+  int64_t sum64 = static_cast<int64_t>(a) + static_cast<int64_t>(b);
+  sum = static_cast<int>(sum64);
+  bool overflow = sum64 != sum;
+#endif
+  if (ABSL_PREDICT_FALSE(overflow)) {
+    HandleAddOverflow(a, b);
+  }
+  return sum;
+}
+
 enum class BoundsCheckMode { kNoEnforcement, kReturnDefault, kAbort };
 
 PROTOBUF_EXPORT constexpr BoundsCheckMode GetBoundsCheckMode() {
-#if defined(PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_ABORT)
+#if defined(PROTO2_OPENSOURCE) || \
+    defined(PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_ABORT)
   return BoundsCheckMode::kAbort;
 #elif defined(PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_RETURN_DEFAULT)
   return BoundsCheckMode::kReturnDefault;
@@ -820,6 +881,23 @@ constexpr bool HasCrc32() { return false; }
 inline uint32_t Crc32(uint32_t, uint64_t) { return 0; }
 
 #endif
+
+// Check minimum Protobuf support defined at:
+// https://github.com/google/oss-policies-info/blob/main/foundational-cxx-support-matrix.md
+#ifdef __clang__
+static_assert(PROTOBUF_CLANG_MIN(6, 0),
+              "Protobuf only supports Clang 6.0 and newer.");
+#elif defined(__GNUC__)
+static_assert(PROTOBUF_GNUC_MIN(7, 3),
+              "Protobuf only supports GCC 7.3 and newer.");
+#elif defined(_MSVC_LANG)
+static_assert(PROTOBUF_MSC_VER_MIN(1910),
+              "Protobuf only supports MSVC 2017 and newer.");
+#endif
+static_assert(PROTOBUF_CPLUSPLUS_MIN(201703L),
+              "Protobuf only supports C++17 and newer.");
+static_assert(PROTOBUF_ABSL_MIN(20230125, 3),
+              "Protobuf only supports Abseil version 20230125.3 and newer.");
 
 }  // namespace internal
 }  // namespace protobuf

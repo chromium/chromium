@@ -62,16 +62,8 @@ void EnumLiteGenerator::Generate(io::Printer* printer) {
   MaybePrintGeneratedAnnotation(context_, printer, descriptor_, immutable_api_);
 
   if (CheckLargeEnum(descriptor_)) {
-    std::vector<
-        std::pair<const EnumValueDescriptor*, const EnumValueDescriptor*>>
-        alias_pairs;
-    alias_pairs.reserve(aliases_.size());
-    for (const Alias& alias : aliases_) {
-      alias_pairs.emplace_back(alias.value, alias.canonical_value);
-    }
-
-    GenerateLarge(printer, descriptor_, canonical_values_, alias_pairs,
-                  immutable_api_, context_, name_resolver_);
+    GenerateLarge(printer, descriptor_, immutable_api_, context_,
+                  name_resolver_);
     return;
   }
 
@@ -145,8 +137,8 @@ void EnumLiteGenerator::Generate(io::Printer* printer) {
   if (!descriptor_->is_closed()) {
     printer->Print(
         "  if (this == UNRECOGNIZED) {\n"
-        "    throw new java.lang.IllegalArgumentException(\n"
-        "        \"Can't get the number of an unknown enum value.\");\n"
+        "    return "
+        "com.google.protobuf.Internal.throwCannotGetNumberOfUnrecognized();\n"
         "  }\n");
   }
   printer->Print(

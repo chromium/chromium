@@ -32,7 +32,10 @@ group("absl") {
 }
 
 config("protobuf_config") {
-  include_dirs = [ "src" ]
+  include_dirs = [
+    "src",
+    "third_party/utf8_range",
+  ]
   defines = [
     "GOOGLE_PROTOBUF_NO_RTTI",
     "PROTOBUF_INTERNAL_BOUNDS_CHECK_MODE_ABORT",
@@ -63,7 +66,10 @@ config("protobuf_config_internal") {
 # This config should be applied to targets using generated code from the proto
 # compiler. It sets up the include directories properly.
 config("using_proto") {
-  include_dirs = [ "src" ]
+  include_dirs = [
+    "src",
+    "third_party/utf8_range",
+  ]
 }
 
 # Configs to remove from the main protobuf libraries (lite and full)
@@ -95,7 +101,10 @@ if (!is_debug && is_android) {
 source_set("protobuf_headers_source_set") {
   visibility = [ ":*" ]
   public = protobuf_headers
-  public_deps = [ ":absl" ]
+  public_deps = [
+    ":absl",
+    ":utf8_range",
+  ]
   public_configs = [ ":protobuf_config" ]
 }
 

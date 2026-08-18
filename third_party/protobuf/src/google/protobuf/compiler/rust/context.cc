@@ -87,6 +87,18 @@ absl::StatusOr<Options> Options::Parse(absl::string_view param) {
         generated_entry_point_rs_file_name_arg->second;
   }
 
+  auto lite = absl::c_find_if(
+      args, [](auto& arg) { return arg.first == "forced_lite_runtime"; });
+  if (lite != args.end()) {
+    opts.force_lite_runtime = lite->second == "true";
+  }
+
+  auto annotate_code = absl::c_find_if(
+      args, [](auto& arg) { return arg.first == "annotate_code"; });
+  if (annotate_code != args.end()) {
+    opts.annotate_code = annotate_code->second == "true";
+  }
+
   return opts;
 }
 

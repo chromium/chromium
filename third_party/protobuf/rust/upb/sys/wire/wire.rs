@@ -17,29 +17,31 @@ use sys::mini_table::mini_table::RawMiniTable;
 // LINT.IfChange(encode_status)
 #[repr(C)]
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
+#[allow(unused)] // C struct values used in FFI.
 pub enum EncodeStatus {
     Ok = 0,
     OutOfMemory = 1,
     MaxDepthExceeded = 2,
     MissingRequired = 3,
+    MaxSizeExceeded = 4,
 }
 // LINT.ThenChange()
 
 // LINT.IfChange(decode_status)
 #[repr(C)]
 #[derive(PartialEq, Eq, Copy, Clone, Debug)]
+#[allow(unused)] // C struct values used in FFI.
 pub enum DecodeStatus {
     Ok = 0,
-    Malformed = 1,
-    OutOfMemory = 2,
+    OutOfMemory = 1,
+    Malformed = 2,
     BadUtf8 = 3,
     MaxDepthExceeded = 4,
     MissingRequired = 5,
-    UnlinkedSubMessage = 6,
 }
 // LINT.ThenChange()
 
-extern "C" {
+unsafe extern "C" {
     // SAFETY:
     // - `mini_table` is the one associated with `msg`
     // - `buf` and `buf_size` are legally writable.

@@ -10,6 +10,7 @@
 __author__ = 'matthewtoia@google.com (Matt Toia)'
 
 import copy
+import timeit
 import unittest
 import warnings
 
@@ -32,6 +33,7 @@ from google.protobuf.internal import testing_refleaks
 from google.protobuf import duration_pb2
 from google.protobuf import struct_pb2
 from google.protobuf import timestamp_pb2
+from absl.testing import parameterized
 from google.protobuf import unittest_features_pb2
 from google.protobuf import unittest_import_pb2
 from google.protobuf import unittest_import_public_pb2
@@ -43,8 +45,50 @@ from google.protobuf import unittest_pb2
 
 warnings.simplefilter('error', DeprecationWarning)
 
+# Enable this to run the benchmarks.
+ALSO_RUN_BENCHMARKS = False
+
 
 class DescriptorPoolTestBase(object):
+
+  @unittest.skipIf(not ALSO_RUN_BENCHMARKS, 'Benchmarks are disabled.')
+  def testDescriptorPoolBenchmark(self):
+    if ALSO_RUN_BENCHMARKS:
+      n_trials = 100
+
+      # FindFileByName
+      name = 'google/protobuf/internal/factory_test1.proto'
+      duration = timeit.timeit(
+          lambda: self.pool.FindFileByName(name),
+          number=n_trials,
+      )
+      print(f'FindFileByName: {duration / n_trials * 1000}ms')
+
+      # FindEnumTypeByName
+      name = 'google.protobuf.python.internal.Factory1Enum'
+      duration = timeit.timeit(
+          lambda: self.pool.FindEnumTypeByName(name),
+          number=n_trials,
+      )
+      print(f'FindEnumTypeByName: {duration / n_trials * 1000}ms')
+
+      # FindOneofByName
+      name = 'google.protobuf.python.internal.Factory2Message.oneof_field'
+      duration = timeit.timeit(
+          lambda: self.pool.FindOneofByName(name),
+          number=n_trials,
+      )
+      print(f'FindOneofByName: {duration / n_trials * 1000}ms')
+
+      # FindExtensionByName
+      name = 'google.protobuf.python.internal.another_field'
+      duration = timeit.timeit(
+          lambda: self.pool.FindExtensionByName(name),
+          number=n_trials,
+      )
+      print(f'FindExtensionByName: {duration / n_trials * 1000}ms')
+    else:
+      print('Skipping benchmark in non-benchmark mode.')
 
   def testFindFileByName(self):
     name1 = 'google/protobuf/internal/factory_test1.proto'
@@ -366,9 +410,13 @@ class DescriptorPoolTestBase(object):
     factory_test2 = self.pool.FindFileByName(
         'google/protobuf/internal/factory_test2.proto')
     another_field = factory_test2.extensions_by_name['another_field']
+    message_field1 = factory_test2.extensions_by_name['message_field1']
+    message_field2 = factory_test2.extensions_by_name['message_field2']
 
     extensions = self.pool.FindAllExtensions(factory1_message)
-    expected_extension_numbers = set([one_more_field, another_field])
+    expected_extension_numbers = set(
+        [one_more_field, another_field, message_field1, message_field2]
+    )
     self.assertEqual(expected_extension_numbers, set(extensions))
     # Verify that mutating the returned list does not affect the pool.
     extensions.append('unexpected_element')
@@ -392,6 +440,49 @@ class DescriptorPoolTestBase(object):
     self.assertEqual(extension.name, 'another_field')
     with self.assertRaises(KeyError):
       extension = self.pool.FindExtensionByNumber(factory1_message, 1234567)
+
+  def testExtensionsLenFromParsed(self):
+    factory1_message = self.pool.FindMessageTypeByName(
+        'google.protobuf.python.internal.Factory1Message'
+    )
+    # Build factory_test2.proto which will put extensions to the pool
+    self.pool.FindFileByName(
+        'google/protobuf/internal/factory_test2.proto'
+    )
+
+    message_class = message_factory.GetMessageClass(factory1_message)
+    message = message_class()
+    self.assertEqual(len(message.Extensions), 0)
+    message.ParseFromString(b'\xda\x3e\000\xe2\x3e\000')
+
+    self.assertEqual(len(message.Extensions), 2)
+
+    # Verify consistency with related methods.
+    self.assertEqual(len(list(message.Extensions)), 2)
+    self.assertEqual(len(message.ListFields()), 2)
+
+  def testExtensionsLenFromSet(self):
+    factory1_message = self.pool.FindMessageTypeByName(
+        'google.protobuf.python.internal.Factory1Message'
+    )
+    # Build factory_test2.proto which will put extensions to the pool
+    self.pool.FindFileByName(
+        'google/protobuf/internal/factory_test2.proto'
+    )
+
+    message_class = message_factory.GetMessageClass(factory1_message)
+    message = message_class()
+    self.assertEqual(len(message.Extensions), 0)
+    extension1 = self.pool.FindExtensionByNumber(factory1_message, 1003)
+    extension2 = self.pool.FindExtensionByNumber(factory1_message, 1004)
+    message.Extensions[extension1].a = 1
+    message.Extensions[extension2].a = 2
+
+    self.assertEqual(len(message.Extensions), 2)
+
+    # Verify consistency with related methods.
+    self.assertEqual(len(list(message.Extensions)), 2)
+    self.assertEqual(len(message.ListFields()), 2)
 
   def testExtensionsAreNotFields(self):
     with self.assertRaises(KeyError):
@@ -1587,7 +1678,7 @@ class FallBackDBTest(unittest.TestCase):
 
   def testFindAllExtensions(self):
     extensions = self.pool.FindAllExtensions(self.message_desc)
-    self.assertEqual(len(extensions), 2)
+    self.assertEqual(len(extensions), 4)
 
   def testIgnoreBadFindExtensionByNumber(self):
     file_desc = self.bad_pool.FindFileByName(
@@ -1615,6 +1706,71 @@ class FallBackDBTest(unittest.TestCase):
     message_desc = file_desc.message_types_by_name['Factory1Message']
     extensions = self.bad_pool.FindAllExtensions(message_desc)
     self.assertEqual(len(extensions), 0)
+
+
+class DescriptorPoolParaTest(parameterized.TestCase):
+
+  @parameterized.named_parameters(
+      (
+          'Message',
+          'google.protobuf.python.internal.Factory1Message',
+          'FindMessageTypeByName',
+      ),
+      (
+          'Field',
+          'google.protobuf.python.internal.Factory1Message.list_value',
+          'FindFieldByName',
+      ),
+      (
+          'File',
+          'google/protobuf/internal/factory_test1.proto',
+          'FindFileByName',
+      ),
+      (
+          'Enum',
+          'google.protobuf.python.internal.Factory1Enum',
+          'FindEnumTypeByName',
+      ),
+      (
+          'Oneof',
+          'google.protobuf.python.internal.Factory2Message.oneof_field',
+          'FindOneofByName',
+      ),
+      (
+          'Extension',
+          'google.protobuf.python.internal.another_field',
+          'FindExtensionByName',
+      ),
+      ('Service', 'proto2_unittest.TestService', 'FindServiceByName'),
+      ('Method', 'proto2_unittest.TestService.Foo', 'FindMethodByName'),
+  )
+  def testFindNULLByte(self, normal_name, method_name):
+    # Attack: Craft malicious type name with embedded null byte
+    malicious_name = normal_name + '\x00Tail.Content.Ignore'
+    method = getattr(descriptor_pool.Default(), method_name)
+    des = method(normal_name)
+
+    if hasattr(des, 'full_name'):
+      self.assertEqual(normal_name, des.full_name)
+    else:
+      self.assertEqual(normal_name, des.name)
+    with self.assertRaises(KeyError) as exc:
+      method(malicious_name)
+    self.assertIn('Tail.Content', str(exc.exception))
+
+  @parameterized.named_parameters(
+      ('Message', 'google.protobuf.python.internal.Factory1Message'),
+      ('Field', 'google.protobuf.python.internal.Factory1Message.list_value'),
+  )
+  def testFindNullByteSymbol(self, normal_name):
+    malicious_name = normal_name + '\x00Tail.Content'
+    file = descriptor_pool.Default().FindFileContainingSymbol(normal_name)
+    self.assertEqual(
+        'google/protobuf/internal/factory_test1.proto', file.name
+    )
+    with self.assertRaises(KeyError) as exc:
+      descriptor_pool.Default().FindFileContainingSymbol(malicious_name)
+    self.assertIn('Tail.Content', str(exc.exception))
 
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/map_field.cc b/src/google/protobuf/map_field.cc
-index 19c47d547aa15..1ec330f0a3165 100644
+index 7456593..18f25be 100644
 --- a/src/google/protobuf/map_field.cc
 +++ b/src/google/protobuf/map_field.cc
-@@ -575,8 +575,8 @@ MapIteratorBase<kIsMutable>::MapIteratorBase(MapFieldBase* map,
+@@ -588,8 +588,8 @@ MapIteratorBase<kIsMutable>::MapIteratorBase(MapFieldBase* map,
    value_.SetType(descriptor->map_value()->cpp_type());
  }
  
@@ -14,10 +14,10 @@ index 19c47d547aa15..1ec330f0a3165 100644
  }  // namespace protobuf
  }  // namespace google
 diff --git a/src/google/protobuf/map_field.h b/src/google/protobuf/map_field.h
-index 40dfa9b005986..df79b3c923495 100644
+index a5d1d1d..7862c3e 100644
 --- a/src/google/protobuf/map_field.h
 +++ b/src/google/protobuf/map_field.h
-@@ -786,7 +786,7 @@ class PROTOBUF_EXPORT MapValueRef final : public MapValueConstRef {
+@@ -822,7 +822,7 @@ class PROTOBUF_EXPORT MapValueRef final : public MapValueConstRef {
  #undef TYPE_CHECK
  
  template <bool kIsMutable>
@@ -26,7 +26,7 @@ index 40dfa9b005986..df79b3c923495 100644
    using MessageT =
        std::conditional_t<kIsMutable, google::protobuf::Message, const google::protobuf::Message>;
    using MapFieldBase = std::conditional_t<kIsMutable, internal::MapFieldBase,
-@@ -832,8 +832,8 @@ class PROTOBUF_EXPORT MapIteratorBase {
+@@ -866,8 +866,8 @@ class PROTOBUF_EXPORT MapIteratorBase {
    ValueRef value_;
  };
  

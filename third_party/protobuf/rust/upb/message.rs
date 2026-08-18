@@ -158,14 +158,8 @@ impl<T: AssociatedMiniTable> MessagePtr<T> {
     ) -> Option<MessagePtr<ChildT>> {
         let f = unsafe { sys_mt::upb_MiniTable_GetFieldByIndex(T::mini_table(), index) };
 
-        let raw = unsafe {
-            sys_msg::upb_Message_GetOrCreateMutableMessage(
-                self.raw,
-                T::mini_table(),
-                f,
-                arena.raw(),
-            )
-        };
+        let raw =
+            unsafe { sys_msg::upb_Message_GetOrCreateMutableMessage(self.raw, f, arena.raw()) };
         raw.map(|raw| MessagePtr { raw, _phantom: PhantomData })
     }
 
@@ -220,7 +214,7 @@ impl<T: AssociatedMiniTable> MessagePtr<T> {
 
     /// # Safety
     /// - `self` must be legally dereferenceable.
-    /// - The field at `index` must be a repeated field.
+    /// - The field at `index` must be a map field.
     /// - Caller must ensure that `value` outlives `self` (typically by being on the same arena).
     pub unsafe fn set_map_at_index(self, index: u32, value: sys_map::RawMap) {
         let f = unsafe { sys_mt::upb_MiniTable_GetFieldByIndex(T::mini_table(), index) };
@@ -243,7 +237,7 @@ impl<T: AssociatedMiniTable> MessagePtr<T> {
     ) -> Option<sys_map::RawMap> {
         unsafe {
             let f = sys_mt::upb_MiniTable_GetFieldByIndex(T::mini_table(), index);
-            let map_entry_mini_table = sys_mt::upb_MiniTable_SubMessage(T::mini_table(), f);
+            let map_entry_mini_table = sys_mt::upb_MiniTable_SubMessage(f);
             sys_msg::upb_Message_GetOrCreateMutableMap(
                 self.raw,
                 map_entry_mini_table,

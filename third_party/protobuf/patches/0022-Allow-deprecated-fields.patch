@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/compiler/cpp/enum.cc b/src/google/protobuf/compiler/cpp/enum.cc
-index 2d5f7c33180eb..0c33b07ebc911 100644
+index f889a0c..6e927f2 100644
 --- a/src/google/protobuf/compiler/cpp/enum.cc
 +++ b/src/google/protobuf/compiler/cpp/enum.cc
-@@ -145,7 +145,7 @@ void EnumGenerator::GenerateDefinition(io::Printer* p) {
+@@ -147,7 +147,7 @@ void EnumGenerator::GenerateDefinition(io::Printer* p) {
                             .AnnotatedAs(value),
                         {"kNumber", Int32ToString(value->number())},
                         {"DEPRECATED",
@@ -11,7 +11,7 @@ index 2d5f7c33180eb..0c33b07ebc911 100644
                     },
                     R"cc(
                       $Msg_Enum_VALUE$$ DEPRECATED$ = $kNumber$,
-@@ -308,7 +308,7 @@ void EnumGenerator::GenerateSymbolImports(io::Printer* p) const {
+@@ -323,7 +323,7 @@ void EnumGenerator::GenerateSymbolImports(io::Printer* p) const {
          {
              Sub("VALUE", EnumValueName(enum_->value(j))).AnnotatedAs(value),
              {"DEPRECATED",
@@ -21,10 +21,10 @@ index 2d5f7c33180eb..0c33b07ebc911 100644
          R"cc(
            $DEPRECATED $static constexpr $Enum_$ $VALUE$ = $Msg_Enum$_$VALUE$;
 diff --git a/src/google/protobuf/compiler/cpp/helpers.h b/src/google/protobuf/compiler/cpp/helpers.h
-index f7b40fb8b332f..c223279c0f898 100644
+index a0dfe5e..94a44bd 100644
 --- a/src/google/protobuf/compiler/cpp/helpers.h
 +++ b/src/google/protobuf/compiler/cpp/helpers.h
-@@ -54,12 +54,12 @@ inline absl::string_view ProtobufNamespace(const Options& opts) {
+@@ -63,12 +63,12 @@ inline FieldDescriptor::CppRepeatedType CalculateFieldDescriptorRepeatedType(
  
  inline std::string DeprecatedAttribute(const Options&,
                                         const FieldDescriptor* d) {

@@ -24,7 +24,6 @@
 #include <cstdint>
 #include <initializer_list>
 #include <memory>
-#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -35,6 +34,7 @@
 #include "absl/base/casts.h"
 #include "absl/base/optimization.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/optional.h"
 #include "google/protobuf/any.h"
 #include "google/protobuf/has_bits.h"
 #include "google/protobuf/implicit_weak_message.h"
@@ -66,6 +66,8 @@ class CodedInputStream;
 namespace internal {
 
 
+class ExtensionSet;
+
 // This fastpath inlines a single branch instead of having to make the
 // InitProtobufDefaults function call.
 // It also generates less inlined code than a function-scope static initializer.
@@ -82,6 +84,7 @@ PROTOBUF_EXPORT inline void InitProtobufDefaults() {
 }
 
 // This used by proto1
+PROTOBUF_FUTURE_ADD_EARLY_NODISCARD
 PROTOBUF_EXPORT const ::std::string& GetEmptyString();
 
 // Default empty Cord object. Don't use directly. Instead, call
@@ -93,6 +96,7 @@ union EmptyCord {
 };
 PROTOBUF_EXPORT extern const EmptyCord empty_cord_;
 
+PROTOBUF_FUTURE_ADD_EARLY_NODISCARD
 constexpr const ::absl::Cord& GetEmptyCordAlreadyInited() {
   return empty_cord_.value;
 }
@@ -103,7 +107,8 @@ constexpr const ::absl::Cord& GetEmptyCordAlreadyInited() {
 // IsInitialized() methods.  We want the C++ compiler to inline this or not
 // as it sees fit.
 template <typename Msg>
-bool AllAreInitialized(const RepeatedPtrField<Msg>& t) {
+PROTOBUF_FUTURE_ADD_EARLY_NODISCARD bool AllAreInitialized(
+    const RepeatedPtrField<Msg>& t) {
   for (int i = t.size(); --i >= 0;) {
     if (!t.Get(i).IsInitialized()) return false;
   }
@@ -114,7 +119,8 @@ bool AllAreInitialized(const RepeatedPtrField<Msg>& t) {
 // This version operates on MessageLite to avoid introducing a dependency on the
 // concrete message type.
 template <class T>
-bool AllAreInitializedWeak(const RepeatedPtrField<T>& t) {
+PROTOBUF_FUTURE_ADD_EARLY_NODISCARD bool AllAreInitializedWeak(
+    const RepeatedPtrField<T>& t) {
   for (int i = t.size(); --i >= 0;) {
     if (!reinterpret_cast<const RepeatedPtrFieldBase&>(t)
              .Get<ImplicitWeakTypeHandler<T> >(i)
@@ -125,11 +131,13 @@ bool AllAreInitializedWeak(const RepeatedPtrField<T>& t) {
   return true;
 }
 
+PROTOBUF_FUTURE_ADD_EARLY_NODISCARD
 inline bool IsPresent(const void* base, uint32_t hasbit) {
   const uint32_t* has_bits_array = static_cast<const uint32_t*>(base);
   return (has_bits_array[hasbit / 32] & (1u << (hasbit & 31))) != 0;
 }
 
+PROTOBUF_FUTURE_ADD_EARLY_NODISCARD
 inline bool IsOneofPresent(const void* base, uint32_t offset, uint32_t tag) {
   const uint32_t* oneof = reinterpret_cast<const uint32_t*>(
       static_cast<const uint8_t*>(base) + offset);
@@ -153,9 +161,9 @@ PROTOBUF_EXPORT MessageLite* DuplicateIfNonNullInternal(MessageLite* message);
 PROTOBUF_EXPORT MessageLite* GetOwnedMessageInternal(Arena* message_arena,
                                                      MessageLite* submessage,
                                                      Arena* submessage_arena);
-PROTOBUF_EXPORT void GenericSwap(MessageLite* m1, MessageLite* m2);
+PROTOBUF_EXPORT void GenericSwap(MessageLite* lhs, MessageLite* rhs);
 // We specialize GenericSwap for non-lite messages to benefit from reflection.
-PROTOBUF_EXPORT void GenericSwap(Message* m1, Message* m2);
+PROTOBUF_EXPORT void GenericSwap(Message* lhs, Message* rhs);
 
 template <typename T>
 T* DuplicateIfNonNull(T* message) {
@@ -323,7 +331,7 @@ class MapSorterPtr {
 };
 
 struct WeakDescriptorDefaultTail {
-  const Message** target;
+  const MessageGlobalsBase** target;
   size_t size;
 };
 
@@ -365,6 +373,10 @@ inline void AssignToString(std::string& dest, absl::string_view value,
                            BytesTag /*tag*/ = BytesTag{}) {
   dest.assign(value.data(), value.size());
 }
+inline void AssignToString(std::string& dest, const absl::Cord& value,
+                           BytesTag tag = BytesTag{}) {
+  absl::CopyCordToString(value, &dest);
+}
 
 // Adds `value`, optionally bounded by `size`, as the last element of `dest`.
 // This overload set is used to implement `add_xxx()` methods for repeated
@@ -384,18 +396,45 @@ inline void AddToRepeatedPtrField(InternalVisibility visibility,
   dest.InternalAddWithArena(visibility, arena, std::move(value));
 }
 
-constexpr std::optional<uintptr_t> EncodePlacementArenaOffsets(
-    std::initializer_list<size_t> offsets) {
-  uintptr_t arena_bits = 0;
-  for (size_t offset : offsets) {
-    offset /= sizeof(Arena*);
-    if (offset >= sizeof(arena_bits) * 8) {
-      return std::nullopt;
-    }
-    arena_bits |= uintptr_t{1} << offset;
+// The struct PrivateAccess is used to provide access to private members of
+// message classes without making them public. This is useful for highly
+// optimized code paths that need to access internals.
+struct PrivateAccess {
+  template <typename T, int number>
+  static constexpr bool IsLazyField() {
+    constexpr auto l =
+        [](auto& msg) -> decltype(msg._lazy_internal_mutable(
+                          std::integral_constant<int, number>{})) {};
+    return std::is_invocable_v<decltype(l), T&>;
   }
-  return arena_bits;
-}
+
+  template <int number, typename T>
+  static auto& MutableLazy(T& msg) {
+    return msg._lazy_internal_mutable(std::integral_constant<int, number>{});
+  }
+
+  template <typename T>
+  static auto& GetExtensionSet(T& msg) {
+    return msg._impl_._extensions_;
+  }
+
+  template <typename T>
+  static void TrackerOnGetMetadata() {
+    T::Impl_::TrackerOnGetMetadata();
+  }
+
+  template <typename T>
+  static constexpr auto GenerateParseTable(
+      const ::google::protobuf::internal::ClassData* class_data) {
+    return T::InternalGenerateParseTable_(class_data);
+  }
+
+  static internal::ExtensionSet* GetExtensionSet(MessageLite* msg);
+  static const internal::ExtensionSet* GetExtensionSet(const MessageLite* msg);
+
+  template <typename T>
+  using ImplTForTesting = typename T::Impl_;
+};
 
 }  // namespace internal
 }  // namespace protobuf

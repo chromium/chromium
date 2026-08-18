@@ -1,13 +1,5 @@
 workspace(name = "com_google_protobuf")
 
-# An explicit self-reference to work around changes in Bazel 7.0
-# See https://github.com/bazelbuild/bazel/issues/19973#issuecomment-1787814450
-# buildifier: disable=duplicated-name
-local_repository(
-    name = "com_google_protobuf",
-    path = ".",
-)
-
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # Load common dependencies first to ensure we use the correct version
@@ -113,10 +105,6 @@ bazel_skylib_workspace()
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
 rules_pkg_dependencies()
-
-load("@build_bazel_rules_apple//apple:repositories.bzl", "apple_rules_dependencies")
-
-apple_rules_dependencies()
 
 load("@build_bazel_apple_support//lib:repositories.bzl", "apple_support_dependencies")
 
@@ -249,48 +237,6 @@ load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_deps_install_deps = "inst
 
 fuzzing_py_deps_install_deps()
 
-# This version of rules_rust is older than the one in MODULE.bazel, but we
-# cannot upgrade any further without breaking the WORKSPACE-based build.
-http_archive(
-    name = "rules_rust",
-    integrity = "sha256-8TBqrAsli3kN8BrZq8arsN8LZUFsdLTvJ/Sqsph4CmQ=",
-    urls = ["https://github.com/bazelbuild/rules_rust/releases/download/0.56.0/rules_rust-0.56.0.tar.gz"],
-)
-
-load("@rules_rust//rust:repositories.bzl", "rules_rust_dependencies", "rust_register_toolchains")
-
-rules_rust_dependencies()
-
-rust_register_toolchains(edition = "2021")
-
-load("@rules_rust//crate_universe:defs.bzl", "crate", "crates_repository")
-
-# to repin, invoke `CARGO_BAZEL_REPIN=1 bazel sync --only=crate_index`
-crates_repository(
-    name = "crate_index",
-    cargo_lockfile = "//:Cargo.lock",
-    lockfile = "//:Cargo.bazel.lock",
-    packages = {
-        "googletest": crate.spec(
-            git = "https://github.com/google/googletest-rust",
-            rev = "0db12bb338b9e75884a24493273c6bf4ce0fa5f5",
-        ),
-        "paste": crate.spec(
-            version = ">=1",
-        ),
-        "quote": crate.spec(
-            version = ">=1",
-        ),
-        "syn": crate.spec(
-            version = ">=2",
-        ),
-    },
-)
-
-load("@crate_index//:defs.bzl", "crate_repositories")
-
-crate_repositories()
-
 # For testing runtime against old gencode from a previous major version.
 http_archive(
     name = "com_google_protobuf_v25",
@@ -338,3 +284,16 @@ load("@rules_buf//buf:repositories.bzl", "rules_buf_dependencies", "rules_buf_to
 rules_buf_dependencies()
 
 rules_buf_toolchains(version = "v1.32.1")
+
+register_toolchains(
+    "//toolchain:osx-x86_64-toolchain",
+    "//toolchain:osx-aarch_64-toolchain",
+    "//toolchain:linux-aarch_64-toolchain",
+    "//toolchain:linux-ppcle_64-toolchain",
+    "//toolchain:linux-s390_64-toolchain",
+    "//toolchain:linux-x86_32-toolchain",
+    "//toolchain:linux-x86_64-toolchain",
+    "//toolchain:win32-toolchain",
+    "//toolchain:win64-toolchain",
+    "//toolchain:k8-toolchain",
+)

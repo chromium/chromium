@@ -155,7 +155,8 @@ def fill_proto_with_bogus(
       )
 
     field = descriptor.fields_by_number[field_number]
-    repeated = field.label == FieldDescriptor.LABEL_REPEATED
+    repeated = (field.is_repeated if hasattr(field, "is_repeated") else
+                (field.label == FieldDescriptor.LABEL_REPEATED))
 
     if field.type == FieldDescriptor.TYPE_STRING and not repeated:
       setattr(proto, field.name, "[Archived]")
@@ -221,7 +222,10 @@ def policy_to_text(chrome_policy: Iterable[Message]) -> str:
           # Skip the policy_options field.
           continue
         writer = text_format.TextWriter(as_utf8=True)
-        if subfield.label == FieldDescriptor.LABEL_REPEATED:
+        subfield_repeated = (
+            subfield.is_repeated if hasattr(subfield, "is_repeated") else
+            (subfield.label == FieldDescriptor.LABEL_REPEATED))
+        if subfield_repeated:
           # text_format.PrintField needs repeated fields passed in
           # one-at-a-time.
           for repeated_value in subvalue:

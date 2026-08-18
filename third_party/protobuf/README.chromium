@@ -3,9 +3,9 @@ Short Name: protobuf
 URL: https://github.com/google/protobuf
 License: BSD-3-Clause
 License File: LICENSE
-Version: 33.0
-CPEPrefix: cpe:/a:google:protobuf:33.0
-Revision: a79f2d2e9fadd75e94f3fe40a0399bf0a5d90551
+Version: 35.1
+CPEPrefix: cpe:/a:google:protobuf:35.1
+Revision: 35cd01f9fe9afbeea38cc7b979a3b6bfcde82c03
 Update Mechanism: Manual
 Security Critical: yes
 Shipped: yes
@@ -166,23 +166,6 @@ Description of the patches:
   Later updated to patch out PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED code
   which was not optimizable.
 
-- 0030-workaround-window-constinit.patch
-
-  Disables PROTOBUF_CONSTINIT in generated code in Windows shared library
-  builds. Protobuf's default instances take pointers to a dllimport variable,
-  fixed_address_empty_string. This is not constinit on Windows. This is a bug in
-  protobuf as the default instance was intended to be constant-initialized. But
-  the components build in Chromium is a developer configuration, so we tolerate
-  an initializer as long as the build works, until protobuf has a proper fix.
-
-  See https://github.com/protocolbuffers/protobuf/issues/10159.
-
-  Feb-2025: this patch was updated to address an issue where code internal to
-  PB assumed that the default instances it was acting on were const inited,
-  when they were not constinit due to the Chromium workaround. See related
-  PB commit:
-  https://github.com/protocolbuffers/protobuf/commit/f5c53ac4605aa5a276e9786952d467fe1fda5420
-
 - 0031-workaround-cfi-unrelated-cast.patch
 
   A workaround for Clang's Control Flow Integrity check for casting pointers to
@@ -204,10 +187,6 @@ Description of the patches:
 
   Fixes the build when PROTOBUF_CUSTOM_VTABLE is not defined.
 
-- 0043-unreachable-code-return.patch
-
-  Fix unreachable code warning via `if constexpr`.
-
 - 0044-trim-protoc-main.patch
 
   Remove parts of protoc's main.cc that aren't necessary for Chromium (languages
@@ -216,10 +195,6 @@ Description of the patches:
 - 0045-string-resize.patch
 
   Replaces usage of absl internal string routines with std::string::resize().
-
-- 0049-deprecated-declarations-pragma.patch
-
-  Modify a compiler diagnostic pragma to work on Windows.
 
 - 0051-export-template-define.patch
 
@@ -248,27 +223,11 @@ Description of the patches:
   accessor in the pre-generated descriptor.pb.h file. This fixes a build
   warning without the noise of regenerating the entire file.
 
-- 0056-fix-use-of-deprecated-has_optional_keyword.patch
-
-  Updates the implementation of the deprecated
-  FieldDescriptor::has_optional_keyword() to use the recommended has_presence()
-  method, fixing a deprecation error.
-
-- 0057-rm-extraneous-utf8-import.patch
-
-  Removes an extraneous utf8 import in parse_context.h. This has already been
-  upstreamed.
-
 - 0058-fix-messagelite-clear-declaration.patch
 
-   Fix a compile error in how a function parameter is declared.
-
-- 0059-rm-repeatedptrfield-deprecated-declaration.patch
-
-   Remove deprecated declaration on repeatedptrfield constructor. This
-   constructor is removed in the next roll post-v33, but this patch is added
-   to allow for rolling proto first without touching the 100s of places to
-   patch in Chromium.
+  Fixes an incomplete type compilation error for the member pointer parameter
+  `clear` in the `ClassData` constructor when `MessageLite` is only forward
+  declared.
 
 - 0060-export-any.patch
 
@@ -298,15 +257,6 @@ Description of the patches:
   PROTOBUF_EXPORT_TEMPLATE_DEFINE (which resolves to dllexport/dllimport) to
   correctly declare and export explicit template instantiations.
 
-- 0063-workaround-windows-constinit-pregenerated.patch
-
-  Fixes 'variable does not have a constant initializer' errors with constinit
-  specifiers in java_features.pb.cc and plugin.pb.cc in Windows component builds.
-  In component builds, pointers to dllimport symbols are not constexpr at compile
-  time, so variables that reference these imported pointers cannot be constant-
-  initialized. This patch uses PROTOBUF_CONSTINIT_WITH_PTR (from patch 0030)
-  for these variables, which evaluates to empty on component builds.
-
 - 0064-time-util-no-export.patch
 
   Do not export symbols in time_util.h.
@@ -324,5 +274,9 @@ Description of the patches:
   zlib, so instead of making Chromium's protobuf depend on zlib, the utility is
   compiled as a separate target, and not exported.
 
+- 0067-disable-early-nodiscard.patch
 
-
+  Disables PROTOBUF_FUTURE_ADD_EARLY_NODISCARD in port_def.inc as well as
+  [[nodiscard]] on generated message and enum methods in message.cc and enum.cc
+  to prevent cascading [[nodiscard]] compilation errors across Chromium and
+  third-party callers (e.g. MediaPipe).

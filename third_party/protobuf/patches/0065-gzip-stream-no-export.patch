@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/io/gzip_stream.h b/src/google/protobuf/io/gzip_stream.h
-index 1644949fa3d8e..995cfb91ee162 100644
+index 3b5952e..32f4dfa 100644
 --- a/src/google/protobuf/io/gzip_stream.h
 +++ b/src/google/protobuf/io/gzip_stream.h
-@@ -28,6 +28,9 @@
+@@ -26,6 +26,9 @@
  // Must be included last.
  #include "google/protobuf/port_def.inc"
  
@@ -11,4 +11,4 @@ index 1644949fa3d8e..995cfb91ee162 100644
 +
  namespace google {
  namespace protobuf {
- namespace io {
+ namespace internal {

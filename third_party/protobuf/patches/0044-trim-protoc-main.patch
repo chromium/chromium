@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/compiler/main.cc b/src/google/protobuf/compiler/main.cc
-index 4a093008939e7..bee5b1015c176 100644
+index dbf8d89..bee5b10 100644
 --- a/src/google/protobuf/compiler/main.cc
 +++ b/src/google/protobuf/compiler/main.cc
-@@ -8,15 +8,9 @@
+@@ -8,16 +8,9 @@
  #include "absl/log/initialize.h"
  #include "google/protobuf/compiler/command_line_interface.h"
  #include "google/protobuf/compiler/cpp/generator.h"
@@ -13,12 +13,13 @@ index 4a093008939e7..bee5b1015c176 100644
 -#include "google/protobuf/compiler/php/php_generator.h"
  #include "google/protobuf/compiler/python/generator.h"
  #include "google/protobuf/compiler/python/pyi_generator.h"
+-#include "google/protobuf/compiler/ruby/rbs_generator.h"
 -#include "google/protobuf/compiler/ruby/ruby_generator.h"
 -#include "google/protobuf/compiler/rust/generator.h"
  #ifdef GOOGLE_PROTOBUF_RUNTIME_INCLUDE_BASE
  #include "google/protobuf/compiler/code_generator_lite.h"
  #endif
-@@ -65,12 +59,6 @@ int ProtobufMain(int argc, char* argv[]) {
+@@ -66,12 +59,6 @@ int ProtobufMain(int argc, char* argv[]) {
    cli.RegisterGenerator("--java_out", "--java_opt", &java_generator,
                          "Generate Java source file.");
  
@@ -31,7 +32,7 @@ index 4a093008939e7..bee5b1015c176 100644
    // Proto2 Python
    python::Generator py_generator;
    cli.RegisterGenerator("--python_out", "--python_opt", &py_generator,
-@@ -85,30 +73,6 @@ int ProtobufMain(int argc, char* argv[]) {
+@@ -86,34 +73,6 @@ int ProtobufMain(int argc, char* argv[]) {
    cli.RegisterGenerator("--pyi_out", &pyi_generator,
                          "Generate python pyi stub.");
  
@@ -44,6 +45,10 @@ index 4a093008939e7..bee5b1015c176 100644
 -  ruby::Generator rb_generator;
 -  cli.RegisterGenerator("--ruby_out", "--ruby_opt", &rb_generator,
 -                        "Generate Ruby source file.");
+-
+-  ruby::RBSGenerator rbs_generator;
+-  cli.RegisterGenerator("--rbs_out", "--rbs_opt", &rbs_generator,
+-                        "Generate RBS type definition.");
 -
 -  // CSharp
 -  csharp::Generator csharp_generator;
@@ -62,4 +67,3 @@ index 4a093008939e7..bee5b1015c176 100644
  #ifdef DISABLE_PROTOC_CONFIG
    auto cleanup = internal::DisableAllowlistInternalOnly();
  #endif  // DISABLE_PROTOC_CONFIG
-

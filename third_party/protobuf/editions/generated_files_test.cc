@@ -11,7 +11,7 @@
 #include "google/protobuf/descriptor.h"
 #include "editions/golden/test_messages_proto2_editions.pb.h"
 #include "editions/golden/test_messages_proto3_editions.pb.h"
-#include "editions/proto/test_editions_default_features.pb.h"
+#include "editions/input/test_editions_default_features.pb.h"
 #include "google/protobuf/internal_feature_helper.h"
 #include "google/protobuf/test_textproto.h"
 
@@ -57,7 +57,6 @@ TEST(Generated, RequiredPresence) {
   ASSERT_THAT(field, NotNull());
   EXPECT_TRUE(field->has_presence());
   EXPECT_TRUE(field->is_required());
-  EXPECT_EQ(field->label(), FieldDescriptor::LABEL_REQUIRED);
 }
 
 TEST(Generated, ImplicitPresence) {
@@ -153,6 +152,7 @@ TEST(Generated, EditionDefaults2023InternalFeatures) {
                   legacy_closed_enum: false
                   string_type: STRING
                   enum_name_uses_string_view: false
+                  repeated_type: LEGACY
                 }
               )pb"));
 }

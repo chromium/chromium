@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/util/time_util.h b/src/google/protobuf/util/time_util.h
-index ef5bbcee91e91..8244e0f27bdf1 100644
+index 67c8fed..f642c13 100644
 --- a/src/google/protobuf/util/time_util.h
 +++ b/src/google/protobuf/util/time_util.h
-@@ -25,6 +25,9 @@ namespace google {
+@@ -26,6 +26,9 @@ namespace google {
  namespace protobuf {
  namespace util {
  

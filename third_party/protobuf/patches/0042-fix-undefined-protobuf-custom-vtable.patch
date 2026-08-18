@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/dynamic_message.cc b/src/google/protobuf/dynamic_message.cc
-index caf592eee04b4..631aa798d83ac 100644
+index 865280c..8ad6f84 100644
 --- a/src/google/protobuf/dynamic_message.cc
 +++ b/src/google/protobuf/dynamic_message.cc
-@@ -383,7 +383,11 @@ struct DynamicMessageFactory::TypeInfo {
+@@ -411,7 +411,11 @@ struct DynamicMessageFactory::TypeInfo {
            &DynamicMessage::MergeImpl,
            internal::MessageCreator(),  // to be filled later
            &DynamicMessage::DestroyImpl,
@@ -14,19 +14,15 @@ index caf592eee04b4..631aa798d83ac 100644
            DynamicMessage::ByteSizeLongImpl,
            DynamicMessage::_InternalSerializeImpl,
            PROTOBUF_FIELD_OFFSET(DynamicMessage, cached_byte_size_),
-diff --git a/src/google/protobuf/implicit_weak_message.cc b/src/google/protobuf/implicit_weak_message.cc
-index d53daf64780e6..73b2fa7639f57 100644
---- a/src/google/protobuf/implicit_weak_message.cc
-+++ b/src/google/protobuf/implicit_weak_message.cc
-@@ -73,7 +73,11 @@ constexpr ClassDataLite<1> ImplicitWeakMessage::class_data_ = {
-                                  sizeof(ImplicitWeakMessage),
-                                  alignof(ImplicitWeakMessage)),
-         &DestroyImpl,
+@@ -1059,7 +1063,11 @@ const Message* DynamicMessageFactory::GetPrototypeNoLock(
+               internal::MessageCreator(DynamicMessage::NewImpl, size,
+                                        kSafeAlignment),
+               &DynamicMessage::DestroyImpl,
 +#if defined(PROTOBUF_CUSTOM_VTABLE)
-         GetClearImpl<ImplicitWeakMessage>(),
+               static_cast<void (MessageLite::*)()>(&DynamicMessage::ClearImpl),
 +#else
-+       nullptr,
++              nullptr,
 +#endif  // PROTOBUF_CUSTOM_VTABLE
-         &ByteSizeLongImpl,
-         &_InternalSerializeImpl,
-         PROTOBUF_FIELD_OFFSET(ImplicitWeakMessage, cached_size_),
+               DynamicMessage::ByteSizeLongImpl,
+               DynamicMessage::_InternalSerializeImpl,
+               PROTOBUF_FIELD_OFFSET(DynamicMessage, cached_byte_size_),

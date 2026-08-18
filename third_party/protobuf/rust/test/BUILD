@@ -5,10 +5,12 @@
 # https://developers.google.com/open-source/licenses/bsd
 
 load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "strip_prefix")
+load("@rules_rust//rust:defs.bzl", "rust_library")
 load("//bazel:proto_library.bzl", "proto_library")
 load(
     "//rust:defs.bzl",
     "rust_cc_proto_library",
+    "rust_proto_library",
     "rust_upb_proto_library",
 )
 
@@ -123,6 +125,43 @@ rust_upb_proto_library(
     name = "enums_upb_rust_proto",
     testonly = True,
     deps = [":enums_proto"],
+)
+
+proto_library(
+    name = "extensions_proto",
+    testonly = True,
+    srcs = ["extensions.proto"],
+)
+
+rust_cc_proto_library(
+    name = "extensions_cpp_rust_proto",
+    testonly = True,
+    deps = [":extensions_proto"],
+)
+
+rust_upb_proto_library(
+    name = "extensions_upb_rust_proto",
+    testonly = True,
+    deps = [":extensions_proto"],
+)
+
+proto_library(
+    name = "extensions_separate_file_proto",
+    testonly = True,
+    srcs = ["extensions_separate_file.proto"],
+    deps = [":extensions_proto"],
+)
+
+rust_cc_proto_library(
+    name = "extensions_separate_file_cpp_rust_proto",
+    testonly = True,
+    deps = [":extensions_separate_file_proto"],
+)
+
+rust_upb_proto_library(
+    name = "extensions_separate_file_upb_rust_proto",
+    testonly = True,
+    deps = [":extensions_separate_file_proto"],
 )
 
 proto_library(
@@ -265,7 +304,10 @@ rust_cc_proto_library(
 proto_library(
     name = "bad_names_proto",
     testonly = True,
-    srcs = ["bad_names.proto"],
+    srcs = [
+        "bad_names.proto",
+        "more_test_protos/bad_names.proto",
+    ],
 )
 
 rust_cc_proto_library(
@@ -457,4 +499,91 @@ rust_upb_proto_library(
     name = "srcsless_library_test_parent_upb_rust_proto",
     testonly = True,
     deps = [":srcsless_library_test_parent_proto"],
+)
+
+# Eventually we should have a Rust target for descriptor.proto directly
+# alongside that file. This is currently difficult to do, because many of our
+# CI jobs are not prepared to handle a Rust dependency in
+# //src/google/protobuf.
+rust_upb_proto_library(
+    name = "descriptor_upb_rust_proto",
+    testonly = True,
+    deps = ["//src/google/protobuf:descriptor_proto"],
+)
+
+proto_library(
+    name = "same_name_direct_deps_proto",
+    testonly = True,
+    srcs = ["same_name_direct_deps.proto"],
+    deps = [
+        "//rust/test/p:parent_proto",
+        "//rust/test/q:parent_proto",
+    ],
+)
+
+rust_proto_library(
+    name = "same_name_direct_deps_rust_proto",
+    testonly = True,
+    deps = [":same_name_direct_deps_proto"],
+)
+
+rust_library(
+    name = "same_name_direct_deps_rust_consumer",
+    testonly = True,
+    srcs = ["same_name_direct_deps_consumer.rs"],
+    deps = [":same_name_direct_deps_rust_proto"],
+)
+
+proto_library(
+    name = "same_name_exported_deps_proto",
+    testonly = True,
+    srcs = ["same_name_exported_deps.proto"],
+    deps = [
+        "//rust/test/p:child_proto",
+        "//rust/test/q:child_proto",
+    ],
+)
+
+rust_proto_library(
+    name = "same_name_exported_deps_rust_proto",
+    testonly = True,
+    deps = [":same_name_exported_deps_proto"],
+)
+
+rust_library(
+    name = "same_name_exported_deps_rust_consumer",
+    testonly = True,
+    srcs = ["same_name_exported_deps_consumer.rs"],
+    deps = [":same_name_exported_deps_rust_proto"],
+)
+
+proto_library(
+    name = "same_name_double_alias_exported_deps_proto",
+    testonly = True,
+    srcs = ["same_name_double_alias_exported_deps.proto"],
+    deps = [
+        "//rust/test/p:grandchild_proto",
+        "//rust/test/q:grandchild_proto",
+    ],
+)
+
+rust_proto_library(
+    name = "same_name_double_alias_exported_deps_rust_proto",
+    testonly = True,
+    deps = [":same_name_double_alias_exported_deps_proto"],
+)
+
+rust_library(
+    name = "same_name_double_alias_exported_deps_rust_consumer",
+    testonly = True,
+    srcs = ["same_name_double_alias_exported_deps_consumer.rs"],
+    deps = [":same_name_double_alias_exported_deps_rust_proto"],
+)
+
+rust_cc_proto_library(
+    name = "layering_check_test_rust_proto",
+    testonly = True,
+    # Ensure this library builds even when layering check is disabled.
+    features = ["-layering_check"],
+    deps = [":unittest_proto"],
 )

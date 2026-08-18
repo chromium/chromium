@@ -23,7 +23,6 @@
 #include "absl/random/random.h"
 #include "absl/strings/str_cat.h"
 #include "google/protobuf/arena_test_util.h"
-#include "google/protobuf/internal_visibility_for_testing.h"
 #include "google/protobuf/map_field.h"
 #include "google/protobuf/map_proto2_unittest.pb.h"
 #include "google/protobuf/map_unittest.pb.h"
@@ -57,7 +56,6 @@ using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
 TEST(MapTest, CopyConstructIntegers) {
-  auto token = internal::InternalVisibilityForTesting{};
   using MapType = Map<int32_t, int32_t>;
   MapType original;
   original[1] = 2;
@@ -68,14 +66,15 @@ TEST(MapTest, CopyConstructIntegers) {
   EXPECT_EQ(map1[1], 2);
   EXPECT_EQ(map1[2], 3);
 
-  MapType map2(token, nullptr, original);
-  ASSERT_EQ(map2.size(), 2);
-  EXPECT_EQ(map2[1], 2);
-  EXPECT_EQ(map2[2], 3);
+  auto* map2 = Arena::Create<MapType>(nullptr, original);
+  ASSERT_EQ(map2->size(), 2);
+  EXPECT_EQ((*map2)[1], 2);
+  EXPECT_EQ((*map2)[2], 3);
+
+  delete map2;
 }
 
 TEST(MapTest, CopyConstructStrings) {
-  auto token = internal::InternalVisibilityForTesting{};
   using MapType = Map<std::string, std::string>;
   MapType original;
   original["1"] = "2";
@@ -86,14 +85,15 @@ TEST(MapTest, CopyConstructStrings) {
   EXPECT_EQ(map1["1"], "2");
   EXPECT_EQ(map1["2"], "3");
 
-  MapType map2(token, nullptr, original);
-  ASSERT_EQ(map2.size(), 2);
-  EXPECT_EQ(map2["1"], "2");
-  EXPECT_EQ(map2["2"], "3");
+  auto* map2 = Arena::Create<MapType>(nullptr, original);
+  ASSERT_EQ(map2->size(), 2);
+  EXPECT_EQ((*map2)["1"], "2");
+  EXPECT_EQ((*map2)["2"], "3");
+
+  delete map2;
 }
 
 TEST(MapTest, CopyConstructMessages) {
-  auto token = internal::InternalVisibilityForTesting{};
   using MapType = Map<std::string, TestAllTypes>;
   MapType original;
   original["1"].set_optional_int32(1);
@@ -104,58 +104,54 @@ TEST(MapTest, CopyConstructMessages) {
   EXPECT_EQ(map1["1"].optional_int32(), 1);
   EXPECT_EQ(map1["2"].optional_int32(), 2);
 
-  MapType map2(token, nullptr, original);
-  ASSERT_EQ(map2.size(), 2);
-  EXPECT_EQ(map2["1"].optional_int32(), 1);
-  EXPECT_EQ(map2["2"].optional_int32(), 2);
+  auto* map2 = Arena::Create<MapType>(nullptr, original);
+  ASSERT_EQ(map2->size(), 2);
+  EXPECT_EQ((*map2)["1"].optional_int32(), 1);
+  EXPECT_EQ((*map2)["2"].optional_int32(), 2);
+
+  delete map2;
 }
 
 TEST(MapTest, CopyConstructIntegersWithArena) {
-  auto token = internal::InternalVisibilityForTesting{};
   using MapType = Map<int32_t, int32_t>;
   MapType original;
   original[1] = 2;
   original[2] = 3;
 
   Arena arena;
-  alignas(MapType) char mem1[sizeof(MapType)];
-  MapType& map1 = *new (mem1) MapType(token, &arena, original);
-  ASSERT_EQ(map1.size(), 2);
-  EXPECT_EQ(map1[1], 2);
-  EXPECT_EQ(map1[2], 3);
-  EXPECT_EQ(map1[2], 3);
+  auto* map1 = Arena::Create<MapType>(&arena, original);
+  ASSERT_EQ(map1->size(), 2);
+  EXPECT_EQ((*map1)[1], 2);
+  EXPECT_EQ((*map1)[2], 3);
+  EXPECT_EQ((*map1)[2], 3);
 }
 
 TEST(MapTest, CopyConstructStringsWithArena) {
-  auto token = internal::InternalVisibilityForTesting{};
   using MapType = Map<std::string, std::string>;
   MapType original;
   original["1"] = "2";
   original["2"] = "3";
 
   Arena arena;
-  alignas(MapType) char mem1[sizeof(MapType)];
-  MapType& map1 = *new (mem1) MapType(token, &arena, original);
-  ASSERT_EQ(map1.size(), 2);
-  EXPECT_EQ(map1["1"], "2");
-  EXPECT_EQ(map1["2"], "3");
+  auto* map1 = Arena::Create<MapType>(&arena, original);
+  ASSERT_EQ(map1->size(), 2);
+  EXPECT_EQ((*map1)["1"], "2");
+  EXPECT_EQ((*map1)["2"], "3");
 }
 
 TEST(MapTest, CopyConstructMessagesWithArena) {
-  auto token = internal::InternalVisibilityForTesting{};
   using MapType = Map<std::string, TestAllTypes>;
   MapType original;
   original["1"].set_optional_int32(1);
   original["2"].set_optional_int32(2);
 
   Arena arena;
-  alignas(MapType) char mem1[sizeof(MapType)];
-  MapType& map1 = *new (mem1) MapType(token, &arena, original);
-  ASSERT_EQ(map1.size(), 2);
-  EXPECT_EQ(map1["1"].optional_int32(), 1);
-  EXPECT_EQ(map1["1"].GetArena(), &arena);
-  EXPECT_EQ(map1["2"].optional_int32(), 2);
-  EXPECT_EQ(map1["2"].GetArena(), &arena);
+  auto* map1 = Arena::Create<MapType>(&arena, original);
+  ASSERT_EQ(map1->size(), 2);
+  EXPECT_EQ((*map1)["1"].optional_int32(), 1);
+  EXPECT_EQ((*map1)["1"].GetArena(), &arena);
+  EXPECT_EQ((*map1)["2"].optional_int32(), 2);
+  EXPECT_EQ((*map1)["2"].GetArena(), &arena);
 }
 
 TEST(MapTest, CopyConstructionMaintainsProperLoadFactor) {
@@ -215,15 +211,20 @@ TEST(MapTest, AlwaysSerializesBothEntries) {
         ASSERT_EQ(4, entry_message->ByteSizeLong());
         EXPECT_EQ(entry_message->SerializeAsString(),
                   std::string({
-                      '\010', '\0',  // key, VARINT, value=0
-                      '\022', '\0',  // value, LEN, size=0
+                      '\010',
+                      '\0',  // key, VARINT, value=0
+                      '\022',
+                      '\0',  // value, LEN, size=0
                   }));
         ASSERT_EQ(6, message->ByteSizeLong());
         EXPECT_EQ(message->SerializeAsString(),
                   std::string({
-                      '\012', '\04',  // field=1, LEN, size=4
-                      '\010', '\0',   // key, VARINT, value=0
-                      '\022', '\0',   // value, LEN, size=0
+                      '\012',
+                      '\04',  // field=1, LEN, size=4
+                      '\010',
+                      '\0',  // key, VARINT, value=0
+                      '\022',
+                      '\0',  // value, LEN, size=0
                   }));
       }
     }
@@ -295,6 +296,39 @@ TEST(MapTest, ErasingEnoughCausesDownwardRehashOnNextInsert) {
                 MapTestPeer::CalculateHiCutoff(MapTestPeer::NumBuckets(m)));
     }
   }
+}
+
+TEST(MapTest, EraseIf) {
+  Map<int, std::string> m;
+  m[1] = "foo";
+  m[2] = "bar";
+  m[3] = "baz";
+  m[4] = "foobar";
+  EXPECT_THAT(m, UnorderedElementsAre(Pair(1, "foo"), Pair(2, "bar"),
+                                      Pair(3, "baz"), Pair(4, "foobar")));
+  EXPECT_EQ(4, m.size());
+
+  EXPECT_EQ(
+      2, google::protobuf::erase_if(m, [&](auto& p) {
+        // Verify that we get a const input.
+        EXPECT_TRUE((std::is_same_v<decltype(p),
+                                    const std::pair<const int, std::string>&>));
+        return absl::StrContains(p.second, "bar");
+      }));
+  EXPECT_THAT(m, UnorderedElementsAre(Pair(1, "foo"), Pair(3, "baz")));
+  EXPECT_EQ(2, m.size());
+
+  EXPECT_EQ(1, google::protobuf::erase_if(m, [&](auto& p) { return p.first == 1; }));
+  EXPECT_THAT(m, UnorderedElementsAre(Pair(3, "baz")));
+  EXPECT_EQ(1, m.size());
+
+  EXPECT_EQ(1, google::protobuf::erase_if(m, [&](auto& p) { return true; }));
+  EXPECT_THAT(m, UnorderedElementsAre());
+  EXPECT_EQ(0, m.size());
+
+  EXPECT_EQ(0, google::protobuf::erase_if(m, [&](auto& p) { return true; }));
+  EXPECT_THAT(m, UnorderedElementsAre());
+  EXPECT_EQ(0, m.size());
 }
 
 // We changed the internal implementation to use a smaller size type, but the

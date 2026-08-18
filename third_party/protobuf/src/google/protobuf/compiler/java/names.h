@@ -94,6 +94,31 @@ inline std::string ClassName(const ServiceDescriptor* descriptor) {
 //   descriptor != NULL
 //
 // Returns:
+//   The fully-qualified Java bytecode class name (using $ separator for nested
+//   classes).
+PROTOC_EXPORT std::string BytecodeClassName(const Descriptor* descriptor);
+
+// Requires:
+//   descriptor != NULL
+//
+// Returns:
+//   The fully-qualified Java bytecode class name (using $ separator for nested
+//   classes).
+PROTOC_EXPORT std::string BytecodeClassName(const EnumDescriptor* descriptor);
+
+// Requires:
+//   descriptor != NULL
+//
+// Returns:
+//   The fully-qualified Java bytecode class name (using $ separator for nested
+//   classes).
+PROTOC_EXPORT std::string BytecodeClassName(
+    const ServiceDescriptor* descriptor);
+
+// Requires:
+//   descriptor != NULL
+//
+// Returns:
 //   Java package name.
 PROTOC_EXPORT std::string FileJavaPackage(const FileDescriptor* file);
 
@@ -186,6 +211,27 @@ PROTOC_EXPORT std::string FullyQualifiedKotlinFactoryName(
 PROTOC_EXPORT std::string KotlinExtensionsClassName(
     const Descriptor* descriptor);
 
+
+// Requires:
+//   descriptor != NULL
+// Returns:
+//   True if the generated message class should be nested in the generated proto
+//   file Java class.
+PROTOC_EXPORT bool NestedInFileClass(const Descriptor& message);
+
+// Requires:
+//   descriptor != NULL
+// Returns:
+//   True if the generated enum class should be nested in the generated proto
+//   file Java class.
+PROTOC_EXPORT bool NestedInFileClass(const EnumDescriptor& enm);
+
+// Requires:
+//   descriptor != NULL
+// Returns:
+//   True if the generated service class should be nested in the generated proto
+//   file Java class.
+PROTOC_EXPORT bool NestedInFileClass(const ServiceDescriptor& service);
 
 }  // namespace java
 }  // namespace compiler

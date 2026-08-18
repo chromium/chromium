@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include "hpb_generator/tests/test_model.hpb.h"
 #include "hpb_generator/tests/test_model.upb.h"
+#include "hpb_generator/tests/test_model.upb_minitable.h"
 #include "upb/mem/arena.h"
 #include "upb/message/message.h"
 
@@ -49,6 +50,47 @@ TEST(CppGeneratedCode, CanCreateProxyWithoutCasting) {
   hpb_unittest::protos::TestModel::Proxy handle =
       hpb::interop::upb::MakeHandle<TestModel>(msg, arena);
   EXPECT_EQ(handle.value(), 0);
+  upb_Arena_Free(arena);
+}
+
+TEST(CppGeneratedCode, CanCreateCProxyWithMiniTable) {
+  upb_Arena* arena = upb_Arena_New();
+  hpb_unittest_TestModel* msg = hpb_unittest_TestModel_new(arena);
+  auto minitable = &hpb_0unittest__TestModel_msg_init;
+  hpb_unittest::protos::TestModel::CProxy const_handle =
+      hpb::interop::upb::MakeCHandle<TestModel>((upb_Message*)msg, minitable,
+                                                arena);
+  EXPECT_EQ(const_handle.value(), 0);
+  upb_Arena_Free(arena);
+}
+
+TEST(CppGeneratedCode, CanCreateProxyWithMiniTable) {
+  upb_Arena* arena = upb_Arena_New();
+  hpb_unittest_TestModel* msg = hpb_unittest_TestModel_new(arena);
+  auto minitable = &hpb_0unittest__TestModel_msg_init;
+  hpb_unittest::protos::TestModel::Proxy handle =
+      hpb::interop::upb::MakeHandle<TestModel>((upb_Message*)msg, minitable,
+                                               arena);
+  EXPECT_EQ(handle.value(), 0);
+  upb_Arena_Free(arena);
+}
+
+TEST(CppGeneratedCode, NonmatchingMinitablesExplode) {
+  upb_Arena* arena = upb_Arena_New();
+  hpb_unittest_TestModel* msg = hpb_unittest_TestModel_new(arena);
+  auto different_minitable = &hpb_0unittest__TestModel__NestedChild_msg_init;
+  EXPECT_DEATH(
+      {
+        hpb::interop::upb::MakeHandle<TestModel>((upb_Message*)msg,
+                                                 different_minitable, arena);
+      },
+      "Check failed: minitable == internal::AssociatedUpbTypes<T>::kMiniTable");
+  EXPECT_DEATH(
+      {
+        hpb::interop::upb::MakeCHandle<TestModel>((upb_Message*)msg,
+                                                  different_minitable, arena);
+      },
+      "Check failed: minitable == internal::AssociatedUpbTypes<T>::kMiniTable");
   upb_Arena_Free(arena);
 }
 

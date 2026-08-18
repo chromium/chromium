@@ -1,8 +1,8 @@
 diff --git a/src/google/protobuf/compiler/cpp/helpers.cc b/src/google/protobuf/compiler/cpp/helpers.cc
-index f994743f5abca..a4eca1a472054 100644
+index 98fae20..f61b3fa 100644
 --- a/src/google/protobuf/compiler/cpp/helpers.cc
 +++ b/src/google/protobuf/compiler/cpp/helpers.cc
-@@ -117,6 +117,14 @@ MessageKnownNonNullaryMethodsSnakeCase() {
+@@ -120,6 +120,14 @@ MessageKnownNonNullaryMethodsSnakeCase() {
    return *methods;
  }
  
@@ -17,7 +17,7 @@ index f994743f5abca..a4eca1a472054 100644
  static const char* const kKeywordList[] = {
      // clang-format off
      "NULL",
-@@ -1345,11 +1353,13 @@ bool IsStringOrMessage(const FieldDescriptor* field) {
+@@ -1373,11 +1381,13 @@ bool IsRepeatedPtrField(const FieldDescriptor* field) {
  }
  
  bool IsAnyMessage(const FileDescriptor* descriptor) {
@@ -34,10 +34,10 @@ index f994743f5abca..a4eca1a472054 100644
  }
  
 diff --git a/src/google/protobuf/compiler/cpp/message.cc b/src/google/protobuf/compiler/cpp/message.cc
-index 2566bec49c3ce..d5a7de27d06bf 100644
+index f060e32..f9a26a9 100644
 --- a/src/google/protobuf/compiler/cpp/message.cc
 +++ b/src/google/protobuf/compiler/cpp/message.cc
-@@ -2395,30 +2395,34 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
+@@ -2391,30 +2391,34 @@ void MessageGenerator::GenerateClassMethods(io::Printer* p) {
      return;
    }
    if (IsAnyMessage(descriptor_)) {
@@ -55,7 +55,7 @@ index 2566bec49c3ce..d5a7de27d06bf 100644
 +                  }
 +                  p->Emit(
 +                      R"cc(
-+                        bool $classname$::GetAnyFieldDescriptors(
++                        $nodiscard $bool $Msg$::GetAnyFieldDescriptors(
 +                            const $pb$::Message& message,
 +                            const $pb$::FieldDescriptor** type_url_field,
 +                            const $pb$::FieldDescriptor** value_field) {
@@ -65,7 +65,7 @@ index 2566bec49c3ce..d5a7de27d06bf 100644
 +                }}},
 +              R"cc(
 +                $any_field_descriptor$;
-+                bool $classname$::ParseAnyTypeUrl(
++                $nodiscard $bool $Msg$::ParseAnyTypeUrl(
 +                    //~
 +                    ::absl::string_view type_url,
 +                    std::string* $nonnull$ full_type_name) {
@@ -73,7 +73,7 @@ index 2566bec49c3ce..d5a7de27d06bf 100644
                  }
 -                p->Emit(
 -                    R"cc(
--                      bool $classname$::GetAnyFieldDescriptors(
+-                      $nodiscard $bool $Msg$::GetAnyFieldDescriptors(
 -                          const $pb$::Message& message,
 -                          const $pb$::FieldDescriptor** type_url_field,
 -                          const $pb$::FieldDescriptor** value_field) {
@@ -83,7 +83,7 @@ index 2566bec49c3ce..d5a7de27d06bf 100644
 -              }}},
 -            R"cc(
 -              $any_field_descriptor$;
--              bool $classname$::ParseAnyTypeUrl(
+-              $nodiscard $bool $Msg$::ParseAnyTypeUrl(
 -                  //~
 -                  ::absl::string_view type_url,
 -                  std::string* $nonnull$ full_type_name) {
@@ -93,5 +93,5 @@ index 2566bec49c3ce..d5a7de27d06bf 100644
 +              )cc");
 +    }
    }
-   p->Emit(
-       {{"has_bit",
+   // Generate non-inline field definitions.
+   for (auto field : internal::FieldRange(descriptor_)) {
