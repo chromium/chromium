@@ -179,32 +179,18 @@ float GetLayerCombinedTargetOpacity(const ui::Layer* layer) {
 
 }  // namespace
 
-WindowOcclusionTracker::InnerClient::InnerClient(
-    WindowOcclusionTracker* occlusion_tracker)
-    : occlusion_tracker_(
-          occlusion_tracker ? occlusion_tracker
-                            : Env::GetInstance()->GetWindowOcclusionTracker()) {
-  CHECK(occlusion_tracker_);
-}
-
-WindowOcclusionTracker::InnerClient::~InnerClient() = default;
-
-WindowOcclusionTracker::ScopedPause::ScopedPause(
-    WindowOcclusionTracker* occlusion_tracker)
-    : InnerClient(occlusion_tracker) {
-  occlusion_tracker_->Pause();
+WindowOcclusionTracker::ScopedPause::ScopedPause() {
+  Env::GetInstance()->GetWindowOcclusionTracker()->Pause();
 }
 
 WindowOcclusionTracker::ScopedPause::~ScopedPause() {
-  occlusion_tracker_->Unpause();
+  Env::GetInstance()->GetWindowOcclusionTracker()->Unpause();
 }
 
-WindowOcclusionTracker::ScopedExclude::ScopedExclude(
-    Window* window,
-    WindowOcclusionTracker* occlusion_tracker)
-    : InnerClient(occlusion_tracker), window_(window) {
-  window->AddObserver(this);
-  occlusion_tracker_->Exclude(window_);
+WindowOcclusionTracker::ScopedExclude::ScopedExclude(Window* window)
+    : window_(window) {
+  window_->AddObserver(this);
+  Env::GetInstance()->GetWindowOcclusionTracker()->Exclude(window_);
 }
 
 WindowOcclusionTracker::ScopedExclude::~ScopedExclude() {
@@ -219,18 +205,15 @@ void WindowOcclusionTracker::ScopedExclude::OnWindowDestroying(Window* window) {
 void WindowOcclusionTracker::ScopedExclude::Shutdown() {
   if (window_) {
     window_->RemoveObserver(this);
-    occlusion_tracker_->Unexclude(window_);
+    Env::GetInstance()->GetWindowOcclusionTracker()->Unexclude(window_);
     window_ = nullptr;
-    occlusion_tracker_ = nullptr;
   }
 }
 
-WindowOcclusionTracker::ScopedForceVisible::ScopedForceVisible(
-    Window* window,
-    WindowOcclusionTracker* occlusion_tracker)
-    : InnerClient(occlusion_tracker), window_(window) {
+WindowOcclusionTracker::ScopedForceVisible::ScopedForceVisible(Window* window)
+    : window_(window) {
   window_->AddObserver(this);
-  occlusion_tracker_->ForceWindowVisible(window_);
+  Env::GetInstance()->GetWindowOcclusionTracker()->ForceWindowVisible(window_);
 }
 
 WindowOcclusionTracker::ScopedForceVisible::~ScopedForceVisible() {
@@ -246,9 +229,9 @@ void WindowOcclusionTracker::ScopedForceVisible::OnWindowDestroying(
 void WindowOcclusionTracker::ScopedForceVisible::Shutdown() {
   if (window_) {
     window_->RemoveObserver(this);
-    occlusion_tracker_->RemoveForceWindowVisible(window_);
+    Env::GetInstance()->GetWindowOcclusionTracker()->RemoveForceWindowVisible(
+        window_);
     window_ = nullptr;
-    occlusion_tracker_ = nullptr;
   }
 }
 
@@ -296,9 +279,7 @@ void WindowOcclusionTracker::Track(Window* window) {
 
 void WindowOcclusionTracker::Untrack(Window* window) {
   auto builder =
-      occlusion_change_builder_factory_
-          ? occlusion_change_builder_factory_.Run()
-          : WindowOcclusionChangeBuilder::Create(/*disallow_unknown=*/false);
+      WindowOcclusionChangeBuilder::Create(/*disallow_unknown=*/false);
 
   DCHECK(window);
   DCHECK(window != window->GetRootWindow());
@@ -454,16 +435,13 @@ void WindowOcclusionTracker::MaybeComputeOcclusion() {
   // Sanity check: Occlusion states in |tracked_windows_| should match those
   // returned by Window::GetOcclusionState() if the default
   // `WindowOcclusionChangeBuilder` is being used.
-  DCHECK(occlusion_change_builder_factory_ ||
-         OcclusionStatesMatch(tracked_windows_));
+  DCHECK(OcclusionStatesMatch(tracked_windows_));
 }
 
 void WindowOcclusionTracker::NotifyOcclusionState(
     std::optional<bool> exceeded_max_num_times_occlusion_recomputed) {
   std::unique_ptr<WindowOcclusionChangeBuilder> change_builder =
-      occlusion_change_builder_factory_
-          ? occlusion_change_builder_factory_.Run()
-          : WindowOcclusionChangeBuilder::Create();
+      WindowOcclusionChangeBuilder::Create();
 
   for (auto& it : tracked_windows_) {
     Window* window = it.first;

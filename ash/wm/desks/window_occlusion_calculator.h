@@ -8,36 +8,68 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
 
 namespace ash {
 
-// Pure virtual base class for window occlusion calculators used by the desk
-// bar.
-class ASH_EXPORT WindowOcclusionCalculator {
+// Computes window occlusion for desk mini views using the global
+// `aura::WindowOcclusionTracker` via synchronous snapshots.
+class ASH_EXPORT WindowOcclusionCalculator : public DesksController::Observer,
+                                             public Desk::Observer {
  public:
-  virtual ~WindowOcclusionCalculator() = default;
+  WindowOcclusionCalculator();
+  WindowOcclusionCalculator(const WindowOcclusionCalculator&) = delete;
+  WindowOcclusionCalculator& operator=(const WindowOcclusionCalculator&) =
+      delete;
+  ~WindowOcclusionCalculator() override;
 
-  // Returns the cached occlusion state of the given `window`.
-  virtual aura::Window::OcclusionState GetOcclusionState(
-      aura::Window* window) const = 0;
+  // Returns the cached occlusion state of the given `window` from the last
+  // snapshot.
+  aura::Window::OcclusionState GetOcclusionState(aura::Window* window) const;
 
-  // Internally records a snapshot of the occlusion state for all
-  // `containers_to_snapshot` and their descendants.
-  virtual void SnapshotOcclusionStateForWindows(
-      const aura::Window::Windows& containers_to_snapshot) = 0;
+  // Records a snapshot of the occlusion state for all `containers_to_snapshot`
+  // and their descendants.
+  void SnapshotOcclusionStateForWindows(
+      const aura::Window::Windows& containers_to_snapshot);
 
-  // Temporarily pauses all calculations.
-  virtual std::unique_ptr<aura::WindowOcclusionTracker::ScopedPause>
-  Pause() = 0;
+  base::WeakPtr<WindowOcclusionCalculator> AsWeakPtr();
 
-  virtual base::WeakPtr<WindowOcclusionCalculator> AsWeakPtr() = 0;
+  using DesksController::Observer::OnDeskNameChanged;
 
-  // Factory method to spawn the active WindowOcclusionCalculator
-  // implementation.
-  static std::unique_ptr<WindowOcclusionCalculator> Create();
+  // DesksController::Observer:
+  void OnDeskAdded(const Desk* desk, bool from_undo) override;
+  void OnDeskRemoved(const Desk* desk) override;
+  void OnDeskReordered(int old_index, int new_index) override {}
+  void OnDeskActivationChanged(const Desk* activated,
+                               const Desk* deactivated) override {}
+
+  // Desk::Observer:
+  void OnContentChanged() override;
+  void OnDeskNameChanged(const std::u16string& new_name) override {}
+  void OnDeskDestroyed(const Desk* desk) override;
+
+ private:
+  void Reset();
+
+  // Caches computed occlusion states from the last snapshot, grouped by
+  // container window.
+  base::flat_map<aura::Window*,
+                 base::flat_map<aura::Window*, aura::Window::OcclusionState>>
+      cached_states_;
+
+  base::ScopedObservation<DesksController, DesksController::Observer>
+      desks_controller_observation_{this};
+  base::ScopedMultiSourceObservation<Desk, Desk::Observer> desk_observations_{
+      this};
+
+  base::WeakPtrFactory<WindowOcclusionCalculator> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

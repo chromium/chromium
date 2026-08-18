@@ -21,7 +21,6 @@
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/legacy_window_occlusion_calculator.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -437,15 +436,7 @@ DeskPreviewView::DeskPreviewView(
       ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
 }
 
-DeskPreviewView::~DeskPreviewView() {
-  if (window_occlusion_calculator_) {
-    if (!features::IsNewWindowOcclusionCalculatorEnabled()) {
-      static_cast<legacy::WindowOcclusionCalculator*>(
-          window_occlusion_calculator_.get())
-          ->RemoveObserver(this);
-    }
-  }
-}
+DeskPreviewView::~DeskPreviewView() = default;
 
 // static
 int DeskPreviewView::GetHeight(aura::Window* root) {
@@ -476,13 +467,6 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   DCHECK(desk_container);
   DCHECK(desk_container->layer());
 
-  // For simplicity, clear occlusion observation state and set it up again.
-  if (window_occlusion_calculator_ &&
-      !features::IsNewWindowOcclusionCalculatorEnabled()) {
-    static_cast<legacy::WindowOcclusionCalculator*>(
-        window_occlusion_calculator_.get())
-        ->RemoveObserver(this);
-  }
   aura::Window::Windows containers_to_mirror = {desk_container};
   // If there is a floated window that belongs to this desk, since it doesn't
   // belong to `desk_container`, we need to add it separately. Note: this
@@ -499,14 +483,8 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
     force_float_occlusion_tracker_visible_.reset();
   }
   if (window_occlusion_calculator_) {
-    if (features::IsNewWindowOcclusionCalculatorEnabled()) {
-      window_occlusion_calculator_->SnapshotOcclusionStateForWindows(
-          containers_to_mirror);
-    } else {
-      static_cast<legacy::WindowOcclusionCalculator*>(
-          window_occlusion_calculator_.get())
-          ->AddObserver(containers_to_mirror, this);
-    }
+    window_occlusion_calculator_->SnapshotOcclusionStateForWindows(
+        containers_to_mirror);
   }
 
   // Mirror the layer tree of the desk container.
@@ -733,32 +711,6 @@ bool DeskPreviewView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 bool DeskPreviewView::CanHandleAccelerators() const {
   return HasFocus() && views::Button::CanHandleAccelerators();
-}
-
-void DeskPreviewView::OnWindowOcclusionChanged(aura::Window* window) {
-  // If `window_occlusion_calculator_` finds multiple windows with occlusion
-  // changes in one calculation, they can be condensed into one
-  // `RecreateDeskContentsMirrorLayers()` call by canceling any pending task
-  // already scheduled.
-  recreate_mirror_layers_weak_factory_.InvalidateWeakPtrs();
-
-  // `RecreateDeskContentsMirrorLayers()` cannot be called directly. If it is,
-  // it creates an infinite loop`:
-  // * DeskPreviewView::OnWindowOcclusionChanged()
-  //   * DeskPreviewView::RecreateDeskContentsMirrorLayers()
-  //     * WindowOcclusionCalculator::RemoveObserver(this)
-  //     * WindowOcclusionCalculator::AddObserver(..., this)
-  // * Iterate to the next observer in the list (which is `this` again). Go back
-  //   to previous step.
-  //
-  // Posting a task fixes this because it finishes the
-  // `WindowOcclusionCalculator::Observer::OnWindowOcclusionChanged()`
-  // notification loop before `DeskPreviewView` resets its observation state.
-  // It's also just simpler to reason about.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DeskPreviewView::RecreateDeskContentsMirrorLayers,
-                     recreate_mirror_layers_weak_factory_.GetWeakPtr()));
 }
 
 BEGIN_METADATA(DeskPreviewView)

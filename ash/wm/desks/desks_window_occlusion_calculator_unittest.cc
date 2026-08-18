@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
@@ -19,7 +18,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/app_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/env.h"
@@ -33,19 +31,9 @@
 namespace ash {
 namespace {
 
-class DesksWindowOcclusionCalculatorTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class DesksWindowOcclusionCalculatorTest : public AshTestBase {
  public:
-  DesksWindowOcclusionCalculatorTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kNewWindowOcclusionCalculator);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kNewWindowOcclusionCalculator);
-    }
-  }
+  DesksWindowOcclusionCalculatorTest() = default;
   DesksWindowOcclusionCalculatorTest(
       const DesksWindowOcclusionCalculatorTest&) = delete;
   DesksWindowOcclusionCalculatorTest& operator=(
@@ -54,9 +42,6 @@ class DesksWindowOcclusionCalculatorTest
 
   // AshTestBase:
   void SetUp() override { AshTestBase::SetUp(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 bool HasLayerWithName(const ui::Layer* layer, const std::string& name) {
@@ -73,14 +58,10 @@ bool HasLayerWithName(const ui::Layer* layer, const std::string& name) {
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         DesksWindowOcclusionCalculatorTest,
-                         testing::Bool());
-
 // Tests that desk bar mini views accurately update and filter occluded windows
 // from their mirrored layer trees during desk operations like moving windows
 // between desks, adding new desks, switching active desks, and removing desks.
-TEST_P(DesksWindowOcclusionCalculatorTest, DeskBarOcclusionIntegration) {
+TEST_F(DesksWindowOcclusionCalculatorTest, DeskBarOcclusionIntegration) {
   auto* desk_controller = DesksController::Get();
   NewDesk();
   ASSERT_EQ(2u, desk_controller->desks().size());
@@ -118,16 +99,11 @@ TEST_P(DesksWindowOcclusionCalculatorTest, DeskBarOcclusionIntegration) {
   EXPECT_TRUE(HasLayerWithName(tree_owner2->root(), "Win1"));
 
   // win1 was moved. The new calculator fixes the stale active desk snapshot
-  // bug, so win0 becomes visible. The legacy calculator has the bug, so
-  // win0 remains occluded.
+  // bug, so win0 becomes visible.
   tree_owner1 = DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(
       root_window, desk1);
   ASSERT_TRUE(tree_owner1);
-  if (GetParam()) {
-    EXPECT_TRUE(HasLayerWithName(tree_owner1->root(), "Win0"));
-  } else {
-    EXPECT_FALSE(HasLayerWithName(tree_owner1->root(), "Win0"));
-  }
+  EXPECT_TRUE(HasLayerWithName(tree_owner1->root(), "Win0"));
 
   // 3. Add a new desk in overview
   auto* new_desk_button =
@@ -164,7 +140,7 @@ TEST_P(DesksWindowOcclusionCalculatorTest, DeskBarOcclusionIntegration) {
   ASSERT_FALSE(overview_controller->InOverviewSession());
 }
 
-TEST_P(DesksWindowOcclusionCalculatorTest, MirroredLayerTreeValidation) {
+TEST_F(DesksWindowOcclusionCalculatorTest, MirroredLayerTreeValidation) {
   auto* desk_controller = DesksController::Get();
   // Must have at least 2 desks to show mini views in clamshell overview.
   NewDesk();
@@ -224,7 +200,7 @@ TEST_P(DesksWindowOcclusionCalculatorTest, MirroredLayerTreeValidation) {
   EXPECT_FALSE(HasLayerWithName(root_layer, "OccludedWindow"));
 }
 
-TEST_P(DesksWindowOcclusionCalculatorTest, ShowsBackgroundDeskWindows) {
+TEST_F(DesksWindowOcclusionCalculatorTest, ShowsBackgroundDeskWindows) {
   // Create Desk 2.
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
