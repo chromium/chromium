@@ -74,7 +74,8 @@ class GPU_GLES2_EXPORT ServiceTransferCache
   cc::ServiceTransferCacheEntry* GetEntry(const EntryKey& key);
   void DeleteAllEntriesForDecoder(int decoder_id);
 
-  void PurgeMemory(base::MemoryPressureLevel memory_pressure_level);
+  void PurgeMemory(int memory_limit);
+  void OnReleaseMemory(int memory_limit) { PurgeMemory(memory_limit); }
 
   // base::trace_event::MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,

@@ -804,7 +804,7 @@ void GpuChannelManager::OnApplicationBackgrounded() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (shared_context_state_) {
-    shared_context_state_->PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    shared_context_state_->PurgeMemory(base::kCriticalMemoryPressureThreshold);
   }
 
   // Release all skia caching when the application is backgrounded.
@@ -866,7 +866,7 @@ void GpuChannelManager::OnReleaseMemory() {
   // SharedContextState requires a current context for cleanup.
   if (shared_context_state_ &&
       shared_context_state_->MakeCurrent(nullptr, true /* needs_gl */)) {
-    shared_context_state_->PurgeMemory(memory_pressure_level);
+    shared_context_state_->PurgeMemory(memory_limit());
   }
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)

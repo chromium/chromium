@@ -8,6 +8,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
@@ -1059,11 +1060,19 @@ void SharedContextState::RemoveContextLostObserver(ContextLostObserver* obs) {
   context_lost_observers_.RemoveObserver(obs);
 }
 
-void SharedContextState::PurgeMemory(
-    base::MemoryPressureLevel memory_pressure_level) {
+void SharedContextState::PurgeMemory(int memory_limit) {
   // Ensure the context is current before doing any GPU cleanup.
   if (!MakeCurrent(nullptr))
     return;
+
+  base::MemoryPressureLevel memory_pressure_level;
+  if (memory_limit <= base::kCriticalMemoryPressureThreshold) {
+    memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
+  } else if (memory_limit <= base::kModerateMemoryPressureThreshold) {
+    memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_MODERATE;
+  } else {
+    memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_NONE;
+  }
 
   switch (memory_pressure_level) {
     case base::MEMORY_PRESSURE_LEVEL_NONE:
@@ -1104,7 +1113,7 @@ void SharedContextState::PurgeMemory(
   }
 
   if (transfer_cache_)
-    transfer_cache_->PurgeMemory(memory_pressure_level);
+    transfer_cache_->PurgeMemory(memory_limit);
 }
 
 // Reports to GpuServiceImpl::GetVideoMemoryUsageStats()

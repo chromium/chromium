@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "build/build_config.h"
@@ -269,7 +270,7 @@ void CompositorGpuThread::OnBackgroundedOnCompositorGpuThread() {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   if (shared_context_state_) {
-    shared_context_state_->PurgeMemory(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    shared_context_state_->PurgeMemory(base::kCriticalMemoryPressureThreshold);
   }
 }
 
