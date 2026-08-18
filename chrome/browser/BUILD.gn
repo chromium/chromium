@@ -1237,6 +1237,7 @@ source_set("core") {
     "//components/tracing:background_tracing_utils",
     "//components/ui_devtools",
     "//components/ukm",
+    "//components/universal_optout:features",
     "//components/update_client",
     "//components/update_client:network_impl",
     "//components/variations/service",

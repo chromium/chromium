@@ -80,6 +80,7 @@
 #include "components/tab_groups/features.h"
 #include "components/themes/cross_device/features.h"
 #include "components/touch_to_search/core/browser/contextual_search_field_trial.h"
+#include "components/universal_optout/features.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/viz/common/features.h"
 #include "components/webapps/browser/features.h"
@@ -597,6 +598,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &tab_groups::kUpdateTabGroupColors,
     &tab_groups::kUseAlternateHistorySyncIllustration,
     &themes::kCrossDeviceThemeTracker,
+    &universal_optout::features::kUniversalOptOutSettings,
     &visited_url_ranking::features::kGroupSuggestionService,
     &webapps::features::kAndroidAutoMintedTWA,
     &webapps::features::kWebApkInstallFailureNotification,

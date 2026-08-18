@@ -17,6 +17,9 @@ namespace universal_optout::features {
 // Controls the rollout of the Universal Opt-Out feature.
 BASE_DECLARE_FEATURE(kUniversalOptOut);
 
+// Feature flag for the settings page development.
+BASE_DECLARE_FEATURE(kUniversalOptOutSettings);
+
 // Comma-separated list of target administrative area codes that are eligible
 // (e.g., "us-fl,us-tx").
 extern const base::FeatureParam<std::string> kTargetLocations;

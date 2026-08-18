@@ -9811,6 +9811,11 @@
     "expiry_milestone": 159
   },
   {
+    "name": "universal-opt-out-settings",
+    "owners": [ "azamatmz@google.com", "zalmashni@google.com", "chrome-privacy-team@google.com" ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "uno-phase-2-follow-up",
     "owners": [ "droger@chromium.org", "chrome-signin-team@google.com" ],
     "expiry_milestone": 160

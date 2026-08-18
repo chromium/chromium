@@ -5738,6 +5738,11 @@ inline constexpr char kUniversalKeyboardHandlingDescription[] =
     "Enables universal keyboard treatment on Clank for UI types and IME "
     "adapters.";
 
+inline constexpr char kUniversalOptOutSettingsName[] =
+    "Universal Opt Out Settings";
+inline constexpr char kUniversalOptOutSettingsDescription[] =
+    "Enables the Universal Opt Out settings for eligible users.";
+
 inline constexpr char kUpdatePaddingForDisplayCalculationName[] =
     "Update Padding For Display Calculation";
 inline constexpr char kUpdatePaddingForDisplayCalculationDescription[] =

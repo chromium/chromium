@@ -210,6 +210,7 @@
 #include "components/translate/core/common/translate_util.h"
 #include "components/trusted_vault/features.h"
 #include "components/ui_devtools/switches.h"
+#include "components/universal_optout/features.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
@@ -13808,6 +13809,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillAndPasswordsRemoveSignInPromo)},
+
+    {"universal-opt-out-settings",
+     flag_descriptions::kUniversalOptOutSettingsName,
+     flag_descriptions::kUniversalOptOutSettingsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(universal_optout::features::kUniversalOptOutSettings)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"disable-grid-tab-switcher",

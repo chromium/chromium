@@ -16908,6 +16908,7 @@ from previous Chrome versions.
   <int value="715957869" label="SendTabToSelfSigninPromo:disabled"/>
   <int value="716073306" label="AssistantVoiceMatch:disabled"/>
   <int value="716080990" label="restrict-iframe-permissions"/>
+  <int value="716221664" label="UniversalOptOutSettings:disabled"/>
   <int value="716592729" label="SuspiciousSiteDetectionRTLookups:disabled"/>
   <int value="717020975" label="ForceOffTextAutosizing:disabled"/>
   <int value="717591093" label="UrlLoaderSyncClient:disabled"/>
@@ -17961,6 +17962,7 @@ from previous Chrome versions.
   <int value="1050442356"
       label="OmniboxUIExperimentBlueTitlesOnPageSuggestions:enabled"/>
   <int value="1050664817" label="CSSFragmentIdentifiers:enabled"/>
+  <int value="1050982627" label="UniversalOptOutSettings:enabled"/>
   <int value="1051252858" label="ClearIdentityInCanMakePaymentEvent:enabled"/>
   <int value="1051600554" label="EnableAdpfEfficiencyMode:disabled"/>
   <int value="1051797561" label="OngoingProcesses:enabled"/>

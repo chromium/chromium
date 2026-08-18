@@ -1977,6 +1977,11 @@ inline constexpr char kTaiyakiAllSurfacesName[] = "Taiyaki (all surfaces)";
 inline constexpr char kTaiyakiAllSurfacesDescription[] =
     "Enables Taiyaki for all surfaces (including post-FRE).";
 
+inline constexpr char kUniversalOptOutSettingsName[] =
+    "Universal Opt Out Settings";
+inline constexpr char kUniversalOptOutSettingsDescription[] =
+    "Enables Universal Opt Out settings.";
+
 inline constexpr char kUpdateTabGroupColorsName[] = "UpdateTabGroupColors";
 inline constexpr char kUpdateTabGroupColorsDescription[] =
     "Enables the UpdateTabGroupColors feature.";

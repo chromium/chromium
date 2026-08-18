@@ -18,6 +18,8 @@ BASE_FEATURE(kUniversalOptOut,
              "UniversalOptOut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUniversalOptOutSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<std::string> kTargetLocations{&kUniversalOptOut,
                                                        "target_locations", ""};
 
