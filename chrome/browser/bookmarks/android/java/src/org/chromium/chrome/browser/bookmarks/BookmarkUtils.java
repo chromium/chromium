@@ -63,6 +63,7 @@ import java.util.concurrent.TimeUnit;
 public class BookmarkUtils {
     private static final String TAG = "BookmarkUtils";
     private static final int READING_LIST_SESSION_LENGTH_MS = (int) TimeUnit.HOURS.toMillis(1);
+    public static final int WIDE_DISPLAY_THRESHOLD_DP = 840;
 
     private static @Nullable Boolean sReadingListSupportedForTesting;
 

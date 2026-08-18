@@ -86,9 +86,6 @@ import java.util.function.Supplier;
 @NullMarked
 public class BookmarkManagerCoordinator
         implements SearchDelegate, BackPressHandler, OnAttachStateChangeListener {
-
-    private static final int WIDE_DISPLAY_THRESHOLD_DP = 840;
-
     private final SelectionDelegate<BookmarkId> mSelectionDelegate =
             new SelectionDelegate<>() {
                 @Override
@@ -720,7 +717,9 @@ public class BookmarkManagerCoordinator
         View navigationPane = mMainView.findViewById(R.id.navigation_pane);
         if (navigationPane != null) {
             navigationPane.setVisibility(
-                    config.screenWidthDp < WIDE_DISPLAY_THRESHOLD_DP ? View.GONE : View.VISIBLE);
+                    config.screenWidthDp < BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP
+                            ? View.GONE
+                            : View.VISIBLE);
         }
     }
 
