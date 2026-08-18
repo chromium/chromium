@@ -64,6 +64,14 @@ Suggestion CreateBnplFootnoteSuggestion() {
   return bnpl_footnote;
 }
 
+Suggestion CreateScanCardSuggestion() {
+  Suggestion scan_credit_card(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
+      SuggestionType::kScanCreditCard);
+  scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
+  return scan_credit_card;
+}
+
 Suggestion CreateMaximizeCreditCardBenefitsSuggestion() {
   Suggestion suggestion{SuggestionType::kMaximizeCreditCardBenefitsEntry};
 
@@ -147,11 +155,7 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
   }
 
   if (should_show_scan_credit_card) {
-    Suggestion scan_credit_card(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
-        SuggestionType::kScanCreditCard);
-    scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
-    footer_suggestions.push_back(scan_credit_card);
+    footer_suggestions.push_back(CreateScanCardSuggestion());
   }
 
   if (should_append_maximize_credit_card_benefits_suggestion) {
@@ -665,13 +669,24 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
             trigger_autofill_field->Type().GetCreditCardType(),
             four_digit_combinations_in_dom_.get(),
             autofilled_last_four_digits_in_form_for_filtering, summary);
-    suggestions = GenerateCreditCardOrCvcFieldSuggestionsSync(
-        client, trigger_field,
-        trigger_autofill_field->Type().GetCreditCardType(),
-        ShouldShowScanCreditCard(*form_structure, *trigger_autofill_field,
-                                 client),
-        summary, card_number_field_value.empty(), cards_to_suggest,
-        amount_extraction_status, bnpl_manager_);
+
+    const bool should_show_scan_credit_card = ShouldShowScanCreditCard(
+        *form_structure, *trigger_autofill_field, client);
+
+    if (cards_to_suggest.empty() &&
+        should_show_scan_credit_card &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableScanCardOptionWhenNoCardsSaved)) {
+      // Add scan credit card suggestion when no cards are available.
+      suggestions = {CreateScanCardSuggestion()};
+    } else {
+      suggestions = GenerateCreditCardOrCvcFieldSuggestionsSync(
+          client, trigger_field,
+          trigger_autofill_field->Type().GetCreditCardType(),
+          should_show_scan_credit_card, summary,
+          card_number_field_value.empty(), cards_to_suggest,
+          amount_extraction_status, bnpl_manager_);
+    }
 
     data_source = SuggestionDataSource::kCreditCard;
   }

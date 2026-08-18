@@ -16017,6 +16017,8 @@ from previous Chrome versions.
   <int value="427860496"
       label="AndroidTabDeclutterPerformanceImprovements:disabled"/>
   <int value="427945554" label="StrictExtensionIsolation:enabled"/>
+  <int value="428335258"
+      label="AutofillEnableScanCardOptionWhenNoCardsSaved:enabled"/>
   <int value="428554364" label="OffsetParentNewSpecBehavior:disabled"/>
   <int value="428631746" label="BackGestureActivityTabProvider:disabled"/>
   <int value="430526292" label="SidePanelTopHairlineRefactorAndroid:enabled"/>
@@ -19165,6 +19167,8 @@ from previous Chrome versions.
   <int value="1416970206" label="ArcGameModeFeature:disabled"/>
   <int value="1417862460" label="SendTabToSelfEnhancedBottomsheet:enabled"/>
   <int value="1418054870" label="SpecialLocale:enabled"/>
+  <int value="1419369870"
+      label="AutofillEnableScanCardOptionWhenNoCardsSaved:disabled"/>
   <int value="1419676945" label="ToolbarSnapshotRefactor:disabled"/>
   <int value="1419806576" label="OsFeedback:enabled"/>
   <int value="1419925608"

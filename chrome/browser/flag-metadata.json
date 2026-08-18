@@ -1109,6 +1109,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "autofill-enable-scan-card-option-when-no-cards-saved",
+    "owners": [ "benphillips@google.com", "siashah@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-enable-separate-pix-preference-item",
     "owners": [
       "tushartushar@google.com",

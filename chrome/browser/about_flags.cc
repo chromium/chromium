@@ -13804,6 +13804,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableGridTabSwitcherDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDisableGridTabSwitcher)},
 #endif
+
+    {"autofill-enable-scan-card-option-when-no-cards-saved",
+     flag_descriptions::kAutofillEnableScanCardOptionWhenNoCardsSavedName,
+     flag_descriptions::
+         kAutofillEnableScanCardOptionWhenNoCardsSavedDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableScanCardOptionWhenNoCardsSaved)},
+
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

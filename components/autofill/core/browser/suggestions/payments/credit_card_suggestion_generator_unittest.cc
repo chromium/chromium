@@ -1505,6 +1505,55 @@ TEST_F(CreditCardSuggestionGeneratorTest, ShouldShowScanCreditCard) {
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 }
 
+TEST_F(CreditCardSuggestionGeneratorTest,
+       ShouldShowScanCreditCard_NoCards) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableScanCardOptionWhenNoCardsSaved};
+  FormBundle form_bundle =
+      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
+
+  ON_CALL(*mock_payments_autofill_client_, HasCreditCardScanFeature)
+      .WillByDefault(testing::Return(true));
+
+  const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+
+  EXPECT_THAT(
+      suggestions[0],
+      EqualsSuggestion(SuggestionType::kScanCreditCard,
+                       l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
+                       Suggestion::Icon::kScanCreditCard));
+}
+
+TEST_F(CreditCardSuggestionGeneratorTest,
+       ShouldShowScanCreditCard_NoCards_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableScanCardOptionWhenNoCardsSaved);
+  FormBundle form_bundle =
+      GetFormWithTypes({.fields = {{.role = CREDIT_CARD_NUMBER}}});
+
+  ON_CALL(*mock_payments_autofill_client_, HasCreditCardScanFeature)
+      .WillByDefault(testing::Return(true));
+
+  const std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      form_bundle.form, *form_bundle.form_structure, form_bundle.trigger_field,
+      *form_bundle.trigger_autofill_field, autofill_client(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
+      credit_card_form_event_logger(),
+      AutofillMetrics::PaymentsSigninState::kUnknown,
+      /*exclude_virtual_cards=*/false);
+
+  EXPECT_THAT(suggestions, testing::IsEmpty());
+}
+
 // Test that 'Scan New Card' suggestion is shown based on whether autofill
 // credit card is enabled or disabled.
 TEST_F(CreditCardSuggestionGeneratorTest,

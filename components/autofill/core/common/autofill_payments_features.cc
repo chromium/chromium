@@ -256,6 +256,11 @@ const base::FeatureParam<int> kAutofillEnableResurrectingPaymentsUsersTreatment{
 // card dropdown menu for users who don't have any cards saved in Autofill.
 BASE_FEATURE(kAutofillEnableSaveAndFill, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the 'Scan new card' option will be offered even if the user
+// does not have any credit cards saved in Autofill.
+BASE_FEATURE(kAutofillEnableScanCardOptionWhenNoCardsSaved,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, show Pix settings as a separate preference menu item instead of
 // bundling them together with the non-card payment preference menu item.
