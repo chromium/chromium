@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actor_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_mutator.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -27,6 +29,7 @@ NSString* const kToolScrollTo = @"Scroll To";
 NSString* const kToolSelect = @"Select";
 NSString* const kToolCloseTab = @"Close Tab";
 NSString* const kToolAttemptLogin = @"Attempt Login";
+NSString* const kToolAttemptFormFilling = @"Attempt Form Filling";
 NSString* const kToolCreateTab = @"Create Tab";
 NSString* const kToolActivateTab = @"Activate Tab";
 
@@ -46,7 +49,8 @@ bool IsWebActuationTool(NSString* tool) {
          [tool isEqualToString:kToolScroll] ||
          [tool isEqualToString:kToolScrollTo] ||
          [tool isEqualToString:kToolSelect] ||
-         [tool isEqualToString:kToolAttemptLogin];
+         [tool isEqualToString:kToolAttemptLogin] ||
+         [tool isEqualToString:kToolAttemptFormFilling];
 }
 }  // namespace
 
@@ -536,6 +540,20 @@ bool IsWebActuationTool(NSString* tool) {
         }
       }
     },
+    kToolAttemptFormFilling : @{
+      @"ui" : @[ _tabIdContainer, _frameIdContainer, _jsonContainer ],
+      @"template" : @{
+        @"attempt_form_filling" : @{
+          @"tab_id" : kTabIdMacro,
+          @"form_filling_requests" : @[ @{
+            @"requested_data" : @(1),
+            @"section_label" : @"Address",
+            @"trigger_fields" :
+                @[ @{@"coordinate" : @{@"x" : @(200), @"y" : @(250)}} ]
+          } ]
+        }
+      }
+    },
     kToolCreateTab : @{
       @"ui" : @[ _jsonContainer ],
       @"template" : @{
@@ -580,46 +598,57 @@ bool IsWebActuationTool(NSString* tool) {
   if (![toolDict isKindOfClass:[NSMutableDictionary class]]) {
     return;
   }
-  // 2. Update Tab ID.
-  if (tabId &&
-      (toolDict[@"tab_id"] || (configTemplate && configTemplate[@"tab_id"]))) {
+  // Update Tab ID.
+  if (tabId && (toolDict[@"tab_id"] || configTemplate[@"tab_id"])) {
     toolDict[@"tab_id"] = @([tabId intValue]);
   }
 
-  // 3. Update Target (Frame).
+  // Update Target (Frame).
   if (toolDict[@"target"]) {
     if (frameId) {
       toolDict[@"target"] =
           [@{@"document_identifier" : frameId, @"content_node_id" : @(1)}
               mutableCopy];
-    } else if (configTemplate && configTemplate[@"target"]) {
+    } else if (configTemplate[@"target"]) {
       // Revert to template default if frame deselected.
       toolDict[@"target"] = [configTemplate[@"target"] mutableCopy];
     }
   }
 
   if (toolDict[@"login_targets"]) {
-    NSMutableArray* loginTargets = [toolDict[@"login_targets"] mutableCopy];
-    NSArray* defaultLoginTargets =
-        configTemplate ? configTemplate[@"login_targets"] : nil;
-    for (NSUInteger i = 0; i < loginTargets.count; i++) {
-      NSMutableDictionary* loginTarget = [loginTargets[i] mutableCopy];
-      if (loginTarget[@"target"]) {
-        NSDictionary* defaultTarget =
-            (defaultLoginTargets && i < defaultLoginTargets.count)
-                ? defaultLoginTargets[i][@"target"]
-                : nil;
-        if (frameId) {
-          loginTarget[@"target"] =
-              [@{@"document_identifier" : frameId, @"content_node_id" : @(1)}
-                  mutableCopy];
-        } else if (defaultTarget) {
-          loginTarget[@"target"] = [defaultTarget mutableCopy];
-        }
+    NSArray<NSMutableDictionary*>* loginTargets = toolDict[@"login_targets"];
+    NSDictionary* defaultCoordinates =
+        configTemplate[@"login_targets"][0][@"target"];
+    // If possible, keep the number of targets in existing config.
+    for (NSMutableDictionary* loginTarget in loginTargets) {
+      if (frameId) {
+        loginTarget[@"target"] =
+            [@{@"document_identifier" : frameId, @"content_node_id" : @(1)}
+                mutableCopy];
+      } else if (defaultCoordinates) {
+        // Revert to template default if frame deselected.
+        loginTarget[@"target"] = defaultCoordinates;
       }
-      loginTargets[i] = loginTarget;
     }
     toolDict[@"login_targets"] = loginTargets;
+  }
+
+  if (toolDict[@"form_filling_requests"]) {
+    NSArray<NSMutableDictionary*>* formFillingRequests =
+        toolDict[@"form_filling_requests"];
+    NSDictionary* defaultCoordinates =
+        configTemplate[@"form_filling_requests"][0][@"trigger_fields"][0];
+    // If possible, keep the number of requests in existing config.
+    for (NSMutableDictionary* request in formFillingRequests) {
+      if (frameId) {
+        request[@"trigger_fields"] =
+            @[ @{@"document_identifier" : frameId, @"content_node_id" : @(1)} ];
+      } else if (defaultCoordinates) {
+        // Revert to template default if frame deselected.
+        request[@"trigger_fields"] = @[ defaultCoordinates ];
+      }
+    }
+    toolDict[@"form_filling_requests"] = formFillingRequests;
   }
 }
 
@@ -801,11 +830,14 @@ bool IsWebActuationTool(NSString* tool) {
   __weak __typeof(self) weakSelf = self;
 
   // Define the explicit order for the dropdown menu.
-  NSArray<NSString*>* orderedTools = @[
+  NSMutableArray<NSString*>* orderedTools = [NSMutableArray arrayWithArray:@[
     kToolMultiTool, kToolNavigate, kToolClick, kToolType, kToolHistoryBack,
     kToolHistoryForward, kToolWait, kToolScroll, kToolScrollTo, kToolSelect,
     kToolCloseTab, kToolAttemptLogin, kToolCreateTab, kToolActivateTab
-  ];
+  ]];
+  if (base::FeatureList::IsEnabled(autofill::features::kGlicActorAutofill)) {
+    [orderedTools addObject:kToolAttemptFormFilling];
+  }
 
   for (NSString* toolName in orderedTools) {
     UIAction* action = [UIAction actionWithTitle:toolName
