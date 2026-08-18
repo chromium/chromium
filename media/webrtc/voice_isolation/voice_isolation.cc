@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/converting_audio_fifo.h"
@@ -89,6 +90,7 @@ VoiceIsolationImpl::~VoiceIsolationImpl() = default;
 
 void VoiceIsolationImpl::ProcessAudio(const AudioBus& input_bus,
                                       AudioBus& output_bus) {
+  TRACE_EVENT("audio", "VoiceIsolationImpl::ProcessAudio");
   CHECK_EQ(input_bus.frames(), output_bus.frames());
   CHECK_EQ(input_bus.channels(), output_bus.channels());
 
@@ -104,6 +106,7 @@ void VoiceIsolationImpl::ProcessAudio(const AudioBus& input_bus,
   forward_fifo_->Push(std::move(input_copy));
 
   while (forward_fifo_->HasOutput()) {
+    TRACE_EVENT("audio", "VoiceIsolationImpl::ProcessInternalFrame");
     const media::AudioBus* internal_in = forward_fifo_->PeekOutput();
     std::unique_ptr<media::AudioBus> internal_out =
         backward_fifo_->GetInputAudioBus();
@@ -120,6 +123,7 @@ void VoiceIsolationImpl::ProcessAudio(const AudioBus& input_bus,
     out->CopyTo(&output_bus);
     backward_fifo_->PopOutput();
   } else {
+    TRACE_EVENT_INSTANT("audio", "VoiceIsolationImpl::OutputZeroed");
     output_bus.Zero();
   }
 }

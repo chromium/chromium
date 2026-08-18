@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 #include "third_party/tflite/buildflags.h"
@@ -158,6 +159,7 @@ TfLiteVoiceIsolation::~TfLiteVoiceIsolation() = default;
 
 void TfLiteVoiceIsolation::ProcessAudio(base::span<const float> input_dfts,
                                         base::span<float> output_dfts) {
+  TRACE_EVENT("audio", "TfLiteVoiceIsolation::ProcessAudio");
   CHECK_EQ(input_dfts.size(), FrameSize());
   CHECK_EQ(output_dfts.size(), FrameSize());
 
@@ -180,7 +182,10 @@ void TfLiteVoiceIsolation::ProcessAudio(base::span<const float> input_dfts,
     input_tensor_span_[(i + 1) * fft_size - 1] = 0.0f;
   }
 
-  CHECK_EQ(interpreter_->Invoke(), kTfLiteOk);
+  {
+    TRACE_EVENT("audio", "TfLiteVoiceIsolation::Inference");
+    CHECK_EQ(interpreter_->Invoke(), kTfLiteOk);
+  }
   base::span(temp_output_).copy_from(output_tensor_span_);
 
   for (size_t k = 0; k < temp_output_.size(); ++k) {

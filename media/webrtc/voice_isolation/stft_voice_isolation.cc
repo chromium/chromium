@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/trace_event/trace_event.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "third_party/pffft/src/pffft.h"
 
@@ -225,6 +226,7 @@ StftVoiceIsolation::~StftVoiceIsolation() = default;
 
 void StftVoiceIsolation::ProcessAudio(base::span<const float> waveform_input,
                                       base::span<float> waveform_output) {
+  TRACE_EVENT("audio", "StftVoiceIsolation::ProcessAudio");
   CHECK_EQ(waveform_input.size(), FrameSize());
   CHECK_EQ(waveform_output.size(), FrameSize());
 

@@ -200,6 +200,7 @@ void AudioProcessorHandler::OnAudioProcessorOutput(
     const media::AudioBus& audio_bus,
     base::TimeTicks audio_capture_time,
     std::optional<double> new_volume) {
+  TRACE_EVENT("audio", "AudioProcessorHandler::OnAudioProcessorOutput");
   // Retrieve and reset the accumulated glitch info to ensure it is attached
   // to the processed frame.
   const media::AudioGlitchInfo glitch_info =

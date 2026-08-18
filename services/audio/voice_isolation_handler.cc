@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/webrtc/ml_model_handle.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
@@ -50,6 +51,7 @@ void VoiceIsolationHandler::ProcessCapturedAudio(
     base::TimeTicks audio_capture_time,
     std::optional<double> volume,
     const media::AudioGlitchInfo& audio_glitch_info) {
+  TRACE_EVENT("audio", "VoiceIsolationHandler::ProcessCapturedAudio");
   DCHECK_EQ(output_bus_->channels(), audio_source.channels());
   DCHECK_EQ(output_bus_->frames(), audio_source.frames());
   voice_isolation_->ProcessAudio(audio_source, *output_bus_);
