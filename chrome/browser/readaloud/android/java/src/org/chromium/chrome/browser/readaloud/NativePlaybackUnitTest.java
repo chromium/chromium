@@ -110,9 +110,11 @@ public class NativePlaybackUnitTest {
 
     @Test
     public void testUpdateMetadata() {
+        mPlayback.addListener(mListener);
         mPlayback.updateMetadata("Title", "Publisher");
         assertEquals("Title", mPlayback.getMetadata().title());
         assertEquals("Publisher", mPlayback.getMetadata().publisher());
+        verify(mListener).onMetadataChanged(mPlayback.getMetadata());
     }
 
     @Test

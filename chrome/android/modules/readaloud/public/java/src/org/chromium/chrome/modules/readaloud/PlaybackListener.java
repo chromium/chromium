@@ -77,6 +77,12 @@ public interface PlaybackListener {
     default void onPlaybackDataChanged(PlaybackData data) {}
 
     /**
+     * Called when article metadata (e.g. title, publisher) changes.
+     * @param metadata Updated metadata.
+     */
+    default void onMetadataChanged(Playback.Metadata metadata) {}
+
+    /**
      * Indicates that an error occurred in playback.
      * @param error Caught exception.
      */

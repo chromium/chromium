@@ -125,6 +125,15 @@ class PlayerMediator implements InteractionHandler {
                         mLastState = data.state();
                     }
                 }
+
+                @Override
+                public void onMetadataChanged(Playback.Metadata metadata) {
+                    if (mPlayback == null) {
+                        return;
+                    }
+                    mModel.set(PlayerProperties.TITLE, metadata.title());
+                    mModel.set(PlayerProperties.PUBLISHER, metadata.publisher());
+                }
             };
 
     private boolean mIsScrubbingSeekBar;

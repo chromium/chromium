@@ -262,6 +262,20 @@ public class PlayerMediatorUnitTest {
     }
 
     @Test
+    public void testMetadataUpdated() {
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+
+        Playback.Metadata metadata = Mockito.mock(Playback.Metadata.class);
+        doReturn("New Title").when(metadata).title();
+        doReturn("New Publisher").when(metadata).publisher();
+        mPlaybackListenerCaptor.getValue().onMetadataChanged(metadata);
+
+        assertEquals("New Title", mModel.get(PlayerProperties.TITLE));
+        assertEquals("New Publisher", mModel.get(PlayerProperties.PUBLISHER));
+    }
+
+    @Test
     public void testSetRequestedPlaybackMode() {
         mMediator.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
 

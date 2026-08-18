@@ -106,6 +106,7 @@ class NativePlayback implements Playback {
         ThreadUtils.assertOnUiThread();
         mMetadata.setTitle(title);
         mMetadata.setPublisher(publisher);
+        notifyMetadataChanged();
     }
 
     @PlaybackListener.State
@@ -138,6 +139,12 @@ class NativePlayback implements Playback {
     private void notifyPlaybackDataChanged() {
         for (PlaybackListener listener : mListeners) {
             listener.onPlaybackDataChanged(mPlaybackData);
+        }
+    }
+
+    private void notifyMetadataChanged() {
+        for (PlaybackListener listener : mListeners) {
+            listener.onMetadataChanged(mMetadata);
         }
     }
 
