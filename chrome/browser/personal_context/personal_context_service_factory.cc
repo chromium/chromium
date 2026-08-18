@@ -48,5 +48,5 @@ PersonalContextServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<personal_context::PersonalContextServiceImpl>(
       profile->GetURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
 }

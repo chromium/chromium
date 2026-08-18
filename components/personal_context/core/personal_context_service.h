@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_SERVICE_H_
 #define COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_SERVICE_H_
 
+#include <optional>
+
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
+#include "components/personal_context/proto/features/common_data.pb.h"
 
 namespace personal_context {
 
@@ -30,6 +33,12 @@ class PersonalContextService : public KeyedService {
   virtual void FetchPiiEntities(const proto::FetchPiiEntitiesRequest& request,
                                 const ContextMemoryRequestOptions& options,
                                 FetchPiiContextCallback callback) = 0;
+
+  // Decrypts the `encrypted_entity` field in `entity` using this device's
+  // private key. Returns the deserialized `DecryptedEntity` on success, or
+  // `std::nullopt` if decryption or parsing fails.
+  virtual std::optional<proto::DecryptedEntity> DecryptEntity(
+      const proto::Entity& entity) = 0;
 };
 
 }  // namespace personal_context

@@ -29,6 +29,10 @@ class MockPersonalContextService : public PersonalContextService {
                const ContextMemoryRequestOptions& options,
                FetchPiiContextCallback callback),
               (override));
+  MOCK_METHOD(std::optional<proto::DecryptedEntity>,
+              DecryptEntity,
+              (const proto::Entity& entity),
+              (override));
 };
 
 }  // namespace personal_context

@@ -46,5 +46,5 @@ IOSPersonalContextServiceFactory::BuildServiceInstanceFor(
 
   return std::make_unique<PersonalContextServiceImpl>(
       profile->GetSharedURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile));
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
 }

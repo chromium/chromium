@@ -10,6 +10,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/personal_context/core/personal_context_service.h"
 
+class PrefService;
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -20,13 +22,15 @@ class IdentityManager;
 
 namespace personal_context {
 
+class PersonalContextKeyManager;
 class PersonalContextManager;
 
 class PersonalContextServiceImpl : public PersonalContextService {
  public:
   PersonalContextServiceImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      PrefService* pref_service);
 
   PersonalContextServiceImpl(const PersonalContextServiceImpl&) = delete;
   PersonalContextServiceImpl& operator=(const PersonalContextServiceImpl&) = delete;
@@ -43,9 +47,12 @@ class PersonalContextServiceImpl : public PersonalContextService {
   void FetchPiiEntities(const proto::FetchPiiEntitiesRequest& request,
                         const ContextMemoryRequestOptions& options,
                         FetchPiiContextCallback callback) override;
+  std::optional<proto::DecryptedEntity> DecryptEntity(
+      const proto::Entity& entity) override;
 
  private:
   std::unique_ptr<PersonalContextManager> personal_context_manager_;
+  std::unique_ptr<PersonalContextKeyManager> key_manager_;
 };
 
 }  // namespace personal_context

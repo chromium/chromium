@@ -6,12 +6,18 @@
 
 #include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
 #include "components/personal_context/core/personal_context_features.h"
+#include "components/personal_context/core/personal_context_key_manager.h"
+#include "components/personal_context/core/personal_context_prefs.h"
+#include "components/personal_context/proto/features/common_data.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -41,11 +47,13 @@ class PersonalContextServiceImplTest : public testing::Test {
   ~PersonalContextServiceImplTest() override = default;
 
   void SetUp() override {
+    prefs::RegisterProfilePrefs(pref_service_.registry());
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     personal_context_service_ = std::make_unique<PersonalContextServiceImpl>(
-        url_loader_factory_, identity_test_env_.identity_manager());
+        url_loader_factory_, identity_test_env_.identity_manager(),
+        &pref_service_);
   }
 
   void SetAutomaticIssueOfAccessTokens() {
@@ -81,6 +89,7 @@ class PersonalContextServiceImplTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kPersonalContext};
   signin::IdentityTestEnvironment identity_test_env_;
+  TestingPrefServiceSimple pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<PersonalContextServiceImpl> personal_context_service_;
@@ -126,6 +135,79 @@ TEST_F(PersonalContextServiceImplTest, FetchPiiEntitiesDelegatesToManager) {
   FetchPiiEntitiesResult result = future.Take();
   ASSERT_TRUE(result.response.has_value());
   EXPECT_EQ("test_id", result.response.value().server_request_id());
+}
+
+TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess) {
+  PersonalContextKeyManager key_manager(&pref_service_);
+
+  proto::DecryptedEntity decrypted_entity;
+  decrypted_entity.mutable_passport()->set_full_name("Jane Doe");
+  decrypted_entity.mutable_passport()->set_number("123456789");
+  decrypted_entity.mutable_passport()->set_issuing_country("US");
+
+  proto::DecryptedReference* gmail_ref = decrypted_entity.add_references();
+  gmail_ref->mutable_gmail_message()->set_subject("Your Passport Application");
+  gmail_ref->mutable_gmail_message()->set_message_url(
+      "https://mail.google.com/mail/u/0/#inbox/123");
+
+  proto::DecryptedReference* drive_ref = decrypted_entity.add_references();
+  drive_ref->mutable_drive_file()->set_name("passport_scan.pdf");
+  drive_ref->mutable_drive_file()->set_url(
+      "https://drive.google.com/file/d/456");
+
+  std::string serialized_entity = decrypted_entity.SerializeAsString();
+  std::optional<std::vector<uint8_t>> ciphertext = key_manager.Seal(
+      key_manager.GetPublicKey(), base::as_byte_span(serialized_entity));
+  ASSERT_TRUE(ciphertext.has_value());
+
+  proto::Entity entity;
+  entity.set_encrypted_entity(
+      std::string(ciphertext->begin(), ciphertext->end()));
+
+  std::optional<proto::DecryptedEntity> result =
+      personal_context_service()->DecryptEntity(entity);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->passport().full_name(), "Jane Doe");
+  EXPECT_EQ(result->passport().number(), "123456789");
+  EXPECT_EQ(result->passport().issuing_country(), "US");
+
+  ASSERT_EQ(result->references_size(), 2);
+  EXPECT_EQ(result->references(0).gmail_message().subject(),
+            "Your Passport Application");
+  EXPECT_EQ(result->references(0).gmail_message().message_url(),
+            "https://mail.google.com/mail/u/0/#inbox/123");
+  EXPECT_EQ(result->references(1).drive_file().name(), "passport_scan.pdf");
+  EXPECT_EQ(result->references(1).drive_file().url(),
+            "https://drive.google.com/file/d/456");
+}
+
+TEST_F(PersonalContextServiceImplTest, DecryptEntityEmptyEntityReturnsNullopt) {
+  proto::Entity empty_entity;
+  empty_entity.set_encrypted_entity("");
+  EXPECT_EQ(personal_context_service()->DecryptEntity(empty_entity),
+            std::nullopt);
+}
+
+TEST_F(PersonalContextServiceImplTest,
+       DecryptEntityCorruptedCiphertextReturnsNullopt) {
+  proto::Entity entity;
+  entity.set_encrypted_entity("invalid_ciphertext");
+  EXPECT_EQ(personal_context_service()->DecryptEntity(entity), std::nullopt);
+}
+
+TEST_F(PersonalContextServiceImplTest,
+       DecryptEntityInvalidProtoPayloadReturnsNullopt) {
+  PersonalContextKeyManager key_manager(&pref_service_);
+
+  const std::string invalid_proto_bytes = "\xFF\xFF\xFF\xFF\xFF";
+  std::optional<std::vector<uint8_t>> ciphertext = key_manager.Seal(
+      key_manager.GetPublicKey(), base::as_byte_span(invalid_proto_bytes));
+  ASSERT_TRUE(ciphertext.has_value());
+
+  proto::Entity entity;
+  entity.set_encrypted_entity(
+      std::string(ciphertext->begin(), ciphertext->end()));
+  EXPECT_EQ(personal_context_service()->DecryptEntity(entity), std::nullopt);
 }
 
 }  // namespace
