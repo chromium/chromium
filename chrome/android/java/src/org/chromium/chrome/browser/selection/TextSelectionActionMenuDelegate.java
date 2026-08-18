@@ -97,7 +97,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                                             | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
                             .build());
         }
-        if (shouldShowAskGeminiForSelection(menuType, isSelectionPassword, selectedText)) {
+        if (shouldShowAskGeminiForSelection(isSelectionPassword, selectedText)) {
             SelectionMenuItem.Builder builder =
                     new SelectionMenuItem.Builder(R.string.glic_button_entrypoint_ask_gemini_label)
                             .setId(R.id.contextmenu_ask_gemini)
@@ -251,12 +251,11 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
      * side panel).
      */
     private boolean shouldShowAskGeminiForSelection(
-            @MenuType int menuType, boolean isSelectionPassword, String selectedText) {
-        boolean isFormFactorSupported =
-                (menuType == MenuType.DROPDOWN && AndroidSidePanelEnabledFn.isEnabled())
-                        || (menuType == MenuType.FLOATING
-                                && TabBottomSheetUtils.isTabBottomSheetEnabled());
-        if (!isFormFactorSupported) return false;
+            boolean isSelectionPassword, String selectedText) {
+        boolean isContainerAvailable =
+                AndroidSidePanelEnabledFn.isEnabled()
+                        || TabBottomSheetUtils.isTabBottomSheetEnabled();
+        if (!isContainerAvailable) return false;
         if (TextUtils.isEmpty(selectedText) || isSelectionPassword) return false;
         if (mTab.isDestroyed() || mTab.isIncognito()) return false;
         Profile profile = mTab.getProfile();

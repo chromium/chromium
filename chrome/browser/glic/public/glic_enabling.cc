@@ -18,6 +18,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "content/public/common/content_switches.h"
+#include "ui/base/device_form_factor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -741,6 +743,19 @@ bool GlicGlobalEnabling::IsSystemRequirementMet() const {
             features::kGlicMinRequiredRamMb.Get()))) {
       return false;
     }
+
+#if BUILDFLAG(IS_ANDROID)
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kTestType)) {
+      ui::DeviceFormFactor formFactor = ui::GetDeviceFormFactor();
+
+      if (formFactor != ui::DEVICE_FORM_FACTOR_PHONE &&
+          formFactor != ui::DEVICE_FORM_FACTOR_FOLDABLE &&
+          formFactor != ui::DEVICE_FORM_FACTOR_DESKTOP) {
+        return false;
+      }
+    }
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
     constexpr base::ByteSize kMinimumMemoryThreshold = base::GiBU(7);
     const bool bypass_cbx_requirement =

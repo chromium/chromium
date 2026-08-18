@@ -261,11 +261,7 @@ BASE_FEATURE(kForcedAppRelaunchOnPlaceholderUpdate,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Controls whether the actor component of Glic is enabled.
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kGlicActor, base::FEATURE_DISABLED_BY_DEFAULT);
-#else
 BASE_FEATURE(kGlicActor, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 BASE_FEATURE(kGlicActorApcComparison, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -579,7 +575,8 @@ BASE_FEATURE(kGlicMessageFirstFre, base::FEATURE_DISABLED_BY_DEFAULT);
 // kill-switch for Glic and can be used in the future to handle unsupported
 // Chrome versions.
 BASE_FEATURE(kGlic,
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -605,7 +602,7 @@ const base::FeatureParam<bool> kGlicAdaptiveToolbarAutoPin{
     &kGlic, "adaptive-toolbar-auto-pin", true};
 
 const base::FeatureParam<bool> kGlicBottomSheetPromo{
-    &kGlic, "glic-bottom-sheet-promo", true};
+    &kGlic, "glic-bottom-sheet-promo", false};
 
 // Controls whether the Glic feature uses multiple instances or not.
 BASE_FEATURE(kGlicMultiInstance, base::FEATURE_ENABLED_BY_DEFAULT);

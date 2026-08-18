@@ -1172,7 +1172,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sGlic =
-            newCachedFlag(GLIC, false, /* defaultValueInTests= */ true);
+            newCachedFlag(GLIC, true, /* defaultValueInTests= */ true);
     public static final CachedFlag sGlicBackgroundActuation =
             newCachedFlag(GLIC_BACKGROUND_ACTUATION, false);
     public static final CachedFlag sGlicBackgroundTriggering =
@@ -1741,7 +1741,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sTabAndroidGracefulShutdown =
             newMutableFlagWithSafeDefault(TAB_ANDROID_GRACEFUL_SHUTDOWN, false);
     public static final MutableFlagWithSafeDefault sTabBottomSheet =
-            newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET, false);
+            newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET, true);
     public static final MutableFlagWithSafeDefault sTabBottomSheetFullHeight =
             newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET_FULL_HEIGHT, false);
     public static final MutableFlagWithSafeDefault sTabBottomSheetHalfHeight =

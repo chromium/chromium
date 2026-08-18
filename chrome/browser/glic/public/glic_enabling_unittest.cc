@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "content/public/common/content_switches.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -129,6 +130,7 @@ class TestDelegate : public GlicEnablingDelegate {
 class GlicEnablingTest : public testing::Test {
  public:
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
 #if BUILDFLAG(IS_ANDROID)
     if (base::android::android_info::sdk_int() <
         base::android::android_info::SDK_VERSION_S) {
@@ -483,6 +485,7 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
   ~GlicEnablingProfileEligibilityTest() override = default;
 
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
 #if BUILDFLAG(IS_ANDROID)
     if (base::android::android_info::sdk_int() <
         base::android::android_info::SDK_VERSION_S) {
@@ -663,6 +666,7 @@ class GlicEnablingProfileReadyStateTestBase
   }
 
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
     GlicEnablingProfileEligibilityTest::SetUp();
     if (IsSkipped()) {
       return;
@@ -745,6 +749,7 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
   }
 
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
 #if BUILDFLAG(IS_ANDROID)
     if (base::android::android_info::sdk_int() <
         base::android::android_info::SDK_VERSION_S) {
@@ -1116,6 +1121,7 @@ class GlicEnablingGatedFeatureTest
 class GlicEnablingAutoOpenForPdfTest : public GlicEnablingGatedFeatureTest {
  public:
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
     SetUpFeature(features::kAutoOpenGlicForPdf,
                  features::kAutoOpenGlicForPdfWithOnboarding);
   }
@@ -1165,6 +1171,7 @@ class GlicEnablingContextMenuTest
       public testing::WithParamInterface<ContextMenuFeatureParams> {
  public:
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
     GlicEnablingProfileReadyStateTestBase::SetUp();
     if (IsSkipped()) {
       return;
@@ -1753,6 +1760,7 @@ class GlicEnablingGeminiEnterpriseSettingsTest
   }
 
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
     GlicEnablingProfileEligibilityTest::SetUp();
     if (IsSkipped()) {
       return;
@@ -2039,6 +2047,7 @@ class GlicEnablingAnchorEntryPointCountryTest
   }
 
   void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
     variations::TestVariationsService::RegisterPrefs(local_state_.registry());
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         &local_state_, &enabled_state_provider_, std::wstring(),
