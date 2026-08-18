@@ -6,11 +6,11 @@
 import 'chrome://settings/lazy_load.js';
 import 'chrome://settings/settings.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AccountManagerBrowserProxy, CrLinkRowElement, SettingsPeoplePageElement} from 'chrome://settings/settings.js';
 import {AccountManagerBrowserProxyImpl, loadTimeData, PrefService, PrefsBrowserProxy, ProfileInfoBrowserProxyImpl, Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {simulateSyncStatus} from './sync_test_util.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -85,7 +85,8 @@ suite('Chrome OS', function() {
     const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
-    await PrefService.getInstance().whenInitialized();
+    const prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
@@ -102,7 +103,7 @@ suite('Chrome OS', function() {
 
     await accountManagerBrowserProxy.whenCalled('getAccounts');
     await syncBrowserProxy.whenCalled('getSyncStatus');
-    flush();
+    await microtasksFinished();
   });
 
   teardown(function() {
@@ -111,34 +112,34 @@ suite('Chrome OS', function() {
 
   test('GAIA name and picture', () => {
     assertTrue(
-        peoplePage.shadowRoot!.querySelector<HTMLElement>('#profile-icon')!
-            .style.backgroundImage.includes(
+        peoplePage.shadowRoot.querySelector<HTMLElement>('#profile-icon')!.style
+            .backgroundImage.includes(
                 'data:image/png;base64,primaryAccountPicData'));
     assertEquals(
         'Primary Account',
-        peoplePage.shadowRoot!.querySelector(
-                                  '#profile-name')!.textContent.trim());
+        peoplePage.shadowRoot.querySelector(
+                                 '#profile-name')!.textContent.trim());
   });
 
-  test('profile row is actionable', () => {
+  test('profile row is actionable', async () => {
     // Simulate a signed-in user.
-    simulateSyncStatus({
+    await simulateSyncStatus({
       signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     });
 
     // Profile row opens account manager, so the row is actionable.
-    const profileRow = peoplePage.shadowRoot!.querySelector('#profile-row');
+    const profileRow = peoplePage.shadowRoot.querySelector('#profile-row');
     assertTrue(!!profileRow);
     assertTrue(profileRow.hasAttribute('actionable'));
-    const subpageArrow = peoplePage.shadowRoot!.querySelector<HTMLElement>(
+    const subpageArrow = peoplePage.shadowRoot.querySelector<HTMLElement>(
         '#profile-subpage-arrow');
     assertTrue(!!subpageArrow);
     assertFalse(subpageArrow.hidden);
   });
 
-  test('SyncSetupSubLabelUpdatedForPassphraseError', () => {
-    simulateSyncStatus({
+  test('SyncSetupSubLabelUpdatedForPassphraseError', async () => {
+    await simulateSyncStatus({
       signedInState: SignedInState.SYNCING,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,
@@ -147,7 +148,7 @@ suite('Chrome OS', function() {
     });
 
     const syncSetupRow =
-        peoplePage.shadowRoot!.querySelector<CrLinkRowElement>('#sync-setup')!;
+        peoplePage.shadowRoot.querySelector<CrLinkRowElement>('#sync-setup')!;
     assertEquals(peoplePage.syncStatus!.statusText, syncSetupRow.subLabel);
   });
 });
@@ -164,7 +165,8 @@ suite('Chrome OS with account manager disabled', function() {
     const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
-    await PrefService.getInstance().whenInitialized();
+    const prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
@@ -177,31 +179,31 @@ suite('Chrome OS with account manager disabled', function() {
     document.body.appendChild(peoplePage);
 
     await syncBrowserProxy.whenCalled('getSyncStatus');
-    flush();
+    await microtasksFinished();
   });
 
   teardown(function() {
     peoplePage.remove();
   });
 
-  test('profile row is not actionable', () => {
+  test('profile row is not actionable', async () => {
     // Simulate a signed-in user.
-    simulateSyncStatus({
+    await simulateSyncStatus({
       signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     });
 
     // Account manager isn't available, so the row isn't actionable.
     const profileIcon =
-        peoplePage.shadowRoot!.querySelector<HTMLElement>('#profile-icon');
+        peoplePage.shadowRoot.querySelector<HTMLElement>('#profile-icon');
     assertTrue(!!profileIcon);
     assertFalse(profileIcon.hasAttribute('actionable'));
-    const profileRow = peoplePage.shadowRoot!.querySelector('#profile-row');
+    const profileRow = peoplePage.shadowRoot.querySelector('#profile-row');
     assertTrue(!!profileRow);
     assertFalse(profileRow.hasAttribute('actionable'));
-    const subpageArrow = peoplePage.shadowRoot!.querySelector<HTMLElement>(
+    const subpageArrow = peoplePage.shadowRoot.querySelector<HTMLElement>(
         '#profile-subpage-arrow');
-    assertTrue(!!subpageArrow!);
+    assertTrue(!!subpageArrow);
     assertTrue(subpageArrow.hidden);
 
     // Clicking on profile icon doesn't navigate to a new route.
@@ -223,7 +225,8 @@ suite('Chrome OS with replaceSyncPromosWithSignInPromos enabled', function() {
     const prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
-    await PrefService.getInstance().whenInitialized();
+    const prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
@@ -240,15 +243,15 @@ suite('Chrome OS with replaceSyncPromosWithSignInPromos enabled', function() {
 
     await accountManagerBrowserProxy.whenCalled('getAccounts');
     await syncBrowserProxy.whenCalled('getSyncStatus');
-    flush();
+    await microtasksFinished();
   });
 
   teardown(function() {
     peoplePage.remove();
   });
 
-  test('SyncSetupRowSublabel_PassphraseError', () => {
-    simulateSyncStatus({
+  test('SyncSetupRowSublabel_PassphraseError', async () => {
+    await simulateSyncStatus({
       signedInState: SignedInState.SYNCING,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,
@@ -257,7 +260,7 @@ suite('Chrome OS with replaceSyncPromosWithSignInPromos enabled', function() {
     });
 
     const syncSetupRow =
-        peoplePage.shadowRoot!.querySelector<CrLinkRowElement>('#sync-setup')!;
+        peoplePage.shadowRoot.querySelector<CrLinkRowElement>('#sync-setup')!;
     assertEquals(peoplePage.syncStatus!.statusText, syncSetupRow.subLabel);
   });
 });

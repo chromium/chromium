@@ -244,12 +244,11 @@ suite('AccountPage', function() {
 
     // Supervised user
     await testSyncBrowserProxy.whenCalled('getSyncStatus');
-    simulateSyncStatus({
+    await simulateSyncStatus({
       signedInState: SignedInState.SIGNED_IN,
       supervisedUser: true,
       statusAction: StatusAction.NO_ACTION,
     });
-    await microtasksFinished();
     assertTrue(dashboardLink.hidden);
   });
 });

@@ -104,9 +104,11 @@ export function getSyncAllPrefsManaged(): SyncPrefs {
   });
 }
 
-export function simulateSyncStatus(status: SyncStatus|undefined) {
+export async function simulateSyncStatus(status: SyncStatus|undefined):
+    Promise<void> {
   webUIListenerCallback('sync-status-changed', status);
   flush();
+  await microtasksFinished();
 }
 
 export async function simulateStoredAccounts(

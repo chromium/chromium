@@ -1,0 +1,82 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-shared-lit
+ * #css_wrapper_metadata_end */
+
+.sync-row {
+  align-items: center;
+  flex: auto;
+}
+
+#profile-icon {
+  background: center / cover no-repeat;
+  border-radius: 20px;
+  flex-shrink: 0;
+  height: 40px;
+  width: 40px;
+}
+
+#account-subpage-row > #profile-icon {
+  margin-inline-end: 16px;
+  order: -1;
+}
+
+#sync-setup {
+  --cr-secondary-text-color: var(--settings-error-color);
+}
+
+#sync-not-allowed {
+  background: var(--google-grey-100);
+  border-top: var(--cr-separator-line);
+}
+
+#sync-not-allowed-text {
+  margin-left: 8px;
+}
+
+cr-link-row {
+  --cr-link-row-icon-width: 40px;
+  border-top: var(--cr-separator-line);
+}
+
+.icon-container {
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  width: 40px;
+}
+
+#toast {
+  left: 0;
+  z-index: 1;
+}
+
+:host-context([dir='rtl']) #toast {
+  left: auto;
+  right: 0;
+}
+
+settings-sync-account-control[showing-promo]::part(banner) {
+  /* Make the banner image stay within setting-section's card border
+     radius. */
+  border-top-left-radius: var(--cr-card-border-radius);
+  border-top-right-radius: var(--cr-card-border-radius);
+}
+
+settings-sync-account-control[showing-promo]::part(title) {
+  font-size: 1.1rem;
+  line-height: 1.625rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  #sync-not-allowed {
+    background: var(--google-grey-800);
+  }
+}
