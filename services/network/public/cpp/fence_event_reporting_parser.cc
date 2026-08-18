@@ -10,11 +10,14 @@ namespace network {
 
 bool ParseAllowCrossOriginEventReportingFromHeader(
     const net::HttpResponseHeaders& headers) {
-  std::string header_value =
-      headers.GetNormalizedHeader("Allow-Cross-Origin-Event-Reporting")
-          .value_or(std::string());
+  std::optional<std::string> header_value =
+      headers.GetNormalizedHeader("Allow-Cross-Origin-Event-Reporting");
+  if (!header_value.has_value()) {
+    return false;
+  }
+
   std::optional<net::structured_headers::ParameterizedItem> item =
-      net::structured_headers::ParseItem(header_value);
+      net::structured_headers::ParseItem(*header_value);
   return item && item->item.is_boolean() && item->item.GetBoolean();
 }
 

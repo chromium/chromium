@@ -4,8 +4,8 @@
 
 #include "services/network/public/cpp/origin_agent_cluster_parser.h"
 
+#include <optional>
 #include <string>
-#include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,6 +14,8 @@ namespace network {
 TEST(OriginAgentClusterHeaderTest, Parse) {
   using mojom::OriginAgentClusterValue;
 
+  EXPECT_EQ(ParseOriginAgentCluster(std::nullopt),
+            OriginAgentClusterValue::kAbsent);
   EXPECT_EQ(ParseOriginAgentCluster(""), OriginAgentClusterValue::kAbsent);
 
   EXPECT_EQ(ParseOriginAgentCluster("?1"), OriginAgentClusterValue::kTrue);

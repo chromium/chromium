@@ -530,10 +530,13 @@ void ResourceResponse::SetDecodedBodyLength(int64_t value) {
 
 network::mojom::CrossOriginEmbedderPolicyValue
 ResourceResponse::GetCrossOriginEmbedderPolicy() const {
-  const std::string value =
-      HttpHeaderField(http_names::kLowerCrossOriginEmbedderPolicy).Utf8();
+  const AtomicString& value =
+      HttpHeaderField(http_names::kLowerCrossOriginEmbedderPolicy);
+  if (value.IsNull()) {
+    return network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+  }
   using Item = net::structured_headers::Item;
-  const auto item = net::structured_headers::ParseItem(value);
+  const auto item = net::structured_headers::ParseItem(value.Utf8());
   if (!item || item->item.Type() != Item::kTokenType) {
     return network::mojom::CrossOriginEmbedderPolicyValue::kNone;
   }

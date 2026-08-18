@@ -16,6 +16,15 @@ TEST(FenceEventReportingParserTest,
   EXPECT_FALSE(ParseAllowCrossOriginEventReportingFromHeader(*headers));
 }
 
+TEST(FenceEventReportingParserTest,
+     ParseAllowCrossOriginEventReportingFromHeader_EmptyObserveTopicsHeader) {
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      net::HttpResponseHeaders::TryToCreate(
+          "HTTP/1.1 200 OK\r\n"
+          "Allow-Cross-Origin-Event-Reporting: \r\n");
+  EXPECT_FALSE(ParseAllowCrossOriginEventReportingFromHeader(*headers));
+}
+
 TEST(
     FenceEventReportingParserTest,
     ParseAllowCrossOriginEventReportingFromHeader_TrueValueObserveTopicsHeader) {

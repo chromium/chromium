@@ -75,9 +75,8 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
                                         IntegrityPolicyHeaderType::kReportOnly);
   }
 
-  std::string origin_agent_cluster =
-      headers->GetNormalizedHeader("Origin-Agent-Cluster")
-          .value_or(std::string());
+  const std::optional<std::string> origin_agent_cluster =
+      headers->GetNormalizedHeader("Origin-Agent-Cluster");
   parsed_headers->origin_agent_cluster =
       ParseOriginAgentCluster(origin_agent_cluster);
 
