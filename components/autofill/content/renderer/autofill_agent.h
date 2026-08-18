@@ -405,7 +405,9 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Returns if a call to `AskForValuesToFill()` should be skipped.
   // Rate limits exist per field and per frame. See the function
   // body for further details.
-  bool ShouldThrottleAskForValuesToFill(FieldRendererId field);
+  bool ShouldThrottleAskForValuesToFill(
+      FieldRendererId field,
+      AutofillSuggestionTriggerSource trigger_source);
   void ResetTokenBucket();
 
   // Set `element` to display the given `value`.

@@ -1516,7 +1516,39 @@ void AutofillAgent::ResetTokenBucket() {
   ask_for_values_to_fill_throttle_.last_replenish_time = base::TimeTicks::Now();
 }
 
-bool AutofillAgent::ShouldThrottleAskForValuesToFill(FieldRendererId field) {
+bool AutofillAgent::ShouldThrottleAskForValuesToFill(
+    FieldRendererId field,
+    AutofillSuggestionTriggerSource trigger_source) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
+    case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
+    case AutofillSuggestionTriggerSource::kAtMemoryTriggerString:
+    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
+    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kGlic:
+    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+      // These sources are used for explicit user actions or by the browser
+      // process. To maximize their reliability, we do not throttle them.
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillThrottleAskForValuesToFillByTriggerSource)) {
+        return false;
+      }
+      break;
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
+    case AutofillSuggestionTriggerSource::kUnspecified:
+      break;
+  }
+
   // 1. Apply 100ms *per field* throttle to AskForValuesToFill.
   // At least on Android, multiple AskForValuesToFill() events may be fired in
   // short succession. Since getting the event handling right in AutofillAgent
@@ -1653,7 +1685,7 @@ void AutofillAgent::ShowSuggestions(
   }
   auto& [form, field] = *form_and_field;
 
-  if (ShouldThrottleAskForValuesToFill(field.renderer_id())) {
+  if (ShouldThrottleAskForValuesToFill(field.renderer_id(), trigger_source)) {
     return;
   }
 
@@ -1679,7 +1711,7 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
   CHECK_EQ(form->fields().size(), 1u);
   const FormFieldData& field = form->fields()[0];
 
-  if (ShouldThrottleAskForValuesToFill(field.renderer_id())) {
+  if (ShouldThrottleAskForValuesToFill(field.renderer_id(), trigger_source)) {
     return;
   }
 

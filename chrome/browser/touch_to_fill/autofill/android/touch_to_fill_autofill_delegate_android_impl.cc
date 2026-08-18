@@ -177,6 +177,8 @@ void TouchToFillAutofillDelegateAndroidImpl::TriggerAskForValuesToFill() {
     return;
   }
 
+  // TODO(crbug.com/547562303): Introduce a new AutofillSuggestionTriggerSource
+  // to prevent throttling.
   manager_->driver().RendererShouldTriggerSuggestions(
       query_field_id_,
       AutofillSuggestionTriggerSource::kFormControlElementClicked);

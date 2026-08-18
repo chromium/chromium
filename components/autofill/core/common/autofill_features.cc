@@ -1000,6 +1000,12 @@ BASE_FEATURE(kAutofillSupportSplitZipCode, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAutofillSupportStandaloneZipCodeGlobally,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch: When enabled, AskForValuesToFill() throttling is skipped for
+// browser-initiated and explicit user triggers.
+// TODO(crbug.com/547562303): Clean up after September 15, 2026.
+BASE_FEATURE(kAutofillThrottleAskForValuesToFillByTriggerSource,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Mitigates side-channel brute-force probing of autofill data by rate-limiting
 // AskForValuesToFill() invocations per RenderFrame via a token bucket.
 BASE_FEATURE(kAutofillThrottleBruteForceProbing,
