@@ -99,14 +99,19 @@ public class VariationsSeedHolderTest {
 
     @Test
     @SmallTest
-    public void testConstructorInitializesEntropySource() {
+    public void testConstructorInitializesEntropySources() {
         new TestHolder();
 
-        // Verify the entropy source exist.
-        int source = AwEntropyState.getLowEntropySource();
-        Assert.assertTrue("Entropy source should be non-negative, but was " + source, source >= 0);
+        // Verify the entropy sources exist.
+        int lowSource = AwEntropyState.getLowEntropySource();
         Assert.assertTrue(
-                "Entropy source should be less than 8000, but was " + source, source < 8000);
+                "Low entropy source should be non-negative, but was " + lowSource, lowSource >= 0);
+        Assert.assertTrue(
+                "Low entropy source should be less than 8000, but was " + lowSource,
+                lowSource < 8000);
+
+        String limitedSource = AwEntropyState.getLimitedEntropyRandomizationSource();
+        Assert.assertNotNull("Limited entropy source should not be null", limitedSource);
     }
 
     // Request that the seed holder write its current seed to a file when the holder has no seed. No

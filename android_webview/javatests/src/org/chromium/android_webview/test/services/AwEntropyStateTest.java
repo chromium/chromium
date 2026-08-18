@@ -26,14 +26,12 @@ public class AwEntropyStateTest {
 
     @Test
     @SmallTest
-    public void testGenerateAndPersistEntropy() {
-        // Ensure clean state
-        AwEntropyState.clearPreferencesForTesting();
-
+    public void testGenerateAndPersistLowEntropy() {
         // Should be -1 initially
+        AwEntropyState.clearPreferencesForTesting();
         Assert.assertEquals(-1, AwEntropyState.getLowEntropySource());
 
-        // Generate (simulating first run)
+        // Generate
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwEntropyState.ensureLowEntropySourceInitialized();
@@ -42,5 +40,20 @@ public class AwEntropyStateTest {
         // Should be generated now (not -1)
         int generated = AwEntropyState.getLowEntropySource();
         Assert.assertNotEquals(-1, generated);
+    }
+
+    @Test
+    @SmallTest
+    public void testGenerateAndPersistLimitedEntropy() {
+        AwEntropyState.clearPreferencesForTesting();
+        Assert.assertNull(AwEntropyState.getLimitedEntropyRandomizationSource());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AwEntropyState.ensureLimitedEntropyRandomizationSourceInitialized();
+                });
+
+        String generated = AwEntropyState.getLimitedEntropyRandomizationSource();
+        Assert.assertNotNull(generated);
     }
 }
