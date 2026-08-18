@@ -43,6 +43,9 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-2071198138" label="WebAuthn.removeVirtualAuthenticator"/>
   <int value="-2061665068" label="Runtime.releaseObjectGroup"/>
   <int value="-2054641626" label="Network.setBlockedURLs"/>
+  <int value="-2053919534"
+      label="SmartCardEmulation.reportBeginTransactionResult"/>
+  <int value="-2050882719" label="SmartCardEmulation.reportConnectResult"/>
   <int value="-2048050381" label="CSS.getStyleSheetText"/>
   <int value="-2043283578" label="HeapProfiler.getObjectByHeapObjectId"/>
   <int value="-2037885365" label="Debugger.continueToLocation"/>
@@ -57,15 +60,21 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-1964329099" label="Debugger.setScriptSource"/>
   <int value="-1956576013" label="Storage.getSharedStorageMetadata"/>
   <int value="-1949001185" label="Page.setDeviceOrientationOverride"/>
+  <int value="-1937153478" label="BluetoothEmulation.removeService"/>
+  <int value="-1934195769" label="Network.overrideNetworkState"/>
   <int value="-1921205276" label="CSS.setRuleSelector"/>
+  <int value="-1916887200" label="Target.openDevTools"/>
   <int value="-1884786444" label="CSS.setContainerQueryText"/>
   <int value="-1880887647" label="Browser.resetPermissions"/>
+  <int value="-1878741176" label="BluetoothEmulation.setSimulatedCentralState"/>
   <int value="-1858038350" label="LayerTree.profileSnapshot"/>
   <int value="-1851961771" label="Overlay.setShowGridOverlays"/>
   <int value="-1841547092" label="DOM.setInspectedNode"/>
   <int value="-1837335741" label="WebAuthn.setResponseOverrideBits"/>
   <int value="-1826914751" label="CSS.enable"/>
   <int value="-1821623837" label="DOM.getNodesForSubtreeByStyle"/>
+  <int value="-1816222617" label="Emulation.setDisplayFeaturesOverride"/>
+  <int value="-1814567654" label="PWA.launchFilesInApp"/>
   <int value="-1812700715" label="Network.setCacheDisabled"/>
   <int value="-1805700735" label="Debugger.setPauseOnExceptions"/>
   <int value="-1803793450" label="DOMDebugger.removeInstrumentationBreakpoint"/>
@@ -76,37 +85,49 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-1755290507" label="Page.addScriptToEvaluateOnLoad"/>
   <int value="-1748219543" label="Cast.startTabMirroring"/>
   <int value="-1741977375" label="Input.synthesizePinchGesture"/>
+  <int value="-1710205584" label="BluetoothEmulation.disable"/>
+  <int value="-1709676954" label="Page.getAnnotatedPageContent"/>
   <int value="-1703305710" label="CSS.getMediaQueries"/>
   <int value="-1702182004" label="HeapProfiler.startSampling"/>
   <int value="-1699153796" label="Debugger.setBlackboxedRanges"/>
   <int value="-1691104224" label="RunTextInputUpdatePostLifecycle:disabled"/>
   <int value="-1689725215" label="Emulation.setHardwareConcurrencyOverride"/>
   <int value="-1688287057" label="Browser.getBrowserCommandLine"/>
+  <int value="-1681814077" label="Emulation.setDataSaverOverride"/>
   <int value="-1679779501" label="Profiler.getBestEffortCoverage"/>
   <int value="-1678649390" label="Overlay.highlightSourceOrder"/>
+  <int value="-1675787067" label="CSS.resolveValues"/>
   <int value="-1673966787" label="Page.removeScriptToEvaluateOnNewDocument"/>
   <int value="-1667233417" label="VisualDebugger.startStream"/>
   <int value="-1658779077" label="Debugger.pause"/>
   <int value="-1652028774" label="Security.setIgnoreCertificateErrors"/>
   <int value="-1647185655" label="Storage.resetSharedStorageBudget"/>
   <int value="-1644991671" label="BackgroundService.stopObserving"/>
+  <int value="-1644506775" label="Emulation.removeScreen"/>
   <int value="-1644184365" label="Runtime.awaitPromise"/>
   <int value="-1624825298" label="PerformanceTimeline.enable"/>
+  <int value="-1620858983" label="PWA.openCurrentPageInApp"/>
+  <int value="-1602416377" label="SmartCardEmulation.reportStatusResult"/>
   <int value="-1588454944" label="Autofill.enable"/>
   <int value="-1585273540" label="Network.canClearBrowserCache"/>
   <int value="-1569586139" label="Network.canEmulateNetworkConditions"/>
   <int value="-1563030253" label="Runtime.terminateExecution"/>
+  <int value="-1549022749" label="Network.enableDeviceBoundSessions"/>
   <int value="-1544247768" label="Profiler.stop"/>
+  <int value="-1539033282" label="Emulation.setPressureSourceOverrideEnabled"/>
   <int value="-1527727763" label="WindowManager.enterOverviewMode"/>
   <int value="-1526812044" label="DOM.highlightNode"/>
   <int value="-1526317261" label="SystemInfo.getFeatureState"/>
   <int value="-1525750288" label="CacheStorage.deleteCache"/>
   <int value="-1519947305" label="DOM.getContentQuads"/>
   <int value="-1515300649" label="Emulation.setDefaultBackgroundColorOverride"/>
+  <int value="-1514545797" label="Extensions.setStorageItems"/>
+  <int value="-1503749681" label="CSS.setNavigationText"/>
   <int value="-1492666567" label="Accessibility.disable"/>
   <int value="-1485363493" label="DeviceAccess.enable"/>
   <int value="-1470297258" label="Emulation.setEmulatedVisionDeficiency"/>
   <int value="-1465858972" label="Fetch.getResponseBody"/>
+  <int value="-1463322189" label="DOM.forceShowInterest"/>
   <int value="-1455930618" label="Target.createTarget"/>
   <int value="-1451540405" label="Input.emulateTouchFromMouseEvent"/>
   <int value="-1451369472" label="Storage.setStorageBucketTracking"/>
@@ -130,6 +151,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-1345093649" label="Emulation.clearDeviceMetricsOverride"/>
   <int value="-1343392079" label="Overlay.highlightNode"/>
   <int value="-1342513878" label="Animation.getCurrentTime"/>
+  <int value="-1333308439" label="CSS.getLocationForSelector"/>
   <int value="-1324576626" label="Emulation.setAutoDarkModeOverride"/>
   <int value="-1323887873" label="FedCm.clickDialogButton"/>
   <int value="-1322277271" label="HeapProfiler.startTrackingHeapObjects"/>
@@ -139,6 +161,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-1288191555" label="Audits.enable"/>
   <int value="-1284949359" label="Emulation.setDeviceMetricsOverride"/>
   <int value="-1270083411" label="CSS.setPropertyRulePropertyName"/>
+  <int value="-1264988125" label="Emulation.clearDisplayFeaturesOverride"/>
   <int value="-1258931033" label="Emulation.setVirtualTimePolicy"/>
   <int value="-1257736881" label="Page.getAppManifest"/>
   <int value="-1250238276" label="LayerTree.releaseSnapshot"/>
@@ -147,6 +170,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-1234598244" label="Runtime.getExceptionDetails"/>
   <int value="-1231855102" label="Page.captureSnapshot"/>
   <int value="-1225935188" label="Accessibility.getChildAXNodes"/>
+  <int value="-1220375214" label="Extensions.clearStorageItems"/>
   <int value="-1216493428" label="Runtime.removeBinding"/>
   <int value="-1213122281" label="Cast.enable"/>
   <int value="-1209043890" label="Animation.setPaused"/>
@@ -163,21 +187,28 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-1145265485" label="Accessibility.enable"/>
   <int value="-1144692665" label="WebAudio.enable"/>
   <int value="-1137656432" label="Emulation.setFocusEmulationEnabled"/>
+  <int value="-1127075669" label="Browser.getGlobalPrivacyControl"/>
   <int value="-1127032472" label="Browser.addPrivacySandboxEnrollmentOverride"/>
   <int value="-1112688989" label="Debugger.getScriptSource"/>
   <int value="-1101830280" label="Runtime.queryObjects"/>
   <int value="-1086562894" label="DOM.markUndoableState"/>
   <int value="-1079235489" label="Target.exposeDevToolsProtocol"/>
+  <int value="-1059149210" label="DOM.getElementByRelation"/>
   <int value="-1029638029"
       label="DeviceOrientation.setDeviceOrientationOverride"/>
   <int value="-1029220989" label="Emulation.setUserAgentOverride"/>
+  <int value="-1024179947" label="DOM.getDetachedDomNodes"/>
   <int value="-1022705504" label="DOM.getQueryingDescendantsForContainer"/>
   <int value="-1007644344" label="Tracing.end"/>
   <int value="-1002264197" label="Page.getResourceTree"/>
   <int value="-990115402" label="Page.getFrameTree"/>
   <int value="-988085333" label="Page.searchInResource"/>
+  <int value="-987789715"
+      label="SmartCardEmulation.reportReleaseContextResult"/>
   <int value="-986068555" label="Target.closeTarget"/>
+  <int value="-978855062" label="SmartCardEmulation.reportError"/>
   <int value="-970451323" label="Network.deleteCookies"/>
+  <int value="-964615788" label="Storage.getStorageKey"/>
   <int value="-960596835" label="LayerTree.makeSnapshot"/>
   <int value="-958796925" label="Network.searchInResponseBody"/>
   <int value="-955928342" label="Browser.getWindowBounds"/>
@@ -185,11 +216,14 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-948475012" label="WebAuthn.getCredential"/>
   <int value="-945591029" label="Overlay.highlightRect"/>
   <int value="-944411795" label="LayerTree.compositingReasons"/>
+  <int value="-937971695" label="Tracing.getTrackEventDescriptor"/>
+  <int value="-916280218" label="BluetoothEmulation.simulateGATTDisconnection"/>
   <int value="-911207405" label="Emulation.setTouchEmulationEnabled"/>
   <int value="-907457147" label="Tethering.bind"/>
   <int value="-901272541" label="Debugger.setSkipAllPauses"/>
   <int value="-891040737" label="Performance.enable"/>
   <int value="-890778350" label="Target.getTargets"/>
+  <int value="-889644904" label="Target.getDevToolsTarget"/>
   <int value="-886232028" label="Preload.enable"/>
   <int value="-875190713" label="Console.enable"/>
   <int value="-871086928" label="Page.setFontSizes"/>
@@ -213,19 +247,23 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-775886564" label="DOM.discardSearchResults"/>
   <int value="-774038059" label="Browser.crash"/>
   <int value="-772306428" label="Fetch.continueWithAuth"/>
+  <int value="-771694352" label="Emulation.clearDevicePostureOverride"/>
   <int value="-763358578" label="Animation.enable"/>
   <int value="-762202899" label="Runtime.setCustomObjectFormatterEnabled"/>
   <int value="-755375693" label="Accessibility.getAXNodeAndAncestors"/>
   <int value="-744282770" label="Log.disable"/>
   <int value="-739815822" label="Overlay.setPausedInDebuggerMessage"/>
   <int value="-738488878" label="DOMDebugger.removeXHRBreakpoint"/>
+  <int value="-734525250" label="Extensions.triggerAction"/>
   <int value="-721034032" label="Runtime.setAsyncCallStackDepth"/>
   <int value="-711908380" label="Page.screencastFrameAck"/>
   <int value="-707727729" label="Debugger.pauseOnAsyncCall"/>
+  <int value="-697772040" label="Emulation.setEmulatedOSTextScale"/>
   <int value="-695222613" label="Target.sendMessageToTarget"/>
   <int value="-695128668" label="FedCm.enable"/>
   <int value="-691754282" label="Debugger.getPossibleBreakpoints"/>
   <int value="-688213769" label="Emulation.canEmulate"/>
+  <int value="-681984388" label="DOM.getAnchorElement"/>
   <int value="-681199137" label="DOM.setNodeValue"/>
   <int value="-673814370" label="Overlay.setShowViewportSizeOnResize"/>
   <int value="-665789240" label="Cast.startDesktopMirroring"/>
@@ -244,6 +282,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-600097863" label="Cast.setSinkToUse"/>
   <int value="-590920088" label="Debugger.setReturnValue"/>
   <int value="-590804334" label="Input.imeSetComposition"/>
+  <int value="-587331460" label="Page.stopScreenRecording"/>
+  <int value="-583804725" label="SmartCardEmulation.enable"/>
   <int value="-578519885" label="Overlay.setShowFlexOverlays"/>
   <int value="-573285176" label="CSS.setLocalFontsEnabled"/>
   <int value="-568907586" label="DOM.getFlattenedDocument"/>
@@ -251,30 +291,43 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-559198953" label="DOM.removeAttribute"/>
   <int value="-551218294" label="Emulation.setVisibleSize"/>
   <int value="-540007950" label="Autofill.disable"/>
+  <int value="-535962476" label="CSS.getEnvironmentVariables"/>
   <int value="-535671266" label="Memory.simulatePressureNotification"/>
   <int value="-531544830" label="Debugger.restartFrame"/>
   <int value="-530334410" label="Page.setDeviceMetricsOverride"/>
+  <int value="-502687820"
+      label="Emulation.setSmallViewportHeightDifferenceOverride"/>
   <int value="-500426075" label="DOMStorage.enable"/>
   <int value="-485414095" label="DOM.getTopLayerElements"/>
+  <int value="-473258995" label="WebMCP.cancelInvocation"/>
   <int value="-459969447" label="Runtime.callFunctionOn"/>
   <int value="-459625210" label="SystemInfo.getProcessInfo"/>
+  <int value="-459523558"
+      label="BluetoothEmulation.simulateDescriptorOperationResponse"/>
+  <int value="-458507771" label="DigitalCredentials.setVirtualWalletBehavior"/>
   <int value="-437962397" label="DOM.getRelayoutBoundary"/>
   <int value="-436119998" label="HeapProfiler.collectGarbage"/>
   <int value="-427019446" label="Fetch.failRequest"/>
+  <int value="-424553961" label="Ads.getAdMetrics"/>
   <int value="-423918421" label="Network.setAttachDebugStack"/>
   <int value="-417003470" label="CSS.setMediaText"/>
   <int value="-404755282" label="Page.clearDeviceOrientationOverride"/>
+  <int value="-400428396" label="Storage.getRelatedWebsiteSets"/>
+  <int value="-400036083" label="CSS.trackComputedStyleUpdatesForNode"/>
   <int value="-396596692" label="DOM.querySelector"/>
   <int value="-394047025" label="DOMSnapshot.captureSnapshot"/>
   <int value="-389389859" label="Security.disable"/>
   <int value="-377338474" label="Runtime.disable"/>
   <int value="-362386202" label="Overlay.setShowFPSCounter"/>
+  <int value="-361727343" label="BluetoothEmulation.addDescriptor"/>
   <int value="-361464467" label="Browser.getHistogram"/>
   <int value="-358355062" label="Preload.disable"/>
   <int value="-348531350" label="CSS.getPlatformFontsForNode"/>
   <int value="-331795539" label="Runtime.setMaxCallStackSizeToCapture"/>
   <int value="-331277996" label="Emulation.setSensorOverrideEnabled"/>
+  <int value="-322550543" label="BluetoothEmulation.addService"/>
   <int value="-310372475" label="Page.setDocumentContent"/>
+  <int value="-307336869" label="Page.getAdScriptAncestry"/>
   <int value="-302864521" label="Target.createBrowserContext"/>
   <int value="-297759119" label="Profiler.stopTypeProfile"/>
   <int value="-289149939" label="IndexedDB.clearObjectStore"/>
@@ -290,12 +343,16 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-242161447" label="Media.enable"/>
   <int value="-234690229" label="Runtime.getIsolateId"/>
   <int value="-222268748" label="Browser.close"/>
+  <int value="-221091104" label="Extensions.uninstall"/>
   <int value="-220986582" label="DOMDebugger.setBreakOnCSPViolation"/>
   <int value="-211237482" label="Input.synthesizeTapGesture"/>
   <int value="-208652542" label="DOM.setFileInputFiles"/>
   <int value="-202100275" label="CSS.createStyleSheet"/>
   <int value="-195833656" label="BackgroundService.clearEvents"/>
+  <int value="-195116535" label="BluetoothEmulation.removeCharacteristic"/>
   <int value="-190386215" label="Page.clearDeviceMetricsOverride"/>
+  <int value="-182852923"
+      label="SmartCardEmulation.reportGetStatusChangeResult"/>
   <int value="-181158610" label="DOM.copyTo"/>
   <int value="-177013498" label="IndexedDB.deleteObjectStoreEntries"/>
   <int value="-175944980" label="Runtime.runScript"/>
@@ -305,6 +362,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="-150266330" label="DOM.disable"/>
   <int value="-145467037" label="WebAuthn.disable"/>
   <int value="-141740484" label="Network.setRequestInterception"/>
+  <int value="-125991092" label="Emulation.addScreen"/>
+  <int value="-102342234" label="Network.setCookieControls"/>
   <int value="-94534758" label="Browser.grantPermissions"/>
   <int value="-80583668" label="HeapProfiler.takeHeapSnapshot"/>
   <int value="-76190083" label="DOM.getOuterHTML"/>
@@ -324,12 +383,17 @@ Called by update_protocol_commands_enum.py.-->
   <int value="30791492" label="Log.stopViolationsReport"/>
   <int value="40689946" label="FedCm.disable"/>
   <int value="53114292" label="Browser.crashGpuProcess"/>
+  <int value="76246577" label="Extensions.getExtensions"/>
   <int value="86737553" label="BackgroundService.startObserving"/>
   <int value="90550342" label="DOM.resolveNode"/>
   <int value="91566930" label="CSS.setStyleSheetText"/>
   <int value="93360860" label="DOMDebugger.setEventListenerBreakpoint"/>
   <int value="108724892" label="Overlay.setShowWindowControlsOverlay"/>
+  <int value="110314450" label="Overlay.setShowInspectedElementAnchor"/>
   <int value="111383160" label="Page.setDownloadBehavior"/>
+  <int value="113403484" label="Network.deleteDeviceBoundSession"/>
+  <int value="117510227" label="CSS.getLonghandProperties"/>
+  <int value="117892292" label="Emulation.setDevicePostureOverride"/>
   <int value="139177156" label="Network.getCertificate"/>
   <int value="149170295" label="Overlay.getHighlightObjectForTest"/>
   <int value="150799963" label="HeapProfiler.getSamplingProfile"/>
@@ -341,6 +405,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="177653395" label="Browser.setPermission"/>
   <int value="187560850" label="Emulation.setEmulatedMedia"/>
   <int value="191621771" label="Storage.setSharedStorageTracking"/>
+  <int value="193118271"
+      label="BluetoothEmulation.simulateCharacteristicOperationResponse"/>
   <int value="196328412" label="WebAuthn.enable"/>
   <int value="196370490" label="Network.getSecurityIsolationStatus"/>
   <int value="208235261" label="Memory.startSampling"/>
@@ -360,6 +426,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="327696792" label="DOM.pushNodesByBackendIdsToFrontend"/>
   <int value="335437143" label="Performance.setTimeDomain"/>
   <int value="336021010" label="Browser.getWindowForTarget"/>
+  <int value="340096547" label="Emulation.setPressureStateOverride"/>
   <int value="341273323" label="DOM.performSearch"/>
   <int value="348034141" label="Fetch.continueResponse"/>
   <int value="353032180" label="Page.getInstallabilityErrors"/>
@@ -385,6 +452,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="456715942" label="Network.setAcceptedEncodings"/>
   <int value="457119051" label="ServiceWorker.stopAllWorkers"/>
   <int value="458783544" label="Emulation.setLocaleOverride"/>
+  <int value="459643295" label="SmartCardEmulation.reportPlainResult"/>
   <int value="466229462" label="ServiceWorker.skipWaiting"/>
   <int value="479774670" label="Page.setGeolocationOverride"/>
   <int value="480396934" label="Emulation.setSensorOverrideReadings"/>
@@ -392,12 +460,15 @@ Called by update_protocol_commands_enum.py.-->
   <int value="508794131" label="DOM.focus"/>
   <int value="529971716" label="Network.emulateNetworkConditions"/>
   <int value="530494361" label="WebAuthn.addCredential"/>
+  <int value="531557070" label="PWA.getOsAppState"/>
   <int value="536921420" label="Debugger.setBreakpointsActive"/>
+  <int value="539934530" label="PWA.launch"/>
   <int value="547099718" label="FedCm.dismissDialog"/>
   <int value="559429465" label="DOMDebugger.getEventListeners"/>
   <int value="565557320" label="Overlay.setShowPaintRects"/>
   <int value="582901199" label="Page.crash"/>
   <int value="599262407" label="DOM.setNodeName"/>
+  <int value="613174348" label="BluetoothEmulation.addCharacteristic"/>
   <int value="618183074" label="Browser.getHistograms"/>
   <int value="618382475" label="Page.getOriginTrials"/>
   <int value="622147841" label="Cast.stopCasting"/>
@@ -406,19 +477,25 @@ Called by update_protocol_commands_enum.py.-->
   <int value="641086326" label="HeapProfiler.getHeapObjectId"/>
   <int value="645220257" label="Debugger.setBreakpoint"/>
   <int value="649541695" label="Network.setExtraHTTPHeaders"/>
+  <int value="650859748" label="PWA.uninstall"/>
   <int value="651945695" label="Network.canClearBrowserCookies"/>
   <int value="652630036" label="Emulation.setDisabledImageTypes"/>
   <int value="670149526" label="Page.disable"/>
   <int value="671757807" label="SystemInfo.getInfo"/>
   <int value="677171630" label="Page.deleteCookie"/>
   <int value="683635159" label="Network.setCookie"/>
+  <int value="689311402"
+      label="SmartCardEmulation.reportEstablishContextResult"/>
   <int value="692020211" label="Debugger.evaluateOnCallFrame"/>
   <int value="709278881" label="EventBreakpoints.setInstrumentationBreakpoint"/>
   <int value="724549002" label="Runtime.getProperties"/>
+  <int value="728236814" label="Emulation.setPrimaryScreen"/>
   <int value="729059492" label="CSS.setStyleTexts"/>
   <int value="738767691" label="LayerTree.disable"/>
   <int value="746599172" label="CSS.collectClassNames"/>
+  <int value="751565667" label="WebAuthn.setCredentialProperties"/>
   <int value="759146008" label="Storage.getCookies"/>
+  <int value="768208589" label="WebMCP.invokeTool"/>
   <int value="769039661" label="DeviceAccess.cancelPrompt"/>
   <int value="771075180" label="Page.close"/>
   <int value="786912412" label="Emulation.setDocumentCookieDisabled"/>
@@ -427,18 +504,23 @@ Called by update_protocol_commands_enum.py.-->
   <int value="814261671" label="VisualDebugger.stopStream"/>
   <int value="814946914" label="Console.disable"/>
   <int value="818686559" label="Target.setRemoteLocations"/>
+  <int value="833362619" label="CSS.forceStartingStyle"/>
   <int value="834356206" label="Page.addScriptToEvaluateOnNewDocument"/>
   <int value="837103377" label="Browser.setWindowBounds"/>
   <int value="869257715" label="DOM.moveTo"/>
   <int value="878415823" label="Target.disposeBrowserContext"/>
+  <int value="880855131" label="Network.configureDurableMessages"/>
+  <int value="899919097" label="SmartCardEmulation.reportListReadersResult"/>
   <int value="904716405" label="LayerTree.loadSnapshot"/>
   <int value="907569144" label="Accessibility.getPartialAXTree"/>
+  <int value="911067624" label="PWA.changeAppUserSettings"/>
   <int value="913559015" label="DOM.undo"/>
   <int value="915465516" label="Page.stopScreencast"/>
   <int value="916698928" label="Target.attachToTarget"/>
   <int value="935769253" label="CSS.setKeyframeKey"/>
   <int value="942566208" label="Emulation.resetPageScaleFactor"/>
   <int value="945359169" label="Storage.setCookies"/>
+  <int value="951597752" label="Browser.setGlobalPrivacyControl"/>
   <int value="953030097" label="Fetch.takeResponseBodyAsStream"/>
   <int value="967272576" label="Tracing.requestMemoryDump"/>
   <int value="974680650" label="Media.disable"/>
@@ -446,6 +528,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="984040144" label="WebAuthn.addVirtualAuthenticator"/>
   <int value="986343566" label="Browser.executeBrowserCommand"/>
   <int value="992337635" label="Storage.clearDataForStorageKey"/>
+  <int value="992631832" label="WebMCP.disable"/>
   <int value="993405240" label="Page.getResourceContent"/>
   <int value="1000056561" label="Inspector.disable"/>
   <int value="1004564198" label="DOMDebugger.removeEventListenerBreakpoint"/>
@@ -458,6 +541,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1026634223" label="Page.getNavigationHistory"/>
   <int value="1060710637" label="CSS.trackComputedStyleUpdates"/>
   <int value="1062782810" label="Network.getResponseBodyForInterception"/>
+  <int value="1069747353"
+      label="BluetoothEmulation.simulateGATTOperationResponse"/>
   <int value="1070168037" label="CacheStorage.requestEntries"/>
   <int value="1081462702" label="Performance.getMetrics"/>
   <int value="1096155281" label="Overlay.highlightQuad"/>
@@ -471,12 +556,15 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1145030905" label="ServiceWorker.dispatchPeriodicSyncEvent"/>
   <int value="1152826264" label="DOM.getBoxModel"/>
   <int value="1153980310" label="Audits.checkContrast"/>
+  <int value="1160190234" label="Extensions.removeStorageItems"/>
   <int value="1167544831" label="WebAuthn.setUserVerified"/>
   <int value="1168280422" label="CSS.forcePseudoState"/>
   <int value="1168863074" label="Network.setBypassServiceWorker"/>
   <int value="1169680273" label="DOM.hideHighlight"/>
+  <int value="1176303697" label="FileSystem.getDirectory"/>
   <int value="1198496813" label="CSS.getInlineStylesForNode"/>
   <int value="1200442441" label="CacheStorage.deleteEntry"/>
+  <int value="1207767211" label="SmartCardEmulation.disable"/>
   <int value="1212265609" label="Storage.deleteSharedStorageEntry"/>
   <int value="1214187445" label="VisualDebugger.filterStream"/>
   <int value="1219893432"
@@ -490,6 +578,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1262636987" label="Target.attachToBrowserTarget"/>
   <int value="1266700733" label="Memory.getBrowserSamplingProfile"/>
   <int value="1266719444" label="Page.getLayoutMetrics"/>
+  <int value="1280923462" label="Extensions.getStorageItems"/>
   <int value="1281437313" label="Profiler.startPreciseCoverage"/>
   <int value="1281996484" label="Debugger.setBreakpointByUrl"/>
   <int value="1294247175" label="Page.getPermissionsPolicyState"/>
@@ -512,6 +601,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1428875463" label="Emulation.setTimezoneOverride"/>
   <int value="1430753789" label="CSS.stopRuleUsageTracking"/>
   <int value="1437117511" label="Database.getDatabaseTableNames"/>
+  <int value="1445160320" label="Overlay.setShowDisplayCutout"/>
   <int value="1447498492" label="IndexedDB.requestData"/>
   <int value="1465527659" label="Network.clearBrowserCookies"/>
   <int value="1468513664" label="HeadlessExperimental.beginFrame"/>
@@ -520,12 +610,15 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1491688128" label="Schema.getDomains"/>
   <int value="1496745411" label="ServiceWorker.unregister"/>
   <int value="1501336388" label="Network.getAllCookies"/>
+  <int value="1501442413" label="CrashReportContext.getEntries"/>
   <int value="1507998313" label="DOMDebugger.removeDOMBreakpoint"/>
   <int value="1508208490" label="Cast.disable"/>
   <int value="1510866078" label="Page.navigate"/>
   <int value="1519789940" label="Debugger.getStackTrace"/>
   <int value="1524679055" label="DOM.setNodeStackTracesEnabled"/>
   <int value="1531241679" label="Animation.seekAnimations"/>
+  <int value="1533335333"
+      label="BluetoothEmulation.simulatePreconnectedPeripheral"/>
   <int value="1534099552" label="HeapProfiler.stopTrackingHeapObjects"/>
   <int value="1536244161" label="Overlay.setInspectMode"/>
   <int value="1536817350" label="DOM.enable"/>
@@ -535,10 +628,12 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1549510961" label="Network.setUserAgentOverride"/>
   <int value="1574924337" label="Emulation.setNavigatorOverrides"/>
   <int value="1595549274" label="Emulation.setAutomationOverride"/>
+  <int value="1606994396" label="CSS.setContainerQueryConditionText"/>
   <int value="1607170407" label="Page.resetNavigationHistory"/>
   <int value="1620885255" label="Animation.disable"/>
   <int value="1624827784" label="Debugger.disassembleWasmModule"/>
   <int value="1637824156" label="Storage.overrideQuotaForOrigin"/>
+  <int value="1642529139" label="Network.emulateNetworkConditionsByRule"/>
   <int value="1646836806" label="Log.clear"/>
   <int value="1646926369" label="Browser.setDockTile"/>
   <int value="1650959940" label="Tethering.unbind"/>
@@ -547,10 +642,12 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1667461816" label="CSS.getLayersForNode"/>
   <int value="1667715250" label="Storage.untrackIndexedDBForStorageKey"/>
   <int value="1667959673" label="DOMDebugger.setInstrumentationBreakpoint"/>
+  <int value="1668860526" label="CSS.getAnimatedStylesForNode"/>
   <int value="1670672931" label="Network.loadNetworkResource"/>
   <int value="1672195472" label="DOM.setAttributesAsText"/>
   <int value="1680515953" label="DeviceAccess.selectPrompt"/>
   <int value="1682337559" label="FedCm.openUrl"/>
+  <int value="1685631384" label="SmartCardEmulation.reportDataResult"/>
   <int value="1686844117"
       label="Storage.setAttributionReportingLocalTestingMode"/>
   <int value="1691295897" label="Network.setCookies"/>
@@ -558,6 +655,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1718688528" label="IndexedDB.requestDatabase"/>
   <int value="1721800289" label="Overlay.setShowScrollBottleneckRects"/>
   <int value="1722263252" label="Page.captureScreenshot"/>
+  <int value="1731049700" label="Extensions.loadUnpacked"/>
+  <int value="1743124905" label="BluetoothEmulation.enable"/>
   <int value="1745507914" label="Overlay.getSourceOrderHighlightObjectForTest"/>
   <int value="1755113609" label="Storage.setInterestGroupTracking"/>
   <int value="1771888696" label="Debugger.setBlackboxPatterns"/>
@@ -567,10 +666,12 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1818737395" label="Runtime.addBinding"/>
   <int value="1818996990" label="CSS.setScopeText"/>
   <int value="1821949345" label="DOMStorage.disable"/>
+  <int value="1823054694" label="Emulation.getScreenInfos"/>
   <int value="1832339238" label="Network.continueInterceptedRequest"/>
   <int value="1841408581" label="DOM.getNodeStackTraces"/>
   <int value="1845967999" label="Animation.setTiming"/>
   <int value="1852597165" label="Debugger.setAsyncCallStackDepth"/>
+  <int value="1855550097" label="Emulation.updateScreen"/>
   <int value="1862437443" label="Debugger.stepInto"/>
   <int value="1863511163" label="Log.startViolationsReport"/>
   <int value="1866482138" label="Emulation.clearGeolocationOverride"/>
@@ -578,10 +679,12 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1871531173" label="Audits.disable"/>
   <int value="1872799439" label="Runtime.globalLexicalScopeNames"/>
   <int value="1875498006" label="Input.dispatchTouchEvent"/>
+  <int value="1875546304" label="DOM.forceShowPopover"/>
   <int value="1879140248" label="Database.enable"/>
   <int value="1880013258" label="Debugger.resume"/>
   <int value="1880557781" label="Storage.getTrustTokens"/>
   <int value="1895140764" label="WebAuthn.setAutomaticPresenceSimulation"/>
+  <int value="1898824700" label="BluetoothEmulation.removeDescriptor"/>
   <int value="1899140242" label="Debugger.nextWasmDisassemblyChunk"/>
   <int value="1906105120" label="ServiceWorker.stopWorker"/>
   <int value="1909294407" label="Profiler.enable"/>
@@ -593,7 +696,9 @@ Called by update_protocol_commands_enum.py.-->
   <int value="1925128188" label="DOM.querySelectorAll"/>
   <int value="1930515882" label="Fetch.continueRequest"/>
   <int value="1932914604" label="Profiler.takeTypeProfile"/>
+  <int value="1937176392" label="Debugger.setBlackboxExecutionContexts"/>
   <int value="1949917369" label="Storage.trackCacheStorageForStorageKey"/>
+  <int value="1950026355" label="Emulation.setSafeAreaInsetsOverride"/>
   <int value="1953833269" label="Overlay.highlightFrame"/>
   <int value="1958287755"
       label="NativeProfiling.dumpProfilingDataOfAllProcesses"/>
@@ -612,17 +717,24 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2039405317" label="IndexedDB.deleteDatabase"/>
   <int value="2043481114" label="Storage.clearSharedStorageEntries"/>
   <int value="2045011463" label="Memory.forciblyPurgeJavaScriptMemory"/>
+  <int value="2046079402" label="BluetoothEmulation.simulateAdvertisement"/>
+  <int value="2051467989" label="Browser.setContentsSize"/>
   <int value="2052331271" label="IndexedDB.requestDatabaseNames"/>
   <int value="2056602650" label="Overlay.setShowHinge"/>
   <int value="2057401477" label="Profiler.setSamplingInterval"/>
+  <int value="2068299702" label="Network.fetchSchemefulSite"/>
   <int value="2069838873" label="IndexedDB.getMetadata"/>
+  <int value="2078344929" label="PWA.install"/>
   <int value="2090828476" label="Network.replayXHR"/>
+  <int value="2092412644" label="WebMCP.enable"/>
   <int value="2099191527" label="DOM.getDocument"/>
   <int value="2099947942" label="Memory.stopSampling"/>
   <int value="2106705522" label="Overlay.setShowHitTestBorders"/>
   <int value="2107929699" label="Storage.setInterestGroupAuctionTracking"/>
   <int value="2122626183" label="DOM.getContainerForNode"/>
+  <int value="2124063848" label="Page.startScreenRecording"/>
   <int value="2125009876" label="Database.executeSQL"/>
+  <int value="2125986502" label="Memory.getDOMCountersForLeakDetection"/>
   <int value="2127469544" label="DOMStorage.setDOMStorageItem"/>
   <int value="2129092570" label="Debugger.enable"/>
   <int value="2140268492" label="CSS.startRuleUsageTracking"/>

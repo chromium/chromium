@@ -151,7 +151,7 @@ void WebServiceWorkerFetchContextImpl::FinalizeRequest(WebURLRequest& request) {
   if (renderer_preferences_.enable_do_not_track) {
     request.SetHttpHeaderField(WebString::FromUtf8(kDoNotTrackHeader), "1");
   }
-  if (IsGlobalPrivacyControlEnabled()) {
+  if (IsGlobalPrivacyControlFeatureAndSettingEnabled()) {
     request.SetHttpHeaderField(WebString::FromUtf8(kGlobalPrivacyControlHeader),
                                "1");
     blink::MaybeRecordGlobalPrivacyControlSourceMetric(

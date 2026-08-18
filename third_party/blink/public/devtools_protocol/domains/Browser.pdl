@@ -332,3 +332,17 @@ domain Browser
   command addPrivacySandboxEnrollmentOverride
     parameters
       string url
+
+  # Gets the current globally-applied privacy control status
+  # See https://www.w3.org/TR/gpc/#get-global-privacy-control
+  experimental command getGlobalPrivacyControl
+    returns
+      boolean gpc
+
+  # Sets and then gets the current globally-applied privacy control status
+  # See https://www.w3.org/TR/gpc/#set-global-privacy-control
+  experimental command setGlobalPrivacyControl
+    parameters
+      boolean gpc
+    returns
+      boolean gpc

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] GPC Testdriver Validation
-  assert_true: Initial value of GPC must be a boolean true or false. expected true got false
-Harness: the test ran to completion.
-

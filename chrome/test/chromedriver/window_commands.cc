@@ -46,7 +46,6 @@
 #include "chrome/test/chromedriver/util.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/url_util.h"
-#include "base/notimplemented.h"
 
 namespace {
 
@@ -3055,10 +3054,10 @@ Status ExecuteGetGlobalPrivacyControl(Session* session,
                                       std::unique_ptr<base::Value>* value,
                                       Timeout* timeout) {
   base::DictValue result;
-  // TODO(crbug.com/40745270): Get gpc pref.
-  *value = base::Value::ToUniquePtrValue(base::Value(std::move(result)));
-  NOTIMPLEMENTED();
-  return Status(kOk);
+  const Status status = session->chrome->Client()->SendCommandAndGetResult(
+      "Browser.getGlobalPrivacyControl", params, &result);
+  *value = std::make_unique<base::Value>(std::move(result));
+  return status;
 }
 
 Status ExecuteSetGlobalPrivacyControl(Session* session,
@@ -3066,14 +3065,9 @@ Status ExecuteSetGlobalPrivacyControl(Session* session,
                                       const base::DictValue& params,
                                       std::unique_ptr<base::Value>* value,
                                       Timeout* timeout) {
-  const std::optional<bool> gpc = params.FindBool("gpc");
-  if (!gpc) {
-    return Status(kInvalidArgument, "missing 'gpc'");
-  }
-  // TODO(crbug.com/40745270): Set gpc pref.
   base::DictValue result;
-  // TODO(crbug.com/40745270): Get gpc pref.
-  *value = base::Value::ToUniquePtrValue(base::Value(std::move(result)));
-  NOTIMPLEMENTED();
-  return Status(kOk);
+  const Status status = session->chrome->Client()->SendCommandAndGetResult(
+      "Browser.setGlobalPrivacyControl", params, &result);
+  *value = std::make_unique<base::Value>(std::move(result));
+  return status;
 }

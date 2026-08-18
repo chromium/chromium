@@ -101,6 +101,9 @@ class BrowserHandler : public DevToolsDomainHandler,
   Response Crash() override;
   Response CrashGpuProcess() override;
 
+  Response GetGlobalPrivacyControl(bool* out_gpc) override;
+  Response SetGlobalPrivacyControl(bool in_gpc, bool* out_gpc) override;
+
   // DownloadItem::Observer overrides
   void OnDownloadUpdated(download::DownloadItem* item) override;
   void OnDownloadDestroyed(download::DownloadItem* item) override;

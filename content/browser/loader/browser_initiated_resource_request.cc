@@ -34,7 +34,7 @@ void UpdateAdditionalHeadersForBrowserInitiatedRequest(
 
   // Set the GlobalPrivacyControl header if appropriate.
   // https://w3c.github.io/gpc/#expression-format
-  if (blink::IsGlobalPrivacyControlEnabled()) {
+  if (blink::IsGlobalPrivacyControlFeatureAndSettingEnabled()) {
     if (should_update_existing_headers) {
       headers->RemoveHeader(blink::kGlobalPrivacyControlHeader);
     }

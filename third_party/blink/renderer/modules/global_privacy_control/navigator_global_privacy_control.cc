@@ -14,7 +14,7 @@ namespace blink {
 namespace NavigatorGlobalPrivacyControl {
 
 bool globalPrivacyControl(NavigatorBase& navigator) {
-  return IsGlobalPrivacyControlEnabled();
+  return IsGlobalPrivacyControlFeatureAndSettingEnabled();
 }
 
 }  // namespace NavigatorGlobalPrivacyControl

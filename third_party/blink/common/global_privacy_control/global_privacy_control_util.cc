@@ -20,20 +20,27 @@ inline constexpr double kGlobalPrivacyControlSourceHistogramSampleProbability =
     0.001;
 }  // namespace
 
-bool IsGlobalPrivacyControlEnabled() {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kGlobalPrivacyControlForce)) {
+bool IsGlobalPrivacyControlFeatureEnabled() {
+  // TODO(crbug.com/40745270): `kGlobalPrivacyControlForce` currently enables
+  // this but it should be removed once we have a real setting to test.
+  return base::FeatureList::IsEnabled(features::kGlobalPrivacyControlForce) ||
+         base::FeatureList::IsEnabled(features::kGlobalPrivacyControlTest);
+}
+
+bool IsGlobalPrivacyControlFeatureAndSettingEnabled() {
+  // TODO(crbug.com/40745270): `kGlobalPrivacyControlForce` currently enables
+  // this but it should be removed once we have a real setting to test.
+  if (base::FeatureList::IsEnabled(features::kGlobalPrivacyControlForce)) {
     return true;
   }
-  // TODO(crbug.com/40745270): Also use pref to inform whether to enable.
-  return base::FeatureList::IsEnabled(
-      blink::features::kGlobalPrivacyControlTest);
+  // TODO(crbug.com/40745270): Use setting to inform whether to enable.
+  return false;
 }
 
 void MaybeRecordGlobalPrivacyControlSourceMetric(
     GPCSignalSourceType source_type) {
   if (base::FeatureList::IsEnabled(
-          blink::features::kGlobalPrivacyControlAlwaysSample) ||
+          features::kGlobalPrivacyControlAlwaysSample) ||
       base::ShouldRecordSubsampledMetric(
           kGlobalPrivacyControlSourceHistogramSampleProbability)) {
     UMA_HISTOGRAM_ENUMERATION(kGlobalPrivacyControlSourceHistogram,

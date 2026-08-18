@@ -1,0 +1,13 @@
+Test global permission control state can be read and written
+-Initial State- false
+-Updated True State- true
+-Post Navigation State- true
+-Updated False State- false
+-Post Reload State- false
+-Page Get Error- Browser agent host required
+-Page Set Error- Browser agent host required
+-Second Browser Session State After Update- true
+-First Browser Session State After Update- true
+-First Browser Session State After Second Page Session Disconnect- true
+-First Browser Session State After Second Browser Session Disconnect- false
+

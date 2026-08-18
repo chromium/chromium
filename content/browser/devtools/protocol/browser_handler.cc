@@ -32,6 +32,7 @@
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
+#include "content/browser/global_privacy_control_util.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -42,6 +43,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/filename_util.h"
+#include "third_party/blink/public/common/global_privacy_control/global_privacy_control_util.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/gurl.h"
 #include "v8/include/v8-version-string.h"
@@ -116,6 +118,10 @@ Response BrowserHandler::Disable() {
   contexts_with_overridden_downloads_.clear();
   SetDownloadEventsEnabled(false);
   histograms_snapshots_.clear();
+
+  if (session()->GetAgentHost()->GetType() == DevToolsAgentHost::kTypeBrowser) {
+    ResetGlobalPrivacyControlDevToolsOverride();
+  }
 
   return Response::Success();
 }
@@ -697,6 +703,29 @@ Response BrowserHandler::CrashGpuProcess() {
   if (host) {
     host->gpu_service()->Crash();
   }
+  return Response::Success();
+}
+
+Response BrowserHandler::GetGlobalPrivacyControl(bool* out_gpc) {
+  if (!blink::IsGlobalPrivacyControlFeatureEnabled()) {
+    return Response::ServerError("Global Privacy Control is disabled.");
+  }
+  if (session()->GetAgentHost()->GetType() != DevToolsAgentHost::kTypeBrowser) {
+    return Response::ServerError("Browser agent host required");
+  }
+  *out_gpc = IsGlobalPrivacyControlSettingEnabled();
+  return Response::Success();
+}
+
+Response BrowserHandler::SetGlobalPrivacyControl(bool in_gpc, bool* out_gpc) {
+  if (!blink::IsGlobalPrivacyControlFeatureEnabled()) {
+    return Response::ServerError("Global Privacy Control is disabled.");
+  }
+  if (session()->GetAgentHost()->GetType() != DevToolsAgentHost::kTypeBrowser) {
+    return Response::ServerError("Browser agent host required");
+  }
+  UpdateGlobalPrivacyControlDevToolsOverride(in_gpc);
+  *out_gpc = IsGlobalPrivacyControlSettingEnabled();
   return Response::Success();
 }
 

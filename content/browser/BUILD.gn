@@ -1073,6 +1073,8 @@ source_set("browser") {
     "generic_sensor/web_contents_sensor_provider_proxy.h",
     "geolocation/geolocation_service_impl.cc",
     "geolocation/geolocation_service_impl.h",
+    "global_privacy_control_util.cc",
+    "global_privacy_control_util.h",
     "gpu/browser_gpu_channel_host_factory.cc",
     "gpu/browser_gpu_channel_host_factory.h",
     "gpu/browser_gpu_client_delegate.cc",
