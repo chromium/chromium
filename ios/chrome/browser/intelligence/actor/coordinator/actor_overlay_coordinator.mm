@@ -41,11 +41,12 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   webState:(web::WebState*)webState {
-  return [self initWithBaseViewController:viewController
-                                  browser:browser
-                                 webState:webState
-                               scrimColor:[UIColor colorNamed:kBlueColor]
-                                glowColor:[UIColor colorNamed:kBlue900Color]];
+  return
+      [self initWithBaseViewController:viewController
+                               browser:browser
+                              webState:webState
+                            scrimColor:[UIColor colorNamed:kStaticBlueColor]
+                             glowColor:[UIColor colorNamed:kStaticBlueColor]];
 }
 
 #pragma mark - ChromeCoordinator

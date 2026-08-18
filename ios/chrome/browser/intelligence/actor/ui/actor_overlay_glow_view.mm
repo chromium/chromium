@@ -9,12 +9,12 @@
 namespace {
 
 // The radius (thickness spread) of the inner shadow glow.
-constexpr CGFloat kGlowShadowRadius = 15.0f;
+constexpr CGFloat kGlowShadowRadius = 12.0f;
 
 // The stroke thickness used to create the single-contour shadow perimeter.
 // Controls the darkness/density of the shadow: a thicker stroke provides more
 // caster mass and results in a darker glow.
-constexpr CGFloat kStrokePerimeterWidth = 18.0f;
+constexpr CGFloat kStrokePerimeterWidth = 14.0f;
 
 }  // namespace
 

@@ -10,7 +10,7 @@ NSString* const kActorOverlayScrimAccessibilityIdentifier =
     @"ActorOverlayScrimAccessibilityIdentifier";
 
 // Alpha value used for the actor overlay scrim color.
-constexpr CGFloat kActorOverlayScrimViewAlpha = 0.15f;
+constexpr CGFloat kActorOverlayScrimViewAlpha = 0.20f;
 }  // namespace
 
 @implementation ActorOverlayScrimView

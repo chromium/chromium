@@ -17,7 +17,7 @@ NSString* const kActorOverlayScrimAccessibilityIdentifier =
     @"ActorOverlayScrimAccessibilityIdentifier";
 
 // Alpha value matching production `ActorOverlayScrimView` background alpha.
-constexpr CGFloat kActorOverlayScrimViewAlpha = 0.15f;
+constexpr CGFloat kActorOverlayScrimViewAlpha = 0.20f;
 
 class ActorOverlayScrimViewTest : public PlatformTest {};
 
