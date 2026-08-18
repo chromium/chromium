@@ -158,17 +158,15 @@ void JXLImageDecoder::ScanFrames() {
 
   FastSharedBufferReader reader(data_.get());
   const size_t data_size = reader.size();
-  if (data_size < scanner_input_offset_) {
-    // In some cases, the input buffer may shrink. This in particular seems to
-    // happen when changing tabs during a partial decode of the image. If that
-    // happens, we cannot possibly make progress, so wait to be called again
-    // with a bigger buffer.
+  // If we did not receive any new data since the last call, we have nothing to
+  // do.
+  // Note that in some cases, the input buffer may shrink. This in particular
+  // seems to happen when changing tabs during a partial decode of the image.
+  if (scanner_input_offset_ >= data_size && !IsAllDataReceived()) {
     return;
   }
 
-  while (!scanner_done_ &&
-         (scanner_input_offset_ < data_size ||
-          (IsAllDataReceived() && scanner_input_offset_ == data_size))) {
+  while (!scanner_done_) {
     base::span<const uint8_t> data_span =
         scanner_input_offset_ < data_size
             ? reader.GetSomeData(scanner_input_offset_)
@@ -195,7 +193,8 @@ void JXLImageDecoder::ScanFrames() {
         continue;
       }
       if (!all_input) {
-        return;
+        // Record frames found so far.
+        break;
       }
 
       // A truncated still image can contain enough data to render a partial
@@ -387,9 +386,6 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
   // buffer segment at a time, avoiding copies across segment boundaries.
   while (decoder_state_ != DecoderState::kDone) {
     CHECK_LE(decoder_input_offset_, data_size);
-    if (decoder_input_offset_ == data_size && !IsAllDataReceived()) {
-      return;
-    }
 
     base::span<const uint8_t> data_span =
         decoder_input_offset_ < data_size
