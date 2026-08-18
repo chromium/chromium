@@ -137,6 +137,8 @@ cr-most-visited {
 }
 
 #content:has(omnibox-everywhere-omnibox[dropdown-is-visible]) #mostVisitedContainer,
-#content:has(#composebox) #mostVisitedContainer {
+#content:has(#composebox) #mostVisitedContainer,
+#mostVisitedContainer:has(cr-most-visited:not([visible_])),
+#mostVisitedContainer:has(cr-most-visited[hidden]) {
   display: none;
 }
