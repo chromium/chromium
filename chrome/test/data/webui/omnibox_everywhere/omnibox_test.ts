@@ -6,9 +6,10 @@ import 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 
 import {ComposeboxProxyImpl, getContextMenuDialog, SearchboxBrowserProxy, UnboundedMenuManager, updateUnboundedElementVisibility} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
 import type {OmniboxEverywhereAppElement, OmniboxEverywhereComposeboxElement, OmniboxEverywhereOmniboxElement, OmniboxEverywhereProfileIconElement, UnboundedElement} from 'chrome://omnibox-everywhere.top-chrome/omnibox_everywhere.js';
-import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import {InputType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
@@ -363,6 +364,8 @@ suite('OmniboxEverywhereComposeboxTest', () => {
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
       searchboxLayoutMode: 'TallBottomContext',
+      composeboxCancelButtonTitle: 'Close AI Mode',
+      composeboxCancelButtonTitleInput: 'Clear text',
     });
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
@@ -566,6 +569,96 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     assertFalse(mockDialog.hasAttribute('unbounded'));
     mockDialog.remove();
   });
+
+  test('cancel button title reflects input and file state', async () => {
+    const cancelIcon =
+        composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#cancelIcon')!;
+    assertTrue(!!cancelIcon);
+    assertEquals('Close AI Mode', cancelIcon.getAttribute('title'));
+
+    composebox.input = 'search query';
+    await composebox.updateComplete;
+    await microtasksFinished();
+    assertEquals('Clear text', cancelIcon.getAttribute('title'));
+
+    composebox.input = '';
+    const mockToken = 'mock-token-uuid';
+    const file = new ComposeboxFile(
+        mockToken, 'test.png', 'image/png', InputType.kLensImage);
+    composebox.files.set(mockToken, file);
+    composebox.files = new Map(composebox.files);
+    await composebox.updateComplete;
+    await microtasksFinished();
+    assertEquals('Clear text', cancelIcon.getAttribute('title'));
+  });
+
+  test('cancel button clears input text when there is text', async () => {
+    composebox.input = 'some query';
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    let closeEventFired = false;
+    composebox.addEventListener('close-composebox', () => {
+      closeEventFired = true;
+    });
+
+    const cancelIcon =
+        composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#cancelIcon')!;
+    cancelIcon.click();
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    assertEquals('', composebox.input);
+    assertEquals(1, testProxy.handler.getCallCount('clearFiles'));
+    assertFalse(closeEventFired);
+  });
+
+  test('cancel button clears files when there are files', async () => {
+    const mockToken = 'mock-token-uuid';
+    const file = new ComposeboxFile(
+        mockToken, 'test.png', 'image/png', InputType.kLensImage);
+    composebox.files.set(mockToken, file);
+    composebox.files = new Map(composebox.files);
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    let closeEventFired = false;
+    composebox.addEventListener('close-composebox', () => {
+      closeEventFired = true;
+    });
+
+    const cancelIcon =
+        composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#cancelIcon')!;
+    cancelIcon.click();
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    assertEquals(0, composebox.files.size);
+    assertEquals(1, testProxy.handler.getCallCount('clearFiles'));
+    assertFalse(closeEventFired);
+  });
+
+  test(
+      'cancel button fires close-composebox when composebox is empty',
+      async () => {
+        let closeEventFired = false;
+        composebox.addEventListener('close-composebox', () => {
+          closeEventFired = true;
+        });
+
+        const cancelIcon =
+            composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+                '#cancelIcon')!;
+        cancelIcon.click();
+        await composebox.updateComplete;
+        await microtasksFinished();
+
+        assertTrue(closeEventFired);
+        assertEquals(1, testProxy.handler.getCallCount('clearFiles'));
+      });
 });
 
 suite('UnboundedUtilsTest', () => {
@@ -745,6 +838,8 @@ suite('OmniboxEverywhereAppTest', () => {
       profileName: 'Test Profile',
       profileEmail: 'test@example.com',
       omniboxEverywhereProfilePickerEnabled: false,
+      composeboxCancelButtonTitle: 'Close AI Mode',
+      composeboxCancelButtonTitleInput: 'Clear text',
     });
 
     testProxy = new TestSearchboxBrowserProxy();
@@ -965,6 +1060,69 @@ suite('OmniboxEverywhereAppTest', () => {
 
     assertFalse(voiceSearch.classList.contains('permission-prompt-showing'));
   });
+
+  test(
+      'close-composebox event exits composebox mode and focuses searchbox',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        assertTrue(!!searchbox);
+
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: '', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+        assertFalse(
+            !!app.shadowRoot.querySelector('omnibox-everywhere-omnibox'));
+
+        composebox.dispatchEvent(new CustomEvent('close-composebox', {
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        assertFalse(
+            !!app.shadowRoot.querySelector('omnibox-everywhere-composebox'));
+        const restoredSearchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        assertTrue(!!restoredSearchbox);
+      });
+
+  test(
+      'clicking cancel button in empty composebox closes composebox mode',
+      async () => {
+        const searchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+        searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: '', files: [], mode: 0, model: 0},
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+
+        const composebox =
+            app.shadowRoot.querySelector('omnibox-everywhere-composebox')!;
+        assertTrue(!!composebox);
+
+        const cancelIcon =
+            composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+                '#cancelIcon')!;
+        assertTrue(!!cancelIcon);
+        cancelIcon.click();
+        await microtasksFinished();
+
+        assertFalse(
+            !!app.shadowRoot.querySelector('omnibox-everywhere-composebox'));
+        const restoredSearchbox =
+            app.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+        assertTrue(!!restoredSearchbox);
+      });
 });
 
 suite('OmniboxEverywhereProfileIconTest', () => {

@@ -121,8 +121,14 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     }
   }
 
-  protected onCloseComposebox_() {
+  protected async onCloseComposebox_() {
     this.isComposeboxMode_ = false;
+    await this.updateComplete;
+    const searchbox =
+        this.shadowRoot.querySelector('omnibox-everywhere-omnibox');
+    if (searchbox) {
+      searchbox.focusInput();
+    }
   }
 
   protected onComposeboxSubmit_() {

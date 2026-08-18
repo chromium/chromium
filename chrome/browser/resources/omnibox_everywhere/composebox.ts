@@ -12,7 +12,6 @@ import '//resources/cr_components/composebox/composebox_submit.js';
 import '//resources/cr_components/composebox/file_carousel.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_components/composebox/composebox_voice_search.js';
-import './profile_icon.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {getLoadTimeBoolean} from '//resources/cr_components/composebox/common.js';

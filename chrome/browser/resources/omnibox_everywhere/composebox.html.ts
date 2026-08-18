@@ -34,9 +34,6 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
       @drop="${this.dragAndDropHandler.handleDrop}"
       @paste="${this.onPaste}">
       <div id="inputContainer" part="input-container">
-        <!-- Note: Copied from omnibox_composebox.html.ts. Cancel button title
-             and cancel click handler may be needed if added to mixin in the
-             future. -->
         <cr-composebox-input id="composeboxInput"
             exportparts="text-container, icon-container, mirror, input,
                          smart-compose, cancel, action-icon, cancel-icon"
@@ -45,13 +42,16 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
             .showDropdown="${this.showDropdown}"
             .inputPlaceholder="${this.inputPlaceholder}"
             .input="${this.input}"
+            .smartComposeEnabled="${this.smartComposeEnabled}"
             .smartComposeInlineHint="${this.smartComposeInlineHint}"
             .submitEnabled="${this.submitEnabled}"
             .entrypointName="${this.entrypointName}"
+            .cancelButtonTitle="${this.computeCancelButtonTitle()}"
             @input-input="${this.onInputInput}"
-            @input-focusin="${this.onInputFocusin}">
+            @input-focusin="${this.onInputFocusin}"
+            @cancel-click="${this.onCancelClick}"
+            @clear-smart-compose="${this.onClearSmartCompose}">
         </cr-composebox-input>
-        <omnibox-everywhere-profile-icon id="profileIcon"></omnibox-everywhere-profile-icon>
         <div id="context" part="context-entrypoint">
           <!-- Note: Copied from omnibox_composebox.html.ts. May need to re-add
                shouldDisableFileInputs_ when added to mixin. -->

@@ -20,6 +20,7 @@
   border: 2px solid transparent;
   border-radius: 28px;
   box-sizing: border-box;
+  --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 10px);
   --cr-composebox-background-color: var(--color-searchbox-background);
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
@@ -111,7 +112,8 @@ search-animated-glow {
 /* Needed because composebox_submit.css sets opacity: 0.4 on #submitIcon
  * when disabled. For loomnibox, we want the submit icon to remain at
  * full opacity even when the input is empty. */
-cr-composebox-submit::part(submit-icon) {
+cr-composebox-submit::part(submit-icon),
+cr-composebox-input::part(cancel) {
   opacity: 1;
 }
 
@@ -140,21 +142,14 @@ cr-composebox-submit::part(submit) {
   gap: 12px;
 }
 
-#profileIcon {
-  position: absolute;
-  right: 16px;
-  top: 10px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  z-index: 100;
-}
-
 /* TODO(crbug.com/532200145): Refine the selectors. New interactive elements
  * must be added to this list because the root container has
  * '-webkit-app-region: drag' enabled; otherwise, clicks will be swallowed by
  * the window drag handler. */
 cr-composebox-input::part(input),
+cr-composebox-input::part(cancel),
+cr-composebox-input::part(cancel-icon),
+cr-composebox-input::part(action-icon),
 cr-composebox-submit::part(submit),
 cr-composebox-submit::part(submit-icon),
 #context,
@@ -165,7 +160,6 @@ cr-composebox-tool-chip,
 .searchbox-icon-button,
 #voiceSearchButton,
 #lensSearchButton,
-#profileIcon,
 #screenshotMenu {
   -webkit-app-region: no-drag;
 }
