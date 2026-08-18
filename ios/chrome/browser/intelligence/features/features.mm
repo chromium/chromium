@@ -676,7 +676,7 @@ bool IsPageContextPDFEnabled() {
   return base::FeatureList::IsEnabled(kPageContextPdf);
 }
 
-BASE_FEATURE(kGeminiClientMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiClientMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiClientMigrationEnabled() {
   if (!IsPageActionMenuEnabled()) {

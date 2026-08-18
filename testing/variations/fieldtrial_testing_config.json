@@ -13232,21 +13232,6 @@
             ]
         }
     ],
-    "HeliosClientMigration": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GeminiClientMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeliosMultiTabContext": [
         {
             "platforms": [
