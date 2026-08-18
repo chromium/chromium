@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/strings/grit/ax_strings.h"
 
@@ -134,8 +135,8 @@ String MonthInputType::FormatDateTimeFieldsState(
     const DateTimeFieldsState& date_time_fields_state) const {
   if (!date_time_fields_state.HasMonth() || !date_time_fields_state.HasYear())
     return g_empty_string;
-  return String::Format("%04u-%02u", date_time_fields_state.Year(),
-                        date_time_fields_state.Month());
+  return Format("{:04}-{:02}", date_time_fields_state.Year(),
+                date_time_fields_state.Month());
 }
 
 void MonthInputType::SetupLayoutParameters(

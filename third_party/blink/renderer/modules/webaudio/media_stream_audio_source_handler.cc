@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 
 namespace blink {
 
@@ -52,8 +53,8 @@ void MediaStreamAudioSourceHandler::SetFormat(uint32_t number_of_channels,
   DCHECK(IsMainThread());
   SendLogMessage(
       __func__,
-      String::Format("({number_of_channels=%u}, {source_sample_rate=%0.f})",
-                     number_of_channels, source_sample_rate));
+      Format("({{number_of_channels={}}}, {{source_sample_rate={:.0f}}})",
+             number_of_channels, source_sample_rate));
 
   {
     base::AutoLock locker(process_lock_);

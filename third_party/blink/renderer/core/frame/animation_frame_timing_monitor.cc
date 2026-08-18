@@ -586,7 +586,7 @@ void AnimationFrameTimingMonitor::ReportPresentationTimeToTrace(
   TRACE_EVENT_INSTANT(
       "devtools.timeline", "AnimationFrame::Presentation", track_id,
       presentation_details.presentation_feedback.timestamp, flow_id, "id",
-      String::Format("%016" PRIx64, trace_id), [&](perfetto::EventContext ctx) {
+      Format("{:016x}", trace_id), [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* begin_frame_id = event->set_begin_frame_id();
         begin_frame_id->set_source_id(presentation_details.frame_id.source_id);

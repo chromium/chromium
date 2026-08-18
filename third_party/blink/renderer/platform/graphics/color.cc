@@ -1116,11 +1116,11 @@ String Color::NameForLayoutTreeAsText() const {
   }
 
   if (!IsOpaque()) {
-    return String::Format("#%02X%02X%02X%02X", Red(), Green(), Blue(),
-                          AlphaAsInteger());
+    return Format("#{:02X}{:02X}{:02X}{:02X}", Red(), Green(), Blue(),
+                  AlphaAsInteger());
   }
 
-  return String::Format("#%02X%02X%02X", Red(), Green(), Blue());
+  return Format("#{:02X}{:02X}{:02X}", Red(), Green(), Blue());
 }
 
 bool Color::SetNamedColor(const String& name) {

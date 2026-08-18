@@ -9152,7 +9152,7 @@ String GetErrorString(GLenum error) {
     case GC3D_CONTEXT_LOST_WEBGL:
       return "CONTEXT_LOST_WEBGL";
     default:
-      return String::Format("WebGL ERROR(0x%04X)", error);
+      return Format("WebGL ERROR(0x{:04X})", error);
   }
 }
 

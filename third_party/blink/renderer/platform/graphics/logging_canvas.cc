@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -243,7 +244,7 @@ std::unique_ptr<JSONObject> ObjectForSkShader(const SkShader& shader) {
 
 String StringForSkColor(SkColor color) {
   // #AARRGGBB.
-  return String::Format("#%08X", color);
+  return Format("#{:08X}", color);
 }
 
 void AppendFlagToString(StringBuilder* flags_string,

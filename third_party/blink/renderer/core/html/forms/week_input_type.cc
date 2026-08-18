@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/strings/grit/ax_strings.h"
 
@@ -91,8 +92,8 @@ String WeekInputType::FormatDateTimeFieldsState(
   if (!date_time_fields_state.HasYear() ||
       !date_time_fields_state.HasWeekOfYear())
     return g_empty_string;
-  return String::Format("%04u-W%02u", date_time_fields_state.Year(),
-                        date_time_fields_state.WeekOfYear());
+  return Format("{:04}-W{:02}", date_time_fields_state.Year(),
+                date_time_fields_state.WeekOfYear());
 }
 
 void WeekInputType::SetupLayoutParameters(

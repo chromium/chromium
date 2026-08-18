@@ -256,8 +256,8 @@ void WebRtcAudioRenderer::AudioStreamTracker::LogAudioPowerLevel() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   std::pair<float, bool> power_and_clip =
       power_monitor_.ReadCurrentPowerAndClip();
-  renderer_->SendLogMessage(String::Format(
-      "%s => (average audio level=%.2f dBFS)", __func__, power_and_clip.first));
+  renderer_->SendLogMessage(Format("{} => (average audio level={:.2f} dBFS)",
+                                   __func__, power_and_clip.first));
 }
 
 void WebRtcAudioRenderer::AudioStreamTracker::CheckAlive(TimerBase*) {

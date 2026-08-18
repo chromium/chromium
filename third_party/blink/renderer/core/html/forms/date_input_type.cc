@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
@@ -99,9 +100,9 @@ String DateInputType::FormatDateTimeFieldsState(
       !date_time_fields_state.HasMonth() || !date_time_fields_state.HasYear())
     return g_empty_string;
 
-  return String::Format("%04u-%02u-%02u", date_time_fields_state.Year(),
-                        date_time_fields_state.Month(),
-                        date_time_fields_state.DayOfMonth());
+  return Format("{:04}-{:02}-{:02}", date_time_fields_state.Year(),
+                date_time_fields_state.Month(),
+                date_time_fields_state.DayOfMonth());
 }
 
 void DateInputType::SetupLayoutParameters(
