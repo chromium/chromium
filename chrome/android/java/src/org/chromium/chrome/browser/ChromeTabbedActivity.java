@@ -1348,7 +1348,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         tabGroupCreationUiDelegate,
                         mUndoBarPopupController,
                         mHubProvider.getHubManagerSupplier(),
-                        mArchivedTabsAutoDeletePromoManager,
+                        getArchivedTabsAutoDeletePromoManager(),
                         () ->
                                 ((TabbedRootUiCoordinator) mRootUiCoordinator)
                                         .getTabGroupSyncController(),
@@ -1683,15 +1683,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
                 mSuggestionEventObserver =
                         new SuggestionEventObserver(mTabModelSelector, mHubManagerSupplier);
-                if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.GROUP_SUGGESTION_SERVICE,
-                        GroupSuggestionsPromotionCoordinator.CREATE_SUGGESTIONS_PROMOTION_UI_PARAM,
-                        false)) {
-                    mGroupSuggestionsPromotionCoordinator =
-                            new GroupSuggestionsPromotionCoordinator(
-                                    this,
-                                    assertNonNull(mRootUiCoordinator.getBottomSheetController()),
-                                    mTabModelSelector.getModel(false));
+                if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
+                    initGroupSuggestionsPromotionCoordinator();
                 }
             }
 
@@ -1699,7 +1692,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 ExtensionsUrlOverrideRegistry.resetRegistry();
             }
 
-            initiateArchivedTabsAutoDeletePromoManager();
+            if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
+                initiateArchivedTabsAutoDeletePromoManager();
+            }
 
             if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()
                     && FindsFeatures.sChromeFinds.isEnabled()) {
@@ -4030,6 +4025,24 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (FindsFeatures.sChromeFinds.isEnabled()) {
                 initFindsManager(profile);
             }
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.GROUP_SUGGESTION_SERVICE)) {
+                initGroupSuggestionsPromotionCoordinator();
+            }
+            initiateArchivedTabsAutoDeletePromoManager();
+        }
+    }
+
+    private void initGroupSuggestionsPromotionCoordinator() {
+        if (mGroupSuggestionsPromotionCoordinator != null) return;
+        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.GROUP_SUGGESTION_SERVICE,
+                GroupSuggestionsPromotionCoordinator.CREATE_SUGGESTIONS_PROMOTION_UI_PARAM,
+                /* defaultValue= */ false)) {
+            mGroupSuggestionsPromotionCoordinator =
+                    new GroupSuggestionsPromotionCoordinator(
+                            this,
+                            assertNonNull(mRootUiCoordinator.getBottomSheetController()),
+                            mTabModelSelector.getModel(/* incognito= */ false));
         }
     }
 
@@ -5686,9 +5699,17 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         return mUndoBarPopupController;
     }
 
+    private @Nullable ArchivedTabsAutoDeletePromoManager getArchivedTabsAutoDeletePromoManager() {
+        initiateArchivedTabsAutoDeletePromoManager();
+        return mArchivedTabsAutoDeletePromoManager;
+    }
+
     private void initiateArchivedTabsAutoDeletePromoManager() {
+        if (mArchivedTabsAutoDeletePromoManager != null) return;
         if (!ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE, false)) {
+                .readBoolean(
+                        ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_DECISION_MADE,
+                        /* defaultValue= */ false)) {
             mArchivedTabsAutoDeletePromoManager =
                     new ArchivedTabsAutoDeletePromoManager(
                             ChromeTabbedActivity.this,
@@ -5697,7 +5718,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             ArchivedTabModelOrchestrator.getForProfile(
                                             mTabModelSelector.getCurrentModel().getProfile())
                                     .getTabCountSupplier(),
-                            mTabModelSelector.getModel(false));
+                            mTabModelSelector.getModel(/* incognito= */ false));
         }
     }
 

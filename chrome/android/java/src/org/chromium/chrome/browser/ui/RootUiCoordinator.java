@@ -1364,29 +1364,8 @@ public class RootUiCoordinator
             initializeEdgeToEdgeController();
         }
 
-        if (EphemeralTabCoordinator.isSupported()) {
-            Supplier<TabCreator> tabCreator =
-                    () ->
-                            mTabCreatorManagerSupplier
-                                    .asNonNull()
-                                    .get()
-                                    .getTabCreator(tabModelSelector.isIncognitoSelected());
-            ContextMenuPopulatorFactory contextMenuPopulatorFactory =
-                    new ChromeContextMenuPopulatorFactory(
-                            /* itemDelegate= */ null,
-                            mShareDelegateSupplier,
-                            ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW,
-                            /* customContentActions= */ Collections.emptyList(),
-                            getLeftSideUiWidthSupplier());
-            mEphemeralTabCoordinatorSupplier.set(
-                    new EphemeralTabCoordinator(
-                            mActivity,
-                            mWindowAndroid,
-                            mActivity.getWindow().getDecorView(),
-                            mActivityTabProvider,
-                            tabCreator,
-                            assertNonNull(getBottomSheetController()),
-                            contextMenuPopulatorFactory));
+        if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
+            initEphemeralTabCoordinator();
         }
         ReadAloudController controller =
                 new ReadAloudController(
@@ -1531,6 +1510,38 @@ public class RootUiCoordinator
             observer.destroy();
         } else {
             mReaderModeTabObserver = observer;
+        }
+    }
+
+    private void initEphemeralTabCoordinator() {
+        if (mEphemeralTabCoordinatorSupplier.get() != null) return;
+        if (EphemeralTabCoordinator.isSupported()) {
+            Supplier<TabCreator> tabCreator =
+                    () ->
+                            mTabCreatorManagerSupplier
+                                    .asNonNull()
+                                    .get()
+                                    .getTabCreator(
+                                            mTabModelSelectorSupplier
+                                                    .asNonNull()
+                                                    .get()
+                                                    .isIncognitoSelected());
+            ContextMenuPopulatorFactory contextMenuPopulatorFactory =
+                    new ChromeContextMenuPopulatorFactory(
+                            /* itemDelegate= */ null,
+                            mShareDelegateSupplier,
+                            ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW,
+                            /* customContentActions= */ Collections.emptyList(),
+                            getLeftSideUiWidthSupplier());
+            mEphemeralTabCoordinatorSupplier.set(
+                    new EphemeralTabCoordinator(
+                            mActivity,
+                            mWindowAndroid,
+                            mActivity.getWindow().getDecorView(),
+                            mActivityTabProvider,
+                            tabCreator,
+                            assertNonNull(getBottomSheetController()),
+                            contextMenuPopulatorFactory));
         }
     }
 
@@ -2716,7 +2727,13 @@ public class RootUiCoordinator
      * @return Supplies the {@link EphemeralTabCoordinator}
      */
     public Supplier<@Nullable EphemeralTabCoordinator> getEphemeralTabCoordinatorSupplier() {
-        return mEphemeralTabCoordinatorSupplier;
+        if (!ChromeFeatureList.sAndroidStartupImprovements.isEnabled()) {
+            return mEphemeralTabCoordinatorSupplier;
+        }
+        return () -> {
+            initEphemeralTabCoordinator();
+            return mEphemeralTabCoordinatorSupplier.get();
+        };
     }
 
     /**
