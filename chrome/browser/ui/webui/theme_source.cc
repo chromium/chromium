@@ -257,7 +257,7 @@ std::optional<std::string> ThemeSource::GenerateColorsCss(
   auto get_bool_param = [&](std::string_view key) {
     std::string value;
     return net::GetValueForKeyInQuery(url, key, &value) &&
-           base::ToLowerASCII(value) == "true";
+           base::EqualsCaseInsensitiveASCII(value, "true");
   };
 
   const bool generate_rgb_vars = get_bool_param("generate_rgb_vars");

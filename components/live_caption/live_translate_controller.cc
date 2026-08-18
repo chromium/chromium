@@ -94,8 +94,8 @@ void LiveTranslateController::GetTranslation(const std::string& result,
       return base::StartsWith(lang, "en", base::CompareCase::INSENSITIVE_ASCII);
     };
     auto is_zh_tw = [](const std::string& lang) {
-      return base::ToLowerASCII(lang) == "zh-tw" ||
-             base::ToLowerASCII(lang) == "cmn-hant-tw";
+      return base::EqualsCaseInsensitiveASCII(lang, "zh-tw") ||
+             base::EqualsCaseInsensitiveASCII(lang, "cmn-hant-tw");
     };
 
     if (!(is_english(source_language) || is_english(target_language)) ||

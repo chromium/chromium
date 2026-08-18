@@ -159,7 +159,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
   // TODO(crbug.com/40160292): Decouple the rest of clear vs EME codec support.
   if (base::FeatureList::IsEnabled(media::kPlatformEncryptedDolbyVision) &&
       !use_aes_decryptor &&
-      base::ToLowerASCII(container_mime_type) == "video/mp4" &&
+      base::EqualsCaseInsensitiveASCII(container_mime_type, "video/mp4") &&
       !codec_vector.empty()) {
     std::vector<std::string> filtered_codec_vector;
     for (const auto& codec : codec_vector) {

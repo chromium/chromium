@@ -203,8 +203,7 @@ std::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
   auto locale = MaybeMapToChineseLocale(language_name);
   for (const SodaLanguagePackComponentConfig& config :
        kLanguageComponentConfigs) {
-    if (base::ToLowerASCII(config.language_name) ==
-        base::ToLowerASCII(locale)) {
+    if (base::EqualsCaseInsensitiveASCII(config.language_name, locale)) {
       return config;
     }
   }

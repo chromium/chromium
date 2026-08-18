@@ -84,9 +84,8 @@ BackgroundFetchCrossOriginFilter::BackgroundFetchCrossOriginFilter(
   auto access_control_allow_credentials_iter =
       response_header_map.find(kAccessControlAllowCredentialsHeader);
   if (access_control_allow_credentials_iter != response_header_map.end()) {
-    access_control_allow_credentials_ =
-        base::ToLowerASCII(access_control_allow_credentials_iter->second) ==
-        "true";
+    access_control_allow_credentials_ = base::EqualsCaseInsensitiveASCII(
+        access_control_allow_credentials_iter->second, "true");
   }
 
   include_credentials_ = request.fetch_request()->credentials_mode ==

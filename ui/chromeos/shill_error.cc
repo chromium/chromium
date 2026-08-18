@@ -144,7 +144,7 @@ std::u16string GetShillErrorString(const std::string& error,
         IDS_CHROMEOS_NETWORK_ERROR_SUSPECT_MODEM_DISALLOWED);
   }
 
-  if (base::ToLowerASCII(error) == base::ToLowerASCII(shill::kUnknownString)) {
+  if (base::EqualsCaseInsensitiveASCII(error, shill::kUnknownString)) {
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_UNKNOWN);
   }
   return l10n_util::GetStringFUTF16(IDS_NETWORK_UNRECOGNIZED_ERROR,

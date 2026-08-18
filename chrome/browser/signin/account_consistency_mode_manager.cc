@@ -55,7 +55,7 @@ bool IsBrowserSigninAllowedByCommandLine() {
   if (command_line->HasSwitch(kAllowBrowserSigninArgument)) {
     std::string allowBrowserSignin =
         command_line->GetSwitchValueASCII(kAllowBrowserSigninArgument);
-    return base::ToLowerASCII(allowBrowserSignin) == "true";
+    return base::EqualsCaseInsensitiveASCII(allowBrowserSignin, "true");
   }
   // If the commandline flag is not provided, the default is true.
   return true;

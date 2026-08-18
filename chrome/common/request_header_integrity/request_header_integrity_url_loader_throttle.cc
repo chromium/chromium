@@ -97,7 +97,7 @@ std::string GetChannelName() {
   }
 #endif
 
-  if (base::ToLowerASCII(channel_name) == "unknown") {
+  if (base::EqualsCaseInsensitiveASCII(channel_name, "unknown")) {
     return "";
   }
 

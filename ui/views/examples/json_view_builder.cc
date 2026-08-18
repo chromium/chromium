@@ -373,7 +373,7 @@ ui::metadata::MemberMetaDataBase* FindMemberDataCaseInsensitive(
   for (ui::metadata::ClassMetaData* current = class_meta; current;
        current = current->parent_class_meta_data()) {
     for (ui::metadata::MemberMetaDataBase* member : current->members()) {
-      if (base::ToLowerASCII(member->member_name()) == lower_name) {
+      if (base::EqualsCaseInsensitiveASCII(member->member_name(), lower_name)) {
         return member;
       }
     }

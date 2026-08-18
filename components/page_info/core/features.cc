@@ -66,8 +66,10 @@ extern bool IsMerchantTrustFeatureEnabled(const std::string& country_code,
   }
 
   return base::FeatureList::IsEnabled(kMerchantTrust) &&
-         base::ToLowerASCII(country_code) == kMerchantTrustEnabledForCountry &&
-         base::ToLowerASCII(locale) == kMerchantTrustEnabledForLocale;
+         base::EqualsCaseInsensitiveASCII(country_code,
+                                          kMerchantTrustEnabledForCountry) &&
+         base::EqualsCaseInsensitiveASCII(locale,
+                                          kMerchantTrustEnabledForLocale);
 }
 
 }  // namespace page_info

@@ -208,7 +208,7 @@ bool IsArchitectureSupported(const std::string& arch,
 }
 
 bool IsPlatformCompatible(const std::string& platform) {
-  return platform.empty() || base::ToLowerASCII(platform) == "win";
+  return platform.empty() || base::EqualsCaseInsensitiveASCII(platform, "win");
 }
 
 bool IsArchitectureCompatible(const std::string& arch_list,

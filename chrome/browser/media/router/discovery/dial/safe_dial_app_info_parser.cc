@@ -17,9 +17,10 @@ namespace media_router {
 namespace {
 
 DialAppState ParseDialAppState(const std::string& app_state) {
-  if (base::ToLowerASCII(app_state) == "running") {
+  if (base::EqualsCaseInsensitiveASCII(app_state, "running")) {
     return DialAppState::kRunning;
-  } else if (base::ToLowerASCII(app_state) == "stopped") {
+  }
+  if (base::EqualsCaseInsensitiveASCII(app_state, "stopped")) {
     return DialAppState::kStopped;
   }
   return DialAppState::kUnknown;
