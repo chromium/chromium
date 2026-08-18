@@ -72,6 +72,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void SetDevToolsCommandsEnabled(bool enabled) override;
   void SetTabSwitchCommandsEnabled(bool enabled) override;
   void ActivateWebContentsAt(size_t index) override;
+  void SetContentsBackgroundVisible(bool visible) override;
 
  private:
   const raw_ref<Browser> browser_;

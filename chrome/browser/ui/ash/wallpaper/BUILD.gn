@@ -25,6 +25,7 @@ static_library("wallpaper") {
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/arc/wallpaper",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/customization",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",

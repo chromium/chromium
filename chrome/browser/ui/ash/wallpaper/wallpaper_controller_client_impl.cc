@@ -31,6 +31,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/customization/customization_wallpaper_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -46,8 +48,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
@@ -394,27 +394,19 @@ void WallpaperControllerClientImpl::MakeTransparent(
       SK_ColorTRANSPARENT);
 
   // Turn off the web contents background.
-  std::vector<ContentsWebView*> contents_views =
-      BrowserView::GetBrowserViewForNativeWindow(
-          web_contents->GetTopLevelNativeWindow())
-          ->GetAllVisibleContentsWebViews();
-  for (ContentsWebView* contents_view : contents_views) {
-    contents_view->SetBackgroundVisible(false);
-  }
+  ash::BrowserController::GetInstance()
+      ->GetBrowserForTab(web_contents)
+      ->SetContentsBackgroundVisible(false);
 }
 
 void WallpaperControllerClientImpl::MakeOpaque(
     content::WebContents* web_contents) {
-  // Reversing `contents_web_view` is sufficient to make the view opaque,
-  // as `window_backdrop`, `top_level_window` and `web_contents` are not
+  // Making the contents background visible is sufficient to make the view
+  // opaque, as `window_backdrop`, `top_level_window` and `web_contents` are not
   // highly impactful to the animated theme change effect.
-  std::vector<ContentsWebView*> contents_views =
-      BrowserView::GetBrowserViewForNativeWindow(
-          web_contents->GetTopLevelNativeWindow())
-          ->GetAllVisibleContentsWebViews();
-  for (ContentsWebView* contents_view : contents_views) {
-    contents_view->SetBackgroundVisible(true);
-  }
+  ash::BrowserController::GetInstance()
+      ->GetBrowserForTab(web_contents)
+      ->SetContentsBackgroundVisible(true);
 }
 
 void WallpaperControllerClientImpl::OnVolumeMounted(

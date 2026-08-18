@@ -26,6 +26,8 @@
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
@@ -341,6 +343,15 @@ void BrowserDelegateImpl::SetTabSwitchCommandsEnabled(bool enabled) {
 
 void BrowserDelegateImpl::ActivateWebContentsAt(size_t index) {
   browser_->tab_strip_model()->ActivateTabAt(static_cast<int>(index));
+}
+
+void BrowserDelegateImpl::SetContentsBackgroundVisible(bool visible) {
+  BrowserView& browser_view =
+      CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(&browser_.get()));
+  for (ContentsWebView* contents_view :
+       browser_view.GetAllVisibleContentsWebViews()) {
+    contents_view->SetBackgroundVisible(visible);
+  }
 }
 
 }  // namespace ash
