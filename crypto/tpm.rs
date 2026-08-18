@@ -226,6 +226,8 @@ pub mod ffi {
         TPM_CC_SEQUENCE_UPDATE = 0x0000015C,
         /// TPM_CC_SIGN is the command code for TPM2_Sign.
         TPM_CC_SIGN = 0x0000015D,
+        /// TPM_CC_FLUSH_CONTEXT is the command code for TPM2_FlushContext.
+        TPM_CC_FLUSH_CONTEXT = 0x00000165,
         /// TPM_CC_HASH is the command code for TPM2_Hash.
         TPM_CC_HASH = 0x0000017D,
         /// TPM_CC_HASH_SEQUENCE_START is the command code for
@@ -313,6 +315,12 @@ pub mod ffi {
         /// code, the serialized `TPMS_ATTEST` statement, and the
         /// serialized `TPMT_SIGNATURE`.
         fn parse_certify_response(resp: &[u8], challenge: &[u8]) -> CertifyResponse;
+
+        /// Builds a TPM2_FlushContext command buffer.
+        fn build_flush_context_command(handle: u32) -> Vec<u8>;
+
+        /// Parses a TPM2_FlushContext response.
+        fn parse_flush_context_response(resp: &[u8]) -> ResponseStatus;
 
         /// Builds a TPM2_Hash command buffer.
         fn build_hash_command(data: &[u8], hash_alg: TpmAlg, hierarchy: TpmRh) -> Vec<u8>;
@@ -1542,4 +1550,73 @@ fn parse_sequence_complete_response_impl<'a>(
 /// Parses a TPM2_SequenceComplete response.
 pub fn parse_sequence_complete_response(resp: &[u8]) -> ffi::HashResponse {
     parse_sequence_complete_response_impl(resp).into()
+}
+
+/// Builds a TPM2_FlushContext command.
+///
+/// * `handle` - The handle of the item to flush.
+///
+/// A TPM FlushContext command has the following structure (Table 164):
+///
+/// Header:
+///
+/// | Type                | Name           |
+/// |---------------------|----------------|
+/// | TPMI_ST_COMMAND_TAG | tag            |
+/// | UINT32              | commandSize    |
+/// | TPM_CC              | commandCode    |
+///
+/// Parameters:
+///
+/// | Type                | Name           |
+/// |---------------------|----------------|
+/// | TPMI_DH_CONTEXT     | flushHandle    |
+///
+/// See Table 164 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=236.
+///
+/// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
+/// for a general overview of the structure of a TPM command.
+pub fn build_flush_context_command(handle: u32) -> Vec<u8> {
+    let total_size = TPM_HEADER_SIZE + TPM_HANDLE_SIZE;
+
+    let mut writer = Writer::with_capacity(total_size);
+
+    // 1. Command Header
+    writer.write_command_header(TpmSt::TPM_ST_NO_SESSIONS, total_size, TpmCc::TPM_CC_FLUSH_CONTEXT);
+
+    // 2. Command Parameters
+    writer.write_u32(handle);
+
+    writer.into_inner()
+}
+
+/// Parses a TPM2_FlushContext response.
+///
+/// Header:
+///
+/// | Type   | Name         |
+/// |--------|--------------|
+/// | TPM_ST | tag          |
+/// | UINT32 | responseSize |
+/// | TPM_RC | responseCode |
+///
+/// See Table 165 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=236.
+///
+/// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
+/// for a general overview of the structure of a TPM response.
+fn parse_flush_context_response_impl(resp: &[u8]) -> Result<(), TpmParseError> {
+    let mut reader = Reader::new(resp);
+    let header = reader.read_response_header(resp.len())?;
+    if header.tag != TpmSt::TPM_ST_NO_SESSIONS {
+        return Err(TpmParseError::WrongType);
+    }
+
+    reader.ensure_empty()?;
+
+    Ok(())
+}
+
+/// Parses a TPM2_FlushContext response.
+pub fn parse_flush_context_response(resp: &[u8]) -> ffi::ResponseStatus {
+    parse_flush_context_response_impl(resp).into()
 }

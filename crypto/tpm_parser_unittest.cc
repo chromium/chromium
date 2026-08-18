@@ -176,6 +176,17 @@ std::vector<uint8_t> BuildFakeCertifyResponse(
   return resp;
 }
 
+std::vector<uint8_t> BuildFakeFlushContextResponse(uint32_t response_code = 0) {
+  uint32_t resp_size = 10;
+  std::vector<uint8_t> resp(resp_size);
+  base::SpanWriter<uint8_t> writer(resp);
+  writer.WriteEnumBigEndian(TPM_ST_NO_SESSIONS);
+  writer.WriteU32BigEndian(resp_size);
+  writer.WriteU32BigEndian(response_code);
+  CHECK_EQ(writer.remaining(), 0u);
+  return resp;
+}
+
 std::vector<uint8_t> BuildFakeHashResponse(
     base::span<const uint8_t> digest,
     TpmSt ticket_tag,
@@ -701,6 +712,7 @@ TEST(TpmCppParserTest, ParseTpmSignature_MalformedBlob) {
 
 TEST(TpmCppParserTest, TpmCommandStringify) {
   EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kCertify), "Certify");
+  EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kFlushContext), "FlushContext");
   EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kHash), "Hash");
   EXPECT_EQ(absl::StrFormat("%v", TpmCommand::kHashSequenceStart),
             "HashSequenceStart");
@@ -713,6 +725,7 @@ TEST(TpmCppParserTest, TpmCommandStringify) {
 
 TEST(TpmCppParserTest, ResponseStructCommandConstants) {
   static_assert(CertifyResponse::kCommand == TpmCommand::kCertify);
+  static_assert(FlushContextResponse::kCommand == TpmCommand::kFlushContext);
   static_assert(HashResponse::kCommand == TpmCommand::kHash);
   static_assert(HashSequenceStartResponse::kCommand ==
                 TpmCommand::kHashSequenceStart);
@@ -721,6 +734,32 @@ TEST(TpmCppParserTest, ResponseStructCommandConstants) {
   static_assert(SequenceUpdateResponse::kCommand ==
                 TpmCommand::kSequenceUpdate);
   static_assert(SignResponse::kCommand == TpmCommand::kSign);
+}
+
+TEST(TpmCppParserTest, BuildFlushContextCommand) {
+  uint32_t handle = 0x80000001;
+  std::vector<uint8_t> cmd = BuildFlushContextCommand(handle);
+  EXPECT_EQ(cmd.size(), 14u);
+
+  base::SpanReader<const uint8_t> reader(cmd);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmSt>(), TPM_ST_NO_SESSIONS);
+  EXPECT_EQ(reader.ReadU32BigEndian(), 14u);
+  EXPECT_EQ(reader.ReadEnumBigEndian<TpmCc>(), TPM_CC_FLUSH_CONTEXT);
+  EXPECT_EQ(reader.ReadU32BigEndian(), handle);
+}
+
+TEST(TpmCppParserTest, ParseFlushContextResponse_Success) {
+  std::vector<uint8_t> resp = BuildFakeFlushContextResponse();
+
+  EXPECT_THAT(ParseFlushContextResponse(resp), ValueIs(FlushContextResponse{}));
+}
+
+TEST(TpmCppParserTest, ParseFlushContextResponse_TpmError) {
+  std::vector<uint8_t> resp = BuildFakeFlushContextResponse(0x100);
+
+  EXPECT_THAT(
+      ParseFlushContextResponse(resp),
+      ErrorIs(TpmParseError(TpmParseError::Type::kTpmErrorResponse, 0x100)));
 }
 
 TEST(TpmCppParserTest, BuildHashSequenceStartCommand) {

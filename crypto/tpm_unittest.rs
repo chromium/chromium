@@ -1082,3 +1082,98 @@ fn test_sequence_complete_tpm_error() {
     expect_true!(result.digest.is_empty());
     expect_true!(result.validation_ticket.is_empty());
 }
+
+#[gtest(TpmTest, BuildFlushContextCommand)]
+fn test_build_flush_context_command() {
+    let handle = 0x80000001;
+    let cmd = tpm::build_flush_context_command(handle);
+
+    // Header (10) + Handle (4) = 14
+    expect_eq!(cmd.len(), 14);
+
+    let mut reader = tpm::Reader::new(&cmd);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmSt::TPM_ST_NO_SESSIONS.repr);
+    expect_eq!(reader.read_u32().unwrap(), 14);
+    expect_eq!(reader.read_u32().unwrap(), tpm::TpmCc::TPM_CC_FLUSH_CONTEXT.repr);
+
+    expect_eq!(reader.read_u32().unwrap(), handle);
+}
+
+struct FlushContextResponseBuilder {
+    tag: u16,
+    rc: u32,
+}
+
+impl FlushContextResponseBuilder {
+    fn new() -> Self {
+        Self { tag: tpm::TpmSt::TPM_ST_NO_SESSIONS.repr, rc: 0 }
+    }
+
+    fn set_tag(mut self, tag: u16) -> Self {
+        self.tag = tag;
+        self
+    }
+
+    fn set_rc(mut self, rc: u32) -> Self {
+        self.rc = rc;
+        self
+    }
+
+    fn build(self) -> Vec<u8> {
+        let total_size = 10;
+        let mut writer = tpm::Writer::with_capacity(total_size);
+        writer.write_u16(self.tag);
+        writer.write_u32(total_size as u32);
+        writer.write_u32(self.rc);
+        writer.into_inner()
+    }
+}
+
+#[gtest(TpmParserTest, FlushContextHappyPath)]
+fn test_flush_context_happy_path() {
+    let builder = FlushContextResponseBuilder::new();
+    let resp = builder.build();
+
+    let result = tpm::parse_flush_context_response(&resp);
+    expect_true!(matches!(result.result, tpm::ffi::ParseResult::Ok));
+    expect_eq!(result.tpm_response_code, 0);
+}
+
+#[gtest(TpmParserTest, FlushContextWrongTag)]
+fn test_flush_context_wrong_tag() {
+    let builder = FlushContextResponseBuilder::new().set_tag(tpm::TpmSt::TPM_ST_SESSIONS.repr);
+    let resp = builder.build();
+
+    let result = tpm::parse_flush_context_response(&resp);
+    expect_true!(matches!(result.result, tpm::ffi::ParseResult::WrongType));
+}
+
+#[gtest(TpmParserTest, FlushContextBufferTooSmall)]
+fn test_flush_context_buffer_too_small() {
+    let builder = FlushContextResponseBuilder::new();
+    let mut resp = builder.build();
+    resp.pop();
+
+    let result = tpm::parse_flush_context_response(&resp);
+    expect_true!(matches!(result.result, tpm::ffi::ParseResult::BufferTooSmall));
+}
+
+#[gtest(TpmParserTest, FlushContextTrailingBytes)]
+fn test_flush_context_trailing_bytes() {
+    let builder = FlushContextResponseBuilder::new();
+    let mut resp = builder.build();
+    resp.push(0);
+
+    let result = tpm::parse_flush_context_response(&resp);
+    expect_true!(matches!(result.result, tpm::ffi::ParseResult::TrailingBytes));
+}
+
+#[gtest(TpmParserTest, FlushContextTpmError)]
+fn test_flush_context_tpm_error() {
+    let builder = FlushContextResponseBuilder::new().set_rc(0x100);
+    let resp = builder.build();
+
+    let result = tpm::parse_flush_context_response(&resp);
+    expect_true!(matches!(result.result, tpm::ffi::ParseResult::TpmErrorResponse));
+    expect_eq!(result.tpm_response_code, 0x100);
+}

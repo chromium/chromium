@@ -598,18 +598,23 @@ bool IsTbsAvailable() {
   return is_available;
 }
 
-TPMOperation TpmCommandToOperation(tpm::TpmCommand command) {
+std::optional<TPMOperation> TpmCommandToOperation(tpm::TpmCommand command) {
   switch (command) {
     case tpm::TpmCommand::kCertify:
       return TPMOperation::kKeyCertification;
     case tpm::TpmCommand::kSign:
       return TPMOperation::kMessageSigning;
+
     case tpm::TpmCommand::kHash:
     case tpm::TpmCommand::kHashSequenceStart:
     case tpm::TpmCommand::kSequenceComplete:
     case tpm::TpmCommand::kSequenceUpdate:
       return TPMOperation::kMessageHashing;
+    case tpm::TpmCommand::kFlushContext:
+      return std::nullopt;
   }
+
+  NOTREACHED();
 }
 
 void LogTpmExtractPropertyResult(
@@ -620,7 +625,9 @@ void LogTpmExtractPropertyResult(
       absl::StrFormat("Crypto.TPMOperation.Win.Tpm%vExtractProperty.Result",
                       command),
       status);
-  LogTPMOperationError(TpmCommandToOperation(command), status, algorithm);
+  if (auto op = TpmCommandToOperation(command)) {
+    LogTPMOperationError(*op, status, algorithm);
+  }
 }
 
 std::optional<TBS_HCONTEXT> GetTbsContext(
@@ -683,7 +690,8 @@ std::optional<std::vector<uint8_t>> SubmitTbsCommand(
   if (tbs_result != TBS_SUCCESS) {
     base::UmaHistogramSparse("Crypto.TPMOperation.Win.TbsSubmitCommand.Error",
                              tbs_result);
-    LogTPMOperationError(TpmCommandToOperation(command), tbs_result, algorithm);
+    ASSIGN_OR_RETURN(TPMOperation op, TpmCommandToOperation(command));
+    LogTPMOperationError(op, tbs_result, algorithm);
     return std::nullopt;
   }
 

@@ -162,6 +162,19 @@ TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
   });
 }
 
+std::vector<uint8_t> BuildFlushContextCommand(uint32_t handle) {
+  return base::ToVector(build_flush_context_command(handle));
+}
+
+TpmParseErrorOr<FlushContextResponse> ParseFlushContextResponse(
+    base::span<const uint8_t> response_blob) {
+  ResponseStatus status =
+      parse_flush_context_response(base::SpanToRustSlice(response_blob));
+
+  return MapResponseStatus(status).transform(
+      [] { return FlushContextResponse{}; });
+}
+
 std::vector<uint8_t> BuildHashCommand(base::span<const uint8_t> data,
                                       TpmAlg hash_alg,
                                       TpmRh hierarchy) {

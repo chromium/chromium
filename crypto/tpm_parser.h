@@ -33,6 +33,7 @@ using enum TpmSt;
 // Enumerates the TPM 2.0 commands implemented by this module.
 enum class TpmCommand {
   kCertify,            // TPM2_Certify
+  kFlushContext,       // TPM2_FlushContext
   kHash,               // TPM2_Hash
   kHashSequenceStart,  // TPM2_HashSequenceStart
   kSequenceComplete,   // TPM2_SequenceComplete
@@ -45,6 +46,9 @@ void AbslStringify(Sink& sink, TpmCommand command) {
   switch (command) {
     case TpmCommand::kCertify:
       sink.Append("Certify");
+      return;
+    case TpmCommand::kFlushContext:
+      sink.Append("FlushContext");
       return;
     case TpmCommand::kHash:
       sink.Append("Hash");
@@ -140,6 +144,14 @@ struct CRYPTO_EXPORT CertifyResponse {
                          const CertifyResponse&) = default;
 };
 
+// Response from parsing a TPM2_FlushContext response.
+struct CRYPTO_EXPORT FlushContextResponse {
+  static constexpr auto kCommand = TpmCommand::kFlushContext;
+
+  friend bool operator==(const FlushContextResponse&,
+                         const FlushContextResponse&) = default;
+};
+
 // Response components extracted from a parsed TPM2_Hash response.
 struct CRYPTO_EXPORT HashResponse {
   static constexpr auto kCommand = TpmCommand::kHash;
@@ -221,6 +233,15 @@ CRYPTO_EXPORT std::vector<uint8_t> BuildCertifyCommand(
 CRYPTO_EXPORT TpmParseErrorOr<CertifyResponse> ParseCertifyResponse(
     base::span<const uint8_t> response_blob,
     base::span<const uint8_t> challenge);
+
+// Builds a serialized TPM2_FlushContext command buffer.
+//
+// * `handle` - The handle of the item to flush.
+CRYPTO_EXPORT std::vector<uint8_t> BuildFlushContextCommand(uint32_t handle);
+
+// Parses a serialized TPM2_FlushContext response.
+CRYPTO_EXPORT TpmParseErrorOr<FlushContextResponse> ParseFlushContextResponse(
+    base::span<const uint8_t> response_blob);
 
 // Builds a serialized TPM2_Hash command buffer.
 //
