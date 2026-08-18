@@ -1073,25 +1073,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Desktop_FormFactor_20260417",
+                    "name": "Enabled",
                     "enable_features": [
-                        "AutoDocPiPPermissionPromptAndroid",
-                        "DocumentPictureInPictureAPI"
-                    ]
-                },
-                {
-                    "name": "Enabled_NonDesktop_FormFactor_20260417",
-                    "enable_features": [
-                        "DocumentPictureInPictureAPI"
-                    ],
-                    "disable_features": [
-                        "AutoDocPiPPermissionPromptAndroid"
-                    ]
-                },
-                {
-                    "name": "Control_NonDesktop_FormFactor_20260417",
-                    "disable_features": [
-                        "AutoDocPiPPermissionPromptAndroid",
                         "DocumentPictureInPictureAPI"
                     ]
                 }

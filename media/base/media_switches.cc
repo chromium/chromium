@@ -1277,7 +1277,7 @@ BASE_FEATURE(kAndroidZeroCopyVideoCapture, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables automatic Picture-in-Picture permission prompt on Android for
 // document picture-in-picture.
 BASE_FEATURE(kAutoDocPiPPermissionPromptAndroid,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables automatic Picture-in-Picture on Android for supported websites.
 // This triggers for active video playback or camera/microphone usage on sites
