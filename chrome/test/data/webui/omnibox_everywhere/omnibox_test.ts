@@ -204,19 +204,71 @@ suite('OmniboxEverywhereOmniboxTest', () => {
         assertFalse(composeButton.hasAttribute('has-user-input'));
       });
 
-  test('clicking compose button dispatches open-composebox event', async () => {
-    const whenOpenComposebox = eventToPromise('open-composebox', omnibox);
+  test(
+      'clicking compose button with empty input dispatches open-composebox ' +
+          'event',
+      async () => {
+        const whenOpenComposebox = eventToPromise('open-composebox', omnibox);
 
-    const composeButton =
-        omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton')!;
-    assertTrue(!!composeButton);
-    composeButton.dispatchEvent(new CustomEvent('compose-click', {
-      bubbles: true,
-      composed: true,
-    }));
+        const composeButton =
+            omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton')!;
+        assertTrue(!!composeButton);
+        composeButton.dispatchEvent(new CustomEvent('compose-click', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            button: 0,
+            ctrlKey: false,
+            metaKey: false,
+            shiftKey: false,
+          },
+        }));
 
-    await whenOpenComposebox;
-  });
+        await whenOpenComposebox;
+        assertEquals(0, testProxy.handler.getCallCount('submitQuery'));
+      });
+
+  test(
+      'clicking compose button with query text submits query and notifies ' +
+          'session',
+      async () => {
+        let openComposeboxCalled = false;
+        omnibox.addEventListener('open-composebox', () => {
+          openComposeboxCalled = true;
+        });
+
+        omnibox.setInputText('test query');
+        await microtasksFinished();
+
+        const composeButton =
+            omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton')!;
+        assertTrue(!!composeButton);
+        composeButton.dispatchEvent(new CustomEvent('compose-click', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            button: 0,
+            ctrlKey: false,
+            metaKey: false,
+            shiftKey: false,
+          },
+        }));
+
+        await testProxy.handler.whenCalled('submitQuery');
+        assertEquals(1, testProxy.handler.getCallCount('submitQuery'));
+        assertEquals(1, testProxy.handler.getCallCount('notifySessionStarted'));
+        assertEquals(
+            1, testProxy.handler.getCallCount('activateMetricsFunnel'));
+        const submitArgs = testProxy.handler.getArgs('submitQuery')[0];
+        assertEquals('test query', submitArgs[0]);
+        assertEquals(0, submitArgs[1]);      // button
+        assertEquals(false, submitArgs[2]);  // altKey
+        assertEquals(false, submitArgs[3]);  // ctrlKey
+        assertEquals(false, submitArgs[4]);  // metaKey
+        assertEquals(false, submitArgs[5]);  // shiftKey
+        assertEquals(false, submitArgs[6]);  // isVoiceSearch
+        assertFalse(openComposeboxCalled);
+      });
 
   test('respects isFuseboxEnabled false', async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
