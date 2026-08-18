@@ -1154,13 +1154,6 @@
       status: "stable",
     },
     {
-      // If the link has tabindex, the status bubble should not persist after
-      // mouse out.
-      // This was added in M146 and can be removed after M148.
-      name: "ClickFocusDoesntPersistStatusBubble",
-      status: "stable",
-    },
-    {
       // Uses ComputeContainerNode() instead of AnchorNode() for clipboard event
       // targeting so that kBeforeAnchor/kAfterAnchor selections correctly target
       // the containing parent element rather than the element itself.

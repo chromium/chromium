@@ -360,9 +360,7 @@ void ChromeClientImpl::SetKeyboardFocusURL(Element* new_focus_element) {
       new_focus_element && new_focus_element->GetDocument().LastFocusType() ==
                                mojom::blink::FocusType::kMouse;
   if (new_focus_element && new_focus_element->IsLiveLink() &&
-      new_focus_element->ShouldHaveFocusAppearance() &&
-      (!RuntimeEnabledFeatures::ClickFocusDoesntPersistStatusBubbleEnabled() ||
-       !is_mouse_focus)) {
+      new_focus_element->ShouldHaveFocusAppearance() && !is_mouse_focus) {
     focus_url = new_focus_element->HrefURL();
   }
   web_view_->SetKeyboardFocusURL(focus_url);
