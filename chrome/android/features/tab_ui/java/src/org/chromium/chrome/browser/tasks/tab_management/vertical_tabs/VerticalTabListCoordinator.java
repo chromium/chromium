@@ -546,7 +546,6 @@ public class VerticalTabListCoordinator {
                 new TabListMediator(
                         activity,
                         mModelList,
-                        TabListMode.VERTICAL,
                         /* modalDialogManager */ null,
                         tabModelSelector.getCurrentTabModelSupplier(),
                         /* thumbnailProvider */ null,

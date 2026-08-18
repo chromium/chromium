@@ -9,20 +9,23 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
+import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 
 /**
  * Configuration policies and visual capabilities for the TabList. The returned values are immutable
  * once constructed.
- *
- * <p>TODO(crbug.com/509226293): Migrate remaining TabListMode capabilities here to eliminate mMode
- * from TabListMediator.
  */
 @NullMarked
 public class TabListConfig {
     /** The layout organization type for the TabList. */
     public final @TabListLayoutType int layoutType;
+
+    /**
+     * The base card UI type for tabs in the list (e.g. {@link UiType#TAB} or {@link UiType#STRIP}).
+     */
+    public final @UiType int tabUiType;
 
     /**
      * Whether the layout supports message card items (e.g. IPH, promo cards, price welcome cards).
@@ -38,6 +41,9 @@ public class TabListConfig {
     /** Whether the tab list items support displaying a loading state / spinner. */
     public final boolean supportsTabLoadingState;
 
+    /** Whether the tab list supports shrink-to-close animations on tab removal. */
+    public final boolean supportsShrinkCloseAnimation;
+
     /** Supplier for the rail collapse state in vertical tabs, or null if not supported. */
     public final @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
             railCollapseStateSupplier;
@@ -50,9 +56,11 @@ public class TabListConfig {
 
     private TabListConfig(Builder builder) {
         layoutType = builder.mLayoutType;
+        tabUiType = builder.mTabUiType;
         supportsMessageCards = builder.mSupportsMessageCards;
         supportsModifierMultiSelect = builder.mSupportsModifierMultiSelect;
         supportsTabLoadingState = builder.mSupportsTabLoadingState;
+        supportsShrinkCloseAnimation = builder.mSupportsShrinkCloseAnimation;
         railCollapseStateSupplier = builder.mRailCollapseStateSupplier;
         tabHoverCardListener = builder.mTabHoverCardListener;
         tabUnderlineManager = builder.mTabUnderlineManager;
@@ -61,9 +69,11 @@ public class TabListConfig {
     /** Builder to construct {@link TabListConfig}. */
     public static class Builder {
         private final @TabListLayoutType int mLayoutType;
+        private @UiType int mTabUiType;
         private boolean mSupportsMessageCards;
         private boolean mSupportsModifierMultiSelect;
         private boolean mSupportsTabLoadingState;
+        private boolean mSupportsShrinkCloseAnimation;
         private @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
                 mRailCollapseStateSupplier;
         private @Nullable TabHoverCardListener mTabHoverCardListener;
@@ -74,6 +84,17 @@ public class TabListConfig {
          */
         public Builder(@TabListLayoutType int layoutType) {
             mLayoutType = layoutType;
+        }
+
+        /**
+         * Sets the base {@link UiType} for tab items in the list.
+         *
+         * @param tabUiType The base {@link UiType} for tab items in the list.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setTabUiType(@UiType int tabUiType) {
+            mTabUiType = tabUiType;
+            return this;
         }
 
         /**
@@ -100,6 +121,18 @@ public class TabListConfig {
          */
         public Builder setSupportsTabLoadingState(boolean supportsTabLoadingState) {
             mSupportsTabLoadingState = supportsTabLoadingState;
+            return this;
+        }
+
+        /**
+         * Sets whether the tab list supports shrink-to-close animations on tab removal.
+         *
+         * @param supportsShrinkCloseAnimation Whether the tab list supports shrink-to-close
+         *     animations.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setSupportsShrinkCloseAnimation(boolean supportsShrinkCloseAnimation) {
+            mSupportsShrinkCloseAnimation = supportsShrinkCloseAnimation;
             return this;
         }
 

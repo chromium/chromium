@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
-import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -381,8 +380,6 @@ public class TabListMediator implements TabListNotificationHandler {
             mOnMenuItemClickedCallback = this::onMenuItemClicked;
     private final Activity mActivity;
     private final TabListModel mModelList;
-    // TODO(crbug.com/509226293): Remove mMode and rely solely on TabListConfig.
-    private final @TabListMode int mMode;
     private final @Nullable ModalDialogManager mModalDialogManager;
     private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
     private final @Nullable ThumbnailProvider mThumbnailProvider;
@@ -877,7 +874,6 @@ public class TabListMediator implements TabListNotificationHandler {
      *
      * @param activity The activity used to get some configuration information.
      * @param modelList The {@link TabListModel} to keep state about a list of {@link Tab}s.
-     * @param mode The {@link TabListMode}.
      * @param modalDialogManager The {@link ModalDialogManager} for managing dialog lifecycles.
      * @param tabModelSupplier Used to fetch the filter that provides tab group information.
      * @param thumbnailProvider {@link ThumbnailProvider} to provide screenshot related details.
@@ -894,7 +890,7 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param componentId The {@link TabComponentId} identifying the parent UI container hosting
      *     this tab list.
      * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
-     *     Must always be CLOSABLE for TabListMode.BOTTOM_STRIP.
+     *     Must always be CLOSABLE for {@link UiType#STRIP}.
      * @param dataSharingTabManager The service used to initiate data sharing.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      * @param undoBarExplicitTrigger Interface to explicitly trigger the undo closure snackbar.
@@ -906,7 +902,6 @@ public class TabListMediator implements TabListNotificationHandler {
     public TabListMediator(
             Activity activity,
             TabListModel modelList,
-            @TabListMode int mode,
             @Nullable ModalDialogManager modalDialogManager,
             NullableObservableSupplier<TabModel> tabModelSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
@@ -929,7 +924,6 @@ public class TabListMediator implements TabListNotificationHandler {
             Runnable onDragStateChangedListener) {
         mActivity = activity;
         mModelList = modelList;
-        mMode = mode;
         mModalDialogManager = modalDialogManager;
         mCurrentTabModelSupplier = tabModelSupplier;
         mThumbnailProvider = thumbnailProvider;
@@ -2275,7 +2269,7 @@ public class TabListMediator implements TabListNotificationHandler {
             tabInfo.set(TabProperties.RAIL_COLLAPSE_STATE, mRailCollapseStateSupplier.get());
         }
 
-        @UiType int tabUiType = mMode == TabListMode.BOTTOM_STRIP ? UiType.STRIP : UiType.TAB;
+        @UiType int tabUiType = mTabListConfig.tabUiType;
         if (index >= mModelList.size()) {
             mModelList.add(new ListItem(tabUiType, tabInfo));
         } else {
@@ -3205,7 +3199,8 @@ public class TabListMediator implements TabListNotificationHandler {
     @Override
     public void updateTabStripNotificationBubble(
             Set<Integer> tabIdsToBeUpdated, boolean hasUpdate) {
-        assert mMode == TabListMode.BOTTOM_STRIP;
+        assert mTabListConfig.tabUiType == UiType.STRIP
+                : "Notification bubbles are only supported for strip mode.";
 
         Callback<PropertyModel> updateTabStripItemCallback =
                 (model) -> model.set(TabProperties.HAS_NOTIFICATION_BUBBLE, hasUpdate);
@@ -3215,7 +3210,8 @@ public class TabListMediator implements TabListNotificationHandler {
 
     @Override
     public void updateTabCardLabels(Map<Integer, TabCardLabelData> labelData) {
-        assert mMode == TabListMode.GRID;
+        assert mTabListConfig.tabUiType == UiType.TAB
+                : "Tab card labels are only supported for tab card UI type.";
 
         Callback<PropertyModel> updateTabCardLabel =
                 (model) -> {
@@ -3511,7 +3507,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     private void setUseShrinkCloseAnimation(int tabId, boolean useShrinkCloseAnimation) {
-        if (mMode != TabListMode.GRID) return;
+        if (!mTabListConfig.supportsShrinkCloseAnimation) return;
 
         @Nullable PropertyModel model = mModelList.getModelFromTabId(tabId);
         if (model != null) {
@@ -3543,7 +3539,7 @@ public class TabListMediator implements TabListNotificationHandler {
             // group by the tab's old root ID.
             int index = getIndexForTabIdWithRelatedTabs(tab.getId());
             if (mModelList.isValidIndex(index)) {
-                if (mMode == TabListMode.GRID) {
+                if (mTabListConfig.supportsShrinkCloseAnimation) {
                     mModelList
                             .get(index)
                             .model
@@ -3715,7 +3711,7 @@ public class TabListMediator implements TabListNotificationHandler {
         model.set(TabProperties.TAB_GROUP_CARD_COLOR, colorId);
         assert colorId != TabGroupColorUtils.INVALID_COLOR_ID
                 : "Tab in tab group should always have valid colors.";
-        assert mMode != TabListMode.BOTTOM_STRIP
+        assert mTabListConfig.tabUiType != UiType.STRIP
                 : "Tab group colors are not applicable to strip mode.";
 
         @Nullable TabGroupColorViewProvider provider = model.get(TAB_GROUP_COLOR_VIEW_PROVIDER);
@@ -3800,11 +3796,6 @@ public class TabListMediator implements TabListNotificationHandler {
 
     View.AccessibilityDelegate getAccessibilityDelegateForTesting() {
         return mAccessibilityDelegate;
-    }
-
-    @TabListMode
-    int getTabListModeForTesting() {
-        return mMode;
     }
 
     @Nullable Tab getTabToAddDelayedForTesting() {

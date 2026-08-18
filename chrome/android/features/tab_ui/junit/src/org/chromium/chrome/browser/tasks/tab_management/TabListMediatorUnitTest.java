@@ -439,10 +439,11 @@ public class TabListMediatorUnitTest {
     private Context mContext;
     private SavedTabGroup mSavedTabGroup1;
     private SavedTabGroup mSavedTabGroup2;
+    private @Nullable ThumbnailProvider mThumbnailProvider;
 
     private class MediatorBuilder {
-        private @TabListMode int mMode = TabListMode.GRID;
-        private @Nullable ThumbnailProvider mThumbnailProvider = getTabThumbnailCallback();
+        private @Nullable ThumbnailProvider mThumbnailProvider =
+                TabListMediatorUnitTest.this.mThumbnailProvider;
         private @Nullable TabListItemOnClickListenerProvider mTabListItemOnClickListenerProvider =
                 TabListMediatorUnitTest.this.mTabListItemOnClickListenerProvider;
         private @Nullable TabListConfig mTabListConfig =
@@ -454,11 +455,6 @@ public class TabListMediatorUnitTest {
                 TabListMediatorUnitTest.this.mUndoBarExplicitTrigger;
         private @Nullable SnackbarManager mSnackbarManager;
         private int mAllowedSelectionCount;
-
-        public MediatorBuilder setMode(@TabListMode int mode) {
-            mMode = mode;
-            return this;
-        }
 
         public MediatorBuilder setThumbnailProvider(@Nullable ThumbnailProvider thumbnailProvider) {
             mThumbnailProvider = thumbnailProvider;
@@ -511,7 +507,6 @@ public class TabListMediatorUnitTest {
             return new TabListMediator(
                     mActivity,
                     mModelList,
-                    mMode,
                     mModalDialogManager,
                     mCurrentTabModelSupplier,
                     mThumbnailProvider,
@@ -646,11 +641,7 @@ public class TabListMediatorUnitTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
         GlicEnabling.setEnabledForTesting(false);
-
-        mTabListConfig =
-                new TabListConfig.Builder(TabListLayoutType.GROUPED)
-                        .setSupportsMessageCards(true)
-                        .build();
+        mTabListConfig = null;
 
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
@@ -6172,7 +6163,9 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
         assertThat(mModelList.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));
 
-        if (mMediator.getTabListModeForTesting() == TabListMode.GRID) {
+        // Only tab surfaces configured with a ThumbnailProvider (e.g. Grid) bind
+        // THUMBNAIL_FETCHER.
+        if (mThumbnailProvider != null) {
             assertThat(
                     mModelList.get(0).model.get(TabProperties.THUMBNAIL_FETCHER),
                     instanceOf(ThumbnailFetcher.class));
@@ -6503,8 +6496,7 @@ public class TabListMediatorUnitTest {
 
         TabListMediator.TabGridDialogHandler handler =
                 type == TabListMediatorType.TAB_GRID_DIALOG ? mTabGridDialogHandler : null;
-        ThumbnailProvider thumbnailProvider =
-                mode == TabListMode.GRID ? getTabThumbnailCallback() : null;
+        mThumbnailProvider = mode == TabListMode.GRID ? getTabThumbnailCallback() : null;
         @TabComponentId
         int componentId =
                 type == TabListMediatorType.VERTICAL_TABS
@@ -6517,37 +6509,48 @@ public class TabListMediatorUnitTest {
         } else if (type == TabListMediatorType.TAB_SWITCHER) {
             layoutType = TabListLayoutType.GROUPED;
         }
+        // Reuse pre-configured TabListConfig if it matches the target layout; otherwise
+        // derive defaults.
+        boolean hasMatchingConfig =
+                mTabListConfig != null && mTabListConfig.layoutType == layoutType;
+        @UiType
+        int tabUiType =
+                hasMatchingConfig
+                        ? mTabListConfig.tabUiType
+                        : (mode == TabListMode.BOTTOM_STRIP ? UiType.STRIP : UiType.TAB);
         boolean supportsMessageCards =
-                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
+                hasMatchingConfig
                         ? mTabListConfig.supportsMessageCards
                         : (type == TabListMediatorType.TAB_SWITCHER);
         boolean supportsModifierMultiSelect =
-                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
+                hasMatchingConfig
                         ? mTabListConfig.supportsModifierMultiSelect
                         : (type == TabListMediatorType.VERTICAL_TABS
                                 && VerticalTabUtils.isMultiSelectEnabled());
         boolean supportsTabLoadingState =
-                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
+                hasMatchingConfig
                         ? mTabListConfig.supportsTabLoadingState
                         : (type == TabListMediatorType.VERTICAL_TABS);
+        boolean supportsShrinkCloseAnimation =
+                hasMatchingConfig
+                        ? mTabListConfig.supportsShrinkCloseAnimation
+                        : (mode == TabListMode.GRID);
         NonNullObservableSupplier<@RailCollapseState Integer> railCollapseStateSupplier =
-                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
-                        ? mTabListConfig.railCollapseStateSupplier
-                        : null;
+                hasMatchingConfig ? mTabListConfig.railCollapseStateSupplier : null;
         TabHoverCardListener tabHoverCardListener =
-                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
-                        ? mTabListConfig.tabHoverCardListener
-                        : null;
+                hasMatchingConfig ? mTabListConfig.tabHoverCardListener : null;
         TabUnderlineManager tabUnderlineManager =
-                (mTabListConfig != null && mTabListConfig.layoutType == layoutType)
+                hasMatchingConfig
                         ? mTabListConfig.tabUnderlineManager
                         : (type == TabListMediatorType.VERTICAL_TABS ? mTabUnderlineManager : null);
 
         mTabListConfig =
                 new TabListConfig.Builder(layoutType)
+                        .setTabUiType(tabUiType)
                         .setSupportsMessageCards(supportsMessageCards)
                         .setSupportsModifierMultiSelect(supportsModifierMultiSelect)
                         .setSupportsTabLoadingState(supportsTabLoadingState)
+                        .setSupportsShrinkCloseAnimation(supportsShrinkCloseAnimation)
                         .setRailCollapseStateSupplier(railCollapseStateSupplier)
                         .setTabHoverCardListener(tabHoverCardListener)
                         .setTabUnderlineManager(tabUnderlineManager)
@@ -6555,8 +6558,7 @@ public class TabListMediatorUnitTest {
 
         mMediator =
                 new MediatorBuilder()
-                        .setMode(mode)
-                        .setThumbnailProvider(thumbnailProvider)
+                        .setThumbnailProvider(mThumbnailProvider)
                         .setDialogHandler(handler)
                         .setComponentId(componentId)
                         .setTabListConfig(mTabListConfig)

@@ -325,16 +325,19 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
 
         @TabListLayoutType
         int layoutType = actionOnRelatedTabs ? TabListLayoutType.GROUPED : TabListLayoutType.FLAT;
+        @UiType int tabUiType = mMode == TabListMode.BOTTOM_STRIP ? UiType.STRIP : UiType.TAB;
+        boolean isGridMode = mMode == TabListMode.GRID;
         TabListConfig tabListConfig =
                 new TabListConfig.Builder(layoutType)
-                        .setSupportsMessageCards(mMode == TabListMode.GRID)
+                        .setTabUiType(tabUiType)
+                        .setSupportsMessageCards(isGridMode)
+                        .setSupportsShrinkCloseAnimation(isGridMode)
                         .build();
 
         mMediator =
                 new TabListMediator(
                         activity,
                         mModelList,
-                        mMode,
                         modalDialogManager,
                         tabModelSupplier,
                         thumbnailProvider,
