@@ -74,6 +74,21 @@ TEST(Sign, RoundTripSignVerify) {
   auto ed25519_pub = PublicKey::FromPrivateKey(ed25519_priv);
 
   expect_oneshot_roundtrip(ed25519_priv, ed25519_pub, SignatureKind::ED25519);
+
+  auto mldsa44_priv = PrivateKey::GenerateMldsa44();
+  auto mldsa44_pub = PublicKey::FromPrivateKey(mldsa44_priv);
+
+  expect_oneshot_roundtrip(mldsa44_priv, mldsa44_pub, SignatureKind::MLDSA_44);
+
+  auto mldsa65_priv = PrivateKey::GenerateMldsa65();
+  auto mldsa65_pub = PublicKey::FromPrivateKey(mldsa65_priv);
+
+  expect_oneshot_roundtrip(mldsa65_priv, mldsa65_pub, SignatureKind::MLDSA_65);
+
+  auto mldsa87_priv = PrivateKey::GenerateMldsa87();
+  auto mldsa87_pub = PublicKey::FromPrivateKey(mldsa87_priv);
+
+  expect_oneshot_roundtrip(mldsa87_priv, mldsa87_pub, SignatureKind::MLDSA_87);
 }
 
 TEST(Sign, CantUseEd25519ForStreaming) {
@@ -84,6 +99,31 @@ TEST(Sign, CantUseEd25519ForStreaming) {
 
   EXPECT_CHECK_DEATH(crypto::sign::Signer(SignatureKind::ED25519, priv));
   EXPECT_CHECK_DEATH(crypto::sign::Verifier(SignatureKind::ED25519, pub, sig));
+}
+
+TEST(Sign, CantUseMldsaForStreaming) {
+  std::array<uint8_t, 64> sig = {};
+
+  auto mldsa44_priv = PrivateKey::GenerateMldsa44();
+  auto mldsa44_pub = PublicKey::FromPrivateKey(mldsa44_priv);
+  EXPECT_CHECK_DEATH(
+      crypto::sign::Signer(SignatureKind::MLDSA_44, mldsa44_priv));
+  EXPECT_CHECK_DEATH(
+      crypto::sign::Verifier(SignatureKind::MLDSA_44, mldsa44_pub, sig));
+
+  auto mldsa65_priv = PrivateKey::GenerateMldsa65();
+  auto mldsa65_pub = PublicKey::FromPrivateKey(mldsa65_priv);
+  EXPECT_CHECK_DEATH(
+      crypto::sign::Signer(SignatureKind::MLDSA_65, mldsa65_priv));
+  EXPECT_CHECK_DEATH(
+      crypto::sign::Verifier(SignatureKind::MLDSA_65, mldsa65_pub, sig));
+
+  auto mldsa87_priv = PrivateKey::GenerateMldsa87();
+  auto mldsa87_pub = PublicKey::FromPrivateKey(mldsa87_priv);
+  EXPECT_CHECK_DEATH(
+      crypto::sign::Signer(SignatureKind::MLDSA_87, mldsa87_priv));
+  EXPECT_CHECK_DEATH(
+      crypto::sign::Verifier(SignatureKind::MLDSA_87, mldsa87_pub, sig));
 }
 
 }  // namespace
