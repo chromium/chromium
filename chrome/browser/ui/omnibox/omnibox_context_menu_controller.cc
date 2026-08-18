@@ -1226,8 +1226,8 @@ ui::ImageModel OmniboxContextMenuController::GetIconForModel(
           ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
       return ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? kBoltIcon : kBoltOldIcon,
-          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+          kAcuteIcon, ui::kColorMenuIcon,
+          ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
       return ui::ImageModel::FromVectorIcon(
@@ -1235,8 +1235,8 @@ ui::ImageModel OmniboxContextMenuController::GetIconForModel(
           ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::ModelMode::MODEL_MODE_GEMINI_FLASH_LATEST:
       return ui::ImageModel::FromVectorIcon(
-          kAcuteIcon, ui::kColorMenuIcon,
-          ui::SimpleMenuModel::kDefaultIconSize);
+          features::IsRoundedIconsEnabled() ? kBoltIcon : kBoltOldIcon,
+          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     default:
       return ui::ImageModel();
   }
