@@ -55,8 +55,7 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
  public:
   // By default MediaDrmOriginIdManager will attempt to pre-provision origin
   // IDs at startup. For most tests this should be disabled.
-  void Initialize(bool enable_preprovision_at_startup = false,
-                  bool enable_backoff = false) {
+  void Initialize(bool enable_preprovision_at_startup = false) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
@@ -64,12 +63,6 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
       enabled_features.push_back(media::kMediaDrmPreprovisioningAtStartup);
     } else {
       disabled_features.push_back(media::kMediaDrmPreprovisioningAtStartup);
-    }
-
-    if (enable_backoff) {
-      enabled_features.push_back(media::kMediaDrmPreprovisioningBackoff);
-    } else {
-      disabled_features.push_back(media::kMediaDrmPreprovisioningBackoff);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -274,6 +267,7 @@ TEST_F(MediaDrmOriginIdManagerTest, PreProvisionFailAtStartup) {
   // Trigger a network connection to force pre-provisioning to run again.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
+  task_environment_.FastForwardBy(base::Seconds(30));
   task_environment_.RunUntilIdle();
 
   // Pre-provisioning should have run again. Should return the same result as if
@@ -465,6 +459,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChange) {
   // Now trigger a network change to connected.
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
+  task_environment_.FastForwardBy(base::Seconds(30));
   task_environment_.RunUntilIdle();
 
   // Pre-provisioning should have run and filled up the list.
@@ -501,8 +496,12 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChangeFails) {
   // after several failed attempts.
   for (size_t i = 0; i < kConnectionAttempts + 3; ++i) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
+    task_environment_.FastForwardBy(base::Hours(2));
+
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
-    task_environment_.RunUntilIdle();
+    task_environment_.FastForwardBy(base::Hours(2));
   }
 
   // Check that |kAvailableOriginIds| is still empty.
@@ -559,8 +558,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChangeBackoff) {
       .WillOnce(Return(std::nullopt))
       .WillRepeatedly(InvokeWithoutArgs(&base::UnguessableToken::Create));
 
-  Initialize(/*enable_preprovision_at_startup=*/false,
-             /*enable_backoff=*/true);
+  Initialize();
 
   // This will trigger the first provisioning attempt, which fails.
   // This instantiates the NetworkObserver and sets up the backoff delay (10s).

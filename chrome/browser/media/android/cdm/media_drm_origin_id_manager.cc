@@ -480,33 +480,29 @@ class MediaDrmOriginIdManager::NetworkObserver
       return;
     }
 
-    if (base::FeatureList::IsEnabled(media::kMediaDrmPreprovisioningBackoff)) {
-      if (backoff_entry_->ShouldRejectRequest()) {
-        ReportProvisioningNetworkRetryUMA(
-            ProvisioningNetworkRetryResult::kIgnoredByBackoff);
-
-        // If we are currently connected but in backoff, schedule a retry.
-        if (!retry_timer_.IsRunning()) {
-          retry_timer_.Start(
-              FROM_HERE, backoff_entry_->GetTimeUntilRelease(),
-              base::BindOnce(&MediaDrmOriginIdManager::NetworkObserver::
-                                 OnRetryTimerExpired,
-                             base::Unretained(this)));
-        }
-        return;
-      }
+    if (backoff_entry_->ShouldRejectRequest()) {
       ReportProvisioningNetworkRetryUMA(
-          ProvisioningNetworkRetryResult::kRetryAttempted);
+          ProvisioningNetworkRetryResult::kIgnoredByBackoff);
+
+      // If we are currently connected but in backoff, schedule a retry.
+      if (!retry_timer_.IsRunning()) {
+        retry_timer_.Start(
+            FROM_HERE, backoff_entry_->GetTimeUntilRelease(),
+            base::BindOnce(
+                &MediaDrmOriginIdManager::NetworkObserver::OnRetryTimerExpired,
+                base::Unretained(this)));
+      }
+      return;
     }
+    ReportProvisioningNetworkRetryUMA(
+        ProvisioningNetworkRetryResult::kRetryAttempted);
 
     ++number_of_attempts_;
     parent_->PreProvisionIfNecessary();
   }
 
   void InformOfRequest(bool succeeded) {
-    if (base::FeatureList::IsEnabled(media::kMediaDrmPreprovisioningBackoff)) {
-      backoff_entry_->InformOfRequest(succeeded);
-    }
+    backoff_entry_->InformOfRequest(succeeded);
   }
 
   void SetTickClockForTesting(const base::TickClock* clock) {
