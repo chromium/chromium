@@ -542,12 +542,6 @@ class VIEWS_EXPORT WidgetDelegate {
   // Returns the title to be read with screen readers.
   virtual std::u16string GetAccessibleWindowTitle() const;
 
-  // Returns the explicitly set accessible title (via SetAccessibleTitle), if
-  // any.
-  const std::u16string& GetAccessibleTitle() const {
-    return params_.accessible_title;
-  }
-
   // Returns the text to be displayed in the window title.
   virtual std::u16string GetWindowTitle() const;
 
