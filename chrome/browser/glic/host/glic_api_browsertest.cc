@@ -1355,22 +1355,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  ExecuteJsTest();
-  RunTestSequence(CloseGlic());
-
-  GlicHistogramTester histogram_tester;
-  ContinueJsTest();
-  histogram_tester.ExpectBucketCount("Glic.Api.RequestCounts.CreateTab",
-                                     GlicRequestEvent::kRequestReceived, 1);
-  histogram_tester.ExpectBucketCount(
-      "Glic.Api.RequestCounts.CreateTab",
-      GlicRequestEvent::kRequestReceivedWhileInactive, 1);
-
-  // Confirm that this request gets latency metrics recorded.
-  histogram_tester.ExpectTotalCount("Glic.Api.RequestHostLatency.CreateTab", 1);
-}
 
 // TODO(crbug.com/454001121): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(GlicApiTest,

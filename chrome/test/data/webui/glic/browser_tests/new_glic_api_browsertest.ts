@@ -1291,6 +1291,18 @@ class ApiTests extends ApiTestFixtureBase {
         {conversationId: '', conversationTitle: 'Empty Conversation'});
   }
 
+  async testCallingApiWhileHiddenRecordsMetrics() {
+    assertDefined(this.host.createTab);
+    await this.advanceToNextStep();
+    await observeSequence(this.host.panelActive())
+        .waitFor(isActive => !isActive);
+    try {
+      await this.host.createTab(
+          'https://www.google.com', {openInBackground: false});
+    } catch {
+    }
+  }
+
   async testNotifyActOnWebCapabilityChanged() {
     assertDefined(this.host.getActOnWebCapability);
     const actOnWebCapabilitySequence =

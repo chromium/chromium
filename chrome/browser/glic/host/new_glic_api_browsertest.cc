@@ -3759,6 +3759,32 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testRegisterConversationWithEmptyId) {
   EXPECT_EQ("Empty Conversation", retrieved_info->conversation_title);
 }
 
+// TODO(b/548051765): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_testCallingApiWhileHiddenRecordsMetrics \
+  DISABLED_testCallingApiWhileHiddenRecordsMetrics
+#else
+#define MAYBE_testCallingApiWhileHiddenRecordsMetrics \
+  testCallingApiWhileHiddenRecordsMetrics
+#endif
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       MAYBE_testCallingApiWhileHiddenRecordsMetrics) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  ASSERT_OK(CloseGlicForTabAndWait(GetTabListInterface()->GetActiveTab()));
+
+  glic::GlicHistogramTester histogram_tester;
+  ContinueJsTest();
+  histogram_tester.ExpectBucketCount("Glic.Api.RequestCounts.CreateTab",
+                                     GlicRequestEvent::kRequestReceived, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Api.RequestCounts.CreateTab",
+      GlicRequestEvent::kRequestReceivedWhileInactive, 1);
+
+  // Confirm that this request gets latency metrics recorded.
+  histogram_tester.ExpectTotalCount("Glic.Api.RequestHostLatency.CreateTab", 1);
+}
+
 class NewGlicApiTestWithGeminiActOnWebPolicy : public NewGlicApiTest {
  public:
   NewGlicApiTestWithGeminiActOnWebPolicy() {

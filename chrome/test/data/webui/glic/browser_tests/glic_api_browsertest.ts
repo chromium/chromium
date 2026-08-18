@@ -493,17 +493,6 @@ class ApiTests extends ApiTestFixtureBase {
     })();
   }
 
-  async testCallingApiWhileHiddenRecordsMetrics() {
-    assertDefined(this.host.createTab);
-    await this.advanceToNextStep();
-    await observeSequence(this.host.panelActive())
-        .waitFor(isActive => !isActive);
-    try {
-      await this.host.createTab(
-          'https://www.google.com', {openInBackground: false});
-    } catch {
-    }
-  }
 
   // Helper function to pin the active tab. Asserts the tab is pinned, and
   // returns the tab ID.
