@@ -7,13 +7,16 @@ assert(is_fuchsia)
 source_set("test_support") {
   testonly = true
   sources = [
-    "fake_api_bindings.cc",
-    "fake_api_bindings.h",
     "fake_application_config_manager.cc",
     "fake_application_config_manager.h",
+    "scoped_port_handler.cc",
+    "scoped_port_handler.h",
   ]
   public_deps = [
     "//base",
+    "//base/test:test_support",
+    "//components/cast/api_bindings:manager",
+    "//components/cast/message_port",
     "//fuchsia_web/runners/cast/fidl:fidl_hlcpp",
     "//url",
   ]

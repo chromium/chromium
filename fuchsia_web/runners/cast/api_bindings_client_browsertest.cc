@@ -7,21 +7,26 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
-#include "base/barrier_closure.h"
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "chromecast/bindings/bindings_manager_fuchsia.h"
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
+#include "components/cast/message_port/test_message_port_receiver.h"
 #include "content/public/test/browser_test.h"
 #include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
 #include "fuchsia_web/runners/cast/named_message_port_connector_fuchsia.h"
-#include "fuchsia_web/runners/cast/test/fake_api_bindings.h"
+#include "fuchsia_web/runners/cast/test/scoped_port_handler.h"
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,11 +51,11 @@ class ApiBindingsClientTest : public WebEngineBrowserTest {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     // Get the bindings from |api_service_|.
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> bindings_future;
     client_ = std::make_unique<ApiBindingsClient>(
-        api_service_binding_.NewBinding(), run_loop.QuitClosure());
+        api_service_binding_.NewBinding(), bindings_future.GetCallback());
     ASSERT_FALSE(client_->HasBindings());
-    run_loop.Run();
+    EXPECT_TRUE(bindings_future.Wait());
     ASSERT_TRUE(client_->HasBindings());
 
     frame_ = FrameForTest::Create(context(), fuchsia::web::CreateFrameParams());
@@ -86,7 +91,7 @@ class ApiBindingsClientTest : public WebEngineBrowserTest {
 
   FrameForTest frame_;
   std::unique_ptr<NamedMessagePortConnectorFuchsia> connector_;
-  FakeApiBindingsImpl api_service_;
+  chromecast::bindings::BindingsManagerFuchsia api_service_;
   fidl::Binding<chromium::cast::ApiBindings> api_service_binding_;
   std::unique_ptr<ApiBindingsClient> client_;
 };
@@ -96,19 +101,13 @@ class ApiBindingsClientTest : public WebEngineBrowserTest {
 // sender.
 IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
   // Define the injected bindings.
-  std::vector<chromium::cast::ApiBinding> binding_list;
-  chromium::cast::ApiBinding echo_binding;
-  echo_binding.set_before_load_script(base::MemBufferFromString(
-      "window.echo = cast.__platform__.PortConnector.bind('echoService');",
-      "test"));
-  binding_list.emplace_back(std::move(echo_binding));
-  api_service_.set_bindings(std::move(binding_list));
+  api_service_.AddBinding(
+      "echoService",
+      "window.echo = cast.__platform__.PortConnector.bind('echoService');");
+
+  ScopedPortHandler echo_port_handler(api_service_, "echoService");
 
   StartClient(false, base::MakeExpectedNotRunClosure(FROM_HERE));
-
-  base::RunLoop post_message_responses_loop;
-  base::RepeatingClosure post_message_response_closure =
-      base::BarrierClosure(2, post_message_responses_loop.QuitClosure());
 
   // Navigate to a test page that makes use of the injected bindings.
   const GURL test_url = embedded_test_server()->GetURL("/echo.html");
@@ -120,46 +119,33 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
   std::string connect_message;
   std::unique_ptr<cast_api_bindings::MessagePort> connect_port;
   connector_->GetConnectMessage(&connect_message, &connect_port);
+  base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result>
+      post_frame_message_future;
   frame_->PostMessage(
       "*", CreateWebMessage(connect_message, std::move(connect_port)),
-      [&post_message_response_closure](
-          fuchsia::web::Frame_PostMessage_Result result) {
-        ASSERT_TRUE(result.is_response());
-        post_message_response_closure.Run();
-      });
+      CallbackToFitFunction(post_frame_message_future.GetCallback()));
 
-  // Connect to the echo service hosted by the page and send a ping to it.
-  fuchsia::web::WebMessage message;
-  message.set_data(base::MemBufferFromString("ping", "ping-msg"));
-  fuchsia::web::MessagePortPtr port =
-      api_service_.RunAndReturnConnectedPort("echoService").Bind();
-  port->PostMessage(std::move(message),
-                    [&post_message_response_closure](
-                        fuchsia::web::MessagePort_PostMessage_Result result) {
-                      ASSERT_TRUE(result.is_response());
-                      post_message_response_closure.Run();
-                    });
+  // Wait for the connected port.
+  std::unique_ptr<cast_api_bindings::MessagePort> echo_port =
+      echo_port_handler.RunUntilPortConnected();
+  ASSERT_TRUE(echo_port);
 
-  // Handle the ping response.
-  base::test::TestFuture<fuchsia::web::WebMessage> response;
-  port->ReceiveMessage(CallbackToFitFunction(response.GetCallback()));
-  ASSERT_TRUE(response.Wait());
+  cast_api_bindings::TestMessagePortReceiver receiver;
+  echo_port->SetReceiver(&receiver);
+  echo_port->PostMessage("ping");
 
-  std::optional<std::string> response_string =
-      base::StringFromMemBuffer(response.Get().data());
-  ASSERT_TRUE(response_string.has_value());
-  EXPECT_EQ("ack ping", *response_string);
+  receiver.RunUntilMessageCountEqual(1);
+  EXPECT_EQ(receiver.buffer()[0].first, "ack ping");
 
-  // Ensure that we've received acks for all messages.
-  post_message_responses_loop.Run();
+  // Ensure that we've received ack for the handshake post message.
+  EXPECT_TRUE(post_frame_message_future.Get().is_response());
 }
 
 IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest,
                        ClientDisconnectsBeforeFrameAttached) {
   bool error_signaled = false;
-  StartClient(
-      true, base::BindOnce([](bool* error_signaled) { *error_signaled = true; },
-                           base::Unretained(&error_signaled)));
+  StartClient(true, base::BindLambdaForTesting(
+                        [&error_signaled]() { error_signaled = true; }));
 
   // Verify that the error is signalled asynchronously.
   EXPECT_FALSE(error_signaled);

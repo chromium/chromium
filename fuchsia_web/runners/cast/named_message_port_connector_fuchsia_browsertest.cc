@@ -4,12 +4,14 @@
 
 #include "fuchsia_web/runners/cast/named_message_port_connector_fuchsia.h"
 
+#include <memory>
+#include <string>
 #include <string_view>
+#include <utility>
 
-#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
-#include "base/path_service.h"
-#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast/message_port/test_message_port_receiver.h"
@@ -86,7 +88,6 @@ class NamedMessagePortConnectorFuchsiaTest : public WebEngineBrowserTest {
     callback();
   }
 
-  std::unique_ptr<base::RunLoop> navigate_run_loop_;
   FrameForTest frame_;
   std::unique_ptr<NamedMessagePortConnectorFuchsia> connector_;
 };
@@ -98,27 +99,19 @@ IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, EndToEnd) {
   fuchsia::web::NavigationControllerPtr controller;
   frame_->GetNavigationController(controller.NewRequest());
 
-  std::string received_port_name;
-  CastMessagePort received_port;
-  base::RunLoop receive_port_run_loop;
-  connector_->RegisterPortHandler(base::BindRepeating(
-      [](std::string* received_port_name, CastMessagePort* received_port,
-         base::RunLoop* receive_port_run_loop, std::string_view port_name,
-         CastMessagePort port) -> bool {
-        *received_port_name = std::string(port_name);
-        *received_port = std::move(port);
-        receive_port_run_loop->Quit();
+  base::test::TestFuture<std::string, CastMessagePort> port_future;
+  connector_->RegisterPortHandler(base::BindLambdaForTesting(
+      [&](std::string_view port_name, CastMessagePort port) {
+        port_future.SetValue(std::string(port_name), std::move(port));
         return true;
-      },
-      base::Unretained(&received_port_name), base::Unretained(&received_port),
-      base::Unretained(&receive_port_run_loop)));
+      }));
 
   EXPECT_TRUE(LoadUrlAndExpectResponse(
       controller.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
   frame_.navigation_listener().RunUntilUrlEquals(test_url);
 
   // The JS code in connector.html should connect to the port "echo".
-  receive_port_run_loop.Run();
+  auto [received_port_name, received_port] = port_future.Take();
   EXPECT_EQ(received_port_name, "echo");
 
   cast_api_bindings::TestMessagePortReceiver test_receiver;
@@ -152,28 +145,20 @@ IN_PROC_BROWSER_TEST_F(NamedMessagePortConnectorFuchsiaTest, MultiplePorts) {
   fuchsia::web::NavigationControllerPtr controller;
   frame_->GetNavigationController(controller.NewRequest());
 
-  std::vector<CastMessagePort> received_ports;
-  base::RunLoop receive_port_run_loop;
-  connector_->RegisterPortHandler(base::BindRepeating(
-      [](std::vector<CastMessagePort>* received_ports,
-         base::RunLoop* receive_port_run_loop, std::string_view port_name,
-         CastMessagePort port) -> bool {
-        received_ports->push_back(std::move(port));
-
-        if (received_ports->size() == kExpectedPortCount)
-          receive_port_run_loop->Quit();
-
+  base::test::TestFuture<std::string, CastMessagePort> ports_future(
+      base::test::TestFutureMode::kQueue);
+  connector_->RegisterPortHandler(base::BindLambdaForTesting(
+      [&](std::string_view port_name, CastMessagePort port) {
+        ports_future.SetValue(std::string(port_name), std::move(port));
         return true;
-      },
-      base::Unretained(&received_ports),
-      base::Unretained(&receive_port_run_loop)));
+      }));
 
   EXPECT_TRUE(LoadUrlAndExpectResponse(
       controller.get(), fuchsia::web::LoadUrlParams(), test_url.spec()));
-  receive_port_run_loop.Run();
+  frame_.navigation_listener().RunUntilUrlEquals(test_url);
 
-  ASSERT_EQ(received_ports.size(), kExpectedPortCount);
-  for (CastMessagePort& message_port : received_ports) {
+  for (size_t i = 0; i < kExpectedPortCount; ++i) {
+    auto [port_name, message_port] = ports_future.Take();
     cast_api_bindings::TestMessagePortReceiver test_receiver;
     message_port->SetReceiver(&test_receiver);
     message_port->PostMessage("ping");

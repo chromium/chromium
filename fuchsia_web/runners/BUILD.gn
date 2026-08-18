@@ -183,7 +183,9 @@ test("cast_runner_integration_tests") {
     ":cast_runner_core",
     "//base/test:test_support",
     "//build:chromecast_buildflags",
+    "//chromecast/bindings:bindings_manager_fuchsia",
     "//components/cast/message_port",
+    "//components/cast/message_port:test_message_port_receiver",
     "//components/fuchsia_component_support:dynamic_component_host",
     "//fuchsia_web/common",
     "//fuchsia_web/common/test:run_all_integration_tests",
@@ -224,6 +226,7 @@ test("cast_runner_browsertests") {
   deps = [
     ":cast_runner_core",
     "//base/test:test_support",
+    "//chromecast/bindings:bindings_manager_fuchsia",
     "//components/cast/message_port",
     "//components/cast/message_port:test_message_port_receiver",
     "//content/public/browser",
