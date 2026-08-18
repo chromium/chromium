@@ -393,6 +393,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/intelligence/bwg/coordinator:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/model:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/ui:unit_tests",
+    "//ios/chrome/browser/intelligence/contextual_cueing:unit_tests",
     "//ios/chrome/browser/intelligence/enhanced_calendar/coordinator:unit_tests",
     "//ios/chrome/browser/intelligence/enhanced_calendar/model:unit_tests",
     "//ios/chrome/browser/intelligence/explain_with_gemini/coordinator:unit_tests",
