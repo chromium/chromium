@@ -154,7 +154,7 @@ public class ChildProcessLauncher {
     }
 
     /**
-     * Starts the child process and calls setup on it if {@param setupConnection} is true.
+     * Starts the child process and calls setup on it if {@code setupConnection} is true.
      *
      * @param setupConnection whether the setup should be performed on the connection once
      *     established.

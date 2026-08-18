@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * Represents an Element added to a {@link ConditionalState} that supplies a {@param <ProductT>}.
+ * Represents an Element added to a {@link ConditionalState} that supplies a {@code <ProductT>}.
  *
  * @param <ProductT> the type of object supplied when this Element is present.
  */

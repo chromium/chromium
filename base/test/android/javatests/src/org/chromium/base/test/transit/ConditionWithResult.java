@@ -10,7 +10,7 @@ import org.chromium.build.annotations.Nullable;
 import java.util.function.Supplier;
 
 /**
- * A {@link Condition} which supplies {@param <ResultT>} when fulfilled.
+ * A {@link Condition} which supplies {@code <ResultT>} when fulfilled.
  *
  * @param <ResultT> The type of the result supplied when the condition is fulfilled.
  */
@@ -66,7 +66,7 @@ public abstract class ConditionWithResult<ResultT> extends Condition
     }
 
     /**
-     * Same as {@link Condition#checkWithSuppliers()}, plus possibly produce a {@param <ResultT>}.
+     * Same as {@link Condition#checkWithSuppliers()}, plus possibly produce a {@code <ResultT>}.
      *
      * <p>Depending on #shouldRunOnUiThread(), called on the UI or the instrumentation thread.
      *
