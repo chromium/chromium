@@ -113,6 +113,17 @@ TEST_F(LayoutObjectTest, CommonAncestor) {
   EXPECT_EQ(child2_1_1->CommonAncestor(*child1_1), container);
   EXPECT_TRUE(child1_1->IsBeforeInPreOrder(*child2_1_1));
   EXPECT_FALSE(child2_1_1->IsBeforeInPreOrder(*child1_1));
+
+  // Perform the same set of tests as before, but now using the index-cache.
+  LayoutObject::IndexCache index_cache;
+  EXPECT_TRUE(child1->IsBeforeInPreOrder(*child2, &index_cache));
+  EXPECT_FALSE(child2->IsBeforeInPreOrder(*child1, &index_cache));
+  EXPECT_TRUE(child1->IsBeforeInPreOrder(*child1_1, &index_cache));
+  EXPECT_FALSE(child1_1->IsBeforeInPreOrder(*child1, &index_cache));
+  EXPECT_TRUE(child1_1->IsBeforeInPreOrder(*child2_1, &index_cache));
+  EXPECT_FALSE(child2_1->IsBeforeInPreOrder(*child1_1, &index_cache));
+  EXPECT_TRUE(child1_1->IsBeforeInPreOrder(*child2_1_1, &index_cache));
+  EXPECT_FALSE(child2_1_1->IsBeforeInPreOrder(*child1_1, &index_cache));
 }
 
 TEST_F(LayoutObjectTest, OwnerNodeId) {

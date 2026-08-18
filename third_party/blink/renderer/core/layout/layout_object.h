@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
 #include "third_party/blink/renderer/platform/graphics/visual_rect_flags.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -446,7 +447,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
  public:
   const LayoutObject* CommonAncestor(const LayoutObject& other) const;
 
-  bool IsBeforeInPreOrder(const LayoutObject& other) const;
+  using IndexCache = HeapHashMap<
+      Member<const LayoutObject>,
+      Member<GCedHeapHashMap<Member<const LayoutObject>, unsigned>>>;
+  bool IsBeforeInPreOrder(const LayoutObject& other,
+                          IndexCache* = nullptr) const;
 
   // The following functions are used when the layout tree hierarchy changes to
   // make sure layers get properly added and removed. Since containership can be

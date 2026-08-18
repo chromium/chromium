@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/types/optional_util.h"
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/animation/animation_trigger.h"
@@ -714,8 +715,21 @@ void FragmentBuilder::SwapOutOfFlowPositionedCandidates(
     HeapVector<LogicalOofPositionedNode>* candidates) {
   DCHECK(candidates->empty());
   if (oof_candidates_may_have_anchors_) {
-    auto compare = [](const LogicalOofPositionedNode& a,
-                      const LogicalOofPositionedNode& b) -> bool {
+    // IsBeforeInPreOrder needs to compare the (index) position of children,
+    // however the children are stored in a linked list. Due to this each call
+    // to IsBeforeInPreOrder is O(N) where N is the number of children.
+    //
+    // When we have a sufficiently large list to sort use an index cache which
+    // brings IsBeforeInPreOrder down to O(1)-ish.
+    //
+    // This prevents a worst case time complexity of O(N*N*logN).
+    constexpr wtf_size_t kIndexCacheMinSize = 32u;
+    std::optional<LayoutObject::IndexCache> index_cache;
+    if (oof_positioned_candidates_.size() > kIndexCacheMinSize) {
+      index_cache.emplace();
+    }
+    auto compare = [&index_cache](const LogicalOofPositionedNode& a,
+                                  const LogicalOofPositionedNode& b) -> bool {
       // Positioned elements with the deepest inline containing-block
       // should have layout performed first.
       const LayoutInline* a_inline = a.InlineContainer();
@@ -731,11 +745,19 @@ void FragmentBuilder::SwapOutOfFlowPositionedCandidates(
         }
       }
       return a.Node().GetLayoutBox()->IsBeforeInPreOrder(
-          *b.Node().GetLayoutBox());
+          *b.Node().GetLayoutBox(), base::OptionalToPtr(index_cache));
     };
     std::sort(oof_positioned_candidates_.begin(),
               oof_positioned_candidates_.end(), compare);
     oof_candidates_may_have_anchors_ = false;
+
+    // To prevent floating garbage eagerly clear the maps in the index cache.
+    if (index_cache) {
+      for (auto& map : index_cache->Values()) {
+        map->clear();
+      }
+      index_cache->clear();
+    }
   }
   std::swap(oof_positioned_candidates_, *candidates);
 }

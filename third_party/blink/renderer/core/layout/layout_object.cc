@@ -1101,7 +1101,8 @@ const LayoutObject* LayoutObject::CommonAncestor(
   return CommonAncestorInternal(this, &other).common_ancestor;
 }
 
-bool LayoutObject::IsBeforeInPreOrder(const LayoutObject& other) const {
+bool LayoutObject::IsBeforeInPreOrder(const LayoutObject& other,
+                                      IndexCache* index_cache) const {
   NOT_DESTROYED();
   DCHECK_NE(this, &other);
   CommonAncestorResult result = CommonAncestorInternal(this, &other);
@@ -1117,6 +1118,26 @@ bool LayoutObject::IsBeforeInPreOrder(const LayoutObject& other) const {
 
   DCHECK(result.last);
   DCHECK(result.other_last);
+
+  if (index_cache) {
+    auto add_result = index_cache->insert(result.common_ancestor, nullptr);
+    if (add_result.is_new_entry) {
+      // Build up the index cache for this layout-object's children this
+      // prevents the O(N) loop below if called multiple times.
+      auto* index_map = MakeGarbageCollected<
+          GCedHeapHashMap<Member<const LayoutObject>, unsigned>>();
+      unsigned index = 0;
+      for (const LayoutObject* child = result.common_ancestor->SlowFirstChild();
+           child; child = child->NextSibling()) {
+        index_map->insert(child, index++);
+      }
+      add_result.stored_value->value = index_map;
+    }
+
+    const auto* index_map = add_result.stored_value->value.Get();
+    return index_map->find(result.last)->value <
+           index_map->find(result.other_last)->value;
+  }
 
   // Try and walk towards each other, if we encounter the other we are before.
   const LayoutObject* forward = result.last;
