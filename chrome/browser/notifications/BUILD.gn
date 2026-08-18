@@ -339,6 +339,9 @@ source_set("impl") {
   }
 
   if (enable_extensions_core) {
+    if (is_android) {
+      deps += [ "//chrome/browser/enterprise" ]
+    }
     deps += [ "//chrome/browser/extensions/api/notifications" ]
   }
 

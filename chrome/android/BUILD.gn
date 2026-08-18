@@ -3117,6 +3117,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/multiwindow/TabbedStartupWindowPolicyDelegate.java",
       "java/src/org/chromium/chrome/browser/navigation_predictor/NavigationPredictorBridge.java",
       "java/src/org/chromium/chrome/browser/notifications/ActionInfo.java",
+      "java/src/org/chromium/chrome/browser/notifications/ExtensionRequestNotificationHelper.java",
       "java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java",
       "java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java",
       "java/src/org/chromium/chrome/browser/notifications/NotificationTriggerScheduler.java",

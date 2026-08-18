@@ -27,6 +27,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/enterprise:test_support",
     "//components/enterprise/common/proto:extensions_workflow_events_proto_gen",
+    "//components/sync_preferences:test_support",
     "//testing/gtest",
   ]
 
@@ -37,6 +38,9 @@ source_set("unit_tests") {
       "extension_request/extension_request_report_generator_unittest.cc",
       "real_time_report_generator_unittest.cc",
     ]
+    if (is_android) {
+      sources += [ "extension_request/extension_request_notification_handler_android_unittest.cc" ]
+    }
   }
 
   if (is_chromeos) {

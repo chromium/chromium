@@ -7,6 +7,8 @@
 #include <array>
 #include <memory>
 
+#include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -26,13 +28,22 @@
 namespace enterprise_reporting {
 namespace {
 
-constexpr char kApprovedNotificationId[] = "extension_approved_notificaiton";
-constexpr char kRejectedNotificationId[] = "extension_rejected_notificaiton";
-constexpr char kInstalledNotificationId[] = "extension_installed_notificaiton";
+constexpr char kApprovedNotificationId[] = "extension_approved_notification";
+constexpr char kRejectedNotificationId[] = "extension_rejected_notification";
+constexpr char kInstalledNotificationId[] = "extension_installed_notification";
 constexpr char kExtensionRequestNotifierId[] =
     "chrome_browser_cloud_management_extension_request";
 constexpr char kChromeWebstoreUrl[] =
     "https://chrome.google.com/webstore/detail/";
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr NotificationHandler::Type kNotificationType =
+    NotificationHandler::Type::EXTENSION_REQUEST;
+constexpr char kAndroidNotificationIdPrefix[] = "ext_req|";
+#else
+constexpr NotificationHandler::Type kNotificationType =
+    NotificationHandler::Type::TRANSIENT;
+#endif
 
 // The elements order of array below must match the order in enum
 // ExtensionRequestNotification::NotifyType.
@@ -62,6 +73,46 @@ ExtensionRequestNotification::ExtensionRequestNotification(
 
 ExtensionRequestNotification::~ExtensionRequestNotification() = default;
 
+std::string ExtensionRequestNotification::GetNotificationId() const {
+  return CreateNotificationId(notify_type_, extension_ids_);
+}
+
+// Notification IDs on Android are formatted as:
+//   "ext_req|<notification_type_id>|<comma_separated_extension_ids>"
+// static
+std::string ExtensionRequestNotification::CreateNotificationId(
+    NotifyType notify_type,
+    const ExtensionIds& extension_ids) {
+#if BUILDFLAG(IS_ANDROID)
+  return std::string(kAndroidNotificationIdPrefix) +
+         kNotificationIds[notify_type] + "|" +
+         base::JoinString(extension_ids, ",");
+#else
+  return kNotificationIds[notify_type];
+#endif
+}
+
+// static
+std::vector<std::string> ExtensionRequestNotification::ParseExtensionIds(
+    const std::string& notification_id) {
+#if BUILDFLAG(IS_ANDROID)
+  DCHECK(base::StartsWith(notification_id, kAndroidNotificationIdPrefix));
+  if (!base::StartsWith(notification_id, kAndroidNotificationIdPrefix)) {
+    return {};
+  }
+  size_t last_separator = notification_id.rfind('|');
+  if (last_separator == std::string::npos ||
+      last_separator == notification_id.size() - 1) {
+    return {};
+  }
+  std::string ids_str = notification_id.substr(last_separator + 1);
+  return base::SplitString(ids_str, ",", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
+#else
+  return {};
+#endif
+}
+
 void ExtensionRequestNotification::Show(NotificationCloseCallback callback) {
   CHECK(!extension_ids_.empty());
 
@@ -72,14 +123,19 @@ void ExtensionRequestNotification::Show(NotificationCloseCallback callback) {
   const std::u16string body = l10n_util::GetPluralStringFUTF16(
       kNotificationBodies[notify_type_], extension_ids_.size());
   GURL original_url("https://chrome.google.com/webstore");
+#if BUILDFLAG(IS_ANDROID)
+  int icon_size = message_center::kNotificationIconSize;
+#else
+  int icon_size = message_center::kSmallImageSize;
+#endif
   auto icon = ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled() ? vector_icons::kDomainIcon
                                         : vector_icons::kBusinessOldIcon,
-      ui::kColorIcon, message_center::kSmallImageSize);
+      ui::kColorIcon, icon_size);
 
   notification_ = std::make_unique<message_center::Notification>(
-      message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationIds[notify_type_],
-      title, body, icon, /*source=*/std::u16string(), original_url,
+      message_center::NOTIFICATION_TYPE_SIMPLE, GetNotificationId(), title,
+      body, icon, /*source=*/std::u16string(), original_url,
       message_center::NotifierId(message_center::NotifierType::APPLICATION,
                                  kExtensionRequestNotifierId),
       message_center::RichNotificationData(),
@@ -88,12 +144,12 @@ void ExtensionRequestNotification::Show(NotificationCloseCallback callback) {
   notification_->set_never_timeout(true);
 
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification_, nullptr);
+      kNotificationType, *notification_, nullptr);
 }
 
 void ExtensionRequestNotification::CloseNotification() {
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
-      NotificationHandler::Type::TRANSIENT, kNotificationIds[notify_type_]);
+      kNotificationType, GetNotificationId());
   notification_.reset();
 }
 

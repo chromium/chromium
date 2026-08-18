@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_notification.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -26,6 +27,10 @@ class ExtensionRequestObserver
   ~ExtensionRequestObserver() override;
   ExtensionRequestObserver(const ExtensionRequestObserver&) = delete;
   ExtensionRequestObserver& operator=(const ExtensionRequestObserver&) = delete;
+
+  static void RemoveExtensionsFromPendingList(
+      Profile* profile,
+      const std::vector<std::string>& extension_ids);
 
   bool IsReportEnabled();
   void EnableReport(ReportTrigger trigger);
@@ -50,9 +55,6 @@ class ExtensionRequestObserver
                             bool by_user);
 #endif
 
-  void RemoveExtensionsFromPendingList(
-      const std::vector<std::string>& extension_ids);
-
   std::array<std::unique_ptr<ExtensionRequestNotification>,
              ExtensionRequestNotification::kNumberOfTypes>
       notifications_;
@@ -60,7 +62,7 @@ class ExtensionRequestObserver
   raw_ptr<Profile> profile_;
 
   PrefChangeRegistrar pref_change_registrar_;
-  bool closing_notification_and_deleting_requests_ = false;
+  base::DictValue previous_pending_requests_;
   ReportTrigger report_trigger_;
 
   base::WeakPtrFactory<ExtensionRequestObserver> weak_factory_{this};

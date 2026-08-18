@@ -379,6 +379,9 @@ source_set("enterprise") {
       "reporting/extension_request/extension_request_policy_handler.h",
       "reporting/extension_request/extension_request_report_generator.h",
     ]
+    if (is_android) {
+      public += [ "reporting/extension_request/extension_request_notification_handler_android.h" ]
+    }
     public_deps += [
       "//extensions/common",
       "//ui/message_center/public/cpp",
@@ -863,6 +866,11 @@ source_set("impl") {
       "reporting/extension_request/extension_request_policy_handler.cc",
       "reporting/extension_request/extension_request_report_generator.cc",
     ]
+    if (is_android) {
+      sources += [
+        "reporting/extension_request/extension_request_notification_handler_android.cc",
+      ]
+    }
     deps += [
       "//chrome/browser/extensions",
       "//components/vector_icons",

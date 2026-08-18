@@ -374,7 +374,8 @@ void NotificationPlatformBridgeAndroid::Display(
                              : false;
   // Extension notifications never show UA buttons like "Unsubscribe" or
   // "Site Settings".
-  if (notification_type == NotificationHandler::Type::EXTENSION) {
+  if (notification_type == NotificationHandler::Type::EXTENSION ||
+      notification_type == NotificationHandler::Type::EXTENSION_REQUEST) {
     skip_ua_buttons = true;
   }
 
