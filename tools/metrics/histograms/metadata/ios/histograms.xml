@@ -8756,7 +8756,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WidgetsForMIM.DeletedAccountUiDisplayed"
-    enum="IOSWidgetKitDeletedUiCount" expires_after="2026-10-01">
+    enum="IOSWidgetKitDeletedUiCount" expires_after="2027-02-18">
   <owner>fedegermi@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
