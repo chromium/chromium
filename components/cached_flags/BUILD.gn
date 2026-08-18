@@ -10,6 +10,7 @@ android_library("java") {
     "//base:base_cached_flags_java",
     "//base:base_java",
     "//base:base_shared_preferences_java",
+    "//base:tristate_java",
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
