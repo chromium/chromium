@@ -38,6 +38,8 @@
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/browser/db/v4_embedded_test_server_util.h"
 #include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#include "components/safe_browsing/core/browser/db/v5_embedded_test_server_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -184,11 +186,12 @@ class SafeBrowsingTriggeredPopupBlockerDisabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// This test harness does not mock the safe browsing v4 hash protocol manager.
-// Instead, it mocks actual HTTP responses from the v4 server by redirecting
+// This test harness does not mock the safe browsing hash protocol manager.
+// Instead, it mocks actual HTTP responses from the server by redirecting
 // requests to a custom test server with a special full hash request handler.
 class SafeBrowsingTriggeredInterceptingBrowserTest
-    : public SafeBrowsingTriggeredPopupBlockerBrowserTest {
+    : public SafeBrowsingTriggeredPopupBlockerBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   SafeBrowsingTriggeredInterceptingBrowserTest()
       : safe_browsing_server_(
@@ -200,6 +203,18 @@ class SafeBrowsingTriggeredInterceptingBrowserTest
       const SafeBrowsingTriggeredInterceptingBrowserTest&) = delete;
 
   ~SafeBrowsingTriggeredInterceptingBrowserTest() override = default;
+
+  bool UseV5() const { return GetParam(); }
+
+  void FinalizeFeatures() override {
+    if (UseV5()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          safe_browsing::kLocalListsUseSBv5);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          safe_browsing::kLocalListsUseSBv5);
+    }
+  }
 
   // SafeBrowsingTriggeredPopupBlockerBrowserTest:
   void SetUp() override {
@@ -220,8 +235,9 @@ class SafeBrowsingTriggeredInterceptingBrowserTest
     return safe_browsing_server_.get();
   }
 
-  safe_browsing::ThreatMatch GetAbusiveMatch(const GURL& url,
-                                             const std::string& abusive_value) {
+  safe_browsing::ThreatMatch GetAbusiveMatchV4(
+      const GURL& url,
+      const std::string& abusive_value) {
     safe_browsing::ThreatMatch threat_match;
     threat_match.set_threat_type(safe_browsing::SUBRESOURCE_FILTER);
     threat_match.set_platform_type(
@@ -240,8 +256,23 @@ class SafeBrowsingTriggeredInterceptingBrowserTest
     return threat_match;
   }
 
+  safe_browsing::V5::FullHash GetAbusiveMatchV5(const GURL& url,
+                                                bool is_warn_only) {
+    safe_browsing::V5::FullHash full_hash;
+    full_hash.set_full_hash(
+        safe_browsing::SBProtocolManagerUtil::GetFullHash(url));
+    auto* detail = full_hash.add_full_hash_details();
+    detail->set_threat_type(
+        safe_browsing::V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION);
+    if (is_warn_only) {
+      detail->add_attributes(safe_browsing::V5::ThreatAttribute::CANARY);
+    }
+    return full_hash;
+  }
+
  private:
   std::unique_ptr<net::test_server::EmbeddedTestServer> safe_browsing_server_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerDisabledTest,
@@ -594,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                                 {blocked_content::kAbusiveEnforceMessage});
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredInterceptingBrowserTest,
+IN_PROC_BROWSER_TEST_P(SafeBrowsingTriggeredInterceptingBrowserTest,
                        AbusiveMetadata) {
   const char kWindowOpenPath[] = "/subresource_filter/window_open.html";
   const GURL no_match_url(
@@ -605,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredInterceptingBrowserTest,
       embedded_test_server()->GetURL("warn.com", kWindowOpenPath));
 
   // Mark the prefixes as bad so that safe browsing will request full hashes
-  // from the v4 server. Even mark the no_match URL as bad just to test that the
+  // from the server. Even mark the no_match URL as bad just to test that the
   // custom server handler is working properly.
   database_helper()->LocallyMarkPrefixAsBad(
       no_match_url, safe_browsing::GetUrlSubresourceFilterId());
@@ -614,14 +645,21 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredInterceptingBrowserTest,
   database_helper()->LocallyMarkPrefixAsBad(
       enforce_url, safe_browsing::GetUrlSubresourceFilterId());
 
-  // Register the V4 server to handle full hash requests for the two URLs, with
-  // the given ThreatMatches, then start accepting connections on the v4 server.
-  // Then, start the server.
-  std::map<GURL, safe_browsing::ThreatMatch> response_map{
-      {enforce_url, GetAbusiveMatch(enforce_url, "enforce")},
-      {warn_url, GetAbusiveMatch(warn_url, "warn")}};
-  safe_browsing::StartRedirectingV4RequestsForTesting(response_map,
-                                                      safe_browsing_server());
+  // Register the test server to handle full hash requests for the URLs, with
+  // the given matches, then start accepting connections on the server.
+  if (UseV5()) {
+    std::map<GURL, safe_browsing::V5::FullHash> response_map{
+        {enforce_url, GetAbusiveMatchV5(enforce_url, /*is_warn_only=*/false)},
+        {warn_url, GetAbusiveMatchV5(warn_url, /*is_warn_only=*/true)}};
+    safe_browsing::StartRedirectingV5RequestsForTesting(response_map,
+                                                        safe_browsing_server());
+  } else {
+    std::map<GURL, safe_browsing::ThreatMatch> response_map{
+        {enforce_url, GetAbusiveMatchV4(enforce_url, "enforce")},
+        {warn_url, GetAbusiveMatchV4(warn_url, "warn")}};
+    safe_browsing::StartRedirectingV4RequestsForTesting(response_map,
+                                                        safe_browsing_server());
+  }
   safe_browsing_server()->StartAcceptingConnections();
 
   // URL with no match should not trigger the blocker.
@@ -650,6 +688,10 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredInterceptingBrowserTest,
                                   {blocked_content::kAbusiveEnforceMessage});
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SafeBrowsingTriggeredInterceptingBrowserTest,
+                         ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                        AbusivePagesAreNotPutIntoBackForwardCache) {
