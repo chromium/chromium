@@ -70,6 +70,12 @@ constexpr CGFloat kLogoSize = 22;
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_mediator, base::NotFatalUntil::M156);
+}
+
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   self.started = YES;
   // Create and configure the mediator
