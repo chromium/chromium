@@ -58,12 +58,10 @@ ASH_EXPORT scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
     gpu::SharedImageUsageSet shared_image_usage,
     gfx::BufferUsage buffer_usage);
 
-// Creates a UiResource of a given `size` and `format` using the SharedImage
-// that `mailbox` (which must be non-zero) is referencing. The created
-// UiResource does not own that SharedImage.
+// Creates a UiResource wrapping the `shared_image` (which must be non-null).
+// The created UiResource does not own `shared_image`.
 ASH_EXPORT std::unique_ptr<UiResource> CreateUiResource(
     UiSourceId ui_source_id,
-    bool is_overlay_candidate,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token);
 

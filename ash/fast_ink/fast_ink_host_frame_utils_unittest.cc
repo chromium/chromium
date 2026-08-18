@@ -9,11 +9,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/frame_sink/ui_resource.h"
 #include "ash/frame_sink/ui_resource_manager.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -197,14 +199,73 @@ TEST_F(FastInkHostCreateFrameUtilTest, FrameDamage_AutoModeOn) {
             gfx::Rect(frame->size_in_pixels()));
 }
 
+TEST_F(FastInkHostCreateFrameUtilTest, LowPriorityHintKillswitch) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kFastInkHostLowPriorityHint);
+
+    auto frame_no_auto = fast_ink_internal::CreateCompositorFrame(
+        viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
+        kTestTotalDamageRectInDIP, /*auto_update=*/false, *host_window_,
+        &resource_manager_, shared_image_, gpu::SyncToken());
+
+    EXPECT_FALSE(frame_no_auto->resource_list.back().GetIsOverlayCandidate());
+    auto* texture_quad_no_auto = viz::TextureDrawQuad::MaterialCast(
+        frame_no_auto->render_pass_list.front()->quad_list.back());
+    EXPECT_EQ(texture_quad_no_auto->overlay_priority_hint,
+              viz::OverlayPriority::kRegular);
+
+    auto frame_auto = fast_ink_internal::CreateCompositorFrame(
+        viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
+        kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
+        &resource_manager_, shared_image_, gpu::SyncToken());
+
+    EXPECT_TRUE(frame_auto->resource_list.back().GetIsOverlayCandidate());
+    auto* texture_quad_auto = viz::TextureDrawQuad::MaterialCast(
+        frame_auto->render_pass_list.front()->quad_list.back());
+    EXPECT_EQ(texture_quad_auto->overlay_priority_hint,
+              viz::OverlayPriority::kRegular);
+  }
+
+  resource_manager_.ClearAvailableResources();
+  resource_manager_.LostExportedResources();
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kFastInkHostLowPriorityHint);
+
+    auto frame_no_auto = fast_ink_internal::CreateCompositorFrame(
+        viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
+        kTestTotalDamageRectInDIP, /*auto_update=*/false, *host_window_,
+        &resource_manager_, shared_image_, gpu::SyncToken());
+
+    auto* texture_quad_no_auto = viz::TextureDrawQuad::MaterialCast(
+        frame_no_auto->render_pass_list.front()->quad_list.back());
+    EXPECT_EQ(texture_quad_no_auto->overlay_priority_hint,
+              viz::OverlayPriority::kLow);
+
+    auto frame_auto = fast_ink_internal::CreateCompositorFrame(
+        viz::BeginFrameAck::CreateManualAckWithDamage(), kTestContentRectInDIP,
+        kTestTotalDamageRectInDIP, /*auto_update=*/true, *host_window_,
+        &resource_manager_, shared_image_, gpu::SyncToken());
+
+    auto* texture_quad_auto = viz::TextureDrawQuad::MaterialCast(
+        frame_auto->render_pass_list.front()->quad_list.back());
+    EXPECT_EQ(texture_quad_auto->overlay_priority_hint,
+              viz::OverlayPriority::kRegular);
+  }
+}
+
 TEST_F(FastInkHostCreateFrameUtilTest, OnlyCreateNewResourcesWhenNecessary) {
   // Populate resources in the resource manager.
   // Two resources from the same SharedImage
   for (int i = 0; i < 2; i++) {
     resource_manager_.OfferResourceForTesting(
         fast_ink_internal::CreateUiResource(
-            fast_ink_internal::kFastInkUiSourceId,
-            /*is_overlay_candidate=*/false, shared_image_, gpu::SyncToken()));
+            fast_ink_internal::kFastInkUiSourceId, shared_image_,
+            gpu::SyncToken()));
   }
 
   // Two resources of the different size / shared image.
@@ -214,8 +275,8 @@ TEST_F(FastInkHostCreateFrameUtilTest, OnlyCreateNewResourcesWhenNecessary) {
         size, shared_image_->usage(), gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
     resource_manager_.OfferResourceForTesting(
         fast_ink_internal::CreateUiResource(
-            fast_ink_internal::kFastInkUiSourceId,
-            /*is_overlay_candidate=*/false, shared_image, gpu::SyncToken()));
+            fast_ink_internal::kFastInkUiSourceId, shared_image,
+            gpu::SyncToken()));
   }
 
   EXPECT_EQ(resource_manager_.available_resources_count(), 4u);

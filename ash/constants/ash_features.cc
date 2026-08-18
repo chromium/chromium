@@ -811,6 +811,10 @@ BASE_FEATURE(kViewTreeHostRootViewNewBackend,
 // Enables the new backend for `FastInkHost` backend.
 BASE_FEATURE(kFastInkHostNewBackend, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables low priority hint instead of overlay candidate override in
+// `FastInkHost`.
+BASE_FEATURE(kFastInkHostLowPriorityHint, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the new backend for `RoundedDisplayHost` backend.
 BASE_FEATURE(kRoundedDisplayHostNewBackend, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2634,6 +2638,10 @@ bool IsViewTreeHostNewBackendEnabled() {
 
 bool IsFastInkHostNewBackendEnabled() {
   return base::FeatureList::IsEnabled(kFastInkHostNewBackend);
+}
+
+bool IsFastInkHostLowPriorityHintEnabled() {
+  return base::FeatureList::IsEnabled(kFastInkHostLowPriorityHint);
 }
 
 bool IsRoundedDisplayHostNewBackendEnabled() {

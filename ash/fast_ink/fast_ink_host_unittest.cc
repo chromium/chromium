@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/fast_ink/fast_ink_host_test_api.h"
 #include "ash/frame_sink/frame_sink_holder.h"
 #include "ash/frame_sink/test/frame_sink_host_test_base.h"
@@ -20,6 +21,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -114,8 +116,15 @@ TEST_P(FastInkHostFrameSubmissionTest,
   EXPECT_EQ(shared_quad_state->visible_quad_layer_rect,
             params.expected_quad_layer_rect);
 
-  EXPECT_EQ(frame.resource_list.back().GetIsOverlayCandidate(),
-            params.auto_update);
+  auto* texture_quad = viz::TextureDrawQuad::MaterialCast(quad);
+  if (features::IsFastInkHostLowPriorityHintEnabled()) {
+    EXPECT_EQ(texture_quad->overlay_priority_hint,
+              params.auto_update ? viz::OverlayPriority::kRegular
+                                 : viz::OverlayPriority::kLow);
+  } else {
+    EXPECT_EQ(frame.resource_list.back().GetIsOverlayCandidate(),
+              params.auto_update);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

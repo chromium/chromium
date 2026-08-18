@@ -44,6 +44,8 @@ class ASH_EXPORT UiResource {
   UiSourceId ui_source_id = kInvalidUiSourceId;
 
   // If the candidate should be promoted to use hw overlays.
+  // TODO(crbug.com/402302302): Remove once `kFastInkHostLowPriorityHint`
+  // killswitch is removed.
   bool is_overlay_candidate = false;
 
   // If the textures represented by the resource is damaged.

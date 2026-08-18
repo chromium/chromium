@@ -7,8 +7,10 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/frame_sink/ui_resource.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -143,6 +145,41 @@ TEST_F(UiResourceManagerTest, PrepareResourceForExporting) {
   // We exported one resources leaving two resources as available.
   EXPECT_EQ(resource_manager_->exported_resources_count(), 1u);
   EXPECT_EQ(resource_manager_->available_resources_count(), 2u);
+}
+
+TEST_F(UiResourceManagerTest, PrepareResourceForExporting_Killswitch) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kFastInkHostLowPriorityHint);
+
+    auto resource = MakeResource(kDefaultSize);
+    resource->is_overlay_candidate = true;
+    // ClientSharedImage in MakeResource is created without
+    // SHARED_IMAGE_USAGE_SCANOUT.
+    viz::TransferableResource transferable_resource =
+        resource_manager_->OfferAndPrepareResourceForExport(
+            std::move(resource));
+    // When feature is enabled, override is not applied, so is_overlay_candidate
+    // is false (from SharedImage usage).
+    EXPECT_FALSE(transferable_resource.GetIsOverlayCandidate());
+  }
+
+  resource_manager_->LostExportedResources();
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kFastInkHostLowPriorityHint);
+
+    auto resource = MakeResource(kDefaultSize);
+    resource->is_overlay_candidate = true;
+    viz::TransferableResource transferable_resource =
+        resource_manager_->OfferAndPrepareResourceForExport(
+            std::move(resource));
+    // When feature is disabled (killswitch active), override is applied.
+    EXPECT_TRUE(transferable_resource.GetIsOverlayCandidate());
+  }
 }
 
 TEST_F(UiResourceManagerTest, CannotReuseExportedResourcesTillReclaimed) {

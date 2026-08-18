@@ -4,6 +4,7 @@
 
 #include "ash/fast_ink/fast_ink_host_frame_utils.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/frame_sink/frame_sink_host.h"
 #include "ash/frame_sink/ui_resource.h"
 #include "base/check.h"
@@ -27,14 +28,12 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 
-namespace ash {
-namespace fast_ink_internal {
+namespace ash::fast_ink_internal {
 namespace {
 
 // Get a UiResource to paint the texture. We try to reuse any
 // existing resources in `resource_manager` before creating a new resource.
 std::unique_ptr<UiResource> AcquireUiResource(
-    bool is_overlay_candidate,
     UiResourceManager* resource_manager,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
@@ -45,8 +44,7 @@ std::unique_ptr<UiResource> AcquireUiResource(
   if (resource) {
     CHECK(shared_image == resource->client_shared_image());
   } else {
-    resource = CreateUiResource(kFastInkUiSourceId, is_overlay_candidate,
-                                shared_image, sync_token);
+    resource = CreateUiResource(kFastInkUiSourceId, shared_image, sync_token);
   }
 
   return resource;
@@ -58,6 +56,7 @@ void AppendQuad(const viz::TransferableResource& resource,
                 const gfx::Rect& quad_rect,
                 const gfx::Size& buffer_size,
                 const gfx::Transform& buffer_to_target_transform,
+                bool auto_update,
                 viz::CompositorRenderPass& render_pass_out) {
   viz::SharedQuadState* quad_state =
       render_pass_out.CreateAndAppendSharedQuadState();
@@ -82,6 +81,10 @@ void AppendQuad(const viz::TransferableResource& resource,
       /*nearest=*/false,
       /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
       /*is_tex_coords_normalized=*/false);
+
+  if (features::IsFastInkHostLowPriorityHintEnabled() && !auto_update) {
+    texture_quad->overlay_priority_hint = viz::OverlayPriority::kLow;
+  }
 }
 
 }  // namespace
@@ -109,7 +112,6 @@ scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
 
 std::unique_ptr<UiResource> CreateUiResource(
     UiSourceId ui_source_id,
-    bool is_overlay_candidate,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
   DCHECK(ui_source_id > 0);
@@ -127,7 +129,6 @@ std::unique_ptr<UiResource> CreateUiResource(
 
   resource->sync_token = sync_token;
   resource->damaged = true;
-  resource->is_overlay_candidate = is_overlay_candidate;
   resource->ui_source_id = ui_source_id;
   return resource;
 }
@@ -155,12 +156,14 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   // method.
   CHECK(shared_image);
 
-  // In auto_update mode, we use hardware overlays to render the content.
-  auto resource = AcquireUiResource(auto_update, resource_manager, shared_image,
-                                    sync_token);
+  auto resource = AcquireUiResource(resource_manager, shared_image, sync_token);
 
   if (!resource) {
     return nullptr;
+  }
+
+  if (!features::IsFastInkHostLowPriorityHintEnabled()) {
+    resource->is_overlay_candidate = auto_update;
   }
 
   if (resource->damaged) {
@@ -219,8 +222,9 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
   render_pass->SetNew(viz::CompositorRenderPassId{1}, output_rect, damage_rect,
                       buffer_to_target_transform);
 
+  // In auto_update mode, we use hardware overlays to render the content.
   AppendQuad(transferable_resource, output_rect, quad_rect, buffer_size,
-             buffer_to_target_transform, *render_pass);
+             buffer_to_target_transform, auto_update, *render_pass);
 
   frame->resource_list.push_back(std::move(transferable_resource));
   frame->render_pass_list.push_back(std::move(render_pass));
@@ -234,5 +238,4 @@ scoped_refptr<viz::RasterContextProvider> GetContextProvider() {
       ->SharedMainThreadRasterContextProvider();
 }
 
-}  // namespace fast_ink_internal
-}  // namespace ash
+}  // namespace ash::fast_ink_internal

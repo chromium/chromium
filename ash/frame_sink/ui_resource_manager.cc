@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/frame_sink/ui_resource.h"
 #include "base/check.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -91,14 +92,20 @@ viz::TransferableResource UiResourceManager::OfferAndPrepareResourceForExport(
     std::unique_ptr<UiResource> resource) {
   CHECK(resource);
 
-  viz::TransferableResource transferable_resource =
-      viz::TransferableResource::Make(
-          resource->client_shared_image(),
-          viz::TransferableResource::ResourceSource::kUI, resource->sync_token,
-          /*override=*/
-          {
-              .is_overlay_candidate = resource->is_overlay_candidate,
-          });
+  viz::TransferableResource transferable_resource;
+  if (!features::IsFastInkHostLowPriorityHintEnabled()) {
+    transferable_resource = viz::TransferableResource::Make(
+        resource->client_shared_image(),
+        viz::TransferableResource::ResourceSource::kUI, resource->sync_token,
+        /*override=*/
+        {
+            .is_overlay_candidate = resource->is_overlay_candidate,
+        });
+  } else {
+    transferable_resource = viz::TransferableResource::Make(
+        resource->client_shared_image(),
+        viz::TransferableResource::ResourceSource::kUI, resource->sync_token);
+  }
 
   transferable_resource.id = id_generator_.GenerateNextId();
   exported_resources_pool_[transferable_resource.id] = std::move(resource);
