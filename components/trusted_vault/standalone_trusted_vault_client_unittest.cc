@@ -266,8 +266,16 @@ TEST_F(StandaloneTrustedVaultClientTest,
   EXPECT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kServerKey));
 }
 
+// TODO(crbug.com/543720939): Flaky on Mac trybots.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShouldFollowKeyRotationOnUserEnrolment \
+  DISABLED_ShouldFollowKeyRotationOnUserEnrolment
+#else
+#define MAYBE_ShouldFollowKeyRotationOnUserEnrolment \
+  ShouldFollowKeyRotationOnUserEnrolment
+#endif
 TEST_F(StandaloneTrustedVaultClientTest,
-       ShouldFollowKeyRotationOnUserEnrolment) {
+       MAYBE_ShouldFollowKeyRotationOnUserEnrolment) {
   std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
   WaitForIdle(client.get());
