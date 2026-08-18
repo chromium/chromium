@@ -5,6 +5,7 @@
 package org.chromium.ui.test.util;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.greaterThan;
@@ -308,6 +309,31 @@ public class ViewUtils {
                 }
                 Assert.assertTrue("Span index out of bounds", spans.length > spanIndex);
                 spans[spanIndex].onClick(view);
+            }
+        };
+    }
+
+    /**
+     * Creates a {@link ViewAction} that performs an accessibility action on the matched view.
+     *
+     * @param action The accessibility action to perform (e.g. AccessibilityNodeInfo.ACTION_CLICK).
+     * @return A {@link ViewAction} on the matching view.
+     */
+    public static ViewAction performAccessibilityAction(int action) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isDisplayed();
+            }
+
+            @Override
+            public String getDescription() {
+                return "perform accessibility action " + action;
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                view.performAccessibilityAction(action, null);
             }
         };
     }

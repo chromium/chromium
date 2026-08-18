@@ -21,7 +21,11 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
@@ -31,6 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -50,13 +55,21 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BottomBarTestUtils;
 import org.chromium.components.javascript_dialogs.JavascriptTabModalDialog;
+import org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper;
+import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.accessibility.AccessibilityStateTestHelper;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.ViewUtils;
 
+import java.util.Collections;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -104,6 +117,160 @@ public class JavascriptTabModalDialogTest {
         Assert.assertTrue(
                 "JavaScript execution should continue after closing prompt.",
                 scriptEvent.waitUntilHasValue());
+    }
+
+    private int findNodeIdWithText(WebContentsAccessibilityImpl wcax, int nodeId, String text) {
+        AccessibilityNodeInfoCompat node = wcax.createAccessibilityNodeInfo(nodeId);
+        if (node == null) return -1;
+        CharSequence nodeText = node.getText();
+        if (nodeText != null && nodeText.toString().contains(text)) {
+            return nodeId;
+        }
+        CharSequence contentDesc = node.getContentDescription();
+        if (contentDesc != null && contentDesc.toString().contains(text)) {
+            return nodeId;
+        }
+        int[] children = wcax.getChildIdsForTesting(nodeId);
+        if (children != null) {
+            for (int childId : children) {
+                int found = findNodeIdWithText(wcax, childId, text);
+                if (found != -1) return found;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Verifies that after dismissing an alert modal dialog, accessibility focus is restored to the
+     * previously focused web element, and an accessibility focus event is received.
+     */
+    @Test
+    @MediumTest
+    @Feature({"Browser", "Main"})
+    public void testAlertModalDialog_restoresAccessibilityFocus() throws Throwable {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccessibilityStateTestHelper.setEventMaskForTesting(
+                            AccessibilityState.EVENT_TYPE_MASK_ALL);
+                    AccessibilityStateTestHelper.setIsAnyAccessibilityServiceEnabledForTesting(
+                            true);
+                    AccessibilityStateTestHelper.setIsKnownScreenReaderEnabledForTesting(true);
+                    AccessibilityStateTestHelper.setIsTouchExplorationEnabledForTesting(true);
+                    ResettersForTesting.register(
+                            AccessibilityStateTestHelper::uninitializeForTesting);
+                });
+
+        String testPage =
+                UrlUtils.encodeHtmlDataUri(
+                        "<html><body><button id='btn' onclick='alert(\"Hello\")'>Trigger"
+                                + " Button</button></body></html>");
+        mActivityTestRule.loadUrl(testPage);
+
+        WebContentsAccessibilityImpl wcax =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            WebContents webContents = mActivity.getActivityTab().getWebContents();
+                            WebContentsAccessibilityImpl impl =
+                                    (WebContentsAccessibilityImpl)
+                                            WebContentsAccessibility.fromWebContents(webContents);
+                            impl.setThrottleDelayForTesting(Collections.emptyMap());
+                            return impl;
+                        });
+
+        CriteriaHelper.pollUiThread(
+                () -> wcax.getAccessibilityNodeProvider() != null,
+                "AccessibilityNodeProvider should be initialized");
+
+        int[] buttonNodeId = new int[1];
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    int rootId = wcax.getRootIdForTesting();
+                    if (rootId == 0 || rootId == View.NO_ID) return false;
+                    buttonNodeId[0] = findNodeIdWithText(wcax, rootId, "Trigger Button");
+                    return buttonNodeId[0] != -1;
+                },
+                "Trigger Button should be found in accessibility tree");
+
+        // Listen for accessibility events across both native Android views and virtual web nodes.
+        // Setting an AccessibilityDelegate on the window's DecorView intercepts events bubbling up
+        // through the view hierarchy, allowing us to capture events emitted by native dialog
+        // controls as well as virtual view events dispatched by WebContentsAccessibilityImpl.
+        ConcurrentLinkedQueue<AccessibilityEvent> receivedEvents = new ConcurrentLinkedQueue<>();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup decorView = (ViewGroup) mActivity.getWindow().getDecorView();
+                    var oldDelegate = decorView.getAccessibilityDelegate();
+                    decorView.setAccessibilityDelegate(
+                            new View.AccessibilityDelegate() {
+                                @Override
+                                public boolean onRequestSendAccessibilityEvent(
+                                        ViewGroup host, View child, AccessibilityEvent event) {
+                                    receivedEvents.add(AccessibilityEvent.obtain(event));
+                                    return super.onRequestSendAccessibilityEvent(
+                                            host, child, event);
+                                }
+                            });
+                    ResettersForTesting.register(
+                            () -> decorView.setAccessibilityDelegate(oldDelegate));
+                });
+
+        // Focus the web button using an accessibility action.
+        boolean focused =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                wcax.getAccessibilityNodeProvider()
+                                        .performAction(
+                                                buttonNodeId[0],
+                                                AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS,
+                                                null));
+        Assert.assertTrue("Focus action should succeed", focused);
+        CriteriaHelper.pollUiThread(
+                () -> wcax.createAccessibilityNodeInfo(buttonNodeId[0]).isAccessibilityFocused(),
+                "Web button should be accessibility focused");
+
+        // Activate the web button using an accessibility click to trigger the alert dialog.
+        boolean clicked =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                wcax.getAccessibilityNodeProvider()
+                                        .performAction(
+                                                buttonNodeId[0],
+                                                AccessibilityNodeInfo.ACTION_CLICK,
+                                                null));
+        Assert.assertTrue("Click action should succeed", clicked);
+        CriteriaHelper.pollUiThread(
+                () -> mActivity.getModalDialogManager().isShowing(),
+                "Modal dialog should appear after clicking web button");
+
+        // Dismiss the dialog using an accessibility click on the dialog OK button.
+        // Clear received events before dismissing to strictly isolate the post-dismissal event.
+        receivedEvents.clear();
+        onView(withText(R.string.ok))
+                .perform(ViewUtils.performAccessibilityAction(AccessibilityNodeInfo.ACTION_CLICK));
+        CriteriaHelper.pollUiThread(
+                () -> !mActivity.getModalDialogManager().isShowing(),
+                "Modal dialog should be dismissed");
+
+        // Verify accessibility focus is restored to the web button.
+        CriteriaHelper.pollUiThread(
+                () -> wcax.createAccessibilityNodeInfo(buttonNodeId[0]).isAccessibilityFocused(),
+                "Accessibility focus should be restored to the web button after dialog dismissal");
+
+        // Verify an accessibility focus event arrived strictly after dialog dismissal for the
+        // trigger button.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        receivedEvents.stream()
+                                .anyMatch(
+                                        e ->
+                                                e.getEventType()
+                                                                == AccessibilityEvent
+                                                                        .TYPE_VIEW_ACCESSIBILITY_FOCUSED
+                                                        && android.widget.Button.class
+                                                                .getName()
+                                                                .equals(e.getClassName())),
+                "Accessibility focus event should be fired for the web button upon dialog"
+                        + " dismissal");
     }
 
     /** Verifies that clicking on a button twice doesn't crash. */

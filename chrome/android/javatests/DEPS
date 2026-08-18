@@ -108,5 +108,8 @@ specific_include_rules = {
   ],
   "MessageTest\\.java": [
     "+content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java",
+  ],
+  "JavascriptTabModalDialogTest\\.java": [
+    "+content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java",
   ]
 }

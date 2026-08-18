@@ -1408,8 +1408,38 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         assert mIsObscuredByAnotherView == null || isObscured != mIsObscuredByAnotherView
                 : "Two clients are both trying to obscure web contents accessibility. These are "
                         + "duplicate requests, or prone to error.";
+        boolean wasObscured = Boolean.TRUE.equals(mIsObscuredByAnotherView);
         mIsObscuredByAnotherView = isObscured;
+        if (isObscured) {
+            mAccessibilityFocusId = View.NO_ID;
+        }
         sendWindowContentChangedEvent(View.NO_ID, /* setSubtreeChanged= */ true);
+
+        if (wasObscured && !isObscured) {
+            restoreAccessibilityFocusOnUnobscured();
+        }
+    }
+
+    private void restoreAccessibilityFocusOnUnobscured() {
+        if (mView == null) return;
+        mView.post(
+                () -> {
+                    if (!isAccessibilityEnabled()) return;
+                    if (shouldPreventNativeEngineUse()) return;
+                    if (mAccessibilityFocusId == View.NO_ID
+                            && mLastAccessibilityFocusId != View.NO_ID
+                            && WebContentsAccessibilityImplJni.get()
+                                    .isNodeValid(mNativeObj, mLastAccessibilityFocusId)) {
+                        if (ContentFeatureList.sAccessibilityDeprecateJavaNodeCacheOptimizeScroll
+                                .getValue()) {
+                            scrollToMakeNodeVisible(mLastAccessibilityFocusId);
+                            moveAccessibilityFocusToId(mLastAccessibilityFocusId);
+                        } else {
+                            moveAccessibilityFocusToId(mLastAccessibilityFocusId);
+                            scrollToMakeNodeVisible(mLastAccessibilityFocusId);
+                        }
+                    }
+                });
     }
 
     @Override
