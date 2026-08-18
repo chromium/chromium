@@ -58,6 +58,10 @@ class StructTraits<tracing::mojom::DataSourceConfigDataView,
       const perfetto::DataSourceConfig& src) {
     return src.chromium_histogram_samples_raw();
   }
+  static const std::string& chromium_sampling_heap_profiler_raw(
+      const perfetto::DataSourceConfig& src) {
+    return src.chromium_sampling_heap_profiler_raw();
+  }
 
   static mojo::OptionalAsPointer<const perfetto::protos::gen::InterceptorConfig>
   interceptor_config(const perfetto::DataSourceConfig& src) {

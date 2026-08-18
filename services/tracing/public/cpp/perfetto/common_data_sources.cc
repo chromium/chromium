@@ -5,9 +5,14 @@
 #include "services/tracing/public/cpp/perfetto/common_data_sources.h"
 
 #include "base/trace_event/trace_event.h"
+#include "build/blink_buildflags.h"
 #include "services/tracing/public/cpp/perfetto/custom_event_recorder.h"
 #include "services/tracing/public/cpp/perfetto/histogram_samples_data_source.h"
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
+
+#if BUILDFLAG(USE_BLINK)
+#include "services/tracing/public/cpp/heap_profiling/heap_profiling_data_source.h"
+#endif
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "services/tracing/public/cpp/system_metrics_sampler.h"
 
@@ -17,6 +22,9 @@ void RegisterCommonPerfettoDataSources(bool enable_consumer) {
   base::TrackEvent::Register();
   TracingSamplerProfiler::RegisterDataSource();
   HistogramSamplesDataSource::Register();
+#if BUILDFLAG(USE_BLINK)
+  HeapProfilingDataSource::Register();
+#endif
   // SystemMetricsSampler will be started when enabling
   // kSystemMetricsSourceName.
   SystemMetricsSampler::Register(/*system_wide=*/enable_consumer);

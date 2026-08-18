@@ -307,6 +307,7 @@ void SamplingHeapProfiler::CaptureNativeStack(const char* context,
   if (record_thread_names_.load(std::memory_order_acquire)) {
     sample->thread_name = CachedThreadName();
   }
+  sample->tid = base::PlatformThread::CurrentId();
 
   if (!context) {
     const auto* tracker =

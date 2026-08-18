@@ -16,7 +16,8 @@ bool StructTraits<tracing::mojom::DataSourceConfigDataView,
     Read(tracing::mojom::DataSourceConfigDataView data,
          perfetto::DataSourceConfig* out) {
   std::string name, legacy_config, track_event_config_raw, etw_config_raw,
-      system_metrics_config_raw, histogram_samples_config_raw;
+      system_metrics_config_raw, histogram_samples_config_raw,
+      chromium_sampling_heap_profiler_raw;
   perfetto::ChromeConfig chrome_config;
   std::optional<perfetto::protos::gen::InterceptorConfig> interceptor_config;
   if (!data.ReadName(&name) || !data.ReadChromeConfig(&chrome_config) ||
@@ -25,6 +26,8 @@ bool StructTraits<tracing::mojom::DataSourceConfigDataView,
       !data.ReadEtwConfigRaw(&etw_config_raw) ||
       !data.ReadSystemMetricsConfigRaw(&system_metrics_config_raw) ||
       !data.ReadHistogramSamplesConfigRaw(&histogram_samples_config_raw) ||
+      !data.ReadChromiumSamplingHeapProfilerRaw(
+          &chromium_sampling_heap_profiler_raw) ||
       !data.ReadInterceptorConfig(&interceptor_config)) {
     return false;
   }
@@ -52,6 +55,10 @@ bool StructTraits<tracing::mojom::DataSourceConfigDataView,
   }
   if (!histogram_samples_config_raw.empty()) {
     out->set_chromium_histogram_samples_raw(histogram_samples_config_raw);
+  }
+  if (!chromium_sampling_heap_profiler_raw.empty()) {
+    out->set_chromium_sampling_heap_profiler_raw(
+        chromium_sampling_heap_profiler_raw);
   }
   return true;
 }

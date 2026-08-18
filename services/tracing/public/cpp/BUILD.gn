@@ -94,6 +94,10 @@ target("component", "cpp") {
 
   if (use_blink) {
     sources += [
+      "heap_profiling/heap_profiling_data_source.cc",
+      "heap_profiling/heap_profiling_data_source.h",
+      "heap_profiling/tracing_heap_profile_builder.cc",
+      "heap_profiling/tracing_heap_profile_builder.h",
       "perfetto/interning_index.h",
       "perfetto/metadata_data_source.cc",
       "perfetto/metadata_data_source.h",
