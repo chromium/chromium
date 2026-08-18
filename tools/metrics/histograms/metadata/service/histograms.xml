@@ -2293,22 +2293,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.{operation}Time" units="ms"
-    expires_after="2023-10-01">
-  <owner>cduvall@chromium.org</owner>
-  <owner>chrome-worker@google.com</owner>
-  <summary>
-    The time taken to query the content settings in the browser process for the
-    {operation} operation. This is recorded each time a sync call is made.
-  </summary>
-  <token key="operation">
-    <variant name="AllowCacheStorage"/>
-    <variant name="AllowIndexedDB"/>
-    <variant name="AllowWebLocks"/>
-    <variant name="RequestFileSystemAccess"/>
-  </token>
-</histogram>
-
 <histogram name="ServiceWorkerCache.Cache.Browser.Match.Initialized" units="ms"
     expires_after="2025-03-23">
   <owner>ayui@chromium.org</owner>

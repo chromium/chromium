@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-blink.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -54,33 +53,23 @@ void SharedWorkerContentSettingsProxy::AllowStorageAccess(
 bool SharedWorkerContentSettingsProxy::AllowStorageAccessSync(
     StorageType storage_type) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  // TODO(crbug.com/503624894): Remove obsolete UMA histograms in a follow-up.
   bool result = false;
   switch (storage_type) {
-    case StorageType::kIndexedDB: {
-      SCOPED_UMA_HISTOGRAM_TIMER("ServiceWorker.AllowIndexedDBTime");
+    case StorageType::kIndexedDB:
       GetService()->AllowIndexedDB(&result);
       break;
-    }
-    case StorageType::kCacheStorage: {
-      SCOPED_UMA_HISTOGRAM_TIMER("ServiceWorker.AllowCacheStorageTime");
+    case StorageType::kCacheStorage:
       GetService()->AllowCacheStorage(&result);
       break;
-    }
-    case StorageType::kWebLocks: {
-      SCOPED_UMA_HISTOGRAM_TIMER("ServiceWorker.AllowWebLocksTime");
+    case StorageType::kWebLocks:
       GetService()->AllowWebLocks(&result);
       break;
-    }
-    case StorageType::kFileSystem: {
-      SCOPED_UMA_HISTOGRAM_TIMER("ServiceWorker.RequestFileSystemAccessTime");
+    case StorageType::kFileSystem:
       GetService()->RequestFileSystemAccessSync(&result);
       break;
-    }
-    default: {
+    default:
       // TODO(crbug.com/40103756): Revisit this default in the future.
       return true;
-    }
   }
 
   return result;
