@@ -765,6 +765,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4180726336228139707">Kun på denne enhed</translation>
 <translation id="4181841719683918333">Sprog</translation>
 <translation id="4188221736490993796">Sortér fra Å til A</translation>
+<translation id="4188638484665452040">Gemini er frigjort</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome forhindrede dette website i at sende notifikationer på grund af spam eller vildledende indhold}one{Chrome forhindrede dette website i at sende notifikationer på grund af spam eller vildledende indhold}other{Chrome forhindrede disse websites i at sende notifikationer på grund af spam eller vildledende indhold}}</translation>
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 fane på denne enhed}one{# fane på denne enhed}other{# faner på denne enhed}}</translation>
@@ -1838,6 +1839,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8393700583063109961">Send en besked</translation>
 <translation id="8396098434728053815">Del også fanelyd</translation>
 <translation id="8398389123831319859">Tryk to gange, og hold fingeren nede for at skifte til Inkognito</translation>
+<translation id="8412037385861858490">For at beskytte dit arbejde i Chrome kan din organisation se eller administrere visse oplysninger, når du er logget ind i Chrome. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Vis hele historikken</translation>
 <translation id="8413795581997394485">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Når du besøger et website, sender Chrome en sløret del af webadressen til Google via en privatlivsbeskyttende server, der skjuler din IP-adresse. Hvis et website foretager sig noget mistænkeligt, sendes hele webadresser og uddrag af sideindhold også.</translation>
 <translation id="8414396119627470038">Log ind på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

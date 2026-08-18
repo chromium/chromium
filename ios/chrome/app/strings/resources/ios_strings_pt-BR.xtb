@@ -520,7 +520,7 @@
 <translation id="2640733327287333451">Sem nome de usuário ••••••</translation>
 <translation id="264215785133931186">Verificadas agora mesmo</translation>
 <translation id="2647434099613338025">Adicionar idioma</translation>
-<translation id="2648812801228676606">A conta <ph name="NAME_OR_EMAIL" /> continua conectada.</translation>
+<translation id="2648812801228676606">A conta <ph name="NAME_OR_EMAIL" /> continua conectada</translation>
 <translation id="2649592894792404568">Você está prestes a excluir seus dados do Gerenciador de senhas do Google</translation>
 <translation id="2652129567809778422">Selecionar senha</translation>
 <translation id="2658056020748144467">Não foi possível abrir arquivo</translation>
@@ -1389,6 +1389,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="560322036295180549">Desativado pela organização</translation>
 <translation id="5611398002774823980">Salvar na conta</translation>
+<translation id="5612225021788368236">Fechar promoção do navegador padrão</translation>
 <translation id="561269594905823128">Toque em <ph name="BEGIN_BOLD" />Selecionar o arquivo<ph name="END_BOLD" /></translation>
 <translation id="5613297089029360427">Ordenar por mais recentes</translation>
 <translation id="5614553682702429503">Salvar senha?</translation>
@@ -2518,7 +2519,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="9162432979321511934">Ative a opção "Preenchimento automático de senhas"</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de redução no preço, ative as notificações nas configurações do iOS.</translation>
 <translation id="9179151630575358778">Oculta este item</translation>
-<translation id="9183563643084679152">Você leu um QR code para fazer login no Chrome. Você vai receber as senhas, os favoritos e outros itens desta conta.</translation>
+<translation id="9183563643084679152">Você leu um QR code para fazer login no Chrome, então vai receber as senhas, os favoritos e outros itens desta conta.</translation>
 <translation id="9183733013282108610">Pesquisa anônima</translation>
 <translation id="9186762474139509529">Iniciar registro</translation>
 <translation id="9191031968346938109">Adicionar a…</translation>

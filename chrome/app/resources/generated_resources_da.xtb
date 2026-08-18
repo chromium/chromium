@@ -1886,6 +1886,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2458379781610688953">Opdater konto, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Aktiveringskoden blev registreret</translation>
 <translation id="2459706890611560967">Genoptag casting af fanen til <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Del et screenshot</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Udløber i dag}=1{Udløber i morgen}one{Udløber om # dag}other{Udløber om # dage}}</translation>
 <translation id="2460482211073772897">I andre mapper</translation>
 <translation id="2460826998961521840">Sådan bruger du adgangsnøgler, der er gemt på din Google-konto</translation>

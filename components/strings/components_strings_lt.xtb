@@ -70,6 +70,7 @@
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" />: pasirinkite leidimą</translation>
 <translation id="1113000785583998331">Išsaugoti IBAN?</translation>
 <translation id="1113869188872983271">&amp;Anuliuoti pertvarkymą</translation>
+<translation id="1117709830616495622">Teikia Asmeninis intelektas su „Gemini“.</translation>
 <translation id="111897705806685148">Prieigos rakto iš kito įrenginio naudojimas</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />; paspauskite tabuliavimo klavišą, tada „Enter“, jei norite tvarkyti, kokią „Chrome“ informaciją išsaugote „Google“ paskyroje</translation>
 <translation id="1121990216147052230">Sukurk man užduočių sąrašą</translation>
@@ -1170,6 +1171,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3005723025932146533">Rodyti išsaugotą kopiją</translation>
 <translation id="300580149047131921">Neseniai naudota</translation>
 <translation id="3006864083554020786">namų adresas</translation>
+<translation id="3008410317623852235">Dabar galite rasti ir užpildyti informaciją iš „Gmail“ ir kt.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, kad naršytumėte pasiekiamus veiksmus, tada paspauskite „Enter“, kad atliktumėte pasirinktą veiksmą.</translation>
 <translation id="3010991137650052245">Jei norite naudoti <ph name="PERMISSION" /> šioje svetainėje, suteikite „<ph name="SHORT_PRODUCT_NAME" />“ prieigą</translation>
 <translation id="3014726756341138577">Išplėstinės spausdintuvo funkcijos</translation>
@@ -2320,6 +2322,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4941627891654116707">Šrifto dydis</translation>
 <translation id="4943620199112228840">Naudoti jūsų mikrofonus</translation>
 <translation id="4943872375798546930">Rezultatų nėra</translation>
+<translation id="494701040141924538">Supratau, uždaryti pranešimą</translation>
 <translation id="495170559598752135">Veiksmai</translation>
 <translation id="4953689047182316270">Reaguoti į pritaikymo neįgaliesiems įvykius</translation>
 <translation id="4954505713046251871">Kad būtų galima pateikti pasiūlymų ir patobulinti šią funkciją, puslapio URL ir turinys bendrinami su „Google“</translation>
@@ -4297,6 +4300,7 @@ Papildoma išsami informacija:
 <translation id="8350416046273606058">Į spartųjį klavišą negalima įtraukti tarpų: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="8351131234907093545">Sukurti užrašą</translation>
 <translation id="8352849934814541340">Šio įrenginio administratorius įdiegė papildomų funkcijų programų. Naudojant programas galima pasiekti kai kuriuos jūsų duomenis.</translation>
+<translation id="8353273112634584260">Teikia Asmeninis intelektas su „Gemini“. Užklausos, puslapių pavadinimai ir URL gali būti peržiūrėti siekiant patobulinti išmanųjį automatinį pildymą.</translation>
 <translation id="8355270400102541638">Vietinės strigties kontekstas:</translation>
 <translation id="8362914115861174987">Versti į</translation>
 <translation id="8363502534493474904">Išjungti lėktuvo režimą</translation>

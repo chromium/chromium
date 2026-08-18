@@ -1885,6 +1885,7 @@
 <translation id="2458379781610688953">खाता अपडेट करें, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">ऐक्टिवेशन कोड की पहचान की गई</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> पर, टैब को कास्ट करना फिर से शुरू करें</translation>
+<translation id="245979889539926662">स्क्रीनशॉट शेयर करें</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{समयसीमा आज खत्म हो जाएगी}=1{समयसीमा कल खत्म हो जाएगी}one{समयसीमा # दिन में खत्म हो जाएगी}other{समयसीमा # दिनों में खत्म हो जाएगी}}</translation>
 <translation id="2460482211073772897">अन्य फ़ोल्डर में</translation>
 <translation id="2460826998961521840">इससे Google खाते में सेव की गई पासकी इस्तेमाल की जा सकेंगी</translation>

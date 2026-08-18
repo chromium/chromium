@@ -765,6 +765,7 @@
 <translation id="4180726336228139707">仅在此设备上</translation>
 <translation id="4181841719683918333">语言</translation>
 <translation id="4188221736490993796">按从 Z 到 A 排序</translation>
+<translation id="4188638484665452040">已取消固定 Gemini</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已阻止此网站发送通知，因为其包含网络垃圾或欺骗性内容}other{Chrome 已阻止这些网站发送通知，因为其包含网络垃圾或欺骗性内容}}</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{此设备上的 1 个标签页}other{此设备上的 # 个标签页}}</translation>
@@ -1836,6 +1837,7 @@
 <translation id="8393700583063109961">发送消息</translation>
 <translation id="8396098434728053815">同时分享标签页中的音频</translation>
 <translation id="8398389123831319859">点按两次并按住即可切换到无痕模式</translation>
+<translation id="8412037385861858490">为了保障您在 Chrome 上的工作安全，当您登录 Chrome 后，您的组织将能够查看或管理某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">显示全部历史记录</translation>
 <translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>
 <translation id="8414396119627470038">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 账号登录 <ph name="SITE_ETLD_PLUS_ONE" /></translation>

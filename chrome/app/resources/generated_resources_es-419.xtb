@@ -1872,6 +1872,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2458379781610688953">Actualizar cuenta, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Se detectó el código de activación</translation>
 <translation id="2459706890611560967">Reanudar la transmisión de la pestaña a <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Compartir una captura de pantalla</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Vence hoy}=1{Vence mañana}other{Vence en # días}}</translation>
 <translation id="2460482211073772897">En otras carpetas</translation>
 <translation id="2460826998961521840">Para usar las llaves de acceso guardadas en tu Cuenta de Google</translation>
@@ -2379,7 +2380,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2828375943530438449">Regresar de la página de acceso</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> liberados</translation>
 <translation id="2833144527504272627">Navegar con el cursor de texto</translation>
-<translation id="2833727845850279275">Este archivo contiene software malicioso o proviene de un sitio sospechoso.</translation>
+<translation id="2833727845850279275">Este archivo contiene malware o proviene de un sitio sospechoso.</translation>
 <translation id="2835177225987815960">Se restablecerá la configuración actual de escaneo, incluidos los interruptores asignados y las preferencias de velocidad de escaneo automático.</translation>
 <translation id="2835547721736623118">Servicio de reconocimiento de voz</translation>
 <translation id="2835761321523638096">Leer y cambiar entradas en la lista de lectura</translation>

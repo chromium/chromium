@@ -120,7 +120,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="1437543266176261764">Wird ausgeführt in <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Du kannst deine beobachteten Produkte in den Lesezeichen organisieren</translation>
 <translation id="1452651021404174820">Gerät auswählen</translation>
-<translation id="1455845192930279203">Möchtest du „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) trotzdem von <ph name="DOWNLOAD_DOMAIN" /> herunterladen?</translation>
+<translation id="1455845192930279203">Möchtest du <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) trotzdem von <ph name="DOWNLOAD_DOMAIN" /> herunterladen?</translation>
 <translation id="1460751212339734034">Weniger tippen und Zeit sparen</translation>
 <translation id="146522654774760805">Passwörter und Autofill</translation>
 <translation id="1466383950273130737">Sprache für Chrome auswählen</translation>
@@ -765,6 +765,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4180726336228139707">Nur auf diesem Gerät</translation>
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="4188221736490993796">Von Z bis A sortieren</translation>
+<translation id="4188638484665452040">Gemini losgelöst</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome hat verhindert, dass diese Website Benachrichtigungen sendet, weil sie Spam oder irreführende Inhalte enthält}other{Chrome hat verhindert, dass diese Websites Benachrichtigungen senden, weil sie Spam oder irreführende Inhalte enthalten}}</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 Tab auf diesem Gerät}other{# Tabs auf diesem Gerät}}</translation>
@@ -1838,6 +1839,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8393700583063109961">Nachricht senden</translation>
 <translation id="8396098434728053815">Auch Audio des Tabs teilen</translation>
 <translation id="8398389123831319859">Doppeltippen und gedrückt halten, um in den Inkognitomodus zu wechseln</translation>
+<translation id="8412037385861858490">Zum Schutz deiner Arbeit in Chrome kann deine Organisation bestimmte Informationen ansehen oder verwalten, wenn du in Chrome angemeldet bist. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Gesamtverlauf anzeigen</translation>
 <translation id="8413795581997394485">Schützt vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind. Wenn du eine Website besuchst, sendet Chrome einen verschleierten Teil der URL über einen Datenschutzserver, der deine IP-Adresse verbirgt, an Google. Zeigt eine Website verdächtige Aktivitäten, werden außerdem vollständige URLs und Teile von Seiteninhalten gesendet.</translation>
 <translation id="8414396119627470038">Mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bei <ph name="SITE_ETLD_PLUS_ONE" /> anmelden</translation>

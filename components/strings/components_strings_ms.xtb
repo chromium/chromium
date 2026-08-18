@@ -70,6 +70,7 @@
 <translation id="1110994991967754504">Pilih kebenaran untuk <ph name="PERMISSION_NAME" /></translation>
 <translation id="1113000785583998331">Simpan IBAN?</translation>
 <translation id="1113869188872983271">&amp;Buat asal susun semula</translation>
+<translation id="1117709830616495622">Dikuasakan oleh Kecerdasan Peribadi dengan Gemini.</translation>
 <translation id="111897705806685148">Gunakan Kunci laluan daripada Peranti Lain</translation>
 <translation id="1119009590493440389"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk mengurus maklumat Chrome yang anda simpan dalam Google Account anda</translation>
 <translation id="1121990216147052230">Buat senarai tugasan untuk saya</translation>
@@ -1170,6 +1171,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3005723025932146533">Paparkan salinan disimpan</translation>
 <translation id="300580149047131921">Digunakan baru-baru ini</translation>
 <translation id="3006864083554020786">alamat rumah</translation>
+<translation id="3008410317623852235">Kini anda boleh menemukan dan mengisi maklumat daripada Gmail dan pelbagai lagi.</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab untuk menyemak imbas tindakan yang tersedia, kemudian tekan Enter untuk melaksanakan tindakan yang dipilih.</translation>
 <translation id="3010991137650052245">Untuk menggunakan <ph name="PERMISSION" /> anda pada laman ini, berikan akses kepada <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3014726756341138577">Ciri lanjutan pencetak</translation>
@@ -2320,6 +2322,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4941627891654116707">Saiz fon</translation>
 <translation id="4943620199112228840">Gunakan mikrofon anda</translation>
 <translation id="4943872375798546930">Tiada hasil carian</translation>
+<translation id="494701040141924538">OK, tutup notis</translation>
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4953689047182316270">Jawab Acara Kebolehaksesan</translation>
 <translation id="4954505713046251871">Untuk menawarkan cadangan dan meningkatkan ciri ini, URL dan kandungan halaman dikongsi dengan Google</translation>
@@ -4297,6 +4300,7 @@ Butiran tambahan:
 <translation id="8350416046273606058">Pintasan tidak boleh mengandungi ruang: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="8351131234907093545">Buat nota</translation>
 <translation id="8352849934814541340">Pentadbir peranti ini telah memasang aplikasi untuk fungsi tambahan. Aplikasi memiliki akses kepada sesetengah data anda.</translation>
+<translation id="8353273112634584260">Dikuasakan oleh Kecerdasan Peribadi dengan Gemini. Permintaan, tajuk halaman dan URL anda mungkin disemak untuk meningkatkan autolengkap dipertingkatkan.</translation>
 <translation id="8355270400102541638">Konteks Ranap Sistem Setempat:</translation>
 <translation id="8362914115861174987">Terjemahkan kepada</translation>
 <translation id="8363502534493474904">Matikan mod pesawat</translation>

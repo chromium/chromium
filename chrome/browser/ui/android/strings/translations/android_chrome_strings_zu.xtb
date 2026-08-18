@@ -765,6 +765,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="4180726336228139707">Kule divayisi kuphela</translation>
 <translation id="4181841719683918333">Izilimi</translation>
 <translation id="4188221736490993796">Hlunga ngo-Z ukuya ku-A</translation>
+<translation id="4188638484665452040">IGemini isuswe ukuphina</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{IChrome imise leli sayithi ekuthumeleni izaziso ngenxa yogaxekile noma ikhontenti elahlekisayo}one{IChrome imise lawa masayithi ekuthumeleni izaziso ngenxa yogaxekile noma ikhontenti elahlekisayo}other{IChrome imise lawa masayithi ekuthumeleni izaziso ngenxa yogaxekile noma ikhontenti elahlekisayo}}</translation>
 <translation id="4195643157523330669">Vula kuthebhu entsha</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Ithebhu e-1 kule divayisi}one{Amathebhu angu-# kule divayisi}other{Amathebhu angu-# kule divayisi}}</translation>
@@ -1838,6 +1839,7 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 <translation id="8393700583063109961">Thumela umlayezo</translation>
 <translation id="8396098434728053815">Futhi wabelane ngomsindo wesistimu</translation>
 <translation id="8398389123831319859">Thepha kabili futhi ubambe ukuze ushintshele ku-Incognito</translation>
+<translation id="8412037385861858490">Ukuze uvikele umsebenzi wakho kuChrome, inhlangano yakho izokwazi ukubuka noma ukulawula ulwazi oluthile uma ungene ngemvume kuChrome. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Bonisa umlando ophelele</translation>
 <translation id="8413795581997394485">Ivikela kumasayithi, okudawunilodwayo, nezandiso ezaziwa njengeziyingozi. Uma uvakashela isayithi, i-Chrome ithumela ingxenye engaqondani ye-URL ku-Google isebenzisa iseva eyimfihlo efihla ikheli lakho lasesizindeni se-inthanethi. Uma isayithi ingakusekeli okuthile okusolisayo, kuzothunyelwa wonke ama-URL kanye nokuqukethwe okuncane kwekhasi.</translation>
 <translation id="8414396119627470038">Ngena ngemvume ku-<ph name="SITE_ETLD_PLUS_ONE" /> no-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

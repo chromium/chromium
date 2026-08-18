@@ -765,6 +765,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4180726336228139707">Yalnızca bu cihazda</translation>
 <translation id="4181841719683918333">Diller</translation>
 <translation id="4188221736490993796">Z'den A'ya sırala</translation>
+<translation id="4188638484665452040">Gemini'ın sabitlemesi kaldırıldı</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome, spam veya yanıltıcı içerik nedeniyle bu sitenin bildirim göndermesini engelledi}other{Chrome, spam veya yanıltıcı içerik nedeniyle bu sitelerin bildirim göndermesini engelledi}}</translation>
 <translation id="4195643157523330669">Yeni sekmede aç</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Bu cihazda 1 sekme}other{Bu cihazda # sekme var}}</translation>
@@ -1838,6 +1839,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8393700583063109961">İleti gönder</translation>
 <translation id="8396098434728053815">Sekme sesini de paylaş</translation>
 <translation id="8398389123831319859">Gizli moda geçmek için iki kez dokunup basılı tutun</translation>
+<translation id="8412037385861858490">Kuruluşunuz, Chrome'da oturum açtığınızda Chrome'daki çalışmanızın güvenliğini sağlamak için belirli bilgileri görüntüleyebilir veya yönetebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="8413126021676339697">Tüm geçmişi göster</translation>
 <translation id="8413795581997394485">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı koruma sağlar. Bir siteyi ziyaret ettiğinizde Chrome, IP adresinizi gizleyen bir gizlilik sunucusu aracılığıyla URL'nin kodu karartılmış bir kısmını Google'a gönderir. Site şüpheli bir işlem gerçekleştirirse tam URL'ler ve sayfa içeriğinin bir kısmı da gönderilir.</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> oturumunu <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile açın</translation>

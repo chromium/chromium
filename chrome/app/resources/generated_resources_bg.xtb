@@ -1884,6 +1884,7 @@
 <translation id="2458379781610688953">Актуализиране на профила <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Открит е код за активиране</translation>
 <translation id="2459706890611560967">Възобновяване на предаването на раздела към „<ph name="DEVICE_NAME" />“</translation>
+<translation id="245979889539926662">Споделяне на екранна снимка</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Изтича днес}=1{Изтича утре}other{Изтича след # дни}}</translation>
 <translation id="2460482211073772897">В други папки</translation>
 <translation id="2460826998961521840">За да използвате ключовете за достъп, запазени в профила ви в Google</translation>

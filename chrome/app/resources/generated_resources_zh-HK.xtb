@@ -1884,6 +1884,7 @@
 <translation id="2458379781610688953">更新帳戶，<ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">已偵測到啟動碼</translation>
 <translation id="2459706890611560967">繼續投放分頁去 <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">分享螢幕截圖</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{今天到期}=1{明天到期}other{# 天後到期}}</translation>
 <translation id="2460482211073772897">在其他資料夾中</translation>
 <translation id="2460826998961521840">以使用儲存在 Google 帳戶的密鑰</translation>

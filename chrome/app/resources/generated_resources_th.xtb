@@ -1872,6 +1872,7 @@
 <translation id="2458379781610688953">อัปเดตบัญชี <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">ตรวจพบรหัสเปิดใช้งาน</translation>
 <translation id="2459706890611560967">แคสต์แท็บไปยัง <ph name="DEVICE_NAME" /> ต่อ</translation>
+<translation id="245979889539926662">แชร์ภาพหน้าจอ</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{หมดอายุวันนี้}=1{หมดอายุวันพรุ่งนี้}other{หมดอายุในอีก # วัน}}</translation>
 <translation id="2460482211073772897">ในโฟลเดอร์อื่นๆ</translation>
 <translation id="2460826998961521840">เพื่อใช้พาสคีย์ที่บันทึกไว้ในบัญชี Google</translation>

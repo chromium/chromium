@@ -1886,6 +1886,7 @@
 <translation id="2458379781610688953">계정 업데이트, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">활성화 코드 감지됨</translation>
 <translation id="2459706890611560967"><ph name="DEVICE_NAME" /> 기기로 탭 전송 재개</translation>
+<translation id="245979889539926662">스크린샷 공유</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{오늘 만료됨}=1{내일 만료됨}other{#일 후에 만료됨}}</translation>
 <translation id="2460482211073772897">다른 폴더 내</translation>
 <translation id="2460826998961521840">Google 계정에 저장된 패스키를 사용하려면</translation>

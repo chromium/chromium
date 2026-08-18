@@ -165,7 +165,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="259935314519650377">Kan het gedownloade installatieprogramma niet opslaan in het cachegeheugen. Fout: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2608461706055011366">Krijg een snel overzicht van dit document en stel vragen met Gemini in Chrome</translation>
 <translation id="2620436844016719705">Systeem</translation>
-<translation id="263447411082773721">Houd je wachtwoorden, bookmarks en geschiedenis perfect gesynchroniseerd op al je apparaten. Krijg makkelijk toegang tot de functies die je kent en gebruikt door je standaardbrowser te updaten naar Chrome. Chrome wordt vastgezet op je taakbalk voor snelle toegang.</translation>
+<translation id="263447411082773721">Houd je wachtwoorden, bookmarks en geschiedenis perfect gesynchroniseerd op al je apparaten. Krijg makkelijk toegang tot de functies die je kent en vertrouwt door Chrome in te stellen als standaardbrowser. Chrome wordt vastgezet op je taakbalk voor snelle toegang.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome checkt regelmatig of je browser de veiligste instellingen heeft. We laten het je weten als je iets moet controleren.</translation>
 <translation id="2652691236519827073">Link openen op een nieuw Chrome-&amp;tabblad</translation>
@@ -269,7 +269,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="3622716124581627104">Herken voorwerpen of plaatsen en kopieer of vertaal tekst. Als je Google Lens gebruikt, wordt een screenshot van de pagina naar Google gestuurd. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Het is nu gemakkelijker om Chrome met je Google-account en op gedeelde computers te gebruiken.</translation>
 <translation id="3635073343384702370">Chrome kan je wachtwoorden controleren als je deze hebt opgeslagen</translation>
-<translation id="3636970668267555808">Krijg makkelijk toegang tot je de functies die je kent, gebruikt en vertrouwt door Chrome in te stellen als je standaardbrowser.</translation>
+<translation id="3636970668267555808">Krijg makkelijk toegang tot de functies die je kent, gebruikt en vertrouwt door Chrome in te stellen als standaardbrowser.</translation>
 <translation id="3667616615096815454">Kan niet installeren. De app is niet bekend bij de server.</translation>
 <translation id="3673813398384385993">Chrome heeft vastgesteld dat <ph name="EXTENSION_NAME" /> malware bevat</translation>
 <translation id="3697952514309507634">Andere Chrome-profielen</translation>
@@ -387,7 +387,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="4918844574251943176">Afbeelding gekopieerd</translation>
 <translation id="4926882258455737990">Als je een ander Google-account wilt gebruiken met Gemini in Chrome, <ph name="BEGIN_LINK" />maak je een nieuw profiel<ph name="END_LINK" /> en log je in met het account dat je wilt gebruiken</translation>
 <translation id="492720062778050435">Chrome raadt je aan deze extensie te checken</translation>
-<translation id="4953650215774548573">Google Chrome instellen als je standaardbrowser</translation>
+<translation id="4953650215774548573">Google Chrome instellen als standaardbrowser</translation>
 <translation id="495931528404527476">In Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex kan je gegevens niet synchroniseren omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="4970761609246024540">Welkom bij Chrome-profielen</translation>
@@ -712,9 +712,9 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="8041795619940733262">Google<ph name="LINE_BREAK" />vragen over dit tabblad</translation>
 <translation id="80471789339884597">Bedankt voor het installeren. Je moet alle browsers opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
-<translation id="8064965390968184078">1. Klik op <ph name="BUTTON_LABEL" /> hieronder
-2. Klik op <ph name="BUTTON_2" /> in je Windows-instellingen
-3. Klik op <ph name="BUTTON_3" /> in de Windows-melding om Chrome vast te zetten op je taakbalk voor snelle toegang</translation>
+<translation id="8064965390968184078">1. Klik hieronder op <ph name="BUTTON_LABEL" />.
+2. Klik op <ph name="BUTTON_2" /> in je Windows-instellingen.
+3. Klik op <ph name="BUTTON_3" /> in de Windows-melding om Chrome vast te zetten op je taakbalk voor snelle toegang.</translation>
 <translation id="8069447462453318634">Selecteer Vastzetten op werkbalk</translation>
 <translation id="8074398340364918139">Als je een specifieke Chrome-functie of -extensie wilt doorzoeken, typ je de bijbehorende snelkoppeling in de adresbalk gevolgd door de door jou geselecteerde toets</translation>
 <translation id="8077579734294125741">Andere Chrome-profielen</translation>

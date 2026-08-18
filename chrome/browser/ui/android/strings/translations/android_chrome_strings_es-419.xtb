@@ -765,6 +765,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4180726336228139707">Solo en este dispositivo</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4188221736490993796">Ordenar de la Z a la A</translation>
+<translation id="4188638484665452040">Se dejó de fijar Gemini</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome impidió que este sitio enviara notificaciones debido a la presencia de contenido engañoso o spam}other{Chrome impidió que estos sitios enviaran notificaciones debido a la presencia de contenido engañoso o spam}}</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 pestaña en este dispositivo}other{# pestañas en este dispositivo}}</translation>
@@ -823,7 +824,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4404568932422911380">No hay favoritos</translation>
 <translation id="4405224443901389797">Mover a…</translation>
 <translation id="4405636711880428279">¿Quieres quitar tu tarjeta virtual?</translation>
-<translation id="4408965460206576430">Este archivo contiene software malicioso o proviene de un sitio sospechoso</translation>
+<translation id="4408965460206576430">Este archivo contiene malware o proviene de un sitio sospechoso</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> y <ph name="TAB_COUNT" /> pestañas más</translation>
 <translation id="441100617989818073">Pestañas y grupos sin usar o duplicados</translation>
 <translation id="4412123112245770507">Contraer sección</translation>
@@ -1838,6 +1839,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8393700583063109961">Enviar mensaje</translation>
 <translation id="8396098434728053815">Compartir también el audio de la pestaña</translation>
 <translation id="8398389123831319859">Presiona dos veces y mantén presionado para cambiar al modo Incógnito</translation>
+<translation id="8412037385861858490">Para proteger tu trabajo en Chrome, tu organización podrá ver o administrar cierta información cuando accedas a Chrome. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Mostrar historial completo</translation>
 <translation id="8413795581997394485">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Cuando visitas un sitio, Chrome envía una parte ofuscada de la URL a Google a través de un servidor de privacidad que oculta tu dirección IP. Si un sitio realiza alguna acción sospechosa, también se envían las URLs completas y partes del contenido de la página.</translation>
 <translation id="8414396119627470038">Accede a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

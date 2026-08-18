@@ -2233,7 +2233,7 @@
 <translation id="8281781826761538115">默认语言区域 - <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8282657446819506217">在标签页分组中打开</translation>
-<translation id="828291969289324795">{count,plural, =1{将标签页添加到新的分组}other{将标签页添加到新的分组}}</translation>
+<translation id="828291969289324795">{count,plural, =1{向新分组添加标签页}other{向新分组添加标签页}}</translation>
 <translation id="8283172974887967105">设置…</translation>
 <translation id="8289930144142009940">“<ph name="FEATURE_NAME" />”通知已关闭</translation>
 <translation id="8292893224181644074">下载已完成</translation>

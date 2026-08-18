@@ -1153,8 +1153,8 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1890026367080681123">Naar instellingen voor ingesloten content</translation>
 <translation id="189210018541388520">Openen in volledig scherm</translation>
 <translation id="1892341345406963517">Hallo <ph name="PARENT_NAME" /></translation>
-<translation id="1892453608039100484">1. Klik op <ph name="BUTTON_LABEL" /> hieronder
-2. Klik op <ph name="BUTTON_2" /> in je Windows-instellingen</translation>
+<translation id="1892453608039100484">1. Klik hieronder op <ph name="BUTTON_LABEL" />.
+2. Klik op <ph name="BUTTON_2" /> in je Windows-instellingen.</translation>
 <translation id="1895658205118569222">Uitschakeling</translation>
 <translation id="1896353439080510710">Chats worden beoordeeld en gebruikt om AI van Google te verbeteren. Gemini is AI en kan fouten maken. Je kunt <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />je activiteit beheren<ph name="END_LINK_MANAGE_ACTIVITY" />, waaronder informatie over je locatie. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie over je keuzes<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1897120393475391208">Sterk wachtwoord gebruiken</translation>
@@ -1872,6 +1872,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2458379781610688953">Account updaten, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Activeringscode waargenomen</translation>
 <translation id="2459706890611560967">Tabblad casten naar <ph name="DEVICE_NAME" /> hervatten</translation>
+<translation id="245979889539926662">Een screenshot delen</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Verloopt vandaag}=1{Verloopt morgen}other{Verloopt over # dagen}}</translation>
 <translation id="2460482211073772897">In andere mappen</translation>
 <translation id="2460826998961521840">Om toegangssleutels te gebruiken die zijn opgeslagen in je Google-account</translation>

@@ -765,6 +765,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4180726336228139707">이 기기에서만</translation>
 <translation id="4181841719683918333">언어</translation>
 <translation id="4188221736490993796">내림차순으로 정렬</translation>
+<translation id="4188638484665452040">Gemini 고정 해제됨</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{스팸 또는 사기성 콘텐츠로 인해 Chrome에서 이 사이트의 알림 전송을 중지했습니다.}other{스팸 또는 사기성 콘텐츠로 인해 Chrome에서 이 사이트의 알림 전송을 중지했습니다.}}</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{이 기기의 탭 1개}other{이 기기의 탭 #개}}</translation>
@@ -1838,6 +1839,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8396098434728053815">탭 오디오도 공유</translation>
 <translation id="8398389123831319859">시크릿 모드로 전환하려면 두 번 탭하고 길게 누르세요.</translation>
+<translation id="8412037385861858490">Chrome에서 업무를 보호하기 위해 Chrome에 로그인하면 조직에서 특정 정보를 보거나 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">방문 기록 전체 보기</translation>
 <translation id="8413795581997394485">위험하다고 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다. 사이트를 방문하면 Chrome에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 일부 페이지 콘텐츠도 전송됩니다.</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 계정으로 <ph name="SITE_ETLD_PLUS_ONE" />에 로그인하세요</translation>

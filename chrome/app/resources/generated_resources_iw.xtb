@@ -1884,6 +1884,7 @@
 <translation id="2458379781610688953">עדכון חשבון, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">זוהה קוד הפעלה</translation>
 <translation id="2459706890611560967">המשך ההעברה של הכרטיסייה אל <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">שיתוף של צילום מסך</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{התוקף יפוג היום}=1{התוקף יפוג מחר}one{התוקף יפוג בעוד # ימים}two{התוקף יפוג בעוד יומיים}other{התוקף יפוג בעוד # ימים}}</translation>
 <translation id="2460482211073772897">בתיקיות אחרות</translation>
 <translation id="2460826998961521840">‏כדי להשתמש במפתחות הגישה ששמורים בחשבון שלך ב-Google</translation>

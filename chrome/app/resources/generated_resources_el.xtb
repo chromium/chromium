@@ -1885,6 +1885,7 @@
 <translation id="2458379781610688953">Ενημέρωση λογαριασμού, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Εντοπίστηκε κωδικός ενεργοποίησης</translation>
 <translation id="2459706890611560967">Συνέχιση καρτέλας μετάδοσης στη συσκευή <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Κοινή χρήση στιγμιότυπου οθόνης</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Λήγει σήμερα}=1{Λήγει αύριο}other{Λήγει σε # ημέρες}}</translation>
 <translation id="2460482211073772897">Σε άλλους φακέλους</translation>
 <translation id="2460826998961521840">Για να χρησιμοποιήσετε κωδικούς πρόσβασης που είναι αποθηκευμένοι στον Λογαριασμό σας Google</translation>

@@ -765,6 +765,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4180726336228139707">Uniquement sur cet appareil</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4188221736490993796">Trier de Z à A</translation>
+<translation id="4188638484665452040">Épinglage de Gemini annulé</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a empêché ce site d'envoyer des notifications en raison de la présence de contenu indésirable ou trompeur}one{Chrome a empêché ce site d'envoyer des notifications en raison de la présence de contenu indésirable ou trompeur}other{Chrome a empêché ces sites d'envoyer des notifications en raison de la présence de contenu indésirable ou trompeur}}</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Un onglet sur cet appareil}one{# onglets sur cet appareil}other{# onglets sur cet appareil}}</translation>
@@ -1838,6 +1839,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8396098434728053815">Partager également l'audio de l'onglet</translation>
 <translation id="8398389123831319859">Touchez deux fois et maintenez le doigt sur l'icône pour passer en mode Navigation privée</translation>
+<translation id="8412037385861858490">Afin de sécuriser vos activités sur Chrome, votre organisation pourra consulter ou gérer certaines informations lorsque vous êtes connecté à Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Afficher l'historique complet</translation>
 <translation id="8413795581997394485">Protège contre les sites, les extensions et les téléchargements qui sont réputés être dangereux. Lorsque vous visitez un site, Chrome envoie une partie brouillée de l'URL à Google au moyen d'un serveur confidentiel qui masque votre adresse IP. Si un site présente un comportement suspect, les URL complètes ainsi que des extraits du contenu des pages sont aussi envoyés.</translation>
 <translation id="8414396119627470038">Connectez-vous à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

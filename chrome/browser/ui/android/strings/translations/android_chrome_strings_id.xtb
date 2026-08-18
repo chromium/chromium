@@ -765,6 +765,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4180726336228139707">Hanya di perangkat ini</translation>
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4188221736490993796">Urutkan menurut Z ke A</translation>
+<translation id="4188638484665452040">Gemini dilepas dari sematan</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome menghentikan situs ini mengirimkan notifikasi karena spam atau konten tidak jujur}other{Chrome menghentikan situs ini mengirimkan notifikasi karena spam atau konten tidak jujur}}</translation>
 <translation id="4195643157523330669">Buka di tab baru</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab di perangkat ini}other{# tab di perangkat ini}}</translation>
@@ -1239,7 +1240,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="6154478581116148741">Aktifkan kunci layar di Setelan untuk mengekspor sandi dari perangkat ini</translation>
 <translation id="6156323911414505561">Tampilkan kolom bookmark</translation>
 <translation id="6162892189396105610">Melakukan pramuat halaman yang menurut Chrome mungkin akan Anda buka.</translation>
-<translation id="6165508094623778733">Pelajari selengkapnya</translation>
+<translation id="6165508094623778733">Pelajari lebih lanjut</translation>
 <translation id="6170675927290506430">Buka setelan notifikasi</translation>
 <translation id="6184972259157699660"><ph name="TAB_TITLE" />, Tab Samaran yang Dibisukan</translation>
 <translation id="6186394685773237175">Tidak ditemukan sandi yang telah dibobol</translation>
@@ -1838,6 +1839,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8393700583063109961">Kirim pesan</translation>
 <translation id="8396098434728053815">Juga bagikan audio tab</translation>
 <translation id="8398389123831319859">Ketuk dua kali dan tahan untuk beralih ke mode Samaran</translation>
+<translation id="8412037385861858490">Untuk mengamankan pekerjaan di Chrome, organisasi Anda akan dapat melihat atau mengelola informasi tertentu saat Anda login ke Chrome. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Tampilkan histori lengkap</translation>
 <translation id="8413795581997394485">Melindungi dari situs, download, dan ekstensi yang diketahui berbahaya. Saat Anda membuka situs, Chrome mengirimkan bagian URL yang disamarkan ke Google melalui server privasi yang menyembunyikan alamat IP Anda. Jika situs melakukan hal yang mencurigakan, URL lengkap dan bit konten halaman juga akan dikirim.</translation>
 <translation id="8414396119627470038">Login ke <ph name="SITE_ETLD_PLUS_ONE" /> dengan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

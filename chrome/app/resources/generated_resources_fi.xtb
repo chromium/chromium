@@ -1884,6 +1884,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2458379781610688953">Päivitä tili, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Aktivointikoodi havaittu</translation>
 <translation id="2459706890611560967">Jatka välilehden striimausta: <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Jaa kuvakaappaus</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Vanhenee tänään}=1{Vanhenee huomenna}other{Vanhenee # päivän kuluttua}}</translation>
 <translation id="2460482211073772897">Muissa kansioissa</translation>
 <translation id="2460826998961521840">Näin voit käyttää Google-tilillesi tallennettuja avainkoodeja</translation>

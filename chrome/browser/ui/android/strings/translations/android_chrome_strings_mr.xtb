@@ -99,6 +99,7 @@
 <translation id="1372840539168747818">{NUM_SITES,plural, =1{तुम्ही या साइटला भविष्यातील नोटिफिकेशन पाठवण्यापासून थांबवू शकता}other{तुम्ही या साइटना भविष्यातील नोटिफिकेशन पाठवण्यापासून थांबवू शकता}}</translation>
 <translation id="137496472437646183">वर्धित संरक्षण निवडा</translation>
 <translation id="1376578503827013741">गणना करत आहे...</translation>
+<translation id="138181280295369883">तुमच्या सर्व डिव्हाइसवर तुमची सेव्ह केलेली माहिती आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="1381838868249179644">तुम्हाला सुरक्षित ठेवण्यात मदत व्हावी, यासाठी काही साइटच्या परवानग्या काढून टाकल्या आहेत</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1384704387250346179">Google Lens सह इमेजचे भाषांतर करा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
@@ -135,8 +136,10 @@
 <translation id="1513352483775369820">बुकमार्क आणि वेब इतिहास</translation>
 <translation id="1515901671075971249">टॅब नेव्हिगेशन शॉर्टकट</translation>
 <translation id="1516966594427080024">गुप्त मोडमध्ये नवीन विंडो उघडा</translation>
+<translation id="152204906462707884">तुमचा ब्राउझिंग इतिहास झटपट हटवा आणि तुमच्या गोपनीयतेवर अधिक नियंत्रण मिळवा</translation>
 <translation id="153446405401665083">Chrome ची नवीन आवृत्ती उपलब्ध आहे</translation>
 <translation id="1540012742443808215">अ‍ॅड्रेस बार सध्या सर्वात वरती आहे</translation>
+<translation id="1543035591122163372"><ph name="DEVICE_TYPE" /> वरून तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="1544084554881119930">पेमेंट पद्धती आणि पत्ते एन्क्रिप्ट केले जाणार नाहीत. Chrome वरील ब्राउझिंग इतिहास सिंक होणार नाही.
 फक्त तुमचा पासफ्रेझ असलेली कोणतीही व्यक्ती तुमचा एन्क्रिप्ट केलेला डेटा वाचू शकते. पासफ्रेझ Google कडे पाठवला किंवा त्याद्वारे स्टोअर केलेला नाही. तुम्ही तुमचा पासफ्रेझ विसरल्यास किंवा हे सेटिंग बदलायचे असल्यास, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा साफ करणे<ph name="END_LINK" /> हे करा.</translation>
 <translation id="1544826120773021464">तुमचे Google खाते व्यवस्थापित करण्यासाठी, "खाते व्यवस्थापित करा" बटणावर टॅप करा</translation>
@@ -199,6 +202,7 @@
 <translation id="1829244130665387512">या पृष्ठामध्ये शोधा</translation>
 <translation id="1832459821645506983">होय, मी तयार आहे</translation>
 <translation id="1845958458910716240">तुमच्या डेटाचे संरक्षण करण्यासाठी, तुम्ही अलीकडे भेट न दिलेल्या साइटच्या परवानग्या Chrome ला काढून टाकू द्या</translation>
+<translation id="1869691326892615940">सुरक्षित पासवर्ड, जलद साइन-इन</translation>
 <translation id="1871098866036088250">Chrome ब्राउझरमध्ये उघडा</translation>
 <translation id="1877026089748256423">Chrome कालबाह्य आहे</translation>
 <translation id="1877073879466606884">तुम्ही साइन इन केलेली प्रोफाइल ही व्यवस्थापित केलेली प्रोफाइल आहे. तुमचा अ‍ॅडमिनिस्ट्रेटर हा तुमच्या प्रोफाइल सेटिंग्जमध्ये रिमोट पद्धतीने बदल करू शकतो, तक्रारीद्वारे ब्राउझरशी संबंधित माहितीचे विश्लेषण करू शकतो आणि इतर आवश्यक टास्क करू शकतो.</translation>
@@ -208,6 +212,7 @@
 <translation id="1899175549411605574">किमतीच्या इनसाइटची तळाशी असलेली शीट</translation>
 <translation id="1900260903084164610">पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_TOS_LINK" />सेवा अटी<ph name="END_TOS_LINK" /> यांना सहमती दर्शवता.</translation>
 <translation id="1904580727789512086">तुम्ही भेट दिलेल्या URL तुमच्या Google खाते मध्ये सेव्ह केल्या जातात</translation>
+<translation id="1905582086181351638"><ph name="DEVICE_TYPE" /> वरून तुमची सेव्ह केलेली माहिती आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="1910950723001426294">शेअरिंग पर्यांयाची सूची बंद आहे.</translation>
 <translation id="1912367671208932516">एक्स्टेंशन मेनू उघडा</translation>
 <translation id="191726024256261717">परवानग्यांचे पुनरावलोकन करा</translation>
@@ -310,6 +315,7 @@
 <translation id="2287421207599770907">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब पहा}other{<ph name="TABS_COUNT_MANY" /> टॅब पहा}}</translation>
 <translation id="2297822946037605517">हे पेज शेअर करा</translation>
 <translation id="230115972905494466">कोणतीही कंपॅटिबल डिव्हाइस आढळली नाहीत</translation>
+<translation id="2305798319182970276">बटणाच्या एका टॅपने तुमचा इतिहास हटवा</translation>
 <translation id="2316129865977710310">नाही, नको</translation>
 <translation id="232137538351753795">मागे जाण्यासाठी डाव्या कडेवरून स्वाइप करा</translation>
 <translation id="2323763861024343754">साइट स्टोरेज</translation>
@@ -534,6 +540,7 @@
 <translation id="3167258285411721858">तुम्ही <ph name="HOST_NAME" /> साठी मोबाइल साइटची विनंती करू शकता</translation>
 <translation id="3177338796769255211">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला पिन केलेला म्यूट केलेला गुप्त टॅब</translation>
+<translation id="3185851164388130512">वर्धित सुरक्षित ब्राउझिंग माहीत असलेल्या आणि संभाव्य नवीन धोक्यांपासून सुरक्षा देते</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> टॅब गट</translation>
 <translation id="3200536777393523575">तुमची सद्य विंडो बंद करायची आहे का?</translation>
 <translation id="3207960819495026254">बुकमार्क केलेली</translation>
@@ -751,6 +758,7 @@
 <translation id="4113030288477039509">तुमच्या ॲडमिनिस्ट्रेटरद्वारे व्यवस्थापित</translation>
 <translation id="4116038641877404294">पेज ऑफलाइन वापरण्यासाठी ती डाउनलोड करा</translation>
 <translation id="4121654769234887259">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो <ph name="USERNAME" /> साठी Google Password Manager यामध्ये सेव्ह केला जाईल.</translation>
+<translation id="4128312955780560730">तुमचे गुप्त टॅब लॉक करा</translation>
 <translation id="4132137475637520539">लिंक असलेल्या कोणत्याही व्यक्तीला सामील होऊ द्या</translation>
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला पिन केलेला रेकॉर्ड करत असलेला टॅब</translation>
 <translation id="4137746084635924146">डिव्हाइसची सध्याची भाषा</translation>
@@ -791,6 +799,7 @@
 <translation id="4285498937028063278">अनपिन</translation>
 <translation id="4285846616383034558">कुकी, कॅशे आणि इतर साइट डेटा</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android सेटिंग्जमध्ये स्क्रीन लॉक सुरू करणे<ph name="END_LINK" /></translation>
+<translation id="4293154608148215505">तुमचा फोन</translation>
 <translation id="4296252229500326964">नवीन गुप्त टॅब</translation>
 <translation id="4298161202289999785"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला गुप्त टॅब</translation>
 <translation id="4298388696830689168">लिंक केलेल्या साइट</translation>
@@ -801,6 +810,7 @@
 <translation id="4307992518367153382">मूलभूत</translation>
 <translation id="4311652497846705514">PDF उघडायची आहे का?</translation>
 <translation id="4313895677475587452">{NUM_SUSPICIOUS_NOTIFICATIONS,plural, =1{संभाव्य स्पॅम}other{संभाव्य स्पॅम (#)}}</translation>
+<translation id="4315292299997584267"><ph name="DEVICE_TYPE" /> वरून तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी या साइटवर व Chrome मध्ये साइन इन करा</translation>
 <translation id="4320177379694898372">कोणतेही इंटरनेट कनेक्शन नाही</translation>
 <translation id="4326079409704643112">तुमच्या Google खाते मधील Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="4335835283689002019">सुरक्षित ब्राउझिंग बंद आहे</translation>
@@ -929,6 +939,7 @@
 <translation id="4793679854893018356">Chrome तुम्हाला सुरक्षित कसे ठेवते याबद्दल जाणून घ्या</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4807098396393229769">कार्डवरील नाव</translation>
+<translation id="4807700370495020449">तुमच्या सर्व डिव्हाइसवर तुमची सेव्ह केलेली माहिती आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी या साइटवर व Chrome मध्ये साइन इन करा</translation>
 <translation id="480990236307250886">होम पेज उघडा</translation>
 <translation id="4816492930507672669">पृष्‍ठानुरुप करा</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> टॅब गट बंद आणि सेव्ह केला आहे</translation>
@@ -975,6 +986,7 @@
 <translation id="4991110219272367918">वेबसाइटला मंजुरी द्यायची की नाही यासाठीचा पर्याय बंद आहे</translation>
 <translation id="4996042648402406470">मिळवा</translation>
 <translation id="4996095658297597226">सुचवलेला पासवर्ड वापरायचा आहे का?</translation>
+<translation id="4996275162531289114">Google चा सर्वात सुरक्षित ब्राउझिंग अनुभव</translation>
 <translation id="5007392906805964215">पुनरावलोकन करा</translation>
 <translation id="5010886807652684893">व्हिज्युअल दृश्य</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> कनेक्ट करू इच्छिते</translation>
@@ -1002,6 +1014,7 @@
 <translation id="5118713593561876160">स्वारस्ये</translation>
 <translation id="5122378528687922675">तुम्हाला मदत हवी असल्यास, तुमचे पालक (<ph name="PARENT_NAME_1" /> किंवा <ph name="PARENT_NAME_2" />) यांना विचारा</translation>
 <translation id="5123685120097942451">गुप्त टॅब</translation>
+<translation id="5126335625961252141">तुमचा टॅबलेट</translation>
 <translation id="5130015735779747822">स्क्रोल करून पेजच्या तळाशी जा</translation>
 <translation id="5142281402488957685">नवीन बातम्यांसाठी, रिफ्रेश करण्याकरिता खाली खेचा</translation>
 <translation id="5144385790872094440">तुम्ही भेट देत असलेली काही पेज प्रीलोड केली जातात. Google साइट किंवा अ‍ॅपवरून लिंक केल्यावर पेज Google सर्व्हरद्वारे प्रीलोड केली जाऊ शकतात.</translation>
@@ -1058,6 +1071,7 @@
 <translation id="5375374982898812658">तुम्ही लगेच “<ph name="GROUP_NAME" />” या टॅब गटाचा ॲक्सेस गमवाल आणि तो तुमच्या सर्व डिव्हाइसवरून हटवला जाईल</translation>
 <translation id="5375577065097716013">Google Lens सह इमेज शोधा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="537865165090710757">सेव्ह करा आणि शेअर करा</translation>
+<translation id="5385892579392932755">तुमचा लॅपटॉप</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ला तुमच्या डिजिटल वॉलेटमधून वैयक्तिक माहिती वापरायची आहे. या साइटवर विश्वास असले तरच पुढे सुरू ठेवा. धोकादायक साइट तुमचे कायदेशीर नाव किंवा आयडी नंबर यांसारख्या गोष्टी उघड करण्यासाठी तुम्हाला फसवण्याचा प्रयत्न करू शकतात.</translation>
 <translation id="5395376160638294582">तुम्ही तुमच्या Google खाते मधील Chrome डेटा कधीही वापरू शकता याची खात्री करा</translation>
 <translation id="539881862970320163">क्लिष्ट पासवर्ड सुचवला. कीबोर्ड लपवलेला आहे.</translation>
@@ -1074,6 +1088,7 @@
 <translation id="5438292632479953702">पुन्हा डाउनलोड करा</translation>
 <translation id="5439191312780166229">साधारण संरक्षणापेक्षा साइटवरील अधिक डेटाचे विश्लेषण करून, Google ला यापूर्वी माहीत नसलेल्या धोकादायक साइटबद्दल तुम्हाला चेतावणी देते. तुम्ही Chrome च्या चेतावण्या वगळणे निवडू शकता.</translation>
 <translation id="5441466871879044658">या भाषेमध्ये भाषांतर करा</translation>
+<translation id="544285856361623600"><ph name="DEVICE_TYPE" /> वरून तुमचे बुकमार्क आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी या साइटवर व Chrome मध्ये साइन इन करा</translation>
 <translation id="5444999712122199445">साइटवर परत जा</translation>
 <translation id="544776284582297024">टॅब उघडण्यासाठी आणि एकाच वेळी वेगवेगळ्या पेजना भेट देण्यासाठी, टॅब उघडा बटणावर टॅप करा</translation>
 <translation id="5456381639095306749">पेज डाउनलोड करा</translation>
@@ -1360,6 +1375,7 @@
 <translation id="6565959834589222080">उपलब्ध असेल तेव्हा वाय-फाय वापरला जातो</translation>
 <translation id="657177046675873214">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क मिळवण्यासाठी, सेटिंग्जमध्ये "बुकमार्क" सुरू करा</translation>
 <translation id="6573096386450695060">नेहमी अनुमती द्या</translation>
+<translation id="658099107946526506">नको असलेला अ‍ॅक्सेस रोखण्यासाठी पिन वापरून तुमच्या खाजगी ब्राउझिंगचे संरक्षण करा</translation>
 <translation id="6583199322650523874">सध्याचे पेज बुकमार्क करा</translation>
 <translation id="6588043302623806746">सुरक्षित DNS वापरा</translation>
 <translation id="6590471736817333463">कमाल ६०% डेटाची बचत करा</translation>
@@ -1519,6 +1535,7 @@
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{१ साइटसाठी परवानग्यांचे पुनरावलोकन केले}other{# साइटसाठी परवानग्यांचे पुनरावलोकन केले}}</translation>
 <translation id="7138678301420049075">इतर</translation>
 <translation id="7140829094791862589">मॅन्युअल क्रमानुसार लावा</translation>
+<translation id="7144458305574230431"><ph name="DEVICE_TYPE" /> वरून तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="7146622961999026732">या साइट आणि ही अ‍ॅप्स तुमच्यासाठी महत्त्वाची आहेत असे दिसते:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> कडून <ph name="BEGIN_LINK" />अधिक माहिती मिळवा<ph name="END_LINK" />.</translation>
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
@@ -1659,6 +1676,7 @@
 <translation id="7663320421139257046">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल. या साइटचे <ph name="BEGIN_LINK1" />गोपनीयता धोरण<ph name="END_LINK1" /> पहा.</translation>
 <translation id="766587987807204883">तुम्ही ऑफलाइन असताना देखील तुम्ही वाचू शकता असे लेख येथे दिसतात</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> बंद केले आहेत</translation>
+<translation id="767157537088426800">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी या साइटवर व Chrome मध्ये साइन इन करा</translation>
 <translation id="7682724950699840886">खालील टिपा वापरून पहा: तुमच्या डिव्हाइसवर पुरेशी जागा असल्याची खात्री करा, पुन्हा एक्सपोर्ट करण्याचा प्रयत्न करा.</translation>
 <translation id="7690596512217303514">तुमच्या डिव्हाइसला Chrome उघडता आले नाही. समस्येचे निराकरण करण्यासाठी, तुमच्या अ‍ॅप स्टोअरवरून नवीनतम Chrome अपडेट डाउनलोड करा.</translation>
 <translation id="7692761875510935111">ब्राउझरमध्ये झटपट उघडा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करून धरून ठेवा.</translation>
@@ -1735,6 +1753,7 @@
 <translation id="7997875520309653083">मागे जाण्यासाठी उजव्या कडेवरून स्वाइप करा</translation>
 <translation id="7998918019931843664">बंद केलेले टॅब पुन्हा उघडा</translation>
 <translation id="8001245658307297681">तुम्ही स्थानिक फाइल पाहत आहात</translation>
+<translation id="800155843932969169">तुम्हाला सुरक्षित ठेवण्यासाठी तुमचे पासवर्ड सुरक्षितपणे तयार आणि स्टोअर करा, आणखी जलद साइन इन करा व पासवर्डच्या सुरक्षेसंबंधित समस्या ओळखा</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8006630792898017994">स्पेस किंवा टॅब</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला पिन केलेला शेअर करत असलेला गुप्त टॅब</translation>
@@ -2046,6 +2065,7 @@
 <translation id="9190355771000652811">अ‍ॅड्रेस बारमध्ये, सर्च इंजीन आणि साइट शोध यासाठीच्या शॉर्टकटसह हा कीबोर्ड शॉर्टकट वापरा.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, निवडलेला गुप्त टॅब पिन केलेला आहे</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{एका मिनिटापूर्वी तपासले}other{# मिनिटांपूर्वी तपासले}}</translation>
+<translation id="9199610579638564405">तुमची सेव्ह केलेली माहिती आणि <ph name="DEVICE_TYPE" /> कडील आणखी बऱ्याच गोष्टी मिळवण्यासाठी या साइटवर व Chrome मध्ये साइन इन करा</translation>
 <translation id="9202894533863490414">या साइटवरून डाउनलोड करायचे आहे क?</translation>
 <translation id="9204836675896933765">1 फाइल शिल्लक</translation>
 <translation id="9205933215779845960">ते पेज सापडले नाही. तुमचे शब्दलेखन तपासा किंवा <ph name="SEARCH_ENGINE" /> वर शोधून पहा.</translation>

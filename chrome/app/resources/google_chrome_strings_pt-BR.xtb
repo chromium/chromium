@@ -144,6 +144,7 @@
 <translation id="2424440923901031101">Esta extensão viola a política da Chrome Web Store e pode não ser segura. Remova do Chrome para que ela não apareça mais e altere seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
 <translation id="2467438592969358367">O Google Chrome quer exportar suas senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="2472092250898121027">Esta extensão contém malware e não é segura. Remova do Chrome para que ela não apareça mais e altere seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
+<translation id="2482846200327569645">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Você também terá acesso aos seus favoritos e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2513154137948333830">Reinicialização necessária: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="2523492931736391680">Seu trabalho está seguro no Chrome</translation>
@@ -195,6 +196,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="2916983411556218750">Vamos preparar seu Chrome</translation>
 <translation id="2926952073016206995">O Chrome precisa da permissão de acesso à câmera para este site</translation>
 <translation id="2945997411976714835">Erro de instalação: falha ao iniciar o processo do instalador.</translation>
+<translation id="2959224682348913614">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Você também terá acesso a senhas e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Login na rede - Chrome</translation>
 <translation id="2970681950995291301">Para remover sua Conta do Google do Chrome, saia dela na página "Configurações"</translation>
 <translation id="2976869732253036751">Receba alertas de Monitoramento de Preços no seu celular com o Chrome</translation>
@@ -214,6 +216,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="3073571714401714450">Ativar/desativar o Gemini no Chrome Dev</translation>
 <translation id="3080151273017101988">Executar aplicativos em segundo plano quando o Google Chrome estiver fechado</translation>
 <translation id="308397506772922478">Se você esqueceu a senha longa ou quer mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
+<translation id="3089427491314610412">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Você também terá acesso às informações salvas e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="3100998948628680988">Nomear seu perfil do Chrome</translation>
 <translation id="310459126943037700">Falha ao encerrar tarefas.</translation>
 <translation id="3104828284009500087">Pesquise o que quiser na página</translation>
@@ -226,6 +229,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="3140883423282498090">Suas alterações terão efeito na próxima vez que você reiniciar o Google Chrome.</translation>
 <translation id="3149510190863420837">apps do Chrome</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
+<translation id="318555301233810762">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Você também terá acesso a favoritos e muito mais em todos os seus dispositivos.</translation>
 <translation id="319199214552513804">Para acessar essa extensão e muito mais em todos os seus computadores, faça login no Chrome</translation>
 <translation id="3196187562065225381">O Chrome bloqueou o download porque o arquivo é perigoso</translation>
 <translation id="3222857603094643834">Pesquise o que quiser nesta página com o Google Lens</translation>
@@ -264,6 +268,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="3598673391539778844">Mostrar o Gemini no Chrome na bandeja do sistema</translation>
 <translation id="3622716124581627104">Identifique itens ou lugares e copie ou traduza textos. Quando você usa o Lens, uma captura de tela da página é enviada ao Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Agora ficou mais fácil usar o Chrome com sua Conta do Google e em computadores compartilhados.</translation>
+<translation id="3628103251823745322">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Você também terá acesso às informações salvas e muito mais em todos os seus dispositivos.</translation>
 <translation id="3635073343384702370">O Chrome poderá verificar suas senhas quando elas forem salvas</translation>
 <translation id="3636970668267555808">Defina o Chrome como o navegador padrão para acessar seus recursos favoritos com facilidade.</translation>
 <translation id="3667616615096815454">Não foi possível fazer a instalação. O app é desconhecido para o servidor.</translation>
@@ -587,6 +592,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Para receber as futuras atualizações do Google Chrome, você precisa do Windows 10 ou versão mais recente. Este computador está usando o Windows 8.1.</translation>
 <translation id="6943584222992551122">Os dados de navegação dessa pessoa serão excluídos deste dispositivo. Para recuperar os dados, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
+<translation id="6962628299694876291">A conta <ph name="EXISTING_USER" /> já está conectada. Para manter sua navegação separada, faça login no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Você também terá acesso a senhas e muito mais em todos os seus dispositivos.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967962315388095737">Regra interna do Google Chrome Beta que permite o tráfego mDNS.</translation>
 <translation id="6979589607440534284">Saiba por que o Chrome bloqueia alguns arquivos (abre em uma nova guia)</translation>

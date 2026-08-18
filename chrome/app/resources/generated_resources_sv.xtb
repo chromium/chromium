@@ -1885,6 +1885,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2458379781610688953">Uppdatera kontot, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Aktiveringskoden har registrerats</translation>
 <translation id="2459706890611560967">Återuppta castingen av fliken till <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Dela en skärmbild</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Löper ut i dag}=1{Löper ut i morgon}other{Löper ut om # dagar}}</translation>
 <translation id="2460482211073772897">I andra mappar</translation>
 <translation id="2460826998961521840">för att använda nycklar i ditt Google-konto</translation>

@@ -1885,6 +1885,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2458379781610688953">Cập nhật tài khoản, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Đã phát hiện một mã kích hoạt</translation>
 <translation id="2459706890611560967">Tiếp tục truyền thẻ tới <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Chia sẻ ảnh chụp màn hình</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Hết hạn hôm nay}=1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
 <translation id="2460482211073772897">Trong các thư mục khác</translation>
 <translation id="2460826998961521840">Để dùng khoá truy cập đã lưu trong Tài khoản Google của bạn</translation>
@@ -8813,7 +8814,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7814458197256864873">Sao &amp;chép</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7815583197273433531">Chỉnh sửa lối tắt <ph name="SHORTCUT" /> cho <ph name="EXTENSION_NAME" /></translation>
-<translation id="7815680994978050279">Tải xuống nguy hiểm đã chặn</translation>
+<translation id="7815680994978050279">Đã chặn tệp tải xuống nguy hiểm</translation>
 <translation id="7818135753970109980">Đã thêm chủ đề mới (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="7819839686707222575">Tiện ích là các ứng dụng bổ sung cho Chrome có thể giúp bạn làm được nhiều việc hơn</translation>
 <translation id="7819968103441522596">&amp;Khôi phục</translation>

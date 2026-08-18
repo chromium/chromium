@@ -766,6 +766,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4180726336228139707">Bara på den här enheten</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4188221736490993796">Sortera från Ö till A</translation>
+<translation id="4188638484665452040">Gemini har lossats</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome har stoppat aviseringar från den här webbplatsen på grund av spam eller bedrägligt innehåll}other{Chrome har stoppat aviseringar från de här webbplatserna på grund av spam eller bedrägligt innehåll}}</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 flik på den här enheten}other{# flikar på den här enheten}}</translation>
@@ -1839,6 +1840,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8396098434728053815">Dela även ljud från flikar</translation>
 <translation id="8398389123831319859">Dubbeltryck och håll kvar fingret för att byta till inkognito</translation>
+<translation id="8412037385861858490">För att skydda ditt arbete i Chrome kan organisationen visa eller hantera viss information när du är inloggad i Chrome. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Visa fullständig historik</translation>
 <translation id="8413795581997394485">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. När du besöker en webbplats skickas en obfuskerad del av webbadressen till Google via en integritetsserver som döljer din IP-adress. Om en webbplats gör något misstänkt skickas också fullständiga webbadresser och delar av sidinnehållet.</translation>
 <translation id="8414396119627470038">Logga in på <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

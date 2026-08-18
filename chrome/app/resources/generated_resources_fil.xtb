@@ -1885,6 +1885,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2458379781610688953">I-update ang account, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Na-detect ang code sa pag-activate</translation>
 <translation id="2459706890611560967">Ipagpatuloy ang pag-cast ng tab sa <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Mag-share ng screenshot</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Mag-e-expire ngayong araw}=1{Mag-e-expire bukas}one{Mag-e-expire sa loob ng # araw}other{Mag-e-expire sa loob ng # na araw}}</translation>
 <translation id="2460482211073772897">Sa iba pang folder</translation>
 <translation id="2460826998961521840">Para magamit ang mga naka-save na passkey sa Google Account mo</translation>

@@ -765,6 +765,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4180726336228139707">Uniquement sur cet appareil</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4188221736490993796">Trier de Z à A</translation>
+<translation id="4188638484665452040">Gemini retiré</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a empêché ce site d'envoyer des notifications en raison de spam ou de contenu trompeur}one{Chrome a empêché ce site d'envoyer des notifications en raison de spam ou de contenu trompeur}other{Chrome a empêché ces sites d'envoyer des notifications en raison de spam ou de contenu trompeur}}</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 onglet sur cet appareil}one{# onglet sur cet appareil}other{# onglets sur cet appareil}}</translation>
@@ -1838,6 +1839,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8393700583063109961">Envoyer un message</translation>
 <translation id="8396098434728053815">Partager aussi l'audio de l'onglet</translation>
 <translation id="8398389123831319859">Appuyer deux fois de manière prolongée pour passer en navigation privée</translation>
+<translation id="8412037385861858490">Pour sécuriser votre travail sur Chrome, votre organisation pourra afficher ou gérer certaines informations lorsque vous serez connecté à Chrome. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Afficher l'historique complet</translation>
 <translation id="8413795581997394485">Protection contre les extensions, sites et téléchargements connus pour être dangereux. Lorsque vous consultez un site, Chrome envoie une partie obscurcie de l'URL à Google via un serveur de confidentialité qui masque votre adresse IP. Si un site a un comportement suspect, les URL complètes et des extraits du contenu des pages sont également envoyés.</translation>
 <translation id="8414396119627470038">Se connecter à <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

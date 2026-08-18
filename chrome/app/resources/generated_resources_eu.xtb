@@ -1379,7 +1379,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2071393345806050157">Ez dago erregistro lokalik.</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Sakatu luzapena instalatzeko}other{Sakatu luzapen horiek instalatzeko}}</translation>
 <translation id="2073505299004274893">Erabili <ph name="CHARACTER_LIMIT" /> karaktere gehienez</translation>
-<translation id="2074263453710478603">Chrome-ko erabiltzaileen erregistroak ChromeOS-en</translation>
+<translation id="2074263453710478603">Chrome-ren erabiltzaileen erregistroak ChromeOS-en</translation>
 <translation id="2074599390896964828">Kokapen zehatza</translation>
 <translation id="2075088158103027942">Joan harpidetzara</translation>
 <translation id="2075474481720804517">Bateriaren % <ph name="BATTERY_PERCENTAGE" /></translation>

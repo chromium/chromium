@@ -765,6 +765,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4180726336228139707">Vain tälle laitteelle</translation>
 <translation id="4181841719683918333">Kielet</translation>
 <translation id="4188221736490993796">Lajittele Z:sta A:han</translation>
+<translation id="4188638484665452040">Gemini irrotettu</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome on estänyt sivustoa lähettämästä ilmoituksia roskasisällön tai vilpillisen sisällön vuoksi}other{Chrome on estänyt näitä sivustoja lähettämästä ilmoituksia roskasisällön tai vilpillisen sisällön vuoksi}}</translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 välilehti tällä laitteella}other{# välilehteä tällä laitteella}}</translation>
@@ -1838,6 +1839,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8393700583063109961">Lähetä viesti</translation>
 <translation id="8396098434728053815">Jaa myös välilehden audio</translation>
 <translation id="8398389123831319859">Vaihda incognito-tilaan kaksoisnapauttamalla ja koskettamalla pitkään</translation>
+<translation id="8412037385861858490">Organisaatiosi voi nähdä tai ylläpitää tiettyjä tietoja, jotta voit käyttää Chromea turvallisesti, kun olet kirjautuneena Chromeen. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Näytä koko selaushistoria</translation>
 <translation id="8413795581997394485">Suojaa vaaralliseksi tiedettyjä sivustoja, latauksia ja laajennuksia vastaan. Kun käyt sivustolla, Chrome lähettää osan URL-osoitteesta obfuskoituna Googlelle yksityisen palvelimen kautta, jolloin IP-osoitteesi piilotetaan. Jos sivusto tekee jotakin epäilyttävää, koko URL-osoitteet ja osia sivun sisällöstä lähetetään.</translation>
 <translation id="8414396119627470038">Kirjaudu sisään: <ph name="SITE_ETLD_PLUS_ONE" /> (<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />)</translation>

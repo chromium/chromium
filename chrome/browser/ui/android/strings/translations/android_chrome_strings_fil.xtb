@@ -765,6 +765,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="4180726336228139707">Sa device lang na ito</translation>
 <translation id="4181841719683918333">Mga Wika</translation>
 <translation id="4188221736490993796">Isaayos: Z hanggang A</translation>
+<translation id="4188638484665452040">Na-unpin ang Gemini</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Pinahinto ng Chrome ang site na ito sa pagpapadala ng mga notification dahil sa spam o mapanlinlang na content}one{Pinahinto ng Chrome ang mga site na ito sa pagpapadala ng mga notification dahil sa spam o mapanlinlang na content}other{Pinahinto ng Chrome ang mga site na ito sa pagpapadala ng mga notification dahil sa spam o mapanlinlang na content}}</translation>
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab sa device na ito}one{# tab sa device na ito}other{# na tab sa device na ito}}</translation>
@@ -1838,6 +1839,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8393700583063109961">Ipadala ang mensahe</translation>
 <translation id="8396098434728053815">I-share din ang audio ng tab</translation>
 <translation id="8398389123831319859">I-double tap at i-hold para lumipat sa Incognito</translation>
+<translation id="8412037385861858490">Para ma-secure ang iyong trabaho sa Chrome, makikita o mapapamahalaan ng organisasyon mo ang ilang partikular na impormasyon kapag naka-sign in ka sa Chrome. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Ipakita ang buong history</translation>
 <translation id="8413795581997394485">Nagpoprotekta laban sa mga site, download, at extension na kilalang mapanganib. Kapag bumisita ka sa isang site, magpapadala ang Chrome ng na-obfuscate na bahagi ng URL sa Google sa pamamagitan ng server ng privacy na nagha-hide ng IP address. Kung may gagawing kahina-hinala ang isang site, ipapadala rin ang mga buong URL at bahagi ng content page.</translation>
 <translation id="8414396119627470038">Mag-sign in sa <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>

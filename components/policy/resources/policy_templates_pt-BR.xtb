@@ -182,6 +182,16 @@ O rótulo pode ser personalizado usando a política <ph name="ENTERPRISE_CUSTOM_
 <translation id="1100840127293327071">Não marcar a opção para manter os dados de navegação existentes por padrão</translation>
 <translation id="1105572260329131950">Usar os ícones padrão em conexões seguras</translation>
 <translation id="1105711894873068933">Após a desativação do <ph name="LACROS_NAME" />, todos os dados do usuário vão ser removidos no próximo login.</translation>
+<translation id="1106279506320506502">Especifica se o Modo Isolado está ativado.
+
+O Modo Isolado é um modo de navegação temporário exclusivo para empresas.
+Ele é compatível com políticas empresariais relacionadas à DLP e extensões de instalação forçada.
+
+Se for definida como 1 (Ativado), o Modo Isolado será ativado e o Modo de Navegação Anônima será desativado.
+
+Se for definida como 0 (Desativado) ou deixada sem definição, o Modo Isolado será desativado.
+
+Esta política exige uma licença do <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> para entrar em vigor.</translation>
 <translation id="1106342730891876476">Configurações de compartilhamento</translation>
 <translation id="1107538157073168076">Desativar extensão de insights</translation>
 <translation id="1110426799149444997">Desativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>

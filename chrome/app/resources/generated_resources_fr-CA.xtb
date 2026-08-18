@@ -1872,6 +1872,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2458379781610688953">Mettre à jour le compte <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Code d'activation détecté</translation>
 <translation id="2459706890611560967">Reprendre l'onglet de diffusion sur <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Partager une capture d'écran</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Expire aujourd'hui}=1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="2460482211073772897">Dans d'autres dossiers</translation>
 <translation id="2460826998961521840">Pour user des clés d'accès dans votre compte</translation>

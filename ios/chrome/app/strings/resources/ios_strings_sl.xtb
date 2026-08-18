@@ -1031,6 +1031,7 @@
 <translation id="4430505936695785931">Zagotovite si shranjena gesla v drugih aplikacijah</translation>
 <translation id="4431224949908513835">Izberite plačilno sredstvo, ki ga želite vnesti.</translation>
 <translation id="4432122368769493392">Nastavitve …</translation>
+<translation id="4439968635693513370">Načrtujte konec tedna z:</translation>
 <translation id="4442550905108052454">Odprite <ph name="BEGIN_BOLD" />Nastavitve<ph name="END_BOLD" /></translation>
 <translation id="4445840280797509738">Več možnosti za: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="4455710003856931944">Povlecite z roba za premik nazaj ali naprej.</translation>
@@ -1100,6 +1101,7 @@
 <translation id="4668929960204016307">,</translation>
 <translation id="4669618761237477717">Vaša organizacija zahteva, da brskate zasebno. Skupine zavihkov se v anonimnem načinu ne sinhronizirajo.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="4670422040696550256">Nakupujte brez skrbi z:</translation>
 <translation id="467189612236587057">Pokličite podjetje, da se povežete z njim</translation>
 <translation id="4673565891421389203">Če se prijavite z upravljanim računom, lahko ločite brskanje, povezano z organizacijo (vključno z zavihki, zgodovino in gesli), od drugega brskanja
 
@@ -2474,6 +2476,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="9029650858822697271">Bili ste odjavljeni</translation>
 <translation id="9032405509996909363">Potrditev brisanja podatkov brskanja</translation>
 <translation id="9035699147763101514">Uporablja osebno inteligenco z Geminijem. Izbire upravljajte v nastavitvah.</translation>
+<translation id="9038526468059454274">Povzemite z:</translation>
 <translation id="9039373489628511875">Pasovna širina</translation>
 <translation id="9042893549633094279">Zasebnost in varnost</translation>
 <translation id="9055291197094969722">Ustvarite skupine zavihkov in organizirajte odprte zavihke za večjo storilnost</translation>

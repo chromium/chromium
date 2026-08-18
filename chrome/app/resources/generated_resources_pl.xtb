@@ -1870,6 +1870,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2458379781610688953">Aktualizuj konto, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Wykryto kod aktywacyjny</translation>
 <translation id="2459706890611560967">Wznów przesyłanie karty na urządzenie <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Udostępnij zrzut ekranu</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Wygasa dzisiaj}=1{Wygasa jutro}few{Wygasa za # dni}many{Wygasa za # dni}other{Wygasa za # dnia}}</translation>
 <translation id="2460482211073772897">W innych folderach</translation>
 <translation id="2460826998961521840">Aby używać kluczy dostępu z konta Google</translation>

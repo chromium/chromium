@@ -1871,6 +1871,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2458379781610688953">Aggiorna account, <ph name="EMAIL" /></translation>
 <translation id="2459703812219683497">Codice di attivazione rilevato</translation>
 <translation id="2459706890611560967">Riprendi la trasmissione della scheda su <ph name="DEVICE_NAME" /></translation>
+<translation id="245979889539926662">Condividi uno screenshot</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Scade oggi}=1{Scade domani}other{Scade tra # giorni}}</translation>
 <translation id="2460482211073772897">In altre cartelle</translation>
 <translation id="2460826998961521840">Per usare le passkey salvate nel tuo Account Google</translation>

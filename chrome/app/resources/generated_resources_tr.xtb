@@ -1872,6 +1872,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2458379781610688953"><ph name="EMAIL" /> hesabını güncelle</translation>
 <translation id="2459703812219683497">Etkinleştirme kodu algılandı</translation>
 <translation id="2459706890611560967">Sekmeyi <ph name="DEVICE_NAME" /> adlı cihazda yayınlamaya devam edin</translation>
+<translation id="245979889539926662">Ekran görüntüsü paylaş</translation>
 <translation id="2460150227008936698">{COUNT,plural, =0{Süresi bugün dolacak}=1{Süresi yarın dolacak}other{Süresi # içinde dolacak}}</translation>
 <translation id="2460482211073772897">Diğer klasörlerde</translation>
 <translation id="2460826998961521840">Google Hesabınızda kayıtlı geçiş anahtarlarını kullanmak için</translation>
