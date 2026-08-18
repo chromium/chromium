@@ -548,17 +548,17 @@
 
 #define SUBMENU_ACTION_IDS                                                     \
   E(kActionAppMenuRoot)                                                        \
-  E(kActionMenuBookmarksSubmenu, IDC_BOOKMARKS_MENU)                           \
-  E(kActionMenuPasswordsAndAutofillSubmenu, IDC_PASSWORDS_AND_AUTOFILL_MENU)   \
-  E(kActionMenuReadingListSubmenu, IDC_READING_LIST_MENU)                      \
-  E(kActionMenuZoomSubmenu, IDC_ZOOM_MENU)                                     \
-  E(kActionMenuProfileSubmenu, IDC_PROFILE_MENU_IN_APP_MENU)                   \
-  E(kActionMenuFindAndEditSubmenu, IDC_FIND_AND_EDIT_MENU)                     \
-  E(kActionMenuSaveAndShareSubmenu, IDC_SAVE_AND_SHARE_MENU)                   \
-  E(kActionMenuHelpSubmenu, IDC_HELP_MENU)                                     \
-  E(kActionMenuSavedTabGroupsSubmenu, IDC_SAVED_TAB_GROUPS_MENU)               \
-  E(kActionMenuRecentTabsSubmenu, IDC_RECENT_TABS_MENU)                       \
-  E(kActionMenuDeveloperSubmenu, IDC_DEVELOPER_MENU)
+  E(kActionBookmarksSubmenu, IDC_BOOKMARKS_MENU)                           \
+  E(kActionPasswordsAndAutofillSubmenu, IDC_PASSWORDS_AND_AUTOFILL_MENU)   \
+  E(kActionReadingListSubmenu, IDC_READING_LIST_MENU)                      \
+  E(kActionZoomSubmenu, IDC_ZOOM_MENU)                                     \
+  E(kActionProfileSubmenu, IDC_PROFILE_MENU_IN_APP_MENU)                   \
+  E(kActionFindAndEditSubmenu, IDC_FIND_AND_EDIT_MENU)                     \
+  E(kActionSaveAndShareSubmenu, IDC_SAVE_AND_SHARE_MENU)                   \
+  E(kActionHelpSubmenu, IDC_HELP_MENU)                                     \
+  E(kActionSavedTabGroupsSubmenu, IDC_SAVED_TAB_GROUPS_MENU)               \
+  E(kActionRecentTabsSubmenu, IDC_RECENT_TABS_MENU)                       \
+  E(kActionDeveloperSubmenu, IDC_DEVELOPER_MENU)
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

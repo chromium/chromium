@@ -4647,7 +4647,7 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuBookmarksSubmenu, IDS_BOOKMARKS_AND_LISTS_MENU,
+          kActionBookmarksSubmenu, IDS_BOOKMARKS_AND_LISTS_MENU,
           IDS_BOOKMARKS_AND_LISTS_MENU,
           features::IsRoundedIconsEnabled() ? kStarIcon
                                             : kBookmarksListsMenuOldIcon,
@@ -4660,8 +4660,8 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuPasswordsAndAutofillSubmenu,
-          IDS_PASSWORDS_AND_AUTOFILL_MENU, IDS_PASSWORDS_AND_AUTOFILL_MENU,
+          kActionPasswordsAndAutofillSubmenu, IDS_PASSWORDS_AND_AUTOFILL_MENU,
+          IDS_PASSWORDS_AND_AUTOFILL_MENU,
           features::IsRoundedIconsEnabled()
               ? vector_icons::kPasswordManagerIcon
               : vector_icons::kPasswordManagerOldIcon,
@@ -4674,7 +4674,7 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuReadingListSubmenu, IDS_READING_LIST_MENU,
+          kActionReadingListSubmenu, IDS_READING_LIST_MENU,
           IDS_READING_LIST_MENU,
           features::IsRoundedIconsEnabled() ? kListAltIcon
                                             : kReadingListOldIcon,
@@ -4687,7 +4687,7 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuZoomSubmenu, IDS_ZOOM_MENU, IDS_ZOOM_MENU,
+          kActionZoomSubmenu, IDS_ZOOM_MENU, IDS_ZOOM_MENU,
           features::IsRoundedIconsEnabled() ? kZoomInIcon : kZoomInOldIcon,
           /*is_pinnable=*/false)
           .Build());
@@ -4707,8 +4707,8 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuProfileSubmenu, IDS_READING_LIST_MENU,
-          IDS_READING_LIST_MENU, avatar_vector_icon,
+          kActionProfileSubmenu, IDS_READING_LIST_MENU, IDS_READING_LIST_MENU,
+          avatar_vector_icon,
           /*is_pinnable=*/false)
           .Build());
 
@@ -4718,7 +4718,7 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuFindAndEditSubmenu, IDS_FIND_AND_EDIT_MENU,
+          kActionFindAndEditSubmenu, IDS_FIND_AND_EDIT_MENU,
           IDS_FIND_AND_EDIT_MENU,
           features::IsRoundedIconsEnabled() ? kFindInPageIcon
                                             : kSearchMenuOldIcon,
@@ -4736,7 +4736,7 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuSaveAndShareSubmenu, save_and_share_menu_string_id,
+          kActionSaveAndShareSubmenu, save_and_share_menu_string_id,
           save_and_share_menu_string_id,
           features::IsRoundedIconsEnabled() ? kFileSaveIcon
                                             : kFileSaveChromeRefreshOldIcon,
@@ -4749,7 +4749,7 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuHelpSubmenu, IDS_HELP_MENU, IDS_HELP_MENU,
+          kActionHelpSubmenu, IDS_HELP_MENU, IDS_HELP_MENU,
           features::IsRoundedIconsEnabled() ? kHelpCustomIcon
                                             : kHelpMenuOldIcon,
           /*is_pinnable=*/false)
@@ -4761,7 +4761,7 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuSavedTabGroupsSubmenu, IDS_SAVED_TAB_GROUPS_MENU,
+          kActionSavedTabGroupsSubmenu, IDS_SAVED_TAB_GROUPS_MENU,
           IDS_SAVED_TAB_GROUPS_MENU,
           features::IsRoundedIconsEnabled()
               ? kGridViewIcon
@@ -4775,7 +4775,7 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuRecentTabsSubmenu, IDS_HISTORY_MENU, IDS_HISTORY_MENU,
+          kActionRecentTabsSubmenu, IDS_HISTORY_MENU, IDS_HISTORY_MENU,
           features::IsRoundedIconsEnabled() ? kHistoryIcon : kHistoryOldIcon,
           /*is_pinnable=*/false)
           .Build());
@@ -4786,7 +4786,7 @@ void BrowserActions::InitializeSubmenuActions() {
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {},
               bwi),
-          kActionMenuDeveloperSubmenu, IDS_MORE_TOOLS_MENU, IDS_MORE_TOOLS_MENU,
+          kActionDeveloperSubmenu, IDS_MORE_TOOLS_MENU, IDS_MORE_TOOLS_MENU,
           features::IsRoundedIconsEnabled() ? kHomeRepairServiceIcon
                                             : kMoreToolsMenuOldIcon,
           /*is_pinnable=*/false)
