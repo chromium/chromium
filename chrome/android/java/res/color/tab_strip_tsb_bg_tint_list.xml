@@ -14,5 +14,5 @@ found in the LICENSE file.
     <item android:state_pressed="true"
         android:color="@color/tab_strip_button_bg_pressed_tint" />
 
-    <item android:color="?attr/colorSurfaceContainer" />
+    <item android:color="?attr/colorSurfaceContainerLow" />
 </selector>
