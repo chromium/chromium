@@ -359,9 +359,6 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
 - (void)testSupervisedUserWithAllowAllSitesAndSafeSearchAllowed {
   [self signInSupervisedUser];
   [FamilyLinkSettingsAppInterface setFilteringToAllowAllSites];
-  // TODO(b/297313665): Instead of a default response, introduce a stack-based
-  // approach for the mocked reponses. See `kids_management_api_server_mock.h`.
-  [FamilyLinkSettingsAppInterface setDefaultClassifyURLNavigationIsAllowed:YES];
 
   // When safe search classifies the url as allowed, the user can navigate to
   // it.
