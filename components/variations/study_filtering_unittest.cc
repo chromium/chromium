@@ -970,6 +970,47 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCustomFilter) {
 }
 
 TEST(VariationsStudyFilteringTest,
+     FilterAndValidateStudies_RuntimeMonitoringStudyProcessedFirst) {
+  VariationsSeed seed;
+  Study* study1 = seed.add_study();
+  study1->set_name("Study1");
+  study1->set_default_experiment_name("Default");
+  AddExperiment("Default", 100, study1);
+
+  Study* study2 = seed.add_study();
+  study2->set_name("Study2");
+  study2->set_default_experiment_name("Default");
+  AddExperiment("Default", 100, study2);
+
+  Study* rollout_study = seed.add_study();
+  rollout_study->set_name(kRuntimeMonitoringStudyName);
+  rollout_study->set_default_experiment_name("Default");
+  AddExperiment("Default", 100, rollout_study);
+
+  Study* study3 = seed.add_study();
+  study3->set_name("Study3");
+  study3->set_default_experiment_name("Default");
+  AddExperiment("Default", 100, study3);
+
+  auto client_state = CreateDummyClientFilterableState();
+  client_state->locale = "en-CA";
+  client_state->reference_date = base::Time::Now();
+  client_state->version = base::Version("20.0.0.0");
+  client_state->channel = Study::STABLE;
+  client_state->form_factor = Study::DESKTOP;
+  client_state->platform = Study::PLATFORM_ANDROID;
+
+  std::vector<ProcessedStudy> processed_studies =
+      FilterAndValidateStudies(seed, *client_state, VariationsLayers());
+
+  ASSERT_EQ(4U, processed_studies.size());
+  EXPECT_EQ(kRuntimeMonitoringStudyName, processed_studies[0].study()->name());
+  EXPECT_EQ("Study1", processed_studies[1].study()->name());
+  EXPECT_EQ("Study2", processed_studies[2].study()->name());
+  EXPECT_EQ("Study3", processed_studies[3].study()->name());
+}
+
+TEST(VariationsStudyFilteringTest,
      FilterAndValidateStudiesPolicyRestrictionWithoutFilter) {
   VariationsSeed seed;
   Study* study = seed.add_study();

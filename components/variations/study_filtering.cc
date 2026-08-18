@@ -512,6 +512,19 @@ std::vector<ProcessedStudy> FilterAndValidateStudies(
 
     filtered_studies.push_back(processed_study);
   }
+
+  // Reorder the studies so that kRuntimeMonitoringStudyName is processed
+  // first. (Note: stable_partition preserves the relative order of elements, so
+  // the order is still deterministic for a given seed).
+  // kRuntimeMonitoringStudyName is processed first because it is used to
+  // monitor the health of newly deployed seeds. This ensures that crash reports
+  // will properly report the newest group in case the application of a
+  // subsequent study is crashy.
+  std::ranges::stable_partition(
+      filtered_studies, [](const ProcessedStudy& study) {
+        return study.study()->name() == kRuntimeMonitoringStudyName;
+      });
+
   return filtered_studies;
 }
 
