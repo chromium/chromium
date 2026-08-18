@@ -198,6 +198,27 @@ TpmParseErrorOr<HashSequenceStartResponse> ParseHashSequenceStartResponse(
   });
 }
 
+std::vector<uint8_t> BuildSequenceCompleteCommand(
+    uint32_t sequence_handle,
+    base::span<const uint8_t> data,
+    TpmRh hierarchy) {
+  return base::ToVector(build_sequence_complete_command(
+      sequence_handle, base::SpanToRustSlice(data), hierarchy));
+}
+
+TpmParseErrorOr<SequenceCompleteResponse> ParseSequenceCompleteResponse(
+    base::span<const uint8_t> response_blob) {
+  RawHashResponse raw_response =
+      parse_sequence_complete_response(base::SpanToRustSlice(response_blob));
+
+  return MapResponseStatus(raw_response.status).transform([&] {
+    return SequenceCompleteResponse{
+        .digest = base::ToVector(raw_response.digest),
+        .validation_ticket = base::ToVector(raw_response.validation_ticket),
+    };
+  });
+}
+
 std::vector<uint8_t> BuildSequenceUpdateCommand(
     uint32_t sequence_handle,
     base::span<const uint8_t> data) {

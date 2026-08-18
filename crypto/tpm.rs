@@ -217,6 +217,9 @@ pub mod ffi {
     #[derive(Debug)]
     #[repr(u32)]
     enum TpmCc {
+        /// TPM_CC_SEQUENCE_COMPLETE is the command code for
+        /// TPM2_SequenceComplete.
+        TPM_CC_SEQUENCE_COMPLETE = 0x0000013E,
         /// TPM_CC_CERTIFY is the command code for TPM2_Certify.
         TPM_CC_CERTIFY = 0x00000148,
         /// TPM_CC_SEQUENCE_UPDATE is the command code for TPM2_SequenceUpdate.
@@ -331,6 +334,16 @@ pub mod ffi {
 
         /// Parses a TPM2_SequenceUpdate response.
         fn parse_sequence_update_response(resp: &[u8]) -> ResponseStatus;
+
+        /// Builds a TPM2_SequenceComplete command buffer.
+        fn build_sequence_complete_command(
+            sequence_handle: u32,
+            data: &[u8],
+            hierarchy: TpmRh,
+        ) -> Vec<u8>;
+
+        /// Parses a TPM2_SequenceComplete response.
+        fn parse_sequence_complete_response(resp: &[u8]) -> HashResponse;
 
         /// Builds a TPM2_Sign command buffer.
         fn build_sign_command(
@@ -1392,4 +1405,141 @@ fn parse_sequence_update_response_impl(resp: &[u8]) -> Result<(), TpmParseError>
 /// Parses a TPM2_SequenceUpdate response.
 pub fn parse_sequence_update_response(resp: &[u8]) -> ffi::ResponseStatus {
     parse_sequence_update_response_impl(resp).into()
+}
+
+/// Builds a TPM2_SequenceComplete command.
+///
+/// * `sequence_handle` - Handle of the sequence object.
+/// * `data` - Data to be added to the sequence hash.
+/// * `hierarchy` - Hierarchy handle for ticket authorization (e.g.
+///   TPM_RH_OWNER).
+///
+/// Note: This function assumes empty password authorization for the sequence
+/// handle.
+///
+/// # Panics
+///
+/// Panics if `data` exceeds `TPM_MAX_BUFFER_SIZE` bytes.
+///
+/// A TPM SequenceComplete command has the following structure (Table 93):
+///
+/// Header:
+///
+/// | Type                | Name           |
+/// |---------------------|----------------|
+/// | TPMI_ST_COMMAND_TAG | tag            |
+/// | UINT32              | commandSize    |
+/// | TPM_CC              | commandCode    |
+///
+/// Handles:
+///
+/// | Type                | Name           |
+/// |---------------------|----------------|
+/// | TPMI_DH_OBJECT      | sequenceHandle |
+///
+/// Parameters:
+///
+/// | Type                | Name           |
+/// |---------------------|----------------|
+/// | TPM2B_MAX_BUFFER    | buffer         |
+/// | TPMI_RH_HIERARCHY   | hierarchy      |
+///
+/// See Table 93 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=148.
+///
+/// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
+/// for a general overview of the structure of a TPM command.
+pub fn build_sequence_complete_command(
+    sequence_handle: u32,
+    data: &[u8],
+    hierarchy: TpmRh,
+) -> Vec<u8> {
+    assert!(
+        data.len() <= TPM_MAX_BUFFER_SIZE,
+        "TPM2_SequenceComplete data exceeds TPM_MAX_BUFFER_SIZE ({} bytes)",
+        TPM_MAX_BUFFER_SIZE
+    );
+    let total_size = TPM_HEADER_SIZE
+        + TPM_HANDLE_SIZE
+        + TPM_AUTH_SIZE_SIZE
+        + TPM_SESSION_SIZE
+        + 2 // data size prefix
+        + data.len()
+        + TPM_HANDLE_SIZE; // hierarchy
+
+    let mut writer = Writer::with_capacity(total_size);
+
+    // 1. Command Header
+    writer.write_command_header(
+        TpmSt::TPM_ST_SESSIONS,
+        total_size,
+        TpmCc::TPM_CC_SEQUENCE_COMPLETE,
+    );
+
+    // 2. Handles
+    writer.write_u32(sequence_handle);
+
+    // 3. Authorization Area
+    writer.write_password_sessions(1);
+
+    // 4. Command Parameters
+    writer.write_tpm2b(data);
+    writer.write_u32(hierarchy.repr);
+
+    writer.into_inner()
+}
+
+/// Parses a TPM2_SequenceComplete response.
+///
+/// Header:
+///
+/// | Type   | Name         |
+/// |--------|--------------|
+/// | TPM_ST | tag          |
+/// | UINT32 | responseSize |
+/// | TPM_RC | responseCode |
+///
+/// Parameters:
+///
+/// | Type               | Name             |
+/// |--------------------|------------------|
+/// | TPM2B_DIGEST       | result           |
+/// | TPMT_TK_HASHCHECK  | validation       |
+///
+/// See Table 94 in https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-3-Commands_Version-185_pub.pdf#page=148.
+///
+/// Also see https://trustedcomputinggroup.org/wp-content/uploads/Trusted-Platform-Module-2.0-Library-Part-1-Architecture_Version-185_pub.pdf#page=97
+/// for a general overview of the structure of a TPM response.
+fn parse_sequence_complete_response_impl<'a>(
+    resp: &'a [u8],
+) -> Result<HashData<'a>, TpmParseError> {
+    let mut reader = Reader::new(resp);
+    let header = reader.read_response_header(resp.len())?;
+    if header.tag != TpmSt::TPM_ST_SESSIONS {
+        return Err(TpmParseError::WrongType);
+    }
+
+    let parameter_size: usize = reader
+        .read_u32()
+        .ok_or(TpmParseError::BufferTooSmall)?
+        .try_into()
+        .map_err(|_| TpmParseError::BufferTooSmall)?;
+
+    let mut param_reader =
+        Reader::new(reader.read_bytes(parameter_size).ok_or(TpmParseError::BufferTooSmall)?);
+
+    let digest = param_reader.read_tpm2b().ok_or(TpmParseError::BufferTooSmall)?;
+    let validation = param_reader.read_all();
+
+    let _ticket = TpmtTkHashcheck::parse(&mut Reader::new(validation))?;
+
+    let _session = TpmsAuthResponse::parse(&mut reader)?;
+
+    reader.ensure_empty()?;
+
+    Ok(HashData { digest, validation })
+}
+
+/// Parses a TPM2_SequenceComplete response.
+pub fn parse_sequence_complete_response(resp: &[u8]) -> ffi::HashResponse {
+    parse_sequence_complete_response_impl(resp).into()
 }

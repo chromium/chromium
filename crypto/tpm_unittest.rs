@@ -886,3 +886,199 @@ fn test_sequence_update_tpm_error() {
     expect_true!(matches!(result.result, tpm::ffi::ParseResult::TpmErrorResponse));
     expect_eq!(result.tpm_response_code, 0x100);
 }
+
+#[gtest(TpmTest, BuildSequenceCompleteCommand)]
+fn test_build_sequence_complete_command() {
+    let sequence_handle = 0x80000001;
+    let data = &[1, 2, 3, 4];
+    let hierarchy = tpm::TpmRh::TPM_RH_OWNER;
+    let cmd = tpm::build_sequence_complete_command(sequence_handle, data, hierarchy);
+
+    // Header (10) + Handle (4) + AuthSize (4) + Session (9) + data prefix (2) +
+    // data len (4) + hierarchy (4) = 37
+    expect_eq!(cmd.len(), 37);
+
+    let mut reader = tpm::Reader::new(&cmd);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmSt::TPM_ST_SESSIONS.repr);
+    expect_eq!(reader.read_u32().unwrap(), 37);
+    expect_eq!(reader.read_u32().unwrap(), tpm::TpmCc::TPM_CC_SEQUENCE_COMPLETE.repr);
+
+    expect_eq!(reader.read_u32().unwrap(), sequence_handle);
+
+    // Auth session
+    expect_eq!(reader.read_u32().unwrap(), 9); // auth size
+    expect_eq!(reader.read_u32().unwrap(), tpm::TpmRh::TPM_RS_PW.repr);
+    expect_eq!(reader.read_u16().unwrap(), 0);
+    expect_eq!(reader.read_u8().unwrap(), 0);
+    expect_eq!(reader.read_u16().unwrap(), 0);
+
+    expect_eq!(reader.read_tpm2b().unwrap(), data);
+    expect_eq!(reader.read_u32().unwrap(), hierarchy.repr);
+}
+
+#[gtest(TpmTest, BuildSequenceCompleteCommandMaxBuffer)]
+fn test_build_sequence_complete_command_max_buffer() {
+    let sequence_handle = 0x80000001;
+    let data = vec![0xAA; tpm::TPM_MAX_BUFFER_SIZE];
+    let hierarchy = tpm::TpmRh::TPM_RH_OWNER;
+    let cmd = tpm::build_sequence_complete_command(sequence_handle, &data, hierarchy);
+
+    // Header (10) + Handle (4) + AuthSize (4) + Session (9) + data prefix (2) +
+    // 1024 + hierarchy (4) = 1057
+    expect_eq!(cmd.len(), 1057);
+
+    let mut reader = tpm::Reader::new(&cmd);
+    expect_eq!(reader.read_u16().unwrap(), tpm::TpmSt::TPM_ST_SESSIONS.repr);
+    expect_eq!(reader.read_u32().unwrap(), 1057);
+    expect_eq!(reader.read_u32().unwrap(), tpm::TpmCc::TPM_CC_SEQUENCE_COMPLETE.repr);
+}
+
+struct SequenceCompleteResponseBuilder {
+    tag: u16,
+    rc: u32,
+    digest: Vec<u8>,
+    ticket_tag: u16,
+    ticket_hierarchy: u32,
+    ticket_digest: Vec<u8>,
+}
+
+impl SequenceCompleteResponseBuilder {
+    fn new() -> Self {
+        Self {
+            tag: tpm::TpmSt::TPM_ST_SESSIONS.repr,
+            rc: 0,
+            digest: vec![1, 2, 3],
+            ticket_tag: tpm::TpmSt::TPM_ST_HASHCHECK.repr,
+            ticket_hierarchy: tpm::TpmRh::TPM_RH_OWNER.repr,
+            ticket_digest: vec![4, 5, 6],
+        }
+    }
+
+    fn set_tag(mut self, tag: u16) -> Self {
+        self.tag = tag;
+        self
+    }
+
+    fn set_rc(mut self, rc: u32) -> Self {
+        self.rc = rc;
+        self
+    }
+
+    fn set_ticket_tag(mut self, tag: u16) -> Self {
+        self.ticket_tag = tag;
+        self
+    }
+
+    fn build(self) -> Vec<u8> {
+        let ticket_size = 2 + 4 + 2 + self.ticket_digest.len();
+        let body_size = 2 + self.digest.len() + ticket_size;
+
+        let mut total_size = 10;
+        if self.rc == 0 {
+            if self.tag == tpm::TpmSt::TPM_ST_SESSIONS.repr {
+                total_size += 4; // parameterSize field
+            }
+            total_size += u32::try_from(body_size).unwrap();
+            if self.tag == tpm::TpmSt::TPM_ST_SESSIONS.repr {
+                total_size += 5; // Session size
+            }
+        }
+
+        let mut writer = tpm::Writer::with_capacity(total_size.try_into().unwrap());
+        writer.write_u16(self.tag);
+        writer.write_u32(total_size);
+        writer.write_u32(self.rc);
+
+        if self.rc == 0 {
+            if self.tag == tpm::TpmSt::TPM_ST_SESSIONS.repr {
+                writer.write_u32(u32::try_from(body_size).unwrap());
+            }
+
+            writer.write_tpm2b(&self.digest);
+            writer.write_bytes(&build_test_ticket(
+                self.ticket_tag,
+                self.ticket_hierarchy,
+                &self.ticket_digest,
+            ));
+
+            if self.tag == tpm::TpmSt::TPM_ST_SESSIONS.repr {
+                // Auth Response Session
+                writer.write_u16(0); // nonce size
+                writer.write_u8(0); // sessionAttributes
+                writer.write_u16(0); // HMAC size (for pw it is 0)
+            }
+        }
+
+        writer.into_inner()
+    }
+}
+
+#[gtest(TpmParserTest, SequenceCompleteHappyPath)]
+fn test_sequence_complete_happy_path() {
+    let builder = SequenceCompleteResponseBuilder::new();
+    let resp = builder.build();
+
+    let result = tpm::parse_sequence_complete_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::Ok));
+    expect_eq!(result.status.tpm_response_code, 0);
+    expect_eq!(result.digest, &[1, 2, 3]);
+
+    let expected_ticket = build_test_ticket(
+        tpm::TpmSt::TPM_ST_HASHCHECK.repr,
+        tpm::TpmRh::TPM_RH_OWNER.repr,
+        &[4, 5, 6],
+    );
+    expect_eq!(result.validation_ticket, expected_ticket);
+}
+
+#[gtest(TpmParserTest, SequenceCompleteWrongTag)]
+fn test_sequence_complete_wrong_tag() {
+    let builder =
+        SequenceCompleteResponseBuilder::new().set_tag(tpm::TpmSt::TPM_ST_NO_SESSIONS.repr);
+    let resp = builder.build();
+
+    let result = tpm::parse_sequence_complete_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::WrongType));
+}
+
+#[gtest(TpmParserTest, SequenceCompleteWrongTicketTag)]
+fn test_sequence_complete_wrong_ticket_tag() {
+    let builder = SequenceCompleteResponseBuilder::new()
+        .set_ticket_tag(tpm::TpmSt::TPM_ST_ATTEST_CERTIFY.repr);
+    let resp = builder.build();
+
+    let result = tpm::parse_sequence_complete_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::WrongType));
+}
+
+#[gtest(TpmParserTest, SequenceCompleteBufferTooSmall)]
+fn test_sequence_complete_buffer_too_small() {
+    let builder = SequenceCompleteResponseBuilder::new();
+    let mut resp = builder.build();
+    resp.pop();
+
+    let result = tpm::parse_sequence_complete_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::BufferTooSmall));
+}
+
+#[gtest(TpmParserTest, SequenceCompleteTrailingBytes)]
+fn test_sequence_complete_trailing_bytes() {
+    let builder = SequenceCompleteResponseBuilder::new();
+    let mut resp = builder.build();
+    resp.push(0);
+
+    let result = tpm::parse_sequence_complete_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::TrailingBytes));
+}
+
+#[gtest(TpmParserTest, SequenceCompleteTpmError)]
+fn test_sequence_complete_tpm_error() {
+    let builder = SequenceCompleteResponseBuilder::new().set_rc(0x100);
+    let resp = builder.build();
+
+    let result = tpm::parse_sequence_complete_response(&resp);
+    expect_true!(matches!(result.status.result, tpm::ffi::ParseResult::TpmErrorResponse));
+    expect_eq!(result.status.tpm_response_code, 0x100);
+    expect_true!(result.digest.is_empty());
+    expect_true!(result.validation_ticket.is_empty());
+}

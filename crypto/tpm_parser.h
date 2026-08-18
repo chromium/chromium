@@ -35,6 +35,7 @@ enum class TpmCommand {
   kCertify,            // TPM2_Certify
   kHash,               // TPM2_Hash
   kHashSequenceStart,  // TPM2_HashSequenceStart
+  kSequenceComplete,   // TPM2_SequenceComplete
   kSequenceUpdate,     // TPM2_SequenceUpdate
   kSign,               // TPM2_Sign
 };
@@ -50,6 +51,9 @@ void AbslStringify(Sink& sink, TpmCommand command) {
       return;
     case TpmCommand::kHashSequenceStart:
       sink.Append("HashSequenceStart");
+      return;
+    case TpmCommand::kSequenceComplete:
+      sink.Append("SequenceComplete");
       return;
     case TpmCommand::kSequenceUpdate:
       sink.Append("SequenceUpdate");
@@ -156,6 +160,17 @@ struct CRYPTO_EXPORT HashSequenceStartResponse {
                          const HashSequenceStartResponse&) = default;
 };
 
+// Response components extracted from a parsed TPM2_SequenceComplete response.
+struct CRYPTO_EXPORT SequenceCompleteResponse {
+  static constexpr auto kCommand = TpmCommand::kSequenceComplete;
+
+  std::vector<uint8_t> digest;
+  std::vector<uint8_t> validation_ticket;
+
+  friend bool operator==(const SequenceCompleteResponse&,
+                         const SequenceCompleteResponse&) = default;
+};
+
 // Response from parsing a TPM2_SequenceUpdate response.
 struct CRYPTO_EXPORT SequenceUpdateResponse {
   static constexpr auto kCommand = TpmCommand::kSequenceUpdate;
@@ -239,6 +254,25 @@ CRYPTO_EXPORT std::vector<uint8_t> BuildHashSequenceStartCommand(
 // extracted.
 CRYPTO_EXPORT TpmParseErrorOr<HashSequenceStartResponse>
 ParseHashSequenceStartResponse(base::span<const uint8_t> response_blob);
+
+// Builds a serialized TPM2_SequenceComplete command buffer.
+//
+// * `sequence_handle` - The handle of the sequence to complete.
+// * `data` - The final byte buffer to append to the hash sequence.
+// * `hierarchy` - The TPM hierarchy handle for the ticket (e.g. TPM_RH_OWNER
+// for storage/test tickets, or TPM_RH_ENDORSEMENT for AIKs).
+CRYPTO_EXPORT std::vector<uint8_t> BuildSequenceCompleteCommand(
+    uint32_t sequence_handle,
+    base::span<const uint8_t> data,
+    TpmRh hierarchy);
+
+// Parses a serialized TPM2_SequenceComplete response.
+//
+// If the TPM returns an error code, an error of type `kTpmErrorResponse` will
+// be returned containing the error code, and no digest or validation ticket
+// will be extracted.
+CRYPTO_EXPORT TpmParseErrorOr<SequenceCompleteResponse>
+ParseSequenceCompleteResponse(base::span<const uint8_t> response_blob);
 
 // Builds a serialized TPM2_SequenceUpdate command buffer.
 //
