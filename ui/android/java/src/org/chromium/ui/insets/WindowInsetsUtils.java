@@ -22,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat.Type;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -37,6 +38,8 @@ public final class WindowInsetsUtils {
 
     private static final Size DEFAULT_INSETS_FRAME = new Size(0, 0);
     private static final List<Rect> DEFAULT_INSETS_BOUNDING_RECTS = List.of();
+
+    private static final String ENABLE_WINDOW_INSETS_LOGGING = "enable-window-insets-logging";
 
     // When a window is expanded, updates to the frame and the bounding rects for the window insets
     // are not synchronized. This can cause issues, such as confusing the desktop windowing
@@ -242,8 +245,8 @@ public final class WindowInsetsUtils {
      * When a window is being resized, updates in the {@link WindowInsets} values for the window
      * frame (height, width) are not synchronized to changes in the bounding rects. This causes
      * issues, as the laggy update to the bounding rects gives the impression of unoccluded space on
-     * the frame edges. This corrects the near-edge bounding rects to align with the
-     * frame edges, as long as they are within a certain threshold.
+     * the frame edges. This corrects the near-edge bounding rects to align with the frame edges, as
+     * long as they are within a certain threshold.
      */
     private static List<Rect> maybeCorrectNearEdgeRects(
             List<Rect> boundingRects, Size windowFrame) {
@@ -259,6 +262,9 @@ public final class WindowInsetsUtils {
             if (Math.abs(rect.right - windowFrame.getWidth()) <= differenceThreshold) {
                 rect.right = windowFrame.getWidth();
             }
+        }
+        if (CommandLine.getInstance().hasSwitch(ENABLE_WINDOW_INSETS_LOGGING)) {
+            Log.i(TAG, "maybeCorrectNearEdgeRects: frame=%s, rects=%s", windowFrame, boundingRects);
         }
         return boundingRects;
     }
