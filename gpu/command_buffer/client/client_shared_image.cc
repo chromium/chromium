@@ -127,10 +127,6 @@ uint32_t ComputeTextureTargetForSharedImage(
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_ANDROID)
 }
 
-void WaitSyncTokenInternal(InterfaceBase* ib, const SyncToken& sync_token) {
-  ib->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-}
-
 }  // namespace
 
 SharedImageExportResult::SharedImageExportResult() = default;
@@ -693,8 +689,17 @@ void ClientSharedImage::CreateGpuFenceForSyncTokens(
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
   CHECK(gl && context_support);
 
-  for (auto& sync_token : sync_tokens) {
-    WaitSyncTokenInternal(gl, sync_token);
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    // Ignore the the input `sync_tokens`.
+    SyncToken dummy_sync_token;
+    for (auto& shared_image : shared_images) {
+      shared_image->WaitSyncTokenInternal(gl, dummy_sync_token);
+    }
+  } else {
+    for (auto& sync_token : sync_tokens) {
+      gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    }
   }
 
   GLuint id = gl->CreateGpuFenceCHROMIUM();
@@ -964,14 +969,80 @@ void ClientSharedImage::RunOnTaskRunner(
                std::move(result_cb));
 }
 
+void ClientSharedImage::WaitSyncTokenInternal(InterfaceBase* ib,
+                                              const SyncToken& sync_token) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    // Ignore the input `sync_token` since all SyncTokens that we need to wait
+    // upon is already inside this ClientSharedImage instance.
+    base::AutoLock auto_lock(lock_);
+    for (const auto& [_, token] : sync_token_map_) {
+      if (token.HasData()) {
+        ib->WaitSyncTokenCHROMIUM(token.GetConstData());
+      }
+    }
+  } else {
+    ib->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  }
+}
+
+void ClientSharedImage::StoreSyncTokenLocked(const SyncToken& sync_token) {
+  if (!sync_token.HasData()) {
+    return;
+  }
+  gpu::SyncPointClientId client_id = sync_token.GetClientId();
+  auto [it, inserted] = sync_token_map_.try_emplace(client_id, sync_token);
+  if (!inserted) {
+    // Entry already exists for this client sequence. Only update if the new
+    // SyncToken is newer or has updated flush state.
+    if (sync_token.release_count() > it->second.release_count() ||
+        (sync_token.release_count() == it->second.release_count() &&
+         sync_token.verified_flush())) {
+      it->second = sync_token;
+    }
+  }
+}
+
 SyncToken ClientSharedImage::StoreSyncTokenInternal(
     const SyncToken& sync_token) {
-  return sync_token;
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    base::AutoLock auto_lock(lock_);
+    StoreSyncTokenLocked(sync_token);
+    return SyncToken();
+  } else {
+    return sync_token;
+  }
+}
+
+std::vector<SyncToken> ClientSharedImage::StoreSyncTokenVectorInternal(
+    const std::vector<SyncToken>& sync_tokens) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    base::AutoLock auto_lock(lock_);
+    for (const auto& sync_token : sync_tokens) {
+      StoreSyncTokenLocked(sync_token);
+    }
+    return std::vector<SyncToken>();
+  } else {
+    return sync_tokens;
+  }
 }
 
 SyncToken ClientSharedImage::GenSyncTokenInternal(InterfaceBase* ib) {
   SyncToken sync_token;
-  ib->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    if (GetSharedImageInterface()) {
+      ib->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+    } else {
+      // Without a valid `sii_holder_`, we cannot verify the SyncToken later,
+      // so the SyncToken must be verified at generation time.
+      ib->GenSyncTokenCHROMIUM(sync_token.GetData());
+    }
+  } else {
+    ib->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  }
   return StoreSyncTokenInternal(sync_token);
 }
 
@@ -987,6 +1058,71 @@ ClientSharedImage::BeginWebGPUTextureAccess(
         metadata_.usage.Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE));
   return base::WrapUnique(new WebGPUTextureScopedAccess(
       webgpu, this, sync_token, device, desc, usage, mailbox_flags));
+}
+
+std::vector<SyncToken> ClientSharedImage::VerifyAndCollectSyncTokens() {
+  base::AutoLock auto_lock(lock_);
+
+  auto sii = GetSharedImageInterface();
+  if (sii) {
+    sii->VerifySyncTokens(sync_token_map_, [](auto& entry) -> gpu::SyncToken& {
+      return const_cast<gpu::SyncToken&>(entry.second);
+    });
+  }
+
+  std::vector<SyncToken> sync_tokens;
+  sync_tokens.reserve(sync_token_map_.size());
+  for (const auto& [_, sync_token] : sync_token_map_) {
+    sync_tokens.push_back(sync_token);
+  }
+  return sync_tokens;
+}
+
+SharedImageExportResult ClientSharedImage::EndImport(
+    const SyncToken& sync_token) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    // Ignore the input `sync_token` since it must have been already generated
+    // and stored in this ClientSharedImage.
+    std::vector<SyncToken> verified_sync_tokens = VerifyAndCollectSyncTokens();
+    if (verified_sync_tokens.empty()) {
+      return SharedImageExportResult{SyncToken()};
+    }
+    return SharedImageExportResult{std::move(verified_sync_tokens)};
+  } else {
+    return SharedImageExportResult{sync_token};
+  }
+}
+
+SharedImageExportResult ClientSharedImage::EndImport(
+    const std::vector<SyncToken>& sync_tokens) {
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    // Ignore the input `sync_tokens` since it must have been already generated
+    // and stored in this ClientSharedImage.
+    std::vector<SyncToken> verified_sync_tokens = VerifyAndCollectSyncTokens();
+    if (verified_sync_tokens.empty()) {
+      return SharedImageExportResult{SyncToken()};
+    }
+    return SharedImageExportResult{std::move(verified_sync_tokens)};
+  } else {
+    return SharedImageExportResult{sync_tokens};
+  }
+}
+
+// Unpack the SharedImageExportResult.
+// This version expects an empty or a single-SyncToken export result.
+SyncToken ClientSharedImage::EndExport(SharedImageExportResult&& result) {
+  if (result.sync_tokens_.empty()) {
+    return SyncToken();
+  }
+  CHECK(result.sync_tokens_.size() == 1);
+  return StoreSyncTokenInternal(result.sync_tokens_[0]);
+}
+
+std::vector<SyncToken> ClientSharedImage::EndExportAsVector(
+    SharedImageExportResult&& result) {
+  return StoreSyncTokenVectorInternal(std::move(result.sync_tokens_));
 }
 
 ExportedSharedImage::ExportedSharedImage() = default;
@@ -1028,7 +1164,7 @@ SharedImageTexture::ScopedAccess::ScopedAccess(SharedImageTexture* texture,
                                                const SyncToken& sync_token,
                                                bool readonly)
     : texture_(texture), readonly_(readonly) {
-  WaitSyncTokenInternal(texture_->gl_, sync_token);
+  texture_->shared_image_->WaitSyncTokenInternal(texture_->gl_, sync_token);
   texture_->gl_->BeginSharedImageAccessDirectCHROMIUM(
       texture->id(), (readonly_)
                          ? GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM
@@ -1058,7 +1194,8 @@ SharedImageTexture::SharedImageTexture(gles2::GLES2Interface* gl,
     : gl_(gl), shared_image_(shared_image) {
   CHECK(gl_);
   CHECK(shared_image_);
-  WaitSyncTokenInternal(gl_, shared_image_->creation_sync_token());
+  shared_image_->WaitSyncTokenInternal(gl_,
+                                       shared_image_->creation_sync_token());
   id_ = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
       shared_image_->mailbox().name);
 }
@@ -1096,7 +1233,7 @@ RasterScopedAccess::RasterScopedAccess(InterfaceBase* raster_interface,
       readonly_(readonly) {
   CHECK(raster_interface_);
   shared_image_->BeginAccess(readonly);
-  WaitSyncTokenInternal(raster_interface_, sync_token);
+  shared_image_->WaitSyncTokenInternal(raster_interface_, sync_token);
   if (readonly) {
     bool has_read_usage =
         shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
@@ -1127,7 +1264,7 @@ WebGPUTextureScopedAccess::WebGPUTextureScopedAccess(
     webgpu::MailboxFlags mailbox_flags)
     : webgpu_(webgpu), shared_image_(shared_image) {
   // Wait on any work using the image.
-  WaitSyncTokenInternal(webgpu_, sync_token);
+  shared_image_->WaitSyncTokenInternal(webgpu_, sync_token);
 
   // Produce and inject image to WebGPU texture
   webgpu::ReservedTexture reservation = webgpu_->ReserveTexture(
@@ -1217,7 +1354,7 @@ WebGPUBufferScopedAccess::WebGPUBufferScopedAccess(
     webgpu::MailboxFlags mailbox_flags)
     : webgpu_(webgpu), shared_image_(shared_image) {
   // Wait on any work using the buffer.
-  WaitSyncTokenInternal(webgpu_, sync_token);
+  shared_image_->WaitSyncTokenInternal(webgpu_, sync_token);
 
   webgpu::ReservedBuffer reservation = webgpu_->ReserveBuffer(
       device.Get(), &static_cast<const WGPUBufferDescriptor&>(desc));

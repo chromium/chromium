@@ -7,10 +7,12 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2extchromium.h>
 
+#include "base/test/scoped_feature_list.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/exported_shared_image.mojom.h"
 #include "gpu/ipc/common/exported_shared_image_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -449,5 +451,75 @@ TEST(ClientSharedImageTest,
   }
 }
 #endif
+
+// Checks whether ClientSharedImage correctly ignores input SyncTokens from
+// clients and only output empty SyncTokens to clients when feature
+// UseAutomaticSyncTokenManagement is enabled.
+TEST(ClientSharedImageTest,
+     AutomaticSyncTokenManagement_DeprecateInputAndOutputSyncTokens) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseAutomaticSyncTokenManagement);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si =
+      sii->CreateSharedImage(CreateSharedImageInfo(), kNullSurfaceHandle);
+
+  // 1. Passing an external SyncToken to BackingWasExternallyUpdated should
+  // return an empty SyncToken to external callers when feature is enabled.
+  SyncToken dummy_input_token(CommandBufferNamespace::GPU_IO,
+                              CommandBufferId::FromUnsafeValue(123),
+                              /*release_count=*/456);
+  SyncToken returned_token =
+      client_si->BackingWasExternallyUpdated(dummy_input_token);
+  EXPECT_FALSE(returned_token.HasData());
+
+  // 2. Exporting and ending export should produce an empty SyncToken to
+  // external callers.
+  auto exported_result = client_si->EndImport(dummy_input_token);
+  SyncToken exported_token = client_si->EndExport(std::move(exported_result));
+  EXPECT_FALSE(exported_token.HasData());
+
+  // 3. EndExportAsVector should return an empty vector to external callers.
+  auto exported_vec_result =
+      client_si->EndImport(std::vector<SyncToken>{dummy_input_token});
+  std::vector<SyncToken> exported_vec =
+      client_si->EndExportAsVector(std::move(exported_vec_result));
+  EXPECT_TRUE(exported_vec.empty());
+}
+
+// Checks whether ClientSharedImage correctly stores only the latest SyncToken
+// on a sequence when feature UseAutomaticSyncTokenManagement is enabled.
+TEST(ClientSharedImageTest, AutomaticSyncTokenManagement_SyncTokenUpdate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseAutomaticSyncTokenManagement);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si =
+      sii->CreateSharedImage(CreateSharedImageInfo(), kNullSurfaceHandle);
+
+  CommandBufferNamespace ns = CommandBufferNamespace::GPU_IO;
+  CommandBufferId cmd_id = CommandBufferId::FromUnsafeValue(42);
+
+  // Simulate storing tokens with increasing release counts on sequence (ns,
+  // cmd_id).
+  SyncToken token1(ns, cmd_id, /*release_count=*/100);
+  SyncToken token2(ns, cmd_id, /*release_count=*/200);  // Newer
+  SyncToken token3(ns, cmd_id, /*release_count=*/150);  // Older than token2
+
+  // EndExport unpacks SharedImageExportResult and invokes
+  // StoreSyncTokenInternal.
+  client_si->EndExport(SharedImageExportResult::CreateForTesting(token1));
+  client_si->EndExport(SharedImageExportResult::CreateForTesting(token2));
+  client_si->EndExport(SharedImageExportResult::CreateForTesting(token3));
+
+  // EndImport exports internal tokens and verifies unverified tokens.
+  SharedImageExportResult export_result = client_si->EndImport(SyncToken());
+  EXPECT_TRUE(export_result.HasData());
+
+  // The export_result should only contain token2 (verified).
+  SyncToken expected_token = token2;
+  expected_token.SetVerifyFlush();
+  EXPECT_TRUE(export_result.IsEqualForTesting(expected_token));
+}
 
 }  // namespace gpu

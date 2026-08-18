@@ -405,6 +405,12 @@ BASE_FEATURE(kUseDynamicBackingAllocations, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUseStrongRefToSharedImageInterface,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, this feature lets ClientSharedImage handle all SyncToken
+// management (i.e. generation, waiting and storing) internally. All SyncTokens
+// that clients obtain from ClientSharedImage will be empty in this situation.
+BASE_FEATURE(kUseAutomaticSyncTokenManagement,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable atlasing of small paths on Skia Graphite. Only meaningful if
 // SkiaGraphite is also enabled.
 BASE_FEATURE(kSkiaGraphiteSmallPathAtlas, base::FEATURE_DISABLED_BY_DEFAULT);
