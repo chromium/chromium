@@ -34,6 +34,9 @@ ContextHubUI::ContextHubUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(source, kContextHubResources,
                               IDR_CONTEXT_HUB_CONTEXT_HUB_HTML);
 
+  source->AddResourcePath("save_to_memory_bank",
+                          IDR_CONTEXT_HUB_SAVE_TO_MEMORY_BANK_HTML);
+
   source->AddBoolean("kAutoTabGroups",
                      base::FeatureList::IsEnabled(
                          browser::context_hub::mojom::kAutoTabGroups));
