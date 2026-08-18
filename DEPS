@@ -3189,8 +3189,8 @@ deps = {
       ],
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@299d9005bcf3928fead539e9ee560df34b44f478',
-  'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@99a007712f509a9877bd4869358b1129bca3493e',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@7be305dbb6b8c4f1565d3e196392c858aa0b4205',
+  'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@3c14556a7001b5138205b7028d848d890e75a3e4',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@0d25db97cb9b8f725e4c95e4553001710e7fc39d',
   'src/third_party/spirv-tools/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Tools@e39e5c5838bc4b4162c349f2a2e5f163efe5432f',
@@ -3198,7 +3198,7 @@ deps = {
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@83ddfc5ec5ca64ddd1055cefa1559c568101075a',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@99140cef98b4ea135141e0040d84c17a1543e5e3',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@245b48c522b5375c0acd5377d52bef5e4917f31e',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@6d4c4f8b14241307a822f21bb9453b2380b66117',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@fe71425cf70d195ee57bc4190992bbea6da5cee2',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '82a9d47e4f9d91f0e32d2b6acd9714fcee1933a0',
