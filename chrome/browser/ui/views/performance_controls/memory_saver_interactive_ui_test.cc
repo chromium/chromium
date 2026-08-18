@@ -543,7 +543,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest, CloseBubbleOnTabSwitch) {
 IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
                        BubbleCorrectlyReportingMemorySaved) {
   // Simulate a page larger than the threshold for showing savings UI.
-  static constexpr base::ByteSize kMemoryUsage = base::GiBU(1);
+  static constexpr base::ByteSize kMemoryUsage = base::GiB(1);
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL()),
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
       NavigateWebContents(kFirstTabContents, GetURL()),
       AddInstrumentedTab(kSecondTabContents, GURL(kOtherPage)),
       ForceRefreshMemoryMetrics(), DiscardAndReloadTab(0, kFirstTabContents),
-      SetTabPreDiscardMemoryUsage(0, base::MiBU(135)), PressPageActionButton(),
+      SetTabPreDiscardMemoryUsage(0, base::MiB(135)), PressPageActionButton(),
       WaitForShow(
           MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId),
       Screenshot(MemorySaverBubbleView::kMemorySaverDialogResourceViewElementId,
