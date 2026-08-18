@@ -318,6 +318,57 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testDidMoveTab_Standalone() {
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        createAndAddPropertyModel(TAB1_ID);
+        createAndAddPropertyModel(TAB2_ID);
+        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(2);
+        setupRepresentativeTab(mTab2, mTab2, 0);
+        setupRepresentativeTab(mTab1, mTab1, 1);
+
+        mDelegate.didMoveTab(mTab1, 1, 0);
+
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
+    public void testDidMoveTab_InGroup_NoOp() {
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        createAndAddPropertyModel(TAB1_ID);
+        createAndAddPropertyModel(TAB2_ID);
+
+        mDelegate.didMoveTab(mTab1, 1, 0);
+
+        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB2_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
+    public void testDidMoveTab_ModelHasGroupMetadata_NoOp() {
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        PropertyModel model1 = createAndAddPropertyModel(TAB1_ID);
+        model1.set(TabProperties.TAB_GROUP_ID, TAB_GROUP_ID);
+        createAndAddPropertyModel(TAB2_ID);
+
+        mDelegate.didMoveTab(mTab1, 1, 0);
+
+        assertEquals(TAB1_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(TAB2_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
+    public void testDidMoveTab_NotInModel_NoOp() {
+        when(mTab1.getTabGroupId()).thenReturn(null);
+        createAndAddPropertyModel(TAB2_ID);
+
+        mDelegate.didMoveTab(mTab1, 1, 0);
+
+        assertEquals(1, mModelList.size());
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
     public void testDidChangeTabGroupTitle() {
         String newTitle = "New Title";
         mDelegate.didChangeTabGroupTitle(TAB_GROUP_ID, newTitle);

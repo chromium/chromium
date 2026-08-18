@@ -109,6 +109,39 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
         mModelList.removeAt(index);
     }
 
+    /**
+     * Handles UI model updates when a tab is moved in the tab model.
+     *
+     * @param tab The {@link Tab} that moved.
+     * @param newIndex The new index of the tab in the {@link TabModel}.
+     * @param curIndex The previous index of the tab in the {@link TabModel}.
+     */
+    void didMoveTab(Tab tab, int newIndex, int curIndex) {
+        // Standalone tab moves triggered from external sources need to be
+        // explicitly synced to the ModelList for GROUPED and NESTED layouts.
+
+        // Intra-group move or merging into group.
+        if (tab.getTabGroupId() != null) {
+            return;
+        }
+
+        int currentUiIndex = mModelList.indexFromTabId(tab.getId());
+        if (currentUiIndex == TabModel.INVALID_TAB_INDEX) return;
+
+        // Moving out of a group.
+        // This assumes the move event is dispatched before the ungroup event
+        // (didMoveTabOutOfGroup) is processed, meaning the UI model still has the
+        // old grouping metadata.
+        PropertyModel model = mModelList.get(currentUiIndex).model;
+        if (TabProperties.isTabInGroup(model) || TabProperties.isTabGroupHeader(model)) {
+            return;
+        }
+
+        // Standalone tab movement.
+        int targetUiIndex = getInsertionIndexOfTab(tab);
+        mModelList.moveItem(currentUiIndex, targetUiIndex);
+    }
+
     @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
         mMediator.updateTabGroupTitle(tabGroupId);

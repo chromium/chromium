@@ -1106,31 +1106,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     public void didMoveTab(Tab tab, int newIndex, int curIndex) {
                         assert mShowingTabs;
 
-                        // Standalone tab moves triggered from external sources need to be
-                        // explicitly synced to the ModelList for GROUPED and NESTED layouts.
-                        if (mLayoutType == TabListLayoutType.FLAT) return;
-
-                        // Intra-group move or merging into group.
-                        if (tab.getTabGroupId() != null) {
-                            return;
-                        }
-
-                        int currentUiIndex = mModelList.indexFromTabId(tab.getId());
-                        if (currentUiIndex == TabModel.INVALID_TAB_INDEX) return;
-
-                        // Moving out of a group.
-                        // This assumes the move event is dispatched before the ungroup event
-                        // (didMoveTabOutOfGroup) is processed, meaning the UI model still has the
-                        // old grouping metadata.
-                        PropertyModel model = mModelList.get(currentUiIndex).model;
-                        if (TabProperties.isTabInGroup(model)
-                                || TabProperties.isTabGroupHeader(model)) {
-                            return;
-                        }
-
-                        // Standalone tab movement.
-                        int targetUiIndex = mTabListLayoutDelegate.getInsertionIndexOfTab(tab);
-                        mModelList.moveItem(currentUiIndex, targetUiIndex);
+                        mTabListLayoutDelegate.didMoveTab(tab, newIndex, curIndex);
                     }
 
                     @Override

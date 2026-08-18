@@ -161,6 +161,16 @@ public class FlatLayoutDelegateUnitTest {
     }
 
     @Test
+    public void testDidMoveTab_NoOp() {
+        addTabsToModelList(TAB1_ID, TAB2_ID);
+
+        mDelegate.didMoveTab(mTab1, 1, 0);
+
+        assertModelListTabIds(TAB1_ID, TAB2_ID);
+        verifyNoInteractions(mMediator);
+    }
+
+    @Test
     public void testDidChangeTabGroupTitle_NoOp() {
         mDelegate.didChangeTabGroupTitle(TAB_GROUP_ID, "New Title");
 

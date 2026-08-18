@@ -67,6 +67,12 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
+    void didMoveTab(Tab tab, int newIndex, int curIndex) {
+        // Flat layout does not need to explicitly sync standalone tab moves triggered from
+        // external sources to the ModelList.
+    }
+
+    @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
         // No update needed. Flat layout does not display tab group headers.
     }
