@@ -19,6 +19,8 @@
 #include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "ui/base/interaction/interactive_test_internal.h"
@@ -26,6 +28,19 @@
 namespace shortcuts {
 
 namespace {
+
+bool IsValidShortcutExtension(const base::FilePath& path) {
+  base::FilePath::StringType ext = path.FinalExtension();
+#if BUILDFLAG(IS_WIN)
+  return ext == FILE_PATH_LITERAL(".lnk");
+#elif BUILDFLAG(IS_MAC)
+  return ext == FILE_PATH_LITERAL(".crwebloc");
+#elif BUILDFLAG(IS_LINUX)
+  return ext == FILE_PATH_LITERAL(".desktop");
+#else
+  return true;
+#endif
+}
 
 // ui::TrackedElement implementation that represents a file on disk, typically a
 // file representing a shortcut created by the "create shortcut" flow, although
@@ -77,11 +92,18 @@ class TrackedShortcut : public ui::TrackedElement {
                             &TrackedShortcut::MaybeTriggerShownEvent,
                             weak_ptr_factory_.GetWeakPtr())));
         }
+        if (!poll_timer_.IsRunning()) {
+          poll_timer_.Start(
+              FROM_HERE, base::Milliseconds(100),
+              base::BindRepeating(&TrackedShortcut::MaybeTriggerShownEvent,
+                                  weak_ptr_factory_.GetWeakPtr()));
+        }
         return;
       }
     }
 
     did_trigger_shown_ = true;
+    poll_timer_.Stop();
     // No longer need to watch for file changes. Deletion of the shortcut is
     // handled in ShortcutTracker.
     path_watcher_.Reset();
@@ -102,6 +124,7 @@ class TrackedShortcut : public ui::TrackedElement {
   // MaybeTriggerShownEvent gets called multiple times.
   bool did_trigger_shown_ = false;
   base::SequenceBound<base::FilePathWatcher> path_watcher_;
+  base::RepeatingTimer poll_timer_;
 
   base::WeakPtrFactory<TrackedShortcut> weak_ptr_factory_{this};
 };
@@ -141,6 +164,13 @@ class ShortcutIntegrationInteractionTestPrivate::ShortcutTracker {
     CHECK(identifier);
     CHECK(!next_shortcut_identifier_);
     next_shortcut_identifier_ = identifier;
+    UpdateTrackedShortcuts();
+    if (next_shortcut_identifier_ && !poll_timer_.IsRunning()) {
+      poll_timer_.Start(
+          FROM_HERE, base::Milliseconds(100),
+          base::BindRepeating(&ShortcutTracker::UpdateTrackedShortcuts,
+                              weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 
  private:
@@ -162,6 +192,9 @@ class ShortcutIntegrationInteractionTestPrivate::ShortcutTracker {
         if (name.BaseName().value()[0] == base::FilePath::kExtensionSeparator) {
           continue;
         }
+        if (!IsValidShortcutExtension(name)) {
+          continue;
+        }
         current_paths.insert(name);
       }
     }
@@ -181,9 +214,10 @@ class ShortcutIntegrationInteractionTestPrivate::ShortcutTracker {
         shortcut = std::make_unique<TrackedShortcut>(
             next_shortcut_identifier_,
             ui::ElementContext::CreateFakeContextForTesting(this), path);
+        next_shortcut_identifier_ = {};
+        poll_timer_.Stop();
       }
       const auto [it, inserted] = shortcuts_.emplace(path, std::move(shortcut));
-      next_shortcut_identifier_ = {};
       CHECK(inserted);
       if (it->second) {
         new_shortcuts.push_back(it->second.get());
@@ -210,6 +244,7 @@ class ShortcutIntegrationInteractionTestPrivate::ShortcutTracker {
   // The path of the directory being monitored.
   const base::FilePath path_;
   base::SequenceBound<base::FilePathWatcher> path_watcher_;
+  base::RepeatingTimer poll_timer_;
 
   // Map containing all the paths in `path_` this class is aware off, as well as
   // associated TrackedShortcut instanced. If a path is not one of interest

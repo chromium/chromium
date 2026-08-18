@@ -12,6 +12,7 @@
 #include "chrome/browser/shortcuts/shortcut_creation_test_support.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -195,6 +196,9 @@ class ShortcutIntegrationMultiProfileInteractiveUiTest
   // Creates shortcuts in both profiles.
   [[nodiscard]] MultiStep CreateShortcuts() {
     return Steps(
+        SetOnIncompatibleAction(
+            OnIncompatibleAction::kIgnoreAndContinue,
+            "ActivateSurface() may fail on Wayland compositors."),
         InstrumentTab(kProfile1TabId, /*tab_index=*/std::nullopt,
                       profile1_browser()),
         InstrumentTab(kProfile2TabId, /*tab_index=*/std::nullopt,
@@ -204,12 +208,14 @@ class ShortcutIntegrationMultiProfileInteractiveUiTest
 
         InstrumentNextShortcut(kProfile2ShortcutId),
         InContext(BrowserElements::From(profile2_browser())->GetContext(),
-                  ShowAndAcceptCreateShortcutDialog()),
+                  Steps(ActivateSurface(kToolbarAppMenuButtonElementId),
+                        ShowAndAcceptCreateShortcutDialog())),
         InAnyContext(WaitForShow(kProfile2ShortcutId)),
 
         InstrumentNextShortcut(kProfile1ShortcutId),
         InContext(BrowserElements::From(profile1_browser())->GetContext(),
-                  ShowAndAcceptCreateShortcutDialog()),
+                  Steps(ActivateSurface(kToolbarAppMenuButtonElementId),
+                        ShowAndAcceptCreateShortcutDialog())),
         InAnyContext(WaitForShow(kProfile1ShortcutId)));
   }
 
