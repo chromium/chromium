@@ -7,8 +7,13 @@ description: Use this skill whenever you need to look up or reference Chrome Des
 
 ## Read reference files
 
-Start from the `agents/projects/chrome-design-system/` directory and use glob to find relevant files.
+Start from the `agents/projects/chrome-design-system/` directory and use glob to
+find relevant files.
 
-- For token mappings, read `assets/tokens.md`.
-- For component specs or to map components between Figma and code, read `assets/component-specs/*`.
-  - Use `list_directory` tool on this path to find the relevant `_Spec.md` files.
+- For token mappings (C++ Views, WebUI, and Clank Android), read
+  `assets/tokens/tokens.md`.
+- For high-level cross-platform mapping across all platforms (Figma, Views,
+  WebUI, Clank), read `assets/component-mapping.md`.
+- For detailed component specifications, read `assets/component-specs/*`.
+  - Use `list_directory` tool on this path to find the relevant `_Spec.md`
+    files.
