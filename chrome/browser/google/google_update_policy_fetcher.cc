@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -38,6 +39,8 @@ policy::PolicyConversions::PolicyToSchemaMap GetGoogleUpdatePolicySchemas() {
       {kUpdatesSuppressedStartHour, policy::Schema()},
       {kUpdatesSuppressedStartMinute, policy::Schema()},
       {kCloudPolicyOverridesPlatformPolicy, policy::Schema()},
+      {kMajorVersionRolloutPolicy, policy::Schema()},
+      {kMinorVersionRolloutPolicy, policy::Schema()},
   }};
 }
 
@@ -176,7 +179,13 @@ void ParsePoliciesJsonIntoPolicyMap(std::string_view json,
     return;
   }
 
-  const base::DictValue* app_policies = policies_by_app_id->FindDict(app_id);
+  const base::DictValue* app_policies = nullptr;
+  for (const auto [key, val] : *policies_by_app_id) {
+    if (base::EqualsCaseInsensitiveASCII(key, app_id) && val.is_dict()) {
+      app_policies = &val.GetDict();
+      break;
+    }
+  }
   if (app_policies == nullptr) {
     return;
   }
@@ -187,5 +196,9 @@ void ParsePoliciesJsonIntoPolicyMap(std::string_view json,
                     policies);
   MapPolicyFromJson(kTargetChannel, "TargetChannel", *app_policies, policies);
   MapPolicyFromJson(kRollbackToTargetVersion, "RollbackToTargetVersionAllowed",
+                    *app_policies, policies);
+  MapPolicyFromJson(kMajorVersionRolloutPolicy, "MajorVersionRolloutPolicy",
+                    *app_policies, policies);
+  MapPolicyFromJson(kMinorVersionRolloutPolicy, "MinorVersionRolloutPolicy",
                     *app_policies, policies);
 }

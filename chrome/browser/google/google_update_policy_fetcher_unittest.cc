@@ -119,3 +119,51 @@ TEST(GoogleUpdatePolicyFetcherTest, ParsePoliciesJsonWithUnknownSource) {
   // The policy should be ignored because "Magic Source" is unknown.
   EXPECT_TRUE(policies.empty());
 }
+
+TEST(GoogleUpdatePolicyFetcherTest, ParsePoliciesJsonCaseInsensitiveAppId) {
+  constexpr std::string_view kJsonWithUppercaseGuid = R"({
+    "policiesByAppId": {
+      "{8A69D345-D564-463C-AFF1-A69D9E530F96}": {
+        "Update": {
+          "prevailingSource": "Device Management",
+          "valuesBySource": {
+            "Device Management": 1
+          }
+        },
+        "MajorVersionRolloutPolicy": {
+          "prevailingSource": "Device Management",
+          "valuesBySource": {
+            "Device Management": 2
+          }
+        },
+        "MinorVersionRolloutPolicy": {
+          "prevailingSource": "Device Management",
+          "valuesBySource": {
+            "Device Management": 1
+          }
+        }
+      }
+    }
+  })";
+
+  policy::PolicyMap policies;
+  // Look up using lowercase 'c' GUID.
+  ParsePoliciesJsonIntoPolicyMap(
+      kJsonWithUppercaseGuid, "{8A69D345-D564-463c-AFF1-A69D9E530F96}", &policies);
+
+  const policy::PolicyMap::Entry* update_policy = policies.Get(kUpdatePolicy);
+  ASSERT_TRUE(update_policy);
+  EXPECT_EQ(update_policy->value(base::Value::Type::INTEGER)->GetInt(), 1);
+
+  const policy::PolicyMap::Entry* major_rollout =
+      policies.Get(kMajorVersionRolloutPolicy);
+  ASSERT_TRUE(major_rollout);
+  EXPECT_EQ(major_rollout->value(base::Value::Type::INTEGER)->GetInt(), 2);
+  EXPECT_EQ(major_rollout->source, policy::POLICY_SOURCE_CLOUD);
+
+  const policy::PolicyMap::Entry* minor_rollout =
+      policies.Get(kMinorVersionRolloutPolicy);
+  ASSERT_TRUE(minor_rollout);
+  EXPECT_EQ(minor_rollout->value(base::Value::Type::INTEGER)->GetInt(), 1);
+  EXPECT_EQ(minor_rollout->source, policy::POLICY_SOURCE_CLOUD);
+}

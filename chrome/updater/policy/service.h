@@ -264,6 +264,10 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
                                                           app_policies);
       IsRollbackToTargetVersionAllowed(app_id).AddPolicyToContainer(
           "RollbackToTargetVersionAllowed", app_policies);
+      GetMajorVersionRolloutPolicy(app_id).AddPolicyToContainer(
+          "MajorVersionRolloutPolicy", app_policies);
+      GetMinorVersionRolloutPolicy(app_id).AddPolicyToContainer(
+          "MinorVersionRolloutPolicy", app_policies);
       policies.insert({app_id, std::move(app_policies)});
     }
 

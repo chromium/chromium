@@ -52,6 +52,10 @@ inline constexpr char kUpdatesSuppressedStartMinute[] =
     "UpdatesSuppressedStartMinute";
 inline constexpr char kCloudPolicyOverridesPlatformPolicy[] =
     "CloudPolicyOverridesPlatformPolicy";
+inline constexpr char kMajorVersionRolloutPolicy[] =
+    "MajorVersionRolloutPolicy";
+inline constexpr char kMinorVersionRolloutPolicy[] =
+    "MinorVersionRolloutPolicy";
 
 // Returns a list of all the supported Google Update policies.
 base::Value GetGoogleUpdatePolicyNames();
