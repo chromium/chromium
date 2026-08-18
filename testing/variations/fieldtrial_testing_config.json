@@ -27323,6 +27323,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "no_system": "true"
+                    },
                     "enable_features": [
                         "WebViewEnableDnsPlatform"
                     ]
