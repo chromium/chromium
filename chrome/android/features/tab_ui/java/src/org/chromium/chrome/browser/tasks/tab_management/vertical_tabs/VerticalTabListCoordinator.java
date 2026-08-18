@@ -752,7 +752,10 @@ public class VerticalTabListCoordinator {
     public void destroy() {
         mPinnedTabsMediator.destroy();
         mPinnedTabsRecyclerView.setAdapter(null);
+        mPinnedTabsModelList.clear();
         mMediator.destroy();
+        mRecyclerView.setAdapter(null);
+        mModelList.clear();
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
         mTabListFaviconProvider.destroy();

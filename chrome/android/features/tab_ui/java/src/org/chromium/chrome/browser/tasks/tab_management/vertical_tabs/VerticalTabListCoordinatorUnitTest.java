@@ -395,6 +395,14 @@ public class VerticalTabListCoordinatorUnitTest {
         TabModelSelectorObserver observer = mSelectorObserverCaptor.getValue();
         assertNotNull(observer);
 
+        TabListRecyclerView recyclerView =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        TabListRecyclerView pinnedRecyclerView =
+                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recyclerView.getAdapter();
+        SimpleRecyclerViewAdapter pinnedAdapter =
+                (SimpleRecyclerViewAdapter) pinnedRecyclerView.getAdapter();
+
         mCoordinator.destroy();
 
         verify(mTabModelSelector).removeObserver(observer);
@@ -416,6 +424,14 @@ public class VerticalTabListCoordinatorUnitTest {
         assertTrue(
                 "The drag handlers list must be cleared on destruction.",
                 mCoordinator.getTabSwitcherDragHandlersForTesting().isEmpty());
+        assertNull(
+                "The tab list recycler view adapter must be set to null on destruction.",
+                recyclerView.getAdapter());
+        assertNull(
+                "The pinned tab list recycler view adapter must be set to null on destruction.",
+                pinnedRecyclerView.getAdapter());
+        assertEquals(0, adapter.getModelList().size());
+        assertEquals(0, pinnedAdapter.getModelList().size());
     }
 
     @Test
