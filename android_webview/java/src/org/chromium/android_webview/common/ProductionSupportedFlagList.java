@@ -1459,6 +1459,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_SINGLE_SHARED_CONTEXT_STATE,
                 "Allows Webview to allocate and share a single shared context for all the"
                         + " webview instances."),
+        Flag.baseFeature(
+                "ComponentsBase32InRust",
+                "Enables the Rust-based Base32 implementation."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
