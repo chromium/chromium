@@ -63,8 +63,6 @@ public class AllSiteSettingsTest {
     public static final String TEST_BATCH_NAME = "AllSiteSettingsTest";
     private static final String A_GITHUB_IO = "a.github.io";
     private static final String B_GITHUB_IO = "b.github.io";
-    private static final String C_GITHUB_IO = "c.github.io";
-    private static final String D_GITHUB_IO = "d.github.io";
     private static final int RENDER_TEST_REVISION = 1;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

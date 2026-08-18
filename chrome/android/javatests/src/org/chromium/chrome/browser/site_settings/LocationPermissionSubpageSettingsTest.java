@@ -25,7 +25,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -74,8 +73,7 @@ public class LocationPermissionSubpageSettingsTest {
 
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putSerializable(SingleWebsiteSettings.EXTRA_SITE, website);
-        SettingsActivity settingsActivity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
+        mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
 
         GeolocationSetting allowPreciseSetting =
                 new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.ALLOW);
@@ -113,8 +111,7 @@ public class LocationPermissionSubpageSettingsTest {
 
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putSerializable(SingleWebsiteSettings.EXTRA_SITE, website);
-        SettingsActivity settingsActivity =
-                mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
+        mSettingsActivityTestRule.startSettingsActivity(fragmentArgs);
         checkNoWarning();
 
         LocationPermissionOptionsPreference preference =
