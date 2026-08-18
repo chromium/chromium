@@ -366,6 +366,9 @@ bool GtkUi::Initialize() {
   };
 
   GtkSettings* settings = gtk_settings_get_default();
+  // Pin `gtk-modules` to an empty string with APPLICATION source priority
+  // to prevent XSETTINGS updates from loading GTK modules.
+  g_object_set(settings, "gtk-modules", "", nullptr);
   SanitizeIconThemeName();
   SanitizeThemeName();
   SanitizeCursorThemeName();
