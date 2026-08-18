@@ -847,4 +847,17 @@ public class WebAppHeaderLayoutCoordinatorTest {
                 mCoordinator.getToggleButtonImageTintList(),
                 tint);
     }
+
+    @Test
+    public void testTintObserverRegisteredOnCreationAndRemovedOnDestroy() {
+        setupDesktopWindowing(/* isInDesktopWindow= */ true);
+        setupDisplayMode(DisplayMode.STANDALONE);
+        setupTab(/* isLoading= */ false, /* canGoBack= */ false);
+        createCoordinator();
+
+        verify(mThemeColorProvider).addTintObserver(mCoordinator);
+
+        mCoordinator.destroy();
+        verify(mThemeColorProvider).removeTintObserver(mCoordinator);
+    }
 }

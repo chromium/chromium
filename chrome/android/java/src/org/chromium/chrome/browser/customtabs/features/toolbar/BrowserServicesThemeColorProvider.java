@@ -44,7 +44,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public class BrowserServicesThemeColorProvider extends ThemeColorProvider
-        implements TopResumedActivityChangedObserver {
+        implements TopResumedActivityChangedObserver, DesktopWindowStateManager.AppHeaderObserver {
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
@@ -149,10 +149,15 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
         mToolbarThemeColorProvider = toolbarThemeColorProvider;
 
         mDesktopWindowStateManager = desktopWindowStateManager;
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
+        }
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
 
-        mIsTopResumedActivity = !AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
+        mIsTopResumedActivity =
+                mDesktopWindowStateManager == null
+                        || !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
 
         tabRegistrar.registerActivityTabObserver(mTabObserver);
 
@@ -280,11 +285,23 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
         updateTheme();
     }
 
+    // AppHeaderObserver implementation.
+    @Override
+    public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
+        if (mDesktopWindowStateManager != null) {
+            mIsTopResumedActivity = !mDesktopWindowStateManager.isInUnfocusedDesktopWindow();
+        }
+        updateTheme();
+    }
+
     @Override
     public void destroy() {
         super.destroy();
         mTabObserverRegistrar.unregisterActivityTabObserver(mTabObserver);
         mActivityLifecycleDispatcher.unregister(this);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
+        }
     }
 
     private static boolean shouldUseDefaultThemeColorForFullscreen(
