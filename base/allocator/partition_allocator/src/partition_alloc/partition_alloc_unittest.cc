@@ -1674,12 +1674,11 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
   EXPECT_NE(ptr1, ptr2);
 
   // When we free again, we expect a new tag for that area that's different from
-  // ptr1 and ptr2.
+  // ptr2.
   allocator.root()->Free(ptr2);
   uint64_t* ptr3 =
       static_cast<uint64_t*>(allocator.root()->Alloc(alloc_size, type_name));
   PA_EXPECT_PTR_EQ(ptr2, ptr3);
-  EXPECT_NE(ptr1, ptr3);
   EXPECT_NE(ptr2, ptr3);
 
   // We don't check anything about ptr3, but we do clean it up to avoid DCHECKs.

@@ -160,7 +160,6 @@ struct PartitionOptions {
 
   struct {
     EnableToggle enabled = kDisabled;
-    EnableToggle random_memory_tagging = kDisabled;
     TagViolationReportingMode reporting_mode =
         TagViolationReportingMode::kUndefined;
   } memory_tagging;
@@ -234,7 +233,6 @@ class alignas(internal::kPartitionCachelineSize)
         scheduler_loop_quarantine_thread_local_config;
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
-    bool use_random_memory_tagging_ = false;
     TagViolationReportingMode memory_tagging_reporting_mode_ =
         TagViolationReportingMode::kUndefined;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
@@ -597,7 +595,6 @@ class alignas(internal::kPartitionCachelineSize)
   PA_NOINLINE size_t GetSlotSizeForTesting(const void* object) const;
 
   PA_ALWAYS_INLINE bool IsMemoryTaggingEnabled() const;
-  PA_ALWAYS_INLINE bool UseRandomMemoryTagging() const;
   PA_ALWAYS_INLINE TagViolationReportingMode
   memory_tagging_reporting_mode() const;
 
@@ -960,13 +957,6 @@ class alignas(internal::kPartitionCachelineSize)
 PA_ALWAYS_INLINE bool PartitionRoot::IsMemoryTaggingEnabled() const {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   return settings_.memory_tagging_enabled_;
-#else
-  return false;
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-}
-PA_ALWAYS_INLINE bool PartitionRoot::UseRandomMemoryTagging() const {
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-  return settings_.use_random_memory_tagging_;
 #else
   return false;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)

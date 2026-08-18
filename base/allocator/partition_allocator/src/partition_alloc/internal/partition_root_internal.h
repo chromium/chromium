@@ -886,15 +886,11 @@ PA_ALWAYS_INLINE void PartitionRoot::RetagSlotIfNeeded(
   }
 
   if (slot_size <= internal::kMaxMemoryTaggingSize) [[likely]] {
-    if (UseRandomMemoryTagging()) {
-      // Exclude the previous tag so that immediate use after free is detected
-      // 100% of the time.
-      uint8_t previous_tag = internal::ExtractTagFromPtr(slot_start_ptr);
-      internal::TagMemoryRangeRandomly(slot_start_ptr, slot_size,
-                                       1 << previous_tag);
-    } else {
-      internal::TagMemoryRangeIncrement(slot_start_ptr, slot_size);
-    }
+    // Exclude the previous tag so that immediate use after free is detected
+    // 100% of the time.
+    uint8_t previous_tag = internal::ExtractTagFromPtr(slot_start_ptr);
+    internal::TagMemoryRangeRandomly(slot_start_ptr, slot_size,
+                                     1 << previous_tag);
   }
 }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)

@@ -247,15 +247,6 @@ constinit const FeatureParam<MemtagMode> kMemtagModeParam{
 #endif
     &kMemtagModeOptions};
 
-constexpr FeatureParam<RetagMode>::Option kRetagModeOptions[] = {
-    {RetagMode::kIncrement, "increment"},
-    {RetagMode::kRandom, "random"},
-};
-
-// Note: Do not use the prepared macro as of no need for a local cache.
-constinit const FeatureParam<RetagMode> kRetagModeParam{
-    &kPartitionAllocMemoryTagging, "retag-mode", RetagMode::kIncrement,
-    &kRetagModeOptions};
 
 constexpr FeatureParam<MemoryTaggingEnabledProcesses>::Option
     kMemoryTaggingEnabledProcessesOptions[] = {
