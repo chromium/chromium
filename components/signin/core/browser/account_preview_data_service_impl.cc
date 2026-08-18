@@ -124,6 +124,27 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
 
 AccountPreviewDataServiceImpl::~AccountPreviewDataServiceImpl() = default;
 
+bool AccountPreviewDataServiceImpl::IsRateLimited() const {
+  base::TimeDelta rate_limit_duration =
+      switches::kAccountPreviewData429RateLimitDuration.Get();
+  if (!rate_limit_duration.is_positive()) {
+    return false;
+  }
+
+  base::Time last_429_time =
+      pref_service_->GetTime(prefs::kAccountPreviewDataLast429TimePref);
+  if (last_429_time.is_null()) {
+    return false;
+  }
+
+  base::Time now = base::Time::Now();
+  if (now < last_429_time) {
+    return false;
+  }
+
+  return (now - last_429_time) < rate_limit_duration;
+}
+
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
 AccountPreviewDataServiceImpl::GetPreferredAccountForPromo() const {
   return ReadPreferredAccountFromPrefs();
@@ -147,6 +168,13 @@ void AccountPreviewDataServiceImpl::GetPreviewPreferenceForAccount(
   }
 
   if (!identity_manager_ || !identity_manager_->AreRefreshTokensLoaded()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  if (IsRateLimited()) {
+    base::UmaHistogramBoolean("Signin.AccountPreview.SingleRequestRateLimited",
+                              true);
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -288,7 +316,13 @@ void AccountPreviewDataServiceImpl::SetAllDataAvailableCallbackForTesting(
 
 void AccountPreviewDataServiceImpl::OnSingleFetchCompleted(
     const GaiaId& gaia_id,
-    std::optional<AccountPreviewData> data) {
+    std::optional<AccountPreviewData> data,
+    bool hit_429) {
+  if (hit_429) {
+    pref_service_->SetTime(prefs::kAccountPreviewDataLast429TimePref,
+                           base::Time::Now());
+  }
+
   if (data.has_value()) {
     auto [it, inserted] =
         cached_data_.insert_or_assign(gaia_id, std::move(*data));
@@ -344,6 +378,15 @@ void AccountPreviewDataServiceImpl::EnsureAllAccountsFetched(
     deferred_fetch_on_loaded_tokens_callback_ =
         base::BindOnce(&AccountPreviewDataServiceImpl::EnsureAllAccountsFetched,
                        weak_ptr_factory_.GetWeakPtr(), cause);
+    return;
+  }
+
+  if (IsRateLimited()) {
+    base::UmaHistogramEnumeration(
+        "Signin.AccountPreview.TriggerCauseRateLimited", cause);
+    if (all_data_available_callback_for_testing_) {
+      std::move(all_data_available_callback_for_testing_).Run();
+    }
     return;
   }
 
@@ -490,6 +533,11 @@ void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
   // barrier, and erased the fetcher from `active_fetchers_`.
   auto it = active_fetchers_.find(gaia_id);
   if (it == active_fetchers_.end()) {
+    return;
+  }
+
+  if (IsRateLimited()) {
+    OnSingleFetchCompleted(gaia_id, /*data=*/std::nullopt, /*hit_429=*/false);
     return;
   }
 

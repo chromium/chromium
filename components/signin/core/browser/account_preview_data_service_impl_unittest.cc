@@ -13,6 +13,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/time/clock.h"
 #include "base/version_info/channel.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -2147,5 +2149,167 @@ TEST_F(AccountPreviewDataServiceTest,
                   &AccountPreviewPreference::gaia_id, account2.gaia)));
 }
 #endif
+
+TEST_F(AccountPreviewDataServiceTest, RateLimitOn429SingleFetch) {
+  base::HistogramTester histograms;
+  base::Time start_time = base::Time::Now();
+  Mock429Fetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("account@gmail.com");
+  run_loop.Run();
+
+  histograms.ExpectBucketCount("Signin.AccountPreviewData.FetchHit429", true,
+                               1);
+
+  // Clear mocked 429 responses so future requests are not automatically
+  // answered with 429.
+  test_url_loader_factory_.ClearResponses();
+
+  // Rate limit is now active.
+  EXPECT_TRUE(service_->IsRateLimitedForTesting());
+  EXPECT_EQ(prefs_.GetTime(prefs::kAccountPreviewDataLast429TimePref),
+            start_time);
+
+  // Subsequent single request immediately returns nullopt without initiating
+  // network fetch.
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> future;
+  service_->GetPreviewPreferenceForAccount(account.gaia, future.GetCallback());
+  EXPECT_EQ(std::nullopt, future.Get());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account.gaia));
+  histograms.ExpectBucketCount("Signin.AccountPreview.SingleRequestRateLimited",
+                               true, 1);
+
+  // Advance clock by 23 hours - still rate limited.
+  task_environment_.FastForwardBy(base::Hours(23));
+  EXPECT_TRUE(service_->IsRateLimitedForTesting());
+
+  // Advance clock past 24 hours - rate limit expires.
+  MockSuccessfulFetch(&test_url_loader_factory_, {.bookmark_count = 10});
+  task_environment_.FastForwardBy(base::Hours(2));
+  EXPECT_FALSE(service_->IsRateLimitedForTesting());
+
+  // Now a new fetch can proceed.
+  base::test::TestFuture<std::optional<AccountPreviewPreference>> future2;
+  service_->GetPreviewPreferenceForAccount(account.gaia, future2.GetCallback());
+  auto pref = future2.Get();
+  ASSERT_TRUE(pref.has_value());
+  EXPECT_EQ(account.gaia, pref->gaia_id);
+  histograms.ExpectBucketCount("Signin.AccountPreviewData.FetchHit429", false,
+                               1);
+}
+
+TEST_F(AccountPreviewDataServiceTest, RateLimitOn429BatchFetch) {
+  base::HistogramTester histograms;
+  Mock429Fetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  run_loop.Run();
+
+  test_url_loader_factory_.ClearResponses();
+  EXPECT_TRUE(service_->IsRateLimitedForTesting());
+
+  // Adding another account while rate limited should not trigger new active
+  // fetchers and records TriggerCauseRateLimited histogram.
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.gaia));
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.TriggerCauseRateLimited",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::kRefreshTokenUpdated,
+      1);
+
+  // Fast forward by 24 hours.
+  task_environment_.FastForwardBy(base::Hours(24));
+  EXPECT_FALSE(service_->IsRateLimitedForTesting());
+}
+
+TEST_F(AccountPreviewDataServiceTest,
+       RateLimitPersistedAcrossServiceRecreation) {
+  Mock429Fetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("account@gmail.com");
+  run_loop.Run();
+
+  test_url_loader_factory_.ClearResponses();
+  EXPECT_TRUE(service_->IsRateLimitedForTesting());
+
+  // Re-create the service.
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
+  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+      identity_test_env_.identity_manager(), &sync_service_, &prefs_,
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
+
+  EXPECT_TRUE(service_->IsRateLimitedForTesting());
+
+  // After 24 hours, rate limit expires in the recreated service as well.
+  task_environment_.FastForwardBy(base::Hours(24));
+  EXPECT_FALSE(service_->IsRateLimitedForTesting());
+}
+
+TEST_F(AccountPreviewDataServiceTest, RateLimitDisabledByFeatureParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      switches::kEnableAccountPreviewData,
+      {{switches::kAccountPreviewData429RateLimitDuration.name, "0s"}});
+
+  Mock429Fetch(&test_url_loader_factory_);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("account@gmail.com");
+  run_loop.Run();
+
+  // With duration set to 0, rate limiting is disabled.
+  EXPECT_FALSE(service_->IsRateLimitedForTesting());
+}
+
+TEST_F(AccountPreviewDataServiceTest, RateLimitOn429PeriodicRefresh) {
+  base::HistogramTester histograms;
+
+  // Have 1 account with successfully cached preview data.
+  MockSuccessfulFetch(&test_url_loader_factory_, {.bookmark_count = 5});
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+  AccountInfo account =
+      identity_test_env_.MakeAccountAvailable("account@gmail.com");
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  identity_test_env_.SetCookieAccounts({{account.email, account.gaia}});
+#endif
+  run_loop.Run();
+
+  ASSERT_TRUE(service_->GetAccountPreviewData(account.gaia).has_value());
+  auto preferred_account = service_->GetPreferredAccountForPromo();
+  ASSERT_TRUE(preferred_account.has_value());
+  EXPECT_EQ(account.gaia, preferred_account->gaia_id);
+
+  // Fast forward by 12 hours.
+  task_environment_.FastForwardBy(base::Hours(12));
+
+  // Simulate hitting 429 at the 12-hour mark.
+  prefs_.SetTime(prefs::kAccountPreviewDataLast429TimePref, base::Time::Now());
+  EXPECT_TRUE(service_->IsRateLimitedForTesting());
+
+  // Advance by another 12 hours to trigger the 24-hour periodic refresh.
+  // The service is still within the 429 rate-limit window (12h elapsed < 24h).
+  task_environment_.FastForwardBy(base::Hours(12));
+
+  // The periodic refresh should have been denied due to rate limit, recording
+  // the histogram.
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.TriggerCauseRateLimited",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::kPeriodicRefresh, 1);
+
+  // Cached data is cleared on periodic refresh.
+  EXPECT_FALSE(service_->GetAccountPreviewData(account.gaia).has_value());
+  EXPECT_FALSE(service_->GetPreferredAccountForPromo().has_value());
+}
 
 }  // namespace signin
