@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/windows/d3d11_av1_accelerator.h"
+#include "media/gpu/windows/d3d_av1_accelerator.h"
 
 #include <numeric>
 #include <tuple>
@@ -53,18 +53,18 @@ class D3D11AV1Picture : public AV1Picture {
   const size_t picture_index_;
 };
 
-D3D11AV1Accelerator::D3D11AV1Accelerator(D3D11VideoDecoderClient* client,
-                                         MediaLog* media_log,
-                                         bool disable_invalid_ref)
+D3DAV1Accelerator::D3DAV1Accelerator(D3D11VideoDecoderClient* client,
+                                     MediaLog* media_log,
+                                     bool disable_invalid_ref)
     : media_log_(media_log->Clone()),
       client_(client),
       disable_invalid_ref_(disable_invalid_ref) {
   DCHECK(client_);
 }
 
-D3D11AV1Accelerator::~D3D11AV1Accelerator() {}
+D3DAV1Accelerator::~D3DAV1Accelerator() {}
 
-scoped_refptr<AV1Picture> D3D11AV1Accelerator::CreateAV1Picture(
+scoped_refptr<AV1Picture> D3DAV1Accelerator::CreateAV1Picture(
     bool apply_grain) {
   D3D11PictureBuffer* picture_buffer = client_->GetPicture();
   return picture_buffer ? base::MakeRefCounted<D3D11AV1Picture>(
@@ -72,7 +72,7 @@ scoped_refptr<AV1Picture> D3D11AV1Accelerator::CreateAV1Picture(
                         : nullptr;
 }
 
-bool D3D11AV1Accelerator::SubmitDecoderBuffer(
+bool D3DAV1Accelerator::SubmitDecoderBuffer(
     const DXVA_PicParams_AV1& pic_params,
     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers) {
   // Buffer #1 - AV1 specific picture parameters.
@@ -128,7 +128,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
          client_->GetWrapper()->SubmitSlice();
 }
 
-DecodeStatus D3D11AV1Accelerator::SubmitDecode(
+DecodeStatus D3DAV1Accelerator::SubmitDecode(
     const AV1Picture& pic,
     const libgav1::ObuSequenceHeader& seq_header,
     const AV1ReferenceFrameVector& ref_frames,
@@ -156,12 +156,12 @@ DecodeStatus D3D11AV1Accelerator::SubmitDecode(
                                                : DecodeStatus::kFail;
 }
 
-bool D3D11AV1Accelerator::OutputPicture(const AV1Picture& pic) {
+bool D3DAV1Accelerator::OutputPicture(const AV1Picture& pic) {
   const auto* pic_ptr = static_cast<const D3D11AV1Picture*>(&pic);
   return client_->OutputResult(pic_ptr, pic_ptr->picture_buffer());
 }
 
-bool D3D11AV1Accelerator::FillPicParams(
+bool D3DAV1Accelerator::FillPicParams(
     size_t picture_index,
     bool apply_grain,
     const libgav1::ObuFrameHeader& frame_header,
@@ -195,8 +195,9 @@ bool D3D11AV1Accelerator::FillPicParams(
         (tile_info.sb_columns + (1 << tile_info.tile_columns_log2) - 1) >>
         tile_info.tile_columns_log2;
     const int last_width_idx = tile_info.tile_columns - 1;
-    for (int i = 0; i < last_width_idx; ++i)
+    for (int i = 0; i < last_width_idx; ++i) {
       UNSAFE_TODO(pp->tiles.widths[i]) = tile_width_sb;
+    }
     UNSAFE_TODO(pp->tiles.widths[last_width_idx]) =
         tile_info.sb_columns - last_width_idx * tile_width_sb;
 
@@ -204,8 +205,9 @@ bool D3D11AV1Accelerator::FillPicParams(
         (tile_info.sb_rows + (1 << tile_info.tile_rows_log2) - 1) >>
         tile_info.tile_rows_log2;
     const int last_height_idx = tile_info.tile_rows - 1;
-    for (int i = 0; i < last_height_idx; ++i)
+    for (int i = 0; i < last_height_idx; ++i) {
       UNSAFE_TODO(pp->tiles.heights[i]) = tile_height_sb;
+    }
     UNSAFE_TODO(pp->tiles.heights[last_height_idx]) =
         tile_info.sb_rows - last_height_idx * tile_height_sb;
   } else {
@@ -366,9 +368,10 @@ bool D3D11AV1Accelerator::FillPicParams(
   pp->loop_filter.delta_lf_multi = frame_header.delta_lf.multi;
   pp->loop_filter.delta_lf_present = frame_header.delta_lf.present;
 
-  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i)
+  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
     UNSAFE_TODO(pp->loop_filter.ref_deltas[i]) =
         frame_header.loop_filter.ref_deltas[i];
+  }
   pp->loop_filter.mode_deltas[0] = frame_header.loop_filter.mode_deltas[0];
   pp->loop_filter.mode_deltas[1] = frame_header.loop_filter.mode_deltas[1];
   pp->loop_filter.delta_lf_res = frame_header.delta_lf.scale;

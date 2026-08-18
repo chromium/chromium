@@ -31,7 +31,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/gpu/windows/d3d11_av1_accelerator.h"
+#include "media/gpu/windows/d3d_av1_accelerator.h"
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/windows/d3d_h265_accelerator.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -183,7 +183,7 @@ bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
         config.color_space_info());
   } else if (config.codec() == VideoCodec::kAV1) {
     accelerated_video_decoder_ = std::make_unique<AV1Decoder>(
-        std::make_unique<D3D11AV1Accelerator>(
+        std::make_unique<D3DAV1Accelerator>(
             this, media_log_.get(),
             gpu_workarounds_.use_first_valid_ref_for_av1_invalid_ref),
         profile_, config.color_space_info());
