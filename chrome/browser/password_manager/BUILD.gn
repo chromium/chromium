@@ -21,6 +21,7 @@ source_set("password_manager") {
   public_deps = [
     "//chrome/browser/actor",
     "//chrome/browser/password_manager/factories",
+    "//chrome/browser/password_manager/ode",
 
     # deps for public headers
     "//base",
