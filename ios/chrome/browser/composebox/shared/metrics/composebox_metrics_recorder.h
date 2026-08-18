@@ -50,16 +50,6 @@ enum class AutocompleteRequestType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:AutocompleteRequestType)
 
-// LINT.IfChange(FocusResultedInNavigationType)
-enum class FocusResultedInNavigationType {
-  kNoNavigationNoAttachments = 0,
-  kNavigationNoAttachments = 1,
-  kNoNavigationWithAttachments = 2,
-  kNavigationWithAttachments = 3,
-  kMaxValue = kNavigationWithAttachments
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FocusResultedInNavigationTypes)
-
 // LINT.IfChange(ComposeboxDragAndDropType)
 enum class ComposeboxDragAndDropType {
   kText = 0,

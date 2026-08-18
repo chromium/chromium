@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 
+#import "components/omnibox/browser/searchbox_utils.h"
+
 #import <set>
 
 #import "base/metrics/histogram_functions.h"
@@ -291,15 +293,17 @@ std::string GetStringForEntrypoint(ComposeboxEntrypoint entrypoint) {
                                   withAttachments:(BOOL)hasAttachments
                                       requestType:
                                           (AutocompleteRequestType)requestType {
-  FocusResultedInNavigationType type;
+  searchbox::FocusResultedInNavigationType type;
   if (navigation) {
     type = hasAttachments
-               ? FocusResultedInNavigationType::kNavigationWithAttachments
-               : FocusResultedInNavigationType::kNavigationNoAttachments;
+               ? searchbox::FocusResultedInNavigationType::kNavigationWithAttachments
+               : searchbox::FocusResultedInNavigationType::kNavigationNoAttachments;
   } else {
     type = hasAttachments
-               ? FocusResultedInNavigationType::kNoNavigationWithAttachments
-               : FocusResultedInNavigationType::kNoNavigationNoAttachments;
+               ? searchbox::FocusResultedInNavigationType::
+                     kNoNavigationWithAttachments
+               : searchbox::FocusResultedInNavigationType::
+                     kNoNavigationNoAttachments;
   }
   base::UmaHistogramEnumeration("Omnibox.FocusResultedInNavigation", type);
 

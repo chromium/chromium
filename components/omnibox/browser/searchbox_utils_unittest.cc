@@ -197,8 +197,9 @@ TEST_F(SearchboxUtilsTest, FocusChanged) {
 
   tracker.FocusChanged(false);
   EXPECT_TRUE(tracker.last_omnibox_focus().is_null());
-  histogram_tester.ExpectUniqueSample("Omnibox.FocusResultedInNavigation", true,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.FocusResultedInNavigation",
+      FocusResultedInNavigationType::kNavigationNoAttachments, 1);
 }
 
 TEST_F(SearchboxUtilsTest, GenerateDotComMatch) {

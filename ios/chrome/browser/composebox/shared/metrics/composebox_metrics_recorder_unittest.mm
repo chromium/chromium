@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 
+#import "components/omnibox/browser/searchbox_utils.h"
+
 #import "base/test/metrics/histogram_tester.h"
 #import "components/contextual_search/contextual_search_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+using searchbox::FocusResultedInNavigationType;
 
 class ComposeboxMetricsRecorderTest : public PlatformTest {
  protected:

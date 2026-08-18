@@ -236,7 +236,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Navigation, with attachments"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/OmniboxMetrics.java:FocusResultedInNavigationTypes,//ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h:FocusResultedInNavigationType) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/OmniboxMetrics.java:FocusResultedInNavigationTypes,//components/omnibox/browser/searchbox_utils.h:FocusResultedInNavigationType) -->
 
 <!-- LINT.IfChange(FuseboxAttachmentButtonType) -->
 

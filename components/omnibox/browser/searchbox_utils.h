@@ -20,6 +20,18 @@ class OmniboxClient;
 
 namespace searchbox {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(FocusResultedInNavigationType)
+enum class FocusResultedInNavigationType {
+  kNoNavigationNoAttachments = 0,
+  kNavigationNoAttachments = 1,
+  kNoNavigationWithAttachments = 2,
+  kNavigationWithAttachments = 3,
+  kMaxValue = kNavigationWithAttachments
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FocusResultedInNavigationTypes)
+
 // Tracks searchbox-related metrics and focus state.
 class InteractionMetricsTracker {
  public:

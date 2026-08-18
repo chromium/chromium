@@ -52,8 +52,11 @@ void InteractionMetricsTracker::FocusChanged(bool focused) {
     focus_resulted_in_navigation_ = false;
   } else {
     if (!last_omnibox_focus_.is_null()) {
-      base::UmaHistogramBoolean("Omnibox.FocusResultedInNavigation",
-                                focus_resulted_in_navigation_);
+      base::UmaHistogramEnumeration(
+          "Omnibox.FocusResultedInNavigation",
+          focus_resulted_in_navigation_
+              ? FocusResultedInNavigationType::kNavigationNoAttachments
+              : FocusResultedInNavigationType::kNoNavigationNoAttachments);
     }
     last_omnibox_focus_ = base::TimeTicks();
   }
