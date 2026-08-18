@@ -859,3 +859,30 @@ BASE_FEATURE(kGeminiCoordinatorTeardownFix, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsGeminiCoordinatorTeardownFixEnabled() {
   return base::FeatureList::IsEnabled(kGeminiCoordinatorTeardownFix);
 }
+
+// Meant for experiments only.
+BASE_FEATURE(kGeminiExperimentalGuidedOnboarding,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kGeminiExperimentalGuidedOnboardingForceParam[] =
+    "force_guided_onboarding";
+
+BASE_FEATURE_PARAM(bool,
+                   kGeminiExperimentalGuidedOnboardingForce,
+                   &kGeminiExperimentalGuidedOnboarding,
+                   kGeminiExperimentalGuidedOnboardingForceParam,
+                   false);
+
+bool IsGeminiExperimentalGuidedOnboardingEnabled() {
+  if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kGeminiExperimentalGuidedOnboarding);
+}
+
+bool ShouldForceGeminiExperimentalGuidedOnboarding() {
+  if (!IsGeminiExperimentalGuidedOnboardingEnabled()) {
+    return false;
+  }
+  return kGeminiExperimentalGuidedOnboardingForce.Get();
+}
