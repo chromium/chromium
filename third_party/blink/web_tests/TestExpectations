@@ -9357,8 +9357,6 @@ crbug.com/540619916 [ Linux ] external/wpt/webdriver/tests/classic/take_element_
 crbug.com/540619916 [ Linux ] external/wpt/webdriver/tests/classic/take_screenshot/screenshot.py [ Failure Pass ]
 crbug.com/540619916 [ Linux ] external/wpt/webdriver/tests/classic/take_screenshot/user_prompts.py [ Failure Pass ]
 
-# Added during FFmpeg roll: Ogg Vorbis container duration vs discard padding discrepancy
-crbug.com/450394703 media/video-seek-to-duration-with-playbackrate-zero.html [ Timeout ]
 
 # Gardener 2026-08-10
 # Timing out on MSAN.
