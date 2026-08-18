@@ -165,7 +165,10 @@ import java.util.function.Consumer;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
-@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
+    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP
+})
 public class BookmarkManagerMediatorTest {
 
     @Rule(order = Rule.DEFAULT_ORDER - 1)
@@ -1626,16 +1629,14 @@ public class BookmarkManagerMediatorTest {
         finishLoading();
         mMediator.openFolder(mFolderId1);
         verifyCurrentViewTypes(
-                ViewType.SEARCH_BOX,
-                ViewType.IMPROVED_BOOKMARK_COMPACT,
-                ViewType.IMPROVED_BOOKMARK_COMPACT);
+                ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT);
 
         PropertyModel searchBoxModel = mMediator.getOrCreateSearchBoxPropertyModel();
         assertNotNull(searchBoxModel);
 
         mModelList.addObserver(mListObserver);
         searchBoxModel.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK).onResult("3");
-        verifyCurrentViewTypes(ViewType.SEARCH_BOX, ViewType.IMPROVED_BOOKMARK_COMPACT);
+        verifyCurrentViewTypes(ViewType.IMPROVED_BOOKMARK_COMPACT);
     }
 
     @Test
