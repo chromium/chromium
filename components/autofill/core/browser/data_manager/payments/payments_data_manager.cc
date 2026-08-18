@@ -303,6 +303,7 @@ PaymentsDataManager::PaymentsDataManager(
 
 PaymentsDataManager::~PaymentsDataManager() {
   CancelPendingLocalQuery(&pending_creditcards_query_);
+  CancelPendingLocalQuery(&pending_local_ibans_query_);
   CancelPendingServerQueries();
 }
 
