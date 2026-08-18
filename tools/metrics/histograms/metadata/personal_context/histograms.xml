@@ -54,6 +54,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PersonalContext.DecryptEntity.Latency" units="microseconds"
+    expires_after="2027-08-18">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-memory-context-eng@google.com</owner>
+  <summary>
+    Records the duration in microseconds to decrypt an encrypted entity payload
+    and parse the resulting DecryptedEntity proto in PersonalContextService.
+    Recorded on every decryption attempt.
+  </summary>
+</histogram>
+
+<histogram name="PersonalContext.DecryptEntity.Result" enum="BooleanSuccess"
+    expires_after="2027-08-18">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-memory-context-eng@google.com</owner>
+  <summary>
+    Records whether an encrypted entity was successfully decrypted and parsed in
+    PersonalContextService. Recorded on every decryption attempt.
+  </summary>
+</histogram>
+
+<histogram name="PersonalContext.DecryptEntity.Status"
+    enum="PersonalContextDecryptionStatus" expires_after="2027-08-18">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-memory-context-eng@google.com</owner>
+  <summary>
+    Records the outcome status (success or specific failure cause) when
+    decrypting an entity in PersonalContextService. Recorded on every decryption
+    attempt.
+  </summary>
+</histogram>
+
 <histogram
     name="PersonalContext.FetchContext.ErrorStatus.{ContextMemoryFeature}"
     enum="ContextMemoryExecutionError" expires_after="2026-11-15">

@@ -40,6 +40,19 @@ enum class PersonalContextNonEligibilityReason {
 std::string_view PersonalContextNonEligibilityReasonToString(
     PersonalContextNonEligibilityReason reason);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PersonalContextDecryptionStatus)
+enum class PersonalContextDecryptionStatus {
+  kSuccess = 0,
+  kNoKeyManager = 1,
+  kEmptyEncryptedEntity = 2,
+  kDecryptionFailed = 3,
+  kProtoParseFailed = 4,
+  kMaxValue = kProtoParseFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/personal_context/enums.xml:PersonalContextDecryptionStatus)
+
 // Tracks the global eligibility state of the feature for the current profile.
 // Used by consuming features to determine both feature execution and UI
 // entrypoint visibility.

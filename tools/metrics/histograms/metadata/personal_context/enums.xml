@@ -42,6 +42,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/personal_context/core/context_memory_error.h:ExecutionError) -->
 
+<!-- LINT.IfChange(PersonalContextDecryptionStatus) -->
+
+<enum name="PersonalContextDecryptionStatus">
+  <summary>Outcomes for personal context entity decryption attempts.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="NoKeyManager"/>
+  <int value="2" label="EmptyEncryptedEntity"/>
+  <int value="3" label="DecryptionFailed"/>
+  <int value="4" label="ProtoParseFailed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/personal_context/core/personal_context_types.h:PersonalContextDecryptionStatus) -->
+
 <!-- LINT.IfChange(PopupNoticeInteractions) -->
 
 <enum name="PopupNoticeInteractions">

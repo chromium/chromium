@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
@@ -164,6 +165,7 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess) {
   entity.set_encrypted_entity(
       std::string(ciphertext->begin(), ciphertext->end()));
 
+  base::HistogramTester histogram_tester;
   std::optional<proto::DecryptedEntity> result =
       personal_context_service()->DecryptEntity(entity);
   ASSERT_TRUE(result.has_value());
@@ -179,20 +181,68 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess) {
   EXPECT_EQ(result->references(1).drive_file().name(), "passport_scan.pdf");
   EXPECT_EQ(result->references(1).drive_file().url(),
             "https://drive.google.com/file/d/456");
+
+  histogram_tester.ExpectUniqueSample("PersonalContext.DecryptEntity.Result",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.DecryptEntity.Status",
+      PersonalContextDecryptionStatus::kSuccess, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("PersonalContext.DecryptEntity.Latency", 1);
+}
+
+TEST_F(PersonalContextServiceImplTest, DecryptEntityNullKeyManager) {
+  PersonalContextServiceImpl service_without_prefs(
+      url_loader_factory_, identity_test_env_.identity_manager(),
+      /*pref_service=*/nullptr);
+
+  base::HistogramTester histogram_tester;
+  proto::Entity entity;
+  entity.set_encrypted_entity("some_ciphertext");
+  EXPECT_EQ(service_without_prefs.DecryptEntity(entity), std::nullopt);
+
+  histogram_tester.ExpectUniqueSample("PersonalContext.DecryptEntity.Result",
+                                      /*sample=*/false,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.DecryptEntity.Status",
+      PersonalContextDecryptionStatus::kNoKeyManager,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("PersonalContext.DecryptEntity.Latency", 1);
 }
 
 TEST_F(PersonalContextServiceImplTest, DecryptEntityEmptyEntityReturnsNullopt) {
+  base::HistogramTester histogram_tester;
   proto::Entity empty_entity;
   empty_entity.set_encrypted_entity("");
   EXPECT_EQ(personal_context_service()->DecryptEntity(empty_entity),
             std::nullopt);
+
+  histogram_tester.ExpectUniqueSample("PersonalContext.DecryptEntity.Result",
+                                      /*sample=*/false,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.DecryptEntity.Status",
+      PersonalContextDecryptionStatus::kEmptyEncryptedEntity,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("PersonalContext.DecryptEntity.Latency", 1);
 }
 
 TEST_F(PersonalContextServiceImplTest,
        DecryptEntityCorruptedCiphertextReturnsNullopt) {
+  base::HistogramTester histogram_tester;
   proto::Entity entity;
   entity.set_encrypted_entity("invalid_ciphertext");
   EXPECT_EQ(personal_context_service()->DecryptEntity(entity), std::nullopt);
+
+  histogram_tester.ExpectUniqueSample("PersonalContext.DecryptEntity.Result",
+                                      /*sample=*/false,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.DecryptEntity.Status",
+      PersonalContextDecryptionStatus::kDecryptionFailed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("PersonalContext.DecryptEntity.Latency", 1);
 }
 
 TEST_F(PersonalContextServiceImplTest,
@@ -207,7 +257,17 @@ TEST_F(PersonalContextServiceImplTest,
   proto::Entity entity;
   entity.set_encrypted_entity(
       std::string(ciphertext->begin(), ciphertext->end()));
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(personal_context_service()->DecryptEntity(entity), std::nullopt);
+
+  histogram_tester.ExpectUniqueSample("PersonalContext.DecryptEntity.Result",
+                                      /*sample=*/false,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.DecryptEntity.Status",
+      PersonalContextDecryptionStatus::kProtoParseFailed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("PersonalContext.DecryptEntity.Latency", 1);
 }
 
 }  // namespace
