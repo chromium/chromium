@@ -751,15 +751,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetContextFromPinnedTabWithoutPermission) {
-  ExecuteJsTest();
-
-  // No context error should have been recorded.
-  EXPECT_THAT(histogram_tester->GetAllSamplesForPrefix(
-                  "Glic.Api.GetContextFromTab.Error"),
-              testing::IsEmpty());
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
                        testGetContextForActorFromTabWithoutPermission) {

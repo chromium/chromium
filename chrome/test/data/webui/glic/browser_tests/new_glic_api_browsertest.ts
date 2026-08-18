@@ -410,6 +410,30 @@ class ApiTests extends ApiTestFixtureBase {
     );
   }
 
+  async testGetContextFromPinnedTabWithoutPermission() {
+    assertDefined(this.host.getContextFromTab);
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getHostCapabilities);
+    await this.host.setTabContextPermissionState(false);
+
+    const focusSequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
+    const focus = await focusSequence.next();
+    const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
+
+    // Tab is already pinned in multi-instance mode.
+    if (!this.host.getHostCapabilities().has(HostCapability.MULTI_INSTANCE)) {
+      assertTrue(await this.host.pinTabs([tabId]));
+    }
+
+    const result = await this.host.getContextFromTab(tabId, {});
+    assertDefined(result);
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/test_data/page.html',
+        `Tab data has unexpected url ${result.tabData.url}`);
+  }
+
   async testIsOnboardingCompleted() {
     assertDefined(this.host.isOnboardingCompleted);
     const completedSequence =

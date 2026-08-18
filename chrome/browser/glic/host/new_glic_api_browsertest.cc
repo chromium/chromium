@@ -1840,6 +1840,16 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testGetContextFromPinnedTabWithoutPermission) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  glic::GlicHistogramTester histogram_tester;
+  ExecuteJsTest();
+  EXPECT_THAT(histogram_tester.GetAllSamplesForPrefix(
+                  "Glic.Api.GetContextFromTab.Error"),
+              testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
                        testGetContextFromFocusedTabWithNoRequestedData) {
   tabs::TabInterface* tab0 = GetTabListInterface()->GetActiveTab();
   ASSERT_TRUE(tab0);

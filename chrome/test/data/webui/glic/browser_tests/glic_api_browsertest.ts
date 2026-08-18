@@ -50,31 +50,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
   }
 
-
-  async testGetContextFromPinnedTabWithoutPermission() {
-    assertDefined(this.host.getContextFromTab);
-    assertDefined(this.host.getFocusedTabStateV2);
-    assertDefined(this.host.pinTabs);
-    await this.host.setTabContextPermissionState(false);
-
-    const focusSequence =
-        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
-    const focus = await focusSequence.next();
-    const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
-
-    // Tab is already pinned in multi-instance mode.
-    if (!this.isMultiInstanceEnabled()) {
-      assertTrue(await this.host.pinTabs([tabId]));
-    }
-
-    const result = await this.host.getContextFromTab(tabId, {});
-    assertDefined(result);
-    assertEquals(
-        new URL(result.tabData.url).pathname, '/glic/browser_tests/test.html',
-        `Tab data has unexpected url ${result.tabData.url}`);
-  }
-
-
   async testGetContextFromFocusedTabWithPdfFile() {
     await this.host.setTabContextPermissionState(true);
 
