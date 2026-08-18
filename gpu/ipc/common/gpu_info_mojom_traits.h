@@ -136,7 +136,7 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
     return input.flags;
   }
 
-  static std::vector<gpu::VideoDecodeAcceleratorSupportedProfile>
+  static const std::vector<gpu::VideoDecodeAcceleratorSupportedProfile>&
   supported_profiles(const gpu::VideoDecodeAcceleratorCapabilities& input) {
     return input.supported_profiles;
   }
@@ -364,7 +364,7 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuInfoDataView,
     return input.video_decode_accelerator_supported_profiles;
   }
 
-  static std::vector<gpu::VideoEncodeAcceleratorSupportedProfile>
+  static const std::vector<gpu::VideoEncodeAcceleratorSupportedProfile>&
   video_encode_accelerator_supported_profiles(const gpu::GPUInfo& input) {
     return input.video_encode_accelerator_supported_profiles;
   }
