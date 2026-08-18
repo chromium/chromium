@@ -18911,8 +18911,7 @@
                         "PartitionAllocWithAdvancedChecks"
                     ],
                     "disable_features": [
-                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread",
-                        "ScreenAIPartitionAllocAdvancedChecksEnabled"
+                        "PartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread"
                     ],
                     "disable_benchmarking": true
                 }
