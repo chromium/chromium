@@ -40,6 +40,7 @@ import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -749,7 +750,7 @@ public class DesktopSiteUtilsUnitTest {
             Assert.assertTrue("Desktop site should be overridden.", shouldOverride);
         } finally {
             ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", originalManufacturer);
-            DesktopSiteUtils.sDesktopUAAllowedOnExternalDisplayForOem = null;
+            DesktopSiteUtils.sDesktopUAAllowedOnExternalDisplayForOem = TriState.NOT_SET;
         }
     }
 
@@ -772,7 +773,7 @@ public class DesktopSiteUtilsUnitTest {
             Assert.assertFalse("Desktop site should not be overridden.", shouldOverride);
         } finally {
             ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", originalManufacturer);
-            DesktopSiteUtils.sDesktopUAAllowedOnExternalDisplayForOem = null;
+            DesktopSiteUtils.sDesktopUAAllowedOnExternalDisplayForOem = TriState.NOT_SET;
         }
     }
 
@@ -798,7 +799,7 @@ public class DesktopSiteUtilsUnitTest {
             Assert.assertFalse("Desktop site should not be overridden.", shouldOverride);
         } finally {
             ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", originalManufacturer);
-            DesktopSiteUtils.sDesktopUAAllowedOnExternalDisplayForOem = null;
+            DesktopSiteUtils.sDesktopUAAllowedOnExternalDisplayForOem = TriState.NOT_SET;
         }
     }
 
@@ -814,7 +815,7 @@ public class DesktopSiteUtilsUnitTest {
             Assert.assertTrue("Desktop site should be overridden.", shouldOverride);
         } finally {
             ReflectionHelpers.setStaticField(Build.class, "MANUFACTURER", originalManufacturer);
-            DesktopSiteUtils.sDesktopUAAllowedOnExternalDisplayForOem = null;
+            DesktopSiteUtils.sDesktopUAAllowedOnExternalDisplayForOem = TriState.NOT_SET;
         }
     }
 }
