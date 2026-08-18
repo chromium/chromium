@@ -103,6 +103,19 @@ void TabModelObserverJniBridge::OnFinishingMultipleTabClosure(
   }
 }
 
+void TabModelObserverJniBridge::OnTabCloseCommitted(
+    JNIEnv* env,
+    const std::vector<TabAndroid*>& tabs,
+    bool is_all_tabs,
+    bool can_restore,
+    int source) {
+  for (auto& observer : model_observers_) {
+    observer.OnTabCloseCommitted(
+        tabs, is_all_tabs, can_restore,
+        static_cast<TabModel::TabClosingSource>(source));
+  }
+}
+
 void TabModelObserverJniBridge::WillAddTab(JNIEnv* env,
                                            TabAndroid* tab,
                                            int type) {

@@ -52,6 +52,12 @@ class TabModelObserver {
       const std::vector<TabAndroid*>& tabs,
       bool canRestore);
 
+  // Called right before tabs closure is committed permanently and cannot be undone.
+  virtual void OnTabCloseCommitted(const std::vector<TabAndroid*>& tabs,
+                                   bool is_all_tabs,
+                                   bool can_restore,
+                                   TabModel::TabClosingSource source);
+
   // Called before a |tab| is added to the TabModel.
   virtual void WillAddTab(TabAndroid* tab, TabModel::TabLaunchType type);
 

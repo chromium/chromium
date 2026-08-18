@@ -226,17 +226,21 @@ public interface TabModelObserver {
      * This is called for both synchronous immediate closures (e.g. non-undoable, incognito)
      * and deferred commits after the pending undo window expires.
      *
-     * <p>TODO(crbug.com/381471263): Method in development. For non-undoable closures (allowUndo =
-     * false), this replaces initial pre-close callbacks ({@link #willCloseTab}, {@link
-     * #willCloseMultipleTabs}, {@link #willCloseAllTabs}, and {@link #allTabsAreClosing}). For
+     * <p>TODO(crbug.com/381471263): Method in development. For
      * finalized closures, this replaces {@link #onFinishingTabClosure}, {@link
      * #onFinishingMultipleTabClosure}, {@link #tabClosureCommitted}, and {@link
      * #allTabsClosureCommitted}.
      *
      * @param tabs The list of {@link Tab}s that are closed.
      * @param isAllTabs Whether tabs are all the tabs.
+     * @param canRestore Whether the closed tabs can be restored to the TabRestoreService.
+     * @param closingSource The tab closing source, e.g. the tablet tab strip.
      */
-    default void onTabCloseCommitted(List<Tab> tabs, boolean isAllTabs) {}
+    default void onTabCloseCommitted(
+            List<Tab> tabs,
+            boolean isAllTabs,
+            boolean canRestore,
+            @TabClosingSource int closingSource) {}
 
     /**
      * Called when a tab closure is committed and can't be undone anymore.

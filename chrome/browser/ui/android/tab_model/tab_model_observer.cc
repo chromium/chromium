@@ -30,6 +30,12 @@ void TabModelObserver::OnFinishingMultipleTabClosure(
     const std::vector<TabAndroid*>& tabs,
     bool canRestore) {}
 
+void TabModelObserver::OnTabCloseCommitted(
+    const std::vector<TabAndroid*>& tabs,
+    bool is_all_tabs,
+    bool can_restore,
+    TabModel::TabClosingSource source) {}
+
 void TabModelObserver::WillAddTab(TabAndroid* tab,
                                   TabModel::TabLaunchType type) {}
 

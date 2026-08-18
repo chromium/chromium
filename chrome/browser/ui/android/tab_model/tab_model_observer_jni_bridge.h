@@ -61,6 +61,12 @@ class TabModelObserverJniBridge {
                                      const std::vector<TabAndroid*>& tabs,
                                      bool can_restore);
 
+  void OnTabCloseCommitted(JNIEnv* env,
+                           const std::vector<TabAndroid*>& tabs,
+                           bool is_all_tabs,
+                           bool can_restore,
+                           int source);
+
   void WillAddTab(JNIEnv* env, TabAndroid* tab, int type);
 
   void DidAddTab(JNIEnv* env, TabAndroid* tab, int type, int index);

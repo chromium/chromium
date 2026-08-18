@@ -98,6 +98,22 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
+    public void onTabCloseCommitted(
+            List<Tab> tabs,
+            boolean isAllTabs,
+            boolean canRestore,
+            @TabClosingSource int closingSource) {
+        assert mNativeTabModelObserverJniBridge != 0;
+        TabModelObserverJniBridgeJni.get()
+                .onTabCloseCommitted(
+                        mNativeTabModelObserverJniBridge,
+                        tabs,
+                        isAllTabs,
+                        canRestore,
+                        closingSource);
+    }
+
+    @Override
     public final void willAddTab(Tab tab, @TabLaunchType int type) {
         assert mNativeTabModelObserverJniBridge != 0;
         assert tab.isInitialized();
@@ -306,6 +322,13 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 long nativeTabModelObserverJniBridge,
                 @JniType("std::vector<TabAndroid*>") Tab[] tabs,
                 boolean canRestore);
+
+        void onTabCloseCommitted(
+                long nativeTabModelObserverJniBridge,
+                @JniType("std::vector<TabAndroid*>") List<Tab> tabs,
+                boolean isAllTabs,
+                boolean canRestore,
+                @TabClosingSource int closingSource);
 
         void willAddTab(
                 long nativeTabModelObserverJniBridge, @JniType("TabAndroid*") Tab tab, int type);
