@@ -77,9 +77,13 @@ bool IsValueOutOfRangeForProperty(CSSPropertyID property_id,
     case CSSPropertyID::kAnimationIterationCount:
     case CSSPropertyID::kBackgroundSize:
     case CSSPropertyID::kBlockSize:
+    case CSSPropertyID::kBorderBlockEndWidth:
+    case CSSPropertyID::kBorderBlockStartWidth:
     case CSSPropertyID::kBorderImageOutset:
     case CSSPropertyID::kBorderImageSlice:
     case CSSPropertyID::kBorderImageWidth:
+    case CSSPropertyID::kBorderInlineEndWidth:
+    case CSSPropertyID::kBorderInlineStartWidth:
     case CSSPropertyID::kColumnRuleWidth:
     case CSSPropertyID::kFlexGrow:
     case CSSPropertyID::kFlexShrink:

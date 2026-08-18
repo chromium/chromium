@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 184 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 176 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Can set 'margin-block' to CSS-wide keywords: initial
   assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 [FAIL] Can set 'margin-block' to CSS-wide keywords: inherit
@@ -168,8 +168,6 @@ Found 184 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
 [FAIL] Can set 'border-block-start' to the 'none' keyword: none
   Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'border-block-start-width' to a length: -3.14em
-  assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 [FAIL] Can set 'border-block-start-color' to the 'currentcolor' keyword: currentcolor
   assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 [FAIL] Can set 'border-block-end' to CSS-wide keywords: initial
@@ -184,8 +182,6 @@ Found 184 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
 [FAIL] Can set 'border-block-end' to the 'none' keyword: none
   Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'border-block-end-width' to a length: -3.14em
-  assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 [FAIL] Can set 'border-block-end-color' to the 'currentcolor' keyword: currentcolor
   assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 [FAIL] Can set 'border-inline-start' to CSS-wide keywords: initial
@@ -200,8 +196,6 @@ Found 184 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
 [FAIL] Can set 'border-inline-start' to the 'none' keyword: none
   Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'border-inline-start-width' to a length: -3.14em
-  assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 [FAIL] Can set 'border-inline-start-color' to the 'currentcolor' keyword: currentcolor
   assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 [FAIL] Can set 'border-inline-end' to CSS-wide keywords: initial
@@ -216,8 +210,6 @@ Found 184 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "CSSUnparsedValue" but got "CSSStyleValue"
 [FAIL] Can set 'border-inline-end' to the 'none' keyword: none
   Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-[FAIL] Can set 'border-inline-end-width' to a length: -3.14em
-  assert_equals: expected "CSSMathSum" but got "CSSUnitValue"
 [FAIL] Can set 'border-inline-end-color' to the 'currentcolor' keyword: currentcolor
   assert_equals: expected "CSSKeywordValue" but got "CSSStyleValue"
 [FAIL] Can set 'border-block' to CSS-wide keywords: initial
