@@ -39,7 +39,7 @@ size_t GetMaxCacheSizeInBytes() {
 bool NavigationTransitionConfig::SupportsBackForwardTransitions(
     base::PassKey<ContentBrowserClient>) {
   return base::SysInfo::AmountOfTotalPhysicalMemory() >=
-         base::MiBU(
+         base::MiB(
              base::checked_cast<uint64_t>(g_min_required_physical_ram_mb));
 }
 
