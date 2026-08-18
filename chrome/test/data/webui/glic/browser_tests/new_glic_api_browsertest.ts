@@ -80,6 +80,16 @@ class ApiTests extends ApiTestFixtureBase {
     })();
   }
 
+  async testPanelWillOpenBeforeClientReady() {
+    const openData = await observeSequence(this.client.panelOpenData).next();
+    assertEquals('test_conversation_id', openData.conversationId);
+    assertEquals(
+        'Test Conversation Title',
+        openData.conversationInfo?.conversationTitle);
+    assertEquals(
+        'test_client_data_from_cc', openData.conversationInfo?.clientData);
+  }
+
   async testGetModelQualityClientIdFeatureDisabled() {
     assertDefined(this.host.getHostCapabilities);
     const capabilities: Set<HostCapability> =

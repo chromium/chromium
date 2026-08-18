@@ -1309,20 +1309,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
   ASSERT_FALSE(instance1->IsHibernated());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenBeforeClientReady) {
-  RunTestSequence(InstrumentTab(kFirstTab),
-                  OpenGlic(GlicInstrumentMode::kNone));
-  Host::PanelWillOpenOptions options;
-  options.conversation_info = mojom::ConversationInfo::New();
-  options.conversation_info->conversation_id = "test_conversation_id";
-  options.conversation_info->conversation_title = "Test Conversation Title";
-  options.conversation_info->client_data = "test_client_data_from_cc";
-  ASSERT_FALSE(GetHost()->IsWebClientConnected());
-  GetHost()->PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
-                           std::move(options));
-  ExecuteJsTest();
-}
-
 class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
  public:
   GlicGetHostCapabilityApiTest()

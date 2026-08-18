@@ -2884,6 +2884,25 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFastTimeout,
 #endif
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPanelWillOpenBeforeClientReady) {
+  ToggleGlicForActiveTab(/*prevent_close=*/true);
+  auto* instance = GetOnlyGlicInstance();
+  ASSERT_TRUE(instance);
+  ASSERT_FALSE(instance->host().IsWebClientConnected());
+
+  Host::PanelWillOpenOptions options;
+  options.conversation_info = mojom::ConversationInfo::New();
+  options.conversation_info->conversation_id = "test_conversation_id";
+  options.conversation_info->conversation_title = "Test Conversation Title";
+  options.conversation_info->client_data = "test_client_data_from_cc";
+  instance->host().PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
+                                 std::move(options));
+
+  ASSERT_OK(WaitForGlicOpen());
+  ASSERT_OK(WaitForGlicClient());
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFails) {
   service()->enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
   glic::GlicHistogramTester histogram_tester;
