@@ -16,6 +16,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -180,6 +181,9 @@ void SecurePaymentConfirmationAppFactory::
         std::unique_ptr<Request> request,
         bool is_available) {
   if (!request->delegate || !request->delegate->GetWebContents()) {
+    VLOG(1) << "SecurePaymentConfirmationAppFactory::"
+               "OnIsUserVerifyingPlatformAuthenticatorAvailable: No delegate "
+               "or webcontents";
     return;
   }
 
@@ -189,6 +193,10 @@ void SecurePaymentConfirmationAppFactory::
   if (!request->authenticator ||
       (!is_available && !base::FeatureList::IsEnabled(
                             ::features::kSecurePaymentConfirmationDebug))) {
+    VLOG(1) << "SecurePaymentConfirmationAppFactory::"
+               "OnIsUserVerifyingPlatformAuthenticatorAvailable: No "
+               "authenticator or "
+               "is not available and debug is not enabled";
     // Skip getting matching credential IDs since the authenticator is not
     // available.
     OnRetrievedCredentials(
@@ -304,10 +312,16 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
         std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>
         credentials) {
   if (!request->delegate || !request->delegate->GetWebContents()) {
+    VLOG(1)
+        << "SecurePaymentConfirmationAppFactory::OnRetrievedCredentials: No "
+           "delegate or webcontents";
     return;
   }
 
   if (!credentials.has_value()) {
+    VLOG(1)
+        << "SecurePaymentConfirmationAppFactory::OnRetrievedCredentials: No "
+           "credentials";
     request->delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -320,6 +334,11 @@ void SecurePaymentConfirmationAppFactory::OnRetrievedCredentials(
   // For the pilot phase, arbitrarily use the first matching credential.
   // TODO(crbug.com/40142088): Handle multiple credentials.
   if (!credentials->empty()) {
+    VLOG(1) << "SecurePaymentConfirmationAppFactory::OnRetrievedCredentials: "
+               "Using the first matching credential: "
+            << std::string(credentials->front()->credential_id.begin(),
+                           credentials->front()->credential_id.end());
+
     request->credential = std::move(credentials->front());
   }
 

@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
@@ -143,10 +144,26 @@ void SecurePaymentConfirmationService::StorePaymentCredential(
     const std::string& rp_id,
     const std::vector<uint8_t>& user_id,
     StorePaymentCredentialCallback callback) {
+  VLOG(1) << "SecurePaymentConfirmationService::StorePaymentCredential"
+          << " credential_id="
+          << std::string(credential_id.begin(), credential_id.end())
+          << ", rp_id=" << rp_id
+          << ", user_id=" << std::string(user_id.begin(), user_id.end());
   if (remote_validation_ || !web_data_service_ ||
       !content::IsFrameAllowedToUseSecurePaymentConfirmation(
           &render_frame_host()) ||
       credential_id.empty() || rp_id.empty() || user_id.empty()) {
+    VLOG(1) << "SecurePaymentConfirmationService::StorePaymentCredential "
+               "failed to store credential: [remote_validation="
+            << remote_validation_
+            << ", !web_data_service=" << !web_data_service_
+            << ", !IsFrameAllowedToUseSecurePaymentConfirmation="
+            << !content::IsFrameAllowedToUseSecurePaymentConfirmation(
+                   &render_frame_host())
+            << ", credential_id.empty()=" << credential_id.empty()
+            << ", rp_id.empty()=" << rp_id.empty()
+            << ", user_id.empty()=" << user_id.empty() << " ]";
+
     std::move(callback).Run(
         mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
     return;
@@ -186,9 +203,19 @@ void SecurePaymentConfirmationService::
         std::vector<uint8_t> user_id,
         StorePaymentCredentialCallback callback,
         blink::mojom::AuthenticatorStatus rp_id_validation_result) {
+  VLOG(1) << "SecurePaymentConfirmationService::"
+             "ContinueStorePaymentCredentialAfterRpIdCheck"
+          << " credential_id="
+          << std::string(credential_id.begin(), credential_id.end())
+          << ", rp_id=" << rp_id
+          << ", user_id=" << std::string(user_id.begin(), user_id.end())
+          << ", rp_id_validation_result=" << rp_id_validation_result;
   remote_validation_.reset();
   // If the RP ID check failed, we cannot store the credential.
   if (rp_id_validation_result != blink::mojom::AuthenticatorStatus::SUCCESS) {
+    VLOG(1) << "SecurePaymentConfirmationService::"
+               "ContinueStorePaymentCredentialAfterRpIdCheck"
+            << " Invalid RP ID in StorePaymentCredential";
     std::move(bad_message_callback)
         .Run("Invalid RP ID in StorePaymentCredential");
     ResetAndDeleteThis();
@@ -202,15 +229,30 @@ void SecurePaymentConfirmationService::
   // will already have been stored during creation.
   if (base::FeatureList::IsEnabled(
           features::kSecurePaymentConfirmationUseCredentialStoreAPIs)) {
+    VLOG(1) << "SecurePaymentConfirmationService::"
+               "ContinueStorePaymentCredentialAfterRpIdCheck: Using"
+               " Credential Store APIs";
     std::move(callback).Run(mojom::PaymentCredentialStorageStatus::SUCCESS);
     return;
   }
 
+  VLOG(1) << "SecurePaymentConfirmationService::"
+             "ContinueStorePaymentCredentialAfterRpIdCheck: Using web data"
+             " service";
   web_data_service_->AddSecurePaymentConfirmationCredential(
       std::make_unique<SecurePaymentConfirmationCredential>(
           std::move(credential_id), std::move(rp_id), std::move(user_id)),
       base::BindOnce([](WebDataServiceBase::Handle h,
                         std::unique_ptr<WDTypedResult> result) {
+        VLOG(1)
+            << "SecurePaymentConfirmationService::"
+               "ContinueStorePaymentCredentialAfterRpIdCheck"
+            << "after web_data_service::AddSecurePaymentConfirmationCredential "
+            << "callback result="
+            << (result ? (static_cast<WDResult<bool>*>(result.get())->GetValue()
+                              ? "success"
+                              : "failed")
+                       : "null");
         return result && static_cast<WDResult<bool>*>(result.get())->GetValue()
                    ? mojom::PaymentCredentialStorageStatus::SUCCESS
                    : mojom::PaymentCredentialStorageStatus::

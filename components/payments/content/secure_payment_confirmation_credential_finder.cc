@@ -5,6 +5,7 @@
 #include "components/payments/content/secure_payment_confirmation_credential_finder.h"
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
@@ -29,6 +30,9 @@ SecurePaymentConfirmationCredentialFinder::
     SecurePaymentConfirmationCredentialFinder() = default;
 SecurePaymentConfirmationCredentialFinder::
     ~SecurePaymentConfirmationCredentialFinder() {
+  VLOG(1) << "SecurePaymentConfirmationCredentialFinder::~"
+             "SecurePaymentConfirmationCredentialFinder: Cancelling "
+          << requests_.size() << " pending requests";
   std::ranges::for_each(requests_, [&](const auto& pair) {
     if (pair.second) {
       pair.second->CancelRequest(pair.first);
@@ -43,12 +47,22 @@ void SecurePaymentConfirmationCredentialFinder::GetMatchingCredentials(
     webauthn::InternalAuthenticator* authenticator,
     scoped_refptr<payments::WebPaymentsWebDataService> web_data_service,
     SecurePaymentConfirmationCredentialFinderCallback result_callback) {
+  VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
+             "GetMatchingCredentials"
+          << " [credential_ids count: " << credential_ids.size()
+          << ", relying_party_id: " << relying_party_id
+          << ", authenticator: " << (authenticator ? "valid" : "null")
+          << ", web_data_service: " << (web_data_service ? "valid" : "null")
+          << "]";
+
   // If we have credential-store level support for SPC, we can query the store
   // directly. Otherwise, we have to rely on the user profile database.
   //
   // Currently, credential store APIs are only available on Android.
   if (base::FeatureList::IsEnabled(
           features::kSecurePaymentConfirmationUseCredentialStoreAPIs)) {
+    VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
+               "GetMatchingCredentials: Using Credential Store APIs";
     // If we are relying on underlying credential-store level support for SPC,
     // but it isn't available, ensure that canMakePayment() will return false by
     // returning failure here.
@@ -72,6 +86,8 @@ void SecurePaymentConfirmationCredentialFinder::GetMatchingCredentials(
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(result_callback), relying_party_id));
   } else {
+    VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
+               "GetMatchingCredentials: Using web data service";
     WebDataServiceBase::Handle handle =
         web_data_service->GetSecurePaymentConfirmationCredentials(
             std::move(credential_ids), relying_party_id,
@@ -88,23 +104,45 @@ void SecurePaymentConfirmationCredentialFinder::
         SecurePaymentConfirmationCredentialFinderCallback callback,
         WebDataServiceBase::Handle handle,
         std::unique_ptr<WDTypedResult> result) {
+  VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
+             "OnGetMatchingCredentialsFromWebDataService called for handle: "
+          << handle;
   auto iterator = requests_.find(handle);
   if (iterator == requests_.end()) {
+    VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
+               "OnGetMatchingCredentialsFromWebDataService: Handle not found "
+               "in requests_";
     return;
   }
 
   requests_.erase(iterator);
 
-  if (result && result->GetType() == SECURE_PAYMENT_CONFIRMATION) {
-    std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
-        credentials = static_cast<WDResult<std::vector<
-            std::unique_ptr<SecurePaymentConfirmationCredential>>>*>(
-                          result.get())
-                          ->GetValue();
-    std::move(callback).Run(std::move(credentials));
-  } else {
+  if (!result) {
+    VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
+               "OnGetMatchingCredentialsFromWebDataService: Result is null, "
+               "returning nullopt";
     std::move(callback).Run(std::nullopt);
+    return;
   }
+
+  if (result->GetType() != SECURE_PAYMENT_CONFIRMATION) {
+    VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
+               "OnGetMatchingCredentialsFromWebDataService: Result type "
+            << result->GetType()
+            << " is not SECURE_PAYMENT_CONFIRMATION, returning nullopt";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
+      credentials = static_cast<WDResult<
+          std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>*>(
+                        result.get())
+                        ->GetValue();
+  VLOG(1) << "SecurePaymentConfirmationCredentialFinder::"
+             "OnGetMatchingCredentialsFromWebDataService: Retrieved "
+          << credentials.size() << " credentials from WebDataService";
+  std::move(callback).Run(std::move(credentials));
 }
 
 void SecurePaymentConfirmationCredentialFinder::
