@@ -285,6 +285,12 @@ async function createEmbedder(options = {}) {
 }
 
 async function createProofreader(options = {}) {
+  if (!options.monitor) {
+    const availability = await Proofreader.availability(options);
+    assert_implements_optional(
+        availability !== 'unavailable',
+        'Proofreader is not available for the given options');
+  }
   await test_driver.bless();
   return await Proofreader.create(options);
 }

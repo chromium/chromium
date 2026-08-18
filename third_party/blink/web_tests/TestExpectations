@@ -1345,6 +1345,9 @@ crbug.com/510552929 [ Win11 ] external/wpt/ai/translator/translator.optional.htt
 crbug.com/461860505 external/wpt/ai/language-model/response-constraint/json-schema/* [ Failure ]
 crbug.com/461860505 external/wpt/ai/language-model/response-constraint/regex/* [ Failure ]
 
+# Proofreader echo backend does not support correction types
+crbug.com/548118790 external/wpt/ai/proofreader/proofreader-proofread.tentative.https.window.html [ Failure Pass ]
+
 # Disabled due to misconfigured PHP on win11-arm64 bots.
 crbug.com/433756870 [ Win11-arm64 ] http/tests/inspector-protocol/fetch/compressed-response-body.js [ Failure ]
 crbug.com/433756870 [ Win11-arm64 ] http/tests/inspector-protocol/issues/sri-message-signatures/* [ Skip Timeout ]
