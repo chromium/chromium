@@ -28,6 +28,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -212,9 +217,23 @@ ImageDocument::ImageDocument(const DocumentInit& initializer)
       did_shrink_image_(false),
       should_shrink_image_(ShouldShrinkToFit()),
       image_is_loaded_(false),
-      shrink_to_fit_mode_(GetFrame()->GetSettings()->GetViewportEnabled()
-                              ? kViewport
-                              : kDesktop) {
+      shrink_to_fit_mode_(
+#if BUILDFLAG(IS_ANDROID)
+          // Android enables viewport for all webpages. With kViewport as
+          // shrink_to_fit_mode_, large images will be sized to fit the viewport
+          // width, and height will be determined by the image aspect ratio. On
+          // Android desktop, we want images to be sized to fit the viewport
+          // width and height, similar to kDesktop shrink_to_fit_mode_.
+          // TODO (crbug.com/548009251): Fix additional vertical scrolling for
+          // images on Android Desktop.
+          base::android::device_info::is_desktop()
+              ? kDesktop
+              : (GetFrame()->GetSettings()->GetViewportEnabled() ? kViewport
+                                                                 : kDesktop)
+#else
+          GetFrame()->GetSettings()->GetViewportEnabled() ? kViewport : kDesktop
+#endif
+      ) {
   SetCompatibilityMode(kNoQuirksMode);
   LockCompatibilityMode();
 }
@@ -355,7 +374,6 @@ float ImageDocument::Scale() const {
       view->GetChromeClient()->WindowToViewportScalar(GetFrame(), 1.f);
   float width_scale = view->Width() / (viewport_zoom * image_size.width());
   float height_scale = view->Height() / (viewport_zoom * image_size.height());
-
   return std::min(width_scale, height_scale);
 }
 
@@ -520,8 +538,12 @@ int ImageDocument::CalculateDivWidth() {
 
 void ImageDocument::WindowSizeChanged() {
   if (!image_element_ || !image_size_is_known_ ||
-      image_element_->GetDocument() != this)
+      image_element_->GetDocument() != this ||
+      // Frame view can be empty on Android where image_size is set before the
+      // Android view completes a layout pass. Avoid processing in this case.
+      GetFrame()->View()->Size().IsEmpty()) {
     return;
+  }
 
   if (shrink_to_fit_mode_ == kViewport) {
     int div_width = CalculateDivWidth();
