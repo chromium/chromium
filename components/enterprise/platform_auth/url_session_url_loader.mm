@@ -69,7 +69,7 @@ namespace enterprise_auth {
 
 namespace {
 
-constexpr base::ByteSize kDataSizeLimit = base::KiBU(128);
+constexpr base::ByteSize kDataSizeLimit = base::KiB(128);
 
 }  // namespace
 
