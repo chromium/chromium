@@ -2342,12 +2342,6 @@
       base_feature: "none",
     },
     {
-      // Disconnected <area> elements should not trigger navigation.
-      // This was added in M146, and can be removed in M148.
-      name: "DisallowDisconnectedAreaNavigation",
-      status: "stable",
-    },
-    {
       // For readonly inputs, do not allow access to the picker.
       // This landed in M146 and can be removed in M148.
       name: "DisallowPickerForReadonlyInputs",

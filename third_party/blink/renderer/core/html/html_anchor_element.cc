@@ -466,8 +466,7 @@ void HTMLAnchorElementBase::HandleClick(MouseEvent& event) {
                       WebFeature::kAnchorClickDispatchForNonConnectedNode);
     // Disconnected <area> elements should not trigger navigation.
     // https://html.spec.whatwg.org/multipage/links.html#cannot-navigate
-    if (RuntimeEnabledFeatures::DisallowDisconnectedAreaNavigationEnabled() &&
-        IsA<HTMLAreaElement>(this)) {
+    if (IsA<HTMLAreaElement>(this)) {
       return;
     }
   }
