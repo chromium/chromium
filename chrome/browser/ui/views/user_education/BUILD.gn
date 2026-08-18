@@ -214,6 +214,7 @@ source_set("browser_tests") {
     "impl/browser_feature_promo_controller_browsertest_base.cc",
     "impl/browser_feature_promo_controller_browsertest_base.h",
     "impl/browser_feature_promo_policy_browsertest.cc",
+    "impl/browser_feature_promo_rotating_browsertest.cc",
   ]
 
   deps = [
