@@ -640,6 +640,19 @@ class ApiTests extends ApiTestFixtureBase {
           ' context permission not enabled',
     });
   }
+
+  async testGetContextFromFocusedTabWithNoRequestedData() {
+    assertDefined(this.host.getContextFromFocusedTab);
+    const result = await this.host.getContextFromFocusedTab({});
+    assertDefined(result);
+    // tabData is present, but pageContent and screenshot are not.
+    assertDefined(result.tabData);
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/glic/browser_tests/test.html',
+        `Tab data has unexpected url ${result.tabData.url}`);
+    assertFalse('pageContent' in result);
+    assertFalse('screenshot' in result);
+  }
   async testPinTabsFailsWhenIncognitoWindow() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

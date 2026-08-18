@@ -74,20 +74,6 @@ class ApiTests extends ApiTestFixtureBase {
         `Tab data has unexpected url ${result.tabData.url}`);
   }
 
-  async testGetContextFromFocusedTabWithNoRequestedData() {
-    assertDefined(this.host.getContextFromFocusedTab);
-    await this.host.setTabContextPermissionState(true);
-
-    const result = await this.host.getContextFromFocusedTab({});
-    assertDefined(result);
-    assertEquals(
-        new URL(result.tabData.url).pathname, '/glic/browser_tests/test.html',
-        `Tab data has unexpected url ${result.tabData.url}`);
-    assertFalse(!!result.annotatedPageData);
-    assertFalse(!!result.pdfDocumentData);
-    assertFalse(!!result.webPageData);
-    assertFalse(!!result.viewportScreenshot);
-  }
 
   async testGetContextFromFocusedTabWithAllRequestedData() {
     await this.host.setTabContextPermissionState(true);
