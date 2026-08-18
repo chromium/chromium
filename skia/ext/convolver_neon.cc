@@ -1,8 +1,4 @@
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 /*
  * Copyright 2016 Google Inc.
  *
@@ -14,6 +10,8 @@
 
 #include <arm_neon.h>
 
+#include "base/compiler_specific.h"
+
 namespace skia {
 
 static SK_ALWAYS_INLINE int32x4_t
@@ -22,11 +20,13 @@ AccumRemainder(const unsigned char* pixels_left,
                int r) {
   int remainder[4] = {0, 0, 0, 0};
   for (int i = 0; i < r; i++) {
-    ConvolutionFilter1D::Fixed coeff = filter_values[i];
-    remainder[0] += coeff * pixels_left[i * 4 + 0];
-    remainder[1] += coeff * pixels_left[i * 4 + 1];
-    remainder[2] += coeff * pixels_left[i * 4 + 2];
-    remainder[3] += coeff * pixels_left[i * 4 + 3];
+    UNSAFE_TODO({
+      ConvolutionFilter1D::Fixed coeff = filter_values[i];
+      remainder[0] += coeff * pixels_left[i * 4 + 0];
+      remainder[1] += coeff * pixels_left[i * 4 + 1];
+      remainder[2] += coeff * pixels_left[i * 4 + 2];
+      remainder[3] += coeff * pixels_left[i * 4 + 3];
+    });
   }
   return vld1q_s32(remainder);
 }
@@ -47,7 +47,8 @@ void ConvolveHorizontally_Neon(const unsigned char* src_data,
 
     // Compute the first pixel in this row that the filter affects. It will
     // touch |filter_length| pixels (4 bytes each) after this.
-    const unsigned char* row_to_filter = &src_data[filter_offset * 4];
+    const unsigned char* row_to_filter =
+        UNSAFE_TODO(&src_data[filter_offset * 4]);
 
     // Apply the filter to the row to get the destination pixel in |accum|.
     int32x4_t accum = vdupq_n_s32(0);
@@ -69,15 +70,17 @@ void ConvolveHorizontally_Neon(const unsigned char* src_data,
       accum = vmlal_lane_s16(accum, vget_high_s16(p23_16), coeffs, 3);
 
       // Advance to next elements.
-      row_to_filter += 16;
-      filter_values += 4;
+      UNSAFE_TODO({
+        row_to_filter += 16;
+        filter_values += 4;
+      });
     }
 
     int remainder = filter_length & 3;
     if (remainder) {
       int remainder_offset = (filter_offset + filter_length - remainder) * 4;
-      accum +=
-          AccumRemainder(src_data + remainder_offset, filter_values, remainder);
+      accum += AccumRemainder(UNSAFE_TODO(src_data + remainder_offset),
+                              filter_values, remainder);
     }
 
     // Bring this value back in range. All of the filter scaling factors
@@ -88,7 +91,7 @@ void ConvolveHorizontally_Neon(const unsigned char* src_data,
     uint8x8_t accum8 = vqmovun_s16(vcombine_s16(accum16, accum16));
     vst1_lane_u32(reinterpret_cast<uint32_t*>(out_row),
                   vreinterpret_u32_u8(accum8), 0);
-    out_row += 4;
+    UNSAFE_TODO(out_row += 4);
   }
 }
 
@@ -133,26 +136,30 @@ void Convolve4RowsHorizontally_Neon(const unsigned char* src_data[4],
         return accum;
       };
 
-      accum0 += iteration(src_data[0] + start);
-      accum1 += iteration(src_data[1] + start);
-      accum2 += iteration(src_data[2] + start);
-      accum3 += iteration(src_data[3] + start);
+      UNSAFE_TODO({
+        accum0 += iteration(src_data[0] + start);
+        accum1 += iteration(src_data[1] + start);
+        accum2 += iteration(src_data[2] + start);
+        accum3 += iteration(src_data[3] + start);
+        filter_values += 4;
+      });
 
       start += 16;
-      filter_values += 4;
     }
 
     int remainder = filter_length & 3;
     if (remainder) {
       int remainder_offset = (filter_offset + filter_length - remainder) * 4;
-      accum0 += AccumRemainder(src_data[0] + remainder_offset, filter_values,
-                               remainder);
-      accum1 += AccumRemainder(src_data[1] + remainder_offset, filter_values,
-                               remainder);
-      accum2 += AccumRemainder(src_data[2] + remainder_offset, filter_values,
-                               remainder);
-      accum3 += AccumRemainder(src_data[3] + remainder_offset, filter_values,
-                               remainder);
+      UNSAFE_TODO({
+        accum0 += AccumRemainder(src_data[0] + remainder_offset, filter_values,
+                                 remainder);
+        accum1 += AccumRemainder(src_data[1] + remainder_offset, filter_values,
+                                 remainder);
+        accum2 += AccumRemainder(src_data[2] + remainder_offset, filter_values,
+                                 remainder);
+        accum3 += AccumRemainder(src_data[3] + remainder_offset, filter_values,
+                                 remainder);
+      });
     }
 
     auto pack_result = [](int32x4_t accum) {
@@ -165,18 +172,20 @@ void Convolve4RowsHorizontally_Neon(const unsigned char* src_data[4],
     uint8x8_t res2 = pack_result(accum2);
     uint8x8_t res3 = pack_result(accum3);
 
-    vst1_lane_u32(reinterpret_cast<uint32_t*>(out_row[0]),
-                  vreinterpret_u32_u8(res0), 0);
-    vst1_lane_u32(reinterpret_cast<uint32_t*>(out_row[1]),
-                  vreinterpret_u32_u8(res1), 0);
-    vst1_lane_u32(reinterpret_cast<uint32_t*>(out_row[2]),
-                  vreinterpret_u32_u8(res2), 0);
-    vst1_lane_u32(reinterpret_cast<uint32_t*>(out_row[3]),
-                  vreinterpret_u32_u8(res3), 0);
-    out_row[0] += 4;
-    out_row[1] += 4;
-    out_row[2] += 4;
-    out_row[3] += 4;
+    UNSAFE_TODO({
+      vst1_lane_u32(reinterpret_cast<uint32_t*>(out_row[0]),
+                    vreinterpret_u32_u8(res0), 0);
+      vst1_lane_u32(reinterpret_cast<uint32_t*>(out_row[1]),
+                    vreinterpret_u32_u8(res1), 0);
+      vst1_lane_u32(reinterpret_cast<uint32_t*>(out_row[2]),
+                    vreinterpret_u32_u8(res2), 0);
+      vst1_lane_u32(reinterpret_cast<uint32_t*>(out_row[3]),
+                    vreinterpret_u32_u8(res3), 0);
+      out_row[0] += 4;
+      out_row[1] += 4;
+      out_row[2] += 4;
+      out_row[3] += 4;
+    });
   }
 }
 
@@ -204,21 +213,24 @@ void ConvolveVertically_Neon(const ConvolutionFilter1D::Fixed* filter_values,
 
     // Convolve with one filter coefficient per iteration.
     for (int filter_y = 0; filter_y < filter_length; filter_y++) {
-      // Load four pixels (16 bytes) together.
-      // [8] a3 b3 g3 r3 a2 b2 g2 r2 a1 b1 g1 r1 a0 b0 g0 r0
-      uint8x16_t src8 = vld1q_u8(&source_data_rows[filter_y][out_x << 2]);
+      UNSAFE_TODO({
+        // Load four pixels (16 bytes) together.
+        // [8] a3 b3 g3 r3 a2 b2 g2 r2 a1 b1 g1 r1 a0 b0 g0 r0
+        uint8x16_t src8 = vld1q_u8(&source_data_rows[filter_y][out_x << 2]);
 
-      int16x8_t src16_01 = vreinterpretq_s16_u16(vmovl_u8(vget_low_u8(src8)));
-      int16x8_t src16_23 = vreinterpretq_s16_u16(vmovl_u8(vget_high_u8(src8)));
+        int16x8_t src16_01 = vreinterpretq_s16_u16(vmovl_u8(vget_low_u8(src8)));
+        int16x8_t src16_23 =
+            vreinterpretq_s16_u16(vmovl_u8(vget_high_u8(src8)));
 
-      accum0 =
-          vmlal_n_s16(accum0, vget_low_s16(src16_01), filter_values[filter_y]);
-      accum1 =
-          vmlal_n_s16(accum1, vget_high_s16(src16_01), filter_values[filter_y]);
-      accum2 =
-          vmlal_n_s16(accum2, vget_low_s16(src16_23), filter_values[filter_y]);
-      accum3 =
-          vmlal_n_s16(accum3, vget_high_s16(src16_23), filter_values[filter_y]);
+        accum0 = vmlal_n_s16(accum0, vget_low_s16(src16_01),
+                             filter_values[filter_y]);
+        accum1 = vmlal_n_s16(accum1, vget_high_s16(src16_01),
+                             filter_values[filter_y]);
+        accum2 = vmlal_n_s16(accum2, vget_low_s16(src16_23),
+                             filter_values[filter_y]);
+        accum3 = vmlal_n_s16(accum3, vget_high_s16(src16_23),
+                             filter_values[filter_y]);
+      });
     }
 
     // Shift right for fixed point implementation.
@@ -263,7 +275,7 @@ void ConvolveVertically_Neon(const ConvolutionFilter1D::Fixed* filter_values,
 
     // Store the convolution result (16 bytes) and advance the pixel pointers.
     vst1q_u8(out_row, accum8);
-    out_row += 16;
+    UNSAFE_TODO(out_row += 16);
   }
 
   // Process the leftovers when the width of the output is not divisible
@@ -275,18 +287,21 @@ void ConvolveVertically_Neon(const ConvolutionFilter1D::Fixed* filter_values,
     int32x4_t accum2 = vdupq_n_s32(0);
 
     for (int filter_y = 0; filter_y < filter_length; ++filter_y) {
-      // [8] a3 b3 g3 r3 a2 b2 g2 r2 a1 b1 g1 r1 a0 b0 g0 r0
-      uint8x16_t src8 = vld1q_u8(&source_data_rows[filter_y][width * 4]);
+      UNSAFE_TODO({
+        // [8] a3 b3 g3 r3 a2 b2 g2 r2 a1 b1 g1 r1 a0 b0 g0 r0
+        uint8x16_t src8 = vld1q_u8(&source_data_rows[filter_y][width * 4]);
 
-      int16x8_t src16_01 = vreinterpretq_s16_u16(vmovl_u8(vget_low_u8(src8)));
-      int16x8_t src16_23 = vreinterpretq_s16_u16(vmovl_u8(vget_high_u8(src8)));
+        int16x8_t src16_01 = vreinterpretq_s16_u16(vmovl_u8(vget_low_u8(src8)));
+        int16x8_t src16_23 =
+            vreinterpretq_s16_u16(vmovl_u8(vget_high_u8(src8)));
 
-      accum0 =
-          vmlal_n_s16(accum0, vget_low_s16(src16_01), filter_values[filter_y]);
-      accum1 =
-          vmlal_n_s16(accum1, vget_high_s16(src16_01), filter_values[filter_y]);
-      accum2 =
-          vmlal_n_s16(accum2, vget_low_s16(src16_23), filter_values[filter_y]);
+        accum0 = vmlal_n_s16(accum0, vget_low_s16(src16_01),
+                             filter_values[filter_y]);
+        accum1 = vmlal_n_s16(accum1, vget_high_s16(src16_01),
+                             filter_values[filter_y]);
+        accum2 = vmlal_n_s16(accum2, vget_low_s16(src16_23),
+                             filter_values[filter_y]);
+      });
     }
 
     int16x4_t accum16_0 = vqshrn_n_s32(accum0, ConvolutionFilter1D::kShiftBits);
@@ -334,7 +349,7 @@ void ConvolveVertically_Neon(const ConvolutionFilter1D::Fixed* filter_values,
       case 3:
         vst1_u32(reinterpret_cast<uint32_t*>(out_row),
                  vreinterpret_u32_u8(vget_low_u8(accum8)));
-        vst1q_lane_u32(reinterpret_cast<uint32_t*>(out_row + 8),
+        vst1q_lane_u32(reinterpret_cast<uint32_t*>(UNSAFE_TODO(out_row + 8)),
                        vreinterpretq_u32_u8(accum8), 2);
         break;
     }
