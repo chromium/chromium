@@ -20,7 +20,7 @@
 #include "chrome/common/net/x509_certificate_model.h"
 #include "components/server_certificate_database/server_certificate_database.pb.h"
 #include "content/public/browser/web_contents.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/cert/x509_util.h"
 
 EnterpriseCertSource::EnterpriseCertSource(std::string export_file_name)
@@ -46,13 +46,13 @@ void EnterpriseCertSource::ViewCertificate(
     return;
   }
 
-  std::array<uint8_t, crypto::kSHA256Length> hash;
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
   if (!base::HexStringToSpan(sha256_hex_hash, hash)) {
     return;
   }
 
   for (const auto& cert : GetCerts()) {
-    if (hash == crypto::SHA256Hash(cert)) {
+    if (hash == crypto::hash::Sha256(cert)) {
       // Found the cert, open cert viewer dialog if able and then exit
       // function.
       ShowCertificateDialog(std::move(web_contents),
@@ -90,7 +90,7 @@ void EnterpriseTrustedCertSource::ViewCertificate(
   if (!web_contents) {
     return;
   }
-  std::array<uint8_t, crypto::kSHA256Length> hash;
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
   if (!base::HexStringToSpan(sha256_hex_hash, hash)) {
     return;
   }
@@ -108,7 +108,7 @@ void EnterpriseTrustedCertSource::ViewCertificate(
   }
 
   for (auto const& cert : certs) {
-    if (hash == crypto::SHA256Hash(cert)) {
+    if (hash == crypto::hash::Sha256(cert)) {
       // Found the cert, open cert viewer dialog if able and then exit
       // function.
       ShowCertificateDialog(std::move(web_contents),
@@ -122,7 +122,7 @@ void EnterpriseTrustedCertSource::ViewCertificate(
   for (const auto& cert_with_constraints :
        policies.certificate_policies
            ->trust_anchors_with_additional_constraints) {
-    if (hash == crypto::SHA256Hash(cert_with_constraints->certificate)) {
+    if (hash == crypto::hash::Sha256(cert_with_constraints->certificate)) {
       // Found the cert, open cert viewer dialog if able and then exit
       // function.
       chrome_browser_server_certificate_database::CertificateMetadata metadata;

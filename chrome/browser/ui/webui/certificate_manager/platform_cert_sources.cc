@@ -15,7 +15,7 @@
 #include "chrome/common/net/x509_certificate_model.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/cert/x509_util.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 
@@ -55,7 +55,7 @@ void ViewCertificateAsync(std::string sha256_hex_hash,
     return;
   }
 
-  std::array<uint8_t, crypto::kSHA256Length> hash;
+  std::array<uint8_t, crypto::hash::kSha256Size> hash;
   if (!base::HexStringToSpan(sha256_hex_hash, hash)) {
     return;
   }
@@ -64,7 +64,7 @@ void ViewCertificateAsync(std::string sha256_hex_hash,
     if (trust != cert_info->trust_setting) {
       continue;
     }
-    if (hash == crypto::SHA256Hash(cert_info->cert)) {
+    if (hash == crypto::hash::Sha256(cert_info->cert)) {
       // Found the cert, open cert viewer dialog if able and then exit function.
       ShowCertificateDialog(
           std::move(web_contents),

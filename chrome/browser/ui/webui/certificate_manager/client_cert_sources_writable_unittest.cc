@@ -29,8 +29,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "crypto/hash.h"
 #include "crypto/nss_util_internal.h"
-#include "crypto/sha2.h"
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/test/cert_test_util.h"
@@ -85,7 +85,7 @@ bool SlotContainsCertWithHash(PK11SlotInfo* slot, std::string_view hash_hex) {
 }
 
 std::string HexHash(base::span<const uint8_t> data) {
-  return base::HexEncodeLower(crypto::SHA256Hash(data));
+  return base::HexEncodeLower(crypto::hash::Sha256(data));
 }
 
 class FakeCertificateManagerPage
