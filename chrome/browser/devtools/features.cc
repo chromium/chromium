@@ -247,4 +247,8 @@ BASE_FEATURE(kDevToolsPlusButton, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDevToolsInstrumentationBreakpoints,
              "DevToolsInstrumentationBreakpoints",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether mobile safe area emulation is enabled in DevTools.
+BASE_FEATURE(kDevToolsMobileSafeAreaEmulation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

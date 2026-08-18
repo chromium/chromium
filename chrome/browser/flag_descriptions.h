@@ -2017,6 +2017,11 @@ inline constexpr char kDevToolsLiveEditDescription[] =
     "Re-enable the deprecated feature in DevTools' Sources panel to apply code "
     "edits to the target page live.";
 
+inline constexpr char kDevToolsMobileSafeAreaEmulationName[] =
+    "Mobile safe area emulation in DevTools";
+inline constexpr char kDevToolsMobileSafeAreaEmulationDescription[] =
+    "Enables mobile safe area emulation in DevTools.";
+
 inline constexpr char kDevToolsPlusButtonName[] =
     "Enable the Plus Button in DevTools";
 inline constexpr char kDevToolsPlusButtonDescription[] =
