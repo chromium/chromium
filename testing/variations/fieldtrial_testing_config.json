@@ -12885,24 +12885,6 @@
             ]
         }
     ],
-    "GoogleChromeScheme": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GoogleChromeScheme"
-                    ]
-                }
-            ]
-        }
-    ],
     "GpuPersistentCache": [
         {
             "platforms": [

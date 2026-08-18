@@ -1116,7 +1116,7 @@ BASE_FEATURE(kGlicContextualCueBubble, base::FEATURE_DISABLED_BY_DEFAULT);
 
 
 // Enables the `google-chrome://` URI scheme.
-BASE_FEATURE(kGoogleChromeScheme, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGoogleChromeScheme, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Google Search AI Mode Workspace link (Connected Apps) is
 // shown in AI Settings. Acts as a killswitch.
