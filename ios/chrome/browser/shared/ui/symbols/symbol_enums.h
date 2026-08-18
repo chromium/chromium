@@ -44,6 +44,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   // Custom symbols
+  SymbolAcute,
   SymbolAirplaneUp,
   SymbolAirplaneUpSpark,
   SymbolArrowClockWise,

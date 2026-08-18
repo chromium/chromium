@@ -8,6 +8,8 @@ bundle_data_xcassets("resources") {
   catalog = "Assets.xcassets"
   sources = [
     "Assets.xcassets/Contents.json",
+    "Assets.xcassets/acute_icon.symbolset/Contents.json",
+    "Assets.xcassets/acute_icon.symbolset/acute.icon.cr.svg",
     "Assets.xcassets/airplane_up.symbolset/Contents.json",
     "Assets.xcassets/airplane_up.symbolset/airplane.up.cr.svg",
     "Assets.xcassets/airplane_up_spark.symbolset/Contents.json",

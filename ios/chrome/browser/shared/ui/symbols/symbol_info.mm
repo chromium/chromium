@@ -59,6 +59,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
       // Custom symbols.
+    case SymbolAcute:
+      return {@"acute_icon", SymbolType::kCustom};
     case SymbolAirplaneUp:
       return {@"airplane_up", SymbolType::kCustom};
     case SymbolAirplaneUpSpark:

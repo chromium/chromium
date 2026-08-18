@@ -203,6 +203,9 @@
     case kThinkingNoGenUI:
       return l10n_util::GetNSString(
           IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_THINKING);
+    case kFlash:
+      return l10n_util::GetNSString(
+          IDS_IOS_COMPOSEBOX_MODEL_SELECTOR_OPTION_FLASH);
   }
 }
 
