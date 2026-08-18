@@ -34,7 +34,10 @@ import org.robolectric.shadows.ShadowNotification;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ui.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileResolver;
@@ -384,6 +387,61 @@ public class ActorNotificationFactoryTest {
         assertTrue(
                 ActorNotificationFactory.shouldUpdateNotification(
                         ActorTaskState.ACTING, ActorTaskState.PAUSED_BY_USER));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testBuildNotification_WithStepText_FlagEnabled() {
+        when(mTask.getCurrentActionName()).thenReturn("Navigating to site");
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildNotification(
+                        mTask,
+                        ActorTaskState.ACTING,
+                        /* isSilent= */ false,
+                        /* isWarning= */ false);
+
+        assertNotNull("Notification wrapper should not be null", wrapper);
+        Notification notification = wrapper.getNotification();
+        assertNotNull("Notification should not be null", notification);
+        ShadowNotification shadowNotification = shadowOf(notification);
+
+        String expectedBody =
+                mContext.getString(
+                        R.string.actor_notification_body_working_with_step_info,
+                        TASK_TITLE,
+                        "Navigating to site");
+        assertEquals(
+                "Content text should match task title and step text",
+                expectedBody,
+                shadowNotification.getContentText());
+        assertEquals(
+                "Big text should match task title and step text",
+                expectedBody,
+                notification.extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testBuildNotification_WithStepText_FlagDisabled() {
+        when(mTask.getCurrentActionName()).thenReturn("Navigating to site");
+        NotificationWrapper wrapper =
+                ActorNotificationFactory.buildNotification(
+                        mTask,
+                        ActorTaskState.ACTING,
+                        /* isSilent= */ false,
+                        /* isWarning= */ false);
+
+        assertNotNull("Notification wrapper should not be null", wrapper);
+        Notification notification = wrapper.getNotification();
+        assertNotNull("Notification should not be null", notification);
+        ShadowNotification shadowNotification = shadowOf(notification);
+
+        String expectedBody =
+                mContext.getString(R.string.actor_notification_body_working, TASK_TITLE);
+        assertEquals(
+                "Content text should use default working body when flag is disabled",
+                expectedBody,
+                shadowNotification.getContentText());
     }
 
     @Test

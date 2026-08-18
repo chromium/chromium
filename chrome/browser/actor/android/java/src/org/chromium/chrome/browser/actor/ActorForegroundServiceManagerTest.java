@@ -383,4 +383,17 @@ public class ActorForegroundServiceManagerTest {
 
         verify(mKeyedService, never()).stopTask(eq(taskId), anyInt());
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testOnTaskStepProgressUpdated_RefreshesNotification() {
+        int taskId = 1;
+        mManager.setKeyedServiceForTesting(mKeyedService);
+        mManager.onTaskStateChanged(taskId, ActorTaskState.ACTING);
+
+        clearInvocations(mNotificationService);
+
+        mManager.onTaskStepProgressUpdated(taskId, "Navigating to site");
+        verify(mNotificationService).updateNotificationForStepProgress(taskId);
+    }
 }

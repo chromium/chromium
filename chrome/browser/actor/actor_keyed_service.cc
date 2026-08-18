@@ -507,6 +507,20 @@ void ActorKeyedService::NotifyTaskVisibilityChanged(ActorTask& task) {
   task_visibility_change_callback_list_.Notify(task);
 }
 
+base::CallbackListSubscription
+ActorKeyedService::AddTaskStepProgressChangedCallback(
+    TaskStepProgressChangedCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  return task_step_progress_change_callback_list_.Add(std::move(callback));
+}
+
+void ActorKeyedService::NotifyTaskStepProgressChanged(
+    ActorTask& task,
+    const std::string& step_progress) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  task_step_progress_change_callback_list_.Notify(task, step_progress);
+}
+
 void ActorKeyedService::RequestTabObservation(
     tabs::TabInterface& tab,
     TaskId task_id,

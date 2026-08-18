@@ -14,6 +14,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -140,7 +141,18 @@ public class ActorNotificationFactory {
 
     private static NotificationWrapper buildRunningNotification(
             NotificationWrapperBuilder builder, Context context, ActorTask task, int id) {
-        String body = context.getString(R.string.actor_notification_body_working, task.getTitle());
+        String actionName =
+                ChromeFeatureList.sActorStepProgressNotification.isEnabled()
+                        ? task.getCurrentActionName()
+                        : null;
+        String body =
+                (actionName != null && !actionName.isEmpty())
+                        ? context.getString(
+                                R.string.actor_notification_body_working_with_step_info,
+                                task.getTitle(),
+                                actionName)
+                        : context.getString(
+                                R.string.actor_notification_body_working, task.getTitle());
         builder.setOngoing(true)
                 .setContentTitle(
                         context.getString(R.string.actor_notification_title_working_on_task))

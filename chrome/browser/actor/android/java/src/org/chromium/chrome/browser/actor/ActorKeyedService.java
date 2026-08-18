@@ -33,6 +33,9 @@ public class ActorKeyedService {
     public interface Observer {
         /** Triggered when a task switches states (e.g., from ACTING to PAUSED). */
         void onTaskStateChanged(@ActorTaskId int taskId, @ActorTaskState int newState);
+
+        /** Triggered when a task's intermediate step progress (worklog) is updated. */
+        default void onTaskStepProgressUpdated(@ActorTaskId int taskId, String stepProgress) {}
     }
 
     @CalledByNative
@@ -154,6 +157,13 @@ public class ActorKeyedService {
     private void onTaskStateChanged(@ActorTaskId int taskId, @ActorTaskState int newState) {
         for (Observer obs : mObservers) {
             obs.onTaskStateChanged(taskId, newState);
+        }
+    }
+
+    @CalledByNative
+    private void onTaskStepProgressChanged(@ActorTaskId int taskId, String stepProgress) {
+        for (Observer obs : mObservers) {
+            obs.onTaskStepProgressUpdated(taskId, stepProgress);
         }
     }
 

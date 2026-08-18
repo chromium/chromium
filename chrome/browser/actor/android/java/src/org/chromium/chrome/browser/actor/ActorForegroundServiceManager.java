@@ -187,6 +187,16 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         refreshTaskUI(taskId, newState);
     }
 
+    @Override
+    public void onTaskStepProgressUpdated(int taskId, String stepProgress) {
+        if (!ChromeFeatureList.sActorStepProgressNotification.isEnabled()) {
+            return;
+        }
+        if (mNotificationService == null) return;
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        processTaskUpdateQueue();
+    }
+
     /**
      * Returns true if there is a visible Chrome activity that has one of the tabs, the given task
      * is acting on.

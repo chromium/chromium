@@ -59,7 +59,7 @@ ScopedJavaLocalRef<jobject> ActorTaskAndroid::GetJavaObject() {
 
 ScopedJavaLocalRef<jstring> ActorTaskAndroid::GetCurrentActionName(
     JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, "");
+  return ConvertUTF8ToJavaString(env, task_->step_progress());
 }
 
 int32_t ActorTaskAndroid::GetState(JNIEnv* env) {

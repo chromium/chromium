@@ -80,6 +80,11 @@ ActorKeyedServiceAndroid::ActorKeyedServiceAndroid(ActorKeyedService* service)
       base::BindRepeating(&ActorKeyedServiceAndroid::OnTaskStateChanged,
                           base::Unretained(this)));
 
+  task_step_progress_subscription_ =
+      service_->AddTaskStepProgressChangedCallback(base::BindRepeating(
+          &ActorKeyedServiceAndroid::OnTaskStepProgressChanged,
+          base::Unretained(this)));
+
   ensure_fgs_started_subscription_ =
       service_->AddForegroundServiceStartedCallback(base::BindRepeating(
           &ActorKeyedServiceAndroid::EnsureForegroundServiceStarted,
@@ -157,6 +162,15 @@ void ActorKeyedServiceAndroid::OnTaskStateChanged(ActorTask& task) {
   Java_ActorKeyedService_onTaskStateChanged(env, java_obj_,
                                             task.id().GetUnsafeValue(),
                                             static_cast<int>(task.GetState()));
+}
+
+void ActorKeyedServiceAndroid::OnTaskStepProgressChanged(
+    ActorTask& task,
+    const std::string& step_progress) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_ActorKeyedService_onTaskStepProgressChanged(
+      env, java_obj_, task.id().GetUnsafeValue(),
+      base::android::ConvertUTF8ToJavaString(env, step_progress));
 }
 
 void ActorKeyedServiceAndroid::EnsureForegroundServiceStarted(

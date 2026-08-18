@@ -8,6 +8,7 @@ import android.app.Notification;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
@@ -78,6 +79,27 @@ public class ActorNotificationService {
         if (current != old) {
             mNotificationManager.notify(current);
         }
+    }
+
+    /**
+     * Updates the notification for a task when its step progress changes.
+     *
+     * @param taskId The ID of the task whose step progress updated.
+     */
+    public void updateNotificationForStepProgress(int taskId) {
+        if (!ChromeFeatureList.sActorStepProgressNotification.isEnabled()) {
+            return;
+        }
+        ActorTask task = getTask(taskId);
+        if (task == null) {
+            return;
+        }
+        @ActorTaskState int state = task.getState();
+        NotificationWrapper current =
+                ActorNotificationFactory.buildNotification(
+                        task, state, /* isSilent= */ true, /* isWarning= */ false);
+        mNotificationCache.put(taskId, current);
+        mNotificationManager.notify(current);
     }
 
     /**
@@ -153,5 +175,9 @@ public class ActorNotificationService {
         mNotificationCache.remove(taskId);
         mTaskStates.remove(taskId);
         mTaskCache.remove(taskId);
+    }
+
+    @Nullable NotificationWrapper getCachedNotificationWrapperForTesting(int taskId) {
+        return mNotificationCache.get(taskId);
     }
 }

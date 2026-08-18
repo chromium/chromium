@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -26,9 +27,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ui.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 /** Unit tests for {@link ActorNotificationService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -394,5 +398,51 @@ public class ActorNotificationServiceTest {
                     "Notification should NOT be ongoing for state: " + state,
                     (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
         }
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testUpdateNotificationForStepProgress_IsSilentAndUpdated() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mTask.getCurrentActionName()).thenReturn("Step 1");
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        // Initial notification post.
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        Notification notification =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(notification);
+        assertEquals(
+                mContext.getString(
+                        R.string.actor_notification_body_working_with_step_info,
+                        "Test Task",
+                        "Step 1"),
+                notification.extras.getString(Notification.EXTRA_TEXT));
+
+        // Step text changes during ACTING state and step progress update is triggered.
+        when(mTask.getCurrentActionName()).thenReturn("Step 2");
+        mNotificationService.updateNotificationForStepProgress(taskId);
+
+        // Notification is updated, not skipped.
+        assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
+
+        NotificationWrapper wrapper =
+                mNotificationService.getCachedNotificationWrapperForTesting(taskId);
+        assertNotNull(wrapper);
+        assertTrue(
+                "Notification should be posted silently on step text update", wrapper.isSilent());
+        assertEquals(
+                mContext.getString(
+                        R.string.actor_notification_body_working_with_step_info,
+                        "Test Task",
+                        "Step 2"),
+                wrapper.getNotification().extras.getString(Notification.EXTRA_TEXT));
     }
 }

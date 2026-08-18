@@ -1013,7 +1013,11 @@ std::ostream& operator<<(std::ostream& os, const ActorTask::State& state) {
 }
 
 void ActorTask::SetStepProgress(std::string step_progress) {
+  if (step_progress_ == step_progress) {
+    return;
+  }
   step_progress_ = std::move(step_progress);
+  service_->NotifyTaskStepProgressChanged(*this, step_progress_);
 }
 
 // static

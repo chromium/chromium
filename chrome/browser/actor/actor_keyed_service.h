@@ -193,6 +193,13 @@ class ActorKeyedService : public KeyedService,
       TaskVisibilityChangedCallback callback);
   void NotifyTaskVisibilityChanged(ActorTask& task);
 
+  using TaskStepProgressChangedCallback =
+      base::RepeatingCallback<void(ActorTask&, const std::string&)>;
+  base::CallbackListSubscription AddTaskStepProgressChangedCallback(
+      TaskStepProgressChangedCallback callback);
+  void NotifyTaskStepProgressChanged(ActorTask& task,
+                                     const std::string& step_progress);
+
   // Returns the acting task for web_contents. Returns nullptr if acting task
   // does not exist.
   const ActorTask* GetActingActorTaskForWebContents(
@@ -279,6 +286,9 @@ class ActorKeyedService : public KeyedService,
 
   base::RepeatingCallbackList<void(ActorTask&)>
       task_visibility_change_callback_list_;
+
+  base::RepeatingCallbackList<void(ActorTask&, const std::string&)>
+      task_step_progress_change_callback_list_;
 
   base::RepeatingCallbackList<void(ActorTask&)>
       task_state_change_callback_list_;
