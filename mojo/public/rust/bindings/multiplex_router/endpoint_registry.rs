@@ -66,7 +66,7 @@ pub(crate) type DisconnectHandler = Box<dyn FnOnce() + Send + 'static>;
 /// Note that an endpoint can be registered with the router before being bound
 /// to a sequence. If so, it will have to provide this info before it can
 /// start processing incoming messages.
-pub(crate) struct EndpointInfo {
+pub struct EndpointInfo {
     /// The function to run when a new message arrives at this endpoint.
     pub(crate) incoming_message_handler: MessageHandler,
     /// The task runner on which to schedule the message and disconnect

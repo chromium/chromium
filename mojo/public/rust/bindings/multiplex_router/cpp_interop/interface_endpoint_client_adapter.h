@@ -36,7 +36,7 @@
 namespace mojo::rust::bindings {
 
 // Defined in Rust, exposed in the cxx bridge
-struct RustAssociatedEndpointState;
+struct EndpointInfo;
 
 class InterfaceEndpointClientAdapter
     : public base::RefCountedDeleteOnSequence<InterfaceEndpointClientAdapter>,
@@ -44,7 +44,7 @@ class InterfaceEndpointClientAdapter
  public:
   InterfaceEndpointClientAdapter(
       mojo::ScopedInterfaceEndpointHandle handle,
-      ::rust::Box<RustAssociatedEndpointState> state,
+      ::rust::Box<EndpointInfo> info,
       scoped_refptr<base::SequencedTaskRunner> runner);
 
   // Receives an incoming one-way IPC message from InterfaceEndpointClient, and
@@ -95,7 +95,7 @@ class InterfaceEndpointClientAdapter
   uint32_t id_;
 
   // Pointer to data that Rust needs to run its handlers
-  std::optional<::rust::Box<RustAssociatedEndpointState>> state_;
+  std::optional<::rust::Box<EndpointInfo>> info_;
 
   // Sequence on which to run methods
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

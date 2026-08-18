@@ -21,7 +21,7 @@
 namespace mojo::rust::bindings {
 
 // Defined in Rust, exposed in the cxx bridge
-struct RustAssociatedEndpointState;
+struct EndpointInfo;
 class InterfaceEndpointClientAdapter;
 
 // This file defines the C++ side of the interop layer that enables Rust to
@@ -66,7 +66,7 @@ class AssociatedEndpointRustAdapter {
   // Binds the endpoint to `runner`. Incoming messages and disconnect events
   // are routed to the provided Rust callbacks.
   void Bind(const base::SequencedTaskRunner& runner,
-            ::rust::Box<RustAssociatedEndpointState> state);
+            ::rust::Box<EndpointInfo> info);
 
   // Returns the interface ID assigned to this endpoint on the routing group.
   uint32_t GetInterfaceId() const;

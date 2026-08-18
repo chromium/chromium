@@ -58,10 +58,10 @@ AssociatedEndpointRustAdapter::PassHandle() {
 // MultiplexRouterHandle::bind().
 void AssociatedEndpointRustAdapter::Bind(
     const base::SequencedTaskRunner& runner,
-    ::rust::Box<RustAssociatedEndpointState> state) {
+    ::rust::Box<EndpointInfo> info) {
   CHECK(!client_adapter_);
   client_adapter_ = base::MakeRefCounted<InterfaceEndpointClientAdapter>(
-      std::move(handle_), std::move(state),
+      std::move(handle_), std::move(info),
       scoped_refptr<base::SequencedTaskRunner>(
           const_cast<base::SequencedTaskRunner*>(&runner)));
 }

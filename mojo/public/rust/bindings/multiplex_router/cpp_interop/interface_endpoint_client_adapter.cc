@@ -50,12 +50,11 @@ namespace mojo::rust::bindings {
 // Rust handler.
 class RustResponder : public mojo::MessageReceiver {
  public:
-  explicit RustResponder(const RustAssociatedEndpointState& state)
-      : state_(state) {}
+  explicit RustResponder(const EndpointInfo& info) : info_(info) {}
 
   bool Accept(mojo::Message* message) override {
     return cxx_incoming_handler(
-        state_,
+        info_,
         std::make_unique<mojo::rust::ScopedMessageHandleWrapper>(
             message->TakeMojoMessage()),
         nullptr);
@@ -65,8 +64,8 @@ class RustResponder : public mojo::MessageReceiver {
   // RAW_PTR_EXCLUSION: FFI (this is allocated by Rust). Note that this struct
   // is owned by `client_` (via its internal async responders map). `client_`
   // drops all pending responders when the pipe closes or when `client_` is
-  // destroyed, which occurs before `state_` is freed.
-  RAW_PTR_EXCLUSION const RustAssociatedEndpointState& state_;
+  // destroyed, which occurs before `info_` is freed.
+  RAW_PTR_EXCLUSION const EndpointInfo& info_;
 };
 
 bool InterfaceEndpointClientAdapter::NoOpValidator::Accept(
@@ -76,11 +75,11 @@ bool InterfaceEndpointClientAdapter::NoOpValidator::Accept(
 
 InterfaceEndpointClientAdapter::InterfaceEndpointClientAdapter(
     mojo::ScopedInterfaceEndpointHandle handle,
-    ::rust::Box<RustAssociatedEndpointState> state,
+    ::rust::Box<EndpointInfo> info,
     scoped_refptr<base::SequencedTaskRunner> runner)
     : base::RefCountedDeleteOnSequence<InterfaceEndpointClientAdapter>(runner),
       id_(handle.id()),
-      state_(std::move(state)),
+      info_(std::move(info)),
       task_runner_(std::move(runner)),
       group_controller_(handle.group_controller()),
       client_(std::move(handle),
@@ -102,17 +101,19 @@ InterfaceEndpointClientAdapter::InterfaceEndpointClientAdapter(
 InterfaceEndpointClientAdapter::~InterfaceEndpointClientAdapter() = default;
 
 // Receives an incoming one-way IPC message from InterfaceEndpointClient, and
-// invokes the Rust incoming callback without a responder.
+// invokes the Rust incoming callback without a responder. We still pass
+// the responder wrapper so that we can use it to register new endpoints.
 bool InterfaceEndpointClientAdapter::Accept(mojo::Message* message) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!state_.has_value()) {
+  if (!info_.has_value()) {
     return false;
   }
   return cxx_incoming_handler(
-      *state_.value(),
+      *info_.value(),
       std::make_unique<mojo::rust::ScopedMessageHandleWrapper>(
           message->TakeMojoMessage()),
-      nullptr);
+      std::make_unique<MojoResponderWrapper>(nullptr, task_runner_,
+                                             group_controller_));
 }
 
 // Receives an incoming request IPC message from InterfaceEndpointClient with
@@ -122,24 +123,24 @@ bool InterfaceEndpointClientAdapter::AcceptWithResponder(
     mojo::Message* message,
     std::unique_ptr<mojo::MessageReceiverWithStatus> responder) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!state_.has_value()) {
+  if (!info_.has_value()) {
     return false;
   }
   return cxx_incoming_handler(
-      *state_.value(),
+      *info_.value(),
       std::make_unique<mojo::rust::ScopedMessageHandleWrapper>(
           message->TakeMojoMessage()),
-      std::make_unique<MojoResponderWrapper>(std::move(responder),
-                                             task_runner_));
+      std::make_unique<MojoResponderWrapper>(std::move(responder), task_runner_,
+                                             group_controller_));
 }
 
 // Invoked by InterfaceEndpointClient on pipe disconnection or error; calls
 // the Rust disconnect callback.
 void InterfaceEndpointClientAdapter::OnConnectionError() {
-  if (state_.has_value()) {
-    auto state = std::move(state_.value());
-    state_.reset();
-    cxx_disconnect_handler(std::move(state));
+  if (info_.has_value()) {
+    auto info = std::move(info_.value());
+    info_.reset();
+    cxx_disconnect_handler(std::move(info));
   }
 }
 
@@ -156,7 +157,7 @@ void InterfaceEndpointClientAdapter::SendMessage(
     return;
   }
 
-  if (!state_.has_value()) {
+  if (!info_.has_value()) {
     return;
   }
 
@@ -165,7 +166,7 @@ void InterfaceEndpointClientAdapter::SendMessage(
 
   if (message.has_flag(mojo::Message::kFlagExpectsResponse)) {
     client_.AcceptWithResponder(
-        &message, std::make_unique<RustResponder>(*state_.value()));
+        &message, std::make_unique<RustResponder>(*info_.value()));
   } else {
     client_.Accept(&message);
   }
