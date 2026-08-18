@@ -78,46 +78,6 @@ BASE_I18N_EXPORT std::u16string TimeFormatFriendlyDateAndTime(Time time);
 // "Monday, March 6, 2008".
 BASE_I18N_EXPORT std::u16string TimeFormatFriendlyDate(Time time);
 
-// Formats a time using a pattern to produce output for different locales when
-// an unusual time format is needed, e.g. "Feb. 2, 18:00". See
-// https://unicode-org.github.io/icu/userguide/format_parse/datetime/#datetime-format-syntax
-// for pattern details.
-//
-// Use this version when you want to display the resulting string to the user.
-//
-// This localizes more than you might expect: it does not simply translate days
-// of the week, etc., and then feed them into the provided pattern. The pattern
-// will also be run through a pattern localizer that will add spacing,
-// delimiters, etc. appropriate for the current locale. If you don't want this,
-// look at `UnlocalizedTimeFormatWithPattern()` below. If you want translation
-// but don't want to adjust the pattern as well, talk to base/ OWNERS about your
-// use case.
-BASE_I18N_EXPORT std::u16string LocalizedTimeFormatWithPattern(
-    Time time,
-    std::string_view pattern);
-
-// Formats a time using a pattern to produce en-US-like output, e.g. "Feb. 2,
-// 18:00". See
-// https://unicode-org.github.io/icu/userguide/format_parse/datetime/#datetime-format-syntax
-// for pattern details. NOTE: While ICU only supports millisecond precision
-// (fractional second patterns "SSS..." will be filled with zeroes after the
-// third 'S'), this supports microsecond precision (up to six 'S's may become
-// non-zero values), since some callers need that.
-//
-// `time_zone` can be set to a desired time zone (e.g.
-// icu::TimeZone::getGMT()); if left as null, the local time zone will be used.
-//
-// Use this version when you want to control the output format precisely, e.g.
-// for logging or to format a string for consumption by some server.
-//
-// This always outputs in US English and does not change the provided pattern at
-// all before formatting. It returns a `std::string` instead of a
-// `std::u16string` under the assumption that it will not be used in UI.
-BASE_I18N_EXPORT std::string UnlocalizedTimeFormatWithPattern(
-    Time time,
-    std::string_view pattern,
-    const icu::TimeZone* time_zone = nullptr);
-
 // Formats a time compliant to ISO 8601 in UTC, e.g. "2020-12-31T23:59:59.999Z".
 BASE_I18N_EXPORT std::string TimeFormatAsIso8601(Time time);
 
