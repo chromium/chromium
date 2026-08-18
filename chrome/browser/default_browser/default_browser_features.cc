@@ -68,6 +68,15 @@ DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface() {
   // locales, fall back to the self-contained illustration-free modal dialog.
   if (prompt_surface ==
       DefaultBrowserPromptSurface::kModalDialogWithSettingsIllustration) {
+    // When the visual guided setter is selected, use the illustration-free
+    // modal dialog because guidance is provided by the visual guide instead
+    // of an inline illustration.
+    if (GetDefaultBrowserSetterType() ==
+        DefaultBrowserSetterType::kVisualGuide) {
+      return DefaultBrowserPromptSurface::
+          kModalDialogWithoutSettingsIllustration;
+    }
+
     std::string os_locale;
     std::vector<std::wstring> os_languages;
     if (base::win::i18n::GetUserPreferredUILanguageList(&os_languages) &&

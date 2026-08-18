@@ -44,4 +44,62 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserChangedOsNotificationEnabled) {
   }
 }
 
+// Tests for GetDefaultBrowserPromptSurface behavior with prompt surfaces and
+// setter selection.
+TEST(DefaultBrowserFeaturesTest, GetDefaultBrowserPromptSurface) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserPromptSurfaces,
+          {{"prompt_surface", "modal_dialog_with_settings_illustration"}}},
+         {kDefaultBrowserSetterSelection, {{"setter_option", "visual_guide"}}}},
+        {});
+#if BUILDFLAG(IS_WIN)
+    EXPECT_EQ(
+        GetDefaultBrowserPromptSurface(),
+        DefaultBrowserPromptSurface::kModalDialogWithoutSettingsIllustration);
+#else
+    EXPECT_EQ(GetDefaultBrowserPromptSurface(),
+              DefaultBrowserPromptSurface::kInfobar);
+#endif
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserPromptSurfaces,
+          {{"prompt_surface", "modal_dialog_with_settings_illustration"}}},
+         {kDefaultBrowserSetterSelection,
+          {{"setter_option", "shell_integration"}}}},
+        {});
+#if BUILDFLAG(IS_WIN)
+    DefaultBrowserPromptSurface surface = GetDefaultBrowserPromptSurface();
+    EXPECT_TRUE(
+        surface ==
+            DefaultBrowserPromptSurface::kModalDialogWithSettingsIllustration ||
+        surface == DefaultBrowserPromptSurface::
+                       kModalDialogWithoutSettingsIllustration);
+#else
+    EXPECT_EQ(GetDefaultBrowserPromptSurface(),
+              DefaultBrowserPromptSurface::kInfobar);
+#endif
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserPromptSurfaces,
+          {{"prompt_surface", "modal_dialog_without_settings_illustration"}}}},
+        {});
+#if BUILDFLAG(IS_WIN)
+    EXPECT_EQ(
+        GetDefaultBrowserPromptSurface(),
+        DefaultBrowserPromptSurface::kModalDialogWithoutSettingsIllustration);
+#else
+    EXPECT_EQ(GetDefaultBrowserPromptSurface(),
+              DefaultBrowserPromptSurface::kInfobar);
+#endif
+  }
+}
+
 }  // namespace default_browser
