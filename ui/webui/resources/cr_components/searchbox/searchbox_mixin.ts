@@ -778,6 +778,35 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     private computeInputAriaLive_(): string {
       return this.selectedMatch ? 'off' : 'polite';
     }
+
+    /**
+     * Accepts the inline autocompletion by appending it to the input text and
+     * moving the cursor to the end. Returns `true` if inline autocomplete was
+     * handled, `false` otherwise.
+     */
+    acceptInlineAutocomplete(e: KeyboardEvent): boolean {
+      const input = this.getInputElement();
+      const lastInput = input?.lastInput();
+      if (!lastInput?.inline) {
+        return false;
+      }
+
+      if (e.shiftKey) {
+        input.setInput({inline: ''});
+        return true;
+      }
+
+      const newText = lastInput.text + lastInput.inline;
+      input.setInput({
+        text: newText,
+        inline: '',
+        moveCursorToEnd: true,
+      });
+      this.queryAutocomplete(
+          newText, /*preventInlineAutocomplete=*/ false, /*isOnFocus=*/ false);
+      e.preventDefault();
+      return true;
+    }
   }
 
   return SearchboxMixin;
@@ -798,6 +827,7 @@ export interface SearchboxMixinInterface {
   inputKeywordModel: InputKeywordModel|null;
   showThumbnail: boolean;
 
+  acceptInlineAutocomplete(e: KeyboardEvent): boolean;
   clearAutocompleteMatches(): void;
   getDropdownElement(): SearchboxDropdownElement;
   getInputElement(): SearchboxInputElement;

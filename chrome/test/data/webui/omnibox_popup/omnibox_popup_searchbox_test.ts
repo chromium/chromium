@@ -1943,4 +1943,57 @@ suite('OmniboxPopupSearchboxTest', function() {
      assertEquals(null, searchbox.$.input.selectedMatch);
    });
  });
+
+ test('TabKeyAcceptsInlineAutocomplete', async () => {
+   searchbox.focusInput();
+   searchbox.getInputElement().setInput({
+     text: 'you',
+     inline: 'tube.com',
+   });
+   await microtasksFinished();
+
+   const tabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(tabEvent);
+   await microtasksFinished();
+
+   assertTrue(tabEvent.defaultPrevented);
+   assertEquals('youtube.com', searchbox.getInputElement().inputElement.value);
+   assertEquals(11, searchbox.getInputElement().inputElement.selectionStart);
+   assertEquals(11, searchbox.getInputElement().inputElement.selectionEnd);
+   assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+   const [_queryId, queryText, preventInline, cursorPos, _inventory, isOnFocus] =
+       testProxy.handler.getArgs('queryAutocomplete')[0];
+   assertEquals('youtube.com', queryText);
+   assertFalse(preventInline);
+   assertEquals(11, cursorPos);
+   assertFalse(isOnFocus);
+ });
+
+ test('ShiftTabClearsInlineAutocompleteWithoutPreventDefault', async () => {
+   searchbox.focusInput();
+   searchbox.getInputElement().setInput({
+     text: 'you',
+     inline: 'tube.com',
+   });
+   await microtasksFinished();
+
+   const shiftTabEvent = new KeyboardEvent('keydown', {
+     key: 'Tab',
+     shiftKey: true,
+     cancelable: true,
+     bubbles: true,
+   });
+   await searchbox.handleKeyNavigation(shiftTabEvent);
+   await microtasksFinished();
+
+   assertFalse(shiftTabEvent.defaultPrevented);
+   const lastInput = searchbox.getInputElement().lastInput();
+   assertTrue(!!lastInput);
+   assertEquals('', lastInput.inline);
+   assertEquals('you', lastInput.text);
+ });
 });

@@ -392,23 +392,8 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
 
   override handleKeyNavigation(e: KeyboardEvent) {
     if (this.composeButtonEnabled && e.key === 'Tab' &&
-        this.$.input?.lastInput()?.inline &&
-        this.$.input === this.shadowRoot.activeElement) {
-      if (e.shiftKey) {
-        this.$.input.setInput({inline: ''});
-        return;
-      }
-
-      const newText =
-          this.$.input.lastInput()!.text + this.$.input.lastInput()!.inline;
-      this.$.input.setInput({
-        text: newText,
-        inline: '',
-        moveCursorToEnd: true,
-      });
-      this.queryAutocomplete(
-          newText, /*preventInlineAutocomplete=*/ false, /*isOnFocus=*/ false);
-      e.preventDefault();
+        this.$.input === this.shadowRoot.activeElement &&
+        this.acceptInlineAutocomplete(e)) {
       return;
     }
 
