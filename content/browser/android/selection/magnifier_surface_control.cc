@@ -9,35 +9,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "cc/layers/deadline_policy.h"
-#include "cc/slim/frame_sink.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
-#include "components/viz/common/frame_timing_details_map.h"
-#include "components/viz/common/surfaces/surface_range.h"
-#include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
-#include "content/browser/gpu/browser_gpu_channel_host_factory.h"
-#include "content/browser/renderer_host/compositor_dependencies_android.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/common/gpu_stream_constants.h"
-#include "gpu/command_buffer/client/shared_memory_limits.h"
-#include "gpu/ipc/common/gpu_surface_tracker.h"
-#include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
-#include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
-#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/window_android.h"
-#include "ui/display/screen.h"
-#include "ui/gfx/geometry/mask_filter_info.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gl/android/scoped_java_surface_control.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/MagnifierSurfaceControl_jni.h"
@@ -67,16 +48,9 @@ static int64_t JNI_MagnifierSurfaceControl_Create(
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(j_web_contents));
 
-  bool release_on_destroy = true;
-  gl::ScopedJavaSurfaceControl scoped_java_surface_control(j_surface_control,
-                                                           release_on_destroy);
-  gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
-  gpu::SurfaceHandle surface_handle = tracker->AddSurfaceForNativeWidget(
-      gpu::SurfaceRecord(std::move(scoped_java_surface_control)));
-
   return reinterpret_cast<int64_t>(new MagnifierSurfaceControl(
-      web_contents, surface_handle, device_scale, width, height, corner_radius,
-      zoom, top_shadow_height, bottom_shadow_height,
+      web_contents, j_surface_control, device_scale, width, height,
+      corner_radius, zoom, top_shadow_height, bottom_shadow_height,
       bottom_shadow_width_reduction));
 }
 
@@ -88,7 +62,7 @@ static void JNI_MagnifierSurfaceControl_Destroy(
 
 MagnifierSurfaceControl::MagnifierSurfaceControl(
     WebContentsImpl* web_contents,
-    gpu::SurfaceHandle surface_handle,
+    const base::android::JavaRef<jobject>& j_surface_control,
     float device_scale,
     int width,
     int height,
@@ -97,9 +71,7 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
     int top_shadow_height,
     int bottom_shadow_height,
     int bottom_shadow_width_reduction)
-    : HostDisplayClient(gfx::kNullAcceleratedWidget),
-      web_contents_(web_contents),
-      surface_handle_(surface_handle),
+    : web_contents_(web_contents),
       frame_sink_id_(AllocateFrameSinkId()),
       surface_size_(width, height + top_shadow_height + bottom_shadow_height),
       root_layer_(cc::slim::Layer::Create()),
@@ -108,15 +80,6 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
       surface_layer_(cc::slim::SurfaceLayer::Create()) {
   local_surface_id_allocator_.GenerateId();
 
-  layer_tree_ = cc::slim::LayerTree::Create(this);
-  layer_tree_->set_background_color(SkColors::kTransparent);
-  layer_tree_->SetViewportRectAndScale(
-      gfx::Rect(surface_size_), device_scale,
-      local_surface_id_allocator_.GetCurrentLocalSurfaceId());
-
-  GetHostFrameSinkManager()->RegisterFrameSinkId(
-      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
-  CreateDisplayAndFrameSink();
   surface_layer_->SetIsDrawable(true);
   root_layer_->SetBounds(surface_size_);
 
@@ -177,21 +140,22 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
   zoom_layer_->SetTransformOrigin(gfx::PointF(width / 2.0f, height / 2.0f));
   zoom_layer_->SetTransform(gfx::Transform::MakeScale(zoom));
 
-  layer_tree_->SetRoot(root_layer_);
   rounded_corner_layer_->AddChild(zoom_layer_);
   zoom_layer_->AddChild(surface_layer_);
+
+  ui::WindowAndroid* window_android = web_contents_->GetTopLevelNativeWindow();
+  CHECK(window_android);
+
+  compositor_ =
+      std::make_unique<AndroidSurfaceControlCompositor>(frame_sink_id_);
+  compositor_->Initialize(*window_android, j_surface_control, this, root_layer_,
+                          surface_size_, device_scale);
+  compositor_->Resize(surface_size_, device_scale,
+                      local_surface_id_allocator_.GetCurrentLocalSurfaceId());
 }
 
 MagnifierSurfaceControl::~MagnifierSurfaceControl() {
-  display_private_.reset();
-  CHECK(frame_sink_id_.is_valid());
-  GetHostFrameSinkManager()->InvalidateFrameSinkId(
-      frame_sink_id_, this,
-      base::BindOnce(
-          [](gpu::SurfaceHandle surface_handle) {
-            gpu::GpuSurfaceTracker::Get()->RemoveSurface(surface_handle);
-          },
-          surface_handle_));
+  compositor_.reset();
 }
 
 void MagnifierSurfaceControl::SetReadbackOrigin(JNIEnv* env, float x, float y) {
@@ -231,71 +195,6 @@ void MagnifierSurfaceControl::UpdateLayers() {
 
 void MagnifierSurfaceControl::ChildLocalSurfaceIdChanged(JNIEnv* env) {
   UpdateLayers();
-}
-
-void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
-  ui::WindowAndroid* window_android = web_contents_->GetTopLevelNativeWindow();
-  if (!window_android) {
-    return;
-  }
-
-  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
-      BrowserGpuChannelHostFactory::instance()->GetGpuChannel();
-  if (!gpu_channel_host) {
-    return;
-  }
-
-  CompositorDependenciesAndroid::Get().TryEstablishVizConnectionIfNeeded();
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
-
-  auto root_params = viz::mojom::RootCompositorFrameSinkParams::New();
-
-  // Create interfaces for a root CompositorFrameSink.
-  mojo::PendingAssociatedRemote<viz::mojom::CompositorFrameSink> sink_remote;
-  root_params->compositor_frame_sink =
-      sink_remote.InitWithNewEndpointAndPassReceiver();
-  mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> client_receiver =
-      root_params->compositor_frame_sink_client
-          .InitWithNewPipeAndPassReceiver();
-  display_private_.reset();
-  root_params->display_private =
-      display_private_.BindNewEndpointAndPassReceiver();
-
-  root_params->display_client = GetBoundRemote(task_runner);
-
-  gfx::DisplayColorSpaces display_color_spaces =
-      display::Screen::Get()
-          ->GetDisplayNearestWindow(window_android)
-          .GetColorSpaces();
-
-  viz::RendererSettings renderer_settings;
-  renderer_settings.partial_swap_enabled = true;
-  renderer_settings.allow_antialiasing = false;
-  renderer_settings.highp_threshold_min = 2048;
-  renderer_settings.requires_alpha_channel = true;
-
-  root_params->frame_sink_id = frame_sink_id_;
-  root_params->widget = surface_handle_;
-  root_params->gpu_compositing = true;
-  root_params->renderer_settings = renderer_settings;
-  root_params->refresh_rate = window_android->GetRefreshRate();
-
-  GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
-      std::move(root_params), /*maybe_wait_on_destruction=*/false);
-
-  display_private_->SetDisplayVisible(true);
-  display_private_->Resize(surface_size_);
-  display_private_->SetDisplayColorSpaces(display_color_spaces);
-  display_private_->SetSupportedRefreshRates(
-      window_android->GetSupportedRefreshRates());
-
-  layer_tree_->SetFrameSink(cc::slim::FrameSink::Create(
-      std::move(sink_remote), std::move(client_receiver), nullptr,
-      GetUIThreadTaskRunner({BrowserTaskType::kUserInput}),
-      base::kInvalidThreadId));
-  layer_tree_->SetVisible(true);
 }
 
 }  // namespace content

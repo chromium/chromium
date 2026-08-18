@@ -16,13 +16,11 @@
 #include "cc/slim/layer_tree_client.h"
 #include "cc/slim/surface_layer.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
-#include "components/viz/host/host_display_client.h"
 #include "components/viz/host/host_frame_sink_client.h"
+#include "content/browser/android/android_surface_control_compositor.h"
 #include "content/browser/renderer_host/unbounded_surface_window.h"
-#include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "third_party/blink/public/mojom/unbounded_element/unbounded_element.mojom.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/geometry/rect.h"
@@ -34,7 +32,6 @@ class RenderWidgetHostViewBase;
 
 class UnboundedSurfaceWindowAndroid
     : public UnboundedSurfaceWindow,
-      public viz::HostDisplayClient,
       public viz::HostFrameSinkClient,
       public cc::slim::LayerTreeClient,
       public blink::mojom::UnboundedSurfaceHost {
@@ -75,12 +72,6 @@ class UnboundedSurfaceWindowAndroid
   // blink::mojom::UnboundedSurfaceHost overrides:
   void UpdateBounds(const gfx::Rect& bounds) override;
 
-  // viz::mojom::DisplayClient implementation:
-  void DidCompleteSwapWithSize(const gfx::Size& pixel_size) override {}
-  void OnContextCreationResult(gpu::ContextResult context_result) override {}
-  void SetWideColorEnabled(bool enabled) override {}
-  void SetPreferredRefreshRate(float refresh_rate) override {}
-
   // viz::HostFrameSinkClient overrides:
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
   }
@@ -105,7 +96,6 @@ class UnboundedSurfaceWindowAndroid
       base::WeakPtr<RenderWidgetHostViewBase> subframe_view);
 
   bool InitWindow(const gfx::Rect& bounds_in_dips);
-  void CreateDisplayAndFrameSink(const gfx::Size& surface_size);
   void OnConnectionError();
 
   base::WeakPtr<RenderWidgetHostViewAndroid> parent_view_;
@@ -118,9 +108,7 @@ class UnboundedSurfaceWindowAndroid
   mojo::AssociatedRemote<blink::mojom::UnboundedSurfaceClient> client_remote_;
 
   raw_ptr<ui::WindowAndroid> window_android_ = nullptr;
-  gpu::SurfaceHandle surface_handle_ = gpu::kNullSurfaceHandle;
-  mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private_;
-  std::unique_ptr<cc::slim::LayerTree> layer_tree_;
+  std::unique_ptr<AndroidSurfaceControlCompositor> compositor_;
   scoped_refptr<cc::slim::SurfaceLayer> surface_layer_;
 
   base::android::ScopedJavaGlobalRef<jobject> j_popup_window_;

@@ -3117,6 +3117,8 @@ source_set("browser") {
       "android/additional_navigation_params.h",
       "android/android_overlay_provider_impl.cc",
       "android/android_overlay_provider_impl.h",
+      "android/android_surface_control_compositor.cc",
+      "android/android_surface_control_compositor.h",
       "android/app_web_message_port.cc",
       "android/app_web_message_port.h",
       "android/background_sync_network_observer_android.cc",

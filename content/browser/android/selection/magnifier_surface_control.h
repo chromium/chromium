@@ -7,59 +7,41 @@
 
 #include <memory>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "cc/slim/layer_tree.h"
+#include "cc/slim/layer.h"
 #include "cc/slim/layer_tree_client.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
-#include "components/viz/host/host_display_client.h"
-#include "components/viz/host/host_frame_sink_client.h"
-#include "gpu/ipc/common/surface_handle.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
-#include "ui/gl/android/scoped_java_surface_control.h"
+#include "content/browser/android/android_surface_control_compositor.h"
 
 namespace content {
 
 class WebContentsImpl;
 
-class MagnifierSurfaceControl : public viz::HostDisplayClient,
-                                public viz::HostFrameSinkClient,
-                                public cc::slim::LayerTreeClient {
+class MagnifierSurfaceControl : public cc::slim::LayerTreeClient {
  public:
-  MagnifierSurfaceControl(WebContentsImpl* web_contents,
-                          gpu::SurfaceHandle surface_handle,
-                          float device_scale,
-                          int width,
-                          int height,
-                          float corner_radius,
-                          float zoom,
-                          int top_shadow_height,
-                          int bottom_shadow_height,
-                          int bottom_shadow_width_reduction);
+  MagnifierSurfaceControl(
+      WebContentsImpl* web_contents,
+      const base::android::JavaRef<jobject>& j_surface_control,
+      float device_scale,
+      int width,
+      int height,
+      float corner_radius,
+      float zoom,
+      int top_shadow_height,
+      int bottom_shadow_height,
+      int bottom_shadow_width_reduction);
   ~MagnifierSurfaceControl() override;
 
   void SetReadbackOrigin(JNIEnv* env, float x, float y);
   void ChildLocalSurfaceIdChanged(JNIEnv* env);
 
-  // viz::mojom::DisplayClient implementation:
-  void DidCompleteSwapWithSize(const gfx::Size& pixel_size) override {}
-  void OnContextCreationResult(gpu::ContextResult context_result) override {}
-  void SetWideColorEnabled(bool enabled) override {}
-  void SetPreferredRefreshRate(float refresh_rate) override {}
-
-  // viz::HostFrameSinkClient
-  void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override {
-  }
-  void OnFrameTokenChanged(uint32_t frame_token,
-                           base::TimeTicks activation_time) override {}
-
-  // cc::slim::LayerTreeClient
+  // cc::slim::LayerTreeClient implementation:
   void BeginFrame(const viz::BeginFrameArgs& args) override {}
   void DidReceiveCompositorFrameAck() override {}
   void RequestNewFrameSink() override {}
@@ -69,11 +51,9 @@ class MagnifierSurfaceControl : public viz::HostDisplayClient,
   void DidLoseLayerTreeFrameSink() override {}
 
  private:
-  void CreateDisplayAndFrameSink();
   void UpdateLayers();
 
   const raw_ptr<WebContentsImpl> web_contents_;
-  const gpu::SurfaceHandle surface_handle_;
   const viz::FrameSinkId frame_sink_id_;
 
   const gfx::Size surface_size_;  // Includes shadow.
@@ -83,8 +63,7 @@ class MagnifierSurfaceControl : public viz::HostDisplayClient,
   const scoped_refptr<cc::slim::SurfaceLayer> surface_layer_;
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
 
-  mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private_;
-  std::unique_ptr<cc::slim::LayerTree> layer_tree_;
+  std::unique_ptr<AndroidSurfaceControlCompositor> compositor_;
 
   float readback_origin_x_ = 0.f;
   float readback_origin_y_ = 0.f;
