@@ -4652,12 +4652,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSaveAndLoad) {
 
   // Verify the loaded attributes have the exact same bounds and properties
   // as the original drawn annotation.
-  EXPECT_THAT(page_boxes[0].attributes,
-              InkTextBoxAttributesEq(
-                  kOriginalRect, attribute.color, attribute.css_font_size,
-                  attribute.typeface, attribute.alignment,
-                  attribute.orientation, attribute.viewport_orientation,
-                  attribute.is_bold, attribute.is_italic, attribute.text));
+  EXPECT_EQ(page_boxes[0].attributes, attribute);
 }
 
 TEST_P(PDFiumEngineInkDrawTextTest, LoadTextAnnotationsFromPdfMultiPages) {

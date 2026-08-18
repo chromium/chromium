@@ -55,6 +55,8 @@ std::string TextTypefaceToString(TextTypeface typeface);
 std::string TextAlignmentToString(TextAlignment alignment);
 
 struct InkTextBoxAttributes {
+  bool operator==(const InkTextBoxAttributes& other) const = default;
+
   // `rect` is in CSS screen coordinates.
   gfx::RectF rect;
   SkColor color;

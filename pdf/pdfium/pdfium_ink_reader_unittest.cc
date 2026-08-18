@@ -88,12 +88,20 @@ TEST_P(PDFiumInkReaderTest, BasicTextAnnotation) {
   EXPECT_EQ(0, textbox.id);
   EXPECT_EQ("Hello\n!", textbox.attributes.text);
 
-  EXPECT_THAT(textbox.attributes,
-              InkTextBoxAttributesEq(
-                  gfx::RectF(25.333334f, 125.333336f, 133.33334f, 66.66667f),
-                  SK_ColorBLACK, 10.0f, TextTypeface::kSansSerif,
-                  TextAlignment::kLeft, 0, PageOrientation::kOriginal,
-                  /*is_bold=*/true, /*is_italic=*/false, "Hello\n!"));
+  EXPECT_EQ(
+      textbox.attributes,
+      (InkTextBoxAttributes{
+          .rect = gfx::RectF(25.333334f, 125.333336f, 133.33334f, 66.66667f),
+          .color = SK_ColorBLACK,
+          .css_font_size = 10.0f,
+          .typeface = TextTypeface::kSansSerif,
+          .alignment = TextAlignment::kLeft,
+          .orientation = 0,
+          .viewport_orientation = PageOrientation::kOriginal,
+          .is_bold = true,
+          .is_italic = false,
+          .text = "Hello\n!",
+      }));
 
   // "Hello\n!" has 2 lines and should have 2 text page objects.
   const std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&
@@ -141,12 +149,20 @@ TEST_P(PDFiumInkReaderTest, MultipleTextboxesOnOnePage) {
   const InkTextBox& textbox0 = results[0].textbox;
   EXPECT_EQ(0, textbox0.id);
   EXPECT_EQ("Hello", textbox0.attributes.text);
-  EXPECT_THAT(textbox0.attributes,
-              InkTextBoxAttributesEq(
-                  gfx::RectF(25.333334f, 125.333336f, 133.33334f, 66.66667f),
-                  SK_ColorBLACK, 10.0f, TextTypeface::kSansSerif,
-                  TextAlignment::kLeft, 0, PageOrientation::kOriginal,
-                  /*is_bold=*/true, /*is_italic=*/false, "Hello"));
+  EXPECT_EQ(
+      textbox0.attributes,
+      (InkTextBoxAttributes{
+          .rect = gfx::RectF(25.333334f, 125.333336f, 133.33334f, 66.66667f),
+          .color = SK_ColorBLACK,
+          .css_font_size = 10.0f,
+          .typeface = TextTypeface::kSansSerif,
+          .alignment = TextAlignment::kLeft,
+          .orientation = 0,
+          .viewport_orientation = PageOrientation::kOriginal,
+          .is_bold = true,
+          .is_italic = false,
+          .text = "Hello",
+      }));
   const std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&
       text_objects0 = results[0].text_objects;
   ASSERT_EQ(1u, text_objects0.size());
@@ -156,12 +172,20 @@ TEST_P(PDFiumInkReaderTest, MultipleTextboxesOnOnePage) {
   const InkTextBox& textbox1 = results[1].textbox;
   EXPECT_EQ(42, textbox1.id);
   EXPECT_EQ("World", textbox1.attributes.text);
-  EXPECT_THAT(textbox1.attributes,
-              InkTextBoxAttributesEq(
-                  gfx::RectF(25.333334f, 186.66667f, 133.33334f, 66.66667f),
-                  SK_ColorBLUE, 15.0f, TextTypeface::kMonospace,
-                  TextAlignment::kLeft, 0, PageOrientation::kOriginal,
-                  /*is_bold=*/false, /*is_italic=*/true, "World"));
+  EXPECT_EQ(
+      textbox1.attributes,
+      (InkTextBoxAttributes{
+          .rect = gfx::RectF(25.333334f, 186.66667f, 133.33334f, 66.66667f),
+          .color = SK_ColorBLUE,
+          .css_font_size = 15.0f,
+          .typeface = TextTypeface::kMonospace,
+          .alignment = TextAlignment::kLeft,
+          .orientation = 0,
+          .viewport_orientation = PageOrientation::kOriginal,
+          .is_bold = false,
+          .is_italic = true,
+          .text = "World",
+      }));
   const std::vector<base::RawPtrIfPtrT<FPDF_PAGEOBJECT, DanglingUntriaged>>&
       text_objects1 = results[1].text_objects;
   ASSERT_EQ(1u, text_objects1.size());

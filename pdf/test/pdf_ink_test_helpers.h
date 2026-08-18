@@ -129,36 +129,6 @@ MATCHER_P6(InkAffineTransformEq,
          Matches(FloatEq(expected_f))(arg.F());
 }
 
-MATCHER_P10(InkTextBoxAttributesEq,
-            rect,
-            color,
-            css_font_size,
-            typeface,
-            alignment,
-            orientation,
-            viewport_orientation,
-            is_bold,
-            is_italic,
-            text,
-            testing::PrintToString(InkTextBoxAttributes{
-                .rect = rect,
-                .color = color,
-                .css_font_size = css_font_size,
-                .typeface = typeface,
-                .alignment = alignment,
-                .orientation = orientation,
-                .viewport_orientation = viewport_orientation,
-                .is_bold = is_bold,
-                .is_italic = is_italic,
-                .text = text})) {
-  return arg.rect == rect && arg.color == color &&
-         arg.css_font_size == css_font_size && arg.typeface == typeface &&
-         arg.alignment == alignment && arg.orientation == orientation &&
-         arg.viewport_orientation == viewport_orientation &&
-         arg.is_bold == is_bold && arg.is_italic == is_italic &&
-         arg.text == text;
-}
-
 bool InkTextInfoEquals(const InkTextInfo& lhs, const InkTextInfo& rhs);
 
 MATCHER_P6(InkTextInfoWithTextEq,
