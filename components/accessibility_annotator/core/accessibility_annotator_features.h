@@ -33,23 +33,6 @@ BASE_DECLARE_FEATURE_PARAM(double, kContentAnnotatorSemanticMatchThreshold);
 BASE_DECLARE_FEATURE_PARAM(bool, kContentAnnotatorEnableMultiTabAnnotations);
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotator);
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kAccessibilityAnnotationTTL);
-
-BASE_DECLARE_FEATURE(kAccessibilityAnnotatorGetEntities);
-
-BASE_DECLARE_FEATURE(kAccessibilityAnnotatorLiveTabContext);
-BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kAccessibilityAnnotatorLiveTabContextMaxSearchResults);
-BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kAccessibilityAnnotatorLiveTabContextPassagesPerPage);
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kAccessibilityAnnotatorLiveTabContextRequestTimeout);
-
-BASE_DECLARE_FEATURE(kAccessibilityAnnotationReducerOnePResolver);
-BASE_DECLARE_FEATURE_PARAM(std::string, kAccessibilityAnnotatorOnePServiceUrl);
-
 BASE_DECLARE_FEATURE(kAccessibilityAnnotatorDatabaseStorage);
 
 }  // namespace accessibility_annotator::features

@@ -1,7 +1,5 @@
 include_rules = [
   # go/keep-sorted start
-  "+components/accessibility_annotator/core",
-  "+components/accessibility_annotator/core/annotation_reducer",
   "+components/affiliations",
   "+components/browser_ui/device_lock/android",
   "+components/consent_auditor",

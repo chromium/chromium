@@ -183,7 +183,6 @@ test("components_unittests") {
 
   deps = [
     "//base",
-    "//components/accessibility_annotator/core/annotation_reducer:unit_tests",
     "//components/accessibility_annotator/core/content_annotator:unit_tests",
     "//components/accessibility_annotator/core/storage:unit_tests",
     "//components/account_settings:unit_tests",
@@ -796,11 +795,7 @@ test("components_unittests") {
   }
 
   if (!is_android && !is_ios && !is_fuchsia && !is_castos) {
-    deps += [
-      "//components/accessibility_annotator/content/content_annotator:unit_tests",
-      "//components/accessibility_annotator/content/live_tab_context:unit_tests",
-      "//components/accessibility_annotator/core/live_tab_context:unit_tests",
-    ]
+    deps += [ "//components/accessibility_annotator/content/content_annotator:unit_tests" ]
   }
 
   if (enable_guest_view) {

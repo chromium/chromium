@@ -1458,8 +1458,6 @@ static_library("browser") {
     "//base:i18n",
     "//base/version_info",
     "//build:branding_buildflags",
-    "//components/accessibility_annotator/core/annotation_reducer",
-    "//components/accessibility_annotator/core/data_models",
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",
@@ -1845,7 +1843,6 @@ static_library("test_support") {
 
   public_deps = [
     ":browser",
-    "//components/accessibility_annotator/core/annotation_reducer",
     "//components/autofill/core/common:test_support",
     "//components/one_time_tokens/core/browser",
     "//components/one_time_tokens/core/browser:test_support",
@@ -2344,8 +2341,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//base/version_info",
-    "//components/accessibility_annotator/core/annotation_reducer",
-    "//components/accessibility_annotator/core/data_models",
     "//components/autofill/core/browser/actor:unit_tests",
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common:credit_card_number_validation",

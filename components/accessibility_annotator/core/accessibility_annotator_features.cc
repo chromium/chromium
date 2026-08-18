@@ -79,42 +79,6 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE(kAccessibilityAnnotator, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kAccessibilityAnnotationTTL,
-                   &kAccessibilityAnnotator,
-                   "accessibility_annotation_ttl",
-                   base::Days(7));
-
-
-BASE_FEATURE(kAccessibilityAnnotatorGetEntities,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAccessibilityAnnotatorLiveTabContext,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kAccessibilityAnnotatorLiveTabContextMaxSearchResults,
-                   &kAccessibilityAnnotatorLiveTabContext,
-                   "live_tab_context_max_search_results",
-                   3);
-// TODO(b/496946516): Evaluate passage count latency vs recall tradeoffs.
-BASE_FEATURE_PARAM(int,
-                   kAccessibilityAnnotatorLiveTabContextPassagesPerPage,
-                   &kAccessibilityAnnotatorLiveTabContext,
-                   "live_tab_context_passages_per_page",
-                   10);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kAccessibilityAnnotatorLiveTabContextRequestTimeout,
-                   &kAccessibilityAnnotatorLiveTabContext,
-                   "live_tab_context_request_timeout",
-                   base::Seconds(3));
-
-BASE_FEATURE(kAccessibilityAnnotationReducerOnePResolver,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(std::string,
-                   kAccessibilityAnnotatorOnePServiceUrl,
-                   &kAccessibilityAnnotationReducerOnePResolver,
-                   "one_p_service_url",
-                   "");
 
 // TODO(crbug.com/484049558): Remove this feature once the SQLite database
 // storage is ready with the initial schema as default storage.
