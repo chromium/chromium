@@ -728,6 +728,7 @@ class TabVerticalViewBinder {
                         : TabCardThemeUtil.getCardViewBackgroundColor(
                                 context, isIncognito, /* isSelected= */ false, /* colorId= */ null);
         ViewCompat.setBackgroundTintList(view, ColorStateList.valueOf(backgroundColor));
+        view.invalidate();
 
         @ColorInt
         int foregroundColor =
