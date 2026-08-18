@@ -6997,13 +6997,77 @@ void WebGLRenderingContextBase::texElementImage2D(
     }
   }
 
-  TexElementImage2DInternal(target, internalformat, sx, sy, swidth, sheight,
-                            width, height, element, exception_state);
+  TexElementImage2DInternal(target, internalformat, /*level*/ 0, /*xoffset*/ 0,
+                            /*yoffset*/ 0, sx, sy, swidth, sheight, width,
+                            height, element, exception_state);
+}
+
+void WebGLRenderingContextBase::texElementSubImage2D(
+    GLenum target,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
+    const V8UnionElementOrElementImage* element,
+    const WebGLCopyElementImageConfig* config,
+    ExceptionState& exception_state) {
+  std::optional<GLfloat> sx;
+  std::optional<GLfloat> sy;
+  std::optional<GLfloat> swidth;
+  std::optional<GLfloat> sheight;
+  std::optional<GLsizei> width;
+  std::optional<GLsizei> height;
+
+  size_t explicit_param_count = 0;
+  if (config) {
+    if (config->hasSx()) {
+      sx = config->sx();
+      explicit_param_count++;
+    }
+    if (config->hasSy()) {
+      sy = config->sy();
+      explicit_param_count++;
+    }
+    if (config->hasSwidth()) {
+      swidth = config->swidth();
+      explicit_param_count++;
+    }
+    if (config->hasSheight()) {
+      sheight = config->sheight();
+      explicit_param_count++;
+    }
+    if (explicit_param_count % 4 != 0) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kOperationError,
+          "Must specify all or none of (sx,sy,swidth,sheight).");
+      return;
+    }
+    if (config->hasWidth()) {
+      width = config->width();
+      explicit_param_count++;
+    }
+    if (config->hasHeight()) {
+      height = config->height();
+      explicit_param_count++;
+    }
+    if (explicit_param_count % 2 != 0) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kOperationError,
+          "Must specify neither or both of (width,height).");
+      return;
+    }
+  }
+
+  TexElementImage2DInternal(target, /*internalformat*/ std::nullopt, level,
+                            xoffset, yoffset, sx, sy, swidth, sheight, width,
+                            height, element, exception_state);
 }
 
 void WebGLRenderingContextBase::TexElementImage2DInternal(
     GLenum target,
-    GLenum internalformat,
+    std::optional<GLenum> internalformat,
+    GLint level,
+    GLint xoffset,
+    GLint yoffset,
     std::optional<GLfloat> sx,
     std::optional<GLfloat> sy,
     std::optional<GLfloat> swidth,
@@ -7015,8 +7079,11 @@ void WebGLRenderingContextBase::TexElementImage2DInternal(
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
       Host()->GetTopExecutionContext()));
 
-  if (internalformat != GL_RGBA8 && internalformat != GL_SRGB8_ALPHA8 &&
-      internalformat != GL_RGBA16F && internalformat != GL_RGBA32F) {
+  bool new_api = !internalformat.has_value();
+
+  if (!new_api && *internalformat != GL_RGBA8 &&
+      *internalformat != GL_SRGB8_ALPHA8 && *internalformat != GL_RGBA16F &&
+      *internalformat != GL_RGBA32F) {
     exception_state.ThrowTypeError(
         "Invalid internalformat. Must be one of RGBA8, SRGB8_ALPHA8, RGBA16F, "
         "or RGBA32F.");
@@ -7027,36 +7094,55 @@ void WebGLRenderingContextBase::TexElementImage2DInternal(
     return;
   }
 
-  if (!ValidateTexture2DBinding("texElementImage2D", target, true)) {
+  if (!ValidateTexture2DBinding("texElementSubImage2D", target, true)) {
+    return;
+  }
+
+  if (new_api && !ValidateSize("texElementSubImage2D", xoffset, yoffset, 0)) {
     return;
   }
 
   scoped_refptr<StaticBitmapImage> image =
       GetElementImage(element, sx, sy, swidth, sheight, width, height,
-                      gpu::SHARED_IMAGE_USAGE_GLES2_READ, "texElementImage2D()",
-                      exception_state);
+                      gpu::SHARED_IMAGE_USAGE_GLES2_READ,
+                      "texElementSubImage2D()", exception_state);
   if (!image) {
     return;
   }
 
+  TexImageParams params;
   GLenum type = GL_UNSIGNED_BYTE;
-  if (internalformat == GL_RGBA16F) {
-    type = GL_HALF_FLOAT;
-  } else if (internalformat == GL_RGBA32F) {
-    type = GL_FLOAT;
+  if (new_api) {
+    params = {.source_type = kSourceImageBitmap,
+              .function_id = kTexSubImage2D,
+              .target = target,
+              .level = 0,
+              .xoffset = xoffset,
+              .yoffset = yoffset,
+              .width = image->Size().width(),
+              .height = image->Size().height(),
+              .format = GL_RGBA,
+              .type = type};
+  } else {
+    if (*internalformat == GL_RGBA16F) {
+      type = GL_HALF_FLOAT;
+    } else if (*internalformat == GL_RGBA32F) {
+      type = GL_FLOAT;
+    }
+
+    params = {
+        .source_type = kSourceImageBitmap,
+        .function_id = kTexImage2D,
+        .target = target,
+        .level = 0,
+        .internalformat = static_cast<GLint>(*internalformat),
+        .width = image->Size().width(),
+        .height = image->Size().height(),
+        .format = GL_RGBA,
+        .type = type,
+    };
   }
 
-  TexImageParams params = {
-      .source_type = kSourceImageBitmap,
-      .function_id = kTexImage2D,
-      .target = target,
-      .level = 0,
-      .internalformat = static_cast<GLint>(internalformat),
-      .width = image->Size().width(),
-      .height = image->Size().height(),
-      .format = GL_RGBA,
-      .type = type,
-  };
   GetCurrentUnpackState(params);
   if (!ValidateTexImageBinding(params)) {
     exception_state.ThrowTypeError("ValidateTexImageBinding failure");

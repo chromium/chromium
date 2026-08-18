@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>WebGL texElementImage2D error conditions tests</title>
+    <title>WebGL texElementSubImage2D error conditions tests</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
@@ -31,12 +31,15 @@
 
         const tex = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, tex);
-        // Helper to run texElementImage2D with optional config.
+        // Allocate texture backing
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, 32, 32, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+        // Helper to run texElementSubImage2D with optional config.
         function callTex(config) {
           if (config === undefined) {
-            gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA8, container);
+            gl.texElementSubImage2D(gl.TEXTURE_2D, /*level*/0, /*xoffset*/0, /*yoffset*/0, container);
           } else {
-            gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA8, container, config);
+            gl.texElementSubImage2D(gl.TEXTURE_2D, /*level*/0, /*xoffset*/0, /*yoffset*/0, container, config);
           }
         }
 
@@ -118,25 +121,7 @@
           () => callTex(makeConfig(0, 0, 10, 10, 10, undefined)),
           "Should throw OperationError for valid source and mismatched dest"
         );
-
-        // 4. Verify internalformat validation.
-        // Must be one of RGBA8, SRGB8_ALPHA8, RGBA16F, RGBA32F.
-        assert_throws_js(TypeError,
-          () => gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA, container),
-          "gl.RGBA internalformat should throw TypeError"
-        );
-        assert_throws_js(TypeError,
-          () => gl.texElementImage2D(gl.TEXTURE_2D, 99999, container),
-          "Invalid internalformat should throw TypeError"
-        );
-
-        // Allowed internal formats: should not throw.
-        gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA8, container);
-        gl.texElementImage2D(gl.TEXTURE_2D, gl.SRGB8_ALPHA8, container);
-        gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA16F, container);
-        gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA32F, container);
-
-      }, "texElementImage2D parameter group validation");
+      }, "texElementSubImage2D parameter group validation");
     </script>
   </body>
 </html>

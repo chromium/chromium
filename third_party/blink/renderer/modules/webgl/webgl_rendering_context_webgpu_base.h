@@ -609,6 +609,14 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
                          const WebGLCopyElementImageConfig* config,
                          ExceptionState& exception_state);
 
+  void texElementSubImage2D(GLenum target,
+                            GLint level,
+                            GLint xoffset,
+                            GLint yoffset,
+                            const V8UnionElementOrElementImage* element,
+                            const WebGLCopyElementImageConfig* config,
+                            ExceptionState& exception_state);
+
   void texSubImage2D(GLenum target,
                      GLint level,
                      GLint xoffset,

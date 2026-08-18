@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>texElementImage2D should not throw if the canvas is nested inside another canvas</title>
+<title>texElementSubImage2D should not throw if the canvas is nested inside another canvas</title>
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -16,6 +16,8 @@ promise_test(async (t) => {
   const gl = nested_webgl_canvas.getContext('webgl2', {preserveDrawingBuffer:true});
   const tex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA8, inner_div);
-}, "texElementImage2D should not throw if called on a nested webgl canvas");
+  // Allocate texture backing
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, 100, 100, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+  gl.texElementSubImage2D(gl.TEXTURE_2D, /*level*/0, /*xoffset*/0, /*yoffset*/0, inner_div);
+}, "texElementSubImage2D should not throw if called on a nested webgl canvas");
 </script>

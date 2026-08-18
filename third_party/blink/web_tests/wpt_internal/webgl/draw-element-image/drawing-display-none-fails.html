@@ -14,14 +14,16 @@
     canvas_3d_div.style.display = 'none';
     await new Promise(requestAnimationFrame);
     await new Promise(setTimeout);
-    const context_gl = canvas_3d.getContext('webgl2');
-    const tex = context_gl.createTexture();
-    context_gl.bindTexture(context_gl.TEXTURE_2D, tex);
-    const internalformat = context_gl.RGBA8;
+    const gl = canvas_3d.getContext('webgl2');
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    const internalformat = gl.RGBA8;
+    // Allocate texture backing
+    gl.texImage2D(gl.TEXTURE_2D, 0, internalformat, 100, 100, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     assert_throws_dom(
       "InvalidStateError",
-        () => context_gl.texElementImage2D(
-            context_gl.TEXTURE_2D, internalformat, canvas_3d_div),
-      'texElementImage2D cannot draw display:none elements.');
-  }, 'texElementImage2D with display:none element');
+        () => gl.texElementSubImage2D(
+            gl.TEXTURE_2D, /*level*/0, /*xoffset*/0, /*yoffset*/0, canvas_3d_div),
+      'texElementSubImage2D cannot draw display:none elements.');
+  }, 'texElementSubImage2D with display:none element');
 </script>

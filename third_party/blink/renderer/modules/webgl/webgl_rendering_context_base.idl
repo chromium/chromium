@@ -650,6 +650,12 @@ interface mixin WebGLRenderingContextBase {
                            (Element or ElementImage) element,
                            optional WebGLCopyElementImageConfig config = {});
 
+    [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
+    void texElementSubImage2D(GLenum target, GLint level,
+                           GLint xoffset, GLint yoffset,
+                           (Element or ElementImage) element,
+                           optional WebGLCopyElementImageConfig config = {});
+
     void texSubImage2D(
         GLenum target, GLint level, GLint xoffset, GLint yoffset,
         GLsizei width, GLsizei height, GLenum format, GLenum type,

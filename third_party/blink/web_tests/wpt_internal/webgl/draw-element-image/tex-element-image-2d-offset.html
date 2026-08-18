@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ensure texElementSubImage2D with xoffset and yoffset</title>
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
+    <style>
+      #red-box {
+        width: 16px;
+        height: 16px;
+        background-color: red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <canvas id="canvasHost" width="32" height="32" layoutsubtree>
+      <div id="red-box"></div>
+    </canvas>
+    <script>
+      function runTest() {
+        async_test(t => {
+          const gl = canvasHost.getContext("webgl2");
+          if (!gl) {
+            assert_unreached("webgl2 context not available");
+            t.done();
+          }
+
+          gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+          const tex = gl.createTexture();
+          gl.bindTexture(gl.TEXTURE_2D, tex);
+          const internalformat = gl.RGBA8;
+
+          // Allocate texture backing
+          gl.texImage2D(gl.TEXTURE_2D, 0, internalformat, 32, 32, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+          // Draw red-box element to texture at destination offset (xoffset=8, yoffset=8)
+          const redBox = document.getElementById("red-box");
+          gl.texElementSubImage2D(gl.TEXTURE_2D, /*level*/0, /*xoffset*/8, /*yoffset*/8, redBox);
+
+          const fbo = gl.createFramebuffer();
+          gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+          gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+
+          let complete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) == gl.FRAMEBUFFER_COMPLETE;
+          assert_true(complete);
+
+          const pixels = new Uint8Array(32* 32 * 4);
+          gl.readPixels(0, 0, 32, 32, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+          // Helper to check pixel RGBA at (x, y)
+          function checkPixel(x, y, r, g, b, a, msg) {
+            const idx = (y * 32 + x) * 4;
+            assert_equals(pixels[idx], r, `${msg} red`);
+            assert_equals(pixels[idx+1], g, `${msg} green`);
+            assert_equals(pixels[idx+2], b, `${msg} blue`);
+            assert_equals(pixels[idx+3], a, `${msg} alpha`);
+          }
+
+          // Outside destination rect: should be zero (0, 0, 0, 0)
+          checkPixel(0, 0, 0, 0, 0, 0, "pixel at (0, 0)");
+          checkPixel(31, 0, 0, 0, 0, 0, "pixel at (31, 0)");
+          checkPixel(7, 7, 0, 0, 0, 0, "pixel at (7, 7)");
+          checkPixel(24, 7, 0, 0, 0, 0, "pixel at (24, 7)");
+          checkPixel(7, 24, 0, 0, 0, 0, "pixel at (7, 24)");
+          checkPixel(24, 24, 0, 0, 0, 0, "pixel at (24, 24)");
+          checkPixel(0, 31, 0, 0, 0, 0, "pixel at (0, 31)");
+          checkPixel(31, 31, 0, 0, 0, 0, "pixel at (31, 31)");
+
+          // Inside destination rect: should be red (255, 0, 0, 255)
+          checkPixel(8, 8, 255, 0, 0, 255, "pixel at (8, 8)");
+          checkPixel(23, 8, 255, 0, 0, 255, "pixel at (23, 8)");
+          checkPixel(8, 23, 255, 0, 0, 255, "pixel at (8, 23)");
+          checkPixel(23, 23, 255, 0, 0, 255, "pixel at (23, 23)");
+
+          t.done();
+        }, "verify texElementSubImage2D with non-zero xoffset and yoffset offsets");
+      }
+
+      onload = async () => {
+        await waitForCanvasPaint(canvasHost);
+        runTest();
+      };
+    </script>
+  </body>
+</html>

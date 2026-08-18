@@ -75,7 +75,11 @@ void main(){
 
     gl.bindTexture(gl.TEXTURE_2D, this.tex);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA8, target);
+    // Allocate texture backing
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, target.width, target.height, 0,
+                  gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texElementSubImage2D(gl.TEXTURE_2D, /*level*/ 0, /*xoffset*/ 0,
+                            /*yoffset*/ 0, target);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     gl.uniform1i(this.texLoc, 0);

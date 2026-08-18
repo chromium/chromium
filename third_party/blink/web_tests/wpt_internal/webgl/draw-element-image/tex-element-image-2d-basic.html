@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Ensure texElementImage2D in texImage2D</title>
+    <title>Ensure texElementSubImage2D in texImage2D</title>
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
@@ -74,10 +74,12 @@
           const tex = gl.createTexture();
           gl.bindTexture(gl.TEXTURE_2D, tex);
           const internalformat = gl.RGBA8;
-          gl.texElementImage2D(gl.TEXTURE_2D, internalformat, container);
+          // Allocate texture backing
+          gl.texImage2D(gl.TEXTURE_2D, 0, internalformat, 32, 32, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+          gl.texElementSubImage2D(gl.TEXTURE_2D, /*level*/0, /*xoffset*/0, /*yoffset*/0, container);
 
           // Zero-area call should not crash and should not paint
-          gl.texElementImage2D(gl.TEXTURE_2D, internalformat, occluder, { width: 100, height: 0 });
+          gl.texElementSubImage2D(gl.TEXTURE_2D, /*level*/0, /*xoffset*/0, /*yoffset*/0, occluder, { width: 100, height: 0 });
 
           const fbo = gl.createFramebuffer();
           gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -192,7 +194,7 @@
           assert_equals(pixels[offset+3], 255, "top right of top right alpha");
 
           t.done();
-        }, "verify the texElementImage2D works as expected");
+        }, "verify the texElementSubImage2D works as expected");
       }
 
       onload = async () => {
