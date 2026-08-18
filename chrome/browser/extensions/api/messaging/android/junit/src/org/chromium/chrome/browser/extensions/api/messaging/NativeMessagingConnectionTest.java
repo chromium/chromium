@@ -229,4 +229,17 @@ public class NativeMessagingConnectionTest {
         Assert.assertNull(connection.getSessionForTesting(EXT_1));
         Mockito.verify(mObserver).onUnbound(TARGET_PACKAGE);
     }
+
+    // Test that addPort on an unbound connection returns getUnableToConnectError.
+    @Test
+    public void testAddPortToUnboundConnection() {
+        NativeMessagingConnection connection =
+                new NativeMessagingConnection(TARGET_PACKAGE, mObserver);
+        connection.unbind();
+        Assert.assertFalse(connection.isBound());
+
+        String error = connectExtension(connection, EXT_1);
+        Assert.assertEquals(
+                NativeMessagingConnection.getUnableToConnectError(TARGET_PACKAGE), error);
+    }
 }

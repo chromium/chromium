@@ -29,6 +29,12 @@
     {% block extra_uses_permissions %}
     {% endblock %}
 
+    <queries>
+        <intent>
+            <action android:name="org.chromium.chrome.browser.extensions.messaging.action.NATIVE_MESSAGING" />
+        </intent>
+    </queries>
+
     <application android:name="org.chromium.android_browsertests_apk.ChromeBrowserTestsApplication"
             android:label="ChromeBrowserTests"
             android:requestLegacyExternalStorage="true">

@@ -84,6 +84,10 @@ source_set("messaging") {
     "//url",
   ]
 
+  if (is_android) {
+    deps += [ "//chrome/browser/extensions/api/messaging/android" ]
+  }
+
   if (!is_android) {
     deps += [ "//components/keep_alive_registry" ]
   }
@@ -201,7 +205,7 @@ if (!is_android) {
 
     sources = [
       "message_tracker_browsertest.cc",
-      "native_messaging_apitest.cc",
+      "native_messaging_apitest_desktop.cc",
     ]
 
     deps = [

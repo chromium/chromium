@@ -124,13 +124,13 @@ ChromeMessagingDelegate::CreateReceiverForNativeApp(
     const std::string& native_app_name,
     bool allow_user_level,
     std::string* error_out) {
+  CHECK(error_out);
 #if BUILDFLAG(IS_ANDROID)
   // On Android, `native_app_name` represents the target package name.
-  return std::make_unique<NativeMessageAndroidPort>(
-      browser_context, channel_delegate, receiver_port_id, extension_id,
-      native_app_name);
+  return NativeMessageAndroidPort::Create(
+      Profile::FromBrowserContext(browser_context), channel_delegate,
+      receiver_port_id, extension_id, native_app_name, error_out);
 #else
-  DCHECK(error_out);
   gfx::NativeView native_view =
       source ? source->GetNativeView() : gfx::NativeView();
   std::unique_ptr<NativeMessageHost> native_host =

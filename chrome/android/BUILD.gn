@@ -932,6 +932,10 @@ if (_is_default_toolchain) {
     # refactor one-by-one.
     sources += unmodularized_bookmarks_java_files
 
+    if (enable_extensions_core) {
+      deps += [ "//chrome/browser/extensions/api/messaging/android:java" ]
+    }
+
     if (enable_printing) {
       sources += [
         "java/src/org/chromium/chrome/browser/printing/ChromeThinWebViewPrintingController.java",

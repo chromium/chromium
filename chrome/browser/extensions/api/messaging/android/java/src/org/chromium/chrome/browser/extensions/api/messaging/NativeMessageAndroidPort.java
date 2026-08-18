@@ -8,6 +8,10 @@ import android.os.RemoteException;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -23,6 +27,7 @@ import java.util.List;
  * native_message_android_port.h/.cc and to the rest of the extensions system. This class will be
  * owned by C++ NativeMessageAndroidPort though it is also referenced by other Java classes.
  */
+@JNINamespace("extensions")
 @NullMarked
 public class NativeMessageAndroidPort {
     // An observer interface for classes which keep a reference to this class
@@ -42,6 +47,7 @@ public class NativeMessageAndroidPort {
     }
 
     private static final String TAG = "NMAndroidPort";
+    private long mNativePtr;
     private @Nullable Observer mObserver;
     private @Nullable TestObserver mTestObserver;
 
@@ -56,6 +62,20 @@ public class NativeMessageAndroidPort {
 
     private final List<String> mPendingMessages = new ArrayList<>();
 
+    @CalledByNative
+    private static NativeMessageAndroidPort create(long nativePtr) {
+        return new NativeMessageAndroidPort(nativePtr);
+    }
+
+    @VisibleForTesting
+    public NativeMessageAndroidPort() {
+        this(0);
+    }
+
+    private NativeMessageAndroidPort(long nativePtr) {
+        mNativePtr = nativePtr;
+    }
+
     public void setObserver(Observer observer) {
         mObserver = observer;
     }
@@ -68,6 +88,7 @@ public class NativeMessageAndroidPort {
     // Initiates connecting this port (which is owned by the extension with the given `extensionId`)
     // to the external app. Returns an error message if the connection immediately fails, or null on
     // success.
+    @CalledByNative
     public @Nullable String connectToApp(Profile profile, String extensionId, String packageName) {
         NativeMessagingManager manager = NativeMessagingManager.getForProfile(profile);
         return manager.addPort(packageName, extensionId, this);
@@ -96,6 +117,7 @@ public class NativeMessageAndroidPort {
 
     // Called to send a message to the external app. If this port is not yet connected to the app's
     // `mRemotePort` receiver then the message is put in a pending queue.
+    @CalledByNative
     public void forwardMessageToApp(String message) {
         if (mRemotePort != null) {
             send(message);
@@ -105,7 +127,9 @@ public class NativeMessageAndroidPort {
     }
 
     // Called when the port is being destroyed.
+    @CalledByNative
     public void destroy() {
+        mNativePtr = 0;
         if (mObserver != null) {
             mObserver.onPortDestroying(this);
             mObserver = null;
@@ -133,7 +157,10 @@ public class NativeMessageAndroidPort {
         if (mTestObserver != null) {
             mTestObserver.onMessageFromApp(message);
         }
-        // TODO(crbug.com/515159909): Forward message to C++.
+
+        if (mNativePtr != 0) {
+            NativeMessageAndroidPortJni.get().postMessageFromApp(mNativePtr, message);
+        }
     }
 
     // Called when the port connection is closed by the external app, on
@@ -144,10 +171,11 @@ public class NativeMessageAndroidPort {
         }
 
         mPendingMessages.clear();
-
-        // TODO(crbug.com/515159909): Forward to C++, which will eventually call
-        // `destroy()`. For now, call it here directly.
-        destroy();
+        if (mNativePtr != 0) {
+            // This will destroy the C++ NativeMessageAndroidPort which will
+            // call destroy().
+            NativeMessageAndroidPortJni.get().closeChannel(mNativePtr, errorMessage);
+        }
     }
 
     private void send(String message) {
@@ -158,6 +186,19 @@ public class NativeMessageAndroidPort {
             Log.w(TAG, "Failed to post message to external app", e);
             closeChannel("Error when communicating with the native messaging host.");
         }
+    }
+
+    // Native methods implemented in C++ (NativeMessageAndroidPort.cc) called from Java to C++.
+    @NativeMethods
+    interface Natives {
+        // Forwards a message received from the external Android app to the C++
+        // NativeMessageAndroidPort, which delivers it to the extension.
+        void postMessageFromApp(long nativeNativeMessageAndroidPort, String message);
+
+        // Notifies the C++ NativeMessageAndroidPort that the channel has been closed
+        // (e.g. by the app, due to an error, or during teardown), closing the port
+        // and dispatching any error message to the extension.
+        void closeChannel(long nativeNativeMessageAndroidPort, String errorMessage);
     }
 
     // A helper that receives calls from the external app back to the browser

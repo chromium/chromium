@@ -238,7 +238,8 @@ public class NativeMessageAndroidPortTest {
         mTestContext.triggerServiceConnected(mFakeBrowserService.asBinder());
         RobolectricUtil.runAllBackgroundAndUi();
 
-        Assert.assertEquals("Native host returned null port.", portObserver.closedError);
+        Assert.assertEquals(
+                "Could not connect port to " + TARGET_PACKAGE + ".", portObserver.closedError);
     }
 
     // Test that if a port is destroyed while connectPortInBackground is in flight,

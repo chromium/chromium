@@ -4,12 +4,16 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 android_apk("chrome_public_test_support_apk") {
   # Used as an additional_apk in test scripts.
   never_incremental = true
 
   deps = [ "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java" ]
+  if (enable_extensions_core) {
+    deps += [ "//chrome/test/android/test_extension_native_messaging:test_extension_native_messaging_java" ]
+  }
 
   apk_name = "ChromePublicTestSupport"
   android_manifest = "AndroidManifest.xml"

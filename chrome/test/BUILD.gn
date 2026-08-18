@@ -1696,6 +1696,7 @@ if (is_android) {
       sources += [
         # These API tests can't be part of platform_browser_tests because they
         # run in interactive_ui_tests on Win/Mac/Linux.
+        "../browser/extensions/api/messaging/native_messaging_apitest_android.cc",
         "../browser/extensions/api/notifications/notifications_interactive_apitest.cc",
         "../browser/extensions/api/omnibox/omnibox_api_interactive_uitest.cc",
         "../browser/extensions/api/tabs/tabs_apitest_android.cc",
@@ -1717,6 +1718,11 @@ if (is_android) {
         "//chrome/test/data/extensions/",
         "//extensions/test/data/",
       ]
+
+      if (!defined(additional_apks)) {
+        additional_apks = []
+      }
+      additional_apks += [ "//chrome/test/android/chrome_public_test_support:chrome_public_test_support_apk" ]
     }
 
     if (safe_browsing_mode != 0) {

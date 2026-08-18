@@ -65,7 +65,7 @@ public class NativeMessagingManager implements Destroyable, NativeMessagingConne
         if (connection == null) {
             connection = new NativeMessagingConnection(packageName, this);
             if (!connection.isBound()) {
-                return "Error: Unable to connect to " + packageName;
+                return NativeMessagingConnection.getUnableToConnectError(packageName);
             }
 
             mConnections.put(packageName, connection);

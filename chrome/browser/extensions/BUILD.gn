@@ -1492,6 +1492,10 @@ source_set("extensions") {
       ]
     }
 
+    if (is_android) {
+      deps += [ "//chrome/browser/extensions/api/messaging/android:java" ]
+    }
+
     if (enable_plugins) {
       sources += [
         "plugin_manager.cc",

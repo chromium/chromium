@@ -149,7 +149,7 @@ public class NativeMessagingManagerTest {
                 mManager.addPort(
                         "com.nonexistent.app", EXTENSION_ID, new NativeMessageAndroidPort());
         Assert.assertNotNull(error);
-        Assert.assertEquals("Error: Unable to connect to com.nonexistent.app", error);
+        Assert.assertEquals("Unable to connect to com.nonexistent.app.", error);
         Assert.assertNull(mManager.getConnectionForTesting("com.nonexistent.app"));
     }
 }

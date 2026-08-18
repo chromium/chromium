@@ -30,5 +30,12 @@ found in the LICENSE file.
         </service>
         <service android:name="org.chromium.chrome.browser.browserservices.MessengerService"
                 android:exported="true"/>
+        <service android:name="org.chromium.chrome.browser.echoservices.EchoService"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="org.chromium.chrome.browser.extensions.messaging.action.NATIVE_MESSAGING"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </service>
     </application>
 </manifest>
