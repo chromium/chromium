@@ -657,6 +657,9 @@ void IndigoPageActionController::OnDeleteOriginalPhotoComplete(
   if (result.has_value()) {
     base::RecordAction(
         base::UserMetricsAction("Indigo.DeleteOriginalPhoto.Complete"));
+    if (indigo_service_) {
+      indigo_service_->NotifyPhotoChanged();
+    }
     Reset(ResetType::kResetReplacementsAndContentScript);
     if (toast_controller) {
       toast_controller->MaybeShowToast(
@@ -772,6 +775,7 @@ void IndigoPageActionController::OnOnboardingDialogClosed(
     }
 
     if (disposition == OnboardingDisposition::kReplacePhoto) {
+      indigo_service_->NotifyPhotoChanged();
       OnRegenerate(toolbar_.get());
     } else {
       indigo_service_->GetCombinedEligibility(base::BindOnce(

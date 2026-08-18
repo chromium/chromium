@@ -44,6 +44,7 @@ source_set("indigo") {
     "//components/tabs:public",
     "//content/public/browser",
     "//content/public/common",
+    "//crypto",
     "//ui/menus",
     "//url",
   ]

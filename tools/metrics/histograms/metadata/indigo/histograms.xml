@@ -67,6 +67,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Indigo.Transformation.IsCacheHit" enum="BooleanCacheHit"
+    expires_after="2027-05-13">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <summary>
+    Records whether an Indigo transformation was served from the in-memory
+    page-scoped image cache (hit) or required a new generation RPC (miss).
+    Recorded on successful image replacement.
+  </summary>
+</histogram>
+
 <histogram name="Indigo.Transformation.Result"
     enum="IndigoTransformationResult" expires_after="2027-05-13">
   <owner>jbroman@chromium.org</owner>

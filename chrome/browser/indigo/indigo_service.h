@@ -106,6 +106,10 @@ class IndigoService : public KeyedService,
   base::CallbackListSubscription RegisterLocalEligibilityChangedCallback(
       LocalEligibilityChangedCallback callback);
 
+  base::CallbackListSubscription RegisterPhotoChangedCallback(
+      base::RepeatingClosure callback);
+  void NotifyPhotoChanged();
+
   ApiClient& GetApiClient() const {
     CHECK(api_client_);
     return *api_client_;
@@ -183,6 +187,7 @@ class IndigoService : public KeyedService,
   LocalEligibility last_known_local_eligibility_;
   base::RepeatingCallbackList<void(LocalEligibility)>
       local_eligibility_callback_list_;
+  base::RepeatingClosureList photo_changed_callback_list_;
 
   void OnIndigoComponentReady();
 

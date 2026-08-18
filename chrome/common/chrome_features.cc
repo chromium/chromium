@@ -1372,6 +1372,11 @@ const base::FeatureParam<std::string> kIndigoGlicSkillId{
 const base::FeatureParam<base::TimeDelta> kIndigoGlicTriggerDelay{
     &kIndigoOpenGlic, "indigo_glic_trigger_delay", base::Milliseconds(300)};
 
+BASE_FEATURE(kIndigoGeneratedImageCache, base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta> kIndigoGeneratedImageCacheLifetime{
+    &kIndigoGeneratedImageCache, "indigo_generated_image_cache_lifetime",
+    base::Minutes(30)};
+
 #if !BUILDFLAG(IS_ANDROID)
 // A feature that controls whether Instant uses a spare renderer.
 BASE_FEATURE(kInstantUsesSpareRenderer, base::FEATURE_DISABLED_BY_DEFAULT);

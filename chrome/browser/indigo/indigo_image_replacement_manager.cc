@@ -55,6 +55,18 @@ IndigoImageReplacementManager::IndigoImageReplacementManager(
   receivers_.set_disconnect_handler(base::BindRepeating(
       &IndigoImageReplacementManager::OnReceiverDisconnected,
       base::Unretained(this)));
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
+  if (web_contents) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
+    if (auto* service = IndigoServiceFactory::GetForProfile(profile)) {
+      photo_changed_subscription_ = service->RegisterPhotoChangedCallback(
+          base::BindRepeating(&IndigoImageReplacementManager::OnPhotoChanged,
+                              base::Unretained(this)));
+    }
+  }
 }
 
 IndigoImageReplacementManager::~IndigoImageReplacementManager() = default;
@@ -109,14 +121,42 @@ IndigoImageReplacementManager::GetImageReplacementForFrame(
   return nullptr;
 }
 
+bool IndigoImageReplacementManager::HasCachedImage() const {
+  return base::FeatureList::IsEnabled(features::kIndigoGeneratedImageCache) &&
+         !generated_image_url_.is_empty() &&
+         cached_input_image_hash_.has_value();
+}
+
+void IndigoImageReplacementManager::ClearCachedImage() {
+  cached_input_image_hash_ = std::nullopt;
+  generated_image_url_ = GURL();
+  cache_expiration_timer_.Stop();
+}
+
+void IndigoImageReplacementManager::OnPhotoChanged() {
+  photo_changed_since_last_generate_ = true;
+  cached_input_image_hash_ = std::nullopt;
+  cache_expiration_timer_.Stop();
+}
+
 void IndigoImageReplacementManager::ResetAllReplacements(
     base::PassKey<IndigoPageActionController>) {
   receivers_.Clear();
   primary_receiver_id_ = std::nullopt;
   primary_original_image_webp_bytes_.clear();
-  generated_image_url_ = GURL();
   active_invocation_id_ = std::nullopt;
   CancelActiveRequest();
+
+  if (HasCachedImage()) {
+    if (!cache_expiration_timer_.IsRunning()) {
+      cache_expiration_timer_.Start(
+          FROM_HERE, features::kIndigoGeneratedImageCacheLifetime.Get(),
+          base::BindOnce(&IndigoImageReplacementManager::ClearCachedImage,
+                         base::Unretained(this)));
+    }
+  } else {
+    generated_image_url_ = GURL();
+  }
 }
 
 bool IndigoImageReplacementManager::RegenerateImage() {
@@ -127,9 +167,9 @@ bool IndigoImageReplacementManager::RegenerateImage() {
 
   CHECK(!primary_original_image_webp_bytes_.empty());
 
-  // Reset generated image URL so subsequent getReplacementImage() requests
-  // wait.
-  generated_image_url_ = GURL();
+  // Invalidate previous cached generated image so subsequent
+  // getReplacementImage() requests wait for the new generated image.
+  ClearCachedImage();
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
@@ -242,6 +282,17 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
         replacement_data->original_image->webp_bytes);
   }
 
+  if (HasCachedImage()) {
+    const auto input_hash =
+        crypto::SHA256Hash(primary_original_image_webp_bytes_);
+    if (cached_input_image_hash_ == input_hash) {
+      cache_expiration_timer_.Stop();
+      NotifyReplacementsReady(/*is_cache_hit=*/true);
+      return;
+    }
+  }
+
+  ClearCachedImage();
   GenerateReplacementImage();
 }
 
@@ -263,6 +314,7 @@ void IndigoImageReplacementManager::GenerateReplacementImage() {
   CHECK(!primary_original_image_webp_bytes_.empty());
 
   CancelActiveRequest();
+  photo_changed_since_last_generate_ = false;
   generate_start_time_ = base::TimeTicks::Now();
 
   content::WebContents* web_contents =
@@ -292,6 +344,7 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
     DVLOG(1) << "Generate image failed: " << result.error().message;
     base::RecordAction(
         base::UserMetricsAction("Indigo.Transformation.Failure"));
+    ClearCachedImage();
     Reset(ResetType::kResetReplacementsAndContentScript);
     ShowErrorToast(IndigoTransformationResult::kGenerateImageError);
     return;
@@ -300,6 +353,18 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
   CHECK(result->image_url.is_valid());
   generated_image_url_ = result->image_url;
 
+  if (base::FeatureList::IsEnabled(features::kIndigoGeneratedImageCache) &&
+      !photo_changed_since_last_generate_) {
+    cached_input_image_hash_ =
+        crypto::SHA256Hash(primary_original_image_webp_bytes_);
+    cache_expiration_timer_.Stop();
+  }
+
+  NotifyReplacementsReady(/*is_cache_hit=*/false);
+}
+
+void IndigoImageReplacementManager::NotifyReplacementsReady(bool is_cache_hit) {
+  base::UmaHistogramBoolean("Indigo.Transformation.IsCacheHit", is_cache_hit);
   base::UmaHistogramEnumeration("Indigo.Transformation.Result",
                                 IndigoTransformationResult::kSuccess);
   base::RecordAction(base::UserMetricsAction("Indigo.Transformation.Success"));

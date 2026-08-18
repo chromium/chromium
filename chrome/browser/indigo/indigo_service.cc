@@ -295,6 +295,15 @@ IndigoService::RegisterLocalEligibilityChangedCallback(
   return local_eligibility_callback_list_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription IndigoService::RegisterPhotoChangedCallback(
+    base::RepeatingClosure callback) {
+  return photo_changed_callback_list_.Add(std::move(callback));
+}
+
+void IndigoService::NotifyPhotoChanged() {
+  photo_changed_callback_list_.Notify();
+}
+
 bool IndigoService::IsModelImprovementAllowed() const {
   if (!pref_service_) {
     return true;
