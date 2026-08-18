@@ -739,6 +739,12 @@ BASE_FEATURE(kAutofillEnableImportOfUnchangedValuesForCountryAndState,
 BASE_FEATURE(kAutofillEnableImportWhenMultiplePhoneNumbers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the Keyboard Accessory on Android will be shown for search
+// fields if any filling sources (e.g. fallback sheets or autofill) are
+// available.
+BASE_FEATURE(kAutofillEnableKeyboardAccessoryOnSearchFields,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Autofill will help users fill in non-affiliated loyalty cards
 // on loyalty card only fields.
 BASE_FEATURE(kAutofillEnableNonAffiliatedLoyaltyCardsFilling,
