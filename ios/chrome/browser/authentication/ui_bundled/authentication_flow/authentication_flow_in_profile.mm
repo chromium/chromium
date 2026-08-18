@@ -302,6 +302,15 @@ enum class AuthenticationFlowInProfileState {
 // Sets the primary identity if not already set.
 - (void)signInIfNeededStep {
   ProfileIOS* profile = [self originalProfile];
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  if (!authenticationService->SigninEnabled()) {
+    // Signin could be disabled at any time. This method being called
+    // asynchronously, it occurs - rarely - that sign-in got disabled.
+    [self handleAuthenticationError:ios::provider::
+                                        CreateUserCancelledSigninError()];
+    return;
+  }
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   std::vector<CoreAccountInfo> accountsInProfile =
@@ -313,8 +322,6 @@ enum class AuthenticationFlowInProfileState {
                                         CreateMissingIdentitySigninError()];
     return;
   }
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> currentIdentity =
       authenticationService->GetPrimaryIdentity();
   if (!currentIdentity) {
