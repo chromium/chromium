@@ -10,6 +10,8 @@ source_set("ui") {
     "ai_prototyping_actor_tool_chip_view_controller.mm",
     "ai_prototyping_actor_view_controller.h",
     "ai_prototyping_actor_view_controller.mm",
+    "ai_prototyping_actuation_task_button_view_controller.h",
+    "ai_prototyping_actuation_task_button_view_controller.mm",
     "ai_prototyping_apc_view_controller.h",
     "ai_prototyping_apc_view_controller.mm",
     "ai_prototyping_calendar_view_controller.h",
