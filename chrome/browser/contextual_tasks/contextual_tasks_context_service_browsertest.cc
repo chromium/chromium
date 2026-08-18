@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_model_handler.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_multi_turn_model_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -211,7 +212,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
                {"ContextualTasksContextContentVisibilityThreshold", "0.8"}}}},
             {kContextualTasksContextLogging, {}},
         },
-        /*disabled_features=*/{});
+        /*disabled_features=*/{kContextualTasksContextMultiTurnTabRelevance});
   }
 
   void SetUpOnMainThread() override {
@@ -300,6 +301,20 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
                 browser()->GetProfile()),
             background_task_runner);
     service()->model_handler_->OnModelUpdated(optimization_target, model_info);
+  }
+
+  void UpdateMultiTurnModel(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      const optimization_guide::ModelInfo& model_info,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner =
+          base::SequencedTaskRunner::GetCurrentDefault()) {
+    service()->multi_turn_model_handler_ =
+        std::make_unique<ContextualTasksContextMultiTurnModelHandler>(
+            OptimizationGuideKeyedServiceFactory::GetForProfile(
+                browser()->GetProfile()),
+            background_task_runner);
+    service()->multi_turn_model_handler_->OnModelUpdated(optimization_target,
+                                                          model_info);
   }
 
   MockPageEmbeddingsService* page_embeddings_service() {
@@ -809,6 +824,194 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualTasks.Context.ContextDeterminationStatus",
       ContextDeterminationStatus::kSuccess, 1);
+}
+
+class ContextualTasksContextServiceMultiTurnTest
+    : public ContextualTasksContextServiceTest {
+ protected:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {kContextualTasksContext,
+             {{{"ContextualTasksContextOnlyUseTitles", "false"},
+               {"ContextualTasksContextDeduplicateByUrl", "false"},
+               {"ContextualTasksContextTabSelectionScoreThreshold", "0.8"},
+               {"ContextualTasksContextContentVisibilityThreshold", "0.8"}}}},
+            {kContextualTasksContextLogging, {}},
+            {kContextualTasksContextMultiTurnTabRelevance, {}},
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceMultiTurnTest,
+                       SuccessWithMultiTurnMlModel) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::HistogramTester histogram_tester;
+
+  optimization_guide::proto::TabRelevanceModelMetadata metadata;
+  metadata.set_num_passages_per_tab(1);
+  metadata.set_num_conversation_thread_turns(1);
+  metadata.set_max_titles_per_thread(1);
+  metadata.set_num_embedding_dimensions(4);  // Match unittest
+
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_EMBEDDING);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CONVERSATION_THREAD_QUERIES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CONVERSATION_THREAD_TITLES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_ACTIVE_TITLE_EMBEDDING);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_ACTIVE_PASSAGES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_TITLE_EMBEDDING);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_PASSAGES_EMBEDDINGS);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_LENGTH);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_QUERY_TITLE_LEXICAL_SIMILARITY);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_RECENCY);
+  metadata.add_input_feature_sequence(
+      optimization_guide::proto::TabRelevanceModelMetadata::
+          TAB_RELEVANCE_FEATURE_CANDIDATE_TAB_LAST_DURATION);
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(
+      "type.googleapis.com/"
+      "optimization_guide.proto.TabRelevanceModelMetadata");
+  metadata.SerializeToString(any_metadata.mutable_value());
+
+  base::FilePath test_data_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
+  base::FilePath model_file_path =
+      test_data_dir.AppendASCII("components")
+          .AppendASCII("test")
+          .AppendASCII("data")
+          .AppendASCII("contextual_tasks")
+          .AppendASCII("multi_turn_tab_relevance.tflite");
+  ASSERT_TRUE(base::PathExists(model_file_path));
+
+  optimization_guide::ModelInfo model_info = {
+      .model_file_path = model_file_path,
+      .model_metadata = any_metadata,
+  };
+  UpdateMultiTurnModel(optimization_guide::proto::
+                  OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_MULTI_TURN_TAB_RELEVANCE,
+              model_info);
+
+  NavigateToValidURL();
+  NotifyEmbedderMetadata();
+
+  std::vector<page_content_annotations::PassageEmbedding>
+      fake_page_embeddings = {
+          {std::make_pair(
+               "page title",
+               page_content_annotations::EmbeddingPassageType::kTitle),
+           passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})},
+          {std::make_pair(
+               "passage 1",
+               page_content_annotations::EmbeddingPassageType::kPageContent),
+           passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kStaticSignalsMlModel;
+  // Ensure tab passes regardless of fake model score.
+  options.min_model_score = 0.0f;
+
+  ConversationThread conversation_thread;
+  ThreadTurn turn1;
+  turn1.query = "history query";
+  conversation_thread.previous_turns.push_back(turn1);
+
+  conversation_thread.query = "some text with multiple words";
+  conversation_thread.shared_tab_titles.push_back("shared tab 1");
+
+  service()->GetRelevantTabsForConversationThread(
+      options, conversation_thread, /*explicit_urls=*/{valid_url()},
+      future.GetCallback());
+
+  auto tabs = future.Get();
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.Context.ContextDeterminationStatus",
+      ContextDeterminationStatus::kSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceMultiTurnTest,
+                       TruncatesOldestTurnsAndTitles) {
+  NavigateToValidURL();
+  NotifyEmbedderMetadata();
+
+  std::vector<page_content_annotations::PassageEmbedding>
+      fake_page_embeddings = {
+          {std::make_pair(
+               "page title",
+               page_content_annotations::EmbeddingPassageType::kTitle),
+           passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})},
+          {std::make_pair(
+               "passage 1",
+               page_content_annotations::EmbeddingPassageType::kPageContent),
+           passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kStaticSignalsMlModel;
+  options.min_model_score = 0.0f;
+
+  ConversationThread conversation_thread;
+  conversation_thread.query = "current query with multiple words";
+
+  // Add 7 turns (oldest to newest); default max_conversation_turns is 5.
+  for (int i = 1; i <= 7; ++i) {
+    ThreadTurn turn;
+    turn.query = base::StringPrintf("turn %d query", i);
+    conversation_thread.previous_turns.push_back(turn);
+  }
+
+  // Add 27 titles (oldest to newest); default max_titles_per_thread is 25.
+  for (int i = 1; i <= 27; ++i) {
+    conversation_thread.shared_tab_titles.push_back(
+        base::StringPrintf("shared tab %d", i));
+  }
+
+  service()->GetRelevantTabsForConversationThread(
+      options, conversation_thread, /*explicit_urls=*/{valid_url()},
+      future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+
+  const auto& last_passages = embedder().last_passages();
+  // 1 current query + 5 newest turns = 6 passages (shared tab titles use dummy
+  // embeddings).
+  ASSERT_EQ(6u, last_passages.size());
+  EXPECT_EQ("current query with multiple words", last_passages[0]);
+
+  // Ensure turns 1 and 2 were dropped, and turns 3-7 are kept in order.
+  EXPECT_EQ("turn 3 query", last_passages[1]);
+  EXPECT_EQ("turn 4 query", last_passages[2]);
+  EXPECT_EQ("turn 5 query", last_passages[3]);
+  EXPECT_EQ("turn 6 query", last_passages[4]);
+  EXPECT_EQ("turn 7 query", last_passages[5]);
 }
 
 class ContextualTasksContextServiceTaskFormattingTest

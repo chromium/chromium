@@ -21,6 +21,7 @@ BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
 BASE_DECLARE_FEATURE(kContextualTasksSearchQuery);
+BASE_DECLARE_FEATURE(kContextualTasksContextMultiTurnTabRelevance);
 BASE_DECLARE_FEATURE(
     kContextualTasksContextSmartTabSharingDefaultOnAvailability);
 BASE_DECLARE_FEATURE(kContextualTasksContextLibrary);
@@ -196,6 +197,11 @@ extern const base::FeatureParam<bool> kDeduplicateRelevantTabsByUrl;
 extern const base::FeatureParam<double> kTabSelectionScoreThreshold;
 // Minimum score required for a tab to be considered visible.
 extern const base::FeatureParam<double> kContentVisibilityThreshold;
+
+// Maximum number of conversation turns to embed and pass to the model.
+extern const base::FeatureParam<int> kMaxConversationTurns;
+// Maximum number of shared tab titles from context library to embed and pass.
+extern const base::FeatureParam<int> kMaxTitlesPerThread;
 
 // Whether to use the immediately previous visited tab as the active tab signal
 // fallback.
