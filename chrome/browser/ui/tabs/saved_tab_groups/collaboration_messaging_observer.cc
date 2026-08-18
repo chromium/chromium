@@ -79,10 +79,11 @@ void CollaborationMessagingObserver::HandleDirtyTabGroup(
     return;
   }
 
-  if (Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
-          local_tab_group_id.value())) {
+  if (BrowserWindowInterface* browser =
+          SavedTabGroupUtils::GetBrowserWithTabGroupId(
+              local_tab_group_id.value())) {
     TabGroup* tab_group =
-        browser->tab_strip_model()->group_model()->GetTabGroup(
+        browser->GetTabStripModel()->group_model()->GetTabGroup(
             local_tab_group_id.value());
     if (tab_group) {
       tab_group->GetTabGroupFeatures()->attention_indicator()->SetHasAttention(
@@ -99,11 +100,12 @@ void CollaborationMessagingObserver::HandleDirtyTab(
     return;
   }
 
-  if (Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
-          tab_info->local_tab_group_id)) {
+  if (BrowserWindowInterface* browser =
+          SavedTabGroupUtils::GetBrowserWithTabGroupId(
+              tab_info->local_tab_group_id)) {
     if (tabs::TabInterface* tab = SavedTabGroupUtils::GetGroupedTab(
             tab_info->local_tab_group_id, tab_info->local_tab_id)) {
-      browser->tab_strip_model()->SetTabNeedsAttention(
+      browser->GetTabStripModel()->SetTabNeedsAttention(
           tab->GetContents(), display == MessageDisplayStatus::kDisplay);
     }
   }
@@ -227,7 +229,7 @@ void CollaborationMessagingObserver::ReopenTabForCurrentInstantMessage() {
     return;
   }
 
-  if (Browser* browser =
+  if (BrowserWindowInterface* browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
               group_id.value())) {
     SavedTabGroupUtils::OpenTabInBrowser(
@@ -260,8 +262,8 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
     }
     std::optional<LocalTabGroupID> opened_group_id =
         tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
-            current_browser_window_interface->GetBrowserForMigrationOnly(),
-            sync_tab_group_id.value(), OpeningSource::kOpenedFromToastAction);
+            current_browser_window_interface, sync_tab_group_id.value(),
+            OpeningSource::kOpenedFromToastAction);
     if (!opened_group_id) {
       return;
     }
@@ -269,7 +271,7 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
     group_id = opened_group_id;
   }
 
-  if (Browser* browser =
+  if (BrowserWindowInterface* browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
               group_id.value())) {
     saved_tab_groups::metrics::RecordSharedTabGroupManageType(

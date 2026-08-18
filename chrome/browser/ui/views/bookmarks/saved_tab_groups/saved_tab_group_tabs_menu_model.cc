@@ -10,7 +10,6 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
@@ -194,12 +193,12 @@ void STGTabsMenuModel::Build(
   }
 
   if (saved_group.local_group_id().has_value()) {
-    const Browser* const browser_with_local_group_id =
+    const BrowserWindowInterface* const browser_with_local_group_id =
         SavedTabGroupUtils::GetBrowserWithTabGroupId(
             saved_group.local_group_id().value());
     if (browser_with_local_group_id) {
       const TabStripModel* const tab_strip_model =
-          browser_with_local_group_id->tab_strip_model();
+          browser_with_local_group_id->GetTabStripModel();
 
       // Show the menu item if there are tabs outside of the saved group.
       should_enable_move_menu_item_ =

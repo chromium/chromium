@@ -72,10 +72,11 @@ void RemoveTabFromGroup(TabStripModel& tab_strip_model,
 }
 
 TabStripModel* GetTabStripModelForLocalGroup(const LocalTabGroupID& group_id) {
-  Browser* browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
+  BrowserWindowInterface* browser =
+      SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
   CHECK(browser);
 
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   CHECK(tab_strip_model);
   CHECK(tab_strip_model->SupportsTabGroups());
 

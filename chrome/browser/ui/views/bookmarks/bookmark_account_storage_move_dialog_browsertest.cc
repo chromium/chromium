@@ -7,7 +7,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"

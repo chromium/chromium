@@ -106,6 +106,7 @@ source_set("impl") {
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/desktop_to_mobile_promos:controller",
     "//chrome/browser/ui/desktop_to_mobile_promos:service",
     "//chrome/browser/ui/dialogs",

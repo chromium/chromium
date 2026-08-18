@@ -271,7 +271,7 @@ LocalTabGroupListener::Liveness LocalTabGroupListener::UpdateFromSync() {
   CHECK(saved_group.has_value());
   TabStripModel* const tab_strip_model =
       SavedTabGroupUtils::GetBrowserWithTabGroupId(local_id_)
-          ->tab_strip_model();
+          ->GetTabStripModel();
   CHECK(tab_strip_model);
 
   // Update the group to use the saved title and color.
@@ -360,9 +360,10 @@ void LocalTabGroupListener::MatchLocalTabToSavedTab(
   }
 }
 
-void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
-                                                    Browser* browser,
-                                                    int index_in_tabstrip) {
+void LocalTabGroupListener::OpenWebContentsFromSync(
+    SavedTabGroupTab tab,
+    BrowserWindowInterface* browser,
+    int index_in_tabstrip) {
   GURL url_to_open = tab.url();
   // Open the NTP if the URL is not valid for local tabs.
   if (!IsURLValidForLocalTab(url_to_open)) {
@@ -378,7 +379,7 @@ void LocalTabGroupListener::OpenWebContentsFromSync(SavedTabGroupTab tab,
       navigation_handle ? navigation_handle->GetWebContents() : nullptr;
 
   tabs::TabInterface* local_tab =
-      browser->tab_strip_model()->GetTabForWebContents(opened_contents);
+      browser->GetTabStripModel()->GetTabForWebContents(opened_contents);
 
   // Listen to navigations.
   service_->UpdateLocalTabId(local_id_, tab.saved_tab_guid(),
@@ -400,20 +401,20 @@ void LocalTabGroupListener::RemoveLocalWebContentsNotInSavedGroup() {
 
 void LocalTabGroupListener::RemoveTabFromSync(tabs::TabInterface* local_tab,
                                               bool should_close_tab) {
-  Browser* const browser =
+  BrowserWindowInterface* const browser =
       SavedTabGroupUtils::GetBrowserWithTabGroupId(local_id_);
   CHECK(browser);
-  CHECK(browser->tab_strip_model());
-  int index = browser->tab_strip_model()->GetIndexOfTab(local_tab);
+  CHECK(browser->GetTabStripModel());
+  int index = browser->GetTabStripModel()->GetIndexOfTab(local_tab);
   CHECK(index != TabStripModel::kNoTab);
 
   // Unload listeners can delay or prevent a tab closing. Remove the tab from
   // the group first so the local and saved groups can be consistent even if
   // this happens.
-  browser->tab_strip_model()->RemoveFromGroup({index});
+  browser->GetTabStripModel()->RemoveFromGroup({index});
 
   if (should_close_tab) {
-    browser->tab_strip_model()->CloseWebContents(
+    browser->GetTabStripModel()->CloseWebContents(
         local_tab->GetContents(), TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
   }
 }

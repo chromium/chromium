@@ -2459,8 +2459,8 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
     }
   }
 
-  BrowserUserEducationInterface::From(browser_view_->browser())
-      ->MaybeShowStartupFeaturePromo(std::move(params));
+  BrowserUserEducationInterface::From(browser())->MaybeShowStartupFeaturePromo(
+      std::move(params));
 }
 
 bool BookmarkBarView::HasDropInfo() const {

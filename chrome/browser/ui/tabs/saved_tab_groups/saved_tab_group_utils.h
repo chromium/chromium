@@ -22,7 +22,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-class Browser;
 class BrowserWindowInterface;
 class Profile;
 
@@ -116,8 +115,10 @@ class SavedTabGroupUtils {
   static bool WasNavigationInitiatedFromSync(
       content::NavigationHandle* navigation_handle);
 
-  // Returns the Browser that contains a local group with id `group_id`.
-  static Browser* GetBrowserWithTabGroupId(tab_groups::TabGroupId group_id);
+  // Returns the BrowserWindowInterface that contains a local group with id
+  // `group_id`.
+  static BrowserWindowInterface* GetBrowserWithTabGroupId(
+      tab_groups::TabGroupId group_id);
 
   // Finds the TabGroup with id `group_id` across all Browsers.
   static TabGroup* GetTabGroupWithId(tab_groups::TabGroupId group_id);

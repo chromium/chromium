@@ -291,8 +291,9 @@ void ContextHubTabProviderDesktop::RemoveGroupFromTabstripIfOpen(
     return;
   }
 
-  Browser* browser = tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
-      local_id.value());
+  BrowserWindowInterface* browser =
+      tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
+          local_id.value());
   if (browser) {
     tab_groups::SavedTabGroupUtils::RemoveGroupFromTabstrip(browser,
                                                             local_id.value());

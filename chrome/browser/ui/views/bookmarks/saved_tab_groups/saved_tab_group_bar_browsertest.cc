@@ -15,8 +15,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->GetProfile());
 
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   const TabGroupId group_id = model->AddToNewGroup({0});
   // Adding a new tab group posts a task. Wait for it to resolve.
   Wait();
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
   TabGroupSyncService* service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser()->GetProfile());
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   const TabGroupId group_id = model->AddToNewGroup({0});
   Wait();
 
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarNtpSimplificationBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
                        OpenGroupFromBookmarksBarUnfocusesCurrentGroup) {
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
   ASSERT_EQ(2, model->count());
 
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     SavedTabGroupBarBrowserTest,
     OpenClosedGroupFromBookmarksBarWhileFocusedUnfocusesCurrentGroup) {
-  TabStripModel* model = browser()->tab_strip_model();
+  TabStripModel* model = browser()->GetTabStripModel();
   const TabGroupId group1 = model->AddToNewGroup({0});
   Wait();
 

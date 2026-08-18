@@ -525,16 +525,16 @@ content::NavigationHandle* SavedTabGroupUtils::OpenTabInBrowser(
 }
 
 // static
-Browser* SavedTabGroupUtils::GetBrowserWithTabGroupId(
+BrowserWindowInterface* SavedTabGroupUtils::GetBrowserWithTabGroupId(
     tab_groups::TabGroupId group_id) {
-  Browser* result = nullptr;
+  BrowserWindowInterface* result = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [group_id, &result](BrowserWindowInterface* browser) {
         const TabStripModel* const tab_strip_model =
             browser->GetTabStripModel();
         if (tab_strip_model && tab_strip_model->SupportsTabGroups() &&
             tab_strip_model->group_model()->ContainsTabGroup(group_id)) {
-          result = browser->GetBrowserForMigrationOnly();
+          result = browser;
         }
         return !result;
       });
@@ -544,12 +544,12 @@ Browser* SavedTabGroupUtils::GetBrowserWithTabGroupId(
 // static
 TabGroup* SavedTabGroupUtils::GetTabGroupWithId(
     tab_groups::TabGroupId group_id) {
-  Browser* browser = GetBrowserWithTabGroupId(group_id);
+  BrowserWindowInterface* browser = GetBrowserWithTabGroupId(group_id);
   if (!browser) {
     return nullptr;
   }
 
-  TabGroupModel* tab_group_model = browser->tab_strip_model()->group_model();
+  TabGroupModel* tab_group_model = browser->GetTabStripModel()->group_model();
   CHECK(tab_group_model);
 
   return tab_group_model->GetTabGroup(group_id);
@@ -558,7 +558,7 @@ TabGroup* SavedTabGroupUtils::GetTabGroupWithId(
 // static
 std::vector<tabs::TabInterface*> SavedTabGroupUtils::GetTabsInGroup(
     tab_groups::TabGroupId group_id) {
-  Browser* browser = GetBrowserWithTabGroupId(group_id);
+  BrowserWindowInterface* browser = GetBrowserWithTabGroupId(group_id);
   if (!browser) {
     return {};
   }
@@ -566,7 +566,7 @@ std::vector<tabs::TabInterface*> SavedTabGroupUtils::GetTabsInGroup(
   const gfx::Range local_tab_group_indices =
       SavedTabGroupUtils::GetTabGroupWithId(group_id)->ListTabs();
   std::vector<tabs::TabInterface*> local_tabs;
-  for (tabs::TabInterface* tab : browser->tab_strip_model()->GetTabsAtIndices(
+  for (tabs::TabInterface* tab : browser->GetTabStripModel()->GetTabsAtIndices(
            local_tab_group_indices.ToIntVector())) {
     local_tabs.push_back(tab);
   }
@@ -576,11 +576,11 @@ std::vector<tabs::TabInterface*> SavedTabGroupUtils::GetTabsInGroup(
 // static
 SavedTabGroup SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
     const tab_groups::LocalTabGroupID& local_id) {
-  Browser* browser = GetBrowserWithTabGroupId(local_id);
+  BrowserWindowInterface* browser = GetBrowserWithTabGroupId(local_id);
   CHECK(browser);
 
   const TabGroup* local_group =
-      browser->tab_strip_model()->group_model()->GetTabGroup(local_id);
+      browser->GetTabStripModel()->group_model()->GetTabGroup(local_id);
   tab_groups::SavedTabGroup saved_tab_group(
       local_group->visual_data()->title(), local_group->visual_data()->color(),
       {}, std::nullopt, std::nullopt, local_id);
@@ -603,20 +603,20 @@ SavedTabGroup SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(
 // static
 void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
     tab_groups::TabGroupId local_group_id) {
-  Browser* browser_for_activation =
+  BrowserWindowInterface* browser_for_activation =
       SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id);
 
   // Only activate the tab group's first tab, if it exists in any browser's
   // tabstrip model and it is not in the active tab in the tab group.
   CHECK(browser_for_activation);
   TabGroup* tab_group =
-      browser_for_activation->tab_strip_model()->group_model()->GetTabGroup(
+      browser_for_activation->GetTabStripModel()->group_model()->GetTabGroup(
           local_group_id);
 
   gfx::Range tab_group_index_range = tab_group->ListTabs();
   CHECK(!tab_group_index_range.is_empty());
 
-  int active_index = browser_for_activation->tab_strip_model()->active_index();
+  int active_index = browser_for_activation->GetTabStripModel()->active_index();
   CHECK_GE(active_index, 0);
 
   if (active_index >= static_cast<int>(tab_group_index_range.GetMin()) &&
@@ -808,16 +808,16 @@ SavedTabGroupUtils::GetRecentActivity(Profile* profile,
 // static
 tabs::TabInterface* SavedTabGroupUtils::GetGroupedTab(LocalTabGroupID group_id,
                                                       LocalTabID tab_id) {
-  Browser* const browser =
+  BrowserWindowInterface* const browser =
       SavedTabGroupUtils::GetBrowserWithTabGroupId(group_id);
   if (!browser) {
     return nullptr;
   }
 
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   const gfx::Range tab_indices =
       tab_strip_model->group_model()->GetTabGroup(group_id)->ListTabs();
-  for (tabs::TabInterface* tab : browser->tab_strip_model()->GetTabsAtIndices(
+  for (tabs::TabInterface* tab : browser->GetTabStripModel()->GetTabsAtIndices(
            tab_indices.ToIntVector())) {
     if (tab->GetHandle().raw_value() == tab_id) {
       return tab;

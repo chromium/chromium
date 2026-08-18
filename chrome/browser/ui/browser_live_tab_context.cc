@@ -364,7 +364,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
     group_id = saved_group->local_group_id();
 
     if (group_id) {
-      Browser* source_browser =
+      BrowserWindowInterface* source_browser =
           tab_groups::SavedTabGroupUtils::GetBrowserWithTabGroupId(
               group_id.value());
       if (original_session_type == sessions::tab_restore::Type::GROUP) {

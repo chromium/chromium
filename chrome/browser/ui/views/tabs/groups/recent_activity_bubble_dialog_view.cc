@@ -629,7 +629,7 @@ void RecentActivityRowView::OpenTabGroupEditDialog() {
     return;
   }
 
-  browser->tab_strip_model()->OpenTabGroupEditor(group_id.value());
+  browser->GetTabStripModel()->OpenTabGroupEditor(group_id.value());
 }
 
 void RecentActivityRowView::ManageSharing() {

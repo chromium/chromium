@@ -159,8 +159,7 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel(
           tab_group_service);
 
   const auto* const color_provider =
-      BrowserWindow::FromBrowser(browser_->GetBrowserForMigrationOnly())
-          ->GetColorProvider();
+      BrowserWindow::FromBrowser(browser_)->GetColorProvider();
   for (size_t i = 0; i < sorted_non_empty_tab_groups_.size(); ++i) {
     const std::optional<SavedTabGroup> tab_group =
         tab_group_service->GetGroup(sorted_non_empty_tab_groups_[i]);
@@ -292,8 +291,7 @@ void STGEverythingMenu::RunMenu() {
   auto root = std::make_unique<views::MenuItemView>(this);
   PopulateMenu(root.get());
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(
-      browser_->GetBrowserForMigrationOnly());
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
   CHECK(browser_view);
   CHECK(browser_view->tab_strip_view());
   expand_on_hover_lock_ = browser_view->tab_strip_view()->GetExpandOnHoverLock(

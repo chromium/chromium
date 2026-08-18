@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/bookmarks/test_bookmark_navigation_wrapper.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -532,7 +531,7 @@ class BookmarkBarViewEventTestBase : public ViewEventTestBase {
   std::unique_ptr<ChromeContentClient> content_client_;
   std::unique_ptr<ChromeContentBrowserClient> browser_content_client_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<BrowserWindowInterface> browser_;
 };
 
 class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,

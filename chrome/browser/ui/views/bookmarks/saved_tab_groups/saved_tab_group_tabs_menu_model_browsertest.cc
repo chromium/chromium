@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/grit/generated_resources.h"  // For IDS_OPEN_GROUP_IN_BROWSER_MENU
 #include "chrome/test/base/in_process_browser_test.h"
@@ -88,9 +88,9 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
 IN_PROC_BROWSER_TEST_F(SavedTabGroupTabsMenuModelBrowserTest,
                        OpenGroupDisabledWhenOpenAndExpanded) {
   ASSERT_TRUE(AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
-  TabGroupId local_id = browser()->tab_strip_model()->AddToNewGroup({0});
+  TabGroupId local_id = browser()->GetTabStripModel()->AddToNewGroup({0});
 
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
   SavedTabGroup group(u"Test Group", tab_groups::TabGroupColorId::kGrey, {},
                       std::nullopt);
   group.SetLocalGroupId(local_id);

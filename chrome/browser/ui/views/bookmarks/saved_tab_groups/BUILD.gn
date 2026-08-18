@@ -57,6 +57,7 @@ source_set("impl") {
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui:view_ids",
     "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/organizer",
     "//chrome/browser/ui/user_education",
