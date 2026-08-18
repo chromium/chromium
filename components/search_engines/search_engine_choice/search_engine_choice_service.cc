@@ -893,7 +893,7 @@ void SearchEngineChoiceService::RecordChoiceMade(
     // There is an existing record AND we should keep it. In this case, being
     // called from a choice screen is not expected.
     CHECK_NE(choice_location, ChoiceMadeLocation::kChoiceScreen,
-             base::NotFatalUntil::M153);
+             base::NotFatalUntil::M156);
     return;
   }
 
@@ -956,7 +956,7 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
         // cache. If programs are compatible, we should NOT have reached this
         // state. Re-entry for the same program is a bug. See
         // crbug.com/390272573.
-        NOTREACHED(base::NotFatalUntil::M153);
+        NOTREACHED(base::NotFatalUntil::M156);
       }
 
       // If we are recording a new display state because we changed programs,
