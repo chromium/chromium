@@ -494,10 +494,14 @@ BASE_FEATURE(kUseUnexportableKeyServiceInBrowserProcess,
 BASE_FEATURE(kBypassRequestForbiddenHeadersCheck,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, the network service will prohibit modifications to the Origin
-// header in FollowRedirect.
-BASE_FEATURE(kBlockOriginHeaderModificationOnRedirect,
+// When enabled, the network service will prohibit invalid modifications to the
+// Origin header in CorsURLLoader::FollowRedirect.
+BASE_FEATURE(kBlockInvalidOriginHeaderModificationOnRedirect,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, the network service will prohibit invalid Origin headers in
+// CorsURLLoader::StartRequest.
+BASE_FEATURE(kBlockInvalidOriginHeader, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kServiceWorkerSyntheticResponseHeaderCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);

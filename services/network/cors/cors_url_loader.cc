@@ -489,13 +489,16 @@ void CorsURLLoader::FollowRedirect(
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kBlockOriginHeaderModificationOnRedirect) &&
-      headers_update_params.modified_headers.HasHeader(
-          net::HttpRequestHeaders::kOrigin)) {
+  std::optional<std::string> modified_origin_header =
+      headers_update_params.modified_headers.GetHeader(
+          net::HttpRequestHeaders::kOrigin);
+  if (modified_origin_header &&
+      base::FeatureList::IsEnabled(
+          features::kBlockInvalidOriginHeaderModificationOnRedirect) &&
+      !HasValidOriginHeader(*modified_origin_header)) {
     HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
     mojo::ReportBadMessage(
-        "CorsURLLoader: Origin header modification on redirect is not "
+        "CorsURLLoader: Invalid Origin header modification on redirect is not "
         "permitted");
     return;
   }
@@ -936,6 +939,41 @@ CorsURLLoader::GetStorageAccessStatus() {
       /*cookie_partition_key=*/std::nullopt, request_.permissions_policy);
 }
 
+bool CorsURLLoader::AllowUnsafeHeaders() const {
+  return process_id_.is_browser() ||
+         cors::ShouldAllowUnsafeHeaders(*origin_access_list_,
+                                        request_.isolated_world_origin
+                                            ? request_.isolated_world_origin
+                                            : request_.request_initiator,
+                                        request_.url);
+}
+
+bool CorsURLLoader::HasValidOriginHeader(
+    const std::string& origin_header_value) const {
+  if (AllowUnsafeHeaders()) {
+    return true;
+  }
+
+  // "null" is always allowed (e.g. tainted or opaque origins).
+  if (origin_header_value == url::Origin().Serialize()) {
+    return true;
+  }
+
+  // Check against legitimate candidate origins for this request context.
+  const std::optional<url::Origin> candidate_origins[] = {
+      request_.isolated_world_origin,
+      request_.request_initiator,
+      isolation_info_.frame_origin(),
+  };
+  for (const auto& origin : candidate_origins) {
+    if (origin.has_value() && origin_header_value == origin->Serialize()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 void CorsURLLoader::StartRequest() {
   TRACE_EVENT("loading", "CorsURLLoader::StartRequest",
               net::NetLogWithSourceToFlow(net_log_));
@@ -978,6 +1016,18 @@ void CorsURLLoader::StartRequest() {
            request_.method != net::HttpRequestHeaders::kHeadMethod;
   };
 
+  std::optional<std::string> origin_header_value =
+      request_.headers.GetHeader(net::HttpRequestHeaders::kOrigin);
+  if (origin_header_value &&
+      base::FeatureList::IsEnabled(features::kBlockInvalidOriginHeader) &&
+      !HasValidOriginHeader(*origin_header_value)) {
+    HandleComplete(URLLoaderCompletionStatus(net::ERR_INVALID_ARGUMENT));
+    mojo::ReportBadMessage(
+        "CorsURLLoader: Invalid Origin header is not permitted for this "
+        "request");
+    return;
+  }
+
   if (should_include_origin_header()) {
     // If the Origin header is given, check if the initiator has a permission to
     // override unsafe headers for the target URL. This Allowlist is given from
@@ -985,8 +1035,7 @@ void CorsURLLoader::StartRequest() {
     // security check here in the network service.
     const bool has_custom_origin_header_with_bypass =
         request_.headers.HasHeader(net::HttpRequestHeaders::kOrigin) &&
-        cors::ShouldAllowUnsafeHeaders(
-            *origin_access_list_, request_.request_initiator, request_.url);
+        AllowUnsafeHeaders();
 
     if (!has_custom_origin_header_with_bypass) {
       if (tainted_) {

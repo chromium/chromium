@@ -142,6 +142,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // and `isolation_info_`.
   std::optional<net::cookie_util::StorageAccessStatus> GetStorageAccessStatus();
 
+  // Checks if the current request is allowed to override unsafe headers.
+  bool AllowUnsafeHeaders() const;
+
+  // Validates whether `origin_header_value` is permitted for `request_`.
+  bool HasValidOriginHeader(const std::string& origin_header_value) const;
+
   void StartRequest();
 
   // Helper for `OnPreflightRequestComplete()`.

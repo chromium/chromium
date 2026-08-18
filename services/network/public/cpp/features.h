@@ -321,10 +321,15 @@ BASE_DECLARE_FEATURE_PARAM(int, kDurableMessagesGlobalBufferSize);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kBypassRequestForbiddenHeadersCheck);
 
-// When enabled, the network service will prohibit modifications to the Origin
-// header in FollowRedirect.
+// When enabled, the network service will prohibit invalid modifications to the
+// Origin header in CorsURLLoader::FollowRedirect.
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kBlockOriginHeaderModificationOnRedirect);
+BASE_DECLARE_FEATURE(kBlockInvalidOriginHeaderModificationOnRedirect);
+
+// When enabled, the network service will prohibit invalid Origin headers in
+// CorsURLLoader::StartRequest.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kBlockInvalidOriginHeader);
 
 // If enabled, the variations headers for allowlisted domains will be included
 // in the Reporting API uploads.
