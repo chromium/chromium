@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -142,6 +143,12 @@ void ImageElementTiming::NotifyImagePaintedInternal(
     return;
   }
 
+  // Do not expose elements which should have effective zero opacity or should
+  // be otherwise ignored (e.g. paint preview).
+  if (IgnorePaintTimingScope::IgnoreDepth()) {
+    return;
+  }
+
   // Since the image is loaded, mark it as recorded now so we don't reconsider
   // it later. If the content has already been recorded, there's nothing to do.
   auto result = recorded_images_.insert(
@@ -187,13 +194,6 @@ void ImageElementTiming::QueueElementTimingInfoForReporingIfNeeded(
   // https://github.com/WICG/element-timing/issues/3 and
   // https://github.com/w3c/webcomponents/issues/816 have been resolved.
   if (generating_node.IsInShadowTree()) {
-    return;
-  }
-
-  // Do not expose elements which should have effective zero opacity. We can
-  // afford to call this expensive method because this is only called once per
-  // image annotated with the elementtiming attribute.
-  if (!layout_object.HasNonZeroEffectiveOpacity()) {
     return;
   }
 
