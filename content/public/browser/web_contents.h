@@ -128,6 +128,7 @@ namespace content {
 class BackForwardTransitionAnimationManager;
 class BrowserContext;
 class BrowserPluginGuestDelegate;
+class FrameEvictionOptOutClient;
 class GuestPageHolder;
 class NavigationController;
 class NavigationEntry;
@@ -1030,6 +1031,13 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // of WasShown() if you are setting Visibility to VISIBLE for the first time.
   // TODO(crbug.com/40911760): Make updating Visibility more robust.
   virtual void UpdateWebContentsVisibility(Visibility visibility) = 0;
+
+  // Opts the WebContents out of frame eviction. Once opted out, a WebContents
+  // cannot be opted back in. You should evaluate the trade-offs before using
+  // this API.
+  // See FrameEvictionOptOutClient for instructions.
+  virtual void OptOutFrameEviction(
+      base::PassKey<FrameEvictionOptOutClient>) = 0;
 
   // This function checks *all* frames in this WebContents (not just the main
   // frame) and returns true if at least one frame has either a beforeunload or

@@ -563,6 +563,10 @@ bool RenderWidgetHostViewIOS::HasFallbackSurface() const {
   return browser_compositor_->GetDelegatedFrameHost()->HasFallbackSurface();
 }
 
+void RenderWidgetHostViewIOS::OptOutFrameEviction() {
+  browser_compositor_->GetDelegatedFrameHost()->OptOutFrameEviction();
+}
+
 bool RenderWidgetHostViewIOS::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
     RenderWidgetHostViewInput* target_view,

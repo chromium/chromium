@@ -1748,6 +1748,10 @@ bool RenderWidgetHostViewMac::HasFallbackSurface() const {
   return browser_compositor_->GetDelegatedFrameHost()->HasFallbackSurface();
 }
 
+void RenderWidgetHostViewMac::OptOutFrameEviction() {
+  browser_compositor_->GetDelegatedFrameHost()->OptOutFrameEviction();
+}
+
 bool RenderWidgetHostViewMac::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
     RenderWidgetHostViewInput* target_view,

@@ -142,6 +142,7 @@ class BackForwardCacheImpl;
 class BeforeUnloadBlockingDelegate;  // content_browser_test_utils_internal.h
 class BrowserPluginEmbedder;
 class BrowserPluginGuest;
+class FrameEvictionOptOutClient;
 class FindRequestManager;
 class JavaScriptDialogDismissNotifier;
 class MediaSession;
@@ -410,6 +411,8 @@ class CONTENT_EXPORT WebContentsImpl
   // WebContents ------------------------------------------------------
   WebContentsDelegate* GetDelegate() final;
   void SetDelegate(WebContentsDelegate* delegate) override;
+  void OptOutFrameEviction(
+      base::PassKey<FrameEvictionOptOutClient>) override;
   SurfaceEmbedConnector* GetSurfaceEmbedConnector() const override;
   NavigationControllerImpl& GetController() override;
   const NavigationControllerImpl& GetController() const override;
@@ -2914,6 +2917,8 @@ class CONTENT_EXPORT WebContentsImpl
       tracing_track_;
 
   void EmitTracingSlice(const std::string& name);
+
+  bool opt_out_frame_eviction_ = false;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

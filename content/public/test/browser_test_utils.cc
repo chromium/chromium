@@ -4440,9 +4440,18 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
+void SetMaxUnlockedCompositorFramesForTesting(size_t max) {
+  viz::FrameEvictionManager::GetInstance()->set_max_number_of_saved_frames(max);
+}
+
 size_t GetUnlockedCompositorFrameCount() {
   return viz::FrameEvictionManager::GetInstance()
       ->GetUnlockedFramesCountForTesting();
+}
+
+size_t GetLockedCompositorFrameCount() {
+  return viz::FrameEvictionManager::GetInstance()
+      ->GetLockedFramesCountForTesting();
 }
 
 void PurgeUnlockedCompositorFrames() {

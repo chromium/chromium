@@ -1770,6 +1770,18 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
   }
 }
 
+void WebContentsImpl::OptOutFrameEviction(
+    base::PassKey<FrameEvictionOptOutClient>) {
+  if (opt_out_frame_eviction_) {
+    return;
+  }
+  opt_out_frame_eviction_ = true;
+  if (RenderWidgetHostViewBase* view =
+          static_cast<RenderWidgetHostViewBase*>(GetRenderWidgetHostView())) {
+    view->OptOutFrameEviction();
+  }
+}
+
 const RenderFrameHostImpl* WebContentsImpl::GetPrimaryMainFrame() const {
   return primary_frame_tree_.root()->current_frame_host();
 }
@@ -11387,6 +11399,13 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
         view_->CreateViewForWidget(render_view_host->GetWidget());
     view_->SetOverscrollControllerEnabled(CanOverscrollContent());
     rwh_view->SetSize(GetSizeForMainFrame());
+  }
+
+  if (opt_out_frame_eviction_) {
+    if (RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
+            render_view_host->GetWidget()->GetView())) {
+      view->OptOutFrameEviction();
+    }
   }
 }
 

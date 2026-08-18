@@ -2335,8 +2335,14 @@ void VerifyStaleContentOnFrameEviction(
 
 #endif  // defined(USE_AURA)
 
+// Sets the maximum number of saved frames in FrameEvictionManager for testing.
+void SetMaxUnlockedCompositorFramesForTesting(size_t max);
+
 // Returns the number of unlocked frames in the FrameEvictionManager.
 size_t GetUnlockedCompositorFrameCount();
+
+// Returns the number of locked frames in the FrameEvictionManager.
+size_t GetLockedCompositorFrameCount();
 
 // Purges all unlocked frames in the FrameEvictionManager.
 void PurgeUnlockedCompositorFrames();

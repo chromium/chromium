@@ -195,6 +195,8 @@ source_set("browser_sources") {
     "font_list_async.h",
     "frame_accept_header.cc",
     "frame_accept_header.h",
+    "frame_eviction_opt_out_client.cc",
+    "frame_eviction_opt_out_client.h",
     "frame_rate_throttling.h",
     "frame_tree_node_id.h",
     "frame_type.h",
