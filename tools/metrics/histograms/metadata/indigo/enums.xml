@@ -23,6 +23,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(IndigoPageActionEntryPoint) -->
+
+<enum name="IndigoPageActionEntryPoint">
+  <int value="0" label="Suggestion Chip"/>
+  <int value="1" label="Proactive Anchored Message"/>
+  <int value="2" label="Reactive Anchored Message"/>
+  <int value="3" label="Error Toast"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoPageActionEntryPoint) -->
+
 <!-- LINT.IfChange(IndigoTransformationResult) -->
 
 <enum name="IndigoTransformationResult">

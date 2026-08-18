@@ -17507,7 +17507,30 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Indigo.PageAction.AnchoredMessage.Proactive.Show"
+    not_user_triggered="true">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    The indigo page action was displayed as a proactive anchored message.
+  </description>
+</action>
+
+<action name="Indigo.PageAction.AnchoredMessage.Reactive.Show">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    The indigo page action was displayed as a reactive anchored message.
+  </description>
+</action>
+
 <action name="Indigo.PageAction.Click">
+  <obsolete>
+    Deprecated M152. Replaced by Indigo.PageAction.SuggestionChip.Click and
+    Indigo.PageAction.AnchoredMessage.Click.
+  </obsolete>
   <owner>jbroman@chromium.org</owner>
   <owner>adithyas@chromium.org</owner>
   <owner>baranerf@google.com</owner>
@@ -17515,6 +17538,12 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Indigo.PageAction.Show" not_user_triggered="true">
+  <obsolete>
+    Deprecated M152. Replaced by
+    Indigo.PageAction.AnchoredMessage.Proactive.Show,
+    Indigo.PageAction.AnchoredMessage.Reactive.Show, and
+    Indigo.PageAction.SuggestionChip.Show.
+  </obsolete>
   <owner>jbroman@chromium.org</owner>
   <owner>adithyas@chromium.org</owner>
   <owner>baranerf@google.com</owner>
@@ -17522,6 +17551,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Indigo.PageAction.ShowAnchoredMessage" not_user_triggered="true">
+  <obsolete>
+    Deprecated M152. Replaced by
+    Indigo.PageAction.AnchoredMessage.Proactive.Show and
+    Indigo.PageAction.AnchoredMessage.Reactive.Show.
+  </obsolete>
   <owner>jbroman@chromium.org</owner>
   <owner>adithyas@chromium.org</owner>
   <owner>baranerf@google.com</owner>
@@ -17537,6 +17571,22 @@ should be able to be added at any place in this file.
   <description>
     User clicked the Indigo page action from a suggestion chip.
   </description>
+</action>
+
+<action name="Indigo.PageAction.SuggestionChip.Show" not_user_triggered="true">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    The indigo page action was displayed as a suggestion chip.
+  </description>
+</action>
+
+<action name="Indigo.Regenerate.Trigger">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>User triggered the regenerate image flow.</description>
 </action>
 
 <action name="Indigo.ReplaceImage.Complete">
