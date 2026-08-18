@@ -24,6 +24,13 @@ extern const base::FeatureParam<std::string> kSkillsServiceApiOAuth2Scope;
 
 BASE_DECLARE_FEATURE(kEnterprisePublishedSkillsPolicyEnabled);
 
+// URL of the web-based Skills settings page to intercept.
+extern const base::FeatureParam<std::string> kInterceptedSkillsUrl;
+
+// Local `chrome://settings` URL to redirect intercepted settings navigations
+// to.
+extern const base::FeatureParam<std::string> kSkillsSettingsPageUrl;
+
 }  // namespace features
 
 #endif  // COMPONENTS_SKILLS_FEATURES_H_

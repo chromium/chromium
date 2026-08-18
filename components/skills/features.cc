@@ -34,4 +34,13 @@ const base::FeatureParam<std::string> kSkillsServiceApiOAuth2Scope{
 BASE_FEATURE(kEnterprisePublishedSkillsPolicyEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<std::string> kInterceptedSkillsUrl{
+    &kSkillsWebViewV2Enabled, "intercepted_skills_url",
+    "https://clients5.google.com/chromeskills/"
+    "settings?utm_source=chrome-skills-settings"};
+
+const base::FeatureParam<std::string> kSkillsSettingsPageUrl{
+    &kSkillsWebViewV2Enabled, "skills_settings_page_url",
+    "chrome://settings/ai/skills"};
+
 }  // namespace features

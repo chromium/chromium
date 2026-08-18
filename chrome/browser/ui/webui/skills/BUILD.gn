@@ -21,6 +21,7 @@ source_set("skills") {
     "skills_dialog_delegate.h",
     "skills_dialog_handler.h",
     "skills_dialog_view.h",
+    "skills_navigation_throttle.h",
     "skills_page_handler.h",
     "skills_page_handler_v2.h",
     "skills_ui.h",
@@ -30,6 +31,7 @@ source_set("skills") {
     "skills_dialog_handler.cc",
     "skills_dialog_handler.h",
     "skills_dialog_view.cc",
+    "skills_navigation_throttle.cc",
     "skills_page_handler.cc",
     "skills_page_handler_v2.cc",
     "skills_ui.cc",
@@ -81,6 +83,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "skills_dialog_handler_unittest.cc",
+    "skills_navigation_throttle_unittest.cc",
     "skills_page_handler_unittest.cc",
     "skills_page_handler_v2_unittest.cc",
   ]
