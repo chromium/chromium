@@ -41,7 +41,7 @@ ByteSize SysInfo::AmountOfTotalPhysicalMemory() {
     // Keep using 512MB as the simulated RAM amount for when users or tests have
     // manually enabled low-end device mode. Note this value is different from
     // the threshold used for low end devices.
-    constexpr ByteSize kSimulatedMemoryForEnableLowEndDeviceMode = MiBU(512);
+    constexpr ByteSize kSimulatedMemoryForEnableLowEndDeviceMode = MiB(512);
     return std::min(kSimulatedMemoryForEnableLowEndDeviceMode,
                     AmountOfTotalPhysicalMemoryImpl());
   }
@@ -62,7 +62,7 @@ ByteSize SysInfo::AmountOfAvailablePhysicalMemory() {
     const ByteSize memory_used =
         ByteSize::FromByteSizeDelta(AmountOfTotalPhysicalMemoryImpl() -
                                     AmountOfAvailablePhysicalMemoryImpl());
-    const ByteSize memory_limit = MiBU(
+    const ByteSize memory_limit = MiB(
         checked_cast<unsigned>(features::kLowMemoryDeviceThresholdMB.Get()));
     // |memory_used| can be > |memory_limit|.
     const ByteSizeDelta memory_available = memory_limit - memory_used;
@@ -102,26 +102,26 @@ BucketizedSize GetSystemRamBucketizedSize() {
   // to discriminate real "X"GB devices from lower memory ones.
   // Addendum: This logic should also work for ChromeOS.
 
-  constexpr ByteSize kUpperBound2GB = GiBU(2);  // inclusive
+  constexpr ByteSize kUpperBound2GB = GiB(2);  // inclusive
   if (physical_memory <= kUpperBound2GB) {
     return BucketizedSize::k2GbOrLess;
   }
 
   constexpr ByteSize kLowerBound3GB = kUpperBound2GB;  // exclusive
-  constexpr ByteSize kUpperBound3GB = GiBU(3.2);       // inclusive
+  constexpr ByteSize kUpperBound3GB = GiB(3.2);        // inclusive
   if (kLowerBound3GB < physical_memory && physical_memory <= kUpperBound3GB) {
     return BucketizedSize::k3Gb;
   }
 
   constexpr ByteSize kLowerBound4GB = kUpperBound3GB;  // exclusive
-  constexpr ByteSize kUpperBound4GB = GiBU(4);         // inclusive
+  constexpr ByteSize kUpperBound4GB = GiB(4);          // inclusive
   if (kLowerBound4GB < physical_memory && physical_memory <= kUpperBound4GB) {
     return BucketizedSize::k4Gb;
   }
 
   constexpr ByteSize kLowerBound6GB = kUpperBound4GB;  // exclusive
   constexpr ByteSize kUpperBound6GB =
-      ByteSize::FromByteSizeDelta(GiBU(6.5) - MiBU(1));  // inclusive
+      ByteSize::FromByteSizeDelta(GiB(6.5) - MiB(1));  // inclusive
   if (kLowerBound6GB < physical_memory && physical_memory <= kUpperBound6GB) {
     return BucketizedSize::k6Gb;
   }
@@ -211,7 +211,7 @@ bool DetectLowEndDevice() {
   ByteSize ram_size = SysInfo::AmountOfTotalPhysicalMemory();
 #if BUILDFLAG(IS_ANDROID)
   if (FeatureList::GetInstance() == nullptr) {
-    ByteSize threshold = MiBU(checked_cast<unsigned>(
+    ByteSize threshold = MiB(checked_cast<unsigned>(
         base::android::GetCachedLowMemoryDeviceThresholdMb()));
     if (threshold > ByteSize(0)) {
       return ram_size > ByteSize(0) && ram_size <= threshold;
@@ -219,7 +219,7 @@ bool DetectLowEndDevice() {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   return ram_size > ByteSize(0) &&
-         ram_size <= MiBU(checked_cast<unsigned>(
+         ram_size <= MiB(checked_cast<unsigned>(
                          features::kLowMemoryDeviceThresholdMB.Get()));
   // LINT.ThenChange(//base/android/java/src/org/chromium/base/SysUtils.java)
 }

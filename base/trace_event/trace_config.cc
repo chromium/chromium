@@ -448,7 +448,7 @@ void TraceConfig::InitializeFromConfigDict(const DictValue& dict) {
   int trace_buffer_size_in_kb = dict.FindInt(kTraceBufferSizeInKb).value_or(0);
   trace_buffer_size_in_bytes_ =
       trace_buffer_size_in_kb > 0
-          ? KiBU(checked_cast<unsigned>(trace_buffer_size_in_kb))
+          ? KiB(checked_cast<unsigned>(trace_buffer_size_in_kb))
           : ByteSize(0);
 
   enable_systrace_ = dict.FindBool(kEnableSystraceParam).value_or(false);

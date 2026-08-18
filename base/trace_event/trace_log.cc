@@ -388,7 +388,7 @@ void TraceLog::SetEnabled(const TraceConfig& trace_config) {
   perfetto::TraceConfig perfetto_config;
   ByteSize size_limit = trace_config.GetTraceBufferSizeInBytes();
   if (size_limit.is_zero()) {
-    size_limit = MiBU(200);
+    size_limit = MiB(200);
   }
   auto* buffer_config = perfetto_config.add_buffers();
   buffer_config->set_size_kb(checked_cast<uint32_t>(size_limit.InKiB()));

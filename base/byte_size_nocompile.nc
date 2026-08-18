@@ -28,29 +28,29 @@ void ConstructByteSizeFromFloat() {
 void ConstructByteSizeFromOtherUnit() {
   // Any runtime signed value not allowed.
   int i = RandIntInclusive(-10, 10);
-  [[maybe_unused]] ByteSize kib = KiBU(i);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize mib = MiBU(i);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize gib = GiBU(i);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize tib = TiBU(i);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize pib = PiBU(i);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize eib = EiBU(i);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize kib = KiB(i);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize mib = MiB(i);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize gib = GiB(i);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize tib = TiB(i);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize pib = PiB(i);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize eib = EiB(i);  // expected-error {{not a constant expression}}
 
   // Negative constant not allowed.
-  [[maybe_unused]] ByteSize kib2 = KiBU(-1);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize mib2 = MiBU(-1);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize gib2 = GiBU(-1);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize tib2 = TiBU(-1);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize pib2 = PiBU(-1);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize eib2 = EiBU(-1);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize kib2 = KiB(-1);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize mib2 = MiB(-1);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize gib2 = GiB(-1);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize tib2 = TiB(-1);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize pib2 = PiB(-1);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize eib2 = EiB(-1);  // expected-error {{not a constant expression}}
 
   // Out-of-range signed constant not allowed.
   constexpr int64_t kLargeInt = std::numeric_limits<int64_t>::max();
-  [[maybe_unused]] ByteSize kib3 = KiBU(kLargeInt);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize mib3 = MiBU(kLargeInt);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize gib3 = GiBU(kLargeInt);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize tib3 = TiBU(kLargeInt);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize pib3 = PiBU(kLargeInt);  // expected-error {{not a constant expression}}
-  [[maybe_unused]] ByteSize eib3 = EiBU(kLargeInt);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize kib3 = KiB(kLargeInt);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize mib3 = MiB(kLargeInt);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize gib3 = GiB(kLargeInt);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize tib3 = TiB(kLargeInt);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize pib3 = PiB(kLargeInt);  // expected-error {{not a constant expression}}
+  [[maybe_unused]] ByteSize eib3 = EiB(kLargeInt);  // expected-error {{not a constant expression}}
 }
 
 void ConstructByteSizeDeltaFromUnsigned() {

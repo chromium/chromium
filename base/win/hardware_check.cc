@@ -113,7 +113,7 @@ HardwareEvaluationResult EvaluateWin11HardwareRequirements() {
   static constexpr int64_t kMinTotalDiskSpace = 64 * 1024 * 1024;
   // TODO(crbug.com/429140103): This was migrated as-is to 4MiB in ByteSize but
   // the legacy code potentially intended 4GiB, needs investigation.
-  static constexpr ByteSize kMinTotalPhysicalMemory = MiBU(4);
+  static constexpr ByteSize kMinTotalPhysicalMemory = MiB(4);
 
   static const HardwareEvaluationResult evaluate_win11_upgrade_eligibility =
       [] {

@@ -27,16 +27,16 @@ namespace base {
 // Sample usage:
 //
 //   // Do not reinvent conversion between units.
-//   constexpr ByteSize kBufferSize = MiBU(1);
+//   constexpr ByteSize kBufferSize = MiB(1);
 //   std::vector<char> buffer(kBufferSize.InBytes());
 //
 //   // Enforce that correct units are used across APIs at compile time.
 //   ByteSize quota = GetQuota();
-//   SetMetadataSize(KiBU(10));
-//   ByteSizeDelta remaining_quota = quota - KiBU(10);
+//   SetMetadataSize(KiB(10));
+//   ByteSizeDelta remaining_quota = quota - KiB(10);
 //   SetDatabaseSize(remaining_quota.AsByteSize());
 //
-// KiBU()/KiBS(), MiBU()/MiBS(), etc. can take float parameters. This will
+// KiB()/KiBS(), MiB()/MiBS(), etc. can take float parameters. This will
 // return the nearest integral number of bytes, rounding towards zero.
 
 namespace internal {
@@ -410,18 +410,16 @@ class BASE_EXPORT ByteSizeDelta : public internal::ByteSizeBase {
 // Templated functions to construct from various types. Note that integers must
 // be converted to CheckedNumeric BEFORE multiplying to detect overflows, while
 // floats must be converted AFTER multiplying to avoid premature truncation.
-//
-// TODO(crbug.com/448661443): Rename KiBU, etc, to KiB, etc.
 
 template <typename T>
   requires std::integral<T>
-constexpr ByteSize KiBU(T kib) {
+constexpr ByteSize KiB(T kib) {
   return ByteSize(kib) * 1024;
 }
 
 template <typename T>
   requires std::floating_point<T>
-constexpr ByteSize KiBU(T kib) {
+constexpr ByteSize KiB(T kib) {
   return ByteSize(checked_cast<uint64_t>(kib * 1024.0));
 }
 
@@ -439,13 +437,13 @@ constexpr ByteSizeDelta KiBS(T kib) {
 
 template <typename T>
   requires std::integral<T>
-constexpr ByteSize MiBU(T mib) {
+constexpr ByteSize MiB(T mib) {
   return ByteSize(mib) * 1024 * 1024;
 }
 
 template <typename T>
   requires std::floating_point<T>
-constexpr ByteSize MiBU(T mib) {
+constexpr ByteSize MiB(T mib) {
   return ByteSize(checked_cast<uint64_t>(mib * 1024.0 * 1024.0));
 }
 
@@ -463,13 +461,13 @@ constexpr ByteSizeDelta MiBS(T mib) {
 
 template <typename T>
   requires std::integral<T>
-constexpr ByteSize GiBU(T gib) {
+constexpr ByteSize GiB(T gib) {
   return ByteSize(gib) * 1024 * 1024 * 1024;
 }
 
 template <typename T>
   requires std::floating_point<T>
-constexpr ByteSize GiBU(T gib) {
+constexpr ByteSize GiB(T gib) {
   return ByteSize(checked_cast<uint64_t>(gib * 1024.0 * 1024.0 * 1024.0));
 }
 
@@ -487,13 +485,13 @@ constexpr ByteSizeDelta GiBS(T gib) {
 
 template <typename T>
   requires std::integral<T>
-constexpr ByteSize TiBU(T tib) {
+constexpr ByteSize TiB(T tib) {
   return ByteSize(tib) * 1024 * 1024 * 1024 * 1024;
 }
 
 template <typename T>
   requires std::floating_point<T>
-constexpr ByteSize TiBU(T tib) {
+constexpr ByteSize TiB(T tib) {
   return ByteSize(
       checked_cast<uint64_t>(tib * 1024.0 * 1024.0 * 1024.0 * 1024.0));
 }
@@ -513,13 +511,13 @@ constexpr ByteSizeDelta TiBS(T tib) {
 
 template <typename T>
   requires std::integral<T>
-constexpr ByteSize PiBU(T pib) {
+constexpr ByteSize PiB(T pib) {
   return ByteSize(pib) * 1024 * 1024 * 1024 * 1024 * 1024;
 }
 
 template <typename T>
   requires std::floating_point<T>
-constexpr ByteSize PiBU(T pib) {
+constexpr ByteSize PiB(T pib) {
   return ByteSize(
       checked_cast<uint64_t>(pib * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0));
 }
@@ -539,13 +537,13 @@ constexpr ByteSizeDelta PiBS(T pib) {
 
 template <typename T>
   requires std::integral<T>
-constexpr ByteSize EiBU(T eib) {
+constexpr ByteSize EiB(T eib) {
   return ByteSize(eib) * 1024 * 1024 * 1024 * 1024 * 1024 * 1024;
 }
 
 template <typename T>
   requires std::floating_point<T>
-constexpr ByteSize EiBU(T eib) {
+constexpr ByteSize EiB(T eib) {
   return ByteSize(checked_cast<uint64_t>(eib * 1024.0 * 1024.0 * 1024.0 *
                                          1024.0 * 1024.0 * 1024.0));
 }
@@ -561,6 +559,39 @@ template <typename T>
 constexpr ByteSizeDelta EiBS(T eib) {
   return ByteSizeDelta(checked_cast<int64_t>(eib * 1024.0 * 1024.0 * 1024.0 *
                                              1024.0 * 1024.0 * 1024.0));
+}
+
+// Deprecated aliases for unsigned KiB()/MiB(), etc.
+// TODO(crbug.com/448661443): Remove all uses of these.
+
+template <typename T>
+constexpr ByteSize KiBU(T kib) {
+  return KiB(kib);
+}
+
+template <typename T>
+constexpr ByteSize MiBU(T mib) {
+  return MiB(mib);
+}
+
+template <typename T>
+constexpr ByteSize GiBU(T gib) {
+  return GiB(gib);
+}
+
+template <typename T>
+constexpr ByteSize TiBU(T tib) {
+  return TiB(tib);
+}
+
+template <typename T>
+constexpr ByteSize PiBU(T pib) {
+  return PiB(pib);
+}
+
+template <typename T>
+constexpr ByteSize EiBU(T eib) {
+  return EiB(eib);
 }
 
 // Stream operators for logging and testing.

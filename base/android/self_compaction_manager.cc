@@ -68,7 +68,7 @@ class SelfCompactionState final
                       base::TimeTicks triggered_at)
       : SelfCompactionState(std::move(task_runner),
                             triggered_at,
-                            base::MiBU(100)) {}
+                            base::MiB(100)) {}
 
   SelfCompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
                       base::TimeTicks triggered_at,
@@ -97,7 +97,7 @@ class RunningCompactionState final
                          base::TimeTicks triggered_at)
       : RunningCompactionState(std::move(task_runner),
                                triggered_at,
-                               base::MiBU(100)) {}
+                               base::MiB(100)) {}
 
   RunningCompactionState(scoped_refptr<SequencedTaskRunner> task_runner,
                          base::TimeTicks triggered_at,

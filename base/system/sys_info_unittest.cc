@@ -58,7 +58,7 @@ namespace base {
 // Some Android (Cast) test devices have a large portion of physical memory
 // reserved. During investigation, around 115-150 MB were seen reserved, so we
 // track this here with a factory of safety of 2.
-static constexpr ByteSize kReservedPhysicalMemory = MiBU(300);
+static constexpr ByteSize kReservedPhysicalMemory = MiB(300);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using SysInfoTest = PlatformTest;
@@ -586,11 +586,11 @@ TEST_F(SysInfoTest, MaxFrequencyPerProcessor) {
 
 TEST_F(SysInfoTest, MemoryOverride_LowEndDevice) {
   {
-    test::ScopedAmountOfPhysicalMemoryOverride memory_override(MiBU(512));
+    test::ScopedAmountOfPhysicalMemoryOverride memory_override(MiB(512));
     EXPECT_TRUE(SysInfo::IsLowEndDevice());
   }
   {
-    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiBU(4));
+    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiB(4));
     EXPECT_FALSE(SysInfo::IsLowEndDevice());
   }
 }
@@ -598,19 +598,19 @@ TEST_F(SysInfoTest, MemoryOverride_LowEndDevice) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(SysInfoTest, MemoryOverride_IsNGbDevice) {
   {
-    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiBU(3));
+    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiB(3));
     EXPECT_TRUE(SysInfo::Is3GbDevice());
     EXPECT_FALSE(SysInfo::Is4GbDevice());
     EXPECT_FALSE(SysInfo::Is6GbDevice());
   }
   {
-    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiBU(4));
+    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiB(4));
     EXPECT_FALSE(SysInfo::Is3GbDevice());
     EXPECT_TRUE(SysInfo::Is4GbDevice());
     EXPECT_FALSE(SysInfo::Is6GbDevice());
   }
   {
-    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiBU(6));
+    test::ScopedAmountOfPhysicalMemoryOverride memory_override(GiB(6));
     EXPECT_FALSE(SysInfo::Is3GbDevice());
     EXPECT_FALSE(SysInfo::Is4GbDevice());
     EXPECT_TRUE(SysInfo::Is6GbDevice());

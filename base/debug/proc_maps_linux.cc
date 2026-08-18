@@ -200,7 +200,7 @@ std::optional<SmapsRollup> ParseSmapsRollup(const std::string& buffer) {
       // here. |resize| does not count the length of the nul-byte, and we want
       // to trim off the trailing colon at the end, so we use |strlen - 1| here.
       key.resize(strlen(key.c_str()) - 1);
-      tmp[key] = KiBU(val);
+      tmp[key] = KiB(val);
     }
   }
 

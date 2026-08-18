@@ -14,12 +14,12 @@ namespace base {
 
 namespace {
 
-constexpr uint64_t kOneKiB = KiBU(1).InBytes();
-constexpr uint64_t kOneMiB = MiBU(1).InBytes();
-constexpr uint64_t kOneGiB = GiBU(1).InBytes();
-constexpr uint64_t kOneTiB = TiBU(1).InBytes();
-constexpr uint64_t kOnePiB = PiBU(1).InBytes();
-constexpr uint64_t kOneEiB = EiBU(1).InBytes();
+constexpr uint64_t kOneKiB = KiB(1).InBytes();
+constexpr uint64_t kOneMiB = MiB(1).InBytes();
+constexpr uint64_t kOneGiB = GiB(1).InBytes();
+constexpr uint64_t kOneTiB = TiB(1).InBytes();
+constexpr uint64_t kOnePiB = PiB(1).InBytes();
+constexpr uint64_t kOneEiB = EiB(1).InBytes();
 
 void AppendMagnitude(std::string* dest,
                      ByteSize magnitude,
