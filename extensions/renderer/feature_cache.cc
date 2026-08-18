@@ -58,7 +58,7 @@ FeatureCache::FeatureNameVector FeatureCache::GetAvailableFeatures(
     if (ExtensionAPI::GetSharedInstance()->IsAnyFeatureAvailableToContext(
             *feature, extension, context_type, url,
             CheckAliasStatus::NOT_ALLOWED, kRendererProfileId, context_data)) {
-      names.push_back(feature->name());
+      names.emplace_back(feature->name());
     }
   }
   return names;
@@ -76,7 +76,7 @@ FeatureCache::GetDeveloperModeRestrictedFeatures(
   FeatureNameVector names;
   names.reserve(features.dev_mode_restricted_features.size());
   for (const Feature* feature : features.dev_mode_restricted_features) {
-    names.push_back(feature->name());
+    names.emplace_back(feature->name());
   }
 
   return names;

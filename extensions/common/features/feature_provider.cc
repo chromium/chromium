@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/span_printf.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -138,7 +139,7 @@ const Feature* FeatureProvider::GetBehaviorFeature(const std::string& name) {
   return GetFeatureFromProviderByName("behavior", name);
 }
 
-const Feature* FeatureProvider::GetFeature(const std::string& name) const {
+const Feature* FeatureProvider::GetFeature(std::string_view name) const {
   return base::FindPtrOrNull(features_, name);
 }
 
@@ -158,7 +159,7 @@ const Feature* FeatureProvider::GetParent(const Feature& feature) const {
 // means they'll be contiguous in the features_ std::map.
 std::vector<const Feature*> FeatureProvider::GetChildren(
     const Feature& parent) const {
-  std::string prefix = parent.name() + ".";
+  std::string prefix = base::StrCat({parent.name(), "."});
   const FeatureMap::const_iterator first_child = features_.lower_bound(prefix);
 
   // All children have names before (parent.name() + ('.'+1)).

@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -164,7 +165,7 @@ class PermissionsData {
   // "runtime" or "browserAction".
   // TODO(mpcomplete): drop the "API" from these names, it's confusing.
   bool HasAPIPermission(mojom::APIPermissionID permission) const;
-  bool HasAPIPermission(const std::string& permission_name) const;
+  bool HasAPIPermission(std::string_view permission_name) const;
   bool HasAPIPermissionForTab(int tab_id,
                               mojom::APIPermissionID permission) const;
   bool CheckAPIPermissionWithParam(

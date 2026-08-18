@@ -410,8 +410,8 @@ std::string SimpleFeature::GetAvailabilityMessage(
     case AvailabilityResult::kUnsupportedChannel:
       return base::StringPrintf(
           "'%s' requires %s channel or newer, but this is the %s channel.",
-          name(), version_info::GetChannelString(channel).data(),
-          version_info::GetChannelString(GetCurrentChannel()).data());
+          name(), version_info::GetChannelString(channel),
+          version_info::GetChannelString(GetCurrentChannel()));
     case AvailabilityResult::kMissingCommandLineSwitch:
       DCHECK(command_line_switch_.has_value());
       return base::StringPrintf(
@@ -792,7 +792,7 @@ Feature::Availability SimpleFeature::RunDelegatedAvailabilityCheck(
   DCHECK(RequiresDelegatedAvailabilityCheck());
   DCHECK(HasDelegatedAvailabilityCheckHandler());
   if (!delegated_availability_check_handler_.Run(
-          name_, extension, context, url, platform, context_id,
+          std::string(name_), extension, context, url, platform, context_id,
           check_developer_mode, context_data)) {
     return CreateAvailability(
         AvailabilityResult::kFailedDelegatedAvailabilityCheck);

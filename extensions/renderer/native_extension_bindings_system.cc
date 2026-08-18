@@ -284,8 +284,9 @@ v8::Local<v8::Object> CreateFullBinding(
             *feature, CheckAliasStatus::NOT_ALLOWED)) {
       // If this feature is an alias for a different API, use the other binding
       // as the basis for the API contents.
-      const std::string& source_name =
-          feature->source().empty() ? root_name : feature->source();
+      const std::string source_name = feature->source().empty()
+                                          ? root_name
+                                          : std::string(feature->source());
       root_binding = CreateRootBinding(context, script_context, source_name,
                                        bindings_system);
     }

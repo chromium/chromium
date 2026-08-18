@@ -150,7 +150,7 @@ bool PermissionSet::HasAPIPermission(APIPermissionID id) const {
   return apis().count(id);
 }
 
-bool PermissionSet::HasAPIPermission(const std::string& permission_name) const {
+bool PermissionSet::HasAPIPermission(std::string_view permission_name) const {
   const APIPermissionInfo* permission =
       PermissionsInfo::GetInstance()->GetByName(permission_name);
   // Ensure our PermissionsProvider is aware of this permission.

@@ -16,7 +16,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -53,38 +52,6 @@ class StaticSpan {
  private:
   // Safe because construction requires static storage.
   RAW_PTR_EXCLUSION base::span<const T> span_;
-};
-
-// A pointer to a static NUL-terminated string. Half the size of a
-// std::string_view, which matters because a handful of features set these
-// fields but every feature pays for them; the length is recovered by scanning
-// on the cold paths that read them.
-//
-// The consteval constructor's attribute reads a character out of the array,
-// which requires the contents, not just the address, to be compile-time
-// constant. A bare const char* is the same size but would accept a mutable or
-// dynamically initialized global.
-class StaticCString {
- public:
-  // Absent by default; nullptr is the sentinel, so no std::optional is needed.
-  constexpr StaticCString() = default;
-
-  template <size_t N>
-  explicit consteval StaticCString(const char (&string)[N])
-      ENABLE_IF_ATTR(string[N - 1u] == '\0', "requires a NUL-terminated string")
-      : data_(string) {}
-
-  constexpr bool has_value() const { return data_ != nullptr; }
-
-  // Stops at an embedded NUL. The attribute above only constrains the final
-  // byte, so a literal containing one still compiles.
-  constexpr std::string_view string_view() const {
-    return data_ ? std::string_view(data_) : std::string_view();
-  }
-
- private:
-  // Safe because construction requires static storage.
-  RAW_PTR_EXCLUSION const char* data_ = nullptr;
 };
 
 class SimpleFeature : public Feature {
@@ -260,7 +227,7 @@ class SimpleFeature : public Feature {
   bool component_extensions_auto_granted() const {
     return component_extensions_auto_granted_;
   }
-  base::span<const std::string_view> match_patterns() const LIFETIME_BOUND {
+  base::span<const std::string_view> match_patterns() const {
     return match_patterns_;
   }
 

@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_COMMON_FEATURES_FEATURE_PROVIDER_H_
 #define EXTENSIONS_COMMON_FEATURES_FEATURE_PROVIDER_H_
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -17,7 +18,8 @@ class Feature;
 
 // Note: Binding code (specifically native_extension_bindings_system.cc) relies
 // on this being a sorted map.
-using FeatureMap = std::map<std::string, std::unique_ptr<const Feature>>;
+using FeatureMap =
+    std::map<std::string, std::unique_ptr<const Feature>, std::less<>>;
 
 // Implemented by classes that can vend features.
 class FeatureProvider {
@@ -49,7 +51,7 @@ class FeatureProvider {
   static const Feature* GetBehaviorFeature(const std::string& name);
 
   // Returns the feature with the specified name.
-  const Feature* GetFeature(const std::string& name) const;
+  const Feature* GetFeature(std::string_view name) const;
 
   // Returns the parent feature of `feature`, or null if there isn't one.
   const Feature* GetParent(const Feature& feature) const;

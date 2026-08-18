@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -57,7 +58,6 @@ TEST(ExtensionAPIPermissionTest, CheckEnums) {
 
 TEST(ExtensionAPIPermissionTest, ManagedSessionLoginWarningFlag) {
   PermissionsInfo* info = PermissionsInfo::GetInstance();
-
   constexpr APIPermissionInfo::InitInfo init_info[] = {
       {mojom::APIPermissionID::kUnknown, "test permission",
        APIPermissionInfo::kFlagImpliesFullURLAccess |
@@ -67,8 +67,30 @@ TEST(ExtensionAPIPermissionTest, ManagedSessionLoginWarningFlag) {
   info->RegisterPermissions(base::span(init_info),
                             base::span<const extensions::Alias>());
 
-  EXPECT_FALSE(info->GetByID(mojom::APIPermissionID::kUnknown)
-                   ->requires_managed_session_full_login_warning());
+  const APIPermissionInfo* permission =
+      info->GetByID(mojom::APIPermissionID::kUnknown);
+  ASSERT_TRUE(permission);
+  EXPECT_FALSE(permission->requires_managed_session_full_login_warning());
+}
+
+TEST(ExtensionAPIPermissionTest, GetByNameWithNonNullTerminatedStringView) {
+  PermissionsInfo* info = PermissionsInfo::GetInstance();
+  constexpr APIPermissionInfo::InitInfo init_info[] = {
+      {mojom::APIPermissionID::kInvalid, "test lookup permission", 0}};
+
+  info->RegisterPermissions(base::span(init_info),
+                            base::span<const extensions::Alias>());
+
+  const APIPermissionInfo* permission =
+      info->GetByID(mojom::APIPermissionID::kInvalid);
+  ASSERT_TRUE(permission);
+
+  const std::string name_with_suffix = "test lookup permission suffix";
+  EXPECT_EQ(
+      permission,
+      info->GetByName(
+          std::string_view(name_with_suffix)
+              .substr(0, std::string_view("test lookup permission").size())));
 }
 
 }  // namespace extensions

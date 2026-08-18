@@ -34,7 +34,7 @@ const APIPermissionInfo* PermissionsInfo::GetByID(
 }
 
 const APIPermissionInfo* PermissionsInfo::GetByName(
-    const std::string& name) const {
+    std::string_view name) const {
   auto i = name_map_.find(name);
   return (i == name_map_.end()) ? nullptr : i->second;
 }

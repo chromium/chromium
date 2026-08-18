@@ -7,6 +7,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/gtest_prod_util.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
@@ -84,7 +85,7 @@ class PermissionSet {
   // Returns true if the `extension` explicitly requests access to the given
   // `permission_name`. Note this does not include APIs without no corresponding
   // permission, like "runtime" or "browserAction".
-  bool HasAPIPermission(const std::string& permission_name) const;
+  bool HasAPIPermission(std::string_view permission_name) const;
 
   // Returns true if the set allows the given permission with the default
   // permission detail.

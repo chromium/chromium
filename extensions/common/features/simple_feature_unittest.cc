@@ -129,8 +129,6 @@ TEST(StaticCStringTest, SizeStopsAtEmbeddedNul) {
   EXPECT_EQ("a", kEmbedded.string_view());
 }
 
-// Longer than std::string's 22-character inline buffer, so a copy would heap
-// allocate.
 TEST(StaticCStringTest, ReferencesLiteralWithoutCopying) {
   static constexpr char kLongName[] = "controlledFrameInternal";
   static constexpr StaticCString kLong(kLongName);
@@ -149,6 +147,19 @@ TEST(StaticCStringTest, DefaultIsAbsent) {
 
   static constexpr StaticCString kPresent("laser-beams");
   static_assert(kPresent.has_value());
+}
+
+TEST(StaticStringViewTest, RetainsLiteralLength) {
+  static constexpr char kName[] = "controlledFrameInternal";
+  static constexpr StaticStringView kView(kName);
+  static_assert(kView.string_view().size() == 23u);
+  static_assert(kView.string_view().data() == kName);
+}
+
+TEST(StaticStringViewTest, SizeStopsAtEmbeddedNul) {
+  static constexpr StaticStringView kEmbedded("a\0b");
+  static_assert(kEmbedded.string_view().size() == 1u);
+  EXPECT_EQ("a", kEmbedded.string_view());
 }
 
 class SimpleFeatureTest : public testing::Test {
@@ -528,9 +539,20 @@ TEST_F(SimpleFeatureTest, PackageType) {
                 .result());
 }
 
+TEST_F(SimpleFeatureTest, StaticIdentityStrings) {
+  SimpleFeature feature;
+  feature.set_name(StaticStringView("static name"));
+  feature.set_alias(StaticCString("static alias"));
+  feature.set_source(StaticCString("static source"));
+
+  EXPECT_EQ("static name", feature.name());
+  EXPECT_EQ("static alias", feature.alias());
+  EXPECT_EQ("static source", feature.source());
+}
+
 TEST_F(SimpleFeatureTest, Context) {
   SimpleFeature feature;
-  feature.set_name("somefeature");
+  feature.set_name(StaticStringView("somefeature"));
   feature.set_contexts(StaticSpan(kPrivilegedExtensionOnly));
   feature.set_extension_types(StaticSpan(kLegacyPackagedAppOnly));
   feature.set_platforms(StaticSpan(kChromeOsPlatform));
@@ -1174,7 +1196,9 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
 TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
   // Test a feature that requires a delegated availability check, but the check
   // fails.
-  std::string expected_feature_name = "DisallowedFeature";
+  static constexpr char kDisallowedFeatureName[] = "DisallowedFeature";
+  static constexpr char kAllowedFeatureName[] = "AllowedFeature";
+  std::string_view expected_feature_name = kDisallowedFeatureName;
   uint32_t delegated_availability_check_call_count = 0;
   auto delegated_availability_check = base::BindLambdaForTesting(
       [&](const std::string& api_full_name, const Extension* extension,
@@ -1183,7 +1207,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
           const ContextData& context_data) {
         ++delegated_availability_check_call_count;
         EXPECT_EQ(expected_feature_name, api_full_name);
-        return api_full_name == "AllowedFeature";
+        return api_full_name == kAllowedFeatureName;
       });
 
   SimpleFeature feature;
@@ -1206,7 +1230,7 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
   }
 
   feature.SetDelegatedAvailabilityCheckHandler(delegated_availability_check);
-  feature.set_name(expected_feature_name);
+  feature.set_name(StaticStringView(kDisallowedFeatureName));
   {
     // Test a feature that requires a delegated availability check and the check
     // is not successful.
@@ -1219,8 +1243,8 @@ TEST(SimpleFeatureUnitTest, TestRequiresDelegatedAvailabilityCheck) {
     EXPECT_EQ(1u, delegated_availability_check_call_count);
   }
 
-  expected_feature_name = "AllowedFeature";
-  feature.set_name(expected_feature_name);
+  expected_feature_name = kAllowedFeatureName;
+  feature.set_name(StaticStringView(kAllowedFeatureName));
   {
     // Test a feature that requires a delegated availability check and the check
     // is successful.
@@ -1545,7 +1569,7 @@ TEST_F(SimpleFeatureTest, RestrictDeveloperModeAPIs) {
 
 TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {
   SimpleFeature feature;
-  feature.set_name("somefeature");
+  feature.set_name(StaticStringView("somefeature"));
   feature.set_contexts(StaticSpan(kPrivilegedExtensionOnly));
   feature.set_extension_types(StaticSpan(kExtensionOnly));
 

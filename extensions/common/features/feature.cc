@@ -42,20 +42,20 @@ Feature::Availability Feature::IsAvailableToExtension(
       extension->manifest_version(), kUnspecifiedContextId);
 }
 
-Feature::Feature() : no_parent_(false) {}
+Feature::Feature() = default;
 
 Feature::~Feature() = default;
 
-void Feature::set_name(std::string_view name) {
-  name_ = std::string(name);
+void Feature::set_name(StaticStringView name) {
+  name_ = name.string_view();
 }
 
-void Feature::set_alias(std::string_view alias) {
-  alias_ = std::string(alias);
+void Feature::set_alias(StaticCString alias) {
+  alias_ = alias;
 }
 
-void Feature::set_source(std::string_view source) {
-  source_ = std::string(source);
+void Feature::set_source(StaticCString source) {
+  source_ = source;
 }
 
 bool Feature::HasDelegatedAvailabilityCheckHandlerForTesting() const {

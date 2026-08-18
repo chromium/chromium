@@ -566,7 +566,7 @@ STATIC_SPAN_LIST_KEYS = {
   ),
 }
 
-STATIC_CSTRING_KEYS = {'command_line_switch', 'feature_flag'}
+STATIC_CSTRING_KEYS = {'alias', 'command_line_switch', 'feature_flag', 'source'}
 
 # By default, if an error is encountered, assert to stop the compilation. This
 # can be disabled for testing.
@@ -788,7 +788,7 @@ class Feature(object):
     c = Code()
     cpp_feature_class = SIMPLE_FEATURE_CPP_CLASSES[feature_type]
     c.Append('%s* feature = new %s();' % (cpp_feature_class, cpp_feature_class))
-    c.Append('feature->set_name("%s");' % self.name)
+    c.Append('feature->set_name(StaticStringView("%s"));' % self.name)
     c.Concat(GetCodeForFeatureValues(self.GetAllFeatureValues()))
     return c
 
@@ -835,7 +835,7 @@ class ComplexFeature(Feature):
       c.Append('features.push_back(feature);')
       c.Eblock('}')
     c.Append('ComplexFeature* feature(new ComplexFeature(&features));')
-    c.Append('feature->set_name("%s");' % self.name)
+    c.Append('feature->set_name(StaticStringView("%s"));' % self.name)
     c.Concat(GetCodeForFeatureValues(self.shared_values))
     return c
 

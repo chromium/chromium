@@ -47,6 +47,8 @@ namespace extensions {
 
 namespace {
 
+constexpr char kTestEventName[] = "testapi.onEvent";
+
 // A simple mock to keep track of listener additions and removals.
 class MockEventRouterObserver : public EventRouter::Observer {
  public:
@@ -472,14 +474,13 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
       incognito_context(), base::BindRepeating(&BuildProcessMap));
 
   // Create a SimpleFeature to allow this API call to be routed to our test URL.
-  std::string event_name = "testapi.onEvent";
   FeatureProvider provider;
   auto feature = std::make_unique<SimpleFeature>();
-  feature->set_name("test feature");
+  feature->set_name(StaticStringView(kTestEventName));
   static constexpr auto kMatches =
       std::to_array<std::string_view>({"chrome://settings/*"});
   feature->set_matches(StaticSpan(kMatches));
-  provider.AddFeature(event_name, std::move(feature));
+  provider.AddFeature(kTestEventName, std::move(feature));
 
   ExtensionAPI api;
   api.RegisterDependencyProvider("api", &provider);
@@ -493,8 +494,8 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
   // profile and one in an otr profile. Note that the string chrome://settings
   // is hardcoded into the api permissions of settingsPrivate.
   GURL placeholder_url("chrome://settings/test");
-  router.AddEventListenerForURL(event_name, &regular_rph, placeholder_url);
-  router.AddEventListenerForURL(event_name, &otr_rph, placeholder_url);
+  router.AddEventListenerForURL(kTestEventName, &regular_rph, placeholder_url);
+  router.AddEventListenerForURL(kTestEventName, &otr_rph, placeholder_url);
 
   // Hook up some test observers
   EventRouterObserver regular_counter(regular_rph.GetDeprecatedID());
@@ -507,7 +508,7 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
 
   // Sending an otr event should not trigger the regular observer.
   auto otr_event =
-      std::make_unique<Event>(extensions::events::FOR_TEST, event_name,
+      std::make_unique<Event>(extensions::events::FOR_TEST, kTestEventName,
                               base::ListValue(), incognito_context());
   router.BroadcastEvent(std::move(otr_event));
   EXPECT_EQ(0, regular_counter.dispatch_count);
@@ -515,7 +516,7 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
 
   // Setting a regular event should not trigger the otr observer.
   std::unique_ptr<Event> regular_event =
-      std::make_unique<Event>(extensions::events::FOR_TEST, event_name,
+      std::make_unique<Event>(extensions::events::FOR_TEST, kTestEventName,
                               base::ListValue(), browser_context());
   router.BroadcastEvent(std::move(regular_event));
   EXPECT_EQ(1, regular_counter.dispatch_count);
@@ -1052,14 +1053,14 @@ class EventRouterDispatchTest : public ExtensionsTest {
   EventRouter* event_router() { return EventRouter::Get(browser_context()); }
 
  protected:
-  void RegisterTestApiFeature(std::string_view event_name,
+  void RegisterTestApiFeature(StaticStringView event_name,
                               StaticSpan<std::string_view> matches = {}) {
     auto feature = std::make_unique<SimpleFeature>();
-    feature->set_name("test feature");
+    feature->set_name(event_name);
     if (!matches.span().empty()) {
       feature->set_matches(matches);
     }
-    provider_.AddFeature(event_name, std::move(feature));
+    provider_.AddFeature(event_name.string_view(), std::move(feature));
     api_.RegisterDependencyProvider("api", &provider_);
     api_scope_ =
         std::make_unique<ExtensionAPI::OverrideSharedInstanceForTest>(&api_);
@@ -1077,10 +1078,10 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   std::string ext2 = "ext2";
   GURL webui1("chrome-untrusted://one");
   GURL webui2("chrome-untrusted://two");
-  std::string event_name = "testapi.onEvent";
   static constexpr auto kMatches = std::to_array<std::string_view>(
       {"chrome-untrusted://one/", "chrome-untrusted://two/"});
-  RegisterTestApiFeature(event_name, StaticSpan(kMatches));
+  RegisterTestApiFeature(StaticStringView(kTestEventName),
+                         StaticSpan(kMatches));
 
   TestEventRouterObserver observer(event_router());
   auto add_extension = [&](const std::string& id) {
@@ -1102,22 +1103,22 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   };
 
   // Register both extensions and both URLs for event.
-  event_router()->AddEventListener(event_name, process(), ext1);
-  event_router()->AddEventListener(event_name, process(), ext2);
-  event_router()->AddEventListenerForURL(event_name, process(), webui1);
-  event_router()->AddEventListenerForURL(event_name, process(), webui2);
+  event_router()->AddEventListener(kTestEventName, process(), ext1);
+  event_router()->AddEventListener(kTestEventName, process(), ext2);
+  event_router()->AddEventListenerForURL(kTestEventName, process(), webui1);
+  event_router()->AddEventListenerForURL(kTestEventName, process(), webui2);
 
   // Should only dispatch to the single specified extension or url.
-  event_router()->DispatchEventToExtension(ext1, event(event_name));
+  event_router()->DispatchEventToExtension(ext1, event(kTestEventName));
   EXPECT_EQ(1u, observer.dispatched_events().size());
   observer.ClearEvents();
-  event_router()->DispatchEventToExtension(ext2, event(event_name));
+  event_router()->DispatchEventToExtension(ext2, event(kTestEventName));
   EXPECT_EQ(1u, observer.dispatched_events().size());
   observer.ClearEvents();
-  event_router()->DispatchEventToURL(webui1, event(event_name));
+  event_router()->DispatchEventToURL(webui1, event(kTestEventName));
   EXPECT_EQ(1u, observer.dispatched_events().size());
   observer.ClearEvents();
-  event_router()->DispatchEventToURL(webui2, event(event_name));
+  event_router()->DispatchEventToURL(webui2, event(kTestEventName));
   EXPECT_EQ(1u, observer.dispatched_events().size());
   observer.ClearEvents();
 
@@ -1132,8 +1133,7 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
 // reaches exactly the identified worker.
 TEST_F(EventRouterDispatchTest, ActiveDispatchTargetRestrictsToWorker) {
   std::string ext1 = "ext1";
-  std::string event_name = "testapi.onEvent";
-  RegisterTestApiFeature(event_name);
+  RegisterTestApiFeature(StaticStringView(kTestEventName));
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test extension").SetID(ext1).Build();
@@ -1151,10 +1151,10 @@ TEST_F(EventRouterDispatchTest, ActiveDispatchTargetRestrictsToWorker) {
       mojom::ServiceWorkerContext::New(GURL(), sw_version_id1, sw_thread_id1);
   auto sw_context2 =
       mojom::ServiceWorkerContext::New(GURL(), sw_version_id2, sw_thread_id2);
-  event_router()->AddServiceWorkerEventListener(ext1, event_name, *sw_context1,
-                                                process());
-  event_router()->AddServiceWorkerEventListener(ext1, event_name, *sw_context2,
-                                                process());
+  event_router()->AddServiceWorkerEventListener(ext1, kTestEventName,
+                                                *sw_context1, process());
+  event_router()->AddServiceWorkerEventListener(ext1, kTestEventName,
+                                                *sw_context2, process());
   event_router()->BindServiceWorkerEventDispatcher(
       process()->GetDeprecatedID(), sw_thread_id1,
       sw_event_dispatcher1.BindAndPassRemote());
@@ -1167,7 +1167,7 @@ TEST_F(EventRouterDispatchTest, ActiveDispatchTargetRestrictsToWorker) {
   std::vector<extensions::EventTarget> dispatched;
   auto create_restricted_event = [&](int64_t sw_version_id, int sw_thread_id) {
     auto event = std::make_unique<extensions::Event>(
-        extensions::events::FOR_TEST, event_name, base::ListValue());
+        extensions::events::FOR_TEST, kTestEventName, base::ListValue());
     event->restrict_to_dispatch_target =
         Event::DispatchTarget{.render_process_id = process()->GetID(),
                               .worker_thread_id = sw_thread_id,
@@ -1204,8 +1204,7 @@ TEST_F(EventRouterDispatchTest, ActiveDispatchTargetRestrictsToWorker) {
 TEST_F(EventRouterDispatchTest,
        ActiveDispatchTargetMissingFiresCannotDispatch) {
   std::string ext1 = "ext1";
-  std::string event_name = "testapi.onEvent";
-  RegisterTestApiFeature(event_name);
+  RegisterTestApiFeature(StaticStringView(kTestEventName));
 
   TestEventRouterObserver observer(event_router());
   scoped_refptr<const Extension> extension =
@@ -1213,14 +1212,14 @@ TEST_F(EventRouterDispatchTest,
   ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
 
   // The extension's only listener registration lives in `process()`.
-  event_router()->AddEventListener(event_name, process(), ext1);
+  event_router()->AddEventListener(kTestEventName, process(), ext1);
 
   // Restrict the dispatch to `other_process`, where no listener is
   // registered.
   auto other_process =
       std::make_unique<content::MockRenderProcessHost>(browser_context());
   auto event = std::make_unique<extensions::Event>(
-      extensions::events::FOR_TEST, event_name, base::ListValue());
+      extensions::events::FOR_TEST, kTestEventName, base::ListValue());
   event->restrict_to_dispatch_target =
       Event::DispatchTarget{.render_process_id = other_process->GetID()};
 
@@ -1237,8 +1236,7 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
   std::string ext1 = "ext1";
   std::string ext2 = "ext2";
   std::string ext3 = "ext3";
-  std::string event_name = "testapi.onEvent";
-  RegisterTestApiFeature(event_name);
+  RegisterTestApiFeature(StaticStringView(kTestEventName));
 
   auto add_extension = [&](const std::string& id) {
     scoped_refptr<const Extension> extension =
@@ -1279,37 +1277,37 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
 
   // Register all extensions for the event:
   // 1) single listener for ext1
-  event_router()->AddEventListener(event_name, process1.get(), ext1);
+  event_router()->AddEventListener(kTestEventName, process1.get(), ext1);
   // 2) two listeners for two processes for ext2
-  event_router()->AddEventListener(event_name, process2.get(), ext2);
-  event_router()->AddEventListener(event_name, process3.get(), ext2);
+  event_router()->AddEventListener(kTestEventName, process2.get(), ext2);
+  event_router()->AddEventListener(kTestEventName, process3.get(), ext2);
   // 3) service worker listeners for ext3
   const int sw_version_id = 10;
   const int sw_thread_id = 100;
   MockEventDispatcher sw_event_dispatcher;
   auto sw_context =
       mojom::ServiceWorkerContext::New(GURL(), sw_version_id, sw_thread_id);
-  event_router()->AddServiceWorkerEventListener(ext3, event_name, *sw_context,
-                                                process4.get());
+  event_router()->AddServiceWorkerEventListener(ext3, kTestEventName,
+                                                *sw_context, process4.get());
   event_router()->BindServiceWorkerEventDispatcher(
       process4->GetDeprecatedID(), sw_thread_id,
       sw_event_dispatcher.BindAndPassRemote());
 
   // Dispatch without callback set.
-  event_router()->DispatchEventToExtension(ext1, create_event(event_name));
-  event_router()->DispatchEventToExtension(ext2, create_event(event_name));
-  event_router()->DispatchEventToExtension(ext3, create_event(event_name));
+  event_router()->DispatchEventToExtension(ext1, create_event(kTestEventName));
+  event_router()->DispatchEventToExtension(ext2, create_event(kTestEventName));
+  event_router()->DispatchEventToExtension(ext3, create_event(kTestEventName));
 
   EXPECT_EQ(0u, dispatched.size());
   dispatched.clear();
 
   // Dispatch with a post-dispatch callback set.
   event_router()->DispatchEventToExtension(
-      ext1, create_event_with_callback(event_name));
+      ext1, create_event_with_callback(kTestEventName));
   event_router()->DispatchEventToExtension(
-      ext2, create_event_with_callback(event_name));
+      ext2, create_event_with_callback(kTestEventName));
   event_router()->DispatchEventToExtension(
-      ext3, create_event_with_callback(event_name));
+      ext3, create_event_with_callback(kTestEventName));
 
   const int sw_invalid_version_id =
       blink::mojom::kInvalidServiceWorkerVersionId;
@@ -1325,7 +1323,7 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
 
   // Repeat the same event, but with broadcast: should have the same dispatch
   // targets.
-  event_router()->BroadcastEvent(create_event_with_callback(event_name));
+  event_router()->BroadcastEvent(create_event_with_callback(kTestEventName));
 
   std::sort(std::begin(dispatched), std::end(dispatched));
   EXPECT_EQ(dispatched, expected);
@@ -1343,8 +1341,6 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
 
 TEST_F(EventRouterDispatchTest, TestDispatchCallback_NoListeners) {
   std::string ext1 = "ext1";
-  std::string event_name = "testapi.onEvent";
-
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test extension").SetID(ext1).Build();
   ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
@@ -1354,7 +1350,7 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback_NoListeners) {
   // A dispatch restricted to `ext1` should still trigger the callback when
   // EventRouter has no listener to receive the event.
   auto event = std::make_unique<extensions::Event>(
-      extensions::events::FOR_TEST, event_name, base::ListValue());
+      extensions::events::FOR_TEST, kTestEventName, base::ListValue());
   base::RunLoop run_loop;
   bool callback_ran = false;
   event->cannot_dispatch_callback = base::BindLambdaForTesting([&]() {
@@ -1372,8 +1368,7 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback_NoListeners) {
 TEST_F(EventRouterDispatchTest, TestDispatchCallback_OtherExtensionListener) {
   std::string ext1 = "ext1";
   std::string ext2 = "ext2";
-  std::string event_name = "testapi.onEvent";
-  RegisterTestApiFeature(event_name);
+  RegisterTestApiFeature(StaticStringView(kTestEventName));
 
   auto add_extension = [&](const std::string& id) {
     scoped_refptr<const Extension> extension =
@@ -1387,12 +1382,13 @@ TEST_F(EventRouterDispatchTest, TestDispatchCallback_OtherExtensionListener) {
   // A listener for the same event name owned by `ext2` should not suppress the
   // callback for a dispatch restricted to `ext1`.
   event_router()->AddFilteredEventListener(
-      event_name, process(), mojom::EventListenerOwner::NewExtensionId(ext2),
+      kTestEventName, process(),
+      mojom::EventListenerOwner::NewExtensionId(ext2),
       /*service_worker_context=*/nullptr, base::DictValue(),
       /*add_lazy_listener=*/false);
 
   auto event = std::make_unique<extensions::Event>(
-      extensions::events::FOR_TEST, event_name, base::ListValue());
+      extensions::events::FOR_TEST, kTestEventName, base::ListValue());
   base::RunLoop run_loop;
   bool callback_ran = false;
   event->cannot_dispatch_callback = base::BindLambdaForTesting([&]() {

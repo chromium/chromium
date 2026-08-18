@@ -601,7 +601,7 @@ class FeatureCompilerTest(unittest.TestCase):
       '''  {
     #if BUILDFLAG(USE_CUPS)
     SimpleFeature* feature = new SimpleFeature();
-    feature->set_name("feature_cups");
+    feature->set_name(StaticStringView("feature_cups"));
     feature->set_channel(version_info::Channel::BETA);
     feature->set_command_line_switch(StaticCString("enable-cups"));
     static constexpr auto kContexts =
@@ -621,6 +621,44 @@ class FeatureCompilerTest(unittest.TestCase):
     #endif
   }''',
     )
+
+  def testFeatureIdentityStringsUseStaticStorage(self):
+    compiler = self._createTestFeatureCompiler('APIFeature')
+    compiler._json = {
+        'feature_alpha': {
+            'alias': 'feature_beta',
+            'contexts': ['privileged_extension']
+        },
+        'feature_beta': {
+            'contexts': ['privileged_extension'],
+            'source': 'feature_alpha'
+        }
+    }
+    compiler.Compile()
+    cc_code = compiler.Render().Render()
+
+    # The code below is formatted correctly!
+    self.assertEqual(
+        cc_code, '''  {
+    SimpleFeature* feature = new SimpleFeature();
+    feature->set_name(StaticStringView("feature_alpha"));
+    feature->set_alias(StaticCString("feature_beta"));
+    static constexpr auto kContexts =
+        std::to_array<mojom::ContextType>(
+            {mojom::ContextType::kPrivilegedExtension});
+    feature->set_contexts(StaticSpan(kContexts));
+    provider->AddFeature("feature_alpha", feature);
+  }
+  {
+    SimpleFeature* feature = new SimpleFeature();
+    feature->set_name(StaticStringView("feature_beta"));
+    static constexpr auto kContexts =
+        std::to_array<mojom::ContextType>(
+            {mojom::ContextType::kPrivilegedExtension});
+    feature->set_contexts(StaticSpan(kContexts));
+    feature->set_source(StaticCString("feature_alpha"));
+    provider->AddFeature("feature_beta", feature);
+  }''')
 
   def testFeatureWithEmptyMatches(self):
     compiler = self._createTestFeatureCompiler('APIFeature')
@@ -688,7 +726,7 @@ class FeatureCompilerTest(unittest.TestCase):
       compiler.Render().Render(),
       '''  {
     SimpleFeature* feature = new SimpleFeature();
-    feature->set_name("enum_lists");
+    feature->set_name(StaticStringView("enum_lists"));
     feature->set_channel(version_info::Channel::BETA);
     static constexpr auto kContexts =
         std::to_array<mojom::ContextType>(

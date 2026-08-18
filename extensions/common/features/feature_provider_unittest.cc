@@ -155,26 +155,26 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 TEST(FeatureProviderTest, GetChildren) {
   FeatureProvider provider;
 
-  auto add_feature = [&provider](std::string_view name,
+  auto add_feature = [&provider](StaticStringView name,
                                  bool no_parent = false) {
     auto feature = std::make_unique<SimpleFeature>();
     feature->set_name(name);
     feature->set_noparent(no_parent);
-    provider.AddFeature(name, std::move(feature));
+    provider.AddFeature(name.string_view(), std::move(feature));
   };
 
-  add_feature("parent");
-  add_feature("parent.child");
-  add_feature("parent.child.grandchild");
-  add_feature("parent.other_child.other_grandchild");
-  add_feature("parent.unparented_child", true);
+  add_feature(StaticStringView("parent"));
+  add_feature(StaticStringView("parent.child"));
+  add_feature(StaticStringView("parent.child.grandchild"));
+  add_feature(StaticStringView("parent.other_child.other_grandchild"));
+  add_feature(StaticStringView("parent.unparented_child"), true);
 
   const Feature* parent = provider.GetFeature("parent");
   ASSERT_TRUE(parent);
   std::vector<const Feature*> children = provider.GetChildren(*parent);
   std::set<std::string> children_names;
   for (const Feature* child : children)
-    children_names.insert(child->name());
+    children_names.emplace(child->name());
   EXPECT_THAT(children_names, testing::UnorderedElementsAre(
                                   "parent.child", "parent.child.grandchild",
                                   "parent.other_child.other_grandchild"));
@@ -182,9 +182,9 @@ TEST(FeatureProviderTest, GetChildren) {
 
 TEST(FeatureProviderTest, InstallFeatureDelegatedAvailabilityCheck) {
   Feature::FeatureDelegatedAvailabilityCheckMap map;
-  static constexpr const char* kDelegatedFeatureName = "delegatedFeature";
-  static constexpr const char* kNondelgatedFeatureName = "nondelegatedFeature";
-  static constexpr const char* kMissingRequiresDelegatedCheckFeatureName =
+  static constexpr char kDelegatedFeatureName[] = "delegatedFeature";
+  static constexpr char kNondelgatedFeatureName[] = "nondelegatedFeature";
+  static constexpr char kMissingRequiresDelegatedCheckFeatureName[] =
       "missingRequiresDelegatedCheckFeature";
 
   auto delegated_availability_check =
@@ -205,7 +205,7 @@ TEST(FeatureProviderTest, InstallFeatureDelegatedAvailabilityCheck) {
   // requires it and has a handler in the map.
   {
     auto feature = std::make_unique<SimpleFeature>();
-    feature->set_name(kDelegatedFeatureName);
+    feature->set_name(StaticStringView(kDelegatedFeatureName));
     feature->set_requires_delegated_availability_check(true);
     provider.AddFeature(kDelegatedFeatureName, std::move(feature));
 
@@ -218,7 +218,7 @@ TEST(FeatureProviderTest, InstallFeatureDelegatedAvailabilityCheck) {
   // doesn't require it.
   {
     auto feature = std::make_unique<SimpleFeature>();
-    feature->set_name(kNondelgatedFeatureName);
+    feature->set_name(StaticStringView(kNondelgatedFeatureName));
     provider.AddFeature(kNondelgatedFeatureName, std::move(feature));
 
     const auto* nondelegated_feature =
@@ -231,7 +231,8 @@ TEST(FeatureProviderTest, InstallFeatureDelegatedAvailabilityCheck) {
   // doesn't require it but has a handler in the map.
   {
     auto feature = std::make_unique<SimpleFeature>();
-    feature->set_name(kMissingRequiresDelegatedCheckFeatureName);
+    feature->set_name(
+        StaticStringView(kMissingRequiresDelegatedCheckFeatureName));
     provider.AddFeature(kMissingRequiresDelegatedCheckFeatureName,
                         std::move(feature));
 

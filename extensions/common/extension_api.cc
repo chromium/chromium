@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/span_printf.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
@@ -195,7 +196,7 @@ bool ExtensionAPI::IsAnyFeatureAvailableToContext(
     return false;
   }
 
-  const std::string& alias_name = api.alias();
+  std::string_view alias_name = api.alias();
   if (alias_name.empty()) {
     return false;
   }
@@ -307,7 +308,7 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
     const GURL& url,
     int context_id,
     const ContextData& context_data) {
-  const std::string& alias = feature.alias();
+  std::string_view alias = feature.alias();
   if (alias.empty()) {
     return Feature::Availability(Feature::AvailabilityResult::kNotPresent,
                                  "Alias not defined");
@@ -324,7 +325,7 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
   // be determined using fooAlias.method feature, rather than fooAlias feature.
   std::string child_name;
   GetAPINameFromFullName(full_name, &child_name);
-  std::string full_alias_name = alias + "." + child_name;
+  const std::string full_alias_name = base::StrCat({alias, ".", child_name});
   const Feature* alias_feature = provider->second->GetFeature(full_alias_name);
 
   // If there is no child feature, use the alias API feature to check

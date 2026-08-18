@@ -5,11 +5,16 @@
 #ifndef EXTENSIONS_COMMON_FEATURES_FEATURE_H_
 #define EXTENSIONS_COMMON_FEATURES_FEATURE_H_
 
+#include <stddef.h>
+
+#include <functional>
 #include <map>
 #include <set>
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/manifest.h"
@@ -23,6 +28,54 @@ namespace extensions {
 inline constexpr int kUnspecifiedContextId = -1;
 
 class Extension;
+
+// A pointer to a static NUL-terminated string. Half the size of a
+// std::string_view, which matters because a handful of features set these
+// fields but every feature pays for them; the length is recovered by scanning
+// on the cold paths that read them.
+//
+// The consteval constructor's attribute reads a character out of the array,
+// which requires the contents, not just the address, to be compile-time
+// constant. A bare const char* is the same size but would accept a mutable or
+// dynamically initialized global.
+class StaticCString {
+ public:
+  // Absent by default; nullptr is the sentinel, so no std::optional is needed.
+  constexpr StaticCString() = default;
+
+  template <size_t N>
+  explicit consteval StaticCString(const char (&string)[N])
+      ENABLE_IF_ATTR(string[N - 1u] == '\0', "requires a NUL-terminated string")
+      : data_(string) {}
+
+  constexpr bool has_value() const { return data_ != nullptr; }
+
+  // Stops at an embedded NUL. The attribute above only constrains the final
+  // byte, so a literal containing one still compiles.
+  constexpr std::string_view string_view() const {
+    return data_ ? std::string_view(data_) : std::string_view();
+  }
+
+ private:
+  // Safe because construction requires static storage.
+  RAW_PTR_EXCLUSION const char* data_ = nullptr;
+};
+
+// A view of a static NUL-terminated string that retains its length. This is a
+// construction-time wrapper for values stored as std::string_view.
+// base::cstring_view also retains the length, but permits non-static backing.
+class StaticStringView {
+ public:
+  template <size_t N>
+  explicit consteval StaticStringView(const char (&string)[N])
+      ENABLE_IF_ATTR(string[N - 1u] == '\0', "requires a NUL-terminated string")
+      : view_(string) {}
+
+  constexpr std::string_view string_view() const { return view_; }
+
+ private:
+  std::string_view view_;
+};
 
 // Represents a single feature accessible to an extension developer, such as a
 // top-level manifest key, a permission, or a programmatic API. A feature can
@@ -84,7 +137,7 @@ class Feature {
 
   // Mapping Feature::name() to override function.
   using FeatureDelegatedAvailabilityCheckMap =
-      std::map<std::string, DelegatedAvailabilityCheckHandler>;
+      std::map<std::string, DelegatedAvailabilityCheckHandler, std::less<>>;
 
   // Container for AvailabilityResult that also exposes a user-visible error
   // message in cases where the feature is not available.
@@ -99,7 +152,7 @@ class Feature {
     bool is_available() const {
       return result_ == AvailabilityResult::kIsAvailable;
     }
-    const std::string& message() const { return message_; }
+    const std::string& message() const LIFETIME_BOUND { return message_; }
 
    private:
     friend class SimpleFeature;
@@ -112,14 +165,12 @@ class Feature {
   Feature();
   virtual ~Feature();
 
-  const std::string& name() const { return name_; }
-  // Note that this arg is passed as a string_view to avoid a lot of bloat from
-  // inlined std::string code.
-  void set_name(std::string_view name);
-  const std::string& alias() const { return alias_; }
-  void set_alias(std::string_view alias);
-  const std::string& source() const { return source_; }
-  void set_source(std::string_view source);
+  std::string_view name() const { return name_; }
+  void set_name(StaticStringView name);
+  std::string_view alias() const { return alias_.string_view(); }
+  void set_alias(StaticCString alias);
+  std::string_view source() const { return source_.string_view(); }
+  void set_source(StaticCString source);
   bool no_parent() const { return no_parent_; }
 
   // Gets the platform the code is currently running on.
@@ -222,10 +273,10 @@ class Feature {
   // Gets whether a feature availability override handler has been set.
   virtual bool HasDelegatedAvailabilityCheckHandler() const = 0;
 
-  std::string name_;
-  std::string alias_;
-  std::string source_;
-  bool no_parent_;
+  std::string_view name_;
+  StaticCString alias_;
+  StaticCString source_;
+  bool no_parent_ = false;
 };
 
 }  // namespace extensions
