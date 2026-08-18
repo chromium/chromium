@@ -5,6 +5,7 @@
 #ifndef NET_TEST_TEST_WITH_TASK_ENVIRONMENT_H_
 #define NET_TEST_TEST_WITH_TASK_ENVIRONMENT_H_
 
+#include <list>
 #include <memory>
 #include <vector>
 
@@ -44,10 +45,16 @@ class NetTaskEnvironment : public base::test::TaskEnvironment {
   base::sequence_manager::TaskQueue::Handle default_task_queue_;
 };
 
-// Inherit from this class if a TaskEnvironment is needed in a test.
-// Use in class hierachies where inheritance from ::testing::Test at the same
-// time is not desirable or possible (for example, when inheriting from
-// PlatformTest at the same time).
+// Inherit from this class if a TaskEnvironment is needed in a test. Use in
+// class hierarchies where inheritance from ::testing::Test at the same time is
+// not desirable or possible (for example, when inheriting from PlatformTest at
+// the same time).
+//
+// Do not add a ScopedFeatureList member to classes that inherit from this. It
+// leads to flaky crashes. Instead call AddScopedFeatureList() to add scoped
+// feature lists while preserving a safe destructor order. Examples:
+//   AddScopedFeatureList().InitAndEnableFeature(kFeature);
+//   AddScopedFeatureList().InitWithFeatureState(kFeature, GetParam());
 class WithTaskEnvironment {
  public:
   WithTaskEnvironment(const WithTaskEnvironment&) = delete;
@@ -101,20 +108,57 @@ class WithTaskEnvironment {
     return task_environment_.NextMainThreadPendingTaskDelay();
   }
 
+  // Creates a new ScopedFeatureList object and returns a reference to it. The
+  // returned ScopeFeatureList will be destroyed after `task_environment_`,
+  // avoiding race conditions. This should be used in preference to subclasses
+  // creating their own ScopedFeatureList. Calling AddScopedFeatureList()
+  // multiple times is supported and is useful when a subclass of a test fixture
+  // also needs to configure some features. Where possible initialize all
+  // ScopedFeatureLists before starting any work involving the TaskEnvironment
+  // to minimise the risk of race conditions.
+  base::test::ScopedFeatureList& AddScopedFeatureList();
+
  private:
+  // Wraps a ScopedFeatureList to disable a vector of features at construction
+  // time.
   struct FeatureDisabler {
     base::test::ScopedFeatureList feature_list;
     explicit FeatureDisabler(
         const std::vector<base::test::FeatureRef>& disabled_features);
   };
 
+  // Wraps a std::list<ScopedFeatureList> to provide a guarantee of destruction
+  // in reverse order of construction.
+  class ScopedFeatureLists {
+   public:
+    ScopedFeatureLists();
+    ~ScopedFeatureLists();
+
+    ScopedFeatureLists(const ScopedFeatureLists&) = delete;
+    ScopedFeatureLists& operator=(const ScopedFeatureLists&) = delete;
+
+    base::test::ScopedFeatureList& Emplace();
+
+   private:
+    // Not a `std::vector` because it is not safe to move a ScopedFeatureList
+    // after it has been initialized.
+    std::list<base::test::ScopedFeatureList> lists_;
+  };
+
   FeatureDisabler feature_disabler_;
+
+  // ScopedFeatureList objects for use by subclasses. Some subclasses themselves
+  // have subclasses which override further features. For that reason we support
+  // multiple ScopedFeatureList objects.
+  ScopedFeatureLists scoped_feature_lists_;
   NetTaskEnvironment task_environment_;
   TestNetLogManager net_log_manager_;
 };
 
 // Inherit from this class instead of ::testing::Test directly if a
-// TaskEnvironment is needed in a test.
+// TaskEnvironment is needed in a test. See the class comment for
+// WithTaskEnvironment for what to do instead of constructing your own
+// ScopedFeatureList objects.
 class TestWithTaskEnvironment : public ::testing::Test,
                                 public WithTaskEnvironment {
  public:

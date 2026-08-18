@@ -4,6 +4,7 @@
 
 #include "net/test/test_with_task_environment.h"
 
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
@@ -63,7 +64,23 @@ TEST_P(WithTaskEnvironmentTest, SchedulerEnabled) {
 
 INSTANTIATE_TEST_SUITE_P(All, WithTaskEnvironmentTest, ::testing::Bool());
 
+class WithTaskEnvironmentFeatureListTest : public TestWithTaskEnvironment {
+ public:
+  WithTaskEnvironmentFeatureListTest()
+      : TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::DEFAULT,
+            {features::kNetTaskScheduler}) {
+    AddScopedFeatureList().InitAndEnableFeature(features::kAsyncDns);
+  }
+};
 
+// Verifies that disabling a feature via the TestWithTaskEnvironment constructor
+// and then enabling another via AddScopedFeatureList() leaves the first feature
+// disabled.
+TEST_F(WithTaskEnvironmentFeatureListTest, FeatureRemainsDisabled) {
+  EXPECT_FALSE(base::FeatureList::IsEnabled(features::kNetTaskScheduler));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(features::kAsyncDns));
+}
 
 }  // namespace
 }  // namespace net

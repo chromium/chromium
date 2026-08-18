@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/base/scheduler/net_task_priority.h"
 #include "net/base/scheduler/net_task_scheduler.h"
@@ -58,6 +59,20 @@ WithTaskEnvironment::FeatureDisabler::FeatureDisabler(
   }
 }
 
+WithTaskEnvironment::ScopedFeatureLists::ScopedFeatureLists() = default;
+
+WithTaskEnvironment::ScopedFeatureLists::~ScopedFeatureLists() {
+  while (!lists_.empty()) {
+    lists_.pop_back();
+  }
+}
+
+base::test::ScopedFeatureList&
+WithTaskEnvironment::ScopedFeatureLists::Emplace() {
+  lists_.emplace_back();
+  return lists_.back();
+}
+
 WithTaskEnvironment::WithTaskEnvironment(
     base::test::TaskEnvironment::TimeSource time_source,
     std::vector<base::test::FeatureRef> disabled_features)
@@ -66,5 +81,9 @@ WithTaskEnvironment::WithTaskEnvironment(
                         time_source) {}
 
 WithTaskEnvironment::~WithTaskEnvironment() = default;
+
+base::test::ScopedFeatureList& WithTaskEnvironment::AddScopedFeatureList() {
+  return scoped_feature_lists_.Emplace();
+}
 
 }  // namespace net
