@@ -190,7 +190,7 @@ public class HubActionButtonViewUnitTest {
         mPropertyModel.set(COLOR_MIXER, mColorMixer);
 
         if (HubUtils.isGtsUpdateEnabled()) {
-            verify(mColorMixer, times(2)).registerBlend(any());
+            verify(mColorMixer, times(3)).registerBlend(any());
         } else {
             // Behaves differently on XR devices.
             verify(mColorMixer).registerBlend(any());

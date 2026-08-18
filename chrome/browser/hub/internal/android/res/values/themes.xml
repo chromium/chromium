@@ -25,6 +25,7 @@ found in the LICENSE file.
         <item name="android:insetTop">0dp</item>
         <item name="android:insetRight">0dp</item>
         <item name="android:insetBottom">0dp</item>
+        <item name="android:foreground">@drawable/hub_action_button_focus_ring</item>
         <item name="materialSizeOverlay">@style/SizeOverlay.Material3Expressive.Button.IconButton.Small.Square</item>
     </style>
 </resources>
