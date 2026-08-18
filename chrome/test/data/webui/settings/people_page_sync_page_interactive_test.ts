@@ -6,10 +6,10 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrInputElement, SettingsSyncPageElement} from 'chrome://settings/lazy_load.js';
 import {Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
@@ -25,10 +25,9 @@ suite('sync-page-test', function() {
     router.navigateTo(router.getRoutes().SYNC);
     syncPage = document.createElement('settings-sync-page');
     document.body.appendChild(syncPage);
-    flush();
   });
 
-  test('autofocus passphrase input', function() {
+  test('autofocus passphrase input', async function() {
     webUIListenerCallback('sync-status-changed', {
       signedInState: SignedInState.SYNCING,
       disabled: false,
@@ -36,21 +35,20 @@ suite('sync-page-test', function() {
       statusAction: StatusAction.ENTER_PASSPHRASE,
     });
     webUIListenerCallback('sync-prefs-changed', {passphraseRequired: false});
-    flush();
+    await microtasksFinished();
     // Passphrase input is not available when no passphrase is required.
     assertFalse(
-        !!syncPage.shadowRoot!.querySelector('#existingPassphraseInput'));
+        !!syncPage.shadowRoot.querySelector('#existingPassphraseInput'));
 
     webUIListenerCallback('sync-prefs-changed', {passphraseRequired: true});
-    flush();
+    await microtasksFinished();
     // Passphrase input is available and focused when a passphrase is required.
-    assertTrue(
-        !!syncPage.shadowRoot!.querySelector('#existingPassphraseInput'));
+    assertTrue(!!syncPage.shadowRoot.querySelector('#existingPassphraseInput'));
     assertEquals(
-        syncPage.shadowRoot!
+        syncPage.shadowRoot
             .querySelector<CrInputElement>(
                 '#existingPassphraseInput')!.inputElement,
-        syncPage.shadowRoot!.querySelector('#existingPassphraseInput')!
+        syncPage.shadowRoot.querySelector('#existingPassphraseInput')!
             .shadowRoot!.activeElement);
   });
 });
