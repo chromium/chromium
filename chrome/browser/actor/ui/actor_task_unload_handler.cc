@@ -7,9 +7,11 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_close_skip_beforeunload_user_data.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -102,7 +104,11 @@ bool ActorTaskTabCloseConfirmDialog::ShouldSuppressForTesting() {
 // static
 bool ActorTaskTabCloseConfirmDialog::ShouldShow(
     content::WebContents* web_contents) {
-  if (g_suppress_for_testing) {
+  // Do not show the warning dialog during system or browser shutdown, because
+  // the parent browser window (`BrowserView`) is being hidden and destroyed.
+  // Creating a Views dialog without an active main window frame will cause an
+  // orphaned modal popup on the desktop.
+  if (g_suppress_for_testing || browser_shutdown::HasShutdownStarted()) {
     return false;
   }
   if (!base::FeatureList::IsEnabled(features::kGlicConfirmTabClose)) {
@@ -145,6 +151,7 @@ ActorTaskTabCloseConfirmDialog::ShowModalIfActuating(
   raw_delegate->SetOwnershipOfNewWidget(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
+  raw_delegate->SetModalType(::ui::mojom::ModalType::kChild);
   std::unique_ptr<views::Widget> widget =
       constrained_window::ShowWebModalDialogViewsOwned(
           raw_delegate, web_contents,
@@ -181,23 +188,34 @@ ActorTaskTabCloseConfirmDialog::CreateDelegateIfActuating(
     }
   }
 
-  // If the tab is not active in the browser, activate it to show the prompt.
-  if (tab->GetBrowserWindowInterface()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::WeakPtr<tabs::TabInterface> weak_tab) {
-              if (weak_tab && weak_tab->GetBrowserWindowInterface() &&
-                  weak_tab->GetContents()) {
-                TabStripModel* tsm =
-                    weak_tab->GetBrowserWindowInterface()->GetTabStripModel();
-                int idx = tsm->GetIndexOfWebContents(weak_tab->GetContents());
-                if (idx != TabStripModel::kNoTab) {
-                  tsm->ActivateTabAt(idx);
-                }
-              }
-            },
-            tab->GetWeakPtr()));
+  // If the target tab is not currently active, activate it asynchronously so
+  // the modal dialog is properly anchored to the visible tab. Defer via
+  // PostTask because invoking `ActivateTab` synchronously while
+  // `TabStripModel` is executing a tab close command triggers a re-entrancy
+  // check failure inside `TabStripModel`.
+  BrowserWindowInterface* bwi = tab->GetBrowserWindowInterface();
+  if (!bwi || bwi->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return nullptr;
+  }
+  if (TabStripModel* tsm = bwi->GetTabStripModel()) {
+    if (tsm->GetActiveTab() != tab) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(
+                         [](base::WeakPtr<tabs::TabInterface> weak_tab) {
+                           if (!weak_tab) {
+                             return;
+                           }
+                           if (BrowserWindowInterface* bwi =
+                                   weak_tab->GetBrowserWindowInterface()) {
+                             if (TabStripModel* tsm = bwi->GetTabStripModel()) {
+                               if (tsm->GetActiveTab() != weak_tab.get()) {
+                                 tsm->ActivateTab(weak_tab.get());
+                               }
+                             }
+                           }
+                         },
+                         tab->GetWeakPtr()));
+    }
   }
 
   auto stop_task_and_run_callback = base::BindOnce(
@@ -265,19 +283,28 @@ ActorTaskUnloadHandler::ActorTaskUnloadHandler() = default;
 ActorTaskUnloadHandler::~ActorTaskUnloadHandler() = default;
 
 bool ActorTaskUnloadHandler::ShouldSkipBeforeUnload(
-    content::WebContents* contents) {
+    content::WebContents* contents) const {
   return actor::ActorTabCloseSkipBeforeUnloadUserData::FromWebContents(
              contents) != nullptr;
 }
 
 bool ActorTaskUnloadHandler::ShouldShowCustomConfirmation(
-    content::WebContents* contents) {
+    content::WebContents* contents) const {
   return ActorTaskTabCloseConfirmDialog::ShouldShow(contents);
 }
 
 bool ActorTaskUnloadHandler::ShowCustomConfirmation(
     content::WebContents* contents,
     base::OnceCallback<void(bool)> on_closed) {
+  // If a confirmation dialog is already open for an active Actor task tab
+  // (for example, if the user pressed Cmd+W or Cmd+Q repeatedly in rapid
+  // succession), reactivate the existing dialog and keep it pinned at the top
+  // rather than allowing repeated keystrokes to dismiss the prompt.
+  if (active_widget_ && !active_widget_->IsClosed()) {
+    active_widget_->Show();
+    active_widget_->Activate();
+    return true;
+  }
   auto stop_and_create_tag_callback = base::BindOnce(
       [](base::WeakPtr<ActorTaskUnloadHandler> handler,
          base::WeakPtr<content::WebContents> contents,
@@ -288,14 +315,11 @@ bool ActorTaskUnloadHandler::ShowCustomConfirmation(
           actor::ActorTabCloseSkipBeforeUnloadUserData::CreateForWebContents(
               contents.get());
         }
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(
-                           [](base::WeakPtr<ActorTaskUnloadHandler> handler) {
-                             if (handler) {
-                               handler->owned_widget_.reset();
-                             }
-                           },
-                           handler));
+        if (handler && handler->owned_widget_) {
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::DoNothingWithBoundArgs(std::move(handler->owned_widget_)));
+        }
         std::move(on_closed).Run(confirmed);
       },
       weak_factory_.GetWeakPtr(), contents ? contents->GetWeakPtr() : nullptr,
@@ -307,16 +331,10 @@ bool ActorTaskUnloadHandler::ShowCustomConfirmation(
     owned_widget_->MakeCloseSynchronous(base::BindOnce(
         [](base::WeakPtr<ActorTaskUnloadHandler> handler,
            views::Widget::ClosedReason reason) {
-          if (handler) {
+          if (handler && handler->owned_widget_) {
             base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    [](base::WeakPtr<ActorTaskUnloadHandler> handler) {
-                      if (handler) {
-                        handler->owned_widget_.reset();
-                      }
-                    },
-                    handler));
+                FROM_HERE, base::DoNothingWithBoundArgs(
+                               std::move(handler->owned_widget_)));
           }
         },
         weak_factory_.GetWeakPtr()));

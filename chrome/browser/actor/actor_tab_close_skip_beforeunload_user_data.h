@@ -13,14 +13,21 @@ namespace actor {
 // explicitly confirmed they want to close the tab via the confirmation dialog.
 //
 // During single-tab closure, when this tag is present:
-// 1. UnloadController will not query the dialog again.
-// 2. UnloadController will skip dispatching standard JavaScript beforeunload
-//    events ("Leave Site?" dialogs) and proceed directly with closure.
+// 1. UnloadController will not query the confirmation dialog again for this
+// tab.
+// 2. For tabs without JS beforeunload listeners, UnloadController proceeds
+//    directly with tab closure.
 class ActorTabCloseSkipBeforeUnloadUserData
     : public content::WebContentsUserData<
           ActorTabCloseSkipBeforeUnloadUserData> {
  public:
   ~ActorTabCloseSkipBeforeUnloadUserData() override = default;
+
+  static void DeleteForWebContents(content::WebContents* contents) {
+    if (contents) {
+      contents->RemoveUserData(UserDataKey());
+    }
+  }
 
  private:
   explicit ActorTabCloseSkipBeforeUnloadUserData(content::WebContents* contents)

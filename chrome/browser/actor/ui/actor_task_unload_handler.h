@@ -49,7 +49,10 @@ class ActorTaskTabCloseConfirmDialog {
   CreateDelegateIfActuating(content::WebContents* web_contents,
                             CloseCallback callback);
 
-  // Returns true if the dialog should be shown for the given web_contents.
+  // Returns true if the dialog should be shown for the given `web_contents`.
+  // Returns false if `browser_shutdown::HasShutdownStarted()` is true (e.g.
+  // during system teardown) to prevent orphaned modal dialogs on the
+  // desktop.
   static bool ShouldShow(content::WebContents* web_contents);
 
   // Creates the dialog delegate for the given `web_contents`.
@@ -72,8 +75,9 @@ class ActorTaskUnloadHandler : public UnloadController::TabUnloadHandler {
   ActorTaskUnloadHandler();
   ~ActorTaskUnloadHandler() override;
 
-  bool ShouldSkipBeforeUnload(content::WebContents* contents) override;
-  bool ShouldShowCustomConfirmation(content::WebContents* contents) override;
+  bool ShouldSkipBeforeUnload(content::WebContents* contents) const override;
+  bool ShouldShowCustomConfirmation(
+      content::WebContents* contents) const override;
   bool ShowCustomConfirmation(
       content::WebContents* contents,
       base::OnceCallback<void(bool /* confirmed */)> on_closed) override;

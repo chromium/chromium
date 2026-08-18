@@ -11,6 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/cocoa/confirm_quit.h"
@@ -256,7 +257,13 @@ BOOL isKeyDownForKeyCode(unsigned short keyCode) {
     // the next key application, and so on. This is bad, so instead we hide all
     // the windows (without animation) to look like we've "quit" and then wait
     // for the KeyUp event to commit the quit.
-    [self hideAllWindowsWithDuration:0];
+    // Only hide windows if all browsers are immediately closeable. If a tab
+    // requires user confirmation (e.g. beforeunload prompt or an active Actor
+    // task dialog), keep the windows visible so the user can see and interact
+    // with the prompt instead of having all windows vanish.
+    if (chrome::AreAllBrowsersCloseable()) {
+      [self hideAllWindowsWithDuration:0];
+    }
     NSEvent* nextEvent = nil;
     do {
       nextEvent = [self waitForKeyEventUpWithTimeout:kEventQueueWaitTime];
@@ -305,8 +312,12 @@ BOOL isKeyDownForKeyCode(unsigned short keyCode) {
         // At this point, the quit has been confirmed and windows should all
         // fade out to convince the user to release the key combo to finalize
         // the quit.
-        [self hideAllWindowsWithDuration:confirm_quit::kWindowFadeDuration
-                                             .InSecondsF()];
+        // Skip fading if any tab requires user confirmation (e.g. beforeunload
+        // or custom task confirmation prompt) so the prompt remains visible.
+        if (chrome::AreAllBrowsersCloseable()) {
+          [self hideAllWindowsWithDuration:confirm_quit::kWindowFadeDuration
+                                               .InSecondsF()];
+        }
       }
     }
   } while (isKeyDownForKeyCode(event.keyCode));

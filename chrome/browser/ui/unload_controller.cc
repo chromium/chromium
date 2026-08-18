@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/actor/actor_tab_close_skip_beforeunload_user_data.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -257,22 +258,22 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
 }
 
 bool UnloadController::ShouldRunUnloadEventsHelper(
-    content::WebContents* contents) {
-  bool should_show_custom_confirmation = false;
+    content::WebContents* contents) const {
   for (const auto& handler : tab_unload_handlers_) {
     if (handler->ShouldSkipBeforeUnload(contents)) {
       return false;
     }
     if (handler->ShouldShowCustomConfirmation(contents)) {
-      should_show_custom_confirmation = true;
+      return true;
     }
   }
-  // If |contents| is being inspected, devtools needs to intercept beforeunload
-  // events.
-  if (DevToolsWindow::GetInstanceForInspectedWebContents(contents) != nullptr) {
+  // If `contents` is being inspected by Chrome DevTools, DevTools needs to
+  // intercept beforeunload events (e.g. during single tab closes or fast
+  // shutdown evaluation).
+  if (DevToolsWindow::NeedsToInterceptBeforeUnload(contents)) {
     return true;
   }
-  return should_show_custom_confirmation;
+  return false;
 }
 
 bool UnloadController::RunUnloadEventsHelper(content::WebContents* contents) {
@@ -498,9 +499,21 @@ UnloadController::GetTabsNeedingBeforeUnloadFired() const {
   for (int i = 0; i < browser_->tab_strip_model()->count(); ++i) {
     content::WebContents* const contents =
         browser_->tab_strip_model()->GetWebContentsAt(i);
+    // Evaluate tab unload handlers (e.g., `ActorTaskUnloadHandler`) first.
+    // If a handler indicates that beforeunload should be skipped for this tab
+    // (for example, if the user already confirmed tab closure via a custom
+    // task dialog), `should_skip` acts as a veto filter so that standard page
+    // or DevTools beforeunload prompts are not triggered.
+    bool should_skip = false;
+    for (const auto& handler : tab_unload_handlers_) {
+      if (handler->ShouldSkipBeforeUnload(contents)) {
+        should_skip = true;
+        break;
+      }
+    }
     const bool should_fire_beforeunload =
-        contents->NeedToFireBeforeUnloadOrUnloadEvents() ||
-        DevToolsWindow::NeedsToInterceptBeforeUnload(contents);
+        !should_skip && (contents->NeedToFireBeforeUnloadOrUnloadEvents() ||
+                         ShouldRunUnloadEventsHelper(contents));
     // Note that we filter out tabs in `tabs_needing_unload_fired_` as they have
     // already had their BeforeUnload fired (and don't need it fired again
     // unless browser closing gets cancelled).
@@ -522,6 +535,14 @@ void UnloadController::CancelWindowClose() {
     DevToolsWindow::OnPageCloseCanceled(it);
   }
   tabs_needing_unload_fired_.clear();
+
+  for (int i = 0; i < browser_->tab_strip_model()->count(); ++i) {
+    content::WebContents* contents_to_clear =
+        browser_->tab_strip_model()->GetWebContentsAt(i);
+    actor::ActorTabCloseSkipBeforeUnloadUserData::DeleteForWebContents(
+        contents_to_clear);
+  }
+
   if (is_calling_before_unload_handlers()) {
     std::move(on_close_confirmed_).Run(false);
   }
@@ -636,19 +657,24 @@ void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {
     // Null check render_view_host here as this gets called on a PostTask and
     // the tab's render_view_host may have been nulled out.
     if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost()) {
-      // If there's a devtools window attached to |web_contents|,
-      // we would like devtools to call its own beforeunload handlers first,
-      // and then call beforeunload handlers for |web_contents|.
-      // See DevToolsWindow::InterceptPageBeforeUnload for details.
-      if (!DevToolsWindow::InterceptPageBeforeUnload(web_contents)) {
-        // Inform PerformanceManager that the page is closing, so the priority
-        // of its frames is boosted while beforeunload/unload handlers are
-        // running, making page closing faster. This state may be reset in
-        // BeforeUnloadFired() if page closing is aborted.
-        performance_manager::execution_context_priority::SetPageIsClosing(
-            web_contents, /*is_closing=*/true);
+      // Inform PerformanceManager that the page is closing, so the priority
+      // of its frames is boosted while beforeunload/unload handlers are
+      // running, making page closing faster. This state may be reset in
+      // BeforeUnloadFired() if page closing is aborted.
+      performance_manager::execution_context_priority::SetPageIsClosing(
+          web_contents, /*is_closing=*/true);
 
-        web_contents->DispatchBeforeUnload(false /* auto_cancel */);
+      if (!RunUnloadEventsHelper(web_contents)) {
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](base::WeakPtr<UnloadController> controller,
+                   base::WeakPtr<content::WebContents> weak_contents) {
+                  if (controller && weak_contents) {
+                    controller->BeforeUnloadFired(weak_contents.get(), true);
+                  }
+                },
+                weak_factory_.GetWeakPtr(), web_contents->GetWeakPtr()));
       }
     } else {
       ClearUnloadState(web_contents, true);
@@ -709,6 +735,8 @@ bool UnloadController::RemoveFromSet(UnloadListenerSet* set,
 
 void UnloadController::ClearUnloadState(content::WebContents* web_contents,
                                         bool process_now) {
+  actor::ActorTabCloseSkipBeforeUnloadUserData::DeleteForWebContents(
+      web_contents);
   if (is_attempting_to_close_browser_) {
     RemoveFromSet(&tabs_needing_before_unload_fired_, web_contents);
     RemoveFromSet(&tabs_needing_unload_fired_, web_contents);
@@ -733,12 +761,15 @@ void UnloadController::OnCustomConfirmationClosed(
     return;
   }
   if (confirmed) {
+    if (is_attempting_to_close_browser_) {
+      BeforeUnloadFired(web_contents.get(), true);
+      return;
+    }
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](base::WeakPtr<UnloadController> controller,
-               base::WeakPtr<content::WebContents> web_contents) {
-              if (!controller || !web_contents) {
+            [](base::WeakPtr<content::WebContents> web_contents) {
+              if (!web_contents) {
                 return;
               }
               // Retrieve the tab host browser via TabInterface. This works both
@@ -761,7 +792,7 @@ void UnloadController::OnCustomConfirmationClosed(
                 }
               }
             },
-            weak_factory_.GetWeakPtr(), web_contents));
+            web_contents));
   } else {
     BeforeUnloadFired(web_contents.get(), false);
   }
