@@ -195,12 +195,7 @@ public class ListMenuItemViewBinder {
                 }
             }
         } else if (propertyKey == ListMenuItemProperties.TEXT_APPEARANCE_ID) {
-            int textAppearanceId = model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID);
-            if (textAppearanceId == Resources.ID_NULL) {
-                textView.setTextAppearance(R.style.TextAppearance_DensityAdaptive_ListMenuItem);
-            } else {
-                textView.setTextAppearance(textAppearanceId);
-            }
+            textView.setTextAppearance(model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
         } else if (propertyKey == ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END) {
             if (model.get(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END)) {
                 textView.setMaxLines(1);

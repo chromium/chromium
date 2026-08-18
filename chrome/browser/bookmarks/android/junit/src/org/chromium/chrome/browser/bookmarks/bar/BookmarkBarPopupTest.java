@@ -255,35 +255,4 @@ public class BookmarkBarPopupTest {
             UiWidgetFactory.setInstance(originalFactory);
         }
     }
-
-    @Test
-    @SmallTest
-    public void testShow_initializesFlyoutController() {
-        View rootView = new View(mActivity);
-        when(mAnchorView.getRootView()).thenReturn(rootView);
-        when(mAnchorView.getViewTreeObserver()).thenReturn(rootView.getViewTreeObserver());
-
-        mPopup.show(
-                mAnchorView,
-                new ModelList(),
-                /* isIncognito= */ false,
-                /* dismissAllCallback= */ () -> {},
-                /* onDismissListener= */ () -> {},
-                /* touchListener= */ null,
-                /* touchInterceptor= */ null);
-
-        assertNotNull(mPopup.getHierarchicalMenuControllerForTesting());
-        assertNotNull(mPopup.getHierarchicalMenuControllerForTesting().getFlyoutController());
-    }
-
-    @Test
-    @SmallTest
-    public void testFlyoutHandler_getPopupRectAndDismiss() {
-        mPopup.dismissPopup(mAnchoredPopupWindow);
-        verify(mAnchoredPopupWindow).dismiss();
-
-        View contentView = new View(mActivity);
-        when(mAnchoredPopupWindow.getContentView()).thenReturn(contentView);
-        assertNotNull(mPopup.getPopupRect(mAnchoredPopupWindow));
-    }
 }

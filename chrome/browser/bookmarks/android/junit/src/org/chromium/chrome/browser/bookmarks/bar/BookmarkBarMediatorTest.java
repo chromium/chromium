@@ -1213,22 +1213,4 @@ public class BookmarkBarMediatorTest {
 
         assertNull(mBookmarkModel.getBookmarkById(bookmarkId));
     }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.FLYOUT_IN_BOOKMARKS_BAR)
-    public void testEmptyFolder_ShowsEmptyItem() {
-        BookmarkId emptyFolderId =
-                mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Empty Folder");
-        ModelList menuModelList =
-                mMediator.buildMenuModelListForFolder(mBookmarkModel, emptyFolderId);
-        assertEquals(1, menuModelList.size());
-        assertEquals(
-                mActivity.getString(R.string.bookmarks_bar_empty_message),
-                menuModelList.get(0).model.get(ListMenuItemProperties.TITLE));
-        assertEquals(
-                R.style.TextAppearance_TextMedium_Disabled,
-                menuModelList.get(0).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
-        assertTrue(menuModelList.get(0).model.get(ListMenuItemProperties.ENABLED));
-    }
 }

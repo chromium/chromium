@@ -223,11 +223,11 @@ public class BookmarkBarTest {
         // clicked.
         onView(withClassName(endsWith("BookmarkToolbar"))).check(doesNotExist());
 
-        // When the folder is empty, the list should be displayed.
-        onView(withId(R.id.menu_list)).inRoot(isPlatformPopup()).check(matches(isDisplayed()));
+        // When the folder is empty, the list should not be displayed.
+        onView(withId(R.id.menu_list)).inRoot(isPlatformPopup()).check(matches(not(isDisplayed())));
 
-        // The empty message should be displayed.
-        onView(allOf(withText(R.string.bookmarks_bar_empty_message), isDisplayed()))
+        // The empty view should be displayed.
+        onView(withText(R.string.bookmarks_bar_empty_message))
                 .inRoot(isPlatformPopup())
                 .check(matches(isDisplayed()));
     }

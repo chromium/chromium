@@ -32,26 +32,19 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
-import org.chromium.ui.hierarchicalmenu.FlyoutController;
-import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
-import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.ui.widget.ViewRectUpdater;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -59,16 +52,13 @@ import java.util.function.Supplier;
  * displayed on the Bookmarks Bar.
  */
 @NullMarked
-class BookmarkBarPopup implements FlyoutHandler<AnchoredPopupWindow> {
+class BookmarkBarPopup {
     private final Activity mActivity;
     private final Supplier<Pair<Integer, Integer>> mControlsHeightSupplier;
     private final BrowserControlsRectProvider mBrowserControlsRectProvider;
 
     private @Nullable AnchoredPopupWindow mPopupWindow;
     private @Nullable View mContentView;
-    private @Nullable HierarchicalMenuController<AnchoredPopupWindow> mHierarchicalMenuController;
-    private @Nullable View mAnchorView;
-    private boolean mIsIncognito;
     private @Nullable ModelList mModelList;
     private @Nullable ListObserver<Void> mSizeObserver;
     private final int[] mLocation = new int[2];
@@ -165,10 +155,6 @@ class BookmarkBarPopup implements FlyoutHandler<AnchoredPopupWindow> {
             boolean anchorToPoint) {
         dismiss();
 
-        mAnchorView = anchorView;
-        mIsIncognito = isIncognito;
-        mHierarchicalMenuController = ListMenuUtils.createHierarchicalMenuController(mActivity);
-
         Context listContext =
                 isIncognito
                         ? new ContextThemeWrapper(
@@ -185,7 +171,8 @@ class BookmarkBarPopup implements FlyoutHandler<AnchoredPopupWindow> {
                                 clickListener.onClick(view);
                             }
                         });
-        popupListMenu.setupCallbacks(dismissAllCallback, mHierarchicalMenuController);
+        popupListMenu.setupCallbacks(
+                dismissAllCallback, ListMenuUtils.createHierarchicalMenuController(mActivity));
 
         final View contentView =
                 createPopupContentView(popupListMenu.getContentView(), isIncognito);
@@ -279,23 +266,9 @@ class BookmarkBarPopup implements FlyoutHandler<AnchoredPopupWindow> {
 
         configurePopupWindowSize(mPopupWindow, popupListMenu);
         mPopupWindow.show();
-
-        mHierarchicalMenuController.setupFlyoutController(
-                this,
-                mPopupWindow,
-                popupListMenu::addOnScrollListener,
-                /* drillDownOverrideValue= */ ChromeFeatureList.sFlyoutInBookmarksBar.isEnabled()
-                        ? null
-                        : true);
-        mHierarchicalMenuController.setupBackPressBehaviorForPopupWindow(
-                mPopupWindow.getContentView(), this::dismiss);
     }
 
     void dismiss() {
-        if (mHierarchicalMenuController != null
-                && mHierarchicalMenuController.getFlyoutController() != null) {
-            mHierarchicalMenuController.destroyFlyoutController();
-        }
         if (mPopupWindow != null) {
             mPopupWindow.dismiss();
         }
@@ -306,12 +279,6 @@ class BookmarkBarPopup implements FlyoutHandler<AnchoredPopupWindow> {
     }
 
     private void cleanup() {
-        if (mHierarchicalMenuController != null
-                && mHierarchicalMenuController.getFlyoutController() != null) {
-            mHierarchicalMenuController.destroyFlyoutController();
-        }
-        mHierarchicalMenuController = null;
-        mAnchorView = null;
         mPopupWindow = null;
         mContentView = null;
         if (mModelList != null && mSizeObserver != null) {
@@ -319,90 +286,6 @@ class BookmarkBarPopup implements FlyoutHandler<AnchoredPopupWindow> {
             mModelList = null;
             mSizeObserver = null;
         }
-    }
-
-    @Override
-    public Rect getPopupRect(AnchoredPopupWindow popupWindow) {
-        View contentView = popupWindow.getContentView();
-        if (contentView == null) {
-            return new Rect();
-        }
-        return ListMenuUtils.getViewRectRelativeToItsRootView(contentView);
-    }
-
-    @Override
-    public void dismissPopup(AnchoredPopupWindow popupWindow) {
-        popupWindow.dismiss();
-    }
-
-    @Override
-    public void setWindowFocus(AnchoredPopupWindow popupWindow, boolean hasFocus) {
-        ViewGroup contentView = (ViewGroup) popupWindow.getContentView();
-        if (contentView == null) return;
-        HierarchicalMenuController.setWindowFocusForFlyoutMenus(contentView, hasFocus);
-    }
-
-    @Override
-    public AnchoredPopupWindow createAndShowFlyoutPopup(
-            List<ListItem> items,
-            View view,
-            Runnable dismissRunnable,
-            View.OnScrollChangeListener scrollListener) {
-        ModelList modelList = new ModelList();
-        modelList.addAll(items);
-
-        BasicListMenu menu =
-                BrowserUiListMenuUtils.getBasicListMenu(
-                        mActivity,
-                        modelList,
-                        (model, v) -> {
-                            OnClickListener clickListener =
-                                    model.get(ListMenuItemProperties.CLICK_LISTENER);
-                            if (clickListener != null) {
-                                clickListener.onClick(v);
-                            }
-                        });
-        menu.addOnScrollListener(scrollListener);
-
-        View contentView = createPopupContentView(menu.getContentView(), mIsIncognito);
-        setupEmptyView(contentView);
-
-        int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
-        View rootView = mAnchorView != null ? mAnchorView.getRootView() : view.getRootView();
-
-        AnchoredPopupWindow popupMenu =
-                new AnchoredPopupWindow.Builder(
-                                mActivity,
-                                rootView,
-                                new ColorDrawable(Color.TRANSPARENT),
-                                () -> contentView,
-                                new RectProvider(
-                                        FlyoutController.calculateFlyoutAnchorRect(view, rootView)))
-                        .setVerticalOverlapAnchor(true)
-                        .setHorizontalOverlapAnchor(false)
-                        .setMaxWidth(
-                                mActivity
-                                        .getResources()
-                                        .getDimensionPixelSize(
-                                                R.dimen.bookmarks_bar_popup_max_width))
-                        .setFocusable(true)
-                        .setTouchModal(false)
-                        .setAnimateFromAnchor(false)
-                        .setAnimationStyle(R.style.PopupWindowAnimFade)
-                        .setSpecCalculator(
-                                new FlyoutPopupSpecCalculator(
-                                        menu.getContentView().getPaddingTop()))
-                        .setDesiredContentWidth(menu.getMaxItemWidth() + lateralPadding)
-                        .addOnDismissListener(dismissRunnable::run)
-                        .build();
-
-        popupMenu.show();
-        return popupMenu;
-    }
-
-    @Nullable HierarchicalMenuController<AnchoredPopupWindow>
-            getHierarchicalMenuControllerForTesting() {
-        return mHierarchicalMenuController;
     }
 
     boolean isShowing() {

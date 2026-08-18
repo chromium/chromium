@@ -807,9 +807,6 @@ class BookmarkBarMediator
                 modelList.add(createListItemForBookmarkLeaf(childBookmarkItem));
             }
         }
-        if (modelList.isEmpty() && ChromeFeatureList.sFlyoutInBookmarksBar.isEnabled()) {
-            modelList.add(createEmptyFolderListItem());
-        }
         return modelList;
     }
 
@@ -874,9 +871,6 @@ class BookmarkBarMediator
         for (ListItem item : children) {
             childrenList.add(item);
         }
-        if (childrenList.isEmpty()) {
-            childrenList.add(createEmptyFolderListItem());
-        }
 
         View.OnClickListener clickListener = (v) -> handlePopupItemClick(bookmarkItem);
 
@@ -939,25 +933,6 @@ class BookmarkBarMediator
                 ListMenuItemProperties.KEY_LISTENER,
                 createPopupMenuItemKeyListener(model, bookmarkItem));
         return listItem;
-    }
-
-    private ListItem createEmptyFolderListItem() {
-        PropertyModel model =
-                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                        .with(
-                                ListMenuItemProperties.TITLE,
-                                mActivity.getString(R.string.bookmarks_bar_empty_message))
-                        .with(
-                                ListMenuItemProperties.TEXT_APPEARANCE_ID,
-                                R.style.TextAppearance_TextMedium_Disabled)
-                        // Keep enabled for keyboard navigation; disabled visual styling is handled
-                        // by the layout. Keyboard navigation becomes problematic when a submenu
-                        // contains only one item and that item is disabled. Currently the "empty"
-                        // item is the only case when that can happen. TODO(crbug.com/542431476):
-                        // Find a better way to handle disabled items.
-                        .with(ListMenuItemProperties.ENABLED, true)
-                        .build();
-        return new ListItem(ListItemType.MENU_ITEM, model);
     }
 
     // Start of popup event handlers
