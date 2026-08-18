@@ -40,7 +40,6 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/drivefs_search_query.h"
@@ -652,6 +651,7 @@ DriveIntegrationService::DriveIntegrationService(
     const base::FilePath& test_cache_root,
     DriveFsMojoListenerFactory test_drivefs_mojo_listener_factory)
     : profile_(profile),
+      identity_manager_(CHECK_DEREF(identity_manager)),
       mount_point_name_(test_mount_point_name),
       cache_root_directory_(!test_cache_root.empty()
                                 ? test_cache_root
@@ -1618,14 +1618,12 @@ void DriveIntegrationService::ImmediatelyUpload(
 void DriveIntegrationService::GetReadOnlyAuthenticationToken(
     GetReadOnlyAuthenticationTokenCallback callback) {
   if (!auth_service_) {
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_);
     // This class doesn't care about browser sync consent.
     const CoreAccountId& account_id =
-        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+        identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
     auth_service_ = std::make_unique<google_apis::AuthService>(
-        identity_manager, account_id, profile_->GetURLLoaderFactory(),
+        &identity_manager_.get(), account_id, profile_->GetURLLoaderFactory(),
         signin::OAuthConsumerId::kAshDriveIntegration);
   }
 
