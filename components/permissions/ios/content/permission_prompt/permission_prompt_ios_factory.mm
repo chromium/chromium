@@ -14,4 +14,13 @@ std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
   return PermissionDialog::Create(web_contents, delegate);
 }
 
+EmbeddedPermissionPromptFlowModel*
+PermissionPrompt::Delegate::GetEmbeddedPromptFlowModel() const {
+  return nullptr;
+}
+
+void PermissionPrompt::Delegate::CalculateCurrentVariantForEmbeddedPrompt() {}
+
+void PermissionPrompt::Delegate::AdvanceOrFinalizeEmbeddedPromptFlow() {}
+
 }  // namespace permissions
