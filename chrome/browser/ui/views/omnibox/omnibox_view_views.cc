@@ -395,9 +395,22 @@ void OmniboxViewViews::InstallPlaceholderText() {
   omnibox::ComputePlaceholderText(location_bar_view_, placeholder_text,
                                   maybe_a11y_placeholder_text);
   SetPlaceholderText(placeholder_text);
-  if (maybe_a11y_placeholder_text.has_value()) {
-    GetViewAccessibility().SetPlaceholder(
-        base::UTF16ToUTF8(*maybe_a11y_placeholder_text));
+  const std::u16string a11y_text =
+      maybe_a11y_placeholder_text.value_or(placeholder_text);
+  const bool is_focused =
+      controller()->edit_model()->has_focus() || HasFocus();
+
+  if (is_focused) {
+    if (!a11y_text.empty()) {
+      GetViewAccessibility().SetPlaceholder(l10n_util::GetStringFUTF8(
+          IDS_CONCAT_TWO_STRINGS_WITH_PERIODS, a11y_text,
+          l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_AUTOCOMPLETE_PLACEHOLDER)));
+    } else {
+      GetViewAccessibility().SetPlaceholder(
+          l10n_util::GetStringUTF8(IDS_ACC_OMNIBOX_AUTOCOMPLETE_PLACEHOLDER));
+    }
+  } else {
+    GetViewAccessibility().SetPlaceholder(base::UTF16ToUTF8(a11y_text));
   }
 
   UpdatePlaceholderTextColor();
@@ -1712,6 +1725,7 @@ void OmniboxViewViews::OnBlur() {
   }
 
   ClearAccessibilityLabel();
+  InstallPlaceholderText();
 }
 
 bool OmniboxViewViews::SupportsEmoji() const {

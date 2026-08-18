@@ -4,6 +4,10 @@
        referencing .grdp file or translation console pipeline breaks. -->
   <part file="omnibox_pedal_ui_strings.grdp" />
 
+  <message name="IDS_ACC_OMNIBOX_AUTOCOMPLETE_PLACEHOLDER" desc="Accessibility announcement to inform users that there are suggestions to arrow through.">
+    Press up or down arrow for auto completions. Type to autocomplete.
+  </message>
+
   <!-- Omnibox popup match descriptions. -->
   <message name="IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION" desc="Description for the default search match.">
     <ph name="ENGINE">$1<ex>Google</ex></ph> Search
