@@ -176,7 +176,14 @@ version = "0.6.0"
 default-features = false
 features = ["flac", "mpa", "pcm", "vorbis", "opt-simd"]
 
+# TODO(https://crbug.com/540235303): Remove direct dependency on syn-v2 after
+# migrating Crubit, WebRTC, and other third-party libraries to syn-v3.
 [dependencies.syn]
+version = "3"
+features = ["full"]
+
+[dependencies.syn_v2]
+package = "syn"
 version = "2"
 features = ["full"]
 
