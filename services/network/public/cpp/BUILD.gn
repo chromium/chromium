@@ -426,11 +426,8 @@ component("flags_and_switches") {
   defines = [ "IS_NETWORK_CPP_FLAGS_AND_SWITCHES_IMPL" ]
 }
 
-component("is_potentially_trustworthy") {
-  sources = [
-    "is_potentially_trustworthy.cc",
-    "is_potentially_trustworthy.h",
-  ]
+source_set("is_potentially_trustworthy") {
+  sources = [ "is_potentially_trustworthy.h" ]
   public_deps = [
     ":flags_and_switches",
     "//base",
