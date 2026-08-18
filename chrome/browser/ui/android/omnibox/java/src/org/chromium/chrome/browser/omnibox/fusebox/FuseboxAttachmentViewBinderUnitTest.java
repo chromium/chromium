@@ -61,7 +61,6 @@ public class FuseboxAttachmentViewBinderUnitTest {
         mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
         Activity activity = mActivityController.get();
         mModel = new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS);
-        mModel.set(FuseboxAttachmentProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
         mView =
                 LayoutInflater.from(activity)
                         .inflate(R.layout.fusebox_attachment_layout, /* root= */ null);
