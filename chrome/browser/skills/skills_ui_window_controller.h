@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
@@ -31,6 +32,10 @@ class SkillsUiWindowController {
 
   static SkillsUiWindowController* From(
       BrowserWindowInterface* browser_window_interface);
+
+  // Closes any open skills dialogs and reloads all open chrome://skills pages
+  // across tabs in this window.
+  void CloseDialogsAndReloadSkillsPages();
 
   // Called when we want to update UI after a skill has been saved.
   void OnSkillSaved(std::string_view skill_id, bool hide_toast_button = false);
@@ -71,6 +76,8 @@ class SkillsUiWindowController {
   std::string last_saved_skill_icon_;
   std::string last_deleted_skill_id_;
   std::set<std::string> pending_deletions_;
+
+  PrefChangeRegistrar pref_registrar_;
 
   // Tracks whether the user clicked the action button (e.g., "Undo") on the
   // active toast.

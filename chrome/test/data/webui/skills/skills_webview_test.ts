@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {ErrorType} from 'chrome://skills/error_page.js';
 import {SkillsDialogType} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillsWebview} from 'chrome://skills/v2/skills_webview.js';
 import {IS_SAVING_GEMINI_QUERY_PARAMETER, SkillSource, SOURCE_QUERY_PARAMETER} from 'chrome://skills/v2/skills_webview_bridge_constants.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 class TestSkillsWebview extends SkillsWebview {
   getRemoteUrlForTesting(): string {
@@ -101,5 +102,28 @@ suite('SkillsWebviewTest', () => {
     const webviewApp = new TestSkillsWebview();
     const url = new URL(webviewApp.getRemoteUrlForTesting());
     assertEquals(null, url.searchParams.get('hl'));
+  });
+
+  test('SkillsWebview_Disabled_ShowsErrorPage', async () => {
+    loadTimeData.overrideValues({
+      devMode: true,
+      isSkillsWebViewV2Enabled: true,
+      isSkillsEnabled: false,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const webview = document.createElement('webview');
+    webview.id = 'webview';
+    const errorPage = document.createElement('error-page');
+    errorPage.id = 'error-page';
+    errorPage.setAttribute('hidden', '');
+    document.body.appendChild(webview);
+    document.body.appendChild(errorPage);
+
+    const webviewApp = new SkillsWebview();
+    await webviewApp.init();
+
+    assertFalse(errorPage.hasAttribute('hidden'));
+    assertEquals(ErrorType.SKILLS_DISABLED, errorPage.errorType);
+    assertEquals('true', webview.getAttribute('hidden'));
   });
 });

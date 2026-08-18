@@ -93,7 +93,7 @@ class SkillsUiTabController : public SkillsUiTabControllerInterface,
   }
 
   // Returns true if the skills dialog is currently being shown.
-  bool IsShowing() const;
+  bool IsShowing() const override;
 
  protected:
   // Helper to retrieve a skill by ID.

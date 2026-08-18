@@ -75,8 +75,6 @@ void AddSkillsV1Resources(content::WebUIDataSource* source, Profile* profile) {
   source->AddResourcePath("dialog", IDR_SKILLS_SKILLS_DIALOG_HTML);
   source->AddBoolean("isGlicEnabled",
                      glic::GlicEnabling::IsReadyForProfile(profile));
-  source->AddBoolean("isSkillsEnabled",
-                     SkillsServiceFactory::IsSkillsEnabledForProfile(profile));
   source->AddInteger("MAX_NAME_CHAR_COUNT", kMaxNameCharCount);
   source->AddInteger("MAX_PROMPT_CHAR_COUNT", kMaxPromptCharCount);
   source->AddBoolean("isRefinementEnabled",
@@ -173,6 +171,8 @@ SkillsUI::SkillsUI(content::WebUI* web_ui)
   source->AddBoolean(
       "isSkillsWebViewV2Enabled",
       base::FeatureList::IsEnabled(features::kSkillsWebViewV2Enabled));
+  source->AddBoolean("isSkillsEnabled",
+                     SkillsServiceFactory::IsSkillsEnabledForProfile(profile));
 
   std::string application_locale = g_browser_process->GetApplicationLocale();
   std::string google_locale = google_util::GetGoogleLocale(application_locale);
