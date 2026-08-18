@@ -27135,7 +27135,6 @@
     "WebUIReloadButtonStudy": [
         {
             "platforms": [
-                "chromeos",
                 "linux",
                 "mac",
                 "windows"
