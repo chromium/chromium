@@ -2000,5 +2000,72 @@ TEST(PNGTests, PlteAfterInitialImageData) {
   std::ignore = decoder->DecodeFrameBufferAtIndex(0);
 }
 
+// An Adam7-interlaced PNG that has only been partially received should still
+// paint every pixel of the image - the pixels that have not been decoded yet
+// are approximated from the closest already-decoded Adam7 sample.  Otherwise
+// the partially decoded image is mostly transparent and therefore invisible.
+TEST(PNGTests, InterlacedPartialDecodeHasNoTransparentGaps) {
+  Vector<char> full_data =
+      ReadFile(kDecodersTestingDir, "interlaced-progressive.png");
+  ASSERT_FALSE(full_data.empty());
+
+  // Enough bytes to cover the first Adam7 pass (which samples every 8th pixel
+  // of every 8th row), but far from the whole image.
+  constexpr size_t kPartialSize = 3000u;
+  ASSERT_LT(kPartialSize, full_data.size());
+
+  auto decoder = CreatePNGDecoder();
+  decoder->SetData(
+      SharedBuffer::Create(base::span(full_data).first(kPartialSize)).get(),
+      /*all_data_received=*/false);
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFramePartial);
+
+  const SkBitmap& bitmap = frame->Bitmap();
+  ASSERT_EQ(bitmap.width(), 128);
+  ASSERT_EQ(bitmap.height(), 128);
+
+  int transparent_pixels = 0;
+  for (int y = 0; y < bitmap.height(); ++y) {
+    for (int x = 0; x < bitmap.width(); ++x) {
+      if (SkColorGetA(bitmap.getColor(x, y)) == 0) {
+        ++transparent_pixels;
+      }
+    }
+  }
+  EXPECT_EQ(transparent_pixels, 0);
+}
+
+// Once all data is available an interlaced image has to decode to exactly the
+// same pixels as its non-interlaced counterpart, regardless of how the
+// intermediate passes are painted.
+TEST(PNGTests, InterlacedFullDecodeMatchesNonInterlaced) {
+  auto interlaced = CreatePNGDecoder();
+  interlaced->SetData(
+      ReadFileToSharedBuffer(kDecodersTestingDir, "interlaced-progressive.png")
+          .get(),
+      /*all_data_received=*/true);
+  ImageFrame* interlaced_frame = interlaced->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(interlaced_frame);
+  ASSERT_EQ(interlaced_frame->GetStatus(), ImageFrame::kFrameComplete);
+
+  auto non_interlaced = CreatePNGDecoder();
+  non_interlaced->SetData(
+      ReadFileToSharedBuffer(kDecodersTestingDir,
+                             "non-interlaced-progressive.png")
+          .get(),
+      /*all_data_received=*/true);
+  ImageFrame* non_interlaced_frame =
+      non_interlaced->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(non_interlaced_frame);
+  ASSERT_EQ(non_interlaced_frame->GetStatus(), ImageFrame::kFrameComplete);
+
+  EXPECT_EQ(HashBitmap(interlaced_frame->Bitmap()),
+            HashBitmap(non_interlaced_frame->Bitmap()));
+}
+
 }  // namespace
 }  // namespace blink

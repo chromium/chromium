@@ -803,8 +803,10 @@ image-decoders/testing/first-frame-has-greater-size-than-screen-size.gif
 image-decoders/testing/green-exif-ifd-last.jpg
 image-decoders/testing/incomplete-prev-frame-reusing-clusterfuzz-repro.gif
 image-decoders/testing/interlaced-multiframe-with-blending.png
+image-decoders/testing/interlaced-progressive.png
 image-decoders/testing/invalid-disposal-method.gif
 image-decoders/testing/many-progressive-scans.jpg
+image-decoders/testing/non-interlaced-progressive.png
 image-decoders/testing/plte-weirdness.png
 image-decoders/testing/private-critical-chunk-before-ihdr.png
 image-decoders/testing/radient-bad-terminator.gif
