@@ -428,6 +428,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                   WindowOpenDisposition) {
                 link_contents = contents;
                 clicked_index = index;
+                return false;
               }))
           .SetScope(InfoBarScope::kTab)
           .Build();

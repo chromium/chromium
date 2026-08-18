@@ -137,10 +137,13 @@ TEST_F(InfoBarSpecTest, BuildSpecWithTemplateAndSubstitutions) {
   });
 
   bool link_clicked = false;
-  auto link_cb =
-      base::BindRepeating([](bool* clicked, content::WebContents*, size_t index,
-                             WindowOpenDisposition) { *clicked = true; },
-                          &link_clicked);
+  auto link_cb = base::BindRepeating(
+      [](bool* clicked, content::WebContents*, size_t index,
+         WindowOpenDisposition) {
+        *clicked = true;
+        return true;
+      },
+      &link_clicked);
 
   InfoBarSpec spec = InfoBarSpec::Builder(InfoBarDelegate::TEST_INFOBAR)
                          .SetMessageTextTemplate(u"Open $1 to continue")
@@ -157,8 +160,8 @@ TEST_F(InfoBarSpecTest, BuildSpecWithTemplateAndSubstitutions) {
   EXPECT_TRUE(substitutions[0].is_link);
 
   ASSERT_FALSE(spec.inline_link_callback().is_null());
-  spec.inline_link_callback().Run(nullptr, 0,
-                                  WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(spec.inline_link_callback().Run(
+      nullptr, 0, WindowOpenDisposition::CURRENT_TAB));
   EXPECT_TRUE(link_clicked);
 }
 

@@ -56,8 +56,10 @@ class InfoBarSpec {
   using SubstitutionsCallback =
       base::RepeatingCallback<std::vector<MessageSubstitution>(
           content::WebContents*)>;
+  // Called with the substitution index when an inline link is clicked.
+  // Returns true to close the infobar.
   using InlineLinkCallback = base::RepeatingCallback<
-      void(content::WebContents*, size_t, WindowOpenDisposition)>;
+      bool(content::WebContents*, size_t, WindowOpenDisposition)>;
   // Reports the terminal outcome. The WebContents may already be gone by
   // then, in which case it is null.
   using ResultCallback =

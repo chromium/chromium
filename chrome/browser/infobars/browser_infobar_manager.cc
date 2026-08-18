@@ -165,7 +165,8 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
     base::UmaHistogramSparse("InfoBar.Centralized.LinkClicked",
                              GetIdentifier());
     if (spec_.inline_link_callback()) {
-      spec_.inline_link_callback().Run(web_contents(), index, disposition);
+      return spec_.inline_link_callback().Run(web_contents(), index,
+                                              disposition);
     }
     return false;
   }
