@@ -44,7 +44,6 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -292,11 +291,6 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   // Preview password on show in generation state.
   if (state_ == kOfferGeneration) {
     driver_->PreviewGenerationSuggestion(current_generated_password_);
-
-    // For the screen reader users, move the focus to the accept button on show.
-    if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
-      SelectElement(PasswordGenerationPopupElement::kAcceptButton);
-    }
   }
 
   if (observer_) {
@@ -317,13 +311,6 @@ void PasswordGenerationPopupControllerImpl::FrameWasScrolled() {
 }
 
 void PasswordGenerationPopupControllerImpl::GenerationElementLostFocus() {
-  // Popup's widget will only be activated in generation state with an active
-  // screen reader, resulting in the focus moving to the popup. Prevent hiding
-  // the popup here.
-  if (view_->IsWidgetActive()) {
-    return;
-  }
-
   HideImpl();
 }
 
