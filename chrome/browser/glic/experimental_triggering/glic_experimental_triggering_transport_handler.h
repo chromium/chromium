@@ -8,13 +8,14 @@
 #include <memory>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_handler.h"
 #include "components/browser_actuator/public/transport_handler_factory.h"
-#include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
+
+class Profile;
 
 namespace browser_actuator {
 class TransportSession;
@@ -22,16 +23,17 @@ class TransportSession;
 
 namespace glic {
 
-class GlicExperimentalOptInController;
+class GlicExperimentalTriggeringCoordinator;
 
-// TransportHandler for handling GlicExperimentalTriggering messages and opt-in
-// requests.
+// TransportHandler for handling GlicExperimentalTriggering messages and
+// coordinating requests over a BrowserActuator TransportSession.
 class GlicExperimentalTriggeringTransportHandler
     : public browser_actuator::TransportHandler {
  public:
   GlicExperimentalTriggeringTransportHandler(
-      GlicExperimentalOptInController* opt_in_controller,
-      browser_actuator::TransportSession* session);
+      Profile* profile,
+      browser_actuator::TransportSession* session,
+      std::unique_ptr<GlicExperimentalTriggeringCoordinator> coordinator);
   ~GlicExperimentalTriggeringTransportHandler() override;
 
   GlicExperimentalTriggeringTransportHandler(
@@ -42,22 +44,12 @@ class GlicExperimentalTriggeringTransportHandler
   // browser_actuator::TransportHandler implementation:
   void OnMessage(const google::protobuf::MessageLite& message) override;
 
-  // Handles opt-in request directly from sharing message or other callers.
-  void HandleOptInRequest(
-      const components_sharing_message::GlicExperimentalTriggering& triggering);
-
  private:
-  void OnOptInCompleted(
-      const components_sharing_message::GlicExperimentalTriggering& request,
-      bool accepted);
+  void SendResponse(ExperimentalTriggeringResponse response);
 
-  void SendOptInResponse(
-      const components_sharing_message::GlicExperimentalTriggering& request,
-      components_sharing_message::GlicExperimentalTriggering::
-          ExperimentalTriggeringResponse::DeviceOptInResult result);
-
-  const raw_ptr<GlicExperimentalOptInController> opt_in_controller_ = nullptr;
+  const raw_ptr<Profile> profile_;
   const raw_ptr<browser_actuator::TransportSession> session_;
+  std::unique_ptr<GlicExperimentalTriggeringCoordinator> coordinator_;
   base::WeakPtrFactory<GlicExperimentalTriggeringTransportHandler>
       weak_ptr_factory_{this};
 };
@@ -65,8 +57,7 @@ class GlicExperimentalTriggeringTransportHandler
 class GlicExperimentalTriggeringTransportHandlerFactory
     : public browser_actuator::TransportHandlerFactory {
  public:
-  explicit GlicExperimentalTriggeringTransportHandlerFactory(
-      GlicExperimentalOptInController* opt_in_controller);
+  explicit GlicExperimentalTriggeringTransportHandlerFactory(Profile* profile);
   ~GlicExperimentalTriggeringTransportHandlerFactory() override;
 
   GlicExperimentalTriggeringTransportHandlerFactory(
@@ -82,7 +73,7 @@ class GlicExperimentalTriggeringTransportHandlerFactory
       browser_actuator::TransportSession* session) override;
 
  private:
-  const raw_ptr<GlicExperimentalOptInController> opt_in_controller_ = nullptr;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace glic

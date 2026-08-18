@@ -225,7 +225,7 @@ GlicKeyedService::GlicKeyedService(
     if (actuator_service && actuator_service->GetChannel()) {
       experimental_triggering_transport_handler_factory_ =
           std::make_unique<GlicExperimentalTriggeringTransportHandlerFactory>(
-              &opt_in_controller());
+              profile_);
       actuator_service->GetChannel()
           ->GetHandlerFactoryRegistry()
           ->RegisterFactory(

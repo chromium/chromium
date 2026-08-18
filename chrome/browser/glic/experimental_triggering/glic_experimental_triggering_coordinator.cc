@@ -20,6 +20,8 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
+#include "chrome/browser/glic/experimental_triggering/actor_log.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_converters.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -49,6 +51,25 @@
 namespace glic {
 
 namespace {
+
+std::optional<TaskMetadata> ExtractRequestTaskMetadata(
+    const components_sharing_message::GlicExperimentalTriggering& proto) {
+  if (!proto.has_task_metadata()) {
+    return std::nullopt;
+  }
+  const auto& proto_meta = proto.task_metadata();
+  TaskMetadata meta;
+  if (proto_meta.has_conversation_id()) {
+    meta.conversation_id = proto_meta.conversation_id();
+  }
+  if (proto_meta.has_task_id()) {
+    meta.task_id = proto_meta.task_id();
+  }
+  if (proto_meta.has_sender_sequence_number()) {
+    meta.sender_sequence_number = proto_meta.sender_sequence_number();
+  }
+  return meta;
+}
 
 GlicInvokeOptions CreateInvokeOptions(
     const ExperimentalTriggeringRequest& request,
@@ -842,6 +863,57 @@ tabs::TabInterface* GlicExperimentalTriggeringCoordinator::GetActiveTab()
     const {
   BrowserWindowInterface* browser = GetBrowserWindow();
   return browser ? TabListInterface::From(browser)->GetActiveTab() : nullptr;
+}
+
+std::optional<ExperimentalTriggeringResponse>
+GlicExperimentalTriggeringCoordinator::OnProtoMessage(
+    const std::string& context_id,
+    const components_sharing_message::GlicExperimentalTriggering& proto,
+    ScopedIncomingMessageResultLogger result_logger,
+    GlicExperimentalTriggeringUpdateCallback update_callback,
+    tabs::TabInterface* prepared_tab) {
+  actor::ActorKeyedService* actor_service =
+      actor::ActorKeyedService::Get(profile_);
+  LogGlicExperimentalTriggeringProto(
+      actor_service, "GlicExperimentalTriggering", context_id, proto);
+
+  auto request_metadata = ExtractRequestTaskMetadata(proto);
+  const TaskMetadata* request_metadata_ptr =
+      request_metadata.has_value() ? &*request_metadata : nullptr;
+
+  GlicKeyedService* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, /*create=*/false);
+  auto local_version =
+      glic_service ? glic_service->enabling().GetExperimentalTriggeringVersion()
+                   : std::nullopt;
+  if (proto.has_glic_experimental_triggering_version() &&
+      (!local_version.has_value() ||
+       proto.glic_experimental_triggering_version() > *local_version)) {
+    result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
+                                 kVersionMismatchOrUnavailable);
+    return CreateResponseMessage(context_id, TaskUpdate::State::kFailed,
+                                 TaskUpdate::DataType::kErrorMessage,
+                                 "Rejected: version mismatch or unavailable.",
+                                 request_metadata_ptr,
+                                 /*sender_sequence_number=*/0);
+  }
+
+  if (!proto.has_request() && !proto.has_task_metadata_updated()) {
+    result_logger.set_result(
+        GlicExperimentalTriggeringIncomingMessageResult::kMissingPayload);
+    return CreateResponseMessage(
+        context_id, TaskUpdate::State::kFailed,
+        TaskUpdate::DataType::kErrorMessage,
+        "Received GlicExperimentalTriggering message with no request payload.",
+        request_metadata_ptr,
+        /*sender_sequence_number=*/0);
+  }
+
+  ExperimentalTriggeringRequest domain_request = ProtoToRequest(proto);
+  domain_request.context_id = context_id;
+
+  return OnRequest(context_id, domain_request, std::move(result_logger),
+                   std::move(update_callback), prepared_tab);
 }
 
 std::optional<ExperimentalTriggeringResponse>

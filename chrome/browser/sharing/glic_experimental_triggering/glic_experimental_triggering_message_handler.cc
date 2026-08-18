@@ -320,24 +320,10 @@ void GlicExperimentalTriggeringMessageHandler::ProcessValidatedMessage(
   const auto& request = message.glic_experimental_triggering();
   CHECK(!context_id.empty());
 
-  if (profile_) {
-    actor::ActorKeyedService* actor_service =
-        actor::ActorKeyedService::Get(profile_);
-    glic::LogGlicExperimentalTriggeringProto(
-        actor_service, "GlicExperimentalTriggering", context_id, request);
-  }
-
-  glic::ExperimentalTriggeringRequest domain_request =
-      glic::ProtoToRequest(request);
-  domain_request.context_id = context_id;
-
-  glic::GlicExperimentalTriggeringUpdateCallback update_callback =
-      GetUpdateCallback(message);
-
   std::optional<glic::ExperimentalTriggeringResponse> domain_response =
-      coordinator_->OnRequest(context_id, domain_request,
-                              std::move(result_logger),
-                              std::move(update_callback), prepared_tab);
+      coordinator_->OnProtoMessage(context_id, request,
+                                   std::move(result_logger),
+                                   GetUpdateCallback(message), prepared_tab);
 
   if (domain_response.has_value()) {
     std::move(done_callback)

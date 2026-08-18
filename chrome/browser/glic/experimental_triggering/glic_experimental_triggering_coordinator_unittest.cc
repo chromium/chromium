@@ -40,6 +40,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
+#include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -485,6 +486,71 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   EXPECT_EQ(result2.task_metadata->last_seen_sequence_number, 43);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       OnProtoMessage_MissingPayload) {
+  components_sharing_message::GlicExperimentalTriggering proto;
+  proto.set_context_id(kTestContextId);
+  proto.mutable_task_metadata()->set_conversation_id("conv_123");
+  proto.mutable_task_metadata()->set_task_id("task_456");
+  proto.mutable_task_metadata()->set_sender_sequence_number(42);
+
+  base::HistogramTester histogram_tester;
+  auto response = coordinator_->OnProtoMessage(
+      kTestContextId, proto,
+      ScopedIncomingMessageResultLogger(ScopedIncomingMessageResultLogger::
+                                            Channel::kBrowserActuatorTransport),
+      base::DoNothing(), nullptr);
+
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(
+      response->task_update->data,
+      "Received GlicExperimentalTriggering message with no request payload.");
+  ASSERT_TRUE(response->task_metadata.has_value());
+  EXPECT_EQ(response->task_metadata->conversation_id, "conv_123");
+  EXPECT_EQ(response->task_metadata->task_id, "task_456");
+  EXPECT_EQ(response->task_metadata->last_seen_sequence_number, 42);
+  EXPECT_EQ(response->task_metadata->sender_sequence_number, 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::kMissingPayload, 1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorTest,
+       OnProtoMessage_VersionMismatch) {
+  components_sharing_message::GlicExperimentalTriggering proto;
+  proto.set_context_id(kTestContextId);
+  proto.mutable_task_metadata()->set_sender_sequence_number(42);
+  proto.set_glic_experimental_triggering_version(9999);
+  proto.mutable_request()->mutable_device_opt_in_request();
+
+  base::HistogramTester histogram_tester;
+  auto response = coordinator_->OnProtoMessage(
+      kTestContextId, proto,
+      ScopedIncomingMessageResultLogger(ScopedIncomingMessageResultLogger::
+                                            Channel::kBrowserActuatorTransport),
+      base::DoNothing(), nullptr);
+
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(response->task_update->data,
+            "Rejected: version mismatch or unavailable.");
+  ASSERT_TRUE(response->task_metadata.has_value());
+  EXPECT_EQ(response->task_metadata->last_seen_sequence_number, 42);
+  EXPECT_EQ(response->task_metadata->sender_sequence_number, 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::
+          kVersionMismatchOrUnavailable,
+      1);
+}
 
 class GlicExperimentalTriggeringCoordinatorWithTabTest
     : public GlicExperimentalTriggeringCoordinatorTest {
