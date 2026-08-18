@@ -2104,11 +2104,6 @@ interface TrustedHTML
     method constructor
     method toJSON
     method toString
-interface TrustedParserOptions
-    attribute @@toStringTag
-    getter runScripts
-    method constructor
-    method sanitizer
 interface TrustedScript
     static method fromLiteral
     attribute @@toStringTag

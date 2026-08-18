@@ -2327,11 +2327,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method toJSON
 [Worker]     method toString
-[Worker] interface TrustedParserOptions
-[Worker]     attribute @@toStringTag
-[Worker]     getter runScripts
-[Worker]     method constructor
-[Worker]     method sanitizer
 [Worker] interface TrustedScript
 [Worker]     static method fromLiteral
 [Worker]     attribute @@toStringTag
