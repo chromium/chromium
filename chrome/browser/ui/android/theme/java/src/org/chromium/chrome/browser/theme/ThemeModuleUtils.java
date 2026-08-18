@@ -14,11 +14,14 @@ public final class ThemeModuleUtils {
 
     /** Returns whether theme module is enabled. */
     public static boolean isEnabled() {
-        return ChromeFeatureList.sAndroidThemeModule.isEnabled();
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_THEME_MODULE);
     }
 
     /** Returns whether enable all the dependency features. */
     public static boolean isForceEnableDependencies() {
-        return isEnabled() && ChromeFeatureList.sAndroidThemeModuleForceDependencies.getValue();
+        return isEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.ANDROID_THEME_MODULE,
+                        ChromeFeatureList.ANDROID_THEME_MODULE_FORCE_DEPENDENCIES);
     }
 }

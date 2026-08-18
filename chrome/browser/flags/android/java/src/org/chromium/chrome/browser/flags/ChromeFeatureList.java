@@ -873,11 +873,14 @@ public abstract class ChromeFeatureList {
      * fieldtrial_testing_config.json.
      */
     static final @Nullable Map<String, Boolean> sFlagsDefaultValuesInTests =
-            !BuildConfig.IS_FOR_TEST ? null : Map.ofEntries();
+            !BuildConfig.IS_FOR_TEST
+                    ? null
+                    : Map.ofEntries(
+                            Map.entry(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, true),
+                            Map.entry(ANDROID_THEME_MODULE, true),
+                            Map.entry(ANDROID_THEME_RESOURCE_PROVIDER, false));
 
     // keep-sorted start group_prefixes=["public static final CachedFlag"]
-    public static final CachedFlag sAccountForSuppressedKeyboardInsets =
-            newCachedFlag(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, /* defaultValue= */ true);
     public static final CachedFlag sAccountPickerDialog =
             newCachedFlag(
                     ACCOUNT_PICKER_DIALOG,
@@ -955,9 +958,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
     public static final CachedFlag sAndroidTabstripStartupCaptureBugFix =
             newCachedFlag(ANDROID_TABSTRIP_STARTUP_CAPTURE_BUG_FIX, true, true);
-    public static final CachedFlag sAndroidThemeModule = newCachedFlag(ANDROID_THEME_MODULE, true);
-    public static final CachedFlag sAndroidThemeResourceProvider =
-            newCachedFlag(ANDROID_THEME_RESOURCE_PROVIDER, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidVerticalTabs =
             newCachedFlag(
                     ANDROID_VERTICAL_TABS,
@@ -1435,7 +1435,6 @@ public abstract class ChromeFeatureList {
     public static final List<CachedFlag> sFlagsCachedFullBrowser =
             List.of(
                     // keep-sorted start
-                    sAccountForSuppressedKeyboardInsets,
                     sAccountPickerDialog,
                     sAllocInstanceIdIncreasedDefaultRange,
                     sAndroidAnimatedProgressBarInBrowser,
@@ -1468,8 +1467,6 @@ public abstract class ChromeFeatureList {
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAndroidTabSkipSaveTabsKillswitch,
                     sAndroidTabstripStartupCaptureBugFix,
-                    sAndroidThemeModule,
-                    sAndroidThemeResourceProvider,
                     sAndroidVerticalTabs,
                     sAndroidWindowManagementWebApi,
                     sAndroidXrImmersivePlayer,
@@ -1774,6 +1771,9 @@ public abstract class ChromeFeatureList {
     public static final String
             ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER_JUMP_TO_COMPLETION_WITH_FADE =
                     "jump_to_completion_with_fade";
+    public static final String ANDROID_THEME_MODULE_FORCE_DEPENDENCIES =
+            "force_theme_module_dependencies";
+    public static final String ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT = "force_light_theme";
 
     // keep-sorted end
 
@@ -1784,7 +1784,14 @@ public abstract class ChromeFeatureList {
      * parameter does not exist in the field trial. It should be in sync with the native param's
      * default value, if there is a corresponding native param.
      */
-    static final Map<String, Map<String, String>> sParamsDefaultValues = Map.ofEntries();
+    static final Map<String, Map<String, String>> sParamsDefaultValues =
+            Map.ofEntries(
+                    Map.entry(
+                            ANDROID_THEME_MODULE,
+                            Map.of(ANDROID_THEME_MODULE_FORCE_DEPENDENCIES, "false")),
+                    Map.entry(
+                            ANDROID_THEME_RESOURCE_PROVIDER,
+                            Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")));
 
     /**
      * This map contains each parameter's default value in tests. This is what gets returned when
@@ -1792,7 +1799,15 @@ public abstract class ChromeFeatureList {
      * String)} in test builds. It should be in sync with the fieldtrial_testing_config.json.
      */
     static final @Nullable Map<String, Map<String, String>> sParamsDefaultValuesInTests =
-            !BuildConfig.IS_FOR_TEST ? null : Map.ofEntries();
+            !BuildConfig.IS_FOR_TEST
+                    ? null
+                    : Map.ofEntries(
+                            Map.entry(
+                                    ANDROID_THEME_MODULE,
+                                    Map.of(ANDROID_THEME_MODULE_FORCE_DEPENDENCIES, "false")),
+                            Map.entry(
+                                    ANDROID_THEME_RESOURCE_PROVIDER,
+                                    Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")));
 
     // CachedFeatureParam instances.
     /* Alphabetical order by feature name, arbitrary order by param name: */
@@ -1811,12 +1826,6 @@ public abstract class ChromeFeatureList {
                     ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER,
                     ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER_JUMP_TO_COMPLETION_NO_FADE,
                     false);
-    public static final BooleanCachedFeatureParam sAndroidThemeModuleForceDependencies =
-            newBooleanCachedFeatureParam(
-                    ANDROID_THEME_MODULE, "force_theme_module_dependencies", false);
-    public static final BooleanCachedFeatureParam sAndroidThemeResourceProviderForceLight =
-            newBooleanCachedFeatureParam(
-                    ANDROID_THEME_RESOURCE_PROVIDER, "force_light_theme", false);
     public static final BooleanCachedFeatureParam sCctAdaptiveButtonEnableVoice =
             newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "voice", false);
     public static final BooleanCachedFeatureParam sCctAdaptiveButtonContextualOnly =
@@ -2231,8 +2240,6 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomBarShowBottomBarOnGts,
                     sAndroidBottomBarShowGlicSettingToggle,
                     sAndroidBottomBarShowUpdateBadge,
-                    sAndroidThemeModuleForceDependencies,
-                    sAndroidThemeResourceProviderForceLight,
                     sAndroidTipsNotificationsAlwaysShowOptInPromo,
                     sAndroidTipsNotificationsResetFeatureTipShown,
                     sAndroidTipsNotificationsV2CooldownDays,

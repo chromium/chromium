@@ -3575,7 +3575,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     // === START of ThemeResourceProvider functionality ===
 
     private void initializeThemeResourceWrapper() {
-        if (!ChromeFeatureList.sAndroidThemeResourceProvider.isEnabled()) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER)) {
             return;
         }
 
@@ -3589,9 +3589,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return;
         }
 
-        int resourceId = ChromeFeatureList.sAndroidThemeResourceProviderForceLight.getValue() ?
-                R.style.ThemeOverlay_BrowserUI_ForcedLightForTesting :
-                R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito;
+        int resourceId =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER,
+                                ChromeFeatureList.ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT)
+                        ? R.style.ThemeOverlay_BrowserUI_ForcedLightForTesting
+                        : R.style.ThemeOverlay_BrowserUI_TabbedMode_Incognito;
         mThemeResourceProvider =
                 new TabStateThemeResourceProvider(
                         this, resourceId, mActivityTabProvider, mLayoutManagerSupplier);
