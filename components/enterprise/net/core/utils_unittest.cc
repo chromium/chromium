@@ -191,6 +191,16 @@ TEST(ResolveExtraHeadersTest, ExpandsPlaceholdersAndEnforcesTypes) {
       ProxyExtraHeader(kTestHeaderKeyLanguages, "${accept_language}",
                        ProxyExtraHeader::HeaderType::kVariable),
 
+      // kVariable header with direct variable names (expanded)
+      ProxyExtraHeader("X-Profile-Camel", "profileId",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader("X-Profile-Snake", "profile_id",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader("X-Lang-Camel", "acceptLanguage",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader("X-Lang-Snake", "accept_language",
+                       ProxyExtraHeader::HeaderType::kVariable),
+
       // kVariable header with static value (kept)
       ProxyExtraHeader("X-Variable-Static", "hello",
                        ProxyExtraHeader::HeaderType::kVariable),
@@ -209,6 +219,10 @@ TEST(ResolveExtraHeadersTest, ExpandsPlaceholdersAndEnforcesTypes) {
   ExpectHeader(headers, kTestHeaderKeyProfileId,
                "profile_" + std::string(kTestProfileId));
   ExpectHeader(headers, kTestHeaderKeyLanguages, kTestAcceptLanguages);
+  ExpectHeader(headers, "X-Profile-Camel", kTestProfileId);
+  ExpectHeader(headers, "X-Profile-Snake", kTestProfileId);
+  ExpectHeader(headers, "X-Lang-Camel", kTestAcceptLanguages);
+  ExpectHeader(headers, "X-Lang-Snake", kTestAcceptLanguages);
   ExpectHeader(headers, "X-Variable-Static", "hello");
   EXPECT_FALSE(headers.HasHeader("X-Variable-Unknown"));
 }
@@ -221,6 +235,39 @@ TEST(ParseProxyProvisioningDomainPolicyTest, ParsesValidPolicyDict) {
       "scope": "CLOUD_SECURE_GATEWAY"
     },
     "extra_headers": [
+      {
+        "key": "x-custom-key",
+        "value": "custom-value"
+      }
+    ]
+  })";
+
+  std::optional<base::DictValue> domain_dict =
+      base::JSONReader::ReadDict(policy_json, 0);
+  ASSERT_TRUE(domain_dict.has_value());
+
+  std::optional<ProvisioningDomainConfig> policy =
+      ParseProxyProvisioningDomainPolicy(*domain_dict);
+
+  ASSERT_TRUE(policy.has_value());
+
+  ProvisioningDomainConfig expected;
+  expected.pvd_id = "example.pvd.com";
+  expected.auth_config = ProxyAuthConfig{AuthType::kProfileBearerToken,
+                                         AuthScope::kCloudSecureGateway};
+  expected.extra_headers = {ProxyExtraHeader("x-custom-key", "custom-value")};
+
+  EXPECT_EQ(*policy, expected);
+}
+
+TEST(ParseProxyProvisioningDomainPolicyTest, ParsesPolicyDictWithHyphenKey) {
+  std::string policy_json = R"({
+    "pvd_id": "example.pvd.com",
+    "auth_config": {
+      "type": "PROFILE_BEARER_TOKEN",
+      "scope": "CLOUD_SECURE_GATEWAY"
+    },
+    "extra-headers": [
       {
         "key": "x-custom-key",
         "value": "custom-value"
@@ -323,6 +370,57 @@ TEST(ParseProvisioningDomainConfigTest, ParsesValidPvdResponse) {
             dynamic_config.routing_rules[0].destination_matchers);
   EXPECT_EQ(MakeHttpsProxyChain(kTestProxyHost1),
             dynamic_config.routing_rules[0].proxy_list.First());
+}
+
+TEST(ParseProvisioningDomainConfigTest, SupportsExtraHeadersHyphenKey) {
+  std::string pvd_json = R"({
+    "identifier": "example.com",
+    "proxies": [
+      {
+        "protocol": "https-connect",
+        "proxy": "proxy.example.com:443",
+        "identifier": "test-proxy",
+        "google_chrome": {
+          "auth": {
+            "type": "PROFILE_BEARER_TOKEN",
+            "scope": "CLOUD_SECURE_GATEWAY"
+          },
+          "extra-headers": [
+            {
+              "key": "x-resource-key",
+              "constant": "projects/test/locations/global/securityGateways/gw"
+            },
+            {
+              "key": "x-profile-id",
+              "variable": "profileId"
+            }
+          ]
+        }
+      }
+    ],
+    "proxy-match": [
+      {
+        "domains": ["*.example.com"],
+        "proxies": ["test-proxy"]
+      }
+    ]
+  })";
+
+  std::optional<ProvisioningDomainProxyConfig> config =
+      ParseProvisioningDomainConfig(pvd_json);
+  ASSERT_TRUE(config.has_value());
+  auto it = config->proxy_endpoints.find("test-proxy");
+  ASSERT_NE(it, config->proxy_endpoints.end());
+  ASSERT_EQ(2u, it->second.extra_headers.size());
+  EXPECT_EQ("x-resource-key", it->second.extra_headers[0].key);
+  EXPECT_EQ("projects/test/locations/global/securityGateways/gw",
+            it->second.extra_headers[0].value);
+  EXPECT_EQ(ProxyExtraHeader::HeaderType::kConstant,
+            it->second.extra_headers[0].type);
+  EXPECT_EQ("x-profile-id", it->second.extra_headers[1].key);
+  EXPECT_EQ("profileId", it->second.extra_headers[1].value);
+  EXPECT_EQ(ProxyExtraHeader::HeaderType::kVariable,
+            it->second.extra_headers[1].type);
 }
 
 // Test that the parsing function handles various protocols correctly.

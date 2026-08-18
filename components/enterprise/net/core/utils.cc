@@ -44,6 +44,7 @@ constexpr char kPortsKey[] = "ports";
 // JSON keys shared between policy entries, PvD server responses, and headers.
 constexpr char kAuthConfigKey[] = "auth_config";
 constexpr char kExtraHeadersKey[] = "extra_headers";
+constexpr char kExtraHeadersHyphenKey[] = "extra-headers";
 constexpr char kAuthKey[] = "auth";
 constexpr char kKeyKey[] = "key";
 constexpr char kValueKey[] = "value";
@@ -52,7 +53,9 @@ constexpr char kScopeKey[] = "scope";
 
 // Constants for placeholders used in extra headers.
 constexpr char kProfileIdPlaceholder[] = "${profile_id}";
+constexpr char kProfileIdCamelPlaceholder[] = "${profileId}";
 constexpr char kAcceptLanguagePlaceholder[] = "${accept_language}";
+constexpr char kAcceptLanguageCamelPlaceholder[] = "${acceptLanguage}";
 
 // Auth type and scope string values.
 constexpr char kAuthNone[] = "none";
@@ -243,8 +246,12 @@ ParseProxy(const base::DictValue& proxy_dict) {
       }
       auth = parsed_auth;
     }
-    extra_headers =
-        ParseExtraHeadersList(chrome_dict->FindList(kExtraHeadersKey));
+    const base::ListValue* extra_headers_list =
+        chrome_dict->FindList(kExtraHeadersKey);
+    if (!extra_headers_list) {
+      extra_headers_list = chrome_dict->FindList(kExtraHeadersHyphenKey);
+    }
+    extra_headers = ParseExtraHeadersList(extra_headers_list);
   }
 
   return std::make_pair(
@@ -383,7 +390,9 @@ net::HttpRequestHeaders ResolveExtraHeadersWithValues(
     const std::string& accept_languages) {
   std::initializer_list<PlaceholderReplacement> replacements = {
       {kProfileIdPlaceholder, profile_id},
+      {kProfileIdCamelPlaceholder, profile_id},
       {kAcceptLanguagePlaceholder, accept_languages},
+      {kAcceptLanguageCamelPlaceholder, accept_languages},
   };
 
   net::HttpRequestHeaders headers;
@@ -395,11 +404,19 @@ net::HttpRequestHeaders ResolveExtraHeadersWithValues(
 
     if (header.type == ProxyExtraHeader::HeaderType::kVariable) {
       std::string expanded_value = header.value;
-      ExpandPlaceholders(&expanded_value, replacements);
-      // Drop header if it contains unsupported or unrecognized variable
-      // placeholders.
-      if (expanded_value.find("${") != std::string::npos) {
-        continue;
+      std::string normalized_val = base::ToLowerASCII(header.value);
+      if (normalized_val == "profileid" || normalized_val == "profile_id") {
+        expanded_value = profile_id;
+      } else if (normalized_val == "acceptlanguage" ||
+                 normalized_val == "accept_language") {
+        expanded_value = accept_languages;
+      } else {
+        ExpandPlaceholders(&expanded_value, replacements);
+        // Drop header if it contains unsupported or unrecognized variable
+        // placeholders.
+        if (expanded_value.find("${") != std::string::npos) {
+          continue;
+        }
       }
       headers.SetHeader(header.key, expanded_value);
     }
@@ -428,8 +445,12 @@ std::optional<ProvisioningDomainConfig> ParseProxyProvisioningDomainPolicy(
     policy.auth_config = auth;
   }
 
-  policy.extra_headers =
-      ParseExtraHeadersList(domain_dict.FindList(kExtraHeadersKey));
+  const base::ListValue* policy_extra_headers =
+      domain_dict.FindList(kExtraHeadersKey);
+  if (!policy_extra_headers) {
+    policy_extra_headers = domain_dict.FindList(kExtraHeadersHyphenKey);
+  }
+  policy.extra_headers = ParseExtraHeadersList(policy_extra_headers);
 
   return policy;
 }

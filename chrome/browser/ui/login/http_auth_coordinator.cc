@@ -253,7 +253,15 @@ void HttpAuthCoordinator::Flow::OnExtensionResponse(
 
 void HttpAuthCoordinator::Flow::OnCredentials(
     const std::optional<net::AuthCredentials>& credentials) {
-  std::move(callback_).Run(credentials);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<Flow> flow,
+                        const std::optional<net::AuthCredentials>& creds) {
+                       if (flow && flow->callback_) {
+                         std::move(flow->callback_).Run(creds);
+                       }
+                     },
+                     GetWeakPtr(), credentials));
 }
 
 HttpAuthCoordinator::LoginDelegateWrapper::LoginDelegateWrapper(Flow* flow)
