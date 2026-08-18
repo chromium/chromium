@@ -13,7 +13,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
@@ -30,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
@@ -60,6 +65,9 @@ import org.chromium.chrome.browser.metrics.UmaSessionStatsJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.send_tab_to_self.EntryPointDisplayReason;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -808,5 +816,70 @@ public class TabbedRootUiCoordinatorTest {
         mActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> assertFalse(mTabbedRootUiCoordinator.getBookmarkBarVisibility()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
+    public void testSendTabToSelfOmniboxIphOnStartup() {
+        doAnswer(
+                        invocation -> {
+                            invocation.<Callback<Boolean>>getArgument(0).onResult(true);
+                            return null;
+                        })
+                .when(mTracker)
+                .addOnInitializedCallback(any());
+        TrackerFactory.setTrackerForTests(mTracker);
+
+        SendTabToSelfAndroidBridge.Natives bridgeMock =
+                mock(SendTabToSelfAndroidBridge.Natives.class);
+        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
+        doReturn(EntryPointDisplayReason.OFFER_FEATURE)
+                .when(bridgeMock)
+                .getEntryPointDisplayReason(any(), any());
+
+        try {
+            mPage = mActivityTestRule.startOnTestServerUrl("/chrome/test/data/android/about.html");
+
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        verify(mTracker)
+                                .shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
+                    });
+        } finally {
+            SendTabToSelfAndroidBridgeJni.setInstanceForTesting(null);
+        }
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
+    public void testSendTabToSelfOmniboxIphOnStartup_notEligible() {
+        doAnswer(
+                        invocation -> {
+                            invocation.<Callback<Boolean>>getArgument(0).onResult(true);
+                            return null;
+                        })
+                .when(mTracker)
+                .addOnInitializedCallback(any());
+        TrackerFactory.setTrackerForTests(mTracker);
+
+        SendTabToSelfAndroidBridge.Natives bridgeMock =
+                mock(SendTabToSelfAndroidBridge.Natives.class);
+        SendTabToSelfAndroidBridgeJni.setInstanceForTesting(bridgeMock);
+        doReturn(EntryPointDisplayReason.OFFER_SIGN_IN)
+                .when(bridgeMock)
+                .getEntryPointDisplayReason(any(), any());
+        try {
+            mPage = mActivityTestRule.startOnTestServerUrl("/chrome/test/data/android/about.html");
+
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        verify(mTracker, never())
+                                .shouldTriggerHelpUi(FeatureConstants.SEND_TAB_TO_SELF_OMNIBOX);
+                    });
+        } finally {
+            SendTabToSelfAndroidBridgeJni.setInstanceForTesting(null);
+        }
     }
 }

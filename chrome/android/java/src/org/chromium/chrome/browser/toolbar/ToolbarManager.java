@@ -3700,7 +3700,8 @@ public class ToolbarManager
         mControlContainer.setLayoutParams(layoutParams);
     }
 
-    private boolean isSendTabToSelfAvailable(GURL url) {
+    @VisibleForTesting
+    boolean isSendTabToSelfAvailable(GURL url) {
         Profile profile = mProfileSupplier.get();
         if (profile == null) {
             return false;
@@ -3709,9 +3710,17 @@ public class ToolbarManager
                 != null;
     }
 
-    private void onSendTabToSelfClicked() {
+    @VisibleForTesting
+    void onSendTabToSelfClicked() {
         GURL url = mLocationBarModel.getUrlBarData().url;
         if (url == null || url.isEmpty()) return;
+        Profile profile = mProfileSupplier.get();
+        assert profile != null;
+
+        // Mark the STTS entrypoint as known to the user to avoid showing an IPH.
+        TrackerFactory.getTrackerForProfile(profile)
+                .notifyEvent(EventConstants.SEND_TAB_TO_SELF_OMNIBOX_USED);
+
         Tab tab = mActivityTabProvider.get();
         String title = tab != null ? tab.getTitle() : "";
         SendTabToSelfCoordinator sttsCoordinator =
@@ -3721,7 +3730,7 @@ public class ToolbarManager
                         url.getSpec(),
                         title,
                         BottomSheetControllerProvider.from(mWindowAndroid),
-                        mProfileSupplier.get(),
+                        profile,
                         DeviceLockActivityLauncherSupplier.get(mWindowAndroid),
                         mActivityTabProvider,
                         mActivity,
