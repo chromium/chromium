@@ -468,6 +468,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kAutofillAmbientAutofillSourceAttribution,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the spii cache is enabled for Ambient Autofill.
+BASE_FEATURE(kAutofillAmbientAutofillSpiiCache,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether pContext suggestion suppression in Ambient Autofill is
 // enabled.
 BASE_FEATURE(kAutofillAmbientAutofillSuppression,
