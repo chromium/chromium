@@ -28,9 +28,9 @@
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1993,7 +1993,7 @@ class FencedFrameTaskBrowserTest : public TaskManagerBrowserTest {
     https_server()->StartAcceptingConnections();
   }
 
-  void NavigateTo(Browser* browser,
+  void NavigateTo(BrowserWindowInterface* browser,
                   std::string_view host,
                   std::string_view rel_url) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(

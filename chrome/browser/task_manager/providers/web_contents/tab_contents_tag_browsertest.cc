@@ -15,7 +15,7 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -144,8 +144,8 @@ class TabContentsTagTest : public InProcessBrowserTest {
   }
 
   void CloseTabAt(int index) {
-    browser()->tab_strip_model()->CloseWebContentsAt(index,
-                                                     TabCloseTypes::CLOSE_NONE);
+    browser()->GetTabStripModel()->CloseWebContentsAt(
+        index, TabCloseTypes::CLOSE_NONE);
   }
 
   std::u16string GetTestPageExpectedTitle(const TestPageData& page_data) const {
@@ -171,7 +171,7 @@ class TabContentsTagTest : public InProcessBrowserTest {
                                       u"about:blank");
   }
 
-  int tabs_count() const { return browser()->tab_strip_model()->count(); }
+  int tabs_count() const { return browser()->GetTabStripModel()->count(); }
 
   GURL GetUrlOfFile(const char* test_page_file) const {
     return embedded_test_server()->GetURL(test_page_file);
@@ -309,11 +309,11 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
   // Wait for the browser to download the favicon.
   favicon::ContentFaviconDriver* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
+          browser()->GetTabStripModel()->GetActiveWebContents());
   FaviconWaiter waiter(favicon_driver);
   waiter.WaitForFaviconWithURL(GetUrlOfFile("/favicon/icon.png"));
   const auto favicon_url = browser()
-                               ->tab_strip_model()
+                               ->GetTabStripModel()
                                ->GetActiveWebContents()
                                ->GetSiteInstance()
                                ->GetSecurityPrincipal()
@@ -375,7 +375,7 @@ class TabContentsTagFencedFrameTest : public TabContentsTagTest {
   ~TabContentsTagFencedFrameTest() override = default;
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {

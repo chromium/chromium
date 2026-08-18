@@ -15,7 +15,7 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/task.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
@@ -316,11 +316,11 @@ IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
   MockWebContentsTaskManager task_manager;
   task_manager.StartObserving();
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser, embedded_test_server()->GetURL("/pdf/test.pdf")));
   ASSERT_TRUE(EnsureFullPagePDFHasLoadedWithValidFrameTree(
-      incognito_browser->tab_strip_model()->GetActiveWebContents(),
+      incognito_browser->GetTabStripModel()->GetActiveWebContents(),
       /*allow_multiple_frames=*/false));
 
   // There are 4 tasks. There is an about:blank frame from the first browser.

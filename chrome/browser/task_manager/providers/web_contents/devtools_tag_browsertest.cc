@@ -8,7 +8,7 @@
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -49,7 +49,7 @@ class DevToolsTagTest : public InProcessBrowserTest {
 
   void OpenDevToolsWindow(bool is_docked) {
     devtools_window_ = DevToolsWindowTesting::OpenDevToolsWindowSync(
-        browser()->tab_strip_model()->GetWebContentsAt(0), is_docked);
+        browser()->GetTabStripModel()->GetWebContentsAt(0), is_docked);
   }
 
   void CloseDevToolsWindow() {

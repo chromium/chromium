@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -206,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   StartUpdating();
 
   EXPECT_TRUE(tasks().empty());
-  Browser* incognito = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito = CreateIncognitoBrowser();
 
   // Close the default browser.
   CloseBrowserSynchronously(browser());
@@ -214,8 +213,9 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito, embedded_test_server()->GetURL(
                      "/service_worker/create_service_worker.html")));
-  EXPECT_EQ("DONE", EvalJs(incognito->tab_strip_model()->GetActiveWebContents(),
-                           "register('respond_with_fetch_worker.js');"));
+  EXPECT_EQ("DONE",
+            EvalJs(incognito->GetTabStripModel()->GetActiveWebContents(),
+                   "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);
 
   const Task* task = tasks()[0];
@@ -344,12 +344,12 @@ IN_PROC_BROWSER_TEST_F(WorkerTaskProviderBrowserTest,
   StartUpdating();
 
   EXPECT_TRUE(tasks().empty());
-  Browser* browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* browser = CreateIncognitoBrowser();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser, embedded_test_server()->GetURL(
                    "/service_worker/create_service_worker.html")));
-  EXPECT_EQ("DONE", EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_EQ("DONE", EvalJs(browser->GetTabStripModel()->GetActiveWebContents(),
                            "register('respond_with_fetch_worker.js');"));
   WaitUntilTaskCount(1);
 
