@@ -333,7 +333,8 @@ void RemoteCommandsService::VerifyAndEnqueueSignedCommand(
 void RemoteCommandsService::EnqueueCommand(
     const em::RemoteCommand& command,
     const em::SignedData& signed_command) {
-  if (!command.has_type() || !command.has_command_id()) {
+  if (!command.has_type() || !em::RemoteCommand::Type_IsValid(command.type()) ||
+      !command.has_command_id()) {
     LOG_POLICY(ERROR, REMOTE_COMMANDS) << "Invalid remote command from server.";
     const auto metric = !command.has_command_id()
                             ? MetricReceivedRemoteCommand::kInvalid
