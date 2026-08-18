@@ -20,8 +20,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -51,8 +51,8 @@ Profile* GetProfileOrDie(int browser_index) {
   return profile;
 }
 
-Browser* GetBrowserOrDie(int browser_index) {
-  Browser* browser = test()->GetBrowser(browser_index);
+BrowserWindowInterface* GetBrowserOrDie(int browser_index) {
+  BrowserWindowInterface* browser = test()->GetBrowser(browser_index);
   CHECK(browser);
   return browser;
 }
@@ -162,7 +162,7 @@ bool OpenTabAtIndex(int browser_index, int tab_index, const GURL& url) {
 }
 
 bool OpenMultipleTabs(int browser_index, const std::vector<GURL>& urls) {
-  Browser* browser = GetBrowserOrDie(browser_index);
+  BrowserWindowInterface* browser = GetBrowserOrDie(browser_index);
   for (const GURL& url : urls) {
     DVLOG(1) << "Opening tab: " << url.spec() << " using browser "
              << browser_index << ".";

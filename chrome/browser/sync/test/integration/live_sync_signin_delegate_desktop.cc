@@ -9,7 +9,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -70,9 +69,7 @@ bool LiveSyncSigninDelegateDesktop::ConfirmSync() {
   BrowserWindowInterface* confirm_browser =
       ProfileBrowserCollection::GetForProfile(profile_.get())
           ->GetLastActiveBrowser();
-  if (!login_ui_test_utils::ConfirmSyncConfirmationDialog(
-          confirm_browser ? confirm_browser->GetBrowserForMigrationOnly()
-                          : nullptr)) {
+  if (!login_ui_test_utils::ConfirmSyncConfirmationDialog(confirm_browser)) {
     LOG(ERROR) << "Failed to dismiss sync confirmation dialog.";
     return false;
   }

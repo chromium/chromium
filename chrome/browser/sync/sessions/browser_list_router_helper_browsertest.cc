@@ -20,7 +20,7 @@
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_P(BrowserListRouterHelperBrowserTest,
       profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
   ASSERT_TRUE(profile_2);
 
-  Browser* browser_2 = CreateBrowser(profile_2);
+  BrowserWindowInterface* browser_2 = CreateBrowser(profile_2);
 
   SyncSessionsWebContentsRouterFactory::GetInstance()
       ->GetForProfile(profile_1)
@@ -124,8 +124,10 @@ IN_PROC_BROWSER_TEST_P(BrowserListRouterHelperBrowserTest,
   EXPECT_FALSE(std::ranges::contains(*handler_2_urls, gurl_1));
 
   // Add a browser for each profile.
-  Browser* new_browser_in_first_profile = CreateBrowser(profile_1);
-  Browser* new_browser_in_second_profile = CreateBrowser(profile_2);
+  BrowserWindowInterface* new_browser_in_first_profile =
+      CreateBrowser(profile_1);
+  BrowserWindowInterface* new_browser_in_second_profile =
+      CreateBrowser(profile_2);
 
   GURL gurl_3 = embedded_test_server()->GetURL("/title3.html");
   GURL gurl_4 = embedded_test_server()->GetURL("/empty.html");

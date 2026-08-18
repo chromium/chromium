@@ -18,8 +18,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_group.h"
@@ -57,10 +57,10 @@ TabAndroid* GetFirstTabAtGroup(
 
 #else  // BUILDFLAG(IS_ANDROID)
 
-Browser* GetBrowserOrDie() {
+BrowserWindowInterface* GetBrowserOrDie() {
   CHECK_EQ(test()->num_clients(), 1)
       << "Tab utils support only single-client tests";
-  Browser* browser = test()->GetBrowser(/*index=*/0);
+  BrowserWindowInterface* browser = test()->GetBrowser(/*index=*/0);
   CHECK(browser);
   return browser;
 }

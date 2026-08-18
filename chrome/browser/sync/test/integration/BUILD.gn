@@ -269,6 +269,7 @@ source_set("sync_integration_tests_impl") {
       "//chrome/browser/skills",
       "//chrome/browser/themes",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/send_tab_to_self",
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/views/send_tab_to_self",

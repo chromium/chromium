@@ -9566,6 +9566,7 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/select_file_policy",
       "//chrome/test/base:chrome_test_launcher",
       "//components/bookmarks/browser",

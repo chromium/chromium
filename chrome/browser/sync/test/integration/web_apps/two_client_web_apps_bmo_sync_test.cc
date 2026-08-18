@@ -10,8 +10,8 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/web_apps/web_apps_sync_test_base.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -110,7 +110,7 @@ class TwoClientWebAppsBMOSyncTest
       webapps::WebappInstallSource source =
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       GURL start_url = GURL()) {
-    Browser* browser = CreateBrowser(profile);
+    BrowserWindowInterface* browser = CreateBrowser(profile);
     if (!start_url.is_valid()) {
       start_url = GetUserInitiatedAppURL();
     }
@@ -121,7 +121,7 @@ class TwoClientWebAppsBMOSyncTest
     auto* provider = WebAppProvider::GetForTest(profile);
     provider->scheduler().FetchManifestAndInstall(
         source,
-        browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+        browser->GetTabStripModel()->GetActiveWebContents()->GetWeakPtr(),
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
                                        webapps::InstallResultCode code) {

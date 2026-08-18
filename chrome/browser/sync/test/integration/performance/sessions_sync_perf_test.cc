@@ -7,8 +7,8 @@
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -85,10 +85,10 @@ void SessionsSyncPerfTest::AddTabs(int profile, int num_tabs) {
 }
 
 void SessionsSyncPerfTest::UpdateTabs(int profile) {
-  Browser* browser = GetBrowser(profile);
+  BrowserWindowInterface* browser = GetBrowser(profile);
   GURL url;
   std::vector<GURL> urls;
-  for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+  for (int i = 0; i < browser->GetTabStripModel()->count(); ++i) {
     chrome::SelectNumberedTab(browser, i);
     url = NextURL();
     browser->OpenURL(

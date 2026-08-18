@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/web_apps/web_apps_sync_test_base.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
@@ -117,7 +117,7 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
     CHECK(app_browser_);
     GURL expected_url = provider(0).registrar_unsafe().GetAppLaunchUrl(app_id);
     EXPECT_TRUE(test::WebAppPageWaiter(
-                    app_browser_->tab_strip_model()->GetActiveWebContents())
+                    app_browser_->GetTabStripModel()->GetActiveWebContents())
                     .ExpectUrl(expected_url)
                     .ExpectManifest()
                     .WaitAndFlushCommands());
@@ -140,7 +140,7 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
     if (!app_browser_) {
       return;
     }
-    Browser* browser = app_browser_;
+    BrowserWindowInterface* browser = app_browser_;
     app_browser_ = nullptr;
     CloseBrowserSynchronously(browser);
   }
@@ -148,7 +148,7 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   std::unique_ptr<base::SimpleTestClock> clock_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> app_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(SingleClientWebAppsSyncGeneratedIconFixSyncTest,
