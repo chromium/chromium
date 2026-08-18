@@ -14,8 +14,17 @@ else
   JAVA=java
 fi
 
+# Suppress JVM warnings regarding terminally deprecated sun.misc.Unsafe memory
+# access methods called by Kotlin's compiler containers on JDK 23+.
+# This flag can go away once Kotlin 2.5 is released:
+# https://youtrack.jetbrains.com/issue/KT-82657
+JAVA_ARGS=("-Xms512M")
+if "$JAVA" --sun-misc-unsafe-memory-access=allow -version >/dev/null 2>&1; then
+  JAVA_ARGS+=("--sun-misc-unsafe-memory-access=allow")
+fi
+
 exec "$JAVA" \
-    -Xms512M \
+    "${JAVA_ARGS[@]}" \
     -jar "$THIS_DIR/cipd/ktfmt.jar" \
     --google-style \
     "$@"
