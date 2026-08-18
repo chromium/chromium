@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_WINDOW_OCCLUSION_CALCULATOR_H_
-#define ASH_WM_DESKS_WINDOW_OCCLUSION_CALCULATOR_H_
+#ifndef ASH_WM_DESKS_DESKS_WINDOW_OCCLUSION_CALCULATOR_H_
+#define ASH_WM_DESKS_DESKS_WINDOW_OCCLUSION_CALCULATOR_H_
 
 #include <memory>
 
@@ -21,14 +21,16 @@ namespace ash {
 
 // Computes window occlusion for desk mini views using the global
 // `aura::WindowOcclusionTracker` via synchronous snapshots.
-class ASH_EXPORT WindowOcclusionCalculator : public DesksController::Observer,
-                                             public Desk::Observer {
+class ASH_EXPORT DesksWindowOcclusionCalculator
+    : public DesksController::Observer,
+      public Desk::Observer {
  public:
-  WindowOcclusionCalculator();
-  WindowOcclusionCalculator(const WindowOcclusionCalculator&) = delete;
-  WindowOcclusionCalculator& operator=(const WindowOcclusionCalculator&) =
+  DesksWindowOcclusionCalculator();
+  DesksWindowOcclusionCalculator(const DesksWindowOcclusionCalculator&) =
       delete;
-  ~WindowOcclusionCalculator() override;
+  DesksWindowOcclusionCalculator& operator=(
+      const DesksWindowOcclusionCalculator&) = delete;
+  ~DesksWindowOcclusionCalculator() override;
 
   // Returns the cached occlusion state of the given `window` from the last
   // snapshot.
@@ -39,7 +41,7 @@ class ASH_EXPORT WindowOcclusionCalculator : public DesksController::Observer,
   void SnapshotOcclusionStateForWindows(
       const aura::Window::Windows& containers_to_snapshot);
 
-  base::WeakPtr<WindowOcclusionCalculator> AsWeakPtr();
+  base::WeakPtr<DesksWindowOcclusionCalculator> AsWeakPtr();
 
   using DesksController::Observer::OnDeskNameChanged;
 
@@ -69,9 +71,9 @@ class ASH_EXPORT WindowOcclusionCalculator : public DesksController::Observer,
   base::ScopedMultiSourceObservation<Desk, Desk::Observer> desk_observations_{
       this};
 
-  base::WeakPtrFactory<WindowOcclusionCalculator> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DesksWindowOcclusionCalculator> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_WINDOW_OCCLUSION_CALCULATOR_H_
+#endif  // ASH_WM_DESKS_DESKS_WINDOW_OCCLUSION_CALCULATOR_H_

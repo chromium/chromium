@@ -21,7 +21,7 @@ OverviewWindowOcclusionCalculator::OverviewWindowOcclusionCalculator(
 OverviewWindowOcclusionCalculator::~OverviewWindowOcclusionCalculator() =
     default;
 
-base::WeakPtr<WindowOcclusionCalculator>
+base::WeakPtr<DesksWindowOcclusionCalculator>
 OverviewWindowOcclusionCalculator::GetCalculator() {
   return calculator_ ? calculator_->AsWeakPtr() : nullptr;
 }
@@ -32,7 +32,7 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeStarting() {
   }
   TRACE_EVENT0("ui",
                "OverviewWindowOcclusionCalculator::OnOverviewModeWillStart");
-  calculator_ = std::make_unique<WindowOcclusionCalculator>();
+  calculator_ = std::make_unique<DesksWindowOcclusionCalculator>();
   // Compute initial occlusion state of all desks' windows before overview mode
   // starts transforming windows.
   ComputeOcclusionStateForAllDesks();

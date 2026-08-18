@@ -12,7 +12,7 @@
 
 namespace ash {
 
-class WindowOcclusionCalculator;
+class DesksWindowOcclusionCalculator;
 
 // Desk bar that contains desk related UI including desk thumbnails, new desk
 // button, library button, and scroll arrow buttons when the available space is
@@ -22,9 +22,9 @@ class ASH_EXPORT DeskBarView : public DeskBarViewBase {
   METADATA_HEADER(DeskBarView, DeskBarViewBase)
 
  public:
-  DeskBarView(
-      aura::Window* root,
-      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
+  DeskBarView(aura::Window* root,
+              base::WeakPtr<DesksWindowOcclusionCalculator>
+                  window_occlusion_calculator);
 
   DeskBarView(const DeskBarView&) = delete;
   DeskBarView& operator=(const DeskBarView&) = delete;

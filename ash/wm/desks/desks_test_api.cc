@@ -116,7 +116,7 @@ ui::LayerTreeOwner* DesksTestApi::GetMirroredContentsLayerTreeForRootAndDesk(
 }
 
 // static
-WindowOcclusionCalculator* DesksTestApi::GetWindowOcclusionCalculator(
+DesksWindowOcclusionCalculator* DesksTestApi::GetWindowOcclusionCalculator(
     DeskBarViewBase::Type type,
     aura::Window* root) {
   auto& mini_views = GetDeskBarView(type, root)->mini_views();

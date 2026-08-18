@@ -7,7 +7,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/desks/window_occlusion_calculator.h"
+#include "ash/wm/desks/desks_window_occlusion_calculator.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_test_base.h"

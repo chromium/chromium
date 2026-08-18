@@ -343,7 +343,7 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
 
   if (!window_occlusion_calculator_) {
     window_occlusion_calculator_ =
-        std::make_unique<WindowOcclusionCalculator>();
+        std::make_unique<DesksWindowOcclusionCalculator>();
   }
 
   auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(

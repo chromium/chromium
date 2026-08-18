@@ -13,7 +13,7 @@
 #include "ash/shell_observer.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "ash/wm/desks/window_occlusion_calculator.h"
+#include "ash/wm/desks/desks_window_occlusion_calculator.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/display/display_observer.h"
@@ -155,7 +155,7 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
 
   bool should_ignore_activation_change_ = false;
 
-  std::unique_ptr<WindowOcclusionCalculator> window_occlusion_calculator_;
+  std::unique_ptr<DesksWindowOcclusionCalculator> window_occlusion_calculator_;
 };
 
 }  // namespace ash

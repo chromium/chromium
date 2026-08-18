@@ -127,7 +127,7 @@ DeskMiniView::DeskMiniView(
     DeskBarViewBase* owner_bar,
     aura::Window* root_window,
     Desk* desk,
-    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
+    base::WeakPtr<DesksWindowOcclusionCalculator> window_occlusion_calculator)
     : owner_bar_(owner_bar), root_window_(root_window), desk_(desk) {
   TRACE_EVENT0("ui", "DeskMiniView::DeskMiniView");
 

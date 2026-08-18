@@ -61,7 +61,7 @@ class OverviewWindowDragController;
 class SavedDeskDialogController;
 class SavedDeskPresenter;
 class ScopedFloatContainerStacker;
-class WindowOcclusionCalculator;
+class DesksWindowOcclusionCalculator;
 
 // The Overview shows a grid of all of your windows, allowing to select
 // one by clicking or tapping on it.
@@ -81,10 +81,10 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   ~OverviewSession() override;
 
   // Initialize with the windows that can be selected.
-  void Init(
-      const aura::Window::Windows& windows,
-      const aura::Window::Windows& hide_windows,
-      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
+  void Init(const aura::Window::Windows& windows,
+            const aura::Window::Windows& hide_windows,
+            base::WeakPtr<DesksWindowOcclusionCalculator>
+                window_occlusion_calculator);
 
   // Perform cleanup that cannot be done in the destructor.
   void Shutdown();

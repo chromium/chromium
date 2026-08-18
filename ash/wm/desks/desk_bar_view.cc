@@ -20,7 +20,7 @@ namespace ash {
 
 DeskBarView::DeskBarView(
     aura::Window* root,
-    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
+    base::WeakPtr<DesksWindowOcclusionCalculator> window_occlusion_calculator)
     : DeskBarViewBase(root,
                       DeskBarViewBase::Type::kDeskButton,
                       window_occlusion_calculator) {}

@@ -55,7 +55,7 @@ class ScopedOverviewHideWindows;
 class ScopedOverviewWallpaperClipper;
 class SplitViewController;
 class SplitViewSetupView;
-class WindowOcclusionCalculator;
+class DesksWindowOcclusionCalculator;
 
 // An instance of this class is created during the initialization of an overview
 // session which manages and positions the overview UI on a per root window
@@ -81,7 +81,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
       aura::Window* root_window,
       const std::vector<raw_ptr<aura::Window, VectorExperimental>>& window_list,
       OverviewSession* overview_session,
-      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
+      base::WeakPtr<DesksWindowOcclusionCalculator>
+          window_occlusion_calculator);
 
   OverviewGrid(const OverviewGrid&) = delete;
   OverviewGrid& operator=(const OverviewGrid&) = delete;
@@ -773,7 +774,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   std::optional<OverviewController::ScopedOcclusionPauser> rotation_pauser_;
   std::optional<OverviewController::ScopedOcclusionPauser> scroll_pauser_;
 
-  const base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator_;
+  const base::WeakPtr<DesksWindowOcclusionCalculator>
+      window_occlusion_calculator_;
 
   // Set of tasks that get run on the UI thread while the enter-animation is
   // in progress. These tasks are not immediately necessary but may be after the

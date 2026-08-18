@@ -12,7 +12,7 @@ namespace ash {
 
 OverviewDeskBarView::OverviewDeskBarView(
     base::WeakPtr<OverviewGrid> overview_grid,
-    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator,
+    base::WeakPtr<DesksWindowOcclusionCalculator> window_occlusion_calculator,
     const gfx::Rect& initial_widget_bounds)
     : DeskBarViewBase(overview_grid->root_window(),
                       DeskBarViewBase::Type::kOverview,

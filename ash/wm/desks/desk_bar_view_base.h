@@ -31,7 +31,7 @@ namespace ash {
 
 class DeskBarHoverObserver;
 class OverviewGrid;
-class WindowOcclusionCalculator;
+class DesksWindowOcclusionCalculator;
 
 // Base class for desk bar views, including desk bar view within overview and
 // desk bar view for the desk button.
@@ -313,10 +313,10 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   class ReorderDeskAnimation;
   class ScrollForActiveMiniView;
 
-  DeskBarViewBase(
-      aura::Window* root,
-      Type type,
-      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
+  DeskBarViewBase(aura::Window* root,
+                  Type type,
+                  base::WeakPtr<DesksWindowOcclusionCalculator>
+                      window_occlusion_calculator);
   ~DeskBarViewBase() override;
 
   // Return the X offset of the first mini_view on the left (if there's one),
@@ -478,7 +478,8 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Test closure that runs after the UI has been updated asynchronously.
   base::OnceClosure on_update_ui_closure_for_testing_;
 
-  const base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator_;
+  const base::WeakPtr<DesksWindowOcclusionCalculator>
+      window_occlusion_calculator_;
 
   const base::RepeatingClosure desk_icon_button_state_changed_cb_;
 

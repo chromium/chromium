@@ -754,7 +754,7 @@ class DeskBarViewBase::ScrollForActiveMiniView
 DeskBarViewBase::DeskBarViewBase(
     aura::Window* root,
     Type type,
-    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
+    base::WeakPtr<DesksWindowOcclusionCalculator> window_occlusion_calculator)
     : type_(type),
       state_(GetPreferredState(type)),
       root_(root),

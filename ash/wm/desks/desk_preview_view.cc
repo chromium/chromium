@@ -301,9 +301,10 @@ void MirrorLayerTree(
 // of the given |window|, and fills |out_layers_data|. If
 // `window_occlusion_calculator` is null, the window's occlusion state will not
 // be considered when deciding whether the layer should be skipped.
-void GetLayersData(aura::Window* window,
-                   const WindowOcclusionCalculator* window_occlusion_calculator,
-                   base::flat_map<ui::Layer*, LayerData>* out_layers_data) {
+void GetLayersData(
+    aura::Window* window,
+    const DesksWindowOcclusionCalculator* window_occlusion_calculator,
+    base::flat_map<ui::Layer*, LayerData>* out_layers_data) {
   auto& layer_data = (*out_layers_data)[window->layer()];
 
   // Windows may be explicitly set to be skipped in mini_views such as those
@@ -385,7 +386,7 @@ void GetLayersData(aura::Window* window,
 DeskPreviewView::DeskPreviewView(
     PressedCallback callback,
     DeskMiniView* mini_view,
-    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
+    base::WeakPtr<DesksWindowOcclusionCalculator> window_occlusion_calculator)
     : views::Button(std::move(callback)),
       mini_view_(mini_view),
       window_occlusion_calculator_(window_occlusion_calculator),

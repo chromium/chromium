@@ -533,7 +533,7 @@ OverviewGrid::OverviewGrid(
     aura::Window* root_window,
     const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
     OverviewSession* overview_session,
-    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator)
+    base::WeakPtr<DesksWindowOcclusionCalculator> window_occlusion_calculator)
     : root_window_(root_window),
       overview_session_(overview_session),
       split_view_drag_indicators_(

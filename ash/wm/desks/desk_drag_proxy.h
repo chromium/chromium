@@ -14,7 +14,7 @@ namespace ash {
 class DeskMiniView;
 class DeskPreviewView;
 class DeskBarViewBase;
-class WindowOcclusionCalculator;
+class DesksWindowOcclusionCalculator;
 
 // A helper class includes a widget whose content is the preview of the dragged
 // desk.
@@ -30,11 +30,11 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
     kEnded,         // The drag and drop finished.
   };
 
-  DeskDragProxy(
-      DeskBarViewBase* desk_bar_view,
-      DeskMiniView* drag_view,
-      float init_offset_x,
-      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
+  DeskDragProxy(DeskBarViewBase* desk_bar_view,
+                DeskMiniView* drag_view,
+                float init_offset_x,
+                base::WeakPtr<DesksWindowOcclusionCalculator>
+                    window_occlusion_calculator);
   DeskDragProxy(const DeskDragProxy&) = delete;
   DeskDragProxy& operator=(const DeskDragProxy&) = delete;
   ~DeskDragProxy() override;
@@ -66,7 +66,8 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
   const int preview_screen_y_;
   // The x of initial offset between cursor and drag view's origin.
   const float init_offset_x_;
-  const base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator_;
+  const base::WeakPtr<DesksWindowOcclusionCalculator>
+      window_occlusion_calculator_;
   // The widget of drag proxy.
   views::UniqueWidgetPtr drag_widget_;
   // The state of the drag proxy.

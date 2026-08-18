@@ -182,7 +182,7 @@ OverviewSession::~OverviewSession() {
 void OverviewSession::Init(
     const aura::Window::Windows& windows,
     const aura::Window::Windows& hide_windows,
-    base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator) {
+    base::WeakPtr<DesksWindowOcclusionCalculator> window_occlusion_calculator) {
   TRACE_EVENT0("ui", "OverviewSession::Init");
 
   Shell::Get()->AddShellObserver(this);
