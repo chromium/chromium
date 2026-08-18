@@ -18,7 +18,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/common:web_view_creation_util",
-    "//ios/web/web_state",
     "//ui/base",
   ]
 }
