@@ -603,6 +603,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="40" label="WRA_INVALID_LISTENER_REGISTRATION"/>
   <int value="41" label="WER_UNEXPECTED_EVENT_HANDLING_DONE"/>
   <int value="42" label="WER_INVALID_EXTENSION_ID"/>
+  <int value="43" label="AER_INVALID_PROCESS_FOR_AUTOMATION_BINDING"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">

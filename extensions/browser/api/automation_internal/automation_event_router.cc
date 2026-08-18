@@ -16,12 +16,15 @@
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/automation_internal/automation_internal_api_delegate.h"
 #include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/manifest_handlers/automation.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -349,6 +352,27 @@ void AutomationEventRouter::BindForRenderer(
     RenderProcessHostId render_process_id,
     mojo::PendingAssociatedReceiver<
         extensions::mojom::RendererAutomationRegistry> receiver) {
+  content::RenderProcessHost* host =
+      content::RenderProcessHost::FromID(render_process_id);
+  if (!host) {
+    return;
+  }
+
+  ProcessMap* process_map = ProcessMap::Get(host->GetBrowserContext());
+  const Extension* extension =
+      process_map
+          ? process_map->GetEnabledExtensionByProcessID(render_process_id)
+          : nullptr;
+
+  const AutomationInfo* automation_info =
+      extension ? AutomationInfo::Get(extension) : nullptr;
+
+  if (!automation_info) {
+    bad_message::ReceivedBadMessage(
+        host, bad_message::AER_INVALID_PROCESS_FOR_AUTOMATION_BINDING);
+    return;
+  }
+
   AutomationEventRouter* router = AutomationEventRouter::GetInstance();
   CHECK(router);
 
