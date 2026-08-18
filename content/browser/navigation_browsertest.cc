@@ -3178,8 +3178,11 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
   // 2. Set a cookie in the child, it affects its parent too.
   EXPECT_TRUE(ExecJs(sub_document_1, "document.cookie = 'b=0';"));
 
-  EXPECT_EQ("a=0; b=0", EvalJs(main_document, "document.cookie"));
+  // Read document.cookie from sub_document_1 first to flush its
+  // RestrictedCookieManager non-blocking SetCookieFromString IPC pipe via a
+  // synchronous GetCookiesString call before querying main_document's pipe.
   EXPECT_EQ("a=0; b=0", EvalJs(sub_document_1, "document.cookie"));
+  EXPECT_EQ("a=0; b=0", EvalJs(main_document, "document.cookie"));
 
   // 3. Checks cookies are sent while requesting resources.
   ExecuteScriptAsync(sub_document_1, "fetch('/response_1');");
@@ -3205,8 +3208,11 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
   EXPECT_TRUE(ExecJs(sub_document_2,
                      "document.cookie = 'd=0; SameSite=none; Secure';"));
 
-  EXPECT_EQ("a=0; b=0; c=0", EvalJs(main_document, "document.cookie"));
+  // Read document.cookie from sub_document_2 first to flush its
+  // RestrictedCookieManager non-blocking SetCookieFromString IPC pipe via a
+  // synchronous GetCookiesString call before querying main_document's pipe.
   EXPECT_EQ("d=0", EvalJs(sub_document_2, "document.cookie"));
+  EXPECT_EQ("a=0; b=0; c=0", EvalJs(main_document, "document.cookie"));
 
   // 7. Checks cookies are sent while requesting resources.
   ExecuteScriptAsync(sub_document_2, "fetch('/response_2');");
@@ -3238,10 +3244,13 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest,
   // 10. Set cookie in the child document.
   EXPECT_TRUE(ExecJs(sub_document_3, "document.cookie = 'f=0';"));
 
-  EXPECT_EQ("a=0; b=0; c=0; e=0; f=0",
-            EvalJs(main_document, "document.cookie"));
+  // Read document.cookie from sub_document_3 first to flush its
+  // RestrictedCookieManager non-blocking SetCookieFromString IPC pipe via a
+  // synchronous GetCookiesString call before querying main_document's pipe.
   EXPECT_EQ("a=0; b=0; c=0; e=0; f=0",
             EvalJs(sub_document_3, "document.cookie"));
+  EXPECT_EQ("a=0; b=0; c=0; e=0; f=0",
+            EvalJs(main_document, "document.cookie"));
 
   // 11. Checks cookies are sent while requesting resources.
   ExecuteScriptAsync(sub_document_3, "fetch('/response_3');");
