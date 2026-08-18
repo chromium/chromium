@@ -45,8 +45,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.MainSettings;
-import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
@@ -65,8 +65,8 @@ public class BackButtonToolbarTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
-    public SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(MainSettings.class);
+    public SettingsTestRule<MainSettings> mSettingsActivityTestRule =
+            new SettingsTestRule<>(MainSettings.class);
 
     @Rule
     public OverrideContextWrapperTestRule mAutomotiveContextWrapperTestRule =
@@ -89,7 +89,7 @@ public class BackButtonToolbarTest {
     public void testAutomotiveToolbar_ToolbarView_Legacy() throws Exception {
         // Launch Settings Activity, which uses a Toolbar View to implement the automotive toolbar.
         mSettingsActivityTestRule.startSettingsActivity();
-        SettingsActivity settingsActivity = mSettingsActivityTestRule.getActivity();
+        ChromeBaseAppCompatActivity settingsActivity = mSettingsActivityTestRule.getActivity();
 
         // Check that the automotive toolbar is present with only a back button.
         Toolbar toolbar = settingsActivity.findViewById(R.id.back_button_toolbar);
@@ -119,7 +119,7 @@ public class BackButtonToolbarTest {
 
         // Launch Settings Activity, which uses a Toolbar View to implement the automotive toolbar.
         mSettingsActivityTestRule.startSettingsActivity();
-        SettingsActivity settingsActivity = mSettingsActivityTestRule.getActivity();
+        ChromeBaseAppCompatActivity settingsActivity = mSettingsActivityTestRule.getActivity();
 
         // Check that the automotive toolbar is present with only a back button.
         Toolbar toolbar = settingsActivity.findViewById(R.id.back_button_toolbar);
