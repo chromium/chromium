@@ -250,7 +250,6 @@ const FeatureEntry::FeatureVariation
          kEnableFuseboxKeyboardAccessoryOnlyFeaturesParam, nullptr},
         {"C) enable both", kEnableFuseboxKeyboardAccessoryBothParam, nullptr}};
 
-
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches4[] = {
@@ -2951,6 +2950,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kFetchDeviceAuthorizationKeysDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(webauthn::features::kFetchDeviceAuthorizationKeys)},
+    {"autofill-and-passwords-remove-sign-in-promo",
+     flag_descriptions::kAutofillAndPasswordsRemoveSignInPromoName,
+     flag_descriptions::kAutofillAndPasswordsRemoveSignInPromoDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAndPasswordsRemoveSignInPromo)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

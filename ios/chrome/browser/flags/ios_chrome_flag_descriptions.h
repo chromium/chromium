@@ -204,6 +204,12 @@ inline constexpr char kAutofillAmbientAutofillName[] =
 inline constexpr char kAutofillAmbientAutofillDescription[] =
     "Enables Ambient Autofill.";
 
+inline constexpr char kAutofillAndPasswordsRemoveSignInPromoName[] =
+    "Autofill and passwords remove sign-in promo";
+inline constexpr char kAutofillAndPasswordsRemoveSignInPromoDescription[] =
+    "When enabled, removes the sign-in promo component from the Autofill and "
+    "passwords settings page.";
+
 inline constexpr char kAutofillBottomSheetNewBlurName[] =
     "New Blur Method for Autofill Bottom Sheet";
 inline constexpr char kAutofillBottomSheetNewBlurDescription[] =
@@ -1241,7 +1247,8 @@ inline constexpr char kLensBypassCompressionForC2paName[] =
     "Lens Bypass Compression for C2PA";
 inline constexpr char kLensBypassCompressionForC2paDescription[] =
     "Bypasses image downscaling and compression if a C2PA metadata urn is "
-    "detected, ensuring provenance is preserved during upload. Works across all surfaces.";
+    "detected, ensuring provenance is preserved during upload. Works across "
+    "all surfaces.";
 
 inline constexpr char kLensCameraNoStillOutputRequiredName[] =
     "Lens camera avoids creating unused outputs";
