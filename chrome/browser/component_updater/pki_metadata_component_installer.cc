@@ -525,7 +525,7 @@ bool PKIMetadataComponentInstallerService::UpdateMtcMetadataTrustAnchorIDs(
 
   std::vector<MtcCaIdAndLandmarkTrustAnchorIds>
       mtc_ca_id_landmark_trust_anchor_ids;
-  for (const auto& [ca_id, ca_data] : parsed->plants05_anchor_data()) {
+  for (const auto& [ca_id, ca_data] : parsed->mtc_anchor_data()) {
     MtcCaIdAndLandmarkTrustAnchorIds tai_entry;
     tai_entry.ca_id = ca_id;
     if (ca_data.trusted_landmark_ranges.empty()) {

@@ -81,7 +81,7 @@ class SystemTrustStore {
       const bssl::CertPathBuilderResultPath* path) const = 0;
 
   virtual const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
-      base::span<const uint8_t> log_id) const = 0;
+      base::span<const uint8_t> ca_id) const = 0;
 
   virtual std::optional<bssl::VerifyCertificateChainDelegate::MTCCosigner>
   GetMtcMirrorKey(base::span<const uint8_t> cosigner_id) const = 0;

@@ -374,8 +374,8 @@ class CertVerifyProcTrustStore {
   }
 
   const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
-      base::span<const uint8_t> log_id) const {
-    return system_trust_store_->GetMTCAnchorData(log_id);
+      base::span<const uint8_t> ca_id) const {
+    return system_trust_store_->GetMTCAnchorData(ca_id);
   }
 
   std::optional<bssl::VerifyCertificateChainDelegate::MTCCosigner>

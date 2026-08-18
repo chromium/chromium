@@ -1703,23 +1703,23 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetCreationMirrorFiltering) {
   }
 }
 
-TEST(TrustStoreChromeTestNoFixture, ParseMtcMetadataProtoBothFormats) {
+TEST(TrustStoreChromeTestNoFixture, ParseMtcMetadataProto) {
   chrome_root_store::MtcMetadata proto;
   proto.set_update_time_seconds(987654321);
 
   // 1. Add experiment format MtcAnchorData.
   {
-    auto* anchor = proto.add_mtc_anchor_data();
-    anchor->set_log_id("\x01\x03\x06\x01\x04\x01");
-    auto* range = anchor->mutable_trusted_landmark_ids_range();
-    range->set_base_id(std::string("\x01\x03\x06\x01\x04\x01\x00\x02", 8));
-    range->set_min_active_landmark_inclusive(10);
-    range->set_last_landmark_inclusive(20);
-
-    auto* subtree = anchor->add_trusted_subtrees();
-    subtree->set_start_inclusive(100);
-    subtree->set_end_exclusive(200);
-    subtree->set_hash(std::string(32, '\xaa'));
+    // The MtcAnchorData proto message previously could contain either
+    // davidben-08 or plants-05 style data. The presence of the `ca_id` field
+    // indicates this message contains plants-05 data.  Since the davidben-08
+    // fields were removed from the proto definition the test can't easily
+    // populate a davidben-08 style message. (Perhaps it could with the
+    // "UnknownFieldSet" API, but not really worth the trouble.) All we really
+    // care about is testing that the parser ignores a message that doesn't
+    // have `ca_id` set.
+    // TODO(crbug.com/520071497): Remove this if we remove the has_ca_id
+    // conditional in ChromeRootStoreMtcMetadata::CreateFromMtcMetadataProto.
+    proto.add_mtc_anchor_data();
   }
 
   // 2. Add plants format MtcAnchorData.
@@ -1737,7 +1737,6 @@ TEST(TrustStoreChromeTestNoFixture, ParseMtcMetadataProtoBothFormats) {
       auto* log = anchor->add_mtc_log_data();
       log->set_log_number(5);
       auto* range = log->mutable_trusted_landmark_ids_range();
-      range->set_base_id(std::string("\x01\x03\x06\x01\x04\x02\x00\x05", 8));
       range->set_min_active_landmark_inclusive(30);
       range->set_last_landmark_inclusive(40);
 
@@ -1752,7 +1751,6 @@ TEST(TrustStoreChromeTestNoFixture, ParseMtcMetadataProtoBothFormats) {
       auto* log = anchor->add_mtc_log_data();
       log->set_log_number(8);
       auto* range = log->mutable_trusted_landmark_ids_range();
-      range->set_base_id(std::string("\x01\x03\x06\x01\x04\x02\x00\x08", 8));
       range->set_min_active_landmark_inclusive(50);
       range->set_last_landmark_inclusive(60);
 
@@ -1779,30 +1777,8 @@ TEST(TrustStoreChromeTestNoFixture, ParseMtcMetadataProtoBothFormats) {
   EXPECT_EQ(mtc_metadata->update_time(),
             base::Time::UnixEpoch() + base::Seconds(987654321));
 
-  const auto& anchor_map = mtc_metadata->mtc_anchor_data();
-  ASSERT_EQ(anchor_map.size(), 1U);
-
-  {
-    // Check experiment format anchor.
-    std::vector<uint8_t> old_log_id = {0x01, 0x03, 0x06, 0x01, 0x04, 0x01};
-    auto old_it = anchor_map.find(old_log_id);
-    ASSERT_NE(old_it, anchor_map.end());
-    EXPECT_EQ(old_it->second.log_id, old_log_id);
-    EXPECT_EQ(
-        old_it->second.landmark_base_id,
-        std::vector<uint8_t>({0x01, 0x03, 0x06, 0x01, 0x04, 0x01, 0x00, 0x02}));
-    EXPECT_EQ(old_it->second.landmark_min_inclusive, 10U);
-    EXPECT_EQ(old_it->second.landmark_max_inclusive, 20U);
-    ASSERT_EQ(old_it->second.trusted_subtrees.size(), 1U);
-    EXPECT_EQ(old_it->second.trusted_subtrees[0].range.start, 100U);
-    EXPECT_EQ(old_it->second.trusted_subtrees[0].range.end, 200U);
-    EXPECT_EQ(base::ToVector(old_it->second.trusted_subtrees[0].hash),
-              std::vector<uint8_t>(32, 0xaa));
-    EXPECT_TRUE(old_it->second.revoked_indices.empty());
-  }
-
   // Check newer format logs.
-  const auto& plants05_map = mtc_metadata->plants05_anchor_data();
+  const auto& plants05_map = mtc_metadata->mtc_anchor_data();
   ASSERT_EQ(plants05_map.size(), 2U);
 
   {

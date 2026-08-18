@@ -173,8 +173,8 @@ class SystemTrustStoreChromeWithUnOwnedSystemStore : public SystemTrustStore {
   }
 
   const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
-      base::span<const uint8_t> log_id) const override {
-    return trust_store_chrome_->GetMTCAnchorData(log_id);
+      base::span<const uint8_t> ca_id) const override {
+    return trust_store_chrome_->GetMTCAnchorData(ca_id);
   }
 
   std::optional<bssl::VerifyCertificateChainDelegate::MTCCosigner>
