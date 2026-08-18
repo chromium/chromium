@@ -1962,7 +1962,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstRun.ImportBookmarksDict"
-    enum="FirstRunImportBookmarksResult" expires_after="M150">
+    enum="FirstRunImportBookmarksResult" expires_after="M160">
   <owner>atharvmaan@chromium.org</owner>
   <owner>chrome-desktop-ui-waterloo@google.com</owner>
   <summary>
