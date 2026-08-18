@@ -106,7 +106,7 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
 
     /**
      * Returns whether all the tiles and non-tiles, with a small margin would fit within a container
-     * with the given {@param totalWidth} without the need to scroll. For large form factors (LFF)
+     * with the given {@code totalWidth} without the need to scroll. For large form factors (LFF)
      * only.
      */
     public boolean contentFitsOnLff(int totalWidth) {
@@ -139,7 +139,7 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
     }
 
     /**
-     * Tags the {@link TileView} at {@param tileIdx} so that on next Layout, minimal scroll is
+     * Tags the {@link TileView} at {@code tileIdx} so that on next Layout, minimal scroll is
      * performed to ensure it's in-view.
      */
     void ensureTileIsInViewOnNextLayout(int tileIdx) {

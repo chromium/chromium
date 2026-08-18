@@ -76,7 +76,7 @@ public class RegularNewTabPageStation extends CtaPageStation {
     }
 
     /**
-     * Checks MVTs exist and returns an {@param MvtsFacility} with interactions with Most Visited
+     * Checks MVTs exist and returns an {@code MvtsFacility} with interactions with Most Visited
      * Tiles.
      *
      * @param siteSuggestions the expected SiteSuggestions to be displayed. Use fakes ones for

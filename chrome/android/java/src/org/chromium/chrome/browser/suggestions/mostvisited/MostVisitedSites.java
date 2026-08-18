@@ -98,7 +98,7 @@ public interface MostVisitedSites extends CustomLinkOperations {
     void recordOpenedMostVisitedItem(Tile tile);
 
     /**
-     * Returns the score of a recent suggestion identified by {@param url}, which is {@link
+     * Returns the score of a recent suggestion identified by {@code url}, which is {@link
      * INVALID_SUGGESTION_SCORE} if not found.
      */
     double getSuggestionScore(GURL url);

@@ -98,7 +98,7 @@ public class TileGroup implements MostVisitedSites.Observer {
         void showTileUnpinSnackbar(Runnable undoHandler);
 
         /**
-         * Returns the score of a recent suggestion identified by {@param url}, or {@link
+         * Returns the score of a recent suggestion identified by {@code url}, or {@link
          * MostVisitedSites.INVALID_SUGGESTION_SCORE} if not found.
          */
         double getSuggestionScore(GURL url);
@@ -203,27 +203,27 @@ public class TileGroup implements MostVisitedSites.Observer {
         void add();
 
         /**
-         * Searches for an existing Most Visited Tile matching {@param suggestion}. If found,
+         * Searches for an existing Most Visited Tile matching {@code suggestion}. If found,
          * attempts to creates a Custom Tile from it. If successful, refreshes the MVT.
          */
         void convert(@Nullable SiteSuggestion suggestion);
 
         /**
-         * Searches for an existing Custom Tile matching {@param suggestion}. If found, attempts to
+         * Searches for an existing Custom Tile matching {@code suggestion}. If found, attempts to
          * remove it. If successful, refreshes the MVT.
          */
         void remove(SiteSuggestion suggestion);
 
         /**
-         * Searches for an existing Custom Tile matching {@param suggestion}. If found, opens the
+         * Searches for an existing Custom Tile matching {@code suggestion}. If found, opens the
          * Custom Tile Edit Dialog (as "Edit shortcut"). If edit proceeds and is successful,
          * refreshes the MVT.
          */
         void edit(SiteSuggestion suggestion);
 
         /**
-         * Searches for existing "from" and "to" Custom Tiles matching {@param fromSuggestion} and
-         * {@param toSuggestion}. If both are found, attempt to move "from" tile to position of the
+         * Searches for existing "from" and "to" Custom Tiles matching {@code fromSuggestion} and
+         * {@code toSuggestion}. If both are found, attempt to move "from" tile to position of the
          * "to" tile, and shift everything between. If successful, refreshes the MVT.
          *
          * @return Whether the operation successfully ran.
@@ -435,7 +435,7 @@ public class TileGroup implements MostVisitedSites.Observer {
     }
 
     /**
-     * Returns the score of a recent suggestion identified by {@param url}, or {@link
+     * Returns the score of a recent suggestion identified by {@code url}, or {@link
      * MostVisitedSites.INVALID_SUGGESTION_SCORE} if not found.
      */
     double getSuggestionScore(GURL url) {

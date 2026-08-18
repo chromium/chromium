@@ -205,7 +205,7 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
      * @param eventX The X coordinate of the The ACTION_MOVE event on the "from" tile.
      * @param eventY The Y coordinate of same.
      * @return The Euclidean distance squared from ({@link mStartX}, {@link mStartY}) to ({@param
-     *     eventX}, {@param eventY}).
+     *     eventX}, {@code eventY}).
      */
     public float getDragDisplacementSquared(float eventX, float eventY) {
         float rawDx = fixEventX(eventX) - mStartX;
@@ -285,7 +285,7 @@ class TileDragSession implements TileDragAutoScroll.Delegate {
     }
 
     /**
-     * Converts {@param eventX} from a fresh {@link MotionEvent} from being relative to {@link
+     * Converts {@code eventX} from a fresh {@link MotionEvent} from being relative to {@link
      * #mFromView} to relative to Inner.
      */
     private float fixEventX(float eventX) {

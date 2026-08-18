@@ -80,7 +80,7 @@ class CustomTileEditDelegates {
      * readily updated by user action. Thus the semantics of Model state assignment is tenuous.
      */
     interface MediatorToView {
-        /** Adds a {@param task} to run once the window gains focus. */
+        /** Adds a {@code task} to run once the window gains focus. */
         void addOnWindowFocusGainedTask(Runnable task);
 
         /**

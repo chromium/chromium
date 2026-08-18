@@ -37,10 +37,10 @@ class TileDragAutoScroll {
         @Px
         float getActiveTileX();
 
-        /** Changes scroll X by {@param dx}. */
+        /** Changes scroll X by {@code dx}. */
         void scrollInnerXBy(@Px int dx);
 
-        /** Callback to inform on each attempt to update scroll (by {@param dx}). */
+        /** Callback to inform on each attempt to update scroll (by {@code dx}). */
         void onAutoScroll(@Px int dx);
     }
 

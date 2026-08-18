@@ -35,8 +35,8 @@ public class TileUtils {
                             UrlConstants.FILE_SCHEME));
 
     /**
-     * Returns whether or not {@param tile} represents a Search query. This includes suggestions
-     * from Repeatable Queries.
+     * Returns whether or not {@code tile} represents a Search query. This includes suggestions from
+     * Repeatable Queries.
      */
     public static boolean isSearchTile(Profile profile, Tile tile) {
         assert profile != null;
@@ -46,9 +46,9 @@ public class TileUtils {
     }
 
     /**
-     * @return Custom tile name, truncated (if needed) from {@param name} if non-empty, or {@param
+     * @return Custom tile name, truncated (if needed) from {@code name} if non-empty, or {@param
      *     url} otherwise. The result can still fail {@link isValidCustomTileName()}, e.g., when
-     *     both {@param name} and {@param url} are empty then the result is also empty.
+     *     both {@code name} and {@code url} are empty then the result is also empty.
      */
     public static String formatCustomTileName(String name, GURL url) {
         String nameToUse = TextUtils.isEmpty(name) ? url.getSpec() : name;
@@ -58,14 +58,14 @@ public class TileUtils {
     }
 
     /**
-     * @return Whether {@param url} is a valid name for Custom Tiles.
+     * @return Whether {@code url} is a valid name for Custom Tiles.
      */
     public static boolean isValidCustomTileName(String name) {
         return !name.isEmpty() && name.length() <= SuggestionsConfig.MAX_CUSTOM_TILES_NAME_LENGTH;
     }
 
     /**
-     * @return Whether {@param url} is a valid URL for usage Custom Tiles.
+     * @return Whether {@code url} is a valid URL for usage Custom Tiles.
      */
     public static boolean isValidCustomTileUrl(@Nullable GURL url) {
         return !GURL.isEmptyOrInvalid(url)
@@ -74,7 +74,7 @@ public class TileUtils {
     }
 
     /**
-     * @return Whether number of Custom Tiles in {@param tiles} is below maximum.
+     * @return Whether number of Custom Tiles in {@code tiles} is below maximum.
      */
     public static boolean customTileCountIsUnderLimit(List<Tile> tiles) {
         int numCustomTiles = 0;
@@ -87,7 +87,7 @@ public class TileUtils {
     }
 
     /**
-     * Returns whether {@param keyCode} and {@param event} from an onKey() event is the combo for
+     * Returns whether {@code keyCode} and {@code event} from an onKey() event is the combo for
      * reorder a Custom Tile by swapping it with a neighbor. Implementation: Ctrl+Shift+{Page Up,
      * Page Down} swaps with the {previous, next} Custom Tile.
      */

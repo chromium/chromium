@@ -46,14 +46,14 @@ public class TileMovement {
     }
 
     /**
-     * @return The {@link TileView} at {@param index}.
+     * @return The {@link TileView} at {@code index}.
      */
     public TileView getTileViewAt(int index) {
         return mTileViews.get(index);
     }
 
     /**
-     * @return Index of {@param view} existing in {@link #mTileViews}.
+     * @return Index of {@code view} existing in {@link #mTileViews}.
      */
     public int getIndexOfView(TileView view) {
         int index = mTileViews.indexOf(view);
@@ -62,7 +62,7 @@ public class TileMovement {
     }
 
     /**
-     * @return Index of the {@link #mTileViews} element whose X-coordinate is nearest to {@param x},
+     * @return Index of the {@link #mTileViews} element whose X-coordinate is nearest to {@code x},
      *     preferring lower index on a tie.
      */
     public int getIndexOfViewNearestTo(float x) {
@@ -94,10 +94,10 @@ public class TileMovement {
     }
 
     /**
-     * Changes the (visual) location of the tile at {@param index} to the original location of tile
-     * at {@param newIndex}. Once move completes (possibly after animation, as determined by {@param
-     * isAnimated}), runs {@param onEnd} if non-null. Replaces the previous tile animation, and
-     * prevents the previously specified {@param onEnd} from running.
+     * Changes the (visual) location of the tile at {@code index} to the original location of tile
+     * at {@code newIndex}. Once move completes (possibly after animation, as determined by {@param
+     * isAnimated}), runs {@code onEnd} if non-null. Replaces the previous tile animation, and
+     * prevents the previously specified {@code onEnd} from running.
      */
     public void moveTile(int index, int newIndex, boolean isAnimated, @Nullable Runnable onEnd) {
         TileView tileView = mTileViews.get(index);
@@ -123,8 +123,8 @@ public class TileMovement {
     }
 
     /**
-     * Given that tile at {@param fromIndex} is moved to {@param toIndex}, shifts the latter and all
-     * tiles in between towards {@param fromIndex}, and resets all other tiles, with animation that
+     * Given that tile at {@code fromIndex} is moved to {@code toIndex}, shifts the latter and all
+     * tiles in between towards {@code fromIndex}, and resets all other tiles, with animation that
      * overrides existing animations.
      */
     public void shiftBackgroundTile(int fromIndex, int toIndex) {
@@ -147,9 +147,9 @@ public class TileMovement {
     }
 
     /**
-     * Accepts tile movement from {@param fromIndex} to {@param toIndex}, starting with animation
-     * for aesthetics. The animation can still be cancelled by calling cancel(). When animation
-     * finishes, runs {@param onAccept}.
+     * Accepts tile movement from {@code fromIndex} to {@code toIndex}, starting with animation for
+     * aesthetics. The animation can still be cancelled by calling cancel(). When animation
+     * finishes, runs {@code onAccept}.
      */
     public void animatedAccept(int fromIndex, int toIndex, Runnable onAccept) {
         // Animate the "from" tile moving to "to" tile, which can be cancelled via cancelIfActive().
@@ -158,7 +158,7 @@ public class TileMovement {
                 toIndex,
                 /* isAnimated= */ true,
                 () -> {
-                    // Animation completes: Reset all tile positions, and run {@param onAccept}.
+                    // Animation completes: Reset all tile positions, and run {@code onAccept}.
                     // Note that reset is needed even on accept, since {@link TileVIew} changes are
                     // "for show", and the actual movement is done on reload, which in turn can
                     // reuse TileView instances (so it's important to clean up).

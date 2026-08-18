@@ -48,7 +48,7 @@ public class OmniboxFeedbackSource implements FeedbackSource {
      *   <li>Preference-Based Settings, e.g. toolbar placement.
      * </ul>
      *
-     * @param key Specific product data key to include - {@see Psd}.
+     * @param key Specific product data key to include - {@link Psd}.
      * @param value Value to associate with the key, or null, to remove the entry from the report.
      */
     public static void addFeedbackData(@Psd String key, @Nullable String value) {
