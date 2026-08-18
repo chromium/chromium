@@ -174,7 +174,6 @@ std::vector<std::string> GetTestSuiteNames() {
   return {
       "GlicApiTest",
       "GlicApiTestWithOneTab",
-      "GlicApiTestWithFastTimeout",
       "GlicApiTestWithOneTabAndCachedUserProfile",
 
       "GlicApiTestUserStatusCheckTest",
@@ -375,37 +374,6 @@ class GlicApiTestWithMqlsIdGetterEnabled : public GlicApiTestWithOneTab {
 
 
 // Test fixture that preloads the web client before starting the test.
-
-class GlicApiTestWithFastTimeout : public GlicApiTest {
- public:
-  GlicApiTestWithFastTimeout() {
-    features2_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{
-            features::kGlicWebClientLoadTimes,
-            {
-// For slow binaries, use a longer timeout.
-#if defined(SLOW_BINARY)
-                {features::kGlicMaxLoadingTimeMs.name, "6000"},
-#else
-                {features::kGlicMaxLoadingTimeMs.name, "2000"},
-#endif
-            },
-        }},
-        /*disabled_features=*/
-        {});
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    GlicApiTest::SetUpCommandLine(command_line);
-    // --glic-dev brings behavioral changes, and we'd rather test the default
-    // behavior.
-    command_line->RemoveSwitch(::switches::kGlicDev);
-  }
-
- private:
-  base::test::ScopedFeatureList features2_;
-};
 
 class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
  public:
@@ -1100,18 +1068,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain, testNewTabMetrics) {
   }));
 }
 
-// TODO(crbug.com/508719420): Flaky time out.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
-                       DISABLED_testNavigateToAboutBlank) {
-  // Client loads, and navigates to a new URL. We try to load the client again,
-  // but it fails.
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  WebUIStateListener listener(GetHost());
-  listener.WaitForWebUiState(mojom::WebUiState::kReady);
-  ExecuteJsTest();
-  listener.WaitForWebUiState(mojom::WebUiState::kError);
-}
-
 // TODO(crbug.com/410881522): Re-enable this test
 
 // TODO(crbug.com/454001121): Re-enable after fixing.
@@ -1582,10 +1538,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithFastTimeout,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestRuntimeFeatureOff,
                          DefaultTestParamSet(),
