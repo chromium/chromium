@@ -71,7 +71,7 @@ TEST_F(ChromeSelectionDropdownMenuDelegateTest,
 
   ASSERT_TRUE(model);
   ASSERT_TRUE(ContainsCommand(*model, IDC_PRINT));
-  EXPECT_EQ(100, GetCommandOrder(*model, IDC_PRINT));
+  EXPECT_EQ(65, GetCommandOrder(*model, IDC_PRINT));
 }
 
 TEST_F(ChromeSelectionDropdownMenuDelegateTest,

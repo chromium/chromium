@@ -40,6 +40,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Utility class around menu items for the text selection action menu. This was created (as opposed
@@ -128,7 +129,12 @@ public class SelectActionMenuHelper {
 
         menu.addAll(
                 getDefaultItems(
-                        context, delegate, menuType, selectedText, selectionActionMenuDelegate));
+                        context,
+                        delegate,
+                        menuType,
+                        isSelectionReadOnly,
+                        selectedText,
+                        selectionActionMenuDelegate));
 
         // TODO(crbug.com/452918681): Instead of creating extra lists. We should pass the
         //  PendingSelectionMenu into these helper methods. This would require refactoring tests.
@@ -182,6 +188,7 @@ public class SelectActionMenuHelper {
             @Nullable Context context,
             TextSelectionCapabilitiesDelegate delegate,
             @MenuType int menuType,
+            boolean isSelectionReadOnly,
             String selectedText,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         List<SelectionMenuItem> menuItems = new ArrayList<>();
@@ -194,26 +201,42 @@ public class SelectActionMenuHelper {
                         : selectionActionMenuDelegate.getDefaultMenuItemOrder(menuType);
         for (int pos = 0; pos < itemOrder.length; pos++) {
             @DefaultItem int item = itemOrder[pos];
+            // Space out default items by 10 (CUT=10, COPY=20, ..., WEB_SEARCH=60, SHARE=70)
+            // leaving orders 61-69 free for additional items to be interposed with.
+            int order = pos * 10;
             if (item == DefaultItem.CUT) {
-                if (delegate.canCut()) menuItems.add(cut(pos));
+                if (delegate.canCut()) {
+                    menuItems.add(cut(order));
+                }
             } else if (item == DefaultItem.COPY) {
-                if (delegate.canCopy()) menuItems.add(copy(pos));
+                if (delegate.canCopy()) {
+                    menuItems.add(copy(order));
+                }
             } else if (item == DefaultItem.PASTE) {
-                if (delegate.canPaste()) menuItems.add(paste(pos));
+                if (delegate.canPaste()) {
+                    menuItems.add(paste(order));
+                }
             } else if (item == DefaultItem.PASTE_AS_PLAIN_TEXT) {
-                if (delegate.canPasteAsPlainText()) menuItems.add(pasteAsPlainText(context, pos));
+                if (delegate.canPasteAsPlainText()) {
+                    menuItems.add(pasteAsPlainText(context, order));
+                }
             } else if (item == DefaultItem.SHARE) {
-                if (delegate.canShare(menuType)) menuItems.add(share(context, pos, menuType));
+                if (delegate.canShare(menuType)) {
+                    menuItems.add(share(context, order, menuType, isSelectionReadOnly));
+                }
             } else if (item == DefaultItem.SELECT_ALL) {
-                if (delegate.canSelectAll(menuType)) menuItems.add(selectAll(pos));
+                if (delegate.canSelectAll(menuType)) {
+                    menuItems.add(selectAll(order));
+                }
             } else if (item == DefaultItem.WEB_SEARCH) {
                 if (delegate.canWebSearch(menuType)) {
                     menuItems.add(
                             webSearch(
                                     context,
-                                    pos,
+                                    order,
                                     selectedText,
                                     menuType,
+                                    isSelectionReadOnly,
                                     selectionActionMenuDelegate));
                 }
             }
@@ -293,6 +316,8 @@ public class SelectActionMenuHelper {
         }
         final PackageManager packageManager = context.getPackageManager();
         for (int i = 0; i < supportedActivities.size(); i++) {
+            int category = ItemGroupOffset.TEXT_PROCESSING_ITEMS;
+            int order = i;
             ResolveInfo resolveInfo = supportedActivities.get(i);
             if (resolveInfo.activityInfo == null || !resolveInfo.activityInfo.exported) continue;
             CharSequence title = resolveInfo.loadLabel(packageManager);
@@ -302,17 +327,38 @@ public class SelectActionMenuHelper {
                 icon = resolveInfo.loadIcon(packageManager);
             }
             Intent intent = createProcessTextIntentForResolveInfo(resolveInfo, isSelectionReadOnly);
+            if (isReadAloud(title)) {
+                if (isSelectionReadOnly || menuType != MenuType.DROPDOWN) {
+                    category = ItemGroupOffset.DEFAULT_ITEMS;
+                    order = SelectionMenuItem.ItemOrder.READ_ALOUD_READ_ONLY;
+                } else {
+                    category = ItemGroupOffset.SECONDARY_ASSIST_ITEMS;
+                    order = SelectionMenuItem.ItemOrder.READ_ALOUD_EDITABLE;
+                }
+            }
             textProcessingItems.add(
                     new SelectionMenuItem.Builder(title)
                             .setId(Menu.NONE)
                             .setGroupId(R.id.select_action_menu_text_processing_items)
                             .setIcon(icon)
-                            .setOrderAndCategory(i, ItemGroupOffset.TEXT_PROCESSING_ITEMS)
+                            .setOrderAndCategory(order, category)
                             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                             .setIntent(intent)
                             .build());
         }
         return textProcessingItems;
+    }
+
+    private static boolean isReadAloud(@Nullable CharSequence title) {
+        if (title != null) {
+            String lowerTitle = title.toString().toLowerCase(Locale.US);
+            if (lowerTitle.contains("read aloud")
+                    || lowerTitle.contains("listen")
+                    || lowerTitle.contains("reading mode")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static Intent createProcessTextIntentForResolveInfo(
@@ -388,30 +434,29 @@ public class SelectActionMenuHelper {
                 .build();
     }
 
-    // Relative order for the Share item within the alternative items section in dropdown menus.
-    private static final int ALTERNATIVE_SECTION_SHARE_ORDER = 1;
-
     private static SelectionMenuItem share(
-            @Nullable Context context, int order, @MenuType int menuType) {
+            @Nullable Context context,
+            int order,
+            @MenuType int menuType,
+            boolean isSelectionReadOnly) {
         if (context == null) {
             context = ContextUtils.getApplicationContext();
         }
-        SelectionMenuItem.Builder builder =
-                new SelectionMenuItem.Builder(context.getString(R.string.actionbar_share))
-                        .setId(R.id.select_action_menu_share)
-                        .setGroupId(R.id.select_action_menu_default_items)
-                        .setIconAttr(android.R.attr.actionModeShareDrawable)
-                        .setShowAsActionFlags(
-                                MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
-                        .setIsEnabled(true)
-                        .setIsIconTintable(true);
-        if (menuType == MenuType.DROPDOWN) {
-            builder.setOrderAndCategory(
-                    ALTERNATIVE_SECTION_SHARE_ORDER, ItemGroupOffset.ALTERNATIVE_ITEMS);
-        } else {
-            builder.setOrderAndCategory(order, ItemGroupOffset.DEFAULT_ITEMS);
+        @ItemGroupOffset int category = ItemGroupOffset.DEFAULT_ITEMS;
+        if (!isSelectionReadOnly && menuType == MenuType.DROPDOWN) {
+            category = ItemGroupOffset.SECONDARY_ASSIST_ITEMS;
+            order = SelectionMenuItem.ItemOrder.SHARE_EDITABLE;
         }
-        return builder.build();
+        return new SelectionMenuItem.Builder(context.getString(R.string.actionbar_share))
+                .setId(R.id.select_action_menu_share)
+                .setGroupId(R.id.select_action_menu_default_items)
+                .setIconAttr(android.R.attr.actionModeShareDrawable)
+                .setOrderAndCategory(order, category)
+                .setShowAsActionFlags(
+                        MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
+                .setIsEnabled(true)
+                .setIsIconTintable(true)
+                .build();
     }
 
     private static SelectionMenuItem selectAll(int order) {
@@ -450,6 +495,7 @@ public class SelectActionMenuHelper {
             int order,
             String selectedText,
             @MenuType int menuType,
+            boolean isSelectionReadOnly,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate) {
         if (context == null) {
             context = ContextUtils.getApplicationContext();
@@ -465,11 +511,16 @@ public class SelectActionMenuHelper {
                 title = customTitle;
             }
         }
+        @ItemGroupOffset int category = ItemGroupOffset.DEFAULT_ITEMS;
+        if (!isSelectionReadOnly && menuType == MenuType.DROPDOWN) {
+            category = ItemGroupOffset.SECONDARY_ASSIST_ITEMS;
+            order = SelectionMenuItem.ItemOrder.WEB_SEARCH_EDITABLE;
+        }
         return new SelectionMenuItem.Builder(title)
                 .setId(R.id.select_action_menu_web_search)
                 .setGroupId(R.id.select_action_menu_default_items)
                 .setIconAttr(android.R.attr.actionModeWebSearchDrawable)
-                .setOrderAndCategory(order, ItemGroupOffset.DEFAULT_ITEMS)
+                .setOrderAndCategory(order, category)
                 .setShowAsActionFlags(
                         MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT)
                 .setIsEnabled(true)

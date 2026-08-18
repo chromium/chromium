@@ -464,10 +464,11 @@ public class ContentTextSelectionTest {
         matchers.add(hasId(R.id.select_action_menu_copy));
         matchers.add(hasId(android.R.id.paste));
         matchers.add(hasId(R.id.select_action_menu_select_all));
+        matchers.add(isDivider());
         if (webSearchAllowed) matchers.add(hasId(R.id.select_action_menu_web_search));
+        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
         matchers.add(isDivider());
         matchers.add(hasTitle("testTextProcessingItem"));
-        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
 
         TestSelectionDropdownMenuDelegate dropdownDelegate =
                 new TestSelectionDropdownMenuDelegate();
@@ -553,16 +554,16 @@ public class ContentTextSelectionTest {
                 mSelectionPopupController.isSelectActionModeAllowed(
                         ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH);
 
-        // Map | Copy [Web Search] | testTextProcessingItem [Share]
+        // Map | Copy [Web Search] [Share] | testTextProcessingItem
         ArrayList<ItemMatcher> matchers = new ArrayList<>();
         matchers.add(hasTitle("Map"));
         matchers.add(isDivider());
         matchers.add(hasId(R.id.select_action_menu_copy));
         if (webSearchAllowed) matchers.add(hasId(R.id.select_action_menu_web_search));
+        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
         matchers.add(isDivider());
         // The text processing menu item we created is added to the menu.
         matchers.add(hasTitle("testTextProcessingItem"));
-        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
 
         TestSelectionDropdownMenuDelegate dropdownDelegate =
                 new TestSelectionDropdownMenuDelegate();
@@ -602,13 +603,13 @@ public class ContentTextSelectionTest {
                 mSelectionPopupController.isSelectActionModeAllowed(
                         ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH);
 
-        // Map Copy [Share] Select All [Web Search] testTextProcessingItem
+        // Map Copy Select All [Web Search] [Share] testTextProcessingItem
         ArrayList<ItemMatcher> matchers = new ArrayList<>();
         matchers.add(hasTitle("Map"));
         matchers.add(hasId(R.id.select_action_menu_copy));
-        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
         matchers.add(hasId(R.id.select_action_menu_select_all));
         if (webSearchAllowed) matchers.add(hasId(R.id.select_action_menu_web_search));
+        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
         // The text processing menu item we created is added to the menu.
         matchers.add(hasTitle("testTextProcessingItem"));
 

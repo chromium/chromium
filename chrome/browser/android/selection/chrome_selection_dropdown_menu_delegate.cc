@@ -37,9 +37,12 @@ namespace {
 
 #if BUILDFLAG(ENABLE_PRINTING)
 // The display order for the Print menu item in the selection dropdown menu.
-// Placed after standard items (e.g., "Search Google for...", order 16) and
-// before alternative items (e.g., "Ask Gemini", order 262144).
-constexpr int kPrintMenuItemOrder = 100;
+// For read-only selection, placed after "Search Google for..." (absolute order
+// 60) and before "Open in reading mode" (absolute order 68). For editable
+// selection, placed in the secondary assist section at relative order 20 (total
+// order 120).
+constexpr int kPrintMenuItemOrderReadOnly = 65;
+constexpr int kPrintMenuItemOrderEditable = 120;
 #endif
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
@@ -87,7 +90,8 @@ class ChromeSelectionDropdownMenuModel : public BaseSelectionDropdownMenuModel
     int command_id = GetCommandIdAt(index);
 #if BUILDFLAG(ENABLE_PRINTING)
     if (command_id == IDC_PRINT) {
-      return kPrintMenuItemOrder;
+      return params_.is_editable ? kPrintMenuItemOrderEditable
+                                 : kPrintMenuItemOrderReadOnly;
     }
 #endif
     if (command_id == IDC_CONTENT_CONTEXT_INSPECTELEMENT) {

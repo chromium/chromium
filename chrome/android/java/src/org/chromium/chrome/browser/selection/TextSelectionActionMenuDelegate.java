@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -91,7 +90,7 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                             .setId(R.id.contextmenu_open_in_reading_mode)
                             .setGroupId(R.id.select_action_menu_delegate_items)
                             .setOrderAndCategory(
-                                    Menu.CATEGORY_SECONDARY, // Show at end of section.
+                                    SelectionMenuItem.ItemOrder.OPEN_IN_READING_MODE,
                                     SelectionMenuItem.ItemGroupOffset.DEFAULT_ITEMS)
                             .setShowAsActionFlags(
                                     MenuItem.SHOW_AS_ACTION_NEVER
@@ -122,7 +121,9 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                     new SelectionMenuItem.Builder(R.string.contextmenu_copy_link_to_highlight)
                             .setId(R.id.contextmenu_copy_link_to_highlight)
                             .setGroupId(org.chromium.content.R.id.select_action_menu_delegate_items)
-                            .setOrderAndCategory(1, ItemGroupOffset.DEFAULT_ITEMS)
+                            .setOrderAndCategory(
+                                    SelectionMenuItem.ItemOrder.COPY_LINK_TO_HIGHLIGHT,
+                                    ItemGroupOffset.DEFAULT_ITEMS)
                             .build();
 
             items.add(copyLinkItem);
