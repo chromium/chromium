@@ -22,7 +22,6 @@
 #include "content/browser/devtools/devtools_pipe_handler.h"
 #include "content/browser/devtools/devtools_stream_file.h"
 #include "content/browser/devtools/forwarding_agent_host.h"
-#include "content/browser/devtools/mojom_devtools_agent_host.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
@@ -36,7 +35,6 @@
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
-#include "content/public/browser/mojom_devtools_agent_host_delegate.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -194,8 +192,6 @@ DevToolsAgentHost::List DevToolsAgentHost::GetOrCreateAll() {
   RenderFrameDevToolsAgentHost::AddAllAgentHosts(&result);
   WebContentsDevToolsAgentHost::AddAllAgentHosts(&result);
 
-  MojomDevToolsAgentHost::GetAll(&result);
-
 #if DCHECK_IS_ON()
   for (auto it : result) {
     DevToolsAgentHostImpl* host = static_cast<DevToolsAgentHostImpl*>(it.get());
@@ -289,17 +285,6 @@ scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::Forward(
   if (result)
     return result;
   return new ForwardingAgentHost(id, std::move(delegate));
-}
-
-// static
-scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::CreateForMojomDelegate(
-    const std::string& id,
-    std::unique_ptr<MojomDevToolsAgentHostDelegate> delegate) {
-  scoped_refptr<DevToolsAgentHost> result = DevToolsAgentHost::GetForId(id);
-  if (result) {
-    return result;
-  }
-  return new MojomDevToolsAgentHost(id, std::move(delegate));
 }
 
 DevToolsSession* DevToolsAgentHostImpl::SessionByClient(
