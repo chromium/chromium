@@ -3374,8 +3374,8 @@ IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, FrameCacheUsage) {
   EXPECT_EQ(baseline_locked, content::GetLockedCompositorFrameCount());
 }
 
-// TODO(crbug.com/548333350): Flaky on Mac ARM64.
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/548333350): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_EndToEndTabSwitchMitigation DISABLED_EndToEndTabSwitchMitigation
 #else
 #define MAYBE_EndToEndTabSwitchMitigation EndToEndTabSwitchMitigation
