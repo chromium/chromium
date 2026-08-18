@@ -8,6 +8,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -575,7 +576,8 @@ bool SharedContextState::InitializeGanesh(
     return false;
   }
 
-  gr_context_->setResourceCacheLimit(max_resource_cache_bytes);
+  max_resource_cache_bytes_ = max_resource_cache_bytes;
+  gr_context_->setResourceCacheLimit(max_resource_cache_bytes_);
   transfer_cache_ = std::make_unique<ServiceTransferCache>(
       gpu_preferences,
       base::BindRepeating(&SharedContextState::ScheduleSkiaCleanup,
@@ -1065,55 +1067,68 @@ void SharedContextState::PurgeMemory(int memory_limit) {
   if (!MakeCurrent(nullptr))
     return;
 
-  base::MemoryPressureLevel memory_pressure_level;
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    if (gr_context_) {
+      size_t target_resource_cache_bytes =
+          gpu::UpdateShaderCacheSizeOnMemoryLimit(max_resource_cache_bytes_,
+                                                  memory_limit);
+      gr_context_->setResourceCacheLimit(target_resource_cache_bytes);
+    }
+  }
+
   if (memory_limit <= base::kCriticalMemoryPressureThreshold) {
-    memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
-  } else if (memory_limit <= base::kModerateMemoryPressureThreshold) {
-    memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_MODERATE;
-  } else {
-    memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_NONE;
-  }
-
-  switch (memory_pressure_level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-      return;
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      // With moderate pressure, clear any unlocked resources.
-      sk_surface_cache_.Clear();
+    // With critical pressure, purge as much as possible.
+    sk_surface_cache_.Clear();
+    {
+      std::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
+      // ScopedCacheUse is to avoid the empty/invalid client id DCHECKS caused
+      // while accessing GrShaderCache. Note that since the actual client_id
+      // here does not matter, we are using gpu::kDisplayCompositorClientId.
+      UseShaderCache(cache_use, kDisplayCompositorClientId);
       if (gr_context_) {
-        gr_context_->purgeUnlockedResources(
-            GrPurgeResourceOptions::kScratchResourcesOnly);
+        gr_context_->freeGpuResources();
       } else if (gpu_main_graphite_cache_controller_) {
-        gpu_main_graphite_cache_controller_->CleanUpScratchResources();
+        gpu_main_graphite_cache_controller_->CleanUpAllResources();
       }
-      UpdateSkiaOwnedMemorySize();
-      scratch_deserialization_buffer_.resize(
-          kInitialScratchDeserializationBufferSize);
-      scratch_deserialization_buffer_.shrink_to_fit();
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      // With critical pressure, purge as much as possible.
-      sk_surface_cache_.Clear();
-      {
-        std::optional<raster::GrShaderCache::ScopedCacheUse> cache_use;
-        // ScopedCacheUse is to avoid the empty/invalid client id DCHECKS caused
-        // while accessing GrShaderCache. Note that since the actual client_id
-        // here does not matter, we are using gpu::kDisplayCompositorClientId.
-        UseShaderCache(cache_use, kDisplayCompositorClientId);
-        if (gr_context_) {
-          gr_context_->freeGpuResources();
-        } else if (gpu_main_graphite_cache_controller_) {
-          gpu_main_graphite_cache_controller_->CleanUpAllResources();
-        }
-      }
-      UpdateSkiaOwnedMemorySize();
-      scratch_deserialization_buffer_.resize(0u);
-      scratch_deserialization_buffer_.shrink_to_fit();
-      break;
+    }
+    UpdateSkiaOwnedMemorySize();
+    scratch_deserialization_buffer_.resize(0u);
+    scratch_deserialization_buffer_.shrink_to_fit();
+  } else if (memory_limit <= base::kModerateMemoryPressureThreshold) {
+    // With moderate pressure, clear any unlocked resources.
+    sk_surface_cache_.Clear();
+    if (gr_context_) {
+      gr_context_->purgeUnlockedResources(
+          GrPurgeResourceOptions::kScratchResourcesOnly);
+    } else if (gpu_main_graphite_cache_controller_) {
+      gpu_main_graphite_cache_controller_->CleanUpScratchResources();
+    }
+    UpdateSkiaOwnedMemorySize();
+    scratch_deserialization_buffer_.resize(
+        kInitialScratchDeserializationBufferSize);
+    scratch_deserialization_buffer_.shrink_to_fit();
   }
 
-  if (transfer_cache_)
-    transfer_cache_->PurgeMemory(memory_limit);
+  if (transfer_cache_) {
+    transfer_cache_->OnReleaseMemory(memory_limit);
+  }
+}
+
+void SharedContextState::OnUpdateMemoryLimit(int memory_limit) {
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    if (gr_context_) {
+      size_t target_resource_cache_bytes =
+          gpu::UpdateShaderCacheSizeOnMemoryLimit(max_resource_cache_bytes_,
+                                                  memory_limit);
+      size_t current_skia_usage = 0;
+      gr_context_->getResourceCacheUsage(nullptr, &current_skia_usage);
+      gr_context_->setResourceCacheLimit(
+          std::max(current_skia_usage, target_resource_cache_bytes));
+    }
+    if (transfer_cache_) {
+      transfer_cache_->OnUpdateMemoryLimit(memory_limit);
+    }
+  }
 }
 
 // Reports to GpuServiceImpl::GetVideoMemoryUsageStats()

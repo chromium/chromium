@@ -49,6 +49,9 @@ class GpuChannelTestCommon : public testing::Test {
   Scheduler* scheduler() const { return scheduler_.get(); }
   GpuChannelManager* channel_manager() const { return channel_manager_.get(); }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
+  base::TestMemoryConsumerRegistry& test_memory_consumer_registry() {
+    return test_memory_consumer_registry_;
+  }
 
   GpuChannel* CreateChannel(int32_t client_id, bool is_gpu_host);
 

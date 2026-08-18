@@ -847,27 +847,29 @@ void GpuChannelManager::PerformImmediateCleanup() {
 #endif
 }
 
-void GpuChannelManager::OnUpdateMemoryLimit() {}
+void GpuChannelManager::OnUpdateMemoryLimit() {
+  if (shared_context_state_) {
+    shared_context_state_->OnUpdateMemoryLimit(memory_limit());
+  }
+}
 
 void GpuChannelManager::OnReleaseMemory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Map the memory limit percentage to the legacy MemoryPressureLevel used by
-  // the downstream PurgeMemory calls.
-  base::MemoryPressureLevel memory_pressure_level;
-  if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
-    memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
-  } else if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
-    memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_MODERATE;
-  } else {
-    return;
-  }
 
   // SharedContextState requires a current context for cleanup.
   if (shared_context_state_ &&
       shared_context_state_->MakeCurrent(nullptr, true /* needs_gl */)) {
     shared_context_state_->PurgeMemory(memory_limit());
   }
+
+  if (memory_limit() > base::kModerateMemoryPressureThreshold) {
+    return;
+  }
+
+  base::MemoryPressureLevel memory_pressure_level =
+      memory_limit() <= base::kCriticalMemoryPressureThreshold
+          ? base::MEMORY_PRESSURE_LEVEL_CRITICAL
+          : base::MEMORY_PRESSURE_LEVEL_MODERATE;
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
   if (dawn_caching_interface_factory()) {

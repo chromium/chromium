@@ -8,7 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/tracing/test_trace_processor.h"
 #include "base/test/tracing/trace_event_analyzer.h"
 #include "base/test/tracing/trace_test_utils.h"
@@ -256,6 +259,38 @@ TEST_F(GpuChannelManagerTest, GetPeakMemoryUsageCalculatedPerSequence) {
 
   EXPECT_EQ(initial_memory, GetManagersPeakMemoryUsage(sequence_num_1));
   EXPECT_EQ(localized_peak_memory, GetManagersPeakMemoryUsage(sequence_num_2));
+}
+
+namespace {
+
+// Helper class to enable `base::kStatefulMemoryPressure` before
+// `GpuChannelTestCommon` initializes `TaskEnvironment` and starts background
+// threads, ensuring `ScopedFeatureList` is created before and destroyed after
+// all worker threads to avoid race conditions during teardown.
+class StatefulMemoryPressureFeature {
+ public:
+  StatefulMemoryPressureFeature() {
+    scoped_feature_list_.InitAndEnableFeature(base::kStatefulMemoryPressure);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+// Test fixture that enables `base::kStatefulMemoryPressure` with safe
+// initialization/destruction order relative to `TaskEnvironment`.
+class GpuChannelManagerStatefulTest : public StatefulMemoryPressureFeature,
+                                      public GpuChannelManagerTest {};
+
+TEST_F(GpuChannelManagerStatefulTest, OnUpdateMemoryLimitStateful) {
+  // Send async notification for memory limit update and ensure it completes.
+  test_memory_consumer_registry().NotifyUpdateMemoryLimitAsync(
+      50, task_environment().QuitClosure());
+  task_environment().RunUntilQuit();
+
+  EXPECT_EQ(channel_manager()->memory_limit(), 50);
 }
 
 }  // namespace gpu

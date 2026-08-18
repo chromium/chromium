@@ -12,6 +12,7 @@
 #include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -19,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/paint/image_transfer_cache_entry.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
@@ -199,9 +201,11 @@ ServiceTransferCache::ServiceTransferCache(
     base::RepeatingClosure flush_callback)
     : flush_callback_(std::move(flush_callback)),
       entries_(EntryCache::NO_AUTO_EVICT),
-      cache_size_limit_(preferences.force_gpu_mem_discardable_limit_bytes
-                            ? preferences.force_gpu_mem_discardable_limit_bytes
-                            : DiscardableCacheSizeLimit()),
+      max_cache_size_limit_(
+          preferences.force_gpu_mem_discardable_limit_bytes
+              ? preferences.force_gpu_mem_discardable_limit_bytes
+              : DiscardableCacheSizeLimit()),
+      cache_size_limit_(max_cache_size_limit_),
       max_cache_entries_(kMaxCacheEntries) {
   // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
   // (Android Webview).  Don't register a dump provider in these cases.
@@ -389,7 +393,26 @@ int ServiceTransferCache::RemoveOldEntriesUntil(
   return removed_count;
 }
 
-void ServiceTransferCache::PurgeMemory(int memory_limit) {
+void ServiceTransferCache::OnUpdateMemoryLimit(int memory_limit) {
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    size_t target_limit = gpu::UpdateShaderCacheSizeOnMemoryLimit(
+        max_cache_size_limit_, memory_limit);
+    // Ensure no memory is released during OnUpdateMemoryLimit.
+    cache_size_limit_ = std::max(total_size_, target_limit);
+  }
+}
+
+void ServiceTransferCache::OnReleaseMemory(int memory_limit) {
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    // In OnUpdateMemoryLimit(), cache_size_limit_ is clamped to total_size_
+    // to avoid unexpected eviction during subsequent CreateLocalEntry() calls.
+    // When OnReleaseMemory() is called to explicitly free memory, we must
+    // update cache_size_limit_ to the actual target limit before enforcing it.
+    cache_size_limit_ = gpu::UpdateShaderCacheSizeOnMemoryLimit(
+        max_cache_size_limit_, memory_limit);
+    EnforceLimits();
+    return;
+  }
   base::AutoReset<size_t> reset_limit(
       &cache_size_limit_,
       DiscardableCacheSizeLimitForPressure(cache_size_limit_, memory_limit));

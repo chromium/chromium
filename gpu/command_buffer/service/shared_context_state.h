@@ -161,7 +161,13 @@ class GPU_GLES2_EXPORT SharedContextState
   void MarkContextLost(error::ContextLostReason reason = error::kUnknown);
   bool IsCurrent(gl::GLSurface* surface, bool needs_gl = false);
 
+  // Immediately evicts unlocked resources (scratch resources under moderate
+  // pressure, or all resources under critical pressure) down to `memory_limit`.
   void PurgeMemory(int memory_limit);
+
+  // Updates internal memory target budgets non-destructively without forcing
+  // immediate resource purges.
+  void OnUpdateMemoryLimit(int memory_limit);
 
   void UpdateSkiaOwnedMemorySize();
   uint64_t GetMemoryUsage();
@@ -432,6 +438,7 @@ class GPU_GLES2_EXPORT SharedContextState
       viz_compositor_graphite_cache_controller_;
 
   std::optional<int> max_texture_size_;
+  size_t max_resource_cache_bytes_ = 0;
 
   base::WeakPtrFactory<SharedContextState> weak_ptr_factory_{this};
 };
