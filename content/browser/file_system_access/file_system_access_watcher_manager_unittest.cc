@@ -25,12 +25,14 @@
 #include "content/browser/file_system_access/file_system_access_observation_group.h"
 #include "content/browser/file_system_access/file_system_access_observer_quota_manager.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/test/test_web_contents.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -258,10 +260,12 @@ class FakeChangeSource : public FileSystemAccessChangeSource {
 
 }  // namespace
 
-class FileSystemAccessWatcherManagerTest : public testing::Test {
+class FileSystemAccessWatcherManagerTestBase : public testing::Test {
  public:
-  FileSystemAccessWatcherManagerTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+  template <typename... TaskEnvironmentTraits>
+  explicit FileSystemAccessWatcherManagerTestBase(
+      TaskEnvironmentTraits&&... traits)
+      : task_environment_(std::forward<TaskEnvironmentTraits>(traits)...) {}
 
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
@@ -287,23 +291,32 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
     static_cast<TestWebContents*>(web_contents_)->NavigateAndCommit(kTestUrl);
 
     quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
-        /*is_incognito=*/false, dir_.GetPath(),
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        /*is_incognito=*/false, dir_.GetPath(), io_task_runner(),
         special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
-        quota_manager_.get(),
-        base::SingleThreadTaskRunner::GetCurrentDefault().get());
+        quota_manager_.get(), io_task_runner());
 
-    file_system_context_ = storage::CreateFileSystemContextForTesting(
-        quota_manager_proxy_.get(), dir_.GetPath());
+    file_system_context_ =
+        storage::CreateFileSystemContextWithAdditionalProvidersForTesting(
+            io_task_runner(),
+            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+            quota_manager_proxy_.get(),
+            std::vector<std::unique_ptr<storage::FileSystemBackend>>(),
+            dir_.GetPath());
 
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         kTestMountPoint, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), dir_.GetPath());
 
     chrome_blob_context_ = base::MakeRefCounted<ChromeBlobStorageContext>();
-    chrome_blob_context_->InitializeOnIOThread(base::FilePath(),
-                                               base::FilePath(), nullptr);
+    base::RunLoop run_loop;
+    io_task_runner()->PostTaskAndReply(
+        FROM_HERE,
+        base::BindOnce(&ChromeBlobStorageContext::InitializeOnIOThread,
+                       chrome_blob_context_, base::FilePath(), base::FilePath(),
+                       nullptr),
+        run_loop.QuitClosure());
+    run_loop.Run();
 
     manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
         file_system_context_, chrome_blob_context_,
@@ -325,7 +338,7 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
     manager_.reset();
     file_system_context_.reset();
     chrome_blob_context_.reset();
-    task_environment_.RunUntilIdle();
+    RunUntilIdle();
     // On Windows, a synchronous delete of the directory can fail.
     GetDeleteFileCallback(dir_.GetPath()).Run();
   }
@@ -466,8 +479,10 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
   FileSystemAccessManagerImpl::BindingContext binding_context_ = {
       kTestStorageKey, kTestUrl, GlobalRenderFrameHostId()};
 
-  BrowserTaskEnvironment task_environment_;
+  virtual scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() = 0;
+  virtual void RunUntilIdle() = 0;
 
+  BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir dir_;
 
   TestBrowserContext browser_context_;
@@ -483,6 +498,37 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
   mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote_;
 
   raw_ptr<WebContents> web_contents_ = nullptr;
+};
+
+class FileSystemAccessWatcherManagerTest
+    : public FileSystemAccessWatcherManagerTestBase {
+ public:
+  FileSystemAccessWatcherManagerTest()
+      : FileSystemAccessWatcherManagerTestBase(
+            base::test::TaskEnvironment::MainThreadType::IO) {}
+
+ protected:
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() override {
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
+  }
+  void RunUntilIdle() override { task_environment_.RunUntilIdle(); }
+};
+
+class FileSystemAccessWatcherManagerRealIOTest
+    : public FileSystemAccessWatcherManagerTestBase {
+ public:
+  FileSystemAccessWatcherManagerRealIOTest()
+      : FileSystemAccessWatcherManagerTestBase(
+            BrowserTaskEnvironment::REAL_IO_THREAD) {}
+
+ protected:
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() override {
+    return GetIOThreadTaskRunner({});
+  }
+  void RunUntilIdle() override {
+    task_environment_.RunUntilIdle();
+    task_environment_.RunIOThreadUntilIdle();
+  }
 };
 
 // Watching the local file system is not supported on Android or Fuchsia.
@@ -686,6 +732,42 @@ TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
 }
 
 TEST_F(FileSystemAccessWatcherManagerTest, ObserveBucketFS) {
+  ASSERT_OK_AND_ASSIGN(auto default_bucket,
+                       CreateSandboxFileSystemAndGetDefaultBucket());
+  auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      base::FilePath::FromUTF8Unsafe("test/foo/bar"));
+  test_file_url.SetBucket(default_bucket);
+
+#if BUILDFLAG(IS_MAC)
+  // Flush setup events before observation begins.
+  SpinEventLoopForABit();
+#endif
+
+  // Attempting to observe the given file will succeed.
+  ChangeAccumulator accumulator(ObserveFile(test_file_url));
+
+  base::test::TestFuture<base::File::Error> create_file_future;
+  manager_->DoFileSystemOperation(
+      FROM_HERE, &storage::FileSystemOperationRunner::CreateDirectory,
+      create_file_future.GetCallback(), test_file_url,
+      /*exclusive=*/false, /*recursive=*/true);
+  ASSERT_EQ(create_file_future.Get(), base::File::Error::FILE_OK);
+
+  // TODO(crbug.com/40283118): Expect changes for recursively-created
+  // intermediate directories.
+  ChangeInfo change_info(FilePathType::kDirectory, ChangeType::kCreated,
+                         test_file_url.path());
+  Change expected_change{test_file_url, change_info};
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return testing::Matches(testing::Contains(expected_change))(
+        accumulator.changes());
+  }));
+}
+
+// See https://crbug.com/520543781. Ensure that we are correctly respecting
+// threading for file change observers.
+TEST_F(FileSystemAccessWatcherManagerRealIOTest, ObserveBucketFS) {
   ASSERT_OK_AND_ASSIGN(auto default_bucket,
                        CreateSandboxFileSystemAndGetDefaultBucket());
   auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(

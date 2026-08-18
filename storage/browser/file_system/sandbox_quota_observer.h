@@ -79,7 +79,7 @@ class SandboxQuotaObserver
   bool is_disabled_ GUARDED_BY(is_disabled_lock_) = false;
   ~SandboxQuotaObserver() override;
 
-  void ApplyPendingUsageUpdate() EXCLUSIVE_LOCKS_REQUIRED(is_disabled_lock_);
+  void ApplyPendingUsageUpdate();
   void UpdateUsageCacheFile(const base::FilePath& usage_file_path,
                             int64_t delta)
       EXCLUSIVE_LOCKS_REQUIRED(is_disabled_lock_);
