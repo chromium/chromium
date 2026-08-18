@@ -46,7 +46,7 @@ int32_t CalculateDefaultMaxSize() {
 
   // We want to use up to 2% of the computer's memory, with a limit of 50 MB,
   // reached on system with more than 2.5 GB of RAM.
-  if (total_memory >= base::MiBU(2500)) {
+  if (total_memory >= base::MiB(2500)) {
     return kMaxMemoryCacheSize;
   }
 
