@@ -8937,16 +8937,8 @@ void NavigationRequest::Resume(NavigationThrottle* resuming_throttle) {
       CHECK(response_body_callback_);
       response_body_watcher_.reset();
       base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
-      std::string throttle_name = resuming_throttle->GetNameForLogging();
       std::move(response_body_callback_).Run(std::string());
-      if (this_ptr.WasInvalidated()) {
-        // TODO(https://crbug.com/411238078): Replace the debug code with a
-        // comment once we ensure that this is the root cause.
-        SCOPED_CRASH_KEY_STRING32("Bug411238078", "throttle",
-                                  throttle_name.c_str());
-        base::debug::DumpWithoutCrashing();
-        return;
-      }
+      CHECK(this_ptr) << "Synchronous cancellation is forbidden.";
     }
 
     is_resuming_ = false;
