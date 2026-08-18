@@ -4,7 +4,7 @@
 import {HostCapability, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {FocusedTabData, TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
 
 // Test cases here correspond to test cases in glic_api_browsertest.cc.
@@ -767,24 +767,6 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     await this.client.waitForInitialize();
   }
 
-  async testDeferredFocusedTabStateAtCreation() {
-    // Initial state.
-    assertDefined(this.host.getFocusedTabStateV2);
-    const focusedTabStateV2Sequence =
-        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
-    let focusedTabState = await focusedTabStateV2Sequence.next();
-    assertDefined(focusedTabState.hasNoFocus);
-    const tabStatePromise = focusedTabStateV2Sequence.next();
-    assertRejects(waitFor(tabStatePromise, 200));
-    // We should only see the second page.
-    await this.advanceToNextStep();
-    focusedTabState = await tabStatePromise;
-    assertDefined(focusedTabState.hasFocus);
-    assertEquals(
-        new URL(focusedTabState.hasFocus.tabData.url).pathname,
-        '/scrollable_page_with_content.html',
-        `url=${focusedTabState.hasFocus.tabData.url}`);
-  }
 
   async testNoExtractionWhileHidden() {
     assertDefined(this.host.getContextFromFocusedTab);

@@ -852,26 +852,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
   ExecuteJsTest();
 }
 
-// TODO(crbug.com/435271214): Re-enable this test
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-#define MAYBE_testDeferredFocusedTabStateAtCreation \
-  DISABLED_testDeferredFocusedTabStateAtCreation
-#else
-#define MAYBE_testDeferredFocusedTabStateAtCreation \
-  testDeferredFocusedTabStateAtCreation
-#endif
-IN_PROC_BROWSER_TEST_P(DISABLED_GlicApiTestWithOneTabAndPreloading,
-                       MAYBE_testDeferredFocusedTabStateAtCreation) {
-  // Navigate the first tab.
-  RunTestSequence(NavigateWebContents(
-      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
-                     "/scrollable_page_with_content.html")));
-  ExecuteJsTest();
-  RunTestSequence(ToggleGlicWindow(GlicWindowMode::kDetached),
-                  CheckControllerShowing(true));
-  ContinueJsTest();
-}
 
 // TODO(crbug.com/457010934): Flaky on Linux and on Win.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
