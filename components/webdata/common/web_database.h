@@ -30,7 +30,7 @@ class WEBDATA_EXPORT WebDatabase {
   enum class InitResult {
     kSuccess = 0,
     kCouldNotOpen = 1,
-    // kDatabaseLocked = 2,  // No longer used.
+    kDatabaseLocked = 2,
     kCouldNotRazeIncompatibleVersion = 3,
     kFailedToBeginInitTransaction = 4,
     kMetaTableInitFailed = 5,

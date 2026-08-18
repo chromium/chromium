@@ -149,6 +149,13 @@ sql::InitStatus WebDatabase::Init(
   }
   DCHECK(db_.is_open());
 
+  // Dummy transaction to check whether the database is writeable and bail
+  // early if that's not the case.
+  if (!db_.Execute("BEGIN EXCLUSIVE") || !db_.Execute("COMMIT")) {
+    LogInitResult(InitResult::kDatabaseLocked);
+    return sql::INIT_FAILURE;
+  }
+
   // Clobber really old databases.
   static_assert(kDeprecatedVersionNumber < kCurrentVersionNumber,
                 "Deprecation version must be less than current");
