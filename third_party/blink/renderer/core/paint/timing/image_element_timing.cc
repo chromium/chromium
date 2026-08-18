@@ -276,13 +276,13 @@ void ImageElementTiming::EnsureContainerTiming() {
   container_timing_ = ContainerTiming::From(*window_);
 }
 
-bool ImageElementTiming::ContributesToContainerTiming(const Element* element) {
-  return (element && IsContainerTimingEnabled() &&
-          ContainerTiming::ContributesToContainerTiming(element));
+bool ImageElementTiming::ContributesToContainerTiming(Element* element) {
+  return element && IsContainerTimingEnabled() &&
+         ContainerTiming::ContributesToContainerTiming(element);
 }
 
 bool ImageElementTiming::NeededForTiming(const LayoutObject& layout_object) {
-  const auto* element = DynamicTo<Element>(layout_object.GeneratingNode());
+  auto* element = DynamicTo<Element>(layout_object.GeneratingNode());
   return internal::IsExplicitlyRegisteredForElementTiming(element) ||
          ContributesToContainerTiming(element);
 }

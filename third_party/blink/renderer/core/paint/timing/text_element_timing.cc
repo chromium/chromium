@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/timing/element_timing_utils.h"
@@ -20,6 +21,16 @@ namespace blink {
 
 TextElementTiming::TextElementTiming(LocalDOMWindow& window)
     : performance_(DOMWindowPerformance::performance(window)) {}
+
+// static
+bool TextElementTiming::NeededForTiming(Node& node) {
+  auto* element = DynamicTo<Element>(node);
+  if (node.IsInShadowTree() || !element) {
+    return false;
+  }
+  return element->FastHasAttribute(html_names::kElementtimingAttr) ||
+         ContainerTiming::ContributesToContainerTiming(element);
+}
 
 // static
 gfx::RectF TextElementTiming::ComputeIntersectionRect(

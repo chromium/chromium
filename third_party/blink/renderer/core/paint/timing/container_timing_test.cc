@@ -390,12 +390,11 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
 }
 
 // Regression test for the graceful early return in OnElementPainted (previously
-// a CHECK). The painted element inherits the container-timing ancestor bit (so
-// it passes ContributesToContainerTiming), but it is neither a text-aggregation
-// nor an image-generating node, so the pre-paint walk never marks it in the
-// tracker and GetContainerRootFor() returns null. This must not crash and must
-// not produce an entry. It mirrors the presentation-time case where a painted
-// element has been detached since paint.
+// a CHECK). The painted element is inside a container timing root, but it is
+// neither a text-aggregation nor an image-generating node, so the pre-paint
+// walk never marks it in the tracker and GetContainerRootFor() returns null.
+// This must not crash and must not produce an entry. It mirrors the
+// presentation-time case where a painted element has been detached since paint.
 TEST_F(ContainerTimingPrepaintTraversalTest,
        NullContainerRoot_UntrackedElementReturns) {
   SetBodyContent(R"HTML(
@@ -406,9 +405,9 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
 
   auto* plain = GetDocument().getElementById(AtomicString("plain"));
   ASSERT_TRUE(plain);
-  // The empty div inherits the ancestor bit from #root but is not tracked.
-  ASSERT_TRUE(plain->SelfOrAncestorHasContainerTiming());
 
+  // Inside #root, but the pre-paint walk never marks it, so the tracker has no
+  // mapping and no entry may be produced.
   SimulatePaint(plain, gfx::RectF(0, 0, 100, 100));
   TriggerPopulateEntries();
   EXPECT_EQ(0u, GetContainerEntryCount());

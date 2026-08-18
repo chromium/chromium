@@ -33,12 +33,9 @@ class CORE_EXPORT TextElementTiming final
   TextElementTiming(const TextElementTiming&) = delete;
   TextElementTiming& operator=(const TextElementTiming&) = delete;
 
-  static inline bool NeededForTiming(Node& node) {
-    auto* element = DynamicTo<Element>(node);
-    return !node.IsInShadowTree() && element &&
-           (element->FastHasAttribute(html_names::kElementtimingAttr) ||
-            element->SelfOrAncestorHasContainerTiming());
-  }
+  // Returns whether a text node needs paint timing tracking, i.e. it is
+  // registered for element timing or contributes to a container timing root.
+  static bool NeededForTiming(Node& node);
 
   static gfx::RectF ComputeIntersectionRect(
       const LayoutObject&,

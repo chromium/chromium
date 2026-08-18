@@ -14040,6 +14040,16 @@ void Element::AdjustContainerTimingIfNeededAfterChildrenChanged(
     return;
   }
 
+  // Prepaint mode does not maintain the SelfOrAncestorHasContainerTiming() node
+  // flag: newly inserted subtrees are attributed by the pre-paint attribution
+  // tracker on the next walk (new LayoutObjects default their
+  // ContainerTimingChanged bit to true, and the paint-invalidation walk reaches
+  // them), so this O(subtree) DOM traversal is unnecessary.
+  if (RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(
+          GetExecutionContext())) {
+    return;
+  }
+
   if (!change.IsChildInsertion() ||
       !ShouldAdjustContainerTimingForInsert(change)) {
     return;

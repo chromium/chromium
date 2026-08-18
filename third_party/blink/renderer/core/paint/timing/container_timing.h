@@ -33,10 +33,10 @@ class CORE_EXPORT ContainerTiming final
 
   static ContainerTiming& From(LocalDOMWindow&);
 
-  static inline bool ContributesToContainerTiming(const Element* element) {
-    return element && !element->IsInShadowTree() &&
-           element->SelfOrAncestorHasContainerTiming();
-  }
+  // In prepaint mode the container-timing decision is made via the paint
+  // attribution tracker; otherwise via the SelfOrAncestorHasContainerTiming()
+  // node flag.
+  static bool ContributesToContainerTiming(Element* element);
 
   bool CanReportToContainerTiming() const;
   void MaybeUpdateContainerRootIdentifier(Element* element,

@@ -46,6 +46,11 @@ Element* ContainerRootFallback(Element* element) {
   return nullptr;
 }
 
+bool ContributesToContainerTimingFallback(const Element* element) {
+  return element && !element->IsInShadowTree() &&
+         element->SelfOrAncestorHasContainerTiming();
+}
+
 // static
 Element* ParentContainerRootFallback(Element* element) {
   auto* parent = element->parentElement();
@@ -77,6 +82,29 @@ ContainerTiming::ContainerTiming(LocalDOMWindow& window)
     paint_attribution_tracker_ =
         MakeGarbageCollected<ContainerTimingPaintAttributionTracker>();
   }
+}
+
+// static
+bool ContainerTiming::ContributesToContainerTiming(Element* element) {
+  if (!element || element->IsInShadowTree()) {
+    return false;
+  }
+  // Check the feature before From(), which would create the supplement: this
+  // runs for every text record considered for timing.
+  LocalDOMWindow* window = element->GetDocument().domWindow();
+  if (window &&
+      RuntimeEnabledFeatures::ContainerTimingPrepaintTraversalEnabled(window)) {
+    // Prepaint mode: the paint attribution tracker, populated during the
+    // pre-paint walk (which runs before paint), is the sole source of truth.
+    // The legacy SelfOrAncestorHasContainerTiming() node flag is not consulted.
+    // The tracker keys images by their generating node and text by its
+    // aggregation node, which is exactly `element` either way.
+    ContainerTimingPaintAttributionTracker* tracker =
+        From(*window).PaintAttributionTracker();
+    CHECK(tracker);
+    return tracker->GetContainerRootFor(element) != nullptr;
+  }
+  return ContributesToContainerTimingFallback(element);
 }
 
 bool ContainerTiming::CanReportToContainerTiming() const {
@@ -160,20 +188,30 @@ void ContainerTiming::OnElementPainted(
     const DOMPaintTimingInfo& paint_timing_info,
     Element* element,
     const gfx::RectF& intersection_rect) {
-  if (!ContributesToContainerTiming(element)) {
-    return;
+  Element* container_root = nullptr;
+  if (paint_attribution_tracker_) {
+    if (!element) {
+      return;
+    }
+    // The tracker only maps elements that are actually attributed to a
+    // container root. A null result means this paint (e.g. a text record that
+    // only exists for LCP) is not under any container root and must be ignored.
+    // The tracker is the sole source of truth in this mode, so the legacy
+    // SelfOrAncestorHasContainerTiming() node flag is not consulted.
+    //
+    // This runs at presentation time, not during paint, so we deliberately
+    // don't assert that ContainerTimingChanged() is clean: an attribute change
+    // between paint and now marks the layout object for re-attribution on a
+    // future pre-paint, which doesn't affect this callback. We report the paint
+    // that already happened using the attribution captured at the last
+    // pre-paint.
+    container_root = paint_attribution_tracker_->GetContainerRootFor(element);
+  } else {
+    if (!ContributesToContainerTimingFallback(element)) {
+      return;
+    }
+    container_root = ContainerRootFallback(element);
   }
-
-  // This runs at presentation time, not during paint, so we deliberately don't
-  // assert that ContainerTimingChanged() is clean: an attribute change between
-  // paint and now marks the layout object for re-attribution on a future
-  // pre-paint, which doesn't affect this callback. We report the paint that
-  // already happened using the attribution captured at the last pre-paint. The
-  // fallback is only for the feature-off case (no tracker).
-  Element* container_root =
-      paint_attribution_tracker_
-          ? paint_attribution_tracker_->GetContainerRootFor(element)
-          : ContainerRootFallback(element);
   if (!container_root) {
     // This runs at presentation time, so the element may have been detached
     // since paint, leaving no reachable container root. Don't report it.
