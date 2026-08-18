@@ -8,6 +8,7 @@ import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FAC
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.HostZoomMap;
@@ -64,6 +65,11 @@ public class PageZoomManager {
             snapToIndex(index);
         }
         return index;
+    }
+
+    /** Resets the zoom level of the current WebContents to the default zoom level. */
+    void resetZoomLevel() {
+        setZoomLevel(getDefaultZoomLevel());
     }
 
     /** Returns the zoom level of the current WebContents. */
@@ -132,6 +138,17 @@ public class PageZoomManager {
     /** Returns true if page zoom is supported for the current tab. */
     public boolean isPageZoomSupported() {
         return mDelegate.isPageZoomSupported();
+    }
+
+    /**
+     * Returns true if the zoom level is default. Returns true if current tab is null or page zoom
+     * is not supported.
+     */
+    public boolean isZoomLevelDefault() {
+        if (isCurrentTabNull() || !isPageZoomSupported()) {
+            return true;
+        }
+        return Math.abs(getZoomLevel() - getDefaultZoomLevel()) < MathUtils.EPSILON;
     }
 
     /**

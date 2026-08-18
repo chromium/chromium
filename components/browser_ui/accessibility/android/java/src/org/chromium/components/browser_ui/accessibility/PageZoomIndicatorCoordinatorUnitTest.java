@@ -214,9 +214,12 @@ public class PageZoomIndicatorCoordinatorUnitTest {
     }
 
     @Test
-    public void testIsZoomLevelDefault_UnsupportedPageZoom_ReturnsTrue() {
-        when(mManager.isPageZoomSupported()).thenReturn(false);
+    public void testIsZoomLevelDefault_DelegatesToManager() {
+        when(mManager.isZoomLevelDefault()).thenReturn(true);
         assertTrue(mCoordinator.isZoomLevelDefault());
+
+        when(mManager.isZoomLevelDefault()).thenReturn(false);
+        assertFalse(mCoordinator.isZoomLevelDefault());
     }
 
     @Test

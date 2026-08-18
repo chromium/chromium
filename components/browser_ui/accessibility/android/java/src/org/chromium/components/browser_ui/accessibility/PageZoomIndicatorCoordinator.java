@@ -178,9 +178,7 @@ public class PageZoomIndicatorCoordinator {
 
     /** Returns true if the given zoom level is the default zoom level for the current Profile. */
     public boolean isZoomLevelDefault() {
-        if (!mManager.isPageZoomSupported()) return true;
-        if (mMediator.isCurrentTabNull()) return true;
-        return mMediator.isZoomLevelDefault();
+        return mManager.isZoomLevelDefault();
     }
 
     /** Returns true if the popup window is showing. */

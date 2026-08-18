@@ -75,7 +75,6 @@ public class PageZoomProperties {
         INCREASE_ZOOM_CALLBACK,
         DECREASE_ZOOM_ENABLED,
         INCREASE_ZOOM_ENABLED,
-        DEFAULT_ZOOM_FACTOR,
         ZOOM_PERCENT_TEXT,
         RESET_ZOOM_CALLBACK
     };

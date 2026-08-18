@@ -30,7 +30,6 @@ import java.util.Locale;
 class PageZoomIndicatorMediator {
     private final PropertyModel mModel;
     private final PageZoomManager mManager;
-    private double mDefaultZoomFactor;
 
     PageZoomIndicatorMediator(PageZoomManager manager) {
         mManager = manager;
@@ -54,8 +53,6 @@ class PageZoomIndicatorMediator {
     /** Sets the initial state of the model. */
     protected void pushProperties() {
         updateZoomPercentage();
-        mDefaultZoomFactor = mManager.getDefaultZoomLevel();
-        mModel.set(PageZoomProperties.DEFAULT_ZOOM_FACTOR, mDefaultZoomFactor);
     }
 
     /** Updates the zoom percentage text and button states for the current zoom factor. */
@@ -77,18 +74,8 @@ class PageZoomIndicatorMediator {
 
     @VisibleForTesting
     void handleResetClicked() {
-        mManager.setZoomLevel(mDefaultZoomFactor);
-        updateZoomPercentageText(mDefaultZoomFactor);
-        updateButtonStates(mDefaultZoomFactor);
-    }
-
-    @VisibleForTesting
-    boolean isZoomLevelDefault() {
-        return Math.abs(mManager.getZoomLevel() - mManager.getDefaultZoomLevel()) < 0.0001;
-    }
-
-    boolean isCurrentTabNull() {
-        return mManager.isCurrentTabNull();
+        mManager.resetZoomLevel();
+        updateZoomPercentage();
     }
 
     PopupWindow buildPopupWindow(View view, OnDismissListener onDismissListener) {

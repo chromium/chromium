@@ -43,12 +43,10 @@ public class PageZoomIndicatorMediatorUnitTest {
     public void testPushProperties() {
         // Set up the manager mock to return specific values.
         when(mManager.getZoomLevel()).thenReturn(0.0); // Corresponds to 100%
-        when(mManager.getDefaultZoomLevel()).thenReturn(0.0);
 
         mMediator.pushProperties();
 
         // Verify that the model is updated correctly.
-        assertEquals(0.0, mModel.get(PageZoomProperties.DEFAULT_ZOOM_FACTOR), 0.0);
         assertEquals("100%", mModel.get(PageZoomProperties.ZOOM_PERCENT_TEXT));
         assertTrue(mModel.get(PageZoomProperties.DECREASE_ZOOM_ENABLED));
         assertTrue(mModel.get(PageZoomProperties.INCREASE_ZOOM_ENABLED));
@@ -76,23 +74,22 @@ public class PageZoomIndicatorMediatorUnitTest {
 
     @Test
     public void testHandleResetClicked() {
-        when(mManager.getDefaultZoomLevel()).thenReturn(0.0);
         when(mManager.getZoomLevel()).thenReturn(0.52);
 
         mMediator.pushProperties();
 
         assertEquals("110%", mModel.get(PageZoomProperties.ZOOM_PERCENT_TEXT));
 
+        when(mManager.getZoomLevel()).thenReturn(0.0);
         mMediator.handleResetClicked();
 
-        verify(mManager).setZoomLevel(0.0);
+        verify(mManager).resetZoomLevel();
         assertEquals("100%", mModel.get(PageZoomProperties.ZOOM_PERCENT_TEXT));
     }
 
     @Test
     public void testButtonStates_AtMinimum() {
         when(mManager.getZoomLevel()).thenReturn(HostZoomMap.AVAILABLE_ZOOM_FACTORS[0]);
-        when(mManager.getDefaultZoomLevel()).thenReturn(0.0);
 
         mMediator.pushProperties();
 
@@ -105,7 +102,6 @@ public class PageZoomIndicatorMediatorUnitTest {
         double maxZoom =
                 HostZoomMap.AVAILABLE_ZOOM_FACTORS[HostZoomMap.AVAILABLE_ZOOM_FACTORS.length - 1];
         when(mManager.getZoomLevel()).thenReturn(maxZoom);
-        when(mManager.getDefaultZoomLevel()).thenReturn(0.0);
 
         mMediator.pushProperties();
 
