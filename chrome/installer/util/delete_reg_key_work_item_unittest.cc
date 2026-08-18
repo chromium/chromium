@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/win/registry.h"
 #include "base/win/security_descriptor.h"
@@ -38,8 +37,7 @@ TEST_F(DeleteRegKeyWorkItemTest, TestNoKey) {
       std::wstring(test_data_.base_path() + L"\\NoKeyHere"),
       std::wstring(test_data_.base_path() + L"\\NoKeyHere\\OrHere")};
   RegKey key;
-  for (size_t i = 0; i < std::size(key_paths); ++i) {
-    const std::wstring& key_path = UNSAFE_TODO(key_paths[i]);
+  for (const std::wstring& key_path : key_paths) {
     std::unique_ptr<DeleteRegKeyWorkItem> item(
         WorkItem::CreateDeleteRegKeyWorkItem(test_data_.root_key(), key_path,
                                              WorkItem::kWow64Default));

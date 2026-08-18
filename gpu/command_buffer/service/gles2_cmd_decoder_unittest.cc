@@ -719,30 +719,27 @@ static void CheckBeginEndQueryBadMemoryFails(GLES2DecoderTestBase* test,
 }
 
 TEST_P(GLES2DecoderManualInitTest, BeginEndQueryEXTBadMemoryIdFails) {
-  for (size_t i = 0; i < std::size(kQueryTypes); ++i) {
-    CheckBeginEndQueryBadMemoryFails(
-        this, kNewClientId, UNSAFE_TODO(kQueryTypes[i]), kInvalidSharedMemoryId,
-        kSharedMemoryOffset);
+  for (const QueryType& query_type : kQueryTypes) {
+    CheckBeginEndQueryBadMemoryFails(this, kNewClientId, query_type,
+                                     kInvalidSharedMemoryId,
+                                     kSharedMemoryOffset);
   }
 }
 
 TEST_P(GLES2DecoderManualInitTest, BeginEndQueryEXTBadMemoryOffsetFails) {
-  for (size_t i = 0; i < std::size(kQueryTypes); ++i) {
+  for (const QueryType& query_type : kQueryTypes) {
     // Out-of-bounds.
-    CheckBeginEndQueryBadMemoryFails(
-        this, kNewClientId, UNSAFE_TODO(kQueryTypes[i]), shared_memory_id_,
-        kInvalidSharedMemoryOffset);
+    CheckBeginEndQueryBadMemoryFails(this, kNewClientId, query_type,
+                                     shared_memory_id_,
+                                     kInvalidSharedMemoryOffset);
     // Overflow.
-    CheckBeginEndQueryBadMemoryFails(this, kNewClientId,
-                                     UNSAFE_TODO(kQueryTypes[i]),
+    CheckBeginEndQueryBadMemoryFails(this, kNewClientId, query_type,
                                      shared_memory_id_, 0xfffffffcu);
   }
 }
 
 TEST_P(GLES2DecoderManualInitTest, QueryReuseTest) {
-  for (size_t i = 0; i < std::size(kQueryTypes); ++i) {
-    const QueryType& query_type = UNSAFE_TODO(kQueryTypes[i]);
-
+  for (const QueryType& query_type : kQueryTypes) {
     GLES2DecoderTestBase::InitState init;
     init.extensions =
         "GL_EXT_occlusion_query_boolean"
@@ -1060,9 +1057,8 @@ TEST_P(GLES2DecoderTest, IsEnabledReturnsCachedValue) {
   static const GLenum kStates[] = {
       GL_DEPTH_TEST, GL_STENCIL_TEST,
   };
-  for (size_t ii = 0; ii < std::size(kStates); ++ii) {
+  for (GLenum state : kStates) {
     cmds::Enable enable_cmd;
-    GLenum state = UNSAFE_TODO(kStates[ii]);
     enable_cmd.Init(state);
     EXPECT_EQ(error::kNoError, ExecuteCmd(enable_cmd));
     auto* result =

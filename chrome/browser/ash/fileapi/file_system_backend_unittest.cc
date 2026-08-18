@@ -8,7 +8,6 @@
 
 #include <set>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend_delegate.h"
@@ -256,24 +255,23 @@ TEST(ChromeOSFileSystemBackendTest, GetVirtualPathConflictWithSystemPoints) {
     { FPL("/foo/xxx"), false, FPL("") },
   };
 
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
+  for (const TestCase& test_case : kTestCases) {
     // Initialize virtual path with a value.
     base::FilePath virtual_path(FPL("/mount"));
-    base::FilePath local_path(UNSAFE_TODO(kTestCases[i]).local_path);
-    UNSAFE_TODO(EXPECT_EQ(kTestCases[i].success,
-                          backend.GetVirtualPath(local_path, &virtual_path)))
-        << "Resolving " << UNSAFE_TODO(kTestCases[i]).local_path;
+    base::FilePath local_path(test_case.local_path);
+    EXPECT_EQ(test_case.success,
+              backend.GetVirtualPath(local_path, &virtual_path))
+        << "Resolving " << test_case.local_path;
 
     // There are no guarantees for |virtual_path| value if |GetVirtualPath|
     // fails.
-    if (!UNSAFE_TODO(kTestCases[i]).success) {
+    if (!test_case.success) {
       continue;
     }
 
-    base::FilePath expected_virtual_path(
-        UNSAFE_TODO(kTestCases[i]).virtual_path);
+    base::FilePath expected_virtual_path(test_case.virtual_path);
     EXPECT_EQ(expected_virtual_path, virtual_path)
-        << "Resolving " << UNSAFE_TODO(kTestCases[i]).local_path;
+        << "Resolving " << test_case.local_path;
   }
 }
 

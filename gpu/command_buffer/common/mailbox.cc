@@ -33,8 +33,8 @@ Mailbox::Mailbox() {
 }
 
 bool Mailbox::IsZero() const {
-  for (size_t i = 0; i < std::size(name); ++i) {
-    if (UNSAFE_TODO(name[i])) {
+  for (int8_t byte : name) {
+    if (byte) {
       return false;
     }
   }

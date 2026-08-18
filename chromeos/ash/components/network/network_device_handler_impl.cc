@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -142,8 +141,8 @@ void NetworkDeviceHandlerImpl::SetDeviceProperty(
       // NetworkConfigurationUpdater.
       shill::kCellularPolicyAllowRoamingProperty};
 
-  for (size_t i = 0; i < std::size(blocked_properties); ++i) {
-    if (property_name == UNSAFE_TODO(blocked_properties[i])) {
+  for (const char* blocked_property : blocked_properties) {
+    if (property_name == blocked_property) {
       InvokeErrorCallback(
           device_path, std::move(error_callback),
           "SetDeviceProperty called on blocked property " + property_name);

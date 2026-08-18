@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -172,13 +171,10 @@ static const struct normalize_name_encoding_test_cases {
     {"foo_dir_na\xcc\x88me/", "foo_dir_n\xc3\xa4me"}};
 
 TEST_F(FileUtilICUTest, NormalizeFileNameEncoding) {
-  for (size_t i = 0; i < std::size(kNormalizeFileNameEncodingTestCases); i++) {
-    FilePath path(
-        UNSAFE_TODO(kNormalizeFileNameEncodingTestCases[i].original_path));
+  for (const auto& test_case : kNormalizeFileNameEncodingTestCases) {
+    FilePath path(test_case.original_path);
     NormalizeFileNameEncoding(&path);
-    EXPECT_EQ(FilePath(UNSAFE_TODO(
-                  kNormalizeFileNameEncodingTestCases[i].normalized_path)),
-              path);
+    EXPECT_EQ(FilePath(test_case.normalized_path), path);
   }
 }
 

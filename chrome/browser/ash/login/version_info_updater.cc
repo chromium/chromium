@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/login/resources/grit/ash_login_strings.h"
 #include "base/check_deref.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -108,9 +107,9 @@ void VersionInfoUpdater::StartUpdate(bool is_chrome_branded) {
   // Watch for changes to the reporting flags.
   auto callback = base::BindRepeating(&VersionInfoUpdater::UpdateEnterpriseInfo,
                                       base::Unretained(this));
-  for (unsigned int i = 0; i < std::size(kReportingFlags); ++i) {
-    subscriptions_.push_back(cros_settings_->AddSettingsObserver(
-        UNSAFE_TODO(kReportingFlags[i]), callback));
+  for (const char* flag : kReportingFlags) {
+    subscriptions_.push_back(
+        cros_settings_->AddSettingsObserver(flag, callback));
   }
 
   // Update device bluetooth info.

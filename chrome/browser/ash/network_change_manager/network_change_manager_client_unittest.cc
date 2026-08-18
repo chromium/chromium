@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/strings/string_split.h"
 #include "base/value_iterators.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -100,12 +99,11 @@ TEST(NetworkChangeManagerClientTest, ConnectionTypeFromShill) {
       {shill::kTypeCellular, "unknown technology",
        NetworkChangeNotifier::CONNECTION_2G}};
 
-  for (size_t i = 0; i < std::size(type_mappings); ++i) {
+  for (const TypeMapping& mapping : type_mappings) {
     NetworkChangeNotifier::ConnectionType type =
-        NetworkChangeManagerClient::ConnectionTypeFromShill(
-            UNSAFE_TODO(type_mappings[i]).shill_type,
-            UNSAFE_TODO(type_mappings[i]).technology);
-    UNSAFE_TODO(EXPECT_EQ(type_mappings[i].connection_type, type));
+        NetworkChangeManagerClient::ConnectionTypeFromShill(mapping.shill_type,
+                                                            mapping.technology);
+    EXPECT_EQ(mapping.connection_type, type);
   }
 }
 
@@ -402,20 +400,19 @@ NotifierUpdateTestCase test_cases[] = {
      false}};
 
 TEST_F(NetworkChangeManagerClientUpdateTest, UpdateDefaultNetwork) {
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
-    UNSAFE_TODO(SCOPED_TRACE(test_cases[i].test_description));
-    SetNotifierState(UNSAFE_TODO(test_cases[i]).initial_state);
-    SetDefaultNetworkState(UNSAFE_TODO(test_cases[i]).default_network_state);
+  for (const NotifierUpdateTestCase& test_case : test_cases) {
+    SCOPED_TRACE(test_case.test_description);
+    SetNotifierState(test_case.initial_state);
+    SetDefaultNetworkState(test_case.default_network_state);
     bool dns_changed = false, ip_changed = false, type_changed = false,
          subtype_changed = false;
     ProcessDefaultNetworkUpdate(&dns_changed, &ip_changed, &type_changed,
                                 &subtype_changed);
-    VerifyNotifierState(UNSAFE_TODO(test_cases[i]).expected_state);
-    UNSAFE_TODO(EXPECT_EQ(test_cases[i].expected_dns_changed, dns_changed));
-    UNSAFE_TODO(EXPECT_EQ(test_cases[i].expected_ip_changed, ip_changed));
-    UNSAFE_TODO(EXPECT_EQ(test_cases[i].expected_type_changed, type_changed));
-    UNSAFE_TODO(
-        EXPECT_EQ(test_cases[i].expected_subtype_changed, subtype_changed));
+    VerifyNotifierState(test_case.expected_state);
+    EXPECT_EQ(test_case.expected_dns_changed, dns_changed);
+    EXPECT_EQ(test_case.expected_ip_changed, ip_changed);
+    EXPECT_EQ(test_case.expected_type_changed, type_changed);
+    EXPECT_EQ(test_case.expected_subtype_changed, subtype_changed);
   }
 }
 

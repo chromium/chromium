@@ -69,9 +69,7 @@ TEST_F(SharedBufferDispatcherTest, ValidateCreateOptionsValid) {
   // Different flags.
   MojoCreateSharedBufferFlags flags_values[] = {
       MOJO_LEGACY_CREATE_SHARED_BUFFER_FLAG_NONE};
-  for (size_t i = 0; i < std::size(flags_values); i++) {
-    const MojoCreateSharedBufferFlags flags = UNSAFE_TODO(flags_values[i]);
-
+  for (const MojoCreateSharedBufferFlags flags : flags_values) {
     // Different capacities (size 1).
     for (uint32_t capacity = 1; capacity <= 100 * 1000 * 1000; capacity *= 10) {
       MojoCreateSharedBufferOptions options = {

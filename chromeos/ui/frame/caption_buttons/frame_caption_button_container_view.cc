@@ -10,7 +10,6 @@
 #include <tuple>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -875,8 +874,7 @@ FrameCaptionButtonContainerView::GetButtonClosestTo(
                                           float_button_,    close_button_};
   int min_squared_distance = INT_MAX;
   views::FrameCaptionButton* closest_button = nullptr;
-  for (size_t i = 0; i < std::size(buttons); ++i) {
-    views::FrameCaptionButton* button = UNSAFE_TODO(buttons[i]);
+  for (views::FrameCaptionButton* button : buttons) {
     if (!button || !button->GetVisible()) {
       continue;
     }

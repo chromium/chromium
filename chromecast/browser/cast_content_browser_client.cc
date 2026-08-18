@@ -11,7 +11,6 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -373,8 +372,8 @@ bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
   };
 
   const std::string& scheme = url.GetScheme();
-  for (size_t i = 0; i < std::size(kProtocolList); ++i) {
-    if (scheme == UNSAFE_TODO(kProtocolList[i])) {
+  for (const char* protocol : kProtocolList) {
+    if (scheme == protocol) {
       return true;
     }
   }

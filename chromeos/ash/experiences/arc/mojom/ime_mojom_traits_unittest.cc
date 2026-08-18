@@ -4,7 +4,6 @@
 
 #include <linux/input.h>
 
-#include "base/compiler_specific.h"
 #include "chromeos/ash/experiences/arc/mojom/ime.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,8 +44,8 @@ TEST(KeyEventStructTraitsTest, Convert) {
       {ui::EventType::kKeyPressed, ui::VKEY_A, ui::DomCode::US_A,
        ui::EF_IS_REPEAT},
   };
-  for (size_t idx = 0; idx < std::size(kTestData); ++idx) {
-    auto copy = std::make_unique<ui::KeyEvent>(UNSAFE_TODO(kTestData[idx]));
+  for (const ui::KeyEvent& event : kTestData) {
+    auto copy = std::make_unique<ui::KeyEvent>(event);
     std::unique_ptr<ui::KeyEvent> output;
     mojo::test::SerializeAndDeserialize<arc::mojom::KeyEventData>(copy, output);
     ExpectKeyEventsEqual(*copy, *output);

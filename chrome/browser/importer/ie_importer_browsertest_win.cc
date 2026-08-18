@@ -546,14 +546,13 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest,
 
   // Verify malformed registry data are safely ignored and alphabetical
   // sort is performed.
-  for (size_t i = 0; i < std::size(kBadBinary); ++i) {
+  for (const BadBinaryData& bad_binary : kBadBinary) {
     std::wstring key_path(importer::GetIEFavoritesOrderKey());
     base::win::RegKey key;
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_WRITE));
-    ASSERT_EQ(ERROR_SUCCESS,
-              key.WriteValue(L"Order", UNSAFE_TODO(kBadBinary[i]).data,
-                             UNSAFE_TODO(kBadBinary[i]).length, REG_BINARY));
+    ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"Order", bad_binary.data,
+                                            bad_binary.length, REG_BINARY));
 
     // Starts to import the above settings.
     // Deletes itself.

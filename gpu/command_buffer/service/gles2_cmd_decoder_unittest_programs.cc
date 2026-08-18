@@ -822,14 +822,14 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformBlockivSucceeds) {
     GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER,
     GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER,
   };
-  for (size_t ii = 0; ii < std::size(kPname); ++ii) {
+  for (GLenum pname : kPname) {
     result->SetNumResults(0);
-    cmd.Init(client_program_id_, 0, UNSAFE_TODO(kPname[ii]), shared_memory_id_,
+    cmd.Init(client_program_id_, 0, pname, shared_memory_id_,
              shared_memory_offset_);
     EXPECT_CALL(*gl_, GetProgramiv(kServiceProgramId, GL_LINK_STATUS, _))
         .WillOnce(SetArgPointee<2>(GL_TRUE))
         .RetiresOnSaturation();
-    if (UNSAFE_TODO(kPname[ii]) == GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES) {
+    if (pname == GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES) {
       EXPECT_CALL(*gl_, GetError())
           .WillOnce(Return(GL_NO_ERROR))
           .RetiresOnSaturation();
@@ -839,8 +839,7 @@ TEST_P(GLES3DecoderWithShaderTest, GetActiveUniformBlockivSucceeds) {
           .WillOnce(SetArgPointee<3>(1))
           .RetiresOnSaturation();
     }
-    UNSAFE_TODO(EXPECT_CALL(*gl_, GetActiveUniformBlockiv(kServiceProgramId, 0,
-                                                          kPname[ii], _)))
+    EXPECT_CALL(*gl_, GetActiveUniformBlockiv(kServiceProgramId, 0, pname, _))
         .WillOnce(SetArgPointee<3>(1976))
         .RetiresOnSaturation();
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));

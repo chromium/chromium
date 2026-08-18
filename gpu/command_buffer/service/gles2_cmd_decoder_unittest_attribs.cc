@@ -211,8 +211,7 @@ TEST_P(GLES2DecoderWithShaderTest, VertexAttribPointer) {
   for (size_t tt = 0; tt < std::size(types); ++tt) {
     GLenum type = UNSAFE_TODO(types[tt]);
     GLsizei num_bytes = UNSAFE_TODO(sizes[tt]);
-    for (size_t ii = 0; ii < std::size(indices); ++ii) {
-      GLuint index = UNSAFE_TODO(indices[ii]);
+    for (GLuint index : indices) {
       for (GLint size = 0; size < 5; ++size) {
         for (size_t oo = 0; oo < std::size(offset_mult); ++oo) {
           GLuint offset = num_bytes * UNSAFE_TODO(offset_mult[oo]) +

@@ -8,7 +8,6 @@
 
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -206,11 +205,10 @@ void InstallAttributes::ReadAttributesIfReady(
         kAttrEnterpriseMode,     kAttrEnterpriseOwned,
     };
     std::map<std::string, std::string> attr_map;
-    for (size_t i = 0; i < std::size(kEnterpriseAttributes); ++i) {
+    for (const char* attribute : kEnterpriseAttributes) {
       std::string value;
-      if (install_attributes_util::InstallAttributesGet(
-              UNSAFE_TODO(kEnterpriseAttributes[i]), &value)) {
-        attr_map[UNSAFE_TODO(kEnterpriseAttributes[i])] = value;
+      if (install_attributes_util::InstallAttributesGet(attribute, &value)) {
+        attr_map[attribute] = value;
       }
     }
 

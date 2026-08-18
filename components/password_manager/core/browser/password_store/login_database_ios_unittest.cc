@@ -13,7 +13,6 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
-#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -81,16 +80,15 @@ TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
       std::u16string(),
   };
 
-  for (unsigned int i = 0; i < std::size(test_passwords); i++) {
+  for (const std::u16string& test_password : test_passwords) {
     EncryptDecryptInterface* encryptor_decryptor = login_db_.get();
     std::string encrypted;
     EXPECT_EQ(EncryptionResult::kSuccess,
-              encryptor_decryptor->EncryptedString(
-                  UNSAFE_TODO(test_passwords[i]), &encrypted));
+              encryptor_decryptor->EncryptedString(test_password, &encrypted));
     std::u16string decrypted;
     EXPECT_EQ(EncryptionResult::kSuccess,
               encryptor_decryptor->DecryptedString(encrypted, &decrypted));
-    EXPECT_STREQ(UTF16ToUTF8(UNSAFE_TODO(test_passwords[i])).c_str(),
+    EXPECT_STREQ(UTF16ToUTF8(test_password).c_str(),
                  UTF16ToUTF8(decrypted).c_str());
   }
 }

@@ -1037,9 +1037,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, StartSession) {
       SessionStartupPref::kPrefValueURLs);
   em::StringListPolicyProto* startup_urls_proto =
       device_local_account_policy_.payload().mutable_restoreonstartupurls();
-  for (size_t i = 0; i < std::size(kStartupURLs); ++i) {
-    startup_urls_proto->mutable_value()->add_entries(
-        UNSAFE_TODO(kStartupURLs[i]));
+  for (const char* url : kStartupURLs) {
+    startup_urls_proto->mutable_value()->add_entries(url);
   }
   UploadAndInstallDeviceLocalAccountPolicy();
   AddPublicSessionToDevicePolicy(kAccountId1);
@@ -1840,8 +1839,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, MultipleRecommendedLocales) {
   // Verify that the recommended locales do not appear again in the remainder of
   // the list.
   std::set<std::string> recommended_locales;
-  for (size_t i = 0; i < std::size(kRecommendedLocales1); ++i) {
-    recommended_locales.insert(UNSAFE_TODO(kRecommendedLocales1[i]));
+  for (const char* locale : kRecommendedLocales1) {
+    recommended_locales.insert(locale);
   }
   for (size_t i = std::size(kRecommendedLocales1); i < locales.size(); ++i) {
     const std::string& locale = locales[i].language_code;

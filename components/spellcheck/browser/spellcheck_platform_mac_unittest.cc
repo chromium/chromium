@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -65,8 +64,8 @@ TEST_F(SpellcheckPlatformMacTest, IgnoreWords_EN_US) {
     "noooen",
   };
 
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    const std::u16string word(base::ASCIIToUTF16(UNSAFE_TODO(kTestCases[i])));
+  for (const char* test_case : kTestCases) {
+    const std::u16string word(base::ASCIIToUTF16(test_case));
     const int doc_tag = spellcheck_platform::GetDocumentTag();
 
     // The word should show up as misspelled.
@@ -363,9 +362,8 @@ TEST_F(SpellcheckPlatformMacTest, SpellCheckSuggestions_EN_US) {
     {"writting", "writing"},
   };
 
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    const std::u16string word(
-        base::ASCIIToUTF16(UNSAFE_TODO(kTestCases[i]).input));
+  for (const auto& test_case : kTestCases) {
+    const std::u16string word(base::ASCIIToUTF16(test_case.input));
     EXPECT_FALSE(spellcheck_platform::CheckSpelling(word, 0)) << word;
 
     // Check if the suggested words occur.
@@ -373,7 +371,7 @@ TEST_F(SpellcheckPlatformMacTest, SpellCheckSuggestions_EN_US) {
     spellcheck_platform::FillSuggestionList(word, &suggestions);
     bool suggested_word_is_present = false;
     const std::u16string suggested_word(
-        base::ASCIIToUTF16(UNSAFE_TODO(kTestCases[i]).suggested_word));
+        base::ASCIIToUTF16(test_case.suggested_word));
     for (size_t j = 0; j < suggestions.size(); j++) {
       if (suggestions[j].compare(suggested_word) == 0) {
         suggested_word_is_present = true;
