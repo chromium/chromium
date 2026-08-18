@@ -22,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -219,7 +220,10 @@ TEST_F(StandaloneTrustedVaultClientTest, ShouldPreEnrollOnStartup) {
   // recovery factor registration is not supported, so only physical device
   // recovery factor is registered.
   WaitForIdle(client.get());
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(), 1);
+  // Registration requests are dispatched asynchronously to the fake server;
+  // wait until the expected member count is reached.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return fake_security_domains_server_->GetMemberCount() == 1; }));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(
       GetConstantTrustedVaultKey()));
 
@@ -251,27 +255,24 @@ TEST_F(StandaloneTrustedVaultClientTest,
   EXPECT_CALL(observer, OnTrustedVaultKeysChanged);
   StoreKeys(client.get(), account_info.gaia, {kServerKey}, kServerEpoch);
   WaitForIdle(client.get());
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
-            kDefaultExpectedMemberCount);
+  // Factor registrations occur asynchronously in the background; wait until
+  // all expected recovery factors have joined the security domain.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_security_domains_server_->GetMemberCount() ==
+           kDefaultExpectedMemberCount;
+  }));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kServerKey));
 
   EXPECT_THAT(FetchKeys(client.get(), account_info), ElementsAre(kServerKey));
 }
 
-// TODO(crbug.com/543720939): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShouldFollowKeyRotationOnUserEnrolment \
-  DISABLED_ShouldFollowKeyRotationOnUserEnrolment
-#else
-#define MAYBE_ShouldFollowKeyRotationOnUserEnrolment \
-  ShouldFollowKeyRotationOnUserEnrolment
-#endif
 TEST_F(StandaloneTrustedVaultClientTest,
-       MAYBE_ShouldFollowKeyRotationOnUserEnrolment) {
+       ShouldFollowKeyRotationOnUserEnrolment) {
   std::unique_ptr<StandaloneTrustedVaultClient> client = CreateClient();
   CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
   WaitForIdle(client.get());
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(), 1);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return fake_security_domains_server_->GetMemberCount() == 1; }));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(
       GetConstantTrustedVaultKey()));
 
@@ -300,21 +301,17 @@ TEST_F(StandaloneTrustedVaultClientTest,
   EXPECT_THAT(FetchKeys(client.get(), account_info),
               ElementsAre(new_epoch_key));
   WaitForIdle(client.get());
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
-            kDefaultExpectedMemberCount);
+  // Factor registrations occur asynchronously in the background; wait until
+  // all expected recovery factors have joined the security domain.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_security_domains_server_->GetMemberCount() ==
+           kDefaultExpectedMemberCount;
+  }));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(new_epoch_key));
 }
 
-// TODO(crbug.com/544711435): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation \
-  DISABLED_ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation
-#else
-#define MAYBE_ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation \
-  ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation
-#endif
 TEST_F(StandaloneTrustedVaultClientTest,
-       MAYBE_ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation) {
+       ShouldResolveErrorAndRegisterFactorsAfterFollowingKeyRotation) {
   const std::vector<uint8_t> kLocalKeyV1 = {1, 1, 1, 1};
   const std::vector<uint8_t> kRemoteKeyV2 = {2, 2, 2, 2};
   const int kLocalEpochV1 = 1;
@@ -350,8 +347,12 @@ TEST_F(StandaloneTrustedVaultClientTest,
   StoreKeys(client.get(), account_info.gaia, {kLocalKeyV1, kRemoteKeyV2},
             kRemoteEpochV2);
   WaitForIdle(client.get());
-  EXPECT_EQ(fake_security_domains_server_->GetMemberCount(),
-            kDefaultExpectedMemberCount);
+  // Factor registrations occur asynchronously in the background; wait until
+  // all expected recovery factors have joined the security domain.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_security_domains_server_->GetMemberCount() ==
+           kDefaultExpectedMemberCount;
+  }));
   EXPECT_TRUE(fake_security_domains_server_->AllMembersHaveKey(kRemoteKeyV2));
 
   EXPECT_THAT(FetchKeys(client.get(), account_info),
