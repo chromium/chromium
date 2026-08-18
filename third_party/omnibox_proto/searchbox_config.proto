@@ -24,7 +24,7 @@ import "tool_config.proto";
 import "tool_mode.proto";
 
 // Configuration for the AI searchbox (e.g. input plate and fusebox)
-// Next ID: 12
+// Next ID: 15
 message SearchboxConfig {
   // The rule set to use for the searchbox.
   optional RuleSet rule_set = 1;
@@ -54,4 +54,9 @@ message SearchboxConfig {
 
   // Feature gating configurations.
   repeated FeatureGateConfig feature_gate_configs = 11;
+
+  // Account check token and timestamp for Safari-to-iGA redirect
+  // reconciliation.
+  string account_check_token = 13;
+  string account_check_timestamp = 14;
 }

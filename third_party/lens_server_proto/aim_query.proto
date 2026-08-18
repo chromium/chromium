@@ -66,7 +66,6 @@ message ContextTurnMetadata {
 // LINT.ThenChange(
 //     //depot/google3/javascript/search/services/aimode/proto/aim_query.proto:ContextTurnMetadata
 // )
-
 // The AIM model mode that is applied to a query.
 // Next ID: 4
 enum ModelMode {

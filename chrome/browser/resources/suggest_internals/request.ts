@@ -129,10 +129,10 @@ export class SuggestRequestElement extends CrLitElement {
           let urlType = '';
           switch (groups.type) {
             case 'google:entityinfo':
-              urlType = 'gws.searchbox.chrome.EntityInfo';
+              urlType = 'omnibox.EntityInfo';
               break;
             case 'google:groupsinfo':
-              urlType = 'gws.searchbox.chrome.GroupsInfo';
+              urlType = 'omnibox.GroupsInfo';
               break;
             case 'X-Client-Data':
               urlType = 'webserver.gws.ClientDataHeader';

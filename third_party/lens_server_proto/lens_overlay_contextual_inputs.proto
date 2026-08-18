@@ -31,7 +31,6 @@ enum LensOverlayContextualInputUploadType {
   // contextual searchbox.
   CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY = 5;
 }
-
 // A container for lens inputs sent into search. Each LensOverlayContextualInput
 // represents one input file, such as an image or pdf.
 message LensOverlayContextualInputs {

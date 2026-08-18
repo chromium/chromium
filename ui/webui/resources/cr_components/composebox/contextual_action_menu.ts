@@ -246,6 +246,12 @@ export class ContextualActionMenuElement extends
           icon: 'composebox:thinkingModel',
         },
       ],
+      [
+        ModelMode.kGeminiFlashLatest,
+        {
+          icon: 'composebox:acute',
+        },
+      ],
     ]);
   }
 

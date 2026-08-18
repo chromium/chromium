@@ -23,6 +23,10 @@ import "input_type_rule.proto";
 // LINT.IfChange(InputTypeConfig)
 message InputTypeConfig {
   // The input type.
+  // Note: Clients should use the *Value accessor variant (e.g.
+  // getInputTypeValue()) rather than enum accessors to be future-proof against
+  // new open enum values served by the backend without requiring client
+  // updates.
   optional InputType input_type = 1;
   // The label for the input type in a menu.
   optional string menu_label = 2;

@@ -599,6 +599,18 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void modelButtonIcon_acute_setsIcon() {
+        PopupButtonData buttonData =
+                new PopupButtonDataBuilder()
+                        .withIconId(IconResourceIds.ACUTE_VALUE)
+                        .withType(PopupButtonType.MODEL)
+                        .build();
+        mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(buttonData));
+        assertNotNull(
+                ((ImageView) getDynamicButton(0).findViewById(R.id.start_icon)).getDrawable());
+    }
+
+    @Test
     public void toolSelectionDrawables() {
         PopupButtonData selectedData =
                 new PopupButtonDataBuilder()

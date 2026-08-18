@@ -58,6 +58,12 @@ std::string GetModelModeString(omnibox::ModelMode mode) {
       return "GeminiProAutoroute";
     case omnibox::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
       return "GeminiProNoGenUi";
+    case omnibox::MODEL_MODE_GEMINI_FLASH_LATEST:
+      return "GeminiFlashLatest";
+    case omnibox::MODEL_MODE_GEMINI_PRO_LATEST:
+      return "GeminiProLatest";
+    case omnibox::MODEL_MODE_GEMINI_PREVIEW:
+      return "GeminiPreview";
     default:
       return "Unspecified";
   }

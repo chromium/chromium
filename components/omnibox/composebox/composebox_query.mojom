@@ -82,6 +82,12 @@ enum ModelMode {
   kGeminiProAutoroute = 3,
   // Uses Gemini Pro Model without generative UI.
   kGeminiProNoGenUi = 4,
+  // Uses Gemini Flash Latest Model.
+  kGeminiFlashLatest = 5,
+  // Uses Gemini Pro Latest Model.
+  kGeminiProLatest = 6,
+  // Uses Gemini Preview Model.
+  kGeminiPreview = 7,
 };
 // LINT.ThenChange(//third_party/omnibox_proto/model_mode.proto:ModelMode)
 

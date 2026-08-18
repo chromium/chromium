@@ -247,6 +247,7 @@ chrome_java_resources = [
   "java/res/drawable-xxxhdpi/spinner_white.png",
   "java/res/drawable-xxxhdpi/tab_group_outline.9.png",
   "java/res/drawable-xxxhdpi/tab_indicator_spinner.png",
+  "java/res/drawable/acute_24dp.xml",
   "java/res/drawable/adaptive_toolbar_preference_header.xml",
   "java/res/drawable/add_link.xml",
   "java/res/drawable/arrow_back_24px.xml",

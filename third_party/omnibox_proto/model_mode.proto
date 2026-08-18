@@ -13,8 +13,9 @@ option java_outer_classname = 'AimModelsProto';
 
 package omnibox;
 
-// The AIM model mode that is applied to a query.
-// Next ID: 5
+// The AIM model mode that is applied to a query (e.g. on the input plate or
+// fusebox).
+// Next ID: 8
 // LINT.IfChange(ModelMode)
 enum ModelMode {
   // Unspecified model mode.
@@ -27,5 +28,12 @@ enum ModelMode {
   MODEL_MODE_GEMINI_PRO_AUTOROUTE = 3;
   // Gemini Pro model without generative UI.
   MODEL_MODE_GEMINI_PRO_NO_GEN_UI = 4;
+  // Gemini Flash Latest model mode.
+  MODEL_MODE_GEMINI_FLASH_LATEST = 5;
+  // Gemini Pro Latest model mode (currently unused as of August 2026).
+  MODEL_MODE_GEMINI_PRO_LATEST = 6;
+  // Gemini Preview model mode, could be XS, S or M (currently unused as of
+  // August 2026).
+  MODEL_MODE_GEMINI_PREVIEW = 7;
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ModelMode, //components/omnibox/common/omnibox_metrics_utils.cc:ModelMode, //tools/metrics/histograms/metadata/omnibox/histograms.xml:OmniboxModelMode)
