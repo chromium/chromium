@@ -1238,7 +1238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.InputModesUsed" enum="GlicInputModesUsed"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3239,7 +3239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Turn.InvocationSource" enum="GlicInvocationSource"
-    expires_after="2026-12-16">
+    expires_after="2027-02-14">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
