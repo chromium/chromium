@@ -72,7 +72,6 @@ class PasswordImporterTest : public testing::Test {
   ~PasswordImporterTest() override {
     account_store_->ShutdownOnUIThread();
     profile_store_->ShutdownOnUIThread();
-    task_environment_.RunUntilIdle();
   }
 
  protected:
@@ -215,6 +214,8 @@ TEST_F(PasswordImporterTest, CSVImportBaseFields) {
 
   EXPECT_EQ(ImportResults::Status::SUCCESS, results.status);
   EXPECT_EQ(1u, results.number_imported);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 1u; }));
   ASSERT_EQ(1u, stored_passwords().size());
   EXPECT_EQ(GURL(kTestOriginURL), stored_passwords()[0].GetURL());
   EXPECT_EQ(kTestSignonRealm, stored_passwords()[0].GetFirstSignonRealm());
@@ -252,6 +253,8 @@ TEST_F(PasswordImporterTest, CSVImportWithNote) {
       "PasswordManager.Import.PerFile.Notes.TotalCount", 1, 1);
 
   EXPECT_EQ(1u, results.number_imported);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 1u; }));
   ASSERT_EQ(1u, stored_passwords().size());
   EXPECT_EQ(kTestNote, stored_passwords()[0].note);
 }
@@ -271,6 +274,8 @@ TEST_F(PasswordImporterTest, CSVImportWithNoteFromString) {
       "PasswordManager.Import.PerFile.Notes.TotalCount", 1, 1);
 
   EXPECT_EQ(1u, results.number_imported);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 1u; }));
   ASSERT_EQ(1u, stored_passwords().size());
   EXPECT_EQ(kTestNote, stored_passwords()[0].note);
 }
@@ -323,6 +328,8 @@ TEST_F(PasswordImporterTest, CSVImportAndroidCredential) {
 
   EXPECT_EQ(ImportResults::Status::SUCCESS, results.status);
   EXPECT_EQ(1u, results.number_imported);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 1u; }));
   ASSERT_EQ(1u, stored_passwords().size());
   EXPECT_EQ(GURL(kTestAndroidSignonRealm), stored_passwords()[0].GetURL());
   EXPECT_EQ(kTestAndroidSignonRealm,
@@ -425,6 +432,10 @@ TEST_F(PasswordImporterTest, ExactMatchWithConflictingNotesValidConcatenation) {
 
   ASSERT_EQ(0u, results.displayed_entries.size());
   EXPECT_EQ(1u, results.number_imported);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !stored_passwords().empty() &&
+           stored_passwords()[0].note == u"local note\nimported note";
+  }));
   ASSERT_EQ(1u, stored_passwords().size());
   EXPECT_EQ(u"local note\nimported note", stored_passwords()[0].note);
 }
@@ -581,6 +592,8 @@ TEST_F(PasswordImporterTest, CSVImportExactMatchProfileAndAccountStore) {
 
   EXPECT_EQ(ImportResults::Status::SUCCESS, results.status);
   EXPECT_EQ(2u, results.number_imported);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 2u; }));
   ASSERT_EQ(2u, stored_passwords().size());
   EXPECT_EQ(GURL("https://test.com"), stored_passwords()[0].GetURL());
   EXPECT_EQ(u"username_exists_in_profile_and_account_store",
@@ -667,6 +680,8 @@ TEST_F(PasswordImporterTest, ContinueImportCanReplaceConflictingPassword) {
   ASSERT_EQ(0u, results.displayed_entries.size());
 
   EXPECT_EQ(2u, results.number_imported);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 2u; }));
   ASSERT_EQ(2u, stored_passwords().size());
   EXPECT_EQ(GURL("https://test.com"), stored_passwords()[0].GetURL());
   EXPECT_EQ(u"username_exists_in_profile_store",
@@ -711,6 +726,8 @@ TEST_F(PasswordImporterTest,
 
   EXPECT_EQ(ImportResults::Status::SUCCESS, results.status);
   EXPECT_EQ(2u, results.number_imported);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 3u; }));
   ASSERT_EQ(3u, stored_passwords().size());
 }
 
@@ -904,6 +921,8 @@ TEST_F(PasswordImporterTest, CSVImportNonASCIIURL) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 1u; }));
   ASSERT_EQ(1u, stored_passwords().size());
 
   EXPECT_EQ(ImportResults::Status::SUCCESS, results.status);
@@ -931,6 +950,8 @@ TEST_F(PasswordImporterTest, SingleFailedSingleSucceeds) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 1u; }));
   ASSERT_EQ(1u, stored_passwords().size());
 
   EXPECT_EQ(ImportResults::Status::SUCCESS, results.status);
@@ -964,6 +985,8 @@ TEST_F(PasswordImporterTest, PartialImportSucceeds) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 1, 1);
 
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 1u; }));
   ASSERT_EQ(1u, stored_passwords().size());
   EXPECT_EQ(GURL(kTestOriginURL), stored_passwords()[0].GetURL());
   EXPECT_EQ(kTestSignonRealm, stored_passwords()[0].GetFirstSignonRealm());
@@ -1094,6 +1117,8 @@ TEST_F(PasswordImporterTest, VectorImport) {
 
   EXPECT_EQ(results.status, ImportResults::Status::SUCCESS);
   EXPECT_EQ(results.number_imported, 1u);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return stored_passwords().size() == 1u; }));
   ASSERT_THAT(stored_passwords(), SizeIs(1));
   CredentialUIEntry stored_password = stored_passwords()[0];
   EXPECT_EQ(stored_password.GetURL(), GURL(kTestOriginURL));
@@ -1155,6 +1180,10 @@ TEST_F(PasswordImporterTest, VectorImportWithConflict) {
 
   EXPECT_EQ(results.status, ImportResults::Status::SUCCESS);
   EXPECT_EQ(results.number_imported, 1u);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !stored_passwords().empty() &&
+           stored_passwords()[0].password == kTestPassword;
+  }));
   ASSERT_THAT(stored_passwords(), SizeIs(1));
   EXPECT_EQ(stored_passwords()[0].password, kTestPassword);
 }

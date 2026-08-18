@@ -1000,9 +1000,12 @@ TEST_F(RemoteActorCredentialSharingImplTest,
 
   // Only exact_user and affiliated_user should be included in the dialog;
   // psl_user and grouped_user must be ignored.
-  ASSERT_EQ(last_dialog_credentials_.size(), 2u);
-  EXPECT_EQ(last_dialog_credentials_[0]->username_value, u"exact_user");
-  EXPECT_EQ(last_dialog_credentials_[1]->username_value, u"affiliated_user");
+  EXPECT_THAT(last_dialog_credentials_,
+              testing::UnorderedElementsAre(
+                  testing::Pointee(testing::Field(&PasswordForm::username_value,
+                                                  u"exact_user")),
+                  testing::Pointee(testing::Field(&PasswordForm::username_value,
+                                                  u"affiliated_user"))));
 
   SimulateDialogSelection(std::nullopt);
 }

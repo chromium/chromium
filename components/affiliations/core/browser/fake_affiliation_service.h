@@ -5,15 +5,24 @@
 #ifndef COMPONENTS_AFFILIATIONS_CORE_BROWSER_FAKE_AFFILIATION_SERVICE_H_
 #define COMPONENTS_AFFILIATIONS_CORE_BROWSER_FAKE_AFFILIATION_SERVICE_H_
 
+#include <string>
+#include <vector>
+
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace affiliations {
 
+// Fake affiliation service to be used in tests. Posts tasks to simulate
+// asynchronous operations.
 class FakeAffiliationService : public AffiliationService {
  public:
   FakeAffiliationService();
+  explicit FakeAffiliationService(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~FakeAffiliationService() override;
 
   // Seeds a `group` of affiliated facets.
@@ -65,6 +74,10 @@ class FakeAffiliationService : public AffiliationService {
   base::WeakPtr<AffiliationService> AsWeakPtr() override;
 
  private:
+  const scoped_refptr<base::SequencedTaskRunner>& GetTaskRunner() const;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   // Ground-truth affiliation groups in the simulated backend database.
   std::vector<AffiliatedFacets> affiliation_groups_;
 

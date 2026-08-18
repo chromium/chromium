@@ -6,16 +6,29 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 
 namespace affiliations {
 
 FakeAffiliationService::FakeAffiliationService() = default;
 
+FakeAffiliationService::FakeAffiliationService(
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)) {}
+
 FakeAffiliationService::~FakeAffiliationService() = default;
+
+const scoped_refptr<base::SequencedTaskRunner>&
+FakeAffiliationService::GetTaskRunner() const {
+  return task_runner_ ? task_runner_
+                      : base::SequencedTaskRunner::GetCurrentDefault();
+}
 
 void FakeAffiliationService::AddAffiliationGroup(const AffiliatedFacets& group,
                                                  bool add_to_cache) {
@@ -45,7 +58,8 @@ void FakeAffiliationService::SetPSLExtensions(
 void FakeAffiliationService::FetchChangePasswordURL(
     const GURL& url,
     base::OnceCallback<void(GURL)> callback) {
-  std::move(callback).Run(GURL());
+  GetTaskRunner()->PostTask(FROM_HERE,
+                            base::BindOnce(std::move(callback), GURL()));
 }
 
 GURL FakeAffiliationService::GetChangePasswordURL(const GURL& url) const {
@@ -56,7 +70,9 @@ void FakeAffiliationService::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
     ResultCallback result_callback) {
   if (!cache_.contains(facet_uri)) {
-    std::move(result_callback).Run(AffiliatedFacets(), /*success=*/false);
+    GetTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(result_callback),
+                                  AffiliatedFacets(), /*success=*/false));
     return;
   }
 
@@ -64,15 +80,20 @@ void FakeAffiliationService::GetAffiliationsAndBranding(
     if (std::ranges::any_of(group, [&](const Facet& facet) {
           return facet.uri == facet_uri;
         })) {
-      std::move(result_callback).Run(group, /*success=*/true);
+      GetTaskRunner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(result_callback), group, /*success=*/true));
       return;
     }
   }
 
   // If no match found in seeded groups, guarantee self hit by returning a
   // single-element group containing the queried facet itself.
-  std::move(result_callback)
-      .Run({Facet(facet_uri, FacetBrandingInfo(), GURL())}, /*success=*/true);
+  GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(result_callback),
+                                AffiliatedFacets{Facet(
+                                    facet_uri, FacetBrandingInfo(), GURL())},
+                                /*success=*/true));
 }
 
 void FakeAffiliationService::Prefetch(const FacetURI& facet_uri,
@@ -106,12 +127,14 @@ void FakeAffiliationService::GetGroupingInfo(std::vector<FacetURI> facet_uris,
     }
     result.push_back(std::move(matched_group));
   }
-  std::move(callback).Run(std::move(result));
+  GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 void FakeAffiliationService::GetPSLExtensions(
     base::OnceCallback<void(std::vector<std::string>)> callback) {
-  std::move(callback).Run(psl_extensions_);
+  GetTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), psl_extensions_));
 }
 
 void FakeAffiliationService::UpdateAffiliationsAndBranding(
@@ -120,7 +143,7 @@ void FakeAffiliationService::UpdateAffiliationsAndBranding(
   for (const auto& facet : facets) {
     cache_.insert(facet);
   }
-  std::move(callback).Run();
+  GetTaskRunner()->PostTask(FROM_HERE, std::move(callback));
 }
 
 void FakeAffiliationService::RegisterSource(

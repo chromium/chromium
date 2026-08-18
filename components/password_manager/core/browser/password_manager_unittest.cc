@@ -3594,6 +3594,11 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePassword) {
       .WillRepeatedly(Return(true));
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !manager()->form_managers().empty() &&
+           manager()->form_managers().front()->GetFormFetcher()->GetState() ==
+               FormFetcher::State::NOT_WAITING;
+  }));
 
   base::HistogramTester histogram_tester;
 
