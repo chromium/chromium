@@ -1326,7 +1326,7 @@ void Tab::UpdateIconVisibility() {
 
   const bool declutter_eligible =
       features::IsTabStripDeclutterEnabled() &&
-      !(mouse_hovered_ || HasFocus() ||
+      !(IsHovering() || HasFocus() ||
         (close_button_ && close_button_->HasFocus()));
 
 #if BUILDFLAG(IS_CHROMEOS)
