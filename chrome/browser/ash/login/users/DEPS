@@ -29,7 +29,6 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash/login",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/common/chrome_paths.h",

@@ -27,11 +27,10 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/printing",
   "+chrome/browser/profiles",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
-  "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
-  "+chrome/browser/ui/views/frame/browser_view.h",
   "+chrome/common",
   "+chrome/grit",
 ]
@@ -39,10 +38,12 @@ include_rules = [
 specific_include_rules = {
   ".*_(browser|ui|unit)test\\.cc": [
     "+chrome/browser/extensions/extension_browsertest.h",
+    "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/navigator/browser_navigator.h",
     "+chrome/browser/ui/tabs/tab_activity_simulator.h",
+    "+chrome/browser/ui/views/frame/browser_view.h",
     "+chrome/test",
   ],
   "dlp_content_tab_helper_browsertest\\.cc": [
