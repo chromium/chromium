@@ -1020,9 +1020,7 @@ void ConfigurePartitions(
         scheduler_loop_quarantine_thread_local_config,
     partition_alloc::internal::SchedulerLoopQuarantineConfig
         scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
-    EventuallyZeroFreedMemory eventually_zero_freed_memory,
-    EnableFreeWithSize enable_free_with_size,
-    EnableStrictFreeSizeCheck enable_strict_free_size_check) {
+    EventuallyZeroFreedMemory eventually_zero_freed_memory) {
   partition_alloc::PartitionOptions opts;
   // The caller of ConfigurePartitions() will decide whether this or
   // another partition will have the thread cache enabled, by calling
@@ -1048,13 +1046,6 @@ void ConfigurePartitions(
                      ? partition_alloc::PartitionOptions::kEnabled
                      : partition_alloc::PartitionOptions::kDisabled,
       .reporting_mode = memory_tagging_reporting_mode};
-  opts.free_with_size = enable_free_with_size
-                            ? partition_alloc::PartitionOptions::kEnabled
-                            : partition_alloc::PartitionOptions::kDisabled;
-  opts.strict_free_size_check =
-      enable_strict_free_size_check
-          ? partition_alloc::PartitionOptions::kEnabled
-          : partition_alloc::PartitionOptions::kDisabled;
 
   static std::array<partition_alloc::internal::base::NoDestructor<
                         partition_alloc::PartitionAllocator>,

@@ -575,27 +575,23 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInternal(
   PA_PREFETCH_FOR_WRITE(object);
   auto [slot_start, slot_span] = GetSlotStartAndSlotSpanFromAddress(object);
 
-  if constexpr (ContainsFlags(flags, FreeFlags::kWithAlignmentHint) &&
-                ContainsFlags(flags, FreeFlags::kWithSizeHint)) {
-    if (settings_.enable_free_with_size) {
-      auto adjusted_size =
-          GetAdjustedSizeForAlignment(hint.alignment, hint.size);
-      // Overflow check. adjusted_size must be larger or equal to the original
-      // size.
-      PA_CHECK(adjusted_size >= hint.size);
-
-      FreeHintType<FreeHintFlags(flags)> new_hint = hint;
-      new_hint.size = adjusted_size;
-      FreeNoHooksImmediate<flags>(slot_start, slot_span, new_hint);
-      return;
-    }
-  }
-
   // We are going to read from |*slot_span| in all branches, but haven't
   // done it yet.
-  if constexpr (!ContainsFlags(flags, FreeFlags::kWithSizeHint)) {
-    PA_PREFETCH(slot_span);
+  PA_PREFETCH(slot_span);
+
+  if constexpr (ContainsFlags(flags, FreeFlags::kWithAlignmentHint) &&
+                ContainsFlags(flags, FreeFlags::kWithSizeHint)) {
+    auto adjusted_size = GetAdjustedSizeForAlignment(hint.alignment, hint.size);
+    // Overflow check. adjusted_size must be larger or equal to the original
+    // size.
+    PA_CHECK(adjusted_size >= hint.size);
+
+    FreeHintType<FreeHintFlags(flags)> new_hint = hint;
+    new_hint.size = adjusted_size;
+    FreeNoHooksImmediate<flags>(slot_start, slot_span, new_hint);
+    return;
   }
+
   FreeNoHooksImmediate<flags>(slot_start, slot_span, hint);
 }
 
@@ -739,14 +735,10 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
     FreeHintType<FreeHintFlags(flags)> hint) {
   internal::BucketSizeDetails size_details;
   if constexpr (ContainsFlags(flags, FreeFlags::kWithSizeHint)) {
-    if (settings_.enable_free_with_size) {
-      size_details = SizeToBucketSizeDetails(hint.size, slot_span);
-      FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, hint,
-                                          size_details);
-      return;
-    }
+    size_details = SizeToBucketSizeDetails(hint.size, slot_span);
+  } else {
+    size_details = SlotSpanToBucketSizeDetails(slot_span);
   }
-  size_details = SlotSpanToBucketSizeDetails(slot_span);
 
   FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, hint,
                                       size_details);
@@ -1234,19 +1226,9 @@ PartitionRoot::SizeToBucketSizeDetails(size_t requested_size,
     auto bucket_index =
         SizeToBucketIndex(raw_size, this->GetBucketDistribution());
     auto slot_size = BucketIndexLookup::GetBucketSize(bucket_index);
-    if (settings_.enable_strict_free_size_check) {
-      // TODO(crbug.com/410190984): Remove this prefetch & CHECKS once the
-      // PA_CHECK of the given size against the slot span metadata is replaced
-      // with a PA_DCHECK.
-      PA_PREFETCH(slot_span);
-      PA_CHECK(bucket_index ==
-               static_cast<uint16_t>(slot_span->bucket - this->buckets_));
-      PA_CHECK(slot_size == slot_span->bucket->slot_size);
-    } else {
-      PA_DCHECK(bucket_index ==
-                static_cast<uint16_t>(slot_span->bucket - this->buckets_));
-      PA_DCHECK(slot_size == slot_span->bucket->slot_size);
-    }
+    PA_CHECK(bucket_index ==
+             static_cast<uint16_t>(slot_span->bucket - this->buckets_));
+    PA_CHECK(slot_size == slot_span->bucket->slot_size);
     return internal::BucketSizeDetails{
         .bucket_index = bucket_index,
         .slot_size = slot_size,

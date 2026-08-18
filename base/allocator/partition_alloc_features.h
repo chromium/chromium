@@ -226,9 +226,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseSmallSingleSlotSpans);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks);
 #endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocFreeWithSize);
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                       kPartitionAllocStrictFreeSizeCheck);
 
 }  // namespace base::features
 

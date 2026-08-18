@@ -18800,30 +18800,6 @@
             ]
         }
     ],
-    "PartitionAllocFreeWithSize": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled_without_strict_check_20260227",
-                    "params": {
-                        "strict-free-size-check": "false"
-                    },
-                    "enable_features": [
-                        "PartitionAllocFreeWithSize"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocMemoryReclaimer": [
         {
             "platforms": [

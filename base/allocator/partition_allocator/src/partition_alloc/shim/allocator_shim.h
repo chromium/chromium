@@ -148,11 +148,6 @@ using EnableBrp =
 using EnableMemoryTagging =
     partition_alloc::internal::base::StrongAlias<class EnableMemoryTaggingTag,
                                                  bool>;
-using EnableFreeWithSize =
-    partition_alloc::internal::base::StrongAlias<class EnableFreeWithSizeTag,
-                                                 bool>;
-using EnableStrictFreeSizeCheck = partition_alloc::internal::base::
-    StrongAlias<class EnableStrictFreeSizeCheckTag, bool>;
 enum class BucketDistribution : uint8_t { kNeutral, kDenser };
 using EventuallyZeroFreedMemory = partition_alloc::internal::base::
     StrongAlias<class EventuallyZeroFreedMemoryTag, bool>;
@@ -172,9 +167,7 @@ void ConfigurePartitions(
         scheduler_loop_quarantine_thread_local_config,
     partition_alloc::internal::SchedulerLoopQuarantineConfig
         scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
-    EventuallyZeroFreedMemory eventually_zero_freed_memory,
-    EnableFreeWithSize enable_free_with_size,
-    EnableStrictFreeSizeCheck enable_strict_free_size_check);
+    EventuallyZeroFreedMemory eventually_zero_freed_memory);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) uint32_t GetMainPartitionRootExtrasSize();
 

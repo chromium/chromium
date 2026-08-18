@@ -168,8 +168,6 @@ struct PartitionOptions {
   ThreadIsolationOption thread_isolation;
 #endif
 
-  EnableToggle free_with_size = kDisabled;
-  EnableToggle strict_free_size_check = kEnabled;
 };
 
 constexpr PartitionOptions::PartitionOptions() = default;
@@ -255,9 +253,6 @@ class alignas(internal::kPartitionCachelineSize)
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
     std::ptrdiff_t metadata_offset_ = 0;
 #endif
-
-    bool enable_free_with_size = false;
-    bool enable_strict_free_size_check = true;
   };
 
   Settings settings_;
