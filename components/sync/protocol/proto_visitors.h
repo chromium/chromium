@@ -732,6 +732,7 @@ VISIT_PROTO_FIELDS(const sync_pb::GooglePlayServicesVersionInfo& proto) {
 
 VISIT_PROTO_FIELDS(const sync_pb::PersonalContextSpecificFields& proto) {
   VISIT_BYTES(p256dh_v2);
+  VISIT_BYTES(serialized_tink_keyset);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DictionarySpecifics& proto) {

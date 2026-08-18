@@ -194,6 +194,19 @@ std::optional<int> SpecificsToGlicExperimentalTriggeringVersion(
   return std::nullopt;
 }
 
+std::optional<DeviceInfo::PersonalContextInfo>
+SpecificsToPersonalContextInfo(const DeviceInfoSpecifics& specifics) {
+  if (!specifics.has_personal_context_fields() ||
+      !specifics.personal_context_fields().has_serialized_tink_keyset()) {
+    return std::nullopt;
+  }
+  const sync_pb::PersonalContextSpecificFields& fields =
+      specifics.personal_context_fields();
+  return DeviceInfo::PersonalContextInfo{
+      .serialized_tink_keyset =
+          base::ToVector(base::as_byte_span(fields.serialized_tink_keyset()))};
+}
+
 // Converts DeviceInfoSpecifics into DeviceInfo.
 DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
   const DeviceInfo::FormFactor device_form_factor =
@@ -237,7 +250,8 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       SpecificsToDesktopToIOSPromoReceivingTypes(specifics),
       SpecificsToGlicExperimentalTriggeringState(specifics),
       SpecificsToGlicExperimentalTriggeringVersion(specifics),
-      android_os_build_fingerprint_prefix);
+      android_os_build_fingerprint_prefix,
+      SpecificsToPersonalContextInfo(specifics));
 }
 
 // Allocate a EntityData and copies |specifics| into it.
@@ -378,6 +392,17 @@ std::unique_ptr<DeviceInfoSpecifics> MakeLocalDeviceSpecifics(
         GetSpecificsFieldNumberFromDataType(data_type));
   }
 
+  const std::optional<DeviceInfo::PersonalContextInfo>& personal_context_info =
+      info.personal_context_info();
+  if (personal_context_info &&
+      !personal_context_info->serialized_tink_keyset.empty()) {
+    specifics->mutable_personal_context_fields()->set_serialized_tink_keyset(
+        personal_context_info->serialized_tink_keyset.data(),
+        personal_context_info->serialized_tink_keyset.size());
+  } else {
+    specifics->clear_personal_context_fields();
+  }
+
   return specifics;
 }
 
@@ -427,7 +452,9 @@ bool IsStoredLocalDeviceInfoStillAccurate(const DeviceInfo* stored,
          current->glic_experimental_triggering_state() ==
              stored->glic_experimental_triggering_state() &&
          current->glic_experimental_triggering_version() ==
-             stored->glic_experimental_triggering_version();
+             stored->glic_experimental_triggering_version() &&
+         current->personal_context_info() ==
+             stored->personal_context_info();
 }
 
 int CalculateMaxConcurrentEvents(const std::multimap<base::Time, int>& events) {

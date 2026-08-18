@@ -110,6 +110,12 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     return std::nullopt;
   }
 
+  // syncer::DeviceInfoSyncClient:
+  std::optional<syncer::DeviceInfo::PersonalContextInfo>
+  GetLocalPersonalContextInfo() const override {
+    return std::nullopt;
+  }
+
  private:
   PrefService* const prefs_;
   syncer::SyncInvalidationsService* const sync_invalidations_service_;

@@ -123,6 +123,8 @@ source_set("device_info_sync_service_factory") {
     ":sync_invalidations_service_factory",
     "//base",
     "//components/desktop_to_mobile_promos",
+    "//components/personal_context/core",
+    "//components/personal_context/core:features",
     "//components/send_tab_to_self",
     "//components/signin/public/base",
     "//components/sync/invalidations",

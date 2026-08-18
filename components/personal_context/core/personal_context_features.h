@@ -18,6 +18,10 @@ BASE_DECLARE_FEATURE(kPersonalContext);
 // Controls whether the Personal Context non-eligibility UMA metric is logged.
 BASE_DECLARE_FEATURE(kPersonalContextLogNonEligibilityUma);
 
+// Controls whether Personal Context generates/syncs the device HPKE public key
+// and handles encrypted payloads.
+BASE_DECLARE_FEATURE(kPersonalContextHandleEncryptedPayloads);
+
 }  // namespace personal_context::features
 
 #endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_FEATURES_H_

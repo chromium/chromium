@@ -140,6 +140,16 @@ class DeviceInfo {
     std::array<uint8_t, 65> peer_public_key_x962;
   };
 
+  // Holds the device's public key used for Personal Context HPKE payload
+  // encryption.
+  struct PersonalContextInfo {
+    // Serialized proto bytes of tink.Keyset.
+    std::vector<uint8_t> serialized_tink_keyset;
+
+    friend bool operator==(const PersonalContextInfo&,
+                           const PersonalContextInfo&) = default;
+  };
+
   //
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync_device_info
@@ -210,7 +220,8 @@ class DeviceInfo {
                  desktop_to_ios_promo_receiving_types,
              GlicExperimentalTriggeringState glic_experimental_triggering_state,
              std::optional<int> glic_experimental_triggering_version,
-             std::optional<std::string> android_os_build_fingerprint_prefix);
+             std::optional<std::string> android_os_build_fingerprint_prefix,
+             std::optional<PersonalContextInfo> personal_context_info);
 
   DeviceInfo& operator=(const DeviceInfo&) = delete;
 
@@ -286,6 +297,8 @@ class DeviceInfo {
 
   const std::optional<PhoneAsASecurityKeyInfo>& paask_info() const;
 
+  const std::optional<PersonalContextInfo>& personal_context_info() const;
+
   // Returns the FCM registration token for sync invalidations.
   const std::string& fcm_registration_token() const;
 
@@ -326,6 +339,9 @@ class DeviceInfo {
   void set_sharing_info(const std::optional<SharingInfo>& sharing_info);
 
   void set_paask_info(std::optional<PhoneAsASecurityKeyInfo>&& paask_info);
+
+  void set_personal_context_info(
+      std::optional<PersonalContextInfo> personal_context_info);
 
   void set_client_name(const std::string& client_name);
 
@@ -421,6 +437,8 @@ class DeviceInfo {
   // The version of the Glic experimental triggering protocol supported by the
   // device.
   std::optional<int> glic_experimental_triggering_version_;
+
+  std::optional<PersonalContextInfo> personal_context_info_;
 
   // NOTE: when adding a member, don't forget to update
   // |IsStoredLocalDeviceInfoStillAccurate| in device_info_sync_bridge.cc or

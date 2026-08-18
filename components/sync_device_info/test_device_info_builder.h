@@ -82,6 +82,9 @@ class TestDeviceInfoBuilder {
       std::optional<int> glic_experimental_triggering_version);
   TestDeviceInfoBuilder& WithServerDeterminedModelName(
       const std::optional<std::string>& server_determined_model_name);
+  TestDeviceInfoBuilder& WithPersonalContextInfo(
+      const std::optional<DeviceInfo::PersonalContextInfo>&
+          personal_context_info);
 
  private:
   std::string guid_ = "guid";
@@ -113,6 +116,7 @@ class TestDeviceInfoBuilder {
           DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
   std::optional<int> glic_experimental_triggering_version_;
   std::optional<std::string> server_determined_model_name_;
+  std::optional<DeviceInfo::PersonalContextInfo> personal_context_info_;
 };
 
 }  // namespace syncer

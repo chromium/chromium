@@ -49,6 +49,8 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
   local_device_info_->set_send_tab_to_self_receiving_type(
       sync_client_->GetSendTabToSelfReceivingType());
   local_device_info_->set_sharing_info(sync_client_->GetLocalSharingInfo());
+  local_device_info_->set_personal_context_info(
+      sync_client_->GetLocalPersonalContextInfo());
 
   // Do not update previous values if the service is not fully initialized.
   // std::nullopt means that the value is unknown yet and the previous value
@@ -161,7 +163,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
       sync_client_->GetDesktopToIOSPromoReceivingTypes(),
       sync_client_->GetGlicExperimentalTriggeringState(),
       sync_client_->GetGlicExperimentalTriggeringVersion(),
-      android_os_build_fingerprint_prefix);
+      android_os_build_fingerprint_prefix,
+      sync_client_->GetLocalPersonalContextInfo());
 
   full_hardware_class_ = full_hardware_class;
 

@@ -92,7 +92,8 @@ TestDeviceInfoBuilder::TestDeviceInfoBuilder(const DeviceInfo& other)
           other.glic_experimental_triggering_state()),
       glic_experimental_triggering_version_(
           other.glic_experimental_triggering_version()),
-      server_determined_model_name_(other.server_determined_model_name()) {}
+      server_determined_model_name_(other.server_determined_model_name()),
+      personal_context_info_(other.personal_context_info()) {}
 
 TestDeviceInfoBuilder::~TestDeviceInfoBuilder() = default;
 
@@ -113,7 +114,8 @@ std::unique_ptr<DeviceInfo> TestDeviceInfoBuilder::Build() const {
       desktop_to_ios_promo_receiving_types_,
       glic_experimental_triggering_state_,
       glic_experimental_triggering_version_,
-      android_os_build_fingerprint_prefix_);
+      android_os_build_fingerprint_prefix_,
+      personal_context_info_);
 }
 
 TestDeviceInfoBuilder& TestDeviceInfoBuilder::WithGuid(
@@ -283,6 +285,13 @@ TestDeviceInfoBuilder::WithGlicExperimentalTriggeringVersion(
 TestDeviceInfoBuilder& TestDeviceInfoBuilder::WithServerDeterminedModelName(
     const std::optional<std::string>& server_determined_model_name) {
   server_determined_model_name_ = server_determined_model_name;
+  return *this;
+}
+
+TestDeviceInfoBuilder& TestDeviceInfoBuilder::WithPersonalContextInfo(
+    const std::optional<DeviceInfo::PersonalContextInfo>&
+        personal_context_info) {
+  personal_context_info_ = personal_context_info;
   return *this;
 }
 

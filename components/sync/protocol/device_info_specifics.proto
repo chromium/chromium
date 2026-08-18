@@ -265,6 +265,9 @@ message GooglePlayServicesVersionInfo {
 // Device specific information for Personal Context feature.
 message PersonalContextSpecificFields {
   // Public key for message encryption using Personal Context sender ID.
-  optional bytes p256dh_v2 = 1;
+  optional bytes p256dh_v2 = 1 [deprecated = true];
+
+  // Serialized proto bytes of tink.Keyset
+  optional bytes serialized_tink_keyset = 2;
 }
 

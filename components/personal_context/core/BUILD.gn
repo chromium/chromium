@@ -16,6 +16,8 @@ source_set("core") {
     "personal_context_eligibility_service.h",
     "personal_context_eligibility_service_impl.cc",
     "personal_context_eligibility_service_impl.h",
+    "personal_context_key_manager.cc",
+    "personal_context_key_manager.h",
     "personal_context_service.h",
     "personal_context_service_impl.cc",
     "personal_context_service_impl.h",
@@ -34,8 +36,10 @@ source_set("core") {
     "//components/optimization_guide/core:features",
     "//components/personal_context/proto:personal_context_proto",
     "//components/prefs",
+    "//components/signin/public/base:hybrid_encryption_key_proto",
     "//components/signin/public/identity_manager",
     "//components/variations/net",
+    "//crypto",
     "//net",
   ]
 }
@@ -85,6 +89,7 @@ source_set("unit_tests") {
     "network/personal_context_fetcher_unittest.cc",
     "network/personal_context_manager_unittest.cc",
     "personal_context_eligibility_service_impl_unittest.cc",
+    "personal_context_key_manager_unittest.cc",
     "personal_context_service_impl_unittest.cc",
   ]
 

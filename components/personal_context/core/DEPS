@@ -10,6 +10,7 @@ include_rules = [
   "+components/sync_preferences",
   "+components/variations",
   "+components/variations/net",
+  "+crypto",
   "+google_apis/gaia",
   "+net/http",
   "+net/traffic_annotation",

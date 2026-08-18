@@ -87,7 +87,8 @@ DeviceInfo::DeviceInfo(
         desktop_to_ios_promo_receiving_types,
     GlicExperimentalTriggeringState glic_experimental_triggering_state,
     std::optional<int> glic_experimental_triggering_version,
-    std::optional<std::string> android_os_build_fingerprint_prefix)
+    std::optional<std::string> android_os_build_fingerprint_prefix,
+    std::optional<PersonalContextInfo> personal_context_info)
     : guid_(guid),
       client_name_(client_name),
       chrome_version_(chrome_version),
@@ -117,7 +118,8 @@ DeviceInfo::DeviceInfo(
           desktop_to_ios_promo_receiving_types),
       glic_experimental_triggering_state_(glic_experimental_triggering_state),
       glic_experimental_triggering_version_(
-          glic_experimental_triggering_version) {}
+          glic_experimental_triggering_version),
+      personal_context_info_(std::move(personal_context_info)) {}
 
 DeviceInfo::DeviceInfo(const DeviceInfo& other) = default;
 
@@ -229,6 +231,11 @@ DeviceInfo::paask_info() const {
   return paask_info_;
 }
 
+const std::optional<DeviceInfo::PersonalContextInfo>&
+DeviceInfo::personal_context_info() const {
+  return personal_context_info_;
+}
+
 const std::string& DeviceInfo::fcm_registration_token() const {
   return fcm_registration_token_;
 }
@@ -287,6 +294,11 @@ void DeviceInfo::set_sharing_info(
 void DeviceInfo::set_paask_info(
     std::optional<PhoneAsASecurityKeyInfo>&& paask_info) {
   paask_info_ = std::move(paask_info);
+}
+
+void DeviceInfo::set_personal_context_info(
+    std::optional<PersonalContextInfo> personal_context_info) {
+  personal_context_info_ = std::move(personal_context_info);
 }
 
 void DeviceInfo::set_client_name(const std::string& client_name) {

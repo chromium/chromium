@@ -18,6 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
+#include "components/personal_context/core/personal_context_features.h"
+#include "components/personal_context/core/personal_context_key_manager.h"
 #include "components/sharing_message/sharing_sync_preference.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/service/sync_prefs.h"
@@ -127,6 +129,22 @@ DeviceInfoSyncClientImpl::GetGlicExperimentalTriggeringVersion() const {
     return std::nullopt;
   }
   return service->enabling().GetExperimentalTriggeringVersion();
+}
+
+std::optional<syncer::DeviceInfo::PersonalContextInfo>
+DeviceInfoSyncClientImpl::GetLocalPersonalContextInfo() const {
+  if (!base::FeatureList::IsEnabled(
+          personal_context::features::kPersonalContextHandleEncryptedPayloads)) {
+    return std::nullopt;
+  }
+  std::vector<uint8_t> public_key =
+      personal_context::PersonalContextKeyManager::
+          GetOrCreateLocalPublicKeyBytes(profile_->GetPrefs());
+  if (public_key.empty()) {
+    return std::nullopt;
+  }
+  return syncer::DeviceInfo::PersonalContextInfo{
+      .serialized_tink_keyset = std::move(public_key)};
 }
 
 }  // namespace browser_sync

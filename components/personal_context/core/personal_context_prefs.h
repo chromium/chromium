@@ -32,6 +32,10 @@ inline constexpr char kPersonalContextAtMemoryNoticeImpressionCount[] =
 inline constexpr char kPersonalContextInAutofillSettingsToggleStatus[] =
     "autofill.personal_context.settings_toggle_status";
 
+// Base64-encoded ML-KEM-768 private key used for HPKE encryption of Personal Context.
+inline constexpr char kPersonalContextPrivateKey[] =
+    "autofill.personal_context.private_key";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace personal_context::prefs

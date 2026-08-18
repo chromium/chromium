@@ -13,5 +13,7 @@ BASE_FEATURE(kPersonalContext, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPersonalContextLogNonEligibilityUma,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPersonalContextHandleEncryptedPayloads,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace personal_context::features

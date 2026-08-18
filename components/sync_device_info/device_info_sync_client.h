@@ -63,6 +63,11 @@ class DeviceInfoSyncClient {
   // Returns the local Glic experimental triggering protocol version supported
   // by the current client, or std::nullopt if unavailable.
   virtual std::optional<int> GetGlicExperimentalTriggeringVersion() const = 0;
+
+  // Returns Personal Context specific information for this device, or
+  // std::nullopt if unavailable.
+  virtual std::optional<DeviceInfo::PersonalContextInfo>
+  GetLocalPersonalContextInfo() const = 0;
 };
 
 }  // namespace syncer

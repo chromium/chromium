@@ -73,6 +73,7 @@ using testing::Not;
 using testing::NotNull;
 using testing::Pair;
 using testing::Pointee;
+using testing::Property;
 using testing::Return;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
@@ -186,7 +187,16 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
              arg.server_determined_model_name().has_value() &&
          (!arg.server_determined_model_name().has_value() ||
           expected_specifics.server_determined_model_name() ==
-              *arg.server_determined_model_name());
+              *arg.server_determined_model_name()) &&
+         expected_specifics.personal_context_fields()
+                 .serialized_tink_keyset() ==
+             (arg.personal_context_info().has_value()
+                  ? std::string(
+                        arg.personal_context_info()
+                            ->serialized_tink_keyset.begin(),
+                        arg.personal_context_info()
+                            ->serialized_tink_keyset.end())
+                  : "");
 }
 
 Matcher<std::unique_ptr<EntityData>> HasSpecifics(
@@ -482,7 +492,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         glic_experimental_triggering_state,
         /*glic_experimental_triggering_version=*/
         glic_experimental_triggering_version,
-        android_os_build_fingerprint_prefix);
+        android_os_build_fingerprint_prefix,
+        personal_context_info_);
   }
 
   void Clear() override { local_device_info_.reset(); }
@@ -520,6 +531,9 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         local_device_info_->set_desktop_to_ios_promo_receiving_types(
             *promo_types_);
       }
+      if (personal_context_info_) {
+        local_device_info_->set_personal_context_info(*personal_context_info_);
+      }
     }
     return local_device_info_.get();
   }
@@ -548,12 +562,18 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
     promo_types_ = promo_types;
   }
 
+  void UpdatePersonalContextInfo(
+      const DeviceInfo::PersonalContextInfo& personal_context_info) {
+    personal_context_info_ = personal_context_info;
+  }
+
  private:
   std::unique_ptr<DeviceInfo> local_device_info_;
   std::optional<std::string> fcm_registration_token_;
   std::optional<DataTypeSet> interested_data_types_;
   std::optional<DeviceInfo::PhoneAsASecurityKeyInfo> paask_info_;
   std::optional<MobilePromoOnDesktopPromoTypeSet> promo_types_;
+  std::optional<DeviceInfo::PersonalContextInfo> personal_context_info_;
 };  // namespace
 
 class DeviceInfoSyncBridgeTest : public testing::Test,
@@ -1905,6 +1925,80 @@ TEST_F(DeviceInfoSyncBridgeTest,
   EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
   EXPECT_EQ(kServerDeterminedModelName,
             info->server_determined_model_name().value_or(""));
+}
+
+TEST_F(DeviceInfoSyncBridgeTest,
+       ApplyIncrementalSyncChangesWithPersonalContextFields) {
+  InitializeAndMergeInitialData(SyncMode::kFull);
+
+  DeviceInfoSpecifics specifics = CreateSpecifics(1);
+  const std::vector<uint8_t> kSerializedKeyset = {1, 2, 3, 4, 5};
+  specifics.mutable_personal_context_fields()->set_serialized_tink_keyset(
+      kSerializedKeyset.data(), kSerializedKeyset.size());
+
+  std::optional<ModelError> error_on_add =
+      bridge()->ApplyIncrementalSyncChanges(
+          bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
+
+  ASSERT_FALSE(error_on_add);
+  const DeviceInfo* info = bridge()->GetDeviceInfo(specifics.cache_guid());
+  ASSERT_TRUE(info);
+  EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
+  ASSERT_TRUE(info->personal_context_info().has_value());
+  EXPECT_EQ(info->personal_context_info()->serialized_tink_keyset,
+            kSerializedKeyset);
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, CommitLocalPersonalContextInfo) {
+  const std::string kLocalGuid = CacheGuidForSuffix(kLocalSuffix);
+  const std::vector<uint8_t> kSerializedKeyset = {1, 2, 3, 4, 5};
+
+  InitializeAndPump();
+  local_device()->UpdatePersonalContextInfo(
+      DeviceInfo::PersonalContextInfo{
+          .serialized_tink_keyset = kSerializedKeyset});
+
+  EXPECT_CALL(
+      *processor(),
+      Put(kLocalGuid,
+          HasSpecifics(Property(
+              &sync_pb::EntitySpecifics::device_info,
+              Property(
+                  &DeviceInfoSpecifics::personal_context_fields,
+                  Property(
+                      &sync_pb::PersonalContextSpecificFields::
+                          serialized_tink_keyset,
+                      std::string(kSerializedKeyset.begin(),
+                                  kSerializedKeyset.end()))))),
+          _));
+
+  EnableSyncAndMergeInitialData(SyncMode::kFull);
+
+  ASSERT_TRUE(local_device()->GetLocalDeviceInfo());
+  EXPECT_EQ(local_device()->GetLocalDeviceInfo()->guid(), kLocalGuid);
+  ASSERT_TRUE(
+      local_device()->GetLocalDeviceInfo()->personal_context_info().has_value());
+  EXPECT_EQ(local_device()
+                ->GetLocalDeviceInfo()
+                ->personal_context_info()
+                ->serialized_tink_keyset,
+            kSerializedKeyset);
+}
+
+TEST_F(DeviceInfoSyncBridgeTest, GetDataForCommitWithPersonalContextFields) {
+  const DeviceInfoSpecifics local_specifics = CreateLocalDeviceSpecifics();
+  const std::vector<uint8_t> kSerializedKeyset = {1, 2, 3, 4, 5};
+  DeviceInfoSpecifics specifics = CreateSpecifics(1);
+  specifics.mutable_personal_context_fields()->set_serialized_tink_keyset(
+      kSerializedKeyset.data(), kSerializedKeyset.size());
+
+  WriteToStoreWithMetadata({local_specifics, specifics},
+                           StateWithEncryption("ekn"));
+  InitializeAndPump();
+
+  EXPECT_THAT(GetDataForCommit({specifics.cache_guid()}),
+              UnorderedElementsAre(
+                  Pair(specifics.cache_guid(), HasDeviceInfo(specifics))));
 }
 
 }  // namespace

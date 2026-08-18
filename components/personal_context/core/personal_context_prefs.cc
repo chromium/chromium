@@ -27,6 +27,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(kPersonalContextInAutofillSettingsToggleStatus,
                                 true);
+
+  registry->RegisterStringPref(kPersonalContextPrivateKey, std::string());
 }
 
 }  // namespace personal_context::prefs
