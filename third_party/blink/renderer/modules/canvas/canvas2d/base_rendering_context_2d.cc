@@ -40,8 +40,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_stretch.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_font_variant_caps.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_text_rendering.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_draw_element_options.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -1347,25 +1349,28 @@ DOMMatrix* BaseRenderingContext2D::drawElementImage(
     const V8UnionElementOrElementImage* element,
     double dx,
     double dy,
-    ExceptionState& exception_state) {
-  return DrawElementInternal(
-      element,
-      /*sx*/ std::nullopt, /*sy*/ std::nullopt,
-      /*swidth*/ std::nullopt, /*sheight*/ std::nullopt, dx, dy,
-      /*dwidth*/ std::nullopt, /*dheight*/ std::nullopt, exception_state);
-}
-
-DOMMatrix* BaseRenderingContext2D::drawElementImage(
-    const V8UnionElementOrElementImage* element,
-    double dx,
-    double dy,
-    double dwidth,
-    double dheight,
+    const DrawElementOptions* options,
     ExceptionState& exception_state) {
   return DrawElementInternal(element,
                              /*sx*/ std::nullopt, /*sy*/ std::nullopt,
                              /*swidth*/ std::nullopt, /*sheight*/ std::nullopt,
-                             dx, dy, dwidth, dheight, exception_state);
+                             dx, dy,
+                             /*dwidth*/ std::nullopt, /*dheight*/ std::nullopt,
+                             options, exception_state);
+}
+
+DOMMatrix* BaseRenderingContext2D::drawElementImage(
+    const V8UnionElementOrElementImage* element,
+    double dx,
+    double dy,
+    double dwidth,
+    double dheight,
+    const DrawElementOptions* options,
+    ExceptionState& exception_state) {
+  return DrawElementInternal(element,
+                             /*sx*/ std::nullopt, /*sy*/ std::nullopt,
+                             /*swidth*/ std::nullopt, /*sheight*/ std::nullopt,
+                             dx, dy, dwidth, dheight, options, exception_state);
 }
 
 DOMMatrix* BaseRenderingContext2D::drawElementImage(
@@ -1376,10 +1381,11 @@ DOMMatrix* BaseRenderingContext2D::drawElementImage(
     double sheight,
     double dx,
     double dy,
+    const DrawElementOptions* options,
     ExceptionState& exception_state) {
   return DrawElementInternal(element, sx, sy, swidth, sheight, dx, dy,
                              /*dwidth*/ std::nullopt, /*dheight*/ std::nullopt,
-                             exception_state);
+                             options, exception_state);
 }
 
 DOMMatrix* BaseRenderingContext2D::drawElementImage(
@@ -1392,9 +1398,10 @@ DOMMatrix* BaseRenderingContext2D::drawElementImage(
     double dy,
     double dwidth,
     double dheight,
+    const DrawElementOptions* options,
     ExceptionState& exception_state) {
   return DrawElementInternal(element, sx, sy, swidth, sheight, dx, dy, dwidth,
-                             dheight, exception_state);
+                             dheight, options, exception_state);
 }
 
 DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
@@ -1407,6 +1414,7 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
     double y,
     std::optional<double> dwidth,
     std::optional<double> dheight,
+    const DrawElementOptions* options,
     ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
       GetCanvasRenderingContextHost()->GetTopExecutionContext()));
@@ -1584,6 +1592,16 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
   // element.
   gfx::Transform result_transform = blink::GetElementTransform(
       child_paint_record->paint_state, Host()->Size(), draw_transform);
+
+  if (element->IsElement()) {
+    if ((!options || options->updateGeometry()) &&
+        RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
+            element->GetAsElement()->GetExecutionContext())) {
+      element->GetAsElement()->SetCanvasTransformInternal(result_transform);
+    }
+  } else if (element->IsElementImage()) {
+    // TODO(crbug.com/532229486): Support DrawElementOptions.
+  }
 
   return MakeGarbageCollected<DOMMatrix>(result_transform,
                                          result_transform.Is2dTransform());

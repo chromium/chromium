@@ -4519,14 +4519,25 @@ const gfx::Transform* Element::GetUsedCanvasTransform() const {
 }
 
 void Element::SetCanvasTransformInternal(const gfx::Transform& transform) {
+  if (const gfx::Transform* existing = GetCanvasTransformInternal()) {
+    if (*existing == transform) {
+      return;
+    }
+  }
   data_ = EnsureRareData().SetWrappedField<gfx::Transform>(
       NodeRareData::FieldId::kCanvasTransform, transform);
   if (LayoutObject* layout_object = GetLayoutObject()) {
     layout_object->SetNeedsPaintPropertyUpdate();
-    // Layout is needed to update the PaintLayer transform (which is updated
-    // during layout in LayoutBox::UpdateLayout). We cannot rely on style recalc
-    // because canvas transform is not stored in ComputedStyle.
-    layout_object->SetNeedsLayout(layout_invalidation_reason::kDomChanged);
+    const auto* box = DynamicTo<LayoutBox>(layout_object);
+    if (box && box->TransformsChangeMayRequireLayout()) {
+      layout_object->SetNeedsLayout(layout_invalidation_reason::kDomChanged);
+    } else {
+      if (layout_object->HasLayer()) {
+        // Directly update the PaintLayer transform to avoid a repaint from
+        // layout invalidation.
+        To<LayoutBoxModelObject>(layout_object)->Layer()->UpdateTransform();
+      }
+    }
   }
 }
 

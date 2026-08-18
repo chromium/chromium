@@ -6,23 +6,16 @@ interface mixin CanvasDrawElementImage {
   [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
   DOMMatrix drawElementImage((Element or ElementImage) element,
                              unrestricted double dx,
-                             unrestricted double dy);
+                             unrestricted double dy,
+                             optional DrawElementOptions options = {});
 
   [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
   DOMMatrix drawElementImage((Element or ElementImage) element,
                              unrestricted double dx,
                              unrestricted double dy,
                              unrestricted double dwidth,
-                             unrestricted double dheight);
-
-  [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
-  DOMMatrix drawElementImage((Element or ElementImage) element,
-                             unrestricted double sx,
-                             unrestricted double sy,
-                             unrestricted double swidth,
-                             unrestricted double sheight,
-                             unrestricted double dx,
-                             unrestricted double dy);
+                             unrestricted double dheight,
+                             optional DrawElementOptions options = {});
 
   [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
   DOMMatrix drawElementImage((Element or ElementImage) element,
@@ -32,6 +25,17 @@ interface mixin CanvasDrawElementImage {
                              unrestricted double sheight,
                              unrestricted double dx,
                              unrestricted double dy,
+                             optional DrawElementOptions options = {});
+
+  [RuntimeEnabled=CanvasDrawElement, RaisesException, MeasureAs=HTMLInCanvas]
+  DOMMatrix drawElementImage((Element or ElementImage) element,
+                             unrestricted double sx,
+                             unrestricted double sy,
+                             unrestricted double swidth,
+                             unrestricted double sheight,
+                             unrestricted double dx,
+                             unrestricted double dy,
                              unrestricted double dwidth,
-                             unrestricted double dheight);
+                             unrestricted double dheight,
+                             optional DrawElementOptions options = {});
 };

@@ -56,6 +56,7 @@ class Canvas2DResourceProvider;
 class Canvas2DBitmapProvider;
 class CanvasContextCreationAttributesCore;
 class CanvasRenderingContext2DSettings;
+class DrawElementOptions;
 class ExceptionState;
 class ImageData;
 class ImageDataSettings;
@@ -193,12 +194,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   DOMMatrix* drawElementImage(const V8UnionElementOrElementImage* element,
                               double dx,
                               double dy,
+                              const DrawElementOptions* options,
                               ExceptionState& exception_state);
   DOMMatrix* drawElementImage(const V8UnionElementOrElementImage* element,
                               double dx,
                               double dy,
                               double dwidth,
                               double dheight,
+                              const DrawElementOptions* options,
                               ExceptionState& exception_state);
   DOMMatrix* drawElementImage(const V8UnionElementOrElementImage* element,
                               double sx,
@@ -207,6 +210,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
                               double sheight,
                               double dx,
                               double dy,
+                              const DrawElementOptions* options,
                               ExceptionState& exception_state);
   DOMMatrix* drawElementImage(const V8UnionElementOrElementImage* element,
                               double sx,
@@ -217,6 +221,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
                               double dy,
                               double dwidth,
                               double dheight,
+                              const DrawElementOptions* options,
                               ExceptionState& exception_state);
 
   DOMMatrix* DrawElementInternal(const V8UnionElementOrElementImage* element,
@@ -228,6 +233,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
                                  double y,
                                  std::optional<double> dwidth,
                                  std::optional<double> dheight,
+                                 const DrawElementOptions* options,
                                  ExceptionState& exception_state);
 
   scoped_refptr<const cc::AnimatedImageFrameIndexMap>
