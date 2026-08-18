@@ -4914,7 +4914,6 @@ void WebAppIntegrationTestDriver::LaunchFile(Site site,
   }
   browser_creator.Start(command_line, profile()->GetPath(),
                         {profile(), StartupProfileMode::kBrowserWindow}, {});
-  provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 #endif
 }
 
