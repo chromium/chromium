@@ -579,8 +579,8 @@ suite('FlagsDisabled', function() {
       });
 });
 
-// Separate test suite for tests specifically related to Safe Browsing controls.
-suite('SafeBrowsing', function() {
+// Separate test suites for tests specifically related to Safe Browsing controls.
+suite('SafeBrowsingRadio', function() {
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
   let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
   let testSecurityBrowserProxy: TestSecurityPageBrowserProxy;
@@ -607,11 +607,6 @@ suite('SafeBrowsing', function() {
     return microtasksFinished();
   }
 
-  async function resetPage() {
-    page.remove();
-    await setUpPage();
-  }
-
   setup(function() {
     return setUpPage();
   });
@@ -625,41 +620,6 @@ suite('SafeBrowsing', function() {
   test('SafeBrowsingRadio_InitialPrefOptionIsExpanded', function() {
     assertFalse(page.$.safeBrowsingEnhanced.expanded);
     assertTrue(page.$.safeBrowsingStandard.expanded);
-  });
-
-  test('PasswordsLeakDetectionText', function() {
-    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-        '#passwordsLeakToggle');
-    assertTrue(!!toggle);
-
-    const passwordLeakLabel =
-        loadTimeData.getString('passwordsLeakDetectionLabel');
-    assertEquals(passwordLeakLabel, toggle.label);
-
-    const defaultSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
-    const activeWhenSignedInSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription') +
-        ' ' +
-        loadTimeData.getString(
-            'passwordsLeakDetectionSignedOutEnabledDescription');
-    assertEquals(defaultSubLabel, toggle.subLabel);
-
-    page.set('prefs.profile.password_manager_leak_detection.value', true);
-    page.set(
-        'prefs.generated.password_leak_detection.userControlDisabled', true);
-    flush();
-    assertEquals(activeWhenSignedInSubLabel, toggle.subLabel);
-
-    page.set('prefs.generated.password_leak_detection.value', true);
-    page.set(
-        'prefs.generated.password_leak_detection.userControlDisabled', false);
-    flush();
-    assertEquals(defaultSubLabel, toggle.subLabel);
-
-    page.set('prefs.profile.password_manager_leak_detection.value', false);
-    flush();
-    assertEquals(defaultSubLabel, toggle.subLabel);
   });
 
   test(
@@ -715,6 +675,92 @@ suite('SafeBrowsing', function() {
         assertFalse(page.$.safeBrowsingStandard.expanded);
         assertTrue(page.$.safeBrowsingEnhanced.expanded);
       });
+
+  test('standardProtectionExpandedIfNoQueryParam', function() {
+    // Standard protection should be pre-expanded if there is no param.
+    Router.getInstance().navigateTo(routes.SECURITY);
+    assertEquals(
+        page.getPref('generated.safe_browsing').value,
+        SafeBrowsingSetting.STANDARD);
+    assertFalse(page.$.safeBrowsingEnhanced.expanded);
+    assertTrue(page.$.safeBrowsingStandard.expanded);
+  });
+
+  test('enhancedProtectionCollapsedIfParamIsEnhanced', function() {
+    // Enhanced protection should be collapsed if the param is set to
+    // enhanced.
+    Router.getInstance().navigateTo(
+        routes.SECURITY,
+        /* dynamicParams= */ new URLSearchParams('q=enhanced'));
+    assertEquals(
+        page.getPref('generated.safe_browsing').value,
+        SafeBrowsingSetting.STANDARD);
+    assertFalse(page.$.safeBrowsingEnhanced.expanded);
+    assertFalse(page.$.safeBrowsingStandard.expanded);
+  });
+
+  test('noValueChangeSafeBrowsingReportingInEnhanced', async () => {
+    page.$.safeBrowsingStandard.click();
+    const previous = page.getPref('safebrowsing.scout_reporting_enabled').value;
+
+    page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
+
+    assertTrue(
+        page.getPref('safebrowsing.scout_reporting_enabled').value ===
+        previous);
+  });
+
+  test('noValueChangePasswordLeakSwitchToEnhanced', async () => {
+    page.$.safeBrowsingStandard.click();
+    await microtasksFinished();
+    const previous =
+        page.getPref('profile.password_manager_leak_detection').value;
+
+    page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
+
+    assertTrue(
+        page.getPref('profile.password_manager_leak_detection').value ===
+        previous);
+  });
+});
+
+suite('SafeBrowsingDialog', function() {
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testSecurityBrowserProxy: TestSecurityPageBrowserProxy;
+  let page: SettingsSecurityPageElement;
+  let openWindowProxy: TestOpenWindowProxy;
+
+  function setUpPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
+    testSecurityBrowserProxy = new TestSecurityPageBrowserProxy();
+    SecurityPageBrowserProxyImpl.setInstance(testSecurityBrowserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
+    page = document.createElement('settings-security-page');
+    page.prefs = pagePrefs();
+    document.body.appendChild(page);
+    page.$.safeBrowsingEnhanced.updateCollapsed();
+    page.$.safeBrowsingStandard.updateCollapsed();
+    return microtasksFinished();
+  }
+
+  setup(function() {
+    return setUpPage();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
 
   test('DisableSafebrowsingDialog_Confirm', async function() {
     page.$.safeBrowsingStandard.click();
@@ -783,18 +829,6 @@ suite('SafeBrowsing', function() {
         page.getPref('generated.safe_browsing').value);
   });
 
-  test('noValueChangeSafeBrowsingReportingInEnhanced', async () => {
-    page.$.safeBrowsingStandard.click();
-    const previous = page.getPref('safebrowsing.scout_reporting_enabled').value;
-
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
-
-    assertTrue(
-        page.getPref('safebrowsing.scout_reporting_enabled').value ===
-        previous);
-  });
-
   test('noValueChangeSafeBrowsingReportingInDisabled', async function() {
     page.$.safeBrowsingStandard.click();
     const previous = page.getPref('safebrowsing.scout_reporting_enabled').value;
@@ -809,20 +843,6 @@ suite('SafeBrowsing', function() {
 
     assertTrue(
         page.getPref('safebrowsing.scout_reporting_enabled').value ===
-        previous);
-  });
-
-  test('noValueChangePasswordLeakSwitchToEnhanced', async () => {
-    page.$.safeBrowsingStandard.click();
-    await microtasksFinished();
-    const previous =
-        page.getPref('profile.password_manager_leak_detection').value;
-
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
-
-    assertTrue(
-        page.getPref('profile.password_manager_leak_detection').value ===
         previous);
   });
 
@@ -843,6 +863,43 @@ suite('SafeBrowsing', function() {
     assertTrue(
         page.getPref('profile.password_manager_leak_detection').value ===
         previous);
+  });
+});
+
+suite('SafeBrowsingMetrics', function() {
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testSecurityBrowserProxy: TestSecurityPageBrowserProxy;
+  let page: SettingsSecurityPageElement;
+  let openWindowProxy: TestOpenWindowProxy;
+
+  function setUpPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
+    testSecurityBrowserProxy = new TestSecurityPageBrowserProxy();
+    SecurityPageBrowserProxyImpl.setInstance(testSecurityBrowserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
+    page = document.createElement('settings-security-page');
+    page.prefs = pagePrefs();
+    document.body.appendChild(page);
+    page.$.safeBrowsingEnhanced.updateCollapsed();
+    page.$.safeBrowsingStandard.updateCollapsed();
+    return microtasksFinished();
+  }
+
+  setup(function() {
+    return setUpPage();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
   });
 
   test('safeBrowsingUserActionRecorded', async function() {
@@ -985,28 +1042,82 @@ suite('SafeBrowsing', function() {
         await testMetricsBrowserProxy.whenCalled(
             'recordSafeBrowsingInteractionHistogram'));
   });
+});
 
-  test('standardProtectionExpandedIfNoQueryParam', function() {
-    // Standard protection should be pre-expanded if there is no param.
-    Router.getInstance().navigateTo(routes.SECURITY);
-    assertEquals(
-        page.getPref('generated.safe_browsing').value,
-        SafeBrowsingSetting.STANDARD);
-    assertFalse(page.$.safeBrowsingEnhanced.expanded);
-    assertTrue(page.$.safeBrowsingStandard.expanded);
+suite('SafeBrowsingLabelsAndToggles', function() {
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+  let testPrivacyBrowserProxy: TestPrivacyPageBrowserProxy;
+  let testSecurityBrowserProxy: TestSecurityPageBrowserProxy;
+  let page: SettingsSecurityPageElement;
+  let openWindowProxy: TestOpenWindowProxy;
+
+  function setUpPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
+    testSecurityBrowserProxy = new TestSecurityPageBrowserProxy();
+    SecurityPageBrowserProxyImpl.setInstance(testSecurityBrowserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
+    page = document.createElement('settings-security-page');
+    page.prefs = pagePrefs();
+    document.body.appendChild(page);
+    page.$.safeBrowsingEnhanced.updateCollapsed();
+    page.$.safeBrowsingStandard.updateCollapsed();
+    return microtasksFinished();
+  }
+
+  async function resetPage() {
+    page.remove();
+    await setUpPage();
+  }
+
+  setup(function() {
+    return setUpPage();
   });
 
-  test('enhancedProtectionCollapsedIfParamIsEnhanced', function() {
-    // Enhanced protection should be collapsed if the param is set to
-    // enhanced.
-    Router.getInstance().navigateTo(
-        routes.SECURITY,
-        /* dynamicParams= */ new URLSearchParams('q=enhanced'));
-    assertEquals(
-        page.getPref('generated.safe_browsing').value,
-        SafeBrowsingSetting.STANDARD);
-    assertFalse(page.$.safeBrowsingEnhanced.expanded);
-    assertFalse(page.$.safeBrowsingStandard.expanded);
+  teardown(function() {
+    page.remove();
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  test('PasswordsLeakDetectionText', function() {
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#passwordsLeakToggle');
+    assertTrue(!!toggle);
+
+    const passwordLeakLabel =
+        loadTimeData.getString('passwordsLeakDetectionLabel');
+    assertEquals(passwordLeakLabel, toggle.label);
+
+    const defaultSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
+    const activeWhenSignedInSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription') +
+        ' ' +
+        loadTimeData.getString(
+            'passwordsLeakDetectionSignedOutEnabledDescription');
+    assertEquals(defaultSubLabel, toggle.subLabel);
+
+    page.set('prefs.profile.password_manager_leak_detection.value', true);
+    page.set(
+        'prefs.generated.password_leak_detection.userControlDisabled', true);
+    flush();
+    assertEquals(activeWhenSignedInSubLabel, toggle.subLabel);
+
+    page.set('prefs.generated.password_leak_detection.value', true);
+    page.set(
+        'prefs.generated.password_leak_detection.userControlDisabled', false);
+    flush();
+    assertEquals(defaultSubLabel, toggle.subLabel);
+
+    page.set('prefs.profile.password_manager_leak_detection.value', false);
+    flush();
+    assertEquals(defaultSubLabel, toggle.subLabel);
   });
 
   test('StandardProtectionText', async () => {

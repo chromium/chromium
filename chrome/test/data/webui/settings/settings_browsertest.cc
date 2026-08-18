@@ -1749,17 +1749,25 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, JavascriptOptimizer) {
           "runMochaSuite('JavascriptOptimizer')");
 }
 
-// TODO(crbug/338155508): Enable this flaky test. This is flaky on Linux debug
-// build.
-// TODO(crbug.com/409069315): Re-enable this test on Mac.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG) || BUILDFLAG(IS_MAC)
-#define MAYBE_SafeBrowsing DISABLED_SafeBrowsing
-#else
-#define MAYBE_SafeBrowsing SafeBrowsing
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, MAYBE_SafeBrowsing) {
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, SafeBrowsingDialog) {
   RunTest("settings/security/security_page_test.js",
-          "runMochaSuite('SafeBrowsing')");
+          "runMochaSuite('SafeBrowsingDialog')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
+                       SafeBrowsingLabelsAndToggles) {
+  RunTest("settings/security/security_page_test.js",
+          "runMochaSuite('SafeBrowsingLabelsAndToggles')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, SafeBrowsingMetrics) {
+  RunTest("settings/security/security_page_test.js",
+          "runMochaSuite('SafeBrowsingMetrics')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, SafeBrowsingRadio) {
+  RunTest("settings/security/security_page_test.js",
+          "runMochaSuite('SafeBrowsingRadio')");
 }
 
 using SettingsSecurityPageV2Test = SettingsBrowserTest;
