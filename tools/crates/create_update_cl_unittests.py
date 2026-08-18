@@ -5,6 +5,7 @@
 # found in the LICENSE file.
 
 import os
+import textwrap
 import unittest
 
 from create_update_cl import (
@@ -12,6 +13,7 @@ from create_update_cl import (
     CreateCommitTitle,
     CreateCommitTitleForBreakingUpdate,
     DiffCrateIds,
+    CombineInclusiveLanguageConfig,
     SortedMarkdownList,
 )
 
@@ -276,6 +278,118 @@ class AutoUpdateTests(unittest.TestCase):
         # Upstream should be branch-for-crate1@1.0.
         self.assertEqual(
             mock_update_crate.call_args_list[2][0][3], 'branch-for-crate1@1.0'
+        )
+
+
+class CombineInclusiveLanguageConfigTests(unittest.TestCase):
+    def testBasics(self):
+        current = textwrap.dedent("""\
+            .
+            base
+            third_party/rust/crate1
+            third_party/rust/crate2
+            third_party/other
+        """)
+        new = textwrap.dedent("""\
+            .
+            base
+            third_party/rust/crate2
+            third_party/rust/crate3
+            third_party/other/new
+            another_dir
+        """)
+        expected = textwrap.dedent("""\
+            .
+            base
+            third_party/rust/crate2
+            third_party/rust/crate3
+            third_party/other
+        """)
+        actual = CombineInclusiveLanguageConfig(current.strip(), new.strip())
+        self.assertEqual(actual.strip(), expected.strip())
+
+    def testNoRustInCurrent(self):
+        current = textwrap.dedent("""\
+            .
+            base
+            third_party/other
+            third_party/web_tests
+        """)
+        new = textwrap.dedent("""\
+            .
+            base
+            third_party/rust/crate1
+        """)
+        expected = textwrap.dedent("""\
+            .
+            base
+            third_party/other
+            third_party/rust/crate1
+            third_party/web_tests
+        """)
+        actual = CombineInclusiveLanguageConfig(current.strip(), new.strip())
+        self.assertEqual(actual.strip(), expected.strip())
+
+    def testNoRustInNew(self):
+        current = textwrap.dedent("""\
+            .
+            base
+            third_party/rust/crate1
+            third_party/other
+        """)
+        new = textwrap.dedent("""\
+            .
+            base
+            third_party/other
+        """)
+        expected = textwrap.dedent("""\
+            .
+            base
+            third_party/other
+        """)
+        actual = CombineInclusiveLanguageConfig(current.strip(), new.strip())
+        self.assertEqual(actual.strip(), expected.strip())
+
+    def testPreservesNonRustOrder(self):
+        # non-rust lines are 'Z' and 'A'. Alphabetically 'A' should come first,
+        # but we expect the original order 'Z', 'A' to be preserved.
+        current = textwrap.dedent("""\
+            Z
+            third_party/rust/crate1
+            A
+        """)
+        new = textwrap.dedent("""\
+            Z
+            third_party/rust/crate2
+            A
+        """)
+        expected = textwrap.dedent("""\
+            Z
+            third_party/rust/crate2
+            A
+        """)
+        actual = CombineInclusiveLanguageConfig(current.strip(), new.strip())
+        self.assertEqual(actual.strip(), expected.strip())
+
+    def testAssertsContiguousRustBlock(self):
+        current = textwrap.dedent("""\
+            .
+            base
+            third_party/rust/crate1
+            third_party/other  # Non-rust line in the middle of rust block
+            third_party/rust/crate2
+        """)
+        new = textwrap.dedent("""\
+            .
+            base
+            third_party/rust/crate2
+            third_party/rust/crate3
+        """)
+        with self.assertRaises(AssertionError) as context:
+            CombineInclusiveLanguageConfig(current.strip(), new.strip())
+        self.assertEqual(
+            str(context.exception),
+            "The Rust block in inclusive language config is not contiguous",
         )
 
 

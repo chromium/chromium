@@ -8,6 +8,7 @@ zero, one, or more resulting CLs to Gerrit.  For more details please see
 `tools/crates/create_update_cl.md`."""
 
 import argparse
+import bisect
 import datetime
 import fnmatch
 import itertools
@@ -455,6 +456,55 @@ def UpdateCrate(
     return new_branch, final_diff
 
 
+def CombineInclusiveLanguageConfig(
+    current_content: str, new_content: str
+) -> str:
+    """Filters the new content of the inclusive language config file,
+    preserving non-third_party/rust/ lines from the current content, and
+    updating third_party/rust/ lines from the new content.
+    """
+    current_lines = current_content.splitlines()
+    new_lines = new_content.splitlines()
+
+    # Find indices of all rust lines in current config
+    rust_indices = [
+        i
+        for i, line in enumerate(current_lines)
+        if line.startswith("third_party/rust/")
+    ]
+
+    # Extract and sort new rust lines
+    new_rust_lines = [
+        line for line in new_lines if line.startswith("third_party/rust/")
+    ]
+    new_rust_lines = sorted(new_rust_lines)
+
+    if rust_indices:
+        first_rust_idx = rust_indices[0]
+        last_rust_idx = rust_indices[-1]
+        assert len(rust_indices) == last_rust_idx - first_rust_idx + 1, (
+            "The Rust block in inclusive language config is not contiguous"
+        )
+        # Replace the rust lines block
+        combined_lines = (
+            current_lines[:first_rust_idx]
+            + new_rust_lines
+            + current_lines[last_rust_idx + 1 :]
+        )
+    else:
+        # Fallback if no rust lines found: find insertion point alphabetically
+        insert_idx = len(current_lines)
+        if new_rust_lines:
+            insert_idx = bisect.bisect_left(current_lines, new_rust_lines[0])
+        combined_lines = (
+            current_lines[:insert_idx]
+            + new_rust_lines
+            + current_lines[insert_idx:]
+        )
+
+    return "\n".join(combined_lines) + "\n"
+
+
 def FinishUpdatingCrate(
     args,
     title: str,
@@ -503,8 +553,13 @@ def FinishUpdatingCrate(
     new_content = RunCommandAndCheckForErrors(
         [INCLUSIVE_LANG_SCRIPT], check_stdout=False, check_exitcode=True
     )
+    with open(INCLUSIVE_LANG_CONFIG, "r") as f:
+        current_content = f.read()
+    combined_content = CombineInclusiveLanguageConfig(
+        current_content, new_content
+    )
     with open(INCLUSIVE_LANG_CONFIG, "w") as f:
-        f.write(new_content)
+        f.write(combined_content)
     Git("add", INCLUSIVE_LANG_CONFIG)
     GitCommit(args, "gnrt vendor")
 
