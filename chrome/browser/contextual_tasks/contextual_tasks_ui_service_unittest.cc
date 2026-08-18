@@ -553,6 +553,35 @@ TEST_F(ContextualTasksUiServiceTest, IsGoogleCaptchaUrl) {
       GURL("https://example.com/sorry/index")));
 }
 
+TEST_F(ContextualTasksUiServiceTest, IsAiUrl) {
+  // Mock IsAimUrl to return false for everything.
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(false));
+
+  // g.ai should be recognized as AI URL.
+  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("https://g.ai/")));
+  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("https://www.g.ai/")));
+  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("http://g.ai/path")));
+
+  // Non-HTTP/HTTPS URLs or invalid URLs should return false.
+  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL("chrome://g.ai/")));
+  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL("file://g.ai/")));
+  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL()));
+
+  // Other URLs should fall back to mock service (which returns false).
+  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL("https://example.com/")));
+  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL("https://google.com/")));
+
+  // When IsAimUrl returns true for valid URLs:
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(Return(true));
+  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("https://example.com/")));
+  EXPECT_TRUE(service_for_nav_->IsAiUrl(GURL("https://google.com/")));
+  // But invalid/non-HTTP/HTTPS URLs should still return false for g.ai.
+  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL("chrome://g.ai/")));
+  EXPECT_FALSE(service_for_nav_->IsAiUrl(GURL()));
+}
+
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_ChecksCobrowse) {
   GURL ai_url(kAiPageUrl);
   ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
@@ -597,8 +626,9 @@ TEST_F(
       blink::mojom::WindowFeatures()));
 }
 
-TEST_F(ContextualTasksUiServiceTest,
-       HandleNavigation_AiPage_CobrowseIneligible_WithAttachedTab_Intercepted) {
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_AiPage_CobrowseIneligible_WithAttachedTab_NotIntercepted) {
   base::test::ScopedFeatureList scoped_feature_list(kContextualTasksSidePanel);
   GURL ai_url(kAiPageUrl);
   ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
@@ -628,17 +658,14 @@ TEST_F(ContextualTasksUiServiceTest,
   helper->SetTaskSession(std::nullopt, std::move(mock_session),
                          /*input_state_model=*/nullptr);
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(ai_url, _, _))
-      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
 
-  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
       blink::mojom::WindowFeatures()));
-
-  run_loop.Run();
 }
 
 TEST_F(

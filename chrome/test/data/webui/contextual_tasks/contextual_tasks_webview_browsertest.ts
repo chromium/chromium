@@ -125,6 +125,8 @@ suite('ContextualTasksWebviewTest', function() {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
 
+    loadTimeData.overrideValues({userAgentSuffix: 'Cobrowsing/'});
+
     const appElement = document.createElement('contextual-tasks-app');
     document.body.appendChild(appElement);
     // Wait for app to finish initializing, which includes setting the initial
@@ -145,12 +147,16 @@ suite('ContextualTasksWebviewTest', function() {
     const headersPromise =
         new Promise<chrome.webRequest.HttpHeaders|undefined>(resolve => {
           const listener = (details: any) => {
+            if (!details.url.includes('/search')) {
+              return {};
+            }
             // Remove listener to avoid capturing other requests.
-            threadFrame.request.onSendHeaders.removeListener(listener);
+            threadFrame.request.onBeforeSendHeaders.removeListener(listener);
             resolve(details.requestHeaders);
+            return {};
           };
 
-          threadFrame.request.onSendHeaders.addListener(
+          threadFrame.request.onBeforeSendHeaders.addListener(
               listener, {urls: ['<all_urls>']}, ['requestHeaders']);
         });
 
@@ -158,7 +164,7 @@ suite('ContextualTasksWebviewTest', function() {
     // else the request will not actually trigger the listener. However, this
     // does not actually load a URL in the webview, because browsertests use a
     // mock server implementation.
-    threadFrame.src = 'https://www.google.com';
+    threadFrame.src = 'https://www.google.com/search?udm=50';
 
     // Verify that the OAuth token was added to the request headers.
     const headers = await headersPromise;
