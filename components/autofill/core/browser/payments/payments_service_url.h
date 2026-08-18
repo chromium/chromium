@@ -29,13 +29,15 @@ GURL GetBaseSecureUrl();
 // Returns the Origin used by Google Pay's pay.js script
 url::Origin GetGooglePayScriptOrigin();
 
-// Returns the URL to navigate to in order to allow the user to edit or delete
-// payment instruments (credit cards, loyalty cards) or addresses, respectively.
-// `GetManageInstrumentsUrl` redirects to the top level page that contains a
-// list of instruments while `GetManageInstrumentUrl` redirects to the detail
-// page for a particular instrument given the `instrument_id`.
+// Returns the URL to navigate to in order to allow the user to update their
+// settings, and edit or delete payment instruments (credit cards, passes) or
+// addresses, respectively. `GetManageInstrumentsUrl` redirects to the top level
+// page that contains a list of instruments while `GetManageInstrumentUrl`
+// redirects to the detail page for a particular `instrument_id`.
+GURL GetManageSettingsUrl();
 GURL GetManageInstrumentsUrl();
 GURL GetManageInstrumentUrl(int64_t instrument_id);
+GURL GetManagePassesUrl();
 GURL GetManageLoyaltyCardsUrl();
 GURL GetManageAddressesUrl();
 

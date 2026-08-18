@@ -21,26 +21,42 @@ TEST(PaymentsServiceSandboxUrl, CheckSandboxUrls) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWalletServiceUseSandbox, "1");
 
-  const char kExpectedURL[] =
+  const char kExpectedManagePaymentMethodsURL[] =
       "https://wallet-web.sandbox.google.com/wallet?"
       "p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
       "paymentmethods";
+  const char kExpectedManageSettingsURL[] =
+      "https://wallet-web.sandbox.google.com/wallet?"
+      "p=settings&utm_source=chrome&utm_medium=settings&utm_campaign=settings";
+  const char kExpectedManagePassesURL[] =
+      "https://wallet-web.sandbox.google.com/wallet?"
+      "p=passes&utm_source=chrome&utm_medium=settings&utm_campaign=passes";
 
-  EXPECT_EQ(kExpectedURL, GetManageInstrumentsUrl().spec());
-  EXPECT_EQ(kExpectedURL, GetManageAddressesUrl().spec());
+  EXPECT_EQ(kExpectedManagePaymentMethodsURL, GetManageInstrumentsUrl().spec());
+  EXPECT_EQ(kExpectedManagePaymentMethodsURL, GetManageAddressesUrl().spec());
+  EXPECT_EQ(kExpectedManageSettingsURL, GetManageSettingsUrl().spec());
+  EXPECT_EQ(kExpectedManagePassesURL, GetManagePassesUrl().spec());
 }
 
 TEST(PaymentsServiceSandboxUrl, CheckProdUrls) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kWalletServiceUseSandbox, "0");
 
-  const char kExpectedURL[] =
+  const char kExpectedManagePaymentMethodsURL[] =
       "https://wallet.google.com/wallet?"
       "p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
       "paymentmethods";
+  const char kExpectedManageSettingsURL[] =
+      "https://wallet.google.com/wallet?"
+      "p=settings&utm_source=chrome&utm_medium=settings&utm_campaign=settings";
+  const char kExpectedManagePassesURL[] =
+      "https://wallet.google.com/wallet?"
+      "p=passes&utm_source=chrome&utm_medium=settings&utm_campaign=passes";
 
-  EXPECT_EQ(kExpectedURL, GetManageInstrumentsUrl().spec());
-  EXPECT_EQ(kExpectedURL, GetManageAddressesUrl().spec());
+  EXPECT_EQ(kExpectedManagePaymentMethodsURL, GetManageInstrumentsUrl().spec());
+  EXPECT_EQ(kExpectedManagePaymentMethodsURL, GetManageAddressesUrl().spec());
+  EXPECT_EQ(kExpectedManageSettingsURL, GetManageSettingsUrl().spec());
+  EXPECT_EQ(kExpectedManagePassesURL, GetManagePassesUrl().spec());
 }
 
 TEST(PaymentsServiceUrl, UrlWithInstrumentId) {

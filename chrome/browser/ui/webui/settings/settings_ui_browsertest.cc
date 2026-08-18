@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_enums.h"
@@ -22,8 +23,11 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/payments/payments_service_url.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
@@ -33,6 +37,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 typedef InProcessBrowserTest SettingsUITest;
@@ -209,4 +214,44 @@ IN_PROC_BROWSER_TEST_F(SettingsUITestGlicDisabledButAnchored, DoesNotCrash) {
           .ExtractBool();
 
   EXPECT_FALSE(show_glic_settings);
+}
+
+class SettingsUIWalletReminderNoticeTest : public SettingsUITest {
+ public:
+  SettingsUIWalletReminderNoticeTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillEnableWalletReminderNotice);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsUIWalletReminderNoticeTest,
+                       ManageCreditCardsLabel) {
+  // Navigate to settings. This should not crash.
+  ASSERT_TRUE(NavigateToURL(browser(), GURL(chrome::kChromeUISettingsURL)));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Wait for settings UI to be loaded.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "customElements.whenDefined('settings-ui');"));
+
+  // Retrieve the string added to loadTimeData.
+  std::string label =
+      content::EvalJs(
+          web_contents,
+          "import('chrome://resources/js/load_time_data.js').then(m => "
+          "m.loadTimeData.getString('manageCreditCardsLabel'))")
+          .ExtractString();
+
+  std::string expected_label = base::UTF16ToUTF8(l10n_util::GetStringFUTF16(
+      IDS_SETTINGS_PAYMENTS_MANAGE_WALLET_DATA,
+      base::UTF8ToUTF16(autofill::payments::GetManageSettingsUrl().spec()),
+      base::UTF8ToUTF16(autofill::payments::GetManageInstrumentsUrl().spec()),
+      base::UTF8ToUTF16(autofill::payments::GetManagePassesUrl().spec())));
+
+  EXPECT_EQ(label, expected_label);
 }

@@ -31,6 +31,15 @@ const char kSandboxPaymentsSecureServiceUrl[] =
 const char kProdGooglePayScriptOrigin[] = "https://pay.google.com/";
 const char kSandboxGooglePayScriptOrigin[] = "https://pay.sandbox.google.com/";
 
+// URLs used when opening the Google Wallet settings page from
+// chrome://settings/payments.
+const char kProdWalletManageSettingsUrl[] =
+    "https://wallet.google.com/wallet?"
+    "p=settings&utm_source=chrome&utm_medium=settings&utm_campaign=settings";
+const char kSandboxWalletManageSettingsUrl[] =
+    "https://wallet-web.sandbox.google.com/wallet?"
+    "p=settings&utm_source=chrome&utm_medium=settings&utm_campaign=settings";
+
 // URLs used when opening the Payment methods management page from
 // chrome://settings/payments.
 const char kProdPaymentsManageCardsUrl[] =
@@ -42,7 +51,14 @@ const char kSandboxPaymentsManageCardsUrl[] =
     "p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
     "paymentmethods";
 
-// URL used when opening the Loyalty cards page from chrome://settings/payments.
+// URLs used when opening the passes page, or specifically the loyalty cards
+// page, from chrome://settings/payments.
+const char kProdManagePassesUrl[] =
+    "https://wallet.google.com/wallet?"
+    "p=passes&utm_source=chrome&utm_medium=settings&utm_campaign=passes";
+const char kSandboxManagePassesUrl[] =
+    "https://wallet-web.sandbox.google.com/wallet?"
+    "p=passes&utm_source=chrome&utm_medium=settings&utm_campaign=passes";
 const char kManageLoyaltyCardsUrl[] =
     "https://wallet.google.com/wallet?"
     "p=passes&utm_source=chrome&utm_medium=settings&utm_campaign=loyalty";
@@ -87,6 +103,11 @@ url::Origin GetGooglePayScriptOrigin() {
                                       : kSandboxGooglePayScriptOrigin));
 }
 
+GURL GetManageSettingsUrl() {
+  return GURL(IsPaymentsProductionEnabled() ? kProdWalletManageSettingsUrl
+                                            : kSandboxWalletManageSettingsUrl);
+}
+
 GURL GetManageInstrumentsUrl() {
   return GURL(IsPaymentsProductionEnabled() ? kProdPaymentsManageCardsUrl
                                             : kSandboxPaymentsManageCardsUrl);
@@ -99,6 +120,11 @@ GURL GetManageInstrumentUrl(int64_t instrument_id) {
   GURL::Replacements replacements;
   replacements.SetQueryStr(new_query);
   return url.ReplaceComponents(replacements);
+}
+
+GURL GetManagePassesUrl() {
+  return GURL(IsPaymentsProductionEnabled() ? kProdManagePassesUrl
+                                            : kSandboxManagePassesUrl);
 }
 
 GURL GetManageLoyaltyCardsUrl() {
