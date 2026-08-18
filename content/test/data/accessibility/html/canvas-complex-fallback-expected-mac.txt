@@ -23,14 +23,10 @@ AXWebArea
 ++++++++AXStaticText AXValue='<newline>    '
 ++++++AXStaticText AXValue='<newline>  '
 ++++AXGroup
-++++++AXStaticText AXValue='<newline>    '
 ++++++AXGroup
-++++++++AXStaticText AXValue='<newline>      '
 ++++++++AXGroup
 ++++++++++AXStaticText AXValue='Here we list the contents:'
-++++++++AXStaticText AXValue='<newline>      '
 ++++++++AXList AXSubrole=AXContentList
-++++++++++AXStaticText AXValue='<newline>        '
 ++++++++++AXGroup
 ++++++++++++AXListMarker AXValue='1. '
 ++++++++++++AXStaticText AXValue='A red circle.'
@@ -42,6 +38,3 @@ AXWebArea
 ++++++++++++AXStaticText AXValue='Text saying'
 ++++++++++++AXGroup
 ++++++++++++++AXStaticText AXValue='Welcome to canvas'
-++++++++++++AXStaticText AXValue='<newline>      '
-++++++++AXStaticText AXValue='<newline>    '
-++++++AXStaticText AXValue='<newline>  '

@@ -89,6 +89,10 @@ void AXInlineTextBox::GetRelativeBounds(AXObject** out_container,
   out_bounds_in_container = gfx::RectF();
   out_container_transform.MakeIdentity();
 
+  if (IsInCanvasSubtreeWithoutCanvasTransform()) {
+    return;
+  }
+
   if (!ParentObject() || !ParentObject()->GetLayoutObject()) {
     return;
   }

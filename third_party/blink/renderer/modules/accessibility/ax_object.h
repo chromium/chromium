@@ -1096,6 +1096,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   gfx::RectF LocalBoundingBoxRectForAccessibility();
 
+  bool IsInCanvasSubtreeWithoutCanvasTransform() const;
+  // Returns the parent node in the flat tree, crossing frame boundaries
+  // (e.g. from a document root inside an iframe to the iframe element owner).
+  static const Node* GetParentNodeAcrossFrames(const Node* node);
+
   // Get the bounds in frame-relative coordinates as a PhysicalRect.
   PhysicalRect GetBoundsInFrameCoordinates() const;
 

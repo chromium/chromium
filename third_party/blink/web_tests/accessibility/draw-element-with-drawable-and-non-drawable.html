@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<title>HTML-in-Canvas: Content under canvas layoutsubtree is exposed with and without drawable attribute</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<canvas id="canvas" width="400" height="400" layoutsubtree>
+  <div drawable id="drawn" style="width: 100px; height: 50px;">Drawn</div>
+  <div drawable id="drawable_not_drawn" style="width: 100px; height: 50px;">Drawable not drawn</div>
+  <div id="non_drawable" style="width: 100px; height: 50px;">Non-drawable</div>
+</canvas>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test(function(t) {
+  const canvas = document.getElementById('canvas');
+  const drawn = document.getElementById('drawn');
+
+  canvas.onpaint = t.step_func(() => {
+    const ctx = canvas.getContext('2d');
+    ctx.reset();
+
+    let matrix = ctx.drawElementImage(drawn, 10, 10);
+    drawn.setCanvasTransform(matrix);
+
+    const axCanvas = axElementById('canvas');
+    const axDrawn = axElementById('drawn');
+    const axDrawableNotDrawn = axElementById('drawable_not_drawn');
+    const axNonDrawable = axElementById('non_drawable');
+
+    assert_not_equals(axCanvas, undefined, 'Canvas AXObject should exist');
+    assert_not_equals(axDrawn, undefined, 'Drawn AXObject should exist');
+    assert_not_equals(axDrawableNotDrawn, undefined, 'Drawable not drawn AXObject should exist');
+    assert_not_equals(axNonDrawable, undefined, 'Non-drawable AXObject should exist');
+
+    // Drawn element has a set canvas element transform, so it should have valid layout bounds.
+    assert_greater_than(axDrawn.boundsWidth, 0, 'Drawn element with canvas transform should have boundsWidth > 0');
+    assert_greater_than(axDrawn.boundsHeight, 0, 'Drawn element with canvas transform should have boundsHeight > 0');
+
+    // Drawable element without a canvas element transform should have no layout bounds (0 width/height).
+    assert_equals(axDrawableNotDrawn.boundsWidth, 0, 'Drawable element without canvas transform should have 0 boundsWidth');
+    assert_equals(axDrawableNotDrawn.boundsHeight, 0, 'Drawable element without canvas transform should have 0 boundsHeight');
+
+    // Non-drawable element should have no layout bounds (0 width/height).
+    assert_equals(axNonDrawable.boundsWidth, 0, 'Non-drawable element should have 0 boundsWidth');
+    assert_equals(axNonDrawable.boundsHeight, 0, 'Non-drawable element should have 0 boundsHeight');
+
+    // Check descendants of drawn, drawable-not-drawn, and non-drawable elements.
+    const axDrawnText = axDrawn.childAtIndex(0);
+    const axDrawableNotDrawnText = axDrawableNotDrawn.childAtIndex(0);
+    const axNonDrawableText = axNonDrawable.childAtIndex(0);
+
+    assert_greater_than(axDrawnText.boundsWidth, 0, 'StaticText descendant of drawn element should have boundsWidth > 0');
+    assert_greater_than(axDrawnText.boundsHeight, 0, 'StaticText descendant of drawn element should have boundsHeight > 0');
+
+    assert_equals(axDrawableNotDrawnText.boundsWidth, 0, 'StaticText descendant of drawable not drawn element should have 0 boundsWidth');
+    assert_equals(axDrawableNotDrawnText.boundsHeight, 0, 'StaticText descendant of drawable not drawn element should have 0 boundsHeight');
+
+    assert_equals(axNonDrawableText.boundsWidth, 0, 'StaticText descendant of non-drawable element should have 0 boundsWidth');
+    assert_equals(axNonDrawableText.boundsHeight, 0, 'StaticText descendant of non-drawable element should have 0 boundsHeight');
+
+    t.done();
+  });
+}, 'All children of a layoutsubtree canvas are exposed to accessibility with geometry synced only for drawn elements');
+</script>

@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<title>HTML-in-Canvas: Content under canvas layoutsubtree is exposed to AX tree</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<canvas id="canvas" width="400" height="400" layoutsubtree>
+  <figure id="figure">
+    <img drawable id="image" src="../images/resources/blue-100.png" alt="a happy face" style="width: 100px; height: 100px;" />
+    <figcaption drawable id="caption" style="width: 200px; height: 50px;">A caption</figcaption>
+  </figure>
+</canvas>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test(function(t) {
+  const canvas = document.getElementById('canvas');
+  const image = document.getElementById('image');
+  const caption = document.getElementById('caption');
+
+  canvas.onpaint = t.step_func(() => {
+    const ctx = canvas.getContext('2d');
+    ctx.reset();
+
+    let image_matrix = ctx.drawElementImage(image, 10, 10);
+    image.setCanvasTransform(image_matrix);
+
+    let caption_matrix = ctx.drawElementImage(caption, 10, 200);
+    caption.setCanvasTransform(caption_matrix);
+
+    // Verify all objects in the canvas subtree are exposed to the accessibility tree.
+    const axCanvas = axElementById('canvas');
+    const axFigure = axElementById('figure');
+    const axImage = axElementById('image');
+    const axCaption = axElementById('caption');
+
+    assert_not_equals(axCanvas, undefined, 'Canvas AXObject should exist');
+    assert_not_equals(axFigure, undefined, 'Figure AXObject should exist');
+    assert_not_equals(axImage, undefined, 'Image AXObject should exist');
+    assert_not_equals(axCaption, undefined, 'Caption AXObject should exist');
+
+    // Verify tree structure: Canvas -> figure -> [image, figcaption -> StaticText]
+    assert_equals(axFigure.role, 'AXRole: AXFigure', 'Figure role');
+    assert_equals(axImage.role, 'AXRole: AXImage', 'Image role');
+    assert_equals(axImage.name, 'a happy face', 'Image name');
+    assert_equals(axCaption.role, 'AXRole: AXFigcaption', 'Caption role');
+
+    assert_equals(axFigure.childrenCount, 2, 'Figure should have 2 children');
+    assert_true(axFigure.childAtIndex(0).isEqual(axImage), 'Figure first child should be image');
+    assert_true(axFigure.childAtIndex(1).isEqual(axCaption), 'Figure second child should be caption');
+
+    assert_equals(axCaption.childrenCount, 1, 'Caption should have 1 child');
+    const axStaticText = axCaption.childAtIndex(0);
+    assert_equals(axStaticText.role, 'AXRole: AXStaticText', 'Caption child should be StaticText');
+    assert_equals(axStaticText.name, 'A caption', 'StaticText name should match caption content');
+
+    // Verify geometry and layout bounds:
+    // Figure does not have a set canvas element transform, nor is it a descendant
+    // of an element with a canvas element transform, so it should have no layout bounds (width/height 0).
+    assert_equals(axFigure.boundsWidth, 0, 'Figure without canvas transform should have 0 boundsWidth');
+    assert_equals(axFigure.boundsHeight, 0, 'Figure without canvas transform should have 0 boundsHeight');
+
+    // Image has a set canvas element transform, so it should have valid layout bounds.
+    assert_greater_than(axImage.boundsWidth, 0, 'Image with canvas transform should have boundsWidth > 0');
+    assert_greater_than(axImage.boundsHeight, 0, 'Image with canvas transform should have boundsHeight > 0');
+
+    // Caption has a set canvas element transform, so it should have valid layout bounds.
+    assert_greater_than(axCaption.boundsWidth, 0, 'Caption with canvas transform should have boundsWidth > 0');
+    assert_greater_than(axCaption.boundsHeight, 0, 'Caption with canvas transform should have boundsHeight > 0');
+
+    // Descendants of an element with a set canvas element transform should also have valid layout bounds.
+    assert_greater_than(axStaticText.boundsWidth, 0, 'StaticText descendant of transformed element should have boundsWidth > 0');
+    assert_greater_than(axStaticText.boundsHeight, 0, 'StaticText descendant of transformed element should have boundsHeight > 0');
+
+    t.done();
+  });
+}, 'Content under canvas layoutsubtree is exposed to the accessibility tree with proper bounds');
+</script>

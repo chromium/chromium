@@ -24,15 +24,11 @@ UNKNOWN focusable has_input_focus
 ++++++++++STATIC_TEXT label='<newline>    '
 ++++++++STATIC_TEXT label='<newline>  '
 ++++++UNKNOWN
-++++++++STATIC_TEXT label='<newline>    '
 ++++++++UNKNOWN
-++++++++++STATIC_TEXT label='<newline>      '
 ++++++++++PARAGRAPH
 ++++++++++++STATIC_TEXT label='Here we list the contents:'
 ++++++++++++++UNKNOWN label='Here we list the contents:'
-++++++++++STATIC_TEXT label='<newline>      '
 ++++++++++LIST list_size=3
-++++++++++++STATIC_TEXT label='<newline>        '
 ++++++++++++LIST_ELEMENT list_element_index=1
 ++++++++++++++LIST_ELEMENT_MARKER label='1. '
 ++++++++++++++++STATIC_TEXT hidden
@@ -53,6 +49,4 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++++UNKNOWN label='Welcome '
 ++++++++++++++++++UNKNOWN label='to '
 ++++++++++++++++++UNKNOWN label='canvas'
-++++++++++++++STATIC_TEXT label='<newline>      '
-++++++++++STATIC_TEXT label='<newline>    '
-++++++++STATIC_TEXT label='<newline>  '
+

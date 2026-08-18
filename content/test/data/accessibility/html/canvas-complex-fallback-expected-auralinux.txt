@@ -23,14 +23,10 @@
 ++++++++[static] name='<newline>    '
 ++++++[static] name='<newline>  '
 ++++[canvas]
-++++++[static] name='<newline>    '
 ++++++[section]
-++++++++[static] name='<newline>      '
 ++++++++[paragraph]
 ++++++++++[static] name='Here we list the contents:'
-++++++++[static] name='<newline>      '
 ++++++++[list]
-++++++++++[static] name='<newline>        '
 ++++++++++[list item]
 ++++++++++++[static] name='1. '
 ++++++++++++[static] name='A red circle.'
@@ -42,6 +38,3 @@
 ++++++++++++[static] name='Text saying'
 ++++++++++++[block quote]
 ++++++++++++++[static] name='Welcome to canvas'
-++++++++++++[static] name='<newline>      '
-++++++++[static] name='<newline>    '
-++++++[static] name='<newline>  '

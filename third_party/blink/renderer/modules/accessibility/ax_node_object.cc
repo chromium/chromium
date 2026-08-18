@@ -1313,6 +1313,23 @@ bool AXNodeObject::ComputeIsIgnoredAsInsideInactiveScrollMarkerTab() const {
   return ParentObject() && ParentObject()->InsideInactiveScrollMarkerTab();
 }
 
+static bool ShouldIgnoreTextUnderLayoutSubtreeCanvas(const Text& text) {
+  if (!text.ContainsOnlyWhitespaceOrEmpty()) {
+    return false;
+  }
+  const Element* element = text.parentElement();
+  if (!element || !element->IsCanvasOrInCanvasSubtree()) {
+    return false;
+  }
+  for (const Node* curr = element; curr;
+       curr = AXObject::GetParentNodeAcrossFrames(curr)) {
+    if (auto* canvas = DynamicTo<HTMLCanvasElement>(curr)) {
+      return canvas->layoutSubtree();
+    }
+  }
+  return false;
+}
+
 bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
   Node* node = GetNode();
 
@@ -1368,7 +1385,13 @@ bool AXNodeObject::ComputeIsIgnored(IgnoredReasons* ignored_reasons) const {
   if (!GetLayoutObject()) {
     // Text without a layout object that has reached this point is not
     // explicitly hidden, e.g. is in a <canvas> fallback or is display locked.
-    if (IsA<Text>(node)) {
+    if (auto* text = DynamicTo<Text>(node)) {
+      if (ShouldIgnoreTextUnderLayoutSubtreeCanvas(*text)) {
+        if (ignored_reasons) {
+          ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
+        }
+        return true;
+      }
       return false;
     }
     // Similarly, elements in <canvas> fallback should not be ignored.
@@ -5717,6 +5740,10 @@ void AXNodeObject::GetRelativeBounds(AXObject** out_container,
   *out_container = nullptr;
   out_bounds_in_container = gfx::RectF();
   out_container_transform.MakeIdentity();
+
+  if (IsInCanvasSubtreeWithoutCanvasTransform()) {
+    return;
+  }
 
   if (RoleValue() == ax::mojom::blink::Role::kMenuListOption) {
     // When a <select> is collapsed, the bounds of its options are the same as

@@ -7560,6 +7560,50 @@ AXObject::AXObjectVector AXObject::TableCellChildren() const {
   return result;
 }
 
+// static
+const Node* AXObject::GetParentNodeAcrossFrames(const Node* node) {
+  if (!node) {
+    return nullptr;
+  }
+  if (const Element* parent =
+          FlatTreeTraversal::ParentElementSkippingSlots(*node)) {
+    return parent;
+  }
+  return node->GetDocument().LocalOwner();
+}
+
+// Elements under a <canvas layoutsubtree> should only have geometry/layout
+// bounds in the accessibility tree if they have a set canvas element
+// transform, or are descendants of a drawable element with a set canvas
+// element transform.
+// TODO(crbug.com/532229486): This loop is iterating up the tree, and this
+// should be optimized.
+bool AXObject::IsInCanvasSubtreeWithoutCanvasTransform() const {
+  const Node* node = GetNode();
+  if (!node) {
+    return false;
+  }
+  const Element* element = DynamicTo<Element>(node);
+  if (!element) {
+    element = node->parentElement();
+  }
+  if (!element || !element->IsInCanvasSubtree()) {
+    return false;
+  }
+  for (const Node* curr = element; curr;
+       curr = GetParentNodeAcrossFrames(curr)) {
+    if (const Element* curr_elem = DynamicTo<Element>(curr)) {
+      if (curr_elem->GetUsedCanvasTransform()) {
+        return false;
+      }
+    }
+    if (auto* canvas = DynamicTo<HTMLCanvasElement>(curr)) {
+      return canvas->layoutSubtree();
+    }
+  }
+  NOTREACHED();
+}
+
 void AXObject::GetRelativeBounds(AXObject** out_container,
                                  gfx::RectF& out_bounds_in_container,
                                  gfx::Transform& out_container_transform,
@@ -7567,6 +7611,10 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   *out_container = nullptr;
   out_bounds_in_container = gfx::RectF();
   out_container_transform.MakeIdentity();
+
+  if (IsInCanvasSubtreeWithoutCanvasTransform()) {
+    return;
+  }
 
   // First check if it has explicit bounds, for example if this element is tied
   // to a canvas path. When explicit coordinates are provided, the ID of the
