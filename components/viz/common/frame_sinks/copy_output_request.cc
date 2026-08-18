@@ -9,19 +9,13 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
-#include "base/synchronization/lock.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace {
-
-constexpr int kMaxPendingSendResult = 4;
 
 const char* ResultFormatToShortString(
     viz::CopyOutputRequest::ResultFormat result_format) {
@@ -45,13 +39,6 @@ const char* ResultDestinationToShortString(
     case viz::CopyOutputRequest::ResultDestination::kSharedImage:
       return "GPU";
   }
-}
-
-int g_pending_send_result_count = 0;
-
-base::Lock& GetPendingSendResultLock() {
-  static base::NoDestructor<base::Lock> lock;
-  return *lock;
 }
 
 }  // namespace
@@ -151,27 +138,7 @@ void CopyOutputRequest::SendResult(std::unique_ptr<CopyOutputResult> result) {
   CHECK(result_task_runner_);
   CHECK(result_callback_);
   auto task = base::BindOnce(std::move(result_callback_), std::move(result));
-
-  if (send_result_delay_.is_zero()) {
-    result_task_runner_->PostTask(FROM_HERE, std::move(task));
-  } else {
-    base::AutoLock locked_counter(GetPendingSendResultLock());
-    if (g_pending_send_result_count >= kMaxPendingSendResult) {
-      result_task_runner_->PostTask(FROM_HERE, std::move(task));
-    } else {
-      g_pending_send_result_count++;
-      result_task_runner_->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](base::OnceClosure callback) {
-                std::move(callback).Run();
-                base::AutoLock locked_counter(GetPendingSendResultLock());
-                g_pending_send_result_count--;
-              },
-              std::move(task)),
-          send_result_delay_);
-    }
-  }
+  result_task_runner_->PostTask(FROM_HERE, std::move(task));
   // Remove the reference to the task runner (no-op if we didn't have one).
   result_task_runner_ = nullptr;
 }

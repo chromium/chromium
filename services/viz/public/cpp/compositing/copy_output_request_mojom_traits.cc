@@ -12,7 +12,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
-#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -123,16 +122,10 @@ StructTraits<viz::mojom::CopyOutputRequestDataView,
   auto result_sender = data.TakeResultSender<
       mojo::PendingRemote<viz::mojom::CopyOutputResultSender>>();
 
-  base::TimeDelta send_result_delay;
-  if (!data.ReadSendResultDelay(&send_result_delay)) {
-    return base::unexpected(DeserializationError());
-  }
-
   auto request = std::make_unique<viz::CopyOutputRequest>(
       result_format, result_destination,
       base::BindOnce(&SendResult, std::move(result_sender)));
 
-  request->set_send_result_delay(send_result_delay);
   // Serializing the result requires an expensive copy, so to not block the
   // any important thread we PostTask onto the threadpool.
   request->set_result_task_runner(

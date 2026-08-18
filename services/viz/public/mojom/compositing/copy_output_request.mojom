@@ -6,7 +6,6 @@ module viz.mojom;
 
 import "services/viz/public/mojom/compositing/blit_request.mojom";
 import "services/viz/public/mojom/compositing/copy_output_result.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -14,7 +13,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 struct CopyOutputRequest {
   CopyOutputResultFormat result_format;
   CopyOutputResultDestination result_destination;
-  mojo_base.mojom.TimeDelta send_result_delay;
 
   // Set both to (1,1) for no scaling. Both must have positive X and Y values.
   gfx.mojom.Vector2d scale_from;
