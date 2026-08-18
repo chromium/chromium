@@ -4,6 +4,8 @@
 
 module connectors_internals.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
+
 // Set of values to represent whether the key manager is supported and, if so,
 // fully initialized or not.
 enum KeyManagerInitializedValue {
@@ -180,6 +182,25 @@ struct SignalsReportingState {
   string? signals_json;
 };
 
+struct ProvisioningDomainConfig {
+  // Provisioning Domain Identifier (FQDN).
+  string pvd_id;
+
+  // Expiration date/time.
+  mojo_base.mojom.JSTime? expiration_time;
+
+  // JSON string representing the routing rules / proxy endpoints.
+  string routes_json;
+
+  // JSON string representing the PvD policy configuration (extra headers,
+  // auth config).
+  string policy_json;
+};
+
+struct ProvisioningDomainState {
+  array<ProvisioningDomainConfig> pvd_configs;
+};
+
 // Browser interface for the page. Consists of calls for data and hooks for
 // interactivity.
 interface PageHandler {
@@ -195,4 +216,7 @@ interface PageHandler {
 
   // Get state information about security signals reporting.
   GetSignalsReportingState() => (SignalsReportingState state);
+
+  // Get state information about PvD configs.
+  GetProvisioningDomainState() => (ProvisioningDomainState state);
 };

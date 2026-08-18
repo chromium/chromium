@@ -13,6 +13,7 @@ build_webui("build") {
     "app.ts",
     "connectors_tabs.ts",
     "managed_client_certificate.ts",
+    "provisioning_domain_config.ts",
   ]
 
   if (!is_ios) {

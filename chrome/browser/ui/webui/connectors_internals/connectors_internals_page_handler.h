@@ -46,6 +46,7 @@ class ConnectorsInternalsPageHandler
       GetClientCertificateStateCallback callback) override;
   void GetSignalsReportingState(
       GetSignalsReportingStateCallback callback) override;
+  void GetProvisioningDomainState(GetProvisioningDomainStateCallback callback) override;
   void OnReportGenerated(
       GetSignalsReportingStateCallback callback,
       connectors_internals::mojom::SignalsReportingStatePtr state,

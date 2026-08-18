@@ -5457,6 +5457,7 @@ test("unit_tests") {
     "//chrome/browser/ui/webui:unit_tests",
     "//chrome/browser/ui/webui/chrome_urls:unit_tests",
     "//chrome/browser/ui/webui/components:unit_tests",
+    "//chrome/browser/ui/webui/connectors_internals:unit_tests",
     "//chrome/browser/ui/webui/context_hub:unit_tests",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//chrome/browser/ui/webui/intro:mojo_bindings",

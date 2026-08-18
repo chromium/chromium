@@ -38,6 +38,9 @@ source_set("connectors_internals") {
     "//services/network/public/mojom",
     "//ui/webui",
   ]
+  if (enterprise_proxy) {
+    deps += [ "//components/enterprise/net" ]
+  }
   if (enterprise_client_certificates) {
     deps += [ "//components/enterprise/client_certificates/core" ]
   }
@@ -46,5 +49,29 @@ source_set("connectors_internals") {
   }
   if (is_linux || is_win || is_mac || is_chromeos) {
     deps += [ "//components/enterprise/device_trust/core:device_trust_connector_service" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "connectors_internals_page_handler_unittest.cc" ]
+  deps = [
+    ":connectors_internals",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/enterprise/buildflags",
+    "//components/enterprise/connectors:mojom",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  if (enterprise_proxy) {
+    deps += [
+      "//chrome/browser/enterprise/net",
+      "//components/enterprise/net",
+      "//components/enterprise/net/core:test_support",
+    ]
   }
 }

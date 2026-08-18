@@ -438,7 +438,7 @@
     "includes": [3750],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/enterprise/connectors/resources/resources.grd": {
-    "META": {"sizes": {"includes": [15]}},
+    "META": {"sizes": {"includes": [20]}},
     "includes": [3760],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/content_annotator_internals/resources.grd": {

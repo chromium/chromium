@@ -104,3 +104,10 @@ void ConnectorsInternalsPageHandler::GetSignalsReportingState(
           /*can_collect_all_fields=*/false,
           /*signals_json=*/std::nullopt));
 }
+
+void ConnectorsInternalsPageHandler::GetProvisioningDomainState(
+    GetProvisioningDomainStateCallback callback) {
+  std::move(callback).Run(
+      connectors_internals::mojom::ProvisioningDomainState::New(
+          std::vector<connectors_internals::mojom::ProvisioningDomainConfigPtr>()));
+}

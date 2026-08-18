@@ -25,6 +25,8 @@ class ConnectorsInternalsPageHandler
       GetClientCertificateStateCallback callback) override;
   void GetSignalsReportingState(
       GetSignalsReportingStateCallback callback) override;
+  void GetProvisioningDomainState(
+      GetProvisioningDomainStateCallback callback) override;
 
  private:
   mojo::Receiver<connectors_internals::mojom::PageHandler> receiver_;

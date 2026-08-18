@@ -99,6 +99,10 @@ class EnterpriseProxyService
   virtual net::ProxyConfig::DynamicRoutingConfig GetDynamicRoutingConfig()
       const;
 
+  // Returns a dictionary containing detailed debugging information for all
+  // managed Provisioning Domains and active fetch states.
+  virtual base::DictValue GetDebugInfo() const;
+
  protected:
   // Protected constructor for test doubles (e.g. MockEnterpriseProxyService).
   EnterpriseProxyService();
@@ -148,10 +152,6 @@ class EnterpriseProxyService
 
   // Forces a new fetch for all managed Provisioning Domains.
   void ForceRefreshAllConfigs();
-
-  // Returns a dictionary containing detailed debugging information for all
-  // managed Provisioning Domains and active fetch states.
-  base::DictValue GetDebugInfo() const;
 
  private:
   friend class EnterpriseProxyServiceTest;
