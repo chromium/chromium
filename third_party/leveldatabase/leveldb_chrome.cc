@@ -53,7 +53,7 @@ BASE_FEATURE_PARAM(size_t,
                    kLevelDBCacheSize_SizeBytes,
                    &kLevelDBCacheSize,
                    "leveldb_cache_size_bytes",
-                   base::KiBU(256).InBytes());
+                   base::KiB(256).InBytes());
 
 size_t DefaultBlockCacheSize() {
   if (base::FeatureList::IsEnabled(kLevelDBCacheSize)) {
