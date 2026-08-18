@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] calc(progress(50%, 0px, 100px) * 10px) should be used-value-equivalent to 5px
+  assert_not_equals: calc(progress(50%, 0px, 100px) * 10px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 [FAIL] calc(progress(no-clamp 100px, 0px, 50px) * 10px + 100px) should be used-value-equivalent to 120px
   assert_not_equals: calc(progress(no-clamp 100px, 0px, 50px) * 10px + 100px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 [FAIL] calc(progress(no-clamp 100, 0, sign(1rem - 5px))) should be used-value-equivalent to 100

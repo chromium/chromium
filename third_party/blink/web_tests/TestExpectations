@@ -2736,7 +2736,6 @@ crbug.com/545678290 external/wpt/css/css-overflow/line-clamp/block-ellipsis-040.
 crbug.com/545678290 external/wpt/css/css-overflow/line-clamp/block-ellipsis-041.html [ Failure ]
 crbug.com/545678290 external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-011.html [ Failure ]
 crbug.com/545692281 [ Win ] external/wpt/css/css-values/acos-asin-atan-atan2-computed.html [ Pass Timeout ]
-crbug.com/545692281 external/wpt/css/css-values/progress-computed.html [ Failure ]
 crbug.com/545676304 [ Win ] external/wpt/html/semantics/popovers/popover-top-layer-nesting-hints.html [ Pass Timeout ]
 crbug.com/545718484 external/wpt/mathml/relations/html5-tree/href-target-base.html [ Failure Pass Timeout ]
 crbug.com/545678290 virtual/disable-css-line-clamp-line-breaking-ellipsis/external/wpt/css/css-overflow/line-clamp/block-ellipsis-038.html [ Failure ]
