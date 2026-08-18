@@ -93,12 +93,13 @@ MinimalFormFieldDataForFilling() {
   return {autofill::FormFieldData::FillData(std::move(field))};
 }
 
-// Returns a simple form suggestion that only consists of a `value` and a `type`
-FormSuggestion* SimpleFormSuggestion(
+// Returns a form suggestion with a custom `payload` and an optional bound
+// `delegate`.
+FormSuggestion* FormSuggestionWithPayload(
     std::u16string value,
     autofill::SuggestionType type,
-    base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate =
-        base::WeakPtr<autofill::AutofillSuggestionDelegate>()) {
+    autofill::Suggestion::Payload payload,
+    base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate) {
   FormSuggestionMetadata metadata;
   metadata.suggestion_delegate = delegate;
   return [FormSuggestion suggestionWithValue:base::SysUTF16ToNSString(value)
@@ -106,11 +107,21 @@ FormSuggestion* SimpleFormSuggestion(
                           displayDescription:@""
                                         icon:nil
                                         type:type
-                                     payload:autofill::Suggestion::Payload()
+                                     payload:std::move(payload)
                  fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
                               requiresReauth:NO
                   acceptanceA11yAnnouncement:nil
                                     metadata:metadata];
+}
+
+// Returns a simple form suggestion that only consists of a `value` and a `type`
+FormSuggestion* SimpleFormSuggestion(
+    std::u16string value,
+    autofill::SuggestionType type,
+    base::WeakPtr<autofill::AutofillSuggestionDelegate> delegate =
+        base::WeakPtr<autofill::AutofillSuggestionDelegate>()) {
+  return FormSuggestionWithPayload(value, type, autofill::Suggestion::Payload(),
+                                   delegate);
 }
 
 }  // namespace
@@ -1220,4 +1231,324 @@ TEST_F(AutofillAgentTest, DidSelectSuggestion_AutocompleteAtMemoryButton) {
 
   // Check that the completion handler was called.
   EXPECT_TRUE(completion_handler_called);
+}
+
+// Tests selecting suggestion payload forwarding when the original payload
+// feature is enabled.
+TEST_F(AutofillAgentTest,
+       DidSelectSuggestion_PayloadForwarding_OriginalPayloadEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillUseOriginalPayloadIos);
+
+  // 1. Default empty payload (variant initialized to `Guid("")`).
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(testing::Field(&autofill::Suggestion::payload,
+                                           autofill::Suggestion::Payload()),
+                            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry,
+        autofill::Suggestion::Payload(), mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+
+  // 2. Guid payload
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    autofill::Suggestion::Payload expected_payload =
+        autofill::Suggestion::Guid("some-guid");
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(
+            testing::Field(&autofill::Suggestion::payload, expected_payload),
+            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
+        mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+
+  // 3. InstrumentId payload (non-guid)
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    autofill::Suggestion::Payload expected_payload =
+        autofill::Suggestion::InstrumentId(12345);
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(
+            testing::Field(&autofill::Suggestion::payload, expected_payload),
+            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
+        mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+
+  // 4. AutofillProfilePayload with a non-empty GUID
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    autofill::Suggestion::Payload expected_payload =
+        autofill::Suggestion::AutofillProfilePayload(
+            autofill::Suggestion::Guid("some-profile-guid"));
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(
+            testing::Field(&autofill::Suggestion::payload, expected_payload),
+            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
+        mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+
+  // 5. AutofillProfilePayload with an empty GUID
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    autofill::Suggestion::Payload expected_payload =
+        autofill::Suggestion::AutofillProfilePayload(
+            autofill::Suggestion::Guid(""));
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(
+            testing::Field(&autofill::Suggestion::payload, expected_payload),
+            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
+        mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+
+  // 6. Empty GUID string
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    autofill::Suggestion::Payload expected_payload =
+        autofill::Suggestion::Guid("");
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(
+            testing::Field(&autofill::Suggestion::payload, expected_payload),
+            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
+        mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+}
+
+// Tests selecting suggestion payload forwarding when the original payload
+// feature is disabled.
+TEST_F(AutofillAgentTest,
+       DidSelectSuggestion_PayloadForwarding_OriginalPayloadDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillUseOriginalPayloadIos);
+
+  // 1. Default empty payload (variant initialized to `Guid("")`).
+  // This does not have a valid GUID, so it should be cleared (remain empty).
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(testing::Field(&autofill::Suggestion::payload,
+                                           autofill::Suggestion::Payload()),
+                            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry,
+        autofill::Suggestion::Payload(), mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+
+  // 2. Guid payload (has Guid, so it should be forwarded).
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    autofill::Suggestion::Payload expected_payload =
+        autofill::Suggestion::Guid("some-guid");
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(
+            testing::Field(&autofill::Suggestion::payload, expected_payload),
+            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
+        mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+
+  // 3. InstrumentId payload (non-guid, so it should be cleared to default
+  // empty).
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    autofill::Suggestion::Payload input_payload =
+        autofill::Suggestion::InstrumentId(12345);
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(testing::Field(&autofill::Suggestion::payload,
+                                           autofill::Suggestion::Payload()),
+                            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry, input_payload,
+        mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+
+  // 4. AutofillProfilePayload with a non-empty GUID (preserved)
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    autofill::Suggestion::Payload expected_payload =
+        autofill::Suggestion::AutofillProfilePayload(
+            autofill::Suggestion::Guid("some-profile-guid"));
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(
+            testing::Field(&autofill::Suggestion::payload, expected_payload),
+            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry, expected_payload,
+        mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+
+  // 5. AutofillProfilePayload with an empty GUID (cleared)
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    autofill::Suggestion::Payload input_payload =
+        autofill::Suggestion::AutofillProfilePayload(
+            autofill::Suggestion::Guid(""));
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(testing::Field(&autofill::Suggestion::payload,
+                                           autofill::Suggestion::Payload()),
+                            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry, input_payload,
+        mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
+
+  // 6. Empty GUID string (cleared)
+  {
+    autofill::MockAutofillSuggestionDelegate mock_delegate;
+    autofill::Suggestion::Payload input_payload =
+        autofill::Suggestion::Guid("");
+    EXPECT_CALL(
+        mock_delegate,
+        DidAcceptSuggestion(testing::Field(&autofill::Suggestion::payload,
+                                           autofill::Suggestion::Payload()),
+                            testing::_));
+
+    FormSuggestion* form_suggestion = FormSuggestionWithPayload(
+        u"", autofill::SuggestionType::kCreditCardEntry, input_payload,
+        mock_delegate.GetWeakPtr());
+    [autofill_agent_ didSelectSuggestion:form_suggestion
+                                 atIndex:0
+                                    form:@"form"
+                          formRendererID:FormRendererId(1)
+                         fieldIdentifier:@"field"
+                         fieldRendererID:FieldRendererId(2)
+                                 frameID:base::SysUTF8ToNSString(kTestFrameId)
+                       completionHandler:^{
+                       }];
+  }
 }
