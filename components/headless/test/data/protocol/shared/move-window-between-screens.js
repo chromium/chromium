@@ -57,13 +57,13 @@
   }
 
   await moveWindowAndLogScreen(
-      {left: 1, top: 1, width: 600, height: 400}, '#1');
+      {left: 1, top: 1, width: 790, height: 590}, '#1');
   await moveWindowAndLogScreen(
-      {left: 801, top: 1, width: 600, height: 400}, '#2');
+      {left: 801, top: 1, width: 790, height: 590}, '#2');
   await moveWindowAndLogScreen(
-      {left: 1, top: 601, width: 600, height: 400}, '#3');
+      {left: 1, top: 601, width: 790, height: 590}, '#3');
   await moveWindowAndLogScreen(
-      {left: 801, top: 601, width: 600, height: 400}, '#4');
+      {left: 801, top: 601, width: 790, height: 590}, '#4');
 
   testRunner.completeTest();
 });
