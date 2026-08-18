@@ -127,7 +127,8 @@ struct CRYPTO_EXPORT AttestationStatement {
     // TODO(crbug.com/406190025): Make this generic once we use the
     // crypto::sign algorithms.
     // `signature` is the signature over `statement` signed using the Secure
-    // Enclave attestation key.
+    // Enclave attestation key in raw IEEE P1363 format (concatenation of
+    // big-endian `r` and `s`, 64 bytes for P-256).
     kSecureEnclave,
   };
   Format format = kTpm;

@@ -48,6 +48,7 @@
 #include "crypto/apple/keychain_util.h"
 #include "crypto/apple/keychain_v2.h"
 #include "crypto/apple/unexportable_key_apple.h"
+#include "crypto/ecdsa_utils.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/signature_verifier.h"
@@ -385,14 +386,21 @@ class UnexportableAttestationKeyApple
     base::Extend(raw_stmt, challenge);
     base::Extend(raw_stmt, hash::Sha256(signing_key.GetSubjectPublicKeyInfo()));
 
-    ASSIGN_OR_RETURN(std::vector<uint8_t> sig,
+    ASSIGN_OR_RETURN(std::vector<uint8_t> der_sig,
                      SignSlowlyImpl(GetSecKeyRef(), raw_stmt,
                                     TPMOperation::kKeyCertification));
+
+    ASSIGN_OR_RETURN(keypair::PublicKey public_key,
+                     keypair::PublicKey::FromSubjectPublicKeyInfo(
+                         GetSubjectPublicKeyInfo()));
+
+    ASSIGN_OR_RETURN(std::vector<uint8_t> raw_sig,
+                     ConvertEcdsaDerSignatureToRaw(public_key, der_sig));
 
     return AttestationStatement{
         .format = AttestationStatement::kSecureEnclave,
         .statement = std::move(raw_stmt),
-        .signature = std::move(sig),
+        .signature = std::move(raw_sig),
     };
   }
 };
