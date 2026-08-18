@@ -116,18 +116,16 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 // front of the list.
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     const signin::IdentityManager* identity_manager,
-    bool restrict_to_accounts_eligible_for_signin,
-    const signin::AccountPreviewDataService* account_preview_data_service =
-        nullptr);
+    const signin::AccountPreviewDataService* account_preview_data_service,
+    bool restrict_to_accounts_eligible_for_signin);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Returns single account to use in promos. If `account_preview_data_service` is
-// provided and has a preferred account for promo, that account is returned.
+// non-null and has a preferred account for promo, that account is returned.
 // Otherwise, returns the default account for promo.
 AccountInfo GetSingleAccountForPromos(
     const signin::IdentityManager* identity_manager,
-    const signin::AccountPreviewDataService* account_preview_data_service =
-        nullptr);
+    const signin::AccountPreviewDataService* account_preview_data_service);
 
 // Returns an existing re-usable Dice signin tab with the given access point.
 content::WebContents* GetSignInTabWithAccessPoint(

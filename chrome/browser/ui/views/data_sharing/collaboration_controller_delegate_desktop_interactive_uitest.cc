@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -14,7 +17,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
-#include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -502,7 +504,9 @@ class
     // Set up an account picture in case it is shown in the dialog.
     signin::SimulateAccountImageFetch(
         identity_manager(),
-        signin_ui_util::GetSingleAccountForPromos(identity_manager())
+        signin_ui_util::GetSingleAccountForPromos(
+            identity_manager(), AccountPreviewDataServiceFactory::GetForProfile(
+                                    browser()->GetProfile()))
             .account_id,
         "https://avatar.com/avatar.png", gfx::test::CreateImage(/*size=*/32));
 

@@ -23,6 +23,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
@@ -236,6 +237,7 @@ base::ListValue SupportToolMessageHandler::GetAccountsList() {
       IdentityManagerFactory::GetForProfile(profile);
   for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
            identity_manager,
+           AccountPreviewDataServiceFactory::GetForProfile(profile),
            /*restrict_to_accounts_eligible_for_signin=*/false)) {
     if (!account.IsEmpty()) {
       account_list.Append(account.email);

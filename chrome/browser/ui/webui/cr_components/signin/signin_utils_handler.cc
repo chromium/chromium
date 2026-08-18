@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
@@ -137,7 +138,10 @@ void SigninUtilsHandler::RecordSigninOffered(
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   CHECK(identity_manager);
   signin_metrics::PromoAction promo_action =
-      signin_ui_util::GetSingleAccountForPromos(identity_manager).IsEmpty()
+      signin_ui_util::GetSingleAccountForPromos(
+          identity_manager,
+          AccountPreviewDataServiceFactory::GetForProfile(profile_))
+              .IsEmpty()
           ? signin_metrics::PromoAction::
                 PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
           : signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;

@@ -35,6 +35,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_hats_util.h"
@@ -768,7 +769,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
     case signin_util::SignedInState::kSignedOut:
     case signin_util::SignedInState::kWebOnlySignedIn: {
       AccountInfo account_info_for_promos =
-          signin_ui_util::GetSingleAccountForPromos(identity_manager);
+          signin_ui_util::GetSingleAccountForPromos(
+              identity_manager,
+              AccountPreviewDataServiceFactory::GetForProfile(&profile()));
       if (!CanOfferSignin(&profile(), account_info_for_promos.gaia,
                           account_info_for_promos.email,
                           /*allow_account_from_other_profile=*/true)

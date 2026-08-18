@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -174,8 +175,9 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       IdentityManagerFactory::GetForProfile(profile);
   bool has_primary_account =
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-  AccountInfo account_info =
-      signin_ui_util::GetSingleAccountForPromos(identity_manager);
+  AccountInfo account_info = signin_ui_util::GetSingleAccountForPromos(
+      identity_manager,
+      AccountPreviewDataServiceFactory::GetForProfile(profile));
   source->AddString(
       "historySyncPromoBodySignedIn",
       l10n_util::GetStringFUTF16(IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_IN,

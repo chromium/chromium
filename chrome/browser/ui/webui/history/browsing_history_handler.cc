@@ -30,6 +30,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -632,8 +633,9 @@ void BrowsingHistoryHandler::IncrementHistoryPageHistorySyncPromoShownCount() {
 }
 
 int BrowsingHistoryHandler::GetHistoryPageHistorySyncPromoShownCount() const {
-  const AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      &identity_manager_.get(),
+      AccountPreviewDataServiceFactory::GetForProfile(profile_));
   if (account.GetGaiaId().empty()) {
     return profile_->GetPrefs()->GetInteger(
         prefs::kHistoryPageHistorySyncPromoShownCountPerProfile);
@@ -646,8 +648,9 @@ int BrowsingHistoryHandler::GetHistoryPageHistorySyncPromoShownCount() const {
 base::Time
 BrowsingHistoryHandler::GetHistoryPageHistorySyncPromoLastDismissedTimestamp()
     const {
-  const AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      &identity_manager_.get(),
+      AccountPreviewDataServiceFactory::GetForProfile(profile_));
   if (account.GetGaiaId().empty()) {
     return profile_->GetPrefs()->GetTime(
         prefs::kHistoryPageHistorySyncPromoLastDismissedTimestampPerProfile);
@@ -660,8 +663,9 @@ BrowsingHistoryHandler::GetHistoryPageHistorySyncPromoLastDismissedTimestamp()
 
 bool BrowsingHistoryHandler::IsHistoryPageHistorySyncPromoShownAfterDismissal()
     const {
-  const AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      &identity_manager_.get(),
+      AccountPreviewDataServiceFactory::GetForProfile(profile_));
   if (account.GetGaiaId().empty()) {
     return profile_->GetPrefs()->GetBoolean(
         prefs::kHistoryPageHistorySyncPromoShownAfterDismissalPerProfile);
@@ -673,8 +677,9 @@ bool BrowsingHistoryHandler::IsHistoryPageHistorySyncPromoShownAfterDismissal()
 
 void BrowsingHistoryHandler::
     SetHistoryPageHistorySyncPromoLastDismissedTimestamp(base::Time time) {
-  const AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      &identity_manager_.get(),
+      AccountPreviewDataServiceFactory::GetForProfile(profile_));
   if (account.GetGaiaId().empty()) {
     profile_->GetPrefs()->SetTime(
         prefs::kHistoryPageHistorySyncPromoLastDismissedTimestampPerProfile,
@@ -688,8 +693,9 @@ void BrowsingHistoryHandler::
 
 void BrowsingHistoryHandler::
     IncrementHistoryPageHistorySyncPromoShownCountPref() {
-  const AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      &identity_manager_.get(),
+      AccountPreviewDataServiceFactory::GetForProfile(profile_));
   if (account.GetGaiaId().empty()) {
     const int promo_shown_count = profile_->GetPrefs()->GetInteger(
         prefs::kHistoryPageHistorySyncPromoShownCountPerProfile);
@@ -704,8 +710,9 @@ void BrowsingHistoryHandler::
 
 void BrowsingHistoryHandler::
     SetHistoryPageHistorySyncPromoShownAfterDismissal() {
-  const AccountInfo account =
-      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  const AccountInfo account = signin_ui_util::GetSingleAccountForPromos(
+      &identity_manager_.get(),
+      AccountPreviewDataServiceFactory::GetForProfile(profile_));
   if (account.GetGaiaId().empty()) {
     profile_->GetPrefs()->SetBoolean(
         prefs::kHistoryPageHistorySyncPromoShownAfterDismissalPerProfile, true);
@@ -859,8 +866,9 @@ Profile* BrowsingHistoryHandler::GetProfile() {
 void BrowsingHistoryHandler::RequestAccountInfo(
     RequestAccountInfoCallback callback) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  AccountInfo account_info =
-      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  AccountInfo account_info = signin_ui_util::GetSingleAccountForPromos(
+      &identity_manager_.get(),
+      AccountPreviewDataServiceFactory::GetForProfile(profile_));
   std::move(callback).Run(CreateAccountInfoDataMojo(account_info));
 
   if (!identity_manager_observation_.IsObserving()) {
@@ -876,8 +884,9 @@ void BrowsingHistoryHandler::RequestAccountInfo(
 void BrowsingHistoryHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
 #if !BUILDFLAG(IS_CHROMEOS)
-  AccountInfo account_to_display =
-      signin_ui_util::GetSingleAccountForPromos(&identity_manager_.get());
+  AccountInfo account_to_display = signin_ui_util::GetSingleAccountForPromos(
+      &identity_manager_.get(),
+      AccountPreviewDataServiceFactory::GetForProfile(profile_));
 
   if (info.IsEmpty() || !info.IsValid() ||
       info.account_id != account_to_display.account_id) {

@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -92,7 +93,9 @@ void HistoryLoginHandler::HandleTurnOnSyncFlow(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_CHROMEOS)
   if (account_info.IsEmpty()) {
-    account_info = signin_ui_util::GetSingleAccountForPromos(identity_manager);
+    account_info = signin_ui_util::GetSingleAccountForPromos(
+        identity_manager,
+        AccountPreviewDataServiceFactory::GetForProfile(profile));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   signin_ui_util::EnableSyncFromSingleAccountPromo(
