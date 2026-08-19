@@ -550,7 +550,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "LanguageDetectionModelService",
     "MediaEngagementServiceFactory",
     "MediaNotificationService",
-    "MerchantPromoCodeManager",
     "NoStatePrefetchManager",
 #if !BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.

@@ -40,8 +40,6 @@ static_library("autofill") {
     "entity_suppression_manager_factory.h",
     "gmail_otp_backend_factory.cc",
     "gmail_otp_backend_factory.h",
-    "merchant_promo_code_manager_factory.cc",
-    "merchant_promo_code_manager_factory.h",
     "ml_log_router_factory.cc",
     "ml_log_router_factory.h",
     "one_time_token_service_factory.cc",

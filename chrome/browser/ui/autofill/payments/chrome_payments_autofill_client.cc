@@ -14,7 +14,6 @@
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
-#include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -136,6 +135,8 @@ ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
     ContentAutofillClient* client)
     : content::WebContentsObserver(&client->GetWebContents()),
       client_(CHECK_DEREF(client)),
+      merchant_promo_code_manager_(
+          std::make_unique<MerchantPromoCodeManager>()),
       save_and_fill_manager_(
           std::make_unique<SaveAndFillManagerImpl>(&client_.get())),
       payments_churned_users_manager_(
@@ -889,9 +890,7 @@ IbanAccessManager* ChromePaymentsAutofillClient::GetIbanAccessManager() {
 
 MerchantPromoCodeManager*
 ChromePaymentsAutofillClient::GetMerchantPromoCodeManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return MerchantPromoCodeManagerFactory::GetForProfile(profile);
+  return merchant_promo_code_manager_.get();
 }
 
 void ChromePaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(

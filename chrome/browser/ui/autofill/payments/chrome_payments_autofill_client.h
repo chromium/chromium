@@ -383,6 +383,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 
   std::unique_ptr<IbanManager> iban_manager_;
   std::unique_ptr<IbanAccessManager> iban_access_manager_;
+  std::unique_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;
 
   std::unique_ptr<payments::MandatoryReauthManager>
       payments_mandatory_reauth_manager_;
