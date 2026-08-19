@@ -8041,16 +8041,13 @@ if (!is_android) {
       "../browser/ui/views/web_apps/web_app_link_capturing_test_utils.h",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
-      "base/web_view_focus_helper.cc",
-      "base/web_view_focus_helper.h",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
 
     allow_circular_includes_from = [
       # TODO(crbug.com/353332589): Remove these circular dependencies when
-      # the remaining blocked headers (web_view_focus_helper.h, etc.) are
-      # fully componentized.
+      # remaining blocked headers are fully componentized.
       "//chrome/browser/privacy_sandbox:attestations_mixin",
       "//chrome/browser/ui/test:dialog",
       "//chrome/test/interaction",
@@ -8087,6 +8084,7 @@ if (!is_android) {
       "//chrome/test/base:ui_test_utils",
       "//chrome/test/base:web_ui_mocha_browser_test",
       "//chrome/test/base:web_ui_test_data_source",
+      "//chrome/test/base:web_view_focus_helper",
       "//chrome/test/interaction",
       "//chrome/test/permissions",
       "//components/autofill/content/browser:test_support",

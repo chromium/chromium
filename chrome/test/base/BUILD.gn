@@ -804,6 +804,24 @@ if (!is_android) {
       "//net:test_support",
     ]
   }
+
+  source_set("web_view_focus_helper") {
+    testonly = true
+    sources = [
+      "web_view_focus_helper.cc",
+      "web_view_focus_helper.h",
+    ]
+    public_deps = [
+      "//base",
+      "//content/public/browser",
+      "//ui/views",
+    ]
+    deps = [
+      "//chrome/test/base:interactive_test_utils",
+      "//testing/gtest",
+      "//ui/views/controls/webview",
+    ]
+  }
 }
 
 if (!is_android) {
