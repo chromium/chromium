@@ -125,6 +125,7 @@ executable("dll_hash_main") {
   sources = [ "dll_hash/dll_hash_main.cc" ]
   deps = [
     ":dll_hash",
+    "//base",
     "//build/win:default_exe_manifest",
   ]
 }
