@@ -26600,26 +26600,6 @@
             ]
         }
     ],
-    "WebViewMemoryProfilingClient": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "nonstable-probability": "1",
-                        "stable-probability": "1"
-                    },
-                    "enable_features": [
-                        "HeapProfilerReporting",
-                        "WebViewMemoryProfilingClient"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewMigrateVisitedLinks": [
         {
             "platforms": [
