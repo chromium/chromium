@@ -186,6 +186,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_Reset) {
 TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_ConfigChange) {
   scoped_refptr<H264Picture> pic0 = accelerator_->CreateH264Picture();
   scoped_refptr<H264Picture> pic1 = accelerator_->CreateH264Picture();
+  pic1->idr = true;
   H264SPS sps;
   H264PPS pps;
   H264DPB dpb;
@@ -219,9 +220,175 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_ConfigChange) {
   EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
   accelerator_->SubmitDecode(pic1);
 
-  // The two samples should have different configurations.
+  // The two samples should have different configurations because pic1 is an
+  // IDR.
   EXPECT_NE(CMSampleBufferGetFormatDescription(sample0.get()),
             CMSampleBufferGetFormatDescription(sample1.get()));
+}
+
+TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_PPSChange_NonIDR) {
+  scoped_refptr<H264Picture> pic0 = accelerator_->CreateH264Picture();
+  scoped_refptr<H264Picture> pic1 = accelerator_->CreateH264Picture();
+  pic1->idr = false;
+  H264SPS sps;
+  H264PPS pps;
+  H264DPB dpb;
+  H264Picture::Vector ref_pic_list;
+  H264SliceHeader slice_hdr;
+  std::vector<SubsampleEntry> subsamples;
+
+  // First frame.
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS0));
+  accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
+                                    ref_pic_list, pic0);
+  accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic0,
+                            kSliceData, sizeof(kSliceData), subsamples);
+
+  // Save the resulting sample.
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0;
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample0));
+  accelerator_->SubmitDecode(pic0);
+
+  // Second frame with new PPS.
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS1));
+  accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
+                                    ref_pic_list, pic1);
+  accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic1,
+                            kSliceData, sizeof(kSliceData), subsamples);
+
+  // Save the resulting sample.
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1;
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
+  accelerator_->SubmitDecode(pic1);
+
+  // The format description should remain the same.
+  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
+
+  // The sample buffer should contain the new PPS in-band before slice data.
+  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample1.get());
+  std::vector<uint8_t> data(CMBlockBufferGetDataLength(buf));
+  CMBlockBufferCopyDataBytes(buf, 0, CMBlockBufferGetDataLength(buf),
+                             data.data());
+  EXPECT_THAT(data, ElementsAre(0x00, 0x00, 0x00, 0x06,  // length of PPS1
+                                0x68, 0xeb, 0xe0, 0xa4, 0xb2, 0x2c,  // kPPS1
+                                0x00, 0x00, 0x00, 0x01,  // length of slice
+                                0x02                     // kSliceData
+                                ));
+}
+
+TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_PPSChange_IDR) {
+  scoped_refptr<H264Picture> pic0 = accelerator_->CreateH264Picture();
+  scoped_refptr<H264Picture> pic1 = accelerator_->CreateH264Picture();
+  pic1->idr = true;
+  H264SPS sps;
+  H264PPS pps;
+  H264DPB dpb;
+  H264Picture::Vector ref_pic_list;
+  H264SliceHeader slice_hdr;
+  std::vector<SubsampleEntry> subsamples;
+
+  // First frame.
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS0));
+  accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
+                                    ref_pic_list, pic0);
+  accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic0,
+                            kSliceData, sizeof(kSliceData), subsamples);
+
+  // Save the resulting sample.
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0;
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample0));
+  accelerator_->SubmitDecode(pic0);
+
+  // Second frame with new PPS on IDR keyframe.
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps, base::span(kPPS1));
+  accelerator_->SubmitFrameMetadata(&sps, &pps, dpb, ref_pic_list, ref_pic_list,
+                                    ref_pic_list, pic1);
+  accelerator_->SubmitSlice(&pps, &slice_hdr, ref_pic_list, ref_pic_list, pic1,
+                            kSliceData, sizeof(kSliceData), subsamples);
+
+  // Save the resulting sample.
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1;
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
+  accelerator_->SubmitDecode(pic1);
+
+  // The format description should change on IDR keyframe.
+  EXPECT_NE(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
+
+  // The sample buffer should contain only slice data, as the PPS was updated
+  // in the format description.
+  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample1.get());
+  std::vector<uint8_t> data(CMBlockBufferGetDataLength(buf));
+  CMBlockBufferCopyDataBytes(buf, 0, CMBlockBufferGetDataLength(buf),
+                             data.data());
+  EXPECT_THAT(data, ElementsAre(0x00, 0x00, 0x00, 0x01,  // length of slice
+                                0x02                     // kSliceData
+                                ));
+}
+
+TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_MultiSlice_PPS) {
+  scoped_refptr<H264Picture> pic0 = accelerator_->CreateH264Picture();
+  scoped_refptr<H264Picture> pic1 = accelerator_->CreateH264Picture();
+  H264SPS sps;
+  H264PPS pps0;
+  pps0.pic_parameter_set_id = 0;
+  pps0.seq_parameter_set_id = 0;
+  H264PPS pps1;
+  pps1.pic_parameter_set_id = 1;
+  pps1.seq_parameter_set_id = 0;
+  H264DPB dpb;
+  H264Picture::Vector ref_pic_list;
+  H264SliceHeader slice_hdr;
+  std::vector<SubsampleEntry> subsamples;
+
+  // First frame with PPS0.
+  accelerator_->ProcessSPS(&sps, base::span(kSPS0));
+  accelerator_->ProcessPPS(&pps0, base::span(kPPS0));
+  accelerator_->SubmitFrameMetadata(&sps, &pps0, dpb, ref_pic_list,
+                                    ref_pic_list, ref_pic_list, pic0);
+  accelerator_->SubmitSlice(&pps0, &slice_hdr, ref_pic_list, ref_pic_list, pic0,
+                            kSliceData, sizeof(kSliceData), subsamples);
+
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0;
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample0));
+  accelerator_->SubmitDecode(pic0);
+
+  // Second frame with two slices: first slice uses PPS0, second slice uses
+  // PPS1.
+  accelerator_->ProcessPPS(&pps1, base::span(kPPS1));
+  accelerator_->SubmitFrameMetadata(&sps, &pps0, dpb, ref_pic_list,
+                                    ref_pic_list, ref_pic_list, pic1);
+  accelerator_->SubmitSlice(&pps0, &slice_hdr, ref_pic_list, ref_pic_list, pic1,
+                            kSliceData, sizeof(kSliceData), subsamples);
+  accelerator_->SubmitSlice(&pps1, &slice_hdr, ref_pic_list, ref_pic_list, pic1,
+                            kSliceData, sizeof(kSliceData), subsamples);
+
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1;
+  EXPECT_CALL(*this, OnDecode(_, _, _)).WillOnce(SaveArg<0>(&sample1));
+  accelerator_->SubmitDecode(pic1);
+
+  // The format description should remain the same.
+  EXPECT_EQ(CMSampleBufferGetFormatDescription(sample0.get()),
+            CMSampleBufferGetFormatDescription(sample1.get()));
+
+  // The sample buffer should contain PPS1 in-band followed by slice 0 and
+  // slice 1.
+  CMBlockBufferRef buf = CMSampleBufferGetDataBuffer(sample1.get());
+  std::vector<uint8_t> data(CMBlockBufferGetDataLength(buf));
+  CMBlockBufferCopyDataBytes(buf, 0, CMBlockBufferGetDataLength(buf),
+                             data.data());
+  EXPECT_THAT(data, ElementsAre(0x00, 0x00, 0x00, 0x06,  // length of PPS1
+                                0x68, 0xeb, 0xe0, 0xa4, 0xb2, 0x2c,  // kPPS1
+                                0x00, 0x00, 0x00, 0x01,  // length of slice 0
+                                0x02,                    // kSliceData
+                                0x00, 0x00, 0x00, 0x01,  // length of slice 1
+                                0x02                     // kSliceData
+                                ));
 }
 
 }  // namespace media

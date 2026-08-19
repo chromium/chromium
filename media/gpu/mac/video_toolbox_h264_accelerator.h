@@ -13,12 +13,15 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/sequence_checker.h"
+#include "media/base/video_types.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
+#include "media/gpu/mac/video_toolbox_nalu_util.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
@@ -65,26 +68,24 @@ class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
   void Reset() override;
 
  private:
+  [[nodiscard]] bool CreateFormat();
+  void ResetFrameData();
+
   std::unique_ptr<MediaLog> media_log_;
 
   // Callbacks are called synchronously, which is always re-entrant.
   DecodeCB decode_cb_;
   OutputCB output_cb_;
 
-  // Raw parameter set bytes that have been observed.
-  base::flat_map<int, std::vector<uint8_t>> seen_sps_data_;  // IDs can be 0-31
-  base::flat_map<int, std::vector<uint8_t>> seen_pps_data_;  // IDs can be 0-255
-
-  // Raw parameter set bytes used to produce |active_format_|, so that they
-  // can be checked for changes.
-  std::vector<uint8_t> active_sps_data_;
-  std::vector<uint8_t> active_pps_data_;
+  // Trackers for observed, active, and per-frame referenced parameter sets.
+  VideoToolboxParameterSetTracker sps_tracker_;
+  VideoToolboxParameterSetTracker pps_tracker_;
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
 
   // Accumulated slice data for the current frame.
   // TODO(367764863) Rewrite to base::raw_span.
-  RAW_PTR_EXCLUSION std::vector<base::span<const uint8_t>> slice_nalu_data_;
+  RAW_PTR_EXCLUSION std::vector<base::span<const uint8_t>> frame_slice_data_;
 
   // True after Reset() and until after the first successful SubmitDecode().
   bool first_decode_ = true;

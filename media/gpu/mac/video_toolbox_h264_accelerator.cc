@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "media/base/media_log.h"
 #include "media/base/video_types.h"
@@ -17,8 +18,6 @@
 namespace media {
 
 namespace {
-
-constexpr size_t kNALUHeaderLength = 4;
 
 // Kill-switch: Remove after M145 is stable.
 BASE_FEATURE(kResetDecoderForNonIDR, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -31,7 +30,9 @@ VideoToolboxH264Accelerator::VideoToolboxH264Accelerator(
     OutputCB output_cb)
     : media_log_(std::move(media_log)),
       decode_cb_(std::move(decode_cb)),
-      output_cb_(std::move(output_cb)) {
+      output_cb_(std::move(output_cb)),
+      sps_tracker_("SPS", media_log_.get()),
+      pps_tracker_("PPS", media_log_.get()) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
@@ -53,8 +54,7 @@ void VideoToolboxH264Accelerator::ProcessSPS(
   DVLOG(3) << __func__
            << ": seq_parameter_set_id=" << sps->seq_parameter_set_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  seen_sps_data_[sps->seq_parameter_set_id] =
-      std::vector<uint8_t>(sps_nalu_data.begin(), sps_nalu_data.end());
+  sps_tracker_.Process(sps->seq_parameter_set_id, sps_nalu_data);
 }
 
 void VideoToolboxH264Accelerator::ProcessPPS(
@@ -63,8 +63,35 @@ void VideoToolboxH264Accelerator::ProcessPPS(
   DVLOG(3) << __func__ << ": pic_parameter_set_id=" << pps->pic_parameter_set_id
            << " seq_parameter_set_id=" << pps->seq_parameter_set_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  seen_pps_data_[pps->pic_parameter_set_id] =
-      std::vector<uint8_t>(pps_nalu_data.begin(), pps_nalu_data.end());
+  pps_tracker_.Process(pps->pic_parameter_set_id, pps_nalu_data);
+}
+
+bool VideoToolboxH264Accelerator::CreateFormat() {
+  // Gather parameter sets and update active parameter set data.
+  std::vector<const uint8_t*> parameter_set_data;
+  std::vector<size_t> parameter_set_size;
+  if (!sps_tracker_.ExtractForFormat(parameter_set_data, parameter_set_size) ||
+      !pps_tracker_.ExtractForFormat(parameter_set_data, parameter_set_size)) {
+    return false;
+  }
+
+  // Create the format description.
+  active_format_.reset();
+
+  OSStatus status = CMVideoFormatDescriptionCreateFromH264ParameterSets(
+      /*allocator=*/kCFAllocatorDefault,
+      /*parameterSetCount=*/parameter_set_data.size(),
+      /*parameterSetPointers=*/parameter_set_data.data(),
+      /*parameterSetSizes=*/parameter_set_size.data(),
+      /*NALUnitHeaderLength=*/kNALUHeaderLength,
+      active_format_.InitializeInto());
+  if (status != noErr) {
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "CMVideoFormatDescriptionCreateFromH264ParameterSets()";
+    return false;
+  }
+
+  return true;
 }
 
 VideoToolboxH264Accelerator::Status
@@ -80,44 +107,7 @@ VideoToolboxH264Accelerator::SubmitFrameMetadata(
            << " pic_parameter_set_id=" << pps->pic_parameter_set_id;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  slice_nalu_data_.clear();
-
-  // Detect format changes.
-  DCHECK(seen_sps_data_.contains(sps->seq_parameter_set_id));
-  DCHECK(seen_pps_data_.contains(pps->pic_parameter_set_id));
-  std::vector<uint8_t>& sps_data = seen_sps_data_[sps->seq_parameter_set_id];
-  std::vector<uint8_t>& pps_data = seen_pps_data_[pps->pic_parameter_set_id];
-  if (sps_data != active_sps_data_ || pps_data != active_pps_data_) {
-    // If we're not at a keyframe and only the PPS has changed, put the new PPS
-    // in-band and don't create a new format.
-    // TODO(crbug.com/40227557): Record that this PPS has been provided and
-    // avoid sending it again. (Copy implementation from H265Accelerator.)
-    if (!pic->idr && sps_data == active_sps_data_) {
-      slice_nalu_data_.push_back(base::span(pps_data));
-      return Status::kOk;
-    }
-
-    active_format_.reset();
-
-    const uint8_t* nalu_data[2] = {sps_data.data(), pps_data.data()};
-    size_t nalu_size[2] = {sps_data.size(), pps_data.size()};
-    OSStatus status = CMVideoFormatDescriptionCreateFromH264ParameterSets(
-        /*allocator=*/kCFAllocatorDefault,
-        /*parameterSetCount=*/2,
-        /*parameterSetPointers=*/nalu_data,
-        /*parameterSetSizes=*/nalu_size,
-        /*NALUnitHeaderLength=*/kNALUHeaderLength,
-        active_format_.InitializeInto());
-    if (status != noErr) {
-      OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-          << "CMVideoFormatDescriptionCreateFromH264ParameterSets()";
-      return Status::kFail;
-    }
-
-    active_sps_data_ = sps_data;
-    active_pps_data_ = pps_data;
-  }
-
+  ResetFrameData();
   return Status::kOk;
 }
 
@@ -132,7 +122,11 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitSlice(
     const std::vector<SubsampleEntry>& subsamples) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  slice_nalu_data_.push_back(UNSAFE_TODO(base::span(data, size)));
+
+  sps_tracker_.ReferenceInFrame(pps->seq_parameter_set_id);
+  pps_tracker_.ReferenceInFrame(pps->pic_parameter_set_id);
+  frame_slice_data_.push_back(UNSAFE_TODO(base::span(data, size)));
+
   return Status::kOk;
 }
 
@@ -141,79 +135,30 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Determine the final size of the converted bitstream.
-  size_t data_size = 0;
-  for (const auto& nalu_data : slice_nalu_data_) {
-    data_size += kNALUHeaderLength + nalu_data.size();
-  }
-
-  // Allocate a buffer.
-  base::apple::ScopedCFTypeRef<CMBlockBufferRef> data;
-  OSStatus status = CMBlockBufferCreateWithMemoryBlock(
-      /*structureAllocator=*/kCFAllocatorDefault,
-      /*memoryBlock=*/nullptr,
-      /*blockLength=*/data_size,
-      /*blockAllocator=*/kCFAllocatorDefault,
-      /*customBlockSource=*/nullptr,
-      /*offsetToData=*/0,
-      /*dataLength=*/data_size,
-      /*flags=*/0, data.InitializeInto());
-  if (status != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-        << "CMBlockBufferCreateWithMemoryBlock()";
+  // Extract changed parameter sets and update active parameter set data.
+  std::vector<base::span<const uint8_t>> combined_nalu_data;
+  if (!sps_tracker_.ExtractForInbandUpdate(combined_nalu_data) ||
+      !pps_tracker_.ExtractForInbandUpdate(combined_nalu_data)) {
     return Status::kFail;
   }
 
-  status = CMBlockBufferAssureBlockMemory(data.get());
-  if (status != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-        << "CMBlockBufferAssureBlockMemory()";
-    return Status::kFail;
-  }
-
-  // Copy each NALU into the buffer, prefixed with a length header.
-  size_t offset = 0u;
-  for (const auto& nalu_data : slice_nalu_data_) {
-    // Write length header.
-    std::array<uint8_t, kNALUHeaderLength> header =
-        base::U32ToBigEndian(static_cast<uint32_t>(nalu_data.size()));
-    status = CMBlockBufferReplaceDataBytes(header.data(), data.get(), offset,
-                                           header.size());
-    if (status != noErr) {
-      OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-          << "CMBlockBufferReplaceDataBytes()";
+  // Create a new format description if we haven't initialized one yet, or if we
+  // are at a keyframe and the parameter set data has changed.
+  if (!active_format_ || (pic->idr && !combined_nalu_data.empty())) {
+    combined_nalu_data.clear();
+    if (!CreateFormat()) {
       return Status::kFail;
     }
-    offset += header.size();
-
-    // Write NALU data.
-    status = CMBlockBufferReplaceDataBytes(nalu_data.data(), data.get(), offset,
-                                           nalu_data.size());
-    if (status != noErr) {
-      OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-          << "CMBlockBufferReplaceDataBytes()";
-      return Status::kFail;
-    }
-    offset += nalu_data.size();
   }
 
-  // Wrap in a sample.
-  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  status = CMSampleBufferCreate(
-      /*allocator=*/kCFAllocatorDefault,
-      /*dataBuffer=*/data.get(),
-      /*dataReady=*/true,
-      /*makeDataReadyCallback=*/nullptr,
-      /*makeDataReadyRefcon=*/nullptr,
-      /*formatDescription=*/active_format_.get(),
-      /*numSamples=*/1,
-      /*numSampleTimingEntries=*/0,
-      /*sampleTimingArray=*/nullptr,
-      /*numSampleSizeEntries=*/1,
-      /*sampleSizeArray=*/&data_size, sample.InitializeInto());
-  if (status != noErr) {
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
-        << "CMSampleBufferCreate()";
+  // Append slice data.
+  combined_nalu_data.insert(combined_nalu_data.end(), frame_slice_data_.begin(),
+                            frame_slice_data_.end());
+
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample =
+      VideoToolboxCreateSampleBufferFromNALUs(
+          combined_nalu_data, active_format_.get(), media_log_.get());
+  if (!sample) {
     return Status::kFail;
   }
 
@@ -256,13 +201,19 @@ bool VideoToolboxH264Accelerator::OutputPicture(
 void VideoToolboxH264Accelerator::Reset() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  seen_sps_data_.clear();
-  seen_pps_data_.clear();
-  active_sps_data_.clear();
-  active_pps_data_.clear();
+  sps_tracker_.ResetActive();
+  pps_tracker_.ResetActive();
   active_format_.reset();
-  slice_nalu_data_.clear();
+  ResetFrameData();
   first_decode_ = true;
+}
+
+void VideoToolboxH264Accelerator::ResetFrameData() {
+  DVLOG(4) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sps_tracker_.ResetFrame();
+  pps_tracker_.ResetFrame();
+  frame_slice_data_.clear();
 }
 
 }  // namespace media
