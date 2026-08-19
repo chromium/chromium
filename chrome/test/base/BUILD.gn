@@ -111,6 +111,22 @@ if (!is_android) {
   }
 }
 
+# These functions depend only on base::PathService and chrome::DIR_TEST_DATA,
+# not on PlatformBrowserTest, so they live in a separate, low-level target.
+source_set("chrome_test_path_utils") {
+  testonly = true
+  sources = [
+    "chrome_test_path_utils.cc",
+    "chrome_test_path_utils.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//chrome/common",
+    "//net",
+    "//url",
+  ]
+}
+
 # Thin header-only target that exposes chrome_test_utils.h for gn check. The
 # implementation (chrome_test_utils.cc) still lives in
 # //chrome/test:test_support until the TestingBrowserProcessDeathTestMixin
@@ -124,6 +140,7 @@ source_set("chrome_test_utils") {
   testonly = true
   sources = [ "chrome_test_utils.h" ]
   public_deps = [
+    "//chrome/test/base:chrome_test_path_utils",
     "//components/tabs:public",
     "//content/public/browser",
   ]

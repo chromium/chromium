@@ -4,14 +4,10 @@
 
 #include "chrome/test/base/chrome_test_utils.h"
 
-#include "base/path_service.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "net/base/filename_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -84,29 +80,6 @@ bool NavigateToURL(content::WebContents* web_contents, const GURL& url) {
   // Wait for load to stop.
   observer.Wait();
   return observer.last_navigation_succeeded();
-}
-
-base::FilePath GetChromeTestDataDir() {
-  return base::FilePath(FILE_PATH_LITERAL("chrome/test/data"));
-}
-
-void OverrideChromeTestDataDir() {
-  base::FilePath src_dir;
-  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
-  CHECK(base::PathService::Override(chrome::DIR_TEST_DATA,
-                                    src_dir.Append(GetChromeTestDataDir())));
-}
-
-base::FilePath GetTestFilePath(const base::FilePath& dir,
-                               const base::FilePath& file) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath path;
-  base::PathService::Get(chrome::DIR_TEST_DATA, &path);
-  return path.Append(dir).Append(file);
-}
-
-GURL GetTestUrl(const base::FilePath& dir, const base::FilePath& file) {
-  return net::FilePathToFileURL(GetTestFilePath(dir, file));
 }
 
 TestingBrowserProcessDeathTestMixin::TestingBrowserProcessDeathTestMixin() {
