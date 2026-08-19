@@ -613,9 +613,6 @@ MemoryDataType AttributeTypeToMemoryDataType(AttributeType type) {
     ATTRIBUTE_TO_QUERY_INTENT(kShipmentTrackingNumber);
     ATTRIBUTE_TO_QUERY_INTENT(kShipmentShippedDate);
     ATTRIBUTE_TO_QUERY_INTENT(kShipmentDeliveryZipCode);
-    case AttributeTypeName::kShipmentOrderIds:
-      return MemoryDataType::kShipmentAssociatedOrderId;
-    case AttributeTypeName::kShipmentOrderDates:
     case AttributeTypeName::kShipmentMerchantName:
     case AttributeTypeName::kShipmentProductNames:
       return MemoryDataType::kUnknown;
@@ -1320,8 +1317,6 @@ std::optional<AttributeType> ToAttributeType(MemoryDataType type) {
     MAP_ATTR(kShipmentCarrierDomain);
     MAP_ATTR(kShipmentShippedDate);
     MAP_ATTR(kShipmentDeliveryZipCode);
-    case MemoryDataType::kShipmentAssociatedOrderId:
-      return AttributeType(AttributeTypeName::kShipmentOrderIds);
     case MemoryDataType::kUnknown:
     case MemoryDataType::kNameFull:
     case MemoryDataType::kAddressFull:
@@ -1336,6 +1331,7 @@ std::optional<AttributeType> ToAttributeType(MemoryDataType type) {
     case MemoryDataType::kIban:
     case MemoryDataType::kIbanNickname:
     case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kShipmentAssociatedOrderId:
     case MemoryDataType::kShipmentDeliveryAddress:
     case MemoryDataType::kShipmentEstimatedDeliveryDate:
     case MemoryDataType::kOrderGrandTotal:

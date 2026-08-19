@@ -1126,12 +1126,6 @@
   <message name="IDS_AUTOFILL_AI_SHIPMENT_SHIPPED_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the shipment shipped date attribute." translateable="false">
     Shipped date
   </message>
-  <message name="IDS_AUTOFILL_AI_SHIPMENT_ORDER_IDS_ATTRIBUTE_NAME" desc="Used as a general label for the shipment order ids attribute." translateable="false">
-    Order ids
-  </message>
-  <message name="IDS_AUTOFILL_AI_SHIPMENT_ORDER_DATES_ATTRIBUTE_NAME" desc="Used as a general label for the shipment order dates attribute." translateable="false">
-    Order dates
-  </message>
   <message name="IDS_AUTOFILL_AI_SHIPMENT_MERCHANT_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the shipment merchant name attribute." translateable="false">
     Merchant name
   </message>

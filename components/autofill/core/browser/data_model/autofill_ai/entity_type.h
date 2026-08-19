@@ -202,8 +202,6 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kShipmentCarrierDomain:
     case AttributeTypeName::kShipmentTrackingNumber:
     case AttributeTypeName::kShipmentDeliveryZipCode:
-    case AttributeTypeName::kShipmentOrderIds:
-    case AttributeTypeName::kShipmentOrderDates:
     case AttributeTypeName::kShipmentMerchantName:
     case AttributeTypeName::kShipmentProductNames:
     case AttributeTypeName::kVehiclePlateNumber:
@@ -300,8 +298,6 @@ constexpr std::optional<FieldType> AttributeType::field_type() const {
     case AttributeTypeName::kShipmentDeliveryZipCode:
       return ADDRESS_HOME_ZIP;
     case AttributeTypeName::kShipmentShippedDate:
-    case AttributeTypeName::kShipmentOrderIds:
-    case AttributeTypeName::kShipmentOrderDates:
     case AttributeTypeName::kShipmentMerchantName:
     case AttributeTypeName::kShipmentProductNames:
       return std::nullopt;

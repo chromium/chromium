@@ -337,8 +337,6 @@ TEST(AutofillAiPersonalContextConverters, ConvertShipment) {
   shipment.set_merchant_name("SuperStore");
   shipment.add_product_names("Widget A");
   shipment.add_product_names("Widget B");
-  shipment.add_associated_order_ids("ORD-001");
-  shipment.add_associated_order_ids("ORD-002");
 
   personal_context::proto::Entity entity;
   *entity.mutable_shipment() = shipment;
@@ -358,7 +356,6 @@ TEST(AutofillAiPersonalContextConverters, ConvertShipment) {
   ExpectAttributeValue(result, kShipmentDeliveryZipCode, u"94043");
   ExpectAttributeValue(result, kShipmentMerchantName, u"SuperStore");
   ExpectAttributeValue(result, kShipmentProductNames, u"Widget A, Widget B");
-  ExpectAttributeValue(result, kShipmentOrderIds, u"ORD-001, ORD-002");
 }
 
 TEST(AutofillAiPersonalContextConverters, ConvertKnownTravelerNumber) {

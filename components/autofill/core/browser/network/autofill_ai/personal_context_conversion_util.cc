@@ -313,13 +313,6 @@ EntityInstance PersonalContextShipmentToEntityInstance(
     AddStringAttribute(kShipmentProductNames, base::JoinString(products, ", "),
                        attributes);
   }
-  if (shipment.associated_order_ids_size() > 0) {
-    const std::vector<std::string> order_ids(
-        shipment.associated_order_ids().begin(),
-        shipment.associated_order_ids().end());
-    AddStringAttribute(kShipmentOrderIds, base::JoinString(order_ids, ", "),
-                       attributes);
-  }
 
   return CreateEntityInstance(EntityTypeName::kShipment, std::move(attributes),
                               entity);

@@ -231,8 +231,6 @@ sync_pb::AutofillValuableSpecifics TestShipmentSpecifics(
   *shipment->mutable_shipping_date() = StringToProtoDate(options.shipped_date);
   shipment->set_carrier_name(base::UTF16ToUTF8(options.carrier_name));
   shipment->set_carrier_domain(base::UTF16ToUTF8(options.carrier_domain));
-  shipment->add_associated_order_ids("Order 1");
-  shipment->add_associated_order_ids("Order 2");
   return specifics;
 }
 
@@ -1150,8 +1148,6 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Shipment) {
   EXPECT_EQ(
       GetStringValue(*shipment, AttributeTypeName::kShipmentCarrierDomain),
       base::UTF16ToUTF8(options.carrier_domain));
-  EXPECT_EQ(GetStringValue(*shipment, AttributeTypeName::kShipmentOrderIds),
-            "Order 1, Order 2");
 }
 
 }  // namespace

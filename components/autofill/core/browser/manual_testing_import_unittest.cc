@@ -422,8 +422,6 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_OrderAndShipment) {
           "Carrier name": "Carrier X",
           "Carrier domain": "carrierx.com",
           "Shipped date": "2025-05-15",
-          "Order ids": "12345",
-          "Order dates": "2025-05-12",
           "Merchant name": "Example Store",
           "Product names": "Widget, Gadget"
         }
@@ -456,8 +454,6 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_OrderAndShipment) {
        CreateAttribute(AttributeTypeName::kShipmentCarrierDomain,
                        "carrierx.com"),
        CreateAttribute(AttributeTypeName::kShipmentShippedDate, "2025-05-15"),
-       CreateAttribute(AttributeTypeName::kShipmentOrderIds, "12345"),
-       CreateAttribute(AttributeTypeName::kShipmentOrderDates, "2025-05-12"),
        CreateAttribute(AttributeTypeName::kShipmentMerchantName,
                        "Example Store"),
        CreateAttribute(AttributeTypeName::kShipmentProductNames,

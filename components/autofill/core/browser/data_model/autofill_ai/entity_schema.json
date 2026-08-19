@@ -139,7 +139,7 @@
   },
   {
     "name": "Shipment",
-    "attributes": [ "Tracking number", "Delivery zip code", "Carrier name", "Carrier domain", "Shipped date", "Order ids", "Order dates", "Merchant name", "Product names"],
+    "attributes": [ "Tracking number", "Delivery zip code", "Carrier name", "Carrier domain", "Shipped date", "Merchant name", "Product names"],
     "obfuscated attributes": [],
     "required fields": [
       [ "Tracking number" ]
@@ -152,7 +152,7 @@
       [ "Tracking number" ]
     ],
     "strike keys": [],
-    "disambiguation order": [ "Merchant name", "Product names", "Order dates" ],
+    "disambiguation order": [ "Merchant name", "Product names" ],
     "experiment feature": "AutofillAiShipment",
     "read only": true
   }

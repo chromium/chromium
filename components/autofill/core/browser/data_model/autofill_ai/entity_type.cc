@@ -103,12 +103,6 @@ std::u16string AttributeType::GetNameForI18n() const {
     case AttributeTypeName::kShipmentShippedDate:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SHIPMENT_SHIPPED_DATE_ATTRIBUTE_NAME);
-    case AttributeTypeName::kShipmentOrderIds:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_SHIPMENT_ORDER_IDS_ATTRIBUTE_NAME);
-    case AttributeTypeName::kShipmentOrderDates:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_SHIPMENT_ORDER_DATES_ATTRIBUTE_NAME);
     case AttributeTypeName::kShipmentMerchantName:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_SHIPMENT_MERCHANT_NAME_ATTRIBUTE_NAME);

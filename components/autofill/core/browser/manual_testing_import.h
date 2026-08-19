@@ -97,8 +97,6 @@ namespace autofill {
 //         "Carrier name": "Carrier X",
 //         "Carrier domain": "carrierx.com",
 //         "Shipped date": "2025-05-15",
-//         "Order ids": "12345",
-//         "Order dates": "2025-05-12",
 //         "Merchant name": "Example Store",
 //         "Product names": "Widget, Gadget"
 //       }
