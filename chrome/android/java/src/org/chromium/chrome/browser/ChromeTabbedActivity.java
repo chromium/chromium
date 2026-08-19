@@ -3225,6 +3225,21 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     @Override
+    protected @Nullable Bundle transformSavedInstanceStateForOnCreate(
+            @Nullable Bundle savedInstanceState) {
+        if (!ProfileManager.isInitialized()) {
+            // Pass null to Activity.onCreate() so that it doesn't automatically restore the
+            // FragmentManager state before native is initialized, as restored fragments (such as
+            // SettingsPage) may depend on native/profile and crash during onCreate(). This is the
+            // same approach used by FirstRunActivity. Fragments will be recreated when tabs are
+            // restored after asynchronous native initialization completes. The original saved
+            // instance state is still available via getSavedInstanceState().
+            return null;
+        }
+        return savedInstanceState;
+    }
+
+    @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
 
