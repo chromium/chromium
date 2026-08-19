@@ -1771,6 +1771,7 @@ if (is_android) {
       "base/platform_browser_test.h",
     ]
     public_deps = [
+      "//chrome/test/base:chrome_test_path_utils",
       "//chrome/test/base:in_process_browser_test_mixin",
       "//chrome/test/base:test_launcher_utils",
       "//components/feed:feature_list",

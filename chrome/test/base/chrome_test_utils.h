@@ -6,7 +6,6 @@
 #define CHROME_TEST_BASE_CHROME_TEST_UTILS_H_
 
 #include "build/build_config.h"
-#include "chrome/test/base/chrome_test_path_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
