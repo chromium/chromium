@@ -197,7 +197,7 @@ BASE_FEATURE(kGlicContentsInitiallyHidden,
 );
 
 BASE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If kGlicShowForSignedOut is enabled, the GiC panel can be shown to signed out
 // users to show the sign-in promotion.
