@@ -114,7 +114,7 @@ TEST_F(SubmenuViewTest, NestedSubmenuHostsChildAXTreeOnOwningMenuItem) {
                         ui::mojom::MenuSourceType::kNone);
   ASSERT_TRUE(menu_runner.IsRunning());
 
-  MenuController::GetActiveInstance()->SelectItemAndOpenSubmenu(submenu_item);
+  submenu_item->GetMenuController()->SelectItemAndOpenSubmenu(submenu_item);
   SubmenuView* child_submenu = submenu_item->GetSubmenu();
   ASSERT_NE(nullptr, child_submenu->GetWidget());
   ASSERT_NE(nullptr, child_submenu->GetWidget()->ax_manager());

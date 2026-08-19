@@ -400,8 +400,7 @@ void ClipboardHistoryMenuModelAdapter::SelectMenuItemWithCommandId(
   views::MenuItemView* selected_menu_item =
       root_view_->GetMenuItemByID(command_id);
   DCHECK(IsRunning());
-  views::MenuController::GetActiveInstance()->SelectItemAndOpenSubmenu(
-      selected_menu_item);
+  root_view_->GetMenuController()->SelectItemAndOpenSubmenu(selected_menu_item);
 }
 
 void ClipboardHistoryMenuModelAdapter::SelectMenuItemHoveredByMouse() {
@@ -413,8 +412,7 @@ void ClipboardHistoryMenuModelAdapter::SelectMenuItemHoveredByMouse() {
   if (iter == item_views_by_command_id_.cend()) {
     // If no item is hovered by mouse, cancel the selection on the child menu
     // item by selecting the root menu item.
-    views::MenuController::GetActiveInstance()->SelectItemAndOpenSubmenu(
-        root_view_);
+    root_view_->GetMenuController()->SelectItemAndOpenSubmenu(root_view_);
   } else {
     SelectMenuItemWithCommandId(iter->first);
   }
@@ -439,8 +437,7 @@ void ClipboardHistoryMenuModelAdapter::RemoveMenuItemWithCommandId(
   if (new_selected_command_id.has_value()) {
     SelectMenuItemWithCommandId(*new_selected_command_id);
   } else {
-    views::MenuController::GetActiveInstance()->SelectItemAndOpenSubmenu(
-        root_view_);
+    root_view_->GetMenuController()->SelectItemAndOpenSubmenu(root_view_);
   }
 
   auto item_view_to_delete_iter = item_views_by_command_id_.find(command_id);

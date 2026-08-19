@@ -15,7 +15,10 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/property_effects.h"
+#include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
@@ -65,9 +68,11 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
 
   ui::NativeTheme::MenuSeparatorExtraParams menu_separator;
   menu_separator.paint_rect = &paint_rect;
-  // TODO(crbug.com/402547880): ideally, make sure the separator is used within
-  // the context of a valid menu controller.
-  if (const auto* menu_controller = MenuController::GetActiveInstance()) {
+  const SubmenuView* submenu = views::AsViewClass<SubmenuView>(parent());
+  const MenuItemView* menu_item = submenu ? submenu->GetMenuItem() : nullptr;
+  const MenuController* menu_controller =
+      menu_item ? menu_item->GetMenuController() : nullptr;
+  if (menu_controller) {
     menu_separator.color_id = menu_controller->GetSeparatorColorId();
   }
   menu_separator.type = type_;

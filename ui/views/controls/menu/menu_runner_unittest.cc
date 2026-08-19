@@ -1021,7 +1021,8 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesLog) {
                     std::nullopt, histogram_name);
 
   base::RunLoop run_loop;
-  views::MenuController::GetActiveInstance()
+  menu_item_view()
+      ->GetMenuController()
       ->GetSelectedMenuItem()
       ->GetSubmenu()
       ->GetWidget()
@@ -1051,7 +1052,8 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesNotLog) {
                     ui::mojom::MenuSourceType::kNone);
 
   base::RunLoop run_loop;
-  views::MenuController::GetActiveInstance()
+  menu_item_view()
+      ->GetMenuController()
       ->GetSelectedMenuItem()
       ->GetSubmenu()
       ->GetWidget()
