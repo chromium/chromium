@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace google_apis {
 class RequestSender;
 }
@@ -29,7 +33,8 @@ class RefreshTokenWaiter;
 // Fetches calendar events using the Google Calendar public API.
 class BirchCalendarFetcher {
  public:
-  explicit BirchCalendarFetcher(Profile* profile);
+  BirchCalendarFetcher(Profile* profile,
+                       signin::IdentityManager* identity_manager);
   BirchCalendarFetcher(const BirchCalendarFetcher&) = delete;
   BirchCalendarFetcher& operator=(const BirchCalendarFetcher&) = delete;
   virtual ~BirchCalendarFetcher();

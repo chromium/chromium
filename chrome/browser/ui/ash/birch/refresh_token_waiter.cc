@@ -8,16 +8,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
-class Profile;
-
 namespace ash {
 
-RefreshTokenWaiter::RefreshTokenWaiter(Profile* profile)
-    : identity_manager_(IdentityManagerFactory::GetForProfile(profile)) {
+RefreshTokenWaiter::RefreshTokenWaiter(
+    signin::IdentityManager* identity_manager)
+    : identity_manager_(identity_manager) {
   CHECK(identity_manager_);
 }
 

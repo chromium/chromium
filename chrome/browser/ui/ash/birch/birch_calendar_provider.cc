@@ -47,13 +47,16 @@ BirchCalendarItem::ResponseStatus GetItemResponseStatus(
 
 }  // namespace
 
-BirchCalendarProvider::BirchCalendarProvider(Profile* profile)
-    : profile_(profile) {}
+BirchCalendarProvider::BirchCalendarProvider(
+    Profile* profile,
+    signin::IdentityManager* identity_manager)
+    : profile_(profile), identity_manager_(identity_manager) {}
 
 BirchCalendarProvider::~BirchCalendarProvider() = default;
 
 void BirchCalendarProvider::Initialize() {
-  fetcher_ = std::make_unique<BirchCalendarFetcher>(profile_);
+  fetcher_ =
+      std::make_unique<BirchCalendarFetcher>(profile_, identity_manager_);
 }
 
 void BirchCalendarProvider::Shutdown() {

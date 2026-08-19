@@ -29,7 +29,8 @@ class RefreshTokenWaiterTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  RefreshTokenWaiter refresh_token_waiter_{&profile_};
+  RefreshTokenWaiter refresh_token_waiter_{
+      IdentityManagerFactory::GetForProfile(&profile_)};
 };
 
 TEST_F(RefreshTokenWaiterTest, TokensAlreadyLoaded) {

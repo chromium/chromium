@@ -15,6 +15,10 @@
 
 class Profile;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace ash {
 
 class BirchCalendarFetcher;
@@ -23,7 +27,8 @@ class BirchCalendarFetcher;
 // sent to the `BirchModel` to be stored.
 class BirchCalendarProvider : public BirchDataProvider {
  public:
-  explicit BirchCalendarProvider(Profile* profile);
+  BirchCalendarProvider(Profile* profile,
+                        signin::IdentityManager* identity_manager);
   BirchCalendarProvider(const BirchCalendarProvider&) = delete;
   BirchCalendarProvider& operator=(const BirchCalendarProvider&) = delete;
   ~BirchCalendarProvider() override;
@@ -43,6 +48,7 @@ class BirchCalendarProvider : public BirchDataProvider {
       std::unique_ptr<google_apis::calendar::EventList> events);
 
   raw_ptr<Profile> profile_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<BirchCalendarFetcher> fetcher_;
   bool is_fetching_ = false;
   base::WeakPtrFactory<BirchCalendarProvider> weak_factory_{this};
