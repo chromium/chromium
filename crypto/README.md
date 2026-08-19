@@ -41,7 +41,7 @@ check the comment at the top of the header file before using them.
   or `keypair::PrivateKey::ToSubjectPublicKeyInfo()`, which return a
   [X.509][x509] SubjectPublicKeyInfo structure serialized as a byte vector. To
   unserialize public keys in this format, use
-  `keypair::PublicKey::FromPublicKeyInfo()`.
+  `keypair::PublicKey::FromSubjectPublicKeyInfo()`.
 * SubjectPublicKeyInfo and PrivateKeyInfo can represent many kinds of keys, so
   code that expects a specific kind of key must check the kind after
   deserialization.

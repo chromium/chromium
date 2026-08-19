@@ -71,11 +71,11 @@ class CRYPTO_EXPORT PrivateKey {
 
   // Importing algorithm-specific formats.
   //
-  // The following methods import public keys in algorithm-specific formats. The
-  // formats encode the private key itself, without the key type or EC curve.
-  // They are appropriate when the full key type (e.g. EC P-256 or Ed25519) is
-  // known in context. When multiple key types are needed, use PrivateKeyInfo,
-  // which also encodes the key type.
+  // The following methods import private keys in algorithm-specific formats.
+  // The formats encode the private key itself, without the key type or EC
+  // curve. They are appropriate when the full key type (e.g. EC P-256 or
+  // Ed25519) is known in context. When multiple key types are needed, use
+  // PrivateKeyInfo, which also encodes the key type.
 
   // Imports an RFC 8017-encoded RSA private key. Returns nullopt if the
   // passed-in buffer is not a valid RSA private key.

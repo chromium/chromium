@@ -79,8 +79,8 @@ CRYPTO_EXPORT void Hash(HashKind kind,
                         std::string_view data,
                         base::span<uint8_t> digest);
 
-// A streaming hasher interface. Calling Finish() resets the hash context to the
-// initial state after computing the digest.
+// A streaming hasher interface. Instances cannot be reused after Finish() is
+// called, so you need one of these per hash you want to compute.
 class CRYPTO_EXPORT Hasher {
  public:
   explicit Hasher(HashKind kind);

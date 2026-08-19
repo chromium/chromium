@@ -17,8 +17,8 @@
 
 namespace crypto::apple {
 
-// UserVerifyingKeyProviderApple is an implementation of the
-// UserVerifyingKeyProvider interface on top of Apple's Secure Enclave. Callers
+// UnexportableKeyProviderApple is an implementation of the
+// UnexportableKeyProvider interface on top of Apple's Secure Enclave. Callers
 // must provide a keychain access group when instantiating this class. This
 // means that the build must be codesigned for any of this to work.
 // https://developer.apple.com/documentation/bundleresources/entitlements/keychain-access-groups?language=objc

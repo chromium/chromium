@@ -63,8 +63,8 @@ class CRYPTO_EXPORT UserVerifyingSigningKey {
   using UserVerifyingKeySignatureCallback = base::OnceCallback<void(
       base::expected<std::vector<uint8_t>, UserVerifyingKeySigningError>)>;
 
-  // Sign invokes |callback| to provide a signature of |data|, or |nullopt| if
-  // an error occurs during signing.
+  // Sign invokes |callback| to provide a signature of |data|, or a
+  // UserVerifyingKeySigningError if signing failed.
   virtual void Sign(base::span<const uint8_t> data,
                     UserVerifyingKeySignatureCallback callback) = 0;
 

@@ -35,9 +35,14 @@ enum Algorithm {
 CRYPTO_EXPORT size_t KeySizeFor(Algorithm algorithm);
 CRYPTO_EXPORT size_t NonceSizeFor(Algorithm algorithm);
 
-// One-shot AEAD interfaces; prefer these over the stateful one unless you
-// compute multiple AEADs with the same key. These CHECK that the key and nonce
-// given are of the right size for the algorithm provided.
+// One-shot AEAD interfaces. These are a more convenient if you only need to do
+// a single AEAD operation with a given key; if you want to do more than one,
+// you should prefer the Aead class below, since it saves doing repeated setup
+// work. These functions tolerate wrong-length keys and nonces by returning
+// empty vectors (Seal) or nullopt (Open). The Open() function also signals
+// invalid ciphertext by returning nullopt.
+//
+// TODO(https://crbug.com/546013416): CHECK-fail on wrong-length key or nonce.
 CRYPTO_EXPORT std::vector<uint8_t> Seal(
     Algorithm algorithm,
     base::span<const uint8_t> key,
@@ -53,10 +58,14 @@ CRYPTO_EXPORT std::optional<std::vector<uint8_t>> Open(
 
 }  // namespace aead
 
-// This class exposes the AES-128-CTR-HMAC-SHA256 and AES_256_GCM AEAD. Note
-// that there are two versions of most methods: an historical version based
-// around |std::string_view| and a more modern version that takes |base::span|.
-// Prefer the latter in new code.
+// This class caches the setup work of creating an AEAD context, so you can
+// reuse that context between Seal() and Open() calls. It does *not* maintain
+// any sort of internal counter or ensure that IVs are unique between calls;
+// you are responsible for that.
+//
+// Note that there are two versions of most methods: an historical version
+// based around |std::string_view| and a more modern version that takes
+// |base::span|. Prefer the latter in new code.
 class CRYPTO_EXPORT Aead {
  public:
   // These allow older client code that assumed the members of this enum were
@@ -73,8 +82,10 @@ class CRYPTO_EXPORT Aead {
   // available.
   explicit Aead(AeadAlgorithm algorithm);
 
-  // This CHECKs that the passed-in key is of the right length for the passed-in
-  // algorithm.
+  // This tolerates an incorrect-length key by leaving the Aead object in an
+  // uninitialized state.
+  //
+  // TODO(https://crbug.com/546013416): make this intolerant of errors.
   Aead(AeadAlgorithm algorithm, base::span<const uint8_t> key);
 
   Aead(const Aead&) = delete;
@@ -82,7 +93,8 @@ class CRYPTO_EXPORT Aead {
   ~Aead();
 
   // These are only legal to call if the key was not supplied at construction
-  // time. The key is copied locally and stored inside |this|.
+  // time. The key is copied into the internal AEAD context, so there is no
+  // longer any need for it to outlive this object.
   //
   // If the key is of the wrong size for the specified algorithm, or the
   // receiving object has not been Init()ed, then Seal() and Open() always fail.

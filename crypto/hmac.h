@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Utility class for calculating the HMAC for a given message. We currently only
-// support SHA-1 and SHA-256 for the hash algorithm, but this can be extended
-// easily. Prefer the base::span and std::vector overloads over the
-// std::string_view and std::string overloads.
-
 #ifndef CRYPTO_HMAC_H_
 #define CRYPTO_HMAC_H_
 
