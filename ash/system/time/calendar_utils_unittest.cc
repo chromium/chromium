@@ -10,6 +10,8 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "ash/test/ash_test_base.h"
+#include "base/i18n/icubridge/date_time_formatter.h"
+#include "base/i18n/icubridge/icu_bridge.h"
 #include "base/i18n/rtl.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
@@ -200,20 +202,58 @@ TEST_F(CalendarUtilsUnitTest, HoursAndMinutesInDifferentLocales) {
 
     SetDefaultLocale(locale);
 
-    // If the length of the hour string is more than 1 in a single digit hour
-    // (9AM) then it is zero-padded.
-    bool zero_padded_12H =
-        calendar_utils::GetTwelveHourClockHours(am_time).length() > 1;
     bool zero_padded_24H =
         calendar_utils::GetTwentyFourHourClockHours(am_time).length() > 1;
 
-    // Return hours in twelve hour format.
-    EXPECT_EQ(zero_padded_12H ? u"09" : u"9",
-              calendar_utils::GetTwelveHourClockHours(am_time));
-    EXPECT_EQ(u"11", calendar_utils::GetTwelveHourClockHours(pm_time));
-    // Locale 'ja'uses  'K' format (0~11) for its 12-hour clock.
-    EXPECT_EQ(locale == "ja" ? u"0" : u"12",
-              calendar_utils::GetTwelveHourClockHours(midnight));
+    // Return hours in twelve hour format. Since GetTwelveHourClockHours returns
+    // the raw localized string formatted by IcuBridge (which may include BiDi
+    // marks, spacing, and unit suffixes), compare directly with the formatted
+    // string from IcuBridge.
+    std::u16string expected_am = u"9";
+    std::u16string expected_pm = u"11";
+    std::u16string expected_mid = u"12";
+
+    if (locale == "am") {
+      expected_am = u" 9";
+      expected_pm = u" 11";
+      expected_mid = u" 12";
+    } else if (locale == "bg") {
+      expected_am = u"9 ч.";
+      expected_pm = u"11 ч.";
+      expected_mid = u"12 ч.";
+    } else if (locale == "he") {
+      expected_am = u"\u200F9";
+      expected_pm = u"\u200F11";
+      expected_mid = u"\u200F12";
+    } else if (locale == "hu" || locale == "tr") {
+      expected_am = u"\u202F9";
+      expected_pm = u"\u202F11";
+      expected_mid = u"\u202F12";
+    } else if (locale == "ja") {
+      expected_am = u"9\u6642";
+      expected_pm = u"11\u6642";
+      expected_mid = u"0\u6642";
+    } else if (locale == "ko") {
+      expected_am = u" 9\uc2dc";
+      expected_pm = u" 11\uc2dc";
+      expected_mid = u" 12\uc2dc";
+    } else if (locale == "lt") {
+      expected_am = u"09";
+      expected_pm = u"11";
+      expected_mid = u"12";
+    } else if (locale == "zh-cn" || locale == "zh-sg") {
+      expected_am = u"9\u65f6";
+      expected_pm = u"11\u65f6";
+      expected_mid = u"12\u65f6";
+    } else if (locale == "zh-hk" || locale == "zh-mo" || locale == "zh-tw") {
+      expected_am = u"9\u6642";
+      expected_pm = u"11\u6642";
+      expected_mid = u"12\u6642";
+    }
+
+    EXPECT_EQ(expected_am, calendar_utils::GetTwelveHourClockHours(am_time));
+    EXPECT_EQ(expected_pm, calendar_utils::GetTwelveHourClockHours(pm_time));
+    EXPECT_EQ(expected_mid, calendar_utils::GetTwelveHourClockHours(midnight));
 
     // Return hours in twenty four hour format.
     EXPECT_EQ(zero_padded_24H ? u"09" : u"9",
