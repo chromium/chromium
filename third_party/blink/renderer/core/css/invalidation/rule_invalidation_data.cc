@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/invalidation/rule_invalidation_data.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
@@ -371,7 +372,8 @@ String RuleInvalidationData::ToString() const {
 
   struct Entry {
     String name;
-    const InvalidationSet* set;
+    raw_ptr<const InvalidationSet, UnprotectedInRelease | DanglingUntriaged>
+        set;
     unsigned flags;
   };
 

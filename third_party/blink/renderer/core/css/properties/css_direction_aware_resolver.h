@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_DIRECTION_AWARE_RESOLVER_H_
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -28,7 +29,9 @@ class CSSDirectionAwareResolver {
     bool Contains(CSSPropertyID) const;
 
    private:
-    base::span<const CSSProperty* const> properties_;
+    base::raw_span<const CSSProperty* const,
+                   UnprotectedInRelease | DanglingUntriaged>
+        properties_;
   };
 
  public:

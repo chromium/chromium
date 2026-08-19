@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -163,8 +164,11 @@ struct RobinHoodMap {
     bool operator==(const iterator& other) const { return pos_ == other.pos_; }
 
    private:
-    Bucket* pos_;
-    const Bucket* end_;
+    // Excluded for performance reasons: iterators are short-lived stack objects
+    // created, copied, and destroyed in tight loops during CSS rule lookup,
+    // where BRP refcount and bookkeeping overhead would be costly.
+    RAW_PTR_EXCLUSION Bucket* pos_;
+    RAW_PTR_EXCLUSION const Bucket* end_;
   };
   class const_iterator {
    public:
@@ -188,8 +192,9 @@ struct RobinHoodMap {
     }
 
    private:
-    const Bucket* pos_;
-    const Bucket* end_;
+    // Excluded for performance reasons: see iterator comment above.
+    RAW_PTR_EXCLUSION const Bucket* pos_;
+    RAW_PTR_EXCLUSION const Bucket* end_;
   };
 
   iterator begin() { return {buckets_.get(), EndBucket()}; }

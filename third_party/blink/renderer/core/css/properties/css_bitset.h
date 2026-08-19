@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 
@@ -123,7 +124,10 @@ class CORE_EXPORT CSSBitsetBase {
     }
 
    private:
-    const uint64_t* chunks_;
+    // Excluded for performance reasons: this iterator is short-lived and
+    // walks a hot bitset loop, so BRP ref-count churn would cost more than
+    // the protection is worth.
+    RAW_PTR_EXCLUSION const uint64_t* chunks_;
     // The current bit index this Iterator is pointing to. Note that this is
     // the "global" index, i.e. it has the range [0, kBits]. (It is not a local
     // index with range [0, 64]).

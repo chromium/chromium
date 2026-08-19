@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -29,7 +30,8 @@
 namespace blink {
 
 struct SameSizeAsCSSPropertyValue {
-  void* property;
+  // RAW_PTR_EXCLUSION: Only used for size comparison.
+  RAW_PTR_EXCLUSION void* property;
   uint32_t bitfields;
   Member<void*> value;
 };

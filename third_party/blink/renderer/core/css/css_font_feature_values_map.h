@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FEATURE_VALUES_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FEATURE_VALUES_MAP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/maplike.h"
@@ -69,7 +70,8 @@ class CSSFontFeatureValuesMap : public ScriptWrappable,
 
   Member<CSSFontFeatureValuesRule> parent_rule_;
   Member<StyleRuleFontFeatureValues> backing_style_rule_;
-  FontFeatureAliases* aliases_ = nullptr;
+  raw_ptr<FontFeatureAliases, UnprotectedInRelease | DanglingUntriaged>
+      aliases_ = nullptr;
 };
 
 }  // namespace blink

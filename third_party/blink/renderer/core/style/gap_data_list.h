@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_LIST_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/style/gap_data.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
@@ -329,7 +330,9 @@ class CORE_EXPORT GapDataListIterator {
     repeated_value_idx_ = 0;
   }
 
-  const GapDataVector& gap_data_list_;
+  // Excluded for performance reasons: this iterator is short-lived, so BRP
+  // ref-count churn would cost more than the protection is worth.
+  RAW_PTR_EXCLUSION const GapDataVector& gap_data_list_;
   wtf_size_t gap_count_;
 
   // Index of the current gap to which we are assigning a gap data.

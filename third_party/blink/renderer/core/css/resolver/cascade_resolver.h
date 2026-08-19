@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_CASCADE_RESOLVER_H_
 
 #include "base/containers/adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/values_equivalent.h"
 #include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -65,7 +66,8 @@ class CORE_EXPORT CascadeResolver {
         return a.HasEqualCSSPropertyName(b);
       };
       return type == o.type &&
-             base::ValuesEquivalent(property, o.property, property_name_eq) &&
+             base::ValuesEquivalent(property.get(), o.property.get(),
+                                    property_name_eq) &&
              name == o.name && function == o.function;
     }
 
@@ -73,7 +75,8 @@ class CORE_EXPORT CascadeResolver {
 
     const Type type;
     // Used for Type::kProperty.
-    const CSSProperty* property;
+    raw_ptr<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+        property;
     // Used for Type::kAttribute and Type::kLocalVariable.
     const AtomicString name;
     // Used for Type::kFunction and Type::kLocalVariable.
