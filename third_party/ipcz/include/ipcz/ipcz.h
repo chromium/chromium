@@ -487,7 +487,7 @@ typedef uint32_t IpczFeature;
 #define IPCZ_FEATURE_MEM_V2 ((IpczFeature)0xA110C002)
 
 // Options given to CreateNode() to configure the new node's behavior.
-struct IPCZ_ALIGN(8) IpczCreateNodeOptions {
+struct IpczCreateNodeOptions {
   // The exact size of this structure in bytes. Must be set accurately before
   // passing the structure to CreateNode().
   size_t size;
@@ -658,7 +658,7 @@ typedef void (*IpczApplicationObjectDestructor)(uintptr_t object,
 // Describes the contents of a box. Boxes may contain driver objects, arbitrary
 // application-defined objects, or collections of bytes and ipcz handles
 // (portals or other boxes).
-struct IPCZ_ALIGN(8) IpczBoxContents {
+struct IpczBoxContents {
   // The exact size of this structure in bytes. Must be set accurately before
   // passing the structure to Box() or Unbox().
   size_t size;
@@ -714,7 +714,7 @@ typedef uint32_t IpczPortalStatusFlags;
 
 // Information returned by QueryPortalStatus() or provided to
 // IpczTrapEventHandlers when a trap's conditions are met on a portal.
-struct IPCZ_ALIGN(8) IpczPortalStatus {
+struct IpczPortalStatus {
   // The exact size of this structure in bytes. Must be set accurately before
   // passing the structure to any functions.
   size_t size;
@@ -791,7 +791,7 @@ typedef uint32_t IpczTrapConditionFlags;
 
 // A structure describing portal conditions necessary to trigger a trap and
 // invoke its event handler.
-struct IPCZ_ALIGN(8) IpczTrapConditions {
+struct IpczTrapConditions {
   // The exact size of this structure in bytes. Must be set accurately before
   // passing the structure to Trap().
   size_t size;
@@ -810,7 +810,7 @@ struct IPCZ_ALIGN(8) IpczTrapConditions {
 
 // Structure passed to each IpczTrapEventHandler invocation with details about
 // the event.
-struct IPCZ_ALIGN(8) IpczTrapEvent {
+struct IpczTrapEvent {
   // The size of this structure in bytes. Populated by ipcz to indicate which
   // version is being provided to the handler.
   size_t size;
