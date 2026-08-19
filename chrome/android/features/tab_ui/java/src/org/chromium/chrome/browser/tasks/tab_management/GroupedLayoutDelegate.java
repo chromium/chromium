@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -101,6 +102,29 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         // Get the position of the nth tab card ignoring any other CARD_TYPE entries present in the
         // model list outside of TAB, TAB_GROUP, and ARCHIVED_TAB_GROUP.
         return mModelList.indexOfNthTabCard(tabIndex);
+    }
+
+    @Override
+    void didAddTab(Tab tab, @TabLaunchType int type) {
+        super.didAddTab(tab, type);
+
+        if (type == TabLaunchType.FROM_RESTORE) {
+            TabModel tabModel = mMediator.getCurrentTabModelChecked();
+            int filterIndex = tabModel.representativeIndexOf(tab);
+            if (filterIndex == TabList.INVALID_TAB_INDEX) return;
+            Tab currentGroupSelectedTab = tabModel.getRepresentativeTabAt(filterIndex);
+            assumeNonNull(currentGroupSelectedTab);
+
+            int tabListModelIndex = mModelList.indexOfNthTabCard(filterIndex);
+            if (mModelList.indexFromTabId(currentGroupSelectedTab.getId()) != tabListModelIndex) {
+                return;
+            }
+            mMediator.updateTab(
+                    tabListModelIndex,
+                    currentGroupSelectedTab,
+                    /* isUpdatingId= */ false,
+                    /* quickMode= */ false);
+        }
     }
 
     /**

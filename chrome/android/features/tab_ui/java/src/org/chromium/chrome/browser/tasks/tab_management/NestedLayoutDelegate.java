@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -151,6 +152,22 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         mMediator.addTabInfoToModelForTab(
                 tab, newIndex, TabModelUtils.getCurrentTabId(tabModel) == tab.getId());
         return newIndex;
+    }
+
+    @Override
+    void didAddTab(Tab tab, @TabLaunchType int type) {
+        super.didAddTab(tab, type);
+
+        if (type == TabLaunchType.FROM_RESTORE) {
+            int tabUiIndex = mModelList.indexFromTabId(tab.getId());
+            if (tabUiIndex != TabModel.INVALID_TAB_INDEX) {
+                mMediator.updateTab(
+                        tabUiIndex, tab, /* isUpdatingId= */ false, /* quickMode= */ false);
+            }
+            if (tab.getTabGroupId() != null) {
+                mMediator.updateTabGroupTitle(tab.getTabGroupId());
+            }
+        }
     }
 
     @Override

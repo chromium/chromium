@@ -1039,38 +1039,7 @@ public class TabListMediator implements TabListNotificationHandler {
                             return;
                         }
 
-                        mTabListLayoutDelegate.onTabAdded(tab);
-                        if (type == TabLaunchType.FROM_RESTORE
-                                && mLayoutType != TabListLayoutType.FLAT) {
-                            // When tab is restored after restoring stage (e.g. exiting multi-window
-                            // mode, switching between dark/light mode in incognito), we need to
-                            // update related property models.
-                            int filterIndex = tabModel.representativeIndexOf(tab);
-                            if (filterIndex == TabList.INVALID_TAB_INDEX) return;
-                            Tab currentGroupSelectedTab =
-                                    tabModel.getRepresentativeTabAt(filterIndex);
-                            assumeNonNull(currentGroupSelectedTab);
-                            // TabModel and TabListModel may be in the process of syncing up through
-                            // restoring. Examples of this situation are switching between
-                            // light/dark mode in incognito, exiting multi-window mode, etc.
-                            if (mLayoutType == TabListLayoutType.NESTED) {
-                                int tabUiIndex = mModelList.indexFromTabId(tab.getId());
-                                if (tabUiIndex != TabModel.INVALID_TAB_INDEX) {
-                                    updateTab(tabUiIndex, tab, false, false);
-                                }
-                                if (tab.getTabGroupId() != null) {
-                                    updateTabGroupTitle(tab.getTabGroupId());
-                                }
-                                return;
-                            }
-
-                            int tabListModelIndex = mModelList.indexOfNthTabCard(filterIndex);
-                            if (mModelList.indexFromTabId(currentGroupSelectedTab.getId())
-                                    != tabListModelIndex) {
-                                return;
-                            }
-                            updateTab(tabListModelIndex, currentGroupSelectedTab, false, false);
-                        }
+                        mTabListLayoutDelegate.didAddTab(tab, type);
                     }
 
                     @Override

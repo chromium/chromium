@@ -32,6 +32,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -223,6 +224,28 @@ public class GroupedLayoutDelegateUnitTest {
 
         assertEquals(0, index);
         verify(mMediator, never()).addTabCardToModel(any(), anyInt());
+    }
+
+    @Test
+    public void testDidAddTab_NormalLaunch() {
+        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
+        setupRepresentativeTab(mTab1, mTab1, 0);
+
+        mDelegate.didAddTab(mTab1, TabLaunchType.FROM_CHROME_UI);
+
+        verify(mMediator).addTabCardToModel(mTab1, 0);
+        verify(mMediator, never()).updateTab(anyInt(), any(), anyBoolean(), anyBoolean());
+    }
+
+    @Test
+    public void testDidAddTab_FromRestore_UpdatesGroupCard() {
+        createAndAddPropertyModel(TAB1_ID);
+        when(mTabModel.representativeIndexOf(mTab2)).thenReturn(0);
+        when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab1);
+
+        mDelegate.didAddTab(mTab2, TabLaunchType.FROM_RESTORE);
+
+        verify(mMediator).updateTab(0, mTab1, false, false);
     }
 
     @Test

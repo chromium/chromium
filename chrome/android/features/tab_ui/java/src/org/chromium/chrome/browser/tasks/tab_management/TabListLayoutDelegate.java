@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -83,6 +84,16 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
 
         mMediator.addTabCardToModel(tab, newIndex);
         return newIndex;
+    }
+
+    /**
+     * Handles UI model updates when a tab is added to the tab model.
+     *
+     * @param tab The {@link Tab} being added.
+     * @param type The {@link TabLaunchType} indicating how the tab was launched.
+     */
+    void didAddTab(Tab tab, @TabLaunchType int type) {
+        onTabAdded(tab);
     }
 
     /**

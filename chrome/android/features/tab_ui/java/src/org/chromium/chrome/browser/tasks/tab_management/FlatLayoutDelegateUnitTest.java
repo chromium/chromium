@@ -27,6 +27,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -124,6 +125,16 @@ public class FlatLayoutDelegateUnitTest {
 
         assertEquals(1, index);
         verify(mMediator, never()).addTabCardToModel(any(), anyInt());
+    }
+
+    @Test
+    public void testDidAddTab() {
+        addTabsToModelList(TAB1_ID);
+        when(mMediator.getRelatedTabsForId(TAB1_ID)).thenReturn(List.of(mTab1, mTab2));
+
+        mDelegate.didAddTab(mTab2, TabLaunchType.FROM_CHROME_UI);
+
+        verify(mMediator).addTabCardToModel(mTab2, 1);
     }
 
     @Test

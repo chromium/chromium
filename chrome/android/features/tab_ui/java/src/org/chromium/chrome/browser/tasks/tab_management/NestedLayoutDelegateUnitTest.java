@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -167,6 +168,28 @@ public class NestedLayoutDelegateUnitTest {
 
         assertEquals(0, index);
         verify(mMediator, never()).addTabInfoToModelForTab(any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    public void testDidAddTab_NormalLaunch() {
+        setupTabsInModel(mTab1);
+        when(mTab1.getTabGroupId()).thenReturn(null);
+
+        mDelegate.didAddTab(mTab1, TabLaunchType.FROM_CHROME_UI);
+
+        verify(mMediator).addTabInfoToModelForTab(eq(mTab1), eq(0), anyBoolean());
+        verify(mMediator, never()).updateTab(anyInt(), any(), anyBoolean(), anyBoolean());
+    }
+
+    @Test
+    public void testDidAddTab_FromRestore() {
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        addTabToModelList(TAB1_ID, TAB_GROUP_ID);
+
+        mDelegate.didAddTab(mTab1, TabLaunchType.FROM_RESTORE);
+
+        verify(mMediator).updateTab(0, mTab1, false, false);
+        verify(mMediator).updateTabGroupTitle(TAB_GROUP_ID);
     }
 
     @Test
