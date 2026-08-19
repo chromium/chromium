@@ -241,6 +241,7 @@ BASE_DECLARE_FEATURE(kNtpVision);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
 BASE_DECLARE_FEATURE(kOnDemandBackgroundTabContextCapture);
 BASE_DECLARE_FEATURE(kOnStartupWindowPolicy);
+BASE_DECLARE_FEATURE(kOneStepAimAccess);
 BASE_DECLARE_FEATURE(kOpenDownloadInPreferredApp);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);
 BASE_DECLARE_FEATURE(kOptionalButtonNoHardwareLayerKillswitch);

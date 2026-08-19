@@ -13311,6 +13311,7 @@ from previous Chrome versions.
   <int value="-418676305" label="ScanningUI:enabled"/>
   <int value="-418629709"
       label="ComputePressureRateObfuscationMitigation:enabled"/>
+  <int value="-418343210" label="OneStepAimAccess:disabled"/>
   <int value="-418041538" label="HelpAppHomePageAppArticles:disabled"/>
   <int value="-417633330" label="MessagesForAndroidInfrastructure:enabled"/>
   <int value="-416660617" label="EnforceTLS13Downgrade:disabled"/>
@@ -16613,6 +16614,7 @@ from previous Chrome versions.
   <int value="630947363" label="touch-events"/>
   <int value="631136125" label="EnableDefaultAppsMigration:enabled"/>
   <int value="631315985" label="SyncSessionOnVisibilityChanged:disabled"/>
+  <int value="631636867" label="OneStepAimAccess:enabled"/>
   <int value="632276726" label="ReadAnythingOmniboxChip:enabled"/>
   <int value="632324382"
       label="ExperimentalAccessibilityDictationListening:disabled"/>

@@ -13834,6 +13834,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableScanCardOptionWhenNoCardsSaved)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"one-step-aim-access", flag_descriptions::kOneStepAimAccessName,
+     flag_descriptions::kOneStepAimAccessDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOneStepAimAccess)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

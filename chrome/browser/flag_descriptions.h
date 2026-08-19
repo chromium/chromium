@@ -5703,6 +5703,10 @@ inline constexpr char kNtpVisionName[] = "New tab page vision";
 inline constexpr char kNtpVisionDescription[] =
     "Enable the new vision of the new tab page";
 
+inline constexpr char kOneStepAimAccessName[] = "One Step AI Mode Access";
+inline constexpr char kOneStepAimAccessDescription[] =
+    "Enables one-step entry points to AI Mode from widgets and shortcuts.";
+
 inline constexpr char kOpenDownloadInPreferredAppName[] =
     "Open downloads in preferred app";
 inline constexpr char kOpenDownloadInPreferredAppDescription[] =

@@ -644,6 +644,7 @@ public abstract class ChromeFeatureList {
     public static final String OMAHA_MIN_SDK_VERSION_ANDROID = "OmahaMinSdkVersionAndroid";
     public static final String OMNIBOX_CACHE_SUGGESTION_RESOURCES =
             "OmniboxCacheSuggestionResources";
+    public static final String ONE_STEP_AIM_ACCESS = "OneStepAimAccess";
     public static final String ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE =
             "OnDemandBackgroundTabContextCapture";
     public static final String ON_STARTUP_WINDOW_POLICY = "OnStartupWindowPolicy";
@@ -1262,6 +1263,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NTP_VISION, /* defaultValue= */ false);
     public static final CachedFlag sOnStartupWindowPolicy =
             newCachedFlag(ON_STARTUP_WINDOW_POLICY, /* defaultValue= */ true);
+    public static final CachedFlag sOneStepAimAccess =
+            newCachedFlag(ONE_STEP_AIM_ACCESS, /* defaultValue= */ false);
     public static final CachedFlag sOptionalButtonNoHardwareLayerKillswitch =
             newCachedFlag(OPTIONAL_BUTTON_NO_HARDWARE_LAYER_KILLSWITCH, /* defaultValue= */ true);
     public static final CachedFlag sPCctMinimumHeight = newCachedFlag(PCCT_MINIMUM_HEIGHT, true);
@@ -1570,6 +1573,7 @@ public abstract class ChromeFeatureList {
                     sNtpMvcRefactor,
                     sNtpVision,
                     sOnStartupWindowPolicy,
+                    sOneStepAimAccess,
                     sOptionalButtonNoHardwareLayerKillswitch,
                     sPCctMinimumHeight,
                     sPaintPreviewDemo,
