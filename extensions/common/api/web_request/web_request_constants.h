@@ -11,6 +11,12 @@
 
 namespace extensions {
 
+// Prefix for chrome.webRequest event names (e.g. "webRequest.onBeforeRequest").
+inline constexpr char kWebRequestEventPrefix[] = "webRequest.";
+
+// Prefix for <webview> event names (e.g. "webViewInternal.onBeforeRequest").
+inline constexpr char kWebViewEventPrefix[] = "webViewInternal.";
+
 // Keys of the payload dictionary that is appended as a second argument in
 // per-context dispatch.
 inline constexpr char kContextDispatchAwaitResponseKey[] = "awaitResponse";

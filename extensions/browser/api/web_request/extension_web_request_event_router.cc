@@ -99,9 +99,6 @@ enum class RequestAction {
 
 constexpr char kEventMessage[] = "webViewInternal.onMessage";
 
-constexpr char kWebRequestEventPrefix[] = "webRequest.";
-constexpr char kWebViewEventPrefix[] = "webViewInternal.";
-
 constexpr size_t kWebRequestEventPrefixLen =
     std::char_traits<char>::length(kWebRequestEventPrefix);
 constexpr size_t kWebViewEventPrefixLen =

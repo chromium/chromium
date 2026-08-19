@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 
@@ -24,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
@@ -72,6 +74,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/service_worker_test_helpers.h"
+#include "content/public/test/test_launcher.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/browsertest_util.h"
@@ -2940,6 +2943,154 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
   // After restart, `CleanUpEmptyFilteredEventLists` will have
   // deleted the empty preference.
   EXPECT_EQ(nullptr, filtered_events);
+}
+
+// Runs the PRE_ step with legacy webRequest dispatch and the main step with
+// per-context dispatch.
+class ServiceWorkerWebRequestPersistFilteredEventsToPerContextTest
+    : public ServiceWorkerWebRequestPersistFilteredEventsTest {
+ public:
+  ServiceWorkerWebRequestPersistFilteredEventsToPerContextTest() {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kWebRequestPerContextEventDispatch,
+        /*enabled=*/!content::IsPreTest());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a webRequest filter persisted in a legacy session is ignored upon
+// restart in a per-context session, and that the extension worker wakes to
+// re-register it.
+// Step 1: Persist the listener in a legacy session.
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerWebRequestPersistFilteredEventsToPerContextTest,
+    PRE_WebRequestAfterRestart) {
+  base::FilePath extension_path = test_data_dir_.AppendASCII("service_worker")
+                                      .AppendASCII("worker_based_background")
+                                      .AppendASCII("web_request_after_restart");
+  const Extension* extension =
+      LoadExtension(extension_path, {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(WaitForMessage());
+
+  // Verify the listener receives the request.
+  ResultCatcher catcher;
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL("/empty.html")));
+  EXPECT_TRUE(catcher.GetNextResult()) << message_;
+}
+
+// Step 2: Verify that the legacy registration is ignored on load, waking the
+// worker to re-register under per-context dispatch while keeping the legacy
+// entry in prefs.
+IN_PROC_BROWSER_TEST_F(
+    ServiceWorkerWebRequestPersistFilteredEventsToPerContextTest,
+    WebRequestAfterRestart) {
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+
+  // Extension load wakes the worker, which re-registers its listener.
+  EXPECT_TRUE(WaitForMessage());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return web_request_router()->GetListenerCountForTesting(
+               profile(), "webRequest.onBeforeRequest") == 1u;
+  }));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // The legacy entry remains in prefs, but is not active.
+  const base::DictValue* filtered_events =
+      ExtensionPrefs::Get(profile())->ReadPrefAsDict(
+          extension->id(), EventRouter::kFilteredServiceWorkerEvents);
+  ASSERT_TRUE(filtered_events);
+  EXPECT_TRUE(filtered_events->contains("webRequest.onBeforeRequest"));
+  const auto legacy_entry =
+      std::ranges::find_if(*filtered_events, [](const auto& entry) {
+        return EventRouter::IsSubEventName(entry.first);
+      });
+  ASSERT_NE(legacy_entry, filtered_events->end());
+  EXPECT_FALSE(EventRouter::Get(profile())->ExtensionHasEventListener(
+      extension->id(), legacy_entry->first));
+
+  // Verify the listener receives the request.
+  ResultCatcher catcher;
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL("/empty.html")));
+  EXPECT_TRUE(catcher.GetNextResult()) << message_;
+}
+
+// Runs the PRE_ step with per-context webRequest dispatch and the main step
+// with legacy dispatch.
+class ServiceWorkerWebRequestPersistFilteredEventsToLegacyTest
+    : public ServiceWorkerWebRequestPersistFilteredEventsTest {
+ public:
+  ServiceWorkerWebRequestPersistFilteredEventsToLegacyTest() {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kWebRequestPerContextEventDispatch,
+        /*enabled=*/content::IsPreTest());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a webRequest filter persisted in a per-context session is ignored
+// upon restart in a legacy session, and that the extension worker wakes to
+// re-register it.
+// Step 1: Persist the listener in a per-context session.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsToLegacyTest,
+                       PRE_WebRequestAfterRestart) {
+  base::FilePath extension_path = test_data_dir_.AppendASCII("service_worker")
+                                      .AppendASCII("worker_based_background")
+                                      .AppendASCII("web_request_after_restart");
+  const Extension* extension =
+      LoadExtension(extension_path, {.wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(WaitForMessage());
+
+  // Verify the listener receives the request.
+  ResultCatcher catcher;
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL("/empty.html")));
+  EXPECT_TRUE(catcher.GetNextResult()) << message_;
+}
+
+// Step 2: Verify that the per-context registration is ignored on load, waking
+// the worker to re-register under legacy dispatch while keeping the per-context
+// entry in prefs.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsToLegacyTest,
+                       WebRequestAfterRestart) {
+  const Extension* extension = GetSingleLoadedExtension();
+  ASSERT_TRUE(extension);
+
+  // Extension load wakes the worker, which re-registers its listener.
+  EXPECT_TRUE(WaitForMessage());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return web_request_router()->GetListenerCountForTesting(
+               profile(), "webRequest.onBeforeRequest") == 1u;
+  }));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // The per-context entry remains in prefs, but is not active.
+  const base::DictValue* filtered_events =
+      ExtensionPrefs::Get(profile())->ReadPrefAsDict(
+          extension->id(), EventRouter::kFilteredServiceWorkerEvents);
+  ASSERT_TRUE(filtered_events);
+  EXPECT_TRUE(filtered_events->contains("webRequest.onBeforeRequest"));
+  EXPECT_TRUE(std::ranges::any_of(*filtered_events, [](const auto& entry) {
+    return EventRouter::IsSubEventName(entry.first);
+  }));
+  EXPECT_FALSE(EventRouter::Get(profile())->ExtensionHasEventListener(
+      extension->id(), "webRequest.onBeforeRequest"));
+
+  // Verify the listener receives the request.
+  ResultCatcher catcher;
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL("/empty.html")));
+  EXPECT_TRUE(catcher.GetNextResult()) << message_;
 }
 
 // Tests that chrome.action.onClicked sees user gesture.

@@ -17,12 +17,14 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -41,12 +43,15 @@
 #include "extensions/browser/extension_user_activation_service.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/script_injection_tracker.h"
+#include "extensions/common/api/web_request/web_request_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature.h"
@@ -125,6 +130,46 @@ base::debug::CrashKeyString* GetEventNameCrashKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
       "ext_event_name", base::debug::CrashKeySize::Size256);
   return crash_key;
+}
+
+// Returns whether a persisted filtered registration for `event_name` matches
+// the active webRequest dispatch mode.
+//
+// When per-context dispatch is enabled, listeners use parent event names
+// (e.g. "webRequest.onBeforeRequest"). When disabled, they use sub-event
+// names (e.g. "webRequest.onBeforeRequest/s1").
+//
+// Mismatched entries remain in prefs so a flag flip or rollback is lossless;
+// they are cleaned up on the extension's next update.
+bool EventMatchesDispatchMode(std::string_view event_name) {
+  if (!event_name.starts_with(kWebRequestEventPrefix)) {
+    // Only webRequest registrations depend on the dispatch mode.
+    return true;
+  }
+  const bool parent_named = !event_name.contains('/');
+  return parent_named ==
+         base::FeatureList::IsEnabled(
+             extensions_features::kWebRequestPerContextEventDispatch);
+}
+
+// Returns a copy of `filtered_events` containing only entries that match the
+// active dispatch mode.
+base::DictValue GetFilteredEventsMatchingDispatchMode(
+    const base::DictValue& filtered_events) {
+  base::DictValue matching_events;
+  for (const auto [event_name, filters] : filtered_events) {
+    if (EventMatchesDispatchMode(event_name)) {
+      matching_events.Set(event_name, filters.Clone());
+    }
+  }
+  return matching_events;
+}
+
+// Returns whether `filtered_events` contains any webRequest registration.
+bool HasFilteredWebRequestEvents(const base::DictValue& filtered_events) {
+  return std::ranges::any_of(filtered_events, [](const auto& entry) {
+    return entry.first.starts_with(kWebRequestEventPrefix);
+  });
 }
 
 }  // namespace
@@ -229,8 +274,8 @@ std::string EventRouter::GetBaseEventName(const std::string& full_event_name) {
 
 // static
 bool EventRouter::IsSubEventName(std::string_view event) {
-  return (event.starts_with("webRequest.") ||
-          event.starts_with("webViewInternal.")) &&
+  return (event.starts_with(kWebRequestEventPrefix) ||
+          event.starts_with(kWebViewEventPrefix)) &&
          event.contains("/");
 }
 
@@ -1766,20 +1811,49 @@ void EventRouter::OnExtensionLoaded(content::BrowserContext* browser_context,
                                          /*is_for_service_worker=*/true,
                                          registered_worker_events);
 
+  // Restore only the filtered registrations that match the active dispatch
+  // mode; see `EventMatchesDispatchMode()`.
+  // TODO(crbug.com/494684626): remove once the legacy path is gone.
+  bool has_persisted_web_request_events = false;
+  bool has_matching_web_request_events = false;
   const base::DictValue* filtered_events =
       GetFilteredEvents(extension->id(), RegisteredEventType::kLazy);
   if (filtered_events) {
+    const base::DictValue matching_events =
+        GetFilteredEventsMatchingDispatchMode(*filtered_events);
+    has_persisted_web_request_events |=
+        HasFilteredWebRequestEvents(*filtered_events);
+    has_matching_web_request_events |=
+        HasFilteredWebRequestEvents(matching_events);
     listeners_.LoadFilteredLazyListeners(browser_context, extension->id(),
                                          /*is_for_service_worker=*/false,
-                                         *filtered_events);
+                                         matching_events);
   }
 
   const base::DictValue* filtered_worker_events =
       GetFilteredEvents(extension->id(), RegisteredEventType::kServiceWorker);
   if (filtered_worker_events) {
+    const base::DictValue matching_events =
+        GetFilteredEventsMatchingDispatchMode(*filtered_worker_events);
+    has_persisted_web_request_events |=
+        HasFilteredWebRequestEvents(*filtered_worker_events);
+    has_matching_web_request_events |=
+        HasFilteredWebRequestEvents(matching_events);
     listeners_.LoadFilteredLazyListeners(browser_context, extension->id(),
                                          /*is_for_service_worker=*/true,
-                                         *filtered_worker_events);
+                                         matching_events);
+  }
+
+  // If all persisted webRequest registrations were skipped due to a dispatch
+  // mode mismatch, the extension would never wake for incoming requests. Wake
+  // its lazy context once so it can re-register listeners under the active
+  // dispatch mode; subsequent loads will find valid registrations and will not
+  // wake the context again.
+  if (has_persisted_web_request_events && !has_matching_web_request_events &&
+      BackgroundInfo::HasLazyContext(extension)) {
+    const auto context_id =
+        LazyContextId::ForExtension(browser_context, extension);
+    context_id.GetTaskQueue()->AddPendingTask(context_id, base::DoNothing());
   }
 }
 
