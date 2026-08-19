@@ -876,9 +876,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_BOOKMARK_THIS_TAB));
 }
 
-// TODO(crbug.com/548631940): Failing on Linux and Mac across trybots.
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTest,
-                       DISABLED_BookmarkBarSubmenuCommandsExecuteCorrectly) {
+                       BookmarkBarSubmenuCommandsExecuteCorrectly) {
   bookmarks::test::WaitForBookmarkModelToLoad(
       BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile()));
 
