@@ -608,6 +608,9 @@ const base::FeatureParam<bool> kAskGComposeboxLensChip{
 const base::FeatureParam<bool> kAskGBlockAutoTabZeroStateSuggestions{
     &kWebUIOmniboxAskGAboutThisPage,
     "Omnibox_AskGBlockAutoTabZeroStateSuggestions", false};
+const base::FeatureParam<bool> kAskGBypassPrivacyNotice{
+    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGBypassPrivacyNotice", false};
+
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {
