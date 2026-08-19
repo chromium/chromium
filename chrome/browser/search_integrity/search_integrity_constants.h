@@ -9,15 +9,6 @@
 
 namespace search_integrity {
 
-// The number of hash functions and bits for the bloom filter. These values are
-// chosen based on the expected number of search engine entries (~200)
-// and a desired false-positive rate of ~1%.
-inline constexpr int kNumHashFunctions = 10;
-inline constexpr int kNumBits = 2875;
-
-// The name of the bloom filter file stored in the user's profile directory.
-inline constexpr char kSearchEngineAllowlistFileName[] = "engine_allowlist.bf";
-
 // The minimum word length to consider when comparing search engine names.
 inline constexpr size_t kMinWordLength = 3;
 

@@ -21,9 +21,7 @@ source_set("search_integrity") {
     "//chrome/browser:resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
-    "//chrome/common:constants",
     "//components/keyed_service/core",
-    "//components/optimization_guide/core",
     "//components/search_engines",
     "//content/public/browser",
   ]
