@@ -369,6 +369,30 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest, AnimatedBoundsChange) {
                                       testing::Ne(initial_bounds.origin())))));
 }
 
+// Regression test for unmaximizing the window to a small size while dialog is
+// visible (crbug.com/487436402).
+IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
+                       WindowBoundsChangeWhileShowingBubble) {
+  std::unique_ptr<views::Widget> widget;
+  views::Widget* browser_widget = views::Widget::GetWidgetForNativeWindow(
+      browser()->GetWindow()->GetNativeWindow());
+  RunTestSequence(
+      // Set the browser window to a wide initial size.
+      Do([&]() { browser_widget->SetBounds(gfx::Rect(0, 0, 1600, 800)); }),
+      // Show a top-level bubble dialog managed by TabDialogManager.
+      Do([&]() {
+        widget = CreateWidgetWithDialogModel();
+        GetTabDialogManager()->ShowDialog(
+            widget.get(), std::make_unique<tabs::TabDialogManager::Params>());
+      }),
+      InAnyContext(WaitForShow(kWidgetContentsViewElementId)),
+      // Move and shrink the browser window simultaneously to simulate
+      // unmaximize.
+      Do([&]() { browser_widget->SetBounds(gfx::Rect(50, 50, 400, 400)); }),
+      // Verify no crash and widget remains valid.
+      CheckResult([&]() { return widget && widget->IsVisible(); }, true));
+}
+
 class TabDialogManagerPixelTest : public DialogBrowserTest {
  public:
   TabDialogManagerPixelTest() = default;

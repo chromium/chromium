@@ -272,18 +272,24 @@ void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
   auto new_size = GetBoundsInPixels().size();
   bool size_changed = size_in_pixels_ != new_size;
   size_in_pixels_ = new_size;
+
+  // Notify size changed first to prevent running OnHostMovedInPixels callbacks
+  // with outdated size.
+  if (size_changed || current_scale != new_scale) {
+    OnHostResizedInPixels(new_size);
+    // Changing the size may destroy this.
+    if (!weak_ref) {
+      return;
+    }
+  }
+
   if (change.origin_changed) {
     OnHostMovedInPixels();
     // Changing the bounds may destroy this.
     if (!weak_ref)
       return;
   }
-  if (size_changed || current_scale != new_scale) {
-    OnHostResizedInPixels(new_size);
-    // Changing the size may destroy this.
-    if (!weak_ref)
-      return;
-  }
+
   DCHECK_GT(on_bounds_changed_recursion_depth_, 0);
   if (--on_bounds_changed_recursion_depth_ == 0) {
     observers().Notify(&WindowTreeHostObserver::OnHostDidProcessBoundsChange,
