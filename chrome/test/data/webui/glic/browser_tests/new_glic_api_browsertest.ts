@@ -173,6 +173,16 @@ class ApiTests extends ApiTestFixtureBase {
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
   }
 
+  async testOpenPinnedTabPicker() {
+    assertDefined(this.host.openPinnedTabPicker);
+    // Verifies that calling openPinnedTabPicker resolves cleanly without error
+    // on non-mobile test platforms (where it is currently a no-op).
+    // TODO(crbug.com/548681335): Augment with end-to-end assertions once Android
+    // picker mocking/delegation is testable in browser tests.
+    await this.host.openPinnedTabPicker();
+    await this.host.openPinnedTabPicker({});
+  }
+
   async testPinTabsFailsWhenDoesNotExist() {
     assertDefined(this.host.pinTabs);
     assertDefined(this.host.getPinnedTabs);

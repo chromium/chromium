@@ -866,6 +866,11 @@ class GlicWebClientHandler
     GetSharingManagerInternal().UnpinAllTabs(trigger);
   }
 
+  void OpenPinnedTabPicker(mojom::OpenPinnedTabPickerOptionsPtr options,
+                           OpenPinnedTabPickerCallback callback) override {
+    std::move(callback).Run();
+  }
+
   void CreateActorHandler(
       mojo::PendingReceiver<mojom::ActorHandler> receiver,
       mojo::PendingRemote<mojom::ActorClient> client) override {

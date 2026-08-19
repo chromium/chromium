@@ -481,6 +481,7 @@ chromium-metrics-reviews@google.com.
   <int value="101" label="GetImageBytesFromTab"/>
   <int value="102" label="ActivateTabWithUrl"/>
   <int value="103" label="UpdateActorTaskStepProgress"/>
+  <int value="104" label="OpenPinnedTabPicker"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->

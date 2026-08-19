@@ -928,6 +928,10 @@ export declare interface UnpinTabsOptions {
   unpinTrigger?: UnpinTrigger;
 }
 
+// Options for opening the pinned tab picker.
+export declare interface OpenPinnedTabPickerOptions {
+}
+
 // Holds optional parameters for `GlicBrowserHost#createActorTab`.
 export declare interface CreateActorTabOptions {
   // The tabId of the tab from which the conversation turn was initiated.

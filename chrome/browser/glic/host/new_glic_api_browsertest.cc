@@ -1635,6 +1635,11 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabs) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testOpenPinnedTabPicker) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPinTabsFailsWhenDoesNotExist) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();

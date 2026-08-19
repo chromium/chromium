@@ -1141,6 +1141,10 @@ struct UnpinTabsOptions {
   UnpinTrigger unpin_trigger;
 };
 
+// @generate glic_api
+// Options for opening the pinned tab picker.
+struct OpenPinnedTabPickerOptions {};
+
 // Interface for actor-related callbacks to the web client.
 interface ActorClient {
   // Requests the web client to show a dialog to the user to select a credential
@@ -1562,6 +1566,11 @@ interface WebClientHandler {
   // Subscribes to receive updates on pin candidates.
   SubscribeToPinCandidates(GetPinCandidatesOptions options,
                            pending_remote<PinCandidatesObserver> observer);
+
+  // Opens the browser's native pinned tab picker UI on mobile platforms
+  // (Android phone and tablet). On desktop and other non-mobile form factors,
+  // this is a no-op that resolves immediately.
+  OpenPinnedTabPicker(OpenPinnedTabPickerOptions? options) => ();
 
   // Foregrounds the given tab.
   // No-op if the tab doesn't exist or is already in the foreground.
