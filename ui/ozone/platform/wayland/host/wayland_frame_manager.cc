@@ -12,11 +12,13 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -108,7 +110,12 @@ WaylandFrame::~WaylandFrame() = default;
 
 WaylandFrameManager::WaylandFrameManager(WaylandWindow* window,
                                          WaylandConnection* connection)
-    : window_(window), connection_(connection), weak_factory_(this) {}
+    : window_(window), connection_(connection), weak_factory_(this) {
+  if (base::FeatureList::IsEnabled(
+          features::kWaylandExternalBeginFrameSource)) {
+    CreateBeginFrameSource();
+  }
+}
 
 WaylandFrameManager::~WaylandFrameManager() {
   ClearStates();
@@ -242,6 +249,21 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
       (should_skip_frame_callbacks_ ||
        !submitted_frames_.back()->wl_frame_callback)) {
     MaybeProcessPendingFrame();
+  }
+
+  // The tail call may have set up a new frame callback
+  // so re-run the check before notifying the begin frame source
+  // that a callback will not be delivered.
+  //
+  // TODO(crbug.com/537421794): OnFrameCallbackUnavailable() can be called
+  // multiple times back-to-back due to the extra calls to
+  // MaybeProcessPendingFrame(), e.g. if a frame is discarded. While these calls
+  // are idempotent, we can replace the tail call with a loop and track early
+  // exit conditions to avoid this.
+  if (begin_frame_source_ && !submitted_frames_.empty() &&
+      (should_skip_frame_callbacks_ ||
+       !submitted_frames_.back()->wl_frame_callback)) {
+    begin_frame_source_->OnFrameCallbackUnavailable();
   }
 }
 
@@ -579,8 +601,8 @@ void WaylandFrameManager::HandleFrameCallback(wl_callback* callback) {
     no_damage_frame_callback_.reset();
     TRACE_EVENT("wayland", "HandleFrameCallback (no damage)");
     auto time = base::TimeTicks::Now();
-    if (frame_timing_observer_) {
-      frame_timing_observer_->OnFrameCallback(time);
+    if (begin_frame_source_) {
+      begin_frame_source_->OnFrameCallback(time);
     }
     return;
   }
@@ -604,8 +626,8 @@ void WaylandFrameManager::HandleFrameCallback(wl_callback* callback) {
   EvaluateShouldSkipFrameCallbacks();
 
   auto time = base::TimeTicks::Now();
-  if (frame_timing_observer_) {
-    frame_timing_observer_->OnFrameCallback(time);
+  if (begin_frame_source_) {
+    begin_frame_source_->OnFrameCallback(time);
   }
 
   MaybeProcessPendingFrame();
@@ -676,8 +698,8 @@ void WaylandFrameManager::HandlePresentationFeedback(
     CHECK_NE(frame.get(), submitted_frames_.back().get());
   }
 
-  if (frame_timing_observer_) {
-    frame_timing_observer_->OnPresentationFeedback(feedback);
+  if (begin_frame_source_) {
+    begin_frame_source_->OnPresentationFeedback(feedback);
   }
 
   MaybeProcessSubmittedFrames();
@@ -1003,32 +1025,38 @@ void WaylandFrameManager::FrameCallbackTimeout() {
   EvaluateShouldSkipFrameCallbacks();
 }
 
-void WaylandFrameManager::AddFrameTimingObserver(
-    WaylandFrameTimingObserver* observer) {
-  DCHECK(!frame_timing_observer_);
-  frame_timing_observer_ = observer;
+void WaylandFrameManager::CreateBeginFrameSource() {
+  DCHECK(!begin_frame_source_);
+  begin_frame_source_ =
+      std::make_unique<BeginFrameSourceWayland>(window_, this);
 }
 
-void WaylandFrameManager::RemoveFrameTimingObserver(
-    WaylandFrameTimingObserver* observer) {
-  DCHECK_EQ(frame_timing_observer_, observer);
-  frame_timing_observer_ = nullptr;
+uint32_t WaylandFrameManager::GetRootSurfaceId() const {
+  auto* surface = window_->root_surface();
+  return surface ? surface->get_surface_id() : 0u;
 }
 
-void WaylandFrameManager::RequestFrameCallback() {
+bool WaylandFrameManager::RequestFrameCallback() {
   if (no_damage_frame_callback_ ||
       (!submitted_frames_.empty() &&
        submitted_frames_.back()->wl_frame_callback)) {
-    return;
+    // A frame callback is already pending.
+    return true;
   }
 
   auto* surface = window_->root_surface();
+  // Compositors do not send frame callbacks for unmapped surfaces.
+  if (!surface->has_buffer()) {
+    return false;
+  }
+
   static constexpr wl_callback_listener kFrameCallbackListener = {
       .done = &OnFrameDone};
   no_damage_frame_callback_.reset(wl_surface_frame(surface->surface()));
   wl_callback_add_listener(no_damage_frame_callback_.get(),
                            &kFrameCallbackListener, this);
   surface->Commit();
+  return true;
 }
 
 void WaylandFrameManager::FreezeTimeout() {
@@ -1066,6 +1094,7 @@ void WaylandFrameManager::Hide() {
     submitted_frames_.push_back(std::move(frame));
   }
   pending_frames_.clear();
+  no_damage_frame_callback_.reset();
 
   MaybeProcessSubmittedFrames();
 }
@@ -1097,6 +1126,9 @@ void WaylandFrameManager::OnWindowSuspensionChanged() {
   DVLOG(1) << __func__
            << " surface=" << window_->root_surface()->get_surface_id()
            << " is_suspended=" << window_->IsSuspended();
+  if (begin_frame_source_) {
+    begin_frame_source_->OnWindowSuspensionChanged(window_->IsSuspended());
+  }
   EvaluateShouldAckSwapWithoutCommit();
 }
 
@@ -1128,6 +1160,10 @@ void WaylandFrameManager::EvaluateShouldAckSwapWithoutCommit() {
     // It should be safe to do so as after this point frame callbacks will not
     // be used.
     MaybeProcessPendingFrame();
+
+    if (begin_frame_source_) {
+      begin_frame_source_->OnFrameCallbackUnavailable();
+    }
   }
 }
 
@@ -1155,6 +1191,10 @@ void WaylandFrameManager::EvaluateShouldSkipFrameCallbacks() {
     // It should be safe to do so as after this point frame callbacks will no
     // longer be waited on.
     MaybeProcessPendingFrame();
+
+    if (begin_frame_source_) {
+      begin_frame_source_->OnFrameCallbackUnavailable();
+    }
   }
   DVLOG_IF(1, prev_skip_frame_callbacks && !should_skip_frame_callbacks_)
       << "surface=" << window_->root_surface()->get_surface_id()
@@ -1177,6 +1217,7 @@ void WaylandFrameManager::ClearStates() {
         << "Can't perform OnChannelDestroyed() during a frame playback.";
   }
   pending_frames_.clear();
+  no_damage_frame_callback_.reset();
 
   presentation_flush_timer_.Stop();
 }

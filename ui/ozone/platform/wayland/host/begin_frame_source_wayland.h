@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -18,17 +17,9 @@ namespace ui {
 class PlatformWindow;
 class WaylandFrameManager;
 
-class WaylandFrameTimingObserver : public base::CheckedObserver {
- public:
-  virtual void OnFrameCallback(base::TimeTicks frame_time) = 0;
-  virtual void OnPresentationFeedback(
-      const gfx::PresentationFeedback& feedback) = 0;
-};
-
 // Drives begin frames from Wayland frame callbacks (wl_frame_callback) and
 // uses presentation feedback (wp_presentation_feedback) for accurate timing.
-class BeginFrameSourceWayland : public BeginFrameSourceExtension,
-                                public WaylandFrameTimingObserver {
+class BeginFrameSourceWayland : public BeginFrameSourceExtension {
  public:
   BeginFrameSourceWayland(PlatformWindow* window,
                           WaylandFrameManager* frame_manager);
@@ -43,10 +34,10 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension,
   void SetNeedsBeginFrame(bool needs) override;
   void SetPreferredInterval(base::TimeDelta interval) override;
 
-  // WaylandFrameTimingObserver implementation.
-  void OnFrameCallback(base::TimeTicks callback_time) override;
-  void OnPresentationFeedback(
-      const gfx::PresentationFeedback& feedback) override;
+  void OnFrameCallback(base::TimeTicks callback_time);
+  void OnPresentationFeedback(const gfx::PresentationFeedback& feedback);
+  void OnFrameCallbackUnavailable();
+  void OnWindowSuspensionChanged(bool suspended);
 
   static base::TimeDelta ComputeEffectiveInterval(
       base::TimeDelta preferred_interval,
@@ -55,8 +46,10 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension,
  private:
   void MaybeIssueBeginFrame();
   void OnBeginFrameAck(bool has_damage);
-  void StartFrameCallbackTimer();
-  void OnFrameCallbackTimeout();
+  // Starts/stops the frame callback recovery timer based on
+  // the current state. Called after every state transition.
+  void UpdateFrameCallbackRecoveryTimer();
+  void OnFrameCallbackRecoveryTimerFired();
 
   base::TimeDelta GetEffectiveInterval() const;
 
@@ -89,6 +82,10 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension,
   // Whether the delegate wants us to produce begin frames.
   bool needs_begin_frame_ = false;
 
+  // Whether the compositor reports the window as suspended (occluded). While
+  // suspended, missing frame callbacks are expected and not treated as stalls.
+  bool suspended_ = false;
+
   // Only one frame can be in flight at a time.
   bool frame_in_flight_ = false;
 
@@ -102,7 +99,7 @@ class BeginFrameSourceWayland : public BeginFrameSourceExtension,
   // Timers for handling edge cases with frame callbacks
 
   // Recovers from stalls if expected frame callbacks do not arrive.
-  base::OneShotTimer frame_callback_timeout_timer_;
+  base::OneShotTimer frame_callback_recovery_timer_;
   // Throttles if multiple frame callbacks arrive within the same vsync cycle.
   base::OneShotTimer deferred_issue_begin_frame_timer_;
 

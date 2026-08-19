@@ -24,9 +24,9 @@
 
 namespace ui {
 
+class BeginFrameSourceWayland;
 class WaylandBufferHandle;
 class WaylandConnection;
-class WaylandFrameTimingObserver;
 class WaylandWindow;
 class WaylandSurface;
 class WaylandSubsurface;
@@ -145,13 +145,17 @@ class WaylandFrameManager {
 
   static base::TimeDelta GetPresentationFlushTimerDurationForTesting();
 
-  void AddFrameTimingObserver(WaylandFrameTimingObserver* observer);
-  void RemoveFrameTimingObserver(WaylandFrameTimingObserver* observer);
+  // Requests a bare wl_frame_callback with no buffer commit to maintain
+  // pacing. Returns false if no frame callback can be obtained.
+  [[nodiscard]] bool RequestFrameCallback();
 
-  void RequestFrameCallback();
+  // Root surface identifier, used for tracing in the begin frame source.
+  uint32_t GetRootSurfaceId() const;
 
  private:
   friend class WaylandFrameManagerTest;
+
+  void CreateBeginFrameSource();
 
   void PlayBackFrame(std::unique_ptr<WaylandFrame> frame);
   void DiscardFrame(std::unique_ptr<WaylandFrame> frame);
@@ -298,9 +302,15 @@ class WaylandFrameManager {
 
   // Frame callback without a buffer commit, used to maintain frame pacing
   // for the begin frame source when viz has no damage.
+  //
+  // TODO(crbug.com/537421794): Unify with submitted_frames_ so there is a
+  // single source of truth for real and synthetic frame callbacks, and so the
+  // begin frame source can request the next callback unconditionally
+  // after processing the previous frame. (NB: playback should never
+  // be gated on synthetic callbacks.)
   wl::Object<wl_callback> no_damage_frame_callback_;
 
-  raw_ptr<WaylandFrameTimingObserver> frame_timing_observer_ = nullptr;
+  std::unique_ptr<BeginFrameSourceWayland> begin_frame_source_;
 
   base::WeakPtrFactory<WaylandFrameManager> weak_factory_;
 };
