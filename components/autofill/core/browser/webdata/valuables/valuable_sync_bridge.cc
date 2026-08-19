@@ -146,18 +146,26 @@ bool IsSyncWalletShoppingEnabled() {
 
 // Returns if the entity `change` should be uploaded to AUTOFILL_VALUABLE.
 bool ShouldUploadEntityChange(const EntityInstanceChange& change) {
-  switch (change.data_model().record_type()) {
-    case EntityInstance::RecordType::kLocal:
-      // Local entities are not uploaded as AUTOFILL_VALUABLE.
-      return false;
-    case EntityInstance::RecordType::kServerWallet:
-      // Only public passes are uploaded. For private passes, the
-      // AUTOFILL_VALUABLE sync bridge is read-only.
-      return GetWalletPassType(change.data_model().type(),
-                               EntityInstance::RecordType::kServerWallet) ==
-             EntityInstance::WalletPassType::kPublic;
-    case EntityInstance::RecordType::kPersonalContext:
-      // Personal context entities are not uploaded as AUTOFILL_VALUABLE.
+  // AUTOFILL_VALUABLE is only used to sync kServerWallet entities.
+  if (change.data_model().record_type() !=
+      EntityInstance::RecordType::kServerWallet) {
+    return false;
+  }
+  switch (change.data_model().type().name()) {
+    // Vehicle info is read and written through AUTOFILL_VALUABLE.
+    case EntityTypeName::kVehicle:
+      return true;
+    // Flights and shopping types are read-only (except for metadata sync).
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
+    // AUTOFILL_VALUABLE is read-only for private passes. Saves go directly
+    // through the Wallet API.
+    case EntityTypeName::kPassport:
+    case EntityTypeName::kDriversLicense:
+    case EntityTypeName::kNationalIdCard:
+    case EntityTypeName::kKnownTravelerNumber:
+    case EntityTypeName::kRedressNumber:
       return false;
   }
   NOTREACHED();

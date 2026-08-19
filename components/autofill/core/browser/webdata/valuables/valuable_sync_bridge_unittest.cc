@@ -759,6 +759,23 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_PrivatePasses) {
       EntityInstanceChange::REMOVE, passport.guid(), passport));
 }
 
+// Tests that `EntityInstanceChanged()` doesn't commit changes for shopping
+// types.
+// Since shopping types are read-only this should never happen in practice - not
+// even for metadata changes, since those are not propagated through
+// `EntityInstanceChanged()`.
+TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_Shopping) {
+  const EntityInstance order = test::GetOrderEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  const EntityInstance shipment = test::GetShipmentEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::ADD, order.guid(), order));
+  bridge().EntityInstanceChanged(EntityInstanceChange(
+      EntityInstanceChange::UPDATE, shipment.guid(), shipment));
+}
+
 // Tests that `EntityInstanceChanged()` includes unknown fields from the server.
 TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_PreservesUnknownFields) {
   ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
