@@ -95,7 +95,7 @@ class NewBadgeControllerTest : public testing::Test {
     }
     auto policy = std::make_unique<TestNewBadgePolicy>(
         kMaxShows, kMaxUsed, kShowWindow, kGracePeriod);
-    controller_ = std::make_unique<NewBadgeController>(
+    controller_ = std::make_unique<NewBadgeControllerImpl>(
         registry_, storage_service_, std::move(policy));
     controller_->InitData();
   }
@@ -106,7 +106,7 @@ class NewBadgeControllerTest : public testing::Test {
     }
     auto policy = std::make_unique<testing::StrictMock<MockNewBadgePolicy>>();
     mock_policy_ = policy.get();
-    controller_ = std::make_unique<NewBadgeController>(
+    controller_ = std::make_unique<NewBadgeControllerImpl>(
         registry_, storage_service_, std::move(policy));
     controller_->InitData();
   }

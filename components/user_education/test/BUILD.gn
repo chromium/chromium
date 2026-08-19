@@ -15,6 +15,8 @@ source_set("test") {
     "mock_anchor_element_provider.h",
     "mock_feature_promo_controller.cc",
     "mock_feature_promo_controller.h",
+    "mock_new_badge_controller.cc",
+    "mock_new_badge_controller.h",
     "mock_user_education_context.cc",
     "mock_user_education_context.h",
     "test_feature_promo_precondition.cc",

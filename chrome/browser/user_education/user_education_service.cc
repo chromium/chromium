@@ -42,7 +42,7 @@ UserEducationService::UserEducationService(Profile* profile, bool allows_promos)
   if (allows_promos) {
     new_badge_registry_ = std::make_unique<user_education::NewBadgeRegistry>();
     new_badge_controller_ =
-        std::make_unique<user_education::NewBadgeController>(
+        std::make_unique<user_education::NewBadgeControllerImpl>(
             *new_badge_registry_, *user_education_storage_service_,
             std::make_unique<user_education::NewBadgePolicy>());
   }
