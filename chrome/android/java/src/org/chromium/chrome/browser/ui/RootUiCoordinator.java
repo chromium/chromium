@@ -2469,6 +2469,7 @@ public class RootUiCoordinator
                         mActionModeControllerCallback,
                         mBackPressManager,
                         mActivity.findViewById(R.id.secondary_ui_container),
+                        mIsTablet ? mActivity.findViewById(R.id.control_container) : null,
                         mBrowserControlsManager);
 
         mFindToolbarObserver =

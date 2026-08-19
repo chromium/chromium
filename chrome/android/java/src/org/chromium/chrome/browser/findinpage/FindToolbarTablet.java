@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
 /** A tablet specific version of the {@link FindToolbar}. */
@@ -180,9 +181,9 @@ public class FindToolbarTablet extends FindToolbar implements SideUiObserver {
         ObjectAnimator nextAnimator = null;
 
         if (show && getVisibility() != View.VISIBLE && mCurrentAnimation != mAnimationEnter) {
-            View anchorView = getRootView().findViewById(R.id.control_container);
+            int anchorBottom = mAnchorView != null ? mAnchorView.getBottom() : 0;
             var lp = (MarginLayoutParams) getLayoutParams();
-            lp.topMargin = anchorView.getBottom() - mYInsetPx;
+            lp.topMargin = Math.max(0, anchorBottom - mYInsetPx);
             lp.setMarginEnd(mBaseMarginEnd + mCurrentSideUiMarginEnd);
             setLayoutParams(lp);
             nextAnimator = mAnimationEnter;
@@ -219,10 +220,7 @@ public class FindToolbarTablet extends FindToolbar implements SideUiObserver {
      */
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
-        int anchorSide =
-                getLayoutDirection() == View.LAYOUT_DIRECTION_RTL
-                        ? AnchorSide.LEFT
-                        : AnchorSide.RIGHT;
+        int anchorSide = LocalizationUtils.isLayoutRtl() ? AnchorSide.LEFT : AnchorSide.RIGHT;
         mCurrentSideUiMarginEnd =
                 sideUiSpecs.getHeightType(anchorSide) == HeightType.WEB_CONTENTS
                         ? sideUiSpecs.getWidth(anchorSide)

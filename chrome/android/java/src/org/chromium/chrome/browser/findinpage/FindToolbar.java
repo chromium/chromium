@@ -105,6 +105,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     protected ImageButton mFindPrevButton;
     protected ImageButton mFindNextButton;
     protected View mDivider;
+    protected @Nullable View mAnchorView;
 
     private @Nullable FindResultBar mResultBar;
     private FrameLayout mSecondaryUiContainer;
@@ -373,6 +374,12 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     @Initializer
     public void setSecondaryUiContainer(FrameLayout container) {
         mSecondaryUiContainer = container;
+    }
+
+    /** Sets the anchor view below which the find toolbar and result bar will be shown. */
+    @Initializer
+    public void setAnchorView(@Nullable View anchorView) {
+        mAnchorView = anchorView;
     }
 
     /** Sets the BrowserControlsStateProvider. */
@@ -802,7 +809,10 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
             if (AndroidSidePanelEnabledFn.isEnabled()) {
                 FrameLayout.LayoutParams lp =
                         (FrameLayout.LayoutParams) mResultBar.getLayoutParams();
-                lp.topMargin = mBrowserControlsStateProvider.getContentOffset();
+                lp.topMargin =
+                        mAnchorView != null
+                                ? mAnchorView.getBottom()
+                                : mBrowserControlsStateProvider.getContentOffset();
                 lp.bottomMargin =
                         BrowserControlsUtils.getBottomContentOffset(mBrowserControlsStateProvider);
                 mResultBar.setLayoutParams(lp);

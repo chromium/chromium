@@ -30,6 +30,7 @@ public class FindToolbarManager {
     private final ObserverList<FindToolbarObserver> mObservers;
     private final BackPressManager mBackPressManager;
     private final FrameLayout mSecondaryUiContainer;
+    private final @Nullable View mAnchorView;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private @Nullable SideUiStateProvider mSideUiStateProvider;
 
@@ -43,6 +44,8 @@ public class FindToolbarManager {
      *     FindToolbar}.
      * @param backPressManager The {@link BackPressManager} for intercepting back press.
      * @param secondaryUiContainer The {@link FrameLayout} that will hold the {@link FindResultBar}.
+     * @param anchorView The {@link View} below which the find toolbar and result bar are
+     *     positioned.
      * @param browserControlsStateProvider Provider for browser controls state.
      */
     public FindToolbarManager(
@@ -52,6 +55,7 @@ public class FindToolbarManager {
             ActionMode.Callback callback,
             BackPressManager backPressManager,
             FrameLayout secondaryUiContainer,
+            @Nullable View anchorView,
             BrowserControlsStateProvider browserControlsStateProvider) {
         mFindToolbarStub = findToolbarStub;
         mTabModelSelector = tabModelSelector;
@@ -59,6 +63,7 @@ public class FindToolbarManager {
         mCallback = callback;
         mBackPressManager = backPressManager;
         mSecondaryUiContainer = secondaryUiContainer;
+        mAnchorView = anchorView;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mObservers = new ObserverList<>();
     }
@@ -97,6 +102,7 @@ public class FindToolbarManager {
             mFindToolbar.setWindowAndroid(mWindowAndroid);
             mFindToolbar.setActionModeCallbackForTextEdit(mCallback);
             mFindToolbar.setSecondaryUiContainer(mSecondaryUiContainer);
+            mFindToolbar.setAnchorView(mAnchorView);
             mFindToolbar.setBrowserControlsStateProvider(mBrowserControlsStateProvider);
             mFindToolbar.setSideUiStateProvider(mSideUiStateProvider);
             mFindToolbar.setObserver(
