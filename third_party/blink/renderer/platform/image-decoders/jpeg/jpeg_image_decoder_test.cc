@@ -531,10 +531,8 @@ INSTANTIATE_TEST_SUITE_P(
             "/images/jpeg-suite/extended_arithmetic/32x32x8_ycbcr.jpg"),
         ArithmeticDecodeDifference("/images/jpeg-suite/extended_arithmetic/"
                                    "32x32x8_ycbcr_interleaved.jpg"),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/extended_huffman/32x32x12_grayscale.jpg",
-            "12-bit JPEG is supported by libjpeg-turbo header parsing but not "
-            "by zune-jpeg."),
+        NoDifference(
+            "/images/jpeg-suite/extended_huffman/32x32x12_grayscale.jpg"),
         NoDifference("/images/jpeg-suite/extended_huffman/32x32x8_cmyk.jpg"),
         NoDifference(
             "/images/jpeg-suite/extended_huffman/32x32x8_cmyk_interleaved.jpg"),
@@ -568,46 +566,23 @@ INSTANTIATE_TEST_SUITE_P(
                      "32x32x8_ycbcr_interleaved.jpg"),
         NoDifference("/images/jpeg-suite/extended_huffman/"
                      "32x32x8_ycbcr_quantization.jpg"),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/lossless_arithmetic/32x32x8_grayscale.jpg",
-            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
-            "not by zune-jpeg."),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/lossless_arithmetic/32x32x8_ycbcr.jpg",
-            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
-            "not by zune-jpeg."),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/lossless_arithmetic/"
-            "32x32x8_ycbcr_interleaved.jpg",
-            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
-            "not by zune-jpeg."),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/lossless_huffman/32x32x16_grayscale.jpg",
-            "16-bit lossless JPEG is supported by libjpeg-turbo header parsing "
-            "but not by zune-jpeg."),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/lossless_huffman/32x32x8_grayscale.jpg",
-            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
-            "not by zune-jpeg."),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/lossless_huffman/"
-            "32x32x8_grayscale_predictor1.jpg",
-            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
-            "not by zune-jpeg."),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/lossless_huffman/"
-            "32x32x8_grayscale_predictor7.jpg",
-            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
-            "not by zune-jpeg."),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/lossless_huffman/32x32x8_ycbcr.jpg",
-            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
-            "not by zune-jpeg."),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/lossless_huffman/"
-            "32x32x8_ycbcr_interleaved.jpg",
-            "Lossless JPEG is supported by libjpeg-turbo header parsing but "
-            "not by zune-jpeg."),
+        NoDifference(
+            "/images/jpeg-suite/lossless_arithmetic/32x32x8_grayscale.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/lossless_arithmetic/32x32x8_ycbcr.jpg"),
+        NoDifference("/images/jpeg-suite/lossless_arithmetic/"
+                     "32x32x8_ycbcr_interleaved.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/lossless_huffman/32x32x16_grayscale.jpg"),
+        NoDifference(
+            "/images/jpeg-suite/lossless_huffman/32x32x8_grayscale.jpg"),
+        NoDifference("/images/jpeg-suite/lossless_huffman/"
+                     "32x32x8_grayscale_predictor1.jpg"),
+        NoDifference("/images/jpeg-suite/lossless_huffman/"
+                     "32x32x8_grayscale_predictor7.jpg"),
+        NoDifference("/images/jpeg-suite/lossless_huffman/32x32x8_ycbcr.jpg"),
+        NoDifference("/images/jpeg-suite/lossless_huffman/"
+                     "32x32x8_ycbcr_interleaved.jpg"),
         ArithmeticDecodeDifference(
             "/images/jpeg-suite/progressive_arithmetic/32x32x8_grayscale.jpg"),
         ArithmeticDecodeDifference("/images/jpeg-suite/progressive_arithmetic/"
@@ -627,10 +602,8 @@ INSTANTIATE_TEST_SUITE_P(
             "/images/jpeg-suite/progressive_arithmetic/32x32x8_ycbcr.jpg"),
         ArithmeticDecodeDifference("/images/jpeg-suite/progressive_arithmetic/"
                                    "32x32x8_ycbcr_interleaved.jpg"),
-        SizeAvailabilityDifference(
-            "/images/jpeg-suite/progressive_huffman/32x32x12_grayscale.jpg",
-            "12-bit progressive JPEG is supported by libjpeg-turbo header "
-            "parsing but not by zune-jpeg."),
+        NoDifference(
+            "/images/jpeg-suite/progressive_huffman/32x32x12_grayscale.jpg"),
         LibjpegTurboDecodeFailure(
             "/images/jpeg-suite/progressive_huffman/32x32x8_cmyk.jpg",
             "Progressive CMYK JPEG: libjpeg-turbo reports decode failure in "

@@ -1,0 +1,276 @@
+From 0582521dadec42cfa839374fe7dbfd4d3a723184 Mon Sep 17 00:00:00 2001
+From: Sergio Gonzalez Martin <sergiog@microsoft.com>
+Date: Thu, 13 Aug 2026 09:42:58 +0000
+Subject: [PATCH 4/4] feat(jpeg): recognize lossless JPEG headers
+
+Integrated backport of https://github.com/etemesi254/zune-image/pull/429 on top of PR #432.
+Includes the follow-up fix to recognize lossless arithmetic headers while
+keeping pixel decoding explicitly unsupported.
+
+---
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
+@@ -653,6 +653,7 @@
+     pub fn decode(&mut self) -> Result<Vec<u8>, DecodeErrors> {
+         self.decode_headers()?;
+         self.ensure_supported_sample_precision()?;
++        self.ensure_supported_encoding()?;
+ 
+         if self.expects_dnl {
+             // Height is unknown until DNL is encountered during entropy
+@@ -1238,6 +1239,18 @@
+                 parse_start_of_frame(marker, self)?;
+                 self.is_progressive = is_progressive;
+             }
++            Marker::SOF(3 | 11) => {
++                let (marker, is_arithmetic) = match m {
++                    Marker::SOF(3) => (SOFMarkers::LosslessHuffman, false),
++                    Marker::SOF(11) => (SOFMarkers::LosslessArithmetic, true),
++                    _ => unreachable!()
++                };
++
++                trace!("Image encoding scheme =`{marker:?}`");
++                parse_start_of_frame(marker, self)?;
++                self.is_progressive = false;
++                self.is_arithmetic = is_arithmetic;
++            }
+             #[cfg(feature = "arith")]
+             Marker::SOF(9..=10) => {
+                 // choose marker
+@@ -1519,6 +1532,18 @@
+         Ok(())
+     }
+ 
++    fn ensure_supported_encoding(&self) -> Result<(), DecodeErrors> {
++        let unsupported = match self.info.sof {
++            SOFMarkers::LosslessHuffman => Some(UnsupportedSchemes::LosslessHuffman),
++            SOFMarkers::LosslessArithmetic => Some(UnsupportedSchemes::LosslessArithmetic),
++            _ => None
++        };
++        if let Some(unsupported) = unsupported {
++            return Err(DecodeErrors::Unsupported(unsupported));
++        }
++        Ok(())
++    }
++
+     /// Decode into a pre-allocated buffer
+     ///
+     /// It is an error if the buffer size is smaller than
+@@ -1718,6 +1743,7 @@
+         }
+ 
+         self.ensure_supported_sample_precision()?;
++        self.ensure_supported_encoding()?;
+ 
+         let expected_size = self.output_buffer_size().unwrap();
+ 
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/headers.rs
+@@ -162,7 +162,13 @@
+             // symbols in increasing code length
+             let mut symbols = [0; 256];
+             cursor.read_exact(&mut symbols[0..(symbols_sum as usize)])?;
+-            let table = HuffmanTable::new(&num_symbols, symbols, dc_or_ac == 0, is_progressive)?;
++            let table = if dc_or_ac == 0
++                && (!decoder.seen_sof || decoder.info.sof.is_lossless())
++            {
++                HuffmanTable::new_lossless(&num_symbols, symbols)?
++            } else {
++                HuffmanTable::new(&num_symbols, symbols, dc_or_ac == 0, is_progressive)?
++            };
+             new_tables.push((dc_or_ac, index, table));
+         }
+         if cursor.remaining() > 0 {
+@@ -329,6 +335,11 @@
+         ));
+     }
+     with_marker_body(img, |img, mut cursor| {
++        let dc_symbol_limit = if sof.is_lossless() { 16 } else { 15 };
++        for table in img.entropy_tables.dc_huffman.iter().flatten() {
++            table.validate_dc_symbol_limit(dc_symbol_limit)?;
++        }
++
+         // Body length came from a u16 length field minus 2; +2 round-trips it.
+         #[allow(clippy::cast_possible_truncation)]
+         let length = (cursor.body().len() + 2) as u16;
+@@ -336,13 +347,17 @@
+         // headers are useful to callers that inspect image metadata.
+         let dt_precision = cursor.read_u8()?;
+ 
+-        let supported_header_precision = dt_precision == 8
+-            || (dt_precision == 12
+-                && matches!(
+-                    sof,
+-                    SOFMarkers::ExtendedSequentialHuffman
+-                        | SOFMarkers::ProgressiveDctHuffman
+-                ));
++        let supported_header_precision = if sof.is_lossless() {
++            (2..=16).contains(&dt_precision)
++        } else {
++            dt_precision == 8
++                || (dt_precision == 12
++                    && matches!(
++                        sof,
++                        SOFMarkers::ExtendedSequentialHuffman
++                            | SOFMarkers::ProgressiveDctHuffman
++                    ))
++        };
+         if !supported_header_precision {
+             return Err(DecodeErrors::SofError(format!(
+                 "Unsupported {dt_precision}-bit sample precision for {sof:?}"
+@@ -432,6 +447,49 @@
+     })
+ }
+ 
++fn validate_scan_parameters(
++    is_lossless: bool,
++    precision: u8,
++    spec_start: u8,
++    spec_end: u8,
++    succ_high: u8,
++    succ_low: u8,
++) -> Result<(), DecodeErrors> {
++    if is_lossless {
++        if !(1..=7).contains(&spec_start)
++            || spec_end != 0
++            || succ_high != 0
++            || succ_low >= precision
++        {
++            return Err(DecodeErrors::SosError(format!(
++                "Invalid lossless scan parameters: predictor={spec_start}, Se={spec_end}, Ah={succ_high}, Pt={succ_low}"
++            )));
++        }
++    } else {
++        if spec_end > 63 {
++            return Err(DecodeErrors::SosError(format!(
++                "Invalid Se parameter {spec_end}, range should be 0-63"
++            )));
++        }
++        if succ_low > 13 {
++            return Err(DecodeErrors::SosError(format!(
++                "Invalid Al parameter {succ_low}, range should be 0-13"
++            )));
++        }
++    }
++    if spec_start > 63 {
++        return Err(DecodeErrors::SosError(format!(
++            "Invalid Ss parameter {spec_start}, range should be 0-63"
++        )));
++    }
++    if succ_high > 13 {
++        return Err(DecodeErrors::SosError(format!(
++            "Invalid Ah parameter {succ_high}, range should be 0-13"
++        )));
++    }
++    Ok(())
++}
++
+ /// Parse a start of scan data
+ pub(crate) fn parse_sos<T: ZByteReaderTrait>(
+     image: &mut JpegDecoder<T>
+@@ -515,26 +573,14 @@
+         let succ_high = bit_approx >> 4;
+         let succ_low = bit_approx & 0xF;
+ 
+-        if spec_end > 63 {
+-            return Err(DecodeErrors::SosError(format!(
+-                "Invalid Se parameter {spec_end}, range should be 0-63"
+-            )));
+-        }
+-        if spec_start > 63 {
+-            return Err(DecodeErrors::SosError(format!(
+-                "Invalid Ss parameter {spec_start}, range should be 0-63"
+-            )));
+-        }
+-        if succ_high > 13 {
+-            return Err(DecodeErrors::SosError(format!(
+-                "Invalid Ah parameter {succ_high}, range should be 0-13"
+-            )));
+-        }
+-        if succ_low > 13 {
+-            return Err(DecodeErrors::SosError(format!(
+-                "Invalid Al parameter {succ_low}, range should be 0-13"
+-            )));
+-        }
++        validate_scan_parameters(
++            image.info.sof.is_lossless(),
++            image.info.pixel_density,
++            spec_start,
++            spec_end,
++            succ_high,
++            succ_low,
++        )?;
+ 
+         // Commit phase: all reads and validations succeeded.
+         image.num_scans = ns;
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/huffman.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/huffman.rs
+--- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/huffman.rs
++++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/huffman.rs
+@@ -51,6 +51,29 @@
+     pub fn new(
+         codes: &[u8; 17], values: [u8; 256], is_dc: bool, is_progressive: bool
+     ) -> Result<HuffmanTable, DecodeErrors> {
++        Self::new_with_dc_symbol_limit(codes, values, is_dc, is_progressive, 15)
++    }
++
++    pub(crate) fn new_lossless(
++        codes: &[u8; 17], values: [u8; 256]
++    ) -> Result<HuffmanTable, DecodeErrors> {
++        Self::new_with_dc_symbol_limit(codes, values, true, false, 16)
++    }
++
++    pub(crate) fn validate_dc_symbol_limit(&self, limit: u8) -> Result<(), DecodeErrors> {
++        if self.values.iter().any(|&symbol| symbol > limit) {
++            return Err(DecodeErrors::HuffmanDecode("Bad Huffman Table".to_string()));
++        }
++        Ok(())
++    }
++
++    fn new_with_dc_symbol_limit(
++        codes: &[u8; 17],
++        values: [u8; 256],
++        is_dc: bool,
++        is_progressive: bool,
++        dc_symbol_limit: u8,
++    ) -> Result<HuffmanTable, DecodeErrors> {
+         let too_long_code = (i32::from(HUFF_LOOKAHEAD) + 1) << HUFF_LOOKAHEAD;
+         let mut p = HuffmanTable {
+             maxcode: [0; 18],
+@@ -60,7 +83,7 @@
+             ac_lookup: None
+         };
+ 
+-        p.make_derived_table(is_dc, is_progressive, codes)?;
++        p.make_derived_table(is_dc, is_progressive, codes, dc_symbol_limit)?;
+ 
+         Ok(p)
+     }
+@@ -87,7 +110,11 @@
+         clippy::explicit_counter_loop,
+     )]
+     fn make_derived_table(
+-        &mut self, is_dc: bool, _is_progressive: bool, bits: &[u8; 17]
++        &mut self,
++        is_dc: bool,
++        _is_progressive: bool,
++        bits: &[u8; 17],
++        dc_symbol_limit: u8,
+     ) -> Result<(), DecodeErrors> {
+         // build a list of code size
+         let mut huff_size = [0; 257];
+@@ -243,7 +270,7 @@
+             for i in 0..num_symbols {
+                 let sym = self.values[i];
+ 
+-                if sym > 15 {
++                if sym > dc_symbol_limit {
+                     return Err(DecodeErrors::HuffmanDecode("Bad Huffman Table".to_string()));
+                 }
+             }
+
+-- 
+2.43.0

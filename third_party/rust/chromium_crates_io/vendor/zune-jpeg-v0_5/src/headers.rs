@@ -162,7 +162,13 @@ where
             // symbols in increasing code length
             let mut symbols = [0; 256];
             cursor.read_exact(&mut symbols[0..(symbols_sum as usize)])?;
-            let table = HuffmanTable::new(&num_symbols, symbols, dc_or_ac == 0, is_progressive)?;
+            let table = if dc_or_ac == 0
+                && (!decoder.seen_sof || decoder.info.sof.is_lossless())
+            {
+                HuffmanTable::new_lossless(&num_symbols, symbols)?
+            } else {
+                HuffmanTable::new(&num_symbols, symbols, dc_or_ac == 0, is_progressive)?
+            };
             new_tables.push((dc_or_ac, index, table));
         }
         if cursor.remaining() > 0 {
@@ -329,16 +335,32 @@ pub(crate) fn parse_start_of_frame<T: ZByteReaderTrait>(
         ));
     }
     with_marker_body(img, |img, mut cursor| {
+        let dc_symbol_limit = if sof.is_lossless() { 16 } else { 15 };
+        for table in img.entropy_tables.dc_huffman.iter().flatten() {
+            table.validate_dc_symbol_limit(dc_symbol_limit)?;
+        }
+
         // Body length came from a u16 length field minus 2; +2 round-trips it.
         #[allow(clippy::cast_possible_truncation)]
         let length = (cursor.body().len() + 2) as u16;
-        // usually 8, but can be 12 and 16, we currently support only 8
-        // so sorry about that 12 bit images
+        // Pixel decoding remains 8-bit only, but Huffman-coded 12-bit frame
+        // headers are useful to callers that inspect image metadata.
         let dt_precision = cursor.read_u8()?;
 
-        if dt_precision != 8 {
+        let supported_header_precision = if sof.is_lossless() {
+            (2..=16).contains(&dt_precision)
+        } else {
+            dt_precision == 8
+                || (dt_precision == 12
+                    && matches!(
+                        sof,
+                        SOFMarkers::ExtendedSequentialHuffman
+                            | SOFMarkers::ProgressiveDctHuffman
+                    ))
+        };
+        if !supported_header_precision {
             return Err(DecodeErrors::SofError(format!(
-                "The library can only parse 8-bit images, the image has {dt_precision} bits of precision"
+                "Unsupported {dt_precision}-bit sample precision for {sof:?}"
             )));
         }
 
@@ -425,6 +447,49 @@ pub(crate) fn parse_start_of_frame<T: ZByteReaderTrait>(
     })
 }
 
+fn validate_scan_parameters(
+    is_lossless: bool,
+    precision: u8,
+    spec_start: u8,
+    spec_end: u8,
+    succ_high: u8,
+    succ_low: u8,
+) -> Result<(), DecodeErrors> {
+    if is_lossless {
+        if !(1..=7).contains(&spec_start)
+            || spec_end != 0
+            || succ_high != 0
+            || succ_low >= precision
+        {
+            return Err(DecodeErrors::SosError(format!(
+                "Invalid lossless scan parameters: predictor={spec_start}, Se={spec_end}, Ah={succ_high}, Pt={succ_low}"
+            )));
+        }
+    } else {
+        if spec_end > 63 {
+            return Err(DecodeErrors::SosError(format!(
+                "Invalid Se parameter {spec_end}, range should be 0-63"
+            )));
+        }
+        if succ_low > 13 {
+            return Err(DecodeErrors::SosError(format!(
+                "Invalid Al parameter {succ_low}, range should be 0-13"
+            )));
+        }
+    }
+    if spec_start > 63 {
+        return Err(DecodeErrors::SosError(format!(
+            "Invalid Ss parameter {spec_start}, range should be 0-63"
+        )));
+    }
+    if succ_high > 13 {
+        return Err(DecodeErrors::SosError(format!(
+            "Invalid Ah parameter {succ_high}, range should be 0-13"
+        )));
+    }
+    Ok(())
+}
+
 /// Parse a start of scan data
 pub(crate) fn parse_sos<T: ZByteReaderTrait>(
     image: &mut JpegDecoder<T>
@@ -508,26 +573,14 @@ pub(crate) fn parse_sos<T: ZByteReaderTrait>(
         let succ_high = bit_approx >> 4;
         let succ_low = bit_approx & 0xF;
 
-        if spec_end > 63 {
-            return Err(DecodeErrors::SosError(format!(
-                "Invalid Se parameter {spec_end}, range should be 0-63"
-            )));
-        }
-        if spec_start > 63 {
-            return Err(DecodeErrors::SosError(format!(
-                "Invalid Ss parameter {spec_start}, range should be 0-63"
-            )));
-        }
-        if succ_high > 13 {
-            return Err(DecodeErrors::SosError(format!(
-                "Invalid Ah parameter {succ_high}, range should be 0-13"
-            )));
-        }
-        if succ_low > 13 {
-            return Err(DecodeErrors::SosError(format!(
-                "Invalid Al parameter {succ_low}, range should be 0-13"
-            )));
-        }
+        validate_scan_parameters(
+            image.info.sof.is_lossless(),
+            image.info.pixel_density,
+            spec_start,
+            spec_end,
+            succ_high,
+            succ_low,
+        )?;
 
         // Commit phase: all reads and validations succeeded.
         image.num_scans = ns;

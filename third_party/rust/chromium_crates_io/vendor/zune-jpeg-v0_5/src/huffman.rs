@@ -51,6 +51,29 @@ impl HuffmanTable {
     pub fn new(
         codes: &[u8; 17], values: [u8; 256], is_dc: bool, is_progressive: bool
     ) -> Result<HuffmanTable, DecodeErrors> {
+        Self::new_with_dc_symbol_limit(codes, values, is_dc, is_progressive, 15)
+    }
+
+    pub(crate) fn new_lossless(
+        codes: &[u8; 17], values: [u8; 256]
+    ) -> Result<HuffmanTable, DecodeErrors> {
+        Self::new_with_dc_symbol_limit(codes, values, true, false, 16)
+    }
+
+    pub(crate) fn validate_dc_symbol_limit(&self, limit: u8) -> Result<(), DecodeErrors> {
+        if self.values.iter().any(|&symbol| symbol > limit) {
+            return Err(DecodeErrors::HuffmanDecode("Bad Huffman Table".to_string()));
+        }
+        Ok(())
+    }
+
+    fn new_with_dc_symbol_limit(
+        codes: &[u8; 17],
+        values: [u8; 256],
+        is_dc: bool,
+        is_progressive: bool,
+        dc_symbol_limit: u8,
+    ) -> Result<HuffmanTable, DecodeErrors> {
         let too_long_code = (i32::from(HUFF_LOOKAHEAD) + 1) << HUFF_LOOKAHEAD;
         let mut p = HuffmanTable {
             maxcode: [0; 18],
@@ -60,7 +83,7 @@ impl HuffmanTable {
             ac_lookup: None
         };
 
-        p.make_derived_table(is_dc, is_progressive, codes)?;
+        p.make_derived_table(is_dc, is_progressive, codes, dc_symbol_limit)?;
 
         Ok(p)
     }
@@ -87,7 +110,11 @@ impl HuffmanTable {
         clippy::explicit_counter_loop,
     )]
     fn make_derived_table(
-        &mut self, is_dc: bool, _is_progressive: bool, bits: &[u8; 17]
+        &mut self,
+        is_dc: bool,
+        _is_progressive: bool,
+        bits: &[u8; 17],
+        dc_symbol_limit: u8,
     ) -> Result<(), DecodeErrors> {
         // build a list of code size
         let mut huff_size = [0; 257];
@@ -243,7 +270,7 @@ impl HuffmanTable {
             for i in 0..num_symbols {
                 let sym = self.values[i];
 
-                if sym > 15 {
+                if sym > dc_symbol_limit {
                     return Err(DecodeErrors::HuffmanDecode("Bad Huffman Table".to_string()));
                 }
             }
