@@ -683,12 +683,41 @@ TEST_F(OnDeviceModelDownloadProgressManagerTest,
                                           kNormalizedDownloadProgressMax);
 }
 
-TEST_F(OnDeviceModelDownloadProgressManagerTest, UnloadableProgressBytes) {
+TEST_F(OnDeviceModelDownloadProgressManagerTest, UnloadableProgressPercent) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kAIModelUnloadableProgress,
-      {{"ai_model_unloadable_progress_bytes", "500"}});
+      {{"ai_model_unloadable_progress_percent", "10"}});
 
+  // For a 900-byte component, a 10% holdback means 100 virtual bytes (900 * 10
+  // / 90 = 100), making total virtual bytes 1000.
+  FakeComponent& component = CreateComponent("component_id", 900);
+  OnDeviceModelDownloadProgressManager manager(&component_update_service_,
+                                               {component.id()});
+
+  MockDownloadProgressObserver observer;
+  manager.AddObserver(observer.BindNewPipeAndPassRemote());
+
+  SendUpdate(component, 0);
+  // The total bytes should include the proportional 10% holdback bytes (900 +
+  // 100 = 1000).
+  observer.ExpectReceivedNormalizedUpdate(0, 1000);
+
+  // When all 900 bytes are downloaded, reported progress is 900 / 1000 (90%).
+  FastForwardBy(base::Milliseconds(51));
+  SendUpdate(component, 900);
+  observer.ExpectReceivedNormalizedUpdate(900, 1000);
+}
+
+TEST_F(OnDeviceModelDownloadProgressManagerTest,
+       UnloadableProgressPercentCustomRatio) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAIModelUnloadableProgress,
+      {{"ai_model_unloadable_progress_percent", "50"}});
+
+  // For a 1000-byte component, 50% holdback means 1000 virtual bytes (1000 * 50
+  // / 50 = 1000), making total virtual bytes 2000.
   FakeComponent& component = CreateComponent("component_id", 1000);
   OnDeviceModelDownloadProgressManager manager(&component_update_service_,
                                                {component.id()});
@@ -697,16 +726,72 @@ TEST_F(OnDeviceModelDownloadProgressManagerTest, UnloadableProgressBytes) {
   manager.AddObserver(observer.BindNewPipeAndPassRemote());
 
   SendUpdate(component, 0);
-  // The total bytes should include the extra unloadable progress bytes.
-  observer.ExpectReceivedNormalizedUpdate(0, component.total_bytes() + 500);
+  observer.ExpectReceivedNormalizedUpdate(0, 2000);
+
+  FastForwardBy(base::Milliseconds(51));
+  SendUpdate(component, 1000);
+  observer.ExpectReceivedNormalizedUpdate(1000, 2000);
 }
 
 TEST_F(OnDeviceModelDownloadProgressManagerTest,
-       UnloadableProgressBytesAddedWhenComponentAlreadyInstalled) {
+       UnloadableProgressPercentDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kAIModelUnloadableProgress,
-      {{"ai_model_unloadable_progress_bytes", "500"}});
+      {{"ai_model_unloadable_progress_percent", "10"}});
+
+  FakeComponent& component = CreateComponent("component_id", 1000);
+  OnDeviceModelDownloadProgressManager manager(
+      &component_update_service_, {component.id()},
+      /*enable_unloadable_progress=*/false);
+
+  MockDownloadProgressObserver observer;
+  manager.AddObserver(observer.BindNewPipeAndPassRemote());
+
+  SendUpdate(component, 0);
+  // The total bytes should not include unloadable progress bytes when
+  // `enable_unloadable_progress` is false.
+  observer.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+
+  FastForwardBy(base::Milliseconds(51));
+  SendUpdate(component, 500);
+  observer.ExpectReceivedNormalizedUpdate(500, component.total_bytes());
+}
+
+TEST_F(OnDeviceModelDownloadProgressManagerTest,
+       UnloadableProgressPercentInvalidParams) {
+  for (const std::string& invalid_percent : {"0", "-10", "100", "150"}) {
+    SCOPED_TRACE(invalid_percent);
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kAIModelUnloadableProgress,
+        {{"ai_model_unloadable_progress_percent", invalid_percent}});
+
+    FakeComponent& component =
+        CreateComponent("component_id_" + invalid_percent, 1000);
+    OnDeviceModelDownloadProgressManager manager(&component_update_service_,
+                                                 {component.id()});
+
+    MockDownloadProgressObserver observer;
+    manager.AddObserver(observer.BindNewPipeAndPassRemote());
+
+    SendUpdate(component, 0);
+    // Invalid percent values (<= 0 or >= 100) should fall back to 0 holdback,
+    // so total bytes is just the component's total bytes.
+    observer.ExpectReceivedNormalizedUpdate(0, component.total_bytes());
+
+    FastForwardBy(base::Milliseconds(51));
+    SendUpdate(component, 500);
+    observer.ExpectReceivedNormalizedUpdate(500, component.total_bytes());
+  }
+}
+
+TEST_F(OnDeviceModelDownloadProgressManagerTest,
+       UnloadableProgressPercentWhenComponentAlreadyInstalled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAIModelUnloadableProgress,
+      {{"ai_model_unloadable_progress_percent", "50"}});
 
   FakeComponent& component = CreateComponent("component_id", 1000);
   OnDeviceModelDownloadProgressManager manager(&component_update_service_,
@@ -716,11 +801,72 @@ TEST_F(OnDeviceModelDownloadProgressManagerTest,
   MockDownloadProgressObserver observer;
   manager.AddObserver(observer.BindNewPipeAndPassRemote());
 
-  // Only receive the unloadable progress bytes since the component is already
-  // installed.
-  observer.ExpectReceivedNormalizedUpdate(0, 500);
+  // When all components are already installed, 0 bytes need to be downloaded
+  // and the holdback is 0, so 0% and 100% are received immediately.
+  observer.ExpectReceivedNormalizedUpdate(0, kNormalizedDownloadProgressMax);
+  observer.ExpectReceivedNormalizedUpdate(kNormalizedDownloadProgressMax,
+                                          kNormalizedDownloadProgressMax);
+}
+
+TEST_F(OnDeviceModelDownloadProgressManagerTest,
+       UnloadableProgressPercentWithAlreadyInstalledComponent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAIModelUnloadableProgress,
+      {{"ai_model_unloadable_progress_percent", "10"}});
+
+  // Component 1 is already installed (600 bytes).
+  // Component 2 needs to be downloaded (900 bytes).
+  // 10% holdback on the 900 uninstalled bytes = 100 virtual bytes -> total
+  // 1000.
+  FakeComponent& component1 = CreateComponent("component_id1", 600);
+  FakeComponent& component2 = CreateComponent("component_id2", 900);
+  OnDeviceModelDownloadProgressManager manager(
+      &component_update_service_, {component1.id(), component2.id()});
+  SendUpdate(component1, component1.total_bytes());
+
+  MockDownloadProgressObserver observer;
+  manager.AddObserver(observer.BindNewPipeAndPassRemote());
+
+  SendUpdate(component2, 0);
+  observer.ExpectReceivedNormalizedUpdate(0, 1000);
+
+  // Download component2 fully (900/1000 = 90%).
   FastForwardBy(base::Milliseconds(51));
-  observer.ExpectNoUpdate();
+  SendUpdate(component2, 900);
+  observer.ExpectReceivedNormalizedUpdate(900, 1000);
+}
+
+TEST_F(OnDeviceModelDownloadProgressManagerTest,
+       UnloadableProgressPercentMultipleComponents) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAIModelUnloadableProgress,
+      {{"ai_model_unloadable_progress_percent", "10"}});
+
+  // Two components: 600 bytes and 300 bytes -> total 900 bytes.
+  // 10% holdback = 100 virtual bytes -> total virtual bytes = 1000.
+  FakeComponent& component1 = CreateComponent("component_id1", 600);
+  FakeComponent& component2 = CreateComponent("component_id2", 300);
+  OnDeviceModelDownloadProgressManager manager(
+      &component_update_service_, {component1.id(), component2.id()});
+
+  MockDownloadProgressObserver observer;
+  manager.AddObserver(observer.BindNewPipeAndPassRemote());
+
+  SendUpdate(component1, 0);
+  SendUpdate(component2, 0);
+  observer.ExpectReceivedNormalizedUpdate(0, 1000);
+
+  // Download component1 fully (600/1000 = 60%).
+  FastForwardBy(base::Milliseconds(51));
+  SendUpdate(component1, 600);
+  observer.ExpectReceivedNormalizedUpdate(600, 1000);
+
+  // Download component2 fully (900/1000 = 90%).
+  FastForwardBy(base::Milliseconds(51));
+  SendUpdate(component2, 300);
+  observer.ExpectReceivedNormalizedUpdate(900, 1000);
 }
 
 TEST_F(OnDeviceModelDownloadProgressManagerTest,

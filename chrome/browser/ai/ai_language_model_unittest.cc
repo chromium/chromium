@@ -277,7 +277,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
           {{"ai_language_model_output_buffer", "100"}}},
          {optimization_guide::features::kOptimizationGuideOnDeviceModel, {}},
          {optimization_guide::features::kAIModelUnloadableProgress,
-          {{"ai_model_unloadable_progress_bytes", "0"}}}},
+          {{"ai_model_unloadable_progress_percent", "0"}}}},
         {});
   }
 

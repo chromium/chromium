@@ -11,14 +11,12 @@ namespace optimization_guide {
 namespace features {
 BASE_FEATURE(kAIModelUnloadableProgress, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The number of bytes that won't load when reporting downloadprogress until
-// creation is completed.
+// The percentage of progress that will not be loadable during download until
+// creation/loading is completed.
 //
-// Calculated to occupy 10% of the loading bar when the model (currently
-// 3556255776 bytes) isn't downloaded.
-const base::FeatureParam<int> kAIModelUnloadableProgressBytes{
-    &kAIModelUnloadableProgress, "ai_model_unloadable_progress_bytes",
-    3556255776 / 9};
+// Defaults to 10% of the overall progress bar.
+const base::FeatureParam<int> kAIModelUnloadableProgressPercent{
+    &kAIModelUnloadableProgress, "ai_model_unloadable_progress_percent", 10};
 }  // namespace features
 
 int64_t NormalizeModelDownloadProgress(int64_t bytes_so_far,
@@ -83,15 +81,10 @@ OnDeviceModelDownloadProgressManager::OnDeviceModelDownloadProgressManager(
     component_updater::ComponentUpdateService* component_update_service,
     base::flat_set<std::string> component_ids,
     bool enable_unloadable_progress)
-    : component_update_service_(component_update_service) {
+    : enable_unloadable_progress_(enable_unloadable_progress),
+      component_update_service_(component_update_service) {
   for (const auto& component_id : component_ids) {
     components_progress_.emplace(component_id, DownloadProgressInfo());
-  }
-
-  if (enable_unloadable_progress &&
-      base::FeatureList::IsEnabled(features::kAIModelUnloadableProgress)) {
-    never_load_component_bytes_ =
-        features::kAIModelUnloadableProgressBytes.Get();
   }
 }
 
@@ -117,12 +110,14 @@ void OnDeviceModelDownloadProgressManager::AddObserver(
 
   if (components_total_bytes_.has_value()) {
     int64_t components_leftover_bytes = CalculateLeftoverBytes();
-    // If |components_leftover_bytes| is equal to |never_load_component_bytes_|,
+    int64_t never_load_component_bytes =
+        CalculateNeverLoadBytes(components_total_bytes_.value());
+    // If |components_leftover_bytes| is equal to |never_load_component_bytes|,
     // all components are already downloaded. Will send a 0 progress update as
     // ComponentUpdateService won't send any updates for already installed
     // components.
     bool is_all_components_downloaded =
-        components_leftover_bytes == never_load_component_bytes_;
+        components_leftover_bytes == never_load_component_bytes;
 
     reporter->SetTotalBytes(components_leftover_bytes);
     if (is_all_components_downloaded) {
@@ -242,6 +237,22 @@ int64_t OnDeviceModelDownloadProgressManager::GetDownloadedBytes() const {
   return total_downloaded_bytes;
 }
 
+int64_t OnDeviceModelDownloadProgressManager::CalculateNeverLoadBytes(
+    int64_t total_bytes) const {
+  if (!enable_unloadable_progress_ || total_bytes <= 0 ||
+      !base::FeatureList::IsEnabled(features::kAIModelUnloadableProgress)) {
+    return 0;
+  }
+  int percent = features::kAIModelUnloadableProgressPercent.Get();
+  if (percent <= 0 || percent >= 100) {
+    return 0;
+  }
+  // Reserve `percent`% of total progress for the unloadable phase.
+  // The download phase occupies (100 - percent)%, so:
+  // holdback_bytes = total_bytes * percent / (100 - percent).
+  return total_bytes * percent / (100 - percent);
+}
+
 int64_t OnDeviceModelDownloadProgressManager::CalculateLeftoverBytes() const {
   CHECK(components_total_bytes_.has_value());
 
@@ -251,7 +262,8 @@ int64_t OnDeviceModelDownloadProgressManager::CalculateLeftoverBytes() const {
 
   components_total_bytes -= downloaded_bytes;
   // Add never load component bytes.
-  components_total_bytes += never_load_component_bytes_;
+  components_total_bytes +=
+      CalculateNeverLoadBytes(components_total_bytes_.value());
   return components_total_bytes;
 }
 

@@ -27,10 +27,10 @@ namespace optimization_guide {
 
 namespace features {
 
-// When enabled some amount of bytes will not be loadable when creating one of
-// the built-in AI APIs.
+// When enabled, some percentage of progress will not be loadable during
+// download to reserve progress for model creation/loading.
 BASE_DECLARE_FEATURE(kAIModelUnloadableProgress);
-extern const base::FeatureParam<int> kAIModelUnloadableProgressBytes;
+extern const base::FeatureParam<int> kAIModelUnloadableProgressPercent;
 
 }  // namespace features
 
@@ -130,8 +130,15 @@ class OnDeviceModelDownloadProgressManager
   int64_t GetDownloadedBytes() const;
   int64_t CalculateLeftoverBytes() const;
 
+  // Calculates the number of virtual "holdback" bytes to append to
+  // `total_bytes` so that downloading all `total_bytes` only reaches
+  // (100 - kAIModelUnloadableProgressPercent)%, reserving the remaining
+  // percentage for the model loading/creation phase. Returns 0 if unloadable
+  // progress is disabled, total_bytes <= 0, or parameters are invalid.
+  int64_t CalculateNeverLoadBytes(int64_t total_bytes) const;
+
   std::optional<int64_t> components_total_bytes_;
-  int64_t never_load_component_bytes_ = 0;
+  bool enable_unloadable_progress_ = false;
 
   raw_ptr<component_updater::ComponentUpdateService> component_update_service_;
   base::flat_set<std::unique_ptr<Reporter>, base::UniquePtrComparator>
