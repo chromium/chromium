@@ -104,9 +104,6 @@ class StateStore {
   // The profile to which this state corresponds.
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  // A read-only view on the profile's incidents_sent preference.
-  raw_ptr<const base::DictValue, DanglingUntriaged> incidents_sent_ = nullptr;
-
 #if DCHECK_IS_ON()
   // True when a Transaction instance is outstanding.
   bool has_transaction_;
