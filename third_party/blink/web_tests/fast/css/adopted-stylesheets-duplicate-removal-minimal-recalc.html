@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="../../resources/js-test.js"></script>
+<div id="changed"></div>
+<div id="unchanged"></div>
+<script>
+description("Removing a duplicated adopted stylesheet does not invalidate a trailing sheet.");
+
+const oldLeading = new CSSStyleSheet();
+oldLeading.replaceSync("#changed { color: red; }");
+const newLeading = new CSSStyleSheet();
+newLeading.replaceSync("#changed { color: green; }");
+const duplicated = new CSSStyleSheet();
+duplicated.replaceSync("#changed { background: blue; }");
+const trailing = new CSSStyleSheet();
+trailing.replaceSync("#unchanged { color: blue; }");
+
+document.adoptedStyleSheets = [
+    oldLeading, duplicated, duplicated, trailing
+];
+document.documentElement.offsetTop;
+
+document.adoptedStyleSheets = [newLeading, duplicated, trailing];
+
+if (window.internals) {
+    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "1");
+}
+</script>
