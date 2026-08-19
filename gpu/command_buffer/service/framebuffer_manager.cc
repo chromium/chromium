@@ -294,7 +294,8 @@ class TextureAttachment
   }
 
   size_t GetSignatureSize(TextureManager* texture_manager) const override {
-    return texture_manager->GetSignatureSize();
+    return texture_manager->GetSignatureSize() + sizeof(samples_) +
+           sizeof(layer_);
   }
 
   void AddToSignature(TextureManager* texture_manager,
@@ -302,6 +303,9 @@ class TextureAttachment
     DCHECK(signature);
     texture_manager->AddToSignature(
         texture_ref_.get(), target_, level_, signature);
+    signature->append(reinterpret_cast<const char*>(&samples_),
+                      sizeof(samples_));
+    signature->append(reinterpret_cast<const char*>(&layer_), sizeof(layer_));
   }
 
   bool FormsFeedbackLoop(TextureRef* texture,

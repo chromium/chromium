@@ -1668,6 +1668,90 @@ TEST_F(FramebufferInfoTest, GetStatus) {
   framebuffer_->GetStatus(texture_manager_.get(), GL_READ_FRAMEBUFFER);
 }
 
+TEST_F(FramebufferInfoTest, GetStatusTextureSamples) {
+  const GLuint kTextureClientId = 33;
+  const GLuint kTextureServiceId = 333;
+  const GLenum kTarget = GL_TEXTURE_2D;
+  const GLint kLevel = 0;
+  const GLint kSamples0 = 0;
+  const GLint kSamples1 = 4;
+
+  texture_manager_->CreateTexture(kTextureClientId, kTextureServiceId);
+  scoped_refptr<TextureRef> texture(
+      texture_manager_->GetTexture(kTextureClientId));
+  ASSERT_TRUE(texture.get() != nullptr);
+  texture_manager_->SetTarget(texture.get(), kTarget);
+
+  framebuffer_->AttachTexture(GL_COLOR_ATTACHMENT0, texture.get(), kTarget,
+                              kLevel, kSamples0);
+  EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(GL_FRAMEBUFFER))
+      .WillOnce(Return(GL_FRAMEBUFFER_COMPLETE))
+      .RetiresOnSaturation();
+  framebuffer_->GetStatus(texture_manager_.get(), GL_FRAMEBUFFER);
+
+  // Check a second call for the same attachment does not call anything.
+  framebuffer_->GetStatus(texture_manager_.get(), GL_FRAMEBUFFER);
+
+  // Check that re-attaching with a different sample count calls
+  // CheckFramebufferStatus.
+  framebuffer_->AttachTexture(GL_COLOR_ATTACHMENT0, texture.get(), kTarget,
+                              kLevel, kSamples1);
+  EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(GL_FRAMEBUFFER))
+      .WillOnce(Return(GL_FRAMEBUFFER_COMPLETE))
+      .RetiresOnSaturation();
+  framebuffer_->GetStatus(texture_manager_.get(), GL_FRAMEBUFFER);
+
+  // Check a second call does not call anything.
+  framebuffer_->GetStatus(texture_manager_.get(), GL_FRAMEBUFFER);
+
+  // Check putting it back does not call CheckFramebufferStatus.
+  framebuffer_->AttachTexture(GL_COLOR_ATTACHMENT0, texture.get(), kTarget,
+                              kLevel, kSamples0);
+  framebuffer_->GetStatus(texture_manager_.get(), GL_FRAMEBUFFER);
+}
+
+TEST_F(FramebufferInfoTest, GetStatusTextureLayer) {
+  const GLuint kTextureClientId = 33;
+  const GLuint kTextureServiceId = 333;
+  const GLenum kTarget = GL_TEXTURE_2D_ARRAY;
+  const GLint kLevel = 0;
+  const GLint kLayer0 = 0;
+  const GLint kLayer1 = 1;
+
+  texture_manager_->CreateTexture(kTextureClientId, kTextureServiceId);
+  scoped_refptr<TextureRef> texture(
+      texture_manager_->GetTexture(kTextureClientId));
+  ASSERT_TRUE(texture.get() != nullptr);
+  texture_manager_->SetTarget(texture.get(), kTarget);
+
+  framebuffer_->AttachTextureLayer(GL_COLOR_ATTACHMENT0, texture.get(), kTarget,
+                                   kLevel, kLayer0);
+  EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(GL_FRAMEBUFFER))
+      .WillOnce(Return(GL_FRAMEBUFFER_COMPLETE))
+      .RetiresOnSaturation();
+  framebuffer_->GetStatus(texture_manager_.get(), GL_FRAMEBUFFER);
+
+  // Check a second call for the same attachment does not call anything.
+  framebuffer_->GetStatus(texture_manager_.get(), GL_FRAMEBUFFER);
+
+  // Check that re-attaching with a different layer calls
+  // CheckFramebufferStatus.
+  framebuffer_->AttachTextureLayer(GL_COLOR_ATTACHMENT0, texture.get(), kTarget,
+                                   kLevel, kLayer1);
+  EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(GL_FRAMEBUFFER))
+      .WillOnce(Return(GL_FRAMEBUFFER_COMPLETE))
+      .RetiresOnSaturation();
+  framebuffer_->GetStatus(texture_manager_.get(), GL_FRAMEBUFFER);
+
+  // Check a second call does not call anything.
+  framebuffer_->GetStatus(texture_manager_.get(), GL_FRAMEBUFFER);
+
+  // Check putting it back does not call CheckFramebufferStatus.
+  framebuffer_->AttachTextureLayer(GL_COLOR_ATTACHMENT0, texture.get(), kTarget,
+                                   kLevel, kLayer0);
+  framebuffer_->GetStatus(texture_manager_.get(), GL_FRAMEBUFFER);
+}
+
 TEST_F(FramebufferInfoES3Test, DifferentDimensions) {
   const GLuint kRenderbufferClient1Id = 33;
   const GLuint kRenderbufferService1Id = 333;
