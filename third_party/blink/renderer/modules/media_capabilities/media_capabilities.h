@@ -90,10 +90,10 @@ class MODULES_EXPORT MediaCapabilities final
                            WebrtcDecodePowerEfficientIsSmooth);
   FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
                            WebrtcDecodeOverridePowerEfficientIsSmooth);
-  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
-                           WebrtcEncodePowerEfficientIsSmooth);
-  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
-                           WebrtcEncodeOverridePowerEfficientIsSmooth);
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesWebrtcTests,
+                           EncodePowerEfficientIsSmooth);
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesWebrtcTests,
+                           EncodeOverridePowerEfficientIsSmooth);
 
   // Lazily binds to the VideoDecodePerfHistory service. Returns whether it was
   // successful. Returns true if it was already bound.

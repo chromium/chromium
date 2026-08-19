@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -80,6 +81,15 @@ using CodecSupport = webrtc::VideoEncoderFactory::CodecSupport;
 
 class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
  public:
+  static std::unique_ptr<WebrtcEncodingInfoHandler> CreateHandler(
+      std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
+      webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory,
+      media::GpuVideoAcceleratorFactories* gpu_factories = nullptr) {
+    return base::WrapUnique(new WebrtcEncodingInfoHandler(
+        std::move(video_encoder_factory), std::move(audio_encoder_factory),
+        gpu_factories));
+  }
+
   void VerifyEncodingInfo(
       const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
       const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
@@ -115,7 +125,8 @@ class WebrtcEncodingInfoHandlerTests : public ::testing::Test {
           .Times(::testing::AtMost(1));
     }
     WebrtcEncodingInfoHandler encoding_info_handler(
-        std::move(video_encoder_factory), audio_encoder_factory);
+        std::move(video_encoder_factory), audio_encoder_factory,
+        /*gpu_factories=*/nullptr);
     MediaCapabilitiesEncodingInfoCallback encoding_info_callback;
 
     encoding_info_handler.EncodingInfo(
@@ -190,6 +201,78 @@ TEST_F(WebrtcEncodingInfoHandlerTests, SupportedVideoUnsupportedAudio) {
       kAudioFormatFoo, kVideoFormatVp9,
       /*video_scalability_mode=*/String(),
       CodecSupport{/*is_supported=*/false, /*is_power_efficient=*/false});
+}
+
+TEST_F(WebrtcEncodingInfoHandlerTests, GpuEncoderSupportKnown) {
+  auto video_encoder_factory = std::make_unique<MockVideoEncoderFactory>();
+  webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory =
+      blink::CreateWebrtcAudioEncoderFactory();
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
+
+  EXPECT_CALL(mock_gpu_factories, IsEncoderSupportKnown())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*video_encoder_factory, QueryCodecSupport)
+      .WillOnce(testing::Return(
+          CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true}));
+
+  std::unique_ptr<WebrtcEncodingInfoHandler> encoding_info_handler =
+      CreateHandler(std::move(video_encoder_factory), audio_encoder_factory,
+                    &mock_gpu_factories);
+  MediaCapabilitiesEncodingInfoCallback encoding_info_callback;
+
+  encoding_info_handler->EncodingInfo(
+      /*sdp_audio_format=*/std::nullopt, kVideoFormatVp9,
+      /*video_scalability_mode=*/String(),
+      /*video_resolution=*/std::nullopt,
+      base::BindOnce(
+          &MediaCapabilitiesEncodingInfoCallback::OnWebrtcEncodingInfoSupport,
+          base::Unretained(&encoding_info_callback)));
+
+  EXPECT_TRUE(encoding_info_callback.IsCalled());
+  EXPECT_TRUE(encoding_info_callback.IsSuccess());
+  EXPECT_TRUE(encoding_info_callback.IsSupported());
+  EXPECT_TRUE(encoding_info_callback.IsPowerEfficient());
+}
+
+TEST_F(WebrtcEncodingInfoHandlerTests, GpuEncoderSupportDeferred) {
+  auto video_encoder_factory = std::make_unique<MockVideoEncoderFactory>();
+  webrtc::scoped_refptr<webrtc::AudioEncoderFactory> audio_encoder_factory =
+      blink::CreateWebrtcAudioEncoderFactory();
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
+
+  base::OnceClosure notify_cb;
+  EXPECT_CALL(mock_gpu_factories, IsEncoderSupportKnown())
+      .WillOnce(testing::Return(false))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_gpu_factories, NotifyEncoderSupportKnown(testing::_))
+      .WillOnce(
+          [&notify_cb](base::OnceClosure cb) { notify_cb = std::move(cb); });
+  EXPECT_CALL(*video_encoder_factory, QueryCodecSupport)
+      .WillOnce(testing::Return(
+          CodecSupport{/*is_supported=*/true, /*is_power_efficient=*/true}));
+
+  std::unique_ptr<WebrtcEncodingInfoHandler> encoding_info_handler =
+      CreateHandler(std::move(video_encoder_factory), audio_encoder_factory,
+                    &mock_gpu_factories);
+  MediaCapabilitiesEncodingInfoCallback encoding_info_callback;
+
+  encoding_info_handler->EncodingInfo(
+      /*sdp_audio_format=*/std::nullopt, kVideoFormatVp9,
+      /*video_scalability_mode=*/String(),
+      /*video_resolution=*/std::nullopt,
+      base::BindOnce(
+          &MediaCapabilitiesEncodingInfoCallback::OnWebrtcEncodingInfoSupport,
+          base::Unretained(&encoding_info_callback)));
+
+  EXPECT_FALSE(encoding_info_callback.IsCalled());
+  EXPECT_FALSE(notify_cb.is_null());
+
+  std::move(notify_cb).Run();
+
+  EXPECT_TRUE(encoding_info_callback.IsCalled());
+  EXPECT_TRUE(encoding_info_callback.IsSuccess());
+  EXPECT_TRUE(encoding_info_callback.IsSupported());
+  EXPECT_TRUE(encoding_info_callback.IsPowerEfficient());
 }
 
 }  // namespace blink
