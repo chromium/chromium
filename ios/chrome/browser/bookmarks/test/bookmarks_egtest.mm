@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_coordinator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -986,6 +987,41 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   // Close Bookmarks by tapping the Done/Exit button.
   [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
       performAction:grey_tap()];
+}
+
+// Tests that swiping down on BookmarksFolderEditorViewController when opened
+// directly from Bookmarks Home dismisses it cleanly and stops its coordinator.
+- (void)testSwipeDownToDismissFolderEditorStandalone {
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Long-press on folder and tap "Edit".
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TappableBookmarkNodeWithLabel(
+                                   @"Folder 1")]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
+      performAction:grey_tap()];
+
+  // Verify Folder Editor is visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarkFolderEditViewContainerIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Swipe down to dismiss Folder Editor.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarkFolderEditViewContainerIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Verify Folder Editor is dismissed.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kBookmarkFolderEditViewContainerIdentifier)];
 }
 
 @end

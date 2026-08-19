@@ -4,9 +4,7 @@
 
 #import "ios/chrome/browser/bookmarks/folder_editor/coordinator/bookmarks_folder_editor_coordinator.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/check.h"
-#import "base/check_op.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -274,7 +272,6 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  CHECK(_navigationController, base::NotFatalUntil::M152);
   _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
