@@ -132,6 +132,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/trusted_vault/command_line_switches.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -944,13 +945,24 @@ void SyncTest::TearDownOnMainThread() {
   // around like profile_to_*_map_ - those should probably be cleaned up too.
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Closing all browsers created by this test. The calls here block until
-  // they are closed. Other browsers created outside SyncTest setup should be
+  // Closing all browsers created by this test in parallel rather than
+  // sequentially. Other browsers created outside SyncTest setup should be
   // closed by the creator of that browser.
+  std::vector<std::unique_ptr<ui_test_utils::BrowserDestroyedObserver>>
+      browser_observers;
+  browser_observers.reserve(browsers_.size());
+
   for (Browser* browser : browsers_) {
     if (browser) {
-      CloseBrowserSynchronously(browser);
+      browser_observers.push_back(
+          std::make_unique<ui_test_utils::BrowserDestroyedObserver>(browser));
+      CloseBrowserAsynchronously(browser);
     }
+  }
+
+  for (const std::unique_ptr<ui_test_utils::BrowserDestroyedObserver>&
+           observer : browser_observers) {
+    observer->Wait();
   }
   browsers_.clear();
 #endif
