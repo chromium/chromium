@@ -128,12 +128,7 @@ message AutofillFetchSpecification {
 
 // Instructions for retrieving local Autofill data.
 message AutofillFetchPlan {
-  // The list of target local data categories to fetch (e.g.
-  // [MEMORY_DATA_TYPE_FLIGHT_RESERVATION]).
-  repeated MemoryDataType data_types = 1 [deprecated = true];
-
-  // Keywords extracted from the query to filter local database results.
-  repeated string filter_keywords = 2 [deprecated = true];
+  reserved 1, 2;
 
   // The list of AutofillFetchSpecifications to use for fetching local data.
   // Repeated to allow either fetching multiple data types or a single data type
