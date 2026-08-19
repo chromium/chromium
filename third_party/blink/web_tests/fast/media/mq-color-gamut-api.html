@@ -11,25 +11,25 @@ test(function() {
   assert_false(window.matchMedia("(color-gamut: foobar)").matches);
 }, "Test that unknown values are rejected");
 
-async_test(t => {
-  assert_true('testRunner' in window);
+function setColorProfile(name) {
+  return new Promise(resolve => testRunner.setColorProfile(name, resolve));
+}
 
-  testRunner.setColorProfile('sRGB', t.step_func(() => {
-    assert_true(window.matchMedia("(color-gamut: srgb)").matches);
-    assert_false(window.matchMedia("(color-gamut: p3)").matches);
-    assert_false(window.matchMedia("(color-gamut: rec2020)").matches);
+const testCases = [
+  { profile: 'sRGB', expected: { srgb: true, p3: false, rec2020: false } },
+  { profile: 'colorSpin', expected: { srgb: true, p3: false, rec2020: false } },
+  { profile: 'adobeRGB', expected: { srgb: true, p3: false, rec2020: false } },
+  { profile: 'almostP3', expected: { srgb: true, p3: true, rec2020: false } },
+  { profile: 'almostRec2020', expected: { srgb: true, p3: true, rec2020: true } },
+];
 
-    testRunner.setColorProfile('colorSpin', t.step_func(() => {
-      assert_true(window.matchMedia("(color-gamut: srgb)").matches);
-      assert_false(window.matchMedia("(color-gamut: p3)").matches);
-      assert_false(window.matchMedia("(color-gamut: rec2020)").matches);
-
-      testRunner.setColorProfile('adobeRGB', t.step_func_done(() => {
-        assert_true(window.matchMedia("(color-gamut: srgb)").matches);
-        assert_true(window.matchMedia("(color-gamut: p3)").matches);
-        assert_false(window.matchMedia("(color-gamut: rec2020)").matches);
-      }));
-    }));
-  }));
-}, "Test API with various color profile");
+for (const { profile, expected } of testCases) {
+  promise_test(async () => {
+    assert_implements('testRunner' in window, 'testRunner is required');
+    await setColorProfile(profile);
+    assert_equals(window.matchMedia("(color-gamut: srgb)").matches, expected.srgb, "srgb matches");
+    assert_equals(window.matchMedia("(color-gamut: p3)").matches, expected.p3, "p3 matches");
+    assert_equals(window.matchMedia("(color-gamut: rec2020)").matches, expected.rec2020, "rec2020 matches");
+  }, `Test color-gamut with ${profile} profile`);
+}
 </script>

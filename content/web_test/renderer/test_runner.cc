@@ -57,6 +57,7 @@
 #include "printing/print_settings.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "services/network/public/mojom/cors.mojom.h"
+#include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -93,6 +94,7 @@
 #include "third_party/blink/public/web/web_view_observer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -2019,15 +2021,46 @@ void TestRunnerBindings::SetColorProfile(const std::string& name,
     return;
   }
 
+  auto mix_primaries = [](const SkColorSpacePrimaries& a,
+                          const SkColorSpacePrimaries& b,
+                          float alpha) -> SkColorSpacePrimaries {
+    return {
+        alpha * a.fRX + (1.f - alpha) * b.fRX,
+        alpha * a.fRY + (1.f - alpha) * b.fRY,
+        alpha * a.fGX + (1.f - alpha) * b.fGX,
+        alpha * a.fGY + (1.f - alpha) * b.fGY,
+        alpha * a.fBX + (1.f - alpha) * b.fBX,
+        alpha * a.fBY + (1.f - alpha) * b.fBY,
+        alpha * a.fWX + (1.f - alpha) * b.fWX,
+        alpha * a.fWY + (1.f - alpha) * b.fWY,
+    };
+  };
+
   gfx::ColorSpace color_space;
   if (name == "genericRGB") {
-    color_space = gfx::ICCProfileForTestingGenericRGB().GetColorSpace();
+    constexpr skcms_TransferFunction kTransferFn1Dot801 = {
+        1.801f, 1.f, 0.f, 0.f, 0.f, 0.f, 0.f};
+    color_space = gfx::ColorSpace(SkNamedPrimariesExt::kAppleGenericRGB,
+                                  kTransferFn1Dot801);
   } else if (name == "sRGB") {
     color_space = gfx::ColorSpace::CreateSRGB();
   } else if (name == "colorSpin") {
     color_space = gfx::ICCProfileForTestingColorSpin().GetColorSpace();
   } else if (name == "adobeRGB") {
-    color_space = gfx::ICCProfileForTestingAdobeRGB().GetColorSpace();
+    color_space = gfx::ColorSpace(SkNamedPrimariesExt::kA98RGB,
+                                  SkNamedTransferFn::k2Dot2);
+  } else if (name == "almostP3") {
+    // Almost-P3 is a mix between sRGB and P3, biased towards P3 enough to cover
+    // 90% of the P3 gamut.
+    SkColorSpacePrimaries almost_p3 = mix_primaries(
+        SkNamedPrimariesExt::kSRGB, SkNamedPrimariesExt::kP3, 0.25f);
+    color_space = gfx::ColorSpace(almost_p3, SkNamedTransferFn::kSRGB);
+  } else if (name == "almostRec2020") {
+    // Almost-Rec2020 is a mix between P3 and Rec2020, biased towards Rec2020
+    // enough to cover 90% of the Rec2020 gamut.
+    SkColorSpacePrimaries almost_rec2020 = mix_primaries(
+        SkNamedPrimariesExt::kP3, SkNamedPrimaries::kRec2020, 0.25f);
+    color_space = gfx::ColorSpace(almost_rec2020, SkNamedTransferFn::kSRGB);
   }
   GetWebFrame()->View()->SetDeviceColorSpaceForTesting(color_space);
 

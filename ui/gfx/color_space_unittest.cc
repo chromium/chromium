@@ -11,7 +11,9 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "skia/ext/skcolorspace_primaries.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/skia_color_space_util.h"
 
@@ -241,6 +243,33 @@ TEST(ColorSpace, ConversionToAndFromSkColorSpace) {
     EXPECT_TRUE(SkColorSpace::Equals(
         sk_color_spaces[i].get(), from_sk_color_space.ToSkColorSpace().get()));
   }
+}
+
+TEST(ColorSpace, FromPrimariesAndTransferFn) {
+  // Creating with standard sRGB primaries and transfer function produces sRGB.
+  ColorSpace srgb(SkNamedPrimariesExt::kSRGB, SkNamedTransferFn::kSRGB);
+  EXPECT_EQ(srgb, ColorSpace::CreateSRGB());
+  EXPECT_EQ(srgb.GetPrimaryID(), ColorSpace::PrimaryID::BT709);
+  EXPECT_EQ(srgb.GetTransferID(), ColorSpace::TransferID::SRGB);
+
+  // Creating with Display P3 primaries and sRGB transfer function produces
+  // Display P3.
+  ColorSpace p3(SkNamedPrimariesExt::kP3, SkNamedTransferFn::kSRGB);
+  EXPECT_EQ(p3, ColorSpace::CreateDisplayP3D65());
+  EXPECT_EQ(p3.GetPrimaryID(), ColorSpace::PrimaryID::P3);
+  EXPECT_EQ(p3.GetTransferID(), ColorSpace::TransferID::SRGB);
+
+  // Creating with custom primaries.
+  ColorSpace custom(SkNamedPrimariesExt::kWideGamutColorSpin,
+                    SkNamedTransferFn::kSRGB);
+  EXPECT_TRUE(custom.IsValid());
+  EXPECT_EQ(custom.GetPrimaryID(),
+            ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN);
+  EXPECT_EQ(custom.GetTransferID(), ColorSpace::TransferID::SRGB);
+
+  // Creating with invalid primaries produces an invalid ColorSpace.
+  ColorSpace invalid(SkNamedPrimariesExt::kInvalid, SkNamedTransferFn::kSRGB);
+  EXPECT_FALSE(invalid.IsValid());
 }
 
 TEST(ColorSpace, PQAndHLGToSkColorSpace) {

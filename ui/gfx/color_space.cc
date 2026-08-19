@@ -148,6 +148,20 @@ ColorSpace::ColorSpace(PrimaryID primaries,
   }
 }
 
+ColorSpace::ColorSpace(const SkColorSpacePrimaries& primaries,
+                       const skcms_TransferFunction& fn)
+    : ColorSpace(PrimaryID::INVALID,
+                 TransferID::INVALID,
+                 MatrixID::RGB,
+                 RangeID::FULL) {
+  skcms_Matrix3x3 to_XYZD50;
+  if (!primaries.toXYZD50(&to_XYZD50)) {
+    return;
+  }
+  SetCustomPrimaries(to_XYZD50);
+  SetCustomTransferFunction(fn, /*is_hdr=*/false);
+}
+
 ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
     : ColorSpace(PrimaryID::INVALID,
                  TransferID::INVALID,

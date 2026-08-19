@@ -1128,23 +1128,13 @@ static bool ColorGamutMediaFeatureEval(const MediaQueryExpValue& value,
   ColorSpaceGamut gamut = media_values.ColorGamut();
 
   switch (gamut) {
-    case ColorSpaceGamut::kUnknown:
-    case ColorSpaceGamut::kLessThanNTSC:
-    case ColorSpaceGamut::NTSC:
     case ColorSpaceGamut::SRGB:
       return value.Id() == CSSValueID::kSRGB;
-    case ColorSpaceGamut::kAlmostP3:
     case ColorSpaceGamut::P3:
-    case ColorSpaceGamut::kAdobeRGB:
-    case ColorSpaceGamut::kWide:
       return value.Id() == CSSValueID::kSRGB || value.Id() == CSSValueID::kP3;
     case ColorSpaceGamut::BT2020:
-    case ColorSpaceGamut::kProPhoto:
-    case ColorSpaceGamut::kUltraWide:
       return value.Id() == CSSValueID::kSRGB || value.Id() == CSSValueID::kP3 ||
              value.Id() == CSSValueID::kRec2020;
-    case ColorSpaceGamut::kEnd:
-      NOTREACHED();
   }
 
   NOTREACHED();
