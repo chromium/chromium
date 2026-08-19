@@ -59,3 +59,10 @@ svg {
   border: 2px solid
       var(--customize-chrome-check-mark-wrapper-background) !important;
 }
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  :host #checkMark {
+    fill: CanvasText;
+  }
+}
