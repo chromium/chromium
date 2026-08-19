@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.tab_ui;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -23,6 +25,16 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 /** Utility methods for TabSwitcher related actions. */
 @NullMarked
 public class TabSwitcherUtils {
+    /**
+     * Returns whether the Grid Tab Switcher should be disabled. True when the
+     * DisableGridTabSwitcher feature flag is enabled on Desktop Android.
+     *
+     * TODO(crbug.com/545634112): This may also be considered for tablets behind a different flag.
+     */
+    public static boolean isGridTabSwitcherDisabled() {
+        return ChromeFeatureList.sDisableGridTabSwitcher.isEnabled() && DeviceInfo.isDesktop();
+    }
+
     /**
      * A method to navigate to tab switcher.
      *

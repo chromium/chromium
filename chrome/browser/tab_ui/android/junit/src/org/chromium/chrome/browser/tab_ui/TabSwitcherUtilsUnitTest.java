@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -13,6 +15,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
 import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID1;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,8 +27,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -65,6 +72,11 @@ public class TabSwitcherUtilsUnitTest {
         when(mTab.getId()).thenReturn(TAB_ID_1);
 
         when(mLayoutManager.isLayoutVisible(LayoutType.HUB)).thenReturn(true);
+    }
+
+    @After
+    public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
     }
 
     @Test
@@ -149,5 +161,25 @@ public class TabSwitcherUtilsUnitTest {
 
         verifyNoInteractions(mTabGroupUiActionHandler);
         verify(mRequestOpenTabGroupDialog).onResult(TAB_ID_1);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testIsGridTabSwitcherDisabled_featureDisabled_returnsFalse() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertFalse(TabSwitcherUtils.isGridTabSwitcherDisabled());
+
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(TabSwitcherUtils.isGridTabSwitcherDisabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testIsGridTabSwitcherDisabled_featureEnabled_desktopOnly() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertTrue(TabSwitcherUtils.isGridTabSwitcherDisabled());
+
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(TabSwitcherUtils.isGridTabSwitcherDisabled());
     }
 }

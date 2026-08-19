@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -37,6 +38,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -518,6 +520,7 @@ public class ToolbarManagerUnitTest {
 
     @After
     public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
         mToolbarManager.destroy();
         mActivityController.close();
     }
@@ -1231,5 +1234,17 @@ public class ToolbarManagerUnitTest {
 
         when(bridgeMock.getEntryPointDisplayReason(any(), any())).thenReturn(null);
         assertFalse(mToolbarManager.isSendTabToSelfAvailable(JUnitTestGURLs.EXAMPLE_URL));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DISABLE_GRID_TAB_SWITCHER)
+    public void testCreateTabSwitcherLongClickListener_disabledOnDesktop() throws Exception {
+        DeviceInfo.setIsDesktopForTesting(true);
+        Method method =
+                ToolbarManager.class.getDeclaredMethod(
+                        "createTabSwitcherLongClickListener", Profile.class, Runnable.class);
+        method.setAccessible(true);
+        Object listener = method.invoke(mToolbarManager, mProfile, mOpenGridTabSwitcherHandler);
+        assertNull(listener);
     }
 }

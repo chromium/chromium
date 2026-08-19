@@ -149,7 +149,7 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
      */
     public void initializeWithNative(
             OnClickListener onClickListener,
-            OnLongClickListener onLongClickListener,
+            @Nullable OnLongClickListener onLongClickListener,
             MonotonicObservableSupplier<Integer> tabCountSupplier,
             @Nullable NonNullObservableSupplier<Integer> archivedTabCountSupplier,
             NonNullObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,

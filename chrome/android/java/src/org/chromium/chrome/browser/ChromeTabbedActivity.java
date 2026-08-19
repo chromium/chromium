@@ -1441,6 +1441,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     private void onTabSwitcherClicked() {
+        assert !TabSwitcherUtils.isGridTabSwitcherDisabled()
+                : "Tab switcher button clicked when GTS is disabled.";
+
         Profile profile = mTabModelProfileSupplier.get();
         if (profile != null) {
             TrackerFactory.getTrackerForProfile(profile)
@@ -5144,7 +5147,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     private void showOverview() {
-        if (mLayoutManager == null) return;
+        if (mLayoutManager == null || TabSwitcherUtils.isGridTabSwitcherDisabled()) return;
 
         if (isInOverviewMode()) {
             if (didFinishNativeInitialization()) {

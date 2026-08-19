@@ -156,6 +156,7 @@ import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.OverridableTabCount;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -2730,7 +2731,11 @@ public class ToolbarManager
                             archivedTabCountSupplier,
                             mLayoutStateProviderSupplier,
                             () -> openGridTabSwitcherHandler.run(),
-                            v -> tabSwitcherLongClickListener.onLongClick(v),
+                            v -> {
+                                if (tabSwitcherLongClickListener != null) {
+                                    tabSwitcherLongClickListener.onLongClick(v);
+                                }
+                            },
                             () -> TabArchiveSettings.setIphShownThisSession(true),
                             () -> TabArchiveSettings.setIphShownThisSession(false));
         }
@@ -4009,8 +4014,11 @@ public class ToolbarManager
         return mIsTablet ? mAppThemeColorProvider : getAdjustedToolbarThemeColorProvider();
     }
 
-    private OnLongClickListener createTabSwitcherLongClickListener(
+    private @Nullable OnLongClickListener createTabSwitcherLongClickListener(
             Profile profile, Runnable openGridTabSwitcherHandler) {
+        if (TabSwitcherUtils.isGridTabSwitcherDisabled()) {
+            return null;
+        }
         assert openGridTabSwitcherHandler != null;
         return TabSwitcherActionMenuCoordinator.createOnLongClickListener(
                 menuItemId -> mAppMenuDelegate.onOptionsItemSelected(menuItemId, null),
