@@ -362,6 +362,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
 
 TEST_F(EmailVerifierDelegateTest, TokenSharedSuccess) {
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   FormStructure* form = SetUpValidForm();
 
   SetUpVerificationExpectations(*form);
@@ -375,6 +376,13 @@ TEST_F(EmailVerifierDelegateTest, TokenSharedSuccess) {
       EvpAutofillFlowResult::kTokenSentToRenderer, 1);
   histogram_tester.ExpectBucketCount("Blink.Evp.Autofill.FormSubmitted", true,
                                      0);
+  EXPECT_EQ(
+      0u,
+      ukm_recorder
+          .GetEntriesByName(
+              ukm::builders::Blink_EmailVerificationProtocol_FormSubmission::
+                  kEntryName)
+          .size());
 
   // Clear expectations on client to avoid conflict with ShowEmailVerifiedToast.
   testing::Mock::VerifyAndClearExpectations(&client());
@@ -388,6 +396,18 @@ TEST_F(EmailVerifierDelegateTest, TokenSharedSuccess) {
       EvpAutofillFlowResult::kTokenSentToRenderer, 1);
   histogram_tester.ExpectUniqueSample("Blink.Evp.Autofill.FormSubmitted", true,
                                       1);
+
+  auto form_submission_entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Blink_EmailVerificationProtocol_FormSubmission::
+          kEntryName);
+  ASSERT_EQ(1u, form_submission_entries.size());
+  const ukm::mojom::UkmEntry* form_submission_entry =
+      form_submission_entries[0];
+  ukm_recorder.ExpectEntryMetric(
+      form_submission_entry,
+      ukm::builders::Blink_EmailVerificationProtocol_FormSubmission::
+          kAutofill_FormSubmittedName,
+      1);
 }
 
 TEST_F(EmailVerifierDelegateTest, ObserverNotified) {

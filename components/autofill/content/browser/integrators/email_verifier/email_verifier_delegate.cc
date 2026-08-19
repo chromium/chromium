@@ -542,6 +542,10 @@ void EmailVerifierDelegate::OnBeforeFormWithEmailVerificationTokenSubmitted(
     issuers_.erase(it);
     manager.client().ShowEmailVerifiedToast(issuer_url);
     base::UmaHistogramBoolean("Blink.Evp.Autofill.FormSubmitted", true);
+    ukm::builders::Blink_EmailVerificationProtocol_FormSubmission(
+        manager.driver().GetPageUkmSourceId())
+        .SetAutofill_FormSubmitted(true)
+        .Record(ukm::UkmRecorder::Get());
   }
 }
 

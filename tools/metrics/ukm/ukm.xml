@@ -4853,6 +4853,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.EmailVerificationProtocol.FormSubmission">
+  <owner>npm@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records metrics for the Email Verification Protocol (EVP) when a form
+    containing a verified email verification token is submitted.
+  </summary>
+  <metric name="Autofill.FormSubmitted" enum="BooleanHit">
+    <summary>
+      Records when a form containing a verified email verification token is
+      submitted. Recorded once when the form submission occurs after successful
+      email verification.
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.FedCm">
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
