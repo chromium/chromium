@@ -216,6 +216,19 @@ class SingleClientDeviceInfoSyncTest
 
   ~SingleClientDeviceInfoSyncTest() override = default;
 
+  [[nodiscard]] bool SetupSync() {
+    if (!SyncTest::SetupSync()) {
+      return false;
+    }
+
+    // Wait for committing DeviceInfo with sharing_fields, it may happen
+    // asynchronously due to FCM token registration.
+    // TODO(crbug.com/548614755): change WaitForFullDeviceInfoCommitted to
+    // accept string_view.
+    return device_info_helper::WaitForFullDeviceInfoCommitted(
+        GetLocalCacheGuid());
+  }
+
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
