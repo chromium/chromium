@@ -10,6 +10,8 @@ import android.content.Context;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
@@ -29,7 +31,7 @@ public class AuxiliarySearchControllerFactory {
     private @Nullable AuxiliarySearchHooks mHooksForTesting;
 
     /** It tracks whether the current device is a tablet. */
-    private @Nullable Boolean mIsTablet;
+    private @TriState int mIsTablet;
 
     private @Nullable AuxiliarySearchController mAuxiliarySearchMultiDataController;
 
@@ -130,13 +132,13 @@ public class AuxiliarySearchControllerFactory {
      * Sets whether the device is a tablet. Note: this must be called before checking isEnabled().
      */
     public void setIsTablet(boolean isTablet) {
-        mIsTablet = isTablet || (mIsTablet != null && mIsTablet);
+        mIsTablet = TriStateUtils.from(isTablet || mIsTablet == TriState.TRUE);
     }
 
     /** Gets whether the device is a tablet. */
     public boolean isTablet() {
-        assert mIsTablet != null;
-        return mIsTablet;
+        assert mIsTablet != TriState.NOT_SET;
+        return mIsTablet == TriState.TRUE;
     }
 
     public @Nullable String getSupportedPackageName() {
@@ -163,6 +165,6 @@ public class AuxiliarySearchControllerFactory {
     }
 
     public void resetIsTabletForTesting() {
-        mIsTablet = null;
+        mIsTablet = TriState.NOT_SET;
     }
 }

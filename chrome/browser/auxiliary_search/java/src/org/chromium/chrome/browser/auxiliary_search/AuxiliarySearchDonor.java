@@ -39,6 +39,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -111,7 +113,7 @@ public class AuxiliarySearchDonor {
     private @Nullable List<WebPage> mPendingDocuments;
     private @Nullable Callback<Boolean> mPendingCallback;
     private boolean mSharedTabsWithOsState;
-    private @Nullable Boolean mIsDeviceCompatible;
+    private @TriState int mIsDeviceCompatible;
     private boolean mIsCreatedSessionAndInitForTesting;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
@@ -206,7 +208,7 @@ public class AuxiliarySearchDonor {
     @RequiresNonNull("mAppSearchSession")
     @VisibleForTesting
     boolean onConsumerSchemaSearchedImpl(boolean success) {
-        mIsDeviceCompatible = success;
+        mIsDeviceCompatible = TriStateUtils.from(success);
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_CONSUMER_SCHEMA_FOUND, success);
 
@@ -214,7 +216,7 @@ public class AuxiliarySearchDonor {
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.AUXILIARY_SEARCH_IS_SCHEMA_SET, false);
 
-        if (!mIsDeviceCompatible) {
+        if (mIsDeviceCompatible == TriState.FALSE) {
             if (mIsSchemaSet) {
                 // If WebPage schema has been set before while the device isn't capable for Tab
                 // donations, clean up now.
@@ -696,19 +698,19 @@ public class AuxiliarySearchDonor {
     boolean canDonate() {
         if (!mSharedTabsWithOsState || mAppSearchSession == null) return false;
 
-        // If mIsDeviceCompatible is null, it means the checking of device compatibility is still
-        // working in progress. In this case, it is safe to let the caller to send a donation list,
-        // and this donor will either close the session or continue to donate the pending list when
-        // the check of mIsDeviceCompatible is done. The follow tasks are handled in {@link
-        // AuxiliarySearchDonor#onConsumerSchemaSearchedImpl(boolean)}.
-        if (Boolean.FALSE.equals(mIsDeviceCompatible)) return false;
+        // If mIsDeviceCompatible is TriState.NOT_SET, it means the checking of device compatibility
+        // is still working in progress. In this case, it is safe to let the caller to send a
+        // donation list, and this donor will either close the session or continue to donate the
+        // pending list when the check of mIsDeviceCompatible is done. The follow tasks are handled
+        // in {@link AuxiliarySearchDonor#onConsumerSchemaSearchedImpl(boolean)}.
+        if (mIsDeviceCompatible == TriState.FALSE) return false;
 
         return true;
     }
 
     /** Returns whether the donor is fully initialized. */
     boolean initialized() {
-        return mIsSchemaSet && mIsDeviceCompatible != null;
+        return mIsSchemaSet && mIsDeviceCompatible != TriState.NOT_SET;
     }
 
     /**

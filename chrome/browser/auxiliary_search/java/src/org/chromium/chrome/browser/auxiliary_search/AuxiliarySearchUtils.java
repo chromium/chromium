@@ -120,11 +120,10 @@ public class AuxiliarySearchUtils {
      *
      * @param shownInThisSession Whether the card has been shown once in the current session.
      */
-    public static boolean canShowCard(Boolean shownInThisSession) {
+    public static boolean canShowCard(boolean shownInThisSession) {
         if (AuxiliarySearchUtils.FORCE_CARD_SHOWN.getValue()) return true;
 
-        boolean hasShown = shownInThisSession == null ? false : shownInThisSession.booleanValue();
-        return !hasShown
+        return !shownInThisSession
                 && !AuxiliarySearchUtils.hasUserResponded()
                 && !AuxiliarySearchUtils.exceedMaxImpressions();
     }

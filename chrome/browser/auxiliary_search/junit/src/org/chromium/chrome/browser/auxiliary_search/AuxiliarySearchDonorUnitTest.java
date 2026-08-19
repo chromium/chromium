@@ -461,6 +461,7 @@ public class AuxiliarySearchDonorUnitTest {
         assertFalse(mAuxiliarySearchDonor.canDonate());
 
         mAuxiliarySearchDonor.setSharedTabsWithOsStateForTesting(/* sharedTabsWithOsState= */ true);
+        assertTrue(mAuxiliarySearchDonor.canDonate());
         mAuxiliarySearchDonor.onConsumerSchemaSearchedImpl(/* success= */ false);
         assertFalse(mAuxiliarySearchDonor.canDonate());
 

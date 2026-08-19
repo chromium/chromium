@@ -139,7 +139,6 @@ public class AuxiliarySearchUtilsUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_APP_INTEGRATION_MODULE + ":force_card_shown/false"})
     public void testCanShowCard() {
-        assertTrue(AuxiliarySearchUtils.canShowCard(null));
         assertTrue(AuxiliarySearchUtils.canShowCard(false));
 
         // Verifies Not to show the card if it has been shown in the current session.
