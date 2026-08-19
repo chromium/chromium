@@ -3248,11 +3248,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "enable-android-new-media-picker",
-    "owners": [ "edcourtney@chromium.org", "lt-web-apps-team@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-android-physical-keyboard-autocorrect-underline",
     "owners": [
       "wesleygwang@google.com",

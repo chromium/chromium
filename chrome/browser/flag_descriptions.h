@@ -5553,11 +5553,6 @@ inline constexpr char kAndroidPageInfoAsAppMenuItemDescription[] =
     "Removes the page info icon from the toolbar and adds it as a standard "
     "list item in the app menu.";
 
-inline constexpr char kAndroidNewMediaPickerName[] =
-    "Enable new media capture picker on Android";
-inline constexpr char kAndroidNewMediaPickerDescription[] =
-    "Enables the new media capture picker UI on Android.";
-
 inline constexpr char kAndroidPkAutocorrectUnderlineName[] =
     "Enable Android physical keyboard autocorrect underline";
 inline constexpr char kAndroidPkAutocorrectUnderlineDescription[] =

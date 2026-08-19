@@ -24,9 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
@@ -113,8 +111,7 @@ public class MediaCapturePickerManagerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MEDIA_PICKER)
-    public void testShowDialog_NewPickerEnabled() {
+    public void testShowDialog() {
         doReturn(mWindowAndroid).when(mWebContents).getTopLevelNativeWindow();
         doReturn(new WeakReference<Context>(mContext)).when(mWindowAndroid).getContext();
 

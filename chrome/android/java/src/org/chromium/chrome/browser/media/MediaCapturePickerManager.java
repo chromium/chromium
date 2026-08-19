@@ -15,14 +15,12 @@ import org.chromium.blink.mojom.PreferredDisplaySurface;
 import org.chromium.blink.mojom.WindowAudioPreference;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Manager for the media capture picker. This class is the entry point for showing the picker UI. It
- * will decide whether to show the old dialog or a new UI based on a feature flag.
+ * Manager for the media capture picker. This class is the entry point for showing the picker UI.
  */
 @NullMarked
 public class MediaCapturePickerManager {
@@ -186,14 +184,7 @@ public class MediaCapturePickerManager {
             delegate.onCancel();
             return;
         }
-
-        if (ChromeFeatureList.sAndroidNewMediaPicker.isEnabled()) {
-            Log.d(TAG, "New media picker is enabled, showing MediaCapturePickerInvoker");
-            MediaCapturePickerInvoker.show(context, params, delegate);
-        } else {
-            Log.d(TAG, "New media picker is disabled, showing MediaCapturePickerDialog");
-            new MediaCapturePickerDialog(context, params, delegate).show();
-        }
+        MediaCapturePickerInvoker.show(context, params, delegate);
     }
 
     static void recordResult(@Result int result) {

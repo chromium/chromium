@@ -41,11 +41,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaCapturePickerDelegate;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager;
@@ -82,7 +80,6 @@ import java.util.concurrent.TimeoutException;
     "enable-features=UserMediaScreenCapturing,AndroidMediaPicker",
 })
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({ChromeFeatureList.ANDROID_NEW_MEDIA_PICKER})
 public class TabMediaIndicatorTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
