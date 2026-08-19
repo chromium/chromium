@@ -50,7 +50,7 @@ class MockEmailVerifier : public content::webid::EmailVerifier {
  public:
   MOCK_METHOD(void,
               CheckIfVerifiable,
-              (const std::string&, base::OnceClosure, IsVerifiableCallback),
+              (const std::string&, IsVerifiableCallback),
               (override));
   MOCK_METHOD(void,
               Verify,
@@ -213,8 +213,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
   result.issuance_endpoint = GURL("https://example.com/issuance");
   result.signing_alg_values_supported.push_back("RS256");
 
-  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _, _))
-      .WillOnce(RunOnceCallback<2>(
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _))
+      .WillOnce(RunOnceCallback<1>(
           result, blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(100)));
 
@@ -314,8 +314,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
 
   testing::InSequence s;
 
-  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _, _))
-      .WillOnce(RunOnceCallback<2>(
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _))
+      .WillOnce(RunOnceCallback<1>(
           result1, blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(100)));
 
@@ -368,8 +368,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest,
   // 3. Simulate selecting a different value (triggers second Verify).
   base::RunLoop popup_run_loop2;
 
-  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("other@example.com", _, _))
-      .WillOnce(RunOnceCallback<2>(
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("other@example.com", _))
+      .WillOnce(RunOnceCallback<1>(
           result2, blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(100)));
 
@@ -445,8 +445,8 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowAutocomplete) {
   result.issuance_endpoint = GURL("https://example.com/issuance");
   result.signing_alg_values_supported.push_back("RS256");
 
-  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _, _))
-      .WillOnce(RunOnceCallback<2>(
+  EXPECT_CALL(*verifier_ptr, CheckIfVerifiable("test@example.com", _))
+      .WillOnce(RunOnceCallback<1>(
           result, blink::mojom::EmailVerificationRequestResult::kSuccess,
           base::Milliseconds(100)));
 

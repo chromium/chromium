@@ -313,31 +313,12 @@ void EmailVerifierDelegate::OnIsVerifiable(
     return;
   }
 
-  // We don't want the loading indicator to show while waiting for user input,
-  // so set the state to none.
-  manager->driver().UpdateEmailVerificationState(
-      email_field_id, mojom::EmailVerificationState::kNone);
-
   net::SchemefulSite issuer_site = result->issuer_site;
   manager->client().ShowEmailVerificationPopup(
       email_field_bounds, issuer_site, base::UTF8ToUTF16(display_email),
       base::BindOnce(&EmailVerifierDelegate::OnEmailVerificationDecision,
                      weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
                      display_email, nonce, std::move(*result)));
-}
-
-void EmailVerifierDelegate::OnDnsCheckPassed(
-    base::WeakPtr<AutofillManager> manager,
-    FieldGlobalId email_field_id) {
-  if (!pending_request_metrics_.contains(email_field_id)) {
-    return;
-  }
-  if (!manager || manager->driver().GetLifecycleState() !=
-                      AutofillDriver::LifecycleState::kActive) {
-    return;
-  }
-  manager->driver().UpdateEmailVerificationState(
-      email_field_id, mojom::EmailVerificationState::kLoading);
 }
 
 EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client) {
@@ -747,9 +728,6 @@ void EmailVerifierDelegate::TriggerVerification(AutofillManager& manager,
 
   verifier->CheckIfVerifiable(
       display_email,
-      base::BindOnce(&EmailVerifierDelegate::OnDnsCheckPassed,
-                     weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr(),
-                     email_field_id),
       base::BindOnce(&EmailVerifierDelegate::OnIsVerifiable,
                      weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr(),
                      email_field_id, email_field_bounds, email_value, nonce,

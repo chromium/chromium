@@ -162,9 +162,6 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
                            std::u16string email_value,
                            const std::string& nonce);
 
-  void OnDnsCheckPassed(base::WeakPtr<AutofillManager> manager,
-                        FieldGlobalId email_field_id);
-
   void OnIsVerifiable(
       base::WeakPtr<AutofillManager> manager,
       FieldGlobalId email_field_id,

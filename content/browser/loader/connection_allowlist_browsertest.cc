@@ -5319,7 +5319,7 @@ class ConnectionAllowlistEmailVerificationTest
         future;
     webid::EmailVerifier::GetOrCreateForFrame(
         shell()->web_contents()->GetPrimaryMainFrame())
-        ->CheckIfVerifiable(email, base::DoNothing(), future.GetCallback());
+        ->CheckIfVerifiable(email, future.GetCallback());
     return future.Get<0>();
   }
 
@@ -5488,8 +5488,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
       future;
   webid::EmailVerifier::GetOrCreateForFrame(
       shell()->web_contents()->GetPrimaryMainFrame())
-      ->CheckIfVerifiable("jane@example.com", base::DoNothing(),
-                          future.GetCallback());
+      ->CheckIfVerifiable("jane@example.com", future.GetCallback());
 
   // Redirect the request from `kDnsPath` to "/another/dns".
   controllable_response.WaitForRequest();
@@ -5557,8 +5556,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
   base::HistogramTester histogram_tester;
   webid::EmailVerifier::GetOrCreateForFrame(
       shell()->web_contents()->GetPrimaryMainFrame())
-      ->CheckIfVerifiable("jane@example.com", base::DoNothing(),
-                          future.GetCallback());
+      ->CheckIfVerifiable("jane@example.com", future.GetCallback());
 
   // Redirect the request from `kDnsPath` to "/another/dns".
   controllable_response.WaitForRequest();

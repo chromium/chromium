@@ -52,9 +52,7 @@ class MockEmailVerificationRequest : public EmailVerificationRequest {
                EmailVerifier::OnEmailVerifiedCallback));
   MOCK_METHOD(void,
               CheckIfVerifiable,
-              (const std::string&,
-               base::OnceClosure,
-               EmailVerifier::IsVerifiableCallback));
+              (const std::string&, EmailVerifier::IsVerifiableCallback));
   MOCK_METHOD(void,
               Verify,
               (const EmailVerifier::Result&,
@@ -103,15 +101,14 @@ TEST_F(EmailVerifierImplTest, TestSingleRequest) {
       verifiable_cb;
 
   EXPECT_CALL(*request_ptr_is_verifiable,
-              CheckIfVerifiable("test@example.com", _, _))
-      .WillOnce(WithArgs<2>([&](EmailVerifier::IsVerifiableCallback callback) {
+              CheckIfVerifiable("test@example.com", _))
+      .WillOnce(WithArgs<1>([&](EmailVerifier::IsVerifiableCallback callback) {
         std::move(callback).Run(
             issuer, blink::mojom::EmailVerificationRequestResult::kSuccess,
             base::Milliseconds(100));
       }));
 
-  verifier.CheckIfVerifiable("test@example.com", base::DoNothing(),
-                             verifiable_cb.GetCallback());
+  verifier.CheckIfVerifiable("test@example.com", verifiable_cb.GetCallback());
 
   EXPECT_EQ(verifiable_cb.Get<0>(), issuer);
 
@@ -157,8 +154,8 @@ TEST_F(EmailVerifierImplTest, TestStatefulFlow) {
   issuer.issuer_site = net::SchemefulSite(GURL("https://example.com"));
   issuer.issuance_endpoint = kIssuanceEndpoint;
 
-  EXPECT_CALL(*request_ptr_is_verifiable, CheckIfVerifiable(kEmail, _, _))
-      .WillOnce(WithArgs<2>([&](EmailVerifier::IsVerifiableCallback callback) {
+  EXPECT_CALL(*request_ptr_is_verifiable, CheckIfVerifiable(kEmail, _))
+      .WillOnce(WithArgs<1>([&](EmailVerifier::IsVerifiableCallback callback) {
         std::move(callback).Run(
             issuer, blink::mojom::EmailVerificationRequestResult::kSuccess,
             base::Milliseconds(100));
@@ -168,8 +165,7 @@ TEST_F(EmailVerifierImplTest, TestStatefulFlow) {
                          blink::mojom::EmailVerificationRequestResult,
                          base::TimeDelta>
       verifiable_cb;
-  verifier.CheckIfVerifiable(kEmail, base::DoNothing(),
-                             verifiable_cb.GetCallback());
+  verifier.CheckIfVerifiable(kEmail, verifiable_cb.GetCallback());
 
   EXPECT_EQ(verifiable_cb.Get<0>(), issuer);
 
@@ -229,16 +225,16 @@ TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
 
   // Set up expectations and capture callbacks for the two requests.
   EXPECT_CALL(*request_ptr_is_verifiable1,
-              CheckIfVerifiable("test1@example.com", _, _))
-      .WillOnce(WithArgs<2>([&](EmailVerifier::IsVerifiableCallback callback) {
+              CheckIfVerifiable("test1@example.com", _))
+      .WillOnce(WithArgs<1>([&](EmailVerifier::IsVerifiableCallback callback) {
         std::move(callback).Run(
             issuer1, blink::mojom::EmailVerificationRequestResult::kSuccess,
             base::Milliseconds(100));
       }));
 
   EXPECT_CALL(*request_ptr_is_verifiable2,
-              CheckIfVerifiable("test2@example.com", _, _))
-      .WillOnce(WithArgs<2>([&](EmailVerifier::IsVerifiableCallback callback) {
+              CheckIfVerifiable("test2@example.com", _))
+      .WillOnce(WithArgs<1>([&](EmailVerifier::IsVerifiableCallback callback) {
         std::move(callback).Run(
             issuer2, blink::mojom::EmailVerificationRequestResult::kSuccess,
             base::Milliseconds(100));
@@ -248,15 +244,13 @@ TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
                          blink::mojom::EmailVerificationRequestResult,
                          base::TimeDelta>
       verifiable_cb1;
-  verifier.CheckIfVerifiable("test1@example.com", base::DoNothing(),
-                             verifiable_cb1.GetCallback());
+  verifier.CheckIfVerifiable("test1@example.com", verifiable_cb1.GetCallback());
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>,
                          blink::mojom::EmailVerificationRequestResult,
                          base::TimeDelta>
       verifiable_cb2;
-  verifier.CheckIfVerifiable("test2@example.com", base::DoNothing(),
-                             verifiable_cb2.GetCallback());
+  verifier.CheckIfVerifiable("test2@example.com", verifiable_cb2.GetCallback());
 
   EXPECT_EQ(verifiable_cb1.Get<0>(), issuer1);
   EXPECT_EQ(verifiable_cb2.Get<0>(), issuer2);
@@ -333,8 +327,8 @@ TEST_F(EmailVerifierImplTest, ForwardsDurationAndStatus) {
   issuer.issuer_site = net::SchemefulSite(GURL("https://example.com"));
   issuer.issuance_endpoint = kIssuanceEndpoint;
 
-  EXPECT_CALL(*request_ptr_is_verifiable, CheckIfVerifiable(kEmail, _, _))
-      .WillOnce(WithArgs<2>([&](EmailVerifier::IsVerifiableCallback callback) {
+  EXPECT_CALL(*request_ptr_is_verifiable, CheckIfVerifiable(kEmail, _))
+      .WillOnce(WithArgs<1>([&](EmailVerifier::IsVerifiableCallback callback) {
         std::move(callback).Run(
             issuer, blink::mojom::EmailVerificationRequestResult::kSuccess,
             base::Milliseconds(100));
@@ -344,8 +338,7 @@ TEST_F(EmailVerifierImplTest, ForwardsDurationAndStatus) {
                          blink::mojom::EmailVerificationRequestResult,
                          base::TimeDelta>
       verifiable_cb;
-  verifier.CheckIfVerifiable(kEmail, base::DoNothing(),
-                             verifiable_cb.GetCallback());
+  verifier.CheckIfVerifiable(kEmail, verifiable_cb.GetCallback());
   EXPECT_EQ(verifiable_cb.Get<0>(), issuer);
   EXPECT_EQ(verifiable_cb.Get<1>(),
             blink::mojom::EmailVerificationRequestResult::kSuccess);
@@ -381,13 +374,12 @@ TEST_F(EmailVerifierImplTest, ObserverUAFCrash) {
                                        base::Unretained(&builder)));
 
   EmailVerifier::IsVerifiableCallback captured_cb;
-  EXPECT_CALL(*request_ptr, CheckIfVerifiable("test@example.com", _, _))
-      .WillOnce(WithArgs<2>([&](EmailVerifier::IsVerifiableCallback cb) {
+  EXPECT_CALL(*request_ptr, CheckIfVerifiable("test@example.com", _))
+      .WillOnce(WithArgs<1>([&](EmailVerifier::IsVerifiableCallback cb) {
         captured_cb = std::move(cb);
       }));
 
-  verifier->CheckIfVerifiable("test@example.com", base::DoNothing(),
-                              base::DoNothing());
+  verifier->CheckIfVerifiable("test@example.com", base::DoNothing());
 
   // Destroy EmailVerifierImpl while the request is pending.
   verifier.reset();
@@ -398,30 +390,6 @@ TEST_F(EmailVerifierImplTest, ObserverUAFCrash) {
       .Run(std::nullopt,
            blink::mojom::EmailVerificationRequestResult::kUserLoggedOut,
            base::Milliseconds(100));
-}
-
-// Verifies that EmailVerifierImpl::CheckIfVerifiable forwards
-// on_dns_resolved_callback to EmailVerificationRequest.
-TEST_F(EmailVerifierImplTest, ForwardsDnsResolvedCallback) {
-  auto request =
-      std::make_unique<NiceMock<MockEmailVerificationRequest>>(*main_rfh());
-  MockEmailVerificationRequest* request_ptr = request.get();
-
-  MockRequestBuilder builder;
-  EXPECT_CALL(builder, Run).WillOnce(Return(ByMove(std::move(request))));
-
-  EmailVerifierImpl verifier(base::BindRepeating(&MockRequestBuilder::Run,
-                                                 base::Unretained(&builder)));
-
-  base::MockCallback<base::OnceClosure> dns_resolved_cb;
-  EXPECT_CALL(*request_ptr, CheckIfVerifiable("test@example.com", _, _))
-      .WillOnce(
-          WithArgs<1>([&](base::OnceClosure cb) { std::move(cb).Run(); }));
-
-  EXPECT_CALL(dns_resolved_cb, Run()).Times(1);
-
-  verifier.CheckIfVerifiable("test@example.com", dns_resolved_cb.Get(),
-                             base::DoNothing());
 }
 
 }  // namespace content::webid
