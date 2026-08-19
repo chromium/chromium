@@ -111,6 +111,17 @@ class ApiTests extends ApiTestFixtureBase {
     assertUndefined(this.host.getModelQualityClientId);
   }
 
+  async testGetModelQualityClientIdFeatureEnabled() {
+    assertDefined(this.host.getHostCapabilities);
+    const capabilities: Set<HostCapability> =
+        await this.host.getHostCapabilities();
+    assertTrue(capabilities.has(HostCapability.GET_MODEL_QUALITY_CLIENT_ID));
+
+    assertDefined(this.host.getModelQualityClientId);
+    const clientId: string = await this.host.getModelQualityClientId();
+    assertDefined(clientId);
+  }
+
   async testGetFocusedTabStateV2BrowserClosed() {
     assertDefined(this.host.getFocusedTabStateV2);
     const sequence =

@@ -341,17 +341,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testGetModelQualityClientIdFeatureEnabled() {
-    assertDefined(this.host.getHostCapabilities);
-    const capabilities: Set<HostCapability> =
-        await this.host.getHostCapabilities();
-    assertTrue(capabilities.has(HostCapability.GET_MODEL_QUALITY_CLIENT_ID));
-
-    assertDefined(this.host.getModelQualityClientId);
-    const clientId = await this.host.getModelQualityClientId();
-    assertDefined(clientId);
-  }
-
 
   async testSwitchConversationToExistingInstance() {
     assertDefined(this.host.registerConversation);

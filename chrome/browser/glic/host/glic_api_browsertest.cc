@@ -179,7 +179,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestUserStatusCheckTest",
       "GlicApiTestWithOneTabMoreDebounceDelay",
       "GlicGetHostCapabilityApiTest",
-      "GlicApiTestWithMqlsIdGetterEnabled",
       "GlicApiTestRuntimeFeatureOff",
       "GlicApiTestWithGeminiActOnWebPolicy",
       "GlicApiTestWithWebContentsWarming",
@@ -352,20 +351,6 @@ class GlicApiTestWithOneTab : public GlicApiTest {
     return optimization_guide::DocumentIdentifierUserData::
         GetDocumentIdentifier(rfh->GetGlobalFrameToken())
             .value();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class GlicApiTestWithMqlsIdGetterEnabled : public GlicApiTestWithOneTab {
- public:
-  GlicApiTestWithMqlsIdGetterEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {mojom::features::kGlicAppendModelQualityClientId},
-        /*disabled_features=*/
-        {});
   }
 
  private:
@@ -744,11 +729,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelActiveWithMicrophone) {
       base::test::RunUntil([&]() { return !GetGlicInstance()->IsActive(); }));
 
   ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
-                       testGetModelQualityClientIdFeatureEnabled) {
-  ExecuteJsTest();
 }
 
 // TODO(crbug.com/454083080): Fix this, it hangs.
@@ -1143,10 +1123,6 @@ INSTANTIATE_TEST_SUITE_P(
     &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTest,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithMqlsIdGetterEnabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,

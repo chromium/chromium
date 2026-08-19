@@ -227,6 +227,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiTestWithMqlsIdGetterDisabled",
       "NewGlicApiTestWithSkills",
       "NewGlicApiTestWithSkillsDisabled",
+      "NewGlicApiTestWithMqlsIdGetterEnabled",
       "NewGlicOnboardingApiTest",
       "NewGlicApiTestSystemSettingsTest",
       "NewGlicGetHostCapabilityApiTest",
@@ -1578,6 +1579,26 @@ class NewGlicApiTestWithMqlsIdGetterDisabled : public NewGlicApiTest {
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithMqlsIdGetterDisabled,
                        testGetModelQualityClientIdFeatureDisabled) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+class NewGlicApiTestWithMqlsIdGetterEnabled : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithMqlsIdGetterEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {mojom::features::kGlicAppendModelQualityClientId},
+        /*disabled_features=*/
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithMqlsIdGetterEnabled,
+                       testGetModelQualityClientIdFeatureEnabled) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
@@ -4985,6 +5006,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithMqlsIdGetterDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithMqlsIdGetterEnabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
