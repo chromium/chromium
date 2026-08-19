@@ -1,6 +1,6 @@
-caption: Allows <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> to connect to and use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> auto browse
+caption: Allows <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> to connect to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and use auto browse via Gemini in Chrome
 desc: |-
-  Controls if the <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> agent is allowed to connect to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and use auto browse.
+  Controls if the <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> agent is allowed to connect to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and use auto browse. <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> might not be available to your organization.
 
   0 = <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> is allowed to connect to and use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> auto browse
 
