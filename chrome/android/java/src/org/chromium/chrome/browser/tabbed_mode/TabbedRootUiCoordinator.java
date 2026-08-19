@@ -2387,6 +2387,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     private void maybeInitializeVerticalTabs(Profile profile) {
+        if (mActivity == null) return;
         if (!VerticalTabUtils.isVerticalTabsEligible(mActivity)) return;
 
         // Restore the user's saved tab layout preference upon browser cold launch.

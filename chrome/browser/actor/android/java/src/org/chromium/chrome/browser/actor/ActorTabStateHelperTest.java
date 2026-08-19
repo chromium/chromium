@@ -33,6 +33,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -40,7 +43,9 @@ import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.ui.base.WindowAndroid;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -233,5 +238,69 @@ public class ActorTabStateHelperTest {
         assertEquals(Integer.valueOf(102), session.getTabDataList().get(1).getPlaceholderTabId());
         assertEquals(3, session.getTabDataList().get(1).getOriginalTabIndex());
         assertEquals(42, session.getTabDataList().get(1).getTabWindowId());
+    }
+
+    @Test
+    public void testRestoreActiveWindowBackgroundTabs_RestoresMatchingTabs() {
+        WindowAndroid window = mock(WindowAndroid.class);
+        TabDelegateFactory delegateFactory = mock(TabDelegateFactory.class);
+
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(111);
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(222);
+
+        // Prepare background session with two tab metadatas:
+        BackgroundSession session = new BackgroundSession(tab1, 500);
+        session.addTab(tab2);
+
+        // Metadata 1 (Window 1, Placeholder 101, Index 0)
+        BackgroundSession.BackgroundTabData meta1 = session.getTabDataList().get(0);
+        meta1.setTabWindowId(1);
+        meta1.setPlaceholderTabId(101);
+        meta1.setOriginalTabIndex(0);
+
+        // Metadata 2 (Window 2, Placeholder 201, Index 1)
+        BackgroundSession.BackgroundTabData meta2 = session.getTabDataList().get(1);
+        meta2.setTabWindowId(2);
+        meta2.setPlaceholderTabId(201);
+        meta2.setOriginalTabIndex(1);
+
+        // Set up the TabModel mock to contain the placeholder for tab1, but not tab2 (since it's a
+        // different window)
+        Tab placeholder1 = mock(Tab.class);
+        when(placeholder1.getId()).thenReturn(101);
+        when(mTabModel.getTabById(101)).thenReturn(placeholder1);
+        when(mTabModel.indexOf(placeholder1)).thenReturn(3);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+
+        // Tab 1 is currently not in mTabModel
+        when(mTabModel.indexOf(tab1)).thenReturn(TabModel.INVALID_TAB_INDEX);
+
+        List<BackgroundSession> sessions = new ArrayList<>(Collections.singletonList(session));
+
+        // Restore tabs for Window 1
+        ActorTabStateHelper.restoreActiveWindowBackgroundTabs(
+                mTabModelSelector, 1, window, sessions, delegateFactory);
+
+        // Assertions:
+        // Tab 1 (Window 1) should be restored
+        verify(tab1).updateAttachment(window, delegateFactory);
+        verify(mTabRemover).removeTab(placeholder1, false);
+        verify(mTabModel)
+                .addTab(
+                        eq(tab1),
+                        eq(3),
+                        eq(TabLaunchType.FROM_RESTORE),
+                        eq(TabCreationState.LIVE_IN_FOREGROUND));
+
+        // Tab 2 (Window 2) should NOT be restored
+        verify(tab2, never()).updateAttachment(any(), any());
+
+        // Session should still exist because Tab 2 is not restored yet
+        assertEquals(1, sessions.size());
+        assertEquals(1, sessions.get(0).getTabDataList().size());
+        assertEquals(tab2, sessions.get(0).getTabDataList().get(0).getTab());
     }
 }

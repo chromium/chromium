@@ -23,16 +23,20 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.ui.base.WindowAndroid;
 
+import java.util.List;
 import java.util.Set;
 
 /** Android implementation of {@link ActorForegroundServiceController}. */
@@ -134,6 +138,27 @@ public class ActorForegroundServiceControllerImpl implements ActorForegroundServ
         if (mBoundService == null) return;
         assert mBackgroundActuationManager != null;
         mBackgroundActuationManager.transitionActiveTasksToBackground(selector);
+    }
+
+    @Override
+    public void restoreActiveWindowBackgroundTabs(
+            TabModelSelector selector,
+            WindowAndroid window,
+            TabDelegateFactory tabDelegateFactory) {
+        ThreadUtils.assertOnUiThread();
+        if (mBackgroundActuationManager == null) return;
+        int activeWindowId =
+                TabWindowManagerSingleton.getInstance().getWindowIdForSelector(selector);
+        if (activeWindowId == TabWindowManager.INVALID_WINDOW_ID) return;
+
+        List<BackgroundSession> sessionsToRemove =
+                ActorTabStateHelper.restoreActiveWindowBackgroundTabs(
+                        selector,
+                        activeWindowId,
+                        window,
+                        mBackgroundActuationManager.getBackgroundSessions(),
+                        tabDelegateFactory);
+        mBackgroundActuationManager.removeBackgroundSessions(sessionsToRemove);
     }
 
     @Override

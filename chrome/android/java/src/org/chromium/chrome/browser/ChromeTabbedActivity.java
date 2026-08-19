@@ -88,6 +88,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
 import org.chromium.chrome.browser.accessibility.settings.CaretBrowsingDialog;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceController;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -1931,8 +1932,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     public void onNewIntentWithNative(Intent intent) {
         try {
             TraceEvent.begin("ChromeTabbedActivity.onNewIntentWithNative");
-
             super.onNewIntentWithNative(intent);
+
             if (!IntentHandler.shouldIgnoreIntent(intent, this, /* isCustomTab= */ false)) {
                 maybeHandleOpenTabGroupIntent(intent);
                 maybeHandleUrlIntent(intent);
@@ -3806,6 +3807,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         if (mMultiInstanceManager != null) {
                             mMultiInstanceManager.onTabStateInitialized();
                         }
+                        if (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)) {
+                            ActorForegroundServiceController.get()
+                                    .restoreActiveWindowBackgroundTabs(
+                                            getTabModelSelector(),
+                                            getWindowAndroid(),
+                                            getTabDelegateFactory());
+                        }
                     }
                 };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
@@ -5209,6 +5218,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     @Override
     public void onDestroyInternal() {
+
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;

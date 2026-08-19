@@ -14,7 +14,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.util.Set;
 
@@ -73,6 +75,12 @@ public interface ActorForegroundServiceController {
      */
     default void transitionActiveTasksToBackground(TabModelSelector selector) {}
 
+    /** Restores active window background tabs when activity starts or receives intent. */
+    default void restoreActiveWindowBackgroundTabs(
+            TabModelSelector selector,
+            WindowAndroid window,
+            TabDelegateFactory tabDelegateFactory) {}
+
     /** Destroys the background actuation manager and cleans up its resources. */
     default void destroyBackgroundActuationManager() {}
 
@@ -86,6 +94,14 @@ public interface ActorForegroundServiceController {
     default void provisionBackgroundTabForTask(
             Profile profile, int taskId, Callback<@Nullable Tab> callback) {
         callback.onResult(null);
+    }
+
+    /**
+     * Returns the placeholder tab ID associated with a given original tab ID if it's currently in a
+     * background session.
+     */
+    default @Nullable Integer getPlaceholderTabIdForTaskTab(int originalTabId) {
+        return null;
     }
 
     /**

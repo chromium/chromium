@@ -26,6 +26,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,6 +42,16 @@ public class ActorBackgroundActuationManager {
 
     // List of active background sessions.
     private final List<BackgroundSession> mBackgroundSessions = new ArrayList<>();
+
+    /** Returns the list of currently active background sessions. */
+    public List<BackgroundSession> getBackgroundSessions() {
+        return Collections.unmodifiableList(mBackgroundSessions);
+    }
+
+    /** Removes the specified background sessions from the active list. */
+    public void removeBackgroundSessions(List<BackgroundSession> sessionsToRemove) {
+        mBackgroundSessions.removeAll(sessionsToRemove);
+    }
 
     /** Default constructor. */
     public ActorBackgroundActuationManager() {}

@@ -22,11 +22,18 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.ui.base.WindowAndroid;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -216,6 +223,123 @@ public class ActorTabStateHelperIntegrationTest {
 
                     assertEquals(4, tabModel.indexOf(tab2));
                     assertEquals(5, tabModel.indexOf(placeholder2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testRestoreActiveWindowBackgroundTabs_RestoresMatchingTabs() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
+                    TabModelSelector selector =
+                            mActivityTestRule.getActivity().getTabModelSelector();
+                    WindowAndroid window = mActivityTestRule.getActivity().getWindowAndroid();
+                    TabDelegateFactory delegateFactory = TabTestUtils.getDelegateFactory(mTab);
+
+                    // Verify initial model state
+                    assertEquals(1, tabModel.getCount());
+                    assertEquals(mTab, tabModel.getTabAt(0));
+
+                    // Create placeholder
+                    Tab placeholder =
+                            ActorTabStateHelper.createAndInsertPlaceholder(mTab, tabModel);
+                    assertNotNull(placeholder);
+
+                    // Simulate setting the placeholder as the active tab
+                    TabModelUtils.setIndex(tabModel, tabModel.indexOf(placeholder));
+                    assertEquals(placeholder, TabModelUtils.getCurrentTab(tabModel));
+
+                    // Detach original tab
+                    tabModel.getTabRemover().removeTab(mTab, /* allowDialog= */ false);
+                    assertEquals(1, tabModel.getCount());
+                    assertEquals(placeholder, tabModel.getTabAt(0));
+
+                    // Package original tab into a BackgroundSession with matching window ID
+                    int activeWindowId =
+                            TabWindowManager.INVALID_WINDOW_ID; // Should match anything
+                    BackgroundSession.BackgroundTabData tabData =
+                            new BackgroundSession.BackgroundTabData(
+                                    mTab, placeholder.getId(), 0, activeWindowId);
+                    BackgroundSession session = new BackgroundSession(tabData, /* taskId= */ 100);
+
+                    List<BackgroundSession> backgroundSessions = new ArrayList<>();
+                    backgroundSessions.add(session);
+
+                    // Execute restoration
+                    List<BackgroundSession> sessionsToRemove =
+                            ActorTabStateHelper.restoreActiveWindowBackgroundTabs(
+                                    selector,
+                                    activeWindowId,
+                                    window,
+                                    backgroundSessions,
+                                    delegateFactory);
+                    backgroundSessions.removeAll(sessionsToRemove);
+
+                    // Because the placeholder was active, the restored original tab should now be
+                    // active
+                    assertEquals(1, tabModel.getCount());
+                    assertEquals(mTab, tabModel.getTabAt(0));
+                    assertEquals(mTab, TabModelUtils.getCurrentTab(tabModel));
+                    assertTrue(backgroundSessions.isEmpty());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testRestoreActiveWindowBackgroundTabs() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
+                    TabModelSelector selector =
+                            mActivityTestRule.getActivity().getTabModelSelector();
+                    WindowAndroid window = mActivityTestRule.getActivity().getWindowAndroid();
+                    TabDelegateFactory delegateFactory = TabTestUtils.getDelegateFactory(mTab);
+
+                    // Verify initial model state has only mTab
+                    assertEquals(1, tabModel.getCount());
+                    assertEquals(mTab, tabModel.getTabAt(0));
+
+                    // Create and insert placeholder tab
+                    Tab placeholder =
+                            ActorTabStateHelper.createAndInsertPlaceholder(mTab, tabModel);
+                    assertNotNull(placeholder);
+                    assertEquals(2, tabModel.getCount());
+                    assertEquals(placeholder, tabModel.getTabAt(1));
+
+                    // Detach original tab
+                    tabModel.getTabRemover().removeTab(mTab, /* allowDialog= */ false);
+                    assertEquals(1, tabModel.getCount());
+                    assertEquals(placeholder, tabModel.getTabAt(0));
+
+                    // Package original tab into a BackgroundSession
+                    int windowId = 42;
+                    BackgroundSession.BackgroundTabData tabData =
+                            new BackgroundSession.BackgroundTabData(
+                                    mTab, placeholder.getId(), 0, windowId);
+                    BackgroundSession session = new BackgroundSession(tabData, /* taskId= */ 100);
+
+                    List<BackgroundSession> backgroundSessions = new ArrayList<>();
+                    backgroundSessions.add(session);
+
+                    // Execute restoration
+                    List<BackgroundSession> sessionsToRemove =
+                            ActorTabStateHelper.restoreActiveWindowBackgroundTabs(
+                                    selector,
+                                    windowId,
+                                    window,
+                                    backgroundSessions,
+                                    delegateFactory);
+                    backgroundSessions.removeAll(sessionsToRemove);
+
+                    // Verify model state after restoration:
+                    // - Original tab is restored back at index 0
+                    // - Placeholder tab is destroyed and removed from model
+                    assertEquals(1, tabModel.getCount());
+                    assertEquals(mTab, tabModel.getTabAt(0));
+                    assertTrue(backgroundSessions.isEmpty());
                 });
     }
 }

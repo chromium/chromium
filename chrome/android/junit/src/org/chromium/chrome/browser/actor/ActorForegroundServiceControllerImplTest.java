@@ -35,6 +35,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -178,7 +179,7 @@ public class ActorForegroundServiceControllerImplTest {
         assertEquals(
                 "Intent extra should contain the correct tabId.",
                 tabId,
-                intent.getIntExtra("BRING_TAB_TO_FRONT", Tab.INVALID_TAB_ID));
+                IntentHandler.getBringTabToFrontId(intent));
         assertTrue(
                 "Intent should have EXTRA_SHOW_ACTOR_CONTROL.",
                 intent.getBooleanExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false));
@@ -205,7 +206,7 @@ public class ActorForegroundServiceControllerImplTest {
         assertEquals(
                 "Intent extra should contain INVALID_TAB_ID for empty tabs.",
                 Tab.INVALID_TAB_ID,
-                intent.getIntExtra("BRING_TAB_TO_FRONT", Tab.INVALID_TAB_ID));
+                IntentHandler.getBringTabToFrontId(intent));
         assertTrue(
                 "Intent should have EXTRA_SHOW_ACTOR_CONTROL.",
                 intent.getBooleanExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false));

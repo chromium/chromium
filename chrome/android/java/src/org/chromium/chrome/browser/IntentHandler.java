@@ -1795,6 +1795,11 @@ public class IntentHandler {
         return IntentUtils.safeGetIntExtra(intent, BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID);
     }
 
+    /** Sets the Bring Tab to Front ID extra for a given intent. */
+    public static void setBringTabToFrontId(Intent intent, int tabId) {
+        intent.putExtra(BRING_TAB_TO_FRONT_EXTRA, tabId);
+    }
+
     public static @Nullable String getBringTabGroupToFrontId(Intent intent) {
         if (!wasIntentSenderChrome(intent)) return null;
         return IntentUtils.safeGetStringExtra(intent, BRING_TAB_GROUP_TO_FRONT_EXTRA);
