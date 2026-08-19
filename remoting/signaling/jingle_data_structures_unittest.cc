@@ -402,7 +402,7 @@ TEST(JingleMessageTest, RemotingErrorCode) {
   // clang-format on
 
   for (int i = static_cast<int>(ErrorCode::OK);
-       i <= static_cast<int>(ErrorCode::ERROR_CODE_MAX); i++) {
+       i <= static_cast<int>(ErrorCode::kMaxValue); i++) {
     ErrorCode error = static_cast<ErrorCode>(i);
     std::string message_str = kTestSessionTerminateMessageBegin;
     message_str.append(ErrorCodeToString(error));

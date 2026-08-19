@@ -63,7 +63,7 @@ enum class ErrorCode {
   OPERATION_TIMEOUT = 29,
   SOFTWARE_UPGRADED = 30,
 
-  ERROR_CODE_MAX = SOFTWARE_UPGRADED,
+  kMaxValue = SOFTWARE_UPGRADED,
 };
 
 bool ParseErrorCode(const std::string& name, ErrorCode* result);
