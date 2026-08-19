@@ -71,20 +71,20 @@ TEST(DirectoryListingTest, GetSizeStringForTesting) {
       // digits.
       {base::ByteSize(0), "0 B"},
       {base::ByteSize(512), "512 B"},
-      {base::MiBU(1), "1.0 MB"},
-      {base::GiBU(1), "1.0 GB"},
-      {base::GiBU(10), "10.0 GB"},
-      {base::GiBU(99), "99.0 GB"},
-      {base::GiBU(105), "105 GB"},
-      {base::GiBU(105) + base::MiBU(500), "105 GB"},
+      {base::MiB(1), "1.0 MB"},
+      {base::GiB(1), "1.0 GB"},
+      {base::GiB(10), "10.0 GB"},
+      {base::GiB(99), "99.0 GB"},
+      {base::GiB(105), "105 GB"},
+      {base::GiB(105) + base::MiB(500), "105 GB"},
       {base::ByteSize::Max(), "8192 PB"},
 
-      {base::KiBU(99) + base::ByteSize(103), "99.1 kB"},
-      {base::MiBU(1) + base::ByteSize(103), "1.0 MB"},
-      {base::MiBU(1) + base::KiBU(205), "1.2 MB"},
-      {base::GiBU(1) + base::MiBU(927), "1.9 GB"},
-      {base::GiBU(10), "10.0 GB"},
-      {base::GiBU(100), "100 GB"},
+      {base::KiB(99) + base::ByteSize(103), "99.1 kB"},
+      {base::MiB(1) + base::ByteSize(103), "1.0 MB"},
+      {base::MiB(1) + base::KiB(205), "1.2 MB"},
+      {base::GiB(1) + base::MiB(927), "1.9 GB"},
+      {base::GiB(10), "10.0 GB"},
+      {base::GiB(100), "100 GB"},
   };
 
   for (const auto& i : cases) {
