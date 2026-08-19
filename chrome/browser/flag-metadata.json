@@ -444,6 +444,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-tab-declutter-archive-on-desktop",
+    "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-tabstrip-startup-capture-bug-fix",
     "owners": ["peilinwang@google.com"],
     "expiry_milestone": 160

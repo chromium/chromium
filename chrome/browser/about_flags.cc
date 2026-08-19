@@ -834,6 +834,16 @@ const FeatureEntry::FeatureVariation kAndroidSidePanelDevFeatureVariations[] = {
     {"Window Scoped", kAndroidSidePanelDevFeatureWindowScoped, nullptr},
     {"Tab Scoped", kAndroidSidePanelDevFeatureTabScoped, nullptr}};
 
+const FeatureEntry::Choice kAndroidTabDeclutterArchiveOnDesktopChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {"Force Disable", switches::kEnableFeatures,
+     "AndroidTabDeclutterArchiveOnDesktop:force_disable/true"},
+    {"Disable by Default", switches::kEnableFeatures,
+     "AndroidTabDeclutterArchiveOnDesktop:disable_by_default/true"},
+    {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
+     "AndroidTabDeclutterArchiveOnDesktop"},
+};
+
 const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kReaderModeHeuristicsMarkup,
@@ -6061,6 +6071,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kAndroidNoCaptureWhenScrollingDisabledOnDesktop)},
+
+    {"android-tab-declutter-archive-on-desktop",
+     flag_descriptions::kAndroidTabDeclutterArchiveOnDesktopName,
+     flag_descriptions::kAndroidTabDeclutterArchiveOnDesktopDescription,
+     kOsAndroid,
+     MULTI_VALUE_TYPE(kAndroidTabDeclutterArchiveOnDesktopChoices)},
 
     {"toolbar-capture-fix-for-spas",
      flag_descriptions::kToolbarCaptureFixForSPAsName,

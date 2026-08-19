@@ -298,6 +298,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
     public static final String ANDROID_TABSTRIP_STARTUP_CAPTURE_BUG_FIX =
             "AndroidTabstripStartupCaptureBugFix";
+    public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_ON_DESKTOP =
+            "AndroidTabDeclutterArchiveOnDesktop";
     public static final String ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH =
             "AndroidTabDeclutterDedupeTabIdsKillSwitch";
     public static final String ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH =
@@ -1666,6 +1668,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_AUTOFILL_PREF_OBSERVER, false);
     public static final MutableFlagWithSafeDefault sAndroidContextMenuDisabledMenuItems =
             newMutableFlagWithSafeDefault(ANDROID_CONTEXT_MENU_DISABLED_MENU_ITEMS, false);
+    public static final MutableFlagWithSafeDefault sAndroidTabDeclutterArchiveOnDesktop =
+            newMutableFlagWithSafeDefault(ANDROID_TAB_DECLUTTER_ARCHIVE_ON_DESKTOP, false);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotifications =
             newMutableFlagWithSafeDefault(ANDROID_TIPS_NOTIFICATIONS, false);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotificationsV2 =
@@ -2325,6 +2329,13 @@ public abstract class ChromeFeatureList {
     // Mutable*ParamWithSafeDefault instances.
     /* Alphabetical: */
 
+    public static final MutableBooleanParamWithSafeDefault
+            sAndroidTabDeclutterArchiveOnDesktopDisableByDefault =
+                    sAndroidTabDeclutterArchiveOnDesktop.newBooleanParam(
+                            "disable_by_default", false);
+    public static final MutableBooleanParamWithSafeDefault
+            sAndroidTabDeclutterArchiveOnDesktopForceDisable =
+                    sAndroidTabDeclutterArchiveOnDesktop.newBooleanParam("force_disable", false);
     public static final MutableBooleanParamWithSafeDefault sInlinePdfV2EnableFormFilling =
             sInlinePdfV2.newBooleanParam("enable_form_filling", false);
     public static final MutableBooleanParamWithSafeDefault

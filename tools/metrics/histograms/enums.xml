@@ -9336,6 +9336,8 @@ from previous Chrome versions.
   <int value="-1652906854" label="DsePreload2OnPress:disabled"/>
   <int value="-1652173255"
       label="OmniboxUIExperimentShowPlaceholderWhenCaretShowing:enabled"/>
+  <int value="-1651365630"
+      label="AndroidTabDeclutterArchiveOnDesktop:disabled"/>
   <int value="-1651341724"
       label="PrivateNetworkAccessPermissionPrompt:disabled"/>
   <int value="-1650769314" label="enable-webgl2-compute-context"/>
@@ -20143,6 +20145,7 @@ from previous Chrome versions.
   <int value="1715482477" label="LauncherFuzzyMatchForOmnibox:enabled"/>
   <int value="1716104463" label="enable-fullscreen-app-list"/>
   <int value="1716533817" label="FastPairLowPower:enabled"/>
+  <int value="1717051555" label="AndroidTabDeclutterArchiveOnDesktop:enabled"/>
   <int value="1717173782" label="OmniboxSearchPrefetchOnEnterKeyDown:enabled"/>
   <int value="1717602894" label="TabStripUnification:enabled"/>
   <int value="1717788959" label="SlowDCTimerInterruptsWin:disabled"/>

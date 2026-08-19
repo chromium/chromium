@@ -4802,6 +4802,11 @@ inline constexpr char
         "Disables toolbar bitmap capture when scrolling is disabled for top "
         "controls on Android desktop.";
 
+inline constexpr char kAndroidTabDeclutterArchiveOnDesktopName[] =
+    "Android Tab Declutter Archive On Desktop";
+inline constexpr char kAndroidTabDeclutterArchiveOnDesktopDescription[] =
+    "Configures tab declutter archiving behavior on Android desktop.";
+
 inline constexpr char kToolbarCaptureFixForSPAsName[] =
     "Toolbar Capture Fix for SPAs";
 inline constexpr char kToolbarCaptureFixForSPAsDescription[] =

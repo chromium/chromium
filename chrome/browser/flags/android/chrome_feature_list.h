@@ -64,6 +64,7 @@ BASE_DECLARE_FEATURE(kAndroidSettingsUrl);
 BASE_DECLARE_FEATURE(kAndroidSetupList);
 BASE_DECLARE_FEATURE(kAndroidStartupImprovements);
 BASE_DECLARE_FEATURE(kAndroidSurfaceColorUpdate);
+BASE_DECLARE_FEATURE(kAndroidTabDeclutterArchiveOnDesktop);
 BASE_DECLARE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch);
 BASE_DECLARE_FEATURE(kAndroidTabSkipSaveTabsKillswitch);
 BASE_DECLARE_FEATURE(kAndroidTabstripStartupCaptureBugFix);
