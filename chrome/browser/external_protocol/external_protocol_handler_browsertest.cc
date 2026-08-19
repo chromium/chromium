@@ -10,7 +10,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -27,7 +27,7 @@
 class ExternalProtocolHandlerBrowserTest : public InProcessBrowserTest {
  public:
   content::WebContents* web_content() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 };
 
@@ -159,12 +159,12 @@ class TabAddedRemovedObserver : public TabStripModelObserver {
 #endif
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
                        MAYBE_AutoCloseTabOnNonWebProtocolNavigation) {
-  TabAddedRemovedObserver observer(browser()->tab_strip_model());
-  ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
+  TabAddedRemovedObserver observer(browser()->GetTabStripModel());
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 1);
   ASSERT_TRUE(
       ExecJs(web_content(), "window.open('mailto:test@site.test', '_blank');"));
   observer.Wait();
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 1);
 }
 
 // Flaky on Mac: https://crbug.com/40728467:

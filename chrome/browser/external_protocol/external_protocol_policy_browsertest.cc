@@ -7,7 +7,7 @@
 #include "chrome/browser/external_protocol/constants.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"

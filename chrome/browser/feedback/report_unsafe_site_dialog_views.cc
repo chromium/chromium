@@ -14,9 +14,9 @@
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/web_dialogs/chrome_webui_dialog.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/untrusted_top_chrome_web_ui_controller.h"
@@ -81,14 +81,14 @@ bool ReportUnsafeSiteDialog::IsEnabled(const Profile& profile) {
 }
 
 // static
-void ReportUnsafeSiteDialog::Show(Browser* browser) {
+void ReportUnsafeSiteDialog::Show(BrowserWindowInterface* browser) {
   Profile* profile = browser->GetProfile();
   if (!ReportUnsafeSiteDialog::IsEnabled(*profile)) {
     return;
   }
 
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {
     return;
   }

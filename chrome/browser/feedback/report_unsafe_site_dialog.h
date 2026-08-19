@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_FEEDBACK_REPORT_UNSAFE_SITE_DIALOG_H_
 #define CHROME_BROWSER_FEEDBACK_REPORT_UNSAFE_SITE_DIALOG_H_
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace feedback {
@@ -17,7 +17,7 @@ class ReportUnsafeSiteDialog {
   static bool IsEnabled(const Profile& profile);
 
   // Shows dialog in the passed-in browser.
-  static void Show(Browser* browser);
+  static void Show(BrowserWindowInterface* browser);
 };
 
 }  // namespace feedback

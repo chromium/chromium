@@ -14,8 +14,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest,
   base::HistogramTester histogram_tester;
 
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   EXPECT_EQ(tab_strip_model->count(), 2);
 
   // Split the current tab.
