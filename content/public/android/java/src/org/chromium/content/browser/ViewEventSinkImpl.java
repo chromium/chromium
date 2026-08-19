@@ -9,9 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.res.Configuration;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.ViewFocusChangeSuppression;
@@ -27,7 +28,7 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
     private final WebContentsImpl mWebContents;
 
     // Whether the container view has view-level focus.
-    private @Nullable Boolean mHasViewFocus;
+    private @TriState int mHasViewFocus;
 
     // This is used in place of window focus on the container view, as we can't actually use window
     // focus due to issues where content expects to be focused while a popup steals window focus.
@@ -37,7 +38,7 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
     // Whether we consider this WebContents to have input focus. This is computed through
     // mHasViewFocus and mIsTopActivity. See the comments on mIsTopActivity for how this doesn't
     // exactly match Android's notion of input focus and why we need to do this.
-    private @Nullable Boolean mHasInputFocus;
+    private @TriState int mHasInputFocus;
     private boolean mHideKeyboardOnBlur;
 
     private static final class UserDataFactoryLazyHolder {
@@ -95,8 +96,9 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
     public void onViewFocusChanged(boolean gainFocus) {
         if (ViewFocusChangeSuppression.from(mWebContents).isSuppressed()) return;
 
-        if (mHasViewFocus != null && mHasViewFocus == gainFocus) return;
-        mHasViewFocus = gainFocus;
+        @TriState int viewFocus = TriStateUtils.from(gainFocus);
+        if (mHasViewFocus == viewFocus) return;
+        mHasViewFocus = viewFocus;
         onFocusChanged();
 
         // Stylus Writing
@@ -130,12 +132,13 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
 
     private void onFocusChanged() {
         // Wait for view focus to be set before propagating focus changes.
-        if (mHasViewFocus == null) return;
+        if (mHasViewFocus == TriState.NOT_SET) return;
 
         // See the comments on mIsTopActivity for why we use it to compute input focus.
-        boolean hasInputFocus = mHasViewFocus && mIsTopActivity;
-        if (mHasInputFocus != null && mHasInputFocus == hasInputFocus) return;
-        mHasInputFocus = hasInputFocus;
+        boolean hasInputFocus = (mHasViewFocus == TriState.TRUE) && mIsTopActivity;
+        @TriState int inputFocus = TriStateUtils.from(hasInputFocus);
+        if (mHasInputFocus == inputFocus) return;
+        mHasInputFocus = inputFocus;
 
         if (mWebContents == null || mWebContents.isDestroyed()) {
             // CVC is on its way to destruction. The rest needs not running as all the states
@@ -144,8 +147,8 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
             return;
         }
         WindowEventObserverManager.from(mWebContents)
-                .onViewFocusChanged(mHasInputFocus, mHideKeyboardOnBlur);
-        mWebContents.setFocus(mHasInputFocus);
+                .onViewFocusChanged(hasInputFocus, mHideKeyboardOnBlur);
+        mWebContents.setFocus(hasInputFocus);
     }
 
     // ActivityStateObserver

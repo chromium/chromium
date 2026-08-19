@@ -11,6 +11,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
@@ -32,7 +34,7 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
     // Remember the stack for clearing native the native stack for debugging use after destroy.
     private @Nullable Throwable mNativeDestroyThrowable;
 
-    private @Nullable Boolean mIsGestureNavigationModeCached;
+    private @TriState int mIsGestureNavigationModeCached;
 
     private @Nullable Toast mPointerLockToast;
 
@@ -96,11 +98,11 @@ public class RenderWidgetHostViewImpl implements RenderWidgetHostView {
     @Override
     public void setIsGestureNavigationMode(boolean isGestureNavigationMode) {
         if (isDestroyed()) return;
-        if (mIsGestureNavigationModeCached != null
-                && mIsGestureNavigationModeCached == isGestureNavigationMode) {
+        @TriState int mode = TriStateUtils.from(isGestureNavigationMode);
+        if (mIsGestureNavigationModeCached == mode) {
             return;
         }
-        mIsGestureNavigationModeCached = isGestureNavigationMode;
+        mIsGestureNavigationModeCached = mode;
         RenderWidgetHostViewImplJni.get()
                 .setIsGestureNavigationMode(getNativePtr(), isGestureNavigationMode);
     }
