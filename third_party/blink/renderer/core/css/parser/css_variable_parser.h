@@ -89,6 +89,10 @@ class CORE_EXPORT CSSVariableParser {
   // NOTE: We have to strip both leading and trailing whitespace (and comments)
   // from values as per spec, but we assume the tokenizer has already done the
   // leading ones for us; see comment on CSSPropertyParser::ParseValue().
+  //
+  // Note that this does not hold for values we have substituted into, which
+  // may well begin with whitespace; the fallback of
+  // var(--a, var(--empty) 1px) substitutes as " 1px".
   static StringView StripTrailingWhitespaceAndComments(StringView);
 
   // Collect any instances of <dashed-function> anywhere in the stream.

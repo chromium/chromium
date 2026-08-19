@@ -732,6 +732,12 @@ CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
   original_text =
       CSSVariableParser::StripTrailingWhitespaceAndComments(original_text);
 
+  // We consumed the leading whitespace before taking `value_start_offset`, and
+  // just stripped the trailing one. (The test needs to be after the trailing
+  // strip, or we could look at trailing space believing it was leading.)
+  DCHECK(original_text.empty() ||
+         original_text.Find(IsNotHTMLSpace<UChar>) == 0u);
+
   return CSSVariableData::Create(original_text, is_animation_tainted, false,
                                  features);
 }
@@ -847,15 +853,7 @@ StringView CSSVariableParser::StripTrailingWhitespaceAndComments(
     }
   }
 
-  StringView ret = StringView(text, 0, string_len);
-
-  // Leading whitespace should already have been stripped.
-  // (This test needs to be after we stripped trailing spaces,
-  // or we could look at trailing space believing it was leading.)
-  // SAFETY: ret is checked for emptiness before access.
-  DCHECK(ret.empty() || !IsHTMLSpace(UNSAFE_BUFFERS(ret[0])));
-
-  return ret;
+  return StringView(text, 0, string_len);
 }
 
 void CSSVariableParser::CollectDashedFunctions(CSSParserTokenStream& stream,

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Whitespace around a substituted value</title>
+    <link rel="help" href="https://drafts.csswg.org/css-variables-2/#serializing-custom-props">
+    <script src="/resources/testharness.js"></script>
+    <script src="/resources/testharnessreport.js"></script>
+    <!--
+      Not a WPT: this asserts the exact serialization of computed custom
+      property values around a substitution, and we don't match css-variables-2
+      § 4.1 there. That section asks for computed values to be serialized
+      "exactly as specified by the author, save for the replacement of any
+      var() functions", but we trim the trailing end of a fallback and drop
+      comments entirely -- see the deviations at the bottom.
+
+      Note that the WPTs covering this shape (css-variables/
+      variable-declaration-26.html and variable-reference-03.html) are
+      reftests, i.e. they check that the substituted value still parses,
+      not what it serializes as.
+    -->
+    <style>
+      #preserved {
+        --empty:;
+        --leading: var(--empty) 1/2;
+        --trailing: 1/2 var(--empty);
+        --both: var(--empty) 1/2 var(--empty);
+        --several: 1/2   var(--empty)   3/4;
+        --empty-fallback: var(--nope,) 1/2;
+
+        /* Same, but with the empty substitution at the start of a fallback
+           rather than of the declaration. This used to hit a DCHECK. */
+        --in-fallback: var(--undefined, var(--empty) 1/2);
+        --in-fallback-indirect: var(--undefined, var(--leading));
+      }
+      #deviations {
+        --empty:;
+        /* We trim the trailing end of a fallback, unlike the leading end. */
+        --trailing-trimmed: var(--undefined, 1/2   );
+        --trailing-comment: var(--undefined, 1/2 /* comment */);
+        /* The example from § 4.1, which asks for "/* foo */ /* baz */ /* bar */".
+           We drop comments, so a comment-only value is empty for us. */
+        --y: /* baz */;
+        --x: /* foo */ var(--y) /* bar */;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="preserved"></div>
+    <div id="deviations"></div>
+    <script>
+      const preserved = {
+        '--leading': ' 1/2',
+        '--trailing': '1/2 ',
+        '--both': ' 1/2 ',
+        '--several': '1/2      3/4',
+        '--empty-fallback': ' 1/2',
+        '--in-fallback': ' 1/2',
+        '--in-fallback-indirect': ' 1/2',
+      };
+      const preserved_style = getComputedStyle(document.getElementById('preserved'));
+      for (const [name, expected] of Object.entries(preserved)) {
+        test(() => {
+          assert_equals(preserved_style.getPropertyValue(name), expected);
+        }, `${name} keeps the whitespace around the substitution`);
+      }
+
+      const deviations_style =
+          getComputedStyle(document.getElementById('deviations'));
+      test(() => {
+        assert_equals(deviations_style.getPropertyValue('--trailing-trimmed'),
+                      '1/2');
+        assert_equals(deviations_style.getPropertyValue('--trailing-comment'),
+                      '1/2');
+      }, 'KNOWN DEVIATION: a fallback is trimmed on the trailing end');
+
+      test(() => {
+        assert_equals(deviations_style.getPropertyValue('--x'), '');
+      }, 'KNOWN DEVIATION: comments are dropped rather than preserved');
+    </script>
+  </body>
+</html>
