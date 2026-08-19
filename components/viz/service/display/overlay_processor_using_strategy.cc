@@ -47,6 +47,15 @@
 namespace viz {
 namespace {
 
+// Note: These metrics are used in ChromeOS for performance tracking and in
+// TAST tests.
+constexpr char kNumOverlaysPromotedHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysPromotedV2";
+constexpr char kNumOverlaysAttemptedHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysAttemptedV2";
+constexpr char kNumOverlaysFailedHistogramName[] =
+    "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysFailedV2";
+
 using OverlayProposedCandidateIndex =
     std::vector<OverlayProposedCandidate>::size_type;
 using ConstOverlayProposedCandidateIterator =
@@ -300,6 +309,9 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   }
 
   DCHECK(candidates->empty() || success);
+  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysPromotedHistogramName,
+                           candidates->size());
+
   UpdateOverlayStatusMap(*candidates);
   UpdateDamageRect(surface_damage_rect_list, *damage_rect);
 
@@ -705,8 +717,10 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
                                    render_pass, *candidates);
   }
 
+  int num_overlays_attempted = 0;
   bool has_required_overlay = false;
   for (auto&& candidate : proposed_candidates) {
+    num_overlays_attempted++;
     if (candidate.candidate.requires_overlay) {
       has_required_overlay = true;
     }
@@ -766,10 +780,20 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
         }
       }
 
+      UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName,
+                               num_overlays_attempted);
+      UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName,
+                               num_overlays_attempted - 1);
+
       RegisterOverlayRequirement(has_required_overlay);
       return true;
     }
   }
+
+  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName,
+                           num_overlays_attempted);
+  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName,
+                           num_overlays_attempted);
 
   RegisterOverlayRequirement(has_required_overlay);
 
@@ -810,6 +834,8 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     AggregatedRenderPass* render_pass,
     OverlayCandidateList& candidates) {
   if (sorted_candidates.empty()) {
+    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName, 0);
+    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName, 0);
     return false;
   }
 
@@ -830,6 +856,8 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   // If `sorted_candidates` only contains candidates with masks, we can skip
   // promoting them to overlays.
   if (candidates_without_masks_count == 0) {
+    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName, 0);
+    UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName, 0);
     return false;
   }
 
@@ -900,6 +928,8 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
     CheckOverlaySupport(new_plane_candidate, &candidates);
   }
 
+  const int num_overlays_attempted = candidates.size();
+
   // Update the test candidates so we can process the result, use EraseIf below
   // and tell the OverlayCombinationCache which ones succeeded/failed.
   SyncOverlayCandidates(test_candidates, candidates,
@@ -926,6 +956,12 @@ bool OverlayProcessorUsingStrategy::AttemptMultipleOverlays(
   std::erase_if(test_candidates, [](auto& proposed) -> bool {
     return !proposed.candidate.overlay_handled;
   });
+
+  const int num_overlays_promoted = candidates.size();
+  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysAttemptedHistogramName,
+                           num_overlays_attempted);
+  UMA_HISTOGRAM_COUNTS_100(kNumOverlaysFailedHistogramName,
+                           num_overlays_attempted - num_overlays_promoted);
 
   if (candidates.empty()) {
     LogStrategyEnumUMA(OverlayStrategy::kNoStrategyAllFail);
