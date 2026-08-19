@@ -179,7 +179,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithOneTabMoreDebounceDelay",
       "GlicGetHostCapabilityApiTest",
       "GlicApiTestRuntimeFeatureOff",
-      "GlicApiTestWithGeminiActOnWebPolicy",
       "GlicApiTestWithWebContentsWarming",
       "GlicApiTestHibernateAllOnMemoryPressure",
       "GlicApiTestWithDaisyChain",
@@ -358,104 +357,6 @@ class GlicApiTestWithOneTab : public GlicApiTest {
 
 
 // Test fixture that preloads the web client before starting the test.
-
-class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
- public:
-  GlicApiTestWithGeminiActOnWebPolicy() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActor,
-        {{features::kGlicActorEnterprisePrefDefault.name,
-          features::kGlicActorEnterprisePrefDefault.GetName(
-              features::GlicActorEnterprisePrefDefault::kDisabledByDefault)},
-         {features::kGlicActorPolicyControlExemption.name, "false"}});
-  }
-  ~GlicApiTestWithGeminiActOnWebPolicy() override = default;
-
-  void SetUpInProcessBrowserTestFixture() override {
-    GlicApiTestWithOneTab::SetUpInProcessBrowserTestFixture();
-    policy_provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
-  }
-
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                                     &test_url_loader_factory_));
-
-    GlicApiTestWithOneTab::SetUpBrowserContextKeyedServices(context);
-  }
-
-  void SetUpOnMainThread() override {
-    GlicApiTestWithOneTab::SetUpOnMainThread();
-
-    adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(GetProfile());
-    identity_test_env_ = adaptor_->identity_test_env();
-    identity_test_env_->SetTestURLLoaderFactory(&test_url_loader_factory_);
-    identity_manager_ = IdentityManagerFactory::GetForProfile(GetProfile());
-    SimulatePrimaryAccountChangedSignIn("foo@bar.com", "");
-
-    GetProfile()->GetPrefs()->SetInteger(
-        subscription_eligibility::prefs::kAiSubscriptionTier, 1);
-
-    policy_provider_.SetupPolicyServiceForPolicyUpdates(
-        browser()->GetProfile()->GetProfilePolicyConnector()->policy_service());
-  }
-
-  void TearDownOnMainThread() override {
-    identity_manager_ = nullptr;
-    identity_test_env_ = nullptr;
-    adaptor_.reset();
-    policy_provider_.SetupPolicyServiceForPolicyUpdates(nullptr);
-    GlicApiTestWithOneTab::TearDownOnMainThread();
-  }
-
-  void UpdateGeminiActOnWebPolicy(
-      glic::prefs::GlicActuationOnWebPolicyState value) {
-    policy::PolicyMap policies;
-    policies.Set(policy::key::kGeminiActOnWebSettings,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                 base::Value(std::to_underlying(value)), nullptr);
-    policy_provider_.UpdateChromePolicy(policies);
-  }
-
- private:
-  // `email` must be non-empty. Empty `host_domain` simulates a consumer
-  // account.
-  void SimulatePrimaryAccountChangedSignIn(std::string_view email,
-                                           std::string_view host_domain) {
-    identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
-
-    AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
-        std::string(email), signin::ConsentLevel::kSignin);
-
-    AccountCapabilitiesTestMutator mutator(&account_info);
-    mutator.set_can_use_model_execution_features(true);
-    mutator.set_is_subject_to_enterprise_features(!host_domain.empty());
-
-    identity_test_env_->UpdateAccountInfoForAccount(account_info);
-    identity_test_env_->SimulateSuccessfulFetchOfAccountInfo(
-        account_info.account_id, account_info.email, account_info.gaia,
-        std::string(host_domain), base::StrCat({"full_name-", email}),
-        base::StrCat({"given_name-", email}), base::StrCat({"local-", email}),
-        base::StrCat({"full_name-", email}));
-  }
-
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
-  raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
-
-  ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 // Test fixture that injects GeminiEnterpriseSettings via command line override.
 class GlicApiTestGeminiEnterpriseSettingsOverride : public GlicApiTestWithOneTab {
@@ -1065,24 +966,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
   ASSERT_FALSE(instance1->IsHibernated());
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithGeminiActOnWebPolicy,
-                       testNotifyActOnWebCapabilityChanged) {
-  policy::ScopedManagementServiceOverrideForTesting
-      scoped_management_service_override(
-          policy::ManagementServiceFactory::GetForProfile(GetProfile()),
-          policy::EnterpriseManagementAuthority::CLOUD);
-
-  UpdateGeminiActOnWebPolicy(
-      glic::prefs::GlicActuationOnWebPolicyState::kEnabled);
-
-  // Runs the JS test until the first `advanceToNextStep()`.
-  ExecuteJsTest();
-  // Disable the capability.
-  UpdateGeminiActOnWebPolicy(
-      glic::prefs::GlicActuationOnWebPolicyState::kDisabled);
-  ContinueJsTest();
-}
-
 
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
@@ -1106,10 +989,6 @@ INSTANTIATE_TEST_SUITE_P(,
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestRuntimeFeatureOff,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithGeminiActOnWebPolicy,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 

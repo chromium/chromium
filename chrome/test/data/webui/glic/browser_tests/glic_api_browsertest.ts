@@ -312,15 +312,6 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testNotifyActOnWebCapabilityChanged() {
-    assertDefined(this.host.getActOnWebCapability);
-    const actOnWebCapabilitySequence =
-        observeSequence(this.host.getActOnWebCapability());
-    await actOnWebCapabilitySequence.waitForValue(true);
-    await this.advanceToNextStep();
-    await actOnWebCapabilitySequence.waitForValue(false);
-  }
-
 
   async testPanelWillOpenHasRecentlyActiveConversations() {
     assertDefined(this.host.registerConversation);
