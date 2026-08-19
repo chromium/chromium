@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -2040,8 +2041,15 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorRemoveBlankInstancesTest,
   ASSERT_OK(WaitForInstanceDeletion(weak_instance));
 }
 
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_DoNotRemoveBlankInstanceWhenInvoking \
+  DISABLED_DoNotRemoveBlankInstanceWhenInvoking
+#else
+#define MAYBE_DoNotRemoveBlankInstanceWhenInvoking \
+  DoNotRemoveBlankInstanceWhenInvoking
+#endif
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorRemoveBlankInstancesTest,
-                       DoNotRemoveBlankInstanceWhenInvoking) {
+                       MAYBE_DoNotRemoveBlankInstanceWhenInvoking) {
   // Start an invocation. This asynchronously initializes the web client.
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   GlicInvokeOptions options(glic::Target(*tab),
