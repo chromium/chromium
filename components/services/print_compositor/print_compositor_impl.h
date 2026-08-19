@@ -56,8 +56,15 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
     virtual ~Addon() = default;
 
     // Called when drawing a page to `canvas` of a given `size`. The addon may
-    // draw into `canvas` as well.
-    virtual void OnDrawPage(SkCanvas* canvas, const SkSize& size) = 0;
+    // draw into `canvas` as well. By default, does nothing.
+    virtual void OnDrawPage(SkCanvas* canvas, const SkSize& size);
+
+    // Called when post-processing an existing PDF document. By default, returns
+    // the PDF region unmodified (pass-through). Addons can override this to
+    // inspect or overlay visual content onto the PDF. Returns an invalid region
+    // on error.
+    virtual base::ReadOnlySharedMemoryRegion OnOverlayPdf(
+        base::ReadOnlySharedMemoryRegion pdf_region);
   };
 
   // Creates an instance with an optional Mojo receiver (may be null) and
@@ -145,6 +152,9 @@ class PrintCompositorImpl : public mojom::PrintCompositor {
   virtual void FulfillRequest(
       base::span<const uint8_t> serialized_content,
       const ContentToFrameMap& subframe_content_map,
+      CompositePagesCallback callback);
+  virtual void FulfillPdfRequest(
+      base::ReadOnlySharedMemoryRegion serialized_content,
       CompositePagesCallback callback);
   virtual void FinishDocumentRequest(
       FinishDocumentCompositionCallback callback);

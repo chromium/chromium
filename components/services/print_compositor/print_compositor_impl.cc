@@ -63,6 +63,14 @@ sk_sp<SkDocument> MakeDocument(
 
 }  // namespace
 
+void PrintCompositorImpl::Addon::OnDrawPage(SkCanvas* canvas,
+                                            const SkSize& size) {}
+
+base::ReadOnlySharedMemoryRegion PrintCompositorImpl::Addon::OnOverlayPdf(
+    base::ReadOnlySharedMemoryRegion pdf_region) {
+  return pdf_region;
+}
+
 PrintCompositorImpl::PrintCompositorImpl(
     mojo::PendingReceiver<mojom::PrintCompositor> receiver,
     bool initialize_environment,
@@ -314,10 +322,7 @@ void PrintCompositorImpl::HandleCompositionRequest(
     bool is_pdf,
     CompositePagesCallback callback) {
   if (is_pdf) {
-    // TODO(crbug.com/518763216): Handle PDF documents in PrintCompositorImpl.
-    // For now, pass the PDF document through to the callback.
-    std::move(callback).Run(mojom::PrintCompositor::Status::kSuccess,
-                            std::move(serialized_content));
+    FulfillPdfRequest(std::move(serialized_content), std::move(callback));
     return;
   }
 
@@ -484,6 +489,29 @@ void PrintCompositorImpl::FulfillRequest(
   auto status =
       CompositePages(serialized_content, subframe_content_map, &region);
   std::move(callback).Run(status, std::move(region));
+}
+
+void PrintCompositorImpl::FulfillPdfRequest(
+    base::ReadOnlySharedMemoryRegion serialized_content,
+    CompositePagesCallback callback) {
+  // Pass-through case: if no addon is attached, return the PDF content
+  // unmodified with kSuccess.
+  if (!addon_) {
+    std::move(callback).Run(mojom::PrintCompositor::Status::kSuccess,
+                            std::move(serialized_content));
+    return;
+  }
+
+  base::ReadOnlySharedMemoryRegion output_region =
+      addon_->OnOverlayPdf(std::move(serialized_content));
+
+  // If Addon post-processing fails, abort printing with kContentFormatError
+  // rather than silently falling back to unmodified PDF content.
+  mojom::PrintCompositor::Status status =
+      output_region.IsValid() ? mojom::PrintCompositor::Status::kSuccess
+                              : mojom::PrintCompositor::Status::kContentFormatError;
+
+  std::move(callback).Run(status, std::move(output_region));
 }
 
 void PrintCompositorImpl::FinishDocumentRequest(

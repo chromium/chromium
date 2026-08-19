@@ -98,6 +98,14 @@ class TestBlueSquareAddon : public PrintCompositorImpl::Addon {
   }
 };
 
+class TestFailingPdfAddon : public PrintCompositorImpl::Addon {
+ public:
+  base::ReadOnlySharedMemoryRegion OnOverlayPdf(
+      base::ReadOnlySharedMemoryRegion pdf_region) override {
+    return base::ReadOnlySharedMemoryRegion();
+  }
+};
+
 class PrintCompositorImplTest : public testing::Test {
  public:
   PrintCompositorImplTest()
@@ -473,6 +481,69 @@ TEST_F(PrintCompositorImplTest, PDFDocumentPassThrough) {
   EXPECT_EQ(
       result_mapping.GetMemoryAsSpan<const uint8_t>().first(kPdfData.size()),
       base::as_byte_span(kPdfData));
+}
+
+TEST_F(PrintCompositorImplTest, PDFDocumentPassThroughWithDefaultAddon) {
+  PrintCompositorImpl impl(mojo::NullReceiver(),
+                           /*initialize_environment=*/false,
+                           /*io_task_runner=*/nullptr);
+  impl.SetAddonForTesting(std::make_unique<TestBlueSquareAddon>());
+
+  constexpr std::string_view kPdfData =
+      "%PDF-1.5 dummy content that is long enough to satisfy LooksLikePdf size "
+      "requirement of 50 bytes";
+  base::MappedReadOnlyRegion region_mapping =
+      base::ReadOnlySharedMemoryRegion::Create(kPdfData.size());
+  ASSERT_TRUE(region_mapping.IsValid());
+  region_mapping.mapping.GetMemoryAsSpan<uint8_t>()
+      .first(kPdfData.size())
+      .copy_from(base::as_byte_span(kPdfData));
+
+  base::test::TestFuture<mojom::PrintCompositor::Status,
+                         base::ReadOnlySharedMemoryRegion>
+      future;
+
+  impl.CompositeDocument(1, std::move(region_mapping.region),
+                         /*is_pdf=*/true, ContentToFrameMap(),
+                         future.GetCallback());
+
+  EXPECT_EQ(future.Get<0>(), mojom::PrintCompositor::Status::kSuccess);
+  ASSERT_TRUE(future.Get<1>().IsValid());
+  EXPECT_EQ(future.Get<1>().GetSize(), kPdfData.size());
+
+  base::ReadOnlySharedMemoryMapping result_mapping = future.Get<1>().Map();
+  ASSERT_TRUE(result_mapping.IsValid());
+  EXPECT_EQ(
+      result_mapping.GetMemoryAsSpan<const uint8_t>().first(kPdfData.size()),
+      base::as_byte_span(kPdfData));
+}
+
+TEST_F(PrintCompositorImplTest, PDFDocumentFailsWithInvalidAddon) {
+  PrintCompositorImpl impl(mojo::NullReceiver(),
+                           /*initialize_environment=*/false,
+                           /*io_task_runner=*/nullptr);
+  impl.SetAddonForTesting(std::make_unique<TestFailingPdfAddon>());
+
+  constexpr std::string_view kPdfData =
+      "%PDF-1.5 dummy content that is long enough to satisfy...";
+  base::MappedReadOnlyRegion region_mapping =
+      base::ReadOnlySharedMemoryRegion::Create(kPdfData.size());
+  ASSERT_TRUE(region_mapping.IsValid());
+  region_mapping.mapping.GetMemoryAsSpan<uint8_t>()
+      .first(kPdfData.size())
+      .copy_from(base::as_byte_span(kPdfData));
+
+  base::test::TestFuture<mojom::PrintCompositor::Status,
+                         base::ReadOnlySharedMemoryRegion>
+      future;
+
+  impl.CompositeDocument(1, std::move(region_mapping.region),
+                         /*is_pdf=*/true, ContentToFrameMap(),
+                         future.GetCallback());
+
+  EXPECT_EQ(future.Get<0>(),
+            mojom::PrintCompositor::Status::kContentFormatError);
+  EXPECT_FALSE(future.Get<1>().IsValid());
 }
 
 TEST_F(PrintCompositorImplTest, InvalidContentFormat) {
