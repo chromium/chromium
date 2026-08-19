@@ -961,6 +961,24 @@ inline LayoutStateAssistantPassKey PassKey() {
   return _AIMEligibilityService && _AIMEligibilityService->IsAimEligible();
 }
 
+// Returns YES if the AIM eligibility check is pending.
+- (BOOL)isAimCheckPending {
+  if (!_AIMEligibilityService) {
+    return NO;
+  }
+  if (!_AIMEligibilityService->IsAimLocallyEligible()) {
+    return NO;
+  }
+  if (!_AIMEligibilityService->IsServerEligibilityEnabled()) {
+    return NO;
+  }
+  if (net::NetworkChangeNotifier::IsOffline()) {
+    return NO;
+  }
+  return _AIMEligibilityService->GetMostRecentResponseSource() ==
+         AimEligibilityService::EligibilityResponseSource::kDefault;
+}
+
 // Returns YES if Lens is eligible to be shown in the App Bar.
 - (BOOL)isLensEligible {
   if (_overrideLensAvailabilityForTesting) {
@@ -1080,10 +1098,18 @@ inline LayoutStateAssistantPassKey PassKey() {
                             _authenticationService &&
                             _authenticationService->HasPrimaryIdentity() &&
                             _geminiService->IsWorkspacePolicyCheckPending();
-  if (!geminiCheckPending) {
-    _initialAssistantButtonStateRecorded = YES;
-    UmaHistogramEnumeration(kAppBarAssistantButtonStateOnLoadHistogram, state);
+  if (geminiCheckPending) {
+    return;
   }
+
+  // If Gemini is chosen, AIM eligibility cannot change the result since Gemini
+  // takes precedence. Otherwise, wait if AIM eligibility is still pending.
+  if (state != AppBarAssistantButtonState::kAsk && [self isAimCheckPending]) {
+    return;
+  }
+
+  _initialAssistantButtonStateRecorded = YES;
+  UmaHistogramEnumeration(kAppBarAssistantButtonStateOnLoadHistogram, state);
 }
 
 // Updates for `incognito` being visible.
