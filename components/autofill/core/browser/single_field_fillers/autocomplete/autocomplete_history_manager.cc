@@ -54,8 +54,7 @@ namespace autofill {
 
 namespace {
 // Returns true if the field type is eligible to be saved in the autocomplete
-// history. Some types (promo codes, IBANs, CCs, CVCs) are excluded. Loyalty
-// card IDs are also excluded if they were autofilled.
+// history. Some types (promo codes, IBANs, CCs, CVCs) are excluded.
 bool IsFieldTypeSaveable(const FormStructure* form, FieldGlobalId field_id) {
   const AutofillField* field = form ? form->GetFieldById(field_id) : nullptr;
   if (!field) {
@@ -69,13 +68,6 @@ bool IsFieldTypeSaveable(const FormStructure* form, FieldGlobalId field_id) {
       case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       case CREDIT_CARD_NUMBER:
         return false;
-      case LOYALTY_MEMBERSHIP_ID:
-        if (field->last_modifier() == FieldModifier::kAutofill &&
-            !base::FeatureList::IsEnabled(
-                features::kAutofillPreventAutofillFromSavingToAutocomplete)) {
-          return false;
-        }
-        break;
       case NO_SERVER_DATA:
       case UNKNOWN_TYPE:
       case EMPTY_TYPE:
@@ -171,6 +163,7 @@ bool IsFieldTypeSaveable(const FormStructure* form, FieldGlobalId field_id) {
       case PASSPORT_ISSUING_COUNTRY:
       case PASSPORT_EXPIRATION_DATE:
       case PASSPORT_ISSUE_DATE:
+      case LOYALTY_MEMBERSHIP_ID:
       case LOYALTY_MEMBERSHIP_PROGRAM:
       case LOYALTY_MEMBERSHIP_PROVIDER:
       case VEHICLE_LICENSE_PLATE:
@@ -218,11 +211,9 @@ bool IsFieldTypeSaveable(const FormStructure* form, FieldGlobalId field_id) {
 //  - neither empty nor whitespace-only value
 //  - text field
 //  - autocomplete is not disabled
-//  - field type is eligible (e.g. not a CVC, promo code, or autofilled loyalty
-//    card)
+//  - field type is eligible (e.g. not a CVC or promo code)
 //  - field was not autofilled by a structured product (e.g., Address,
-//    Payments), when
-//    `features::kAutofillPreventAutofillFromSavingToAutocomplete` is enabled.
+//    Payments)
 //  - value is not a credit card number, IBAN, or Social Security Number (SSN)
 //  - field has user-typed input or is focusable (this is a mild criterion but
 //    this way it is consistent for all platforms)
@@ -257,28 +248,25 @@ bool IsFieldValueSaveable(const FormFieldData& field,
   }
 
   // Reject fields with types that are ineligible for autocomplete such as
-  // credit card numbers, CVCs, IBANs, promo codes, or autofilled loyalty cards.
+  // credit card numbers, CVCs, IBANs, or promo codes.
   if (!IsFieldTypeSaveable(form, field.global_id())) {
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPreventAutofillFromSavingToAutocomplete)) {
-    const AutofillField* autofill_field =
-        form ? form->GetFieldById(field.global_id()) : nullptr;
-    if (autofill_field &&
-        autofill_field->all_modifiers().contains(FieldModifier::kAutofill) &&
-        (autofill_field->last_modifier() != FieldModifier::kUser ||
-         autofill_field->filling_product() != FillingProduct::kAutocomplete)) {
-      // If a field has been autofilled by a structured product (e.g. Address,
-      // Payments, Autofill AI), we avoid saving the submitted value to
-      // Autocomplete, even if the user edited it.
-      //
-      // However, if the field was filled by Autocomplete and then edited by
-      // the user, we should save the edited value as it represents a new
-      // user-edited autocomplete value.
-      return false;
-    }
+  const AutofillField* autofill_field =
+      form ? form->GetFieldById(field.global_id()) : nullptr;
+  if (autofill_field &&
+      autofill_field->all_modifiers().contains(FieldModifier::kAutofill) &&
+      (autofill_field->last_modifier() != FieldModifier::kUser ||
+       autofill_field->filling_product() != FillingProduct::kAutocomplete)) {
+    // If a field has been autofilled by a structured product (e.g. Address,
+    // Payments, Autofill AI), we avoid saving the submitted value to
+    // Autocomplete, even if the user edited it.
+    //
+    // However, if the field was filled by Autocomplete and then edited by
+    // the user, we should save the edited value as it represents a new
+    // user-edited autocomplete value.
+    return false;
   }
 
   // Do not save sensitive values like credit card numbers, IBANs, or Social
@@ -419,12 +407,10 @@ void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
   base::TimeDelta time_delta = base::Time::Now() - entry.date_last_used();
   AutofillMetrics::LogAutocompleteDaysSinceLastUse(time_delta.InDays());
 
-  if (profile_database_ &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillPreventAutofillFromSavingToAutocomplete)) {
-    // When the feature is enabled, form submission will skip saving any fields
-    // that were autofilled. Therefore, we must update the autocomplete entry's
-    // metadata immediately when the suggestion is selected.
+  if (profile_database_) {
+    // Form submission will skip saving any fields that were autofilled.
+    // Therefore, we must update the autocomplete entry's metadata immediately
+    // when the suggestion is selected.
     FormFieldData field;
     field.set_name(entry.key().name());
     field.set_value(entry.key().value());

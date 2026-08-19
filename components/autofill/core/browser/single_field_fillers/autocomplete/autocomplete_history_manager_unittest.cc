@@ -745,10 +745,6 @@ TEST_F(AutocompleteHistoryManagerTest,
 
 TEST_F(AutocompleteHistoryManagerTest,
        OnSingleFieldSuggestionSelected_UpdatesMetadata) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillPreventAutofillFromSavingToAutocomplete);
-
   Suggestion suggestion(u"TestValue", SuggestionType::kAutocompleteEntry);
   suggestion.payload = GetAutocompleteEntry(
       test_field_.name(), u"TestValue",
@@ -1078,13 +1074,8 @@ TEST_F(AutocompleteHistoryManagerTest, LoyaltyCardManualEntryIsSaved) {
 }
 
 // Tests that fields autofilled by standard Autofill or Autocomplete are not
-// saved to the Autocomplete database during form submission when the
-// kAutofillPreventAutofillFromSavingToAutocomplete feature is enabled.
+// saved to the Autocomplete database during form submission.
 TEST_F(AutocompleteHistoryManagerTest, PreventSavingAutofilledFields) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillPreventAutofillFromSavingToAutocomplete);
-
   FormData form = test::GetFormData(
       {.fields = {
            {.role = NAME_FIRST, .value = u"John"},
@@ -1126,10 +1117,6 @@ TEST_F(AutocompleteHistoryManagerTest, PreventSavingAutofilledFields) {
 // Autofill product and then edited, it is still prevented from being saved.
 TEST_F(AutocompleteHistoryManagerTest,
        PreventSavingAutofilledFields_AllowEditedAutocomplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillPreventAutofillFromSavingToAutocomplete);
-
   FormData form =
       test::GetFormData({.fields = {
                              {.role = NAME_FIRST, .value = u"JohnEdited"},
