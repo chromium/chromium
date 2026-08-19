@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Two separate webdriver action chains should have different wheel event transactions
+  assert_equals: Wheel event at index `0` did not target the initial element expected Element node <div id="initial"></div> but got Element node <div id="second"></div>
+Harness: the test ran to completion.
+

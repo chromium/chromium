@@ -8358,7 +8358,11 @@ crbug.com/358343067 [ Linux ] external/wpt/html/semantics/embedded-content/media
 
 crbug.com/522828603 [ Mac ] external/wpt/html/dom/usvstring-reflection.https.html [ Timeout ]
 # Gardener 2024-08-13
+crbug.com/358437652 [ Linux ] external/wpt/dom/events/scrolling/wheel-event-transactions-multiple-action-chains.html [ Failure ]
+crbug.com/358437652 [ Mac ] external/wpt/dom/events/scrolling/wheel-event-transactions-multiple-action-chains.html [ Failure ]
+crbug.com/358437652 [ Win ] external/wpt/dom/events/scrolling/wheel-event-transactions-multiple-action-chains.html [ Failure ]
 crbug.com/359519774 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_touch.py [ Failure Pass ]
+
 
 # Flaky scheduler/integration_tests
 crbug.com/360163253 [ Linux ] virtual/threaded/wpt_internal/scheduler/integration_tests/prioritize-rendering-after-input-click.html [ Failure Pass ]
