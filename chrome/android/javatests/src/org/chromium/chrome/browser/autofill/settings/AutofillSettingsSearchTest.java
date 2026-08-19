@@ -309,6 +309,26 @@ public class AutofillSettingsSearchTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_SHOPPING)
+    public void testSearchShoppingOptIn() {
+        searchSettings("fill shopping");
+
+        onViewWaiting( // Wait for debounce and Search results to appear.
+                        allOf(
+                                withId(android.R.id.title),
+                                withText(R.string.autofill_shopping_opt_in_toggle_label)))
+                .perform(click());
+
+        onView(
+                        allOf(
+                                hasDescendant(
+                                        withText(R.string.autofill_shopping_opt_in_toggle_label)),
+                                isHighlighted()))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testSearchAutofill_autofillAndPasswordsDisabled() {
         searchSettings("autofill");
