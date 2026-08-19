@@ -412,6 +412,10 @@ void DataProtectionNavigationObserver::DidRedirectNavigation(
 
   if (ShouldPerformRealTimeUrlCheck(
           navigation_handle->GetWebContents()->GetBrowserContext())) {
+    is_verdict_received_ = false;
+    rt_lookup_response_.reset();
+    // Cancel any previous lookup calls before starting a new lookup for the redirect.
+    weak_factory_.InvalidateWeakPtrs();
     DoLookup(
         lookup_service_, navigation_handle->GetURL(),
         base::BindOnce(&DataProtectionNavigationObserver::OnLookupComplete,

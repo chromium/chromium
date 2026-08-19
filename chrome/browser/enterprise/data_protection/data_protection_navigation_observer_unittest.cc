@@ -149,16 +149,20 @@ class FakeRealTimeUrlLookupService
     // does not care whether the verdict came from the verdict cache or from an
     // actual lookup request, as long as it gets a verdict back.
     std::optional<std::string> watermark_text;
-    if (url_to_watermark_.count(url) > 0) {
+    if (url_to_watermark_.contains(url)) {
       watermark_text = url_to_watermark_[url];
     } else {
       watermark_text = "custom_message";
     }
 
+    bool block_screenshot = should_block_screenshot_;
+    if (url_to_block_screenshot_.contains(url)) {
+      block_screenshot = url_to_block_screenshot_[url];
+    }
+
     auto response = std::make_unique<safe_browsing::RTLookupResponse>(
         CreateRTLookupResponse(std::move(watermark_text),
-                               should_have_matched_rule_,
-                               should_block_screenshot_));
+                               should_have_matched_rule_, block_screenshot));
 
     callback_task_runner->PostTask(
         FROM_HERE,
@@ -184,6 +188,10 @@ class FakeRealTimeUrlLookupService
     url_to_watermark_[url] = std::move(watermark_text);
   }
 
+  void SetBlockScreenshotForURL(const GURL& url, bool block_screenshot) {
+    url_to_block_screenshot_[url] = block_screenshot;
+  }
+
   void SetShouldHaveMatchedRule(bool should_have_matched_rule) {
     should_have_matched_rule_ = should_have_matched_rule;
   }
@@ -192,6 +200,7 @@ class FakeRealTimeUrlLookupService
   base::OnceClosure on_start_lookup_complete_;
   bool is_rt_lookup_successful_ = true;
   std::map<GURL, std::optional<std::string>> url_to_watermark_;
+  std::map<GURL, bool> url_to_block_screenshot_;
   bool should_have_matched_rule_ = false;
   bool should_block_screenshot_ = false;
 };
@@ -826,25 +835,51 @@ TEST_F(DataProtectionNavigationObserverTest,
   EXPECT_EQ(user_data->settings(), future.Get());
 }
 
-TEST_F(DataProtectionNavigationObserverTest,
-       ApplyDataProtectionSettings_DC_BlockScreenshot_Redirect) {
+enum class ScreenshotProtectionSource {
+  kDataControls,
+  kRealTimeUrlLookup,
+};
+
+class DataProtectionNavigationObserverRedirectScreenshotTest
+    : public DataProtectionNavigationObserverTest,
+      public testing::WithParamInterface<ScreenshotProtectionSource> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DataProtectionNavigationObserverRedirectScreenshotTest,
+    testing::Values(ScreenshotProtectionSource::kDataControls,
+                    ScreenshotProtectionSource::kRealTimeUrlLookup));
+
+TEST_P(DataProtectionNavigationObserverRedirectScreenshotTest,
+       BlockScreenshot_Redirect) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
   DataProtectionNavigationObserver::SetLookupServiceForTesting(
       &lookup_service_);
-  data_controls::SetDataControls(profile()->GetPrefs(), {R"(
-        {
-          "name":"block",
-          "rule_id":"1234",
-          "sources":{"urls":["redirect.com"]},
-          "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
-        }
-      )"});
 
-  lookup_service_.SetWatermarkTextForURL(GURL("https://example.com"),
-                                         std::nullopt);
-  lookup_service_.SetWatermarkTextForURL(GURL("https://redirect.com"),
-                                         std::nullopt);
+  switch (GetParam()) {
+    case ScreenshotProtectionSource::kDataControls:
+      data_controls::SetDataControls(profile()->GetPrefs(), {R"(
+            {
+              "name":"block",
+              "rule_id":"1234",
+              "sources":{"urls":["redirect.com"]},
+              "restrictions":[{"class": "SCREENSHOT", "level": "BLOCK"} ]
+            }
+          )"});
+      break;
+    case ScreenshotProtectionSource::kRealTimeUrlLookup:
+      lookup_service_.SetShouldHaveMatchedRule(true);
+      lookup_service_.SetBlockScreenshotForURL(GURL("https://example.com"),
+                                               false);
+      lookup_service_.SetBlockScreenshotForURL(GURL("https://redirect.com"),
+                                               true);
+      lookup_service_.SetWatermarkTextForURL(GURL("https://example.com"),
+                                             std::nullopt);
+      lookup_service_.SetWatermarkTextForURL(GURL("https://redirect.com"),
+                                             std::nullopt);
+      break;
+  }
 
   SetContents(CreateTestWebContents());
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
