@@ -308,8 +308,9 @@ ALWAYS_INLINE static void Conv(base::span<const float> source,
 ALWAYS_INLINE static void Vadd(base::span<const float> source1,
                                base::span<const float> source2,
                                base::span<float> dest) {
-  DCHECK_EQ(source1.size(), dest.size());
-  DCHECK_EQ(source2.size(), dest.size());
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source1.size(), dest.size());
+  CHECK_EQ(source2.size(), dest.size());
   for (size_t i = 0; i < dest.size(); ++i) {
     dest[i] = source1[i] + source2[i];
   }
@@ -318,8 +319,9 @@ ALWAYS_INLINE static void Vadd(base::span<const float> source1,
 ALWAYS_INLINE static void Vsub(base::span<const float> source1,
                                base::span<const float> source2,
                                base::span<float> dest) {
-  DCHECK_EQ(source1.size(), dest.size());
-  DCHECK_EQ(source2.size(), dest.size());
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source1.size(), dest.size());
+  CHECK_EQ(source2.size(), dest.size());
   for (size_t i = 0; i < dest.size(); ++i) {
     dest[i] = source1[i] - source2[i];
   }
@@ -329,7 +331,8 @@ ALWAYS_INLINE static void Vclip(base::span<const float> source,
                                 float low_threshold,
                                 float high_threshold,
                                 base::span<float> dest) {
-  DCHECK_EQ(source.size(), dest.size());
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source.size(), dest.size());
   for (size_t i = 0; i < dest.size(); ++i) {
     dest[i] = ClampTo(source[i], low_threshold, high_threshold);
   }
@@ -349,8 +352,9 @@ ALWAYS_INLINE static void Vmaxmgv(const float* source_p,
 ALWAYS_INLINE static void Vmul(base::span<const float> source1,
                                base::span<const float> source2,
                                base::span<float> dest) {
-  DCHECK_EQ(source1.size(), dest.size());
-  DCHECK_EQ(source2.size(), dest.size());
+  // CHECK allows the compiler to elide bounds checks (docs/unsafe_buffers.md).
+  CHECK_EQ(source1.size(), dest.size());
+  CHECK_EQ(source2.size(), dest.size());
   for (size_t i = 0; i < dest.size(); ++i) {
     dest[i] = source1[i] * source2[i];
   }
