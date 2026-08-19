@@ -8826,12 +8826,6 @@ inline constexpr char kShowFrozenUpdateNotificationName[] =
 inline constexpr char kShowFrozenUpdateNotificationDescription[] =
     "Enables showing Frozen Update Notifications on ChromeOS Flex devices.";
 
-inline constexpr char kAndroidEntraSsoName[] =
-    "Enable Entra SSO for enterprise browsers.";
-inline constexpr char kAndroidEntraSsoDescription[] =
-    "Enables native support for Entra SSO on Android provided by selected "
-    "Authentication Brokers.";
-
 inline constexpr char kEnableDlpFileSystemApiName[] =
     "Enable DLP upload scans for FileSystem API.";
 inline constexpr char kEnableDlpFileSystemApiDescription[] =

@@ -17007,7 +17007,6 @@ from previous Chrome versions.
   <int value="737205998" label="CentralizedInfoBarFramework:enabled"/>
   <int value="737421745" label="enable-accessibility-object-model"/>
   <int value="738325581" label="NtpMicrosoftAuthenticationModule:disabled"/>
-  <int value="738770668" label="AndroidEntraSSO:enabled"/>
   <int value="738868972" label="GdiTextPrinting:disabled"/>
   <int value="738962107" label="ExoOrdinalMotion:disabled"/>
   <int value="739153932" label="ToolbarCaptureFixForSPAs:enabled"/>

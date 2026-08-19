@@ -13068,12 +13068,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-entra-sso", flag_descriptions::kAndroidEntraSsoName,
-     flag_descriptions::kAndroidEntraSsoDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(enterprise_auth::kAndroidEntraSSO)},
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
     {"apb144-patch5", flag_descriptions::kApb144Patch5Name,
      flag_descriptions::kApb144Patch5Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch5)},
