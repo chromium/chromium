@@ -28,10 +28,14 @@ base::DictValue UserCloudPolicyStatusProviderChromeOS::GetStatus() {
     return {};
   }
   base::DictValue dict = UserCloudPolicyStatusProvider::GetStatus();
-  GetUserAffiliationStatus(&dict, profile_);
+  if (auto user_affiliation_status = GetUserAffiliationStatus(profile_)) {
+    dict.Set("isAffiliated", user_affiliation_status.value());
+  }
   GetUserManager(&dict, profile_);
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
   SetDomainExtractedFromUsername(dict);
-  SetProfileId(&dict, profile_);
+  if (auto profile_id = GetProfileId(profile_)) {
+    dict.Set("profileId", profile_id.value());
+  }
   return dict;
 }

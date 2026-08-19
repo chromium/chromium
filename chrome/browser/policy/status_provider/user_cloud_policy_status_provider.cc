@@ -17,6 +17,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -63,7 +64,9 @@ base::DictValue UserCloudPolicyStatusProvider::GetStatus() {
 
   if (enrollment_token.empty()) {
     SetDomainExtractedFromUsername(dict);
-    GetUserAffiliationStatus(&dict, profile());
+    if (auto user_affiliation_status = GetUserAffiliationStatus(profile())) {
+      dict.Set("isAffiliated", user_affiliation_status.value());
+    }
     dict.Set(policy::kFlexOrgWarningKey, show_flex_org_warning);
   } else {
     dict.Set(policy::kEnrollmentTokenKey, enrollment_token);
@@ -76,6 +79,63 @@ base::DictValue UserCloudPolicyStatusProvider::GetStatus() {
       dict, profile()->GetPrefs(),
       enterprise_reporting::kLastUploadSucceededTimestamp);
   dict.Set(policy::kPolicyDescriptionKey, kUserPolicyStatusDescription);
-  SetProfileId(&dict, profile());
+  if (auto profile_id = GetProfileId(profile())) {
+    dict.Set("profileId", profile_id.value());
+  }
   return dict;
+}
+
+policy::mojom::StatusPtr UserCloudPolicyStatusProvider::GetStatusMojo() {
+#if BUILDFLAG(IS_CHROMEOS)
+  const bool show_flex_org_warning = false;
+#else
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  const bool show_flex_org_warning =
+      identity_manager && identity_manager
+                              ->FindExtendedAccountInfoByEmailAddress(
+                                  profile()->GetProfileUserName())
+                              .IsMemberOfFlexOrg();
+  if (!show_flex_org_warning && !core()->store()->is_managed()) {
+    return policy::mojom::Status::New();
+  }
+#endif
+
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile()->GetPath());
+  auto enrollment_token =
+      entry ? entry->GetProfileManagementEnrollmentToken() : std::string();
+
+  auto status = policy::mojom::Status::New();
+  policy::PolicyStatusProvider::PopulateStatusFromCore(
+      core(), /*is_extension_install_policy=*/false, status);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (extension_install_core() && extension_install_core()->client() &&
+      extension_install_core()->client()->HasPolicyTypeToFetch()) {
+    policy::PolicyStatusProvider::PopulateStatusFromCore(
+        extension_install_core(), /*is_extension_install_policy=*/true, status);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+  if (enrollment_token.empty()) {
+    SetDomainExtractedFromUsername(status);
+    status->is_affiliated = GetUserAffiliationStatus(profile());
+    status->flex_org_warning = show_flex_org_warning;
+  } else {
+    status->enrollment_token = enrollment_token;
+    status->domain =
+        gaia::ExtractDomainName(core()->store()->policy()->username());
+
+    status->username.reset();
+    status->gaia_id.reset();
+  }
+  UpdateLastReportTimestamp(
+      status, profile()->GetPrefs(),
+      enterprise_reporting::kLastUploadSucceededTimestamp);
+  status->policy_description_key = kUserPolicyStatusDescription;
+  status->profile_id = GetProfileId(profile());
+  return status;
 }

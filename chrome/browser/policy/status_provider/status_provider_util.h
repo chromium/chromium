@@ -15,18 +15,19 @@
 extern const char kDevicePolicyStatusDescription[];
 extern const char kUserPolicyStatusDescription[];
 
-// Looks for "username" key in `dict` and sets "domain" key with the
-// domain extracted from username.
+// Looks for "username" key in `dict` and sets "domain" key with the domain
+// extracted from username.
 void SetDomainExtractedFromUsername(base::DictValue& dict);
 void SetDomainExtractedFromUsername(policy::mojom::StatusPtr& status);
 
-// Adds a new entry to |dict| with the affiliation status of the user associated
+// Returns the affiliation status of the user associated
 // with |profile|. This method shouldn't be called for device scope status.
-void GetUserAffiliationStatus(base::DictValue* dict, Profile* profile);
+// Returns nullopt if the affiliation status can't be determined.
+std::optional<bool> GetUserAffiliationStatus(Profile* profile);
 
-// Adds a new entry to |dict| with the enterprise profile identifier of the
-// current |profile|.
-void SetProfileId(base::DictValue* dict, Profile* profile);
+// Returns the enterprise profile identifier of the `profile`.
+// Returns nullopt if the profile id can't be determined.
+std::optional<std::string> GetProfileId(Profile* profile);
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::optional<bool> GetOffHoursStatus();

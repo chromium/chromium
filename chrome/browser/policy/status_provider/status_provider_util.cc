@@ -57,34 +57,34 @@ void SetDomainExtractedFromUsername(policy::mojom::StatusPtr& status) {
   }
 }
 
-void GetUserAffiliationStatus(base::DictValue* dict, Profile* profile) {
+std::optional<bool> GetUserAffiliationStatus(Profile* profile) {
   CHECK(profile);
 
 #if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
-    return;
-  dict->Set("isAffiliated", user->IsAffiliated());
+  if (!user) {
+    return std::nullopt;
+  }
+  return user->IsAffiliated();
 #else
   // Don't show affiliation status if the browser isn't enrolled in CBCM.
   if (!policy::GetDMToken(profile).is_valid()) {
-    return;
+    return std::nullopt;
   }
-  dict->Set("isAffiliated", enterprise_util::IsProfileAffiliated(profile));
+  return enterprise_util::IsProfileAffiliated(profile);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-void SetProfileId(base::DictValue* dict, Profile* profile) {
+std::optional<std::string> GetProfileId(Profile* profile) {
   CHECK(profile);
   auto* profile_id_service =
       enterprise::ProfileIdServiceFactory::GetForProfile(profile);
-  if (!profile_id_service)
-    return;
+  if (!profile_id_service) {
+    return std::nullopt;
+  }
 
-  auto profile_id = profile_id_service->GetProfileId();
-  if (profile_id)
-    dict->Set("profileId", profile_id.value());
+  return profile_id_service->GetProfileId();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
