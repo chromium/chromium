@@ -498,4 +498,18 @@ public class TextSelectionActionMenuDelegateTest {
         assertTrue(title.endsWith("\""));
         assertTrue(title.length() < longText.length());
     }
+
+    @Test
+    public void testGetWebSearchMenuItemTitle_searchEngineNameTooLong() {
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        when(mTemplateUrlService.getDefaultSearchEngineTemplateUrl()).thenReturn(mTemplateUrl);
+        when(mTemplateUrl.getKeyword()).thenReturn("google");
+        when(mTemplateUrlService.getFullNameFromTemplateUrl("google")).thenReturn("a".repeat(1000));
+
+        Context context =
+                new android.view.ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        assertNull(mDelegate.getWebSearchMenuItemTitle(context, "test query"));
+    }
 }
