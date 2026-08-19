@@ -623,7 +623,9 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNotShownTest, OnlyNotShownMetricsLogged) {
   ASSERT_EQ(1U, buckets.size());
   EXPECT_EQ(toInt(Event2::kUserAborted) |
                 toInt(Event2::kHadInitialFormOfPayment) |
-                toInt(Event2::kRequestMethodOther),
+                toInt(Event2::kRequestMethodOther) |
+                toInt(Event2::kCanMakePaymentCalled) |
+                toInt(Event2::kHasEnrolledInstrumentCalled),
             buckets[0].min);
 }
 
@@ -755,7 +757,8 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestIframeFeatureParamTest,
 
   int64_t expected_step_metric =
       toInt(Event2::kShown) | toInt(Event2::kRequestMethodOther) |
-      toInt(Event2::kUserAborted) | toInt(Event2::kHadInitialFormOfPayment);
+      toInt(Event2::kUserAborted) | toInt(Event2::kHadInitialFormOfPayment) |
+      toInt(Event2::kInitiatedInCrossSiteIframe);
 
   // Make sure the correct UMA events were logged.
   std::vector<base::Bucket> buckets =

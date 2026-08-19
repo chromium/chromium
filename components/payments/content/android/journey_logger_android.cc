@@ -61,6 +61,18 @@ void JourneyLoggerAndroid::SetPayClicked(JNIEnv* env) {
   journey_logger_.SetPayClicked();
 }
 
+void JourneyLoggerAndroid::SetCanMakePaymentCalled(JNIEnv* env) {
+  journey_logger_.SetCanMakePaymentCalled();
+}
+
+void JourneyLoggerAndroid::SetHasEnrolledInstrumentCalled(JNIEnv* env) {
+  journey_logger_.SetHasEnrolledInstrumentCalled();
+}
+
+void JourneyLoggerAndroid::SetInitiatedInCrossSiteIframe(JNIEnv* env) {
+  journey_logger_.SetInitiatedInCrossSiteIframe();
+}
+
 void JourneyLoggerAndroid::SetSelectedMethod(JNIEnv* env,
                                              int32_t jPaymentMethodCategory) {
   DCHECK_GE(jPaymentMethodCategory, 0);

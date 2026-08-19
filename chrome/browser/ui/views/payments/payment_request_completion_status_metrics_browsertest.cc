@@ -398,7 +398,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestInitiatedCompletionStatusMetricsTest,
       histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
   EXPECT_EQ(toInt(Event2::kInitiated) | toInt(Event2::kUserAborted) |
-                toInt(Event2::kRequestMethodOther),
+                toInt(Event2::kRequestMethodOther) |
+                toInt(Event2::kCanMakePaymentCalled),
             buckets[0].min);
 }
 

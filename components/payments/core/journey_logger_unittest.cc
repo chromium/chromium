@@ -68,6 +68,47 @@ TEST(JourneyLoggerTest,
   EXPECT_FALSE(buckets[0].min & toInt(Event2::kRequestMethodOther));
 }
 
+TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_CanMakePaymentCalled) {
+  base::HistogramTester histogram_tester;
+  JourneyLogger logger(ukm::kInvalidSourceId);
+
+  logger.SetCanMakePaymentCalled();
+  logger.SetNotShown();
+
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kCanMakePaymentCalled));
+}
+
+TEST(JourneyLoggerTest,
+     RecordJourneyStatsHistograms_HasEnrolledInstrumentCalled) {
+  base::HistogramTester histogram_tester;
+  JourneyLogger logger(ukm::kInvalidSourceId);
+
+  logger.SetHasEnrolledInstrumentCalled();
+  logger.SetNotShown();
+
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kHasEnrolledInstrumentCalled));
+}
+
+TEST(JourneyLoggerTest,
+     RecordJourneyStatsHistograms_InitiatedInCrossSiteIframe) {
+  base::HistogramTester histogram_tester;
+  JourneyLogger logger(ukm::kInvalidSourceId);
+
+  logger.SetInitiatedInCrossSiteIframe();
+  logger.SetNotShown();
+
+  std::vector<base::Bucket> buckets =
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
+  ASSERT_EQ(1U, buckets.size());
+  EXPECT_TRUE(buckets[0].min & toInt(Event2::kInitiatedInCrossSiteIframe));
+}
+
 // Tests that the completion status metrics based on whether the user had
 // suggestions for all the requested sections are logged as correctly.
 TEST(JourneyLoggerTest,

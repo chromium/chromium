@@ -46,6 +46,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
@@ -221,6 +222,13 @@ void PaymentRequest::Init(
 
   journey_logger_.RecordCheckoutStep(
       JourneyLogger::CheckoutFunnelStep::kInitiated);
+  content::RenderFrameHost* rfh = delegate_->GetRenderFrameHost();
+  if (rfh && rfh->GetParent() && rfh->GetMainFrame() &&
+      !net::SchemefulSite::IsSameSite(
+          rfh->GetLastCommittedOrigin(),
+          rfh->GetMainFrame()->GetLastCommittedOrigin())) {
+    journey_logger_.SetInitiatedInCrossSiteIframe();
+  }
   is_initialized_ = true;
   init_time_ = base::TimeTicks::Now();
   client_.Bind(std::move(client));
@@ -737,6 +745,7 @@ void PaymentRequest::CanMakePayment() {
   }
 
   // It's valid to call canMakePayment() without calling show() first.
+  journey_logger_.SetCanMakePaymentCalled();
 
   if (observer_for_testing_)
     observer_for_testing_->OnCanMakePaymentCalled();
@@ -773,6 +782,7 @@ void PaymentRequest::HasEnrolledInstrument() {
   }
 
   // It's valid to call hasEnrolledInstrument() without calling show() first.
+  journey_logger_.SetHasEnrolledInstrumentCalled();
 
   if (observer_for_testing_)
     observer_for_testing_->OnHasEnrolledInstrumentCalled();
