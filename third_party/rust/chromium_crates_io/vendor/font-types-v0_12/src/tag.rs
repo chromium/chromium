@@ -99,7 +99,7 @@ impl Tag {
 
     /// Check that the tag conforms with the spec.
     ///
-    /// This is intended for use during things like santization or lint passes
+    /// This is intended for use during things like sanitization or lint passes
     /// on existing fonts; if you are creating a new tag, you should prefer
     /// [`Tag::new_checked`].
     ///

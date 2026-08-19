@@ -1,6 +1,6 @@
 [package]
 name = "shared-brotli-patch-decoder"
-version = "0.1.4"
+version = "0.1.5"
 description = "Wrapper around brotli-sys which allows for decoding shared brotli (https://datatracker.ietf.org/doc/draft-vandevenne-shared-brotli-format/) encoded patch data."
 edition.workspace = true
 license.workspace = true

@@ -169,7 +169,6 @@ content/common
 content/public/android/junit/src/org/chromium/content/browser/input
 content/public/common
 content/renderer
-content/test/gpu
 content/web_test/browser
 content/web_test/renderer
 device/gamepad
@@ -369,6 +368,7 @@ third_party/blink/web_tests/dom/domparsing
 third_party/blink/web_tests/external/wpt
 third_party/blink/web_tests/external/wpt/bluetooth/resources
 third_party/blink/web_tests/external/wpt/cookies/resources
+third_party/blink/web_tests/external/wpt/core-aam/aamtests/support
 third_party/blink/web_tests/external/wpt/css/css-fonts/font-display
 third_party/blink/web_tests/external/wpt/css/css-fonts/variations
 third_party/blink/web_tests/external/wpt/css/css-scroll-anchoring
@@ -651,7 +651,7 @@ third_party/rust/chromium_crates_io/vendor/getrandom-v0_3
 third_party/rust/chromium_crates_io/vendor/getrandom-v0_4
 third_party/rust/chromium_crates_io/vendor/gimli-v0_32
 third_party/rust/chromium_crates_io/vendor/gimli-v0_32/src/read
-third_party/rust/chromium_crates_io/vendor/harfrust-v0_12/src/hb
+third_party/rust/chromium_crates_io/vendor/harfrust-v0_13/src/hb
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_16
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_16/src
 third_party/rust/chromium_crates_io/vendor/hashbrown-v0_17
@@ -727,10 +727,10 @@ third_party/rust/chromium_crates_io/vendor/quote-v1
 third_party/rust/chromium_crates_io/vendor/quote-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/rand_core-v0_9
 third_party/rust/chromium_crates_io/vendor/rand_core-v0_9/src
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_41/scripts
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_41/src/ps
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_41/src/ps/cff
-third_party/rust/chromium_crates_io/vendor/read-fonts-v0_41/src/tables
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/scripts
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/ps
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/ps/cff
+third_party/rust/chromium_crates_io/vendor/read-fonts-v0_43/src/tables
 third_party/rust/chromium_crates_io/vendor/ref-cast-v1
 third_party/rust/chromium_crates_io/vendor/ref-cast-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/regex-automata-v0_4
@@ -792,7 +792,7 @@ third_party/rust/chromium_crates_io/vendor/windows-link-v0_2
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Wdk/System/SystemServices
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/Networking/Clustering
-third_party/rust/chromium_crates_io/vendor/write-fonts-v0_50/src/tables/variations
+third_party/rust/chromium_crates_io/vendor/write-fonts-v0_52/src/tables/variations
 third_party/rust/chromium_crates_io/vendor/write16-v1
 third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8
 third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8/src

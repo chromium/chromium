@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.89"
+rust-version = "1.85"
 name = "font-types"
-version = "0.12.2"
+version = "0.12.3"
 build = false
 autolib = false
 autobins = false
@@ -39,7 +39,7 @@ name = "font_types"
 path = "src/lib.rs"
 
 [dependencies.bytemuck]
-version = "1.13.1"
+version = "1.14.0"
 features = [
     "derive",
     "min_const_generics",

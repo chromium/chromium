@@ -1,7 +1,7 @@
 Name: shared-brotli-patch-decoder
 URL: https://crates.io/crates/shared-brotli-patch-decoder
-Version: 0.1.4
-Revision: e6a00e239a83541432fef8e8548f5b0f40516d35
+Version: 0.1.5
+Revision: 74915340ab076dd6edf11c5ddfd285d20459fc78
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/shared-brotli-patch-decoder-v0_1/LICENSE-APACHE

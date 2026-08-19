@@ -1,0 +1,51 @@
+[package]
+name = "harfrust"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description.workspace = true
+repository.workspace = true
+license.workspace = true
+readme = "../README.md"
+keywords.workspace = true
+categories.workspace = true
+exclude = ["benches/", "tests/"]
+
+[dependencies]
+read-fonts.workspace = true
+bitflags = "2.9"
+bytemuck = { version = "1.22", features = ["extern_crate_alloc"] }
+core_maths = { version = "0.1", optional = true }
+smallvec = "1.14"
+icu_properties = { version = "2.2.0", optional = true }
+icu_normalizer = { version = "2.2.0", optional = true }
+
+[features]
+default = ["std"]
+std = ["read-fonts/std"]
+libm = ["dep:core_maths", "read-fonts/libm"]
+experimental_font_api = []
+icu = ["dep:icu_properties", "dep:icu_normalizer"]
+
+[dev-dependencies]
+harfrust = { path = "../harfrust", features = ["experimental_font_api"] }
+criterion = "0.8.0"
+harfbuzz_rs = { git = "https://github.com/harfbuzz/harfbuzz_rs/", rev = "66dae27" }
+hr-shape = { path = "../hr-shape" }
+
+[target.'cfg(target_vendor = "apple")'.dev-dependencies]
+objc2-core-text = { version = "0.3.1", default-features = false, features = [
+    "CTFont",
+    "CTFontDescriptor",
+] }
+objc2-core-foundation = { version = "0.3.1", default-features = false, features = ["CFString"] }
+
+[lib]
+bench = false
+
+[[bench]]
+name = "shaping"
+harness = false
+
+[lints]
+workspace = true

@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "shared-brotli-patch-decoder"
-version = "0.1.4"
+version = "0.1.5"
 build = "build.rs"
 autolib = false
 autobins = false
