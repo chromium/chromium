@@ -122,7 +122,7 @@ void PagePopupController::setWindowRect(int x, int y, int width, int height) {
     return;
   }
 
-  popup_.SetWindowRect(gfx::Rect(x, y, width, height));
+  popup_->SetWindowRect(gfx::Rect(x, y, width, height));
 
   popup_origin_ = gfx::Point(x, y);
   popup_client_->SetMenuListOptionsBoundsInAXTree(options_bounds_,

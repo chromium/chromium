@@ -32,6 +32,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/base/features.h"
@@ -367,7 +368,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
         delta, granularity, scrollable_area_element_id, injected_type);
   }
 
-  WebPagePopupImpl* popup_;
+  raw_ptr<WebPagePopupImpl, UnprotectedInRelease | DanglingUntriaged> popup_;
 };
 
 // WebPagePopupImpl ----------------------------------------------------------

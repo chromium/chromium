@@ -4431,7 +4431,7 @@ void WebViewImpl::CreateRemoteMainFrame(
 }
 
 scheduler::WebAgentGroupScheduler& WebViewImpl::GetWebAgentGroupScheduler() {
-  return web_agent_group_scheduler_;
+  return *web_agent_group_scheduler_;
 }
 
 void WebViewImpl::UpdatePageBrowsingContextGroup(

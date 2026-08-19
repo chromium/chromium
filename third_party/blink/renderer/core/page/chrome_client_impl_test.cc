@@ -33,6 +33,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/trees/layer_tree_host.h"
@@ -132,14 +133,14 @@ class CreateWindowTest : public testing::Test {
   test::TaskEnvironment task_environment_;
   ViewCreatingClient web_frame_client_;
   frame_test_helpers::WebViewHelper helper_;
-  WebViewImpl* web_view_;
-  WebLocalFrame* main_frame_;
+  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged> web_view_;
+  raw_ptr<WebLocalFrame, UnprotectedInRelease | DanglingUntriaged> main_frame_;
   Persistent<ChromeClientImpl> chrome_client_impl_;
 };
 
 TEST_F(CreateWindowTest, CreateWindowFromPausedPage) {
   ScopedPagePauser pauser;
-  LocalFrame* frame = To<WebLocalFrameImpl>(main_frame_)->GetFrame();
+  LocalFrame* frame = To<WebLocalFrameImpl>(main_frame_.get())->GetFrame();
   FrameLoadRequest request(frame->DomWindow(), ResourceRequest());
   request.SetNavigationPolicy(kNavigationPolicyNewForegroundTab);
   WebWindowFeatures features;
@@ -308,7 +309,7 @@ class PagePopupSuppressionTest : public testing::Test {
  protected:
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
-  WebViewImpl* web_view_;
+  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged> web_view_;
   Persistent<WebLocalFrameImpl> main_frame_;
   Persistent<ChromeClientImpl> chrome_client_impl_;
   Persistent<FakeColorChooserClient> color_chooser_client_;
@@ -347,7 +348,7 @@ class FileChooserQueueTest : public testing::Test {
 
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
-  WebViewImpl* web_view_;
+  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged> web_view_;
   Persistent<ChromeClientImpl> chrome_client_impl_;
 };
 
@@ -549,15 +550,15 @@ class ChromeClientImplAutofillTest : public testing::Test {
 
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
-  WebViewImpl* web_view_;
-  WebLocalFrame* main_frame_;
+  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged> web_view_;
+  raw_ptr<WebLocalFrame, UnprotectedInRelease | DanglingUntriaged> main_frame_;
   Persistent<ChromeClientImpl> chrome_client_impl_;
 };
 
 TEST_F(ChromeClientImplAutofillTest, IsAutofillableElement) {
   frame_test_helpers::LoadHTMLString(
       main_frame_, "<body><input id=input></body>", blink::WebURL());
-  auto* web_frame = To<WebLocalFrameImpl>(main_frame_);
+  auto* web_frame = To<WebLocalFrameImpl>(main_frame_.get());
   MockWebAutofillClient mock_autofill_client;
   web_frame->SetAutofillClient(&mock_autofill_client);
 

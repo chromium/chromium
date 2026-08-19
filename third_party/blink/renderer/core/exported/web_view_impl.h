@@ -37,6 +37,8 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -808,7 +810,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   const bool widgets_never_composited_;
 
   // Can be null (e.g. unittests, shared workers, etc).
-  WebViewClient* web_view_client_;
+  raw_ptr<WebViewClient, UnprotectedInRelease | DanglingUntriaged>
+      web_view_client_;
   Persistent<ChromeClient> chrome_client_;
   Persistent<Page> page_;
 
@@ -1005,7 +1008,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   ui::mojom::blink::VirtualKeyboardMode virtual_keyboard_mode_ =
       ui::mojom::blink::VirtualKeyboardMode::kUnset;
 
-  scheduler::WebAgentGroupScheduler& web_agent_group_scheduler_;
+  const raw_ref<scheduler::WebAgentGroupScheduler,
+                UnprotectedInRelease | DanglingUntriaged>
+      web_agent_group_scheduler_;
 
   // Indicates whether the page supports draggable regions via the app-region
   // CSS property.

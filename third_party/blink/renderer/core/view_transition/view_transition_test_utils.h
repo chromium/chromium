@@ -32,7 +32,7 @@ class ViewTransitionTestUtils {
           !transition.style_tracker_->IsOldSnapshotFrozen()) {
         transition.PauseRendering();
       }
-      if (auto* delegate = transition.delegate_;
+      if (auto* delegate = transition.delegate_.get();
           delegate && delegate->IsEarlyCallbackEnabled()) {
         delegate->OnCaptureCommitted(&transition);
       }

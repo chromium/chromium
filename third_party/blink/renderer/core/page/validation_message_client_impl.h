@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VALIDATION_MESSAGE_CLIENT_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VALIDATION_MESSAGE_CLIENT_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -89,7 +90,9 @@ class CORE_EXPORT ValidationMessageClientImpl final
       timer_;
   Member<FrameOverlay> overlay_;
   // Raw pointer. This pointer is valid unless overlay_ is nullptr.
-  ValidationMessageOverlayDelegate* overlay_delegate_ = nullptr;
+  raw_ptr<ValidationMessageOverlayDelegate,
+          UnprotectedInRelease | DanglingUntriaged>
+      overlay_delegate_ = nullptr;
   bool allow_initial_empty_anchor_ = false;
 };
 

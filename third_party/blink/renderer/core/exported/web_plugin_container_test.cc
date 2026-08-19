@@ -33,6 +33,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
@@ -167,7 +168,9 @@ class TestPlugin : public FakeWebPlugin {
  private:
   ~TestPlugin() override = default;
 
-  TestPluginWebFrameClient* const test_client_;
+  const raw_ptr<TestPluginWebFrameClient,
+                UnprotectedInRelease | DanglingUntriaged>
+      test_client_;
 };
 
 // Subclass of FakeWebPlugin used for testing edit commands, so HasSelection()

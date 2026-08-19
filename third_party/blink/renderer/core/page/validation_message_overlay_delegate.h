@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VALIDATION_MESSAGE_OVERLAY_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VALIDATION_MESSAGE_OVERLAY_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/frame_overlay.h"
@@ -77,7 +78,8 @@ class CORE_EXPORT ValidationMessageOverlayDelegate
 
   // Used by CreatePage() to determine if this has been deleted in the middle of
   // the function.
-  bool* destroyed_ptr_ = nullptr;
+  raw_ptr<bool, UnprotectedInRelease | DanglingUntriaged> destroyed_ptr_ =
+      nullptr;
 };
 
 }  // namespace blink

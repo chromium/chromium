@@ -252,7 +252,7 @@ void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
       layer_origin += DeprecatedLocation().OffsetFromOrigin();
     }
     RecordForeignLayer(context, *layout, DisplayItem::kForeignLayerPlugin,
-                       layer_, layer_origin);
+                       layer_.get(), layer_origin);
     return;
   }
 

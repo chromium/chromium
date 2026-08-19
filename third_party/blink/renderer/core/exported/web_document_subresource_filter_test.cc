@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -113,7 +114,9 @@ class SubresourceFilteringWebFrameClient
 
  private:
   // Weak, owned by WebDocumentLoader.
-  TestDocumentSubresourceFilter* subresource_filter_ = nullptr;
+  raw_ptr<TestDocumentSubresourceFilter,
+          UnprotectedInRelease | DanglingUntriaged>
+      subresource_filter_ = nullptr;
   TestDocumentSubresourceFilter::LoadPolicy load_policy_for_next_load_;
 };
 

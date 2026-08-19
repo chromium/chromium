@@ -8,6 +8,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -459,7 +460,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   Member<Element> scope_ = nullptr;
   bool has_document_scope_ = false;
 
-  Delegate* const delegate_ = nullptr;
+  const raw_ptr<Delegate, UnprotectedInRelease | DanglingUntriaged> delegate_ =
+      nullptr;
 
   // Each transition is assigned a unique ID. For cross-document navigations
   // this is also the `transition_token` provided to the browser/GPU process to

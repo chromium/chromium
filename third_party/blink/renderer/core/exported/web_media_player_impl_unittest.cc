@@ -320,7 +320,8 @@ class MockWebMediaPlayerDelegate : public WebMediaPlayerDelegate {
   int player_id() { return player_id_; }
 
  private:
-  Observer* observer_ = nullptr;
+  raw_ptr<Observer, UnprotectedInRelease | DanglingUntriaged> observer_ =
+      nullptr;
   int player_id_ = 1234;
   bool is_idle_ = false;
   bool is_stale_ = false;
@@ -963,7 +964,9 @@ class WebMediaPlayerImplTest
   frame_test_helpers::WebViewHelper web_view_helper_;
 
   scoped_refptr<viz::TestContextProvider> context_provider_;
-  NiceMock<MockVideoFrameCompositor>* compositor_;
+  raw_ptr<NiceMock<MockVideoFrameCompositor>,
+          UnprotectedInRelease | DanglingUntriaged>
+      compositor_;
 
   scoped_refptr<NiceMock<media::MockAudioRendererSink>> audio_sink_;
   MockResourceFetchContext mock_resource_fetch_context_;
@@ -999,14 +1002,20 @@ class WebMediaPlayerImplTest
 
   // Use NiceMock since most tests do not care about this.
   std::unique_ptr<NiceMock<MockSurfaceLayerBridge>> surface_layer_bridge_;
-  NiceMock<MockSurfaceLayerBridge>* surface_layer_bridge_ptr_ = nullptr;
+  raw_ptr<NiceMock<MockSurfaceLayerBridge>,
+          UnprotectedInRelease | DanglingUntriaged>
+      surface_layer_bridge_ptr_ = nullptr;
 
   // Only valid once set by InitializeWebMediaPlayerImpl(), this is for
   // verifying a subset of potential media logs.
-  NiceMock<media::MockMediaLog>* media_log_ = nullptr;
+  raw_ptr<NiceMock<media::MockMediaLog>,
+          UnprotectedInRelease | DanglingUntriaged>
+      media_log_ = nullptr;
 
   // Raw pointer of the media::RendererFactorySelector owned by |wmpi_|.
-  media::RendererFactorySelector* renderer_factory_selector_ = nullptr;
+  raw_ptr<media::RendererFactorySelector,
+          UnprotectedInRelease | DanglingUntriaged>
+      renderer_factory_selector_ = nullptr;
 
   // default decoder factory for WMPI
   std::unique_ptr<media::DecoderFactory> decoder_factory_;

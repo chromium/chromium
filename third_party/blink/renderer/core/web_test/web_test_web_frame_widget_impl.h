@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/test/frame_widget_test_helper.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
@@ -102,7 +103,8 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
                           base::OnceClosure callback);
   std::unique_ptr<content::EventSender> event_sender_;
 
-  content::TestRunner* const test_runner_;
+  const raw_ptr<content::TestRunner, UnprotectedInRelease | DanglingUntriaged>
+      test_runner_;
 
   // For collapsing multiple simulated ScheduleAnimation() calls.
   bool animation_scheduled_ = false;

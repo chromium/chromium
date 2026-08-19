@@ -37,6 +37,8 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -214,7 +216,7 @@ class TestData {
 
  private:
   gfx::Size size_;
-  WebViewImpl* web_view_;
+  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged> web_view_;
 };
 
 class AutoResizeWebViewClient : public WebViewClient {
@@ -4907,7 +4909,8 @@ class ViewReusingWebFrameClient
   void SetWebView(WebView* view) { web_view_ = view; }
 
  private:
-  WebView* web_view_ = nullptr;
+  raw_ptr<WebView, UnprotectedInRelease | DanglingUntriaged> web_view_ =
+      nullptr;
 };
 
 TEST_F(WebViewTest,
@@ -6635,7 +6638,8 @@ TEST_F(WebViewTest, DetachPluginInLayout) {
     }
 
    private:
-    WebLocalFrame* frame_;  // Unowned
+    raw_ptr<WebLocalFrame, UnprotectedInRelease | DanglingUntriaged>
+        frame_;  // Unowned
   };
 
   class PluginCreatingWebFrameClient
@@ -6876,11 +6880,13 @@ class MockClockAdvancingWebFrameClient
                               const WebString& source_name,
                               unsigned source_line,
                               const WebString& stack_trace) override {
-    task_environment_.FastForwardBy(event_handling_delay_);
+    task_environment_->FastForwardBy(event_handling_delay_);
   }
 
  private:
-  base::test::TaskEnvironment& task_environment_;
+  const raw_ref<base::test::TaskEnvironment,
+                UnprotectedInRelease | DanglingUntriaged>
+      task_environment_;
   base::TimeDelta event_handling_delay_;
 };
 

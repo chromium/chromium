@@ -33,6 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_PLUGIN_CONTAINER_IMPL_H_
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
@@ -244,8 +245,8 @@ class CORE_EXPORT WebPluginContainerImpl final
 
   Member<HTMLPlugInElement> element_;
   Member<MouseLockLostListener> mouse_lock_lost_listener_;
-  WebPlugin* web_plugin_;
-  cc::Layer* layer_ = nullptr;
+  raw_ptr<WebPlugin, UnprotectedInRelease | DanglingUntriaged> web_plugin_;
+  raw_ptr<cc::Layer, UnprotectedInRelease | DanglingUntriaged> layer_ = nullptr;
   TouchEventRequestType touch_event_request_type_ = kTouchEventRequestTypeNone;
   bool wants_wheel_events_ = false;
 
