@@ -18,12 +18,14 @@
 #include <iphlpapi.h>
 #include <powersetting.h>
 #include <propsys.h>
+#include <wrl/client.h>
 
 #include <optional>
 
 #include "base/base_paths_win.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
@@ -35,9 +37,7 @@
 #include "base/win/win_util.h"
 #include "base/win/wincred_shim.h"
 #include "base/win/windows_version.h"
-#include "base/win/wmi.h"
 #include "components/device_signals/core/common/common_types.h"
-#include "components/device_signals/core/common/platform_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
 
 namespace device_signals {
@@ -267,11 +267,23 @@ std::string GetDeviceModel() {
   return base::SysInfo::HardwareModelName();
 }
 
-// Retrieves the computer serial number from WMI.
 std::string GetSerialNumber() {
-  base::win::WmiComputerSystemInfo sys_info =
-      base::win::WmiComputerSystemInfo::Get();
-  return base::WideToUTF8(sys_info.serial_number());
+  std::optional<std::wstring> winrt_serial_number =
+      base::win::GetSerialNumber();
+
+  if (!winrt_serial_number.has_value()) {
+    VLOG(1)
+        << "GetSerialNumber: Failed to retrieve serial number via WinRT API.";
+    return std::string();
+  }
+
+  if (winrt_serial_number->empty()) {
+    VLOG(1) << "GetSerialNumber: WinRT API succeeded but returned an empty "
+               "serial number.";
+    return std::string();
+  }
+
+  return base::WideToUTF8(winrt_serial_number.value());
 }
 
 // Gets cumulative screen locking policy based on the screen saver and console
