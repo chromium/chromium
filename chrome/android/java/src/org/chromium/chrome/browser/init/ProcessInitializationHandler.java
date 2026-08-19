@@ -520,10 +520,8 @@ public class ProcessInitializationHandler {
         TraceEvent.begin("NetworkChangeNotifier.init");
         // Enable auto-detection of network connectivity state changes.
         NetworkChangeNotifier.init();
-        boolean forceUpdateNetworkState =
-                !ChromeFeatureList.sUseInitialNetworkStateAtStartup.isEnabled();
         NetworkChangeNotifier.setAutoDetectConnectivityState(
-                new RegistrationPolicyApplicationStatus(), forceUpdateNetworkState);
+                new RegistrationPolicyApplicationStatus(), /* forceUpdateNetworkState= */ false);
         TraceEvent.end("NetworkChangeNotifier.init");
     }
 
