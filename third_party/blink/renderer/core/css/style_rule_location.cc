@@ -16,7 +16,7 @@
 
 namespace blink {
 
-StyleRuleLocation::StyleRuleLocation(const String& name,
+StyleRuleLocation::StyleRuleLocation(const AtomicString& name,
                                      CSSPropertyValueSet* values)
     : StyleRuleBase(kLocation),
       name_(name),

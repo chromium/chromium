@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
@@ -50,7 +50,7 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
     needs_style_update_on_navigation_ = true;
   }
 
-  void AddURLPatternFromLocation(const String& dashed_ident, URLPattern*);
+  void AddURLPatternFromLocation(const AtomicString& dashed_ident, URLPattern*);
 
   const URLPattern* FindURLPatternByLocation(
       const AtomicString& location_name) const;
@@ -86,7 +86,7 @@ class CORE_EXPORT RouteMap final : public GarbageCollected<RouteMap>,
   void NotifyStyleEngineIfNeeded();
 
   // URLPattern entries defined by @location rules.
-  HeapHashMap<String, Member<URLPattern>> locations_;
+  HeapHashMap<AtomicString, Member<URLPattern>> locations_;
 
   bool needs_style_update_on_navigation_ = false;
 };

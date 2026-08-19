@@ -1967,9 +1967,9 @@ StyleRuleLocation* CSSParserImpl::ConsumeLocationRule(
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   const CSSParserToken& name_token = stream.Peek();
   // <dashed-ident>
-  String name;
+  AtomicString name;
   if (name_token.GetType() == kIdentToken) {
-    name = name_token.Value().ToString();
+    name = name_token.Value().ToAtomicString();
     if (!name.starts_with("--")) {
       ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleLocation);
       return nullptr;

@@ -32,8 +32,10 @@ TEST_F(RouteMapTest, AddAndMatch) {
   GetDocument().SetURL(start_url);
 
   RouteMap& route_map = GetRouteMap();
-  route_map.AddURLPatternFromLocation("--route1", MakePattern("/foo"));
-  route_map.AddURLPatternFromLocation("--route2", MakePattern("/bar"));
+  route_map.AddURLPatternFromLocation(AtomicString("--route1"),
+                                      MakePattern("/foo"));
+  route_map.AddURLPatternFromLocation(AtomicString("--route2"),
+                                      MakePattern("/bar"));
 
   const URLPattern* pattern1 =
       route_map.FindURLPatternByLocation(AtomicString("--route1"));

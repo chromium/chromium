@@ -61,7 +61,7 @@ RouteMap& RouteMap::Ensure(Document& document) {
 
 // END Supplement support
 
-void RouteMap::AddURLPatternFromLocation(const String& dashed_ident,
+void RouteMap::AddURLPatternFromLocation(const AtomicString& dashed_ident,
                                          URLPattern* url_pattern) {
   DCHECK(dashed_ident.starts_with("--"));
   if (locations_.find(dashed_ident) != locations_.end()) {
