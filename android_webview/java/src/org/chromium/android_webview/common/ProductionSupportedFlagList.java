@@ -492,6 +492,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 NetFeatures.ASYNC_QUIC_SESSION, "Enables asynchronous QUIC session creation"),
         Flag.baseFeature(
+                NetFeatures.ASYNC_DNS_QUIC_JOB, "Enables asynchronous DNS resolutions for QUIC"),
+        Flag.baseFeature(
                 NetFeatures.SPDY_HEADERS_TO_HTTP_RESPONSE_USE_BUILDER,
                 "Enables new optimized implementation of SpdyHeadersToHttpResponse. No behavior"
                         + " change."),
@@ -1459,9 +1461,7 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_SINGLE_SHARED_CONTEXT_STATE,
                 "Allows Webview to allocate and share a single shared context for all the"
                         + " webview instances."),
-        Flag.baseFeature(
-                "ComponentsBase32InRust",
-                "Enables the Rust-based Base32 implementation."),
+        Flag.baseFeature("ComponentsBase32InRust", "Enables the Rust-based Base32 implementation."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
