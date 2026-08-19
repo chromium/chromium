@@ -40,7 +40,6 @@ found in the LICENSE file.
             android:clickable="true"
             android:focusable="true"
             android:visibility="gone"
-            android:background="@null"
             app:menuMaxWidth="@dimen/menu_width"
             app:tint="@color/default_icon_color_tint_list"
             tools:ignore="ContentDescription" />

@@ -47,6 +47,8 @@ public class TabListEditorLayoutBinder {
                     .getActionViewLayout()
                     .setIsDoneButtonEnabled(
                             model.get(TabListEditorProperties.IS_DONE_BUTTON_ENABLED));
+        } else if (TabListEditorProperties.IS_INCOGNITO == propertyKey) {
+            view.getToolbar().setIsIncognito(model.get(TabListEditorProperties.IS_INCOGNITO));
         } else if (TabListEditorProperties.IS_VISIBLE == propertyKey) {
             if (model.get(TabListEditorProperties.IS_VISIBLE)) {
                 view.show();

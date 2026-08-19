@@ -282,6 +282,7 @@ class TabListEditorMediator
         mModel.set(TabListEditorProperties.TOOLBAR_BACKGROUND_COLOR, toolbarBackgroundColor);
         mModel.set(TabListEditorProperties.TOOLBAR_TEXT_TINT, toolbarTintColorList);
         mModel.set(TabListEditorProperties.TOOLBAR_BUTTON_TINT, toolbarTintColorList);
+        mModel.set(TabListEditorProperties.IS_INCOGNITO, isIncognito);
 
         if (mActionListModel == null) return;
 

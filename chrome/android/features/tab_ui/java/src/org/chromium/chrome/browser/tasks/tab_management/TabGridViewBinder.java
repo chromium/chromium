@@ -21,7 +21,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -472,6 +474,17 @@ public class TabGridViewBinder {
         mediaIndicator.setImageTintList(
                 TabCardThemeUtil.getMediaIndicatorColorStateList(
                         mediaIndicator.getContext(), isIncognito, isSelected));
+
+        View contentView = rootView.fastFindViewById(R.id.content_view);
+        if (contentView != null) {
+            @DrawableRes
+            int focusRingRes =
+                    isIncognito
+                            ? R.drawable.tab_grid_focus_ring_incognito
+                            : R.drawable.tab_grid_focus_ring;
+            contentView.setForeground(
+                    AppCompatResources.getDrawable(contentView.getContext(), focusRingRes));
+        }
     }
 
     private static void updateColorForSelectionToggleButton(

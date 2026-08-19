@@ -28,6 +28,9 @@ public class TabListEditorProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_DONE_BUTTON_ENABLED =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
 
@@ -58,6 +61,7 @@ public class TabListEditorProperties {
                 DONE_BUTTON_CLICK_HANDLER,
                 DONE_BUTTON_VISIBILITY,
                 IS_DONE_BUTTON_ENABLED,
+                IS_INCOGNITO,
                 IS_VISIBLE,
                 PRIMARY_COLOR,
                 TOOLBAR_BACKGROUND_COLOR,
