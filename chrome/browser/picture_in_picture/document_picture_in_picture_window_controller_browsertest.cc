@@ -22,9 +22,9 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -213,7 +213,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
   }
 
   void LoadTabAndEnterPictureInPicture(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const gfx::Size& window_size = gfx::Size(500, 500),
       bool prefer_initial_window_placement = false) {
     GURL test_page_url = chrome_test_utils::GetTestUrl(
@@ -222,7 +222,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
 
     content::WebContents* active_web_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser->GetTabStripModel()->GetActiveWebContents();
     ASSERT_NE(nullptr, active_web_contents);
 
     SetUpWindowController(active_web_contents);
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // Now open the window a second time, without previously closing the original
   // window.
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(true, EvalJs(active_web_contents,
                          "documentPictureInPicture.requestWindow()"
                          ".then(w => true)"));
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   LoadTabAndEnterPictureInPicture(browser());
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(true, EvalJs(active_web_contents,
                          "navigateInDocumentPipWindow('http://media/"
                          "picture_in_picture/blank.html');"));
@@ -454,7 +454,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   LoadTabAndEnterPictureInPicture(browser());
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(true, EvalJs(active_web_contents,
                          "navigateInDocumentPipWindow('#top');"));
   base::RunLoop().RunUntilIdle();
@@ -467,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   LoadTabAndEnterPictureInPicture(browser());
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(true, EvalJs(active_web_contents, "refreshInDocumentPipWindow();"));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(window_controller()->GetChildWebContents());
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   LoadTabAndEnterPictureInPicture(browser());
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(true, EvalJs(active_web_contents,
                          "navigateInDocumentPipWindow('about:blank');"));
   base::RunLoop().RunUntilIdle();
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   LoadTabAndEnterPictureInPicture(browser());
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(true,
             EvalJs(active_web_contents, "navigateInDocumentPipWindow('');"));
   base::RunLoop().RunUntilIdle();
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   LoadTabAndEnterPictureInPicture(browser());
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_EQ(true, EvalJs(active_web_contents,
                          "addScriptToPictureInPictureWindow();"));
   base::RunLoop().RunUntilIdle();
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), test_page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_NE(browser()->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_NE(browser()->GetTabStripModel()->GetActiveWebContents(),
             opener_web_contents);
 
   auto* web_contents = window_controller()->GetChildWebContents();
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ClickButton(
       views::Button::AsButton(pip_frame_view->GetBackToTabButtonForTesting()));
   EXPECT_FALSE(window_controller()->GetChildWebContents());
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents(),
             opener_web_contents);
 }
 
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_NE(nullptr, active_web_contents);
 
   // In an insecure context, there should not be a method.
@@ -899,7 +899,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), test_page_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  EXPECT_NE(browser()->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_NE(browser()->GetTabStripModel()->GetActiveWebContents(),
             opener_web_contents);
 
   ASSERT_EQ(true, EvalJs(opener_web_contents, "loadAndPlayVideo();"));
@@ -987,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // the pip window page title is not set.
   EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
             tabs::GetAccessibleTabLabel(
-                pip_browser_view->browser()->tab_strip_model()->GetActiveTab(),
+                pip_browser_view->browser()->GetTabStripModel()->GetActiveTab(),
                 /*is_for_tab=*/false));
 
   // Set the pip window page title and ensure that the pip and opener window
@@ -1002,7 +1002,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // label returns the opener window page title.
   EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
             tabs::GetAccessibleTabLabel(
-                pip_browser_view->browser()->tab_strip_model()->GetActiveTab(),
+                pip_browser_view->browser()->GetTabStripModel()->GetActiveTab(),
                 /*is_for_tab=*/false));
 }
 
@@ -1095,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(
           &was_tucked_during_picker));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   auto result = EvalJs(web_contents, "window.showOpenFilePicker();");
   EXPECT_TRUE(result.ExtractError().find("aborted") != std::string::npos)
       << result;

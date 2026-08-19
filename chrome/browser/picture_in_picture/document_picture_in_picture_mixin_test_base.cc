@@ -10,7 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,12 +34,12 @@ void DocumentPictureInPictureMixinTestBase::PostRunTestOnMainThread() {
 }
 
 void DocumentPictureInPictureMixinTestBase::
-    NavigateToURLAndEnterPictureInPicture(Browser* browser,
+    NavigateToURLAndEnterPictureInPicture(BrowserWindowInterface* browser,
                                           const gfx::Size& window_size) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, GetPictureInPictureURL()));
 
   content::WebContents* active_web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_NE(nullptr, active_web_contents);
 
   SetUpWindowController(active_web_contents);
@@ -60,7 +60,7 @@ void DocumentPictureInPictureMixinTestBase::
 }
 
 void DocumentPictureInPictureMixinTestBase::NavigateToUrl(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const GURL& test_page_url) const {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
 }

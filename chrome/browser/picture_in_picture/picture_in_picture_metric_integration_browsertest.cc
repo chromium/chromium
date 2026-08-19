@@ -4,7 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
@@ -49,7 +49,7 @@ class PictureInPictureMetricIntegrationTest
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
   content::WebContents* web_contents() const {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   DocumentPictureInPictureMixinTestBase& picture_in_picture_test_base() {

@@ -16,7 +16,7 @@ class WebContents;
 }  // namespace content
 
 class GURL;
-class Browser;
+class BrowserWindowInterface;
 
 // DocumentPictureInPictureMixinTestBase is test base harness that can inherit
 // any InProcessBrowserTest to be used for writing basic automated tests for
@@ -36,10 +36,11 @@ class DocumentPictureInPictureMixinTestBase : public InProcessBrowserTestMixin {
   void PostRunTestOnMainThread() override;
 
   void NavigateToURLAndEnterPictureInPicture(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       const gfx::Size& window_size = gfx::Size(500, 500));
 
-  void NavigateToUrl(Browser* browser, const GURL& test_page_url) const;
+  void NavigateToUrl(BrowserWindowInterface* browser,
+                     const GURL& test_page_url) const;
 
   void WaitForPageLoad(content::WebContents* contents);
 

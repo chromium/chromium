@@ -272,6 +272,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui:recently_audible_helper",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/views/overlay",
       "//chrome/browser/ui/views/page_info",
@@ -329,6 +330,7 @@ if (!is_android) {
       ":test_support_ui",
       "//base/test:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//testing/gtest",
     ]
   }
@@ -347,6 +349,7 @@ if (!is_android) {
     ]
     deps = [
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//content/public/browser",
       "//content/test:test_support",
