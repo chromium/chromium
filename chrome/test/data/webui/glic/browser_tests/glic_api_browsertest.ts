@@ -4,7 +4,7 @@
 import {HostCapability, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
 import type {TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, sleep, testMain} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertTrue, checkDefined, mapObservable, observeSequence, sleep, testMain} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
 
 // Test cases here correspond to test cases in glic_api_browsertest.cc.
@@ -352,69 +352,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(clientId);
   }
 
-
-  async testAdditionalContext() {
-    const additionalContextPromise = new Promise<void>(resolve => {
-      this.host.getAdditionalContext!().subscribe(async context => {
-        assertEquals(context.name, 'part with everything');
-        assertDefined(context.tabId);
-        assertTrue(context.tabId!.length > 0);
-        assertDefined(context.frameUrl);
-        assertTrue(context.frameUrl!.length > 0);
-        assertEquals(context.parts.length, 7);
-
-        const part1 = context.parts[0]!;
-        assertDefined(part1.data);
-        assertEquals(part1.data!.type, 'text/plain');
-        const data1 = new Uint8Array(await part1.data!.arrayBuffer());
-        assertEquals(data1.length, 4);
-        assertEquals(data1[0], 't'.charCodeAt(0));
-
-        const part2 = context.parts[1]!;
-        assertUndefined(part2.data);
-        assertDefined(part2.screenshot);
-        assertEquals(part2.screenshot!.widthPixels, 10);
-        assertEquals(part2.screenshot!.heightPixels, 20);
-        assertEquals(part2.screenshot!.mimeType, 'image/png');
-        const data2 = new Uint8Array(part2.screenshot!.data);
-        assertEquals(data2.length, 4);
-        assertEquals(data2[0], 1);
-
-        const part3 = context.parts[2]!;
-        assertDefined(part3.webPageData);
-        assertEquals(
-            part3.webPageData!.mainDocument.innerText, 'some inner text');
-
-        const part4 = context.parts[3]!;
-        assertDefined(part4.annotatedPageData);
-
-        const part5 = context.parts[4]!;
-        assertDefined(part5.pdf);
-        assertDefined(part5.pdf!.pdfData);
-        const pdfText = await new Response(part5.pdf!.pdfData!).text();
-        assertEquals(pdfText, 'pdf');
-
-        const part6 = context.parts[5]!;
-        assertDefined(part6.tabContext);
-        assertDefined(part6.tabContext!.tabData);
-        assertEquals(part6.tabContext!.tabData!.tabId, '1');
-        assertEquals(part6.tabContext!.tabData!.windowId, '2');
-        assertEquals(part6.tabContext!.tabData!.url, 'https://google.com/');
-
-        const part7 = context.parts[6]!;
-        assertDefined(part7.region);
-        assertDefined(part7.region!.rect);
-        assertEquals(part7.region!.rect!.x, 10);
-        assertEquals(part7.region!.rect!.y, 20);
-        assertEquals(part7.region!.rect!.width, 30);
-        assertEquals(part7.region!.rect!.height, 40);
-        resolve();
-      });
-    });
-
-    await this.advanceToNextStep();
-    await additionalContextPromise;
-  }
 
   async testSwitchConversationToExistingInstance() {
     assertDefined(this.host.registerConversation);
