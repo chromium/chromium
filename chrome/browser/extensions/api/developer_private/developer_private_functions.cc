@@ -31,7 +31,9 @@
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/sync/account_extension_tracker.h"
@@ -47,7 +49,10 @@
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
 #include "content/public/common/drop_data.h"
@@ -79,6 +84,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/extensions/extension_developer_private_bridge.h"
@@ -88,6 +94,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -615,6 +622,43 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
 
 DeveloperPrivateUpdateExtensionConfigurationFunction::
     ~DeveloperPrivateUpdateExtensionConfigurationFunction() = default;
+
+DeveloperPrivateOpenReviewPageFunction::
+    ~DeveloperPrivateOpenReviewPageFunction() = default;
+
+ExtensionFunction::ResponseAction
+DeveloperPrivateOpenReviewPageFunction::Run() {
+  std::optional<developer::OpenReviewPage::Params> params =
+      developer::OpenReviewPage::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const Extension* extension = GetExtensionById(params->extension_id);
+  if (!extension) {
+    return RespondNow(LogNoSuchExtensionFoundAndReturn());
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  CHECK(profile);
+  if (!profile->GetPrefs()->GetBoolean(prefs::kExtensionReviewPromptsAllowed)) {
+    return RespondNow(Error("Review prompts are disabled by policy."));
+  }
+  if (!ui_util::ShouldShowReviewPrompt(*extension, *profile)) {
+    return RespondNow(Error("The extension is ineligible for review prompts."));
+  }
+
+  content::WebContents* web_contents = GetSenderWebContents();
+  if (!web_contents) {
+    return RespondNow(Error(kCouldNotFindWebContentsError));
+  }
+
+  GURL review_url = util::GetCWSWritingReviewUrl(
+      params->extension_id, util::CWSReviewSource::kExtensionsPage);
+
+  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  web_contents, review_url, base::DoNothing());
+
+  return RespondNow(NoArguments());
+}
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
