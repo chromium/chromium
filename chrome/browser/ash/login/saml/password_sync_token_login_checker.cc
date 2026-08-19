@@ -49,8 +49,12 @@ void PasswordSyncTokenLoginChecker::RecheckAfter(base::TimeDelta delay) {
 
 void PasswordSyncTokenLoginChecker::CheckForPasswordNotInSync() {
   DCHECK(!password_sync_token_fetcher_);
+  // Passing nullptr to the PasswordSyncTokenFetcher here is fine,
+  // because it is used only for verification.
+  // TODO: consider to remove the explicit nullptr passing by splitting
+  // PasswordSyncTokenFetcher per purposes.
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
-      shared_url_loader_factory_, /*primary_profile_ = */ nullptr, this);
+      shared_url_loader_factory_, /*identity_manager=*/nullptr, this);
   password_sync_token_fetcher_->StartTokenVerify(sync_token_);
 }
 

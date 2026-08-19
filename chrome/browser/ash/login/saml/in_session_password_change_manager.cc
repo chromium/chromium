@@ -27,6 +27,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -488,7 +489,8 @@ void InSessionPasswordChangeManager::OnApiCallFailed(
 
 void InSessionPasswordChangeManager::CreateTokenAsync() {
   password_sync_token_fetcher_ = std::make_unique<PasswordSyncTokenFetcher>(
-      primary_profile_->GetURLLoaderFactory(), primary_profile_, this);
+      primary_profile_->GetURLLoaderFactory(),
+      IdentityManagerFactory::GetForProfile(primary_profile_.get()), this);
   password_sync_token_fetcher_->StartTokenCreate();
 }
 
