@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_action_helper.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_section_action_item.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/toolbar/recent_tabs_dynamic_menu.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/actions.h"
@@ -30,8 +31,10 @@
 ActionAppMenu::ActionAppMenu(BrowserWindowInterface* browser_window_interface,
                              base::RepeatingClosure on_menu_closed_callback)
     : browser_window_interface_(browser_window_interface),
-      on_menu_closed_callback_(std::move(on_menu_closed_callback)) {
-  CreateMenuHierarchy(app_menu::GetAppMenuRoot(browser_window_interface));
+      on_menu_closed_callback_(std::move(on_menu_closed_callback)),
+      recent_tabs_menu_(
+          std::make_unique<RecentTabsDynamicMenu>(browser_window_interface)) {
+  CreateMenuHierarchy(app_menu::GetAppMenuRoot(browser_window_interface_));
 }
 
 ActionAppMenu::~ActionAppMenu() {
@@ -59,8 +62,17 @@ void ActionAppMenu::CreateMenuHierarchy(actions::ActionItem* root) {
       kActionShowPasswordManager, app_menu::DisplayType::kRow,
       your_chrome_background));
 
-  chrome_ptr->AddChild(app_menu::CreateAppMenuIndirectActionItem(
-      kActionShowHistory, app_menu::DisplayType::kRow, your_chrome_background));
+  auto recent_tabs_menu = app_menu::CreateAppMenuIndirectActionItem(
+      kActionRecentTabsSubmenu, app_menu::DisplayType::kRow,
+      your_chrome_background);
+
+  recent_tabs_menu->SetPopulateChildrenCallback(
+      base::BindRepeating(&RecentTabsDynamicMenu::BuildRecentTabsActions,
+                          recent_tabs_menu_->GetWeakPtr()));
+
+  recent_tabs_menu->PopulateChildItems();
+
+  chrome_ptr->AddChild(std::move(recent_tabs_menu));
 
   chrome_ptr->AddChild(app_menu::CreateAppMenuIndirectActionItem(
       kActionManageExtensions, app_menu::DisplayType::kRow,
@@ -154,33 +166,46 @@ std::optional<SkColor> ActionAppMenu::GetLabelColor(int id) const {
 }
 
 void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
-                                 actions::ActionItem* action_item) {
+                                 actions::BaseAction* action_item) {
   const auto& children = action_item->GetChildren().children();
   const size_t child_count = children.size();
 
   const auto* provider = ChromeLayoutProvider::Get();
 
   for (size_t i = 0; i < child_count; ++i) {
-    actions::ActionItem* child_ptr = children[i]->GetActionItem();
+    actions::BaseAction* child_base = children[i].get();
+    actions::ActionItem* child_ptr = child_base->GetActionItem();
+    if (!child_ptr) {
+      continue;
+    }
+
     // If the child is a section action item, append it as a MenuItem that
     // represents a section header.
     if (actions::IsActionClass<AppMenuSectionActionItem>(child_ptr)) {
       auto* header_menu_item =
           view_parent->AppendTitle(std::u16string(child_ptr->GetText()));
       header_menu_item->SetEnabled(false);
-      header_menu_item->set_vertical_margin(8);
+      const int vertical_margin =
+          views::LayoutProvider::Get()->GetDistanceMetric(
+              views::DistanceMetric::DISTANCE_RELATED_CONTROL_VERTICAL);
+      header_menu_item->set_vertical_margin(vertical_margin);
       // Recursive call using the same parent to keep the children in
       // the same menu section as the header.
-      PopulateMenu(view_parent, child_ptr);
+      PopulateMenu(view_parent, child_base);
     } else {
       // Otherwise, append it as a MenuItemView that represents an action item.
       std::optional<actions::ActionId> action_id = child_ptr->GetActionId();
-      CHECK(action_id.has_value());
+      int command_id = action_id.value_or(next_id_++);
 
-      auto* menu_item = view_parent->AppendMenuItem(action_id.value());
+      const bool has_children = !child_base->GetChildren().children().empty();
+
+      auto* menu_item =
+          has_children ? view_parent->AppendSubMenu(
+                             command_id, std::u16string(child_ptr->GetText()))
+                       : view_parent->AppendMenuItem(command_id);
       action_view_controller_.CreateActionViewRelationship(
           menu_item, child_ptr->GetAsWeakPtr());
-      command_to_action_map_[action_id.value()] = child_ptr;
+      command_to_action_map_[command_id] = child_ptr;
 
       // Set the border radius depending on the position a menu item has in
       // its section.
@@ -228,7 +253,7 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
 
       // Recursively populate the menu item with the ActionItem's children.
       // This creates any submenu items.
-      PopulateMenu(menu_item, child_ptr);
+      PopulateMenu(menu_item, child_base);
     }
   }
 }

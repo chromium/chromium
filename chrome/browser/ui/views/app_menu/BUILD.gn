@@ -22,6 +22,7 @@ source_set("app_menu") {
     "//skia",
     "//ui/actions:actions_headers",
     "//ui/base",
+    "//ui/base:constants",
     "//ui/views",
   ]
 }
@@ -39,6 +40,7 @@ source_set("impl") {
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/browser:command_updater_impl",
+    "//chrome/browser:global_features",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",
@@ -49,6 +51,7 @@ source_set("impl") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views",
     "//chrome/browser/ui/views/controls",
+    "//chrome/browser/ui/views/toolbar",
     "//components/bookmarks/browser",
     "//components/feature_engagement/public",
     "//components/omnibox/browser",
