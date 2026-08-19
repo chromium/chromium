@@ -1021,6 +1021,11 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testErrorShownOnMojoPipeError() {}
 
+  async testPanelActiveWithMicrophone() {
+    await this.advanceToNextStep();
+    await this.advanceToNextStep();
+  }
+
   async testRequestHeader() {
     const rpcUrls: string[] = this.testParams.rpcUrls;
     await Promise.all(rpcUrls.map(url => fetch(url)));

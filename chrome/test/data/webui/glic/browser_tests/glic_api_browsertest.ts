@@ -38,11 +38,6 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testHibernateAllOnMemoryPressure() {}
 
-  async testPanelActiveWithMicrophone() {
-    await this.advanceToNextStep();
-    await this.advanceToNextStep();
-  }
-
   // TODO(crbug.com/422544382): add test for getContextForActorFromTab for the
   // case where tab is in background.
 

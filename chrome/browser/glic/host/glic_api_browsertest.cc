@@ -546,41 +546,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelActiveWithMicrophone) {
-  TrackFloatingGlicInstance();
-  // Add another tab and open Floaty.
-  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-
-  RunTestSequence(InstrumentTab(kFirstTab),
-                  NavigateWebContents(kFirstTab, page_url()),
-                  OpenGlicFloatingWindow(GlicInstrumentMode::kHostAndContents,
-                                         /*conversation_id=*/std::nullopt));
-
-  ExecuteJsTest();
-
-  GetHost()->OnMicrophoneStatusChanged(mojom::MicrophoneStatus::kListening);
-
-  // Activating the other tab should take focus away from Floaty. Floaty should
-  // still remain active.
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  browser()->GetWindow()->Activate();
-
-  EXPECT_TRUE(GetGlicInstance()->IsActive());
-
-  ContinueJsTest();
-
-  // Pause the microphone and focus on the window. Floaty should not be
-  // considered active.
-  GetHost()->OnMicrophoneStatusChanged(mojom::MicrophoneStatus::kNotListening);
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  browser()->GetWindow()->Activate();
-
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return !GetGlicInstance()->IsActive(); }));
-
-  ContinueJsTest();
-}
-
 // TODO(crbug.com/454083080): Fix this, it hangs.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
   ExecuteJsTest();

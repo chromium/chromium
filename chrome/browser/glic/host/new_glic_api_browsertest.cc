@@ -2755,6 +2755,41 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testSetMinimumWidgetSize) {
 }
 #endif
 
+// Detached floating window mode (Floaty) is not supported on Android, where
+// Glic runs exclusively attached to tabs or side panels.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPanelActiveWithMicrophone) {
+  tabs::TabInterface* background_tab = CreateBackgroundTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
+
+  ExecuteJsTest();
+
+  instance->host().OnMicrophoneStatusChanged(
+      mojom::MicrophoneStatus::kListening);
+
+  // Activating the other tab should take focus away from Floaty. Floaty should
+  // still remain active because the microphone is listening.
+  GetTabListInterface()->ActivateTab(background_tab->GetHandle());
+  GetBrowserWindowInterface()->GetWindow()->Activate();
+  EXPECT_TRUE(instance->IsActive());
+
+  ContinueJsTest();
+
+  // Pause the microphone and focus on the other tab. Floaty should not be
+  // considered active.
+  instance->host().OnMicrophoneStatusChanged(
+      mojom::MicrophoneStatus::kNotListening);
+  GetTabListInterface()->ActivateTab(background_tab->GetHandle());
+  GetBrowserWindowInterface()->GetWindow()->Activate();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !instance->IsActive(); }));
+
+  ContinueJsTest();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testManualResizeChanged) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
