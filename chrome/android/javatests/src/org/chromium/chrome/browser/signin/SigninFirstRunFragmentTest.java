@@ -45,6 +45,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.filters.LargeTest;
@@ -741,11 +742,15 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Drawable profilePicture = mFragment.getProfilePictureForTesting();
-                    if (!(profilePicture instanceof BitmapDrawable)) {
+                    Bitmap bitmap = null;
+                    if (profilePicture instanceof BitmapDrawable) {
+                        bitmap = ((BitmapDrawable) profilePicture).getBitmap();
+                    } else if (profilePicture instanceof RoundedBitmapDrawable) {
+                        bitmap = ((RoundedBitmapDrawable) profilePicture).getBitmap();
+                    } else {
                         return false;
                     }
 
-                    Bitmap bitmap = ((BitmapDrawable) profilePicture).getBitmap();
                     // Check a pixel in the middle to see if it's RED.
                     return bitmap.getPixel(bitmap.getWidth() / 2, bitmap.getHeight() / 2)
                             == Color.RED;

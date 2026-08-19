@@ -87,6 +87,7 @@ robolectric_binary("touch_to_fill_junit_tests") {
     "//components/url_formatter/android:url_formatter_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/gif_player:gif_player_java",
     "//third_party/google-truth:google_truth_java",
     "//third_party/hamcrest:hamcrest_java",

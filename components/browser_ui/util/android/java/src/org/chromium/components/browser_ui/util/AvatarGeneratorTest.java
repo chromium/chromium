@@ -9,8 +9,8 @@ import static org.junit.Assert.assertTrue;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
@@ -106,14 +106,12 @@ public class AvatarGeneratorTest {
             }
         }
 
-        BitmapDrawable separateAvatarsOutput =
-                (BitmapDrawable)
-                        AvatarGenerator.makeRoundAvatar(
-                                mResources, Arrays.asList(avatar1, avatar2), IMAGE_SIZE_PX);
+        RoundedBitmapDrawable separateAvatarsOutput =
+                AvatarGenerator.makeRoundAvatar(
+                        mResources, Arrays.asList(avatar1, avatar2), IMAGE_SIZE_PX);
 
-        BitmapDrawable mergedAvatarOutput =
-                (BitmapDrawable)
-                        AvatarGenerator.makeRoundAvatar(mResources, mergedAvatar, IMAGE_SIZE_PX);
+        RoundedBitmapDrawable mergedAvatarOutput =
+                AvatarGenerator.makeRoundAvatar(mResources, mergedAvatar, IMAGE_SIZE_PX);
 
         assertTrue(separateAvatarsOutput.getBitmap().sameAs(mergedAvatarOutput.getBitmap()));
         // TODO(crbug.com/40944605): Add another test that compares the result of  makeRoundAvatar()
@@ -160,16 +158,12 @@ public class AvatarGeneratorTest {
             }
         }
 
-        BitmapDrawable separateAvatarsOutput =
-                (BitmapDrawable)
-                        AvatarGenerator.makeRoundAvatar(
-                                mResources,
-                                Arrays.asList(avatar1, avatar2, avatar3),
-                                IMAGE_SIZE_PX);
+        RoundedBitmapDrawable separateAvatarsOutput =
+                AvatarGenerator.makeRoundAvatar(
+                        mResources, Arrays.asList(avatar1, avatar2, avatar3), IMAGE_SIZE_PX);
 
-        BitmapDrawable mergedAvatarOutput =
-                (BitmapDrawable)
-                        AvatarGenerator.makeRoundAvatar(mResources, mergedAvatar, IMAGE_SIZE_PX);
+        RoundedBitmapDrawable mergedAvatarOutput =
+                AvatarGenerator.makeRoundAvatar(mResources, mergedAvatar, IMAGE_SIZE_PX);
 
         assertTrue(separateAvatarsOutput.getBitmap().sameAs(mergedAvatarOutput.getBitmap()));
     }
@@ -213,16 +207,14 @@ public class AvatarGeneratorTest {
             }
         }
 
-        BitmapDrawable separateAvatarsOutput =
-                (BitmapDrawable)
-                        AvatarGenerator.makeRoundAvatar(
-                                mResources,
-                                Arrays.asList(avatar1, avatar2, avatar3, avatar4),
-                                IMAGE_SIZE_PX);
+        RoundedBitmapDrawable separateAvatarsOutput =
+                AvatarGenerator.makeRoundAvatar(
+                        mResources,
+                        Arrays.asList(avatar1, avatar2, avatar3, avatar4),
+                        IMAGE_SIZE_PX);
 
-        BitmapDrawable mergedAvatarOutput =
-                (BitmapDrawable)
-                        AvatarGenerator.makeRoundAvatar(mResources, mergedAvatar, IMAGE_SIZE_PX);
+        RoundedBitmapDrawable mergedAvatarOutput =
+                AvatarGenerator.makeRoundAvatar(mResources, mergedAvatar, IMAGE_SIZE_PX);
 
         assertTrue(separateAvatarsOutput.getBitmap().sameAs(mergedAvatarOutput.getBitmap()));
     }

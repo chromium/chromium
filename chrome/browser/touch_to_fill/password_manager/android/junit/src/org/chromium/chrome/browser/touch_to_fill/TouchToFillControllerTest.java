@@ -41,9 +41,9 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillPasswordManag
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.Px;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -407,16 +407,13 @@ public class TouchToFillControllerTest {
         // This value is chosen randomly for the test
         final int avatarImgeSizePx = 80;
         Bitmap expectedBitmap =
-                ((BitmapDrawable)
-                                AvatarGenerator.makeRoundAvatar(
-                                        mContext.getResources(),
-                                        mBitmapFromImageFetcher,
-                                        avatarImgeSizePx))
+                AvatarGenerator.makeRoundAvatar(
+                                mContext.getResources(), mBitmapFromImageFetcher, avatarImgeSizePx)
                         .getBitmap();
 
         assertTrue(
                 expectedBitmap.sameAs(
-                        ((BitmapDrawable) itemList.get(0).model.get(AVATAR)).getBitmap()));
+                        ((RoundedBitmapDrawable) itemList.get(0).model.get(AVATAR)).getBitmap()));
     }
 
     @Test
