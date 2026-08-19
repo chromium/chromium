@@ -41,6 +41,8 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_consent_provider_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
@@ -402,6 +404,14 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     identity_manager_->AddObserver(this);
   }
   last_known_gemini_availability_ = IsGeminiAvailableForActiveWebState();
+
+  if (IsAppSwitcherAISummarizationEnabled()) {
+    GeminiCapabilitiesManager* capabilities_manager =
+        GeminiCapabilitiesManagerFactory::GetForProfile(browser_->GetProfile());
+    if (capabilities_manager) {
+      capabilities_manager->UpdateCapabilities();
+    }
+  }
 
   if (IsIOSGeminiBottomSheetMigrationEnabled()) {
     return;

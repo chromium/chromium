@@ -20,8 +20,6 @@ GeminiCapabilitiesManagerImpl::GeminiCapabilitiesManagerImpl(
   if (gemini_service_) {
     gemini_service_observation_.Observe(gemini_service_);
   }
-  // Update capabilities immediately upon initialization.
-  UpdateCapabilities();
 }
 
 GeminiCapabilitiesManagerImpl::~GeminiCapabilitiesManagerImpl() = default;

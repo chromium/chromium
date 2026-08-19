@@ -105,9 +105,9 @@ TEST_F(GeminiCapabilitiesManagerTest, FeatureDisabledClearsCapabilities) {
   }
                forKey:app_group::kChromeCapabilitiesPreference];
 
-  // Constructor automatically calls UpdateCapabilities()!
   GeminiCapabilitiesManagerImpl manager(profile_.get(), auth_service_,
                                         fake_gemini_service_);
+  manager.UpdateCapabilities();
 
   EXPECT_NSEQ(nil, [defaults objectForKey:app_group::kAppSwitcherHashedUserID]);
   NSDictionary* capabilities =
@@ -125,9 +125,9 @@ TEST_F(GeminiCapabilitiesManagerTest, FeatureEnabledNoUser) {
   scoped_feature_list_.InitWithFeatures(
       {kPageActionMenu, kAppSwitcherAISummarization}, {});
 
-  // Constructor automatically calls UpdateCapabilities()!
   GeminiCapabilitiesManagerImpl manager(profile_.get(), auth_service_,
                                         fake_gemini_service_);
+  manager.UpdateCapabilities();
   fake_gemini_service_->SetIsEligible(false);
 
   NSUserDefaults* defaults = app_group::GetCommonGroupUserDefaults();
@@ -163,9 +163,9 @@ TEST_F(GeminiCapabilitiesManagerTest, FeatureEnabledWithUser) {
 
   auth_service_->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
 
-  // Constructor automatically calls UpdateCapabilities()!
   GeminiCapabilitiesManagerImpl manager(profile_.get(), auth_service_,
                                         fake_gemini_service_);
+  manager.UpdateCapabilities();
   fake_gemini_service_->SetIsEligible(true);
 
   NSUserDefaults* defaults = app_group::GetCommonGroupUserDefaults();

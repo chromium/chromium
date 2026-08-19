@@ -219,6 +219,7 @@ source_set("gemini_capabilities_manager_factory") {
     "//base",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
