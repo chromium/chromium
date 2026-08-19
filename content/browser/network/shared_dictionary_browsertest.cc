@@ -1836,8 +1836,16 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
       "Net.SharedDictionaryStorageOnDisk.MetadataReadTime.Empty";
 
   EXPECT_TRUE(WaitForHistogram(histogram_name));
-  histogram_tester.ExpectTotalCount(histogram_name,
-                                    /*expected_count=*/1);
+  // When pervasive dictionaries are enabled, it will check both the
+  // pervasive partition and site-specific partition (2 reads).
+  const size_t expected_count =
+      (base::FeatureList::IsEnabled(
+           network::features::kPervasiveSharedDictionaries) &&
+       base::FeatureList::IsEnabled(
+           network::features::kCacheSharingForPervasiveResources))
+          ? 2
+          : 1;
+  histogram_tester.ExpectTotalCount(histogram_name, expected_count);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, RestartWithAuth) {

@@ -19251,6 +19251,25 @@
             ]
         }
     ],
+    "PervasiveSharedDictionaries": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PervasiveSharedDictionaries"
+                    ]
+                }
+            ]
+        }
+    ],
     "PinExtensionJourney": [
         {
             "platforms": [
