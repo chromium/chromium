@@ -14119,6 +14119,21 @@
             ]
         }
     ],
+    "IOSPageContextScreenshotPasswordRedaction": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageContextScreenshotPasswordRedaction"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPartitionAllocBackupRefPtr": [
         {
             "platforms": [
