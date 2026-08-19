@@ -35,8 +35,10 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
@@ -342,7 +344,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
                         mModelList,
                         mAddNewFolderCoordinator,
                         rowCoordinator,
-                        mShoppingService);
+                        mShoppingService,
+                        /* isFromBookmarkDialog= */ false);
     }
 
     @Test
@@ -415,16 +418,112 @@ public class BookmarkFolderPickerMediatorUnitTest {
 
     @Test
     public void testOptionsItemSelected_BackPressed() {
-        mMediator.optionsItemSelected(android.R.id.home);
+        assertTrue(mMediator.optionsItemSelected(android.R.id.home));
         assertEquals("Move to…", mModel.get(BookmarkFolderPickerProperties.TOOLBAR_TITLE));
-        mMediator.optionsItemSelected(android.R.id.home);
-        verify(mFinishRunnable).run();
+        assertFalse(mMediator.optionsItemSelected(android.R.id.home));
     }
 
     @Test
     public void testOptionsItemSelected_AddNewFolder() {
         mMediator.optionsItemSelected(R.id.create_new_folder_menu_id);
         verify(mAddNewFolderCoordinator).show(any());
+    }
+
+    @Test
+    public void testOptionsItemSelected_Close() {
+        mMediator.optionsItemSelected(R.id.close_menu_id);
+        verify(mFinishRunnable).run();
+    }
+
+    @Test
+    public void testNewFolderButtonClicked() {
+        mModel.get(BookmarkFolderPickerProperties.NEW_FOLDER_CLICK_LISTENER).run();
+        verify(mAddNewFolderCoordinator).show(mMobileFolderId);
+    }
+
+    @Test
+    public void testBackPressStateSupplier() {
+        // Initially populated at mMobileFolderId (not root), so back press is handled.
+        assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
+
+        // When navigating to root folder, back press is no longer handled by mediator.
+        mMediator.populateFoldersForParentId(mRootFolderId);
+        assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
+
+        // Navigating back into a subfolder re-enables back press handling.
+        mMediator.populateFoldersForParentId(mMobileFolderId);
+        assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testDesktopBookmarksLayout_UsesCompactRows() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        mMediator.populateFoldersForParentId(mMobileFolderId);
+        assertEquals(2, mModelList.size());
+        assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, mModelList.get(0).type);
+        assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, mModelList.get(1).type);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testDesktopBookmarksLayout_NavigationIconVisibility_NotFromBookmarkDialog() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        remakeMediator(mBookmarkModel, mUserBookmarkId);
+
+        // At root folder when not from a parent dialog, navigation icon should not be visible.
+        mMediator.populateFoldersForParentId(mRootFolderId);
+        assertFalse(mModel.get(BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE));
+
+        // In a top-level folder (like Mobile or Bookmark Bar), navigation icon should be visible.
+        mMediator.populateFoldersForParentId(mMobileFolderId);
+        assertTrue(mModel.get(BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE));
+
+        // In the original parent folder of the bookmark, navigation icon should also be visible.
+        mMediator.populateFoldersForParentId(mUserFolderId);
+        assertTrue(mModel.get(BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE));
+
+        // Pressing back from the original parent folder navigates up to its parent.
+        mMediator.onBackPressed();
+        assertTrue(mModel.get(BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testDesktopBookmarksLayout_NavigationIconVisibility_FromBookmarkDialog() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        if (mMediator != null) {
+            mMediator.destroy();
+        }
+        ImprovedBookmarkRowCoordinator rowCoordinator =
+                new ImprovedBookmarkRowCoordinator(
+                        mActivity,
+                        mBookmarkImageFetcher,
+                        mBookmarkModel,
+                        mBookmarkUiPrefs,
+                        mShoppingService);
+        mMediator =
+                new BookmarkFolderPickerMediator(
+                        mActivity,
+                        mBookmarkModel,
+                        Arrays.asList(mUserBookmarkId),
+                        mFinishRunnable,
+                        mBookmarkUiPrefs,
+                        mModel,
+                        mModelList,
+                        mAddNewFolderCoordinator,
+                        rowCoordinator,
+                        mShoppingService,
+                        /* isFromBookmarkDialog= */ true);
+
+        // At root folder when from another dialog, navigation icon should be visible to allow
+        // returning.
+        mMediator.populateFoldersForParentId(mRootFolderId);
+        assertTrue(mModel.get(BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE));
+
+        // In a subfolder, navigation icon should also be visible.
+        mMediator.populateFoldersForParentId(mMobileFolderId);
+        assertTrue(mModel.get(BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE));
     }
 
     @Test

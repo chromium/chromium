@@ -16,9 +16,13 @@ class BookmarkFolderPickerProperties {
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Runnable> CANCEL_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<Runnable> NEW_FOLDER_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Runnable> MOVE_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
     static final WritableBooleanPropertyKey MOVE_BUTTON_ENABLED = new WritableBooleanPropertyKey();
+    static final WritableBooleanPropertyKey NAVIGATION_ICON_VISIBLE =
+            new WritableBooleanPropertyKey();
     // Using WritableObjectPropertyKey and skipEquality=true here because the menu button is
     // initialized by the activity. Since we have no control over it, it could get instantiated
     // after the property is already set.
@@ -28,8 +32,10 @@ class BookmarkFolderPickerProperties {
     static final PropertyKey[] ALL_KEYS = {
         TOOLBAR_TITLE,
         CANCEL_CLICK_LISTENER,
+        NEW_FOLDER_CLICK_LISTENER,
         MOVE_CLICK_LISTENER,
         MOVE_BUTTON_ENABLED,
+        NAVIGATION_ICON_VISIBLE,
         ADD_NEW_FOLDER_BUTTON_ENABLED
     };
 }

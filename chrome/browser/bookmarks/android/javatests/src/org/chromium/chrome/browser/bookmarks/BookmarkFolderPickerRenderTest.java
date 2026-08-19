@@ -111,6 +111,7 @@ public class BookmarkFolderPickerRenderTest {
 
     @Before
     public void setUp() throws Exception {
+        ImprovedBookmarkRow.setEnableIconAnimationForTesting(false);
         mBookmarkModel = runOnUiThreadBlocking(() -> FakeBookmarkModel.createModel());
         mBookmarkModel.setAreAccountBookmarkFoldersActive(false);
         mActivityTestRule.launchActivity(null);
@@ -178,7 +179,8 @@ public class BookmarkFolderPickerRenderTest {
                                     mAddNewFolderCoordinator,
                                     mBookmarkUiPrefs,
                                     mImprovedBookmarkRowCoordinator,
-                                    mShoppingService);
+                                    mShoppingService,
+                                    /* isFromBookmarkDialog= */ false);
 
                     mContentView.addView(mCoordinator.getView());
 

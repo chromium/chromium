@@ -78,7 +78,16 @@ public class BookmarkManagerOpenerImpl implements BookmarkManagerOpener {
                 BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
                 BookmarkUtils.bookmarkIdsToStringList(bookmarkIds));
         ProfileIntentUtils.addProfileToIntent(profile, intent);
-        context.startActivity(intent);
+        // When launched from BookmarkEditActivity, the folder picker is opened as a child dialog.
+        // It needs to know it was opened from another bookmark dialog (to show the back arrow at
+        // the root folder on desktop) and needs to report results so dismissals chain properly.
+        if (context instanceof BookmarkEditActivity bookmarkEditActivity) {
+            intent.putExtra(BookmarkFolderPickerActivity.INTENT_IS_FROM_BOOKMARK_DIALOG, true);
+            bookmarkEditActivity.startActivityForResult(
+                    intent, BookmarkEditActivity.FOLDER_PICKER_REQUEST_CODE);
+        } else {
+            context.startActivity(intent);
+        }
     }
 
     @Override

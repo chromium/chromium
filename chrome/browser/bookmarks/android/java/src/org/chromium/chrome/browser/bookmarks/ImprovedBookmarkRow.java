@@ -24,6 +24,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
@@ -55,6 +56,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         int BOTTOM = 2;
         int SOLO = 3;
     }
+
+    private static boolean sEnableIconAnimationForTesting = true;
 
     private ViewGroup mContainer;
     // The start image view which is shows the favicon.
@@ -273,8 +276,8 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
         cancelAnimation();
 
         mStartImageView.setImageDrawable(drawable);
-        // No need to fade-in a null drawable.
-        if (drawable == null) return;
+        // No need to fade-in a null drawable or when animations are disabled in tests.
+        if (drawable == null || !sEnableIconAnimationForTesting) return;
 
         mStartImageView.setAlpha(0f);
 
@@ -397,5 +400,10 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
 
     public String getTitleForTesting() {
         return mTitleView.getText().toString();
+    }
+
+    public static void setEnableIconAnimationForTesting(boolean enable) {
+        sEnableIconAnimationForTesting = enable;
+        ResettersForTesting.register(() -> sEnableIconAnimationForTesting = true);
     }
 }

@@ -4796,6 +4796,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_CREATE_NEW_FOLDER"  desc="Option in the bookmarks manager to show the create a new folder in the current context. [CHAR_LIMIT=24]">
         Create new folder
       </message>
+      <message name="IDS_NEW_FOLDER"  desc="Button in the bookmarks manager to create a new folder in the current context. [CHAR_LIMIT=24]">
+        New folder
+      </message>
       <message name="IDS_FOLDER_PICKER_ROOT"  desc="Toolbar title for when the user is selecting a folder and the current selected folder is the root.">
         Move to\u2026
       </message>

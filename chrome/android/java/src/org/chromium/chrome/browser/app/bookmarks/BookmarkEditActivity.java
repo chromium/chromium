@@ -6,15 +6,19 @@ package org.chromium.chrome.browser.app.bookmarks;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.Initializer;
@@ -59,6 +63,8 @@ import org.chromium.url.GURL;
 public class BookmarkEditActivity extends SnackbarActivity {
     /** The intent extra specifying the ID of the bookmark to be edited. */
     public static final String INTENT_BOOKMARK_ID = "BookmarkEditActivity.BookmarkId";
+
+    public static final int FOLDER_PICKER_REQUEST_CODE = 101;
 
     private static final String TAG = "BookmarkEdit";
 
@@ -180,6 +186,13 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                         scrollView, getEdgeToEdgeSupplier());
         updateViewContent(false);
+
+        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            setFinishOnTouchOutside(true);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            int scrimColor = ContextCompat.getColor(this, R.color.modal_dialog_scrim_color_lff);
+            getWindow().setDimAmount(Color.alpha(scrimColor) / 255.0f);
+        }
     }
 
     /**
@@ -330,9 +343,11 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         mFolderSelectRowModel.set(
                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                () ->
-                        mBookmarkManagerOpener.startFolderPickerActivity(
-                                /* context= */ this, mProfile, mBookmarkId));
+                () -> {
+                    setDialogContentVisible(false);
+                    mBookmarkManagerOpener.startFolderPickerActivity(
+                            /* context= */ this, mProfile, mBookmarkId);
+                });
 
         mFolderSelectRow =
                 ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);
@@ -341,6 +356,39 @@ public class BookmarkEditActivity extends SnackbarActivity {
 
         mFolderPickerRowContainer.removeAllViews();
         mFolderPickerRowContainer.addView(mFolderSelectRow);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setDialogContentVisible(true);
+    }
+
+    /**
+     * Toggles the visibility of the dialog content view on desktop.
+     *
+     * <p>On desktop, {@link BookmarkEditActivity} and {@link BookmarkFolderPickerActivity} are
+     * layered modal dialog activities. When opening the folder picker as a child dialog, we hide
+     * the edit dialog content so that if both are dismissed together (via {@code
+     * RESULT_DISMISS_ALL}), the edit dialog finishes without a brief visual flash.
+     */
+    private void setDialogContentVisible(boolean visible) {
+        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            findViewById(android.R.id.content)
+                    .setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == FOLDER_PICKER_REQUEST_CODE
+                && resultCode == BookmarkFolderPickerActivity.RESULT_DISMISS_ALL) {
+            finish();
+            if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+                overridePendingTransition(0, 0);
+            }
+        }
     }
 
     View getFolderSelectRowForTesting() {

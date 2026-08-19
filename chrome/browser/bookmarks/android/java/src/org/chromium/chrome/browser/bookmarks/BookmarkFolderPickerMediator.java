@@ -9,6 +9,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -71,11 +74,14 @@ class BookmarkFolderPickerMediator {
     private final BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
     private final ImprovedBookmarkRowCoordinator mImprovedBookmarkRowCoordinator;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private boolean mMovingAtLeastOneFolder;
     private boolean mMovingAtLeastOneBookmark;
     private boolean mCanMoveAllToReadingList;
     private @Nullable BookmarkItem mCurrentParentItem;
+    private final boolean mIsFromBookmarkDialog;
 
     BookmarkFolderPickerMediator(
             Context context,
@@ -87,13 +93,15 @@ class BookmarkFolderPickerMediator {
             ModelList modelList,
             BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
             ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator,
-            ShoppingService shoppingService) {
+            ShoppingService shoppingService,
+            boolean isFromBookmarkDialog) {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(mBookmarkModelObserver);
         mBookmarkIds = bookmarkIds;
         mBookmarkIds.removeIf(id -> mBookmarkModel.getBookmarkById(id) == null);
         mFinishRunnable = finishRunnable;
+        mIsFromBookmarkDialog = isFromBookmarkDialog;
         mQueryHandler =
                 new ImprovedBookmarkQueryHandler(
                         mBookmarkModel,
@@ -142,6 +150,8 @@ class BookmarkFolderPickerMediator {
                         : assumeNonNull(mBookmarkModel.getRootFolderId());
 
         mModel.set(BookmarkFolderPickerProperties.CANCEL_CLICK_LISTENER, mFinishRunnable);
+        mModel.set(
+                BookmarkFolderPickerProperties.NEW_FOLDER_CLICK_LISTENER, this::onNewFolderClicked);
         mModel.set(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER, this::onMoveClicked);
 
         // crbug.com/439882814 shows bookmark model is not always loaded by this time.
@@ -170,8 +180,11 @@ class BookmarkFolderPickerMediator {
         BookmarkItem parentItem = mBookmarkModel.getBookmarkById(parentId);
         assert parentItem != null;
         mCurrentParentItem = parentItem;
+        mBackPressStateSupplier.set(
+                !parentId.equals(mBookmarkModel.getRootFolderId()) || mIsFromBookmarkDialog);
         updateToolbarTitleForCurrentParent();
         updateButtonsForCurrentParent();
+        updateNavigationIconForCurrentParent();
 
         List<BookmarkListEntry> children = mQueryHandler.buildBookmarkListForFolderSelect(parentId);
 
@@ -197,7 +210,6 @@ class BookmarkFolderPickerMediator {
     ListItem createFolderPickerRow(BookmarkListEntry entry) {
         BookmarkItem bookmarkItem = assumeNonNull(entry.getBookmarkItem());
         BookmarkId bookmarkId = bookmarkItem.getId();
-
         PropertyModel propertyModel =
                 mImprovedBookmarkRowCoordinator.createBasePropertyModel(bookmarkId);
 
@@ -259,16 +271,28 @@ class BookmarkFolderPickerMediator {
                 BookmarkUtils.canAddFolderToParent(mBookmarkModel, mCurrentParentItem.getId()));
     }
 
+    void updateNavigationIconForCurrentParent() {
+        if (mCurrentParentItem == null || !BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            return;
+        }
+
+        boolean isRoot = mCurrentParentItem.getId().equals(mBookmarkModel.getRootFolderId());
+        mModel.set(
+                BookmarkFolderPickerProperties.NAVIGATION_ICON_VISIBLE,
+                !isRoot || mIsFromBookmarkDialog);
+    }
+
     // Delegate methods for embedder.
 
     boolean optionsItemSelected(int menuItemId) {
         if (menuItemId == R.id.create_new_folder_menu_id) {
-            assumeNonNull(mCurrentParentItem);
-            mAddNewFolderCoordinator.show(mCurrentParentItem.getId());
+            onNewFolderClicked();
+            return true;
+        } else if (menuItemId == R.id.close_menu_id) {
+            mFinishRunnable.run();
             return true;
         } else if (menuItemId == android.R.id.home) {
-            onBackPressed();
-            return true;
+            return onBackPressed();
         }
         return false;
     }
@@ -276,12 +300,15 @@ class BookmarkFolderPickerMediator {
     boolean onBackPressed() {
         if (mCurrentParentItem == null
                 || mCurrentParentItem.getId().equals(mBookmarkModel.getRootFolderId())) {
-            mFinishRunnable.run();
+            return false;
         } else {
             populateFoldersForParentId(mCurrentParentItem.getParentId());
+            return true;
         }
+    }
 
-        return true;
+    NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
     }
 
     // Private methods.
@@ -291,6 +318,11 @@ class BookmarkFolderPickerMediator {
         mBookmarkModel.moveBookmarks(mBookmarkIds, mCurrentParentItem.getId());
         BookmarkUtils.setLastUsedParent(mCurrentParentItem.getId());
         mFinishRunnable.run();
+    }
+
+    private void onNewFolderClicked() {
+        assumeNonNull(mCurrentParentItem);
+        mAddNewFolderCoordinator.show(mCurrentParentItem.getId());
     }
 
     private boolean isValidFolderForMovedBookmarks(BookmarkId folderId) {

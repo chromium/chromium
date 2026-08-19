@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <item
+        android:id="@+id/close_menu_id"
+        android:icon="@drawable/material_ic_close_24dp"
+        android:title="@string/bookmark_toolbar_close"
+        app:showAsAction="always"
+        app:iconTint="@color/default_icon_color_secondary_tint_list" />
+</menu>
