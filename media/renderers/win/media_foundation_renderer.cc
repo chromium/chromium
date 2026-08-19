@@ -1083,6 +1083,9 @@ void MediaFoundationRenderer::OnCdmProxyReceived() {
 void MediaFoundationRenderer::Flush(base::OnceClosure flush_cb) {
   DVLOG_FUNC(2);
 
+  // Only the StartPlayingFrom() that follows may resume playback.
+  awaiting_start_playing_from_ = true;
+
   HRESULT hr = PauseInternal();
   // Ignore any Pause() error. We can continue to flush |mf_source_| instead of
   // stopping the playback with error.
@@ -1096,6 +1099,8 @@ void MediaFoundationRenderer::Flush(base::OnceClosure flush_cb) {
 void MediaFoundationRenderer::StartPlayingFrom(base::TimeDelta time) {
   double current_time = time.InSecondsF();
   DVLOG_FUNC(2) << "current_time=" << current_time;
+
+  awaiting_start_playing_from_ = false;
 
   // Note: It is okay for |waiting_for_mf_cdm_| to be true here. The
   // MFMediaEngine supports calls to Play/SetCurrentTime before a source is set
@@ -1523,6 +1528,10 @@ MediaEngineNotifyImpl* MediaFoundationRenderer::GetMediaEngineNotifyForTesting()
   return mf_media_engine_notify_.Get();
 }
 
+IMFMediaEngine* MediaFoundationRenderer::GetMediaEngineForTesting() const {
+  return mf_media_engine_.Get();
+}
+
 base::TimeDelta MediaFoundationRenderer::GetMediaTime() {
 // GetCurrentTime is expanded as GetTickCount in base/win/windows_types.h
 #undef GetCurrentTime
@@ -1633,8 +1642,17 @@ void MediaFoundationRenderer::OnTimeUpdate() {
 }
 
 void MediaFoundationRenderer::OnFrameStepCompleted() {
-  DVLOG_FUNC(2);
+  DVLOG_FUNC(2) << "awaiting_start_playing_from="
+                << awaiting_start_playing_from_;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  // The Media Engine has a single paused state, so this Play() would also
+  // clear the pause that Flush() issued. StartPlayingFrom()'s Play() would
+  // then find the engine unpaused and send no PLAYING event, which
+  // BUFFERING_HAVE_ENOUGH is derived from. StartPlayingFrom() resumes.
+  if (awaiting_start_playing_from_) {
+    return;
+  }
 
   // Frame-Stepping causes Media engine to be in a paused state after finishing.
   // Thus play and set playback rate is needed to change the state to be

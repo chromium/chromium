@@ -124,6 +124,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   void SetTargetWindowRect(const gfx::Rect& target_window_rect);
 
   MediaEngineNotifyImpl* GetMediaEngineNotifyForTesting() const;
+  IMFMediaEngine* GetMediaEngineForTesting() const;
 
  private:
   enum class StopSendingStatisticsReason {
@@ -252,6 +253,10 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   Microsoft::WRL::ComPtr<MediaFoundationProtectionManager>
       content_protection_manager_;
+
+  // True between Flush() and StartPlayingFrom(), while the Media Engine is
+  // paused for a seek.
+  bool awaiting_start_playing_from_ = false;
 
   bool has_reported_playing_ = false;
   bool has_reported_significant_playback_ = false;

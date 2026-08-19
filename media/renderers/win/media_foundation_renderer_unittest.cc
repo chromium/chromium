@@ -520,4 +520,41 @@ TEST_F(MediaFoundationRendererTest,
   histogram_tester.ExpectBucketCount(kSubsequentEventOrErrorReportedUmaName,
                                      true, 1);
 }
+
+// A frame step completing during a seek must leave the Media Engine paused for
+// StartPlayingFrom().
+TEST_F(MediaFoundationRendererTest,
+       FrameStepCompletedDuringFlushDoesNotResume) {
+  // Use encrypted streams to avoid SetSourceOnMediaEngine() being called
+  // automatically during Initialize(). This prevents the MediaEngine from
+  // generating events that could interfere with the test.
+  AddStream(DemuxerStream::AUDIO, /*encrypted=*/true);
+  AddStream(DemuxerStream::VIDEO, /*encrypted=*/true);
+
+  EXPECT_CALL(renderer_init_cb_, Run(HasStatusCode(PIPELINE_OK)));
+  mf_renderer_->Initialize(&media_resource_, &renderer_client_,
+                           renderer_init_cb_.Get());
+  task_environment_.RunUntilIdle();
+
+  MediaEngineNotifyImpl* media_engine_notify =
+      mf_renderer_->GetMediaEngineNotifyForTesting();
+  ASSERT_TRUE(media_engine_notify);
+  IMFMediaEngine* media_engine = mf_renderer_->GetMediaEngineForTesting();
+  ASSERT_TRUE(media_engine);
+
+  // Flush() pauses the Media Engine for the seek.
+  base::MockOnceClosure flush_cb;
+  EXPECT_CALL(flush_cb, Run());
+  mf_renderer_->Flush(flush_cb.Get());
+  task_environment_.RunUntilIdle();
+
+  ASSERT_TRUE(media_engine->IsPaused());
+
+  // The frame step completes before StartPlayingFrom().
+  media_engine_notify->EventNotify(MF_MEDIA_ENGINE_EVENT_FRAMESTEPCOMPLETED, 0L,
+                                   0L);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(media_engine->IsPaused());
+}
 }  // namespace media
