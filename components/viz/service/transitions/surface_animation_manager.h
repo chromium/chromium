@@ -36,8 +36,7 @@ struct TransferableResource;
 //
 // This class is owned by CompositorFrameSinkSupport but can be moved between
 // CompositorFrameSinkSupports for transitions between 2 renderer CC instances.
-class VIZ_SERVICE_EXPORT SurfaceAnimationManager
-    : public ReservedResourceDelegate {
+class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
  public:
   using SaveDirectiveCompleteCallback =
       base::OnceCallback<void(const CompositorFrameTransitionDirective&)>;
@@ -61,19 +60,16 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
                            std::unique_ptr<SurfaceAnimationManager>>&
           token_to_animation_manager);
 
-  ~SurfaceAnimationManager() override;
+  ~SurfaceAnimationManager();
 
   // Returns false if it is invalid to start the animation phase.
   bool Animate();
 
-  // ReservedResourceDelegate:
-  void ReceiveFromChild(
-      const std::vector<TransferableResource>& resources) override;
-  void RefResources(
-      const std::vector<TransferableResource>& resources) override;
+  void ReceiveFromChild(const std::vector<TransferableResource>& resources);
+  void RefResources(const std::vector<TransferableResource>& resources);
   // Unrefs resources managed by this animation manager and removes handled
   // resources from `resources`.
-  void UnrefResources(std::vector<ReturnedResourceViz>& resources) override;
+  void UnrefResources(std::vector<ReturnedResourceViz>& resources);
 
  private:
   friend class SurfaceAnimationManagerTest;

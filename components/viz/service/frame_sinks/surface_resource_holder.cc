@@ -11,8 +11,6 @@
 
 namespace viz {
 
-ReservedResourceDelegate::~ReservedResourceDelegate() = default;
-
 SurfaceResourceHolder::ResourceRefs::ResourceRefs() = default;
 
 SurfaceResourceHolder::ResourceRefs::~ResourceRefs() = default;

@@ -292,8 +292,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   LayerContextImpl* layer_context_for_testing() { return layer_context_.get(); }
 
-  void SetExternalReservedResourceDelegate(ReservedResourceDelegate* delegate);
-
   // Subscribes or unsubscribes `layer_context_` to subsequent BeginFrames.
   void SetLayerContextWantsBeginFrames(bool wants_begin_frames);
 
@@ -366,9 +364,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   void UpdateThreadIdsPostVerification(std::vector<Thread> threads,
                                        bool passed_verification);
-
-  void ForAllReservedResourceDelegates(
-      base::FunctionRef<void(ReservedResourceDelegate&)> func);
 
   void DoReturnResources(std::vector<ReturnedResource> resources);
 
@@ -556,12 +551,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   base::flat_map<blink::ViewTransitionToken,
                  std::unique_ptr<SurfaceAnimationManager>>
       view_transition_token_to_animation_manager_;
-
-  // This is used for any viz side resources that are managed by viz. These
-  // resources must use the reserved resource range defined by
-  // `kVizReservedRangeStartId`.
-  raw_ptr<ReservedResourceDelegate> external_reserved_resource_delegate_ =
-      nullptr;
 
   std::vector<Thread> threads_;
 
