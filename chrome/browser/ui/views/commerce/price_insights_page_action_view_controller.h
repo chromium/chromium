@@ -72,6 +72,8 @@ class PriceInsightsPageActionViewController {
   // requests from this object.
   const raw_ref<page_actions::PageActionController> page_action_controller_;
 
+  // TODO(https://crbug.com/549071859): Remove this once CallToAction is
+  // deprecated.
   std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 
   ui::ScopedUnownedUserData<PriceInsightsPageActionViewController>

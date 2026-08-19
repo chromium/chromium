@@ -85,6 +85,8 @@ class LensOverlayHomeworkPageActionController
   base::CallbackListSubscription tab_will_discard_contents_subscription_;
   base::CallbackListSubscription tab_will_detach_subscription_;
 
+  // TODO(https://crbug.com/549071859): Remove this once CallToAction is
+  // deprecated.
   std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 };
 

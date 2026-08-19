@@ -78,6 +78,9 @@ class DiscountsPageActionViewController final
   // Keeps the browser-window “call-to-action” highlight alive while the chip
   // label is expanded. Automatically clears when reset or when the controller
   // is destroyed.
+  //
+  // TODO(https://crbug.com/549071859): Remove this once CallToAction is
+  // deprecated.
   std::unique_ptr<ScopedCallToActionLock> scoped_call_to_action_lock_;
 
   ui::ScopedUnownedUserData<DiscountsPageActionViewController>
