@@ -17,3 +17,7 @@ tast.flex.HWIS
 # b/542363235
 tast.apps.LaunchHelpAppOnManagedDevice.logged_in_stable_fieldtrial_testing_config_on@octopus
 tast.apps.LaunchHelpAppOnManagedDevice.logged_in_stable_fieldtrial_testing_config_off@octopus
+
+# b/537159924
+tast.wmp.DesksTemplatesBasic
+tast.wmp.DesksTemplatesLaunch
