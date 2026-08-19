@@ -449,9 +449,6 @@ bool ShouldGoOffTheRecord(Profile* profile) {
 
 }  // namespace
 
-BASE_FEATURE(kProfileManagerDeferAsyncLoading,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
     : user_data_dir_(user_data_dir)
 #if !BUILDFLAG(IS_ANDROID)
@@ -846,8 +843,7 @@ void ProfileManager::CreateProfileAsync(
 
   // Defer async profile creation during startup, to avoid colliding with
   // synchronous creation.
-  if (defer_async_loading_ &&
-      base::FeatureList::IsEnabled(kProfileManagerDeferAsyncLoading)) {
+  if (defer_async_loading_) {
     deferred_asynchronous_loads_.push_back(base::BindOnce(
         &ProfileManager::CreateProfileAsync, base::Unretained(this),
         profile_path, std::move(initialized_callback),
