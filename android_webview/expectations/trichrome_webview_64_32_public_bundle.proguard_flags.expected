@@ -791,5 +791,161 @@
  -if @kotlinx.serialization.Serializable class **
  -keep, allowshrinking, allowoptimization, allowobfuscation, allowaccessmodification class <1>
 
+# File: lib.java/third_party/android_deps/com_google_guava_guava_java.filtered.jar:META-INF/proguard/base.pro
+# Note: We intentionally don't add the flags we'd need to make Flags and Enums
+# work. That's because the Proguard configuration required to make them work on
+# optimized code would preclude lots of optimization, like converting enums
+# into ints.
+
+# Throwables uses internal APIs for lazy stack trace resolution
+-dontnote sun.misc.SharedSecrets
+-keep class sun.misc.SharedSecrets {
+  *** getJavaLangAccess(...);
+}
+-dontnote sun.misc.JavaLangAccess
+-keep class sun.misc.JavaLangAccess {
+  *** getStackTraceElement(...);
+  *** getStackTraceDepth(...);
+}
+
+# FinalizableReferenceQueue calls this reflectively
+# Proguard is intelligent enough to spot the use of reflection onto this, so we
+# only need to keep the names, and allow it to be stripped out if
+# FinalizableReferenceQueue is unused.
+#
+# (Under Android, we end up using Finalzier non-reflectively, so we could
+# likely rework all this configuration.)
+-keepclassmembernames class com.google.common.base.internal.Finalizer {
+  *** startFinalizer(...);
+}
+# However, it cannot "spot" that this method needs to be kept IF the class is.
+-keepclassmembers class com.google.common.base.internal.Finalizer {
+  *** startFinalizer(...);
+}
+
+-keepclassmembernames class com.google.common.base.FinalizableReference {
+  void finalizeReferent();
+}
+-keepclassmembers class com.google.common.base.FinalizableReference {
+  void finalizeReferent();
+}
+
+# File: lib.java/third_party/android_deps/com_google_guava_guava_java.filtered.jar:META-INF/proguard/cache.pro
+# Striped64 uses this
+-dontwarn sun.misc.Unsafe
+
+# Striped64 appears to make some assumptions about object layout that
+# really might not be safe. This should be investigated.
+-keepclassmembers class com.google.common.cache.Striped64 {
+  *** base;
+  *** busy;
+}
+-keepclassmembers class com.google.common.cache.Striped64$Cell {
+  <fields>;
+}
+
+# File: lib.java/third_party/android_deps/com_google_guava_guava_java.filtered.jar:META-INF/proguard/collect.pro
+# The nested FieldSettersHolder class looks these up.
+#
+# We use -keepclassmembernames because we want for ImmutableMultimap and its
+# fields to be stripped if it's unused: -keepclassmembernames says that, *if*
+# you're keeping the fields, you need to leave their names untouched. (Anyone
+# who is using ImmutableMultimap will certainly be using its fields. So we
+# don't need to worry that an ImmutableMultimap user will have the fields
+# optimized away.)
+#
+# This configuration is untested....
+-keepclassmembernames class com.google.common.collect.ImmutableMultimap {
+  *** map;
+  *** size;
+}
+# similarly:
+-keepclassmembernames class com.google.common.collect.ConcurrentHashMultiset {
+  *** countMap;
+}
+# similarly:
+-keepclassmembernames class com.google.common.collect.ImmutableSetMultimap {
+  *** emptySet;
+}
+# similarly:
+-keepclassmembernames class com.google.common.collect.AbstractSortedMultiset {
+  *** comparator;
+}
+# similarly:
+-keepclassmembernames class com.google.common.collect.TreeMultiset {
+  *** range;
+  *** rootReference;
+  *** header;
+}
+
+# File: lib.java/third_party/android_deps/com_google_guava_guava_java.filtered.jar:META-INF/proguard/concurrent.pro
+# Futures.getChecked, in both of its variants, is incompatible with proguard.
+
+# Used by AtomicReferenceFieldUpdater, sun.misc.Unsafe, and VarHandle.
+# We could be more precise about which classes these are defined in, but that feels error-prone.
+-keepclassmembers class com.google.common.util.concurrent.AbstractFuture** {
+  *** waitersField;
+  *** valueField;
+  *** listenersField;
+  *** thread;
+  *** next;
+}
+-keepclassmembers class com.google.common.util.concurrent.AbstractFutureState** {
+  *** waitersField;
+  *** valueField;
+  *** listenersField;
+  *** thread;
+  *** next;
+}
+-keepclassmembers class com.google.common.util.concurrent.AtomicDouble {
+  *** value;
+}
+-keepclassmembers class com.google.common.util.concurrent.AggregateFutureState {
+  *** remainingField;
+  *** seenExceptionsField;
+}
+
+# Since Unsafe is using the field offsets of these inner classes, we don't want
+# to have class merging or similar tricks applied to these classes and their
+# fields. It's safe to allow obfuscation, since the by-name references are
+# already preserved in the -keep statement above.
+-keep,allowshrinking,allowobfuscation class com.google.common.util.concurrent.AbstractFuture** {
+  <fields>;
+}
+-keep,allowshrinking,allowobfuscation class com.google.common.util.concurrent.AbstractFutureState** {
+  <fields>;
+}
+
+# AbstractFuture uses this
+-dontwarn sun.misc.Unsafe
+
+# MoreExecutors references AppEngine
+-dontnote com.google.appengine.api.ThreadManager
+-keep class com.google.appengine.api.ThreadManager {
+  static *** currentRequestThreadFactory(...);
+}
+-dontnote com.google.apphosting.api.ApiProxy
+-keep class com.google.apphosting.api.ApiProxy {
+  static *** getCurrentEnvironment (...);
+}
+
+# File: lib.java/third_party/android_deps/com_google_guava_guava_java.filtered.jar:META-INF/proguard/hash.pro
+# LittleEndianByteArray uses this
+-dontwarn sun.misc.Unsafe
+
+# Striped64 appears to make some assumptions about object layout that
+# really might not be safe. This should be investigated.
+-keepclassmembers class com.google.common.hash.Striped64 {
+  *** base;
+  *** busy;
+}
+-keepclassmembers class com.google.common.hash.Striped64$Cell {
+  <fields>;
+}
+
+# File: lib.java/third_party/android_deps/com_google_guava_guava_java.filtered.jar:META-INF/proguard/primitives.pro
+# UnsignedBytes uses this
+-dontwarn sun.misc.Unsafe
+
 # File: //build/android/gyp/proguard.py (generated rules)
 -repackageclasses 'WV'

@@ -1225,6 +1225,11 @@
         "version": "1.1.0"
     },
     {
+        "name": "web",
+        "group": "androidx.web",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
         "name": "webkit",
         "group": "androidx.webkit",
         "version": "1.18.0-SNAPSHOT"
@@ -1592,7 +1597,7 @@
     {
         "name": "firebase-common",
         "group": "com.google.firebase",
-        "version": "22.0.1"
+        "version": "22.2.0"
     },
     {
         "name": "firebase-components",
@@ -1627,7 +1632,7 @@
     {
         "name": "firebase-installations",
         "group": "com.google.firebase",
-        "version": "19.1.1"
+        "version": "19.1.2"
     },
     {
         "name": "firebase-installations-interop",
@@ -1657,7 +1662,7 @@
     {
         "name": "guava",
         "group": "com.google.guava",
-        "version": "33.6.0-jre"
+        "version": "33.7.1-jre"
     },
     {
         "name": "listenablefuture",
