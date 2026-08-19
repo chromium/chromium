@@ -21,6 +21,7 @@ inline constexpr int kPageStabilityWindowDurationMs = 100;
 inline constexpr int kPageStabilityTimeoutMs = 2000;
 inline constexpr int kPageStabilityMinWaitMs = 1000;
 inline constexpr int kPageStabilityLcpDelayMs = 3000;
+inline constexpr int kPageStabilityAutofillPredictionsTimeoutMs = 3000;
 
 // Result of searching for a content node within PageContext.
 struct FindNodeResult {

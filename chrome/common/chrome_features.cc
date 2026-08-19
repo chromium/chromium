@@ -434,11 +434,13 @@ const base::FeatureParam<base::TimeDelta> kActorObservationDelayLcp{
 // The time for Autofill to parse and classify form fields.
 // Autofill is expected to return within this timeout (having successfully
 // parsed the form fields or not).
+// LINT.IfChange(kActorObservationDelayAutofillPredictionsTimeout)
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kActorObservationDelayAutofillPredictionsTimeout,
                    &kGlicActor,
                    "actor-observation-delay-autofill-predictions-timeout",
                    base::Seconds(1));
+// LINT.ThenChange(//ios/chrome/browser/intelligence/features/features.mm:kActorPageStabilityAutofillPredictionsTimeout)
 
 // If enabled, observation for page load excludes load in ad frames.
 BASE_FEATURE(kGlicActorObservationDelayExcludeAdFrameLoading,

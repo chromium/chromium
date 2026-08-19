@@ -485,6 +485,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kActorPageStabilityLcpDelay,
                    &kActorTools,
                    base::Seconds(1));
+// LINT.IfChange(kActorPageStabilityAutofillPredictionsTimeout)
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kActorPageStabilityAutofillPredictionsTimeout,
+                   &kActorTools,
+                   base::Seconds(1));
+// LINT.ThenChange(//chrome/common/chrome_features.cc:kActorObservationDelayAutofillPredictionsTimeout)
 
 bool IsActorEnabled() {
   return base::FeatureList::IsEnabled(kActorTools);
@@ -525,6 +531,11 @@ base::TimeDelta GetActorPageStabilityWindowDuration() {
 base::TimeDelta GetActorPageStabilityLcpDelay() {
   CHECK(IsPageStabilityEnabled());
   return kActorPageStabilityLcpDelay.Get();
+}
+
+base::TimeDelta GetActorPageStabilityAutofillPredictionsTimeout() {
+  CHECK(IsPageStabilityEnabled());
+  return kActorPageStabilityAutofillPredictionsTimeout.Get();
 }
 
 bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool) {

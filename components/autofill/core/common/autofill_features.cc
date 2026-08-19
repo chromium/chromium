@@ -607,7 +607,12 @@ BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
 // TODO(crbug.com/479794574): Convert to killswitch if no regressions are
 // spotted.
 BASE_FEATURE(kAutofillDelayApcForPredictions,
+// The feature will be tested and rolled out independently on iOS.
+#if BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
 
 // Kill switch for Autofill address import.
 BASE_FEATURE(kAutofillDisableAddressImport, base::FEATURE_DISABLED_BY_DEFAULT);

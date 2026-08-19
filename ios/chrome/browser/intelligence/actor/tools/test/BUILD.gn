@@ -12,6 +12,9 @@ source_set("eg_app_support+eg2") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/model:tab_helper",

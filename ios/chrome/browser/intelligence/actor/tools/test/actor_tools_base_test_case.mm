@@ -16,6 +16,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/values.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/intelligence/actor/tools/test/actor_app_interface.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -141,9 +142,14 @@ FindNodeResult FindNodeWithText(
            base::StringPrintf("%dms", kPageStabilityMinWaitMs)},
           {"ActorPageStabilityLcpDelay",
            base::StringPrintf("%dms", kPageStabilityLcpDelayMs)},
+          {"ActorPageStabilityAutofillPredictionsTimeout",
+           base::StringPrintf("%dms",
+                              kPageStabilityAutofillPredictionsTimeoutMs)},
       });
 
   config.features_enabled_and_params.push_back(actorToolsConfig);
+  config.features_enabled.push_back(
+      autofill::features::kAutofillDelayApcForPredictions);
   return config;
 }
 
