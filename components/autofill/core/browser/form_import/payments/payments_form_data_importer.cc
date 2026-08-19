@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments/wallet_reminder_notice_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "net/base/url_util.h"
@@ -367,6 +368,15 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
   if (ProceedWithCardMandatoryReauthOptInIfApplicable()) {
     // Try to offer mandatory re-auth as the last step.
     return true;
+  }
+
+  if (WalletReminderNoticeManager* wallet_reminder_notice_manager =
+          client_->GetPaymentsAutofillClient()
+              ->GetWalletReminderNoticeManager()) {
+    if (wallet_reminder_notice_manager->IsWalletReminderNoticeEligible(
+            *extracted_credit_card)) {
+      wallet_reminder_notice_manager->ShowWalletReminderNotice();
+    }
   }
 
   return false;

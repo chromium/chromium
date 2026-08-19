@@ -14,6 +14,7 @@
 namespace autofill {
 
 class AutofillClient;
+class CreditCard;
 
 namespace payments {
 
@@ -26,6 +27,9 @@ class WalletReminderNoticeManager {
   WalletReminderNoticeManager& operator=(const WalletReminderNoticeManager&) =
       delete;
   virtual ~WalletReminderNoticeManager();
+
+  // Checks if a user is eligible to see the Wallet reminder notice.
+  bool IsWalletReminderNoticeEligible(const CreditCard& extracted_card);
 
   // Initiates the asynchronous flow to display the Wallet Reminder Notice by
   // issuing the GetWalletReminderNotice RPC via PaymentsNetworkInterface.

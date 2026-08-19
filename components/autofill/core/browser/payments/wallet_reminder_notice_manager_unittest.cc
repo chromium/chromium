@@ -10,12 +10,18 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/wallet_reminder_notice_ui_delegate.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,6 +42,8 @@ class MockWalletReminderNoticeUiDelegate
 class WalletReminderNoticeManagerTest : public testing::Test {
  public:
   WalletReminderNoticeManagerTest() : manager_(&autofill_client_) {
+    feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillEnableWalletReminderNotice);
     auto ui_delegate = std::make_unique<MockWalletReminderNoticeUiDelegate>();
     ui_delegate_ = ui_delegate.get();
     autofill_client_.GetPaymentsAutofillClient()
@@ -43,11 +51,48 @@ class WalletReminderNoticeManagerTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
   raw_ptr<MockWalletReminderNoticeUiDelegate> ui_delegate_;
   WalletReminderNoticeManager manager_;
 };
+
+TEST_F(WalletReminderNoticeManagerTest,
+       IsWalletReminderNoticeEligible_FlagOff_NotEligible) {
+  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(
+      autofill::features::kAutofillEnableWalletReminderNotice);
+  autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  EXPECT_FALSE(
+      manager_.IsWalletReminderNoticeEligible(test::GetMaskedServerCard()));
+}
+
+TEST_F(WalletReminderNoticeManagerTest,
+       IsWalletReminderNoticeEligible_LocalCard_NotEligible) {
+  autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  EXPECT_FALSE(manager_.IsWalletReminderNoticeEligible(test::GetCreditCard()));
+}
+
+TEST_F(WalletReminderNoticeManagerTest,
+       IsWalletReminderNoticeEligible_AlreadyShown_NotEligible) {
+  CoreAccountInfo account_info =
+      autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+          "user@gmail.com", signin::ConsentLevel::kSignin);
+  prefs::SetHasShownWalletReminderNotice(autofill_client_.GetPrefs());
+  EXPECT_FALSE(
+      manager_.IsWalletReminderNoticeEligible(test::GetMaskedServerCard()));
+}
+
+TEST_F(WalletReminderNoticeManagerTest,
+       IsWalletReminderNoticeEligible_Eligible) {
+  autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  EXPECT_TRUE(
+      manager_.IsWalletReminderNoticeEligible(test::GetMaskedServerCard()));
+}
 
 TEST_F(WalletReminderNoticeManagerTest, ShowWalletReminderNotice) {
   EXPECT_CALL(*ui_delegate_, ShowWalletReminderNotice(_)).Times(0);
