@@ -50,10 +50,6 @@ public final class StartupMetrics {
             "Android.WebView.Startup.CreationTime.FirstInstanceWithGlobalStartup";
     private static final String HISTOGRAM_NOT_FIRST_INSTANCE =
             "Android.WebView.Startup.CreationTime.NotFirstInstance";
-    private static final String HISTOGRAM_STAGE2_PROVIDER_INIT_COLD =
-            "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold";
-    private static final String HISTOGRAM_STAGE2_PROVIDER_INIT_WARM =
-            "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm";
 
     // =========================================================================
     // Recording Helpers
@@ -84,20 +80,6 @@ public final class StartupMetrics {
             // happened beforehand.
             RecordHistogram.recordTimesHistogram(HISTOGRAM_NOT_FIRST_INSTANCE, elapsedTimeMs);
             TraceEvent.webViewStartupNotFirstInstance(startTimeMs, elapsedTimeMs);
-        }
-
-        // Record "legacy" metrics. These have suboptimal definitions because they don't allow for
-        // the
-        // case where global Chromium initialization happened before the first WebView instance was
-        // constructed, and just use "cold/warm" to refer to whether global Chromium initialization
-        // had
-        // to be run during the constructor or not, giving the "cold" case a bimodal distribution.
-        if (!wasChromiumAlreadyInitialized) {
-            RecordHistogram.recordTimesHistogram(
-                    HISTOGRAM_STAGE2_PROVIDER_INIT_COLD, elapsedTimeMs);
-        } else {
-            RecordHistogram.recordTimesHistogram(
-                    HISTOGRAM_STAGE2_PROVIDER_INIT_WARM, elapsedTimeMs);
         }
     }
 
