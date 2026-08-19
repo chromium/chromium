@@ -21,6 +21,7 @@
 #include "media/base/video_types.h"
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
+#include "media/gpu/mac/video_toolbox_nalu_util.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
@@ -77,20 +78,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   bool IsAlphaLayerSupported() override;
 
  private:
-  bool ExtractParameterSetData(
-      const char* parameter_set_name,
-      const base::flat_set<int>& parameter_set_ids,
-      const base::flat_map<int, std::vector<uint8_t>>& seen_parameter_set_data,
-      base::flat_map<int, std::vector<uint8_t>>* active_parameter_set_data_out,
-      std::vector<const uint8_t*>* parameter_set_data_out,
-      std::vector<size_t>* parameter_set_size_out);
   [[nodiscard]] bool CreateFormat(scoped_refptr<H265Picture> pic);
-  bool ExtractChangedParameterSetData(
-      const char* parameter_set_name,
-      const base::flat_set<int>& parameter_set_ids,
-      const base::flat_map<int, std::vector<uint8_t>>& seen_parameter_set_data,
-      base::flat_map<int, std::vector<uint8_t>>* active_parameter_set_data_out,
-      std::vector<base::span<const uint8_t>>* parameter_set_data_out);
   void ResetFrameData();
 
   std::unique_ptr<MediaLog> media_log_;
@@ -99,27 +87,20 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   DecodeCB decode_cb_;
   OutputCB output_cb_;
 
-  // Raw parameter set bytes that have been observed.
-  base::flat_map<int, std::vector<uint8_t>> seen_vps_data_;  // IDs can be 0-16
-  base::flat_map<int, std::vector<uint8_t>> seen_sps_data_;  // IDs can be 0-15
-  base::flat_map<int, std::vector<uint8_t>> seen_pps_data_;  // IDs can be 0-63
+  // Trackers for observed, active, and per-frame referenced parameter sets.
+  VideoToolboxParameterSetTracker vps_tracker_;
+  VideoToolboxParameterSetTracker sps_tracker_;
+  VideoToolboxParameterSetTracker pps_tracker_;
 
   // Cached parameter values.
   base::flat_set<int> alpha_vps_ids_;
 
-  // Raw parameter set bytes that have been sent to the decoder, to compare for
-  // changes.
-  base::flat_map<int, std::vector<uint8_t>> active_vps_data_;
-  base::flat_map<int, std::vector<uint8_t>> active_sps_data_;
-  base::flat_map<int, std::vector<uint8_t>> active_pps_data_;
-
+  // Format description and session metadata created from active parameter
+  // sets and frame configurations.
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
   VideoToolboxDecompressionSessionMetadata active_session_metadata_;
 
-  // Accumulated data for the current frame.
-  base::flat_set<int> frame_vps_ids_;  // Note: there should be exactly one VPS.
-  base::flat_set<int> frame_sps_ids_;
-  base::flat_set<int> frame_pps_ids_;
+  // Accumulated slice data and format properties for the current frame.
   // TODO(367764863) Rewrite to base::raw_span.
   RAW_PTR_EXCLUSION std::vector<base::span<const uint8_t>> frame_slice_data_;
   uint8_t frame_bit_depth_ = 8;

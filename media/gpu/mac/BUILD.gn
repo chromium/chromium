@@ -30,6 +30,8 @@ source_set("mac") {
     "video_toolbox_frame_converter.h",
     "video_toolbox_h264_accelerator.cc",
     "video_toolbox_h264_accelerator.h",
+    "video_toolbox_nalu_util.cc",
+    "video_toolbox_nalu_util.h",
     "video_toolbox_output_queue.cc",
     "video_toolbox_output_queue.h",
     "video_toolbox_video_decoder.cc",
