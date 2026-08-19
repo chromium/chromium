@@ -4,7 +4,7 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions)
+assert(enable_platform_apps)
 
 source_set("sync_file_system") {
   public = [

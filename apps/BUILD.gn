@@ -6,8 +6,8 @@ import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(!is_android && !is_ios)
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_platform_apps,
+       "Cannot depend on platform apps because enable_platform_apps=false.")
 
 static_library("apps") {
   sources = []

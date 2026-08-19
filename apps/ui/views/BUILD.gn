@@ -5,7 +5,7 @@
 import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions)
+assert(enable_platform_apps)
 
 source_set("views") {
   sources = [

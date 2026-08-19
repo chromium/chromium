@@ -24,12 +24,9 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/renderer/extensions/api/sync_file_system_custom_bindings.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/renderer/extensions/api/app_hooks_delegate.h"
+#include "chrome/renderer/extensions/api/sync_file_system_custom_bindings.h"
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -77,10 +74,13 @@ void ChromeExtensionsRendererAPIProvider::RegisterNativeHandlers(
       "lazy_background_page",
       std::make_unique<LazyBackgroundPageNativeHandler>(context));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   module_system->RegisterNativeHandler(
       "sync_file_system",
       std::make_unique<SyncFileSystemCustomBindings>(context));
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS)
   module_system->RegisterNativeHandler(
       "file_browser_handler",

@@ -227,12 +227,15 @@ void OnLocalStatePrefsLoaded();
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/apps/platform_apps/chrome_apps_browser_api_provider.h"
-#include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "components/storage_monitor/storage_monitor.h"  // nogncheck crbug.com/40147906
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension_l10n_util.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/browser/apps/platform_apps/chrome_apps_browser_api_provider.h"
+#include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -413,9 +416,12 @@ void BrowserProcessImpl::Init() {
 
   extensions_browser_client_->Init();
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   extensions_browser_client_->AddAPIProvider(
       std::make_unique<chrome_apps::ChromeAppsBrowserAPIProvider>());
+  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions_browser_client_->AddAPIProvider(
       std::make_unique<
           controlled_frame::ControlledFrameExtensionsBrowserAPIProvider>());
@@ -424,7 +430,6 @@ void BrowserProcessImpl::Init() {
       std::make_unique<
           chromeos::ChromeOSTelemetryExtensionsBrowserAPIProvider>());
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  extensions::AppWindowClient::Set(ChromeAppWindowClient::GetInstance());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
@@ -567,6 +572,8 @@ BrowserProcessImpl::~BrowserProcessImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ExtensionsBrowserClient::Set(nullptr);
+#endif
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   extensions::AppWindowClient::Set(nullptr);
 #endif
 

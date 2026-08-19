@@ -64,6 +64,13 @@ source_set("extensions") {
   # TODO(https://crbug.com/356905053): These sources are not currently included
   # in the experimental desktop-android configuration. Gradually include more
   # of them, or omit them behind more targeted GN flags.
+  if (enable_platform_apps) {
+    sources += [
+      "api/sync_file_system_custom_bindings.cc",
+      "api/sync_file_system_custom_bindings.h",
+    ]
+  }
+
   if (enable_extensions) {
     public += [ "api/accessibility_private_hooks_delegate.h" ]
 
@@ -72,8 +79,6 @@ source_set("extensions") {
       "api/accessibility_private_hooks_delegate.h",
       "api/app_hooks_delegate.cc",
       "api/app_hooks_delegate.h",
-      "api/sync_file_system_custom_bindings.cc",
-      "api/sync_file_system_custom_bindings.h",
     ]
 
     public_deps += [ "//v8:v8_headers" ]

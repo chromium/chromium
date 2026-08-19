@@ -4,8 +4,8 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_platform_apps,
+       "Cannot depend on platform apps because enable_platform_apps=false.")
 
 source_set("app_current_window_internal") {
   sources = [

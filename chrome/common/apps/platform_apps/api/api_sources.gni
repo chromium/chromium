@@ -4,7 +4,7 @@
 
 import("//chrome/common/features.gni")
 
-assert(enable_extensions)
+assert(enable_platform_apps)
 
 chrome_apps_api_schema_files_ = [ "sync_file_system.idl" ]
 

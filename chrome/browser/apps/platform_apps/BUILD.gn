@@ -5,7 +5,7 @@
 import("//extensions/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 
-assert(enable_extensions)
+assert(enable_platform_apps)
 
 source_set("platform_apps") {
   sources = [

@@ -6,7 +6,7 @@ import("//chrome/common/apps/platform_apps/api/api_sources.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
-assert(enable_extensions)
+assert(enable_platform_apps)
 
 function_registration("api_registration") {
   sources = chrome_apps_api_schema_files
