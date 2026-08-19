@@ -6,24 +6,42 @@ package org.chromium.chrome.test.transit.settings;
 
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.transit.EntryPointSentinelStation;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 
 import java.util.concurrent.Callable;
 
 /** Entry points for Public Transit tests that use SettingsActivity. */
 public class SettingsActivityPublicTransitEntryPoints {
+    private final SettingsTestRule<MainSettings> mSettingsTestRule;
     private final SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule;
-    private static SettingsActivity sActivity;
+    private static ChromeBaseAppCompatActivity sActivity;
 
     /**
-     * Constructs the settings activity entry points for the Public Transit tests.
+     * Constructs the settings activity entry points for Public Transit tests using
+     * {@link SettingsTestRule}.
      *
-     * @param settingsActivityTestRule The test rule capable of starting the settings activity.
+     * @param settingsTestRule The test rule capable of starting the settings activity.
      */
     public SettingsActivityPublicTransitEntryPoints(
+            SettingsTestRule<MainSettings> settingsTestRule) {
+        mSettingsTestRule = settingsTestRule;
+        mSettingsActivityTestRule = null;
+    }
+
+    /**
+     * Constructs the settings activity entry points for Public Transit tests using legacy
+     * {@link SettingsActivityTestRule}.
+     *
+     * @deprecated Use {@link #SettingsActivityPublicTransitEntryPoints(SettingsTestRule)} instead.
+     */
+    @Deprecated
+    public SettingsActivityPublicTransitEntryPoints(
             SettingsActivityTestRule<MainSettings> settingsActivityTestRule) {
+        mSettingsTestRule = null;
         mSettingsActivityTestRule = settingsActivityTestRule;
     }
 
@@ -37,7 +55,14 @@ public class SettingsActivityPublicTransitEntryPoints {
         sentinel.setAsEntryPoint();
 
         SettingsStation<MainSettings> entryPageStation = new SettingsStation<>(MainSettings.class);
-        return sentinel.runTo(mSettingsActivityTestRule::startSettingsActivity)
+        return sentinel.runTo(
+                        () -> {
+                            if (mSettingsTestRule != null) {
+                                mSettingsTestRule.startSettingsActivity();
+                            } else {
+                                mSettingsActivityTestRule.startSettingsActivity();
+                            }
+                        })
                 .arriveAt(entryPageStation);
     }
 
@@ -54,7 +79,11 @@ public class SettingsActivityPublicTransitEntryPoints {
     private SettingsStation<MainSettings> startBatched(
             BatchedPublicTransitRule<SettingsStation<MainSettings>> batchedRule,
             Callable<SettingsStation<MainSettings>> entryPointCallable) {
-        mSettingsActivityTestRule.setFinishActivity(false);
+        if (mSettingsTestRule != null) {
+            mSettingsTestRule.setFinishActivity(false);
+        } else {
+            mSettingsActivityTestRule.setFinishActivity(false);
+        }
         SettingsStation<MainSettings> station = batchedRule.getHomeStation();
         if (station == null) {
             try {
@@ -62,9 +91,17 @@ public class SettingsActivityPublicTransitEntryPoints {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            sActivity = mSettingsActivityTestRule.getActivity();
+            if (mSettingsTestRule != null) {
+                sActivity = mSettingsTestRule.getActivity();
+            } else {
+                sActivity = mSettingsActivityTestRule.getActivity();
+            }
         } else {
-            mSettingsActivityTestRule.setActivity(sActivity);
+            if (mSettingsTestRule != null) {
+                mSettingsTestRule.setActivity(sActivity);
+            } else {
+                mSettingsActivityTestRule.setActivity((SettingsActivity) sActivity);
+            }
         }
         return station;
     }
