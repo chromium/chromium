@@ -100,8 +100,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DownloadsBindMountMigration.{Operation}"
-    enum="PopularOSErrno" expires_after="2026-05-17">
-  <owner>wenbojie@chromium.org</owner>
+    enum="PopularOSErrno" expires_after="2027-09-01">
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     Error or success of the {Operation} operation that happened when migrating
@@ -123,8 +123,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DownloadsBindMountMigrationStatus"
-    enum="CryptohomeDownloadsMigrationStatus" expires_after="2026-05-17">
-  <owner>wenbojie@chromium.org</owner>
+    enum="CryptohomeDownloadsMigrationStatus" expires_after="2027-09-01">
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     This metric records events that happen during the migration of the
@@ -287,8 +287,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.MaskedDownloadsItems" units="items"
-    expires_after="2026-05-10">
-  <owner>benreich@chromium.org</owner>
+    expires_after="2027-09-01">
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     If the Downloads bind mount fails, files may be saved to ~/MyFiles/Downloads
