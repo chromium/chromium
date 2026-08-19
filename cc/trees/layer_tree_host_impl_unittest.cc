@@ -1876,15 +1876,7 @@ TEST_P(LayerTreeHostImplTest, ScrollUpdateReturnsCorrectValue) {
           .did_scroll);
 }
 
-// TODO(crbug.com/487287578): Re-enable on Android once it's non-flaky.
-#if BUILDFLAG(IS_ANDROID)
-#define DISABLED_ON_ANDROID(test_name) DISABLED_##test_name
-#else
-#define DISABLED_ON_ANDROID(test_name) test_name
-#endif
-
-TEST_P(LayerTreeHostImplTest,
-       DISABLED_ON_ANDROID(ScrollEndMainThreadRepaintFastPathScroll)) {
+TEST_P(LayerTreeHostImplTest, ScrollEndMainThreadRepaintFastPathScroll) {
   SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
   DrawFrame();
 
@@ -1901,8 +1893,7 @@ TEST_P(LayerTreeHostImplTest,
                    .updates_need_main_thread_repaint);
 }
 
-TEST_P(LayerTreeHostImplTest,
-       DISABLED_ON_ANDROID(ScrollEndMainThreadRepaintSlowPathScroll)) {
+TEST_P(LayerTreeHostImplTest, ScrollEndMainThreadRepaintSlowPathScroll) {
   SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
   DrawFrame();
 
