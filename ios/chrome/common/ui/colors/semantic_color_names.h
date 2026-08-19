@@ -34,8 +34,8 @@ extern NSString* const kMDCInkColor;
 extern NSString* const kMDCSecondaryInkColor;
 // Color used to tint placeholder images and icons.
 extern NSString* const kPlaceholderImageTintColor;
-// Surface container background color. Used for the NTP background.
-extern NSString* const kSurfaceContainerColor;
+// New Tab Page background color.
+extern NSString* const kNewTabPageBackgroundColor;
 // Surface container low background color.
 extern NSString* const kSurfaceContainerLowColor;
 // Primary blue color. Used for quick action buttons on the NTP.

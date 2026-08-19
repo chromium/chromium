@@ -144,7 +144,7 @@ const CGFloat kSeparatorHeight = 0.5;
     [_button setTitleColor:[UIColor colorNamed:kBlueColor]
                   forState:UIControlStateNormal];
     _iconContainerView.backgroundColor = [UIColor
-        colorNamed:IsNewTabPageUICleanupEnabled() ? kSurfaceContainerColor
+        colorNamed:IsNewTabPageUICleanupEnabled() ? kNewTabPageBackgroundColor
                                                   : kGrey100Color];
   }
 }
