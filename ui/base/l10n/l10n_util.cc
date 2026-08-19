@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -17,6 +18,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
 #include "base/i18n/file_util_icu.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/language_tag.h"
 #include "base/i18n/language_tag_matcher.h"
 #include "base/i18n/message_formatter.h"
@@ -258,7 +260,11 @@ std::string GetApplicationLocale(std::string_view pref_locale,
                                  bool set_icu_locale) {
   const std::string locale = GetApplicationLocaleInternal(pref_locale);
   if (set_icu_locale && !locale.empty()) {
-    base::i18n::SetICUDefaultLocale(locale);
+    std::optional<LanguageTag> language_tag = GetLanguageTagFromString(locale);
+    if (language_tag) {
+      base::i18n::SetDefaultIcuLocale(base::i18n::DefaultIcuLocaleSetterKey(),
+                                      *language_tag);
+    }
   }
   return locale;
 }
