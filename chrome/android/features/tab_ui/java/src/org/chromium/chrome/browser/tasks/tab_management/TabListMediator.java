@@ -1019,7 +1019,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     @Override
                     public void onTabsSelectionChanged() {
-                        if (mComponentId != TabComponentId.VERTICAL_TABS) return;
+                        if (!mTabListConfig.supportsModifierMultiSelect) return;
 
                         TabModel tabModel = mCurrentTabModelSupplier.get();
                         if (tabModel == null) return;
@@ -1054,15 +1054,10 @@ public class TabListMediator implements TabListNotificationHandler {
                         boolean isSupportedLaunchType =
                                 type == TabLaunchType.FROM_TAB_SWITCHER_UI
                                         || type == TabLaunchType.FROM_TAB_GROUP_UI;
-                        boolean isGridOrDialogComponent =
-                                mComponentId == TabComponentId.GRID_TAB_SWITCHER
-                                        || mComponentId == TabComponentId.TAB_GRID_DIALOG_FROM_STRIP
-                                        || mComponentId
-                                                == TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER;
                         boolean delayAdd =
                                 isSupportedLaunchType
                                         && markedForSelection
-                                        && isGridOrDialogComponent;
+                                        && mTabListConfig.supportsDelayedTabAddition;
                         if (delayAdd) {
                             mTabToAddDelayed = tab;
                             return;
@@ -1166,11 +1161,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         Tab closingTab = tabModel.getTabById(tabId);
                         if (closingTab == null) return;
 
-                        @TabClosingSource
-                        int tabClosingSource =
-                                mComponentId == TabComponentId.VERTICAL_TABS
-                                        ? TabClosingSource.VERTICAL_TAB_STRIP
-                                        : TabClosingSource.UNKNOWN;
+                        @TabClosingSource int tabClosingSource = mTabListConfig.tabClosingSource;
 
                         setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
                         boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotion);
@@ -3264,11 +3255,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
             boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
 
-            @TabClosingSource
-            int tabClosingSource =
-                    mComponentId == TabComponentId.VERTICAL_TABS
-                            ? TabClosingSource.VERTICAL_TAB_STRIP
-                            : TabClosingSource.UNKNOWN;
+            @TabClosingSource int tabClosingSource = mTabListConfig.tabClosingSource;
 
             setUseShrinkCloseAnimation(tabId, /* useShrinkCloseAnimation= */ true);
             onGroupClosedFrom(tabId);

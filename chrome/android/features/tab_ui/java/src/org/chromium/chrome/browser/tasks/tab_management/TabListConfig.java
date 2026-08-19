@@ -8,6 +8,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverCardController.TabHoverCardListener;
@@ -44,6 +45,17 @@ public class TabListConfig {
     /** Whether the tab list supports shrink-to-close animations on tab removal. */
     public final boolean supportsShrinkCloseAnimation;
 
+    /**
+     * Whether the component delays adding tabs to the model when created from switcher/group UI
+     * until after the switcher or dialog finishes hiding.
+     */
+    public final boolean supportsDelayedTabAddition;
+
+    /** The {@link TabClosingSource} to attribute when tabs or tab groups are closed. */
+    public final @TabClosingSource int tabClosingSource;
+
+    // TODO(crbug.com/509226293): Revisit if vertical tabs specific fields like
+    // railCollapseStateSupplier should be decoupled or moved to a dedicated mediator.
     /** Supplier for the rail collapse state in vertical tabs, or null if not supported. */
     public final @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
             railCollapseStateSupplier;
@@ -61,6 +73,8 @@ public class TabListConfig {
         supportsModifierMultiSelect = builder.mSupportsModifierMultiSelect;
         supportsTabLoadingState = builder.mSupportsTabLoadingState;
         supportsShrinkCloseAnimation = builder.mSupportsShrinkCloseAnimation;
+        supportsDelayedTabAddition = builder.mSupportsDelayedTabAddition;
+        tabClosingSource = builder.mTabClosingSource;
         railCollapseStateSupplier = builder.mRailCollapseStateSupplier;
         tabHoverCardListener = builder.mTabHoverCardListener;
         tabUnderlineManager = builder.mTabUnderlineManager;
@@ -74,6 +88,8 @@ public class TabListConfig {
         private boolean mSupportsModifierMultiSelect;
         private boolean mSupportsTabLoadingState;
         private boolean mSupportsShrinkCloseAnimation;
+        private boolean mSupportsDelayedTabAddition;
+        private @TabClosingSource int mTabClosingSource;
         private @Nullable NonNullObservableSupplier<@RailCollapseState Integer>
                 mRailCollapseStateSupplier;
         private @Nullable TabHoverCardListener mTabHoverCardListener;
@@ -133,6 +149,29 @@ public class TabListConfig {
          */
         public Builder setSupportsShrinkCloseAnimation(boolean supportsShrinkCloseAnimation) {
             mSupportsShrinkCloseAnimation = supportsShrinkCloseAnimation;
+            return this;
+        }
+
+        /**
+         * Sets whether the component delays adding tabs to the model when created from
+         * switcher/group UI.
+         *
+         * @param supportsDelayedTabAddition Whether to delay tab addition until post-hiding.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setSupportsDelayedTabAddition(boolean supportsDelayedTabAddition) {
+            mSupportsDelayedTabAddition = supportsDelayedTabAddition;
+            return this;
+        }
+
+        /**
+         * Sets the {@link TabClosingSource} for tab closures initiated from this tab list.
+         *
+         * @param tabClosingSource The {@link TabClosingSource}.
+         * @return The {@link Builder} instance.
+         */
+        public Builder setTabClosingSource(@TabClosingSource int tabClosingSource) {
+            mTabClosingSource = tabClosingSource;
             return this;
         }
 

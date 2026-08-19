@@ -1172,6 +1172,35 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_VERTICAL_TABS + ":multi_select/true"})
+    public void testOnTabsSelectionChanged_MultiSelectEnabled_UpdatesProperty() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+        assertTrue(mTabListConfig.supportsModifierMultiSelect);
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+
+        when(mTabModel.isTabMultiSelected(mTab1.getId())).thenReturn(true);
+        when(mTabModel.isTabMultiSelected(mTab2.getId())).thenReturn(false);
+
+        mTabModelObserverCaptor.getValue().onTabsSelectionChanged();
+
+        assertTrue(mModelList.get(0).model.get(TabProperties.IS_MULTI_SELECTED));
+        assertFalse(mModelList.get(1).model.get(TabProperties.IS_MULTI_SELECTED));
+    }
+
+    @Test
+    public void testOnTabsSelectionChanged_MultiSelectDisabled_NoOp() {
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+        assertFalse(mTabListConfig.supportsModifierMultiSelect);
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+
+        when(mTabModel.isTabMultiSelected(anyInt())).thenReturn(true);
+
+        mTabModelObserverCaptor.getValue().onTabsSelectionChanged();
+
+        verify(mTabModel, never()).isTabMultiSelected(anyInt());
+    }
+
+    @Test
     public void sendsOpenGroupSignalCorrectly_SingleTabGroup() {
         List<Tab> tabs = List.of(mTab1);
         createTabGroup(tabs, TAB_GROUP_ID);
@@ -6591,6 +6620,18 @@ public class TabListMediatorUnitTest {
                 hasMatchingConfig
                         ? mTabListConfig.supportsShrinkCloseAnimation
                         : (mode == TabListMode.GRID);
+        boolean supportsDelayedTabAddition =
+                hasMatchingConfig
+                        ? mTabListConfig.supportsDelayedTabAddition
+                        : (type == TabListMediatorType.TAB_SWITCHER
+                                || type == TabListMediatorType.TAB_GRID_DIALOG);
+        @TabClosingSource
+        int tabClosingSource =
+                hasMatchingConfig
+                        ? mTabListConfig.tabClosingSource
+                        : (type == TabListMediatorType.VERTICAL_TABS
+                                ? TabClosingSource.VERTICAL_TAB_STRIP
+                                : TabClosingSource.UNKNOWN);
         NonNullObservableSupplier<@RailCollapseState Integer> railCollapseStateSupplier =
                 hasMatchingConfig ? mTabListConfig.railCollapseStateSupplier : null;
         TabHoverCardListener tabHoverCardListener =
@@ -6607,6 +6648,8 @@ public class TabListMediatorUnitTest {
                         .setSupportsModifierMultiSelect(supportsModifierMultiSelect)
                         .setSupportsTabLoadingState(supportsTabLoadingState)
                         .setSupportsShrinkCloseAnimation(supportsShrinkCloseAnimation)
+                        .setSupportsDelayedTabAddition(supportsDelayedTabAddition)
+                        .setTabClosingSource(tabClosingSource)
                         .setRailCollapseStateSupplier(railCollapseStateSupplier)
                         .setTabHoverCardListener(tabHoverCardListener)
                         .setTabUnderlineManager(tabUnderlineManager)

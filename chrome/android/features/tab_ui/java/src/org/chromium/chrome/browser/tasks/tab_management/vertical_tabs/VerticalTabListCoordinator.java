@@ -495,6 +495,7 @@ public class VerticalTabListCoordinator {
                 new TabListConfig.Builder(TabListLayoutType.NESTED)
                         .setSupportsModifierMultiSelect(VerticalTabUtils.isMultiSelectEnabled())
                         .setSupportsTabLoadingState(/* supportsTabLoadingState= */ true)
+                        .setTabClosingSource(TabClosingSource.VERTICAL_TAB_STRIP)
                         .setRailCollapseStateSupplier(
                                 mCollapseController.getRailCollapseStateSupplier())
                         .setTabHoverCardListener(mTabHoverCardController.getTabHoverCardListener())

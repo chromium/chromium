@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener;
@@ -327,11 +328,17 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         int layoutType = actionOnRelatedTabs ? TabListLayoutType.GROUPED : TabListLayoutType.FLAT;
         @UiType int tabUiType = mMode == TabListMode.BOTTOM_STRIP ? UiType.STRIP : UiType.TAB;
         boolean isGridMode = mMode == TabListMode.GRID;
+        boolean isGridOrDialogComponent =
+                componentId == TabComponentId.GRID_TAB_SWITCHER
+                        || componentId == TabComponentId.TAB_GRID_DIALOG_FROM_STRIP
+                        || componentId == TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER;
         TabListConfig tabListConfig =
                 new TabListConfig.Builder(layoutType)
                         .setTabUiType(tabUiType)
                         .setSupportsMessageCards(isGridMode)
                         .setSupportsShrinkCloseAnimation(isGridMode)
+                        .setSupportsDelayedTabAddition(isGridOrDialogComponent)
+                        .setTabClosingSource(TabClosingSource.UNKNOWN)
                         .build();
 
         mMediator =
