@@ -532,8 +532,6 @@ public abstract class ChromeFeatureList {
     public static final String EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS =
             "EdgeToEdgeUseBackupNavbarInsets";
     public static final String EMAIL_VERIFICATION_ANDROID = "EmailVerificationAndroid";
-    public static final String EMPTY_TAB_LIST_ANIMATION_KILL_SWITCH =
-            "EmptyTabListAnimationKillSwitch";
     public static final String ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION =
             "EnableAndroidEnterpriseScreenshotProtection";
     public static final String ENABLE_ANDROID_SIDE_PANEL = "EnableAndroidSidePanel";
@@ -1700,10 +1698,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(DEFAULT_BROWSER_PROMO_FRE, false);
     public static final MutableFlagWithSafeDefault sDisableGridTabSwitcher =
             newMutableFlagWithSafeDefault(DISABLE_GRID_TAB_SWITCHER, false);
-    // Defaulted to true in native, but since it is being used as a kill switch set the default
-    // value pre-native to false as it is safer if the feature needs to be killed via Finch config.
-    public static final MutableFlagWithSafeDefault sEmptyTabListAnimationKillSwitch =
-            newMutableFlagWithSafeDefault(EMPTY_TAB_LIST_ANIMATION_KILL_SWITCH, false);
     public static final MutableFlagWithSafeDefault sEnableSwipeToSwitchPane =
             newMutableFlagWithSafeDefault(ENABLE_SWIPE_TO_SWITCH_PANE, false);
     public static final MutableFlagWithSafeDefault sEnableToolbarPositioningInResizeMode =
