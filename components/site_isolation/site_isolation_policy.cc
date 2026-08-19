@@ -77,11 +77,11 @@ bool ShouldDisableSiteIsolationDueToMemorySlow(
         features::kSiteIsolationMemoryThresholdsAndroid, param_name,
         default_memory_threshold_mb);
     return base::SysInfo::AmountOfTotalPhysicalMemory() <=
-           base::MiBU(base::saturated_cast<uint64_t>(memory_threshold_mb));
+           base::MiB(base::saturated_cast<uint64_t>(memory_threshold_mb));
   }
 
   if (base::SysInfo::AmountOfTotalPhysicalMemory() <=
-      base::MiBU(default_memory_threshold_mb)) {
+      base::MiB(default_memory_threshold_mb)) {
     return true;
   }
 #endif
@@ -122,7 +122,7 @@ bool ShouldDisableOriginIsolationDueToMemorySlow() {
         features::kOriginIsolationMemoryThresholdParamName,
         default_memory_threshold_mb);
     return base::SysInfo::AmountOfTotalPhysicalMemory() <=
-           base::MiBU(base::saturated_cast<uint64_t>(memory_threshold_mb));
+           base::MiB(base::saturated_cast<uint64_t>(memory_threshold_mb));
   }
   return false;
 #endif
