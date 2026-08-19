@@ -475,25 +475,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // The object that drives the Chrome startup/shutdown logic.
   std::unique_ptr<IOSChromeMain> _chromeMain;
 
-  // True if the current session began from a cold start. False if the app has
-  // entered the background at least once since start up.
-  BOOL _isColdStart;
-
-  // True if the launch metrics have already been recorded.
-  BOOL _launchMetricsRecorded;
-
-  // YES if the user has ever interacted with the application. May be NO if the
-  // application has been woken up by the system for background work.
-  BOOL _userInteracted;
-
-  // Whether the application is currently in the background. Workaround for
-  // rdar://22392526 where -applicationDidEnterBackground: can be called twice.
-  // TODO(crbug.com/41211311): remove when rdar:22392526 is fixed
-  BOOL _applicationInBackground;
-
-  // YES if any Profile had initialized the UI for its first Scene.
-  BOOL _firstWindowCreated;
-
   // An object to record metrics related to the user's first action.
   std::unique_ptr<FirstUserActionRecorder> _firstUserActionRecorder;
 
@@ -526,6 +507,14 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
 
+  // Timer used to schedule the unload of unused profiles during the next
+  // run loop (to avoid unloading a profile and destroying all objects in
+  // an observer method as this can be dangerous if it destroys the sender).
+  base::OneShotTimer _timer;
+
+  // The controller that will process the share extension files.
+  ShareExtensionController* _shareExtensionController;
+
   // The highest ProfileInitStage reached by any ProfileState. This value
   // can only be increased, never decreased. It gates application-level
   // initialisation that should only happen once at least one Profile has
@@ -533,10 +522,24 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // user to interact with the application, ...).
   ProfileInitStage _highestProfileInitStageReached;
 
-  // Timer used to schedule the unload of unused profiles during the next
-  // run loop (to avoid unloading a profile and destroying all objects in
-  // an observer method as this can be dangerous if it destroy the sender).
-  base::OneShotTimer _timer;
+  // True if the current session began from a cold start. False if the app has
+  // entered the background at least once since start up.
+  BOOL _isColdStart;
+
+  // True if the launch metrics have already been recorded.
+  BOOL _launchMetricsRecorded;
+
+  // YES if the user has ever interacted with the application. May be NO if the
+  // application has been woken up by the system for background work.
+  BOOL _userInteracted;
+
+  // Whether the application is currently in the background. Workaround for
+  // rdar://22392526 where -applicationDidEnterBackground: can be called twice.
+  // TODO(crbug.com/41211311): remove when rdar:22392526 is fixed
+  BOOL _applicationInBackground;
+
+  // YES if any Profile had initialized the UI for its first Scene.
+  BOOL _firstWindowCreated;
 
 #if BUILDFLAG(ENABLE_RLZ)
   // Record whether the RLZTracker has been initialized or not. Calling
@@ -549,9 +552,6 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // singleton during the shutdown creates.
   BOOL _rlzTrackerInitialized;
 #endif
-
-  // The controller that will process the share extension files.
-  ShareExtensionController* _shareExtensionController;
 }
 
 // Defined by public protocols.
