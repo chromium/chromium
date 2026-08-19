@@ -103,6 +103,10 @@ void SafeBrowsingChildNavigationThrottle::OnCalculatedLoadPolicyFinished() {
     if (ad_evidence_->IndicatesAdFrame()) {
       navigation_handle()->SetIsAdTagged();
     }
+    if (matched_subdomain_disallow_rule()) {
+      CHECK(ad_evidence_->IndicatesAdFrame());
+      navigation_handle()->SetIsAdTaggedByHostFilter();
+    }
   }
 }
 

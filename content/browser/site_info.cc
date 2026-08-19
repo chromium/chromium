@@ -956,7 +956,7 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
 
   // We want to skip process-isolation if this is an ad URL without an explicit
   // header.
-  if (url_info.matches_ad_filter_with_host &&
+  if (url_info.is_ad_tagged_by_host_filter &&
       base::FeatureList::IsEnabled(features::kExcludeAdsFromOriginIsolation) &&
       !url_info.oac_header_request.has_value() &&
       oac_isolation_state.is_origin_agent_cluster()) {

@@ -83,6 +83,11 @@ class ChildFrameNavigationFilteringThrottleTestHarness
       std::vector<std::string_view> urls_to_block,
       mojom::ActivationLevel parent_level = mojom::ActivationLevel::kEnabled);
 
+  void InitializeDocumentSubresourceFilterWithSubdomainRule(
+      const GURL& document_url,
+      std::string_view subdomain,
+      mojom::ActivationLevel parent_level = mojom::ActivationLevel::kEnabled);
+
   void RunUntilIdle();
 
   void CreateTestSubframeAndInitNavigation(const GURL& first_url,

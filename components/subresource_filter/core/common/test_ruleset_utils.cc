@@ -56,6 +56,13 @@ proto::UrlRule CreateSubstringRule(std::string_view substring) {
                         /*is_suffix_rule=*/false);
 }
 
+proto::UrlRule CreateSubdomainRule(std::string_view subdomain) {
+  proto::UrlRule rule = CreateRuleImpl(subdomain, /*is_allowlist_rule=*/false,
+                                       /*is_suffix_rule=*/false);
+  rule.set_anchor_left(proto::ANCHOR_TYPE_SUBDOMAIN);
+  return rule;
+}
+
 proto::UrlRule CreateAllowlistSubstringRule(std::string_view substring) {
   return CreateRuleImpl(substring, /*is_allowlist_rule=*/true,
                         /*is_suffix_rule=*/false);

@@ -21,6 +21,12 @@ namespace testing {
 url_pattern_index::proto::UrlRule CreateSubstringRule(
     std::string_view substring);
 
+// Creates a blocklisted URL rule which targets subresources of any type with
+// a URL matching the given `subdomain` as a subdomain (using
+// ANCHOR_TYPE_SUBDOMAIN).
+url_pattern_index::proto::UrlRule CreateSubdomainRule(
+    std::string_view subdomain);
+
 // Creates an allowlisted URL rule which targets subresources of any type with
 // a URL containing the given `substring`.
 url_pattern_index::proto::UrlRule CreateAllowlistSubstringRule(

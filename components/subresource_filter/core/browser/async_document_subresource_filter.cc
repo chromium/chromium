@@ -19,6 +19,7 @@
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
+#include "components/subresource_filter/core/common/scoped_rule.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 #include "url/gurl.h"
@@ -160,14 +161,22 @@ void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocument(
       FROM_HERE,
       base::BindOnce(
           [](AsyncDocumentSubresourceFilter::Core* core,
-             const GURL& subdocument_url) {
+             const GURL& subdocument_url)
+              -> AsyncDocumentSubresourceFilter::LoadPolicyResult {
             CHECK(core);
             DocumentSubresourceFilter* filter = core->filter();
-            return filter
-                       ? filter->GetLoadPolicy(
-                             subdocument_url,
-                             url_pattern_index::proto::ELEMENT_TYPE_SUBDOCUMENT)
-                       : LoadPolicy::ALLOW;
+            if (!filter) {
+              return {LoadPolicy::ALLOW, false};
+            }
+            ScopedRule rule;
+            LoadPolicy policy = filter->GetLoadPolicy(
+                subdocument_url,
+                url_pattern_index::proto::ELEMENT_TYPE_SUBDOCUMENT, &rule);
+            bool matched_subdomain_disallow_rule =
+                (policy == LoadPolicy::DISALLOW ||
+                 policy == LoadPolicy::WOULD_DISALLOW) &&
+                rule.IsSubdomainRule();
+            return {policy, matched_subdomain_disallow_rule};
           },
           core_.get(), subdocument_url),
       std::move(result_callback));
@@ -234,17 +243,24 @@ AsyncDocumentSubresourceFilter::Core::~Core() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-std::vector<LoadPolicy> AsyncDocumentSubresourceFilter::Core::GetLoadPolicies(
+std::vector<AsyncDocumentSubresourceFilter::LoadPolicyResult>
+AsyncDocumentSubresourceFilter::Core::GetLoadPolicies(
     const std::vector<GURL>& urls) {
-  std::vector<LoadPolicy> policies;
+  std::vector<AsyncDocumentSubresourceFilter::LoadPolicyResult> results;
   for (const auto& url : urls) {
+    ScopedRule rule;
     auto policy =
         filter() ? filter()->GetLoadPolicy(
-                       url, url_pattern_index::proto::ELEMENT_TYPE_SUBDOCUMENT)
+                       url, url_pattern_index::proto::ELEMENT_TYPE_SUBDOCUMENT,
+                       &rule)
                  : LoadPolicy::ALLOW;
-    policies.push_back(policy);
+    bool matched_subdomain_disallow_rule =
+        (policy == LoadPolicy::DISALLOW ||
+         policy == LoadPolicy::WOULD_DISALLOW) &&
+        rule.IsSubdomainRule();
+    results.push_back({policy, matched_subdomain_disallow_rule});
   }
-  return policies;
+  return results;
 }
 
 void AsyncDocumentSubresourceFilter::Core::SetActivationState(

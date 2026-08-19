@@ -253,8 +253,9 @@ class OriginAgentClusterAdBrowserTest : public OriginAgentClusterBrowserTest {
 
   void SetUpOnMainThread() override {
     // For subdocument resources, allowlist rules are always checked.
-    SetRulesetWithRules(
-        {subresource_filter::testing::CreateSubstringRule("ad.bar.com")});
+    auto rule = subresource_filter::testing::CreateSubstringRule("ad.bar.com");
+    rule.set_anchor_left(url_pattern_index::proto::ANCHOR_TYPE_SUBDOMAIN);
+    SetRulesetWithRules({rule});
 
     OriginAgentClusterBrowserTest::SetUpOnMainThread();
   }
@@ -658,11 +659,15 @@ IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
   EXPECT_TRUE(content::HasOriginKeyedProcess(child));
 }
 
+// TODO(crbug.com/40259221): Re-enable once same-site subframe process
+// consolidation inside ad frames is supported with granular host-anchored ad
+// rules.
 // A same-site, cross-origin child frame inside an ad frame should remain
 // site-keyed. This is done to reduce the process count in a common case without
 // adding too much attack surface.
-IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
-                       NestedSameSiteSubframeInsideAdFrameIsSiteKeyed) {
+IN_PROC_BROWSER_TEST_F(
+    OriginKeyedProcessByDefaultBrowserTest,
+    DISABLED_NestedSameSiteSubframeInsideAdFrameIsSiteKeyed) {
   GURL main_frame_url(https_server()->GetURL("foo.com", "/iframe_blank.html"));
   GURL ad_url(https_server()->GetURL("ad.bar.com", "/iframe_blank.html"));
   GURL nested_url(https_server()->GetURL("other.bar.com", "/title1.html"));

@@ -42,6 +42,10 @@ class ScopedRule {
   // Returns whether `rule_` is valid.
   bool IsValid() const;
 
+  // Returns whether `rule_` is anchored to a domain/subdomain and is not a
+  // regular expression.
+  bool IsSubdomainRule() const;
+
   // Returns `rule_` in string form. This operation can be expensive.
   //
   // Prerequisite: `rule_` is valid.

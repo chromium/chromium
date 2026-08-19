@@ -56,7 +56,7 @@ class SafeBrowsingChildNavigationThrottleTest
                                   kDisallowChildFrameConsoleMessageFormat,
                                   filtered_url.possibly_invalid_spec().c_str());
                             }),
-                            /*ad_evidence=*/std::nullopt);
+                            ad_evidence_for_next_throttle_);
                     EXPECT_NE(nullptr, throttle->GetNameForLogging());
                     registry.AddThrottle(std::move(throttle));
                   }
@@ -68,6 +68,8 @@ class SafeBrowsingChildNavigationThrottleTest
       content::NavigationHandle* navigation_handle) override {
     ASSERT_FALSE(navigation_handle->IsInMainFrame());
   }
+
+  std::optional<blink::FrameAdEvidence> ad_evidence_for_next_throttle_;
 
  private:
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
@@ -145,6 +147,22 @@ TEST_F(SafeBrowsingChildNavigationThrottleTest, DelayMetricsDryRun) {
   histogram_tester.ExpectTotalCount(kFilterDelayDisallowed, 0);
   histogram_tester.ExpectTotalCount(kFilterDelayWouldDisallow, 1);
   histogram_tester.ExpectTotalCount(kFilterDelayAllowed, 1);
+}
+
+TEST_F(SafeBrowsingChildNavigationThrottleTest,
+       SetIsAdTaggedByHostFilterCalledWhenTrue) {
+  InitializeDocumentSubresourceFilterWithSubdomainRule(
+      GURL("https://example.test"), "anchored_disallowed.com");
+
+  ad_evidence_for_next_throttle_ =
+      blink::FrameAdEvidence(/*parent_is_ad=*/false);
+  CreateTestSubframeAndInitNavigation(
+      GURL("https://anchored_disallowed.com/foo.html"), main_rfh());
+  navigation_simulator()->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+  SimulateStartAndGetResult(navigation_simulator());
+
+  EXPECT_TRUE(
+      navigation_simulator()->GetNavigationHandle()->IsAdTaggedByHostFilter());
 }
 
 }  // namespace subresource_filter

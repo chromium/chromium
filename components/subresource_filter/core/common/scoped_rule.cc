@@ -31,6 +31,16 @@ bool ScopedRule::IsValid() const {
   return rule_;
 }
 
+bool ScopedRule::IsSubdomainRule() const {
+  // Regular expressions do not guarantee a literal domain prefix match, even if
+  // assigned a subdomain anchor.
+  return IsValid() &&
+         rule_->anchor_left() ==
+             url_pattern_index::flat::AnchorType_SUBDOMAIN &&
+         rule_->url_pattern_type() !=
+             url_pattern_index::flat::UrlPatternType_REGEXP;
+}
+
 std::string ScopedRule::ToString() const {
   CHECK(IsValid());
   return url_pattern_index::FlatUrlRuleToFilterlistString(rule_);

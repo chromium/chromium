@@ -897,6 +897,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // can include other signals outside of the initiator.
   virtual void SetIsAdTagged() = 0;
 
+  // Allows the embedder to mark whether this navigation matched an ad filter
+  // anchored to the domain/host.
+  virtual void SetIsAdTaggedByHostFilter() = 0;
+  virtual bool IsAdTaggedByHostFilter() const = 0;
+
   // If the navigation is discarded without committing, returns the reason for
   // the discarding. See `NavigationDiscardReason` for the various cases.
   virtual std::optional<NavigationDiscardReason>

@@ -127,10 +127,12 @@ void ChildFrameNavigationFilteringThrottle::HandleDisallowedLoad() {
 content::NavigationThrottle::ThrottleCheckResult
 ChildFrameNavigationFilteringThrottle::MaybeDeferToCalculateLoadPolicy() {
   CHECK_NE(load_policy_, LoadPolicy::DISALLOW);
-  if (load_policy_ == LoadPolicy::WOULD_DISALLOW) {
-    return PROCEED;
-  }
 
+  // Even if `load_policy_` is already WOULD_DISALLOW from an earlier redirect
+  // hop in dry-run mode, we still need to perform the filter list check for
+  // subsequent URLs in the redirect chain so that
+  // `matched_subdomain_disallow_rule_` is accurately updated for the current
+  // URL.
   pending_load_policy_calculations_ += 1;
   parent_frame_filter_->GetLoadPolicyForSubdocument(
       navigation_handle()->GetURL(),
@@ -185,29 +187,37 @@ void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicy(
 }
 
 void ChildFrameNavigationFilteringThrottle::OnCalculatedLoadPolicyForUrl(
-    LoadPolicy policy) {
-  if (policy != load_policy_ &&
-      policy == MoreRestrictiveLoadPolicy(policy, load_policy_)) {
+    AsyncDocumentSubresourceFilter::LoadPolicyResult result) {
+  if (result.load_policy != load_policy_ &&
+      result.load_policy ==
+          MoreRestrictiveLoadPolicy(result.load_policy, load_policy_)) {
     // Child frame's hostname check determined the load policy.
     did_alias_check_determine_load_policy_ = false;
   }
-  OnCalculatedLoadPolicy(policy);
+  // Note: `matched_subdomain_disallow_rule_` is intentionally reset on redirect
+  // to prevent an attacker from bypassing origin isolation by redirecting an ad
+  // URL to a victim URL.
+  matched_subdomain_disallow_rule_ = result.matched_subdomain_disallow_rule;
+  OnCalculatedLoadPolicy(result.load_policy);
 }
 
 void ChildFrameNavigationFilteringThrottle::
-    OnCalculatedLoadPoliciesFromAliasUrls(std::vector<LoadPolicy> policies) {
+    OnCalculatedLoadPoliciesFromAliasUrls(
+        std::vector<AsyncDocumentSubresourceFilter::LoadPolicyResult> results) {
   // We deferred to check aliases in WillProcessResponse.
   CHECK(defer_stage_ == DeferStage::kWillProcessResponse);
   CHECK(alias_check_enabled_);
-  CHECK(!policies.empty());
+  CHECK(!results.empty());
 
   did_alias_check_ = true;
 
   LoadPolicy most_restrictive_alias_policy = LoadPolicy::EXPLICITLY_ALLOW;
 
-  for (LoadPolicy policy : policies) {
-    most_restrictive_alias_policy =
-        MoreRestrictiveLoadPolicy(most_restrictive_alias_policy, policy);
+  for (const auto& result : results) {
+    most_restrictive_alias_policy = MoreRestrictiveLoadPolicy(
+        most_restrictive_alias_policy, result.load_policy);
+    // Accumulate host ad filter match across all evaluated alias URLs.
+    matched_subdomain_disallow_rule_ |= result.matched_subdomain_disallow_rule;
   }
 
   if (most_restrictive_alias_policy != load_policy_ &&

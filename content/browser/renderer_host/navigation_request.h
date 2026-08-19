@@ -522,6 +522,7 @@ class CONTENT_EXPORT NavigationRequest
       override;
   BeforeUnloadExecutionMode GetBeforeUnloadExecutionMode() const override;
   void SetIsAdTagged() override;
+  void SetIsAdTaggedByHostFilter() override;
   std::optional<NavigationDiscardReason> GetNavigationDiscardReason() override;
   // NOTE: Read function comments in NavigationHandle before use!
   std::optional<url::Origin> GetOriginToCommit() override;
@@ -532,6 +533,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsPageActivation() const override;
   bool IsNavigatingFromInitialEmptyDocument() const override;
   bool IsBlockedByConnectionAllowlist() const override;
+  bool IsAdTaggedByHostFilter() const override;
   // End of NavigationHandle implementation.
 
   // Returns a perfetto Track that represents this navigation, nested under the
@@ -1581,7 +1583,21 @@ class CONTENT_EXPORT NavigationRequest
                                  : -1;
   }
 
-  bool is_ad_tagged() const { return is_ad_tagged_; }
+  // Keeps track of the ad tagging status of a NavigationRequest.
+  enum class AdStatus {
+    // The navigation is not tagged as an ad.
+    kNone = 0,
+    // The navigation is tagged as an ad (e.g., from an ad frame, created by ad
+    // script, etc.),
+    // but did not match an ad filter anchored to the domain/host.
+    kAdTagged = 1,
+    // The navigation is tagged as an ad AND matched an ad filter anchored to
+    // the domain/host.
+    kAdTaggedByHostFilter = 2,
+    kMaxValue = kAdTaggedByHostFilter,
+  };
+
+  bool is_ad_tagged() const { return ad_status_ != AdStatus::kNone; }
 
   const GURL& original_url() const { return original_url_; }
 
@@ -3662,9 +3678,9 @@ class CONTENT_EXPORT NavigationRequest
   EarlyRenderFrameHostSwapType early_render_frame_host_swap_type_ =
       EarlyRenderFrameHostSwapType::kNone;
 
-  // Whether the embedder indicated this navigation is being used for
+  // Tracks whether the embedder indicated this navigation is being used for
   // advertising purposes.
-  bool is_ad_tagged_ = false;
+  AdStatus ad_status_ = AdStatus::kNone;
 
   // This is the origin to commit value calculated at request time for data: URL
   // navigations. It is stored so that the opaque origin nonce can be maintained

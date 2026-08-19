@@ -84,9 +84,15 @@ class ChildFrameNavigationFilteringThrottle
   content::NavigationThrottle::ThrottleCheckResult
   MaybeDeferToCalculateLoadPolicy();
 
+  bool matched_subdomain_disallow_rule() const {
+    return matched_subdomain_disallow_rule_;
+  }
+
   void OnCalculatedLoadPolicy(LoadPolicy policy);
-  void OnCalculatedLoadPolicyForUrl(LoadPolicy policy);
-  void OnCalculatedLoadPoliciesFromAliasUrls(std::vector<LoadPolicy> policies);
+  void OnCalculatedLoadPolicyForUrl(
+      AsyncDocumentSubresourceFilter::LoadPolicyResult result);
+  void OnCalculatedLoadPoliciesFromAliasUrls(
+      std::vector<AsyncDocumentSubresourceFilter::LoadPolicyResult> results);
   void HandleDisallowedLoad();
 
   void DeferStart(DeferStage stage);
@@ -118,6 +124,12 @@ class ChildFrameNavigationFilteringThrottle
 
   // Set to the least restrictive load policy by default.
   LoadPolicy load_policy_ = LoadPolicy::EXPLICITLY_ALLOW;
+
+  // Set to true if the URL (or any of its DNS aliases) evaluated for the
+  // current navigation step matched a domain/subdomain anchored DISALLOW or
+  // WOULD_DISALLOW rule. Reset on each redirect to reflect the final URL at
+  // commit time.
+  bool matched_subdomain_disallow_rule_ = false;
 
   // Callback to construct a console message based on a disallowed resource URL
   // without storing a copy of the message string.

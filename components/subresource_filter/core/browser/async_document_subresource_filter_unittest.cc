@@ -50,6 +50,7 @@ class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
         "allowlisted.subframe.com", proto::ACTIVATION_TYPE_GENERICBLOCK,
         {"example.com"}));
     rules.push_back(testing::CreateSuffixRule("disallowed.html"));
+    rules.push_back(testing::CreateSubdomainRule("anchored_disallowed.com"));
 
     ASSERT_NO_FATAL_FAILURE(test_ruleset_creator_.CreateRulesetWithRules(
         rules, &test_ruleset_pair_));
@@ -139,19 +140,36 @@ class LoadPolicyCallbackReceiver {
     return base::BindOnce(&LoadPolicyCallbackReceiver::Callback,
                           base::Unretained(this));
   }
-  void ExpectReceivedOnce(LoadPolicy load_policy) const {
+  void ExpectReceivedOnce(LoadPolicy load_policy,
+                          bool matched_subdomain_disallow_rule = false) const {
     ASSERT_EQ(1, callback_count_);
     EXPECT_EQ(load_policy, last_load_policy_);
+    EXPECT_EQ(matched_subdomain_disallow_rule,
+              last_matched_subdomain_disallow_rule_);
+  }
+
+  int callback_count() const { return callback_count_; }
+
+  void SetQuitClosure(base::OnceClosure quit_closure) {
+    CHECK(quit_closure);
+    quit_closure_ = std::move(quit_closure);
   }
 
  private:
-  void Callback(LoadPolicy load_policy) {
+  void Callback(AsyncDocumentSubresourceFilter::LoadPolicyResult result) {
     ++callback_count_;
-    last_load_policy_ = load_policy;
+    last_load_policy_ = result.load_policy;
+    last_matched_subdomain_disallow_rule_ =
+        result.matched_subdomain_disallow_rule;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
   }
 
+  base::OnceClosure quit_closure_;
   int callback_count_ = 0;
   LoadPolicy last_load_policy_;
+  bool last_matched_subdomain_disallow_rule_ = false;
 };
 
 class MultiLoadPolicyCallbackReceiver {
@@ -176,15 +194,22 @@ class MultiLoadPolicyCallbackReceiver {
 
   int disallow_count() const { return disallow_count_; }
 
+  const std::vector<AsyncDocumentSubresourceFilter::LoadPolicyResult>& results()
+      const {
+    return results_;
+  }
+
   void SetQuitClosure(base::OnceClosure quit_closure) {
     CHECK(quit_closure);
     quit_closure_ = std::move(quit_closure);
   }
 
  private:
-  void Callback(std::vector<LoadPolicy> policies) {
-    for (const auto& load_policy : policies) {
-      switch (load_policy) {
+  void Callback(
+      std::vector<AsyncDocumentSubresourceFilter::LoadPolicyResult> policies) {
+    results_ = policies;
+    for (const auto& result : policies) {
+      switch (result.load_policy) {
         case LoadPolicy::EXPLICITLY_ALLOW:
           explicitly_allow_count_++;
           break;
@@ -213,6 +238,7 @@ class MultiLoadPolicyCallbackReceiver {
   int allow_count_ = 0;
   int would_disallow_count_ = 0;
   int disallow_count_ = 0;
+  std::vector<AsyncDocumentSubresourceFilter::LoadPolicyResult> results_;
 };
 
 }  // namespace
@@ -659,6 +685,80 @@ TEST_F(SubresourceFilterComputeActivationStateTest,
         << activation_state.filtering_disabled_for_document << " "
         << activation_state.generic_blocking_rules_disabled;
   }
+}
+
+TEST_F(AsyncDocumentSubresourceFilterTest,
+       GetLoadPolicyForSubdocument_MatchedSubdomainDisallowRule) {
+  dealer_handle()->TryOpenAndSetRulesetFile(
+      ruleset().path, /*expected_checksum=*/0, base::DoNothing());
+  auto ruleset_handle = CreateRulesetHandle();
+
+  AsyncDocumentSubresourceFilter::InitializationParams params(
+      GURL("http://example.com"), mojom::ActivationLevel::kEnabled, false);
+
+  testing::TestActivationStateCallbackReceiver activation_state;
+  auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
+      ruleset_handle.get(), std::move(params), activation_state.GetCallback(),
+      kSafeBrowsingRulesetConfig.uma_tag);
+
+  // Case 1: Matches a non-anchored suffix rule ->
+  // matched_subdomain_disallow_rule is false
+  {
+    base::RunLoop run_loop;
+    LoadPolicyCallbackReceiver load_policy_receiver;
+    load_policy_receiver.SetQuitClosure(run_loop.QuitClosure());
+    filter->GetLoadPolicyForSubdocument(
+        GURL("http://example.com/disallowed.html"),
+        load_policy_receiver.GetCallback());
+    RunBlockingTasks();
+    run_loop.Run();
+    load_policy_receiver.ExpectReceivedOnce(LoadPolicy::DISALLOW, false);
+  }
+
+  // Case 2: Matches an anchored subdomain rule ->
+  // matched_subdomain_disallow_rule is true
+  {
+    base::RunLoop run_loop;
+    LoadPolicyCallbackReceiver load_policy_receiver;
+    load_policy_receiver.SetQuitClosure(run_loop.QuitClosure());
+    filter->GetLoadPolicyForSubdocument(
+        GURL("http://anchored_disallowed.com/foo.html"),
+        load_policy_receiver.GetCallback());
+    RunBlockingTasks();
+    run_loop.Run();
+    load_policy_receiver.ExpectReceivedOnce(LoadPolicy::DISALLOW, true);
+  }
+}
+
+TEST_F(AsyncDocumentSubresourceFilterTest,
+       GetLoadPolicyForSubdocumentURLs_MatchedSubdomainDisallowRule) {
+  dealer_handle()->TryOpenAndSetRulesetFile(
+      ruleset().path, /*expected_checksum=*/0, base::DoNothing());
+  auto ruleset_handle = CreateRulesetHandle();
+
+  AsyncDocumentSubresourceFilter::InitializationParams params(
+      GURL("http://example.com"), mojom::ActivationLevel::kEnabled, false);
+
+  testing::TestActivationStateCallbackReceiver activation_state;
+  auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
+      ruleset_handle.get(), std::move(params), activation_state.GetCallback(),
+      kSafeBrowsingRulesetConfig.uma_tag);
+
+  std::vector<GURL> urls = {GURL("http://example.com/disallowed.html"),
+                            GURL("http://anchored_disallowed.com/foo.html")};
+
+  base::RunLoop run_loop;
+  MultiLoadPolicyCallbackReceiver receiver;
+  receiver.SetQuitClosure(run_loop.QuitClosure());
+  filter->GetLoadPolicyForSubdocumentURLs(urls, receiver.GetCallback());
+  RunBlockingTasks();
+  run_loop.Run();
+
+  ASSERT_EQ(2u, receiver.results().size());
+  EXPECT_EQ(LoadPolicy::DISALLOW, receiver.results()[0].load_policy);
+  EXPECT_FALSE(receiver.results()[0].matched_subdomain_disallow_rule);
+  EXPECT_EQ(LoadPolicy::DISALLOW, receiver.results()[1].load_policy);
+  EXPECT_TRUE(receiver.results()[1].matched_subdomain_disallow_rule);
 }
 
 }  // namespace subresource_filter

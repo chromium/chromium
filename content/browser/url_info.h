@@ -167,7 +167,7 @@ struct CONTENT_EXPORT UrlInfo {
   // matching a known ad URL.
   // TODO(crbug.com/40259221): This should eventually only include filters that
   // match a domain (host), and not include partial matches.
-  bool matches_ad_filter_with_host = false;
+  bool is_ad_tagged_by_host_filter = false;
 
   // The CrossOriginIsolationKey to use for the navigation. This represents the
   // isolation requested by the page itself through the use of COOP, COEP and
@@ -215,7 +215,7 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfoInit& WithWebExposedIsolationInfo(
       std::optional<WebExposedIsolationInfo> web_exposed_isolation_info);
   UrlInfoInit& WithEmbedderIsolationInfo(EmbedderIsolationInfo info);
-  UrlInfoInit& WithMatchesAdFilterWithHost(bool matches_ad_filter_with_host);
+  UrlInfoInit& WithIsAdTaggedByHostFilter(bool is_ad_tagged_by_host_filter);
   UrlInfoInit& WithCrossOriginIsolationKey(
       const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
           cross_origin_isolation_key);
@@ -240,7 +240,7 @@ class CONTENT_EXPORT UrlInfoInit {
   std::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
   EmbedderIsolationInfo embedder_isolation_info_ =
       EmbedderIsolationInfo::CreateNone();
-  bool matches_ad_filter_with_host_ = false;
+  bool is_ad_tagged_by_host_filter_ = false;
   std::optional<AgentClusterKey::CrossOriginIsolationKey>
       cross_origin_isolation_key_;
   std::optional<base::SafeRef<ProcessSelectionUserData>>

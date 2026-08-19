@@ -36,12 +36,15 @@ class TestChildFrameNavigationFilteringThrottle
       AsyncDocumentSubresourceFilter* parent_frame_filter,
       bool alias_check_enabled,
       base::RepeatingCallback<std::string(const GURL& url)>
-          disallow_message_callback)
+          disallow_message_callback,
+      base::RepeatingCallback<void(bool)> on_finished_callback =
+          base::RepeatingCallback<void(bool)>())
       : ChildFrameNavigationFilteringThrottle(
             registry,
             parent_frame_filter,
             alias_check_enabled,
-            std::move(disallow_message_callback)) {}
+            std::move(disallow_message_callback)),
+        on_finished_callback_(std::move(on_finished_callback)) {}
 
   TestChildFrameNavigationFilteringThrottle(
       const TestChildFrameNavigationFilteringThrottle&) = delete;
@@ -54,6 +57,8 @@ class TestChildFrameNavigationFilteringThrottle
     return "TestChildFrameNavigationFilteringThrottle";
   }
 
+  using ChildFrameNavigationFilteringThrottle::matched_subdomain_disallow_rule;
+
  private:
   bool ShouldDeferNavigation() const override {
     return parent_frame_filter_->activation_state().activation_level ==
@@ -61,9 +66,12 @@ class TestChildFrameNavigationFilteringThrottle
   }
 
   void OnCalculatedLoadPolicyFinished() override {
-    // Nothing custom here.
-    return;
+    if (on_finished_callback_) {
+      on_finished_callback_.Run(matched_subdomain_disallow_rule());
+    }
   }
+
+  base::RepeatingCallback<void(bool)> on_finished_callback_;
 
   void NotifyLoadPolicy() const override {
     // No observers to notify.
@@ -104,7 +112,11 @@ class ChildFrameNavigationFilteringThrottleTest
                           return base::StringPrintf(
                               kDisallowChildFrameConsoleMessageFormat,
                               filtered_url.possibly_invalid_spec().c_str());
-                        }));
+                        }),
+                        base::BindRepeating(
+                            &ChildFrameNavigationFilteringThrottleTest::
+                                OnThrottleFinished,
+                            base::Unretained(this)));
                 EXPECT_NE(nullptr, throttle->GetNameForLogging());
                 registry.AddThrottle(std::move(throttle));
               }
@@ -118,7 +130,22 @@ class ChildFrameNavigationFilteringThrottleTest
   }
 
  protected:
+  void OnThrottleFinished(bool val) {
+    last_matched_subdomain_disallow_rule_ = val;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  void WaitForThrottle() {
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
   bool alias_check_enabled_ = false;
+  std::optional<bool> last_matched_subdomain_disallow_rule_;
+  base::OnceClosure quit_closure_;
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 };
 
@@ -143,6 +170,54 @@ TEST_F(ChildFrameNavigationFilteringThrottleTest, FilterOnRedirect) {
             SimulateRedirectAndGetResult(
                 navigation_simulator(),
                 GURL("https://example.test/disallowed.html")));
+}
+
+TEST_F(ChildFrameNavigationFilteringThrottleTest,
+       MatchedSubdomainDisallowRule_TrueOnRedirect) {
+  InitializeDocumentSubresourceFilterWithSubdomainRule(
+      GURL("https://example.test"), "anchored_disallowed.com");
+
+  CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
+                                      main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  EXPECT_FALSE(last_matched_subdomain_disallow_rule_.value_or(true));
+
+  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE,
+            SimulateRedirectAndGetResult(
+                navigation_simulator(),
+                GURL("https://anchored_disallowed.com/foo.html")));
+  EXPECT_TRUE(last_matched_subdomain_disallow_rule_.value_or(false));
+}
+
+TEST_F(ChildFrameNavigationFilteringThrottleTest,
+       MatchedSubdomainDisallowRule_FalseOnRedirectToAllowed) {
+  // Use kDryRun so that matched URLs are not blocked, allowing redirect to
+  // continue.
+  InitializeDocumentSubresourceFilterWithSubdomainRule(
+      GURL("https://example.test"), "anchored_disallowed.com",
+      mojom::ActivationLevel::kDryRun);
+
+  CreateTestSubframeAndInitNavigation(GURL("https://example.test/allowed.html"),
+                                      main_rfh());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateStartAndGetResult(navigation_simulator()));
+  WaitForThrottle();
+  EXPECT_FALSE(last_matched_subdomain_disallow_rule_.value_or(true));
+
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            SimulateRedirectAndGetResult(
+                navigation_simulator(),
+                GURL("https://anchored_disallowed.com/foo.html")));
+  WaitForThrottle();
+  EXPECT_TRUE(last_matched_subdomain_disallow_rule_.value_or(false));
+
+  EXPECT_EQ(
+      content::NavigationThrottle::PROCEED,
+      SimulateRedirectAndGetResult(navigation_simulator(),
+                                   GURL("https://example.test/allowed2.html")));
+  WaitForThrottle();
+  EXPECT_FALSE(last_matched_subdomain_disallow_rule_.value_or(true));
 }
 
 TEST_F(ChildFrameNavigationFilteringThrottleTest, DryRunOnStart) {
@@ -288,6 +363,22 @@ TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest, EnabledNoAliases) {
             SimulateCommitAndGetResult(navigation_simulator()));
   EXPECT_FALSE(std::ranges::contains(GetConsoleMessages(),
                                      GetFilterConsoleMessage(url)));
+}
+
+TEST_F(ChildFrameNavigationFilteringThrottleDnsAliasTest,
+       MatchedSubdomainDisallowRule_TrueOnAlias) {
+  InitializeDocumentSubresourceFilterWithSubdomainRule(
+      GURL("https://example.test"), "anchored_disallowed.com");
+
+  const GURL url("https://example.test/some_path.html");
+  CreateTestSubframeAndInitNavigation(url, main_rfh());
+
+  std::vector<std::string> dns_aliases({"anchored_disallowed.com"});
+  SetResponseDnsAliasesForNavigation(std::move(dns_aliases));
+
+  EXPECT_EQ(content::NavigationThrottle::CANCEL,
+            SimulateCommitAndGetResult(navigation_simulator()));
+  EXPECT_TRUE(last_matched_subdomain_disallow_rule_.value_or(false));
 }
 
 }  // namespace subresource_filter

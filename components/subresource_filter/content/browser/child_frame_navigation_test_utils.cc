@@ -20,6 +20,7 @@
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/constants.h"
+#include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -105,6 +106,19 @@ void ChildFrameNavigationFilteringThrottleTestHarness::
   ASSERT_NO_FATAL_FAILURE(
       test_ruleset_creator_.CreateRulesetToDisallowURLWithSubstrings(
           urls_to_block, &test_ruleset_pair_));
+
+  FinishInitializingDocumentSubresourceFilter(document_url, parent_level);
+}
+
+void ChildFrameNavigationFilteringThrottleTestHarness::
+    InitializeDocumentSubresourceFilterWithSubdomainRule(
+        const GURL& document_url,
+        std::string_view subdomain,
+        mojom::ActivationLevel parent_level) {
+  std::vector<url_pattern_index::proto::UrlRule> rules;
+  rules.push_back(testing::CreateSubdomainRule(subdomain));
+  ASSERT_NO_FATAL_FAILURE(
+      test_ruleset_creator_.CreateRulesetWithRules(rules, &test_ruleset_pair_));
 
   FinishInitializingDocumentSubresourceFilter(document_url, parent_level);
 }
