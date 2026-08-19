@@ -1474,10 +1474,13 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DontCloseNewTab3) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
   // Open a new tab and wait.
+  content::TestNavigationObserver observer(nullptr, 1);
+  observer.StartWatchingNewWebContents();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("javascript:openNew()"),
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+  observer.Wait();
 
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
