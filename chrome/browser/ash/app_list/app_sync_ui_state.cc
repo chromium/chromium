@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/app_list/app_sync_ui_state_observer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -38,15 +37,13 @@ bool AppSyncUIState::ShouldObserveAppSyncForProfile(Profile* profile) {
   if (!profile || profile->IsOffTheRecord())
     return false;
 
-  if (!SyncServiceFactory::HasSyncService(profile))
-    return false;
-
   return profile->IsNewProfile();
 }
 
-AppSyncUIState::AppSyncUIState(Profile* profile)
+AppSyncUIState::AppSyncUIState(Profile* profile,
+                               syncer::SyncService* sync_service)
     : profile_(profile),
-      sync_service_(nullptr),
+      sync_service_(sync_service),
       status_(STATUS_NORMAL),
       extension_registry_(nullptr) {
   StartObserving();
@@ -71,14 +68,12 @@ void AppSyncUIState::Shutdown() {
 
 void AppSyncUIState::StartObserving() {
   DCHECK(ShouldObserveAppSyncForProfile(profile_));
-  DCHECK(!sync_service_);
+  DCHECK(sync_service_);
   DCHECK(!extension_registry_);
 
   extension_registry_ = extensions::ExtensionRegistry::Get(profile_);
   extension_registry_->AddObserver(this);
 
-  sync_service_ = SyncServiceFactory::GetForProfile(profile_);
-  CHECK(sync_service_);
   sync_service_->AddObserver(this);
 }
 

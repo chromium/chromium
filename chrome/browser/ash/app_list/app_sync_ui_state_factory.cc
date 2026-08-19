@@ -11,8 +11,10 @@
 
 // static
 AppSyncUIState* AppSyncUIStateFactory::GetForProfile(Profile* profile) {
-  if (!AppSyncUIState::ShouldObserveAppSyncForProfile(profile))
+  if (!AppSyncUIState::ShouldObserveAppSyncForProfile(profile) ||
+      !SyncServiceFactory::HasSyncService(profile)) {
     return nullptr;
+  }
 
   return static_cast<AppSyncUIState*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
@@ -47,5 +49,6 @@ AppSyncUIStateFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
   DCHECK(AppSyncUIState::ShouldObserveAppSyncForProfile(profile));
-  return std::make_unique<AppSyncUIState>(profile);
+  return std::make_unique<AppSyncUIState>(
+      profile, SyncServiceFactory::GetForProfile(profile));
 }

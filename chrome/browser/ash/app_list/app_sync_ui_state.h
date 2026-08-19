@@ -45,7 +45,7 @@ class AppSyncUIState : public KeyedService,
   // Returns true if |profile| should be watched for app syncing.
   static bool ShouldObserveAppSyncForProfile(Profile* profile);
 
-  explicit AppSyncUIState(Profile* profile);
+  AppSyncUIState(Profile* profile, syncer::SyncService* sync_service);
 
   AppSyncUIState(const AppSyncUIState&) = delete;
   AppSyncUIState& operator=(const AppSyncUIState&) = delete;
