@@ -1062,7 +1062,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                             .setFragment(AutofillOptionsFragment.class.getName())
                                             .setArguments(
                                                     AutofillOptionsFragment.createRequiredArgs(
-                                                            AutofillOptionsReferrer.SETTINGS))
+                                                            AutofillOptionsReferrer
+                                                                    .SETTINGS_SEARCH))
                                             .build());
                         }
                     }

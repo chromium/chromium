@@ -40,6 +40,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
+import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -363,6 +364,10 @@ public class AutofillSettingsSearchTest {
     @SmallTest
     @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testSearchAutofill_autofillAndPasswordsDisabled() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Autofill.Settings.AutofillOptionsReferrerAndroid",
+                        AutofillOptionsReferrer.SETTINGS_SEARCH);
         searchSettings("autofill");
 
         onViewWaiting( // Wait for debounce and Search results to appear.
@@ -372,6 +377,7 @@ public class AutofillSettingsSearchTest {
                 .perform(click());
 
         onView(withText(R.string.settings_autofill_service_provider)).check(matches(isDisplayed()));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -381,6 +387,10 @@ public class AutofillSettingsSearchTest {
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSearchAutofill_autofillAiAndAutofillAndPasswordsDisabled() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Autofill.Settings.AutofillOptionsReferrerAndroid",
+                        AutofillOptionsReferrer.SETTINGS_SEARCH);
         searchSettings("autofill");
 
         onViewWaiting( // Wait for debounce and Search results to appear.
@@ -391,6 +401,7 @@ public class AutofillSettingsSearchTest {
 
         onView(withText(R.string.autofill_third_party_filling_default))
                 .check(matches(isDisplayed()));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -429,6 +440,10 @@ public class AutofillSettingsSearchTest {
     }
 
     private void testSearchAutofillAiSwitch() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Autofill.Settings.AutofillOptionsReferrerAndroid",
+                        AutofillOptionsReferrer.SETTINGS_SEARCH);
         searchSettings("Smarter form understanding");
 
         onViewWaiting( // Wait for debounce and Search results to appear.
@@ -448,6 +463,7 @@ public class AutofillSettingsSearchTest {
                                         withText(R.string.settings_autofill_ai_page_title_v2)),
                                 isHighlighted()))
                 .check(matches(isDisplayed()));
+        histogramWatcher.assertExpected();
     }
 
     private void searchSettings(String query) {

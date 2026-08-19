@@ -430,7 +430,7 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
                                             .setArguments(
                                                     AutofillOptionsFragment.createRequiredArgs(
                                                             AutofillOptionsReferrer
-                                                                    .AUTOFILL_AND_PASSWORDS_FRAGMENT))
+                                                                    .SETTINGS_SEARCH))
                                             .build());
                         }
 

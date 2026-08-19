@@ -215,7 +215,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                     AutofillOptionsFragment.class.getName(), R.xml.autofill_options_preferences) {
                 @Override
                 public Bundle getExtras() {
-                    return createRequiredArgs(AutofillOptionsReferrer.SETTINGS);
+                    return createRequiredArgs(AutofillOptionsReferrer.SETTINGS_SEARCH);
                 }
 
                 @Override
