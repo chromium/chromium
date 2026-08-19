@@ -2415,6 +2415,13 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="void setupAutoFill(Message)"/>
 </enum>
 
+<enum name="WebContentAdoptResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed: AwContents destroyed"/>
+  <int value="2" label="Failed: Old container view attached"/>
+  <int value="3" label="Failed: New container view attached"/>
+</enum>
+
 <enum name="WebPageContentProviderEvent">
   <int value="0" label="GET_CONTENT_URI_FAILED">
     WebPageContentProvider failed to generate a JSON string with URIs for the

@@ -284,6 +284,22 @@ public class AwContents implements SmartClipProvider {
         int COUNT = 3;
     }
 
+    // Used to record Android.WebView.WebContent.AdoptResult.
+    // Since these values are persisted to logs, they should never be renumbered or reused
+    @IntDef({
+        AdoptResult.SUCCESS,
+        AdoptResult.DESTROYED,
+        AdoptResult.OLD_CONTAINER_ATTACHED,
+        AdoptResult.NEW_CONTAINER_ATTACHED,
+    })
+    public @interface AdoptResult {
+        int SUCCESS = 0;
+        int DESTROYED = 1;
+        int OLD_CONTAINER_ATTACHED = 2;
+        int NEW_CONTAINER_ATTACHED = 3;
+        int COUNT = 4;
+    }
+
     /**
      * WebKit hit test related data structure. These are used to implement getHitTestResult,
      * requestFocusNodeHref, requestImageRef methods in WebView. All values should be updated
@@ -1358,16 +1374,20 @@ public class AwContents implements SmartClipProvider {
     public void adopt(ViewGroup newContainerView, InternalAccessDelegate internalAccessAdapter) {
         ThreadUtils.assertOnUiThread();
         if (isDestroyed(NO_WARN)) {
+            recordAdoptResult(AdoptResult.DESTROYED);
             throw new IllegalStateException("AwContents is destroyed.");
         }
         if (mContainerView != null && mContainerView.isAttachedToWindow()) {
+            recordAdoptResult(AdoptResult.OLD_CONTAINER_ATTACHED);
             throw new IllegalStateException(
                     "AwContents must be detached from the window before adopting.");
         }
         if (newContainerView.isAttachedToWindow()) {
+            recordAdoptResult(AdoptResult.NEW_CONTAINER_ATTACHED);
             throw new IllegalStateException(
                     "The new container view must be detached from the window before adopting.");
         }
+        recordAdoptResult(AdoptResult.SUCCESS);
         updateContext(newContainerView.getContext());
         mPrimaryInternalAccessAdapter = internalAccessAdapter;
         setInternalAccessAdapter(internalAccessAdapter);
@@ -1375,6 +1395,11 @@ public class AwContents implements SmartClipProvider {
         mDisplayCutoutController.unregisterContainerView(mContainerView);
         setContainerView(newContainerView);
         mDisplayCutoutController.registerContainerView(newContainerView);
+    }
+
+    private static void recordAdoptResult(@AdoptResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.WebContent.AdoptResult", result, AdoptResult.COUNT);
     }
 
     private void setContainerView(ViewGroup newContainerView) {

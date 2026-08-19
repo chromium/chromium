@@ -157,6 +157,11 @@ public class AwContentsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     public void testUpdateContextAndAdopt() throws Throwable {
         mActivityTestRule.startBrowserProcess();
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.WebContent.AdoptResult",
+                        AwContents.AdoptResult.SUCCESS);
+
         MutableContextWrapper oldContext =
                 new MutableContextWrapper(mActivityTestRule.getActivity());
         AwTestContainerView testContainer =
@@ -182,6 +187,7 @@ public class AwContentsTest extends AwParameterizedTest {
         TouchCommon.longPressView(testContainer);
 
         AwTestContainerView newContainer = mActivityTestRule.reparentAwContents(testContainer);
+        histogramWatcher.assertExpected();
         oldContext.setBaseContext(null);
 
         ThreadUtils.runOnUiThreadBlocking(

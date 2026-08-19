@@ -9831,6 +9831,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.WebContent.AdoptResult"
+    enum="WebContentAdoptResult" expires_after="2027-09-01">
+  <owner>bewise@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded every time AwContents.adopt() is called to transfer WebView state
+    to a new WebView instance. Adopt is triggered by app developers using the
+    WebContent API. Captures successful adoptions as well as precondition check
+    failures (e.g. view attachment races or destroyed instances).
+  </summary>
+</histogram>
+
 <histogram name="Android.Window.OcclusionExperimental.Duration" units="ms"
     expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>
