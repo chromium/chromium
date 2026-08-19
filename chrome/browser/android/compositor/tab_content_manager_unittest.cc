@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
 #include "cc/resources/ui_resource_client.h"
@@ -78,7 +77,6 @@ class TabContentManagerTest : public ::testing::Test {
 };
 
 TEST_F(TabContentManagerTest, UpdateTabIdsForStaticLayerCache) {
-  JNIEnv* env = base::android::AttachCurrentThread();
   constexpr int kTabId1 = 6;
   constexpr int kTabId2 = 7;
   EXPECT_DCHECK(
@@ -86,31 +84,26 @@ TEST_F(TabContentManagerTest, UpdateTabIdsForStaticLayerCache) {
   EXPECT_DCHECK(
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId2)); }, "");
 
-  auto jarr = base::android::ToJavaIntArray(env, std::vector<int>({kTabId1}));
-  tab_content_manager().UpdateVisibleIds(env, jarr, kTabId1);
+  tab_content_manager().UpdateVisibleIds({kTabId1}, kTabId1);
   EXPECT_TRUE(tab_content_manager().GetStaticLayer(kTabId1));
   EXPECT_DCHECK(
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId2)); }, "");
 
-  tab_content_manager().UpdateVisibleIds(env, jarr, -1);
+  tab_content_manager().UpdateVisibleIds({kTabId1}, -1);
   EXPECT_TRUE(tab_content_manager().GetStaticLayer(kTabId1));
   EXPECT_DCHECK(
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId2)); }, "");
 
-  jarr =
-      base::android::ToJavaIntArray(env, std::vector<int>({kTabId1, kTabId2}));
-  tab_content_manager().UpdateVisibleIds(env, jarr, -1);
+  tab_content_manager().UpdateVisibleIds({kTabId1, kTabId2}, -1);
   EXPECT_TRUE(tab_content_manager().GetStaticLayer(kTabId1));
   EXPECT_TRUE(tab_content_manager().GetStaticLayer(kTabId2));
 
-  jarr = base::android::ToJavaIntArray(env, std::vector<int>({kTabId2}));
-  tab_content_manager().UpdateVisibleIds(env, jarr, -1);
+  tab_content_manager().UpdateVisibleIds({kTabId2}, -1);
   EXPECT_DCHECK(
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId1)); }, "");
   EXPECT_TRUE(tab_content_manager().GetStaticLayer(kTabId2));
 
-  jarr = base::android::ToJavaIntArray(env, std::vector<int>({}));
-  tab_content_manager().UpdateVisibleIds(env, jarr, -1);
+  tab_content_manager().UpdateVisibleIds({}, -1);
   EXPECT_DCHECK(
       { EXPECT_FALSE(tab_content_manager().GetStaticLayer(kTabId1)); }, "");
   EXPECT_DCHECK(

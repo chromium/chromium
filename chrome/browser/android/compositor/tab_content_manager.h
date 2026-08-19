@@ -87,7 +87,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                           float thumbnail_scale);
   void InvalidateIfChanged(JNIEnv* env, int32_t tab_id, const GURL& url);
   void UpdateVisibleIds(JNIEnv* env,
-                        const base::android::JavaRef<jintArray>& priority,
+                        const std::vector<int32_t>& priority_ids,
                         int32_t primary_tab_id);
   void NativeRemoveTabThumbnail(int tab_id);
   void RemoveTabThumbnail(JNIEnv* env, int32_t tab_id);

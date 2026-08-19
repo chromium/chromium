@@ -388,11 +388,10 @@ void TabContentManager::InvalidateIfChanged(JNIEnv* env,
   thumbnail_cache_.InvalidateThumbnailIfChanged(tab_id, url);
 }
 
-void TabContentManager::UpdateVisibleIds(JNIEnv* env,
-                                         const JavaRef<jintArray>& priority,
-                                         int32_t primary_tab_id) {
-  std::vector<int> priority_ids;
-  base::android::JavaIntArrayToIntVector(env, priority, &priority_ids);
+void TabContentManager::UpdateVisibleIds(
+    JNIEnv* env,
+    const std::vector<int32_t>& priority_ids,
+    int32_t primary_tab_id) {
   UpdateVisibleIds(priority_ids, primary_tab_id);
 }
 
