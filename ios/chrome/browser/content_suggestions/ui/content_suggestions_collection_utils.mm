@@ -368,6 +368,7 @@ CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
       padding =
           is_doodle ? kDoodleTopPaddingPreferred : kLogoTopPaddingPreferred;
       break;
+    case NTPUICleanupVariation::kFakeboxBackgroundAndShadow:
     case NTPUICleanupVariation::kDisabled:
       return DoodleTopMargin(logo_state, trait_collection);
   }
@@ -395,6 +396,7 @@ CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state) {
       padding = is_doodle ? kDoodleToFakeboxPaddingPreferred
                           : kLogoToFakeboxPaddingPreferred;
       break;
+    case NTPUICleanupVariation::kFakeboxBackgroundAndShadow:
     case NTPUICleanupVariation::kDisabled:
       return SearchFieldTopMargin(logo_state);
   }
@@ -413,6 +415,7 @@ CGFloat QuickActionsTopPadding() {
       return kQuickActionsTopPaddingMedium;
     case NTPUICleanupVariation::kPreferredPadding:
       return kQuickActionsTopPaddingPreferred;
+    case NTPUICleanupVariation::kFakeboxBackgroundAndShadow:
     case NTPUICleanupVariation::kDisabled:
       return kQuickActionsTopPaddingControl;
   }
@@ -426,6 +429,7 @@ CGFloat MostVisitedTopPadding() {
       return kMostVisitedTopPaddingMedium;
     case NTPUICleanupVariation::kPreferredPadding:
       return kMostVisitedTopPaddingPreferred;
+    case NTPUICleanupVariation::kFakeboxBackgroundAndShadow:
     case NTPUICleanupVariation::kDisabled:
       return kMostVisitedTopPaddingControl;
   }
@@ -440,6 +444,7 @@ CGFloat ReducedModuleSpacing(UITraitCollection* trait_collection) {
     case NTPUICleanupVariation::kMediumPadding:
     case NTPUICleanupVariation::kPreferredPadding:
       return kReducedModuleSpacing;
+    case NTPUICleanupVariation::kFakeboxBackgroundAndShadow:
     case NTPUICleanupVariation::kDisabled:
       return kReducedModuleSpacingControl;
   }

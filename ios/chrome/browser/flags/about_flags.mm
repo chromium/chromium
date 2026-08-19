@@ -1357,11 +1357,16 @@ const FeatureEntry::FeatureParam kNewTabPageUICleanupMediumPadding[] = {
     {kNewTabPageUICleanupArmParam, "2"}};
 const FeatureEntry::FeatureParam kNewTabPageUICleanupPreferredPadding[] = {
     {kNewTabPageUICleanupArmParam, "3"}};
+const FeatureEntry::FeatureParam
+    kNewTabPageUICleanupFakeboxBackgroundAndShadow[] = {
+        {kNewTabPageUICleanupArmParam, "4"}};
 
 const FeatureEntry::FeatureVariation kNewTabPageUICleanupVariations[] = {
     {" - Tight Padding", kNewTabPageUICleanupTightPadding, nullptr},
     {" - Medium Padding", kNewTabPageUICleanupMediumPadding, nullptr},
     {" - Preferred Padding", kNewTabPageUICleanupPreferredPadding, nullptr},
+    {" - Fakebox Background and Shadow Update",
+     kNewTabPageUICleanupFakeboxBackgroundAndShadow, nullptr},
 };
 
 const FeatureEntry::FeatureParam
