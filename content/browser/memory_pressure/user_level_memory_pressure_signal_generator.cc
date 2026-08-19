@@ -45,12 +45,12 @@ constexpr base::TimeDelta kDefaultMinimumInterval = base::Minutes(10);
 // The memory threshold: 458 was selected at around the 99th percentile of
 // the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
 // system memory were 4GB.
-constexpr base::ByteSize kMemoryThresholdOf4GbDevices = base::MiBU(458);
+constexpr base::ByteSize kMemoryThresholdOf4GbDevices = base::MiB(458);
 
 // The memory threshold: 494 was selected at around the 99th percentile of
 // the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
 // system memory were 6GB.
-constexpr base::ByteSize kMemoryThresholdOf6GbDevices = base::MiBU(494);
+constexpr base::ByteSize kMemoryThresholdOf6GbDevices = base::MiB(494);
 
 UserLevelMemoryPressureSignalGenerator* g_instance = nullptr;
 
@@ -345,7 +345,7 @@ std::optional<base::ByteSize> CalculateProcessMemoryFootprint(
       sscanf(swap_line, "VmSwap: %" SCNu64 " kB", &swap_footprint_kb));
   if (num_scanned != 1)
     return std::nullopt;
-  const base::ByteSize swap_footprint = base::KiBU(swap_footprint_kb);
+  const base::ByteSize swap_footprint = base::KiB(swap_footprint_kb);
 
   return (resident_pages - shared_pages) * page_size + swap_footprint;
 }

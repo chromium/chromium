@@ -852,7 +852,7 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
       }
     }
   }
-  constexpr base::ByteSize kMaxDragBinarySize = base::MiBU(256);
+  constexpr base::ByteSize kMaxDragBinarySize = base::MiB(256);
   if (file_data.length > 0 &&
       file_data.length <= kMaxDragBinarySize.InBytes()) {
     drop_data.file_contents =
@@ -877,7 +877,7 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
       disposition =
           [pboard stringForType:ui::kUTTypeChromiumContentDisposition];
     }
-    constexpr base::ByteSize kMaxContentDispositionLength = base::KiBU(4);
+    constexpr base::ByteSize kMaxContentDispositionLength = base::KiB(4);
     if (disposition.length > 0 &&
         disposition.length <= kMaxContentDispositionLength.InBytes()) {
       drop_data.file_contents_content_disposition =
