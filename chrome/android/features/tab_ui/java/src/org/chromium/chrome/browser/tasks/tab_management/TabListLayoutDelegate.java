@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -82,6 +83,41 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
 
         mMediator.addTabCardToModel(tab, newIndex);
         return newIndex;
+    }
+
+    /**
+     * Resolves the UI index in {@link #mModelList} of the card representing the given tab in this
+     * layout.
+     *
+     * <p>For flat and nested layouts, this locates the tab's direct card in the model list.
+     * Subclasses (such as grouped layouts) may override this to resolve to the containing group
+     * card if the tab is part of a tab group.
+     *
+     * @param tabId The ID of the tab to locate.
+     * @return The UI index in {@link #mModelList}, or {@link TabModel#INVALID_TAB_INDEX} if not
+     *     present.
+     */
+    int getUiIndexForTab(int tabId) {
+        return mModelList.indexFromTabId(tabId);
+    }
+
+    /**
+     * Handles UI model updates when a tab is selected in the tab model.
+     *
+     * @param tab The {@link Tab} that was selected.
+     * @param type The {@link TabSelectionType} indicating the selection trigger.
+     * @param lastId The ID of the previously selected tab.
+     */
+    void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+        int oldIndex = getUiIndexForTab(lastId);
+        int newIndex = getUiIndexForTab(tab.getId());
+
+        mMediator.setLastSelectedTabListModelIndex(oldIndex);
+        if (mMediator.isTabDelayed(tab)) {
+            // If tab is being added later, it will be selected later.
+            return;
+        }
+        mMediator.selectTab(oldIndex, newIndex);
     }
 
     /**

@@ -32,6 +32,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -70,6 +71,8 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab1.getId()).thenReturn(TAB1_ID);
         when(mTab2.getId()).thenReturn(TAB2_ID);
         when(mTab3.getId()).thenReturn(TAB3_ID);
+        when(mMediator.getIndexForTabIdWithRelatedTabs(anyInt()))
+                .thenReturn(TabModel.INVALID_TAB_INDEX);
     }
 
     @Test
@@ -577,6 +580,65 @@ public class GroupedLayoutDelegateUnitTest {
 
         verify(mMediator, never()).updateTabGroupProperties(any(), any(), anyInt());
         verify(mMediator, never()).updateFaviconForTab(any(), any(), any(), any());
+    }
+
+    @Test
+    public void testDidSelectTab_DirectModelMatch() {
+        createAndAddPropertyModel(TAB1_ID);
+        createAndAddPropertyModel(TAB2_ID);
+
+        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+
+        verify(mMediator).setLastSelectedTabListModelIndex(0);
+        verify(mMediator).selectTab(0, 1);
+    }
+
+    @Test
+    public void testDidSelectTab_RelatedTabsLookup() {
+        createAndAddPropertyModel(TAB1_ID);
+        when(mMediator.getIndexForTabIdWithRelatedTabs(TAB2_ID)).thenReturn(0);
+
+        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB3_ID);
+
+        verify(mMediator).setLastSelectedTabListModelIndex(TabModel.INVALID_TAB_INDEX);
+        verify(mMediator).selectTab(TabModel.INVALID_TAB_INDEX, 0);
+    }
+
+    @Test
+    public void testDidSelectTab_FromUndo_UpdatesGroupRepresentativeTab() {
+        createAndAddPropertyModel(TAB1_ID);
+        when(mMediator.getIndexForTabIdWithRelatedTabs(TAB2_ID)).thenReturn(0);
+
+        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_UNDO, TAB3_ID);
+
+        assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
+        verify(mMediator).setLastSelectedTabListModelIndex(TabModel.INVALID_TAB_INDEX);
+        verify(mMediator).selectTab(TabModel.INVALID_TAB_INDEX, 0);
+    }
+
+    @Test
+    public void testDidSelectTab_TabDelayed_DoesNotSelect() {
+        createAndAddPropertyModel(TAB1_ID);
+        createAndAddPropertyModel(TAB2_ID);
+        when(mMediator.isTabDelayed(mTab2)).thenReturn(true);
+
+        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+
+        verify(mMediator).setLastSelectedTabListModelIndex(0);
+        verify(mMediator, never()).selectTab(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testGetUiIndexForTab_DirectMatch() {
+        createAndAddPropertyModel(TAB1_ID);
+        assertEquals(0, mDelegate.getUiIndexForTab(TAB1_ID));
+    }
+
+    @Test
+    public void testGetUiIndexForTab_Fallback() {
+        createAndAddPropertyModel(TAB1_ID);
+        when(mMediator.getIndexForTabIdWithRelatedTabs(TAB2_ID)).thenReturn(0);
+        assertEquals(0, mDelegate.getUiIndexForTab(TAB2_ID));
     }
 
     private PropertyModel createAndAddPropertyModel(int tabId) {

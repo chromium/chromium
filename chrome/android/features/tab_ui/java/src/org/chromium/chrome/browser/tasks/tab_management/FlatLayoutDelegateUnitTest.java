@@ -27,6 +27,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
@@ -338,6 +339,35 @@ public class FlatLayoutDelegateUnitTest {
         // Flat layout does not display tab group headers, so no updates should occur.
         verifyNoInteractions(mMediator);
         verifyNoInteractions(mTabGridDialogHandler);
+    }
+
+    @Test
+    public void testDidSelectTab() {
+        addTabsToModelList(TAB1_ID, TAB2_ID);
+
+        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+
+        verify(mMediator).setLastSelectedTabListModelIndex(0);
+        verify(mMediator).selectTab(0, 1);
+    }
+
+    @Test
+    public void testDidSelectTab_TabDelayed() {
+        addTabsToModelList(TAB1_ID, TAB2_ID);
+        when(mMediator.isTabDelayed(mTab2)).thenReturn(true);
+
+        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+
+        verify(mMediator).setLastSelectedTabListModelIndex(0);
+        verify(mMediator, never()).selectTab(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testGetUiIndexForTab() {
+        addTabsToModelList(TAB1_ID, TAB2_ID);
+        assertEquals(0, mDelegate.getUiIndexForTab(TAB1_ID));
+        assertEquals(1, mDelegate.getUiIndexForTab(TAB2_ID));
+        assertEquals(TabModel.INVALID_TAB_INDEX, mDelegate.getUiIndexForTab(3));
     }
 
     private void addTabsToModelList(int... tabIds) {

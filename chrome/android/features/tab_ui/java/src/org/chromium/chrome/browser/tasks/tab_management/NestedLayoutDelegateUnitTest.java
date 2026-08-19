@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver.DidRemoveTabGroupReason;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -619,6 +620,38 @@ public class NestedLayoutDelegateUnitTest {
         assertFalse(
                 mDelegate.ensureGroupHeaderExists(mTab1, TAB_GROUP_ID, TabModel.INVALID_TAB_INDEX));
         verify(mMediator, never()).addTabInfoToModelForGroup(any(), any(), anyInt());
+    }
+
+    @Test
+    public void testDidSelectTab() {
+        addTabToModelList(TAB1_ID, null);
+        addTabToModelList(TAB2_ID, null);
+
+        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+
+        verify(mMediator).setLastSelectedTabListModelIndex(0);
+        verify(mMediator).selectTab(0, 1);
+    }
+
+    @Test
+    public void testDidSelectTab_TabDelayed() {
+        addTabToModelList(TAB1_ID, null);
+        addTabToModelList(TAB2_ID, null);
+        when(mMediator.isTabDelayed(mTab2)).thenReturn(true);
+
+        mDelegate.didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
+
+        verify(mMediator).setLastSelectedTabListModelIndex(0);
+        verify(mMediator, never()).selectTab(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testGetUiIndexForTab() {
+        addTabToModelList(TAB1_ID, null);
+        addTabToModelList(TAB2_ID, null);
+        assertEquals(0, mDelegate.getUiIndexForTab(TAB1_ID));
+        assertEquals(1, mDelegate.getUiIndexForTab(TAB2_ID));
+        assertEquals(TabModel.INVALID_TAB_INDEX, mDelegate.getUiIndexForTab(3));
     }
 
     private PropertyModel addTabToModelList(int tabId, @Nullable Token tabGroupId) {

@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -102,6 +103,34 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
         return mModelList.indexOfNthTabCard(tabIndex);
     }
 
+    /**
+     * Resolves the UI index in {@link #mModelList} for the given tab ID, falling back to finding
+     * the containing tab group card if the tab is a non-representative member of a group.
+     */
+    @Override
+    int getUiIndexForTab(int tabId) {
+        int index = super.getUiIndexForTab(tabId);
+        if (index == TabModel.INVALID_TAB_INDEX) {
+            // If a tab in a tab group does not have its own card in the model, identify the
+            // related tab IDs and determine the index of the group card in the model list.
+            index = mMediator.getIndexForTabIdWithRelatedTabs(tabId);
+        }
+        return index;
+    }
+
+    @Override
+    void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+        // For UNDO ensure we update the representative tab in the model.
+        if (type == TabSelectionType.FROM_UNDO) {
+            int newIndex = getUiIndexForTab(tab.getId());
+            if (mModelList.isValidIndex(newIndex)) {
+                mModelList.updateTabListModelIdForGroup(tab, newIndex);
+            }
+        }
+
+        super.didSelectTab(tab, type, lastId);
+    }
+
     @Override
     void onFaviconUpdated(Tab updatedTab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {
         if (mMediator.isTabInTabGroup(updatedTab)) {
@@ -163,7 +192,7 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     @Override
     public void didMoveWithinGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
         if (mThumbnailProvider != null) {
-            int indexInModel = mMediator.getIndexForTabIdWithRelatedTabs(movedTab.getId());
+            int indexInModel = getUiIndexForTab(movedTab.getId());
             if (indexInModel == TabModel.INVALID_TAB_INDEX) return;
 
             TabModel tabModel = mMediator.getCurrentTabModelChecked();
