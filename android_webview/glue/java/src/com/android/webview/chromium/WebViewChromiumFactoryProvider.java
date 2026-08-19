@@ -475,13 +475,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             ApkInfo.setBrowserPackageInfo(packageInfo);
 
             // Find the package ID for the package that WebView's resources come from.
-            // This will be the donor package if there is one, not our main package.
             String resourcePackage = packageInfo.packageName;
-            if (packageInfo.applicationInfo.metaData != null) {
-                resourcePackage =
-                        packageInfo.applicationInfo.metaData.getString(
-                                "com.android.webview.WebViewDonorPackage", resourcePackage);
-            }
             int packageId;
             try {
                 packageId = webViewDelegate.getPackageId(ctx.getResources(), resourcePackage);
