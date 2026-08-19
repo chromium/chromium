@@ -155,14 +155,14 @@ StoreSeedResult Uncompress(const std::string& compressed, std::string* result) {
 
   // Dump without crashing to alert us that actual seeds are approaching the
   // rejection threshold below.
-  constexpr static base::ByteSize kDumpThreshold = base::MiBU(40);
+  constexpr static base::ByteSize kDumpThreshold = base::MiB(40);
   if (uncompressed_size > kDumpThreshold.InBytes()) {
     base::debug::DumpWithoutCrashing();
   }
 
   // Enforce a maximum uncompressed size to prevent OOM / Gzip bomb crashes.
   // We use 50 MiB as a conservative limit, similar to seed_reader_writer.cc.
-  constexpr static base::ByteSize kMaxUncompressedSeedSize = base::MiBU(50);
+  constexpr static base::ByteSize kMaxUncompressedSeedSize = base::MiB(50);
   if (uncompressed_size > kMaxUncompressedSeedSize.InBytes()) {
     VLOG(1) << "Rejecting seed: uncompressed size " << uncompressed_size
             << " exceeds limit of " << kMaxUncompressedSeedSize.InBytes();
