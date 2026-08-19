@@ -20,8 +20,10 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/webauthn/core/browser/import/imported_passkey_checker.h"
 #import "components/webauthn/core/browser/passkey_model_change.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
+#import "crypto/keypair.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_passkey.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_exchange_password.h"
@@ -60,13 +62,16 @@ CredentialExchangePassword* CreateTestPassword(NSString* url) {
 }
 
 CredentialExchangePasskey* CreateTestPasskey() {
+  std::vector<uint8_t> pkcs8_key =
+      crypto::keypair::PrivateKey::GenerateEcP256().ToPrivateKeyInfo();
   return [[CredentialExchangePasskey alloc]
       initWithCredentialId:ToNSData("1234567890123456")
                       rpId:@"example.com"
                   userName:@"userName"
            userDisplayName:@"userDisplayName"
                     userId:ToNSData("user_id")
-                privateKey:ToNSData("private_key")
+                privateKey:[NSData dataWithBytes:pkcs8_key.data()
+                                          length:pkcs8_key.size()]
               creationDate:nil];
 }
 
@@ -380,6 +385,77 @@ TEST_F(CredentialImporterTest, RecordsCredentialsReceivedMetrics) {
     histogram_tester.ExpectUniqueSample(
         "IOS.CredentialExchange.CredentialsReceivedCount." + suffix, count, 1);
   }
+}
+
+TEST_F(CredentialImporterTest, TestImportPasskeyWithInvalidPrivateKey) {
+  CredentialExchangePasskey* passkey = [[CredentialExchangePasskey alloc]
+      initWithCredentialId:ToNSData("1234567890123456")
+                      rpId:@"example.com"
+                  userName:@"userName"
+           userDisplayName:@"userDisplayName"
+                    userId:ToNSData("user_id")
+                privateKey:ToNSData("invalid_private_key")
+              creationDate:nil];
+
+  [importer_ onCredentialsTranslatedWithPasswords:@[]
+                                         passkeys:@[ passkey ]
+                              exporterDisplayName:@"Exporter"
+                                            stats:[[ImportStats alloc] init]];
+
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  OCMExpect([importer_delegate_ onPasskeysImported:0 invalid:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        quit_closure.Run();
+      });
+
+  base::HistogramTester histogram_tester;
+  [importer_
+      startImportingCredentialsWithTrustedVaultKeys:{std::vector<uint8_t>(32,
+                                                                          0)}];
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(importer_delegate_);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.CredentialExchange.PasskeyImportStatus",
+      webauthn::ImportedPasskeyStatus::kPrivateKeyInvalid, 1);
+}
+
+TEST_F(CredentialImporterTest, TestImportPasskeyWithUnsupportedAlgorithm) {
+  std::vector<uint8_t> rsa_key =
+      crypto::keypair::PrivateKey::GenerateRsa2048().ToPrivateKeyInfo();
+  CredentialExchangePasskey* passkey = [[CredentialExchangePasskey alloc]
+      initWithCredentialId:ToNSData("1234567890123456")
+                      rpId:@"example.com"
+                  userName:@"userName"
+           userDisplayName:@"userDisplayName"
+                    userId:ToNSData("user_id")
+                privateKey:[NSData dataWithBytes:rsa_key.data()
+                                          length:rsa_key.size()]
+              creationDate:nil];
+
+  [importer_ onCredentialsTranslatedWithPasswords:@[]
+                                         passkeys:@[ passkey ]
+                              exporterDisplayName:@"Exporter"
+                                            stats:[[ImportStats alloc] init]];
+
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+  OCMExpect([importer_delegate_ onPasskeysImported:0 invalid:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        quit_closure.Run();
+      });
+
+  base::HistogramTester histogram_tester;
+  [importer_
+      startImportingCredentialsWithTrustedVaultKeys:{std::vector<uint8_t>(32,
+                                                                          0)}];
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(importer_delegate_);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.CredentialExchange.PasskeyImportStatus",
+      webauthn::ImportedPasskeyStatus::kPrivateKeyUnsupportedAlgorithm, 1);
 }
 
 }  // namespace

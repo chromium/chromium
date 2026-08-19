@@ -5,13 +5,9 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_IMPORT_IMPORTED_PASSKEY_CHECKER_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_IMPORT_IMPORTED_PASSKEY_CHECKER_H_
 
-#include <cstddef>
-
-namespace sync_pb {
-class WebauthnCredentialSpecifics;
-}  // namespace sync_pb
-
 namespace webauthn {
+
+struct PasskeyImportCandidate;
 
 // Represents status of a validity check for an about to be imported passkey.
 //
@@ -36,15 +32,21 @@ enum class ImportedPasskeyStatus {
   // Relying Party Identifier is a required field
   // (https://www.w3.org/TR/webauthn-2/#relying-party-identifier).
   kRpIdMissing = 5,
-  kMaxValue = kRpIdMissing,
+  // Private key cannot be parsed as a valid PKCS#8 block.
+  kPrivateKeyInvalid = 6,
+  // Private key uses an algorithm not supported by GPM.
+  kPrivateKeyUnsupportedAlgorithm = 7,
+  // Failed to encrypt the passkey data.
+  kEncryptionFailed = 8,
+  kMaxValue = kEncryptionFailed,
 };
-// LINT.ThenChange(/tools/metrics/histograms/metadata/webauthn/enums.xml:PasskeyImportStatus)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml:ImportedPasskeyStatus)
 
-// Checks the validity of a passkey that is about to be imported. This mostly
-// includes conformance to the WebAuthn spec (more details in possible statuses
-// above).
+// Checks the validity of a passkey that is about to be imported.
+// This includes WebAuthn spec conformance (credential ID and user ID bounds,
+// required fields) as well as private key validity and algorithm support.
 ImportedPasskeyStatus CheckImportedPasskey(
-    const sync_pb::WebauthnCredentialSpecifics& passkey);
+    const PasskeyImportCandidate& passkey);
 
 }  // namespace webauthn
 

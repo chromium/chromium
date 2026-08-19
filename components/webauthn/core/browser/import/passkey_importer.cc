@@ -5,21 +5,50 @@
 #include "components/webauthn/core/browser/import/passkey_importer.h"
 
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/webauthn/core/browser/import/import_processing_result.h"
 #include "components/webauthn/core/browser/import/imported_passkey_checker.h"
+#include "components/webauthn/core/browser/import/passkey_import_candidate.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_utils.h"
+#include "crypto/keypair.h"
 
 namespace webauthn {
 namespace {
 
-ImportedPasskeyInfo SpecificsToImportedPasskeyInfo(
-    const sync_pb::WebauthnCredentialSpecifics& specifics,
+ImportedPasskeyInfo CandidateToImportedPasskeyInfo(
+    const PasskeyImportCandidate& candidate,
     ImportedPasskeyStatus status) {
-  return {.rp_id = specifics.rp_id(),
-          .user_name = specifics.user_name(),
+  return {.rp_id = candidate.rp_id,
+          .user_name = candidate.user_name,
           .status = status};
+}
+
+sync_pb::WebauthnCredentialSpecifics CandidateToSpecifics(
+    const PasskeyImportCandidate& candidate) {
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_sync_id(
+      base::RandBytesAsString(webauthn::passkey_model_utils::kSyncIdLength));
+  passkey.set_credential_id(std::string(candidate.credential_id.begin(),
+                                        candidate.credential_id.end()));
+  passkey.set_user_id(
+      std::string(candidate.user_id.begin(), candidate.user_id.end()));
+  passkey.set_rp_id(candidate.rp_id);
+  passkey.set_user_name(candidate.user_name);
+  passkey.set_user_display_name(candidate.user_display_name);
+  passkey.set_creation_time(candidate.creation_time);
+  return passkey;
+}
+
+void RecordPasskeyImportError(const PasskeyImportCandidate& candidate,
+                              ImportedPasskeyStatus status,
+                              ImportProcessingResult& result) {
+  base::UmaHistogramEnumeration(
+      "WebAuthentication.CredentialExchange.PasskeyImportStatus", status);
+  result.errors.push_back(CandidateToImportedPasskeyInfo(candidate, status));
 }
 
 }  // namespace
@@ -29,13 +58,14 @@ PasskeyImporter::PasskeyImporter(PasskeyModel& passkey_model)
 
 PasskeyImporter::~PasskeyImporter() = default;
 
-void PasskeyImporter::StartImport(
-    std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
-    ProcessingCallback processing_callback) {
+void PasskeyImporter::StartImport(std::vector<PasskeyImportCandidate> passkeys,
+                                  std::vector<uint8_t> trusted_vault_key,
+                                  ProcessingCallback processing_callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&PasskeyImporter::ProcessPasskeys,
                      weak_ptr_factory_.GetWeakPtr(), std::move(passkeys),
+                     std::move(trusted_vault_key),
                      std::move(processing_callback)));
 }
 
@@ -50,23 +80,34 @@ void PasskeyImporter::FinishImport(
 }
 
 void PasskeyImporter::ProcessPasskeys(
-    std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+    std::vector<PasskeyImportCandidate> passkeys,
+    std::vector<uint8_t> trusted_vault_key,
     ProcessingCallback processing_callback) {
   ImportProcessingResult result;
-  for (sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {
+  for (const PasskeyImportCandidate& candidate : passkeys) {
+    ImportedPasskeyStatus status = CheckImportedPasskey(candidate);
+    if (status != ImportedPasskeyStatus::kOk) {
+      RecordPasskeyImportError(candidate, status, result);
+      continue;
+    }
+
+    sync_pb::WebauthnCredentialSpecifics passkey =
+        CandidateToSpecifics(candidate);
+    sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted;
+    encrypted.set_private_key(candidate.private_key.data(),
+                              candidate.private_key.size());
+    if (!webauthn::passkey_model_utils::EncryptWebauthnCredentialSpecificsData(
+            trusted_vault_key, encrypted, &passkey)) {
+      RecordPasskeyImportError(
+          candidate, ImportedPasskeyStatus::kEncryptionFailed, result);
+      continue;
+    }
+
     if (passkey_model_
             ->GetPasskey(PasskeyModel::AnyRp(), passkey.credential_id(),
                          PasskeyModel::ShadowedCredentials::kInclude)
             .has_value()) {
       duplicate_passkey_count_++;
-      continue;
-    }
-
-    ImportedPasskeyStatus status = CheckImportedPasskey(passkey);
-    if (status != ImportedPasskeyStatus::kOk) {
-      base::UmaHistogramEnumeration(
-          "WebAuthentication.CredentialExchange.PasskeyImportStatus", status);
-      result.errors.push_back(SpecificsToImportedPasskeyInfo(passkey, status));
       continue;
     }
 
@@ -78,7 +119,7 @@ void PasskeyImporter::ProcessPasskeys(
               return existing_passkey.user_id() == passkey.user_id();
             })) {
       result.conflicts.push_back(
-          SpecificsToImportedPasskeyInfo(passkey, status));
+          CandidateToImportedPasskeyInfo(candidate, status));
       conflicting_passkeys_.push_back(std::move(passkey));
       continue;
     }

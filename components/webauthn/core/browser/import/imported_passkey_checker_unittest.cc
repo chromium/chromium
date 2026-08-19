@@ -6,25 +6,26 @@
 
 #include "base/rand_util.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/webauthn/core/browser/import/passkey_import_candidate.h"
 #include "components/webauthn/core/browser/passkey_model_utils.h"
+#include "crypto/keypair.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webauthn {
 namespace {
 
-sync_pb::WebauthnCredentialSpecifics CreateValidPasskey() {
-  sync_pb::WebauthnCredentialSpecifics passkey;
-  passkey.set_rp_id("example.com");
-  passkey.set_sync_id(
-      base::RandBytesAsString(passkey_model_utils::kSyncIdLength));
-  passkey.set_credential_id(
-      base::RandBytesAsString(passkey_model_utils::kCredentialIdMinLength));
-  passkey.set_user_id(
-      base::RandBytesAsString(passkey_model_utils::kUserIdMaxLength));
-  passkey.set_private_key({1, 2, 3, 4});
-  passkey.set_user_name("username");
-  passkey.set_user_display_name("display_name");
-  return passkey;
+PasskeyImportCandidate CreateValidPasskey() {
+  return PasskeyImportCandidate{
+      .rp_id = "example.com",
+      .user_name = "username",
+      .user_display_name = "display_name",
+      .credential_id =
+          base::RandBytesAsVector(passkey_model_utils::kCredentialIdMinLength),
+      .user_id = base::RandBytesAsVector(passkey_model_utils::kUserIdMaxLength),
+      .private_key =
+          crypto::keypair::PrivateKey::GenerateEcP256().ToPrivateKeyInfo(),
+      .creation_time = 1234567890,
+  };
 }
 
 TEST(ImportedPasskeyCheckerTest, ReturnsStatusForValidPasskey) {
@@ -33,45 +34,77 @@ TEST(ImportedPasskeyCheckerTest, ReturnsStatusForValidPasskey) {
 }
 
 TEST(ImportedPasskeyCheckerTest, ReturnsStatusForTooShortCredentialId) {
-  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
-  passkey.set_credential_id(
-      base::RandBytesAsString(passkey_model_utils::kCredentialIdMinLength - 1));
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.credential_id =
+      base::RandBytesAsVector(passkey_model_utils::kCredentialIdMinLength - 1);
 
   EXPECT_EQ(CheckImportedPasskey(passkey),
             ImportedPasskeyStatus::kCredentialIdTooShort);
 }
 
 TEST(ImportedPasskeyCheckerTest, ReturnsStatusForTooLongCredentialId) {
-  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
-  passkey.set_credential_id(
-      base::RandBytesAsString(passkey_model_utils::kCredentialIdMaxLength + 1));
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.credential_id =
+      base::RandBytesAsVector(passkey_model_utils::kCredentialIdMaxLength + 1);
 
   EXPECT_EQ(CheckImportedPasskey(passkey),
             ImportedPasskeyStatus::kCredentialIdTooLong);
 }
 
 TEST(ImportedPasskeyCheckerTest, ReturnsStatusForTooLongUserId) {
-  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
-  passkey.set_user_id(
-      base::RandBytesAsString(passkey_model_utils::kUserIdMaxLength + 1));
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.user_id =
+      base::RandBytesAsVector(passkey_model_utils::kUserIdMaxLength + 1);
 
   EXPECT_EQ(CheckImportedPasskey(passkey),
             ImportedPasskeyStatus::kUserIdTooLong);
 }
 
 TEST(ImportedPasskeyCheckerTest, ReturnsStatusForMissingPrivateKey) {
-  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
-  passkey.clear_private_key();
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.private_key.clear();
 
   EXPECT_EQ(CheckImportedPasskey(passkey),
             ImportedPasskeyStatus::kPrivateKeyMissing);
 }
 
 TEST(ImportedPasskeyCheckerTest, ReturnsStatusForMissingRpId) {
-  sync_pb::WebauthnCredentialSpecifics passkey = CreateValidPasskey();
-  passkey.clear_rp_id();
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.rp_id.clear();
 
   EXPECT_EQ(CheckImportedPasskey(passkey), ImportedPasskeyStatus::kRpIdMissing);
+}
+
+TEST(ImportedPasskeyCheckerTest, ReturnsStatusForInvalidPrivateKey) {
+  PasskeyImportCandidate passkey = CreateValidPasskey();
+  passkey.private_key = {'n', 'o', 't', '_', 'a', '_', 'k', 'e', 'y'};
+
+  EXPECT_EQ(CheckImportedPasskey(passkey),
+            ImportedPasskeyStatus::kPrivateKeyInvalid);
+}
+
+TEST(ImportedPasskeyCheckerTest, ReturnsStatusForUnsupportedAlgorithm) {
+  {
+    PasskeyImportCandidate passkey = CreateValidPasskey();
+    passkey.private_key =
+        crypto::keypair::PrivateKey::GenerateRsa2048().ToPrivateKeyInfo();
+    EXPECT_EQ(CheckImportedPasskey(passkey),
+              ImportedPasskeyStatus::kPrivateKeyUnsupportedAlgorithm);
+  }
+  {
+    PasskeyImportCandidate passkey = CreateValidPasskey();
+    passkey.private_key =
+        crypto::keypair::PrivateKey::GenerateEcP384().ToPrivateKeyInfo();
+    EXPECT_EQ(CheckImportedPasskey(passkey),
+              ImportedPasskeyStatus::kPrivateKeyUnsupportedAlgorithm);
+  }
+  {
+    PasskeyImportCandidate passkey = CreateValidPasskey();
+    passkey.private_key =
+        crypto::keypair::PrivateKey::GenerateEd25519().ToPrivateKeyInfo();
+    EXPECT_EQ(CheckImportedPasskey(passkey),
+              ImportedPasskeyStatus::kPrivateKeyUnsupportedAlgorithm);
+  }
 }
 
 }  // namespace

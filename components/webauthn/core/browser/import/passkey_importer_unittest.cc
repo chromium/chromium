@@ -14,7 +14,9 @@
 #include "base/test/test_future.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/import/import_processing_result.h"
+#include "components/webauthn/core/browser/import/passkey_import_candidate.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
+#include "crypto/keypair.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,17 +36,32 @@ constexpr char kRpId[] = "example.com";
 constexpr char kUserId[] = "user_id";
 constexpr char kUserId2[] = "user_id2";
 
-sync_pb::WebauthnCredentialSpecifics CreatePasskey(const std::string& rp_id,
-                                                   const std::string& user_id) {
+sync_pb::WebauthnCredentialSpecifics CreateSpecifics(
+    const std::string& rp_id,
+    const std::string& user_id) {
   sync_pb::WebauthnCredentialSpecifics passkey;
   passkey.set_sync_id(base::RandBytesAsString(16));
   passkey.set_credential_id(base::RandBytesAsString(16));
   passkey.set_rp_id(rp_id);
   passkey.set_user_id(user_id);
-  passkey.set_private_key({1, 2, 3, 4});
+  passkey.set_encrypted("dummy_encrypted");
   passkey.set_user_name("username");
   passkey.set_user_display_name("display_name");
   return passkey;
+}
+
+PasskeyImportCandidate CreateCandidate(const std::string& rp_id,
+                                       const std::string& user_id) {
+  PasskeyImportCandidate candidate;
+  candidate.rp_id = rp_id;
+  candidate.user_name = "username";
+  candidate.user_display_name = "display_name";
+  candidate.credential_id = std::vector<uint8_t>(16, 'a');
+  candidate.user_id = std::vector<uint8_t>(user_id.begin(), user_id.end());
+  candidate.private_key =
+      crypto::keypair::PrivateKey::GenerateEcP256().ToPrivateKeyInfo();
+  candidate.creation_time = 1234567890;
+  return candidate;
 }
 
 class PasskeyImporterTest : public testing::Test {
@@ -55,9 +72,10 @@ class PasskeyImporterTest : public testing::Test {
             std::make_unique<PasskeyImporter>(*passkey_model_.get())) {}
 
   ImportProcessingResult StartImport(
-      std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys) {
+      std::vector<PasskeyImportCandidate> passkeys) {
     base::test::TestFuture<const ImportProcessingResult&> future;
-    passkey_importer_->StartImport(std::move(passkeys), future.GetCallback());
+    passkey_importer_->StartImport(
+        std::move(passkeys), std::vector<uint8_t>(32, 0), future.GetCallback());
     return future.Get();
   }
 
@@ -76,7 +94,8 @@ class PasskeyImporterTest : public testing::Test {
 };
 
 TEST_F(PasskeyImporterTest, ProcessesValidPasskeys) {
-  ImportProcessingResult result = StartImport({CreatePasskey(kRpId, kUserId)});
+  ImportProcessingResult result =
+      StartImport({CreateCandidate(kRpId, kUserId)});
 
   EXPECT_EQ(result.valid_passkeys_amount, 1);
   EXPECT_THAT(result.errors, IsEmpty());
@@ -84,9 +103,9 @@ TEST_F(PasskeyImporterTest, ProcessesValidPasskeys) {
 }
 
 TEST_F(PasskeyImporterTest, ProcessesInvalidPasskeys) {
-  sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(kRpId, kUserId);
-  passkey.clear_private_key();
-  ImportProcessingResult result = StartImport({passkey});
+  PasskeyImportCandidate candidate = CreateCandidate(kRpId, kUserId);
+  candidate.private_key = {};
+  ImportProcessingResult result = StartImport({candidate});
 
   EXPECT_EQ(result.valid_passkeys_amount, 0);
   EXPECT_THAT(result.errors, UnorderedElementsAre(ImportedInfoIs(
@@ -99,10 +118,15 @@ TEST_F(PasskeyImporterTest, ProcessesInvalidPasskeys) {
 }
 
 TEST_F(PasskeyImporterTest, ProcessesDuplicatePasskey) {
-  sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(kRpId, kUserId);
-  passkey_model_->AddNewPasskeyForTesting(passkey);
+  PasskeyImportCandidate candidate = CreateCandidate(kRpId, kUserId);
+  // Add an already existing passkey to the model with the same credential_id.
+  sync_pb::WebauthnCredentialSpecifics specifics;
+  specifics.set_rp_id(kRpId);
+  specifics.set_credential_id(std::string(candidate.credential_id.begin(),
+                                          candidate.credential_id.end()));
+  passkey_model_->AddNewPasskeyForTesting(specifics);
 
-  std::ignore = StartImport({passkey});
+  std::ignore = StartImport({candidate});
   int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{});
 
   // Duplicate passkey should be reported as imported, but not actually added
@@ -117,9 +141,10 @@ TEST_F(PasskeyImporterTest, ProcessesDuplicatePasskey) {
 }
 
 TEST_F(PasskeyImporterTest, ProcessesConflictingPasskeys) {
-  passkey_model_->AddNewPasskeyForTesting(CreatePasskey(kRpId, kUserId));
+  passkey_model_->AddNewPasskeyForTesting(CreateSpecifics(kRpId, kUserId));
 
-  ImportProcessingResult result = StartImport({CreatePasskey(kRpId, kUserId)});
+  ImportProcessingResult result =
+      StartImport({CreateCandidate(kRpId, kUserId)});
 
   EXPECT_EQ(result.valid_passkeys_amount, 0);
   EXPECT_THAT(result.errors, IsEmpty());
@@ -130,7 +155,7 @@ TEST_F(PasskeyImporterTest, ProcessesConflictingPasskeys) {
 
 TEST_F(PasskeyImporterTest, ImportsValidPasskeys) {
   std::ignore = StartImport(
-      {CreatePasskey(kRpId, kUserId), CreatePasskey(kRpId, kUserId2)});
+      {CreateCandidate(kRpId, kUserId), CreateCandidate(kRpId, kUserId2)});
   int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{});
   EXPECT_EQ(passkeys_imported, 2);
   EXPECT_THAT(
@@ -143,11 +168,11 @@ TEST_F(PasskeyImporterTest, ImportsValidPasskeys) {
 
 TEST_F(PasskeyImporterTest, ImportsIncomingConflictingPasskey) {
   sync_pb::WebauthnCredentialSpecifics stored_passkey =
-      CreatePasskey(kRpId, kUserId);
+      CreateSpecifics(kRpId, kUserId);
   passkey_model_->AddNewPasskeyForTesting(stored_passkey);
 
   std::ignore = StartImport(
-      {CreatePasskey(kRpId, kUserId), CreatePasskey(kRpId, kUserId2)});
+      {CreateCandidate(kRpId, kUserId), CreateCandidate(kRpId, kUserId2)});
   int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{0});
   EXPECT_EQ(passkeys_imported, 2);
   EXPECT_THAT(
@@ -165,11 +190,11 @@ TEST_F(PasskeyImporterTest, ImportsIncomingConflictingPasskey) {
 
 TEST_F(PasskeyImporterTest, IgnoresNotSelectedConflictingPasskey) {
   sync_pb::WebauthnCredentialSpecifics stored_passkey =
-      CreatePasskey(kRpId, kUserId);
+      CreateSpecifics(kRpId, kUserId);
   passkey_model_->AddNewPasskeyForTesting(stored_passkey);
 
   std::ignore = StartImport(
-      {CreatePasskey(kRpId, kUserId), CreatePasskey(kRpId, kUserId2)});
+      {CreateCandidate(kRpId, kUserId), CreateCandidate(kRpId, kUserId2)});
   int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{});
   EXPECT_EQ(passkeys_imported, 1);
   EXPECT_THAT(
@@ -179,10 +204,9 @@ TEST_F(PasskeyImporterTest, IgnoresNotSelectedConflictingPasskey) {
 }
 
 TEST_F(PasskeyImporterTest, DoesNotImportInvalidPasskeys) {
-  sync_pb::WebauthnCredentialSpecifics invalid_passkey =
-      CreatePasskey(kRpId, kUserId);
-  invalid_passkey.clear_private_key();
-  std::ignore = StartImport({invalid_passkey});
+  PasskeyImportCandidate candidate = CreateCandidate(kRpId, kUserId);
+  candidate.private_key = {};
+  std::ignore = StartImport({candidate});
 
   int passkeys_imported = FinishImport(/*selected_passkey_ids=*/{});
   EXPECT_EQ(passkeys_imported, 0);
