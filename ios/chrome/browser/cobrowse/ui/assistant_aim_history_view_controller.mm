@@ -10,80 +10,81 @@
 
 namespace {
 
-// The reuse identifier for the history table view cell.
-NSString* const kHistoryCellIdentifier = @"AssistantAIMHistoryCell";
-
-// The estimated row height for the history table view cells.
-const CGFloat kTableViewEstimatedRowHeight = 56.0;
-
-// The top inset for the history table view.
-const CGFloat kTableViewTopInset = 8.0;
+// The top inset for the history collection view.
+const CGFloat kCollectionViewTopInset = 8.0;
 
 // The number of lines for the title label in the history cell.
 const NSInteger kTitleNumberOfLines = 2;
 
+// Identifier for the section in diffable data source.
+NSString* const kHistorySectionIdentifier = @"kHistorySectionIdentifier";
+
 }  // namespace
 
-@interface AssistantAIMHistoryViewController () <UITableViewDataSource,
-                                                 UITableViewDelegate>
+@interface AssistantAIMHistoryViewController () <UICollectionViewDelegate>
 @end
 
 @implementation AssistantAIMHistoryViewController {
-  UITableView* _tableView;
+  UICollectionView* _collectionView;
+  UICollectionViewDiffableDataSource<NSString*, NSString*>* _dataSource;
   std::vector<AssistantAIMHistoryItem> _items;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  self.view.backgroundColor = [UIColor clearColor];
 
-  [self setUpTableView];
+  [self setUpCollectionView];
 }
 
-- (void)setUpTableView {
-  _tableView = [[UITableView alloc] initWithFrame:CGRectZero
-                                            style:UITableViewStyleInsetGrouped];
-  _tableView.translatesAutoresizingMaskIntoConstraints = NO;
-  _tableView.delegate = self;
-  _tableView.dataSource = self;
-  _tableView.rowHeight = UITableViewAutomaticDimension;
-  _tableView.estimatedRowHeight = kTableViewEstimatedRowHeight;
-  _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-  _tableView.tableHeaderView =
-      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
-  [_tableView registerClass:[UITableViewCell class]
-      forCellReuseIdentifier:kHistoryCellIdentifier];
+- (void)setUpCollectionView {
+  UICollectionLayoutListConfiguration* config =
+      [[UICollectionLayoutListConfiguration alloc]
+          initWithAppearance:UICollectionLayoutListAppearanceInsetGrouped];
+  config.backgroundColor = [UIColor clearColor];
 
-  [self.view addSubview:_tableView];
+  UICollectionViewCompositionalLayout* layout =
+      [UICollectionViewCompositionalLayout layoutWithListConfiguration:config];
+
+  _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
+                                       collectionViewLayout:layout];
+  _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
+  _collectionView.delegate = self;
+
+  [self.view addSubview:_collectionView];
+
+  __weak __typeof(self) weakSelf = self;
+  UICollectionViewCellRegistration* cellRegistration =
+      [UICollectionViewCellRegistration
+          registrationWithCellClass:[UICollectionViewListCell class]
+               configurationHandler:^(UICollectionViewListCell* cell,
+                                      NSIndexPath* indexPath,
+                                      NSString* taskId) {
+                 [weakSelf configureListCell:cell atIndexPath:indexPath];
+               }];
+
+  _dataSource = [[UICollectionViewDiffableDataSource alloc]
+      initWithCollectionView:_collectionView
+                cellProvider:^UICollectionViewCell*(
+                    UICollectionView* collectionView, NSIndexPath* indexPath,
+                    NSString* taskId) {
+                  return [collectionView
+                      dequeueConfiguredReusableCellWithRegistration:
+                          cellRegistration
+                                                       forIndexPath:indexPath
+                                                               item:taskId];
+                }];
 
   NSDirectionalEdgeInsets insets =
-      NSDirectionalEdgeInsetsMake(kTableViewTopInset, 0, 0, 0);
-  AddSameConstraintsWithInsets(_tableView, self.view, insets);
+      NSDirectionalEdgeInsetsMake(kCollectionViewTopInset, 0, 0, 0);
+  AddSameConstraintsWithInsets(_collectionView, self.view, insets);
 }
 
-- (void)updateHistoryItems:(const std::vector<AssistantAIMHistoryItem>&)items {
-  _items = items;
-  [_tableView reloadData];
-}
-
-#pragma mark - Actions
-
-- (void)didTapDismiss {
-  [self.delegate assistantAIMHistoryViewControllerDidTapDismiss:self];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (NSInteger)tableView:(UITableView*)tableView
-    numberOfRowsInSection:(NSInteger)section {
-  return _items.size();
-}
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell =
-      [tableView dequeueReusableCellWithIdentifier:kHistoryCellIdentifier
-                                      forIndexPath:indexPath];
+- (void)configureListCell:(UICollectionViewListCell*)cell
+              atIndexPath:(NSIndexPath*)indexPath {
+  if (static_cast<size_t>(indexPath.row) >= _items.size()) {
+    return;
+  }
   const AssistantAIMHistoryItem& item = _items[indexPath.row];
 
   UIListContentConfiguration* content = [cell defaultContentConfiguration];
@@ -92,16 +93,45 @@ const NSInteger kTitleNumberOfLines = 2;
   content.textProperties.lineBreakMode = NSLineBreakByTruncatingTail;
   content.textProperties.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  content.textProperties.color = [UIColor colorNamed:kTextPrimaryColor];
   cell.contentConfiguration = content;
 
-  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-
-  return cell;
+  UICellAccessoryDisclosureIndicator* disclosureIndicator =
+      [[UICellAccessoryDisclosureIndicator alloc] init];
+  cell.accessories = @[ disclosureIndicator ];
 }
 
-- (void)tableView:(UITableView*)tableView
-    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+- (void)updateHistoryItems:(const std::vector<AssistantAIMHistoryItem>&)items {
+  _items = items;
+  [self applySnapshot];
+}
+
+- (void)applySnapshot {
+  NSDiffableDataSourceSnapshot<NSString*, NSString*>* snapshot =
+      [[NSDiffableDataSourceSnapshot alloc] init];
+  [snapshot appendSectionsWithIdentifiers:@[ kHistorySectionIdentifier ]];
+  NSMutableArray<NSString*>* taskIds = [[NSMutableArray alloc] init];
+  for (const AssistantAIMHistoryItem& item : _items) {
+    [taskIds addObject:base::SysUTF8ToNSString(item.task_id)];
+  }
+  [snapshot appendItemsWithIdentifiers:taskIds];
+  [_dataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
+#pragma mark - Actions
+
+- (void)didTapDismiss {
+  [self.delegate assistantAIMHistoryViewControllerDidTapDismiss:self];
+}
+
+#pragma mark - UICollectionViewDelegate
+
+- (void)collectionView:(UICollectionView*)collectionView
+    didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  [collectionView deselectItemAtIndexPath:indexPath animated:YES];
+  if (static_cast<size_t>(indexPath.row) >= _items.size()) {
+    return;
+  }
   const AssistantAIMHistoryItem& item = _items[indexPath.row];
   [self.delegate
       assistantAIMHistoryViewController:self
