@@ -9715,6 +9715,39 @@
             ]
         }
     ],
+    "EnableAccountPreviewPreferredAccount": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAccountPreviewPreferredAccount",
+                        "EnableAccountPreviewUseAppAccount"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAccountPreviewPreferredAccount"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableAndroidEnterpriseScreenshotProtection": [
         {
             "platforms": [
