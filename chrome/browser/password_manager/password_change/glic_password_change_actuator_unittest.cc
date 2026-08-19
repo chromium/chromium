@@ -405,13 +405,6 @@ TEST_F(GlicPasswordChangeActuatorTest,
                 CreateChangePasswordFormData(old_password, new_password));
           });
 
-  // Simulate find form task lifecycle.
-  actor::TaskId find_form_task_id = actor_service()->CreateTaskForTesting();
-  actor::ActorTask* find_form_task =
-      actor_service()->GetTask(find_form_task_id);
-  actor::AddTabToTask(mock_actuation_tab(), *find_form_task);
-  actor_service()->NotifyTaskStateChanged(*find_form_task);
-
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_glic_service(),
               InvokeWithAutoSubmit(
@@ -422,10 +415,14 @@ TEST_F(GlicPasswordChangeActuatorTest,
         return nullptr;
       });
 
-  // Complete find form task, which triggers form waiter, filler, and posts
-  // InvokeVerificationFlow.
-  actor_service()->StopTaskForTesting(
-      find_form_task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+  // Complete find form task via triggering update, which triggers form waiter,
+  // filler, and posts InvokeVerificationFlow.
+  auto find_form_update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  find_form_update->type =
+      glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  find_form_update->data = "CHANGE_PASSWORD_FORM_FOUND on page.";
+  actuator()->OnUpdate(std::move(find_form_update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
 
   run_loop.Run();
 
@@ -476,22 +473,6 @@ TEST_F(GlicPasswordChangeActuatorTest,
 
   actuator()->Start();
 
-  actor::TaskId find_form_task_id = actor_service()->CreateTaskForTesting();
-  actor::ActorTask* find_form_task =
-      actor_service()->GetTask(find_form_task_id);
-  actor::AddTabToTask(mock_actuation_tab(), *find_form_task);
-  actor_service()->NotifyTaskStateChanged(*find_form_task);
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(*mock_glic_service(),
-              InvokeWithAutoSubmit(
-                  testing::_, testing::Matcher<glic::GlicInvokeOptions>(_),
-                  testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
-      .WillOnce([&run_loop](auto, auto, auto) {
-        run_loop.Quit();
-        return nullptr;
-      });
-
   EXPECT_CALL(observer(),
               OnActuationStateChanged(
                   PasswordChangeActuator::State::kChangingPassword));
@@ -508,8 +489,22 @@ TEST_F(GlicPasswordChangeActuatorTest,
                 CreateChangePasswordFormData(old_password, new_password));
           });
 
-  actor_service()->StopTaskForTesting(
-      find_form_task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_glic_service(),
+              InvokeWithAutoSubmit(
+                  testing::_, testing::Matcher<glic::GlicInvokeOptions>(_),
+                  testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
+      .WillOnce([&run_loop](auto, auto, auto) {
+        run_loop.Quit();
+        return nullptr;
+      });
+
+  auto find_form_update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  find_form_update->type =
+      glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  find_form_update->data = "CHANGE_PASSWORD_FORM_FOUND on page.";
+  actuator()->OnUpdate(std::move(find_form_update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
 
   run_loop.Run();
 
@@ -520,6 +515,30 @@ TEST_F(GlicPasswordChangeActuatorTest,
   auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
   update->type = glic::mojom::ExperimentalTriggeringUpdateType::kTerminalFailed;
   update->data = "FAILED_TO_CHANGE_PASSWORD: could not submit change form";
+  actuator()->OnUpdate(std::move(update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
+}
+
+// 4. FindFormFailedNotifiesChangePasswordFormNotFound:
+// Simulates OnUpdate with FAILED_TO_FIND_CHANGE_PASSWORD_FORM during the find
+// form step, verifying observer is notified with kChangePasswordFormNotFound.
+TEST_F(GlicPasswordChangeActuatorTest,
+       FindFormFailedNotifiesChangePasswordFormNotFound) {
+  EXPECT_CALL(
+      observer(),
+      OnActuationStateChanged(
+          PasswordChangeActuator::State::kWaitingForChangePasswordForm));
+  EXPECT_CALL(observer(),
+              OnActuationStateChanged(
+                  PasswordChangeActuator::State::kChangePasswordFormNotFound));
+
+  actuator()->Start();
+
+  auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update->type =
+      glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  update->data =
+      "FAILED_TO_FIND_CHANGE_PASSWORD_FORM: could not locate password form";
   actuator()->OnUpdate(std::move(update),
                        glic::mojom::SubscriberObservationType::kUpdate);
 }
