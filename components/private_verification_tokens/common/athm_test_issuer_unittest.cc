@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "components/private_verification_tokens/common/privacy_pass_athm_batch_request.h"
@@ -65,13 +66,12 @@ std::optional<std::vector<uint8_t>> CreateAthmTokenRequestBytes(
 std::optional<uint8_t> RunRoundtrip(const AthmTestIssuer& issuer,
                                     const AthmTestClient& client,
                                     uint8_t metadata) {
-  std::optional<AthmTestClient::ClientRequest> request =
-      client.CreateClientRequest();
+  std::optional<AthmClientRequest> request = client.CreateClientRequest();
   if (!request) {
     return std::nullopt;
   }
   std::optional<std::vector<uint8_t>> response =
-      issuer.Issue(request->request, metadata);
+      issuer.Issue(base::ToVector(request->request()), metadata);
   if (!response) {
     return std::nullopt;
   }
@@ -90,7 +90,6 @@ TEST(AthmTestIssuerTest, IssuanceRedemptionRoundtrip) {
   ASSERT_TRUE(issuer.has_value());
   EXPECT_THAT(issuer->public_key(), testing::Not(testing::IsEmpty()));
   EXPECT_THAT(issuer->public_key_proof(), testing::Not(testing::IsEmpty()));
-  EXPECT_THAT(issuer->params(), testing::Not(testing::IsEmpty()));
 
   std::optional<AthmTestClient> client = AthmTestClient::Create(
       issuer->public_key(), issuer->public_key_proof(), /*num_buckets=*/4,
@@ -129,9 +128,9 @@ INSTANTIATE_TEST_SUITE_P(AllBuckets,
 
 // Create() returns nullopt for parameters the ATHM crate rejects.
 struct InvalidConstructionCase {
-  std::string name;
+  const char* name;
   uint8_t num_buckets;
-  size_t deployment_id_size;
+  size_t deployment_id_len;
 };
 
 class AthmTestIssuerInvalidConstructionTest
@@ -139,10 +138,13 @@ class AthmTestIssuerInvalidConstructionTest
 
 TEST_P(AthmTestIssuerInvalidConstructionTest, CreateReturnsNullopt) {
   const InvalidConstructionCase& test_case = GetParam();
-  std::vector<uint8_t> deployment_id(test_case.deployment_id_size,
-                                     uint8_t{'d'});
-  EXPECT_FALSE(
-      AthmTestIssuer::Create(test_case.num_buckets, deployment_id).has_value());
+  std::vector<uint8_t> deployment_id(test_case.deployment_id_len, 'x');
+
+  EXPECT_EQ(AthmTestIssuer::Create(test_case.num_buckets, deployment_id),
+            std::nullopt);
+  EXPECT_EQ(AthmTestClient::Create(/*public_key=*/{}, /*public_key_proof=*/{},
+                                   test_case.num_buckets, deployment_id),
+            std::nullopt);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -166,14 +168,12 @@ TEST(AthmTestIssuerTest, ClientRequestsAreFreshlyBlinded) {
       AthmTestClient::Create(issuer->public_key(), issuer->public_key_proof(),
                              /*num_buckets=*/4, DeploymentId("blinding"));
   ASSERT_TRUE(client.has_value());
-  std::optional<AthmTestClient::ClientRequest> first =
-      client->CreateClientRequest();
-  std::optional<AthmTestClient::ClientRequest> second =
-      client->CreateClientRequest();
+  std::optional<AthmClientRequest> first = client->CreateClientRequest();
+  std::optional<AthmClientRequest> second = client->CreateClientRequest();
   ASSERT_TRUE(first.has_value());
   ASSERT_TRUE(second.has_value());
-  EXPECT_THAT(first->context, testing::Not(testing::IsEmpty()));
-  EXPECT_NE(first->request, second->request);
+  EXPECT_NE(base::ToVector(first->request()),
+            base::ToVector(second->request()));
 }
 
 // A tampered token must not verify. (Negative case: an early guard against
@@ -188,11 +188,10 @@ TEST(AthmTestIssuerTest, TamperedTokenDoesNotVerify) {
                              /*num_buckets=*/4, DeploymentId("tamper"));
   ASSERT_TRUE(client.has_value());
 
-  std::optional<AthmTestClient::ClientRequest> request =
-      client->CreateClientRequest();
+  std::optional<AthmClientRequest> request = client->CreateClientRequest();
   ASSERT_TRUE(request.has_value());
   std::optional<std::vector<uint8_t>> response =
-      issuer->Issue(request->request, /*hidden_metadata=*/2);
+      issuer->Issue(base::ToVector(request->request()), /*hidden_metadata=*/2);
   ASSERT_TRUE(response.has_value());
   std::optional<std::vector<uint8_t>> token =
       client->FinalizeToken(*request, *response);
@@ -221,11 +220,10 @@ TEST(AthmTestIssuerTest, WrongIssuerKeyDoesNotVerify) {
       issuer_a->public_key(), issuer_a->public_key_proof(),
       /*num_buckets=*/4, DeploymentId("cross-key"));
   ASSERT_TRUE(client_a.has_value());
-  std::optional<AthmTestClient::ClientRequest> request =
-      client_a->CreateClientRequest();
+  std::optional<AthmClientRequest> request = client_a->CreateClientRequest();
   ASSERT_TRUE(request.has_value());
-  std::optional<std::vector<uint8_t>> response =
-      issuer_a->Issue(request->request, /*hidden_metadata=*/1);
+  std::optional<std::vector<uint8_t>> response = issuer_a->Issue(
+      base::ToVector(request->request()), /*hidden_metadata=*/1);
   ASSERT_TRUE(response.has_value());
   std::optional<std::vector<uint8_t>> token =
       client_a->FinalizeToken(*request, *response);
@@ -254,16 +252,15 @@ TEST(AthmTestIssuerTest, BatchIssue_Success) {
   ASSERT_TRUE(client.has_value());
 
   constexpr size_t kBatchSize = 3;
-  std::vector<AthmTestClient::ClientRequest> client_requests;
+  std::vector<AthmClientRequest> client_requests;
   std::vector<std::vector<uint8_t>> requests;
   for (size_t i = 0; i < kBatchSize; ++i) {
-    std::optional<AthmTestClient::ClientRequest> req =
-        client->CreateClientRequest();
+    std::optional<AthmClientRequest> req = client->CreateClientRequest();
     ASSERT_TRUE(req.has_value());
     std::optional<std::vector<uint8_t>> request_bytes =
         CreateAthmTokenRequestBytes(
             PrivateVerificationTokensParameters::kAthmTokenType,
-            issuer->truncated_key_id(), req->request);
+            issuer->truncated_key_id(), base::ToVector(req->request()));
     ASSERT_TRUE(request_bytes.has_value());
     requests.push_back(std::move(request_bytes.value()));
     client_requests.push_back(std::move(*req));
@@ -306,14 +303,13 @@ TEST(AthmTestIssuerTest, BatchIssue_InvalidRequestInBatch_ReturnsNullopt) {
                              kBucketCount, DeploymentId("batch-issue-invalid"));
   ASSERT_TRUE(client.has_value());
 
-  std::optional<AthmTestClient::ClientRequest> valid_req =
-      client->CreateClientRequest();
+  std::optional<AthmClientRequest> valid_req = client->CreateClientRequest();
   ASSERT_TRUE(valid_req.has_value());
 
   std::optional<std::vector<uint8_t>> formatted_valid_req =
       CreateAthmTokenRequestBytes(
           PrivateVerificationTokensParameters::kAthmTokenType,
-          issuer->truncated_key_id(), valid_req->request);
+          issuer->truncated_key_id(), base::ToVector(valid_req->request()));
   ASSERT_TRUE(formatted_valid_req.has_value());
 
   std::vector<uint8_t> invalid_req = {1, 2, 3};
@@ -333,14 +329,13 @@ TEST(AthmTestIssuerTest, BatchIssue_InvalidMetadata_ReturnsNullopt) {
                              kBucketCount, DeploymentId("batch-issue-meta"));
   ASSERT_TRUE(client.has_value());
 
-  std::optional<AthmTestClient::ClientRequest> valid_req =
-      client->CreateClientRequest();
+  std::optional<AthmClientRequest> valid_req = client->CreateClientRequest();
   ASSERT_TRUE(valid_req.has_value());
 
   std::optional<std::vector<uint8_t>> formatted_valid_req =
       CreateAthmTokenRequestBytes(
           PrivateVerificationTokensParameters::kAthmTokenType,
-          issuer->truncated_key_id(), valid_req->request);
+          issuer->truncated_key_id(), base::ToVector(valid_req->request()));
   ASSERT_TRUE(formatted_valid_req.has_value());
 
   // Metadata >= kBucketCount is out of range.
@@ -360,14 +355,13 @@ TEST(AthmTestIssuerTest, BatchIssue_WrongTokenType_ReturnsNullopt) {
                              kBucketCount, DeploymentId("batch-type-inv"));
   ASSERT_TRUE(client.has_value());
 
-  std::optional<AthmTestClient::ClientRequest> valid_req =
-      client->CreateClientRequest();
+  std::optional<AthmClientRequest> valid_req = client->CreateClientRequest();
   ASSERT_TRUE(valid_req.has_value());
 
   std::optional<std::vector<uint8_t>> wrong_type_req =
       CreateAthmTokenRequestBytes(/*token_type=*/0x1234,
                                   issuer->truncated_key_id(),
-                                  valid_req->request);
+                                  base::ToVector(valid_req->request()));
   ASSERT_TRUE(wrong_type_req.has_value());
 
   std::optional<std::vector<std::vector<uint8_t>>> batch_responses =
@@ -385,8 +379,7 @@ TEST(AthmTestIssuerTest, BatchIssue_WrongTruncatedKeyId_ReturnsNullopt) {
                              kBucketCount, DeploymentId("batch-keyid-inv"));
   ASSERT_TRUE(client.has_value());
 
-  std::optional<AthmTestClient::ClientRequest> valid_req =
-      client->CreateClientRequest();
+  std::optional<AthmClientRequest> valid_req = client->CreateClientRequest();
   ASSERT_TRUE(valid_req.has_value());
 
   uint8_t wrong_key_id =
@@ -395,7 +388,7 @@ TEST(AthmTestIssuerTest, BatchIssue_WrongTruncatedKeyId_ReturnsNullopt) {
   std::optional<std::vector<uint8_t>> wrong_key_req =
       CreateAthmTokenRequestBytes(
           PrivateVerificationTokensParameters::kAthmTokenType, wrong_key_id,
-          valid_req->request);
+          base::ToVector(valid_req->request()));
   ASSERT_TRUE(wrong_key_req.has_value());
 
   std::optional<std::vector<std::vector<uint8_t>>> batch_responses =

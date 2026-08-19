@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/types/expected.h"
+#include "components/private_verification_tokens/common/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_issuer_config.h"
 
 namespace private_verification_tokens {
@@ -78,19 +79,14 @@ class PrivacyPassAthmBatchRequest {
   Finalize(base::span<const uint8_t> response_body);
 
  private:
-  struct TokenState {
-    std::vector<uint8_t> context;
-    std::vector<uint8_t> request;
-  };
-
   PrivacyPassAthmBatchRequest(PrivateVerificationTokensPublicKey pvt_public_key,
-                              std::vector<uint8_t> params,
-                              std::vector<TokenState> token_states,
+                              AthmParameters params,
+                              std::vector<AthmClientRequest> client_requests,
                               std::vector<uint8_t> request_body);
 
   PrivateVerificationTokensPublicKey pvt_public_key_;
-  std::vector<uint8_t> params_;
-  std::vector<TokenState> token_states_;
+  AthmParameters params_;
+  std::vector<AthmClientRequest> client_requests_;
   std::vector<uint8_t> request_body_;
 };
 

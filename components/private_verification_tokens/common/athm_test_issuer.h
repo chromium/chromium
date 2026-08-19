@@ -13,6 +13,8 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
+#include "components/private_verification_tokens/common/athm_ffi.h"
 #include "crypto/hash.h"
 
 namespace private_verification_tokens {
@@ -25,8 +27,8 @@ namespace private_verification_tokens {
 // to participate (public key, the public-key proof, and the public protocol
 // params). All inputs/outputs are serialized ATHM wire encodings.
 //
-// The crypto runs through the cxx bridge in athm_ffi.rs on Chromium's in-tree
-// BoringSSL. This is a test utility, not production code.
+// The crypto runs through the Crubit bindings in athm_ffi.rs on Chromium's
+// in-tree BoringSSL. This is a test utility, not production code.
 class AthmTestIssuer {
  public:
   // Creates an issuer for `num_buckets` metadata buckets (valid hidden metadata
@@ -45,21 +47,24 @@ class AthmTestIssuer {
   AthmTestIssuer& operator=(const AthmTestIssuer&) = delete;
 
   // Public material the client/browser needs (the "verification key" analog).
-  const std::vector<uint8_t>& public_key() const { return public_key_; }
-  const std::vector<uint8_t>& public_key_proof() const {
-    return public_key_proof_;
+  std::vector<uint8_t> public_key() const {
+    return base::ToVector(key_material_.public_key());
   }
-  const std::vector<uint8_t>& params() const { return params_; }
-  // The 32-byte SHA-256 digest of `public_key_`.
-  const std::array<uint8_t, crypto::hash::kSha256Size>& key_id() const {
-    return key_id_;
+  std::vector<uint8_t> public_key_proof() const {
+    return base::ToVector(key_material_.public_key_proof());
   }
-  // The 1-byte truncated key ID (last byte of `key_id_`) used in Privacy Pass /
-  // ATHM token request and redemption framing.
-  uint8_t truncated_key_id() const { return key_id_.back(); }
+  // The 32-byte SHA-256 digest of `public_key()`.
+  std::array<uint8_t, crypto::hash::kSha256Size> key_id() const {
+    return crypto::hash::Sha256(public_key());
+  }
+  // The 1-byte truncated key ID (last byte of `key_id()`) used in Privacy Pass
+  // / ATHM token request and redemption framing.
+  uint8_t truncated_key_id() const { return key_id().back(); }
 
   // Issuer side: signs `request`, embedding `hidden_metadata`. Returns the
   // serialized token response, or nullopt on failure.
+  std::optional<std::vector<uint8_t>> Issue(const TokenRequest& request,
+                                            uint8_t hidden_metadata) const;
   std::optional<std::vector<uint8_t>> Issue(base::span<const uint8_t> request,
                                             uint8_t hidden_metadata) const;
 
@@ -96,16 +101,9 @@ class AthmTestIssuer {
       base::span<const uint8_t> marshaled_token) const;
 
  private:
-  AthmTestIssuer(std::vector<uint8_t> params,
-                 std::vector<uint8_t> private_key,
-                 std::vector<uint8_t> public_key,
-                 std::vector<uint8_t> public_key_proof);
+  explicit AthmTestIssuer(AthmKeyMaterial key_material);
 
-  std::vector<uint8_t> params_;
-  std::vector<uint8_t> private_key_;
-  std::vector<uint8_t> public_key_;
-  std::vector<uint8_t> public_key_proof_;
-  std::array<uint8_t, crypto::hash::kSha256Size> key_id_;
+  AthmKeyMaterial key_material_;
 };
 
 // A self-contained test client for Anonymous Tokens with Hidden Metadata
@@ -116,15 +114,6 @@ class AthmTestIssuer {
 // can drive the issuer and client as separate parties.
 class AthmTestClient {
  public:
-  // The client state produced by CreateClientRequest(). Holding one of these
-  // means it is valid; CreateClientRequest() returns nullopt on failure.
-  struct ClientRequest {
-    // Client-secret state that must be retained until FinalizeToken().
-    std::vector<uint8_t> context;
-    // The blinded request to send to the issuer.
-    std::vector<uint8_t> request;
-  };
-
   static std::optional<AthmTestClient> Create(
       base::span<const uint8_t> public_key,
       base::span<const uint8_t> public_key_proof,
@@ -138,23 +127,23 @@ class AthmTestClient {
   AthmTestClient& operator=(AthmTestClient&&);
 
   // Client side: builds a blinded token request from public material.
-  std::optional<ClientRequest> CreateClientRequest() const;
+  std::optional<AthmClientRequest> CreateClientRequest() const;
 
   // Client side: unblinds the issuer `response` into a finalized token, using
   // the `client_request` returned by CreateClientRequest(). Returns the
   // serialized token, or nullopt on failure.
   std::optional<std::vector<uint8_t>> FinalizeToken(
-      const ClientRequest& client_request,
+      const AthmClientRequest& client_request,
       base::span<const uint8_t> response) const;
 
  private:
   AthmTestClient(std::vector<uint8_t> public_key,
                  std::vector<uint8_t> public_key_proof,
-                 std::vector<uint8_t> params);
+                 AthmParameters params);
 
   std::vector<uint8_t> public_key_;
   std::vector<uint8_t> public_key_proof_;
-  std::vector<uint8_t> params_;
+  AthmParameters params_;
 };
 
 }  // namespace private_verification_tokens

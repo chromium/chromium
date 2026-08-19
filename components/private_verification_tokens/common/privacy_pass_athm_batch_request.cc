@@ -8,13 +8,14 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/span_rust.h"
 #include "base/containers/to_vector.h"
-#include "components/private_verification_tokens/common/athm_ffi.rs.h"
+#include "components/private_verification_tokens/common/athm_ffi.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_parameters.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
 #include "crypto/hash.h"
 #include "third_party/anonymous_tokens/src/anonymous_tokens/cpp/privacy_pass/athm_token_encodings_utils.h"
+#include "third_party/crubit/support/rs_std/slice_ref.h"
+#include "third_party/crubit/support/rs_std/vec.h"
 
 namespace private_verification_tokens {
 
@@ -32,34 +33,33 @@ PrivacyPassAthmBatchRequest::Create(const IssuerConfig& issuer_config,
   }
 
   // Derive client protocol parameters using the deployment ID and bucket count.
-  AthmClientParams client_params = athm_client_params(
-      num_buckets,
-      base::SpanToRustSlice(base::as_byte_span(issuer_config.deployment_id)));
-  if (client_params.status != AthmStatus::Ok) {
+  auto params = AthmParameters::create(
+      num_buckets, rs_std::SliceRef<const uint8_t>(
+                       base::as_byte_span(issuer_config.deployment_id)));
+  if (!params.has_value()) {
     return base::unexpected(
         PrivacyPassAthmBatchRequestError::kParameterGenerationFailed);
   }
-  std::vector<uint8_t> params = base::ToVector(client_params.params);
 
   const size_t count = static_cast<size_t>(issuer_config.batch_size);
   base::span<const uint8_t> public_key = issuer_config.public_key.public_key();
   base::span<const uint8_t> public_key_proof =
       issuer_config.public_key.public_key_proof();
 
-  std::vector<TokenState> token_states;
-  token_states.reserve(count);
+  std::vector<AthmClientRequest> client_requests;
+  client_requests.reserve(count);
   std::vector<uint8_t> batch_request_body;
 
   for (size_t i = 0; i < count; ++i) {
-    AthmClientRequest bridge_result = athm_client_request(
-        base::SpanToRustSlice(public_key),
-        base::SpanToRustSlice(public_key_proof), base::SpanToRustSlice(params));
-    if (bridge_result.status != AthmStatus::Ok) {
+    auto bridge_result = AthmClientRequest::create(
+        rs_std::SliceRef<const uint8_t>(public_key),
+        rs_std::SliceRef<const uint8_t>(public_key_proof), *params);
+    if (!bridge_result.has_value()) {
       return base::unexpected(
           PrivacyPassAthmBatchRequestError::kClientRequestGenerationFailed);
     }
 
-    std::vector<uint8_t> req_bytes = base::ToVector(bridge_result.request);
+    rs_std::Vec<uint8_t> req_bytes = bridge_result->request();
     anonymous_tokens::AthmTokenRequest token_req;
     token_req.token_type = PrivateVerificationTokensParameters::kAthmTokenType;
     token_req.truncated_issuer_key_id =
@@ -76,25 +76,22 @@ PrivacyPassAthmBatchRequest::Create(const IssuerConfig& issuer_config,
 
     batch_request_body.insert(batch_request_body.end(), marshaled_req.begin(),
                               marshaled_req.end());
-    token_states.push_back(TokenState{
-        .context = base::ToVector(bridge_result.context),
-        .request = std::move(req_bytes),
-    });
+    client_requests.push_back(std::move(*bridge_result));
   }
 
-  return PrivacyPassAthmBatchRequest(issuer_config.public_key,
-                                     std::move(params), std::move(token_states),
-                                     std::move(batch_request_body));
+  return PrivacyPassAthmBatchRequest(
+      issuer_config.public_key, std::move(*params), std::move(client_requests),
+      std::move(batch_request_body));
 }
 
 PrivacyPassAthmBatchRequest::PrivacyPassAthmBatchRequest(
     PrivateVerificationTokensPublicKey pvt_public_key,
-    std::vector<uint8_t> params,
-    std::vector<TokenState> token_states,
+    AthmParameters params,
+    std::vector<AthmClientRequest> client_requests,
     std::vector<uint8_t> request_body)
     : pvt_public_key_(std::move(pvt_public_key)),
       params_(std::move(params)),
-      token_states_(std::move(token_states)),
+      client_requests_(std::move(client_requests)),
       request_body_(std::move(request_body)) {}
 
 PrivacyPassAthmBatchRequest::PrivacyPassAthmBatchRequest(
@@ -106,17 +103,12 @@ PrivacyPassAthmBatchRequest::~PrivacyPassAthmBatchRequest() = default;
 base::expected<std::vector<std::vector<uint8_t>>,
                PrivacyPassAthmBatchRequestError>
 PrivacyPassAthmBatchRequest::Finalize(base::span<const uint8_t> response_body) {
-  if (token_states_.empty()) {
+  if (client_requests_.empty()) {
     return base::unexpected(
         PrivacyPassAthmBatchRequestError::kAlreadyFinalized);
   }
-  const size_t token_count = token_states_.size();
-  const size_t single_response_size =
-      athm_token_response_size(base::SpanToRustSlice(params_));
-  if (single_response_size == 0) {
-    return base::unexpected(
-        PrivacyPassAthmBatchRequestError::kParameterGenerationFailed);
-  }
+  const size_t token_count = client_requests_.size();
+  const size_t single_response_size = params_.token_response_size();
 
   const size_t expected_response_size = token_count * single_response_size;
   if (response_body.size() != expected_response_size) {
@@ -130,20 +122,18 @@ PrivacyPassAthmBatchRequest::Finalize(base::span<const uint8_t> response_body) {
                                       issuer_key_id.end());
 
   std::vector<std::vector<uint8_t>> finalized_tokens;
-  finalized_tokens.reserve(token_states_.size());
+  finalized_tokens.reserve(client_requests_.size());
 
-  // Consume token_states_ so this instance cannot be finalized again.
-  std::vector<TokenState> states = std::exchange(token_states_, {});
+  // Consume client_requests_ so this instance cannot be finalized again.
+  std::vector<AthmClientRequest> requests = std::exchange(client_requests_, {});
 
   for (size_t i = 0; i < token_count; ++i) {
     base::span<const uint8_t> item_response =
         response_body.subspan(i * single_response_size, single_response_size);
-    AthmBytesResult finalize_result = athm_client_finalize(
-        base::SpanToRustSlice(states[i].context),
-        base::SpanToRustSlice(pvt_public_key_.public_key()),
-        base::SpanToRustSlice(states[i].request),
-        base::SpanToRustSlice(item_response), base::SpanToRustSlice(params_));
-    if (finalize_result.status != AthmStatus::Ok) {
+    auto finalize_result = requests[i].finalize(
+        rs_std::SliceRef<const uint8_t>(pvt_public_key_.public_key()),
+        rs_std::SliceRef<const uint8_t>(item_response), params_);
+    if (!finalize_result.has_value()) {
       return base::unexpected(
           PrivacyPassAthmBatchRequestError::kClientFinalizeFailed);
     }
@@ -151,8 +141,7 @@ PrivacyPassAthmBatchRequest::Finalize(base::span<const uint8_t> response_body) {
     anonymous_tokens::AthmToken token;
     token.token_type = PrivateVerificationTokensParameters::kAthmTokenType;
     token.issuer_key_id = issuer_key_id_str;
-    token.token =
-        std::string(finalize_result.bytes.begin(), finalize_result.bytes.end());
+    token.token = std::string(finalize_result->begin(), finalize_result->end());
 
     std::string marshaled_token;
     absl::Status status =

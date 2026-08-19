@@ -180,7 +180,7 @@ source_set("private_verification_tokens_issuer_config_unittest") {
   ]
 }
 
-# ATHM (Anonymous Tokens with Hidden Metadata): a cxx bridge over
+# ATHM (Anonymous Tokens with Hidden Metadata): Crubit bindings over
 # //third_party/anonymous_tokens:athm and the C++ that calls it.
 if (enable_rust) {
   import("//build/rust/rust_static_library.gni")
@@ -188,15 +188,17 @@ if (enable_rust) {
   rust_static_library("athm_ffi") {
     crate_root = "athm_ffi.rs"
     sources = [ "athm_ffi.rs" ]
-    cxx_bindings = [ "athm_ffi.rs" ]
-    allow_unsafe = true  # Required for the cxx FFI layer.
+    cpp_api_from_rust = {
+      target_name = "athm_ffi_bindings"
+      cpp_namespace = "private_verification_tokens"
+    }
     deps = [ "//third_party/anonymous_tokens:athm" ]
     visibility = [ ":*" ]
   }
 
   # Test issuer modeled on network::TestTrustTokenIssuer: holds the secret ATHM
   # key material and exposes issuer-side (Issue/Verify) and client-side
-  # (request/finalize) operations over the cxx bridge.
+  # (request/finalize) operations over Crubit bindings.
   # This is to be used in tests only. Chrome does not need/use
   # issuer side capability.
   source_set("athm_test_issuer") {
@@ -205,9 +207,11 @@ if (enable_rust) {
       "athm_test_issuer.cc",
       "athm_test_issuer.h",
     ]
-    public_deps = [ "//base" ]
+    public_deps = [
+      ":athm_ffi_bindings",
+      "//base",
+    ]
     deps = [
-      ":athm_ffi",
       ":private_verification_tokens_parameters",
       "//crypto",
       "//third_party/anonymous_tokens:athm_token_encodings_utils",
@@ -220,13 +224,13 @@ if (enable_rust) {
       "privacy_pass_athm_batch_request.h",
     ]
     deps = [
-      ":athm_ffi",
       ":private_verification_tokens_parameters",
       ":private_verification_tokens_public_key",
       "//crypto",
       "//third_party/anonymous_tokens:athm_token_encodings_utils",
     ]
     public_deps = [
+      ":athm_ffi_bindings",
       ":private_verification_tokens_issuer_config",
       "//base",
     ]
