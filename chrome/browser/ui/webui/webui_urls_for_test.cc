@@ -52,7 +52,6 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://connectors-internals",
       "chrome://content-settings",
 #if !BUILDFLAG(IS_ANDROID)
-      "chrome://content-annotator-internals",
       "chrome://contextual-cueing-internals",
 #endif
       "chrome://context-hub",

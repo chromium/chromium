@@ -92,7 +92,6 @@ browser_exposed_mojom_targets = [
   "//components/media_gallery_util/public/mojom:mojom",
   "//chrome/services/printing/public/mojom:mojom",
   "//chrome/services/removable_storage_writer/public/mojom:mojom",
-  "//components/accessibility_annotator/core/logging:mojo_bindings",
   "//components/actor/public/mojom:mojo_bindings",
   "//components/autofill/content/common/mojom:mojom",
   "//components/autofill/core/browser/ml_model/logging:mojo_bindings",

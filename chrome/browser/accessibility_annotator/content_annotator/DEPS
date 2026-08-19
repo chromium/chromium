@@ -1,4 +1,0 @@
-include_rules = [
-  "+components/accessibility_annotator/core",
-  "+components/accessibility_annotator/content/content_annotator",
-]

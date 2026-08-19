@@ -6525,7 +6525,6 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/bookmarks",
       "//chrome/browser/ui/webui/browser_command:unit_tests",
       "//chrome/browser/ui/webui/commerce:unit_tests",
-      "//chrome/browser/ui/webui/content_annotator_internals:unit_tests",
       "//chrome/browser/ui/webui/cr_components/composebox",
       "//chrome/browser/ui/webui/data_sharing:unit_tests",
       "//chrome/browser/ui/webui/feedback:unit_tests",
@@ -6882,7 +6881,6 @@ test("unit_tests") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser/accessibility_annotator/content_annotator:unit_tests",
       "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
       "//chrome/browser/apps/intent_helper:unit_tests",
       "//chrome/browser/ui/contextual_search:unit_tests",

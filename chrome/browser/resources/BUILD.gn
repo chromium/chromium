@@ -56,7 +56,6 @@ group("resources") {
       "autofill_ml_internals:resources",
       "bookmarks:resources",
       "certificate_manager:resources",
-      "content_annotator_internals:resources",
       "content_settings:resources",
       "contextual_cueing/internals:resources",
       "data_sharing:resources",

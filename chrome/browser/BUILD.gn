@@ -2704,7 +2704,6 @@ source_set("browser") {
     #!is_android
     deps += [
       "//chrome/app/theme:chrome_unscaled_resources_grit",
-      "//chrome/browser/accessibility_annotator/content_annotator",
       "//chrome/browser/actor/ui:window_controller_impl",
       "//chrome/browser/actor/ui/task_list_bubble:controller_impl",
       "//chrome/browser/actor/ui/task_list_bubble:ui",
@@ -2790,7 +2789,6 @@ source_set("browser") {
       "//chrome/browser/ui/webui/color_pipeline_internals",
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/commerce:impl",
-      "//chrome/browser/ui/webui/content_annotator_internals",
       "//chrome/browser/ui/webui/cr_components/searchbox:searchbox_impl",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker:impl",
       "//chrome/browser/ui/webui/customize_buttons",
@@ -3880,7 +3878,6 @@ group("browser_generated_files") {
       "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/browser/ui/webui_browser:browser_mojo_bindings",
       "//chrome/browser/webauthn/proto",
-      "//components/accessibility_annotator/core/logging:mojo_bindings",
       "//components/autofill/core/browser/ml_model/logging:mojo_bindings",
       "//components/browser_apis/tab_drag:mojom",
       "//components/browser_apis/tab_strip:mojom",

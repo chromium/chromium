@@ -183,7 +183,6 @@ test("components_unittests") {
 
   deps = [
     "//base",
-    "//components/accessibility_annotator/core/content_annotator:unit_tests",
     "//components/accessibility_annotator/core/storage:unit_tests",
     "//components/account_settings:unit_tests",
     "//components/activity_reporter:unit_tests",
@@ -791,10 +790,6 @@ test("components_unittests") {
 
   if (!is_fuchsia && !is_castos) {
     deps += [ "//components/private_ai:unit_tests" ]
-  }
-
-  if (!is_android && !is_ios && !is_fuchsia && !is_castos) {
-    deps += [ "//components/accessibility_annotator/content/content_annotator:unit_tests" ]
   }
 
   if (enable_guest_view) {

@@ -1,11 +1,4 @@
 include_rules = [
   "+components/history/core/browser",
   "+components/optimization_guide/proto",
-  "+components/passage_embeddings",
-  "+components/prefs",
-  "+components/ukm",
-  "+components/url_matcher",
-  "+components/variations",
-  "+services/metrics/public/cpp",
-  "+third_party/re2",
 ]

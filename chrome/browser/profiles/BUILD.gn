@@ -909,7 +909,6 @@ source_set("profiles_extra_parts_impl") {
     deps += [
       "//chrome/browser/accessibility/phrase_segmentation",
       "//chrome/browser/accessibility/tree_fixing:service",
-      "//chrome/browser/accessibility_annotator/content_annotator",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
       "//chrome/browser/badging",

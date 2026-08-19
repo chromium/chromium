@@ -78,10 +78,6 @@ namespace back_to_opener {
 class BackToOpenerController;
 }  // namespace back_to_opener
 
-namespace accessibility_annotator {
-class ContentAnnotatorTabHelper;
-}  // namespace accessibility_annotator
-
 namespace autofill {
 class BubbleManager;
 class OmniboxAutofillBubbleController;
@@ -672,9 +668,6 @@ class TabFeatures {
   std::unique_ptr<CommitLimitOOMRecoveryTracker>
       commit_limit_oom_recovery_tracker_;
 #endif
-
-  std::unique_ptr<accessibility_annotator::ContentAnnotatorTabHelper>
-      content_annotator_tab_helper_;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<indigo::IndigoPageActionController>
