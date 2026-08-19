@@ -195,9 +195,13 @@ class BookmarkBubbleViewMigrationBrowserTest : public InProcessBrowserTest {
   const bookmarks::BookmarkNode* GetBookmark() { return bookmark_node_; }
 
   views::View* GetViewInBookmarkBubble(ui::ElementIdentifier id) {
+    views::BubbleDialogDelegate* const bubble =
+        BookmarkBubbleView::bookmark_bubble();
+    if (!bubble || !bubble->GetWidget()) {
+      return nullptr;
+    }
     const ui::ElementContext context =
-        views::ElementTrackerViews::GetContextForView(
-            BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
+        views::ElementTrackerViews::GetContextForWidget(bubble->GetWidget());
     return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
         id, context);
   }
@@ -515,12 +519,8 @@ IN_PROC_BROWSER_TEST_P(BookmarkBubbleViewShoppingCollectionBrowserTest,
 
   CreateBubbleView();
 
-  const ui::ElementContext context =
-      views::ElementTrackerViews::GetContextForView(
-          BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
   views::View* iph_root =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          commerce::kShoppingCollectionIPHViewId, context);
+      GetViewInBookmarkBubble(commerce::kShoppingCollectionIPHViewId);
 
   // The IPH should be shown in this case.
   EXPECT_TRUE(iph_root);
@@ -534,12 +534,8 @@ IN_PROC_BROWSER_TEST_P(BookmarkBubbleViewShoppingCollectionBrowserTest,
 
   CreateBubbleView();
 
-  const ui::ElementContext context =
-      views::ElementTrackerViews::GetContextForView(
-          BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
   views::View* iph_root =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          commerce::kShoppingCollectionIPHViewId, context);
+      GetViewInBookmarkBubble(commerce::kShoppingCollectionIPHViewId);
 
   // The IPH should not be shown.
   EXPECT_FALSE(iph_root);
@@ -553,12 +549,8 @@ IN_PROC_BROWSER_TEST_P(BookmarkBubbleViewShoppingCollectionBrowserTest,
 
   CreateBubbleView();
 
-  const ui::ElementContext context =
-      views::ElementTrackerViews::GetContextForView(
-          BookmarkBubbleView::bookmark_bubble()->GetAnchorView());
   views::View* const iph_root =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          commerce::kShoppingCollectionIPHViewId, context);
+      GetViewInBookmarkBubble(commerce::kShoppingCollectionIPHViewId);
 
   // The IPH should not be shown.
   EXPECT_FALSE(iph_root);
