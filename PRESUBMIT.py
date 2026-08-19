@@ -1713,8 +1713,9 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     BanRule(
         'sqlite3_initialize(',
         (
-            'Instead of calling sqlite3_initialize(), depend on //sql, ',
-            '#include "sql/initialize.h" and use sql::EnsureSqliteInitialized().',
+            'Instead of calling sqlite3_initialize(), depend on //sql,',
+            '#include "sql/initialization.h" and use '
+            'sql::EnsureSqliteInitialized().',
         ),
         True,
         (
