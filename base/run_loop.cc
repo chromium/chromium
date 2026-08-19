@@ -117,7 +117,7 @@ void RunLoop::Run(const Location& location) {
   }
 
   // If there is a RunLoopTimeout active then set the timeout.
-  // TODO(crbug.com/40602467): Use real-time for Run() timeouts so that they
+  // TODO(crbug.com/40625086): Use real-time for Run() timeouts so that they
   // can be applied even in tests which mock TimeTicks::Now().
   CancelableOnceClosure cancelable_timeout;
   const RunLoopTimeout* run_timeout = GetTimeoutForCurrentThread();
