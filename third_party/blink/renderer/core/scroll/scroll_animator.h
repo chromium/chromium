@@ -31,8 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_ANIMATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_ANIMATOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
-
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -148,7 +148,8 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // because we are already at targetPos.
   bool WillAnimateToOffset(const ScrollOffset& target_pos);
 
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock, UnprotectedInRelease | DanglingUntriaged>
+      tick_clock_;
   base::TimeTicks start_time_;
 
   ScrollOffset target_offset_;

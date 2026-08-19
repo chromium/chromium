@@ -31,6 +31,8 @@
 #include <optional>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -176,7 +178,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   bool IsCurrentThread();
 
   WorkerReportingProxy& GetWorkerReportingProxy() const {
-    return worker_reporting_proxy_;
+    return *worker_reporting_proxy_;
   }
 
   // Only callable on the parent thread.
@@ -444,7 +446,8 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   InspectorIssueStorage inspector_issue_storage_;
   int debugger_task_counter_ GUARDED_BY(lock_) = 0;
 
-  WorkerReportingProxy& worker_reporting_proxy_;
+  const raw_ref<WorkerReportingProxy, UnprotectedInRelease | DanglingUntriaged>
+      worker_reporting_proxy_;
 
   // Task runner bound with the parent thread's default task queue. Be careful
   // that a task runner may run even after the parent execution context and
@@ -479,7 +482,9 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
 
   // A nested message loop for handling pausing. Pointer is not owned. Used only
   // on the worker thread.
-  Platform::NestedMessageLoopRunner* nested_runner_ = nullptr;
+  raw_ptr<Platform::NestedMessageLoopRunner,
+          UnprotectedInRelease | DanglingUntriaged>
+      nested_runner_ = nullptr;
 
   CrossThreadPersistent<ConsoleMessageStorage> console_message_storage_;
   CrossThreadPersistent<WorkerOrWorkletGlobalScope> global_scope_;

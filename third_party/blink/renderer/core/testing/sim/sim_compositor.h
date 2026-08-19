@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_COMPOSITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_COMPOSITOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/trees/layer_tree_host.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -77,8 +78,10 @@ class SimCompositor final {
   cc::LayerTreeHost* LayerTreeHost() const;
 
  private:
-  WebViewImpl* web_view_ = nullptr;
-  cc::LayerTreeHost* layer_tree_host_ = nullptr;
+  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged> web_view_ =
+      nullptr;
+  raw_ptr<cc::LayerTreeHost, UnprotectedInRelease | DanglingUntriaged>
+      layer_tree_host_ = nullptr;
 
   base::TimeTicks last_frame_time_;
 

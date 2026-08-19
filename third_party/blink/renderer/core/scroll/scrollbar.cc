@@ -95,9 +95,9 @@ Scrollbar::Scrollbar(ScrollableArea* scrollable_area,
       injected_gesture_scroll_begin_(false),
       scrollbar_manipulation_in_progress_on_cc_thread_(false),
       style_source_(style_source) {
-  theme_.RegisterScrollbar(*this);
+  theme_->RegisterScrollbar(*this);
   int thickness =
-      theme_.ScrollbarThickness(ScaleFromDIP(), CSSScrollbarWidth());
+      theme_->ScrollbarThickness(ScaleFromDIP(), CSSScrollbarWidth());
   frame_rect_ = gfx::Rect(0, 0, thickness, thickness);
   current_pos_ = ScrollableAreaCurrentPos();
 }
@@ -540,7 +540,7 @@ void Scrollbar::MouseMoved(const WebMouseEvent& evt) {
 void Scrollbar::MouseEntered() {
   if (scrollable_area_)
     scrollable_area_->MouseEnteredScrollbar(*this);
-  if (theme_.UsesFluentOverlayScrollbars() && scrollable_area_) {
+  if (theme_->UsesFluentOverlayScrollbars() && scrollable_area_) {
     scrollable_area_->GetLayoutBox()
         ->GetFrameView()
         ->SetPaintArtifactCompositorNeedsUpdate();
@@ -551,7 +551,7 @@ void Scrollbar::MouseExited() {
   if (scrollable_area_)
     scrollable_area_->MouseExitedScrollbar(*this);
   SetHoveredPart(kNoPart);
-  if (theme_.UsesFluentOverlayScrollbars() && scrollable_area_) {
+  if (theme_->UsesFluentOverlayScrollbars() && scrollable_area_) {
     // If the mouse was hovering over the track and leaves the scrollbar, the
     // call to `SetHoveredPart(kNoPart)` will only invalidate the paint for the
     // track. Overlay Fluent scrollbars always need to invalidate the thumb to
@@ -758,25 +758,25 @@ int Scrollbar::ScrollbarThickness() const {
   int thickness = Orientation() == kHorizontalScrollbar ? Height() : Width();
   if (!thickness || IsCustomScrollbar())
     return thickness;
-  return theme_.ScrollbarThickness(ScaleFromDIP(), CSSScrollbarWidth());
+  return theme_->ScrollbarThickness(ScaleFromDIP(), CSSScrollbarWidth());
 }
 
 bool Scrollbar::IsSolidColor() const {
-  return theme_.IsSolidColor();
+  return theme_->IsSolidColor();
 }
 
 bool Scrollbar::IsOverlayScrollbar() const {
-  return theme_.UsesOverlayScrollbars();
+  return theme_->UsesOverlayScrollbars();
 }
 
 bool Scrollbar::IsFluentOverlayScrollbarMinimalMode() const {
-  return theme_.UsesFluentOverlayScrollbars() && hovered_part_ == kNoPart &&
+  return theme_->UsesFluentOverlayScrollbars() && hovered_part_ == kNoPart &&
          pressed_part_ != kThumbPart;
 }
 
 bool Scrollbar::UsesNinePatchTrackAndCanSkipRepaint(
     const gfx::Rect& new_frame_rect) const {
-  if (!theme_.UsesNinePatchTrackAndButtonsResource()) {
+  if (!theme_->UsesNinePatchTrackAndButtonsResource()) {
     return false;
   }
   // If the scrollbar's thickness is being changed, then a new bitmap needs to
@@ -857,7 +857,7 @@ float Scrollbar::ScrollableAreaTargetPos() const {
 
 void Scrollbar::SetNeedsPaintInvalidation(ScrollbarPart invalid_parts) {
   needs_update_display_ = true;
-  if (theme_.ShouldRepaintAllPartsOnInvalidation()) {
+  if (theme_->ShouldRepaintAllPartsOnInvalidation()) {
     invalid_parts = kAllParts;
   }
   if (invalid_parts & ~kThumbPart) {
@@ -931,7 +931,7 @@ std::optional<blink::Color> Scrollbar::ScrollbarThumbColor() const {
       style_source_->StyleRef().ScrollbarThumbColorResolved()) {
     return style_source_->StyleRef().ScrollbarThumbColorResolved();
   }
-  if (theme_.UsesFluentScrollbars() && !InForcedColorsMode() &&
+  if (theme_->UsesFluentScrollbars() && !InForcedColorsMode() &&
       !ScrollbarTrackColor().has_value()) {
     return RootScrollbarThemeColor();
   }

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_NETWORK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_SIM_SIM_NETWORK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_test_delegate.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -49,7 +50,8 @@ class SimNetwork final : public URLLoaderTestDelegate {
                         int64_t total_decoded_body_length) override;
   bool FillNavigationParamsResponse(WebNavigationParams*) override;
 
-  SimRequestBase* current_request_;
+  raw_ptr<SimRequestBase, UnprotectedInRelease | DanglingUntriaged>
+      current_request_;
   HashMap<String, SimRequestBase*> requests_;
 };
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
@@ -189,7 +190,8 @@ class CORE_EXPORT WorkletGlobalScope : public WorkerOrWorkletGlobalScope {
   // |frame_| is available only when |thread_type_| is kMainThread.
   Member<LocalFrame> frame_;
   // |worker_thread_| is available only when |thread_type_| is kOffMainThread.
-  WorkerThread* worker_thread_;
+  raw_ptr<WorkerThread, UnprotectedInRelease | DanglingUntriaged>
+      worker_thread_;
 
   // The token identifying the LocalFrame that caused this scope to be created.
   const LocalFrameToken frame_token_;

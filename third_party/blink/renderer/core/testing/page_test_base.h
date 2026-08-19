@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_PAGE_TEST_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_PAGE_TEST_BASE_H_
 
+#include <gtest/gtest.h>
+
 #include <memory>
 
-#include <gtest/gtest.h>
+#include "base/memory/raw_ptr.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
@@ -54,7 +56,9 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
    private:
     void BindClipboardHost(mojo::ScopedMessagePipeHandle handle);
 
-    const blink::BrowserInterfaceBrokerProxy* interface_broker_ = nullptr;
+    raw_ptr<const blink::BrowserInterfaceBrokerProxy,
+            UnprotectedInRelease | DanglingUntriaged>
+        interface_broker_ = nullptr;
     MockClipboardHost host_;
   };
 

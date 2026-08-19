@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PROFILER_GROUP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PROFILER_GROUP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/permissions_policy/js_profiling_mode.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -102,8 +103,9 @@ class CORE_EXPORT ProfilerGroup : public V8PerIsolateData::UserData {
   // Generates an unused string identifier to use for a new profiling session.
   String NextProfilerId();
 
-  v8::Isolate* const isolate_;
-  v8::CpuProfiler* cpu_profiler_;
+  const raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_;
+  raw_ptr<v8::CpuProfiler, UnprotectedInRelease | DanglingUntriaged>
+      cpu_profiler_;
   int next_profiler_id_;
   int num_active_profilers_;
   HeapHashSet<WeakMember<Profiler>> profilers_;

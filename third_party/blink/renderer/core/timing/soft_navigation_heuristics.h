@@ -9,6 +9,7 @@
 
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/common/features.h"
@@ -202,7 +203,9 @@ class CORE_EXPORT SoftNavigationHeuristics
   // `task_attribution_tracker_` is cleared during `Shutdown()` (frame detach),
   // which should happen before the tracker is destroyed, since its lifetime is
   // tied to the lifetime of the isolate/main thread.
-  scheduler::TaskAttributionTracker* task_attribution_tracker_;
+  raw_ptr<scheduler::TaskAttributionTracker,
+          UnprotectedInRelease | DanglingUntriaged>
+      task_attribution_tracker_;
 };
 
 }  // namespace blink

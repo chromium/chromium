@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -55,7 +56,8 @@ class CORE_EXPORT WorkerBackingThread final {
 
  private:
   std::unique_ptr<blink::NonMainThread> backing_thread_;
-  v8::Isolate* isolate_ = nullptr;
+  raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_ =
+      nullptr;
   const bool is_denormal_disabled_thread_;
 };
 

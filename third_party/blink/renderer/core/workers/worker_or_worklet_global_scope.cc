@@ -640,7 +640,7 @@ void WorkerOrWorkletGlobalScope::OnConsoleApiMessage(
     mojom::ConsoleMessageLevel level,
     const String& message,
     SourceLocation* location) {
-  reporting_proxy_.ReportConsoleMessage(
+  reporting_proxy_->ReportConsoleMessage(
       mojom::ConsoleMessageSource::kConsoleApi, level, message, location);
 }
 

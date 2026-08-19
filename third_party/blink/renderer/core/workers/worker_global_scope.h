@@ -29,6 +29,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
@@ -349,7 +350,7 @@ class CORE_EXPORT WorkerGlobalScope
   mutable Member<WorkerNavigator> navigator_;
   mutable Member<TrustedTypePolicyFactory> trusted_types_;
 
-  WorkerThread* thread_;
+  raw_ptr<WorkerThread, UnprotectedInRelease | DanglingUntriaged> thread_;
 
   // The compositor task runner associated with the |AgentGroupScheduler| this
   // worker belongs to.

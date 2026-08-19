@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -245,7 +246,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // scenarios.
   const bool direct_sockets_force_enabled_in_parent;
 
-  InterfaceRegistry* const interface_registry;
+  const raw_ptr<InterfaceRegistry, UnprotectedInRelease | DanglingUntriaged>
+      interface_registry;
 
   // The compositor task runner associated with the |AgentGroupScheduler| this
   // worker belongs to.
