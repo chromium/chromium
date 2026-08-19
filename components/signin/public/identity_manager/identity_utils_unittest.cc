@@ -226,7 +226,6 @@ TEST_F(IdentityUtilsTest, GetAllGaiaIdsForKeyedPreferences) {
 
 TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayNoAccounts) {
   EXPECT_TRUE(GetOrderedAccountsForDisplay(identity_manager()).empty());
-  EXPECT_TRUE(GetDefaultAccountForPromo(identity_manager()).IsEmpty());
 }
 
 TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayPrimaryAccount) {
@@ -235,8 +234,6 @@ TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayPrimaryAccount) {
       GetOrderedAccountsForDisplay(identity_manager());
   ASSERT_EQ(accounts.size(), 1u);
   EXPECT_EQ(accounts[0].account_id, primary_account.account_id);
-  EXPECT_EQ(GetDefaultAccountForPromo(identity_manager()).account_id,
-            primary_account.account_id);
 }
 
 #if BUILDFLAG(IS_IOS)
@@ -251,8 +248,6 @@ TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayDeviceOrderOnIOS) {
   ASSERT_EQ(accounts.size(), 2u);
   EXPECT_EQ(accounts[0].account_id, account1.account_id);
   EXPECT_EQ(accounts[1].account_id, account2.account_id);
-  EXPECT_EQ(GetDefaultAccountForPromo(identity_manager()).account_id,
-            account1.account_id);
 
   // Filter by pattern so only beta is allowed.
   pref_service()->SetString(prefs::kGoogleServicesUsernamePattern, "beta@.*");
@@ -260,9 +255,6 @@ TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayDeviceOrderOnIOS) {
       GetOrderedAccountsForDisplay(identity_manager(), pref_service());
   ASSERT_EQ(filtered_accounts.size(), 1u);
   EXPECT_EQ(filtered_accounts[0].account_id, account2.account_id);
-  EXPECT_EQ(
-      GetDefaultAccountForPromo(identity_manager(), pref_service()).account_id,
-      account2.account_id);
 }
 #endif
 
@@ -278,8 +270,6 @@ TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayDeviceOrderOnAndroid) {
   ASSERT_EQ(accounts.size(), 2u);
   EXPECT_EQ(accounts[0].account_id, account1.account_id);
   EXPECT_EQ(accounts[1].account_id, account2.account_id);
-  EXPECT_EQ(GetDefaultAccountForPromo(identity_manager()).account_id,
-            account1.account_id);
 
   // Filter by pattern so only beta is allowed.
   pref_service()->SetString(prefs::kGoogleServicesUsernamePattern, "beta@.*");
@@ -287,9 +277,6 @@ TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayDeviceOrderOnAndroid) {
       GetOrderedAccountsForDisplay(identity_manager(), pref_service());
   ASSERT_EQ(filtered_accounts.size(), 1u);
   EXPECT_EQ(filtered_accounts[0].account_id, account2.account_id);
-  EXPECT_EQ(
-      GetDefaultAccountForPromo(identity_manager(), pref_service()).account_id,
-      account2.account_id);
 }
 #endif
 
@@ -309,8 +296,6 @@ TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayCookieOrderOnDesktop) {
   ASSERT_EQ(accounts.size(), 2u);
   EXPECT_EQ(accounts[0].account_id, account2.account_id);
   EXPECT_EQ(accounts[1].account_id, account1.account_id);
-  EXPECT_EQ(GetDefaultAccountForPromo(identity_manager()).account_id,
-            account2.account_id);
 
   // Filter by pattern so only alpha is allowed.
   pref_service()->SetString(prefs::kGoogleServicesUsernamePattern, "alpha@.*");
@@ -318,9 +303,6 @@ TEST_F(IdentityUtilsTest, GetOrderedAccountsForDisplayCookieOrderOnDesktop) {
       GetOrderedAccountsForDisplay(identity_manager(), pref_service());
   ASSERT_EQ(filtered_accounts.size(), 1u);
   EXPECT_EQ(filtered_accounts[0].account_id, account1.account_id);
-  EXPECT_EQ(
-      GetDefaultAccountForPromo(identity_manager(), pref_service()).account_id,
-      account1.account_id);
 }
 #endif
 

@@ -58,7 +58,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   AccountPreviewDataServiceImpl(
       IdentityManager* identity_manager,
       syncer::SyncService* sync_service,
-      PrefService* pref_service,
+      PrefService* local_state,
+      PrefService* profile_prefs,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper,
       version_info::Channel channel,
@@ -164,7 +165,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
 
   raw_ptr<IdentityManager> identity_manager_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
+  raw_ptr<PrefService> profile_prefs_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper_;
   const version_info::Channel channel_;
