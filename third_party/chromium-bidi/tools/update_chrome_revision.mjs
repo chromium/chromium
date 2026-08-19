@@ -91,5 +91,7 @@ await updateDevToolsProtocolVersion(revision);
 const browserVersion = `chrome@${version}`;
 await writeFile('./.browser', browserVersion, 'utf-8');
 
-// Make sure that the `package-lock.json` is formatted correctly
+// Create new `package-lock.json` as we update devtools-protocol
+execSync('npm install --ignore-scripts');
+// Make sure that the `package.json` is formatted correctly
 execSync(`npx prettier --write ./package.json`);

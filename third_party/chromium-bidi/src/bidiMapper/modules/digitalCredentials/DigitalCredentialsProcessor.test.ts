@@ -175,7 +175,6 @@ describe('DigitalCredentialsProcessor', () => {
           'DigitalCredentials.setVirtualWalletBehavior',
           {
             action: DigitalCredentials.VirtualWalletAction.Decline,
-            behavior: DigitalCredentials.VirtualWalletAction.Decline,
             protocol: undefined,
             response: undefined,
           },
@@ -262,7 +261,6 @@ describe('DigitalCredentialsProcessor', () => {
 
       const expectedCdpParams = {
         action: DigitalCredentials.VirtualWalletAction.Respond,
-        behavior: DigitalCredentials.VirtualWalletAction.Respond,
         protocol: 'openid4vp',
         response: {token: 'abc'},
       };
@@ -313,7 +311,6 @@ describe('DigitalCredentialsProcessor', () => {
           'DigitalCredentials.setVirtualWalletBehavior',
           {
             action: DigitalCredentials.VirtualWalletAction.Clear,
-            behavior: DigitalCredentials.VirtualWalletAction.Clear,
             protocol: undefined,
             response: undefined,
           },

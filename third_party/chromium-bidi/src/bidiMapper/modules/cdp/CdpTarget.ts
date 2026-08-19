@@ -723,9 +723,7 @@ export class CdpTarget {
       promises.push(
         this.cdpClient
           .sendCommand('DigitalCredentials.setVirtualWalletBehavior', {
-            // @ts-expect-error action is kept for backward compatibility with older Chromium CDP versions
             action: config.digitalCredentialsBehavior.action,
-            behavior: config.digitalCredentialsBehavior.action,
             protocol: config.digitalCredentialsBehavior.protocol,
             response: config.digitalCredentialsBehavior.response,
           })

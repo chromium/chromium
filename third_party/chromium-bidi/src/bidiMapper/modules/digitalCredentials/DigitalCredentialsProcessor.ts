@@ -131,9 +131,7 @@ export class DigitalCredentialsProcessor {
     await cdpTarget.cdpClient.sendCommand(
       'DigitalCredentials.setVirtualWalletBehavior',
       {
-        // @ts-expect-error action is kept for backward compatibility with older Chromium CDP versions
         action: behavior.action,
-        behavior: behavior.action,
         protocol: behavior.protocol,
         response: behavior.response,
       },
