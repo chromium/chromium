@@ -3050,9 +3050,9 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
     }
     await this.setUpWithClient(new WebClientThatOpensSlowly());
     const panelOpenState = observeSequence(this.client.panelOpenState);
-    panelOpenState.waitForValue(true);
+    await panelOpenState.waitForValue(true);
     await this.host.closePanel!();
-    panelOpenState.waitForValue(false);
+    await panelOpenState.waitForValue(false);
     await this.advanceToNextStep();
     openSignal.resolve();
     await panelOpenState.waitForValue(true);

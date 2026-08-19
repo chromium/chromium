@@ -3395,14 +3395,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitializeFails) {
       BucketsAre(Bucket(5 /*kError*/, 1)));
 }
 
-// Flaky on slower bots / builds.
-// Also flaky on Android.
-#if defined(SLOW_BINARY) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_testCloseAndOpenWhileOpening DISABLED_testCloseAndOpenWhileOpening
-#else
-#define MAYBE_testCloseAndOpenWhileOpening testCloseAndOpenWhileOpening
-#endif
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, MAYBE_testCloseAndOpenWhileOpening) {
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testCloseAndOpenWhileOpening) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
   ASSERT_OK(OpenGlicForActiveTab());
