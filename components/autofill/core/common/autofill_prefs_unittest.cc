@@ -203,6 +203,13 @@ TEST_F(AutofillProfilePrefsTest, DeduplicateEmailVerificationState) {
             expected_state);
 }
 
+TEST_F(AutofillProfilePrefsTest, SetHasShownWalletReminderNotice) {
+  EXPECT_FALSE(HasShownWalletReminderNotice(pref_service()));
+
+  SetHasShownWalletReminderNotice(pref_service());
+  EXPECT_TRUE(HasShownWalletReminderNotice(pref_service()));
+}
+
 }  // namespace
 
 }  // namespace autofill::prefs

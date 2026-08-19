@@ -29,9 +29,9 @@ void WalletReminderNoticeManager::OnGetWalletReminderNoticeResponse(
     const LegalMessageLines& legal_message_lines,
     const std::string& acknowledgement_token,
     bool has_user_acknowledged) {
-  // TODO(crbug.com/540389575): We need to store the Gaia ID associated with
-  // this Chrome profile in the PrefService and use this Gaia ID to determine
-  // whether to show the reminder notice.
+  // TODO(crbug.com/540389575): Check HasShownWalletReminderNotice(~) before
+  // showing the reminder notice and call SetHasShownWalletReminderNotice(~)
+  // when `has_user_acknowledged` is `true`.
   if (has_user_acknowledged) {
     return;
   }

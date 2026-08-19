@@ -171,6 +171,7 @@ enum {
   kAutofillGmailOtpFillingActivationDismissalTimestamp = 120,
   kDriveConsentState = 121,
   kAutofillAiPrivateInferenceOptInStatus = 122,
+  kAutofillWalletReminderNoticeShown = 123,
   // New entries should be added above this line.
   kSubscriptionEligibilityAiSubscriptionTier =
       100338,  // (different ID as it's a move from //chrome)
@@ -505,6 +506,10 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {autofill::prefs::kAutofillAiPrivateInferenceOptInStatus,
          {syncable_prefs_ids::kAutofillAiPrivateInferenceOptInStatus,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {autofill::prefs::kAutofillWalletReminderNoticeShown,
+         {syncable_prefs_ids::kAutofillWalletReminderNoticeShown,
+          syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone,
+          WriteBehavior::kWriteToAccountOnly}},
     });
 
 }  // namespace

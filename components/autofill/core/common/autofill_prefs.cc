@@ -192,6 +192,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       kAutofillAutocompleteLabelSensitiveMigrationGeneration, 0);
 
+  registry->RegisterBooleanPref(
+      kAutofillWalletReminderNoticeShown, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
   // Deprecated prefs registered for migration.
   registry->RegisterBooleanPref(kAutofillEnabledDeprecated, true);
   registry->RegisterStringPref(kAutofillAblationSeedPref, "");
@@ -599,4 +603,15 @@ bool AmountExtractionAiTermsSeen(const PrefService* prefs) {
              features::kAutofillEnableAiBasedAmountExtraction) &&
          prefs->GetBoolean(kAutofillAmountExtractionAiTermsSeen);
 }
+
+void SetHasShownWalletReminderNotice(PrefService* prefs) {
+  if (prefs) {
+    prefs->SetBoolean(kAutofillWalletReminderNoticeShown, true);
+  }
+}
+
+bool HasShownWalletReminderNotice(const PrefService* prefs) {
+  return prefs && prefs->GetBoolean(kAutofillWalletReminderNoticeShown);
+}
+
 }  // namespace autofill::prefs

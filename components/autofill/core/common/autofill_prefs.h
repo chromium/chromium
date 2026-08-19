@@ -280,6 +280,12 @@ inline constexpr char kAutofillAutocompleteLabelSensitiveMigrationGeneration[] =
 // value is reached, we should not show a mandatory re-auth promo.
 const int kMaxValueForMandatoryReauthPromoShownCounter = 2;
 
+// Boolean indicating whether the user has been shown the Wallet reminder
+// notice. This pref is synced and is written only to the account store, so is
+// effectively tied to a GAIA id.
+inline constexpr char kAutofillWalletReminderNoticeShown[] =
+    "autofill.wallet_reminder_notice_shown";
+
 namespace sync_transport_opt_in {
 enum Flags {
   kWallet = 1 << 0,
@@ -391,6 +397,14 @@ bool HasSeenBnpl(const PrefService* prefs);
 void SetAutofillAmountExtractionAiTermsSeen(PrefService* prefs);
 
 bool AmountExtractionAiTermsSeen(const PrefService* prefs);
+
+// Records that the user has been shown the Wallet reminder notice in `prefs`.
+void SetHasShownWalletReminderNotice(PrefService* prefs);
+
+// Returns `true` if the user has already been shown the Wallet reminder notice
+// according to `prefs`, `false` otherwise.
+bool HasShownWalletReminderNotice(const PrefService* prefs);
+
 }  // namespace autofill::prefs
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_
