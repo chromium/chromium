@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -202,6 +203,11 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
   }
 }
 
+- (void)handleCommandWithSceneState:(SceneState*)sceneState {
+  NOTREACHED()
+      << "-handleCommandWithSceneState: must be implemented by sub-classes";
+}
+
 - (void)execute {
   SceneState* sceneState = [self sceneStateFromSessionID];
   CHECK(sceneState);
@@ -220,17 +226,7 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
       return;
     }
   }
-
-  ProfileState* profileState = sceneState.profileState;
-  URLOpenerParams* options =
-      [[URLOpenerParams alloc] initWithUIOpenURLContext:_URLContext];
-  [URLOpener openURL:options
-          applicationActive:YES
-                  tabOpener:sceneState.controller
-      connectionInformation:sceneState.controller
-         startupInformation:profileState.startupInformation
-                prefService:profileState.profile->GetPrefs()
-                  initStage:profileState.initStage];
+  [self handleCommandWithSceneState:sceneState];
 }
 
 #pragma mark - Private
@@ -267,4 +263,3 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
 }
 
 @end
-

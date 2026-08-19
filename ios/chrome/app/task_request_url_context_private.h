@@ -17,6 +17,9 @@
 
 - (void)recordStartupMetrics;
 
+// Handles the command associated with the request using the given scene state.
+- (void)handleCommandWithSceneState:(SceneState*)sceneState;
+
 @end
 
 #endif  // IOS_CHROME_APP_TASK_REQUEST_URL_CONTEXT_PRIVATE_H_

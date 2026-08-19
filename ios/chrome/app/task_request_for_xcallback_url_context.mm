@@ -81,4 +81,8 @@ NSDate* ExtractCommandTimeFromSharedDefaults(UIOpenURLContext* URLContext) {
   }
 }
 
+- (void)handleCommandWithSceneState:(SceneState*)sceneState {
+  // TODO(crbug.com/493816082): Add implementation.
+}
+
 @end
