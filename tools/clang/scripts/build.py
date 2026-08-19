@@ -279,6 +279,7 @@ def GitCherryPick(
       git_repository,
       'cherry-pick',
       '--keep-redundant-commits',
+      '--no-gpg-sign',
       commit,
     ],
     env=env,
@@ -293,7 +294,16 @@ def GitRevert(git_repository, commit):
   env = os.environ.copy()
   env.update(GIT_METADATA_OVERRIDES)
   RunCommand(
-    ['git', '-C', git_repository, 'revert', '--no-edit', commit], env=env
+    [
+      'git',
+      '-C',
+      git_repository,
+      'revert',
+      '--no-edit',
+      '--no-gpg-sign',
+      commit,
+    ],
+    env=env,
   )
 
 
