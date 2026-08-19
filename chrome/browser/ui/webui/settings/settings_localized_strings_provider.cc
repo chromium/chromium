@@ -603,6 +603,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"showOrganizerPanelButton", IDS_SETTINGS_SHOW_ORGANIZER_PANEL_BUTTON},
       {"showEverythingMenuButton", IDS_SETTINGS_SHOW_EVERYTHING_MENU_BUTTON},
       {"tabStripPosition", IDS_SETTINGS_TAB_STRIP_POSITION},
+      {"tabScrollAutoShowOnOverflow", IDS_TAB_SCROLL_AUTO_SHOW_ON_OVERFLOW},
       {"showVerticalTabsExpandOnHover",
        IDS_SETTINGS_VERTICAL_TABS_EXPAND_ON_HOVER},
       {"allowSplitViewDragAndDrop",
@@ -686,6 +687,9 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("showCtrlTabMru",
                           base::FeatureList::IsEnabled(features::kCtrlTabMru));
+  html_source->AddBoolean(
+      "tabStripUnificationEnabled",
+      base::FeatureList::IsEnabled(tabs::kTabStripUnification));
 
   std::string configurable_alignments_json;
   base::JSONWriter::Write(

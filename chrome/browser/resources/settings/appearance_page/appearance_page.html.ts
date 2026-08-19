@@ -199,6 +199,15 @@ export function getHtml(this: SettingsAppearancePageElement) {
           </settings-toggle-button>
         ` : ''}
       </div>
+      ${this.tabStripUnificationEnabled_ ? html`
+        <div class="list-frame indented-toggles"
+            ?hidden="${!!this.verticalTabsEnabledPref_?.value}">
+          <settings-toggle-button id="tabScrollAutoShowOnOverflow"
+              pref-key="tab_scroll_buttons.pinned_to_tabstrip"
+              label="$i18n{tabScrollAutoShowOnOverflow}">
+          </settings-toggle-button>
+        </div>
+      ` : ''}
     ` : ''}
 
     <settings-toggle-button id="showTabSearchButton" class="hr"

@@ -113,6 +113,11 @@ async function createAppearancePage() {
       value: false,
     },
     {
+      key: 'tab_scroll_buttons.pinned_to_tabstrip',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
       key: 'vertical_tabs.enabled',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
@@ -834,6 +839,84 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
             '#showVerticalTabsExpandOnHover');
 
         assertTrue(!toggle);
+      });
+});
+
+suite('TabScrollButtonsSettings', () => {
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({
+      showVerticalTabsEnabled: true,
+      tabStripUnificationEnabled: true,
+    });
+
+    appearanceBrowserProxy = new TestAppearanceBrowserProxy();
+    AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
+
+    await createAppearancePage();
+    await prefService.setPrefValue('vertical_tabs.enabled', false);
+    await microtasksFinished();
+  });
+
+  test(
+      'Toggle updates tab_scroll_buttons.pinned_to_tabstrip pref',
+      async function() {
+        assertFalse(
+            prefService.getPref<boolean>('vertical_tabs.enabled').value);
+        assertTrue(
+            prefService
+                .getPref<boolean>('tab_scroll_buttons.pinned_to_tabstrip')
+                .value);
+
+        const toggle = appearancePage.shadowRoot
+                           .querySelector<SettingsToggleButtonElement>(
+                               '#tabScrollAutoShowOnOverflow');
+        assertTrue(!!toggle);
+        assertTrue(toggle.checked);
+
+        toggle.click();
+        await microtasksFinished();
+
+        assertFalse(
+            prefService
+                .getPref<boolean>('tab_scroll_buttons.pinned_to_tabstrip')
+                .value);
+        assertFalse(toggle.checked);
+
+        toggle.click();
+        await microtasksFinished();
+
+        assertTrue(
+            prefService
+                .getPref<boolean>('tab_scroll_buttons.pinned_to_tabstrip')
+                .value);
+        assertTrue(toggle.checked);
+      });
+
+  test('Toggle is hidden when vertical tabs pref is enabled', async function() {
+    await prefService.setPrefValue('vertical_tabs.enabled', true);
+    await microtasksFinished();
+
+    const toggle =
+        appearancePage.shadowRoot.querySelector('#tabScrollAutoShowOnOverflow');
+    assertTrue(!!toggle);
+    assertTrue(toggle.parentElement!.hasAttribute('hidden'));
+  });
+
+  test(
+      'Toggle is not rendered when tabStripUnification is disabled',
+      async function() {
+        loadTimeData.overrideValues({
+          tabStripUnificationEnabled: false,
+        });
+        await createAppearancePage();
+        await prefService.setPrefValue('vertical_tabs.enabled', false);
+        await microtasksFinished();
+
+        const toggle = appearancePage.shadowRoot.querySelector(
+            '#tabScrollAutoShowOnOverflow');
+        assertFalse(!!toggle);
       });
 });
 
