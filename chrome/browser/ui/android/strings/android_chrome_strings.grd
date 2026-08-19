@@ -970,6 +970,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_BOOKMARK_BAR_SETTING_ALWAYS_SHOW" desc="Title for option to always show the bookmark bar." translateable="false">
         Always show
       </message>
+      <message name="IDS_BOOKMARK_BAR_SETTING_ONLY_SHOW_BOOKMARKS_BAR_ON_NTP" desc="Title for option to only show the bookmark bar on the new tab page." translateable="false">
+        Only Show on New Tab Page
+      </message>
       <message name="IDS_BOOKMARK_BAR_SETTING_ALWAYS_HIDE" desc="Title for option to always hide the bookmark bar." translateable="false">
         Always hide
       </message>

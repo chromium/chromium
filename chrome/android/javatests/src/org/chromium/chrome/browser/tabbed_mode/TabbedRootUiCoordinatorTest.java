@@ -566,7 +566,7 @@ public class TabbedRootUiCoordinatorTest {
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures({ChromeFeatureList.BOOKMARKS_BAR_NTP})
-    public void testBookmarkBarMenuAction_AlwaysShowAndHide() {
+    public void testBookmarkBarMenuAction_StateChanges() {
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =
                 (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
@@ -606,6 +606,8 @@ public class TabbedRootUiCoordinatorTest {
                         assertEquals(
                                 0,
                                 userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysHide"));
+                        assertEquals(
+                                0, userActionTester.getActionCount("MobileMenuBookmarkBarOnlyNtp"));
 
                         // 1. "Always show": shows bookmark bar and records action.
                         assertTrue(
@@ -633,7 +635,32 @@ public class TabbedRootUiCoordinatorTest {
                                 1,
                                 userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysShow"));
 
-                        // 2. "Always hide": hides bookmark bar and records action.
+                        // 2. "Only show on NTP": sets to ONLY_SHOW_ON_NTP and records action.
+                        assertTrue(
+                                mTabbedRootUiCoordinator.handleMenuOrKeyboardAction(
+                                        R.id.bookmark_bar_state_only_ntp_menu_id,
+                                        /* fromMenu= */ true));
+                        assertEquals(
+                                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                                BookmarkBarUtils.getBookmarkBarVisibilityState(
+                                        activity, profile, false));
+                        assertEquals(
+                                1, userActionTester.getActionCount("MobileMenuBookmarkBarOnlyNtp"));
+
+                        // Redundant "Only show on NTP": stays ONLY_SHOW_ON_NTP, no new action
+                        // recorded.
+                        assertTrue(
+                                mTabbedRootUiCoordinator.handleMenuOrKeyboardAction(
+                                        R.id.bookmark_bar_state_only_ntp_menu_id,
+                                        /* fromMenu= */ true));
+                        assertEquals(
+                                BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
+                                BookmarkBarUtils.getBookmarkBarVisibilityState(
+                                        activity, profile, false));
+                        assertEquals(
+                                1, userActionTester.getActionCount("MobileMenuBookmarkBarOnlyNtp"));
+
+                        // 3. "Always hide": hides bookmark bar and records action.
                         assertTrue(
                                 mTabbedRootUiCoordinator.handleMenuOrKeyboardAction(
                                         R.id.bookmark_bar_state_always_hide_menu_id,
@@ -662,7 +689,51 @@ public class TabbedRootUiCoordinatorTest {
 
             assertEquals(1, userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysShow"));
             assertEquals(1, userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysHide"));
+            assertEquals(1, userActionTester.getActionCount("MobileMenuBookmarkBarOnlyNtp"));
         } finally {
+            userActionTester.tearDown();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures({ChromeFeatureList.BOOKMARKS_BAR_NTP})
+    public void testBookmarkBarMenuAction_IncompatibleActivity() {
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
+        UserActionTester userActionTester = new UserActionTester();
+        try {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
+
+                        assertFalse(
+                                mTabbedRootUiCoordinator.handleMenuOrKeyboardAction(
+                                        R.id.bookmark_bar_state_only_ntp_menu_id,
+                                        /* fromMenu= */ true));
+                        assertFalse(
+                                mTabbedRootUiCoordinator.handleMenuOrKeyboardAction(
+                                        R.id.bookmark_bar_state_always_show_menu_id,
+                                        /* fromMenu= */ true));
+                        assertFalse(
+                                mTabbedRootUiCoordinator.handleMenuOrKeyboardAction(
+                                        R.id.bookmark_bar_state_always_hide_menu_id,
+                                        /* fromMenu= */ true));
+
+                        assertEquals(
+                                0, userActionTester.getActionCount("MobileMenuBookmarkBarOnlyNtp"));
+                        assertEquals(
+                                0,
+                                userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysShow"));
+                        assertEquals(
+                                0,
+                                userActionTester.getActionCount("MobileMenuBookmarkBarAlwaysHide"));
+                    });
+        } finally {
+            BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(null);
             userActionTester.tearDown();
         }
     }
