@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/sampling_metrics_provider.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
-#include "chrome/browser/web_applications/sampling_metrics_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -129,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(SamplingMetricsProviderInteractiveUiTest,
 
   // Install and launch an app browser.
   webapps::AppId app_id = InstallPWA(GetInstallableAppURL());
-  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id);
   CheckWebAppCount(/*web_app_count=*/1, /*is_active=*/true);
 
   // Close.
@@ -145,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SamplingMetricsProviderInteractiveUiTest, Tab) {
 
   // Install and launch a tabbed pwa.
   webapps::AppId app_id = InstallTabbedPWA(GetInstallableAppURL());
-  Browser* browser = LaunchBrowserForWebAppInTab(app_id);
+  BrowserWindowInterface* browser = LaunchBrowserForWebAppInTab(app_id);
   CheckWebAppCount(/*web_app_count=*/1, /*is_active=*/true);
 
   // Add a new tab that is not a PWA.

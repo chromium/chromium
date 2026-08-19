@@ -19,7 +19,6 @@
 #include "base/test/values_test_util.h"
 #include "base/test/with_feature_override.h"
 #include "base/types/expected_macros.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"

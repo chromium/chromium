@@ -20,8 +20,8 @@
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -124,7 +124,7 @@ class WebInstallFromUrlCommandBrowserTestBase : public WebAppBrowserTestBase {
 
   // Tests start on an about:blank page. We need to navigate to any valid URL
   // before we can execute `navigator.install()`
-  void NavigateToValidUrl(Browser* app_browser = nullptr) {
+  void NavigateToValidUrl(BrowserWindowInterface* app_browser = nullptr) {
     VLOG(0) << embedded_https_test_server().GetURL("/simple.html").spec();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         app_browser ? app_browser : browser(),
@@ -437,9 +437,10 @@ IN_PROC_BROWSER_TEST_P(WebInstallFromUrlCommandBrowserTest,
   base::HistogramTester histograms;
 
   // Install the pwa to use to call `navigator.install()` from within.
-  Browser* app_browser = web_app::InstallWebAppFromPageGetBrowser(
-      browser(),
-      embedded_https_test_server().GetURL("/banners/manifest_test_page.html"));
+  BrowserWindowInterface* app_browser =
+      web_app::InstallWebAppFromPageGetBrowser(
+          browser(), embedded_https_test_server().GetURL(
+                         "/banners/manifest_test_page.html"));
   const webapps::AppId app_id =
       web_app::AppBrowserController::From(app_browser)->app_id();
   content::WebContents* app_web_contents =
@@ -1149,7 +1150,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
       web_app::SetPwaInstallationAutoRespondForTesting(
           web_app::InstallDialogTestResponse::kAcceptAndLaunch);
 
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::InstallWebAppFromPageGetBrowser(browser(), install_url);
   const webapps::AppId app_id =
       web_app::AppBrowserController::From(app_browser)->app_id();

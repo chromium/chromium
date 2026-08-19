@@ -6,6 +6,7 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -26,13 +27,13 @@ namespace web_app {
 
 namespace {
 
-content::RenderFrameHost* GetMainFrame(const Browser& browser) {
+content::RenderFrameHost* GetMainFrame(const BrowserWindowInterface& browser) {
   content::WebContents* web_contents =
       browser.tab_strip_model()->GetActiveWebContents();
   return web_contents ? web_contents->GetPrimaryMainFrame() : nullptr;
 }
 
-bool WaitForMainFrameToFocus(Browser* browser) {
+bool WaitForMainFrameToFocus(BrowserWindowInterface* browser) {
   return base::test::RunUntil([browser]() -> bool {
     content::RenderFrameHost* frame = GetMainFrame(*browser);
     if (!frame) {
@@ -43,7 +44,7 @@ bool WaitForMainFrameToFocus(Browser* browser) {
   });
 }
 
-bool IsMainFrameFocused(Browser* browser) {
+bool IsMainFrameFocused(BrowserWindowInterface* browser) {
   content::RenderFrameHost* frame = GetMainFrame(*browser);
   if (!frame) {
     return false;
@@ -53,7 +54,7 @@ bool IsMainFrameFocused(Browser* browser) {
       .ExtractBool();
 }
 
-bool IsWindowActive(Browser* browser) {
+bool IsWindowActive(BrowserWindowInterface* browser) {
   return browser->GetWindow()->IsActive();
 }
 
@@ -126,7 +127,7 @@ class IsolatedWebAppFocusBrowserTest
         blink::mojom::UserActivationNotificationType::kTest);
   }
 
-  testing::AssertionResult WindowHasFocus(Browser* browser) {
+  testing::AssertionResult WindowHasFocus(BrowserWindowInterface* browser) {
     if (!WaitForMainFrameToFocus(browser)) {
       return testing::AssertionFailure()
              << "Timed out waiting for browser main frame to focus.";
@@ -142,7 +143,7 @@ class IsolatedWebAppFocusBrowserTest
     return testing::AssertionSuccess();
   }
 
-  testing::AssertionResult WindowHasNoFocus(Browser* browser) {
+  testing::AssertionResult WindowHasNoFocus(BrowserWindowInterface* browser) {
     if (IsWindowActive(browser)) {
       return testing::AssertionFailure()
              << "Expected no focus, but OS window is active.";
@@ -154,27 +155,28 @@ class IsolatedWebAppFocusBrowserTest
     return testing::AssertionSuccess();
   }
 
-  Browser* OpenChildAppWindow(content::RenderFrameHost* iwa_frame) {
+  BrowserWindowInterface* OpenChildAppWindow(
+      content::RenderFrameHost* iwa_frame) {
     ui_test_utils::BrowserCreatedObserver browser_observer;
 
     EXPECT_TRUE(content::ExecJs(
         iwa_frame,
         "window.newWinHandle = window.open('/popup.html','_blank');"));
 
-    Browser* new_browser = browser_observer.Wait();
+    BrowserWindowInterface* new_browser = browser_observer.Wait();
     EXPECT_TRUE(new_browser);
 
     return new_browser;
   }
 
-  Browser* OpenPopup(content::RenderFrameHost* iwa_frame) {
+  BrowserWindowInterface* OpenPopup(content::RenderFrameHost* iwa_frame) {
     ui_test_utils::BrowserCreatedObserver browser_observer;
 
     EXPECT_TRUE(content::ExecJs(
         iwa_frame,
         "window.newWinHandle = window.open('/popup.html','_blank', 'popup');"));
 
-    Browser* new_browser = browser_observer.Wait();
+    BrowserWindowInterface* new_browser = browser_observer.Wait();
     EXPECT_TRUE(new_browser);
 
     return new_browser;
@@ -195,14 +197,15 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
 #endif
   IsolatedWebAppUrlInfo url_info =
       InstallIwa(IsWindowManagementPermissionDeclared());
-  Browser* iwa_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* iwa_browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   ASSERT_TRUE(iwa_browser);
   SetWindowManagementContentSetting(url_info.origin().GetURL());
 
   content::RenderFrameHost* iwa_frame = GetMainFrame(*iwa_browser);
   ASSERT_TRUE(iwa_frame);
 
-  Browser* new_browser = OpenChildAppWindow(iwa_frame);
+  BrowserWindowInterface* new_browser = OpenChildAppWindow(iwa_frame);
 
   EXPECT_TRUE(WindowHasFocus(new_browser));
   EXPECT_TRUE(WindowHasNoFocus(iwa_browser));
@@ -240,14 +243,15 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
 #endif
   IsolatedWebAppUrlInfo url_info =
       InstallIwa(IsWindowManagementPermissionDeclared());
-  Browser* iwa_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* iwa_browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   ASSERT_TRUE(iwa_browser);
   SetWindowManagementContentSetting(url_info.origin().GetURL());
 
   content::RenderFrameHost* iwa_frame = GetMainFrame(*iwa_browser);
   ASSERT_TRUE(iwa_frame);
 
-  Browser* new_browser = OpenChildAppWindow(iwa_frame);
+  BrowserWindowInterface* new_browser = OpenChildAppWindow(iwa_frame);
 
   EXPECT_TRUE(WindowHasFocus(new_browser));
   EXPECT_TRUE(WindowHasNoFocus(iwa_browser));
@@ -280,14 +284,15 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
 #endif
   IsolatedWebAppUrlInfo url_info =
       InstallIwa(IsWindowManagementPermissionDeclared());
-  Browser* iwa_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* iwa_browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   ASSERT_TRUE(iwa_browser);
   SetWindowManagementContentSetting(url_info.origin().GetURL());
 
   content::RenderFrameHost* iwa_frame = GetMainFrame(*iwa_browser);
   ASSERT_TRUE(iwa_frame);
 
-  Browser* new_browser = OpenChildAppWindow(iwa_frame);
+  BrowserWindowInterface* new_browser = OpenChildAppWindow(iwa_frame);
 
   EXPECT_TRUE(WindowHasFocus(new_browser));
   EXPECT_TRUE(WindowHasNoFocus(iwa_browser));
@@ -328,14 +333,15 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
 #endif
   IsolatedWebAppUrlInfo url_info =
       InstallIwa(IsWindowManagementPermissionDeclared());
-  Browser* iwa_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* iwa_browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   ASSERT_TRUE(iwa_browser);
   SetWindowManagementContentSetting(url_info.origin().GetURL());
 
   content::RenderFrameHost* iwa_frame = GetMainFrame(*iwa_browser);
   ASSERT_TRUE(iwa_frame);
 
-  Browser* new_browser = OpenPopup(iwa_frame);
+  BrowserWindowInterface* new_browser = OpenPopup(iwa_frame);
 
   EXPECT_TRUE(WindowHasFocus(new_browser));
   EXPECT_TRUE(WindowHasNoFocus(iwa_browser));
@@ -377,7 +383,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
 #endif
   IsolatedWebAppUrlInfo url_info =
       InstallIwa(IsWindowManagementPermissionDeclared());
-  Browser* iwa_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* iwa_browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   ASSERT_TRUE(iwa_browser);
   SetWindowManagementContentSetting(url_info.origin().GetURL());
 
@@ -387,13 +394,13 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
   ui_test_utils::BrowserCreatedObserver observer_1;
   ASSERT_TRUE(content::ExecJs(iwa_frame,
                               "window.child1 = window.open('/popup.html');"));
-  Browser* browser_1 = observer_1.Wait();
+  BrowserWindowInterface* browser_1 = observer_1.Wait();
   ASSERT_TRUE(browser_1);
 
   ui_test_utils::BrowserCreatedObserver observer_2;
   ASSERT_TRUE(content::ExecJs(iwa_frame,
                               "window.child2 = window.open('/popup.html');"));
-  Browser* browser_2 = observer_2.Wait();
+  BrowserWindowInterface* browser_2 = observer_2.Wait();
   ASSERT_TRUE(browser_2);
 
   browser_1->GetWindow()->Activate();
@@ -429,14 +436,15 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
 #endif
   IsolatedWebAppUrlInfo url_info =
       InstallIwa(IsWindowManagementPermissionDeclared());
-  Browser* iwa_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* iwa_browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   ASSERT_TRUE(iwa_browser);
   SetWindowManagementContentSetting(url_info.origin().GetURL());
 
   content::RenderFrameHost* iwa_frame = GetMainFrame(*iwa_browser);
   ASSERT_TRUE(iwa_frame);
 
-  Browser* new_browser = OpenChildAppWindow(iwa_frame);
+  BrowserWindowInterface* new_browser = OpenChildAppWindow(iwa_frame);
 
   EXPECT_TRUE(WindowHasFocus(new_browser));
   EXPECT_TRUE(WindowHasNoFocus(iwa_browser));
@@ -469,7 +477,8 @@ IN_PROC_BROWSER_TEST_P(
 #endif
   IsolatedWebAppUrlInfo url_info =
       InstallIwa(IsWindowManagementPermissionDeclared());
-  Browser* iwa_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* iwa_browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   ASSERT_TRUE(iwa_browser);
   SetWindowManagementContentSetting(url_info.origin().GetURL());
 
@@ -483,7 +492,7 @@ IN_PROC_BROWSER_TEST_P(
       iwa_frame, content::JsReplace("window.newWinHandle = window.open($1, "
                                     "'_blank', 'popup,width=400,height=400');",
                                     external_url)));
-  Browser* popup_browser = browser_observer.Wait();
+  BrowserWindowInterface* popup_browser = browser_observer.Wait();
   ASSERT_TRUE(popup_browser);
 
   content::WebContents* popup_contents =

@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/commands/launch_or_reparent_web_contents_into_app_command.h"
 
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
             GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Find the new browser and verify it is for the app.
-  Browser* app_browser = observer.Wait();
+  BrowserWindowInterface* app_browser = observer.Wait();
   EXPECT_TRUE(app_browser);
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(LaunchOrReparentWebContentsIntoAppCommandBrowserTest,
             GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Find the new browser and verify it is for the app.
-  Browser* app_browser = observer.Wait();
+  BrowserWindowInterface* app_browser = observer.Wait();
   EXPECT_TRUE(app_browser);
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));

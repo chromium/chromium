@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_navigation_capturing_browsertest_base.h"
@@ -60,12 +60,12 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingAuxContentFocusBrowserTest,
   // inspect that the aux_content tab isn't brought into focus again.
   intermediary_tab->Focus();
 
-  Browser* app_browser = CallWindowOpenExpectNewBrowser(
+  BrowserWindowInterface* app_browser = CallWindowOpenExpectNewBrowser(
       intermediary_tab, GetAppUrl(), /* with_opener= */ false);
   ASSERT_TRUE(app_browser);
   content::WebContents* app_contents =
       app_browser->tab_strip_model()->GetWebContentsAt(0);
-  EXPECT_EQ(Browser::Type::TYPE_APP, app_browser->GetType());
+  EXPECT_EQ(BrowserWindowInterface::Type::TYPE_APP, app_browser->GetType());
 
   WaitForLaunchParams(app_contents, /* min_launch_params_to_wait_for= */ 1);
   std::vector<GURL> launch_params = apps::test::GetLaunchParamUrlsInContents(

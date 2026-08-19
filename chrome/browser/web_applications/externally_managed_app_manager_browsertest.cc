@@ -16,8 +16,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
       registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
 
   // Open an app window so that the placeholder resolution is delayed.
-  Browser* app_browser = LaunchWebAppBrowser(app_id.value());
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id.value());
   EXPECT_NE(nullptr, app_browser);
   options.placeholder_resolution_behavior =
       PlaceholderResolutionBehavior::kWaitForAppWindowsClosed;

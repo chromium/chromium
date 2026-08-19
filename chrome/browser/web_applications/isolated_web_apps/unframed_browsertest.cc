@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/location.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -100,18 +101,18 @@ IsolatedWebAppBuilder CreateUnframedIwaBuilder() {
       .AddHtml(kUnframedPagePath, kPageHtml);
 }
 
-content::WebContents& WebContentsOf(Browser& browser) {
+content::WebContents& WebContentsOf(BrowserWindowInterface& browser) {
   return CHECK_DEREF(browser.tab_strip_model()->GetActiveWebContents());
 }
 
-blink::mojom::DisplayMode DisplayModeOf(Browser& browser) {
+blink::mojom::DisplayMode DisplayModeOf(BrowserWindowInterface& browser) {
   auto& web_contents = WebContentsOf(browser);
   return web_contents.GetDelegate()->GetDisplayMode(&web_contents);
 }
 
 // Reads the inner text of the "message" element. See
 // `CreateUnframedIwaBuilder`.
-content::EvalJsResult ReadAppMessage(Browser& browser) {
+content::EvalJsResult ReadAppMessage(BrowserWindowInterface& browser) {
   return content::EvalJs(
       &WebContentsOf(browser),
       "document.getElementById('message').innerText.trim();");
@@ -130,7 +131,7 @@ void SetContentSetting(
 }
 
 content::EvalJsResult WaitUntilCssDisplayModeIs(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     blink::mojom::DisplayMode mode) {
   std::string css_mode = blink::DisplayModeToString(mode);
   std::string script = content::JsReplace(R"(
@@ -149,12 +150,14 @@ content::EvalJsResult WaitUntilCssDisplayModeIs(
   return content::EvalJs(&WebContentsOf(browser), script);
 }
 
-Browser& CallWindowOpenAndReturnNewBrowser(Browser& browser,
-                                           std::string_view url_path) {
+BrowserWindowInterface& CallWindowOpenAndReturnNewBrowser(
+    BrowserWindowInterface& browser,
+    std::string_view url_path) {
   BrowserWaiter browser_waiter(nullptr);
   CHECK(content::ExecJs(&WebContentsOf(browser),
                         content::JsReplace("window.open($1)", url_path)));
-  Browser& new_browser = CHECK_DEREF(browser_waiter.AwaitAdded(FROM_HERE));
+  BrowserWindowInterface& new_browser =
+      CHECK_DEREF(browser_waiter.AwaitAdded(FROM_HERE));
   CHECK(content::WaitForLoadStop(&WebContentsOf(new_browser)));
   return new_browser;
 }
@@ -175,24 +178,26 @@ class UnframedTest : public WebAppBrowserTestBase {
         CreateUnframedIwaBuilder().BuildBundle()->InstallChecked(profile());
   }
 
-  Browser& LaunchAppInPathAndWait(std::string_view url_path) {
-    Browser& browser =
+  BrowserWindowInterface& LaunchAppInPathAndWait(std::string_view url_path) {
+    BrowserWindowInterface& browser =
         CHECK_DEREF(LaunchWebAppToURL(profile(), app_url_info_->app_id(),
                                       app_origin_url().Resolve(url_path)));
     CHECK(content::WaitForLoadStop(&WebContentsOf(browser)));
     return browser;
   }
 
-  Browser& LaunchAppWithWindowOpenAndWait(std::string_view url_path) {
-    Browser& starting_browser =
+  BrowserWindowInterface& LaunchAppWithWindowOpenAndWait(
+      std::string_view url_path) {
+    BrowserWindowInterface& starting_browser =
         CHECK_DEREF(LaunchWebAppBrowserAndWait(app_url_info_->app_id()));
-    Browser& browser =
+    BrowserWindowInterface& browser =
         CallWindowOpenAndReturnNewBrowser(starting_browser, url_path);
     CloseBrowserSynchronously(&starting_browser);
     return browser;
   }
 
-  bool NavigateToAppPathAndWait(Browser& browser, std::string_view url_path) {
+  bool NavigateToAppPathAndWait(BrowserWindowInterface& browser,
+                                std::string_view url_path) {
     return ui_test_utils::NavigateToURL(&browser,
                                         app_origin_url().Resolve(url_path)) &&
            content::WaitForLoadStop(&WebContentsOf(browser));
@@ -213,7 +218,7 @@ class UnframedTest : public WebAppBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(UnframedTest, AppCanCreateStandaloneWindow) {
   SetAppWindowManagementPermission(CONTENT_SETTING_ALLOW);
 
-  Browser& browser = LaunchAppInPathAndWait(kStandalonePagePath);
+  BrowserWindowInterface& browser = LaunchAppInPathAndWait(kStandalonePagePath);
   EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kStandalone);
   EXPECT_EQ(ReadAppMessage(browser), kNotUnframedMessage);
 }
@@ -221,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(UnframedTest, AppCanCreateStandaloneWindow) {
 IN_PROC_BROWSER_TEST_F(UnframedTest, AppCanCreateUnframedWindow) {
   SetAppWindowManagementPermission(CONTENT_SETTING_ALLOW);
 
-  Browser& browser = LaunchAppInPathAndWait(kUnframedPagePath);
+  BrowserWindowInterface& browser = LaunchAppInPathAndWait(kUnframedPagePath);
   EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kUnframed);
   EXPECT_EQ(ReadAppMessage(browser), kUnframedMessage);
 }
@@ -230,7 +235,8 @@ IN_PROC_BROWSER_TEST_F(UnframedTest, DisplayModeDoesNotChangeOnNavigation) {
   SetAppWindowManagementPermission(CONTENT_SETTING_ALLOW);
 
   {
-    Browser& browser = LaunchAppInPathAndWait(kStandalonePagePath);
+    BrowserWindowInterface& browser =
+        LaunchAppInPathAndWait(kStandalonePagePath);
     EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kStandalone);
 
     EXPECT_TRUE(NavigateToAppPathAndWait(browser, kUnframedPagePath));
@@ -238,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(UnframedTest, DisplayModeDoesNotChangeOnNavigation) {
   }
 
   {
-    Browser& browser = LaunchAppInPathAndWait(kUnframedPagePath);
+    BrowserWindowInterface& browser = LaunchAppInPathAndWait(kUnframedPagePath);
     EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kUnframed);
 
     EXPECT_TRUE(NavigateToAppPathAndWait(browser, kStandalonePagePath));
@@ -250,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(UnframedTest,
                        AppCannotCreateUnframedWindowWithoutPermission) {
   SetAppWindowManagementPermission(CONTENT_SETTING_BLOCK);
 
-  Browser& browser = LaunchAppInPathAndWait(kUnframedPagePath);
+  BrowserWindowInterface& browser = LaunchAppInPathAndWait(kUnframedPagePath);
   EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kStandalone);
   EXPECT_EQ(ReadAppMessage(browser), kNotUnframedMessage);
 }
@@ -259,7 +265,8 @@ IN_PROC_BROWSER_TEST_F(UnframedTest,
                        AppSwitchesInAndOutOfUnframedAsPermissionChanges) {
   SetAppWindowManagementPermission(CONTENT_SETTING_ALLOW);
 
-  Browser& browser = LaunchAppWithWindowOpenAndWait(kUnframedPagePath);
+  BrowserWindowInterface& browser =
+      LaunchAppWithWindowOpenAndWait(kUnframedPagePath);
   EXPECT_EQ(DisplayModeOf(browser), blink::mojom::DisplayMode::kUnframed);
   EXPECT_EQ(ReadAppMessage(browser), kUnframedMessage);
 

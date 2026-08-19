@@ -22,7 +22,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
@@ -192,7 +192,8 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
                        ControlledFrameUsageIsCounted) {
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
-  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
@@ -397,7 +398,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
                        LocalStorageCleared) {
   // Install 2 IWAs and add data to each.
   IsolatedWebAppUrlInfo url_info1 = InstallIsolatedWebApp();
-  Browser* browser1 = LaunchWebAppBrowserAndWait(url_info1.app_id());
+  BrowserWindowInterface* browser1 =
+      LaunchWebAppBrowserAndWait(url_info1.app_id());
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -406,7 +408,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   EXPECT_THAT(GetIwaUsage(url_info1), IsApproximately(1000));
 
   IsolatedWebAppUrlInfo url_info2 = InstallIsolatedWebApp();
-  Browser* browser2 = LaunchWebAppBrowserAndWait(url_info2.app_id());
+  BrowserWindowInterface* browser2 =
+      LaunchWebAppBrowserAndWait(url_info2.app_id());
   content::WebContents* web_contents2 =
       browser2->tab_strip_model()->GetActiveWebContents();
 
@@ -438,7 +441,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CacheCleared) {
   ASSERT_TRUE(cache_test_server->Start());
 
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
-  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
@@ -485,7 +489,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CacheCleared) {
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
-  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
@@ -572,7 +577,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
                        DataClearedOnUninstall) {
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
-  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
@@ -639,7 +645,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
 
   // Set up IWA.
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
-  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   // Create cache data in the IWA's main, persistent, and non-persistent
@@ -725,7 +732,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
 
   // Set up IWA.
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
-  Browser* browser2 = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* browser2 =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =
       browser2->tab_strip_model()->GetActiveWebContents();
   GURL cache_url = embedded_https_test_server().GetURL(
@@ -809,7 +817,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   ASSERT_TRUE(cache_test_server->Start());
 
   IsolatedWebAppUrlInfo url_info1 = InstallIsolatedWebApp();
-  Browser* browser1 = LaunchWebAppBrowserAndWait(url_info1.app_id());
+  BrowserWindowInterface* browser1 =
+      LaunchWebAppBrowserAndWait(url_info1.app_id());
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
   // Create both a persistent and a non-persistent partitions.
@@ -888,7 +897,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
       profile()->GetStoragePartition(
           url_info.storage_partition_config(profile()));
 
-  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   content::RenderFrameHost* rfh =
       browser->tab_strip_model()->GetActiveWebContents()->GetPrimaryMainFrame();
 
@@ -936,7 +946,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
                                base::ToString(in_memory)}));
     IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
 
-    Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+    BrowserWindowInterface* browser =
+        LaunchWebAppBrowserAndWait(url_info.app_id());
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
 

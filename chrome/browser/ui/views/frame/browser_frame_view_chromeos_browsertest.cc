@@ -1209,7 +1209,7 @@ class PreventCloseBrowserFrameViewChromeOSTest : public PreventCloseTestBase {
     PreventCloseTestBase::TearDownOnMainThread();
   }
 
-  views::Button* GetWindowCloseButton(Browser* browser) {
+  views::Button* GetWindowCloseButton(BrowserWindowInterface* browser) {
     auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     auto* const frame_view =
         ChromeOSBrowserUITest::GetFrameViewChromeOS(browser_view);
@@ -1227,7 +1227,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserFrameViewChromeOSTest,
                                    kPreventCloseEnabledForCalculator,
                                    kCalculatorForceInstalled);
 
-  Browser* const browser =
+  BrowserWindowInterface* const browser =
       LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
@@ -1258,7 +1258,7 @@ IN_PROC_BROWSER_TEST_F(PreventCloseBrowserFrameViewChromeOSTest,
                        CloseButtonIsEnabled) {
   InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
 
-  Browser* const browser =
+  BrowserWindowInterface* const browser =
       LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 

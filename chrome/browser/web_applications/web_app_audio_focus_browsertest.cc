@@ -8,7 +8,7 @@
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_P(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
   EXPECT_EQ(base::UnguessableToken::Null(), GetAudioFocusGroupId(tab2));
 
   // Launch the PWA.
-  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id);
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
@@ -209,7 +209,8 @@ IN_PROC_BROWSER_TEST_P(WebAppAudioFocusBrowserTest, AppHasDifferentAudioFocus) {
 
   // Launch a second window for the PWA. It should have the same group id.
   {
-    Browser* second_app_browser = LaunchWebAppBrowserAndWait(app_id);
+    BrowserWindowInterface* second_app_browser =
+        LaunchWebAppBrowserAndWait(app_id);
 
     content::WebContents* new_contents =
         second_app_browser->tab_strip_model()->GetActiveWebContents();

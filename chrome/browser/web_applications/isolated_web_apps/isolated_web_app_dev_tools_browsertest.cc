@@ -10,7 +10,7 @@
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -70,7 +70,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, MAYBE_ErrorPage) {
       CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
   IsolatedWebAppUrlInfo url_info =
       InstallDevModeProxyIsolatedWebApp(server->GetOrigin());
-  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* browser =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
@@ -95,7 +96,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, MAYBE_ErrorPage) {
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, IwaIdentifiedAsApp) {
   // 1) Install an Isolated Web App and check its type in DevTools
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
-  Browser* iwa_app = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* iwa_app =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   scoped_refptr<content::DevToolsAgentHost> iwa_host =
       content::DevToolsAgentHost::GetOrCreateFor(
           iwa_app->tab_strip_model()->GetActiveWebContents());
@@ -119,7 +121,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, IwaIdentifiedAsApp) {
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, IwaWithCorrectTitle) {
   IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
-  Browser* iwa_app = LaunchWebAppBrowserAndWait(url_info.app_id());
+  BrowserWindowInterface* iwa_app =
+      LaunchWebAppBrowserAndWait(url_info.app_id());
   scoped_refptr<content::DevToolsAgentHost> iwa_host =
       content::DevToolsAgentHost::GetOrCreateFor(
           iwa_app->tab_strip_model()->GetActiveWebContents());
@@ -133,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTest, PwaIdentifiedAsPage) {
   const GURL app_url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
   webapps::AppId pwa_id = web_app::test::InstallPwaForCurrentUrl(browser());
-  Browser* pwa_app =
+  BrowserWindowInterface* pwa_app =
       web_app::LaunchWebAppBrowserAndWait(browser()->GetProfile(), pwa_id);
   scoped_refptr<content::DevToolsAgentHost> pwa_host =
       content::DevToolsAgentHost::GetOrCreateFor(

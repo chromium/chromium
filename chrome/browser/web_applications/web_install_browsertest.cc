@@ -13,8 +13,8 @@
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
@@ -359,7 +359,8 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
 
   ASSERT_TRUE(TryInstallApp());
 
-  Browser* launched_app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* launched_app_browser =
+      browser_created_observer.Wait();
   ASSERT_TRUE(AppBrowserController::IsWebApp(launched_app_browser));
   EXPECT_EQ(AppBrowserController::From(launched_app_browser)->app_id(),
             parent_app_id);
@@ -395,7 +396,8 @@ IN_PROC_BROWSER_TEST_P(WebInstallCurrentDocumentBrowserTest,
 
   ASSERT_TRUE(TryInstallApp());
 
-  Browser* launched_app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* launched_app_browser =
+      browser_created_observer.Wait();
   ASSERT_TRUE(AppBrowserController::IsWebApp(launched_app_browser));
   EXPECT_EQ(AppBrowserController::From(launched_app_browser)->app_id(), app_id);
 
@@ -569,7 +571,7 @@ using WebInstallNotSupportedDialogBrowserTest =
 IN_PROC_BROWSER_TEST_P(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogInIncognito_CurrentDocument) {
   // Open incognito window and navigate to a page with a valid manifest.
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser, embedded_https_test_server().GetURL(kTestPageWithId)));
 
@@ -626,7 +628,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogInIncognito_BackgroundDocument) {
   // Open incognito window and navigate to a valid URL.
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, test_url));
 
   const GURL background_doc_install_url =
@@ -703,7 +705,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallNotSupportedDialogBrowserTest,
 IN_PROC_BROWSER_TEST_P(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogAfterTabSwitching) {
   // Open incognito window and navigate to a page with a valid manifest.
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser, embedded_https_test_server().GetURL(kTestPageWithId)));
 
@@ -772,9 +774,9 @@ IN_PROC_BROWSER_TEST_P(WebInstallGuestModeTest,
                        NotSupportedDialogInGuestMode_CurrentDocument) {
   // Open a new guest mode window.
 #if BUILDFLAG(IS_CHROMEOS)
-  Browser* guest_browser = browser();
+  BrowserWindowInterface* guest_browser = browser();
 #else
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
 
@@ -835,9 +837,9 @@ IN_PROC_BROWSER_TEST_P(WebInstallGuestModeTest,
                        NotSupportedDialogInGuestMode_BackgroundDocument) {
   // Open a new guest mode window.
 #if BUILDFLAG(IS_CHROMEOS)
-  Browser* guest_browser = browser();
+  BrowserWindowInterface* guest_browser = browser();
 #else
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
 

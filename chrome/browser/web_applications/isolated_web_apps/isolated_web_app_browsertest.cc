@@ -30,8 +30,8 @@
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -228,7 +228,8 @@ class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
     return browser()->GetProfile()->GetDefaultStoragePartition();
   }
 
-  content::RenderFrameHost* GetPrimaryMainFrame(Browser* browser) {
+  content::RenderFrameHost* GetPrimaryMainFrame(
+      BrowserWindowInterface* browser) {
     return browser->tab_strip_model()
         ->GetActiveWebContents()
         ->GetPrimaryMainFrame();
@@ -333,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, SameOriginWindowOpen) {
   navigation_observer.StartWatchingNewWebContents();
   BrowserWaiter browser_waiter(nullptr);
   ASSERT_TRUE(ExecJs(app_frame, "window.open('/popup')"));
-  Browser* popup = browser_waiter.AwaitAdded(FROM_HERE);
+  BrowserWindowInterface* popup = browser_waiter.AwaitAdded(FROM_HERE);
   navigation_observer.WaitForNavigationFinished();
 
   ASSERT_NE(popup, nullptr);
@@ -496,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, NoOpenInChrome) {
                    ->IsCommandEnabled(IDC_OPEN_IN_CHROME));
 
   auto app_menu_model = std::make_unique<WebAppMenuModel>(
-      /*provider=*/nullptr, app_browser->GetBrowserForMigrationOnly());
+      /*provider=*/nullptr, app_browser);
   app_menu_model->Init();
   ui::MenuModel* model = app_menu_model.get();
   size_t index = 0;

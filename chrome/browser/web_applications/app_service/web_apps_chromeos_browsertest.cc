@@ -21,8 +21,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {
 
   PinAppWithIDToShelf(installed_app_id);
 
-  Browser* const browser = LaunchWebAppBrowser(installed_app_id);
+  BrowserWindowInterface* const browser = LaunchWebAppBrowser(installed_app_id);
   ASSERT_TRUE(browser);
 
   ash::ShelfModel* const shelf_model = ash::ShelfModel::Get();
@@ -338,7 +338,8 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
               .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
               .Set(web_app::kPreventClose, IsPreventCloseEnabled())));
 
-  Browser* const browser = LaunchWebAppBrowserAndWait(installed_app_id);
+  BrowserWindowInterface* const browser =
+      LaunchWebAppBrowserAndWait(installed_app_id);
   ASSERT_TRUE(browser);
 
   chrome::CloseTab(browser);
@@ -367,7 +368,8 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
               .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
               .Set(web_app::kPreventClose, IsPreventCloseEnabled())));
 
-  Browser* const browser = LaunchWebAppBrowserAndWait(installed_app_id);
+  BrowserWindowInterface* const browser =
+      LaunchWebAppBrowserAndWait(installed_app_id);
   ASSERT_TRUE(browser);
 
   chrome::CloseWindow(browser);

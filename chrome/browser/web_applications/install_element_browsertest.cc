@@ -15,7 +15,7 @@
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_progress_view.h"
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, Install) {
   // Click the install element and wait for the app to open.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
-  Browser* web_app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* web_app_browser = browser_created_observer.Wait();
 
   // Verify installresult event was fired with "success".
   WaitForSuccessEvent(kInstallElementId);
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithUrl) {
   // Click the install element and wait for the app to open.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
-  Browser* web_app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* web_app_browser = browser_created_observer.Wait();
 
   // Verify installresult event was fired with "success".
   WaitForSuccessEvent(kInstallElementId);
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithUrlAndId) {
   // Click the install element and wait for the app to open.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
-  Browser* web_app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* web_app_browser = browser_created_observer.Wait();
 
   // Verify installresult event was fired with "success".
   WaitForSuccessEvent(kInstallElementId);
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, Install_DenyPermission) {
   // Click the install element and wait for the app to open.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
-  Browser* web_app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* web_app_browser = browser_created_observer.Wait();
 
   // Verify installresult event was fired with "success".
   WaitForSuccessEvent(kInstallElementId);
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest,
   // Click the install element and wait for the app to open.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
-  Browser* web_app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* web_app_browser = browser_created_observer.Wait();
 
   // Verify installresult event was fired with "success".
   WaitForSuccessEvent(kInstallElementId);
@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithManifest) {
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
-  Browser* web_app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* web_app_browser = browser_created_observer.Wait();
 
   WaitForSuccessEvent(kInstallElementId);
 
@@ -827,7 +827,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, InstallWithManifestAndId) {
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
-  Browser* web_app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* web_app_browser = browser_created_observer.Wait();
 
   WaitForSuccessEvent(kInstallElementId);
 
@@ -1238,7 +1238,7 @@ IN_PROC_BROWSER_TEST_P(InstallElementAndApiInteractionBrowserTest,
   {
     ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(ClickElementWithId(kInstallElementId));
-    Browser* web_app_browser = browser_created_observer.Wait();
+    BrowserWindowInterface* web_app_browser = browser_created_observer.Wait();
     WaitForSuccessEvent(kInstallElementId);
     ASSERT_TRUE(AppBrowserController::IsWebApp(web_app_browser));
   }

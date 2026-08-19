@@ -21,7 +21,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -170,7 +170,7 @@ class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  void NavigateToValidUrl(Browser* test_browser = nullptr) {
+  void NavigateToValidUrl(BrowserWindowInterface* test_browser = nullptr) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         test_browser ? test_browser : browser(),
         embedded_https_test_server().GetURL("/simple.html")));
@@ -1313,7 +1313,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   NavigateToValidUrl(incognito_browser);
 
   base::HistogramTester histograms;
@@ -1586,9 +1586,9 @@ class WebInstallPrivacyInvariantTest
   // and returns its WebContents to run the install in.
   content::WebContents* NavigateAndGetWebContents(
       std::string_view path = "/simple.html") {
-    Browser* test_browser = GetParam() == ProfileMode::kIncognito
-                                ? CreateIncognitoBrowser()
-                                : browser();
+    BrowserWindowInterface* test_browser = GetParam() == ProfileMode::kIncognito
+                                               ? CreateIncognitoBrowser()
+                                               : browser();
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         test_browser, embedded_https_test_server().GetURL(path)));
     return test_browser->tab_strip_model()->GetActiveWebContents();
@@ -1856,7 +1856,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   // and reject with AbortError (not DataError).
   base::HistogramTester histograms;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   NavigateToValidUrl(incognito_browser);
 
   views::NamedWidgetShownWaiter widget_waiter(
@@ -1941,9 +1941,9 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestGuestModeTest,
   base::HistogramTester histograms;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 #if BUILDFLAG(IS_CHROMEOS)
-  Browser* guest_browser = browser();
+  BrowserWindowInterface* guest_browser = browser();
 #else
-  Browser* guest_browser = CreateGuestBrowser();
+  BrowserWindowInterface* guest_browser = CreateGuestBrowser();
 #endif  // BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(guest_browser->GetProfile()->IsGuestSession());
 

@@ -99,7 +99,7 @@ class TabStripModelPreventCloseTest : public PreventCloseTestBase,
               (override));
 
  protected:
-  void ObserveBrowser(Browser* browser) {
+  void ObserveBrowser(BrowserWindowInterface* browser) {
     browser_did_close_subscription_ =
         browser->RegisterBrowserDidClose(base::BindRepeating(
             [](TabStripModelPreventCloseTest* self, BrowserWindowInterface*) {
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
   SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
                                    kCalculatorForceInstalled);
-  Browser* const browser =
+  BrowserWindowInterface* const browser =
       LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(
   SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
                                    kCalculatorForceInstalled);
-  Browser* const browser =
+  BrowserWindowInterface* const browser =
       LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/false);
   ASSERT_TRUE(browser);
 

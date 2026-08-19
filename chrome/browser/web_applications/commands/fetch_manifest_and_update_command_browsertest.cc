@@ -9,7 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -73,7 +73,7 @@ class FetchManifestAndUpdateCommandMigrationTest
 
 IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
                        CheckMigrateFromTriggersUpdate) {
-  Browser* app_browser = InstallWebAppFromPageGetBrowser(
+  BrowserWindowInterface* app_browser = InstallWebAppFromPageGetBrowser(
       browser(), embedded_https_test_server().GetURL(
                      "/web_apps/migration/migrate_from/suggest.html"));
   webapps::AppId app_a_id = AppBrowserController::From(app_browser)->app_id();
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
 
 IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
                        CheckMigrateFromTriggersUpdate_WithUpdate) {
-  Browser* app_browser = InstallWebAppFromPageGetBrowser(
+  BrowserWindowInterface* app_browser = InstallWebAppFromPageGetBrowser(
       browser(), embedded_https_test_server().GetURL(
                      "/web_apps/migration/migrate_from/suggest.html"));
   webapps::AppId app_a_id = AppBrowserController::From(app_browser)->app_id();

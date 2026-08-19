@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/link_capturing/enable_link_capturing_infobar_delegate.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
                      mojom::UserDisplayMode::kStandalone,
                      ManifestLaunchHandler_ClientMode::kFocusExisting));
 
-  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id);
   EXPECT_NE(app_browser, browser());
   content::WebContents* app_contents =
       app_browser->tab_strip_model()->GetWebContentsAt(0);
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
       mojom::UserDisplayMode::kStandalone,
       ManifestLaunchHandler_ClientMode::kNavigateExisting));
 
-  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id);
   EXPECT_NE(app_browser, browser());
   content::WebContents* app_contents =
       app_browser->tab_strip_model()->GetWebContentsAt(0);
@@ -188,14 +188,14 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
       [&](base::FunctionRef<webapps::AppId()> app_browser_launcher) {
         ui_test_utils::BrowserCreatedObserver browser_created_observer;
         webapps::AppId app_id = app_browser_launcher();
-        Browser* app_browser = browser_created_observer.Wait();
+        BrowserWindowInterface* app_browser = browser_created_observer.Wait();
         EXPECT_NE(app_browser, browser());
         EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
         return std::make_pair(app_browser, app_id);
       };
 
   // Install WCO app and toggle the Window Controls Overlay display.
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::InstallWebAppFromPageGetBrowser(browser(), GetAppUrlWithWCO());
   const webapps::AppId app_id =
       web_app::AppBrowserController::From(app_browser)->app_id();
@@ -232,12 +232,12 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   // hangs, waiting for certain nested tasks to finish.
   content::TitleWatcher title_watcher2(new_contents, u"WCO Disabled",
                                        /*include_nestable_tasks=*/true);
-  std::pair<Browser*, webapps::AppId> post_intent_picker_data =
+  std::pair<BrowserWindowInterface*, webapps::AppId> post_intent_picker_data =
       ensure_app_browser([&] {
         EXPECT_TRUE(web_app::ClickIntentPickerChip(browser()));
         return app_id;
       });
-  Browser* new_app_browser = post_intent_picker_data.first;
+  BrowserWindowInterface* new_app_browser = post_intent_picker_data.first;
   std::ignore = title_watcher2.WaitAndGetTitle();
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(new_app_browser)
                    ->IsWindowControlsOverlayEnabled());
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppNavigationCapturingIntentPickerBrowserTest,
   if (expect_new_window) {
     ui_test_utils::BrowserCreatedObserver browser_observer;
     ASSERT_TRUE(web_app::ClickIntentPickerChip(browser()));
-    Browser* second_app_browser = browser_observer.Wait();
+    BrowserWindowInterface* second_app_browser = browser_observer.Wait();
 
     // Verify the new browser is for the correct app.
     EXPECT_TRUE(AppBrowserController::IsForWebApp(second_app_browser,

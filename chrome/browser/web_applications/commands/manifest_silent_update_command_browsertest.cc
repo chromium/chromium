@@ -16,8 +16,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest, SilentUpdate) {
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/updating/index.html");
   const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest, PendingUpdate) {
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/updating/index.html");
   const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   const GURL app_url =
       embedded_https_test_server().GetURL("/web_apps/scope_updating/page.html");
   const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
       embedded_https_test_server().GetURL("/web_apps/updating/index_blue.html");
   const webapps::AppId app_id =
       InstallWebAppInNewTabAndClose(browser(), app_url);
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
       embedded_https_test_server().GetURL("/web_apps/updating/index_blue.html");
   const webapps::AppId app_id =
       InstallWebAppInNewTabAndClose(browser(), app_url);
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
       embedded_https_test_server().GetURL("/web_apps/updating/index.html");
   const webapps::AppId app_id =
       InstallWebAppInNewTabAndClose(browser(), app_url);
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -477,7 +477,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
 
   // Fourth, launch the app, and wait for any commands to complete. The menu
   // button should not be updated.
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id);
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   WebAppMenuButton* const menu_button = views::AsViewClass<WebAppMenuButton>(
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
@@ -573,7 +573,7 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandLineTests,
       embedded_https_test_server().GetURL("/web_apps/updating/index_blue.html");
   const webapps::AppId app_id =
       InstallWebAppInNewTabAndClose(browser(), app_url);
-  Browser* app_browser = LaunchWebAppBrowser(app_id);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id);
   // TODO(crbug.com/442643377): Delete this wait after the update runs for every
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();

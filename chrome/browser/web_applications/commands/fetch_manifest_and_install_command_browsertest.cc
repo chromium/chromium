@@ -15,7 +15,6 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -455,14 +454,12 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
 
   // Navigate outside scope to trigger custom tab bar.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      app_browser->GetBrowserForMigrationOnly(),
-      embedded_https_test_server().GetURL(
-          "/web_apps/scope_updating/out-of-scope.html")));
+      app_browser, embedded_https_test_server().GetURL(
+                       "/web_apps/scope_updating/out-of-scope.html")));
 
   EXPECT_TRUE(
       AppBrowserController::From(app_browser)->ShouldShowCustomTabBar());
-  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(
-      app_browser->GetBrowserForMigrationOnly());
+  BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser);
   ASSERT_TRUE(app_view);
   EXPECT_TRUE(
       app_view->toolbar()->custom_tab_bar()->IsShowingOriginForTesting());
@@ -506,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   // command) does not reparent the current web contents into the installed app.
   webapps::AppId other_app_id;
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(
-      app_browser->GetBrowserForMigrationOnly(),
+      app_browser,
       embedded_https_test_server().GetURL("/web_apps/simple/index.html")));
   {
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>

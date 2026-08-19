@@ -9,7 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -76,7 +76,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
   webapps::AppId app_id = web_app->app_id();
 
   // 2. Launch the app and navigate out of scope.
-  Browser* app_browser = web_app::LaunchWebAppBrowser(profile(), app_id);
+  BrowserWindowInterface* app_browser =
+      web_app::LaunchWebAppBrowser(profile(), app_id);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, out_of_scope_url));
   WebAppBrowserController* controller =
       web_app::AppBrowserController::From(app_browser)
@@ -126,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
 
   // 2. Launch the app to a page that will update it's scope..
   UpdateAwaiter update_awaiter(provider().install_manager());
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       web_app::LaunchWebAppToURL(profile(), app_id, updating_url);
   ASSERT_TRUE(app_browser);
   update_awaiter.AwaitUpdate();

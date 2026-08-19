@@ -19,7 +19,6 @@
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -170,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
                        OutOfScopeBarRemoval) {
   // Check that the out of scope banner doesn't show after navigating to the
   // different scope in the web app window.
-  Browser* app_browser = LaunchWebAppBrowser(app_id_);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowser(app_id_);
   NavigateViaLinkClickToURLAndWait(app_browser, extended_scope_page_);
   EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
                    ->ShouldShowCustomTabBar());
@@ -196,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
                        IgnoreManifestColor) {
-  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
                    ->GetThemeColor()
                    .has_value());
@@ -281,7 +280,7 @@ class ChromeOsWebAppExperimentsNavigationBrowserTest
 // leaving that window.
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        PostForm) {
-  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
@@ -317,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 // window opened via target=_blank, ends up in a new app window.
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        PostFormInBlankWindow) {
-  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
@@ -355,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 // in a new app window.
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        OpenAsBlankWindow) {
-  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
@@ -383,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 // target=_top to an app-controlled URL ends up in a new app window.
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        OpenTopWindowInBlankWindow) {
-  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
@@ -466,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
 // out-of-scope URL results in opening a browser tab.
 IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        NoopenerNoreferrerBlankLinkToOutOfScope) {
-  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 

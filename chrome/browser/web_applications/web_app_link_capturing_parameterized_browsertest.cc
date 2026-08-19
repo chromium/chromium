@@ -46,7 +46,6 @@
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -1070,7 +1069,7 @@ class NavCaptureParameterizedBrowserTest
   }
 
  protected:
-  void EnsureValidNewTabPage(Browser* browser) {
+  void EnsureValidNewTabPage(BrowserWindowInterface* browser) {
     CHECK(browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL);
     // Ensure that if a fixture ended up loading a different page in the
     // starting tab, create a new tab for the navigation.
@@ -1107,8 +1106,9 @@ class NavCaptureParameterizedBrowserTest
     return contents;
   }
 
-  content::WebContents* LaunchPageInTab(const GURL& url,
-                                        Browser* browser_window = nullptr) {
+  content::WebContents* LaunchPageInTab(
+      const GURL& url,
+      BrowserWindowInterface* browser_window = nullptr) {
     content::DOMMessageQueue message_queue;
     if (browser_window == nullptr) {
       browser_window = browser();
@@ -1927,24 +1927,24 @@ class NavCaptureParameterizedBrowserTest
     return GetExpectationsFile(file_config);
   }
 
-  Browser::Type StringToBrowserType(std::string type) {
+  BrowserWindowInterface::Type StringToBrowserType(std::string type) {
     if (type == "TYPE_NORMAL") {
-      return Browser::Type::TYPE_NORMAL;
+      return BrowserWindowInterface::Type::TYPE_NORMAL;
     }
     if (type == "TYPE_POPUP") {
-      return Browser::Type::TYPE_POPUP;
+      return BrowserWindowInterface::Type::TYPE_POPUP;
     }
     if (type == "TYPE_APP") {
-      return Browser::Type::TYPE_APP;
+      return BrowserWindowInterface::Type::TYPE_APP;
     }
     if (type == "TYPE_DEVTOOLS") {
-      return Browser::Type::TYPE_DEVTOOLS;
+      return BrowserWindowInterface::Type::TYPE_DEVTOOLS;
     }
     if (type == "TYPE_APP_POPUP") {
-      return Browser::Type::TYPE_APP_POPUP;
+      return BrowserWindowInterface::Type::TYPE_APP_POPUP;
     }
     if (type == "TYPE_PICTURE_IN_PICTURE") {
-      return Browser::Type::TYPE_PICTURE_IN_PICTURE;
+      return BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE;
     }
 
     NOTREACHED() << "Unknown browser type: " + type;
@@ -2954,7 +2954,7 @@ class NavigationCapturingTestWithAppBInNewBrowserWindow
   testing::AssertionResult MaybeCustomPreSetup(
       const webapps::AppId& app_a,
       const webapps::AppId& app_b) override {
-    Browser* browser_b = CreateBrowser(profile());
+    BrowserWindowInterface* browser_b = CreateBrowser(profile());
     GURL url_b_dest = embedded_test_server()->GetURL(kDestinationPageScopeB);
     if (!LaunchPageInTab(url_b_dest, browser_b)) {
       return testing::AssertionFailure() << "Unable to launch app b in a tab.";

@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -81,8 +81,9 @@ void PreventCloseTestBase::InstallPWA(const GURL& app_url,
   EXPECT_EQ(app_id, installed_app_id);
 }
 
-Browser* PreventCloseTestBase::LaunchPWA(const webapps::AppId& app_id,
-                                         bool launch_in_window) {
+BrowserWindowInterface* PreventCloseTestBase::LaunchPWA(
+    const webapps::AppId& app_id,
+    bool launch_in_window) {
   return launch_in_window
              ? web_app::LaunchWebAppBrowserAndWait(
                    profile(), app_id, WindowOpenDisposition::NEW_WINDOW)
