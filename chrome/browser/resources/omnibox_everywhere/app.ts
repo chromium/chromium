@@ -54,7 +54,10 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
       isOblongShape_: {type: Boolean},
       contextManagementInComposeboxEnabled_: {type: Boolean},
       composeboxState_: {type: Object},
-      showVoiceSearchOverlay_: {type: Boolean},
+      showVoiceSearchOverlay_: {
+        type: Boolean,
+        reflect: true,
+      },
       hasVoiceSearchError_: {type: Boolean},
       voiceSearchTranscript_: {type: String},
       voiceSearchReceivedSpeech_: {type: Boolean},
