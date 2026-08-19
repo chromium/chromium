@@ -2219,7 +2219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.LowMemoryKiller.Count" units="low-memory kills"
-    expires_after="2026-09-06">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>vovoy@google.com</owner>
   <summary>
@@ -2229,21 +2229,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.LowMemoryKiller.FirstKillLatency" units="ms"
-    expires_after="2024-12-08">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>vovoy@google.com</owner>
   <summary>
     When Chrome OS is in low memory state, TabManager kills some victims to free
     memory. This value is the elapsed time between TabManager receiving the low
     memory notification and the first kill.
+
+    Warning: this histogram was expired from 2024-12-08 to 2026-08-17; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Memory.LowMemoryKiller.FreedSize" units="KB"
-    expires_after="2024-07-21">
+    expires_after="2027-04-01">
   <owner>khmel@google.com</owner>
   <owner>vovoy@google.com</owner>
-  <summary>The memory size freed by each low memory kill event.</summary>
+  <summary>
+    The memory size freed by each low memory kill event.
+
+    Warning: this histogram was expired from 2024-07-21 to 2026-08-17; data may
+    be missing.
+  </summary>
 </histogram>
 
 <histogram name="Memory.MemoryDumpOutcome" enum="RequestOutcome"
