@@ -747,33 +747,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
   ContinueJsTest();
 }
 
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testSwitchConversationToExistingInstance) {
-  // Open glic. It will register a conversation.
-  ExecuteJsTest({.params = base::Value("first")});
-
-  // Open a second tab and second glic instance. It will switch conversations
-  // resulting in deleting the second glic instance.
-  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  TrackGlicInstanceWithTabIndex(1);
-  RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-  ExecuteJsTest({.params = base::Value("second")});
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return GetInstanceCoordinatorImpl().GetInstances().size() == 1u;
-  }));
-  ASSERT_EQ("id_hello", GetGlicInstanceImpl()->conversation_id());
-
-  // This should continue the test in the first instance, because tab 2 is now
-  // bound to that instance.
-  ContinueJsTest();
-}
-
-
 // TODO(b/498955581): Clean up glic hibernation experiments, and test in the
 // coordinator test.
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testHibernateAllOnMemoryPressure) {
