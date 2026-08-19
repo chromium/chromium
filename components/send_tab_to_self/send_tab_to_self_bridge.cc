@@ -407,6 +407,8 @@ void SendTabToSelfBridge::ApplyDisableSyncChanges(
   std::vector<std::string> all_guids = GetAllGuids();
 
   entries_.clear();
+  unknown_opened_entries_.clear();
+  unknown_activated_entries_.clear();
   mru_entry_guid_.clear();
 
   commit_tracker_->OnSyncDisabled();

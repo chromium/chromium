@@ -61,6 +61,7 @@ using testing::AllOf;
 using testing::ElementsAre;
 using testing::Field;
 using testing::IsEmpty;
+using testing::NotNull;
 using testing::Return;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
@@ -1062,14 +1063,14 @@ TEST_F(SendTabToSelfBridgeTest, NotifyPendingCommitsOnIncrementalSync) {
 
   // Still unsynced, should not fire.
   ON_CALL(*processor(), IsEntityUnsynced(entry->GetGUID()))
-      .WillByDefault(testing::Return(true));
+      .WillByDefault(Return(true));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         syncer::EntityChangeList());
   EXPECT_FALSE(future.IsReady());
 
   // Once synced, it should fire.
   ON_CALL(*processor(), IsEntityUnsynced(entry->GetGUID()))
-      .WillByDefault(testing::Return(false));
+      .WillByDefault(Return(false));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         syncer::EntityChangeList());
   EXPECT_EQ(future.Get(), SendTabToSelfResult::kSuccess);
@@ -1691,7 +1692,7 @@ TEST_F(SendTabToSelfBridgeTest, SendTabToSelfEntryActivated_QueueUnknownGuid) {
 
   // Verify that the entry is now in the bridge, opened, and activated.
   const SendTabToSelfEntry* local_entry = bridge()->GetEntryByGUID("guid1");
-  ASSERT_THAT(local_entry, testing::NotNull());
+  ASSERT_THAT(local_entry, NotNull());
   EXPECT_TRUE(local_entry->IsOpened());
   EXPECT_TRUE(local_entry->IsActivated());
 
@@ -1703,6 +1704,43 @@ TEST_F(SendTabToSelfBridgeTest, SendTabToSelfEntryActivated_QueueUnknownGuid) {
       "Sharing.SendTabToSelf.TimeSentToActivated", base::Seconds(15), 1);
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.ActivatedEntryPoint", entry_point, 1);
+}
+
+// Tests that queued unknown opened and activated entries are cleared when sync
+// is disabled, preventing them from being applied in a later sync session.
+TEST_F(SendTabToSelfBridgeTest, ClearQueuedUnknownEntriesOnDisableSync) {
+  InitializeBridge();
+  SetLocalDeviceCacheGuid("Device1");
+
+  SendTabToSelfEntry entry("guid1", GURL("http://www.example.com/"), "title",
+                           AdvanceAndGetTime(), "device", "Device1",
+                           PageContext(), NavigationHistory());
+
+  // Queue open and activation events for an unknown GUID before sync delivery.
+  bridge()->MarkEntryOpened("guid1");
+  bridge()->MarkEntryActivated("guid1", ShareActivatedEntryPoint::kTabStrip);
+
+  // Disabling sync clears local state, including queued open and activation
+  // entries.
+  bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
+
+  // Put should not be called since queued open and activation states were
+  // cleared.
+  EXPECT_CALL(*processor(), Put).Times(0);
+
+  // Deliver the entry via sync in a new sync session.
+  syncer::EntityChangeList remote_input;
+  remote_input.push_back(
+      syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry)));
+
+  bridge()->MergeFullSyncData(
+      std::make_unique<syncer::InMemoryMetadataChangeList>(),
+      std::move(remote_input));
+
+  const SendTabToSelfEntry* local_entry = bridge()->GetEntryByGUID("guid1");
+  ASSERT_THAT(local_entry, NotNull());
+  EXPECT_FALSE(local_entry->IsOpened());
+  EXPECT_FALSE(local_entry->IsActivated());
 }
 
 TEST_F(SendTabToSelfBridgeTest,
@@ -1970,10 +2008,8 @@ TEST_F(SendTabToSelfBridgeTest,
   // Stable sort should preserve the order from GetAllDeviceInfo if timestamps
   // are equal. FakeDeviceInfoTracker::GetAllDeviceInfo usually returns in order
   // of addition. This is a safety check for deterministic behavior.
-  EXPECT_THAT(
-      list,
-      ElementsAre(testing::Field(&TargetDeviceInfo::cache_guid, "guid1"),
-                  testing::Field(&TargetDeviceInfo::cache_guid, "guid2")));
+  EXPECT_THAT(list, ElementsAre(Field(&TargetDeviceInfo::cache_guid, "guid1"),
+                                Field(&TargetDeviceInfo::cache_guid, "guid2")));
 }
 
 TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
@@ -2000,12 +2036,11 @@ TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfoSortedList_FormFactors) {
 
   std::vector<TargetDeviceInfo> list =
       bridge()->GetTargetDeviceInfoSortedList();
-  EXPECT_THAT(list,
-              UnorderedElementsAre(
-                  testing::Field(&TargetDeviceInfo::form_factor,
-                                 syncer::DeviceInfo::FormFactor::kDesktop),
-                  testing::Field(&TargetDeviceInfo::form_factor,
-                                 syncer::DeviceInfo::FormFactor::kPhone)));
+  EXPECT_THAT(list, UnorderedElementsAre(
+                        Field(&TargetDeviceInfo::form_factor,
+                              syncer::DeviceInfo::FormFactor::kDesktop),
+                        Field(&TargetDeviceInfo::form_factor,
+                              syncer::DeviceInfo::FormFactor::kPhone)));
 }
 
 TEST_F(SendTabToSelfBridgeTest, GetTargetDeviceInfo) {
