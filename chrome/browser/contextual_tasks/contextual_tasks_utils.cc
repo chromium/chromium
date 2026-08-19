@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
@@ -33,6 +35,7 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
+#include "components/contextual_tasks/public/utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "content/public/browser/web_contents.h"
@@ -388,6 +391,34 @@ std::vector<uint8_t> GetSerializedHandshakeMessage() {
   std::vector<uint8_t> serialized_message(size);
   message.SerializeToArray(serialized_message.data(), size);
   return serialized_message;
+}
+
+bool ShouldUseDarkMode(Profile* profile, const GURL& url) {
+  std::optional<bool> url_dark_mode = GetDarkModeFromUrl(url);
+  if (url_dark_mode.has_value()) {
+    return *url_dark_mode;
+  }
+  return ShouldUseDarkMode(profile);
+}
+
+bool ShouldUseDarkMode(Profile* profile) {
+#if !BUILDFLAG(IS_ANDROID)
+  // Assume light mode as fallback.
+  if (!profile) {
+    return false;
+  }
+
+  // Always use dark mode in incognito.
+  if (profile->IsOffTheRecord()) {
+    return true;
+  }
+
+  // In all other cases, respect the theme service dark mode preferences.
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
+  return theme_service && theme_service->BrowserUsesDarkColors();
+#else
+  return false;
+#endif
 }
 
 }  // namespace contextual_tasks

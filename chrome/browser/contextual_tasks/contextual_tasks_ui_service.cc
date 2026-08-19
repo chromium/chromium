@@ -1469,9 +1469,7 @@ ContextualTasksUiService::GetCommonSearchParamsMapForContextualTasks(
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile =
       Profile::FromBrowserContext(source_contents->GetBrowserContext());
-  ThemeService* theme_service =
-      profile ? ThemeServiceFactory::GetForProfile(profile) : nullptr;
-  is_dark_mode = theme_service ? theme_service->BrowserUsesDarkColors() : false;
+  is_dark_mode = contextual_tasks::ShouldUseDarkMode(profile);
 #endif
 
   bool is_side_panel =

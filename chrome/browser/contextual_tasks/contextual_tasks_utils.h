@@ -129,6 +129,17 @@ void UpdatePinButtonVisibilityState(BrowserWindowInterface* browser_window,
                                     bool eligible);
 #endif
 
+// Returns whether dark mode should be used for the given profile and URL.
+// If the URL contains a 'cs' parameter, that takes precedence. Otherwise,
+// returns true if ThemeService uses dark colors or if the profile is
+// off-the-record (Incognito).
+bool ShouldUseDarkMode(Profile* profile, const GURL& url);
+
+// Returns whether dark mode should be used for the given profile. Returns true
+// if ThemeService uses dark colors or if the profile is off-the-record
+// (Incognito).
+bool ShouldUseDarkMode(Profile* profile);
+
 // Returns the ClientToAimMessage containing the HandshakePing
 // with supported capabilities.
 lens::ClientToAimMessage GetHandshakeMessageProto();
