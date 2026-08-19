@@ -210,8 +210,8 @@ void DaemonProcessWin::LaunchNetworkProcess() {
   auto delegate = std::make_unique<UnprivilegedProcessDelegate>(
       io_task_runner(), std::move(target),
       UnprivilegedProcessDelegate::IntegrityLevel::kLow);
-  delegate->UseAppContainer(L"chromoting.network");
-
+  // TODO(joedow): Address software-backed cert issues and then configure
+  // this process to run in an app container again.
   SetNetworkLauncherDelegate(std::move(delegate));
 }
 
