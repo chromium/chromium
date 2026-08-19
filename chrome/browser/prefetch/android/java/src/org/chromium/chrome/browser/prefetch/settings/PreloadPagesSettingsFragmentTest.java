@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -49,8 +49,8 @@ public class PreloadPagesSettingsFragmentTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public SettingsActivityTestRule<PreloadPagesSettingsFragment> mTestRule =
-            new SettingsActivityTestRule<>(PreloadPagesSettingsFragment.class);
+    public SettingsTestRule<PreloadPagesSettingsFragment> mTestRule =
+            new SettingsTestRule<>(PreloadPagesSettingsFragment.class);
 
     @Mock private SettingsNavigation mSettingsNavigation;
 
