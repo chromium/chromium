@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -17,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/skills/public/skills_prefs.h"
@@ -32,6 +34,11 @@
 namespace skills {
 
 namespace {
+
+constexpr char kLogPrefix[] = "[EnterprisePublishedSkills] ";
+constexpr char kBaseValidationError[] =
+    "Validation failed for skill with hash: ";
+constexpr char kDownloadFailedError[] = "Failed to download skill with hash: ";
 
 constexpr char kValidYamlFrontmatter[] =
     "---\n"
@@ -49,6 +56,19 @@ constexpr char kFetchYamlFrontmatter[] =
     "description: \"This is a test skill\"\n"
     "---\n"
     "Prompt content goes here.";
+
+bool HasPolicyLogMessage(std::string_view substring) {
+  base::ListValue logs = policy::PolicyLogger::GetInstance()->GetAsList();
+  for (const auto& log : logs) {
+    if (log.is_dict()) {
+      const std::string* message = log.GetDict().FindString("message");
+      if (message && message->find(substring) != std::string::npos) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 
 }  // namespace
 
@@ -500,6 +520,85 @@ TEST_F(EnterpriseSkillsProviderFetchTest,
   const auto& skills = provider_->GetSkills();
   ASSERT_EQ(1u, skills.size());
   EXPECT_EQ("Skill 2", skills[0]->name);
+}
+
+TEST_F(EnterpriseSkillsProviderFetchTest, HashMismatchLogsToPolicyLogger) {
+  policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
+  std::string wrong_hash =
+      "1111111111111111111111111111111111111111111111111111111111111111";
+
+  base::RunLoop run_loop;
+  auto sub = provider_->RegisterSkillsChangedCallback(run_loop.QuitClosure());
+
+  SetPolicyPref({{kTestUrl1, wrong_hash}});
+  test_url_loader_factory_.AddResponse(kTestUrl1, kFetchYamlFrontmatter);
+  run_loop.Run();
+
+  EXPECT_EQ(0u, provider_->GetSkills().size());
+  EXPECT_TRUE(
+      HasPolicyLogMessage(base::StrCat({kLogPrefix, "Hash mismatch."})));
+}
+
+TEST_F(EnterpriseSkillsProviderFetchTest, DownloadFailureLogsToPolicyLogger) {
+  policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
+  std::string expected_hash =
+      base::HexEncode(crypto::hash::Sha256(kFetchYamlFrontmatter));
+
+  base::RunLoop run_loop;
+  auto sub = provider_->RegisterSkillsChangedCallback(run_loop.QuitClosure());
+
+  SetPolicyPref({{kTestUrl1, expected_hash}});
+  test_url_loader_factory_.AddResponse(kTestUrl1, "", net::HTTP_NOT_FOUND);
+  run_loop.Run();
+
+  EXPECT_EQ(0u, provider_->GetSkills().size());
+  EXPECT_TRUE(
+      HasPolicyLogMessage(base::StrCat({kLogPrefix, kDownloadFailedError})));
+}
+
+TEST_F(EnterpriseSkillsProviderFetchTest,
+       FormatValidationFailureLogsToPolicyLogger) {
+  policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
+  std::string invalid_content = "invalid non-yaml frontmatter content";
+  std::string expected_hash =
+      base::HexEncode(crypto::hash::Sha256(invalid_content));
+
+  base::RunLoop run_loop;
+  auto sub = provider_->RegisterSkillsChangedCallback(run_loop.QuitClosure());
+
+  SetPolicyPref({{kTestUrl1, expected_hash}});
+  test_url_loader_factory_.AddResponse(kTestUrl1, invalid_content);
+  run_loop.Run();
+
+  EXPECT_EQ(0u, provider_->GetSkills().size());
+  EXPECT_TRUE(
+      HasPolicyLogMessage(base::StrCat({kLogPrefix, kBaseValidationError})));
+  EXPECT_TRUE(HasPolicyLogMessage("(Reason: Invalid format)"));
+}
+
+TEST_F(EnterpriseSkillsProviderFetchTest,
+       MetadataValidationFailureLogsToPolicyLogger) {
+  policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
+  std::string invalid_metadata_content =
+      "---\n"
+      "name: \"This skill name is definitely longer than 20 characters\"\n"
+      "description: \"Test description\"\n"
+      "---\n"
+      "Prompt goes here";
+  std::string expected_hash =
+      base::HexEncode(crypto::hash::Sha256(invalid_metadata_content));
+
+  base::RunLoop run_loop;
+  auto sub = provider_->RegisterSkillsChangedCallback(run_loop.QuitClosure());
+
+  SetPolicyPref({{kTestUrl1, expected_hash}});
+  test_url_loader_factory_.AddResponse(kTestUrl1, invalid_metadata_content);
+  run_loop.Run();
+
+  EXPECT_EQ(0u, provider_->GetSkills().size());
+  EXPECT_TRUE(
+      HasPolicyLogMessage(base::StrCat({kLogPrefix, kBaseValidationError})));
+  EXPECT_TRUE(HasPolicyLogMessage("(Reason: Invalid name length)"));
 }
 
 }  // namespace skills

@@ -56,8 +56,10 @@ bool IsFieldValid(std::string_view field, size_t max_length) {
   return !field.empty() && field.length() <= max_length;
 }
 
+constexpr char kLogPrefix[] = "[EnterprisePublishedSkills] ";
 constexpr char kBaseValidationError[] =
-    "Validation failed for enterprise skill (Hash: ";
+    "Validation failed for skill with hash: ";
+constexpr char kDownloadFailedError[] = "Failed to download skill with hash: ";
 
 EnterpriseSkillValidationResult ValidateSkillMetadata(
     std::string_view expected_hash,
@@ -66,20 +68,20 @@ EnterpriseSkillValidationResult ValidateSkillMetadata(
     std::string_view prompt) {
   if (!IsFieldValid(name, Skill::kMaxNameLength)) {
     LOG_POLICY(ERROR, POLICY_PROCESSING)
-        << kBaseValidationError << expected_hash
-        << "). Reason: Invalid name length.";
+        << kLogPrefix << kBaseValidationError << expected_hash
+        << " (Reason: Invalid name length).";
     return EnterpriseSkillValidationResult::kInvalidName;
   }
   if (!IsFieldValid(description, Skill::kMaxDescriptionLength)) {
     LOG_POLICY(ERROR, POLICY_PROCESSING)
-        << kBaseValidationError << expected_hash
-        << "). Reason: Invalid description length.";
+        << kLogPrefix << kBaseValidationError << expected_hash
+        << " (Reason: Invalid description length).";
     return EnterpriseSkillValidationResult::kInvalidDescription;
   }
   if (!IsFieldValid(prompt, Skill::kMaxPromptLength)) {
     LOG_POLICY(ERROR, POLICY_PROCESSING)
-        << kBaseValidationError << expected_hash
-        << "). Reason: Invalid prompt length.";
+        << kLogPrefix << kBaseValidationError << expected_hash
+        << " (Reason: Invalid prompt length).";
     return EnterpriseSkillValidationResult::kInvalidPrompt;
   }
   return EnterpriseSkillValidationResult::kSuccess;
@@ -89,8 +91,8 @@ bool IsHashValid(std::string_view actual_hash_hex,
                  std::string_view expected_hash) {
   if (!base::EqualsCaseInsensitiveASCII(actual_hash_hex, expected_hash)) {
     LOG_POLICY(ERROR, POLICY_PROCESSING)
-        << "Enterprise skill hash mismatch. "
-        << "Expected: " << expected_hash << ", Actual: " << actual_hash_hex;
+        << kLogPrefix << "Hash mismatch. Expected: " << expected_hash
+        << ", Actual: " << actual_hash_hex;
     return false;
   }
   return true;
@@ -252,7 +254,8 @@ std::unique_ptr<Skill> EnterpriseSkillsProvider::ParseAndValidateSkill(
   if (!parsed.success) {
     RecordValidationResult(EnterpriseSkillValidationResult::kInvalidFormat);
     LOG_POLICY(ERROR, POLICY_PROCESSING)
-        << "Enterprise skill validation failed for hash: " << expected_hash;
+        << kLogPrefix << kBaseValidationError << expected_hash
+        << " (Reason: Invalid format).";
     return nullptr;
   }
 
@@ -300,7 +303,7 @@ void EnterpriseSkillsProvider::OnURLLoadComplete(
     // ParseAndValidateSkill.
   } else {
     LOG_POLICY(ERROR, POLICY_PROCESSING)
-        << "Failed to download enterprise skill for hash: " << expected_hash;
+        << kLogPrefix << kDownloadFailedError << expected_hash;
   }
 
   std::erase_if(url_loaders_, [source](const auto& loader) {

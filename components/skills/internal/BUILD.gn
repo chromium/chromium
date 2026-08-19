@@ -117,6 +117,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/policy/core/browser:test_support",
+    "//components/policy/core/common",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/skills:features",
