@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -28,6 +29,8 @@
 #include "chrome/browser/ui/views/tabs/horizontal/tab_scroll_button_container.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_scroll_bar.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_group.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -209,6 +212,16 @@ TabStripView::TabStripView(TabCollectionNode* collection_node)
   callback_subscriptions_.emplace_back(
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &TabStripView::ResetCollectionNode, base::Unretained(this))));
+
+  if (tab_scroll_button_container_) {
+    if (PrefService* prefs = GetPrefs()) {
+      pref_change_registrar_.Init(prefs);
+      pref_change_registrar_.Add(
+          prefs::kTabScrollButtonsPinnedToTabstrip,
+          base::BindRepeating(&TabStripView::InvalidateLayout,
+                              base::Unretained(this), false));
+    }
+  }
 
   SetNotifyEnterExitOnChild(true);
   UpdateColors();
@@ -451,6 +464,12 @@ TabScrollButtonContainer* TabStripView::GetScrollButtonContainer() const {
   return tab_scroll_button_container_;
 }
 
+bool TabStripView::IsTabScrollButtonsPinned() const {
+  PrefService* prefs = GetPrefs();
+  return prefs ? prefs->GetBoolean(prefs::kTabScrollButtonsPinnedToTabstrip)
+               : true;
+}
+
 void TabStripView::SetCollapsedState(bool is_collapsed) {
   if (is_collapsed != is_collapsed_) {
     is_collapsed_ = is_collapsed;
@@ -588,6 +607,21 @@ void TabStripView::SetScrollViewProperties(views::ScrollView* scroll_view) {
 
 void TabStripView::ResetCollectionNode() {
   collection_node_ = nullptr;
+  if (tab_scroll_button_container_) {
+    tab_scroll_button_container_->SetScrollView(nullptr);
+  }
+  pref_change_registrar_.Reset();
+}
+
+PrefService* TabStripView::GetPrefs() const {
+  BrowserView* browser_view =
+      collection_node_ ? collection_node_->GetController()->GetBrowserView()
+                       : nullptr;
+  if (!browser_view || !browser_view->browser()) {
+    return nullptr;
+  }
+  Profile* profile = browser_view->browser()->GetProfile();
+  return profile ? profile->GetPrefs() : nullptr;
 }
 
 void TabStripView::EnsureViewsVisibleInViewportPostLayout(

@@ -6,11 +6,14 @@
 
 #include <algorithm>
 
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
 #include "ui/views/layout/box_layout.h"
@@ -22,6 +25,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabScrollButtonContainer,
                                       kStartScrollButton);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabScrollButtonContainer,
                                       kEndScrollButton);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabScrollButtonContainer, kUnpinMenuItem);
 
 namespace {
 // TODO(b/523328731): Validate animation parameters with design.
@@ -31,7 +35,9 @@ constexpr int kScrollButtonHorizontalPadding = 4;
 }  // namespace
 
 TabScrollButtonContainer::TabScrollButtonContainer(
-    BrowserWindowInterface* browser_window_interface) {
+    BrowserWindowInterface* browser_window_interface)
+    : browser_window_interface_(browser_window_interface) {
+  set_context_menu_controller(this);
   SetProperty(views::kElementIdentifierKey, kTabScrollButtonContainer);
 
   std::unique_ptr<views::BoxLayout> box_layout =
@@ -51,6 +57,7 @@ TabScrollButtonContainer::TabScrollButtonContainer(
           &TabScrollButtonContainer::BeginScrollAnimation,
           base::Unretained(this), /*scroll_to_start=*/true)),
       kKeyboardArrowLeftIcon, Edge::kNone, Edge::kNone));
+  start_scroll_button_->set_context_menu_controller(this);
   start_scroll_button_->SetProperty(views::kElementIdentifierKey,
                                     kStartScrollButton);
   start_scroll_button_->GetViewAccessibility().SetName(
@@ -64,6 +71,7 @@ TabScrollButtonContainer::TabScrollButtonContainer(
           &TabScrollButtonContainer::BeginScrollAnimation,
           base::Unretained(this), /*scroll_to_start=*/false)),
       kKeyboardArrowRightIcon, Edge::kNone, Edge::kNone));
+  end_scroll_button_->set_context_menu_controller(this);
   end_scroll_button_->SetProperty(views::kElementIdentifierKey,
                                   kEndScrollButton);
   end_scroll_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
@@ -72,6 +80,43 @@ TabScrollButtonContainer::TabScrollButtonContainer(
   start_scroll_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
   end_scroll_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets()));
   animation_.SetDuration(kScrollAnimationTime);
+}
+
+TabScrollButtonContainer::~TabScrollButtonContainer() = default;
+
+void TabScrollButtonContainer::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
+  context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+
+  // TODO(b/523328731): Implement IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN
+  // as a browser action and execute this command with the action item
+  // framework.
+  context_menu_model_->AddItemWithIcon(
+      IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN,
+      l10n_util::GetStringUTF16(IDS_TAB_SCROLL_UNPIN_BUTTONS),
+      ui::ImageModel::FromVectorIcon(kKeepOffIcon, ui::kColorIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
+  context_menu_model_->SetElementIdentifierAt(
+      context_menu_model_
+          ->GetIndexOfCommandId(IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN)
+          .value(),
+      kUnpinMenuItem);
+
+  int32_t menu_runner_flags =
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
+  context_menu_runner_ = std::make_unique<views::MenuRunner>(
+      context_menu_model_.get(), menu_runner_flags);
+  context_menu_runner_->RunMenuAt(
+      source->GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
+      views::MenuAnchorPosition::kTopLeft, source_type);
+}
+
+void TabScrollButtonContainer::ExecuteCommand(int command_id, int event_flags) {
+  if (command_id == IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN) {
+    chrome::ExecuteCommand(browser_window_interface_, command_id);
+  }
 }
 
 bool TabScrollButtonContainer::IsPositionInWindowCaption(const gfx::Point& p) {

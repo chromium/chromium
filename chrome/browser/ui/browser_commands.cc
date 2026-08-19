@@ -2506,6 +2506,13 @@ void ToggleTabSearchPin(BrowserWindowInterface* browser) {
   prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, !is_pinned);
 }
 
+void ToggleTabScrollButtonsPin(BrowserWindowInterface* browser) {
+  PrefService* prefs = browser->GetProfile()->GetPrefs();
+  const bool is_pinned =
+      prefs->GetBoolean(prefs::kTabScrollButtonsPinnedToTabstrip);
+  prefs->SetBoolean(prefs::kTabScrollButtonsPinnedToTabstrip, !is_pinned);
+}
+
 void ToggleContextualTasksSidePanel(BrowserWindowInterface* browser) {
   auto* controller =
       contextual_tasks::ContextualTasksPanelController::From(browser);

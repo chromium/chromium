@@ -696,6 +696,9 @@ void BrowserCommandController::HandleCommandWithDisposition(
     case IDC_TAB_SEARCH_TOGGLE_PIN:
       ToggleTabSearchPin(browser_);
       break;
+    case IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN:
+      ToggleTabScrollButtonsPin(browser_);
+      break;
     case IDC_TOGGLE_VERTICAL_TABS:
       ToggleVerticalTabs(browser_);
       break;
@@ -1972,6 +1975,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_SELECT_TAB_7, supports_tabs);
   command_updater_->UpdateCommandEnabled(IDC_SELECT_LAST_TAB, supports_tabs);
   command_updater_->UpdateCommandEnabled(IDC_NEW_TAB_TO_RIGHT, supports_tabs);
+  command_updater_->UpdateCommandEnabled(IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN,
+                                         supports_tabs);
 
   // These are always enabled; the menu determines their menu item visibility.
   command_updater_->UpdateCommandEnabled(IDC_UPGRADE_DIALOG, true);

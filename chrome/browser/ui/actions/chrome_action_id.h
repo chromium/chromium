@@ -384,6 +384,8 @@
   /* Tab Search */ \
   E(kActionTabSearchClose, IDC_TAB_SEARCH_CLOSE) \
   E(kActionTabSearchTogglePin, IDC_TAB_SEARCH_TOGGLE_PIN) \
+  /* Tab Scroll */ \
+  E(kActionTabScrollTogglePin, IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN) \
   /* Views debug commands. */ \
   E(kActionDebugToggleTabletMode, IDC_DEBUG_TOGGLE_TABLET_MODE) \
   E(kActionDebugPrintViewTree, IDC_DEBUG_PRINT_VIEW_TREE) \

@@ -1239,6 +1239,11 @@ inline constexpr char kProjectsPanelPinnedToTabstrip[] =
 inline constexpr char kEverythingMenuPinnedToTabstrip[] =
     "everything_menu.pinned_to_tabstrip";
 
+// Boolean determining whether the tab scroll buttons are pinned to the tab
+// strip.
+inline constexpr char kTabScrollButtonsPinnedToTabstrip[] =
+    "tab_scroll_buttons.pinned_to_tabstrip";
+
 // Boolean indicating whether the one-time migration for
 // kEverythingMenuPinnedToTabstrip has been completed. This sets the pinned
 // state for the button to true for users who have used vertical tab strip

@@ -133,7 +133,10 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
     const bool will_overflow_without_scroll_buttons =
         unpinned_container &&
         available_unpinned_width < unpinned_container->GetMinimumSize().width();
-    if (has_unpinned && will_overflow_without_scroll_buttons) {
+    const bool is_scroll_buttons_pinned =
+        tab_strip_view->IsTabScrollButtonsPinned();
+    if (has_unpinned && will_overflow_without_scroll_buttons &&
+        is_scroll_buttons_pinned) {
       available_unpinned_width = std::max(
           available_unpinned_width - scroll_button_container_preferred_width,
           0);

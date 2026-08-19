@@ -7,11 +7,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
+class PrefService;
 class TabCollectionNode;
 class PinnedTabContainerView;
 class UnpinnedTabContainerView;
@@ -41,6 +43,7 @@ class TabStripView final : public views::View,
   PinnedTabContainerView* GetPinnedTabsContainer() const;
   UnpinnedTabContainerView* GetUnpinnedTabsContainer() const;
   TabScrollButtonContainer* GetScrollButtonContainer() const;
+  bool IsTabScrollButtonsPinned() const;
 
   views::ScrollView* pinned_tabs_scroll_view() const {
     return pinned_tabs_scroll_view_;
@@ -123,12 +126,15 @@ class TabStripView final : public views::View,
 
   void HideHoverCardOnScroll();
 
+  PrefService* GetPrefs() const;
+
   // Updates the main-axis space allocated for unpinned tabs (e.g. total
   // available tab strip width minus pinned container width in horizontal mode).
   void SetAvailableUnpinnedSpace(views::SizeBound space) const;
 
   friend class TabStripViewLayout;
 
+  PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
   raw_ptr<views::ScrollView> pinned_tabs_scroll_view_ = nullptr;
   raw_ptr<PinnedTabContainerView> pinned_tabs_container_view_ = nullptr;

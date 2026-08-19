@@ -10511,22 +10511,28 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_TAB_SCROLL_AUTO_SHOW_ON_OVERFLOW" desc="In Title Case: Text of the setting to automatically show scroll buttons on tab overflow.">
             Automatically Show Tab Scroll Buttons When Needed
           </message>
-          <message name="IDS_TAB_SCROLL_HIDE_BUTTONS" desc="In Title Case: Text of the context menu item or button to hide scroll buttons.">
-            Hide Scroll Buttons
-          </message>
-          <message name="IDS_TAB_SCROLL_PIN_BUTTONS" desc="In Title Case: Text of the context menu item to pin scroll buttons.">
+          <message name="IDS_TAB_SCROLL_PIN_BUTTONS_SYSTEM_MENU" desc="In Title Case: Text of the context system menu item to pin scroll buttons.">
             Pin Scroll Buttons
+          </message>
+          <message name="IDS_TAB_SCROLL_UNPIN_BUTTONS_SYSTEM_MENU" desc="In Title Case: Text of the context system menu item to unpin scroll buttons.">
+            Unpin Scroll Buttons
+          </message>
+          <message name="IDS_TAB_SCROLL_UNPIN_BUTTONS" desc="In Title Case: Text of the context menu item to unpin scroll buttons.">
+            Unpin
           </message>
         </then>
         <else>
           <message name="IDS_TAB_SCROLL_AUTO_SHOW_ON_OVERFLOW" desc="Text of the setting to automatically show scroll buttons on tab overflow.">
             Automatically show tab scroll buttons when needed
           </message>
-          <message name="IDS_TAB_SCROLL_HIDE_BUTTONS" desc="Text of the context menu item or button to hide scroll buttons.">
-            Hide scroll buttons
-          </message>
-          <message name="IDS_TAB_SCROLL_PIN_BUTTONS" desc="Text of the context menu item to pin scroll buttons.">
+          <message name="IDS_TAB_SCROLL_PIN_BUTTONS_SYSTEM_MENU" desc="Text of the context menu item to pin scroll buttons.">
             Pin scroll buttons
+          </message>
+          <message name="IDS_TAB_SCROLL_UNPIN_BUTTONS_SYSTEM_MENU" desc="In Title Case: Text of the context system menu item to unpin scroll buttons.">
+            Unpin scroll buttons
+          </message>
+          <message name="IDS_TAB_SCROLL_UNPIN_BUTTONS" desc="Text of the context menu item to unpin scroll buttons.">
+            Unpin
           </message>
         </else>
       </if>

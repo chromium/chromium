@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -111,6 +112,14 @@ bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
   if (command_id == IDC_GLIC_TOGGLE_PIN) {
     return glic::GlicEnabling::IsEnabledForProfile(browser_->GetProfile());
   }
+
+  if (command_id == IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN) {
+    if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+      return !BrowserView::GetBrowserViewForBrowser(browser_)
+                  ->ShouldDrawVerticalTabStrip();
+    }
+    return false;
+  }
   return true;
 }
 
@@ -126,7 +135,8 @@ bool SystemMenuModelDelegate::IsItemForCommandIdDynamic(int command_id) const {
                   IDC_GLIC_TOGGLE_PIN,
                   IDC_TOGGLE_VERTICAL_TABS,
                   IDC_TOGGLE_VERTICAL_TABS_COLLAPSE,
-                  IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER}
+                  IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER,
+                  IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN}
       .contains(command_id);
 }
 
@@ -194,6 +204,12 @@ std::u16string SystemMenuModelDelegate::GetLabelForCommandId(
                       glic::prefs::kGlicPinnedToTabstrip)
                       ? IDS_GLIC_UNPIN
                       : IDS_GLIC_PIN;
+      break;
+    case IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN:
+      string_id = browser_->GetProfile()->GetPrefs()->GetBoolean(
+                      prefs::kTabScrollButtonsPinnedToTabstrip)
+                      ? IDS_TAB_SCROLL_UNPIN_BUTTONS_SYSTEM_MENU
+                      : IDS_TAB_SCROLL_PIN_BUTTONS_SYSTEM_MENU;
       break;
     default:
       NOTREACHED();

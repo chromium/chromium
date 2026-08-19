@@ -21,8 +21,10 @@
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_constants.h"
@@ -500,6 +502,25 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
       PressButton(TabScrollButtonContainer::kStartScrollButton),
       WaitForState(kFirstTabVisibleObserver, true),
       WaitForState(kLastTabVisibleObserver, false));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewInteractiveUiTest,
+                       ScrollButtonsRespectPinnedPref) {
+  AddTabsUntilScrollable(10);
+
+  RunTestSequence(
+      EnsurePresent(kTabStripRegionElementId),
+      WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer),
+      Do([this]() {
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            prefs::kTabScrollButtonsPinnedToTabstrip, false);
+      }),
+      WaitForHide(TabScrollButtonContainer::kTabScrollButtonContainer),
+      Do([this]() {
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            prefs::kTabScrollButtonsPinnedToTabstrip, true);
+      }),
+      WaitForShow(TabScrollButtonContainer::kTabScrollButtonContainer));
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewNewRTLInteractiveUiTest,

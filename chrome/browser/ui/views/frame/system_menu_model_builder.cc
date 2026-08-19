@@ -191,6 +191,11 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
           model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS_COLLAPSE).value(),
           kToggleVerticalTabsCollapseElementId);
     } else {
+      if (base::FeatureList::IsEnabled(tabs::kTabStripUnification)) {
+        model->AddItemWithStringId(IDC_TAB_SCROLL_BUTTONS_TOGGLE_PIN,
+                                   IDS_TAB_SCROLL_PIN_BUTTONS_SYSTEM_MENU);
+      }
+
       model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
                                  IDS_SWITCH_TO_VERTICAL_TAB);
       const bool use_preview_badge =
