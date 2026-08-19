@@ -3077,13 +3077,22 @@ TEST_F(EmailVerificationHandlerTest,
 }
 
 // Tests that GetNonceForEmailVerification correctly queries the nonce from
-// the hidden verification token field.
+// the verification token field (including both type="hidden" and boolean hidden
+// attribute) and ignores non-hidden fields.
 TEST_F(EmailVerificationHandlerTest, GetNonceForEmailVerification) {
   EXPECT_CALL(autofill_driver(), FormsSeen);
   LoadHTML(R"(<body>
     <form id="form">
       <input type="email" id="email" value="a@example.com">
       <input type="hidden" id="verification" autocomplete="email-verification-token" nonce="test_nonce_123">
+    </form>
+    <form id="form_hidden_attr">
+      <input type="email" id="email_hidden_attr" value="a@example.com">
+      <input id="verification_hidden_attr" autocomplete="email-verification-token" nonce="test_nonce_456" hidden>
+    </form>
+    <form id="form_visible_token">
+      <input type="email" id="email_visible" value="a@example.com">
+      <input id="verification_visible" autocomplete="email-verification-token" nonce="test_nonce_789">
     </form>
     <form id="form_without_token">
       <input type="email" id="email2" value="b@example.com">
@@ -3093,6 +3102,10 @@ TEST_F(EmailVerificationHandlerTest, GetNonceForEmailVerification) {
 
   blink::WebFormControlElement email_element =
       GetFormControlElementById("email");
+  blink::WebFormControlElement email_hidden_attr_element =
+      GetFormControlElementById("email_hidden_attr");
+  blink::WebFormControlElement email_visible_element =
+      GetFormControlElementById("email_visible");
   blink::WebFormControlElement email2_element =
       GetFormControlElementById("email2");
 
@@ -3101,10 +3114,57 @@ TEST_F(EmailVerificationHandlerTest, GetNonceForEmailVerification) {
       form_util::GetFieldRendererId(email_element), future1.GetCallback());
   EXPECT_EQ(future1.Get(), "test_nonce_123");
 
+  base::test::TestFuture<const std::optional<std::string>&> future_hidden_attr;
+  autofill_agent().GetNonceForEmailVerification(
+      form_util::GetFieldRendererId(email_hidden_attr_element),
+      future_hidden_attr.GetCallback());
+  EXPECT_EQ(future_hidden_attr.Get(), "test_nonce_456");
+
+  base::test::TestFuture<const std::optional<std::string>&> future_visible;
+  autofill_agent().GetNonceForEmailVerification(
+      form_util::GetFieldRendererId(email_visible_element),
+      future_visible.GetCallback());
+  EXPECT_EQ(future_visible.Get(), std::nullopt);
+
   base::test::TestFuture<const std::optional<std::string>&> future2;
   autofill_agent().GetNonceForEmailVerification(
       form_util::GetFieldRendererId(email2_element), future2.GetCallback());
   EXPECT_EQ(future2.Get(), std::nullopt);
+}
+
+// Tests that the verification token is injected into an input field using the
+// boolean `hidden` attribute instead of type="hidden".
+TEST_F(EmailVerificationHandlerTest,
+       EmailVerificationHandlerSharesTokenWithHiddenAttributeField) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(R"(<body>
+    <form id="form">
+      <input type="email" id="email" value="a@example.com">
+      <input id="verification" autocomplete="email-verification-token" hidden>
+    </form>
+  </body>)");
+  WaitForFormsSeen();
+
+  blink::WebFormElement form_element =
+      GetWebElementById("form").DynamicTo<blink::WebFormElement>();
+  blink::WebFormControlElement email_element =
+      GetFormControlElementById("email");
+  blink::WebFormControlElement verification_element =
+      GetFormControlElementById("verification");
+
+  EXPECT_CALL(autofill_driver(),
+              FormWithEmailVerificationTokenSubmitted(
+                  _, form_util::GetFieldRendererId(email_element)));
+
+  autofill_agent().SendEmailVerificationToken(
+      form_util::GetFieldRendererId(email_element), "a@example.com",
+      "evt_token_456");
+
+  test_api(autofill_agent())
+      .email_verification_handler()
+      .WillSendSubmitEvent(form_element);
+
+  EXPECT_EQ(verification_element.Value().Utf16(), u"evt_token_456");
 }
 
 // Malicious web pages can attempt to steal saved autofill data via a

@@ -45,9 +45,14 @@ blink::WebFormControlElement FindTokenFieldForEmailField(
   // Scan all control elements in the form to find the hidden token field.
   for (const auto& control_element : form_util::GetOwnedFormControls(
            email_element.GetDocument(), form_element)) {
-    // We are only interested in hidden input fields.
-    if (control_element.FormControlTypeForAutofill() !=
-        blink::mojom::FormControlType::kInputHidden) {
+    // The Email Verification specification requires `<input type="hidden">`
+    // (`kInputHidden`). `<input hidden>` (HTML `hidden` attribute) is also
+    // supported for resilience against common developer mistakes and markup
+    // patterns.
+    const bool is_hidden = control_element.FormControlTypeForAutofill() ==
+                               blink::mojom::FormControlType::kInputHidden ||
+                           control_element.HasAttribute("hidden");
+    if (!is_hidden) {
       continue;
     }
     // Check if the field has the "email-verification-token" autocomplete
