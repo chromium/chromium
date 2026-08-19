@@ -1658,6 +1658,65 @@ TEST_F(GridLanesLayoutAlgorithmTest, AppendSubgriddedItemsColumns) {
             2u);
 }
 
+TEST_F(GridLanesLayoutAlgorithmTest, AppendSubgriddedGridLanesItems) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px;
+    }
+    #subgrid {
+      display: grid-lanes;
+      grid-template-columns: subgrid;
+      grid-column: 1 / 3;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="subgrid">
+        <div style="grid-column: 1">A</div>
+        <div style="grid-column: 2">B</div>
+      </div>
+    </div>
+  )HTML");
+
+  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
+  GridLanesNode subgrid_node(GetLayoutBoxByElementId("subgrid"));
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  bool must_invalidate_placement_cache = false;
+  auto* grid_items =
+      node.ConstructGridItems(line_resolver, &must_invalidate_placement_cache);
+  ASSERT_FALSE(must_invalidate_placement_cache);
+  ASSERT_EQ(grid_items->Size(), 1u);
+
+  auto& subgrid_item = grid_items->At(0);
+  // TODO(yanlingwang): Remove this setup once `GridItemData`
+  // recognizes grid-lanes subgrids.
+  subgrid_item.has_subgridded_columns = true;
+  subgrid_item.must_consider_grid_items_for_column_sizing = true;
+  subgrid_item.MaybeTranslateSpan(/*start_offset=*/0, kForColumns);
+
+  const GridLineResolver subgrid_line_resolver(subgrid_node.Style(),
+                                               /*auto_repetitions=*/0);
+  To<LayoutGridLanes>(subgrid_node.GetLayoutBox())
+      ->SetCachedPlacementData(GridPlacementData(subgrid_line_resolver));
+
+  // TODO(yanlingwang): Use `BuildGridSizingTree` once sizing-tree recursion
+  // supports `GridLanesLayoutAlgorithm` and grid-lanes subgrid recognition.
+  AppendSubgriddedItems(node, grid_items);
+
+  wtf_size_t total_count = 0;
+  wtf_size_t subgridded_count = 0;
+  for (const auto& item : grid_items->IncludeSubgriddedItems()) {
+    if (item.is_subgridded_to_parent_grid) {
+      ++subgridded_count;
+    }
+    ++total_count;
+  }
+  EXPECT_EQ(total_count, 3u);
+  EXPECT_EQ(subgridded_count, 2u);
+}
+
 TEST_F(GridLanesLayoutAlgorithmTest, AppendSubgriddedItemsRows) {
   SetBodyInnerHTML(R"HTML(
     <style>

@@ -121,11 +121,27 @@ GridLanesItemGroups GridLanesNode::CollectItemGroups(
   return item_groups;
 }
 
-// TODO(almaher): Similar to grid, we should eventually create an overloaded
-// method that takes `must_consider_for_columns` and `must_consider_for_rows`
-// so that we can pass that in for grid lanes subgrids.
 GridItems* GridLanesNode::ConstructGridItems(
     const GridLineResolver& line_resolver,
+    bool* must_invalidate_placement_cache,
+    bool parent_is_auto_placed,
+    HeapVector<Member<LayoutBox>>* opt_oof_children,
+    bool* opt_has_nested_subgrid) const {
+  const ComputedStyle& style = Style();
+  const GridTrackSizingDirection grid_axis_direction =
+      style.GridLanesTrackSizingDirection();
+  return ConstructGridItems(
+      line_resolver, /*root_grid_style=*/style, /*parent_grid_style=*/style,
+      /*must_consider_for_columns=*/grid_axis_direction == kForColumns,
+      must_invalidate_placement_cache, parent_is_auto_placed, opt_oof_children,
+      opt_has_nested_subgrid);
+}
+
+GridItems* GridLanesNode::ConstructGridItems(
+    const GridLineResolver& line_resolver,
+    const ComputedStyle& root_grid_style,
+    const ComputedStyle& parent_grid_style,
+    bool must_consider_for_columns,
     bool* must_invalidate_placement_cache,
     bool parent_is_auto_placed,
     HeapVector<Member<LayoutBox>>* opt_oof_children,
@@ -143,10 +159,6 @@ GridItems* GridLanesNode::ConstructGridItems(
   CHECK(must_invalidate_placement_cache);
   *must_invalidate_placement_cache =
       To<LayoutGridLanes>(box_.Get())->IsGridPlacementDirty();
-
-  // For grid-lanes, we only consider subgridding in the grid axis.
-  const bool must_consider_for_columns = (grid_axis_direction == kForColumns);
-  const bool must_consider_for_rows = (grid_axis_direction == kForRows);
 
   if (opt_has_nested_subgrid) {
     *opt_has_nested_subgrid = false;
@@ -182,9 +194,9 @@ GridItems* GridLanesNode::ConstructGridItems(
       }
 
       GridItemData* grid_lanes_item = MakeGarbageCollected<GridItemData>(
-          To<BlockNode>(child), /*parent_grid_style=*/style,
-          /*root_grid_style=*/style, must_consider_for_columns,
-          must_consider_for_rows);
+          To<BlockNode>(child), parent_grid_style, root_grid_style,
+          must_consider_for_columns,
+          /*must_consider_for_rows=*/!must_consider_for_columns);
 
       // We'll need to sort when we encounter a non-initial order property.
       should_sort_grid_lanes_items_by_order_property |=

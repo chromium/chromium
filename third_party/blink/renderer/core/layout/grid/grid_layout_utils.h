@@ -8,6 +8,7 @@
 #include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_node.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/core/style/grid_track_size.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
@@ -354,16 +355,24 @@ void AppendSubgriddedItems(const NodeType& node, GridItems* grid_items) {
       continue;
     }
 
-    // TODO(almaher): This should eventually support grid lanes, as well.
     bool must_invalidate_placement_cache = false;
-    const auto subgrid = To<GridNode>(current_item.node);
-
-    auto* subgridded_items = subgrid.ConstructGridItems(
-        subgrid.CachedLineResolver(), root_grid_style, subgrid.Style(),
-        current_item.must_consider_grid_items_for_column_sizing,
-        current_item.must_consider_grid_items_for_row_sizing,
-        &must_invalidate_placement_cache,
-        /*parent_is_auto_placed=*/current_item.is_auto_placed);
+    GridItems* subgridded_items;
+    if (current_item.node.IsGridLanes()) {
+      const auto subgrid = To<GridLanesNode>(current_item.node);
+      subgridded_items = subgrid.ConstructGridItems(
+          subgrid.CachedLineResolver(), root_grid_style, subgrid.Style(),
+          current_item.must_consider_grid_items_for_column_sizing,
+          &must_invalidate_placement_cache,
+          /*parent_is_auto_placed=*/current_item.is_auto_placed);
+    } else {
+      const auto subgrid = To<GridNode>(current_item.node);
+      subgridded_items = subgrid.ConstructGridItems(
+          subgrid.CachedLineResolver(), root_grid_style, subgrid.Style(),
+          current_item.must_consider_grid_items_for_column_sizing,
+          current_item.must_consider_grid_items_for_row_sizing,
+          &must_invalidate_placement_cache,
+          /*parent_is_auto_placed=*/current_item.is_auto_placed);
+    }
 
     DCHECK(!must_invalidate_placement_cache)
         << "We shouldn't need to invalidate the placement cache if we relied "
