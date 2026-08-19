@@ -212,7 +212,7 @@ class PersonalizedRecommendAppsScreenLowMemoryTest
  private:
   base::test::ScopedFeatureList memory_feature_list_;
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override_{
-      base::GiBU(4)};
+      base::GiB(4)};
 };
 
 IN_PROC_BROWSER_TEST_F(PersonalizedRecommendAppsScreenTest, WithOldUser) {
