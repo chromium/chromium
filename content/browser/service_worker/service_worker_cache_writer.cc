@@ -23,7 +23,7 @@
 
 namespace {
 
-constexpr base::ByteSize kCopyBufferSize = base::KiBU(16);
+constexpr base::ByteSize kCopyBufferSize = base::KiB(16);
 
 // Shim class used to turn always-async functions into async-or-result
 // functions. See the comments below near ReadResponseHead.
