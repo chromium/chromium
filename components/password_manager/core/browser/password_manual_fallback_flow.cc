@@ -410,6 +410,10 @@ bool PasswordManualFallbackFlow::IsSearching() const {
   return false;
 }
 
+autofill::FieldGlobalId PasswordManualFallbackFlow::GetQueriedFieldId() const {
+  return field_id_;
+}
+
 void PasswordManualFallbackFlow::RunFlowImpl(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {

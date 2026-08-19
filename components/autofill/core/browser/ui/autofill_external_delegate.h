@@ -97,6 +97,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
 
   void OnTabSelected(TabbedPaneTabType tab_type) override;
 
+  FieldGlobalId GetQueriedFieldId() const override;
+
   // Called when the renderer posts an Autofill query to the browser. We might
   // not want to display the warning if a website has disabled Autocomplete
   // because they have their own popup, and showing our popup on to of theirs

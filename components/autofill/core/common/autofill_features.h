@@ -196,6 +196,8 @@ BASE_DECLARE_FEATURE(kAutofillAtMemoryTriggerShortcut);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillBetterLocalHeuristicPlaceholderSupport);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillCheckTriggeringFieldDoesNotChangeDuringFilling);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillComplementCountryUsingPhoneNumber);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillCreditCardUserPerceptionSurvey);
