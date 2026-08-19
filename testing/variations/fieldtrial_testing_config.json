@@ -25399,21 +25399,6 @@
             ]
         }
     ],
-    "WasapiInputDeviceInUseRetry": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WasapiInputDeviceInUseRetry"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebApkBackupAndRestore": [
         {
             "platforms": [

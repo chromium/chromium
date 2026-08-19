@@ -14,9 +14,6 @@ enum class WASAPITestErrorCode {
   kAudioClientActivationAsyncOperationFailed,
   kAudioClientActivationFailed,
   kAudioClientGetBufferSizeFailed,
-  kAudioClientInitializeDeviceInUseOnce,
-  kAudioClientInitializeDeviceInUseTwice,
-  kAudioClientInitializeDeviceInUse,
 };
 
 }  // namespace media
