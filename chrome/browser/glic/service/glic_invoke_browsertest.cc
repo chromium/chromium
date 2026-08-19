@@ -1703,4 +1703,38 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
   // Glic should be bound to this new tab.
   EXPECT_TRUE(GetInstanceForTab(active_tab));
 }
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
+                       InvokeTargetLastActiveOrNew_UsesLastActiveSurface) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+
+  auto* tab_list = GetTabListInterface();
+  int initial_tab_count = tab_list->GetTabCount();
+  BrowserWindowInterface* browser = tab1->GetBrowserWindowInterface();
+
+  PreventDeletionOnClose(instance);
+  instance->CloseAllEmbedders();
+  ASSERT_TRUE(WaitForGlicClose(instance));
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+
+  options.target.conversation = glic::InstanceId(instance->id());
+  options.target.surface =
+      glic::LastActiveOrNew{browser, /*open_in_foreground=*/true};
+  options.on_success = success_future.GetCallback();
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+
+  // No new tab should have been created.
+  EXPECT_EQ(tab_list->GetTabCount(), initial_tab_count);
+  EXPECT_EQ(tab_list->GetActiveTab(), tab1);
+
+  // Glic should be bound to tab1 again.
+  EXPECT_EQ(GetInstanceForTab(tab1), instance);
+}
+
 }  // namespace glic
