@@ -545,6 +545,12 @@ enum ActionResultCode {
   // The requested target language is not supported.
   kTranslateUnsupportedLanguage = 1501,
 
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1600-1699: Errors for bookmark management.
+
+  // The BookmarkModel was not loaded or not available.
+  kBookmarkModelNotLoaded = 1600,
+
   // Please see the comment above about adding new values.
 };
 

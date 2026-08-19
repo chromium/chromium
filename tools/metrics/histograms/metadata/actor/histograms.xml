@@ -70,6 +70,7 @@ chromium-metrics-reviews@google.com.
 <variants name="ToolRequest">
   <variant name="ActivateTab" summary="Activate Tab"/>
   <variant name="ActivateWindow" summary="Activate Window"/>
+  <variant name="AddBookmark" summary="Add Bookmark"/>
   <variant name="AttemptFormFilling" summary="Attempt Form Filling"/>
   <variant name="AttemptLogin" summary="Attempt Login"/>
   <variant name="AttemptOtpFilling" summary="Attempt OTP Filling"/>
@@ -86,6 +87,7 @@ chromium-metrics-reviews@google.com.
   <variant name="MediaControl" summary="Media Control"/>
   <variant name="MoveMouse" summary="MoveMouse"/>
   <variant name="Navigate" summary="Navigate"/>
+  <variant name="RemoveBookmark" summary="Remove Bookmark"/>
   <variant name="ScriptTool" summary="ScriptTool"/>
   <variant name="Scroll" summary="Scroll"/>
   <variant name="ScrollTo" summary="Scroll To"/>

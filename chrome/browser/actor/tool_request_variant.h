@@ -18,6 +18,7 @@ using ToolRequestVariant = std::variant<
     ActivateTabToolRequest,
     ActivateWindowToolRequest,
 #endif
+    AddBookmarkToolRequest,
     AttemptLoginToolRequest,
     AttemptFormFillingToolRequest,
     AttemptOtpFillingToolRequest,
@@ -40,6 +41,7 @@ using ToolRequestVariant = std::variant<
     MediaControlToolRequest,
     MoveMouseToolRequest,
     NavigateToolRequest,
+    RemoveBookmarkToolRequest,
     ScriptToolRequest,
     ScrollToolRequest,
     ScrollToToolRequest,
@@ -59,6 +61,7 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const ActivateTabToolRequest&) override;
   void Apply(const ActivateWindowToolRequest&) override;
 #endif
+  void Apply(const AddBookmarkToolRequest&) override;
   void Apply(const AttemptLoginToolRequest&) override;
   void Apply(const AttemptFormFillingToolRequest&) override;
   void Apply(const AttemptOtpFillingToolRequest&) override;
@@ -81,6 +84,7 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const MediaControlToolRequest&) override;
   void Apply(const MoveMouseToolRequest&) override;
   void Apply(const NavigateToolRequest&) override;
+  void Apply(const RemoveBookmarkToolRequest&) override;
   void Apply(const ScriptToolRequest&) override;
   void Apply(const ScrollToolRequest&) override;
   void Apply(const ScrollToToolRequest&) override;
