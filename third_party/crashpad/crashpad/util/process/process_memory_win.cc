@@ -60,8 +60,9 @@ ssize_t ProcessMemoryWin::ReadUpTo(VMAddress address,
   if (GetLastError() == ERROR_PARTIAL_COPY) {
     // If we can not read the entire section, perform a short read of the first
     // page instead. This is necessary to support ReadCString().
-    size_t short_read =
+    const size_t page_remainder =
         base::GetPageSize() - (address & (base::GetPageSize() - 1));
+    const size_t short_read = std::min(size, page_remainder);
     success = ReadProcessMemory(handle_,
                                 reinterpret_cast<void*>(address),
                                 buffer,

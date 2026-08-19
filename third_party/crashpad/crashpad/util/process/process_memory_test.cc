@@ -601,6 +601,38 @@ TEST(ProcessMemory, ReadCStringSizeLimitedUnmappedChild) {
   test.RunAgainstChild();
 }
 
+class MockProcessMemoryOverflow : public ProcessMemory {
+ public:
+  MockProcessMemoryOverflow() = default;
+  ~MockProcessMemoryOverflow() override = default;
+
+ protected:
+  ssize_t ReadUpTo(VMAddress address,
+                   size_t size,
+                   void* buffer) const override {
+    // Maliciously return more bytes than requested to test the bounds checking.
+    return size + 10;
+  }
+};
+
+TEST(ProcessMemory, ReadOverflowFailsSafely) {
+  MockProcessMemoryOverflow memory;
+  char buffer[16];
+  EXPECT_FALSE(memory.Read(0x1000, 16, buffer));
+}
+
+TEST(ProcessMemory, ReadCStringOverflowFailsSafely) {
+  MockProcessMemoryOverflow memory;
+  std::string result;
+  EXPECT_FALSE(memory.ReadCString(0x1000, &result));
+}
+
+TEST(ProcessMemory, ReadCStringSizeLimitedOverflowFailsSafely) {
+  MockProcessMemoryOverflow memory;
+  std::string result;
+  EXPECT_FALSE(memory.ReadCStringSizeLimited(0x1000, 16, &result));
+}
+
 }  // namespace
 }  // namespace test
 }  // namespace crashpad
