@@ -366,7 +366,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
   const base::TimeTicks discard_start_time = NowTicks();
 
   last_discard_time_ = discard_start_time;
-  last_discard_memory_estimate_ = base::KiBU(tab_memory_footprint_estimate);
+  last_discard_memory_estimate_ = base::KiB(tab_memory_footprint_estimate);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -463,11 +463,11 @@ void TabLifecycleUnitSource::TabLifecycleUnit::UpdatePreDiscardResourceUsage(
   if (pre_discard_resource_usage == nullptr) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         PreDiscardResourceUsage::CreateForWebContents(
-            web_contents, base::KiBU(tab_memory_footprint_estimate),
+            web_contents, base::KiB(tab_memory_footprint_estimate),
             discard_reason);
   } else {
     pre_discard_resource_usage->UpdateDiscardInfo(
-        base::KiBU(tab_memory_footprint_estimate), discard_reason);
+        base::KiB(tab_memory_footprint_estimate), discard_reason);
   }
 }
 
