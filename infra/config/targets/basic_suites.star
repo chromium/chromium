@@ -156,7 +156,7 @@ targets.legacy_basic_suite(
             skylab = targets.skylab(
                 timeout_sec = 7200,
                 cros_test_names_from_file = ["chromeos/tast_control_flaky_tests.txt"],
-                # TODO(yoshiki): set shard_level_retries_on_ctp when ready.
+                shard_level_retries_on_ctp = 1,
             ),
             args = [
                 "-retries=2",
