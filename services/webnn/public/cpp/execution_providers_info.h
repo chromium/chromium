@@ -287,9 +287,20 @@ inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
             // requires int64 support, so enable it explicitly. Key and value
             // must align with the ORT WebGPU EP implementation. See:
             // https://github.com/microsoft/onnxruntime/blob/47faa11b035d53c49f3f93e815d004e616d360ca/onnxruntime/core/providers/webgpu/webgpu_provider_options.h#L18
+            //
+            // The WebGPU EP disables robust buffer access by default in
+            // release builds (for performance). Enable it explicitly so
+            // out-of-bounds accesses in generated shaders are
+            // clamped/bounds-checked by the WebGPU runtime instead of reading
+            // or writing arbitrary GPU memory. WebNN runs untrusted web
+            // content, so this is enabled to harden Chrome's security. Key and
+            // value must align with the ORT WebGPU EP implementation. See:
+            // https://github.com/microsoft/onnxruntime/blob/4576ea193c1c322115d2a75bb88026310add77c0/onnxruntime/core/providers/webgpu/webgpu_provider_options.h#L37
             .config_entries =
                 (const SessionConfigEntry[]){
                     {.key = "ep.webgpuexecutionprovider.enableInt64",
+                     .value = "1"},
+                    {.key = "ep.webgpuexecutionprovider.enableRobustness",
                      .value = "1"},
                 },
             .offline_compilation_support = internal::kWebGpuOfflineCompilation,
