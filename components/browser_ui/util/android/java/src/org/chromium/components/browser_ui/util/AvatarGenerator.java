@@ -8,11 +8,15 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Px;
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
@@ -35,16 +39,24 @@ public class AvatarGenerator {
      * @return the scaled and cropped avatar.
      */
     @Contract("_, !null, _ -> !null")
-    public static @Nullable RoundedBitmapDrawable makeRoundAvatar(
+    public static @Nullable Drawable makeRoundAvatar(
             Resources resources, Bitmap avatar, @Px int imageSize) {
         if (avatar == null) return null;
 
-        Bitmap scaledAvatar = Bitmap.createScaledBitmap(avatar, imageSize, imageSize, true);
-        RoundedBitmapDrawable roundedAvatar =
-                RoundedBitmapDrawableFactory.create(resources, scaledAvatar);
-        roundedAvatar.setAntiAlias(true);
-        roundedAvatar.setCircular(true);
-        return roundedAvatar;
+        Bitmap output = Bitmap.createBitmap(imageSize, imageSize, Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+        // Fill the canvas with transparent color.
+        canvas.drawColor(Color.TRANSPARENT);
+        // Draw a white circle.
+        float radius = (float) imageSize / 2;
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.WHITE);
+        canvas.drawCircle(radius, radius, radius, paint);
+        // Use SRC_IN so white circle acts as a mask while drawing the avatar.
+        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+        canvas.drawBitmap(avatar, null, new Rect(0, 0, imageSize, imageSize), paint);
+        return new BitmapDrawable(resources, output);
     }
 
     /**
@@ -56,7 +68,7 @@ public class AvatarGenerator {
      * @param imageSize the target image size in pixels.
      * @return the scaled and cropped avatar.
      */
-    public static @Nullable RoundedBitmapDrawable makeRoundAvatar(
+    public static @Nullable Drawable makeRoundAvatar(
             Resources resources, List<Bitmap> avatars, @Px int imageSize) {
         for (Bitmap avatar : avatars) {
             if (avatar == null) return null;
