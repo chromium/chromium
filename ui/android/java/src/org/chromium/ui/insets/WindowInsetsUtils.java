@@ -28,7 +28,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.Comparator;
 import java.util.List;
 
 /** Helper functions for working with WindowInsets and Rects. */
@@ -230,7 +229,7 @@ public final class WindowInsetsUtils {
 
         try {
             if (windowInsets == null) return DEFAULT_INSETS_BOUNDING_RECTS;
-            return maybeCorrectStartAndEndRects(
+            return maybeCorrectNearEdgeRects(
                     windowInsets.getBoundingRects(insetType), getFrameFromInsets(windowInsets));
         } catch (NoSuchMethodError e) {
             Log.w(TAG, e.toString());
@@ -243,26 +242,22 @@ public final class WindowInsetsUtils {
      * When a window is being resized, updates in the {@link WindowInsets} values for the window
      * frame (height, width) are not synchronized to changes in the bounding rects. This causes
      * issues, as the laggy update to the bounding rects gives the impression of unoccluded space on
-     * the right side. This corrects the leftmost and rightmost bounding rects to align with the
-     * edges of the window frame, as long as they are within a certain threshold.
+     * the frame edges. This corrects the near-edge bounding rects to align with the
+     * frame edges, as long as they are within a certain threshold.
      */
-    private static List<Rect> maybeCorrectStartAndEndRects(
+    private static List<Rect> maybeCorrectNearEdgeRects(
             List<Rect> boundingRects, Size windowFrame) {
         if (boundingRects.size() < 1) return boundingRects;
 
         float differenceThreshold =
                 windowFrame.getWidth() * EXPANDING_WINDOW_GUTTER_BOUNDING_RECT_THRESHOLD;
 
-        boundingRects.sort(Comparator.comparingInt(rect -> rect.left));
-        Rect startRect = boundingRects.get(0);
-        startRect.left = startRect.left <= differenceThreshold ? 0 : startRect.left;
-
-        boundingRects.sort(Comparator.comparingInt(rect -> rect.right));
-        Rect endRect = boundingRects.get(boundingRects.size() - 1);
-        if (endRect.right != windowFrame.getWidth()) {
-            int widthDiff = Math.abs(endRect.right - windowFrame.getWidth());
-            if (widthDiff <= differenceThreshold) {
-                endRect.right = windowFrame.getWidth();
+        for (Rect rect : boundingRects) {
+            if (rect.left <= differenceThreshold) {
+                rect.left = 0;
+            }
+            if (Math.abs(rect.right - windowFrame.getWidth()) <= differenceThreshold) {
+                rect.right = windowFrame.getWidth();
             }
         }
         return boundingRects;
