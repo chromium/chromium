@@ -402,8 +402,7 @@
                 {
                     "name": "MaxContentChangedEventsToFire_005",
                     "params": {
-                        "max_events": "5",
-                        "prevent_window_content_changes_for_nodes_not_likely_in_android": "true"
+                        "max_events": "5"
                     },
                     "enable_features": [
                         "AccessibilityRequestScopedContentChangedEvents"
@@ -412,8 +411,7 @@
                 {
                     "name": "MaxContentChangedEventsToFire_x",
                     "params": {
-                        "max_events": "0",
-                        "prevent_window_content_changes_for_nodes_not_likely_in_android": "true"
+                        "max_events": "0"
                     },
                     "enable_features": [
                         "AccessibilityRequestScopedContentChangedEvents"
@@ -422,8 +420,7 @@
                 {
                     "name": "MaxContentChangedEventsToFire_002",
                     "params": {
-                        "max_events": "2",
-                        "prevent_window_content_changes_for_nodes_not_likely_in_android": "true"
+                        "max_events": "2"
                     },
                     "enable_features": [
                         "AccessibilityRequestScopedContentChangedEvents"
@@ -432,8 +429,7 @@
                 {
                     "name": "MaxContentChangedEventsToFire_010",
                     "params": {
-                        "max_events": "10",
-                        "prevent_window_content_changes_for_nodes_not_likely_in_android": "true"
+                        "max_events": "10"
                     },
                     "enable_features": [
                         "AccessibilityRequestScopedContentChangedEvents"
@@ -442,8 +438,7 @@
                 {
                     "name": "MaxContentChangedEventsToFire_030",
                     "params": {
-                        "max_events": "30",
-                        "prevent_window_content_changes_for_nodes_not_likely_in_android": "true"
+                        "max_events": "30"
                     },
                     "enable_features": [
                         "AccessibilityRequestScopedContentChangedEvents"
@@ -452,8 +447,7 @@
                 {
                     "name": "MaxContentChangedEventsToFire_050",
                     "params": {
-                        "max_events": "50",
-                        "prevent_window_content_changes_for_nodes_not_likely_in_android": "true"
+                        "max_events": "50"
                     },
                     "enable_features": [
                         "AccessibilityRequestScopedContentChangedEvents"
