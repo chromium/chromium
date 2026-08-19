@@ -47,6 +47,7 @@ source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
+    "actor_attempt_form_filling_tool_egtest.mm",
     "actor_attempt_login_tool_egtest.mm",
     "actor_browser_tools_egtest.mm",
     "actor_page_stability_egtest.mm",
@@ -58,8 +59,10 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/common",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/password_manager/core/browser/features:password_features",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/features",
