@@ -2966,6 +2966,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillAndPasswordsRemoveSignInPromo)},
+    {"recover-tabs-of-last-closed-window",
+     flag_descriptions::kRecoverTabsOfLastClosedWindowName,
+     flag_descriptions::kRecoverTabsOfLastClosedWindowDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kRecoverTabsOfLastClosedWindow)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -1017,4 +1017,8 @@ BASE_DECLARE_FEATURE(kVoiceSearchMicPermissions);
 // Returns true if VoiceSearchMicPermissions is enabled.
 bool IsVoiceSearchMicPermissionsEnabled();
 
+// Feature to control whether the application should try to restore the tabs
+// of the last closed window on startup when possible.
+BASE_DECLARE_FEATURE(kRecoverTabsOfLastClosedWindow);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

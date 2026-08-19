@@ -8659,6 +8659,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "recover-tabs-of-last-closed-window",
+    "owners": ["sdefresne@chromium.org"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "reengagement-notification",
     "owners": [ "dtrainor@chromium.org", "xingliu@chromium.org" ],
     "expiry_milestone": 90

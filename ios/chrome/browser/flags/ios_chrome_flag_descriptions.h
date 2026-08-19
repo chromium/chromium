@@ -1799,6 +1799,12 @@ inline constexpr char kReaderModeSupportNewFontsName[] =
 inline constexpr char kReaderModeSupportNewFontsDescription[] =
     "Enables new accessible font options in Reader Mode.";
 
+inline constexpr char kRecoverTabsOfLastClosedWindowName[] =
+    "Recover Tabs of last closed window";
+inline constexpr char kRecoverTabsOfLastClosedWindowDescription[] =
+    "Allow the application to attempt to recover the tabs of the last closed "
+    "window on startup when possible.";
+
 inline constexpr char kRefactorToolbarsSizeName[] = "Refactor toolbars size";
 inline constexpr char kRefactorToolbarsSizeDescription[] =
     "When enabled, the toolbars size does not use broadcaster but observers.";

@@ -1265,3 +1265,5 @@ BASE_FEATURE(kVoiceSearchMicPermissions, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsVoiceSearchMicPermissionsEnabled() {
   return base::FeatureList::IsEnabled(kVoiceSearchMicPermissions);
 }
+
+BASE_FEATURE(kRecoverTabsOfLastClosedWindow, base::FEATURE_DISABLED_BY_DEFAULT);
