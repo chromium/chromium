@@ -12,6 +12,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #import "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -20,6 +21,10 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
+
+namespace safe_browsing {
+class ClientSideDetectionHostBase;
+}
 
 class SafeBrowsingClient;
 @protocol SafeBrowsingTabHelperDelegate;
@@ -67,6 +72,11 @@ class SafeBrowsingTabHelper
   static void ReportSecurityInterstitialShown(
       web::WebState* web_state,
       const security_interstitials::UnsafeResource& resource);
+
+  // Returns the client side detection host, or nullptr if disabled.
+  safe_browsing::ClientSideDetectionHostBase* client_side_detection_host() {
+    return csd_host_.get();
+  }
 
  private:
   friend class web::WebStateUserData<SafeBrowsingTabHelper>;
@@ -344,6 +354,15 @@ class SafeBrowsingTabHelper
     base::ScopedObservation<web::WebState, web::WebStateObserver>
         scoped_observation_{this};
   };
+
+  // Updates the ClientSideDetectionHost based on current Safe Browsing
+  // settings.
+  void UpdateClientSideDetectionHost();
+
+  raw_ptr<web::WebState> web_state_ = nullptr;
+  raw_ptr<SafeBrowsingClient> client_ = nullptr;
+  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<safe_browsing::ClientSideDetectionHostBase> csd_host_;
 
   PolicyDecider policy_decider_;
   QueryObserver query_observer_;

@@ -5,12 +5,15 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefService;
 
 namespace safe_browsing {
+class ClientSideDetectionHostBase;
 class HashRealTimeService;
 class RealTimeUrlLookupServiceBase;
 class V5GetHashProtocolManager;
@@ -70,6 +73,10 @@ class SafeBrowsingClient : public KeyedService {
   virtual void OnSecurityInterstitialShown(
       web::WebState* web_state,
       const security_interstitials::UnsafeResource& resource) = 0;
+  // Creates and returns a Client-Side Detection host for `web_state`.
+  // Clients may return nullptr if CSD is not supported or disabled.
+  virtual std::unique_ptr<safe_browsing::ClientSideDetectionHostBase>
+  CreateClientSideDetectionHost(web::WebState* web_state) = 0;
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_CLIENT_H_

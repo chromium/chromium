@@ -80,3 +80,10 @@ void WebViewSafeBrowsingClient::OnSecurityInterstitialShown(
     const security_interstitials::UnsafeResource& resource) {
   // ios/web_view does not support enterprise reporting.
 }
+
+std::unique_ptr<safe_browsing::ClientSideDetectionHostBase>
+WebViewSafeBrowsingClient::CreateClientSideDetectionHost(
+    web::WebState* web_state) {
+  // ios/web_view does not support client side detection.
+  return nullptr;
+}

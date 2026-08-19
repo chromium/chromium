@@ -12,8 +12,11 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/browser/client_side_detection_host_base.h"
 #import "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safe_browsing/core/common/safebrowsing_constants.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
@@ -132,11 +135,51 @@ void RecordTotalDelayMetricForDelayedAllowedNavigation(
 
 SafeBrowsingTabHelper::SafeBrowsingTabHelper(web::WebState* web_state,
                                              SafeBrowsingClient* client)
-    : policy_decider_(web_state, client),
+    : web_state_(web_state),
+      client_(client),
+      policy_decider_(web_state, client),
       query_observer_(web_state, &policy_decider_),
-      navigation_observer_(web_state, &policy_decider_) {}
+      navigation_observer_(web_state, &policy_decider_) {
+  if (client_ && client_->GetPrefs()) {
+    PrefService* prefs = client_->GetPrefs();
+    if (prefs->FindPreference(prefs::kSafeBrowsingEnabled)) {
+      pref_change_registrar_.Init(prefs);
+      pref_change_registrar_.Add(
+          prefs::kSafeBrowsingEnabled,
+          base::BindRepeating(
+              &SafeBrowsingTabHelper::UpdateClientSideDetectionHost,
+              base::Unretained(this)));
+      if (prefs->FindPreference(prefs::kSafeBrowsingEnhanced)) {
+        pref_change_registrar_.Add(
+            prefs::kSafeBrowsingEnhanced,
+            base::BindRepeating(
+                &SafeBrowsingTabHelper::UpdateClientSideDetectionHost,
+                base::Unretained(this)));
+      }
+    }
+  }
+  UpdateClientSideDetectionHost();
+}
 
 SafeBrowsingTabHelper::~SafeBrowsingTabHelper() = default;
+
+void SafeBrowsingTabHelper::UpdateClientSideDetectionHost() {
+  if (!client_ || !web_state_) {
+    csd_host_.reset();
+    return;
+  }
+  PrefService* prefs = client_->GetPrefs();
+  bool safe_browsing_enabled =
+      prefs && prefs->FindPreference(prefs::kSafeBrowsingEnabled) &&
+      safe_browsing::IsSafeBrowsingEnabled(*prefs);
+  if (safe_browsing_enabled) {
+    if (!csd_host_) {
+      csd_host_ = client_->CreateClientSideDetectionHost(web_state_);
+    }
+  } else {
+    csd_host_.reset();
+  }
+}
 
 void SafeBrowsingTabHelper::SetDelegate(
     id<SafeBrowsingTabHelperDelegate> delegate) {

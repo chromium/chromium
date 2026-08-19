@@ -46,6 +46,8 @@ class SafeBrowsingClientImpl : public SafeBrowsingClient {
   void OnSecurityInterstitialShown(
       web::WebState* web_state,
       const security_interstitials::UnsafeResource& resource) override;
+  std::unique_ptr<safe_browsing::ClientSideDetectionHostBase>
+  CreateClientSideDetectionHost(web::WebState* web_state) override;
 
  private:
   raw_ptr<PrefService> pref_service_ = nullptr;

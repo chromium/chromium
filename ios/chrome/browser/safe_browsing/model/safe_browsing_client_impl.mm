@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_client_impl.h"
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/memory/weak_ptr.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
+#import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safe_browsing/core/common/utils.h"
@@ -115,4 +117,10 @@ void SafeBrowsingClientImpl::OnSecurityInterstitialShown(
         pref_service_->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled),
         referrer_chain);
   }
+}
+
+std::unique_ptr<safe_browsing::ClientSideDetectionHostBase>
+SafeBrowsingClientImpl::CreateClientSideDetectionHost(
+    web::WebState* web_state) {
+  return nullptr;
 }

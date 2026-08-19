@@ -36,6 +36,8 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   void OnSecurityInterstitialShown(
       web::WebState* web_state,
       const security_interstitials::UnsafeResource& resource) override;
+  std::unique_ptr<safe_browsing::ClientSideDetectionHostBase>
+  CreateClientSideDetectionHost(web::WebState* web_state) override;
 
   // Controls the return value of `ShouldBlockUnsafeResource`.
   void set_should_block_unsafe_resource(bool should_block_unsafe_resource) {
