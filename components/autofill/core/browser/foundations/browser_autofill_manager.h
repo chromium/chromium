@@ -490,19 +490,16 @@ class BrowserAutofillManager : public AutofillManager {
                              bool has_suggestions);
 
   // Returns a list with the suggestions available for `field`. Which fields of
-  // the `form` are filled depends on the `trigger_source`. `context` could
-  // contain additional information about the suggestions, such as ablation
-  // study related fields.
-  // TODO(crbug.com/340494671): Move ablation study fields out of the function
-  // and make the context a const ref.
+  // the `form` are filled depends on the `trigger_source`.
+  // TODO(crbug.com/409962888): Remove this function after launching
+  // `kAutofillNewSuggestionGeneration`.
   std::vector<Suggestion> GetAvailableSuggestions(
       const FormData& form,
-      const FormStructure* form_structure,
+      const FormStructure& form_structure,
       const FormFieldData& field,
-      AutofillField* autofill_field,
+      const AutofillField& autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
-      const std::vector<std::string>& one_time_passwords,
-      SuggestionsContext& context);
+      const std::vector<std::string>& one_time_passwords);
 
   // Called when all suggestion generators have finished generating their
   // suggestions. It combines the returned suggestions respecting their
