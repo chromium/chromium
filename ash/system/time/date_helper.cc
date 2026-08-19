@@ -211,11 +211,7 @@ base::Time DateHelper::GetLocalMidnight(base::Time date) {
 }
 
 DateHelper::DateHelper()
-    :  // Note: "yyyy" represents a four-digit calendar year (e.g. "2023"),
-       // while "YYYY" represents a so called 'week year' (which might be "2022"
-       // if the first day is on the last week of 2022).
-      year_formatter_(CreateSimpleDateFormatter("yyyy")),
-      twelve_hour_clock_hours_formatter_(CreateHoursFormatter("h:mm a")),
+    : twelve_hour_clock_hours_formatter_(CreateHoursFormatter("h:mm a")),
       twenty_four_hour_clock_hours_formatter_(CreateHoursFormatter("HH:mm")),
       minutes_formatter_(CreateSimpleDateFormatterWithoutBestPattern("mm")),
       twelve_hour_clock_interval_formatter_(CreateDateIntervalFormatter("hm")),
@@ -245,7 +241,6 @@ DateHelper::~DateHelper() {
 }
 
 void DateHelper::ResetFormatters() {
-  year_formatter_ = CreateSimpleDateFormatter("yyyy");
   twelve_hour_clock_hours_formatter_ = CreateHoursFormatter("h:mm a");
   twenty_four_hour_clock_hours_formatter_ = CreateHoursFormatter("HH:mm");
   minutes_formatter_ = CreateSimpleDateFormatterWithoutBestPattern("mm");

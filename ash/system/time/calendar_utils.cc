@@ -144,8 +144,8 @@ std::u16string GetTimeZone(const base::Time date) {
 }
 
 std::u16string GetYear(const base::Time date) {
-  return calendar_utils::FormatDate(DateHelper::GetInstance()->year_formatter(),
-                                    date);
+  return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
+      date, base::i18n::datetime_options::Y::Medium());
 }
 
 std::u16string GetMonthNameAndYear(const base::Time date) {
