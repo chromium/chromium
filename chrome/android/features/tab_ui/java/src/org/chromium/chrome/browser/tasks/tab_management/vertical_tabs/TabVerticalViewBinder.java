@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
@@ -143,7 +144,7 @@ class TabVerticalViewBinder {
             updateTabItemSize(model, view, expandedWidth, pinnedHeight);
         }
 
-        if (TabProperties.TITLE == propertyKey) {
+        if (TabProperties.TITLE == propertyKey || TabProperties.IS_PINNED == propertyKey) {
             updateContentDescription(model, view);
         } else if (TabProperties.IS_SELECTED == propertyKey
                 || TabProperties.IS_MULTI_SELECTED == propertyKey
@@ -225,16 +226,16 @@ class TabVerticalViewBinder {
         } else if (TabProperties.MEDIA_INDICATOR == propertyKey) {
             updateMediaIndicator(model, view);
             updateIcons(model, view);
+            updateContentDescription(model, view);
         } else if (TabProperties.ACTOR_UI_STATE == propertyKey) {
-            TabListViewBinderUtils.setupActorIndicator(model, view);
             updateIcons(model, view);
+            updateContentDescription(model, view);
         } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
             updateContentDescription(model, view);
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
         } else if (TabProperties.IS_GLIC_ACTIVE == propertyKey) {
-            boolean isGlicActive = TabListViewBinderUtils.setupGlicIndicator(model, view);
-            updateGlicIndicatorBar(isGlicActive, view);
+            updateGlicIndicatorBar(model, view);
         } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
             View button = view.findViewById(R.id.action_button);
             if (button == null) button = view.findViewById(R.id.menu_button);
@@ -312,8 +313,7 @@ class TabVerticalViewBinder {
         boolean actorActuationWanted =
                 actuationSpark != null
                         && actuationSpinner != null
-                        && actorState != null
-                        && actorState.tabIndicator != TabIndicatorStatus.NONE;
+                        && TabListViewBinderUtils.isActorActive(actorState);
         @MediaState int mediaState = model.get(TabProperties.MEDIA_INDICATOR);
         boolean mediaWanted = mediaIndicator != null && mediaState != MediaState.NONE;
         boolean loadingWanted = spinner != null && model.get(TabProperties.IS_LOADING);
@@ -467,10 +467,13 @@ class TabVerticalViewBinder {
     }
 
     /** Updates the visibility of the Glic indicator bar on the tab row. */
-    private static void updateGlicIndicatorBar(boolean isGlicActive, View view) {
+    private static void updateGlicIndicatorBar(PropertyModel model, View view) {
         View glicIndicatorView = view.findViewById(R.id.ai_indicator);
         if (glicIndicatorView == null) return;
 
+        boolean isGlicActive =
+                model.containsKey(TabProperties.IS_GLIC_ACTIVE)
+                        && model.get(TabProperties.IS_GLIC_ACTIVE);
         glicIndicatorView.setVisibility(isGlicActive ? View.VISIBLE : View.GONE);
     }
 
@@ -794,15 +797,42 @@ class TabVerticalViewBinder {
         updateContentDescription(model, view);
     }
 
+    /**
+     * Updates the content description of a tab row. Tab groups use {@link
+     * TabProperties#CONTENT_DESCRIPTION_TEXT_RESOLVER}. Individual tabs format a compound string:
+     * {@code "<Title> [ - Gemini is working...], [Pinned] [Media] Tab"}.
+     */
     private static void updateContentDescription(PropertyModel model, View view) {
+        // TODO(crbug.com/509226293): Align tab group header accessibility descriptions with HTS.
+        Context context = view.getContext();
         @Nullable TextResolver contentDescriptionTextResolver =
                 model.get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
         @Nullable CharSequence contentDescriptionString =
                 contentDescriptionTextResolver != null
-                        ? contentDescriptionTextResolver.resolve(view.getContext())
+                        ? contentDescriptionTextResolver.resolve(context)
                         : null;
         if (TextUtils.isEmpty(contentDescriptionString) && model.containsKey(TabProperties.TITLE)) {
-            contentDescriptionString = model.get(TabProperties.TITLE);
+            String title = model.get(TabProperties.TITLE);
+            boolean isPinned = TabProperties.isPinnedTab(model);
+            @MediaState
+            int mediaState =
+                    model.containsKey(TabProperties.MEDIA_INDICATOR)
+                            ? model.get(TabProperties.MEDIA_INDICATOR)
+                            : MediaState.NONE;
+
+            @Nullable UiTabState actorState =
+                    model.containsKey(TabProperties.ACTOR_UI_STATE)
+                            ? model.get(TabProperties.ACTOR_UI_STATE)
+                            : null;
+            if (TabListViewBinderUtils.isActorActive(actorState)) {
+                // Appends "- Gemini is working on your task..." to the title when Actor is active.
+                title = context.getString(R.string.tab_ax_label_actor_accessing, title);
+            }
+
+            @StringRes
+            int stringRes =
+                    TabListViewBinderUtils.getTabContentDescriptionStringId(isPinned, mediaState);
+            contentDescriptionString = context.getString(stringRes, title);
         }
         view.setContentDescription(contentDescriptionString);
     }

@@ -170,7 +170,9 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TITLE);
 
         assertEquals(TEST_TITLE, mTitleView.getText());
-        assertEquals(TEST_TITLE, mItemView.getContentDescription());
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab, TEST_TITLE),
+                mItemView.getContentDescription());
     }
 
     @Test
@@ -209,14 +211,13 @@ public class TabVerticalViewBinderUnitTest {
         mModel.set(TabProperties.TITLE, TEST_TITLE);
         TextResolver resolver = _ -> TEST_DESCRIPTION;
         mModel.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, resolver);
+        TabVerticalViewBinder.bindTab(
+                mModel, mItemView, TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
 
         mModel.set(TabProperties.IS_GLIC_ACTIVE, true);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_GLIC_ACTIVE);
         assertIndicatorStateAndDescription(
-                mIndicatorView,
-                mItemView,
-                View.VISIBLE,
-                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE));
+                mIndicatorView, mItemView, View.VISIBLE, TEST_DESCRIPTION);
 
         mModel.set(TabProperties.IS_GLIC_ACTIVE, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_GLIC_ACTIVE);
@@ -227,8 +228,6 @@ public class TabVerticalViewBinderUnitTest {
     @SmallTest
     public void testBindGlicIndicator_WithActorUiState() {
         mModel.set(TabProperties.TITLE, TEST_TITLE);
-        TextResolver resolver = _ -> TEST_DESCRIPTION;
-        mModel.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, resolver);
 
         // Turn on both Glic and Actor UI State.
         mModel.set(TabProperties.IS_GLIC_ACTIVE, true);
@@ -238,22 +237,19 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_GLIC_ACTIVE);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ACTOR_UI_STATE);
 
-        assertIndicatorStateAndDescription(
-                mIndicatorView,
-                mItemView,
-                View.VISIBLE,
-                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE));
+        String expectedActorTitle =
+                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE);
+        String expectedDesc =
+                mActivity.getString(R.string.accessibility_tabstrip_tab, expectedActorTitle);
+
+        assertIndicatorStateAndDescription(mIndicatorView, mItemView, View.VISIBLE, expectedDesc);
 
         // Deactivate Glic while Actor remains active.
         mModel.set(TabProperties.IS_GLIC_ACTIVE, false);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.IS_GLIC_ACTIVE);
 
         // Accessibility description should NOT be reset because Actor is still active.
-        assertIndicatorStateAndDescription(
-                mIndicatorView,
-                mItemView,
-                View.GONE,
-                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE));
+        assertIndicatorStateAndDescription(mIndicatorView, mItemView, View.GONE, expectedDesc);
     }
 
     @Test
@@ -275,7 +271,95 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTab(
                 mModel, mItemView, TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
 
-        assertEquals(TEST_TITLE, mItemView.getContentDescription());
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab, TEST_TITLE),
+                mItemView.getContentDescription());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindContentDescription_MediaStates() {
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
+
+        // Produces: "Google Website, Muted Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab_muted, TEST_TITLE),
+                mItemView.getContentDescription());
+
+        // Produces: "Google Website, Audible Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab_audible, TEST_TITLE),
+                mItemView.getContentDescription());
+
+        // Produces: "Google Website, Recording Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab_recording, TEST_TITLE),
+                mItemView.getContentDescription());
+
+        // Produces: "Google Website, Sharing Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.SHARING);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab_sharing, TEST_TITLE),
+                mItemView.getContentDescription());
+
+        // Produces: "Google Website, Picture-in-Picture Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.PICTURE_IN_PICTURE);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(
+                        R.string.accessibility_tabstrip_tab_picture_in_picture, TEST_TITLE),
+                mItemView.getContentDescription());
+
+        // Produces: "Google Website, Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.NONE);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab, TEST_TITLE),
+                mItemView.getContentDescription());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindContentDescription_ActorActive() {
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
+        mModel.set(
+                TabProperties.ACTOR_UI_STATE,
+                new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false));
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ACTOR_UI_STATE);
+
+        // Produces: "Google Website - Gemini is working on your task..., Tab".
+        String expectedActorTitle =
+                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab, expectedActorTitle),
+                mItemView.getContentDescription());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindContentDescription_ActorActive_WithMedia() {
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
+        mModel.set(
+                TabProperties.ACTOR_UI_STATE,
+                new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false));
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
+
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.ACTOR_UI_STATE);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.MEDIA_INDICATOR);
+
+        // Produces: "Google Website - Gemini is working on your task..., Muted Tab".
+        String expectedActorTitle =
+                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab_muted, expectedActorTitle),
+                mItemView.getContentDescription());
     }
 
     @Test
@@ -956,11 +1040,81 @@ public class TabVerticalViewBinderUnitTest {
     @SmallTest
     public void testBindPinnedTab_ContentDescription() {
         ViewGroup pinnedView = inflatePinnedTabView();
-
+        mModel.set(TabProperties.IS_PINNED, true);
         mModel.set(TabProperties.TITLE, TEST_TITLE);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TITLE);
 
-        assertEquals(TEST_TITLE, pinnedView.getContentDescription().toString());
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab_pinned, TEST_TITLE),
+                pinnedView.getContentDescription());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_ContentDescription_MediaStates() {
+        ViewGroup pinnedView = inflatePinnedTabView();
+        mModel.set(TabProperties.IS_PINNED, true);
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
+
+        // Produces: "Google Website, Pinned Muted Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab_pinned_muted, TEST_TITLE),
+                pinnedView.getContentDescription());
+
+        // Produces: "Google Website, Pinned Audible Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.AUDIBLE);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab_pinned_audible, TEST_TITLE),
+                pinnedView.getContentDescription());
+
+        // Produces: "Google Website, Pinned Recording Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.RECORDING);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(
+                        R.string.accessibility_tabstrip_tab_pinned_recording, TEST_TITLE),
+                pinnedView.getContentDescription());
+
+        // Produces: "Google Website, Pinned Sharing Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.SHARING);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab_pinned_sharing, TEST_TITLE),
+                pinnedView.getContentDescription());
+
+        // Produces: "Google Website, Pinned Picture-in-Picture Tab".
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.PICTURE_IN_PICTURE);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.MEDIA_INDICATOR);
+        assertEquals(
+                mActivity.getString(
+                        R.string.accessibility_tabstrip_tab_pinned_picture_in_picture, TEST_TITLE),
+                pinnedView.getContentDescription());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindPinnedTab_ContentDescription_ActorActive_WithMedia() {
+        ViewGroup pinnedView = inflatePinnedTabView();
+        mModel.set(TabProperties.IS_PINNED, true);
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
+        mModel.set(
+                TabProperties.ACTOR_UI_STATE,
+                new UiTabState(0, null, null, TabIndicatorStatus.DYNAMIC, false));
+        mModel.set(TabProperties.MEDIA_INDICATOR, MediaState.MUTED);
+
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.ACTOR_UI_STATE);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.MEDIA_INDICATOR);
+
+        // Produces: "Google Website - Gemini is working on your task..., Pinned Muted Tab".
+        String expectedActorTitle =
+                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE);
+        assertEquals(
+                mActivity.getString(
+                        R.string.accessibility_tabstrip_tab_pinned_muted, expectedActorTitle),
+                pinnedView.getContentDescription());
     }
 
     @Test
@@ -970,18 +1124,25 @@ public class TabVerticalViewBinderUnitTest {
         View glicIndicator = pinnedView.findViewById(R.id.ai_indicator);
         assertNotNull(glicIndicator);
 
+        mModel.set(TabProperties.IS_PINNED, true);
         mModel.set(TabProperties.TITLE, TEST_TITLE);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TITLE);
+
         mModel.set(TabProperties.IS_GLIC_ACTIVE, true);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_GLIC_ACTIVE);
         assertIndicatorStateAndDescription(
                 glicIndicator,
                 pinnedView,
                 View.VISIBLE,
-                mActivity.getString(R.string.tab_ax_label_actor_accessing, TEST_TITLE));
+                mActivity.getString(R.string.accessibility_tabstrip_tab_pinned, TEST_TITLE));
 
         mModel.set(TabProperties.IS_GLIC_ACTIVE, false);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.IS_GLIC_ACTIVE);
-        assertIndicatorStateAndDescription(glicIndicator, pinnedView, View.GONE, TEST_TITLE);
+        assertIndicatorStateAndDescription(
+                glicIndicator,
+                pinnedView,
+                View.GONE,
+                mActivity.getString(R.string.accessibility_tabstrip_tab_pinned, TEST_TITLE));
     }
 
     @Test
@@ -1677,7 +1838,9 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
 
         assertNotEquals(View.VISIBLE, mTitleView.getVisibility());
-        assertEquals(TEST_TITLE, mItemView.getContentDescription());
+        assertEquals(
+                mActivity.getString(R.string.accessibility_tabstrip_tab, TEST_TITLE),
+                mItemView.getContentDescription());
     }
 
     @Test
