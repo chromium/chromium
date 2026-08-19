@@ -427,6 +427,12 @@ template("chrome_common_apk_or_module_tmpl") {
       # it contains more assets than we need (always use the 64_32 variant).
       # https://crbug.com/357131361
       suffix_apk_assets_used_by = system_webview_apk_target
+    } else {
+      # This must be done even for non-Trichrome due to Android R & S putting
+      # old versions of our TrichromeLibrary into our AssetManager:
+      # crbug.com/40064988
+      suffix_apk_assets_used_by = system_webview_apk_target
+      suffix_apk_assets_string = "40064988"
     }
 
     if (defined(invoker.add_upstream_only_deps) &&
