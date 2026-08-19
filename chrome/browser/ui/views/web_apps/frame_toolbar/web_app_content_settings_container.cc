@@ -93,5 +93,11 @@ void WebAppContentSettingsContainer::EnsureVisible() {
   }
 }
 
+void WebAppContentSettingsContainer::ChildVisibilityChanged(
+    views::View* child) {
+  views::View::ChildVisibilityChanged(child);
+  InvalidateLayout();
+}
+
 BEGIN_METADATA(WebAppContentSettingsContainer)
 END_METADATA

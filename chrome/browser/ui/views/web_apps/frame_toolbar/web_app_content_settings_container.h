@@ -41,6 +41,9 @@ class WebAppContentSettingsContainer : public views::View {
 
   void EnsureVisible();
 
+  // views::View:
+  void ChildVisibilityChanged(views::View* child) override;
+
   const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>&
   get_content_setting_views() const {
     return content_setting_views_;
