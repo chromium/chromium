@@ -72,6 +72,7 @@
   // C2PA: Promo image should not have C2PA metadata. b/541315801
   [_lensOverlayHandler
           searchImageWithLens:_promoViewController.lensSearchImage
+                 rawImageData:nil
                    entrypoint:LensOverlayEntrypoint::kFREPromo
       initialPresentationBase:_promoViewController.lensContainerViewController
       resultsPresenterFactory:factory

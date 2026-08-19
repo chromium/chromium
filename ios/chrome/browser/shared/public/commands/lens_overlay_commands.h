@@ -31,12 +31,13 @@ typedef id<LensOverlayResultsPagePresenting> (^LensResultsPresenterFactory)(
                  completion:(void (^)(BOOL))completion;
 
 /// Responds to a search image with Lens request by creating a new Lens UI with
-/// the given image. The overlay will be shown over the specified
-/// initial presentation base.
+/// the given image or raw image data. The overlay will be shown over the
+/// specified initial presentation base.
 /// The `presenterFactory` allows the caller to provide a custom presenter for
 /// the results page. If nil, a default presenter will be used.
 /// The completion is called once the UI is presented.
 - (void)searchImageWithLens:(UIImage*)image
+               rawImageData:(NSData*)rawImageData
                  entrypoint:(LensOverlayEntrypoint)entrypoint
     initialPresentationBase:(UIViewController*)initialPresentationBase
     resultsPresenterFactory:(LensResultsPresenterFactory)presenterFactory

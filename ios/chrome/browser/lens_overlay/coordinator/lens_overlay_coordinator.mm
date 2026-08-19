@@ -367,6 +367,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 }
 
 - (void)searchImageWithLens:(UIImage*)image
+               rawImageData:(NSData*)rawImageData
                  entrypoint:(LensOverlayEntrypoint)entrypoint
     initialPresentationBase:(UIViewController*)initialPresentationBase
     resultsPresenterFactory:(LensResultsPresenterFactory)presenterFactory
@@ -384,8 +385,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   // infrastructure still needs to be built to allow the restoration window to
   // be displayed when exiting and re-entering the experience.
   [self prepareSnapshotCapturingInfrastructure];
+  CHECK(image || rawImageData);
   LensImageSource* imageSource =
-      [[LensImageSource alloc] initWithSnapshot:image];
+      image ? [[LensImageSource alloc] initWithSnapshot:image]
+            : [[LensImageSource alloc] initWithRawImageData:rawImageData];
   [self handleOverlayImageSourceFound:imageSource
                              animated:YES
                            completion:completion];

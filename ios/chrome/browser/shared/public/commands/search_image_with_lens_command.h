@@ -10,6 +10,7 @@
 enum class LensEntrypoint;
 
 // An instance of this class contains the data needed to do a Lens search.
+// Either `image` or `rawImageData` should be non-nil.
 @interface SearchImageWithLensCommand : NSObject
 
 // Initializes to search for `image`.
@@ -17,10 +18,18 @@ enum class LensEntrypoint;
                    entryPoint:(LensEntrypoint)entryPoint
     NS_DESIGNATED_INITIALIZER;
 
+// Initializes to search for `rawImageData`.
+- (instancetype)initWithRawImageData:(NSData*)rawImageData
+                          entryPoint:(LensEntrypoint)entryPoint
+    NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
 
-// The image to search with Lens.
+// The image to search with Lens. Is nil if `rawImageData` is non-nil.
 @property(nonatomic, strong, readonly) UIImage* image;
+
+// The raw image data to search with Lens. Is nil if `image` is non-nil.
+@property(nonatomic, strong, readonly) NSData* rawImageData;
 
 // The entry point to pass to Lens.
 @property(nonatomic, assign) LensEntrypoint entryPoint;

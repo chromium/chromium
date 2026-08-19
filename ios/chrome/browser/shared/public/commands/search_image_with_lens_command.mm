@@ -16,4 +16,14 @@
   return self;
 }
 
+- (instancetype)initWithRawImageData:(NSData*)rawImageData
+                          entryPoint:(LensEntrypoint)entryPoint {
+  self = [super init];
+  if (self) {
+    _rawImageData = rawImageData;
+    _entryPoint = entryPoint;
+  }
+  return self;
+}
+
 @end
