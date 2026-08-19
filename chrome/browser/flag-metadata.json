@@ -8722,6 +8722,14 @@
     "expiry_milestone": -1
   },
   {
+    "name": "remote-actor-credential-sharing",
+    "owners": [
+      "derinel@google.com",
+      "anki-team@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "render-arc-notifications-by-chrome",
     "owners": [ "shuminghao@google.com", "arc-framework@google.com" ],
     "expiry_milestone": 152

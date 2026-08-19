@@ -4293,6 +4293,13 @@ inline constexpr char kPwaUpdateDialogForAppIconName[] =
 inline constexpr char kPwaUpdateDialogForAppIconDescription[] =
     "Enable a confirmation dialog that shows up when a PWA changes its icon";
 
+inline constexpr char kRemoteActorCredentialSharingName[] =
+    "Enable password sharing with remote actors";
+inline constexpr char kRemoteActorCredentialSharingDescription[] =
+    "Enables remote actors to request passwords from the signed in Google "
+    "account. When requested, the user will be prompted to select a password "
+    "and authenticate.";
+
 inline constexpr char kRenderDocumentName[] = "Enable RenderDocument";
 inline constexpr char kRenderDocumentDescription[] =
     "Enable swapping RenderFrameHosts on same-site navigations";

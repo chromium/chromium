@@ -13846,6 +13846,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kOneStepAimAccess)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"remote-actor-credential-sharing",
+     flag_descriptions::kRemoteActorCredentialSharingName,
+     flag_descriptions::kRemoteActorCredentialSharingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kRemoteActorCredentialSharing)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

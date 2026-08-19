@@ -16873,6 +16873,7 @@ from previous Chrome versions.
   <int value="699641785" label="DefaultBrowserFramework:enabled"/>
   <int value="700346797" label="WheelEventRegions:enabled"/>
   <int value="700926106" label="OmniboxPedalsBatch3NonEnglish:enabled"/>
+  <int value="701084761" label="RemoteActorCredentialSharing:disabled"/>
   <int value="701766325" label="PerNavigationMojoInterface:enabled"/>
   <int value="702060507" label="SafetyCheckWeakPasswords:disabled"/>
   <int value="702117246" label="OmniboxSiteSearchStarterPack:disabled"/>
@@ -20593,6 +20594,7 @@ from previous Chrome versions.
   <int value="1850641630" label="ForceSecurePaymentConfirmationDialog:enabled"/>
   <int value="1851358497" label="enable-ash-sidebar"/>
   <int value="1851746253" label="ReducedReferrerGranularity:disabled"/>
+  <int value="1852058257" label="RemoteActorCredentialSharing:enabled"/>
   <int value="1852099433" label="AndroidHub:enabled"/>
   <int value="1852285132"
       label="AutofillEnableRankingFormulaAddressProfiles:disabled"/>
