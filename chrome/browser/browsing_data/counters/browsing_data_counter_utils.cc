@@ -117,7 +117,7 @@ std::u16string GetChromeCounterTextFromResult(
 
     // Three cases: Nonzero result for the entire cache, nonzero result for
     // a subset of cache (i.e. a finite time interval), and almost zero (< 1MB).
-    if (cache_size_bytes >= base::MiBU(1)) {
+    if (cache_size_bytes >= base::MiB(1)) {
       std::u16string formatted_size = FormatBytesMBOrHigher(cache_size_bytes);
       if (!is_upper_limit) {
 #if BUILDFLAG(IS_ANDROID)
