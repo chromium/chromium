@@ -314,7 +314,7 @@ void NTPResourceCache::CreateNewTabIsolatedHTML(
   replacements["learnMore"] =
       l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_LEARN_MORE_LINK);
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
-  replacements["cookieIsolatedControlsTitle"] =
+  replacements["isolatedVisibilityWarning"] =
       l10n_util::GetStringUTF8(IDS_NEW_ISOLATED_TAB_VISIBILITY_WARNING);
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
       IDS_NEW_ISOLATED_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
