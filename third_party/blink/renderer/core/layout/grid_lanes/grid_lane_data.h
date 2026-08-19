@@ -32,8 +32,9 @@ struct GridLanesItemPlacementData
   // fill-reverse may move the item without changing this position.
   LayoutUnit forward_stacking_start;
 
-  // Stable order in which the item was placed, used as the `CrossGap` tie-break
-  // for equal final gutter centers.
+  // Unique item identifier within a placement pass. All lane entries for a
+  // spanner share this value. It also breaks ties between equal final
+  // `CrossGap` centers.
   wtf_size_t placement_sequence = 0;
 
   // Index of the item's fragment in the container builder during normal layout.

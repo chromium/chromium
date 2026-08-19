@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_gap_accumulator.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
@@ -30,6 +31,20 @@ const GridLanesItemData* FirstItemInForwardStackingOrder(
     }
   }
   return first;
+}
+
+bool LaneEntryIdsMatch(const Vector<wtf_size_t>& before_ids,
+                       wtf_size_t before_index,
+                       const Vector<wtf_size_t>& after_ids,
+                       wtf_size_t after_index) {
+  // A lane with no entries cannot be spanned, so nothing is blocked.
+  if (before_ids.empty() || after_ids.empty()) {
+    return false;
+  }
+
+  CHECK_LT(before_index, before_ids.size());
+  CHECK_LT(after_index, after_ids.size());
+  return before_ids[before_index] == after_ids[after_index];
 }
 
 }  // namespace
@@ -112,11 +127,13 @@ const GapGeometry* GridLanesGapAccumulator::FinalizeGapGeometry(
   return gap_geometry_;
 }
 
-void GridLanesGapAccumulator::MaybeAddCrossGapForTrackEntry(
+void GridLanesGapAccumulator::RecordLaneEntry(
     const GridLanesItemData& item,
     const GridLanesItemData* first_item_in_track,
     wtf_size_t compact_track_index,
-    const GridLanesGapGeometryState& state) {
+    const GridLanesGapGeometryState& state,
+    Vector<wtf_size_t>& lane_occupant_ids) {
+  lane_occupant_ids.push_back(item.PlacementSequence());
   if (&item == first_item_in_track) {
     return;
   }
@@ -145,11 +162,57 @@ void GridLanesGapAccumulator::MaybeAddCrossGapForTrackEntry(
   }
 }
 
+void GridLanesGapAccumulator::MarkBlockedMainGapSegments(
+    wtf_size_t main_gap_index,
+    const Vector<wtf_size_t>& previous_lane_occupant_ids,
+    const Vector<wtf_size_t>& current_lane_occupant_ids) {
+  // A lane with no entries cannot be spanned, so no segment is blocked.
+  if (previous_lane_occupant_ids.empty() || current_lane_occupant_ids.empty()) {
+    return;
+  }
+
+  MainGap& main_gap = gap_geometry_->MainGapAt(main_gap_index);
+  GridLanesMainGapSegmentWalker walker(*gap_geometry_, main_gap_index);
+  wtf_size_t segment_index = 0;
+  std::optional<wtf_size_t> blocked_run_start;
+
+  // Walk through the gap decoration segments for this `MainGap` to mark the
+  // segments that are blocked by a spanner.
+  while (const auto segment = walker.Next()) {
+    // If the IDs of the entries in the lanes adjacent to this `MainGap` match,
+    // it means one item spans both lanes, so the segment is blocked.
+    const bool is_blocked = LaneEntryIdsMatch(
+        previous_lane_occupant_ids, segment->before_occupant_index,
+        current_lane_occupant_ids, segment->after_occupant_index);
+
+    if (is_blocked) {
+      if (!blocked_run_start) {
+        blocked_run_start = segment_index;
+      }
+    } else if (blocked_run_start) {
+      main_gap.AddGapSegmentStateRange(
+          {*blocked_run_start, segment_index,
+           GapSegmentState(GapSegmentState::kBlocked)});
+      blocked_run_start.reset();
+    }
+
+    ++segment_index;
+  }
+
+  // Close a blocked run that extends through the final segment.
+  if (blocked_run_start) {
+    main_gap.AddGapSegmentStateRange(
+        {*blocked_run_start, segment_index,
+         GapSegmentState(GapSegmentState::kBlocked)});
+  }
+}
+
 void GridLanesGapAccumulator::AddCrossGapsForPackedItems(
     const GridLanesItemData& item_below,
     const GridLanesItemData* first_item_in_track,
     wtf_size_t compact_track_index,
-    const GridLanesGapGeometryState& state) {
+    const GridLanesGapGeometryState& state,
+    Vector<wtf_size_t>& lane_occupant_ids) {
   if (item_below.items_densely_packed_above.empty()) {
     return;
   }
@@ -167,8 +230,8 @@ void GridLanesGapAccumulator::AddCrossGapsForPackedItems(
               return a->PlacementSequence() < b->PlacementSequence();
             });
   for (const GridLanesItemData* packed : packed_items) {
-    MaybeAddCrossGapForTrackEntry(*packed, first_item_in_track,
-                                  compact_track_index, state);
+    RecordLaneEntry(*packed, first_item_in_track, compact_track_index, state,
+                    lane_occupant_ids);
   }
 }
 
@@ -184,6 +247,8 @@ void GridLanesGapAccumulator::BuildCrossGaps(
   CHECK_EQ(grid_lanes.size(), raw_track_count_);
   CHECK(collapsed_track_indexes_);
 
+  Vector<wtf_size_t> previous_lane_occupant_ids;
+  Vector<wtf_size_t> current_lane_occupant_ids;
   wtf_size_t compact_track_index = 0;
   wtf_size_t collapsed_track_index = 0;
   for (wtf_size_t raw_track_index = 0; raw_track_index < grid_lanes.size();
@@ -197,28 +262,51 @@ void GridLanesGapAccumulator::BuildCrossGaps(
     const GridLaneData* lane_data = grid_lanes[raw_track_index];
     const GridLanesItemData* first_item_in_track =
         FirstItemInForwardStackingOrder(lane_data);
+    current_lane_occupant_ids.Shrink(0);
+#if DCHECK_IS_ON()
+    const wtf_size_t lane_cross_gap_start = gap_geometry_->CrossGapCount();
+#endif
     if (lane_data) {
       const auto& item_data = lane_data->item_data;
       if (!state.is_fill_reverse) {
         // Visit packed entries before the direct entry below them.
         for (const GridLanesItemData* direct : item_data) {
           AddCrossGapsForPackedItems(*direct, first_item_in_track,
-                                     compact_track_index, state);
-          MaybeAddCrossGapForTrackEntry(*direct, first_item_in_track,
-                                        compact_track_index, state);
+                                     compact_track_index, state,
+                                     current_lane_occupant_ids);
+          RecordLaneEntry(*direct, first_item_in_track, compact_track_index,
+                          state, current_lane_occupant_ids);
         }
       } else {
         // Fill-reverse reflects offsets, so walk direct entries backward and
         // visit each direct entry before its packed group. This keeps each
         // track run in increasing final coordinate order.
         for (const GridLanesItemData* direct : base::Reversed(item_data)) {
-          MaybeAddCrossGapForTrackEntry(*direct, first_item_in_track,
-                                        compact_track_index, state);
+          RecordLaneEntry(*direct, first_item_in_track, compact_track_index,
+                          state, current_lane_occupant_ids);
           AddCrossGapsForPackedItems(*direct, first_item_in_track,
-                                     compact_track_index, state);
+                                     compact_track_index, state,
+                                     current_lane_occupant_ids);
         }
       }
     }
+
+#if DCHECK_IS_ON()
+    const wtf_size_t lane_cross_gap_count =
+        gap_geometry_->CrossGapCount() - lane_cross_gap_start;
+    const wtf_size_t expected_cross_gap_count =
+        current_lane_occupant_ids.empty()
+            ? 0u
+            : current_lane_occupant_ids.size() - 1;
+    DCHECK_EQ(lane_cross_gap_count, expected_cross_gap_count);
+#endif
+
+    if (compact_track_index > 0) {
+      MarkBlockedMainGapSegments(compact_track_index - 1,
+                                 previous_lane_occupant_ids,
+                                 current_lane_occupant_ids);
+    }
+    std::swap(previous_lane_occupant_ids, current_lane_occupant_ids);
     ++compact_track_index;
   }
   CHECK_EQ(compact_track_index, UncollapsedTrackCount());

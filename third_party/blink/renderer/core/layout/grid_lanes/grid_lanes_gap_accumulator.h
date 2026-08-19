@@ -61,18 +61,25 @@ class CORE_EXPORT GridLanesGapAccumulator {
 
   wtf_size_t UncollapsedTrackCount() const;
 
-  // Adds one `CrossGap` unless `item` is first in this track.
-  void MaybeAddCrossGapForTrackEntry(
-      const GridLanesItemData& item,
-      const GridLanesItemData* first_item_in_track,
-      wtf_size_t compact_track_index,
-      const GridLanesGapGeometryState& state);
+  // Records the item and adds its `CrossGap` if needed.
+  void RecordLaneEntry(const GridLanesItemData& item,
+                       const GridLanesItemData* first_item_in_track,
+                       wtf_size_t compact_track_index,
+                       const GridLanesGapGeometryState& state,
+                       Vector<wtf_size_t>& lane_occupant_ids);
+
+  // Adds blocked ranges between the previous and current lanes.
+  void MarkBlockedMainGapSegments(
+      wtf_size_t main_gap_index,
+      const Vector<wtf_size_t>& previous_lane_occupant_ids,
+      const Vector<wtf_size_t>& current_lane_occupant_ids);
 
   // Sorts and adds the densely packed items above `item_below`.
   void AddCrossGapsForPackedItems(const GridLanesItemData& item_below,
                                   const GridLanesItemData* first_item_in_track,
                                   wtf_size_t compact_track_index,
-                                  const GridLanesGapGeometryState& state);
+                                  const GridLanesGapGeometryState& state,
+                                  Vector<wtf_size_t>& lane_occupant_ids);
 
   // Builds the `CrossGap`s grouped by track in ascending track order.
   void BuildCrossGaps(const GridLanesDataVector& grid_lanes,

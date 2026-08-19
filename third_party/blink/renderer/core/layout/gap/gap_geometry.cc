@@ -16,6 +16,105 @@
 
 namespace blink {
 
+GridLanesMainGapSegmentWalker::GridLanesMainGapSegmentWalker(
+    const GapGeometry& gap_geometry,
+    wtf_size_t main_gap_index)
+    : gap_geometry_(gap_geometry),
+      // TODO(javiercon): Consider having a util method for
+      // GridTrackSizingDirection that swaps direction since it's a common
+      // scenario.
+      cross_direction_(gap_geometry.GetMainDirection() == kForColumns
+                           ? kForRows
+                           : kForColumns) {
+  if (cross_direction_ == kForRows) {
+    content_start_ = gap_geometry.GetContentBlockStart();
+    content_end_ = gap_geometry.GetContentBlockEnd();
+  } else {
+    content_start_ = gap_geometry.GetContentInlineStart();
+    content_end_ = gap_geometry.GetContentInlineEnd();
+  }
+
+  CHECK_EQ(gap_geometry.GetContainerType(),
+           GapGeometry::ContainerType::kGridLanes);
+  CHECK_LT(main_gap_index, gap_geometry.MainGapCount());
+  const MainGap& main_gap = gap_geometry.MainGapAt(main_gap_index);
+  if (main_gap.HasCrossGapsBefore()) {
+    before_ = CrossGapRunCursor(main_gap.GetCrossGapBeforeStart(),
+                                main_gap.GetCrossGapBeforeEnd(),
+                                gap_geometry.CrossGapCount());
+  }
+  if (main_gap.HasCrossGapsAfter()) {
+    after_ = CrossGapRunCursor(main_gap.GetCrossGapAfterStart(),
+                               main_gap.GetCrossGapAfterEnd(),
+                               gap_geometry.CrossGapCount());
+  }
+  // The 2 accounts for the content-start and content-end intersections.
+  intersection_capacity_ = 2 + before_.Size() + after_.Size();
+  SkipGapsAtOrBeforeContentStart();
+}
+
+LayoutUnit GridLanesMainGapSegmentWalker::CrossGapOffset(
+    wtf_size_t index) const {
+  CHECK_LT(index, gap_geometry_.CrossGapCount());
+  return gap_geometry_.GetCrossGaps()[index].GetGapOffset(cross_direction_);
+}
+
+void GridLanesMainGapSegmentWalker::SkipGapsAtOrBeforeContentStart() {
+  SkipRunAtOrBeforeContentStart(before_);
+  SkipRunAtOrBeforeContentStart(after_);
+}
+
+void GridLanesMainGapSegmentWalker::SkipRunAtOrBeforeContentStart(
+    CrossGapRunCursor& run) {
+  while (!run.AtEnd() &&
+         CrossGapOffset(run.CrossGapIndex()) <= content_start_) {
+    run.Advance();
+  }
+}
+
+void GridLanesMainGapSegmentWalker::ConsumeRunAtOffset(CrossGapRunCursor& run,
+                                                       LayoutUnit offset) {
+  while (!run.AtEnd() && CrossGapOffset(run.CrossGapIndex()) == offset) {
+    run.Advance();
+  }
+  CHECK(run.AtEnd() || CrossGapOffset(run.CrossGapIndex()) > offset);
+}
+
+std::optional<const GridLanesMainGapSegmentWalker::Segment>
+GridLanesMainGapSegmentWalker::Next() {
+  if (finished_) {
+    return std::nullopt;
+  }
+
+  Segment segment{content_end_, before_.ConsumedCount(),
+                  after_.ConsumedCount()};
+  if (before_.AtEnd() && after_.AtEnd()) {
+    finished_ = true;
+    return segment;
+  }
+
+  LayoutUnit offset;
+  if (before_.AtEnd()) {
+    offset = CrossGapOffset(after_.CrossGapIndex());
+  } else if (after_.AtEnd()) {
+    offset = CrossGapOffset(before_.CrossGapIndex());
+  } else {
+    offset = std::min(CrossGapOffset(before_.CrossGapIndex()),
+                      CrossGapOffset(after_.CrossGapIndex()));
+  }
+
+  if (offset >= content_end_) {
+    finished_ = true;
+    return segment;
+  }
+
+  ConsumeRunAtOffset(before_, offset);
+  ConsumeRunAtOffset(after_, offset);
+
+  segment.end_offset = offset;
+  return segment;
+}
+
 bool GapGeometry::HasRowGapFragmentation(
     const PhysicalBoxFragment& box_fragment,
     bool is_main) const {
@@ -245,17 +344,17 @@ void GapGeometry::GenerateMainIntersectionList(
 
   switch (GetContainerType()) {
     case ContainerType::kGridLanes: {
-      // TODO(javiercon): Implement full intersection support for grid-lanes.
-      // Main-gap segment states will need to account for grid-axis spanners.
-      intersections.reserve(2);
+      GridLanesMainGapSegmentWalker walker(*this, gap_index);
+      intersections.reserve(walker.IntersectionCapacity());
       const LayoutUnit content_start = direction == kForColumns
                                            ? content_block_start_
                                            : content_inline_start_;
       intersections.emplace_back(content_start,
                                  cursor.GetNextGapSegmentState());
-      const LayoutUnit content_end =
-          direction == kForColumns ? content_block_end_ : content_inline_end_;
-      intersections.emplace_back(content_end, cursor.GetNextGapSegmentState());
+      while (auto segment = walker.Next()) {
+        intersections.emplace_back(segment->end_offset,
+                                   cursor.GetNextGapSegmentState());
+      }
       break;
     }
     case ContainerType::kGrid:
@@ -809,7 +908,10 @@ LayoutUnit GapGeometry::GetCrossDecorationWidthForIntersection(
 
   const GapIntersection& intersection = intersections[intersection_index];
 
-  CHECK(GetContainerType() != ContainerType::kGridLanes || !is_main_gap);
+  if (GetContainerType() == ContainerType::kGridLanes && is_main_gap) {
+    // TODO(javiercon): Support main-gap `overlap-join` for grid-lanes.
+    return LayoutUnit();
+  }
 
   // For flex cross gaps, the intersection carries the associated main gap
   // index directly, since cross gaps don't map 1:1 to main gaps by position.

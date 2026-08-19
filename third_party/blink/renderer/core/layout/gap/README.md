@@ -110,13 +110,15 @@ ever span multiple flex lines.
 
 #### Grid-lanes
 - Main Gap intersection points are calculated as:
-  - Start edge of the container || All orthogonal cross gaps adjacent to this main gap
-  || End edge of the container.
+  - Start edge of the container || The ordered, de-duplicated merge of real
+    orthogonal Cross Gaps in the adjacent lanes || End edge of the container.
+  - Blocked segments are derived by comparing occupant identity on the two
+    sides.
 - Cross Gaps use:
   - Start grid-axis boundary of the owning lane || End grid-axis
     boundary of the owning lane.
-  - Each Cross Gap has exactly two intersection points and does not cross a
-    Main Gap.
+  - Each stored Cross Gap has exactly two intersection points and remains
+    confined to its owning lane. See [CSSWG issue 14153](https://github.com/w3c/csswg-drafts/issues/14153).
 
 ### For Multicol:
 - Same as grid.

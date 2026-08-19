@@ -23,6 +23,7 @@ namespace blink {
 
 class ComputedStyle;
 class PhysicalBoxFragment;
+class GapGeometry;
 
 // This bitmask indicates whether an intersection is blocked due to the presence
 // of a spanning item in one or both directions. When considering column gaps,
@@ -58,6 +59,77 @@ class CORE_EXPORT BlockedStatus {
 
 using MainGaps = Vector<MainGap>;
 using CrossGaps = Vector<CrossGap>;
+
+// Walks the gap decoration segments for a `MainGap` in a grid-lanes container.
+// Segments are formed by the intersections of the `MainGap` with the
+// `CrossGaps` (or items) in the adjacent lanes.
+//
+// This is different from `GapSegmentStateCursor`, which does not generate
+// segment geometry. That cursor only walks stored `GapSegmentStateRange`s in
+// the segment order produced by this class and returns the state for each
+// index.
+class GridLanesMainGapSegmentWalker {
+  STACK_ALLOCATED();
+
+ public:
+  struct Segment {
+    LayoutUnit end_offset;
+    wtf_size_t before_occupant_index;
+    wtf_size_t after_occupant_index;
+  };
+
+  GridLanesMainGapSegmentWalker(const GapGeometry& gap_geometry,
+                                wtf_size_t main_gap_index);
+
+  std::optional<const Segment> Next();
+  wtf_size_t IntersectionCapacity() const { return intersection_capacity_; }
+
+ private:
+  // Forward cursor over one side's contiguous `CrossGap` run.
+  class CrossGapRunCursor {
+   public:
+    CrossGapRunCursor() = default;
+    CrossGapRunCursor(wtf_size_t start,
+                      wtf_size_t inclusive_end,
+                      wtf_size_t cross_gap_count)
+        : start_(start), current_(start) {
+      CHECK_LE(start, inclusive_end);
+      CHECK_LT(inclusive_end, cross_gap_count);
+      end_ = inclusive_end + 1;
+    }
+
+    bool AtEnd() const { return current_ == end_; }
+    wtf_size_t Size() const { return end_ - start_; }
+    wtf_size_t CrossGapIndex() const {
+      CHECK(!AtEnd());
+      return current_;
+    }
+    wtf_size_t ConsumedCount() const { return current_ - start_; }
+    void Advance() {
+      CHECK(!AtEnd());
+      ++current_;
+    }
+
+   private:
+    wtf_size_t start_ = 0;
+    wtf_size_t current_ = 0;
+    wtf_size_t end_ = 0;
+  };
+
+  LayoutUnit CrossGapOffset(wtf_size_t index) const;
+  void SkipGapsAtOrBeforeContentStart();
+  void SkipRunAtOrBeforeContentStart(CrossGapRunCursor& run);
+  void ConsumeRunAtOffset(CrossGapRunCursor& run, LayoutUnit offset);
+
+  const GapGeometry& gap_geometry_;
+  GridTrackSizingDirection cross_direction_;
+  LayoutUnit content_start_;
+  LayoutUnit content_end_;
+  CrossGapRunCursor before_;
+  CrossGapRunCursor after_;
+  wtf_size_t intersection_capacity_ = 0;
+  bool finished_ = false;
+};
 
 // Gap geometry is used to determine gap locations for the purpose of painting
 // gap decorations.
