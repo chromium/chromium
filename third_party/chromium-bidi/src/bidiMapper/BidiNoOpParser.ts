@@ -223,6 +223,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   ): Emulation.SetLocaleOverrideParameters {
     return params as Emulation.SetLocaleOverrideParameters;
   }
+  parseSetMediaFeaturesOverrideParams(
+    params: unknown,
+  ): Emulation.SetMediaFeaturesOverrideParameters {
+    return params as Emulation.SetMediaFeaturesOverrideParameters;
+  }
   parseSetNetworkConditionsParams(
     params: unknown,
   ): Emulation.SetNetworkConditionsParameters {
@@ -262,6 +267,11 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
     params: unknown,
   ): Emulation.SetUserAgentOverrideParameters {
     return params as Emulation.SetUserAgentOverrideParameters;
+  }
+  parseSetViewportMetaOverrideParams(
+    params: unknown,
+  ): Emulation.SetViewportMetaOverrideParameters {
+    return params as Emulation.SetViewportMetaOverrideParameters;
   }
   // keep-sorted end
 

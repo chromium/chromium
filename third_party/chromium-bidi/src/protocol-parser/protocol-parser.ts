@@ -413,6 +413,12 @@ export namespace Emulation {
       WebDriverBidi.Emulation.SetLocaleOverrideParametersSchema,
     ) as Protocol.Emulation.SetLocaleOverrideParameters;
   }
+  export function parseSetMediaFeaturesOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetMediaFeaturesOverrideParametersSchema,
+    ) as Protocol.Emulation.SetMediaFeaturesOverrideParameters;
+  }
   export function parseSetNetworkConditionsParams(params: unknown) {
     return parseObject(
       params,
@@ -460,6 +466,12 @@ export namespace Emulation {
       params,
       WebDriverBidi.Emulation.SetUserAgentOverrideParametersSchema,
     ) as Protocol.Emulation.SetUserAgentOverrideParameters;
+  }
+  export function parseSetViewportMetaOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetViewportMetaOverrideParametersSchema,
+    ) as Protocol.Emulation.SetViewportMetaOverrideParameters;
   }
   // keep-sorted end
 }

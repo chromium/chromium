@@ -1407,6 +1407,7 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetForcedColorsModeThemeOverrideSchema,
     Emulation.SetGeolocationOverrideSchema,
     Emulation.SetLocaleOverrideSchema,
+    Emulation.SetMediaFeaturesOverrideSchema,
     Emulation.SetNetworkConditionsSchema,
     Emulation.SetScreenOrientationOverrideSchema,
     Emulation.SetScreenSettingsOverrideSchema,
@@ -1415,6 +1416,7 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetTimezoneOverrideSchema,
     Emulation.SetTouchOverrideSchema,
     Emulation.SetUserAgentOverrideSchema,
+    Emulation.SetViewportMetaOverrideSchema,
   ]),
 );
 export const EmulationResultSchema = z.lazy(() =>
@@ -1422,12 +1424,14 @@ export const EmulationResultSchema = z.lazy(() =>
     Emulation.SetForcedColorsModeThemeOverrideResultSchema,
     Emulation.SetGeolocationOverrideResultSchema,
     Emulation.SetLocaleOverrideResultSchema,
+    Emulation.SetMediaFeaturesOverrideResultSchema,
     Emulation.SetScreenOrientationOverrideResultSchema,
     Emulation.SetScriptingEnabledResultSchema,
     Emulation.SetScrollbarTypeOverrideResultSchema,
     Emulation.SetTimezoneOverrideResultSchema,
     Emulation.SetTouchOverrideResultSchema,
     Emulation.SetUserAgentOverrideResultSchema,
+    Emulation.SetViewportMetaOverrideResultSchema,
   ]),
 );
 export namespace Emulation {
@@ -1544,6 +1548,172 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export const SetLocaleOverrideResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Emulation {
+  export const SetMediaFeaturesOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setMediaFeaturesOverride'),
+      params: Emulation.SetMediaFeaturesOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetMediaFeaturesOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      features: z.union([Emulation.MediaFeaturesSchema, z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const MediaFeaturesSchema = z.lazy(() =>
+    z.object({
+      [z.literal('any-hover')]: z
+        .union([z.literal('none'), z.literal('hover'), z.null()])
+        .optional(),
+      [z.literal('any-pointer')]: z
+        .union([
+          z.literal('none'),
+          z.literal('coarse'),
+          z.literal('fine'),
+          z.null(),
+        ])
+        .optional(),
+      [z.literal('color')]: z.union([JsUintSchema, z.null()]).optional(),
+      [z.literal('color-gamut')]: z
+        .union([
+          z.literal('srgb'),
+          z.literal('p3'),
+          z.literal('rec2020'),
+          z.null(),
+        ])
+        .optional(),
+      [z.literal('color-index')]: z.union([JsUintSchema, z.null()]).optional(),
+      [z.literal('display-mode')]: z
+        .union([
+          z.literal('fullscreen'),
+          z.literal('standalone'),
+          z.literal('minimal-ui'),
+          z.literal('browser'),
+          z.literal('picture-in-picture'),
+          z.null(),
+        ])
+        .optional(),
+      [z.literal('dynamic-range')]: z
+        .union([z.literal('standard'), z.literal('high'), z.null()])
+        .optional(),
+      [z.literal('environment-blending')]: z
+        .union([
+          z.literal('opaque'),
+          z.literal('additive'),
+          z.literal('subtractive'),
+          z.null(),
+        ])
+        .optional(),
+      [z.literal('forced-colors')]: z
+        .union([z.literal('none'), z.literal('active'), z.null()])
+        .optional(),
+      [z.literal('grid')]: z
+        .union([z.literal(0), z.literal(1), z.null()])
+        .optional(),
+      [z.literal('horizontal-viewport-segments')]: z
+        .union([JsUintSchema, z.null()])
+        .optional(),
+      [z.literal('hover')]: z
+        .union([z.literal('none'), z.literal('hover'), z.null()])
+        .optional(),
+      [z.literal('inverted-colors')]: z
+        .union([z.literal('none'), z.literal('inverted'), z.null()])
+        .optional(),
+      [z.literal('monochrome')]: z.union([JsUintSchema, z.null()]).optional(),
+      [z.literal('nav-controls')]: z
+        .union([z.literal('none'), z.literal('back'), z.null()])
+        .optional(),
+      [z.literal('overflow-block')]: z
+        .union([
+          z.literal('none'),
+          z.literal('scroll'),
+          z.literal('optional-paged'),
+          z.literal('paged'),
+          z.null(),
+        ])
+        .optional(),
+      [z.literal('overflow-inline')]: z
+        .union([z.literal('none'), z.literal('scroll'), z.null()])
+        .optional(),
+      [z.literal('pointer')]: z
+        .union([
+          z.literal('none'),
+          z.literal('coarse'),
+          z.literal('fine'),
+          z.null(),
+        ])
+        .optional(),
+      [z.literal('prefers-color-scheme')]: z
+        .union([z.literal('light'), z.literal('dark'), z.null()])
+        .optional(),
+      [z.literal('prefers-contrast')]: z
+        .union([
+          z.literal('no-preference'),
+          z.literal('more'),
+          z.literal('less'),
+          z.literal('custom'),
+          z.null(),
+        ])
+        .optional(),
+      [z.literal('prefers-reduced-data')]: z
+        .union([z.literal('no-preference'), z.literal('reduce'), z.null()])
+        .optional(),
+      [z.literal('prefers-reduced-motion')]: z
+        .union([z.literal('no-preference'), z.literal('reduce'), z.null()])
+        .optional(),
+      [z.literal('prefers-reduced-transparency')]: z
+        .union([z.literal('no-preference'), z.literal('reduce'), z.null()])
+        .optional(),
+      [z.literal('scan')]: z
+        .union([z.literal('interlace'), z.literal('progressive'), z.null()])
+        .optional(),
+      [z.literal('scripting')]: z
+        .union([
+          z.literal('none'),
+          z.literal('initial-only'),
+          z.literal('enabled'),
+          z.null(),
+        ])
+        .optional(),
+      [z.literal('update')]: z
+        .union([
+          z.literal('none'),
+          z.literal('slow'),
+          z.literal('fast'),
+          z.null(),
+        ])
+        .optional(),
+      [z.literal('vertical-viewport-segments')]: z
+        .union([JsUintSchema, z.null()])
+        .optional(),
+      [z.literal('video-color-gamut')]: z
+        .union([
+          z.literal('srgb'),
+          z.literal('p3'),
+          z.literal('rec2020'),
+          z.null(),
+        ])
+        .optional(),
+      [z.literal('video-dynamic-range')]: z
+        .union([z.literal('standard'), z.literal('high'), z.null()])
+        .optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetMediaFeaturesOverrideResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
 }
 export namespace Emulation {
   export const SetNetworkConditionsSchema = z.lazy(() =>
@@ -1685,6 +1855,31 @@ export namespace Emulation {
 }
 export namespace Emulation {
   export const SetUserAgentOverrideResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
+export namespace Emulation {
+  export const SetViewportMetaOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setViewportMetaOverride'),
+      params: Emulation.SetViewportMetaOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetViewportMetaOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      viewportMeta: z.union([z.literal(true), z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetViewportMetaOverrideResultSchema = z.lazy(
     () => EmptyResultSchema,
   );
 }

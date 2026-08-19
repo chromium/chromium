@@ -145,6 +145,9 @@ export interface BidiCommandParameterParser {
   parseSetLocaleOverrideParams(
     params: unknown,
   ): Emulation.SetLocaleOverrideParameters;
+  parseSetMediaFeaturesOverrideParams(
+    params: unknown,
+  ): Emulation.SetMediaFeaturesOverrideParameters;
   parseSetNetworkConditionsParams(
     params: unknown,
   ): Emulation.SetNetworkConditionsParameters;
@@ -169,6 +172,9 @@ export interface BidiCommandParameterParser {
   parseSetUserAgentOverrideParams(
     params: unknown,
   ): Emulation.SetUserAgentOverrideParameters;
+  parseSetViewportMetaOverrideParams(
+    params: unknown,
+  ): Emulation.SetViewportMetaOverrideParameters;
   // keep-sorted end
 
   // Input module

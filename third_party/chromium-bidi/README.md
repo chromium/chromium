@@ -590,10 +590,11 @@ Make sure Chromium already has the CDP methods your command will rely on.
 
 ### Update CDDL types
 
-1. If your command lives in a separate spec, add a link to that spec in the ["Build WebDriverBiDi types"](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/.github/workflows/update-bidi-types.yml#L27) GitHub action (check out the ["bluetooth" pull request](https://github.com/GoogleChromeLabs/chromium-bidi/pull/2585) for an example).
-2. Run the ["Update WebdriverBiDi types"](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/update-bidi-types.yml) GitHub action. This will create a pull request with your new types. If you added a command, this PR will have a failing check complaining about a non-exhaustive switch statement:
-   > error: Switch is not exhaustive. Cases not matched: "{NEW_COMMAND_NAME}" @typescript-eslint/switch-exhaustiveness-check
-3. Update the created pull request. Add your new command to [`CommandProcessor.#processCommand`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/CommandProcessor.ts#L140). For now, just have it throw an UnknownErrorException (see the [example](https://github.com/GoogleChromeLabs/chromium-bidi/pull/2647/files#diff-7f06ce28b8514fd75b759d217bff9f5a471b657bcf78bd893cc291c7945c1cacR169) for how to do this).
+1. Checkout a new branch.
+2. If your command lives in a separate spec, add a link to that spec in the [`tools/update-bidi-types.sh`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/b2715a96faa2a6a48fd1f298b06be9f199293b01/tools/update-bidi-types.sh) script.
+3. Run the [`tools/update-bidi-types.sh`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/b2715a96faa2a6a48fd1f298b06be9f199293b01/tools/update-bidi-types.sh) script.
+4. Run `npm run format`. If a new WebDriver BiDi command was added, this should fail with `error  Switch is not exhaustive. Cases not matched ...`.
+5. Add the new BiDi command to [`CommandProcessor.#processCommand`](https://github.com/GoogleChromeLabs/chromium-bidi/blob/0f971303281aba1910786035facc5eb54a833232/src/bidiMapper/CommandProcessor.ts#L140). For now, just have it throw an UnknownErrorException (see the [example](https://github.com/GoogleChromeLabs/chromium-bidi/pull/2647/files#diff-7f06ce28b8514fd75b759d217bff9f5a471b657bcf78bd893cc291c7945c1cacR169) for how to do this).
 
 ```typescript
 case '{NEW_COMMAND_NAME}':
@@ -602,7 +603,7 @@ case '{NEW_COMMAND_NAME}':
   );
 ```
 
-4. Merge it! Standard PR process: create, review, merge.
+6. Create a PR and have it merged through the standard PR process: create, review, merge.
 
 ### Implement the new command
 
