@@ -5,12 +5,17 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <limits>
 #include <memory>
 #include <queue>
 #include <variant>
 
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -462,14 +467,14 @@ void ReportDragData(const content::ClipboardEndpoint& source,
   if (drop_data.text) {
     MaybeReportDataControlsCopy(
         source,
-        {.size = drop_data.text->size() * sizeof(std::u16string::value_type),
+        {.size = drop_data.text->size() * sizeof((*drop_data.text)[0]),
          .format_type = ui::ClipboardFormatType::PlainTextType()},
         verdict);
   }
   if (drop_data.html) {
     MaybeReportDataControlsCopy(
         source,
-        {.size = drop_data.html->size() * sizeof(std::u16string::value_type),
+        {.size = drop_data.html->size() * sizeof((*drop_data.html)[0]),
          .format_type = ui::ClipboardFormatType::HtmlType()},
         verdict);
   }
@@ -496,8 +501,8 @@ void ReportDragData(const content::ClipboardEndpoint& source,
   if (!drop_data.custom_data.empty()) {
     size_t size = 0;
     for (const auto& item : drop_data.custom_data) {
-      size += (item.first.size() + item.second.size()) *
-              sizeof(std::u16string::value_type);
+      size += item.first.size() * sizeof(item.first[0]) +
+              item.second.size() * sizeof(item.second[0]);
     }
     MaybeReportDataControlsCopy(
         source,
@@ -516,6 +521,32 @@ void ReportDragData(const content::ClipboardEndpoint& source,
          .format_type = ui::ClipboardFormatType::FilenamesType()},
         verdict);
   }
+}
+
+size_t GetDropDataSize(const content::DropData& drop_data) {
+  // TODO: b/548437360 Unify the calculation of size for Copying on the cloud,
+  // locally, and for drag to ensure consistency across all Data Controls
+  // evaluations.
+  int64_t size = 0;
+  if (drop_data.text) {
+    size += drop_data.text->size() * sizeof((*drop_data.text)[0]);
+  }
+  if (drop_data.html) {
+    size += drop_data.html->size() * sizeof((*drop_data.html)[0]);
+  }
+  size += drop_data.file_contents.size() * sizeof(drop_data.file_contents[0]);
+
+  for (const auto& url_info : drop_data.url_infos) {
+    size += url_info.url.spec().size() * sizeof(url_info.url.spec()[0]);
+    size += url_info.title.size() * sizeof(url_info.title[0]);
+  }
+  for (const auto& item : drop_data.custom_data) {
+    size += item.second.size() * sizeof(item.second[0]);
+  }
+  for (const auto& fs_file : drop_data.file_system_files) {
+    size += std::max<int64_t>(0, fs_file.size);
+  }
+  return base::saturated_cast<size_t>(size);
 }
 
 // Replaces `clipboard_paste_data` with the original clipboard data if it was
@@ -651,7 +682,6 @@ void PasteIfAllowedByDataControls(
     std::move(callback).Run(std::move(clipboard_paste_data));
     return;
   }
-
 #if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   std::move(callback).Run(std::move(clipboard_paste_data));
 #else
@@ -684,10 +714,12 @@ void OnDlpRulesCheckDone(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 void GetCopyToOSClipboardReplacement(const content::ClipboardEndpoint& source,
+                                     const ui::ClipboardMetadata& metadata,
                                      std::u16string* replacement) {
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
                      ->GetForBrowserContext(source.browser_context())
-                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
+                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source),
+                                                   metadata.size);
 
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     *replacement = l10n_util::GetStringUTF16(
@@ -706,7 +738,7 @@ void IsCopyToOSClipboardRestricted(
   }
 
   std::u16string replacement;
-  GetCopyToOSClipboardReplacement(source, &replacement);
+  GetCopyToOSClipboardReplacement(source, metadata, &replacement);
   if (!replacement.empty()) {
     // Before calling `callback`, we remember `data` will correspond to the next
     // clipboard sequence number so that it can be potentially replaced again at
@@ -788,7 +820,8 @@ void IsCopyRestrictedByDialog(
   auto os_clipboard_verdict =
       data_controls::ChromeRulesServiceFactory::GetInstance()
           ->GetForBrowserContext(source.browser_context())
-          ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
+          ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source),
+                                        metadata.size);
 
   if (source_only_verdict.level() == data_controls::Rule::Level::kWarn ||
       os_clipboard_verdict.level() == data_controls::Rule::Level::kWarn) {
@@ -1134,7 +1167,8 @@ bool IsCopyPolicyCheckRequired(const content::ClipboardEndpoint& source,
                  .level() != data_controls::Rule::Level::kNotSet ||
          data_controls::ChromeRulesServiceFactory::GetInstance()
                  ->GetForBrowserContext(source.browser_context())
-                 ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source))
+                 ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source),
+                                               metadata.size)
                  .level() != data_controls::Rule::Level::kNotSet;
 }
 
@@ -1234,7 +1268,8 @@ bool IsDragAllowedByPolicy(const content::ClipboardEndpoint& source,
 
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
                      ->GetForBrowserContext(source.browser_context())
-                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
+                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source),
+                                                   GetDropDataSize(drop_data));
 
   if (verdict.level() == data_controls::Rule::Level::kBlock ||
       verdict.level() == data_controls::Rule::Level::kWarn ||
@@ -1286,7 +1321,9 @@ bool ReplaceCopyFromFindBar(std::u16string_view selected_text,
     return false;
   }
 
-  GetCopyToOSClipboardReplacement(*source, replacement);
+  ui::ClipboardMetadata metadata;
+  metadata.size = selected_text.size() * sizeof(selected_text[0]);
+  GetCopyToOSClipboardReplacement(*source, metadata, replacement);
   if (!replacement->empty()) {
     // Before returning, we persist the data that would have been copied so it
     // can be potentially replaced again at paste time.
@@ -1391,7 +1428,8 @@ void ShouldAllowSearchWith(content::WebContents* web_contents,
 
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
                      ->GetForBrowserContext(source->browser_context())
-                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(*source));
+                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(*source),
+                                                   selection_size);
 
   base::UmaHistogramEnumeration("Enterprise.DataControls.SearchWith.Verdict",
                                 verdict.level());
@@ -1506,7 +1544,7 @@ void CopyTextToClipboard(content::RenderFrameHost* rfh,
 
   content::ClipboardPasteData data;
   data.text = text;
-  size_t size = data.text.size() * sizeof(std::u16string::value_type);
+  size_t size = data.text.size() * sizeof(data.text[0]);
 
   IsClipboardCopyAllowedByPolicy(
       std::move(clipboard_endpoint),

@@ -65,6 +65,9 @@ source_set("unit_tests") {
     ]
     if (!is_android) {
       sources += [ "clipboard_toast_tracker_unittest.cc" ]
+      if (toolkit_views) {
+        deps += [ "//ui/views:test_support" ]
+      }
     }
   }
 

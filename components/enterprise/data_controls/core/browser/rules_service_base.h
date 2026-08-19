@@ -45,6 +45,9 @@ class RulesServiceBase : public KeyedService {
   // by this function should replace the data put in the clipboard, and warning
   // verdicts should trigger a dialog.
   virtual Verdict GetCopyToOSClipboardVerdict(const GURL& source) const;
+  virtual Verdict GetCopyToOSClipboardVerdict(
+      const GURL& source,
+      std::optional<size_t> content_size) const;
 
   // Returns a clipboard verdict for when data is being inserted/pasted into
   // the browser from the integrated Gemini agent (Glic).

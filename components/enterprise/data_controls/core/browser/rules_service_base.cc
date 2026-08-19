@@ -44,12 +44,22 @@ Verdict RulesServiceBase::GetCopyRestrictedBySourceVerdict(
 
 Verdict RulesServiceBase::GetCopyToOSClipboardVerdict(
     const GURL& source) const {
+  // TODO(b/547920440): Replace this 1-param fallback with the
+  // 2-param version across all call sites (including iOS) to pipe the actual
+  // content size, and remove this helper.
+  return GetCopyToOSClipboardVerdict(source, std::nullopt);
+}
+
+Verdict RulesServiceBase::GetCopyToOSClipboardVerdict(
+    const GURL& source,
+    std::optional<size_t> content_size) const {
   return GetVerdict(Rule::Restriction::kClipboard,
                     {
                         .source =
                             {
                                 .url = source,
                                 .incognito = incognito_profile(),
+                                .content_size = content_size,
                             },
                         .destination =
                             {

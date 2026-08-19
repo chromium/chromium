@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/functional/function_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -40,6 +41,9 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
+#if defined(TOOLKIT_VIEWS)
+#include "ui/views/layout/layout_provider.h"
+#endif
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "base/run_loop.h"
@@ -148,6 +152,13 @@ class DataProtectionClipboardTest : public testing::Test {
                                       *contents()->GetPrimaryMainFrame());
   }
 
+  void ExpectDragAllowed(
+      base::FunctionRef<void(content::DropData&)> setup_func) {
+    content::DropData drop_data;
+    setup_func(drop_data);
+    EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   void EnableDataControls() {
     scoped_features_.InitWithFeatures(
@@ -170,6 +181,10 @@ class DataProtectionClipboardTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   base::test::ScopedFeatureList scoped_features_;
+#if defined(TOOLKIT_VIEWS)
+  std::unique_ptr<views::LayoutProvider> layout_provider_ =
+      std::make_unique<views::LayoutProvider>();
+#endif
 };
 
 using DataProtectionPasteIfAllowedByPolicyTest = DataProtectionClipboardTest;
@@ -1314,10 +1329,209 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByContentAnalysisTest,
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 TEST_F(DataProtectionClipboardTest, DragAllowed_NoRule) {
-  content::DropData drop_data;
-  drop_data.text = u"allowed";
+  ExpectDragAllowed([](content::DropData& data) { data.text = u"allowed"; });
+}
 
-  EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+TEST_F(DataProtectionClipboardTest, DragAllowed_HTMLOnly) {
+  ExpectDragAllowed([](content::DropData& data) { data.html = u"<p>html only</p>"; });
+}
+
+TEST_F(DataProtectionClipboardTest, DragAllowed_FileContents) {
+  ExpectDragAllowed([](content::DropData& data) { data.file_contents = {1, 2, 3, 4}; });
+}
+
+TEST_F(DataProtectionClipboardTest, DragAllowed_UrlInfos) {
+  ExpectDragAllowed([](content::DropData& data) {
+    data.url_infos.push_back(
+        ui::ClipboardUrlInfo(GURL("https://example.com"), u"title"));
+  });
+}
+
+TEST_F(DataProtectionClipboardTest, DragAllowed_CustomData) {
+  ExpectDragAllowed([](content::DropData& data) { data.custom_data[u"type"] = u"data"; });
+}
+
+TEST_F(DataProtectionClipboardTest, DragAllowed_FileSystemFiles) {
+  ExpectDragAllowed([](content::DropData& data) {
+    content::DropData::FileSystemFileInfo file_info;
+    file_info.size = 100;
+    data.file_system_files.push_back(file_info);
+  });
+}
+
+TEST_F(DataProtectionClipboardTest, DragBlocked_SizeLowerThan) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      data_controls::kDataControlsUrlRegexAndSizeAttributes);
+
+  data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["source.com"],
+          "size_lower_than": 100
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })"});
+
+  content::DropData drop_data;
+  drop_data.text = u"short";  // 10 bytes < 100
+  EXPECT_FALSE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+
+  content::DropData drop_data_allowed;
+  drop_data_allowed.text =
+      u"this is a very long text that definitely exceeds one hundred bytes in length";
+  EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data_allowed));
+}
+
+TEST_F(DataProtectionClipboardTest, DragBlocked_SizeHigherThan) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      data_controls::kDataControlsUrlRegexAndSizeAttributes);
+
+  data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["source.com"],
+          "size_higher_than": 10
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })"});
+
+  content::DropData drop_data_blocked;
+  drop_data_blocked.text = u"long text longer than ten bytes";  // > 10 bytes
+  EXPECT_FALSE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data_blocked));
+
+  content::DropData drop_data_allowed;
+  drop_data_allowed.text = u"hi";  // 4 bytes < 10
+  EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data_allowed));
+}
+
+TEST_F(DataProtectionClipboardTest, DragBlocked_CustomDataSize) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      data_controls::kDataControlsUrlRegexAndSizeAttributes);
+
+  data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["source.com"],
+          "size_higher_than": 10
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })"});
+
+  content::DropData drop_data;
+  drop_data.custom_data[u"type"] = u"long custom payload over 10 bytes";
+  EXPECT_FALSE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+
+  content::DropData drop_data_allowed;
+  drop_data_allowed.custom_data[u"type"] = u"a";  // 2 bytes < 10
+  EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data_allowed));
+}
+
+TEST_F(DataProtectionClipboardTest, DragBlocked_HTMLOnlySize) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      data_controls::kDataControlsUrlRegexAndSizeAttributes);
+
+  data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["source.com"],
+          "size_higher_than": 10
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })"});
+
+  content::DropData drop_data;
+  drop_data.html = u"<p>HTML payload over 10 bytes</p>";
+  EXPECT_FALSE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+
+  content::DropData drop_data_allowed;
+  drop_data_allowed.html = u"hi";  // 4 bytes < 10
+  EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data_allowed));
+}
+
+TEST_F(DataProtectionClipboardTest, DragBlocked_FileContentsSize) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      data_controls::kDataControlsUrlRegexAndSizeAttributes);
+
+  data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["source.com"],
+          "size_higher_than": 5
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })"});
+
+  content::DropData drop_data;
+  drop_data.file_contents = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  EXPECT_FALSE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+
+  content::DropData drop_data_allowed;
+  drop_data_allowed.file_contents = {1, 2, 3};  // 3 bytes < 5
+  EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data_allowed));
+}
+
+TEST_F(DataProtectionClipboardTest, DragBlocked_UrlInfosSize) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      data_controls::kDataControlsUrlRegexAndSizeAttributes);
+
+  data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["source.com"],
+          "size_higher_than": 20
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })"});
+
+  content::DropData drop_data;
+  drop_data.url_infos.push_back(
+      ui::ClipboardUrlInfo(GURL("https://verylongexampledomain.com"), u"title"));
+  EXPECT_FALSE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+
+  content::DropData drop_data_allowed;
+  drop_data_allowed.url_infos.push_back(
+      ui::ClipboardUrlInfo(GURL("http://example.com"), u""));  // 19 bytes <= 20
+  EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data_allowed));
+}
+
+TEST_F(DataProtectionClipboardTest, DragBlocked_FileSystemFilesSize) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(
+      data_controls::kDataControlsUrlRegexAndSizeAttributes);
+
+  data_controls::SetDataControls(profile_->GetPrefs(), {R"({
+        "sources": {
+          "urls": ["source.com"],
+          "size_higher_than": 50
+        },
+        "restrictions": [
+          {"class": "CLIPBOARD", "level": "BLOCK"}
+        ]
+      })"});
+
+  content::DropData drop_data;
+  content::DropData::FileSystemFileInfo file_info;
+  file_info.size = 500;
+  drop_data.file_system_files.push_back(file_info);
+  EXPECT_FALSE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data));
+
+  content::DropData drop_data_allowed;
+  content::DropData::FileSystemFileInfo file_info_allowed;
+  file_info_allowed.size = 10;
+  drop_data_allowed.file_system_files.push_back(file_info_allowed);
+  EXPECT_TRUE(IsDragAllowedByPolicy(SourceEndpoint(), drop_data_allowed));
 }
 
 TEST_F(DataProtectionClipboardDistilledURLTest,

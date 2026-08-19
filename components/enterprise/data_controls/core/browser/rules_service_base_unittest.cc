@@ -5,6 +5,8 @@
 #include "components/enterprise/data_controls/core/browser/rules_service_base.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/prefs/testing_pref_service.h"
@@ -494,6 +496,57 @@ TEST_F(RulesServiceBaseTest, ScreenshotLatencyHistogramLogged) {
 
   histogram_tester.ExpectTotalCount(
       "Enterprise.DataControls.Screenshot.EvaluationLatency", 1);
+}
+TEST_F(RulesServiceBaseTest, GetCopyToOSClipboardVerdict_WithSize) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kDataControlsUrlRegexAndSizeAttributes);
+
+  SetDataControls(&prefs_, {R"({
+    "name": "Block drag over 50 bytes",
+    "rule_id": "1234",
+    "sources": {
+      "urls": ["google.com"],
+      "size_higher_than": 50
+    },
+    "restrictions": [ {"class": "CLIPBOARD", "level": "BLOCK"} ]
+  })"});
+
+  // Should block when content_size > 50.
+  auto block_verdict =
+      service_->GetCopyToOSClipboardVerdict(google_url(), /*content_size=*/100);
+  EXPECT_EQ(block_verdict.level(), Rule::Level::kBlock);
+
+  // Should allow when content_size <= 50.
+  auto allow_verdict =
+      service_->GetCopyToOSClipboardVerdict(google_url(), /*content_size=*/10);
+  EXPECT_EQ(allow_verdict.level(), Rule::Level::kNotSet);
+}
+
+TEST_F(RulesServiceBaseTest, GetCopyToOSClipboardVerdict_WithSizeLowerThan) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kDataControlsUrlRegexAndSizeAttributes);
+
+  SetDataControls(&prefs_, {R"({
+    "name": "Block drag under 50 bytes",
+    "rule_id": "1235",
+    "sources": {
+      "urls": ["google.com"],
+      "size_lower_than": 50
+    },
+    "restrictions": [ {"class": "CLIPBOARD", "level": "BLOCK"} ]
+  })"});
+
+  // Should block when content_size < 50.
+  auto block_verdict =
+      service_->GetCopyToOSClipboardVerdict(google_url(), /*content_size=*/10);
+  EXPECT_EQ(block_verdict.level(), Rule::Level::kBlock);
+
+  // Should allow when content_size >= 50.
+  auto allow_verdict =
+      service_->GetCopyToOSClipboardVerdict(google_url(), /*content_size=*/100);
+  EXPECT_EQ(allow_verdict.level(), Rule::Level::kNotSet);
 }
 
 }  // namespace data_controls
