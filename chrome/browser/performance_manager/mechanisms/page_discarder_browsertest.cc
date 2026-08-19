@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscarderBrowserTest, DiscardPageNodes) {
   // this page.
   GraphOperations::VisitFrameTreePreOrder(
       page_node.get(), [&total](const FrameNode* frame_node) {
-        constexpr base::ByteSize kUsage = base::KiBU(1);
+        constexpr base::ByteSize kUsage = base::KiB(1);
         total += kUsage;
         FrameNodeImpl::FromNode(frame_node)
             ->SetPrivateFootprintEstimate(kUsage);

@@ -141,14 +141,14 @@ TEST(MacSystemMemoryPressureEvaluatorTest, OSTransitionsOnly) {
   // 3. Now simulate disk pressure while OS is CRITICAL.
   // Disk becomes low (should vote CRITICAL, but OS is already CRITICAL).
   base::SysInfo::DiskSpaceInfo disk_space_info;
-  disk_space_info.available = base::MiBU(100);
+  disk_space_info.available = base::MiB(100);
   evaluator.TriggerDiskSpaceCheckComplete(disk_space_info);
 
   // Advance clock in CRITICAL (both OS and Disk are CRITICAL).
   task_environment.FastForwardBy(base::Seconds(20));
 
   // 4. Simulate Disk pressure goes away, but OS remains CRITICAL.
-  disk_space_info.available = base::MiBU(500);
+  disk_space_info.available = base::MiB(500);
   evaluator.TriggerDiskSpaceCheckComplete(disk_space_info);
 
   // No transition should be reported because OS level didn't change (remained

@@ -39,7 +39,7 @@ BASE_FEATURE(kMacCriticalDiskSpacePressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The default threshold for the critical disk space pressure
 // signal.
-constexpr base::ByteSize kDefaultCriticalDiskSpace = base::MiBU(250);
+constexpr base::ByteSize kDefaultCriticalDiskSpace = base::MiB(250);
 
 // Defines the threshold for the critical disk space pressure
 // signal. This is a parameter for the kMacCriticalDiskSpacePressure feature.
@@ -197,7 +197,7 @@ void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
   // The minimum free disk space before dispatching a critical memory pressure
   // signal.
   const base::ByteSize threshold =
-      base::MiBU(kMacCriticalDiskSpacePressureThresholdMB.Get());
+      base::MiB(kMacCriticalDiskSpacePressureThresholdMB.Get());
 
   if (disk_space_info.has_value() && disk_space_info->available < threshold) {
     new_disk_vote = base::MEMORY_PRESSURE_LEVEL_CRITICAL;

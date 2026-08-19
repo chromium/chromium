@@ -46,9 +46,9 @@ using FrameContext = resource_attribution::FrameContext;
 using ProcessContext = resource_attribution::ProcessContext;
 using WorkerContext = resource_attribution::WorkerContext;
 
-constexpr base::ByteSize kFakeResidentSet = base::KiBU(12345);
-constexpr base::ByteSize kFakePrivateFootprint = base::KiBU(67890);
-constexpr base::ByteSize kFakePrivateSwap = base::KiBU(13579);
+constexpr base::ByteSize kFakeResidentSet = base::KiB(12345);
+constexpr base::ByteSize kFakePrivateFootprint = base::KiB(67890);
+constexpr base::ByteSize kFakePrivateSwap = base::KiB(13579);
 
 // Test version of the |ProcessMetricsDecorator| class.
 class LenientTestProcessMetricsDecorator : public ProcessMetricsDecorator {

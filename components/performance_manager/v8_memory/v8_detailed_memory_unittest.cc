@@ -605,7 +605,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
   {
     auto data = NewPerProcessV8MemoryUsage(1);
     // Add data for an unknown frame.
-    AddIsolateMemoryUsage(blink::LocalFrameToken(), base::KiBU(1),
+    AddIsolateMemoryUsage(blink::LocalFrameToken(), base::KiB(1),
                           data->isolates[0].get());
 
     ExpectBindAndRespondToQuery(&reporter, std::move(data));
@@ -619,7 +619,7 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
 
   // Since the frame was unknown, the usage should have accrued to detached.
   EXPECT_TRUE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
-  EXPECT_EQ(base::KiBU(1),
+  EXPECT_EQ(base::KiB(1),
             V8DetailedMemoryProcessData::ForProcessNode(process.get())
                 ->detached_v8_memory_used());
 

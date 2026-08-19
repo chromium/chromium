@@ -38,9 +38,9 @@ BASE_FEATURE(kCommitAvailableMemoryPressureThresholds,
 
 // Default thresholds for commit-based memory pressure detection.
 constexpr base::ByteSize kDefaultCommitAvailableCriticalThreshold =
-    base::MiBU(200);
+    base::MiB(200);
 constexpr base::ByteSize kDefaultCommitAvailableModerateThreshold =
-    base::MiBU(500);
+    base::MiB(500);
 
 // The amount of commit available below which the system is considered to be
 // under critical memory pressure. The default value is equal to
@@ -74,7 +74,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // to avoid activating the feature study group for users with ample memory.
 // Value based on Memory.CommitAvailableMB UMA, aiming to capture a population
 // similar in size (~13%) to the existing physical memory signal.
-constexpr base::ByteSize kEarlyExitCommitThreshold = base::GiBU(2);
+constexpr base::ByteSize kEarlyExitCommitThreshold = base::GiB(2);
 
 // Implements ObjectWatcher::Delegate by forwarding to a provided callback.
 class MemoryPressureWatcherDelegate
@@ -239,12 +239,12 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
   }
 
   if (base::FeatureList::IsEnabled(kCommitAvailableMemoryPressureThresholds)) {
-    if (commit_available < base::MiBU(base::saturated_cast<uint64_t>(
+    if (commit_available < base::MiB(base::saturated_cast<uint64_t>(
                                kCommitAvailableCriticalThresholdMB.Get()))) {
       return base::MEMORY_PRESSURE_LEVEL_CRITICAL;
     }
 
-    if (commit_available < base::MiBU(base::saturated_cast<uint64_t>(
+    if (commit_available < base::MiB(base::saturated_cast<uint64_t>(
                                kCommitAvailableModerateThresholdMB.Get()))) {
       return base::MEMORY_PRESSURE_LEVEL_MODERATE;
     }

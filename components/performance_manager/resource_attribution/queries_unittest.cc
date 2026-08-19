@@ -66,9 +66,9 @@ constexpr auto kWorkerContextTypeId =
     ResourceContextTypeId::ForType<WorkerContext>();
 
 // Fake memory results.
-constexpr base::ByteSize kFakeResidentSetSize = base::KiBU(123);
-constexpr base::ByteSize kFakePrivateFootprint = base::KiBU(456);
-constexpr base::ByteSize kFakePrivateSwap = base::KiBU(789);
+constexpr base::ByteSize kFakeResidentSetSize = base::KiB(123);
+constexpr base::ByteSize kFakePrivateFootprint = base::KiB(456);
+constexpr base::ByteSize kFakePrivateSwap = base::KiB(789);
 
 class LenientMockQueryResultObserver : public QueryResultObserver {
  public:

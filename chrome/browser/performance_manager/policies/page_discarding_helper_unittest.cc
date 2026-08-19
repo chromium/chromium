@@ -71,7 +71,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoCandidate) {
   // When discard_protected_tabs is false, protected page can not be discarded.
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::MiBU(1)),
+          memory_pressure::ReclaimTarget(base::MiB(1)),
           /*discard_protected_tabs=*/false, DiscardReason::URGENT);
   EXPECT_FALSE(first_discarded_at.has_value());
 }
@@ -85,7 +85,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesDiscardProtected) {
 
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::MiBU(1)),
+          memory_pressure::ReclaimTarget(base::MiB(1)),
           /*discard_protected_tabs=*/true, DiscardReason::URGENT);
 
   EXPECT_TRUE(first_discarded_at.has_value());
@@ -100,8 +100,8 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidates) {
 
   EXPECT_EQ(kEligible, CanDiscard(page_node2.get(), DiscardReason::URGENT));
 
-  process_node()->set_resident_set(base::MiBU(1));
-  process_node2->set_resident_set(base::MiBU(1));
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(1));
 
   // 2 candidates should both be discarded.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
@@ -111,7 +111,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidates) {
 
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::MiBU(2)),
+          memory_pressure::ReclaimTarget(base::MiB(2)),
           /*discard_protected_tabs=*/true, DiscardReason::URGENT);
   EXPECT_TRUE(first_discarded_at.has_value());
 }
@@ -128,8 +128,8 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesProtected) {
 
   EXPECT_EQ(kEligible, CanDiscard(page_node2.get(), DiscardReason::URGENT));
 
-  process_node()->set_resident_set(base::MiBU(1));
-  process_node2->set_resident_set(base::MiBU(1));
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(1));
 
   // When discard_protected_tabs is false, it should not discard protected page
   // even with large reclaim_target.
@@ -138,7 +138,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesTwoCandidatesProtected) {
 
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::GiBU(1)),
+          memory_pressure::ReclaimTarget(base::GiB(1)),
           /*discard_protected_tabs=*/false, DiscardReason::URGENT);
   EXPECT_TRUE(first_discarded_at.has_value());
 }
@@ -167,9 +167,9 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesThreeCandidates) {
   page_node3->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
 
-  process_node()->set_resident_set(base::MiBU(1));
-  process_node2->set_resident_set(base::MiBU(1));
-  process_node3->set_resident_set(base::MiBU(1));
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(1));
+  process_node3->set_resident_set(base::MiB(1));
 
   // The 2 candidates with earlier last visible time should be discarded.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
@@ -179,7 +179,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesThreeCandidates) {
 
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::KiBU(1500)),
+          memory_pressure::ReclaimTarget(base::KiB(1500)),
           /*discard_protected_tabs=*/true, DiscardReason::URGENT);
   EXPECT_TRUE(first_discarded_at.has_value());
   histogram_tester()->ExpectBucketCount("Discarding.DiscardCandidatesCount", 3,
@@ -214,9 +214,9 @@ TEST_F(PageDiscardingHelperTest,
   page_node3->SetIsVisible(false);
   AdvanceClock(base::Minutes(30));
 
-  process_node()->set_resident_set(base::MiBU(1));
-  process_node2->set_resident_set(base::MiBU(1));
-  process_node3->set_resident_set(base::MiBU(1));
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(1));
+  process_node3->set_resident_set(base::MiB(1));
 
   // Protected pages should have lower discard priority.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
@@ -226,7 +226,7 @@ TEST_F(PageDiscardingHelperTest,
 
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::KiBU(1500)),
+          memory_pressure::ReclaimTarget(base::KiB(1500)),
           /*discard_protected_tabs=*/true, DiscardReason::URGENT);
   EXPECT_TRUE(first_discarded_at.has_value());
 }
@@ -241,8 +241,8 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoDiscardable) {
   auto main_frame_node2 =
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
 
-  process_node()->set_resident_set(base::MiBU(1));
-  process_node2->set_resident_set(base::MiBU(1));
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(1));
 
   // Discarding failed on all nodes.
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
@@ -252,7 +252,7 @@ TEST_F(PageDiscardingHelperTest, DiscardMultiplePagesNoDiscardable) {
 
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::MiBU(10)),
+          memory_pressure::ReclaimTarget(base::MiB(10)),
           /*discard_protected_tabs=*/true, DiscardReason::URGENT);
   EXPECT_FALSE(first_discarded_at.has_value());
 }
@@ -315,8 +315,8 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidates) {
   EXPECT_LT(page_node()->GetLastVisibilityChangeTime(),
             page_node2->GetLastVisibilityChangeTime());
 
-  process_node()->set_resident_set(base::MiBU(1));
-  process_node2->set_resident_set(base::MiBU(2));
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(2));
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
@@ -337,8 +337,8 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesFirstFails) {
       CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
   testing::MakePageNodeDiscardable(page_node2.get(), task_env());
 
-  process_node()->set_resident_set(base::MiBU(1));
-  process_node2->set_resident_set(base::MiBU(2));
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(2));
 
   // Pretends that the first discardable page hasn't been discarded
   // successfully, the other one should be discarded in this case.
@@ -365,8 +365,8 @@ TEST_F(PageDiscardingHelperTest, DiscardAPageTwoCandidatesMultipleFrames) {
   auto page_node1_extra_frame =
       CreateFrameNodeAutoId(process_node2.get(), page_node(), frame_node());
 
-  process_node()->set_resident_set(base::MiBU(1));
-  process_node2->set_resident_set(base::MiBU(2));
+  process_node()->set_resident_set(base::MiB(1));
+  process_node2->set_resident_set(base::MiB(2));
 
   // The total RSS of |page_node()| should be 1024 + 2048 / 2 = 2048 and the
   // RSS of |page_node2| should be 2048 / 2 = 1024, so |page_node()| will get
@@ -456,14 +456,14 @@ TEST_F(PageDiscardingHelperTest, DiscardingProtectedTabReported) {
   // page_node2.
   page_node()->SetIsVisible(true);
 
-  process_node2->set_resident_set(base::MiBU(1));
+  process_node2->set_resident_set(base::MiB(1));
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node2.get()))
       .WillOnce(Return(true));
 
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::KiBU(1)),
+          memory_pressure::ReclaimTarget(base::KiB(1)),
           /*discard_protected_tabs=*/true, DiscardReason::URGENT);
   EXPECT_TRUE(first_discarded_at.has_value());
 
@@ -476,14 +476,14 @@ TEST_F(PageDiscardingHelperTest, DiscardingProtectedTabReported) {
 TEST_F(PageDiscardingHelperTest, DiscardingUnprotectedTabReported) {
   // By default the primary page node is not protected.
 
-  process_node()->set_resident_set(base::MiBU(1));
+  process_node()->set_resident_set(base::MiB(1));
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
 
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::KiBU(1)),
+          memory_pressure::ReclaimTarget(base::KiB(1)),
           /*discard_protected_tabs=*/true, DiscardReason::URGENT);
   EXPECT_TRUE(first_discarded_at.has_value());
 
@@ -494,7 +494,7 @@ TEST_F(PageDiscardingHelperTest, DiscardingUnprotectedTabReported) {
 }
 
 TEST_F(PageDiscardingHelperTest, DiscardingFocusedTabReported) {
-  process_node()->set_resident_set(base::MiBU(1));
+  process_node()->set_resident_set(base::MiB(1));
   page_node()->SetIsVisible(true);
   page_node()->SetIsFocused(true);
 
@@ -503,7 +503,7 @@ TEST_F(PageDiscardingHelperTest, DiscardingFocusedTabReported) {
 
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::KiBU(1)),
+          memory_pressure::ReclaimTarget(base::KiB(1)),
           /*discard_protected_tabs=*/true, DiscardReason::URGENT);
   EXPECT_TRUE(first_discarded_at.has_value());
 
@@ -515,14 +515,14 @@ TEST_F(PageDiscardingHelperTest, DiscardingFocusedTabReported) {
 
 TEST_F(PageDiscardingHelperTest, DiscardingUnfocusedTabReported) {
   // Main process node is not focused by default.
-  process_node()->set_resident_set(base::MiBU(1));
+  process_node()->set_resident_set(base::MiB(1));
 
   EXPECT_CALL(*discarder(), DiscardPageNodeImpl(page_node()))
       .WillOnce(Return(true));
 
   std::optional<base::TimeTicks> first_discarded_at =
       PageDiscardingHelper::GetFromGraph(graph())->DiscardMultiplePages(
-          memory_pressure::ReclaimTarget(base::KiBU(1)),
+          memory_pressure::ReclaimTarget(base::KiB(1)),
           /*discard_protected_tabs=*/true, DiscardReason::URGENT);
   EXPECT_TRUE(first_discarded_at.has_value());
 

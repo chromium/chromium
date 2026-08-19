@@ -43,9 +43,9 @@ class SystemMemoryPressureEvaluator
   // at the time of writing this). Therefore, we consider that there is critical
   // memory pressure when approaching this amount of available memory.
   static constexpr base::ByteSize kPhysicalMemoryDefaultModerateThreshold =
-      base::MiBU(1000);
+      base::MiB(1000);
   static constexpr base::ByteSize kPhysicalMemoryDefaultCriticalThreshold =
-      base::MiBU(400);
+      base::MiB(400);
 
   // Default constructor. Will choose thresholds automatically based on the
   // actual amount of system memory.

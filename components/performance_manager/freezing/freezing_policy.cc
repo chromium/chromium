@@ -1054,7 +1054,7 @@ void FreezingPolicy::DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
   }
 
   const base::ByteSize growth_threshold =
-      base::KiBU(base::checked_cast<uint64_t>(
+      base::KiB(base::checked_cast<uint64_t>(
           features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
 
   // Traverse memory measurements to find pages to discard.

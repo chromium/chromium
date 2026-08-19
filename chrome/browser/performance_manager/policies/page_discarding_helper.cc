@@ -228,7 +228,7 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
       // the average Memory.Renderer.PrivateMemoryFootprint histogram value on
       // Windows in August 2021.
       node_reclaim = page_node_footprint[node].is_zero()
-                         ? base::MiBU(80)
+                         ? base::MiB(80)
                          : page_node_footprint[node];
 
       LOG(WARNING) << "Queueing discard attempt, type="

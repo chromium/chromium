@@ -15,7 +15,7 @@
 namespace performance_manager {
 
 // Private memory footprint threshold above which a process is considered large.
-constexpr base::ByteSize kLargeProcessFootprintThreshold = base::MiBU(100);
+constexpr base::ByteSize kLargeProcessFootprintThreshold = base::MiB(100);
 
 namespace {
 

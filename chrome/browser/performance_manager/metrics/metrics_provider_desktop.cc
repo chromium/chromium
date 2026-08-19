@@ -611,7 +611,7 @@ void MetricsProviderDesktop::RecordDiskMetrics() {
   base::UmaHistogramCustomCounts(
       "PerformanceManager.DiskStats.UserDataDirFreeSpaceMb",
       disk_metrics.available.InMiB(), 0,
-      base::GiBU(10)
+      base::GiB(10)
           .InMiB(),  // It's fine to bucket everything >10Gb as "large enough"
       100);
   // Also report as a percentage of capacity

@@ -1105,17 +1105,17 @@ TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_Basic) {
   base::test::ScopedFeatureList feature_list{
       features::kDiscardFrozenBrowsingInstancesWithGrowingPMF};
   const base::ByteSize growth_threshold =
-      base::KiBU(base::checked_cast<uint64_t>(
+      base::KiB(base::checked_cast<uint64_t>(
           features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
   // Pretend that the page is frozen.
   page_node()->SetLifecycleStateForTesting(PageNode::LifecycleState::kFrozen);
 
   // First memory measurement after freezing.
-  constexpr base::ByteSize kInitialPMF = base::KiBU(10);
+  constexpr base::ByteSize kInitialPMF = base::KiB(10);
   ReportMemoryUsage(kContext, kInitialPMF);
 
   // Another memory measurement, *not* crossing the growth threshold.
-  constexpr base::ByteSize kSecondPMF = base::KiBU(20);
+  constexpr base::ByteSize kSecondPMF = base::KiB(20);
   ASSERT_LT(kSecondPMF - kInitialPMF, growth_threshold);
   ReportMemoryUsage(kContext, kSecondPMF);
 
@@ -1123,7 +1123,7 @@ TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_Basic) {
   // be discarded.
   EXPECT_CALL(*discarder(),
               DiscardPages(testing::_, testing::ElementsAre(page_node())));
-  ReportMemoryUsage(kContext, kInitialPMF + growth_threshold + base::KiBU(1));
+  ReportMemoryUsage(kContext, kInitialPMF + growth_threshold + base::KiB(1));
   VerifyDiscarderExpectations();
 }
 
@@ -1134,13 +1134,13 @@ TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_PageAddedAfterFreezing) {
   base::test::ScopedFeatureList feature_list{
       features::kDiscardFrozenBrowsingInstancesWithGrowingPMF};
   const base::ByteSize growth_threshold =
-      base::KiBU(base::checked_cast<uint64_t>(
+      base::KiB(base::checked_cast<uint64_t>(
           features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
   // Pretend that the page is frozen.
   page_node()->SetLifecycleStateForTesting(PageNode::LifecycleState::kFrozen);
 
   // First memory measurement after freezing.
-  constexpr base::ByteSize kInitialPMF = base::KiBU(10);
+  constexpr base::ByteSize kInitialPMF = base::KiB(10);
   ReportMemoryUsage(kContext, kInitialPMF);
 
   // Add a (non-frozen) page to the browsing instance.
@@ -1150,7 +1150,7 @@ TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_PageAddedAfterFreezing) {
   // Memory measurement crossing the growth threshold. This should not result in
   // discarding (or crash) since post-freezing memory estimates were cleared.
   const base::ByteSize kSecondPMF =
-      kInitialPMF + growth_threshold + base::KiBU(1);
+      kInitialPMF + growth_threshold + base::KiB(1);
   ReportMemoryUsage(kContext, kSecondPMF);
 
   // Pretend that the new page is frozen.
@@ -1158,14 +1158,13 @@ TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_PageAddedAfterFreezing) {
 
   // Memory measurement crossing the growth threshold. Should not result in
   // discarding since it's the first measurement since the new page was added.
-  const base::ByteSize kThirdPMF =
-      kSecondPMF + growth_threshold + base::KiBU(1);
+  const base::ByteSize kThirdPMF = kSecondPMF + growth_threshold + base::KiB(1);
   ReportMemoryUsage(kContext, kThirdPMF);
 
   // Memory measurement crossing the growth threshold. This should result in
   // discarding.
   const base::ByteSize kFourthPMFKb =
-      kThirdPMF + growth_threshold + base::KiBU(1);
+      kThirdPMF + growth_threshold + base::KiB(1);
   EXPECT_CALL(*discarder(),
               DiscardPages(testing::_, testing::UnorderedElementsAre(
                                            page_node(), page2.get())));
@@ -1179,18 +1178,18 @@ TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_FeatureDisabled) {
       features::kDiscardFrozenBrowsingInstancesWithGrowingPMF);
 
   const base::ByteSize growth_threshold =
-      base::KiBU(base::checked_cast<uint64_t>(
+      base::KiB(base::checked_cast<uint64_t>(
           features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
   // Pretend that the page is frozen.
   page_node()->SetLifecycleStateForTesting(PageNode::LifecycleState::kFrozen);
 
   // First memory measurement after freezing.
-  constexpr base::ByteSize kInitialPMF = base::KiBU(10);
+  constexpr base::ByteSize kInitialPMF = base::KiB(10);
   ReportMemoryUsage(kContext, kInitialPMF);
 
   // Another memory measurement, crossing the growth threshold. The page should
   // not be discarded since the feature is disabled.
-  ReportMemoryUsage(kContext, kInitialPMF + growth_threshold + base::KiBU(1));
+  ReportMemoryUsage(kContext, kInitialPMF + growth_threshold + base::KiB(1));
   VerifyDiscarderExpectations();
 }
 
@@ -1199,7 +1198,7 @@ TEST_F(FreezingPolicyTest,
   base::test::ScopedFeatureList feature_list{
       features::kDiscardFrozenBrowsingInstancesWithGrowingPMF};
   const base::ByteSize growth_threshold =
-      base::KiBU(base::checked_cast<uint64_t>(
+      base::KiB(base::checked_cast<uint64_t>(
           features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
   auto [page2, frame2] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
@@ -1209,7 +1208,7 @@ TEST_F(FreezingPolicyTest,
   page2->SetLifecycleStateForTesting(PageNode::LifecycleState::kFrozen);
 
   // First memory measurement after freezing.
-  constexpr base::ByteSize kInitialPMF = base::KiBU(10);
+  constexpr base::ByteSize kInitialPMF = base::KiB(10);
   ReportMemoryUsage(kContext, kInitialPMF);
 
   // Another memory measurement, crossing the growth threshold. The 2 pages
@@ -1217,7 +1216,7 @@ TEST_F(FreezingPolicyTest,
   EXPECT_CALL(*discarder(),
               DiscardPages(testing::_, testing::UnorderedElementsAre(
                                            page_node(), page2.get())));
-  ReportMemoryUsage(kContext, kInitialPMF + growth_threshold + base::KiBU(1));
+  ReportMemoryUsage(kContext, kInitialPMF + growth_threshold + base::KiB(1));
   VerifyDiscarderExpectations();
 }
 
@@ -1226,7 +1225,7 @@ TEST_F(FreezingPolicyTest,
   base::test::ScopedFeatureList feature_list{
       features::kDiscardFrozenBrowsingInstancesWithGrowingPMF};
   const base::ByteSize growth_threshold =
-      base::KiBU(base::checked_cast<uint64_t>(
+      base::KiB(base::checked_cast<uint64_t>(
           features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
   auto [page2, frame2] =
       CreatePageAndFrameWithBrowsingInstanceId(kBrowsingInstanceA);
@@ -1235,7 +1234,7 @@ TEST_F(FreezingPolicyTest,
   page_node()->SetLifecycleStateForTesting(PageNode::LifecycleState::kFrozen);
 
   // First memory measurement after freezing the page (2nd page still unfrozen).
-  constexpr base::ByteSize kInitialPMF = base::KiBU(10);
+  constexpr base::ByteSize kInitialPMF = base::KiB(10);
   ReportMemoryUsage(kContext, kInitialPMF);
 
   // Pretend that the 2nd page is frozen.
@@ -1244,7 +1243,7 @@ TEST_F(FreezingPolicyTest,
   // Another memory measurement, crossing the growth threshold since the first
   // page was frozen (but not since *all* pages were frozen). No discarding
   // expected.
-  ReportMemoryUsage(kContext, kInitialPMF + growth_threshold + base::KiBU(1));
+  ReportMemoryUsage(kContext, kInitialPMF + growth_threshold + base::KiB(1));
 
   // Another memory measurement, crossing the growth threshold since all pages
   // were frozen.  The 2 pages should be discarded.
@@ -1252,7 +1251,7 @@ TEST_F(FreezingPolicyTest,
               DiscardPages(testing::_, testing::UnorderedElementsAre(
                                            page_node(), page2.get())));
   ReportMemoryUsage(kContext,
-                    kInitialPMF + 2 * (growth_threshold + base::KiBU(1)));
+                    kInitialPMF + 2 * (growth_threshold + base::KiB(1)));
   VerifyDiscarderExpectations();
 }
 
@@ -1260,13 +1259,13 @@ TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_Unfreeze) {
   base::test::ScopedFeatureList feature_list{
       features::kDiscardFrozenBrowsingInstancesWithGrowingPMF};
   const base::ByteSize growth_threshold =
-      base::KiBU(base::checked_cast<uint64_t>(
+      base::KiB(base::checked_cast<uint64_t>(
           features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
   // Pretend that the page is frozen.
   page_node()->SetLifecycleStateForTesting(PageNode::LifecycleState::kFrozen);
 
   // First memory measurement after freezing.
-  constexpr base::ByteSize kInitialPMF = base::KiBU(10);
+  constexpr base::ByteSize kInitialPMF = base::KiB(10);
   ReportMemoryUsage(kContext, kInitialPMF);
 
   // Pretend that the page is unfrozen and re-frozen.
@@ -1276,14 +1275,14 @@ TEST_F(FreezingPolicyTest, DiscardGrowingPrivateMemory_Unfreeze) {
   // Another memory measurement, crossing the growth threshold since the
   // measurement taken before unfreezing. The page should not be discarded,
   // because this is the first measurement since re-freezing.
-  ReportMemoryUsage(kContext, kInitialPMF + growth_threshold + base::KiBU(1));
+  ReportMemoryUsage(kContext, kInitialPMF + growth_threshold + base::KiB(1));
 
   // Another memory measurement, crossing the growth threshold since the
   // measurement taken after re-freezing. The page should be discarded.
   EXPECT_CALL(*discarder(),
               DiscardPages(testing::_, testing::ElementsAre(page_node())));
   ReportMemoryUsage(kContext,
-                    kInitialPMF + 2 * (growth_threshold + base::KiBU(1)));
+                    kInitialPMF + 2 * (growth_threshold + base::KiB(1)));
   VerifyDiscarderExpectations();
 }
 
@@ -1293,7 +1292,7 @@ TEST_F(
   base::test::ScopedFeatureList feature_list{
       features::kDiscardFrozenBrowsingInstancesWithGrowingPMF};
   const base::ByteSize growth_threshold =
-      base::KiBU(base::checked_cast<uint64_t>(
+      base::KiB(base::checked_cast<uint64_t>(
           features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
   const resource_attribution::OriginInBrowsingInstanceContext kOtherContext{
       url::Origin(), kBrowsingInstanceA};
@@ -1302,20 +1301,20 @@ TEST_F(
   page_node()->SetLifecycleStateForTesting(PageNode::LifecycleState::kFrozen);
 
   // First memory measurement after freezing.
-  constexpr base::ByteSize kInitialPMF = base::KiBU(10);
+  constexpr base::ByteSize kInitialPMF = base::KiB(10);
   ReportMemoryUsage(kContext, kInitialPMF);
 
   // A memory measurement below the growth threshold for an origin not seen in
   // the first measurement. Nothing should happen.
   ReportMemoryUsage(kOtherContext,
-                    (growth_threshold - base::KiBU(1)).AsByteSize());
+                    (growth_threshold - base::KiB(1)).AsByteSize());
   VerifyDiscarderExpectations();
 
   // A second memory measurement above the growth threshold for an origin not
   // seen in the first measurement. The browsing instance should be discarded.
   EXPECT_CALL(*discarder(),
               DiscardPages(testing::_, testing::ElementsAre(page_node())));
-  ReportMemoryUsage(kOtherContext, growth_threshold + base::KiBU(1));
+  ReportMemoryUsage(kOtherContext, growth_threshold + base::KiB(1));
   VerifyDiscarderExpectations();
 }
 
@@ -1325,7 +1324,7 @@ TEST_F(
   base::test::ScopedFeatureList feature_list{
       features::kDiscardFrozenBrowsingInstancesWithGrowingPMF};
   const base::ByteSize growth_threshold =
-      base::KiBU(base::checked_cast<uint64_t>(
+      base::KiB(base::checked_cast<uint64_t>(
           features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
   const resource_attribution::OriginInBrowsingInstanceContext kOtherContext{
       url::Origin(), kBrowsingInstanceA};
@@ -1334,14 +1333,14 @@ TEST_F(
   page_node()->SetLifecycleStateForTesting(PageNode::LifecycleState::kFrozen);
 
   // First memory measurement after freezing.
-  constexpr base::ByteSize kInitialPMF = base::KiBU(10);
+  constexpr base::ByteSize kInitialPMF = base::KiB(10);
   ReportMemoryUsage(kContext, kInitialPMF);
 
   // A memory measurement above the growth threshold for an origin not seen in
   // the first measurement. The browsing instance should be discarded.
   EXPECT_CALL(*discarder(),
               DiscardPages(testing::_, testing::ElementsAre(page_node())));
-  ReportMemoryUsage(kOtherContext, growth_threshold + base::KiBU(1));
+  ReportMemoryUsage(kOtherContext, growth_threshold + base::KiB(1));
   VerifyDiscarderExpectations();
 }
 
@@ -1350,7 +1349,7 @@ TEST_F(FreezingPolicyTest,
   base::test::ScopedFeatureList feature_list{
       features::kDiscardFrozenBrowsingInstancesWithGrowingPMF};
   const base::ByteSize growth_threshold =
-      base::KiBU(base::checked_cast<uint64_t>(
+      base::KiB(base::checked_cast<uint64_t>(
           features::kFreezingMemoryGrowthThresholdToDiscardKb.Get()));
 
   const resource_attribution::OriginInBrowsingInstanceContext
@@ -1361,10 +1360,10 @@ TEST_F(FreezingPolicyTest,
 
   // Simulate memory usage growth above the threshold for a browsing instance
   // not known to the `FreezingPolicy`. This should be gracefully ignored.
-  constexpr base::ByteSize kInitialPMF = base::KiBU(10);
+  constexpr base::ByteSize kInitialPMF = base::KiB(10);
   ReportMemoryUsage(kUnknownBrowsingInstanceContext, kInitialPMF);
   ReportMemoryUsage(kUnknownBrowsingInstanceContext,
-                    kInitialPMF + growth_threshold + base::KiBU(1));
+                    kInitialPMF + growth_threshold + base::KiB(1));
 }
 
 namespace {

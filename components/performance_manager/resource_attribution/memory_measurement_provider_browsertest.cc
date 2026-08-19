@@ -77,11 +77,11 @@ class MemoryMeasurementDelegateWithSwap final
 
  private:
   static MemorySummaryMap ModifyMemorySummary(MemorySummaryMap summary) {
-    base::ByteSize fake_swap = base::KiBU(1);
+    base::ByteSize fake_swap = base::KiB(1);
     for (auto& [context, measurement] : summary) {
       if (measurement.private_swap.is_zero()) {
         measurement.private_swap = fake_swap;
-        fake_swap += base::KiBU(1);
+        fake_swap += base::KiB(1);
       }
     }
     return summary;
