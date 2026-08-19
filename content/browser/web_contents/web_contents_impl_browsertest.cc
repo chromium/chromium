@@ -49,6 +49,8 @@
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_manager.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
@@ -128,6 +130,7 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -4952,6 +4955,95 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, InnerWebContentsVisibility) {
   EXPECT_EQ(Visibility::HIDDEN, root_contents->GetVisibility());
   EXPECT_EQ(PageVisibilityState::kHidden,
             root_contents->GetPrimaryMainFrame()->GetVisibilityState());
+  EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       InnerContentsVisibilityCapping) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  auto* root_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Attach inner contents (initially same-process at about:blank).
+  WebContentsImpl* inner_contents =
+      static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(
+          ChildFrameAt(root_contents->GetPrimaryMainFrame(), 0)));
+
+  RenderFrameProxyHost* proxy = inner_contents->GetPrimaryFrameTree()
+                                    .root()
+                                    ->render_manager()
+                                    ->GetProxyToOuterDelegate();
+  ASSERT_TRUE(proxy);
+
+  // Initially both should be visible.
+  EXPECT_EQ(Visibility::VISIBLE, root_contents->GetVisibility());
+  EXPECT_EQ(Visibility::VISIBLE, inner_contents->GetVisibility());
+
+  // First, verify handling of inner frame visibility changes.
+
+  // While the outer frame is visible, we can transition the inner frame to all
+  // visibility values.
+  proxy->VisibilityChanged(
+      blink::mojom::FrameVisibility::kRenderedOutOfViewport);
+  EXPECT_EQ(Visibility::OCCLUDED, inner_contents->GetVisibility());
+  proxy->VisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
+  EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
+  proxy->VisibilityChanged(blink::mojom::FrameVisibility::kRenderedInViewport);
+  EXPECT_EQ(Visibility::VISIBLE, inner_contents->GetVisibility());
+
+  // While the outer frame is occluded, we can not transition the inner frame to
+  // VISIBLE.
+  root_contents->WasOccluded();
+  proxy->VisibilityChanged(
+      blink::mojom::FrameVisibility::kRenderedOutOfViewport);
+  EXPECT_EQ(Visibility::OCCLUDED, inner_contents->GetVisibility());
+  proxy->VisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
+  EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
+  proxy->VisibilityChanged(blink::mojom::FrameVisibility::kRenderedInViewport);
+  EXPECT_EQ(Visibility::OCCLUDED, inner_contents->GetVisibility());
+
+  // While the outer frame is hidden, we can not transition the inner frame to
+  // VISIBLE or OCCLUDED.
+  root_contents->WasHidden();
+  proxy->VisibilityChanged(
+      blink::mojom::FrameVisibility::kRenderedOutOfViewport);
+  EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
+  proxy->VisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
+  EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
+  proxy->VisibilityChanged(blink::mojom::FrameVisibility::kRenderedInViewport);
+  EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
+
+  // Next, verify propagation of outer frame visibility to the inner frame.
+
+  // While the inner frame is visible, we can transition the outer frame to
+  // all visibility values and see the reflected on the inner frame.
+  proxy->VisibilityChanged(blink::mojom::FrameVisibility::kRenderedInViewport);
+  root_contents->WasOccluded();
+  EXPECT_EQ(Visibility::OCCLUDED, inner_contents->GetVisibility());
+  root_contents->WasHidden();
+  EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
+  root_contents->WasShown();
+  EXPECT_EQ(Visibility::VISIBLE, inner_contents->GetVisibility());
+
+  // While the inner frame is occluded.
+  proxy->VisibilityChanged(
+      blink::mojom::FrameVisibility::kRenderedOutOfViewport);
+  root_contents->WasOccluded();
+  EXPECT_EQ(Visibility::OCCLUDED, inner_contents->GetVisibility());
+  root_contents->WasHidden();
+  EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
+  root_contents->WasShown();
+  EXPECT_EQ(Visibility::OCCLUDED, inner_contents->GetVisibility());
+
+  // While the inner frame is hidden.
+  proxy->VisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
+  root_contents->WasOccluded();
+  EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
+  root_contents->WasHidden();
+  EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
+  root_contents->WasShown();
   EXPECT_EQ(Visibility::HIDDEN, inner_contents->GetVisibility());
 }
 
