@@ -4,37 +4,42 @@
 
 #include "base/rand_util.h"
 
-#include <errno.h>
-#include <fcntl.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <sys/syscall.h>
-#include <sys/utsname.h>
-#include <unistd.h>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
-#include "base/no_destructor.h"
-#include "base/posix/eintr_wrapper.h"
-#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
+#if BUILDFLAG(IS_MAC)
+#include <sys/random.h>
+#elif BUILDFLAG(IS_APPLE)
+#include <CommonCrypto/CommonRandom.h>
+#else
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+#include "base/files/file_util.h"
+#include "base/no_destructor.h"
+#include "base/posix/eintr_wrapper.h"
+#include "base/system/sys_info.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "third_party/lss/linux_syscall_support.h"
-#elif BUILDFLAG(IS_MAC)
-#include <sys/random.h>
-#elif BUILDFLAG(IS_IOS)
-#include <CommonCrypto/CommonRandom.h>
-#endif
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace base {
 
 namespace {
+
+#if !BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_AIX)
 // AIX has no 64-bit support for O_CLOEXEC.
@@ -60,6 +65,8 @@ class URandomFd {
  private:
   const int fd_;
 };
+
+#endif  // !BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
@@ -120,6 +127,11 @@ void RandBytesInternal(span<uint8_t> output, bool avoid_allocation) {
     (void)RAND_bytes(output.data(), output.size());
     return;
   }
+#if BUILDFLAG(IS_MAC)
+  CHECK(getentropy(output.data(), output.size()) == 0);
+#elif BUILDFLAG(IS_APPLE)
+  CHECK(CCRandomGenerateBytes(output.data(), output.size()) == kCCSuccess);
+#else
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // On Android it is mandatory to check that the kernel _version_ has the
   // support for a syscall before calling. The same check is made on Linux and
@@ -128,16 +140,8 @@ void RandBytesInternal(span<uint8_t> output, bool avoid_allocation) {
   if (kernel_has_support && GetRandomSyscall(output.data(), output.size())) {
     return;
   }
-#elif BUILDFLAG(IS_MAC)
-  if (getentropy(output.data(), output.size()) == 0) {
-    return;
-  }
-#elif BUILDFLAG(IS_IOS)
-  if (CCRandomGenerateBytes(output.data(), output.size()) == kCCSuccess) {
-    return;
-  }
-#endif
-
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
   // If the OS-specific mechanisms didn't work, fall through to reading from
   // urandom.
   //
@@ -146,6 +150,7 @@ void RandBytesInternal(span<uint8_t> output, bool avoid_allocation) {
   const int urandom_fd = GetUrandomFD();
   const bool success = ReadFromFD(urandom_fd, as_writable_chars(output));
   CHECK(success);
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 }  // namespace
@@ -165,9 +170,11 @@ void RandBytes(span<uint8_t> output) {
   RandBytesInternal(output, /*avoid_allocation=*/false);
 }
 
+#if !BUILDFLAG(IS_APPLE)
 int GetUrandomFD() {
   static NoDestructor<URandomFd> urandom_fd;
   return urandom_fd->fd();
 }
+#endif  // !BUILDFLAG(IS_APPLE)
 
 }  // namespace base
