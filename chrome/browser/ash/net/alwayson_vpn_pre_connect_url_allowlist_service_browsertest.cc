@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/net/alwayson_vpn_pre_connect_url_allowlist_service.h"
 
 #include <memory>
+#include <string>
 
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -17,7 +18,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
+#include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/account_id/account_id.h"
@@ -38,6 +41,49 @@ constexpr char kDefaultVpnPath[] = "/service/vpn1";
 
 constexpr char kTestUrl[] = "test.url.com";
 constexpr char kTestUrlInternalScheme[] = "chrome://print";
+
+class DefaultNetworkStateWaiter : public ash::NetworkStateHandlerObserver {
+ public:
+  DefaultNetworkStateWaiter(const std::string& expected_service_path,
+                            const std::string& expected_connection_state)
+      : expected_service_path_(expected_service_path),
+        expected_connection_state_(expected_connection_state) {
+    observation_.Observe(ash::NetworkHandler::Get()->network_state_handler());
+  }
+
+  DefaultNetworkStateWaiter(const DefaultNetworkStateWaiter&) = delete;
+  DefaultNetworkStateWaiter& operator=(const DefaultNetworkStateWaiter&) =
+      delete;
+
+  ~DefaultNetworkStateWaiter() override = default;
+
+  void Wait() {
+    if (HasExpectedDefaultNetwork()) {
+      return;
+    }
+
+    run_loop_.Run();
+  }
+
+ private:
+  void DefaultNetworkChanged(const ash::NetworkState* network) override {
+    if (HasExpectedDefaultNetwork()) {
+      run_loop_.Quit();
+    }
+  }
+
+  bool HasExpectedDefaultNetwork() const {
+    const ash::NetworkState* network =
+        ash::NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
+    return network && network->path() == expected_service_path_ &&
+           network->connection_state() == expected_connection_state_;
+  }
+
+  const std::string expected_service_path_;
+  const std::string expected_connection_state_;
+  base::RunLoop run_loop_;
+  ash::NetworkStateHandlerScopedObservation observation_{this};
+};
 
 }  // namespace
 
@@ -91,6 +137,9 @@ class AlwaysOnVpnPreConnectUrlAllowlistServiceTest
 
  protected:
   void SetVpnConnectionState(bool vpn_enabled) {
+    DefaultNetworkStateWaiter default_network_waiter(
+        vpn_enabled ? kDefaultVpnPath : kDefaultEthernetPath,
+        shill::kStateOnline);
     ShillServiceClient::TestInterface* service =
         ShillServiceClient::Get()->GetTestInterface();
     service->SetServiceProperty(
@@ -99,7 +148,7 @@ class AlwaysOnVpnPreConnectUrlAllowlistServiceTest
     service->SetServiceProperty(
         kDefaultVpnPath, shill::kStateProperty,
         base::Value(vpn_enabled ? shill::kStateOnline : shill::kStateIdle));
-    base::RunLoop().RunUntilIdle();
+    default_network_waiter.Wait();
   }
 
   // The kAlwaysOnVpnPreConnectUrlAllowlist should be enfoced when the following
