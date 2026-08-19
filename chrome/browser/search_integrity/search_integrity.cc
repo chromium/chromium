@@ -122,9 +122,13 @@ void SearchIntegrity::CheckSearchEngines() {
   // thread to avoid blocking the UI thread.
 
   // Get the JSON data from resources.
+#if defined(IDR_SEARCH_ENGINE_HISTORICAL_SEARCH_URLS_JSON)
   std::string json_data =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_SEARCH_ENGINE_PREPOPULATED_ENGINES_JSON);
+          IDR_SEARCH_ENGINE_HISTORICAL_SEARCH_URLS_JSON);
+#else
+  std::string json_data;
+#endif
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE},

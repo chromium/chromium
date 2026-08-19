@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//testing/test.gni")
 
 source_set("search_integrity") {
@@ -14,6 +15,8 @@ source_set("search_integrity") {
     "search_integrity_factory.cc",
     "search_integrity_factory.h",
   ]
+
+  defines = [ "enable_src_internal=$enable_src_internal" ]
 
   deps = [
     "//base",
@@ -30,6 +33,7 @@ source_set("search_integrity") {
 source_set("unit_tests") {
   testonly = true
   sources = [ "search_integrity_unittest.cc" ]
+  defines = [ "enable_src_internal=$enable_src_internal" ]
   deps = [
     ":search_integrity",
     "//base",
