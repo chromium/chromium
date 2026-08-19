@@ -11,10 +11,13 @@
  * #css_wrapper_metadata_end */
 
 #hoverButton {
+  background: transparent;
+  border: none;
   box-sizing: border-box;
   color: var(--cr-primary-text-color);
   cursor: pointer;
   display: flex;
+  font: inherit;
   justify-content: space-between;
   line-height: 16px;
   margin-top: 8px;
