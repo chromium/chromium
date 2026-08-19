@@ -22,6 +22,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/writeable-v0_6/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/writeable-v0_6/src/ops.rs",
     "//third_party/rust/chromium_crates_io/vendor/writeable-v0_6/src/parts_write_adapter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/writeable-v0_6/src/replace.rs",
     "//third_party/rust/chromium_crates_io/vendor/writeable-v0_6/src/testing.rs",
     "//third_party/rust/chromium_crates_io/vendor/writeable-v0_6/src/to_string_or_borrow.rs",
     "//third_party/rust/chromium_crates_io/vendor/writeable-v0_6/src/try_writeable.rs",
@@ -34,7 +35,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "writeable"
   cargo_pkg_description = "A more efficient alternative to fmt::Display"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.6.3"
+  cargo_pkg_version = "0.6.4"
 
   allow_unsafe = true
 
