@@ -521,6 +521,30 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals('https://example.com', searchbox.$.input.inputElement.value);
   });
 
+  test('HandlesPasteAtEndScrollsToEnd', async () => {
+    const longText = 'a'.repeat(200);
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/plain', longText);
+    const pasteEvent = new ClipboardEvent('paste', {
+      clipboardData: dataTransfer,
+      cancelable: true,
+    });
+
+    const inputElement = searchbox.$.input.inputElement;
+    searchbox.$.input.dispatchEvent(pasteEvent);
+    await microtasksFinished();
+
+    assertTrue(pasteEvent.defaultPrevented);
+    assertEquals(longText, inputElement.value);
+    assertEquals(longText.length, inputElement.selectionStart);
+    assertEquals(longText.length, inputElement.selectionEnd);
+    // Verify scroll position was adjusted to show cursor at the end.
+    // The browser clamps scrollLeft to max (scrollWidth - clientWidth).
+    assertEquals(
+        inputElement.scrollWidth - inputElement.clientWidth,
+        inputElement.scrollLeft);
+  });
+
   test('HandlesCopy', async () => {
     callbackRouter.setInputState(createDefaultOmniboxInputState({
       sequenceNumber: 7,

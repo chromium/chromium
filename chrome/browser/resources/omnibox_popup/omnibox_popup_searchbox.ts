@@ -617,6 +617,15 @@ export class OmniboxPopupSearchboxElement extends
     this.getInputElement().setInput({text: newValue, inline: ''});
     this.getInputElement().setSelectionRange(cursorPos, cursorPos);
 
+    // Programmatic selection changes do not automatically scroll the input
+    // element. Explicitly adjust scroll position so the trailing caret/pasted
+    // text is visible.
+    if (this.multiLineEnabled) {
+      input.scrollTop = input.scrollHeight;
+    } else if (cursorPos === newValue.length) {
+      input.scrollLeft = input.scrollWidth;
+    }
+
     const selectionRange = {start: cursorPos, end: cursorPos};
     this.popupPageHandler_.onPaste(
         newValue, selectionRange, this.currentSequenceNum_);
