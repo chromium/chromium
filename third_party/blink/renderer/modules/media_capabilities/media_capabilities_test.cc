@@ -941,6 +941,16 @@ TEST(MediaCapabilitiesTests, WebrtcDecodingSpatialScalability) {
 
 class MediaCapabilitiesWebrtcTests : public ::testing::Test {
  public:
+  static std::unique_ptr<WebrtcDecodingInfoHandler>
+  CreateWebrtcDecodingInfoHandler(
+      std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory,
+      webrtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory,
+      media::GpuVideoAcceleratorFactories* gpu_factories) {
+    return base::WrapUnique(new WebrtcDecodingInfoHandler(
+        std::move(video_decoder_factory), std::move(audio_decoder_factory),
+        gpu_factories));
+  }
+
   static std::unique_ptr<WebrtcEncodingInfoHandler>
   CreateWebrtcEncodingInfoHandler(
       std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
@@ -1061,25 +1071,27 @@ TEST_F(MediaCapabilitiesWebrtcTests, EncodingScalabilityMode) {
   EXPECT_FALSE(info->powerEfficient());
 }
 
-TEST(MediaCapabilitiesTests, WebrtcDecodePowerEfficientIsSmooth) {
+TEST_F(MediaCapabilitiesWebrtcTests, DecodePowerEfficientIsSmooth) {
   test::TaskEnvironment task_environment;
   // Set up a custom decoding info handler with a GPU factory that returns
   // supported and powerEfficient.
   MediaCapabilitiesTestContext context;
-  auto mock_gpu_factories =
-      std::make_unique<media::MockGpuVideoAcceleratorFactories>(nullptr);
-  WebrtcDecodingInfoHandler decoding_info_handler(
-      blink::CreateWebrtcVideoDecoderFactory(
-          mock_gpu_factories.get(),
-          Platform::Current()->GetRenderingColorSpace(), base::DoNothing()),
-      blink::CreateWebrtcAudioDecoderFactory());
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
+  auto video_decoder_factory = blink::CreateWebrtcVideoDecoderFactory(
+      &mock_gpu_factories, Platform::Current()->GetRenderingColorSpace(),
+      base::DoNothing());
+
+  std::unique_ptr<WebrtcDecodingInfoHandler> decoding_info_handler =
+      CreateWebrtcDecodingInfoHandler(std::move(video_decoder_factory),
+                                      blink::CreateWebrtcAudioDecoderFactory(),
+                                      &mock_gpu_factories);
 
   context.GetMediaCapabilities()->set_webrtc_decoding_info_handler_for_test(
-      &decoding_info_handler);
+      decoding_info_handler.get());
 
-  EXPECT_CALL(*mock_gpu_factories, IsDecoderSupportKnown())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_gpu_factories, IsDecoderConfigSupported(_))
+  EXPECT_CALL(mock_gpu_factories, IsDecoderSupportKnown())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_gpu_factories, IsDecoderConfigSupported(_))
       .WillOnce(Return(media::GpuVideoAcceleratorFactories::Supported::kTrue));
 
   const auto* kDecodingConfig = CreateWebrtcDecodingConfig();
@@ -1089,9 +1101,12 @@ TEST(MediaCapabilitiesTests, WebrtcDecodePowerEfficientIsSmooth) {
   EXPECT_TRUE(info->supported());
   EXPECT_TRUE(info->smooth());
   EXPECT_TRUE(info->powerEfficient());
+
+  context.GetMediaCapabilities()->set_webrtc_decoding_info_handler_for_test(
+      nullptr);
 }
 
-TEST(MediaCapabilitiesTests, WebrtcDecodeOverridePowerEfficientIsSmooth) {
+TEST_F(MediaCapabilitiesWebrtcTests, DecodeOverridePowerEfficientIsSmooth) {
   test::TaskEnvironment task_environment;
   // Override the default behavior using a field trial. Query smooth from perf
   // history regardless the value of powerEfficient.
@@ -1108,16 +1123,18 @@ TEST(MediaCapabilitiesTests, WebrtcDecodeOverridePowerEfficientIsSmooth) {
   // supported and powerEfficient.
   MediaCapabilitiesTestContext context;
   media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
-  WebrtcDecodingInfoHandler decoding_info_handler(
-      blink::CreateWebrtcVideoDecoderFactory(
-          &mock_gpu_factories, Platform::Current()->GetRenderingColorSpace(),
-          base::DoNothing()),
-      blink::CreateWebrtcAudioDecoderFactory());
+  auto video_decoder_factory = blink::CreateWebrtcVideoDecoderFactory(
+      &mock_gpu_factories, Platform::Current()->GetRenderingColorSpace(),
+      base::DoNothing());
+  std::unique_ptr<WebrtcDecodingInfoHandler> decoding_info_handler =
+      CreateWebrtcDecodingInfoHandler(std::move(video_decoder_factory),
+                                      blink::CreateWebrtcAudioDecoderFactory(),
+                                      &mock_gpu_factories);
   context.GetMediaCapabilities()->set_webrtc_decoding_info_handler_for_test(
-      &decoding_info_handler);
+      decoding_info_handler.get());
 
   EXPECT_CALL(mock_gpu_factories, IsDecoderSupportKnown())
-      .WillOnce(Return(true));
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(mock_gpu_factories, IsDecoderConfigSupported(_))
       .WillOnce(Return(media::GpuVideoAcceleratorFactories::Supported::kTrue));
 
@@ -1135,6 +1152,9 @@ TEST(MediaCapabilitiesTests, WebrtcDecodeOverridePowerEfficientIsSmooth) {
   EXPECT_TRUE(info->supported());
   EXPECT_FALSE(info->smooth());
   EXPECT_TRUE(info->powerEfficient());
+
+  context.GetMediaCapabilities()->set_webrtc_decoding_info_handler_for_test(
+      nullptr);
 }
 
 TEST_F(MediaCapabilitiesWebrtcTests, EncodePowerEfficientIsSmooth) {

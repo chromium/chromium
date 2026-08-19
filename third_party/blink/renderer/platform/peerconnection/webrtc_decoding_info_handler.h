@@ -9,6 +9,8 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -23,12 +25,6 @@ class PLATFORM_EXPORT WebrtcDecodingInfoHandler {
  public:
   static WebrtcDecodingInfoHandler* Instance();
 
-  WebrtcDecodingInfoHandler();
-  // Constructor for unittest to inject video and audio decoder factory
-  // instances.
-  WebrtcDecodingInfoHandler(
-      std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory,
-      webrtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory);
   // Not copyable or movable.
   WebrtcDecodingInfoHandler(const WebrtcDecodingInfoHandler&) = delete;
   WebrtcDecodingInfoHandler& operator=(const WebrtcDecodingInfoHandler&) =
@@ -38,22 +34,44 @@ class PLATFORM_EXPORT WebrtcDecodingInfoHandler {
   // Queries the capabilities of the given decoding configuration and passes
   // the result via callbacks.
   // It implements WICG Media Capabilities decodingInfo() call for webrtc
-  // encoding.
+  // decoding.
   // https://wicg.github.io/media-capabilities/#media-capabilities-interface
   using OnMediaCapabilitiesDecodingInfoCallback =
       base::OnceCallback<void(bool, bool)>;
   void DecodingInfo(
-      const std::optional<webrtc::SdpAudioFormat> sdp_audio_format,
-      const std::optional<webrtc::SdpVideoFormat> sdp_video_format,
-      const bool video_spatial_scalability,
+      const std::optional<webrtc::SdpAudioFormat>& sdp_audio_format,
+      const std::optional<webrtc::SdpVideoFormat>& sdp_video_format,
+      bool video_spatial_scalability,
       std::optional<gfx::Size> video_resolution,
       OnMediaCapabilitiesDecodingInfoCallback callback) const;
 
  private:
+  friend class WebrtcDecodingInfoHandlerTests;
+  friend class MediaCapabilitiesWebrtcTests;
+
+  WebrtcDecodingInfoHandler();
+  explicit WebrtcDecodingInfoHandler(
+      media::GpuVideoAcceleratorFactories* gpu_factories);
+
+  // Constructor for unittest to inject video and audio decoder factory
+  // instances.
+  WebrtcDecodingInfoHandler(
+      std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory,
+      webrtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory,
+      media::GpuVideoAcceleratorFactories* gpu_factories);
+
+  void ContinueVideoSupportCheck(
+      const std::optional<webrtc::SdpVideoFormat>& sdp_video_format,
+      bool video_spatial_scalability,
+      std::optional<gfx::Size> video_resolution,
+      OnMediaCapabilitiesDecodingInfoCallback callback) const;
+
   std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory_;
   webrtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory_;
   // List of supported audio codecs.
   HashSet<String> supported_audio_codecs_;
+
+  raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
 };
 
 }  // namespace blink

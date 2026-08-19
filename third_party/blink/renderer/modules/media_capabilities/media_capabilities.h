@@ -86,10 +86,10 @@ class MODULES_EXPORT MediaCapabilities final
     base::TimeTicks request_time;
   };
 
-  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
-                           WebrtcDecodePowerEfficientIsSmooth);
-  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesTests,
-                           WebrtcDecodeOverridePowerEfficientIsSmooth);
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesWebrtcTests,
+                           DecodePowerEfficientIsSmooth);
+  FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesWebrtcTests,
+                           DecodeOverridePowerEfficientIsSmooth);
   FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesWebrtcTests,
                            EncodePowerEfficientIsSmooth);
   FRIEND_TEST_ALL_PREFIXES(MediaCapabilitiesWebrtcTests,
