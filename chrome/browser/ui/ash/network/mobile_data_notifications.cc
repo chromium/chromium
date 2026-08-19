@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
@@ -26,6 +26,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/message_center.h"
 
 using ::ash::NetworkHandler;
 using ::ash::NetworkState;
@@ -141,7 +142,7 @@ void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
   one_shot_notification_check_delay_.Stop();
 
   // Display a one-time notification on first use of Mobile Data connection.
-  message_center::Notification notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kMobileDataNotificationId,
       l10n_util::GetStringUTF16(IDS_MOBILE_DATA_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(IDS_3G_NOTIFICATION_MESSAGE),
@@ -156,7 +157,8 @@ void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
       ash::kNotificationMobileDataIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
 
-  SystemNotificationHelper::GetInstance()->Display(notification);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 }
 
 void MobileDataNotifications::DelayedShowOptionalMobileDataNotification() {

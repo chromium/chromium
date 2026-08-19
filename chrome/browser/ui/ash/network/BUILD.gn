@@ -63,6 +63,7 @@ static_library("network") {
     "//extensions/common",
     "//ui/chromeos",
     "//ui/chromeos/strings",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/web_dialogs",
   ]
@@ -118,6 +119,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
     "//ui/chromeos/strings",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
   ]
 }

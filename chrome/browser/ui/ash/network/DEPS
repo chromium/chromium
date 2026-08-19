@@ -28,6 +28,8 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/floating_workspace",
   "+chrome/grit",
   "+chrome/test",
+
+  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {
