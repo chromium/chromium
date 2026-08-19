@@ -610,6 +610,15 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
     this.refreshTabSuggestions_(/*forceRefresh=*/ true);
   }
 
+  closeContextMenu() {
+    const context =
+        this.shadowRoot?.querySelector<ContextualEntrypointAndMenuElement>(
+            '#context');
+    if (context) {
+      context.closeMenu();
+    }
+  }
+
   protected onContextMenuOpened_() {
     this.contextMenuOpened_ = true;
     this.refreshTabSuggestions_(/*forceRefresh=*/ true);

@@ -1396,6 +1396,39 @@ suite('NewTabPageAppTest', () => {
       assertFalse($$(app, '#searchbox')!.hasAttribute('inert'));
     });
 
+    test(
+        'composebox context-menu-opened closes searchbox context menu',
+        async () => {
+          callbackRouterRemote.setTheme(createTheme());
+          await callbackRouterRemote.$.flushForTesting();
+
+          const searchbox = $$(app, '#searchbox') as NtpSearchboxElement;
+          assertTrue(!!searchbox);
+          let searchboxContextMenuClosed = false;
+          searchbox.closeContextMenu = () => {
+            searchboxContextMenuClosed = true;
+          };
+
+          // Open composebox.
+          searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+            detail: {text: '', files: []},
+          }));
+          await microtasksFinished();
+
+          const composebox = app.shadowRoot.querySelector<NtpComposeboxElement>(
+              '#composebox')!;
+          assertTrue(!!composebox);
+
+          // Context menu opens in composebox.
+          composebox.dispatchEvent(new CustomEvent('context-menu-opened', {
+            bubbles: true,
+            composed: true,
+          }));
+          await microtasksFinished();
+
+          assertTrue(searchboxContextMenuClosed);
+        });
+
     test('Sequential ESC clears input then closes composebox', async () => {
       // Arrange: Create and open the Composebox UI.
       callbackRouterRemote.setTheme(createTheme());
