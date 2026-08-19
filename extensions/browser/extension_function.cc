@@ -622,9 +622,6 @@ bool ExtensionFunction::ShouldKeepWorkerAliveIndefinitely() {
 }
 
 const base::ListValue& ExtensionFunction::GetOriginalArgs() const {
-  CHECK(base::FeatureList::IsEnabled(
-      extensions_features::kAvoidCloneArgsOnExtensionFunctionDispatch));
-
   if (original_args_.has_value()) {
     // Return `original_args_`, which were copied from `args_` on the first call
     // to GetMutableArgs().
@@ -730,12 +727,8 @@ void ExtensionFunction::SetTransferredBlobs(
 
 base::ListValue& ExtensionFunction::GetMutableArgs() {
   DCHECK(args_);
-  if (!original_args_.has_value() &&
-      base::FeatureList::IsEnabled(
-          extensions_features::kAvoidCloneArgsOnExtensionFunctionDispatch)) {
-    // Preserve original args before allowing modification of `args_`. Not
-    // needed when `kAvoidCloneArgsOnExtensionFunctionDispatch` is disabled
-    // since GetOriginalArgs() is disallowed in that configuration.
+  if (!original_args_.has_value()) {
+    // Preserve original args before allowing modification of `args_`.
     original_args_ = args_->Clone();
   }
   return *args_;

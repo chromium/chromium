@@ -344,13 +344,7 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
 
   const bool is_worker_request = IsRequestFromServiceWorker(*params);
 
-  base::ListValue arguments;
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kAvoidCloneArgsOnExtensionFunctionDispatch)) {
-    arguments = std::move(params->arguments);
-  } else {
-    arguments = params->arguments.Clone();
-  }
+  base::ListValue arguments = std::move(params->arguments);
 
   scoped_refptr<ExtensionFunction> function = CreateExtensionFunction(
       *params, std::move(arguments), extension, render_process_id,
@@ -389,22 +383,11 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   // Fetch the ProcessManager before |this| is possibly invalidated.
   ProcessManager* process_manager = ProcessManager::Get(browser_context_);
 
-  // TODO(crbug.com/424432184): When the
-  // `kAvoidCloneArgsOnExtensionFunctionDispatch` feature is cleaned up, this
-  // lambda can be removed and references to it can be replaced with
-  // `function->GetOriginalArgs()`.
-  auto original_args = [&]() -> const base::ListValue& {
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kAvoidCloneArgsOnExtensionFunctionDispatch)) {
-      return function->GetOriginalArgs();
-    }
-    return params->arguments;
-  };
-
   ExtensionSystem* extension_system = ExtensionSystem::Get(browser_context_);
   QuotaService* quota = extension_system->quota_service();
-  std::string violation_error = quota->Assess(
-      extension->id(), function.get(), original_args(), base::TimeTicks::Now());
+  std::string violation_error =
+      quota->Assess(extension->id(), function.get(),
+                    function->GetOriginalArgs(), base::TimeTicks::Now());
 
   function->set_request_uuid(base::Uuid::GenerateRandomV4());
 
@@ -431,8 +414,8 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
   if (violation_error.empty()) {
     // See crbug.com/39178.
     ExtensionsBrowserClient::Get()->PermitExternalProtocolHandler();
-    NotifyApiFunctionCalled(extension->id(), params->name, original_args(),
-                            browser_context_);
+    NotifyApiFunctionCalled(extension->id(), params->name,
+                            function->GetOriginalArgs(), browser_context_);
 
     // Since sandboxed frames listed in the manifest don't get access to the
     // extension APIs, this will only be true in an extension frame in an iframe

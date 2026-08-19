@@ -282,12 +282,6 @@ BASE_DECLARE_FEATURE(kDebuggerAPIRestrictedToDevMode);
 // even if they are not externally connectable.
 BASE_DECLARE_FEATURE(kExtensionBrowserNamespaceOnWebPages);
 
-// When enabled, a call to base::ListValue::Clone is avoided when dispatching an
-// extension function. Behind a feature to assess impact
-// (go/chrome-performance-work-should-be-finched).
-// TODO(crbug.com/424432184): Clean up when experiment is complete.
-BASE_DECLARE_FEATURE(kAvoidCloneArgsOnExtensionFunctionDispatch);
-
 // If enabled, the ContentVerifier cache key will include the extension root
 // path. This prevents collisions when an extension is updated or reloaded
 // to a new directory while keeping the same version ID.

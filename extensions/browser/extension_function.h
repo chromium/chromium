@@ -452,9 +452,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   virtual void OnResponseAck();
 
   // Returns original args, as they were set by SetArgs() (doesn't include
-  // modifications via GetMutableArgs()). Can only be called when the
-  // "AvoidCloneArgsOnExtensionFunctionDispatch" feature is enabled (otherwise
-  // the `ExtensionFunction` owner has preserved the original args).
+  // modifications via GetMutableArgs()).
   const base::ListValue& GetOriginalArgs() const;
 
   // Sets did_respond_ to true so that the function won't DCHECK if it never
