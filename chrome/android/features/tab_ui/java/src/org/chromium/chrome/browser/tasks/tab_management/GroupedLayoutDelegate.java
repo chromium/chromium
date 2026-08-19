@@ -101,6 +101,21 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
     }
 
     @Override
+    public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
+        @Nullable Pair<Integer, Tab> indexAndTab =
+                mMediator.getIndexAndTabForTabGroupId(tabGroupId);
+        if (indexAndTab == null) return;
+        Tab tab = indexAndTab.second;
+        PropertyModel model = mModelList.get(indexAndTab.first).model;
+
+        mMediator.updateTabGroupProperties(tab, model, newColor);
+        mMediator.updateFaviconForTab(model, tab, null, null);
+        mMediator.updateDescriptionString(model);
+        mMediator.updateActionButtonDescriptionString(tab, model);
+        mMediator.updateThumbnailFetcher(model, tab.getId());
+    }
+
+    @Override
     public void didMoveWithinGroup(Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
         if (mThumbnailProvider != null) {
             int indexInModel = mMediator.getIndexForTabIdWithRelatedTabs(movedTab.getId());

@@ -155,7 +155,13 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
-        super.didChangeTabGroupColor(tabGroupId, newColor);
+        int headerIndex = mModelList.indexFromTabGroupId(tabGroupId);
+        if (headerIndex != TabModel.INVALID_TAB_INDEX) {
+            PropertyModel headerModel = mModelList.get(headerIndex).model;
+            EitherGroupId eitherGroupId =
+                    EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId));
+            mMediator.updateTabGroupColorViewProvider(eitherGroupId, headerModel, newColor);
+        }
         // Sync the color down to the child models so decorations (like the group spine) can
         // read it.
         updateColorForChildTabsInNestedLayout(tabGroupId, newColor);

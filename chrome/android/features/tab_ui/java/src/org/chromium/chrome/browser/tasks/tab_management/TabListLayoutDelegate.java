@@ -7,17 +7,13 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.isOnlyArchivedMsg;
 
-import android.util.Pair;
-
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -87,21 +83,6 @@ abstract class TabListLayoutDelegate implements TabGroupObserver {
     @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
         mMediator.updateTabGroupTitle(tabGroupId);
-    }
-
-    @Override
-    public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
-        @Nullable Pair<Integer, Tab> indexAndTab =
-                mMediator.getIndexAndTabForTabGroupId(tabGroupId);
-        if (indexAndTab == null) return;
-        Tab tab = indexAndTab.second;
-        PropertyModel model = mModelList.get(indexAndTab.first).model;
-
-        mMediator.updateTabGroupProperties(tab, model, newColor);
-        mMediator.updateFaviconForTab(model, tab, null, null);
-        mMediator.updateDescriptionString(model);
-        mMediator.updateActionButtonDescriptionString(tab, model);
-        mMediator.updateThumbnailFetcher(model, tab.getId());
     }
 
     @Override

@@ -20,8 +20,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB_GROUP;
 
-import android.util.Pair;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -182,18 +180,10 @@ public class NestedLayoutDelegateUnitTest {
         PropertyModel child1Model = addTabToModelList(TAB1_ID, TAB_GROUP_ID);
         PropertyModel child2Model = addTabToModelList(TAB2_ID, TAB_GROUP_ID);
 
-        Pair<Integer, Tab> indexAndTab = new Pair<>(0, mTab1);
-        when(mMediator.getIndexAndTabForTabGroupId(TAB_GROUP_ID)).thenReturn(indexAndTab);
-        when(mTab1.getId()).thenReturn(TAB1_ID);
-
         mDelegate.didChangeTabGroupColor(TAB_GROUP_ID, TabGroupColorId.BLUE);
 
-        verify(mMediator).updateTabGroupProperties(mTab1, headerModel, TabGroupColorId.BLUE);
-        verify(mMediator).updateFaviconForTab(headerModel, mTab1, null, null);
-        verify(mMediator).updateDescriptionString(headerModel);
-        verify(mMediator).updateActionButtonDescriptionString(mTab1, headerModel);
-        verify(mMediator).updateThumbnailFetcher(headerModel, TAB1_ID);
-
+        verify(mMediator)
+                .updateTabGroupColorViewProvider(any(), eq(headerModel), eq(TabGroupColorId.BLUE));
         verify(mMediator)
                 .updateTabGroupColorViewProvider(any(), eq(child1Model), eq(TabGroupColorId.BLUE));
         verify(mMediator)
