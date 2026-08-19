@@ -55,8 +55,11 @@ class PolicyProvider : public ObservableProvider {
 
  private:
   struct PrefsForManagedDefaultMapEntry;
+  struct PrefsForManagedBooleanDefaultMapEntry;
 
   static const PrefsForManagedDefaultMapEntry kPrefsForManagedDefault[];
+  static const PrefsForManagedBooleanDefaultMapEntry
+      kPrefsForManagedAudioVideoCaptureDefault[];
 
   // Reads the policy managed default settings.
   void ReadManagedDefaultSettings();
@@ -66,6 +69,8 @@ class PolicyProvider : public ObservableProvider {
 
   // Reads the policy controlled default settings for a specific content type.
   void UpdateManagedDefaultSetting(const PrefsForManagedDefaultMapEntry& entry);
+  void UpdateManagedAudioVideoCaptureDefaultSetting(
+      const PrefsForManagedBooleanDefaultMapEntry& entry);
 
   void ReadManagedContentSettings(bool overwrite);
 

@@ -284,6 +284,8 @@ void PermissionToggleRowView::InitForManagedSource(
   row_view_->AddControl(std::move(state_label));
 
   auto managed_icon = std::make_unique<views::ImageView>();
+  managed_icon->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_MANAGED_ICON);
   managed_icon->SetImage(GetManagedPermissionIcon(permission_));
   std::u16string managed_tooltip =
       PageInfoUI::PermissionManagedTooltipToUIString(delegate, permission_);

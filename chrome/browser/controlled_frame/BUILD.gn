@@ -50,6 +50,7 @@ source_set("media_access_handler_impl") {
   public_deps = [ "//chrome/browser/media:access_handler" ]
   deps = [
     ":media_access_handler",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/profiles:profile",
     "//extensions/browser",

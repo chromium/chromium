@@ -83,6 +83,22 @@ inline constexpr char kManagedDefaultLegacyCookieScope[] =
     "profile.managed_default_content_settings.legacy_cookie_scope";
 inline constexpr char kManagedDefaultControlledFrameSetting[] =
     "profile.managed_default_content_settings.controlled_frame";
+
+// A pref holding the value of the policy used to explicitly allow or deny
+// access to audio capture devices.  When enabled or not set, the user is
+// prompted for device access.  When disabled, access to audio capture devices
+// is not allowed and no prompt will be shown.
+// See also kManagedAudioCaptureAllowedUrls.
+inline constexpr char kManagedAudioCaptureAllowed[] =
+    "hardware.audio_capture_enabled";
+
+// A pref holding the value of the policy used to explicitly allow or deny
+// access to video capture devices.  When enabled or not set, the user is
+// prompted for device access.  When disabled, access to video capture devices
+// is not allowed and no prompt will be shown.
+inline constexpr char kManagedVideoCaptureAllowed[] =
+    "hardware.video_capture_enabled";
+
 #if BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kManagedDefaultSmartCardConnectSetting[] =
     "profile.managed_default_content_settings.smart_card_connect";
@@ -222,6 +238,16 @@ inline constexpr char kManagedControlledFrameAllowedForUrls[] =
     "profile.managed_controlled_frame_allowed_for_urls";
 inline constexpr char kManagedControlledFrameBlockedForUrls[] =
     "profile.managed_controlled_frame_blocked_for_urls";
+
+// Holds URL patterns that specify URLs that will be granted access to audio
+// capture devices without prompt.
+inline constexpr char kManagedAudioCaptureAllowedUrls[] =
+    "hardware.audio_capture_allowed_urls";
+
+// Holds URL patterns that specify URLs that will be granted access to video
+// capture devices without prompt.
+inline constexpr char kManagedVideoCaptureAllowedUrls[] =
+    "hardware.video_capture_allowed_urls";
 
 inline constexpr char kManagedLocalNetworkAccessAllowedForUrls[] =
     "profile.managed_local_network_access_allowed_for_urls";

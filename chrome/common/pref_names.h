@@ -26,6 +26,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/chrome_pref_names.h"
+#include "components/content_settings/core/common/pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace prefs {
@@ -2211,38 +2212,15 @@ inline constexpr char kDnsOverHttpsAutomaticModeFallbackToDoh[] =
 inline constexpr char kAdditionalDnsQueryTypesEnabled[] =
     "async_dns.additional_dns_query_types_enabled";
 
-// A pref holding the value of the policy used to explicitly allow or deny
-// access to audio capture devices.  When enabled or not set, the user is
-// prompted for device access.  When disabled, access to audio capture devices
-// is not allowed and no prompt will be shown.
-// See also kAudioCaptureAllowedUrls.
-inline constexpr char kAudioCaptureAllowed[] = "hardware.audio_capture_enabled";
+// Ensure that the preference names defined in components match those in Ash.
 #if BUILDFLAG(IS_CHROMEOS)
-static_assert(std::string_view(kAudioCaptureAllowed) ==
+static_assert(std::string_view(kManagedAudioCaptureAllowed) ==
               std::string_view(ash::chrome_prefs::kAudioCaptureAllowed));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Holds URL patterns that specify URLs that will be granted access to audio
-// capture devices without prompt.
-inline constexpr char kAudioCaptureAllowedUrls[] =
-    "hardware.audio_capture_allowed_urls";
-
-// A pref holding the value of the policy used to explicitly allow or deny
-// access to video capture devices.  When enabled or not set, the user is
-// prompted for device access.  When disabled, access to video capture devices
-// is not allowed and no prompt will be shown.
-inline constexpr char kVideoCaptureAllowed[] = "hardware.video_capture_enabled";
-#if BUILDFLAG(IS_CHROMEOS)
-static_assert(std::string_view(kVideoCaptureAllowed) ==
+static_assert(std::string_view(kManagedAudioCaptureAllowedUrls) ==
+              std::string_view(ash::chrome_prefs::kAudioCaptureAllowedUrls));
+static_assert(std::string_view(kManagedVideoCaptureAllowed) ==
               std::string_view(ash::chrome_prefs::kVideoCaptureAllowed));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-// Holds URL patterns that specify URLs that will be granted access to video
-// capture devices without prompt.
-inline constexpr char kVideoCaptureAllowedUrls[] =
-    "hardware.video_capture_allowed_urls";
-#if BUILDFLAG(IS_CHROMEOS)
-static_assert(std::string_view(kVideoCaptureAllowedUrls) ==
+static_assert(std::string_view(kManagedVideoCaptureAllowedUrls) ==
               std::string_view(ash::chrome_prefs::kVideoCaptureAllowedUrls));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

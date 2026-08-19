@@ -339,21 +339,7 @@ class PermissionsClient {
   // capability to sites.
   virtual bool CanRequestDevicePermission(ContentSettingsType type) const;
 
-  // Returns true if the |type| can be blocked by device policy, for example, by
-  // the custodian of a supervised user.
-  virtual bool IsPermissionBlockedByDevicePolicy(
-      content::WebContents* web_contents,
-      PermissionSetting setting,
-      const content_settings::SettingInfo& info,
-      ContentSettingsType type) const;
 
-  // Returns true if the |type| can be allowed by device policy, for example
-  // admins can use the whitelist to allow device access without prompt.
-  virtual bool IsPermissionAllowedByDevicePolicy(
-      content::WebContents* web_contents,
-      PermissionSetting setting,
-      const content_settings::SettingInfo& info,
-      ContentSettingsType type) const;
 
   // Returns true if the system blocks the access to the specified content type
   // permission.

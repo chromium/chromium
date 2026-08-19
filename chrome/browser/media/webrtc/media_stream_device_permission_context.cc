@@ -5,7 +5,6 @@
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
 
 #include "base/command_line.h"
-#include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -88,37 +87,11 @@ MediaStreamDevicePermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  // TODO(raymes): Merge this policy check into content settings
-  // crbug.com/41014586.
-  const char* policy_name = nullptr;
-  const char* urls_policy_name = nullptr;
-  if (content_settings_type_ == ContentSettingsType::MEDIASTREAM_MIC) {
-    policy_name = prefs::kAudioCaptureAllowed;
-    urls_policy_name = prefs::kAudioCaptureAllowedUrls;
-  } else {
-    DCHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA);
-    policy_name = prefs::kVideoCaptureAllowed;
-    urls_policy_name = prefs::kVideoCaptureAllowedUrls;
-  }
-
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeUIForMediaStream)) {
     bool blocked = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                        switches::kUseFakeUIForMediaStream) == "deny";
     return blocked ? CONTENT_SETTING_BLOCK : CONTENT_SETTING_ALLOW;
-  }
-
-  MediaStreamDevicePolicy policy =
-      GetDevicePolicy(Profile::FromBrowserContext(browser_context()),
-                      requesting_origin, policy_name, urls_policy_name);
-
-  switch (policy) {
-    case ALWAYS_DENY:
-      return CONTENT_SETTING_BLOCK;
-    case ALWAYS_ALLOW:
-      return CONTENT_SETTING_ALLOW;
-    default:
-      DCHECK_EQ(POLICY_NOT_SET, policy);
   }
 
   // Check the content setting. TODO(raymes): currently mic/camera permission

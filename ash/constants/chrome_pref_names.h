@@ -21,6 +21,8 @@ namespace ash::chrome_prefs {
 
 // Sorted in the lexicographical order.
 inline constexpr char kAudioCaptureAllowed[] = "hardware.audio_capture_enabled";
+inline constexpr char kAudioCaptureAllowedUrls[] =
+    "hardware.audio_capture_allowed_urls";
 inline constexpr char kDevToolsAvailability[] = "devtools.availability";
 inline constexpr char kDisableAuthNegotiateCnameLookup[] =
     "auth.disable_negotiate_cname_lookup";

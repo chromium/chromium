@@ -120,7 +120,7 @@ public class VoiceRecognitionHandlerUnitTest {
         AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
         doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
         UserPrefs.setPrefServiceForTesting(mPrefs);
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        doReturn(true).when(mPrefs).getBoolean(Pref.MANAGED_AUDIO_CAPTURE_ALLOWED);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         doReturn(DEFAULT_SEARCH_URL).when(mTemplateUrlService).getUrlForVoiceSearchQuery(any());
@@ -235,7 +235,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     @SmallTest
     public void testIsVoiceSearchEnabled_AllowedByPolicy() {
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        doReturn(true).when(mPrefs).getBoolean(Pref.MANAGED_AUDIO_CAPTURE_ALLOWED);
         doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
         doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
         assertTrue(mHandler.isVoiceSearchEnabled());
@@ -244,7 +244,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     @SmallTest
     public void testIsVoiceSearchEnabled_DisabledByPolicy() {
-        doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        doReturn(false).when(mPrefs).getBoolean(Pref.MANAGED_AUDIO_CAPTURE_ALLOWED);
         doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
         doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
         assertFalse(mHandler.isVoiceSearchEnabled());
@@ -253,7 +253,7 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     @SmallTest
     public void testIsVoiceSearchEnabled_AudioCapturePolicyAllowsByDefault() {
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        doReturn(true).when(mPrefs).getBoolean(Pref.MANAGED_AUDIO_CAPTURE_ALLOWED);
         doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
         doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
         assertTrue(mHandler.isVoiceSearchEnabled());
@@ -262,14 +262,14 @@ public class VoiceRecognitionHandlerUnitTest {
     @Test
     @SmallTest
     public void testIsVoiceSearchEnabled_UpdateAfterProfileSet() {
-        doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        doReturn(true).when(mPrefs).getBoolean(Pref.MANAGED_AUDIO_CAPTURE_ALLOWED);
         doReturn(true).when(mPermissionDelegate).canRequestPermission(anyString());
         doReturn(true).when(mPermissionDelegate).hasPermission(anyString());
         verify(mObserver, never()).onVoiceAvailabilityImpacted();
         assertTrue(mHandler.isVoiceSearchEnabled());
 
         mProfileSupplier.set(mProfile);
-        doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        doReturn(false).when(mPrefs).getBoolean(Pref.MANAGED_AUDIO_CAPTURE_ALLOWED);
         assertFalse(mHandler.isVoiceSearchEnabled());
         verify(mObserver).onVoiceAvailabilityImpacted();
     }

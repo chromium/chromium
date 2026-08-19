@@ -46,8 +46,6 @@ source_set("webrtc") {
     "media_stream_capture_indicator.h",
     "media_stream_device_permission_context.cc",
     "media_stream_device_permission_context.h",
-    "media_stream_device_permissions.cc",
-    "media_stream_device_permissions.h",
     "native_desktop_media_list.cc",
     "native_desktop_media_list.h",
     "permission_bubble_media_access_handler.cc",

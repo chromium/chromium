@@ -14,10 +14,10 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -36,6 +36,10 @@
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -108,18 +112,28 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
   // Sets the device policy-controlled |access| for |example_url_| to be for the
   // selected |device_type|.
   void SetDevicePolicy(DeviceType device_type, Access access) {
-    PrefService* prefs = Profile::FromBrowserContext(
-        GetWebContents()->GetBrowserContext())->GetPrefs();
     const char* policy_name = nullptr;
     switch (device_type) {
       case DEVICE_TYPE_AUDIO:
-        policy_name = prefs::kAudioCaptureAllowed;
+        policy_name = policy::key::kAudioCaptureAllowed;
         break;
       case DEVICE_TYPE_VIDEO:
-        policy_name = prefs::kVideoCaptureAllowed;
+        policy_name = policy::key::kVideoCaptureAllowed;
         break;
     }
-    prefs->SetBoolean(policy_name, access == ACCESS_ALLOWED);
+    policy_map_.Set(policy_name, policy::POLICY_LEVEL_MANDATORY,
+                    policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                    base::Value(access == ACCESS_ALLOWED), nullptr);
+    policy_provider_.UpdateChromePolicy(policy_map_);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    WebRtcTestBase::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
   }
 
   // Set the content settings for mic/cam/ptz.
@@ -288,6 +302,9 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
   std::unique_ptr<PermissionBubbleMediaAccessHandler>
       permission_bubble_media_access_handler_;
   base::test::ScopedFeatureList scoped_feature_list_;
+
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+  policy::PolicyMap policy_map_;
 };
 
 class MediaStreamDevicesControllerPtzTest

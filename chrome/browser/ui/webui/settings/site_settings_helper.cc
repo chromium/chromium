@@ -388,53 +388,6 @@ std::string GetDisplayNameForPattern(Profile* profile,
   return pattern.ToString();
 }
 
-// Returns exceptions constructed from the policy-set allowed URLs
-// for the content settings |type| mic or camera.
-void GetPolicyAllowedUrls(ContentSettingsType type,
-                          std::vector<base::DictValue>* exceptions,
-                          content::WebUI* web_ui,
-                          bool incognito) {
-  DCHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
-         type == ContentSettingsType::MEDIASTREAM_CAMERA);
-
-  Profile* profile = Profile::FromWebUI(web_ui);
-  PrefService* prefs = profile->GetPrefs();
-  const base::ListValue& policy_urls =
-      prefs->GetList(type == ContentSettingsType::MEDIASTREAM_MIC
-                         ? prefs::kAudioCaptureAllowedUrls
-                         : prefs::kVideoCaptureAllowedUrls);
-
-  // Convert the URLs to |ContentSettingsPattern|s. Ignore any invalid ones.
-  std::vector<ContentSettingsPattern> patterns;
-  for (const auto& entry : policy_urls) {
-    const std::string* url = entry.GetIfString();
-    if (!url) {
-      continue;
-    }
-
-    ContentSettingsPattern pattern = ContentSettingsPattern::FromString(*url);
-    if (!pattern.IsValid()) {
-      continue;
-    }
-
-    patterns.push_back(pattern);
-  }
-
-  // The patterns are shown in the UI in a reverse order defined by
-  // |ContentSettingsPattern::operator<|.
-  std::sort(patterns.begin(), patterns.end(),
-            std::greater<ContentSettingsPattern>());
-
-  for (const ContentSettingsPattern& pattern : patterns) {
-    std::string display_name = GetDisplayNameForPattern(profile, pattern);
-    exceptions->push_back(GetExceptionForPage(
-        type, profile, pattern, ContentSettingsPattern(), display_name,
-        CONTENT_SETTING_ALLOW, SiteSettingSource::kPolicy,
-        // Pass base::Time() to indicate the exceptions do not expire.
-        base::Time(), incognito));
-  }
-}
-
 // Retrieves the source of a chooser exception as a string. This method uses the
 // CalculateSiteSettingSource method above to calculate the correct string to
 // use.
@@ -1131,16 +1084,6 @@ void GetExceptionsForContentType(ContentSettingsType type,
                               site_exception_info.expiration, is_incognito,
                               site_exception_info.is_embargoed));
     }
-  }
-
-  // For camera and microphone, we do not have policy exceptions, but we do have
-  // the policy-set allowed URLs, which should be displayed in the same manner.
-  if (type == ContentSettingsType::MEDIASTREAM_MIC ||
-      type == ContentSettingsType::MEDIASTREAM_CAMERA) {
-    auto& policy_exceptions =
-        all_provider_exceptions[ProviderType::kPolicyProvider];
-    DCHECK(policy_exceptions.empty());
-    GetPolicyAllowedUrls(type, &policy_exceptions, web_ui, incognito);
   }
 
   // Display the URLs with File System entries that are granted

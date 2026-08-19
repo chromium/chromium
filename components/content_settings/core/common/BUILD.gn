@@ -5,6 +5,10 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
+source_set("pref_names") {
+  sources = [ "pref_names.h" ]
+}
+
 static_library("common") {
   sources = [
     "content_settings.cc",
@@ -31,7 +35,6 @@ static_library("common") {
     "cookie_settings_base.h",
     "host_indexed_content_settings.cc",
     "host_indexed_content_settings.h",
-    "pref_names.h",
     "third_party_site_data_access_type.h",
   ]
 
@@ -41,6 +44,7 @@ static_library("common") {
     ":content_settings_enums",
     ":content_settings_types",
     ":features",
+    ":pref_names",
     "//base",
     "//services/network/public/cpp:web_platform",
   ]

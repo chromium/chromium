@@ -162,16 +162,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
 
   bool HasDevicePermission(ContentSettingsType type) const override;
   bool CanRequestDevicePermission(ContentSettingsType type) const override;
-  bool IsPermissionBlockedByDevicePolicy(
-      content::WebContents* web_contents,
-      PermissionSetting setting,
-      const content_settings::SettingInfo& info,
-      ContentSettingsType type) const override;
-  bool IsPermissionAllowedByDevicePolicy(
-      content::WebContents* web_contents,
-      PermissionSetting setting,
-      const content_settings::SettingInfo& info,
-      ContentSettingsType type) const override;
+
   bool IsSystemDenied(ContentSettingsType type) const override;
   bool CanPromptSystemPermission(ContentSettingsType type) const override;
   bool IsActorOperatingOnWebContents(

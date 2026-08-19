@@ -569,6 +569,7 @@ static_library("constants") {
     ":chrome_features",
     ":non_code_constants",
     "//components/compose:buildflags",
+    "//components/content_settings/core/common:pref_names",
     "//components/signin/public/base:signin_buildflags",
     "//content/public/common:buildflags",
     "//content/public/common:result_codes",

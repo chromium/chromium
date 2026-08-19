@@ -240,21 +240,7 @@ bool PermissionsClient::CanRequestDevicePermission(
   return false;
 }
 
-bool PermissionsClient::IsPermissionAllowedByDevicePolicy(
-    content::WebContents* web_contents,
-    PermissionSetting setting,
-    const content_settings::SettingInfo& info,
-    ContentSettingsType type) const {
-  return false;
-}
 
-bool PermissionsClient::IsPermissionBlockedByDevicePolicy(
-    content::WebContents* web_contents,
-    PermissionSetting setting,
-    const content_settings::SettingInfo& info,
-    ContentSettingsType type) const {
-  return false;
-}
 
 bool PermissionsClient::IsSystemDenied(ContentSettingsType type) const {
   return false;

@@ -127,6 +127,11 @@ let prefsMixedCookiesExceptionTypes: SiteSettingsPref;
 let prefsMixedCookiesExceptionTypes2: SiteSettingsPref;
 
 /**
+ * An example pref with managed media stream exceptions.
+ */
+let prefsMediaStreamManaged: SiteSettingsPref;
+
+/**
  * Creates all the test |SiteSettingsPref|s that are needed for the tests in
  * this file. They are populated after test setup in order to access the
  * |settings| constants required.
@@ -442,6 +447,20 @@ function populateTestExceptions() {
           createRawSiteException(SITE_EXCEPTION_WILDCARD, {
             embeddingOrigin: 'http://3p-bar-block.com',
             setting: ContentSetting.BLOCK,
+          }),
+        ]),
+  ]);
+
+  prefsMediaStreamManaged = createSiteSettingsPrefs([], [
+    createContentSettingTypeToValuePair(
+        ContentSettingsTypes.MIC,
+        [
+          createRawSiteException('https://bar-allow.com', {
+            source: SiteSettingSource.POLICY,
+          }),
+          createRawSiteException('https://foo-block.com', {
+            setting: ContentSetting.BLOCK,
+            source: SiteSettingSource.POLICY,
           }),
         ]),
   ]);
@@ -1546,6 +1565,25 @@ suite('SiteList', function() {
     // Resetting the last element should move the focus to the list's header.
     assertEquals(
         testElement.$.listHeader, testElement.shadowRoot!.activeElement);
+  });
+
+  test('managed exception has policy pref indicator', async function() {
+    setUpCategory(
+        ContentSettingsTypes.MIC, ContentSetting.ALLOW,
+        prefsMediaStreamManaged);
+    const contentType = await browserProxy.whenCalled('getExceptionList');
+    assertEquals(ContentSettingsTypes.MIC, contentType);
+    flush();
+
+    assertEquals(1, testElement.sites.length);
+    assertEquals('https://bar-allow.com', testElement.sites[0]!.origin);
+    assertEquals(
+        chrome.settingsPrivate.ControlledBy.USER_POLICY,
+        testElement.sites[0]!.controlledBy);
+
+    const entry = testElement.shadowRoot!.querySelector('site-list-entry')!;
+    assertTrue(!!entry);
+    assertTrue(isChildVisible(entry, 'cr-policy-pref-indicator'));
   });
 });
 

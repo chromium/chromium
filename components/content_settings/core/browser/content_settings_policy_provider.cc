@@ -16,6 +16,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
@@ -91,6 +92,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedNotificationsBlockedForUrls,
          ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedAudioCaptureAllowedUrls,
+         ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedVideoCaptureAllowedUrls,
+         ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW},
         {prefs::kManagedPopupsAllowedForUrls, ContentSettingsType::POPUPS,
          CONTENT_SETTING_ALLOW},
         {prefs::kManagedPopupsBlockedForUrls, ContentSettingsType::POPUPS,
@@ -109,8 +114,6 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::FILE_SYSTEM_WRITE_GUARD, CONTENT_SETTING_BLOCK},
         {prefs::kManagedLegacyCookieAccessAllowedForDomains,
          ContentSettingsType::LEGACY_COOKIE_ACCESS, CONTENT_SETTING_ALLOW},
-        {prefs::kManagedDefaultLegacyCookieScope,
-         ContentSettingsType::LEGACY_COOKIE_SCOPE, CONTENT_SETTING_ALLOW},
         {prefs::kManagedLegacyCookieScopeForDomains,
          ContentSettingsType::LEGACY_COOKIE_SCOPE, CONTENT_SETTING_ALLOW},
         {prefs::kManagedSerialAskForUrls, ContentSettingsType::SERIAL_GUARD,
@@ -242,6 +245,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedLoopbackNetworkBlockedForUrls,
     prefs::kManagedNotificationsAllowedForUrls,
     prefs::kManagedNotificationsBlockedForUrls,
+    prefs::kManagedAudioCaptureAllowedUrls,
+    prefs::kManagedVideoCaptureAllowedUrls,
     prefs::kManagedPopupsAllowedForUrls,
     prefs::kManagedPopupsBlockedForUrls,
     prefs::kManagedSensorsAllowedForUrls,
@@ -315,6 +320,18 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultSmartCardConnectSetting,
     prefs::kManagedDefaultDeviceAttributesSetting,
 #endif  // BUILDFLAG(IS_CHROMEOS)
+};
+
+// These two are similar to `kManagedDefaultPrefs`, with two exceptions:
+//  -- for historical reasons, they are defined as booleans, as opposed to
+//  integral
+//     values representing the `ContentSetting` enum,
+//  -- unlike other default settings that never overlap, these can be in
+//  conflict
+//     with, and in that case override, `kManagedDefaultMediaStreamSetting`.
+constexpr const char* kManagedAudioVideoCaptureDefaultPrefs[] = {
+    prefs::kManagedAudioCaptureAllowed,
+    prefs::kManagedVideoCaptureAllowed,
 };
 
 void ReportCookiesAllowedForUrlsUsage(
@@ -442,6 +459,24 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
+struct PolicyProvider::PrefsForManagedBooleanDefaultMapEntry {
+  const char* pref_name;
+  ContentSettingsType content_type;
+  ContentSetting setting_when_true;
+  ContentSetting setting_when_false;
+};
+
+// static
+const PolicyProvider::PrefsForManagedBooleanDefaultMapEntry
+    PolicyProvider::kPrefsForManagedAudioVideoCaptureDefault[] = {
+        {prefs::kManagedAudioCaptureAllowed,
+         ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_DEFAULT,
+         CONTENT_SETTING_BLOCK},
+        {prefs::kManagedVideoCaptureAllowed,
+         ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_DEFAULT,
+         CONTENT_SETTING_BLOCK},
+};
+
 // static
 void PolicyProvider::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -452,6 +487,10 @@ void PolicyProvider::RegisterProfilePrefs(
   // the corresponding preferences below is set to CONTENT_SETTING_DEFAULT.
   for (const char* pref : kManagedDefaultPrefs)
     registry->RegisterIntegerPref(pref, CONTENT_SETTING_DEFAULT);
+
+  for (const char* pref : kManagedAudioVideoCaptureDefaultPrefs) {
+    registry->RegisterBooleanPref(pref, true);
+  }
 }
 
 PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
@@ -467,6 +506,10 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
 
   for (const char* pref : kManagedDefaultPrefs)
     pref_change_registrar_.Add(pref, callback);
+
+  for (const char* pref : kManagedAudioVideoCaptureDefaultPrefs) {
+    pref_change_registrar_.Add(pref, callback);
+  }
 
   ReportCookiesAllowedForUrlsUsage(value_map_);
   TRACE_EVENT_END("startup");
@@ -530,6 +573,14 @@ void PolicyProvider::GetContentSettingsFromPreferences() {
       // Ignore invalid patterns.
       if (!pattern_pair.first.IsValid()) {
         VLOG(1) << "Ignoring invalid content settings pattern "
+                << original_pattern_str;
+        continue;
+      }
+
+      if ((entry.content_type == ContentSettingsType::MEDIASTREAM_MIC ||
+           entry.content_type == ContentSettingsType::MEDIASTREAM_CAMERA) &&
+          pattern_pair.first == ContentSettingsPattern::Wildcard()) {
+        VLOG(1) << "Ignoring wildcard URL pattern for media stream: "
                 << original_pattern_str;
         continue;
       }
@@ -670,8 +721,16 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences() {
 }
 
 void PolicyProvider::ReadManagedDefaultSettings() {
-  for (const PrefsForManagedDefaultMapEntry& entry : kPrefsForManagedDefault)
+  for (const PrefsForManagedDefaultMapEntry& entry : kPrefsForManagedDefault) {
     UpdateManagedDefaultSetting(entry);
+  }
+
+  // These must come second, so in case they conflict with
+  // `kManagedDefaultMediaStreamSetting`, these policies take precedence.
+  for (const PrefsForManagedBooleanDefaultMapEntry& entry :
+       kPrefsForManagedAudioVideoCaptureDefault) {
+    UpdateManagedAudioVideoCaptureDefaultSetting(entry);
+  }
 }
 
 void PolicyProvider::UpdateManagedDefaultSetting(
@@ -689,8 +748,10 @@ void PolicyProvider::UpdateManagedDefaultSetting(
   // preference to manage a default-content-settings is CONTENT_SETTING_DEFAULT.
   // This indicates that no managed value is set. If a pref was set, than it
   // MUST be managed.
-  DCHECK(!prefs_->HasPrefPath(entry.pref_name) ||
-         prefs_->IsManagedPreference(entry.pref_name));
+  CHECK(!prefs_->HasPrefPath(entry.pref_name) ||
+            prefs_->IsManagedPreference(entry.pref_name),
+        base::NotFatalUntil::M154);
+
   int setting = prefs_->GetInteger(entry.pref_name);
   ContentSetting content_setting = IntToContentSetting(setting);
 
@@ -709,6 +770,33 @@ void PolicyProvider::UpdateManagedDefaultSetting(
                               ToPermissionOption(content_setting),
                               ToPermissionOption(content_setting)}));
   }
+}
+
+void PolicyProvider::UpdateManagedAudioVideoCaptureDefaultSetting(
+    const PrefsForManagedBooleanDefaultMapEntry& entry) {
+  const ContentSettingsInfo* info =
+      ContentSettingsRegistry::GetInstance()->Get(entry.content_type);
+  if (!info) {
+    return;
+  }
+
+  CHECK(!prefs_->HasPrefPath(entry.pref_name) ||
+            prefs_->IsManagedPreference(entry.pref_name),
+        base::NotFatalUntil::M154);
+
+  if (!prefs_->HasPrefPath(entry.pref_name)) {
+    return;
+  }
+
+  bool value = prefs_->GetBoolean(entry.pref_name);
+  ContentSetting content_setting =
+      value ? entry.setting_when_true : entry.setting_when_false;
+
+  base::AutoLock lock(value_map_.GetLock());
+  SetDefaultValue(entry.content_type,
+                  content_setting == CONTENT_SETTING_DEFAULT
+                      ? std::nullopt
+                      : std::make_optional(content_setting));
 }
 
 void PolicyProvider::SetDefaultValue(ContentSettingsType type,
@@ -760,16 +848,15 @@ void PolicyProvider::ShutdownOnUIThread() {
 void PolicyProvider::OnPreferenceChanged(const std::string& name) {
   DCHECK(CalledOnValidThread());
 
-  for (const PrefsForManagedDefaultMapEntry& entry : kPrefsForManagedDefault) {
-    if (entry.pref_name == name) {
-      UpdateManagedDefaultSetting(entry);
-    }
+  if (!std::ranges::contains(kManagedPrefs, name) &&
+      !std::ranges::contains(kManagedDefaultPrefs, name) &&
+      !std::ranges::contains(kManagedAudioVideoCaptureDefaultPrefs, name)) {
+    return;
   }
 
-  if (std::ranges::contains(kManagedPrefs, name)) {
-    ReadManagedContentSettings(true);
-    ReadManagedDefaultSettings();
-  }
+  // Clear all, then re-read per-site and default (including boolean) settings.
+  ReadManagedContentSettings(true);
+  ReadManagedDefaultSettings();
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
                   ContentSettingsPattern::Wildcard(),
