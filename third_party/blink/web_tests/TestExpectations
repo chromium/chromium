@@ -4363,6 +4363,10 @@ crbug.com/383653154 external/wpt/speculation-rules/prerender/restriction-speech-
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-004.svg [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-001.svg [ Failure ]
 
+## Temporarily disable for https://crrev.com/c/8257562
+crbug.com/535451658 http/tests/devtools/console-xhr-logging-async.js [ Failure Pass ]
+crbug.com/535451658 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
+
 
 # See also crbug.com/920100 (sheriff 2019-01-09).
 crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/external-stylesheet.html [ Failure Timeout ]
