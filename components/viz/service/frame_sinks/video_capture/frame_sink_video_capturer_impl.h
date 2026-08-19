@@ -134,6 +134,7 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // event triggers a frame capture in the meantime, and will result in a frame
   // sent to the consumer with a delay of up to one second.
   void RequestRefreshFrame() final;
+  void InvalidateBuffers() final;
   void CreateOverlay(int32_t stacking_index,
                      mojo::PendingReceiver<mojom::FrameSinkVideoCaptureOverlay>
                          receiver) final;

@@ -45,6 +45,7 @@ class VIZ_SERVICE_EXPORT MappableSharedImageVideoFramePool
       const media::VideoFrame& frame) override;
 
   size_t GetNumberOfReservedFrames() const override;
+  void InvalidateBuffers() override;
 
   // Returns the buffer format preference used to configure this pool.
   // This can be used in tests to verify how the pool was initialized.

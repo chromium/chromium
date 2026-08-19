@@ -220,6 +220,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
   MOCK_METHOD(void, Stop, ());
 
   MOCK_METHOD(void, RequestRefreshFrame, ());
+  MOCK_METHOD(void, InvalidateBuffers, (), (override));
 
   MOCK_METHOD(void,
               CreateOverlay,

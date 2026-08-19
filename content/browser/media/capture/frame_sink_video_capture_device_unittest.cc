@@ -131,13 +131,15 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
     consumer_.reset();
     MockStop();
   }
-  MOCK_METHOD0(MockStop, void());
-  MOCK_METHOD0(RequestRefreshFrame, void());
-  MOCK_METHOD2(
-      CreateOverlay,
-      void(int32_t stacking_index,
-           mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay>
-               receiver));
+  MOCK_METHOD(void, MockStop, ());
+  MOCK_METHOD(void, RequestRefreshFrame, (), (override));
+  MOCK_METHOD(void, InvalidateBuffers, (), (override));
+  MOCK_METHOD(void,
+              CreateOverlay,
+              (int32_t stacking_index,
+               mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay>
+                   receiver),
+              (override));
 
  private:
   mojo::Receiver<viz::mojom::FrameSinkVideoCapturer> receiver_{this};

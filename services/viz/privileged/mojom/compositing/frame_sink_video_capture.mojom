@@ -222,6 +222,9 @@ interface FrameSinkVideoCapturer {
   // resolve occasional "picture loss" issues consumer-side.
   RequestRefreshFrame();
 
+  // Invalidates all used buffers.
+  InvalidateBuffers();
+
   // Creates an overlay to be rendered within each captured video frame. The
   // |stacking_index| is an arbitrary value that determines whether to render
   // this overlay before/after other overlays. Greater values mean "after" and

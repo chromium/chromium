@@ -52,6 +52,7 @@ class VIZ_SERVICE_EXPORT VideoFramePool {
   // Returns the number of frames that are currently reserved (and thus still
   // owned by the caller of |ReserveVideoFrame()|).
   virtual size_t GetNumberOfReservedFrames() const = 0;
+  virtual void InvalidateBuffers() = 0;
 
   size_t capacity() const { return capacity_; }
 

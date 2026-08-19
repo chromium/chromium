@@ -337,4 +337,9 @@ void ClientFrameSinkVideoCapturer::Overlay::EstablishConnection(
     overlay_->SetImageAndBounds(image_, bounds_);
 }
 
+void ClientFrameSinkVideoCapturer::InvalidateBuffers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  capturer_remote_->InvalidateBuffers();
+}
+
 }  // namespace viz

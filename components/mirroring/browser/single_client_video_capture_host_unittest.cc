@@ -56,6 +56,7 @@ class MockVideoCaptureDevice final
           uint32_t,
           base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>));
   MOCK_METHOD0(RequestRefreshFrame, void());
+  MOCK_METHOD0(InvalidateBuffers, void());
   MOCK_METHOD1(OnUtilizationReport, void(media::VideoCaptureFeedback));
 };
 
