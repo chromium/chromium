@@ -4376,7 +4376,6 @@ public class WebContentsAccessibilityTest {
     /** Test extended selection with a leaf node at the end of root to trigger at_end_of_anchor. */
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/511014514")
     public void testPerformAction_setExtendedSelection_atEndOfEmptyTextAnchor() throws Throwable {
         setupTestWithHTML(
                 """
@@ -4388,24 +4387,10 @@ public class WebContentsAccessibilityTest {
         int emptyVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "empty");
 
         // Select after the empty div using root child offsets.
-        // Since the empty div is a TextView, selection is set as text offset, which
-        // does not differentiate between beginning and end of the text on Android.
-        // TODO(crbug.com/443078007): Either with current API or the new API, fix this
-        // to point to the very end of the document.
+        // The empty div is text-selectable, but since it is empty, the selection is set using
+        // child offsets.
         setAndAssertExtendedSelection(
-                rootVvid,
-                rootVvid,
-                2,
-                OFFSET_TYPE_CHILD,
-                rootVvid,
-                2,
-                OFFSET_TYPE_CHILD,
-                emptyVvid,
-                0,
-                OFFSET_TYPE_TEXT,
-                emptyVvid,
-                0,
-                OFFSET_TYPE_TEXT);
+                rootVvid, rootVvid, 2, OFFSET_TYPE_CHILD, rootVvid, 2, OFFSET_TYPE_CHILD);
     }
 
     /** Test extended selection with a contentEditable and a non-text-selectable image. */
