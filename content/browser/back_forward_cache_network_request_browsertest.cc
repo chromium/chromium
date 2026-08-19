@@ -1125,10 +1125,12 @@ IN_PROC_BROWSER_TEST_F(
 
   // 1) Navigate to A.
   shell()->LoadURL(url_a);
+  // Wait until the image request is received to ensure the navigation to A has
+  // committed before capturing its RenderFrameHost.
+  image_response.WaitForRequest();
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
   // Start sending response before the page gets in the back-forward cache, so
   // that the readystate of the document is interactive instead of complete.
-  image_response.WaitForRequest();
   image_response.Send(net::HTTP_OK, "image/png");
   image_response.Send(" ");
   ASSERT_TRUE(WaitForDOMContentLoaded(rfh_a.get()));
