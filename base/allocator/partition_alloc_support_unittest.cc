@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/allocator/partition_alloc_features.h"
+#include "base/command_line.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -358,6 +360,33 @@ TEST_F(MemoryReclaimerSupportTest, ForegroundToBackgroundAndBack) {
   instance.SetForegrounded(true);
   EXPECT_TRUE(instance.has_pending_task_for_testing());
   EXPECT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
+}
+
+TEST(PartitionAllocSupportTest, GetProcessTypeIdentifierBrowser) {
+  test::ScopedCommandLine scoped_command_line;
+  EXPECT_EQ("browser", GetProcessTypeIdentifier());
+}
+
+TEST(PartitionAllocSupportTest, GetProcessTypeIdentifierRenderer) {
+  test::ScopedCommandLine scoped_command_line;
+  CommandLine* cl = scoped_command_line.GetProcessCommandLine();
+  cl->AppendSwitchASCII("type", "renderer");
+  EXPECT_EQ("renderer", GetProcessTypeIdentifier());
+}
+
+TEST(PartitionAllocSupportTest, GetProcessTypeIdentifierUtility) {
+  test::ScopedCommandLine scoped_command_line;
+  CommandLine* cl = scoped_command_line.GetProcessCommandLine();
+  cl->AppendSwitchASCII("type", "utility");
+  EXPECT_EQ("utility", GetProcessTypeIdentifier());
+}
+
+TEST(PartitionAllocSupportTest, GetProcessTypeIdentifierUtilitySubType) {
+  test::ScopedCommandLine scoped_command_line;
+  CommandLine* cl = scoped_command_line.GetProcessCommandLine();
+  cl->AppendSwitchASCII("type", "utility");
+  cl->AppendSwitchASCII("utility-sub-type", "network.mojom.NetworkService");
+  EXPECT_EQ("utility.network.mojom.NetworkService", GetProcessTypeIdentifier());
 }
 
 }  // namespace base::allocator

@@ -64,6 +64,15 @@ BASE_EXPORT bool IsSchedulerLoopQuarantineEnabled(
 BASE_EXPORT void ReconfigureSchedulerLoopQuarantineBranch(
     SchedulerLoopQuarantineBranchType branch_type);
 
+// Returns a "process type identifier" for the current process.
+// It is the process type (e.g. "renderer", "gpu-process") for non-utility
+// processes. For the browser process, it is "browser".
+// For utility processes, it is "utility" followed by "." and the utility
+// sub-type name (e.g. "utility.network.mojom.NetworkService").
+//
+// Must be called after `CommandLine::Init()`.
+BASE_EXPORT std::string GetProcessTypeIdentifier();
+
 // Configuration for `ReconfigureAfterFeatureListInit()`.
 struct BASE_EXPORT FeatureListConfiguration {
   bool configure_dangling_pointer_detector = true;

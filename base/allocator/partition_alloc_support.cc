@@ -146,12 +146,9 @@ constexpr char kZygoteProcess[] = "zygote";
   return command_line->GetSwitchValueASCII(switches::kProcessType);
 }
 
-// Returns a "process type identifier" for the current process.
-// It is the process type (e.g. "renderer", "gpu-process") for non-utility
-// processes. For the browser process, it is "browser".
-// For utility processes, it is "utility" followed by "." and the utility
-// sub-type name (e.g. "utility.network.mojom.NetworkService").
-[[maybe_unused]] std::string GetProcessTypeIdentifier() {
+}  // namespace
+
+std::string GetProcessTypeIdentifier() {
   const CommandLine* command_line = CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
@@ -167,6 +164,8 @@ constexpr char kZygoteProcess[] = "zygote";
   }
   return process_type;
 }
+
+namespace {
 
 class LockMetricsRecorderSupport
     : public partition_alloc::internal::LockMetricsRecorderInterface {
