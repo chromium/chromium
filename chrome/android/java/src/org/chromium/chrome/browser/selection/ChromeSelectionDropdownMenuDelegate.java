@@ -140,6 +140,7 @@ public class ChromeSelectionDropdownMenuDelegate
 
     @Override
     public void setWindowFocus(AnchoredPopupWindow popupWindow, boolean hasFocus) {
+        popupWindow.setFocusable(hasFocus);
         ViewGroup contentView = (ViewGroup) popupWindow.getContentView();
         if (contentView == null) return;
 

@@ -1229,6 +1229,6 @@ public class BookmarkBarMediatorTest {
         assertEquals(
                 R.style.TextAppearance_TextMedium_Disabled,
                 menuModelList.get(0).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
-        assertTrue(menuModelList.get(0).model.get(ListMenuItemProperties.ENABLED));
+        assertFalse(menuModelList.get(0).model.get(ListMenuItemProperties.ENABLED));
     }
 }

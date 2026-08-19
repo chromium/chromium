@@ -4,7 +4,9 @@
 
 package org.chromium.ui.hierarchicalmenu;
 
+import static org.chromium.ui.base.KeyNavigationUtil.isEscape;
 import static org.chromium.ui.base.KeyNavigationUtil.isGoBackward;
+import static org.chromium.ui.base.KeyNavigationUtil.isGoUpOrDown;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -15,6 +17,7 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ListView;
 import android.window.OnBackInvokedCallback;
 import android.window.OnBackInvokedDispatcher;
@@ -643,13 +646,33 @@ public class HierarchicalMenuController<T> {
             item.model.set(
                     mKeyProvider.getKeyListenerKey(),
                     (view, keyCode, keyEvent) -> {
-                        if (isGoBackward(keyEvent)) {
-                            if (!shouldUseDrillDown()) {
-                                assert mFlyoutController != null;
+                        if (!shouldUseDrillDown()) {
+                            assert mFlyoutController != null;
+
+                            if (isGoBackward(keyEvent) || isEscape(keyEvent)) {
+                                int oldNumPopups = mFlyoutController.getNumberOfPopups();
                                 mFlyoutController.exitFlyoutWithoutDelay(
-                                        levelOfHoveredItem, view, highlightPath);
+                                        oldNumPopups - 1, highlightPath);
+                                if (mFlyoutController.getNumberOfPopups() < oldNumPopups) {
+                                    // If the focus is not in the frontmost window and the user
+                                    // presses back (which happens when all items in the new popup
+                                    // window are disabled), the focus does not move, so we have to
+                                    // manually trigger accessibility talkback again.
+                                    view.sendAccessibilityEvent(
+                                            AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED);
+                                }
+                                return true;
                             }
-                            return true;
+
+                            if (isGoUpOrDown(keyEvent)
+                                    && mFlyoutController.getNumberOfPopups()
+                                            > levelOfHoveredItem + 1) {
+                                // If the focus is not in the frontmost window and the user presses
+                                // up or down, we dismiss windows on top of it. We don't consume the
+                                // event because we still want the focus to move up or down.
+                                mFlyoutController.exitFlyoutWithoutDelay(
+                                        levelOfHoveredItem + 1, highlightPath);
+                            }
                         }
 
                         if (originalListener != null) {
@@ -748,7 +771,12 @@ public class HierarchicalMenuController<T> {
     public static void setWindowFocusForFlyoutMenus(ViewGroup contentView, boolean hasFocus) {
         if (hasFocus) {
             contentView.setDescendantFocusability(ViewGroup.FOCUS_AFTER_DESCENDANTS);
-            contentView.requestFocus();
+            // `ViewGroup.requestFocus()` is not a no-op even if a descendant is already focused;
+            // it executes `onRequestFocusInDescendants()` starting from index 0, which would steal
+            // focus from a currently focused `ListView` item and reset/clear the list's selection.
+            if (!contentView.hasFocus()) {
+                contentView.requestFocus();
+            }
         } else {
             contentView.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
             contentView.clearFocus();
@@ -828,22 +856,10 @@ public class HierarchicalMenuController<T> {
             } else if (!mContentModelList.isEmpty()) {
                 firstItem = mContentModelList.get(0);
             }
-            if (firstItem instanceof ListItem firstListItem && firstListItem.model != null) {
-                WritableObjectPropertyKey<CharSequence> titleKey = mKeyProvider.getTitleKey();
-                WritableIntPropertyKey titleIdKey = mKeyProvider.getTitleIdKey();
-
-                if (firstListItem.model.containsKey(titleKey)
-                        && firstListItem.model.get(titleKey) != null) {
-                    CharSequence title = firstListItem.model.get(titleKey);
-                    if (title.length() != 0) {
-                        accessibilityPaneTitle = String.valueOf(title);
-                    }
-                } else if (firstListItem.model.containsKey(titleIdKey)) {
-                    @StringRes int titleId = firstListItem.model.get(titleIdKey);
-                    if (titleId != Resources.ID_NULL) {
-                        accessibilityPaneTitle =
-                                mContext.getString(firstListItem.model.get(titleIdKey));
-                    }
+            if (firstItem instanceof ListItem firstListItem) {
+                CharSequence title = getItemTitle(firstListItem, mKeyProvider, mContext);
+                if (title != null) {
+                    accessibilityPaneTitle = String.valueOf(title);
                 }
             }
             ViewCompat.setAccessibilityPaneTitle(mView, accessibilityPaneTitle);
@@ -855,5 +871,34 @@ public class HierarchicalMenuController<T> {
             }
             mView.requestFocus();
         }
+    }
+
+    /**
+     * Extracts the title of a {@link ListItem} using the given {@link HierarchicalMenuKeyProvider}.
+     *
+     * @param item The {@link ListItem} to retrieve the title from.
+     * @param keyProvider The {@link HierarchicalMenuKeyProvider} to use.
+     * @param context The {@link Context} to resolve string resources.
+     * @return The title as a {@link CharSequence}, or null if not found.
+     */
+    public static @Nullable CharSequence getItemTitle(
+            ListItem item, HierarchicalMenuKeyProvider keyProvider, Context context) {
+        if (item.model == null) return null;
+
+        WritableObjectPropertyKey<CharSequence> titleKey = keyProvider.getTitleKey();
+        if (titleKey != null && item.model.containsKey(titleKey)) {
+            CharSequence title = item.model.get(titleKey);
+            return title;
+        }
+
+        WritableIntPropertyKey titleIdKey = keyProvider.getTitleIdKey();
+        if (titleIdKey != null && item.model.containsKey(titleIdKey)) {
+            @StringRes int titleId = item.model.get(titleIdKey);
+            if (titleId != Resources.ID_NULL) {
+                return context.getString(titleId);
+            }
+        }
+
+        return null;
     }
 }

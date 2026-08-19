@@ -239,6 +239,22 @@ class AppMenu implements OnKeyListener {
 
             return null;
         }
+
+        /**
+         * Sets focusability on the popup window.
+         *
+         * @param focusable Whether the popup should be focusable.
+         */
+        public void setFocusable(boolean focusable) {
+            if (mMainPopup != null) {
+                mMainPopup.setFocusable(focusable);
+                if (mMainPopup.isShowing()) {
+                    mMainPopup.update();
+                }
+            } else if (mFlyoutPopup != null) {
+                mFlyoutPopup.setFocusable(focusable);
+            }
+        }
     }
 
     private static final float LAST_ITEM_SHOW_FRACTION = 0.5f;

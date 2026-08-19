@@ -934,6 +934,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     @Deprecated
     public void setFocusable(boolean focusable) {
         mPopupWindow.setFocusable(focusable);
+        if (mPopupWindow.isShowing()) {
+            mPopupWindow.update();
+        }
     }
 
     /**

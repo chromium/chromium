@@ -469,11 +469,7 @@ public class AppMenuItemUtils {
                 AppMenuHandler.AppMenuItemType.EMPTY,
                 new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
                         .with(AppMenuItemProperties.MENU_ITEM_ID, R.id.empty_item_menu_id)
-                        // Keep enabled for keyboard navigation; disabled visual styling is handled
-                        // by the layout. Keyboard navigation becomes problematic when a submenu
-                        // contains only one item and that item is disabled. Currently the "empty"
-                        // item is the only case when that can happen.
-                        .with(AppMenuItemProperties.ENABLED, true)
+                        .with(AppMenuItemProperties.ENABLED, false)
                         .build());
     }
 

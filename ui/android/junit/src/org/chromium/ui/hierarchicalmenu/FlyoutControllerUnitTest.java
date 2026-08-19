@@ -288,6 +288,53 @@ public class FlyoutControllerUnitTest {
         Assert.assertEquals("There should be 1 popup.", 1, mFlyoutController.getNumberOfPopups());
     }
 
+    @Test
+    public void hoverOnDisabledOnlySubmenuDoesNotStealWindowFocus() {
+        Object mainPopup = mFlyoutController.getMainPopup();
+        Object flyoutPopup = new Object();
+        when(mFlyoutHandler.createAndShowFlyoutPopup(any(), any(), any(), any()))
+                .thenReturn(flyoutPopup);
+
+        ListItem disabledItem =
+                new ListItem(
+                        MENU_ITEM,
+                        new PropertyModel.Builder(ALL_MENU_ITEM_KEYS)
+                                .with(TITLE, "Empty")
+                                .with(ENABLED, false)
+                                .build());
+        ListItem emptySubmenu =
+                new ListItem(
+                        MENU_ITEM_WITH_SUBMENU,
+                        new PropertyModel.Builder(ALL_SUBMENU_ITEM_KEYS)
+                                .with(TITLE, "Empty Submenu")
+                                .with(ENABLED, true)
+                                .with(SUBMENU_PROVIDER, () -> List.of(disabledItem))
+                                .with(IS_HIGHLIGHTED, false)
+                                .build());
+
+        triggerHoverEnter(emptySubmenu, 0, List.of(emptySubmenu));
+        waitForUiDelay();
+
+        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getNumberOfPopups());
+        verify(mFlyoutHandler).setWindowFocus(flyoutPopup, false);
+        verify(mFlyoutHandler, never()).setWindowFocus(mainPopup, false);
+        verify(mListView).announceForAccessibility("Empty");
+    }
+
+    @Test
+    public void exitFlyoutFromParentItemClosesChildFlyoutOnly() {
+        // Create level 1 popup window.
+        triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));
+        waitForUiDelay();
+
+        Assert.assertEquals("There should be 2 popups.", 2, mFlyoutController.getNumberOfPopups());
+
+        // Exit child flyout from index 1.
+        mFlyoutController.exitFlyoutWithoutDelay(1, List.of(mSubmenuLevel0));
+
+        Assert.assertEquals("There should be 1 popup.", 1, mFlyoutController.getNumberOfPopups());
+    }
+
     private void triggerHoverEnter(ListItem item, int level, List<ListItem> path) {
         mFlyoutController.onItemHovered(item, mListView, level, path, () -> {});
     }

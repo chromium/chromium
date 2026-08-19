@@ -618,6 +618,7 @@ public abstract class TabOverflowMenuCoordinator<T>
 
     @Override
     public void setWindowFocus(TabOverflowMenuHolder<T> popupWindow, boolean hasFocus) {
+        popupWindow.getMenuWindow().setFocusable(hasFocus);
         ViewGroup contentView = (ViewGroup) popupWindow.getMenuWindow().getContentView();
         if (contentView == null) {
             return;

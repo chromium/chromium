@@ -950,12 +950,7 @@ class BookmarkBarMediator
                         .with(
                                 ListMenuItemProperties.TEXT_APPEARANCE_ID,
                                 R.style.TextAppearance_TextMedium_Disabled)
-                        // Keep enabled for keyboard navigation; disabled visual styling is handled
-                        // by the layout. Keyboard navigation becomes problematic when a submenu
-                        // contains only one item and that item is disabled. Currently the "empty"
-                        // item is the only case when that can happen. TODO(crbug.com/542431476):
-                        // Find a better way to handle disabled items.
-                        .with(ListMenuItemProperties.ENABLED, true)
+                        .with(ListMenuItemProperties.ENABLED, false)
                         .build();
         return new ListItem(ListItemType.MENU_ITEM, model);
     }
