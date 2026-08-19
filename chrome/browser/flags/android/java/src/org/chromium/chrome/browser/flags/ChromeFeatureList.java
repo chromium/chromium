@@ -1256,7 +1256,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sNotificationTrampolineNoNewTask =
             newCachedFlag(NOTIFICATION_TRAMPOLINE_NO_NEW_TASK, true);
     public static final CachedFlag sNtpAurora =
-            newCachedFlag(NTP_AURORA, /* defaultValue= */ false, /* defaultValueInTests= */ true);
+            newCachedFlag(NTP_AURORA, /* defaultValue= */ false);
     public static final CachedFlag sNtpMvcRefactor =
             newCachedFlag(NTP_MVC_REFACTOR, /* defaultValue= */ false);
     public static final CachedFlag sNtpVision =
