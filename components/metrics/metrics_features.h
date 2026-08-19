@@ -17,6 +17,10 @@ BASE_DECLARE_FEATURE(kStructuredMetrics);
 // immediately after writing a system profile to it.
 BASE_DECLARE_FEATURE(kFlushPersistentSystemProfileOnWrite);
 
+// Controls whether to use a double-buffered shared memory minidump user stream
+// for SystemProfileProto instead of CrashpadInfo heap pointers.
+BASE_DECLARE_FEATURE(kSharedMemorySystemProfileMinidump);
+
 // Determines whether to always flush Local State immediately after an UMA/UKM
 // log upload. If this is disabled, Local State is only immediately flushed
 // after an upload if this is a mobile platform and the browser is in the

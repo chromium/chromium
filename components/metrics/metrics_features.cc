@@ -17,6 +17,9 @@ BASE_FEATURE(kStructuredMetrics,
 BASE_FEATURE(kFlushPersistentSystemProfileOnWrite,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSharedMemorySystemProfileMinidump,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kReportingServiceAlwaysFlush, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMetricsLogTrimming, base::FEATURE_ENABLED_BY_DEFAULT);

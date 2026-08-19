@@ -100,6 +100,7 @@
 #include "components/metrics/stability_metrics_helper.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
 #include "components/metrics/structured/structured_metrics_service.h"  // nogncheck
+#include "components/metrics/system_profile_user_stream.h"
 #include "components/metrics/ui/form_factor_metrics_provider.h"
 #include "components/metrics/ui/screen_info_metrics_provider.h"
 #include "components/metrics/version_utils.h"
@@ -669,12 +670,19 @@ std::string ChromeMetricsServiceClient::GetVersionString() {
 }
 
 void ChromeMetricsServiceClient::OnEnvironmentUpdate(std::string* environment) {
-  // TODO(https://bugs.chromium.org/p/crashpad/issues/detail?id=135): call this
-  // on Mac when the Crashpad API supports it.
+  // Updates the environment (system profile) for the crash reporter. Note that
+  // there is a window from startup to this point during which crash reports
+  // will not have an environment set.
+  if (base::FeatureList::IsEnabled(
+          metrics::features::kSharedMemorySystemProfileMinidump)) {
+    metrics::SystemProfileUserStream::Get().WritePayload(*environment);
+    return;
+  }
+
+  // TODO(crbug.com/514425492): The old SystemProfile to crashpad sharing
+  // flow is deprecated and will be removed once
+  // `kSharedMemorySystemProfileMinidump` is fully launched.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-  // Register the environment with the crash reporter. Note that there is a
-  // window from startup to this point during which crash reports will not have
-  // an environment set.
   GetCrashReporter().OnEnvironmentUpdate(*environment);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 }

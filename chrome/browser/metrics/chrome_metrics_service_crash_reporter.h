@@ -10,6 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"  // nogncheck
 
+// TODO(crbug.com/514425492): The old SystemProfile to crashpad sharing
+// flow is deprecated and will be removed once
+// `kSharedMemorySystemProfileMinidump` is fully launched.
+
 // Stores a given system profile and registers it with the crash reporter. Must
 // be kept alive indefinitely so that the registered data remains available to
 // the crash reporter (as crashpad does not take ownership of the data). Also

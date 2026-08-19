@@ -19,6 +19,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/crash/core/common/shared_memory_user_stream_reader.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/dwa/dwa_recorder.h"
@@ -26,6 +27,7 @@
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/system_profile_user_stream.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
@@ -599,4 +601,36 @@ TEST_F(ChromeMetricsServiceClientTest,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   metrics::DesktopSessionDurationTracker::CleanupForTesting();
 #endif
+}
+
+TEST_F(ChromeMetricsServiceClientTest,
+       OnEnvironmentUpdate_SharedMemoryEnabled) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      metrics::features::kSharedMemorySystemProfileMinidump);
+
+  // Initialize the stream region first.
+  metrics::SystemProfileUserStream::Get().Initialize();
+  base::ReadOnlySharedMemoryRegion shared_region =
+      metrics::SystemProfileUserStream::Get().DuplicateSharedMemoryRegion();
+  ASSERT_TRUE(shared_region.IsValid());
+
+  std::unique_ptr<TestChromeMetricsServiceClient> client =
+      TestChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                             synthetic_trial_registry_.get());
+
+  std::string test_environment = "test_environment_payload";
+  client->OnEnvironmentUpdate(&test_environment);
+
+  base::ReadOnlySharedMemoryMapping mapping = shared_region.Map();
+  ASSERT_TRUE(mapping.IsValid());
+
+  std::optional<crash_reporter::UserStreamData> stream_data =
+      crash_reporter::ExtractSharedMemoryUserStreamData(
+          mapping.GetMemoryAsSpan<const uint8_t>());
+  ASSERT_TRUE(stream_data.has_value());
+  EXPECT_EQ(stream_data->user_stream_type, 0x4B6B0003u);
+  EXPECT_EQ(
+      std::string(stream_data->payload.begin(), stream_data->payload.end()),
+      test_environment);
 }
