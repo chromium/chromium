@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -423,13 +424,11 @@ void ApplyRemapping(const EventRewriterAsh::MutableKeyState& changes,
 // remapping was found and remapped values were updated.
 // See MatchKeyboardRemapping() for |strict|.
 bool RewriteWithKeyboardRemappings(
-    const KeyboardRemapping* mappings,
-    size_t num_mappings,
+    base::span<const KeyboardRemapping> mappings,
     const EventRewriterAsh::MutableKeyState& input_state,
     EventRewriterAsh::MutableKeyState* remapped_state,
     bool strict = false) {
-  for (size_t i = 0; i < num_mappings; ++i) {
-    const KeyboardRemapping& map = UNSAFE_TODO(mappings[i]);
+  for (const KeyboardRemapping& map : mappings) {
     if (MatchKeyboardRemapping(input_state, map.condition, strict)) {
       remapped_state->flags = (input_state.flags & ~map.condition.flags);
       ApplyRemapping(map.result, remapped_state);
@@ -444,11 +443,9 @@ bool RewriteWithKeyboardRemappings(
 // result of the remapping. If there is no match then VKEY_UNKNOWN
 // is returned. No remapping actually occurs in either case.
 ui::KeyboardCode MatchedDeprecatedRemapping(
-    const KeyboardRemapping* mappings,
-    size_t num_mappings,
+    base::span<const KeyboardRemapping> mappings,
     const EventRewriterAsh::MutableKeyState& input_state) {
-  for (size_t i = 0; i < num_mappings; ++i) {
-    const KeyboardRemapping& map = UNSAFE_TODO(mappings[i]);
+  for (const KeyboardRemapping& map : mappings) {
     if (MatchKeyboardRemapping(input_state, map.condition, /*strict=*/false)) {
       return map.result.key_code;
     }
@@ -515,10 +512,8 @@ bool IsFromTouchpadDevice(const MouseEvent& mouse_event) {
 // Returns whether |key_code| appears as one of the key codes that might be
 // remapped by table mappings.
 bool IsKeyCodeInMappings(KeyboardCode key_code,
-                         const KeyboardRemapping* mappings,
-                         size_t num_mappings) {
-  for (size_t i = 0; i < num_mappings; ++i) {
-    const KeyboardRemapping& map = UNSAFE_TODO(mappings[i]);
+                         base::span<const KeyboardRemapping> mappings) {
+  for (const KeyboardRemapping& map : mappings) {
     if (key_code == map.condition.key_code) {
       return true;
     }
@@ -853,9 +848,8 @@ bool MaybeRewriteSearchBasedShortcutToSixPackKeyAction(
     };
 
     if (!skip_search_key_remapping &&
-        RewriteWithKeyboardRemappings(kNewInsertRemapping,
-                                      std::size(kNewInsertRemapping), incoming,
-                                      state, strict)) {
+        RewriteWithKeyboardRemappings(kNewInsertRemapping, incoming, state,
+                                      strict)) {
       RecordSixPackEventRewrites(/*delegate=*/nullptr, key_event.type(),
                                  state->key_code,
                                  /*legacy_variant=*/false);
@@ -863,8 +857,8 @@ bool MaybeRewriteSearchBasedShortcutToSixPackKeyAction(
     }
 
     // Test for the deprecated insert rewrite in order to show a notification.
-    const ui::KeyboardCode deprecated_key = MatchedDeprecatedRemapping(
-        kOldInsertRemapping, std::size(kOldInsertRemapping), incoming);
+    const ui::KeyboardCode deprecated_key =
+        MatchedDeprecatedRemapping(kOldInsertRemapping, incoming);
     if (deprecated_key != VKEY_UNKNOWN) {
       // If the key would have matched prior to being deprecated then notify
       // the delegate to show a notification.
@@ -872,9 +866,8 @@ bool MaybeRewriteSearchBasedShortcutToSixPackKeyAction(
     }
   } else {
     if (!skip_search_key_remapping &&
-        RewriteWithKeyboardRemappings(kOldInsertRemapping,
-                                      std::size(kOldInsertRemapping), incoming,
-                                      state, strict)) {
+        RewriteWithKeyboardRemappings(kOldInsertRemapping, incoming, state,
+                                      strict)) {
       RecordSixPackEventRewrites(delegate, key_event.type(), state->key_code,
                                  /*legacy_variant=*/true);
       return true;
@@ -899,9 +892,8 @@ bool MaybeRewriteSearchBasedShortcutToSixPackKeyAction(
        {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
 
   if (!skip_search_key_remapping &&
-      RewriteWithKeyboardRemappings(kSixPackRemappings,
-                                    std::size(kSixPackRemappings), incoming,
-                                    state, strict)) {
+      RewriteWithKeyboardRemappings(kSixPackRemappings, incoming, state,
+                                    strict)) {
     RecordSixPackEventRewrites(delegate, key_event.type(), state->key_code,
                                /*legacy_variant=*/false);
     return true;
@@ -934,17 +926,15 @@ bool MaybeRewriteAltBasedShortcutToSixPackKeyAction(
        {EF_ALT_DOWN, VKEY_DOWN},
        {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
   if (!::features::IsImprovedKeyboardShortcutsEnabled()) {
-    if (RewriteWithKeyboardRemappings(kLegacySixPackRemappings,
-                                      std::size(kLegacySixPackRemappings),
-                                      incoming, state)) {
+    if (RewriteWithKeyboardRemappings(kLegacySixPackRemappings, incoming,
+                                      state)) {
       RecordSixPackEventRewrites(delegate, key_event.type(), state->key_code,
                                  /*legacy_variant=*/true);
       return true;
     }
   } else {
-    const ui::KeyboardCode deprecated_key = MatchedDeprecatedRemapping(
-        kLegacySixPackRemappings, std::size(kLegacySixPackRemappings),
-        incoming);
+    const ui::KeyboardCode deprecated_key =
+        MatchedDeprecatedRemapping(kLegacySixPackRemappings, incoming);
     if (deprecated_key != VKEY_UNKNOWN) {
       // If the key would have matched prior to being deprecated then notify
       // the delegate to show a notification.
@@ -1477,13 +1467,15 @@ int EventRewriterAsh::GetRemappedModifierMasks(int device_id,
                                                int original_flags) const {
   int unmodified_flags = original_flags;
   int rewritten_flags = pressed_modifier_latches_ | latched_modifier_latches_;
-  for (size_t i = 0; unmodified_flags && (i < std::size(kModifierRemappings));
-       ++i) {
+  for (const ModifierRemapping& remapping : kModifierRemappings) {
+    if (!unmodified_flags) {
+      break;
+    }
     const ModifierRemapping* remapped_key = nullptr;
-    if (!(unmodified_flags & UNSAFE_TODO(kModifierRemappings[i]).flag)) {
+    if (!(unmodified_flags & remapping.flag)) {
       continue;
     }
-    switch (UNSAFE_TODO(kModifierRemappings[i]).flag) {
+    switch (remapping.flag) {
       case EF_COMMAND_DOWN:
         remapped_key =
             GetSearchRemappedKey(delegate_, device_id, *keyboard_capability_);
@@ -1511,18 +1503,14 @@ int EventRewriterAsh::GetRemappedModifierMasks(int device_id,
     }
     // ISO Level 5 Shift should already be handled, so do not try to remap it
     // here.
-    if (!remapped_key && &UNSAFE_TODO(kModifierRemappings[i]) !=
-                             kModifierRemappingIsoLevel5ShiftMod3) {
+    if (!remapped_key && &remapping != kModifierRemappingIsoLevel5ShiftMod3) {
       const std::string pref_name =
-          UNSAFE_TODO(kModifierRemappings[i]).pref_name
-              ? UNSAFE_TODO(kModifierRemappings[i]).pref_name
-              : "";
-      remapped_key = GetRemappedKey(
-          device_id, UNSAFE_TODO(kModifierRemappings[i]).remap_to, pref_name,
-          delegate_);
+          remapping.pref_name ? remapping.pref_name : "";
+      remapped_key =
+          GetRemappedKey(device_id, remapping.remap_to, pref_name, delegate_);
     }
     if (remapped_key) {
-      unmodified_flags &= ~UNSAFE_TODO(kModifierRemappings[i]).flag;
+      unmodified_flags &= ~remapping.flag;
       rewritten_flags |= remapped_key->flag;
     }
   }
@@ -2295,10 +2283,9 @@ bool EventRewriterAsh::RewriteTopRowKeysForLayoutWilco(
       {{EF_NONE, VKEY_PRIVACY_SCREEN_TOGGLE},
        {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
   };
-  MutableKeyState incoming_with_modifier_removed_if_neccessary = *state;
+  MutableKeyState incoming_with_modifier_removed_if_necessary = *state;
   if (should_flip_top_row_mapping) {
-    incoming_with_modifier_removed_if_neccessary.flags &=
-        ~flip_rewrite_modifier;
+    incoming_with_modifier_removed_if_necessary.flags &= ~flip_rewrite_modifier;
   }
 
   if ((state->key_code >= VKEY_F1) && (state->key_code <= VKEY_F12)) {
@@ -2319,12 +2306,11 @@ bool EventRewriterAsh::RewriteTopRowKeysForLayoutWilco(
         return true;
       }
       return RewriteWithKeyboardRemappings(
-          kFnkeysToActionKeys, std::size(kFnkeysToActionKeys),
-          incoming_with_modifier_removed_if_neccessary, state);
+          kFnkeysToActionKeys, incoming_with_modifier_removed_if_necessary,
+          state);
     }
     return true;
-  } else if (IsKeyCodeInMappings(state->key_code, kActionToFnKeys,
-                                 std::size(kActionToFnKeys))) {
+  } else if (IsKeyCodeInMappings(state->key_code, kActionToFnKeys)) {
     // Incoming key code is an action key. Check if it needs to be mapped back
     // to its corresponding function key.
     if (should_flip_top_row_mapping != ForceTopRowAsFunctionKeys(device_id)) {
@@ -2340,8 +2326,7 @@ bool EventRewriterAsh::RewriteTopRowKeysForLayoutWilco(
         return true;
       }
       return RewriteWithKeyboardRemappings(
-          kActionToFnKeys, std::size(kActionToFnKeys),
-          incoming_with_modifier_removed_if_neccessary, state);
+          kActionToFnKeys, incoming_with_modifier_removed_if_necessary, state);
     }
     // Remap Privacy Screen Toggle to F12 on Drallion devices that do not have
     // privacy screens.
@@ -2458,24 +2443,21 @@ bool EventRewriterAsh::RewriteTopRowKeysForStandardLayouts(
   const bool should_rewrite_to_action_keys =
       (ForceTopRowAsFunctionKeys(device_id) == should_flip_top_row_mapping);
   if (should_rewrite_to_action_keys) {
-    const KeyboardRemapping* mapping = nullptr;
-    size_t mappingSize = 0u;
+    base::span<const KeyboardRemapping> mapping;
     switch (layout) {
       case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2:
         mapping = kFkeysToSystemKeys2;
-        mappingSize = std::size(kFkeysToSystemKeys2);
         break;
       case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1:
       default:
         mapping = kFkeysToSystemKeys1;
-        mappingSize = std::size(kFkeysToSystemKeys1);
         break;
     }
 
     MutableKeyState incoming_without_flip_modifier = *state;
     incoming_without_flip_modifier.flags &= ~flip_rewrite_modifier;
-    if (RewriteWithKeyboardRemappings(mapping, mappingSize,
-                                      incoming_without_flip_modifier, state)) {
+    if (RewriteWithKeyboardRemappings(mapping, incoming_without_flip_modifier,
+                                      state)) {
       // If the remapping was not supposed to be flipped and search is
       // pressed, the search flag must be added back.
       if (!should_flip_top_row_mapping && rewrite_modifier_is_pressed) {
