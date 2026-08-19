@@ -2373,7 +2373,7 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxForBufferImmediate(
   std::unique_ptr<SharedBufferRepresentationAndAccess>
       representation_and_access;
   auto it = known_device_metadata_.find(device);
-  DCHECK(it != known_device_metadata_.end());
+  CHECK(it != known_device_metadata_.end());
   representation_and_access = AssociateMailboxDawnBuffer(
       mailbox, device, it->second.backendType, usage);
 
