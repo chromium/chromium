@@ -7,7 +7,7 @@ import 'chrome://chrome-signin/edu_coexistence/edu_coexistence_app.js';
 import {EduCoexistenceApp, Screens} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_app.js';
 import {EduCoexistenceBrowserProxyImpl} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_browser_proxy.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestEduCoexistenceBrowserProxy} from './edu_coexistence_test_browser_proxy.js';
 
@@ -24,6 +24,16 @@ suite('EduCoexistenceAppTest', function() {
     appComponent = new EduCoexistenceApp();
     document.body.appendChild(appComponent);
     flush();
+  });
+
+  test('SetOnlineFlowAsInitialView', function() {
+    assertEquals(appComponent.getCurrentScreenForTest(), Screens.ONLINE_FLOW);
+    const onlineScreen =
+        appComponent.shadowRoot!.querySelector('edu-coexistence-ui')!;
+    // CrViewManager adds the 'active' class to slotted views when switched to.
+    assertTrue(
+        onlineScreen.classList.contains('active'),
+        'online screen should be active in view manager');
   });
 
   test('InitOnline', function() {

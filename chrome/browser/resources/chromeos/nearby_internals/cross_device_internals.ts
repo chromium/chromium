@@ -156,10 +156,15 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
   declare private actionsSelectList_: SelectOption[];
   declare private logList_: LogMessage[];
   declare private filteredLogList_: LogMessage[];
-  private currentFilter_: string;
+  private currentFilter_: string = '';
   declare private currentSeverity: Severity;
   declare private logLevelList_: SelectOption[];
-  private logProvider_: LogProvider;
+  private logProvider_: LogProvider = {
+    messageAddedEventName: 'log-message-added',
+    bufferClearedEventName: 'log-buffer-cleared',
+    logFilePrefix: 'cross_device_logs_',
+    getLogMessages: () => NearbyLogsBrowserProxy.getInstance().getLogMessages(),
+  };
   declare private currentLogTypes: FeatureValues[];
 
   private nearbyPresenceBrowserProxy_: NearbyPresenceBrowserProxy =
@@ -189,13 +194,6 @@ class CrossDeviceInternalsElement extends CrossDeviceInternalsElementBase {
         (device: PresenceDevice) => this.onPresenceDeviceLost_(device));
     this.set('actionsSelectList_', this.nearbyInfraActionList_);
 
-    this.logProvider_ = {
-      messageAddedEventName: 'log-message-added',
-      bufferClearedEventName: 'log-buffer-cleared',
-      logFilePrefix: 'cross_device_logs_',
-      getLogMessages: () =>
-          NearbyLogsBrowserProxy.getInstance().getLogMessages(),
-    };
     this.addWebUiListener(
         this.logProvider_.messageAddedEventName,
         (log: LogMessage) => this.onLogMessageAdded_(log));

@@ -134,7 +134,7 @@ export class EmojiPickerApp extends PolymerElement {
   declare private nextGifPos: {[key: string]: string};
   declare private status: Status|null;
   private previousGifValidation: Date;
-  private fetchAndProcessDataPromise: Promise<void>|null;
+  private fetchAndProcessDataPromise: Promise<void>|null = null;
   declare private errorMessage: string;
   declare private useMojoSearch;
 

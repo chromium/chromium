@@ -73,7 +73,7 @@ export class ReportingHistoryElement extends PolymerElement {
   private static allButUploads: string = 'All events except uploads';
   declare private filterOptions: string[];
   declare private selectedOption: string;
-  private currentHistory: ErpHistoryData;
+  private currentHistory: ErpHistoryData = {events: []};
   declare private loggingState: boolean;
 
   loggingStateToString(checked: boolean) {

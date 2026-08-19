@@ -81,7 +81,7 @@ export class EmojiSearch extends PolymerElement {
   declare private nextGifPos: string;  // This variable ensures that we get the correct
                                // set of GIFs when fetching more.
   declare private errorMessage: string;
-  private scrollTimeout: number|null;
+  private scrollTimeout: number|null = null;
 
   static get observers() {
     return [
