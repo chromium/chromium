@@ -1410,6 +1410,13 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       getA11yAnnouncer(target).announce(message);
     }
   }
+
+  clearInput(): void {
+    this.$.textInput.value = '';
+    this.updateStateFromTextInput();
+    this.sendInputToBrowser();
+    this.$.textInput.focus();
+  }
 }
 
 interface AriaNotificationOptions {

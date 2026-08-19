@@ -38,6 +38,17 @@ ${this.locationBarState.selectedKeyword ? html`
   .browserOmniboxState="${this.locationBarState.omniboxViewState}"
   .isPopupOpen="${this.isPopupOpen}">
 </readonly-omnibox>
+${this.shouldShowClearButton_() ? html`
+  <cr-icon-button id="clear-all"
+      iron-icon="${this.getClearButtonIcon_()}"
+      title="${this.getClearButtonTitle_()}"
+      @pointerdown="${this.clearPressHandler_.onPointerdown}"
+      @pointerup="${this.clearPressHandler_.onPointerup}"
+      @pointercancel="${this.clearPressHandler_.onPointercancel}"
+      @contextmenu="${this.clearPressHandler_.onContextmenu}"
+      @click="${this.onClearClick_}">
+  </cr-icon-button>
+` : nothing}
 <content-settings-icons id="contentSettings"
     .contentSettingImageStates=
         "${this.locationBarState.contentSettingImageStates}"

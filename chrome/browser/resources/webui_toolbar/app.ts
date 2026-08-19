@@ -424,6 +424,7 @@ export class ToolbarAppElement extends AppElementBase {
         userInputInProgress: false,
         popupOpen: false,
         forceAimButtonFocusRing: false,
+        isVirtualKeyboardVisible: false,
       },
       selectedKeyword: null,
       contentSettingImageStates: [],

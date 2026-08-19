@@ -993,6 +993,9 @@ void WebUILocationBar::UpdateLocationBarFlagsState() {
   location_bar_flags->popup_open = omnibox_controller_->IsPopupOpen();
   location_bar_flags->force_aim_button_focus_ring =
       force_aim_button_focus_ring_;
+  views::Widget* widget = toolbar_delegate_->GetView()->GetWidget();
+  location_bar_flags->is_virtual_keyboard_visible =
+      widget && LocationBarView::IsVirtualKeyboardVisible(widget);
   toolbar_delegate_->OnLocationBarFlagsChanged(std::move(location_bar_flags));
 }
 

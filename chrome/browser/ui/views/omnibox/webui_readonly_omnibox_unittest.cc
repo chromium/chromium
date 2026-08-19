@@ -363,6 +363,33 @@ TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
   EXPECT_EQ(1u, mojo_state->ui_version);
 }
 
+TEST_F(WebUIReadOnlyOmniboxTest, ClearInputFromWebUI) {
+  std::u16string initial_text = u"https://www.example.org/";
+  location_bar_model()->set_url(GURL(initial_text));
+  omnibox_view_->Update();
+
+  // Verify initial state.
+  EXPECT_EQ(initial_text, omnibox_view_->GetText());
+
+  // Simulate WebUI clearing the text.
+  // This sends an empty text with updated UI version.
+  EXPECT_TRUE(
+      omnibox_view_
+          ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewTextInput(
+              toolbar_ui_api::mojom::OmniboxActionTextInput::New(
+                  /*text=*/u"", /*inline_completion=*/u"",
+                  /*browser_version=*/1, /*ui_version=*/10, gfx::Range(0))))
+          .has_value());
+
+  // State will reflect it.
+  auto mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_THAT(mojo_state->text_pieces, ElementsAre());  // Empty text pieces
+  EXPECT_EQ(1u, mojo_state->browser_version);
+  EXPECT_EQ(10u, mojo_state->ui_version);
+  EXPECT_EQ(u"", omnibox_view_->GetText());
+}
+
 TEST_F(WebUIReadOnlyOmniboxTest, ContextualTasksFocusBlur) {
   // Set up contextual tasks page.
   location_bar_model()->set_is_contextual_tasks_page(true);

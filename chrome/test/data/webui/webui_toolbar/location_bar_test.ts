@@ -6,6 +6,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {LocationBarElement, LocationBarState} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('LocationBar', function() {
@@ -158,5 +159,115 @@ suite('LocationBar', function() {
 
     iconButton.dispatchEvent(new PointerEvent('pointercancel'));
     assertFalse(locationBar.hasAttribute('chip-hovered'));
+  });
+
+  test('Clear button visibility and click', async () => {
+    locationBar.locationBarState = {
+      ...initialState,
+      omniboxViewState: {
+        ...initialState.omniboxViewState,
+        textPieces: [
+          {
+            text: 'example.com',
+            strikethrough: false,
+            color: OmniboxTextColor.kOmniboxText,
+          },
+        ],
+        selection: {start: 0, end: 0},
+      },
+    };
+    await microtasksFinished();
+
+    let clearButton = locationBar.shadowRoot.querySelector('#clear-all');
+    assertTrue(!clearButton);
+
+    locationBar.locationBarState = {
+      ...locationBar.locationBarState,
+      locationBarFlags: {
+        userInputInProgress: true,
+        popupOpen: false,
+        forceAimButtonFocusRing: false,
+        isVirtualKeyboardVisible: true,
+      },
+    };
+    await microtasksFinished();
+
+    clearButton = locationBar.shadowRoot.querySelector('#clear-all');
+    assertTrue(!!clearButton);
+    assertEquals('webui-toolbar:close', clearButton.getAttribute('iron-icon'));
+
+    locationBar.touchUi = true;
+    await microtasksFinished();
+    assertEquals(
+        'webui-toolbar:backspace_filled',
+        clearButton.getAttribute('iron-icon'));
+
+    locationBar.touchUi = false;
+    await microtasksFinished();
+    assertEquals('webui-toolbar:close', clearButton.getAttribute('iron-icon'));
+
+    const omnibox = locationBar.shadowRoot.querySelector('readonly-omnibox')!;
+    const input = omnibox.shadowRoot.querySelector('input')!;
+
+    // Test 1: Pointer events (pointerdown + pointerup) should clear the input.
+    const rect = clearButton.getBoundingClientRect();
+    clearButton.dispatchEvent(new PointerEvent('pointerdown', {
+      button: 0,
+      pointerId: 1,
+      clientX: rect.left,
+      clientY: rect.top,
+      bubbles: true,
+      composed: true,
+    }));
+    clearButton.dispatchEvent(new PointerEvent('pointerup', {
+      button: 0,
+      pointerId: 1,
+      clientX: rect.left,
+      clientY: rect.top,
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+
+    assertEquals('', input.value);
+    assertEquals(
+        '', omnibox.shadowRoot.querySelector('#textContainer')!.textContent);
+    assertEquals(input, omnibox.shadowRoot.activeElement);
+
+    // Enter text and update state to re-enable clear button.
+    locationBar.locationBarState = {
+      ...locationBar.locationBarState,
+      omniboxViewState: {
+        ...locationBar.locationBarState.omniboxViewState,
+        textPieces: [
+          {
+            text: 'test input',
+            strikethrough: false,
+            color: OmniboxTextColor.kOmniboxText,
+          },
+        ],
+      },
+    };
+    await microtasksFinished();
+
+    clearButton = locationBar.shadowRoot.querySelector('#clear-all');
+    assertTrue(!!clearButton);
+
+    // Test 2: Mouse click with detail > 0 is ignored by @click listener because
+    // mouse clicks are already processed via pointerup in PressHandler.
+    input.value = 'test input';
+    clearButton.dispatchEvent(new MouseEvent('click', {detail: 1}));
+    await microtasksFinished();
+    assertEquals('test input', input.value);
+
+    // Test 3: Keyboard synthetic click (Enter/Space) with detail === 0 clears
+    // the input.
+    clearButton.dispatchEvent(new MouseEvent('click', {detail: 0}));
+    await microtasksFinished();
+
+    assertEquals('', input.value);
+    assertEquals(
+        '', omnibox.shadowRoot.querySelector('#textContainer')!.textContent);
+    assertEquals(input, omnibox.shadowRoot.activeElement);
   });
 });

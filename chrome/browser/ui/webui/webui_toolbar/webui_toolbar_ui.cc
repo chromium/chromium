@@ -191,6 +191,7 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
       {"backButtonTooltip", IDS_TOOLTIP_BACK},
       {"batterySaverButtonAccName", IDS_BATTERY_SAVER_BUTTON_ACCNAME},
       {"batterySaverButtonTooltip", IDS_BATTERY_SAVER_BUTTON_TOOLTIP},
+      {"clearButtonTooltip", IDS_OMNIBOX_CLEAR_ALL},
       {"forwardButtonAccName", IDS_ACCNAME_FORWARD},
       {"forwardButtonTooltip", IDS_TOOLTIP_FORWARD},
       {"homeButtonAccName", IDS_ACCNAME_HOME},

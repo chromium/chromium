@@ -1283,4 +1283,23 @@ suite('ReadonlyOmnibox', function() {
         assertEquals('alert(1)', input.value);
       });
 
+  test('Clear input', async () => {
+    getTextInput().focus();
+    getTextInput().dispatchEvent(new Event('focus'));
+    getTextInput().value = 'test input';
+    getTextInput().dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    uiHandler.reset();
+    omnibox.clearInput();
+    await microtasksFinished();
+
+    assertEquals('', getTextInput().value);
+    assertEquals('', omnibox.$.textContainer.textContent);
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    const args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[0].textInput);
+    assertEquals('', args[0].textInput.text);
+    assertEquals(getTextInput(), omnibox.shadowRoot.activeElement);
+  });
 });

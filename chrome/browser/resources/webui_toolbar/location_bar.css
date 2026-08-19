@@ -146,3 +146,12 @@ content-settings-icons {
    * container is naturally treated by C++ as an intra-item gap. */
   margin-inline-end: 8px;
 }
+
+#clear-all {
+  --cr-icon-button-icon-size: var(--location-bar-icon-size);
+  --cr-icon-button-size: calc(
+      var(--location-bar-height) -
+      2 * var(--location-bar-page-info-icon-vertical-padding));
+  flex-shrink: 0;
+}
+
