@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.ExternalIntentUrlChecker;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.url.GURL;
@@ -104,7 +104,9 @@ public class HandoffController implements Destroyable {
             extras.putBoolean(Browser.EXTRA_CREATE_NEW_TAB, true);
 
             return new HandoffActivityData.Builder(
-                            new ComponentName(activity, ChromeLauncherActivity.class))
+                            new ComponentName(
+                                    activity,
+                                    BrowserIntentUtils.CHROME_LAUNCHER_ACTIVITY_CLASS_NAME))
                     .setFallbackUri(Uri.parse(url))
                     .setExtras(extras)
                     .build();
