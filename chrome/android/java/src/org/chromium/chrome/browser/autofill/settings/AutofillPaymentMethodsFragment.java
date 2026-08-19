@@ -61,6 +61,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -69,6 +70,8 @@ import org.chromium.components.payments.AndroidPaymentAppFactory;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 /**
  * Autofill credit cards fragment, which allows the user to edit credit cards and control payment
@@ -94,6 +97,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     static final String PREF_CARD_BENEFITS = "card_benefits";
     static final String PREF_PAYMENT_APPS = "payment_apps";
     static final String PREF_LOYALTY_CARDS = "loyalty_cards";
+    static final String PREF_WALLET_REMINDER_NOTICE = "wallet_reminder_notice";
+
+    // TODO(crbug.com/548004948): Update wallet reminder URLs with query params.
+    private static final String WALLET_PAYMENT_METHODS_URL =
+            "https://wallet.google.com/wallet/paymentmethods";
 
     @VisibleForTesting
     static final String PREF_FINANCIAL_ACCOUNTS_MANAGEMENT = "financial_accounts_management";
@@ -479,6 +487,10 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                             getActivity(), getActivity().getPackageManager());
                     return true;
                 });
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_WALLET_REMINDER_NOTICE)) {
+            createWalletReminderNoticePreference();
+        }
         notifyPreferencesUpdated();
     }
 
@@ -527,6 +539,43 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         mandatoryReauthSwitch.setChecked(
                 personalDataManager.isPaymentMethodsMandatoryReauthEnabled()
                         && !disabledSettingsInThirdPartyMode(getProfile()));
+    }
+
+    private void createWalletReminderNoticePreference() {
+        ClickableSpansTextMessagePreference noticePref =
+                new ClickableSpansTextMessagePreference(getStyledContext(), /* attrs= */ null);
+        ChromeClickableSpan dataAndPrivacyLink =
+                new ChromeClickableSpan(
+                        getContext(),
+                        view ->
+                                CustomTabActivity.showInfoPage(
+                                        getActivity(),
+                                        GoogleWalletLauncher.GOOGLE_WALLET_SETTINGS_URL));
+        ChromeClickableSpan paymentMethodsLink =
+                new ChromeClickableSpan(
+                        getContext(),
+                        view ->
+                                CustomTabActivity.showInfoPage(
+                                        getActivity(), WALLET_PAYMENT_METHODS_URL));
+        ChromeClickableSpan passesLink =
+                new ChromeClickableSpan(
+                        getContext(),
+                        view ->
+                                CustomTabActivity.showInfoPage(
+                                        getActivity(),
+                                        GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL));
+
+        SpannableString summary =
+                SpanApplier.applySpans(
+                        getString(R.string.autofill_payment_methods_wallet_reminder_notice),
+                        new SpanApplier.SpanInfo("<link1>", "</link1>", dataAndPrivacyLink),
+                        new SpanApplier.SpanInfo("<link2>", "</link2>", paymentMethodsLink),
+                        new SpanApplier.SpanInfo("<link3>", "</link3>", passesLink));
+        noticePref.setSummary(summary);
+        noticePref.setKey(PREF_WALLET_REMINDER_NOTICE);
+        noticePref.setDividerAllowedAbove(false);
+        noticePref.setDividerAllowedBelow(false);
+        getPreferenceScreen().addPreference(noticePref);
     }
 
     private Context getStyledContext() {

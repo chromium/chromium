@@ -1723,6 +1723,30 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_REMINDER_NOTICE})
+    public void testWalletReminderNotice_shown() throws Exception {
+        SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
+
+        Preference noticePref =
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_WALLET_REMINDER_NOTICE);
+        assertNotNull(noticePref);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_WALLET_REMINDER_NOTICE})
+    public void testWalletReminderNotice_whenFlagDisabled_notShown() throws Exception {
+        SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
+
+        Preference noticePref =
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_WALLET_REMINDER_NOTICE);
+        assertNull(noticePref);
+    }
+
+    @Test
+    @MediumTest
     public void testSettingsState_SaveAndFillPaymentMethodsDisabledInThirdPartyMode()
             throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
