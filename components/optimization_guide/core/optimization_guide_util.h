@@ -118,12 +118,6 @@ void PopulateServerTimeoutRequestHeader(
     network::ResourceRequest* resource_request,
     base::TimeDelta timeout);
 
-// TODO(crbug.com/514743962): Move to chrome/browser/optimization_guide/model_validator_keyed_service.h.
-// Returns whether model validator service should be started to validate various
-// model executions such as, TFLite, server-side AI, on-device AI models. Used
-// for integration testing purposes.
-bool ShouldStartModelValidator();
-
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_UTIL_H_

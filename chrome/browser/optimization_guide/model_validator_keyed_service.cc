@@ -4,13 +4,14 @@
 
 #include "chrome/browser/optimization_guide/model_validator_keyed_service.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,9 +23,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_validation.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
@@ -56,6 +54,37 @@ void WriteResponseToFile(
   DCHECK(write_file_success);
 }
 
+bool ShouldValidateModel() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(optimization_guide::kModelValidateSwitch);
+}
+
+bool ShouldValidateModelExecution() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(
+      optimization_guide::kModelExecutionValidateSwitch);
+}
+
+std::optional<base::FilePath> GetOnDeviceValidationRequestOverride() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(
+          optimization_guide::kOnDeviceValidationRequestOverrideSwitch)) {
+    return std::nullopt;
+  }
+  return command_line->GetSwitchValuePath(
+      optimization_guide::kOnDeviceValidationRequestOverrideSwitch);
+}
+
+std::optional<base::FilePath> GetOnDeviceValidationWriteToFile() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(
+          optimization_guide::kOnDeviceValidationWriteToFileSwitch)) {
+    return std::nullopt;
+  }
+  return command_line->GetSwitchValuePath(
+      optimization_guide::kOnDeviceValidationWriteToFileSwitch);
+}
+
 }  // namespace
 
 namespace optimization_guide {
@@ -69,7 +98,7 @@ ModelValidatorKeyedService::ModelValidatorKeyedService(Profile* profile)
   if (!opt_guide_service) {
     return;
   }
-  if (switches::ShouldValidateModel()) {
+  if (ShouldValidateModel()) {
     // Create the validator object which will get destroyed when the model
     // load is complete.
     new ModelValidatorHandler(
@@ -77,7 +106,7 @@ ModelValidatorKeyedService::ModelValidatorKeyedService(Profile* profile)
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
   }
-  if (switches::ShouldValidateModelExecution()) {
+  if (ShouldValidateModelExecution()) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
     if (!identity_manager) {
       return;
@@ -92,9 +121,9 @@ ModelValidatorKeyedService::ModelValidatorKeyedService(Profile* profile)
             &ModelValidatorKeyedService::StartModelExecutionValidation,
             weak_ptr_factory_.GetWeakPtr()));
   }
-  if (switches::GetOnDeviceValidationRequestOverride()) {
+  if (GetOnDeviceValidationRequestOverride()) {
     base::FilePath ondevice_override_file =
-        switches::GetOnDeviceValidationRequestOverride().value();
+        GetOnDeviceValidationRequestOverride().value();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&ParseRequestFromFile, ondevice_override_file),
@@ -109,7 +138,7 @@ ModelValidatorKeyedService::~ModelValidatorKeyedService() = default;
 void ModelValidatorKeyedService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!switches::ShouldValidateModelExecution()) {
+  if (!ShouldValidateModelExecution()) {
     return;
   }
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
@@ -135,7 +164,7 @@ void ModelValidatorKeyedService::StartModelExecutionValidation() {
   }
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   std::string model_execution_input =
-      command_line->GetSwitchValueASCII(switches::kModelExecutionValidate);
+      command_line->GetSwitchValueASCII(kModelExecutionValidateSwitch);
   if (model_execution_input.empty()) {
     return;
   }
@@ -235,7 +264,7 @@ void ModelValidatorKeyedService::OnDeviceModelExecuteResponse(
     model_call->mutable_response()->CopyFrom(result.response.value().response);
   }
 
-  auto out_file = switches::GetOnDeviceValidationWriteToFile();
+  auto out_file = GetOnDeviceValidationWriteToFile();
   if (!out_file) {
     return;
   }
@@ -249,6 +278,11 @@ void ModelValidatorKeyedService::OnModelExecuteResponse(
     OptimizationGuideModelExecutionResult result,
     std::unique_ptr<ModelQualityLogEntry> log_entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+bool ShouldStartModelValidator() {
+  return ShouldValidateModel() || ShouldValidateModelExecution() ||
+         GetOnDeviceValidationRequestOverride();
 }
 
 }  // namespace optimization_guide

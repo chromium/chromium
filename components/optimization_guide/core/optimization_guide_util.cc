@@ -252,10 +252,4 @@ void PopulateServerTimeoutRequestHeader(
       kServerTimeoutHeader, base::NumberToString(timeout.InSeconds()));
 }
 
-bool ShouldStartModelValidator() {
-  return switches::ShouldValidateModel() ||
-         switches::ShouldValidateModelExecution() ||
-         switches::GetOnDeviceValidationRequestOverride();
-}
-
 }  // namespace optimization_guide

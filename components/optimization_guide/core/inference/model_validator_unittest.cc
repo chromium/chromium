@@ -4,7 +4,6 @@
 
 #include "components/optimization_guide/core/inference/model_validator.h"
 
-#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -19,8 +18,6 @@
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -29,8 +26,6 @@ namespace {
 
 void DoValidateModel(
     OptimizationGuideModelProvider* optimization_guide_model_provider) {
-  DCHECK(switches::ShouldValidateModel());
-
   // Create the validator object which will get destroyed when the model load is
   // complete.
   new ModelValidatorHandler(
@@ -85,8 +80,6 @@ class ModelValidatorModelObserverTracker
 class ModelValidatorExecutorTest : public testing::Test {
  public:
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kModelValidate);
     model_observer_tracker_ =
         std::make_unique<ModelValidatorModelObserverTracker>();
   }
