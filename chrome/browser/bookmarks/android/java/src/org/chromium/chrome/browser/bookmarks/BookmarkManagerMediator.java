@@ -418,6 +418,7 @@ class BookmarkManagerMediator
     private boolean mIsBookmarkModelReorderingInProgress;
     // Whether the shopping feature is available and there are price-tracked bookmarks.
     private boolean mShoppingFilterAvailable;
+    private boolean mSearchBoxInline;
 
     BookmarkManagerMediator(
             Activity activity,
@@ -520,6 +521,8 @@ class BookmarkManagerMediator
                         mBookmarkModel,
                         mBookmarkUiPrefs,
                         mShoppingService);
+
+        mSearchBoxInline = !BookmarkUtils.isDesktopBookmarksLayoutEnabled();
 
         initializeToLoadingState();
         if (!sPreventLoadingForTesting) {
@@ -1090,7 +1093,7 @@ class BookmarkManagerMediator
         int index = 0;
 
         // Don't replace if it already exists. The text box is stateful.
-        if (BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+        if (!isSearchBoxInline()) {
             getOrCreateSearchBoxPropertyModel();
         } else {
             if (getCurrentSearchBoxIndex() < 0) {
@@ -1113,7 +1116,7 @@ class BookmarkManagerMediator
         }
 
         // Only show the empty state if there's only a searchbox.
-        int emptyListThreshold = BookmarkUtils.isDesktopBookmarksLayoutEnabled() ? 0 : 1;
+        int emptyListThreshold = isSearchBoxInline() ? 1 : 0;
         boolean listIsEmpty = index == emptyListThreshold;
         if (listIsEmpty) {
             updateOrAdd(index++, buildEmptyStateListItem());
@@ -1430,6 +1433,47 @@ class BookmarkManagerMediator
 
     private ListItem buildSearchBoxRow() {
         return new ListItem(ViewType.SEARCH_BOX, getOrCreateSearchBoxPropertyModel());
+    }
+
+    /**
+     * Sets whether the search box should be displayed inline in the bookmarks list. This is only
+     * applicable when desktop bookmarks layout is enabled.
+     *
+     * @param isInline Whether the search box is inline.
+     */
+    public void setSearchBoxInline(boolean isInline) {
+        if (!BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            return;
+        }
+        if (mSearchBoxInline == isInline) {
+            return;
+        }
+        mSearchBoxInline = isInline;
+
+        if (mStateStack.isEmpty() || !mBookmarkModel.isBookmarkModelLoaded()) {
+            return;
+        }
+
+        int searchBoxIndex = getCurrentSearchBoxIndex();
+        if (mSearchBoxInline) {
+            if (searchBoxIndex < 0) {
+                boolean isScrollPositionAtTop = !mRecyclerView.canScrollVertically(-1);
+                mModelList.add(0, buildSearchBoxRow());
+                updateSearchBoxShoppingFilterVisibility(assumeNonNull(getSearchBoxPropertyModel()));
+                if (isScrollPositionAtTop) {
+                    mRecyclerView.scrollToPosition(0);
+                }
+            }
+        } else {
+            if (searchBoxIndex >= 0) {
+                mModelList.removeAt(searchBoxIndex);
+            }
+        }
+    }
+
+    @VisibleForTesting
+    boolean isSearchBoxInline() {
+        return mSearchBoxInline;
     }
 
     private ListItem buildEmptyStateListItem() {

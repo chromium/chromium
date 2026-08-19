@@ -334,6 +334,7 @@ public class BookmarkManagerCoordinator
                             BookmarkSearchBoxRowViewBinder.createViewBinder());
 
             updateDesktopSearchBoxMargins();
+            updateDesktopSearchBoxPosition(activity.getResources().getConfiguration());
         }
 
         mMainView.addOnAttachStateChangeListener(this);
@@ -424,6 +425,7 @@ public class BookmarkManagerCoordinator
 
                             updateNavigationPaneVisibility(newConfig);
                             updateDesktopSearchBoxMargins();
+                            updateDesktopSearchBoxPosition(newConfig);
 
                             mBookmarkToolbarCoordinator.onConfigurationChanged(newConfig);
                         }
@@ -739,6 +741,18 @@ public class BookmarkManagerCoordinator
             params.setMarginEnd(margin + padding);
             searchBoxView.setLayoutParams(params);
         }
+    }
+
+    private void updateDesktopSearchBoxPosition(Configuration config) {
+        if (!BookmarkUtils.isDesktopBookmarksLayoutEnabled()) {
+            return;
+        }
+        View searchBoxView = mMainView.findViewById(R.id.desktop_search_box_row);
+        boolean isSmallScreen = config.screenWidthDp < BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP;
+        if (searchBoxView != null) {
+            searchBoxView.setVisibility(isSmallScreen ? View.GONE : View.VISIBLE);
+        }
+        mMediator.setSearchBoxInline(isSmallScreen);
     }
 
     private void openSettings() {

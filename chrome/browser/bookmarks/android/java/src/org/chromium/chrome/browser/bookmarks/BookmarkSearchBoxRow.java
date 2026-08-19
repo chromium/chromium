@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.LinearLayout;
 
 import org.chromium.build.annotations.NullMarked;
@@ -69,19 +68,8 @@ public class BookmarkSearchBoxRow extends LinearLayout {
                                 ? R.dimen.bookmark_search_box_padding_horizontal_desktop
                                 : R.dimen.bookmark_search_box_padding_end_default);
         int paddingStartPx = res.getDimensionPixelSize(R.dimen.bookmark_search_box_padding_start);
-        int rowMarginBottomPx =
-                res.getDimensionPixelSize(
-                        isDesktop
-                                ? R.dimen.bookmark_search_box_row_margin_bottom_desktop
-                                : R.dimen.bookmark_search_box_row_margin_bottom_default);
         int backgroundRes =
                 isDesktop ? R.drawable.search_box_background : R.drawable.search_row_modern_bg;
-
-        MarginLayoutParams rowParams = (MarginLayoutParams) getLayoutParams();
-        if (rowParams != null) {
-            rowParams.bottomMargin = rowMarginBottomPx;
-            setLayoutParams(rowParams);
-        }
 
         LinearLayout.LayoutParams params =
                 (LinearLayout.LayoutParams) mSearchBoxView.getLayoutParams();

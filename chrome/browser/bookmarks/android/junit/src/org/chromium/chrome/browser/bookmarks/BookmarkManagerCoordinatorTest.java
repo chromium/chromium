@@ -397,4 +397,48 @@ public class BookmarkManagerCoordinatorTest {
         assertNotNull(navigationPane);
         assertEquals(View.VISIBLE, navigationPane.getVisibility());
     }
+
+    @Test
+    @Config(qualifiers = "w839dp")
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    public void testDesktopSearchBoxPosition_belowThreshold() {
+        recreateCoordinatorForDesktop();
+        View searchBoxView = mCoordinator.getView().findViewById(R.id.desktop_search_box_row);
+        assertNotNull(searchBoxView);
+        assertEquals(View.GONE, searchBoxView.getVisibility());
+    }
+
+    @Test
+    @Config(qualifiers = "w840dp")
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    public void testDesktopSearchBoxPosition_atThreshold() {
+        recreateCoordinatorForDesktop();
+        View searchBoxView = mCoordinator.getView().findViewById(R.id.desktop_search_box_row);
+        assertNotNull(searchBoxView);
+        assertEquals(View.VISIBLE, searchBoxView.getVisibility());
+    }
+
+    @Test
+    @Config(qualifiers = "w800dp-h1000dp")
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
+    public void testDesktopSearchBox_resize() {
+        recreateCoordinatorForDesktop();
+        View searchBoxView = mCoordinator.getView().findViewById(R.id.desktop_search_box_row);
+        assertNotNull(searchBoxView);
+        assertEquals(View.GONE, searchBoxView.getVisibility());
+
+        // Resize to wide screen (1200dp).
+        RuntimeEnvironment.setQualifiers("w1200dp-h1000dp");
+        mCoordinator
+                .getComponentCallbacksForTesting()
+                .onConfigurationChanged(mActivity.getResources().getConfiguration());
+        assertEquals(View.VISIBLE, searchBoxView.getVisibility());
+
+        // Resize back to narrow screen (800dp).
+        RuntimeEnvironment.setQualifiers("w800dp-h1000dp");
+        mCoordinator
+                .getComponentCallbacksForTesting()
+                .onConfigurationChanged(mActivity.getResources().getConfiguration());
+        assertEquals(View.GONE, searchBoxView.getVisibility());
+    }
 }

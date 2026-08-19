@@ -57,6 +57,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -1637,6 +1638,103 @@ public class BookmarkManagerMediatorTest {
         mModelList.addObserver(mListObserver);
         searchBoxModel.get(SearchBoxProperties.TEXT_CHANGED_CALLBACK).onResult("3");
         verifyCurrentViewTypes(ViewType.IMPROVED_BOOKMARK_COMPACT);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testSetSearchBoxInline() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        // By default on desktop, search box is NOT inline.
+        verifyCurrentViewTypes(
+                ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT);
+        verify(mRecyclerView, times(1)).scrollToPosition(0);
+
+        // Enable inline search box.
+        mMediator.setSearchBoxInline(true);
+        verifyCurrentViewTypes(
+                ViewType.SEARCH_BOX,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT);
+        verify(mRecyclerView, times(2)).scrollToPosition(0);
+
+        // Hide inline search box.
+        mMediator.setSearchBoxInline(false);
+        verifyCurrentViewTypes(
+                ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.IMPROVED_BOOKMARK_COMPACT);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testSetSearchBoxInline_emptyFolder() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        finishLoading();
+        mMediator.openFolder(mFolderId3);
+        // By default on desktop, search box is NOT inline.
+        verifyCurrentViewTypes(ViewType.EMPTY_STATE);
+
+        // Enable inline search box.
+        mMediator.setSearchBoxInline(true);
+        verifyCurrentViewTypes(ViewType.SEARCH_BOX, ViewType.EMPTY_STATE);
+
+        // Hide inline search box.
+        mMediator.setSearchBoxInline(false);
+        verifyCurrentViewTypes(ViewType.EMPTY_STATE);
+    }
+
+    @Test
+    public void testSetSearchBoxInline_nonDesktopDoesNothing() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        verifyCurrentViewTypes(
+                ViewType.SEARCH_BOX,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT);
+
+        // Calling setSearchBoxInline(false) on non-desktop should be a no-op.
+        mMediator.setSearchBoxInline(false);
+        verifyCurrentViewTypes(
+                ViewType.SEARCH_BOX,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testSetSearchBoxInline_scrolledDownDoesNotScrollToTop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        verify(mRecyclerView, times(1)).scrollToPosition(0);
+
+        // Hide inline search box.
+        mMediator.setSearchBoxInline(false);
+
+        // Mock that the RecyclerView is scrolled down (can scroll up).
+        doReturn(true).when(mRecyclerView).canScrollVertically(-1);
+
+        // Re-enable inline search box while scrolled down.
+        mMediator.setSearchBoxInline(true);
+        verifyCurrentViewTypes(
+                ViewType.SEARCH_BOX,
+                ViewType.IMPROVED_BOOKMARK_COMPACT,
+                ViewType.IMPROVED_BOOKMARK_COMPACT);
+        // scrollToPosition(0) should NOT have been called again.
+        verify(mRecyclerView, times(1)).scrollToPosition(0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testIsSearchBoxInline() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        finishLoading();
+
+        mMediator.setSearchBoxInline(false);
+        assertFalse(mMediator.isSearchBoxInline());
+
+        mMediator.setSearchBoxInline(true);
+        assertTrue(mMediator.isSearchBoxInline());
     }
 
     @Test
