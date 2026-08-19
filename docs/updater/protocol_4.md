@@ -298,6 +298,15 @@ A request object has the following members:
      The valid operations are any of the types supported by the
      [Operation Object](#operation-objects-update-check-response)
  *   `apps`: A list of `app` objects.
+ *   `arch`: The architecture of the updater, or "" if unknown. This represents
+      the architecture of the updater itself, which may differ from the
+      operating system architecture (reported in `request.os.arch`) in case of
+      emulation (e.g. 32-bit updater running on a 64-bit operating system).
+      Default: "". Known values include:
+      *   "arm": ARM
+      *   "arm64": 64-bit ARM
+      *   "x86": x86
+      *   "x64": x64
  *   `dedup`: A string, must be "cr". This indicates to servers that the client
      intends to use client-regulated counting algorithms rather than any sort of
      unique identifier. Version 3.0 of the protocol also supported "uid".
