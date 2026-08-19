@@ -49,7 +49,7 @@ using extensions::api::pdf_viewer_private::SaveToDriveProgress;
 using extensions::api::pdf_viewer_private::SaveToDriveStatus;
 
 constexpr base::TimeDelta kHatsSurveyTimeout = base::Seconds(4);
-constexpr base::ByteSize kMultipartUploadThreshold = base::MiBU(5);
+constexpr base::ByteSize kMultipartUploadThreshold = base::MiB(5);
 
 WebContents* GetTabWebContents(RenderFrameHost* render_frame_host) {
   auto stream = GetStreamWeakPtr(render_frame_host);
