@@ -61,7 +61,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/autocomplete_change_observer.h"
-#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/find_result_waiter.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/download/public/common/download_item.h"
