@@ -2144,6 +2144,10 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
       // into sub reasons.
       NOTREACHED();
     case Reason::kUnknown:
+    case Reason::kRfhEnforceInsecureNavigationsSet:
+    case Reason::kRfhEnforceInsecureRequestPolicy:
+    case Reason::kRfhHadStickyUserActivationBeforeNavigationChanged:
+    case Reason::kRfhUpdateIsAdFrame:
       return Page::BackForwardCacheNotRestoredReasonEnum::Unknown;
     case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
       return Page::BackForwardCacheNotRestoredReasonEnum::
@@ -2470,6 +2474,10 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kWebLocksContention:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
+    case Reason::kRfhEnforceInsecureNavigationsSet:
+    case Reason::kRfhEnforceInsecureRequestPolicy:
+    case Reason::kRfhHadStickyUserActivationBeforeNavigationChanged:
+    case Reason::kRfhUpdateIsAdFrame:
     case Reason::kUnknown:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case Reason::kBlocklistedFeatures:

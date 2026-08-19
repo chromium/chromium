@@ -4931,4 +4931,32 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       BFCachedFrameCannotUpdateFrameReplicationState) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+
+  // 2) Navigate to B. Page A should go to BFCache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Simulate a compromised renderer sending state updates from the cached
+  // RenderFrameHost. This should trigger eviction.
+  static_cast<blink::mojom::LocalFrameHost*>(rfh_a)
+      ->EnforceInsecureRequestPolicy(
+          blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent);
+
+  // 4) Go back to A. It should not be restored.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({NotRestoredReason::kRfhEnforceInsecureRequestPolicy}, {},
+                    {}, {}, {}, FROM_HERE);
+}
+
 }  // namespace content
