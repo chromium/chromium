@@ -705,7 +705,7 @@ void SelectFileDialogLinuxGtk::OnUpdatePreview(GtkWidget* chooser) {
   // Don't attempt to preview files over 100MB to avoid excessive memory use
   // and crashes when decoding very large images.
   struct stat stat_buf;
-  constexpr base::ByteSize kMaxPreviewFileSize = base::MiBU(100);
+  constexpr base::ByteSize kMaxPreviewFileSize = base::MiB(100);
   if (stat(filename, &stat_buf) != 0 || !S_ISREG(stat_buf.st_mode) ||
       static_cast<uint64_t>(stat_buf.st_size) > kMaxPreviewFileSize.InBytes()) {
     g_free(filename);
