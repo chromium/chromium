@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_widget_delegate.h"
@@ -24,6 +25,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/ntp_tiles/pref_names.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/file_select_listener.h"
@@ -192,6 +194,39 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
   // active profile is changing.
   if (profile_ != profile) {
     browser_collection_observation_.Reset();
+    profile_pref_change_registrar_.Reset();
+    if (profile && profile->GetPrefs()) {
+      profile_pref_change_registrar_.Init(profile->GetPrefs());
+      profile_pref_change_registrar_.Add(
+          ntp_prefs::kNtpCustomLinksVisible,
+          base::BindRepeating(
+              &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
+              base::Unretained(this)));
+      profile_pref_change_registrar_.Add(
+          ntp_prefs::kNtpEnterpriseShortcutsVisible,
+          base::BindRepeating(
+              &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
+              base::Unretained(this)));
+      // TODO(crbug.com/546555215): Only register this if omnibox everywhere
+      // MVT pref is not set.
+      profile_pref_change_registrar_.Add(
+          ntp_prefs::kNtpPersonalShortcutsVisible,
+          base::BindRepeating(
+              &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
+              base::Unretained(this)));
+      profile_pref_change_registrar_.Add(
+          ntp_prefs::kNtpShortcutsVisible,
+          base::BindRepeating(
+              &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
+              base::Unretained(this)));
+#if !BUILDFLAG(IS_ANDROID)
+      profile_pref_change_registrar_.Add(
+          ntp_tiles::prefs::kEnterpriseShortcutsPolicyList,
+          base::BindRepeating(
+              &OmniboxEverywhereUIManager::OnMostVisitedPrefChanged,
+              base::Unretained(this)));
+#endif
+    }
   }
   profile_ = profile;
 
@@ -349,6 +384,15 @@ void OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged() {
   }
 }
 
+void OmniboxEverywhereUIManager::OnMostVisitedPrefChanged() {
+  if (!widget_ || IsVisible()) {
+    return;
+  }
+  // Clean up the widget when the pref changes so there is not flicker when the
+  // omnibox is re-invoked.
+  CleanUpWidget();
+}
+
 void OmniboxEverywhereUIManager::Close() {
   if (widget_) {
     if (is_file_chooser_open_ || is_drive_picker_open_) {
@@ -408,6 +452,7 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
 
 void OmniboxEverywhereUIManager::Shutdown() {
   browser_collection_observation_.Reset();
+  profile_pref_change_registrar_.Reset();
   CleanUpWidget();
   profile_ = nullptr;
 }
