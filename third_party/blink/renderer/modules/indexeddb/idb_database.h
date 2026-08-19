@@ -186,7 +186,7 @@ class MODULES_EXPORT IDBDatabase final
   // IndexedDBClientStateChecker, IDBDatabase, and DatabaseCallbacks). The
   // size was derived empirically by measuring the browser process memory
   // delta from retaining 100k connections in a renderer process.
-  static constexpr base::ByteSize kExternalMemorySize = base::KiBU(90);
+  static constexpr base::ByteSize kExternalMemorySize = base::KiB(90);
 
   void RenameObjectStore(int64_t transaction_id,
                          int64_t object_store_id,
