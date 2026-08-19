@@ -83,7 +83,7 @@ class AdsPageLoadMetricsObserver
     // Maximum amount of additive noise to add to the network threshold to
     // obscure cross origin resource sizes: 1303 KB.
     static constexpr base::ByteSize kMaxNetworkThresholdNoiseBytes =
-        base::KiBU(1303);
+        base::KiB(1303);
 
    private:
     // Whether to use noise.

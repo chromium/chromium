@@ -46,7 +46,7 @@
 // Records |bytes| to |histogram_name| in kilobytes.
 #define PAGE_BYTES_HISTOGRAM(histogram_name, bytes)                \
   base::UmaHistogramCustomCounts(histogram_name, bytes.InKiB(), 1, \
-                                 base::MiBU(500).InKiB(), 50)
+                                 base::MiB(500).InKiB(), 50)
 
 // Up to 1 minute with 50 buckets.
 #define INPUT_DELAY_HISTOGRAM(name, sample)                          \
