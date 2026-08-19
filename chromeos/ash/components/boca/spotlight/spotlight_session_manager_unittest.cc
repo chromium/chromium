@@ -54,7 +54,6 @@ constexpr base::TimeDelta kTestNotificationDuration =
 
 class MockBocaAppClient : public BocaAppClient {
  public:
-  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(std::string, GetDeviceId, (), (override));
   MOCK_METHOD(std::string, GetSchoolToolsServerBaseUrl, (), (override));
 };
@@ -131,8 +130,6 @@ class SpotlightSessionManagerTest : public testing::Test {
 
     // Set up global BocaAppClient's mock.
     boca_app_client_ = std::make_unique<NiceMock<MockBocaAppClient>>();
-    ON_CALL(*boca_app_client_, GetIdentityManager())
-        .WillByDefault(Return(nullptr));
     EXPECT_CALL(*boca_app_client_, GetDeviceId())
         .WillRepeatedly(Return(kDeviceId));
 

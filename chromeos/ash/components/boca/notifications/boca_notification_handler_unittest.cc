@@ -20,7 +20,6 @@ namespace ash::boca {
 namespace {
 class MockBocaAppClient : public BocaAppClient {
  public:
-  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(void, LaunchApp, (), (override));
 };
 

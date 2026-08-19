@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "chromeos/ash/components/boca/babelorca/soda_installer.h"
 #include "chromeos/ash/components/boca/invalidations/invalidation_service_delegate.h"
 #include "chromeos/ash/components/boca/notifications/boca_notification_handler.h"
@@ -57,6 +58,7 @@ class SessionManager;
 
 namespace ash::boca {
 
+class BocaAppHandler;
 class ScreenPresenterFactory;
 class StudentScreenPresenter;
 class TeacherScreenPresenter;
@@ -286,6 +288,10 @@ class BocaSessionManager
   base::ObserverList<Observer>& observers() { return observers_; }
 
   AccountId& account_id() { return account_id_; }
+
+  signin::IdentityManager* GetIdentityManager(base::PassKey<BocaAppHandler>) {
+    return identity_manager_observation_.GetSource();
+  }
 
   SessionClientImpl* session_client_impl() { return session_client_impl_; }
 

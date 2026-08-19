@@ -78,7 +78,6 @@ class MockRequestHandler {
 
 class MockBocaAppClient : public BocaAppClient {
  public:
-  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(std::string, GetDeviceId, (), (override));
 };
 
@@ -105,9 +104,6 @@ class SpotlightServiceTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kBoca},
         /*disabled_features=*/{ash::features::kBocaSpotlightRobotRequester});
-    ON_CALL(boca_app_client_, GetIdentityManager())
-        .WillByDefault(Return(identity_test_env_.identity_manager()));
-
     ON_CALL(boca_app_client_, GetDeviceId()).WillByDefault(Return(kDeviceId));
     boca_session_manager_ = std::make_unique<StrictMock<MockSessionManager>>(
         nullptr, identity_test_env_.identity_manager());

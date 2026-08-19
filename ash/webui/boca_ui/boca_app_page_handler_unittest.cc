@@ -305,7 +305,6 @@ class MockSessionClientImpl : public SessionClientImpl {
 
 class MockBocaAppClient : public BocaAppClient {
  public:
-  MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(std::string, GetSchoolToolsServerBaseUrl, (), (override));
   MOCK_METHOD(void, OpenFeedbackDialog, (), (override));
   MOCK_METHOD(int, GetAppInstanceCount, (), (override));
@@ -313,12 +312,15 @@ class MockBocaAppClient : public BocaAppClient {
 
 class MockSessionManager : public BocaSessionManager {
  public:
-  explicit MockSessionManager(SessionClientImpl* session_client_impl)
+  MockSessionManager(SessionClientImpl* session_client_impl,
+                     signin::IdentityManager* identity_manager)
       : BocaSessionManager(session_client_impl,
                            /*pref_service=*/nullptr,
                            AccountId::FromUserEmail(kUserEmail),
-                           /*identity_manager=*/nullptr,
+                           identity_manager,
                            /*=is_producer*/ false) {}
+  ~MockSessionManager() override = default;
+
   MOCK_METHOD(void,
               NotifyLocalCaptionEvents,
               (::boca::CaptionsConfig config),
@@ -357,7 +359,6 @@ class MockSessionManager : public BocaSessionManager {
                SpotlightCrdStateUpdatedCallback),
               (override));
   MOCK_METHOD(void, CleanupPresenters, (), (override));
-  ~MockSessionManager() override = default;
 };
 
 class FakeTabInfoCollector : public TabInfoCollector {
@@ -611,8 +612,6 @@ class BocaAppPageHandlerTest : public testing::Test {
 
     // Set up global BocaAppClient's mock.
     boca_app_client_ = std::make_unique<NiceMock<MockBocaAppClient>>();
-    ON_CALL(*boca_app_client_, GetIdentityManager())
-        .WillByDefault(Return(nullptr));
     ON_CALL(*boca_app_client_, GetSchoolToolsServerBaseUrl())
         .WillByDefault(Return(kTestDefaultUrl));
 
@@ -629,12 +628,15 @@ class BocaAppPageHandlerTest : public testing::Test {
             /*is_off_the_record=*/false);
     ash::AnnotatedAccountId::Set(browser_context_, account_id);
 
+    identity_test_env_.MakePrimaryAccountAvailable(
+        kUserEmail, signin::ConsentLevel::kSignin);
+
     // Create BocaSessionManager mock.
     EXPECT_CALL(*session_client_impl(),
                 GetSession(_, /*can_skip_duplicate_request=*/true))
         .Times(1);
-    session_manager_ =
-        std::make_unique<NiceMock<MockSessionManager>>(&session_client_impl_);
+    session_manager_ = std::make_unique<NiceMock<MockSessionManager>>(
+        &session_client_impl_, identity_test_env_.identity_manager());
 
     spotlight_service_ = std::make_unique<StrictMock<MockSpotlightService>>(
         session_manager_.get(), nullptr);
@@ -795,6 +797,10 @@ class BocaAppPageHandlerTest : public testing::Test {
     return &task_environment_;
   }
 
+  signin::IdentityTestEnvironment& identity_test_env() {
+    return identity_test_env_;
+  }
+
  private:
   bool is_producer_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -813,6 +819,7 @@ class BocaAppPageHandlerTest : public testing::Test {
   // and destruct last.
   std::unique_ptr<NiceMock<MockBocaAppClient>> boca_app_client_;
 
+  signin::IdentityTestEnvironment identity_test_env_;
   StrictMock<MockSessionClientImpl> session_client_impl_{nullptr};
   std::unique_ptr<NiceMock<MockSessionManager>> session_manager_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -4060,14 +4067,11 @@ TEST_P(BocaAppPageHandlerProducerGeminiStatusTest,
   const GeminiStatusTestParam& param = GetParam();
   base::HistogramTester histogram_tester;
   network::TestURLLoaderFactory test_url_loader_factory;
-  signin::IdentityTestEnvironment identity_test_env;
-  identity_test_env.MakePrimaryAccountAvailable("test_user@gmail.com",
-                                                signin::ConsentLevel::kSignin);
   GeminiStatusFetcher::RegisterProfilePrefs(pref_service()->registry());
-  identity_test_env.SetAutomaticIssueOfAccessTokens(true);
+  identity_test_env().SetAutomaticIssueOfAccessTokens(true);
 
   auto gemini_status_fetcher = std::make_unique<GeminiStatusFetcher>(
-      kGaiaId.ToString(), identity_test_env.identity_manager(),
+      kGaiaId.ToString(), identity_test_env().identity_manager(),
       test_url_loader_factory.GetSafeWeakWrapper(), pref_service());
   mojo::Remote<mojom::PageHandler> remote;
   std::unique_ptr<FakePage> fake_page;

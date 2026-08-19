@@ -11,7 +11,6 @@
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/ash/components/boca/shared_crd_session_wrapper.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
@@ -26,11 +25,6 @@ inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
 BocaAppClientImpl::BocaAppClientImpl() = default;
 
 BocaAppClientImpl::~BocaAppClientImpl() = default;
-
-signin::IdentityManager* BocaAppClientImpl::GetIdentityManager() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  return IdentityManagerFactory::GetForProfile(profile);
-}
 
 std::string BocaAppClientImpl::GetDeviceId() {
   if (!ash::DeviceSettingsService::IsInitialized()) {

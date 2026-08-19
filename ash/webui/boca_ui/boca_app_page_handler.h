@@ -273,8 +273,6 @@ class BocaAppHandler : public mojom::PageHandler,
 
   BocaSessionManager& GetBocaSessionManager();
 
-  void SetAccountImage(user_manager::User* user);
-
   // TODO(crbug.com/399923859): remove only the override keyword when the
   // inheritance from `mojom::Page` is removed.
   void OnPresentOwnScreenEnded() override;

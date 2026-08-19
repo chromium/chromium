@@ -353,6 +353,24 @@ bool IsConnectionCodeInSession(const ::boca::Session* session,
   return false;
 }
 
+// Returns Photo data URL for the given user's icon. Returns an empty
+// string for unavailable cases.
+std::string CreatePhotoUrl(const AccountId& account_id,
+                           signin::IdentityManager& identity_manager) {
+  if (account_id.GetAccountType() != AccountType::GOOGLE) {
+    // Account type might not be GOOGLE during tests.
+    return std::string();
+  }
+
+  AccountInfo maybe_account_info =
+      identity_manager.FindExtendedAccountInfoByGaiaId(account_id.GetGaiaId());
+  auto avatar_image = maybe_account_info.GetAvatarImage();
+  if (!avatar_image.has_value()) {
+    return std::string();
+  }
+  return webui::GetBitmapDataUrl(avatar_image->AsBitmap());
+}
+
 }  // namespace
 
 BocaAppHandler::BocaAppHandler(
@@ -383,7 +401,13 @@ BocaAppHandler::BocaAppHandler(
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
   user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId().ToString());
   user_identity_.set_full_name(base::UTF16ToUTF8(user->GetDisplayName()));
-  SetAccountImage(user);
+  if (std::string photo_url = CreatePhotoUrl(
+          user->GetAccountId(),
+          CHECK_DEREF(boca_session_manager_->GetIdentityManager({})));
+      !photo_url.empty()) {
+    user_identity_.set_photo_url(std::move(photo_url));
+  }
+
   pref_service_ = user->GetProfilePrefs();
   boca_session_manager_->AddObserver(this);
   network_info_provider_ = std::make_unique<NetworkInfoProvider>(
@@ -1501,28 +1525,6 @@ void BocaAppHandler::OnUpdateSessionBlockingRequestCompleted() {
 
 BocaSessionManager& BocaAppHandler::GetBocaSessionManager() {
   return boca_session_manager_.get();
-}
-
-void BocaAppHandler::SetAccountImage(user_manager::User* user) {
-  auto* identity_manager = BocaAppClient::Get()->GetIdentityManager();
-  if (!identity_manager) {
-    return;
-  }
-
-  auto account_id = user->GetAccountId();
-  if (account_id.GetAccountType() != AccountType::GOOGLE) {
-    // Account type might not be GOOGLE during tests.
-    return;
-  }
-
-  AccountInfo maybe_account_info =
-      identity_manager->FindExtendedAccountInfoByGaiaId(account_id.GetGaiaId());
-  if (std::optional<gfx::Image> avatar_image =
-          maybe_account_info.GetAvatarImage();
-      avatar_image.has_value()) {
-    user_identity_.set_photo_url(
-        webui::GetBitmapDataUrl(avatar_image->AsBitmap()));
-  }
 }
 
 void BocaAppHandler::OnPresentOwnScreenEnded() {
