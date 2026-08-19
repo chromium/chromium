@@ -2376,6 +2376,27 @@ TEST_F(ContextualSearchboxHandlerTest, QueryAutocomplete_SetsLensInputs) {
 }
 
 TEST_F(ContextualSearchboxHandlerTest,
+       QueryAutocomplete_NullBrowserWindowInterfaceDoesNotCrash) {
+  // Ensure BrowserWindowInterface is null for web_contents.
+  webui::SetBrowserWindowInterface(web_contents(), nullptr);
+
+  auto autocomplete_controller =
+      std::make_unique<testing::NiceMock<MockAutocompleteController>>(
+          std::make_unique<MockAutocompleteProviderClient>(), 0);
+  EXPECT_CALL(*autocomplete_controller, Start(_));
+  handler().SetAutocompleteControllerForTesting(
+      std::move(autocomplete_controller));
+
+  // Should execute cleanly without crashing even when BrowserWindowInterface
+  // is null.
+  handler().QueryAutocomplete(
+      0, u"test", /*prevent_inline_autocomplete=*/false, 0,
+      omnibox::SuggestInventory::SUGGEST_INVENTORY_DEFAULT,
+      /*is_on_focus=*/false, /*keyword=*/"",
+      searchbox::mojom::InputMethod::kKeyboard);
+}
+
+TEST_F(ContextualSearchboxHandlerTest,
        QueryAutocomplete_SetsLensInputs_InToolModes) {
   lens::proto::LensOverlaySuggestInputs suggest_inputs;
   suggest_inputs.set_encoded_image_signals("xyz");
