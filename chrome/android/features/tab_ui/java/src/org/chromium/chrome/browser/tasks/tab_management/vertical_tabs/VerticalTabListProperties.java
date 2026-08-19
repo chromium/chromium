@@ -44,8 +44,8 @@ public class VerticalTabListProperties {
         int EXPANDED_FOR_HOVERING = 2;
     }
 
-    public static final PropertyModel.WritableIntPropertyKey COLLAPSE_STATE =
-            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntDefPropertyKey<RailCollapseState> COLLAPSE_STATE =
+            new PropertyModel.WritableIntDefPropertyKey<>(RailCollapseState.UNKNOWN);
     public static final PropertyModel.WritableBooleanPropertyKey IS_COLLAPSE_BUTTON_ENABLED =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_INCOGNITO =
