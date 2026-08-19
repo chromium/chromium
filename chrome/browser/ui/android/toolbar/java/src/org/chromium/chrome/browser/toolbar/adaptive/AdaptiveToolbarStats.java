@@ -103,7 +103,7 @@ public class AdaptiveToolbarStats {
                     RecordHistogram.recordEnumeratedHistogram(
                             "SegmentationPlatform.AdaptiveToolbar.SegmentSelected.Startup",
                             adaptiveToolbarStatePredictor.filterSegmentationResults(result),
-                            AdaptiveToolbarButtonVariant.MAX_VALUE);
+                            AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
                 });
     }
 

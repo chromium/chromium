@@ -558,13 +558,13 @@ public class AutofillProviderUMA {
      */
     static void recordException(Exception e, @AutofillManagerMethod int calledMethod) {
         RecordHistogram.recordEnumeratedHistogram(
-                UMA_AUTOFILL_MANAGER_ERROR, calledMethod, AutofillManagerMethod.MAX_VALUE);
+                UMA_AUTOFILL_MANAGER_ERROR, calledMethod, AutofillManagerMethod.MAX_VALUE + 1);
         Log.e(TAG, "Calling AutofillManager#mAutofillManager failed: " + e.getMessage());
     }
 
     private static void recordUmaAutofillProvider(@Provider int autofillProvider) {
         RecordHistogram.recordEnumeratedHistogram(
-                UMA_AUTOFILL_PROVIDER, autofillProvider, Provider.MAX_VALUE);
+                UMA_AUTOFILL_PROVIDER, autofillProvider, Provider.MAX_VALUE + 1);
     }
 
     private int toUMASubmissionSource(int source) {
@@ -596,7 +596,7 @@ public class AutofillProviderUMA {
         RecordHistogram.recordEnumeratedHistogram(
                 UMA_AUTOFILL_CREATION_CONTEXT,
                 toCreationContext(creationContext),
-                AutofillManagerCreationContext.MAX_VALUE);
+                AutofillManagerCreationContext.MAX_VALUE + 1);
     }
 
     static @AutofillManagerCreationContext int toCreationContext(@Nullable Context context) {

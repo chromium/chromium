@@ -193,7 +193,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
             RecordHistogram.recordEnumeratedHistogram(
                     NOTICE_INTERACTIONS_HISTOGRAM,
                     PopupNoticeInteractions.SHOWN,
-                    PopupNoticeInteractions.MAX_VALUE);
+                    PopupNoticeInteractions.MAX_VALUE + 1);
             mWasNoticeShownRecorded = true;
         }
     }
@@ -202,7 +202,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
         RecordHistogram.recordEnumeratedHistogram(
                 NOTICE_INTERACTIONS_HISTOGRAM,
                 PopupNoticeInteractions.ACKNOWLEDGED,
-                PopupNoticeInteractions.MAX_VALUE);
+                PopupNoticeInteractions.MAX_VALUE + 1);
         mDelegate.onSuggestionDismissed(position);
     }
 

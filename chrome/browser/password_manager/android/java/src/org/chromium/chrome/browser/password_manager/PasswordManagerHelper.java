@@ -127,7 +127,7 @@ public class PasswordManagerHelper {
         RecordHistogram.recordEnumeratedHistogram(
                 "PasswordManager.ManagePasswordsReferrer",
                 referrer,
-                ManagePasswordsReferrer.MAX_VALUE);
+                ManagePasswordsReferrer.MAX_VALUE + 1);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
 
         if (!showPwmUnavailableOrDownloadCsvDialog(

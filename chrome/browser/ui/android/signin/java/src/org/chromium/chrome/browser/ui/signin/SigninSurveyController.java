@@ -131,7 +131,7 @@ public class SigninSurveyController implements Destroyable {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.HatsSurveyAndroid.TriggerRegistered",
                 surveyType,
-                SigninSurveyType.MAX_VALUE);
+                SigninSurveyType.MAX_VALUE + 1);
         controller.mRegisteredTrigger = surveyType;
 
         if (surveyType == SigninSurveyType.WEB
@@ -219,7 +219,7 @@ public class SigninSurveyController implements Destroyable {
                     RecordHistogram.recordEnumeratedHistogram(
                             "Signin.HatsSurveyAndroid.TriedShowing",
                             assertNonNull(mRegisteredTrigger),
-                            SigninSurveyType.MAX_VALUE);
+                            SigninSurveyType.MAX_VALUE + 1);
                     surveyClient.showSurvey(
                             activity,
                             assertNonNull(mActivityLifecycleDispatcher),

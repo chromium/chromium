@@ -71,7 +71,7 @@ public class AppRatingPromoMetrics {
                 break;
         }
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.AppRatingPrompt.Status", status, ReviewStatus.MAX_VALUE);
+                "Android.AppRatingPrompt.Status", status, ReviewStatus.MAX_VALUE + 1);
     }
 
     /**

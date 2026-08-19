@@ -82,6 +82,6 @@ class TouchToFillAutofillMediator {
 
     private void recordNoticeInteraction(@PopupNoticeInteractions int interaction) {
         RecordHistogram.recordEnumeratedHistogram(
-                NOTICE_INTERACTIONS_HISTOGRAM, interaction, PopupNoticeInteractions.MAX_VALUE);
+                NOTICE_INTERACTIONS_HISTOGRAM, interaction, PopupNoticeInteractions.MAX_VALUE + 1);
     }
 }

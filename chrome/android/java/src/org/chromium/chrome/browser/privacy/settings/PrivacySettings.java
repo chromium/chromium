@@ -150,7 +150,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                     RecordHistogram.recordEnumeratedHistogram(
                             "Settings.PrivacyGuide.EntryExit",
                             PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY,
-                            PrivacyGuideInteractions.MAX_VALUE);
+                            PrivacyGuideInteractions.MAX_VALUE + 1);
                     UserPrefs.get(getProfile()).setBoolean(Pref.PRIVACY_GUIDE_VIEWED, true);
 
                     // Explicitly launch PrivacyGuideFragment from here. Because the fragment

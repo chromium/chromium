@@ -238,7 +238,7 @@ public class SafetyHubMetricUtils {
 
     public static void recordExternalInteractions(@ExternalInteractions int value) {
         RecordHistogram.recordEnumeratedHistogram(
-                EXTERNAL_INTERACTIONS_HISTOGRAM_NAME, value, ExternalInteractions.MAX_VALUE);
+                EXTERNAL_INTERACTIONS_HISTOGRAM_NAME, value, ExternalInteractions.MAX_VALUE + 1);
     }
 
     static @ModuleStateEnum int getModuleStateEnum(@ModuleState int state) {
@@ -269,26 +269,26 @@ public class SafetyHubMetricUtils {
         String histogramName = joiner.toString();
 
         RecordHistogram.recordEnumeratedHistogram(
-                histogramName, getModuleStateEnum(state), ModuleStateEnum.MAX_VALUE);
+                histogramName, getModuleStateEnum(state), ModuleStateEnum.MAX_VALUE + 1);
     }
 
     static void recordRevokedPermissionsInteraction(@PermissionsModuleInteractions int value) {
         RecordHistogram.recordEnumeratedHistogram(
                 PERMISSIONS_INTERACTIONS_HISTOGRAM_NAME,
                 value,
-                PermissionsModuleInteractions.MAX_VALUE);
+                PermissionsModuleInteractions.MAX_VALUE + 1);
     }
 
     static void recordNotificationsInteraction(@NotificationsModuleInteractions int value) {
         RecordHistogram.recordEnumeratedHistogram(
                 NOTIFICATIONS_INTERACTIONS_HISTOGRAM_NAME,
                 value,
-                NotificationsModuleInteractions.MAX_VALUE);
+                NotificationsModuleInteractions.MAX_VALUE + 1);
     }
 
     static void recordDashboardInteractions(@DashboardInteractions int value) {
         RecordHistogram.recordEnumeratedHistogram(
-                DASHBOARD_INTERACTIONS_HISTOGRAM_NAME, value, DashboardInteractions.MAX_VALUE);
+                DASHBOARD_INTERACTIONS_HISTOGRAM_NAME, value, DashboardInteractions.MAX_VALUE + 1);
     }
 
     static void maybeRecordAbusiveNotificationRevokedInteraction(
@@ -306,7 +306,7 @@ public class SafetyHubMetricUtils {
                     RecordHistogram.recordEnumeratedHistogram(
                             ABUSIVE_NOTIFICATION_REVOCATION_INTERACTIONS_HISTOGRAM_NAME,
                             value,
-                            PermissionsModuleInteractions.MAX_VALUE);
+                            PermissionsModuleInteractions.MAX_VALUE + 1);
                     return;
             }
         }

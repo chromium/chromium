@@ -316,7 +316,7 @@ public class AdaptiveToolbarButtonController
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.AdaptiveToolbarButton.SessionVariant",
                     receivedButtonData.getButtonSpec().getButtonVariant(),
-                    AdaptiveToolbarButtonVariant.MAX_VALUE);
+                    AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
         }
 
         mButtonData.setCanShow(
@@ -355,7 +355,7 @@ public class AdaptiveToolbarButtonController
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.AdaptiveToolbarButton.Clicked",
                     buttonVariant,
-                    AdaptiveToolbarButtonVariant.MAX_VALUE);
+                    AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
             receivedListener.onClick(view);
         };
     }
@@ -455,7 +455,7 @@ public class AdaptiveToolbarButtonController
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.AdaptiveToolbarButton.Variant.OnPageLoad",
                 actionToShow,
-                AdaptiveToolbarButtonVariant.MAX_VALUE);
+                AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
         if (mOriginalButtonSpec != null && mOriginalButtonSpec.getButtonVariant() == actionToShow) {
             return;
         }
@@ -490,7 +490,7 @@ public class AdaptiveToolbarButtonController
                                 RecordHistogram.recordEnumeratedHistogram(
                                         "Android.AdaptiveToolbarButton.Variant.OnStartNavigation",
                                         currentVariant,
-                                        AdaptiveToolbarButtonVariant.MAX_VALUE);
+                                        AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
                             }
                         },
                         null);

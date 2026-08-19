@@ -4402,7 +4402,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             RecordHistogram.recordEnumeratedHistogram(
                     "Bookmarks.OpenBookmarkManager.PerProfileType",
                     type,
-                    BrowserProfileType.MAX_VALUE);
+                    BrowserProfileType.MAX_VALUE + 1);
 
             RecordUserAction.record("MobileMenuAllBookmarks");
         } else if (id == R.id.show_reading_list_menu_id) {

@@ -60,7 +60,7 @@ public class AutofillVirtualCardUnenrollmentDialog {
                                     "Autofill.VirtualCard.SettingsPageUnenrollment.LinkClicked",
                                     VirtualCardEnrollmentLinkType
                                             .VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK,
-                                    VirtualCardEnrollmentLinkType.MAX_VALUE);
+                                    VirtualCardEnrollmentLinkType.MAX_VALUE + 1);
                             CustomTabActivity.showInfoPage(context, url);
                         });
         int unenrollTitle = R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_title;

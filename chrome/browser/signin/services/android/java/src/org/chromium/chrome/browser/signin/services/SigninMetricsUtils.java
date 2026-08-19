@@ -68,7 +68,7 @@ public class SigninMetricsUtils {
      */
     public static void logSigninStarted(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.SignIn.Started", accessPoint, SigninAccessPoint.MAX_VALUE);
+                "Signin.SignIn.Started", accessPoint, SigninAccessPoint.MAX_VALUE + 1);
     }
 
     /**
@@ -90,17 +90,17 @@ public class SigninMetricsUtils {
 
     public static void logHistorySyncAcceptButtonClicked(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Completed", accessPoint, SigninAccessPoint.MAX_VALUE);
+                "Signin.HistorySyncOptIn.Completed", accessPoint, SigninAccessPoint.MAX_VALUE + 1);
     }
 
     public static void logHistorySyncDeclineButtonClicked(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Declined", accessPoint, SigninAccessPoint.MAX_VALUE);
+                "Signin.HistorySyncOptIn.Declined", accessPoint, SigninAccessPoint.MAX_VALUE + 1);
     }
 
     public static void recordButtonsShown(@SyncButtonsType int type) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.SyncButtons.Shown", type, SyncButtonsType.MAX_VALUE);
+                "Signin.SyncButtons.Shown", type, SyncButtonsType.MAX_VALUE + 1);
     }
 
     /**

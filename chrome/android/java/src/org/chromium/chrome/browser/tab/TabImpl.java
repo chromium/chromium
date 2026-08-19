@@ -2725,7 +2725,7 @@ class TabImpl implements Tab, TabInternal {
             RecordHistogram.recordEnumeratedHistogram(
                     UMA_AUTOFILL_THIRD_PARTY_MODE_DISABLED_PROVIDER,
                     AutofillProviderUMA.getCurrentProvider(componentName.getPackageName()),
-                    AutofillProviderUMA.Provider.MAX_VALUE);
+                    AutofillProviderUMA.Provider.MAX_VALUE + 1);
         }
     }
 

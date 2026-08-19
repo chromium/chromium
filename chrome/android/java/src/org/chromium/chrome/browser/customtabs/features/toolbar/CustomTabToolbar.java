@@ -431,7 +431,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.AdaptiveToolbarButton.FallbackIndicator.Shown",
                 buttonVariant,
-                AdaptiveToolbarButtonVariant.MAX_VALUE);
+                AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
         var lp = (MarginLayoutParams) indicator.getLayoutParams();
         int topMargin = getDimensionPx(R.dimen.custom_tabs_toolbar_menu_dot_top_margin);
         int endMargin = getDimensionPx(R.dimen.custom_tabs_toolbar_menu_dot_end_margin);
@@ -455,7 +455,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.AdaptiveToolbarButton.FallbackIndicator.Clicked",
                 mVariantForFallbackMenu,
-                AdaptiveToolbarButtonVariant.MAX_VALUE);
+                AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
     }
 
     /**
@@ -971,7 +971,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTab.AdaptiveToolbarButton.FallbackUi",
                 variant,
-                AdaptiveToolbarButtonVariant.MAX_VALUE);
+                AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
         mVariantForFallbackMenu = AdaptiveToolbarButtonVariant.UNKNOWN;
     }
 

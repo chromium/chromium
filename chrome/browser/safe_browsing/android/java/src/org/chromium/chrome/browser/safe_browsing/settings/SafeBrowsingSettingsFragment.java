@@ -270,7 +270,7 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
         RecordHistogram.recordEnumeratedHistogram(
                 "SafeBrowsing.Settings.UserAction." + metricsSuffix,
                 userAction,
-                UserAction.MAX_VALUE);
+                UserAction.MAX_VALUE + 1);
 
         String userActionSuffix;
         switch (userAction) {

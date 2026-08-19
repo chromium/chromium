@@ -672,7 +672,7 @@ public class ReaderModeManager extends EmptyTabObserver
                         RecordHistogram.recordEnumeratedHistogram(
                                 "CustomTab.AdaptiveToolbarButton.FallbackUi",
                                 AdaptiveToolbarButtonVariant.READER_MODE,
-                                AdaptiveToolbarButtonVariant.MAX_VALUE);
+                                AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
                     }
                     recordEntryPointMetric(entryPoint);
                 };

@@ -2956,7 +2956,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             RecordHistogram.recordEnumeratedHistogram(
                     "Settings.OpenSettingsFromMenu.PerProfileType",
                     type,
-                    BrowserProfileType.MAX_VALUE);
+                    BrowserProfileType.MAX_VALUE + 1);
             return true;
         }
 

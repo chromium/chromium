@@ -486,7 +486,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.SigninAbortedAccessPoint",
                 signInState.getAccessPoint(),
-                SigninAccessPoint.MAX_VALUE);
+                SigninAccessPoint.MAX_VALUE + 1);
 
         signInState.mCallback.onSignInAborted();
 

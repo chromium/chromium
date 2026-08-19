@@ -104,7 +104,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
         RecordHistogram.recordEnumeratedHistogram(
                 "Privacy.DeleteBrowsingData.Action",
                 DeleteBrowsingDataAction.HISTORY_PAGE_ENTRIES,
-                DeleteBrowsingDataAction.MAX_VALUE);
+                DeleteBrowsingDataAction.MAX_VALUE + 1);
 
         BrowsingHistoryBridgeJni.get().removeItems(mNativeHistoryBridge);
     }

@@ -79,7 +79,7 @@ public class DigitalIdentitySafetyInterstitialBridge {
                     RecordHistogram.recordEnumeratedHistogram(
                             "Blink.DigitalIdentityRequest.InterstitialClosedReason",
                             closedReasonFromDismissalCause(dismissalCause),
-                            DigitalIdentityInterstitialClosedReason.MAX_VALUE);
+                            DigitalIdentityInterstitialClosedReason.MAX_VALUE + 1);
                     onDone(
                             dismissalCause.intValue()
                                             == DialogDismissalCause.POSITIVE_BUTTON_CLICKED

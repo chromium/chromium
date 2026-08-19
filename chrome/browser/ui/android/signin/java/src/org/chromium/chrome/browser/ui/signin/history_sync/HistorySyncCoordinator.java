@@ -93,7 +93,7 @@ public class HistorySyncCoordinator {
 
         setView(view, mUseLandscapeLayout);
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Started", accessPoint, SigninAccessPoint.MAX_VALUE);
+                "Signin.HistorySyncOptIn.Started", accessPoint, SigninAccessPoint.MAX_VALUE + 1);
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         assumeNonNull(signinManager);
         IdentityManager identityManager = signinManager.getIdentityManager();

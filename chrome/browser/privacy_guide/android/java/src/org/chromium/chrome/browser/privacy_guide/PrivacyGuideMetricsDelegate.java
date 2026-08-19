@@ -99,14 +99,14 @@ class PrivacyGuideMetricsDelegate {
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.SettingsStates",
                 stateChange,
-                PrivacyGuideSettingsStates.MAX_VALUE);
+                PrivacyGuideSettingsStates.MAX_VALUE + 1);
         // Record user action for clicking the next button on the MSBB card
         RecordUserAction.record("Settings.PrivacyGuide.NextClickMSBB");
         // Record histogram for clicking the next button on the MSBB card
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.NextNavigation",
                 PrivacyGuideInteractions.MSBB_NEXT_BUTTON,
-                PrivacyGuideInteractions.MAX_VALUE);
+                PrivacyGuideInteractions.MAX_VALUE + 1);
     }
 
     /** A method to record metrics on the next click of {@link HistorySyncFragment}. */
@@ -130,14 +130,14 @@ class PrivacyGuideMetricsDelegate {
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.SettingsStates",
                 stateChange,
-                PrivacyGuideSettingsStates.MAX_VALUE);
+                PrivacyGuideSettingsStates.MAX_VALUE + 1);
         // Record user action for clicking the next button on the History Sync card
         RecordUserAction.record("Settings.PrivacyGuide.NextClickHistorySync");
         // Record histogram for clicking the next button on the History Sync card
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.NextNavigation",
                 PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON,
-                PrivacyGuideInteractions.MAX_VALUE);
+                PrivacyGuideInteractions.MAX_VALUE + 1);
     }
 
     /** A method to record metrics on the next click of {@link SafeBrowsingFragment} */
@@ -166,14 +166,14 @@ class PrivacyGuideMetricsDelegate {
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.SettingsStates",
                 stateChange,
-                PrivacyGuideSettingsStates.MAX_VALUE);
+                PrivacyGuideSettingsStates.MAX_VALUE + 1);
         // Record user action for clicking the next button on the Safe Browsing card
         RecordUserAction.record("Settings.PrivacyGuide.NextClickSafeBrowsing");
         // Record histogram for clicking the next button on the Safe Browsing card
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.NextNavigation",
                 PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON,
-                PrivacyGuideInteractions.MAX_VALUE);
+                PrivacyGuideInteractions.MAX_VALUE + 1);
     }
 
     /** A method to record metrics on the next click of {@link CookiesFragment} */
@@ -205,14 +205,14 @@ class PrivacyGuideMetricsDelegate {
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.SettingsStates",
                 stateChange,
-                PrivacyGuideSettingsStates.MAX_VALUE);
+                PrivacyGuideSettingsStates.MAX_VALUE + 1);
         // Record user action for clicking the next button on the Cookies card
         RecordUserAction.record("Settings.PrivacyGuide.NextClickCookies");
         // Record histogram for clicking the next button on the Cookies card
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.NextNavigation",
                 PrivacyGuideInteractions.COOKIES_NEXT_BUTTON,
-                PrivacyGuideInteractions.MAX_VALUE);
+                PrivacyGuideInteractions.MAX_VALUE + 1);
     }
 
     /**
@@ -295,7 +295,7 @@ class PrivacyGuideMetricsDelegate {
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.NextNavigation",
                 PrivacyGuideInteractions.WELCOME_NEXT_BUTTON,
-                PrivacyGuideInteractions.MAX_VALUE);
+                PrivacyGuideInteractions.MAX_VALUE + 1);
     }
 
     /** A method to record metrics for the done click of the privacy guide completion page. */
@@ -304,7 +304,7 @@ class PrivacyGuideMetricsDelegate {
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.NextNavigation",
                 PrivacyGuideInteractions.COMPLETION_NEXT_BUTTON,
-                PrivacyGuideInteractions.MAX_VALUE);
+                PrivacyGuideInteractions.MAX_VALUE + 1);
     }
 
     /** A method to record metrics on the WAA link click on the privacy guide done page. */
@@ -313,7 +313,7 @@ class PrivacyGuideMetricsDelegate {
         RecordHistogram.recordEnumeratedHistogram(
                 "Settings.PrivacyGuide.EntryExit",
                 PrivacyGuideInteractions.SWAA_COMPLETION_LINK,
-                PrivacyGuideInteractions.MAX_VALUE);
+                PrivacyGuideInteractions.MAX_VALUE + 1);
     }
 
     /**

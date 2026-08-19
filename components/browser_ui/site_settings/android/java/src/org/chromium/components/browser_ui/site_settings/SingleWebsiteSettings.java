@@ -427,7 +427,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                             RecordHistogram.recordEnumeratedHistogram(
                                     "Privacy.DeleteBrowsingData.Action",
                                     DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
-                                    DeleteBrowsingDataAction.MAX_VALUE);
+                                    DeleteBrowsingDataAction.MAX_VALUE + 1);
 
                             SiteDataCleaner.clearData(
                                     getSiteSettingsDelegate(),
@@ -1817,7 +1817,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         RecordHistogram.recordEnumeratedHistogram(
                 "Privacy.DeleteBrowsingData.Action",
                 DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
-                DeleteBrowsingDataAction.MAX_VALUE);
+                DeleteBrowsingDataAction.MAX_VALUE + 1);
         if (finishActivityImmediately) {
             // Save the paused fragment before finishing the current fragment as it may cause the
             // paused fragment to resume.

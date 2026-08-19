@@ -220,7 +220,7 @@ public class WebAppHeaderUtils {
      */
     static void recordReloadButtonEvent(@ReloadType int type) {
         RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.WebAppHeader.ReloadButtonEvent", type, ReloadType.MAX_VALUE);
+                "CustomTabs.WebAppHeader.ReloadButtonEvent", type, ReloadType.MAX_VALUE + 1);
     }
 
     /**
@@ -230,6 +230,6 @@ public class WebAppHeaderUtils {
      */
     static void recordBackButtonEvent(@BackEvent int type) {
         RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.WebAppHeader.BackButtonEvent", type, ReloadType.MAX_VALUE);
+                "CustomTabs.WebAppHeader.BackButtonEvent", type, BackEvent.MAX_VALUE + 1);
     }
 }

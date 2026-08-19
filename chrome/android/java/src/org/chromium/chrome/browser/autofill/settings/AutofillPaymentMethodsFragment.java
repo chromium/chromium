@@ -619,7 +619,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
                 MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
-                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
+                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
         // We require user authentication every time user tries to change this
         // preference. Set useLastValidAuth=false to skip the grace period.
         assertNonNull(mReauthenticatorBridge);
@@ -638,12 +638,12 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         RecordHistogram.recordEnumeratedHistogram(
                                 histogramName,
                                 MandatoryReauthAuthenticationFlowEvent.FLOW_SUCCEEDED,
-                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
+                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
                     } else {
                         RecordHistogram.recordEnumeratedHistogram(
                                 histogramName,
                                 MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED,
-                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
+                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
                     }
                 });
         // Returning false here holds the toggle to still display the old value while
@@ -673,7 +673,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         RecordHistogram.recordEnumeratedHistogram(
                 MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
                 MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
-                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
+                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
         // When mandatory reauth is enabled, offer device authentication challenge.
         mReauthenticatorBridge.reauthenticate(
                 success -> {
@@ -683,13 +683,13 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         RecordHistogram.recordEnumeratedHistogram(
                                 MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
                                 MandatoryReauthAuthenticationFlowEvent.FLOW_SUCCEEDED,
-                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
+                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
                         showLocalCardEditPage(preference);
                     } else {
                         RecordHistogram.recordEnumeratedHistogram(
                                 MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM,
                                 MandatoryReauthAuthenticationFlowEvent.FLOW_FAILED,
-                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE);
+                                MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
                     }
                 });
         return true;

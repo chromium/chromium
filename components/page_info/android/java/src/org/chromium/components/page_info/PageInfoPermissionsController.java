@@ -272,7 +272,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         RecordHistogram.recordEnumeratedHistogram(
                 "Privacy.DeleteBrowsingData.Action",
                 DeleteBrowsingDataAction.PAGE_INFO_RESET_PERMISSIONS,
-                DeleteBrowsingDataAction.MAX_VALUE);
+                DeleteBrowsingDataAction.MAX_VALUE + 1);
         // Need to fetch data in order to clear it.
         BrowserContextHandle browserContext = getDelegate().getBrowserContext();
         WebsitePermissionsFetcher fetcher =

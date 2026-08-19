@@ -72,6 +72,6 @@ class OngoingGesture {
         RecordHistogram.recordEnumeratedHistogram(
                 "InputMethod.StylusHandwriting.GestureResult",
                 gestureResult,
-                HandwritingGestureResult.MAX_VALUE);
+                HandwritingGestureResult.MAX_VALUE + 1);
     }
 }

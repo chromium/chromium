@@ -717,7 +717,7 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
                 FopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED,
-                FopSelectorAction.MAX_VALUE);
+                FopSelectorAction.MAX_VALUE + 1);
     }
 
     private void recordManagePaymentMethodsOptionSelectedNonCardPaymentMethods(
@@ -725,14 +725,14 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
                 PaymentLinkFopSelectorAction.MANAGE_PAYMENT_METHODS_OPTION_SELECTED,
-                PaymentLinkFopSelectorAction.MAX_VALUE);
+                PaymentLinkFopSelectorAction.MAX_VALUE + 1);
     }
 
     private void recordHistogramOnTurnOffPaymentPromptLinkClicked(String histogramName) {
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
                 FopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED,
-                FopSelectorAction.MAX_VALUE);
+                FopSelectorAction.MAX_VALUE + 1);
     }
 
     private void recordHistogramOnTurnOffPaymentPromptLinkNonCardPaymentMethodsClicked(
@@ -740,7 +740,7 @@ class FacilitatedPaymentsPaymentMethodsMediator implements SnackbarController {
         RecordHistogram.recordEnumeratedHistogram(
                 histogramName,
                 PaymentLinkFopSelectorAction.TURN_OFF_PAYMENT_PROMPT_LINK_CLICKED,
-                PaymentLinkFopSelectorAction.MAX_VALUE);
+                PaymentLinkFopSelectorAction.MAX_VALUE + 1);
     }
 
     private String getEwalletFopSelectorUserActionHistogram(List<Ewallet> ewallets) {

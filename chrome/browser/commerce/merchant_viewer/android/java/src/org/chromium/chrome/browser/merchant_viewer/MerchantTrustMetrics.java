@@ -110,7 +110,7 @@ public class MerchantTrustMetrics {
     public void recordMetricsForMessageCleared(@MessageClearReason int clearReason) {
         finishMessagePreparedTimer();
         RecordHistogram.recordEnumeratedHistogram(
-                "MerchantTrust.Message.ClearReason", clearReason, MessageClearReason.MAX_VALUE);
+                "MerchantTrust.Message.ClearReason", clearReason, MessageClearReason.MAX_VALUE + 1);
         resetMessageMetrics();
     }
 
@@ -212,7 +212,7 @@ public class MerchantTrustMetrics {
         RecordHistogram.recordEnumeratedHistogram(
                 "MerchantTrust.BottomSheet.CloseReason",
                 stateChangeReason,
-                StateChangeReason.MAX_VALUE);
+                StateChangeReason.MAX_VALUE + 1);
         resetBottomSheetMetrics();
     }
 
@@ -303,7 +303,7 @@ public class MerchantTrustMetrics {
         RecordHistogram.recordEnumeratedHistogram(
                 "MerchantTrust.BottomSheet.OpenSource",
                 source,
-                BottomSheetOpenedSource.MAX_VALUE);
+                BottomSheetOpenedSource.MAX_VALUE + 1);
     }
 
     /** Start recording message impact on user browsing time and navigation times. */

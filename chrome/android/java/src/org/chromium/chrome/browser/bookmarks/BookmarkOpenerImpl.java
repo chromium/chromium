@@ -348,7 +348,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
 
     private void recordTypeOpened(BookmarkItem item, String histogram) {
         RecordHistogram.recordEnumeratedHistogram(
-                histogram, item.getId().getType(), BookmarkType.LAST);
+                histogram, item.getId().getType(), BookmarkType.LAST + 1);
     }
 
     private void recordTimeSinceAdded(BookmarkItem item, String histogramPrefix) {

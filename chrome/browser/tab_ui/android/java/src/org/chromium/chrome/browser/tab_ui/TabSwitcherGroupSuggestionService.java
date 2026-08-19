@@ -401,7 +401,7 @@ public class TabSwitcherGroupSuggestionService {
     /** Records a histogram for a {@link SuggestionUiEvent}. */
     public static void recordGroupSuggestionHistogram(@SuggestionUiEvent int suggestionUiEvent) {
         RecordHistogram.recordEnumeratedHistogram(
-                SUGGESTION_UI_HISTOGRAM_NAME, suggestionUiEvent, SuggestionUiEvent.MAX_VALUE);
+                SUGGESTION_UI_HISTOGRAM_NAME, suggestionUiEvent, SuggestionUiEvent.MAX_VALUE + 1);
     }
 
     /** Forces a tab group suggestion for testing purposes. */

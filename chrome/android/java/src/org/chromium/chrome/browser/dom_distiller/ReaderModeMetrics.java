@@ -64,7 +64,7 @@ public class ReaderModeMetrics {
         RecordHistogram.recordEnumeratedHistogram(
                 READER_MODE_CONTEXTUAL_PAGE_ACTION_EVENT_HISTOGRAM,
                 action,
-                ReaderModeContextualPageActionEvent.MAX_VALUE);
+                ReaderModeContextualPageActionEvent.MAX_VALUE + 1);
     }
 
     /**
@@ -126,7 +126,7 @@ public class ReaderModeMetrics {
         RecordHistogram.recordEnumeratedHistogram(
                 "DomDistiller.Android.EntryPoint." + tabTypeString,
                 entryPoint,
-                EntryPoint.MAX_VALUE);
+                EntryPoint.MAX_VALUE + 1);
     }
 
     /** Record when a user enters Reading Mode. */

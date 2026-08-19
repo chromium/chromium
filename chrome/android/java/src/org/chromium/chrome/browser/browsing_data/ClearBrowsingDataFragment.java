@@ -415,12 +415,12 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         RecordHistogram.recordEnumeratedHistogram(
                 "History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog",
                 choice,
-                CookieOrCacheDeletionChoice.MAX_VALUE);
+                CookieOrCacheDeletionChoice.MAX_VALUE + 1);
 
         RecordHistogram.recordEnumeratedHistogram(
                 "Privacy.DeleteBrowsingData.Action",
                 DeleteBrowsingDataAction.CLEAR_BROWSING_DATA_DIALOG,
-                DeleteBrowsingDataAction.MAX_VALUE);
+                DeleteBrowsingDataAction.MAX_VALUE + 1);
 
         Object spinnerSelection =
                 ((SpinnerPreference) findPreference(PREF_TIME_RANGE)).getSelectedOption();

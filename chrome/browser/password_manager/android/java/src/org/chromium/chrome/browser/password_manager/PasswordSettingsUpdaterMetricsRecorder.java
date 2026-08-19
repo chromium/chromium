@@ -107,11 +107,11 @@ class PasswordSettingsUpdaterMetricsRecorder {
         @AndroidBackendErrorType
         int error = PasswordManagerAndroidBackendUtil.getBackendError(exception);
         RecordHistogram.recordEnumeratedHistogram(
-                getHistogramName("ErrorCode"), error, AndroidBackendErrorType.MAX_VALUE);
+                getHistogramName("ErrorCode"), error, AndroidBackendErrorType.MAX_VALUE + 1);
         RecordHistogram.recordEnumeratedHistogram(
                 getHistogramName("ErrorCode", mStoreType),
                 error,
-                AndroidBackendErrorType.MAX_VALUE);
+                AndroidBackendErrorType.MAX_VALUE + 1);
         if (error == AndroidBackendErrorType.EXTERNAL_ERROR) {
             int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
             RecordHistogram.recordSparseHistogram(getHistogramName("APIError1"), apiErrorCode);

@@ -279,7 +279,9 @@ public abstract class AwContentsClient {
 
     private static void recordSendBrowsingIntentState(@SendIntentState int activityStarted) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Android.WebView.SendBrowsingIntent", activityStarted, SendIntentState.MAX_VALUE);
+                "Android.WebView.SendBrowsingIntent",
+                activityStarted,
+                SendIntentState.MAX_VALUE + 1);
     }
 
     public static Uri[] parseFileChooserResult(int resultCode, Intent intent) {

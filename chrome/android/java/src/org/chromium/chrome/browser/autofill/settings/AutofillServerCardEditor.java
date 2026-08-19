@@ -262,7 +262,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                     RecordHistogram.recordEnumeratedHistogram(
                             SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT + ".LinkClicked",
                             virtualCardEnrollmentLinkType,
-                            VirtualCardEnrollmentLinkType.MAX_VALUE);
+                            VirtualCardEnrollmentLinkType.MAX_VALUE + 1);
                     CustomTabActivity.showInfoPage(getActivity(), url);
                 };
         Callback<Integer> resultHandler =

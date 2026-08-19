@@ -298,7 +298,9 @@ class WebAppHeaderLayoutMediator
 
         if (mIsFirstAppHeaderStateUpdate && mCurrentHeaderState.isInDesktopWindow()) {
             RecordHistogram.recordEnumeratedHistogram(
-                    "CustomTabs.WebAppHeader.DisplayMode2", mDisplayMode, DisplayMode.MAX_VALUE);
+                    "CustomTabs.WebAppHeader.DisplayMode2",
+                    mDisplayMode,
+                    DisplayMode.MAX_VALUE + 1);
             mIsFirstAppHeaderStateUpdate = false;
         }
     }

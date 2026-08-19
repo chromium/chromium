@@ -180,7 +180,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                             RecordHistogram.recordEnumeratedHistogram(
                                     "Privacy.DeleteBrowsingData.Action",
                                     DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
-                                    DeleteBrowsingDataAction.MAX_VALUE);
+                                    DeleteBrowsingDataAction.MAX_VALUE + 1);
 
                             SiteDataCleaner.clearData(
                                     getSiteSettingsDelegate(), mSiteGroup, mDataClearedCallback);
@@ -216,7 +216,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         RecordHistogram.recordEnumeratedHistogram(
                 "Privacy.DeleteBrowsingData.Action",
                 DeleteBrowsingDataAction.SITES_SETTINGS_PAGE,
-                DeleteBrowsingDataAction.MAX_VALUE);
+                DeleteBrowsingDataAction.MAX_VALUE + 1);
 
         SiteDataCleaner.clearData(getSiteSettingsDelegate(), mSiteGroup, mDataClearedCallback);
     }

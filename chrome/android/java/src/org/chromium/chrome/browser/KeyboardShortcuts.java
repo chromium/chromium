@@ -1108,7 +1108,7 @@ public class KeyboardShortcuts {
                         ? "Accessibility.Android.KeyboardShortcut.ScreenReaderRunning7"
                         : "Accessibility.Android.KeyboardShortcut.NoScreenReader7",
                 semanticMeaning,
-                KeyboardShortcuts.KeyboardShortcutsSemanticMeaning.MAX_VALUE);
+                KeyboardShortcuts.KeyboardShortcutsSemanticMeaning.MAX_VALUE + 1);
 
         switch (semanticMeaning) {
             case KeyboardShortcutsSemanticMeaning.OPEN_RECENTLY_CLOSED_TAB:

@@ -188,7 +188,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
                         + (isServerSave ? ".Upload" : ".Local")
                         + ".FirstShow",
                 offer,
-                SaveIbanPromptOffer.MAX_VALUE);
+                SaveIbanPromptOffer.MAX_VALUE + 1);
     }
 
     /**
@@ -203,6 +203,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
                         + (isServerSave ? ".Upload" : ".Local")
                         + ".FirstShow",
                 result,
-                SaveIbanPromptResult.MAX_VALUE);
+                SaveIbanPromptResult.MAX_VALUE + 1);
     }
 }

@@ -437,7 +437,7 @@ class TouchToFillPasswordManagerMediator {
         RecordHistogram.recordEnumeratedHistogram(
                 UMA_TOUCH_TO_FILL_DISMISSAL_REASON,
                 reason,
-                BottomSheetController.StateChangeReason.MAX_VALUE);
+                BottomSheetController.StateChangeReason.MAX_VALUE + 1);
         mDelegate.onDismissed();
     }
 

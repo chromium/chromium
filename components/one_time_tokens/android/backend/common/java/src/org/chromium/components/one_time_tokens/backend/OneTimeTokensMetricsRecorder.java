@@ -66,7 +66,7 @@ public class OneTimeTokensMetricsRecorder {
             RecordHistogram.recordEnumeratedHistogram(
                     getHistogramName(ERROR_CODE_METRIC_NAME),
                     backendException.getErrorCode(),
-                    OneTimeTokensBackendErrorCode.MAX_VALUE);
+                    OneTimeTokensBackendErrorCode.MAX_VALUE + 1);
             return;
         }
 

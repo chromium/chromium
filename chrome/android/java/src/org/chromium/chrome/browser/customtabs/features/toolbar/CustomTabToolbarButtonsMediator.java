@@ -202,7 +202,7 @@ class CustomTabToolbarButtonsMediator
             RecordHistogram.recordEnumeratedHistogram(
                     "CustomTabs.AdaptiveToolbarButton.Shown",
                     buttonVariant,
-                    AdaptiveToolbarButtonVariant.MAX_VALUE);
+                    AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
         }
     }
 

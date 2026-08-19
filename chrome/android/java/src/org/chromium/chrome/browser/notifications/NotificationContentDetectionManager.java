@@ -693,7 +693,7 @@ public class NotificationContentDetectionManager {
         RecordHistogram.recordEnumeratedHistogram(
                 SUSPICIOUS_NOTIFICATION_WARNING_INTERACTIONS_HISTOGRAM_NAME,
                 value,
-                SuspiciousNotificationWarningInteractions.MAX_VALUE);
+                SuspiciousNotificationWarningInteractions.MAX_VALUE + 1);
     }
 
     /**

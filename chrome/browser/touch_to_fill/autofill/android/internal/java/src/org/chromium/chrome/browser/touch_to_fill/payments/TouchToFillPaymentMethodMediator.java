@@ -1211,12 +1211,12 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
                 RecordHistogram.recordEnumeratedHistogram(
                         TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
                         TouchToFillCreditCardOutcome.DISMISS,
-                        TouchToFillCreditCardOutcome.MAX_VALUE);
+                        TouchToFillCreditCardOutcome.MAX_VALUE + 1);
             } else if (mIbans != null) {
                 RecordHistogram.recordEnumeratedHistogram(
                         TOUCH_TO_FILL_IBAN_OUTCOME_HISTOGRAM,
                         TouchToFillIbanOutcome.DISMISS,
-                        TouchToFillIbanOutcome.MAX_VALUE);
+                        TouchToFillIbanOutcome.MAX_VALUE + 1);
             } else if (mAffiliatedLoyaltyCards != null && mAllLoyaltyCards != null) {
                 recordTouchToFillLoyaltyCardOutcomeHistogram(TouchToFillLoyaltyCardOutcome.DISMISS);
             }
@@ -1853,14 +1853,14 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
         RecordHistogram.recordEnumeratedHistogram(
                 TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
                 outcome,
-                TouchToFillCreditCardOutcome.MAX_VALUE);
+                TouchToFillCreditCardOutcome.MAX_VALUE + 1);
     }
 
     private static void recordTouchToFillIbanOutcomeHistogram(@TouchToFillIbanOutcome int outcome) {
         RecordHistogram.recordEnumeratedHistogram(
                 TOUCH_TO_FILL_IBAN_OUTCOME_HISTOGRAM,
                 outcome,
-                TouchToFillIbanOutcome.MAX_VALUE);
+                TouchToFillIbanOutcome.MAX_VALUE + 1);
     }
 
     private static void recordTouchToFillLoyaltyCardOutcomeHistogram(
@@ -1868,7 +1868,7 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
         RecordHistogram.recordEnumeratedHistogram(
                 TOUCH_TO_FILL_LOYALTY_CARD_OUTCOME_HISTOGRAM,
                 outcome,
-                TouchToFillLoyaltyCardOutcome.MAX_VALUE);
+                TouchToFillLoyaltyCardOutcome.MAX_VALUE + 1);
     }
 
     private static void recordTouchToFillLoyaltyCardSourceHistogram(
@@ -1876,7 +1876,7 @@ class TouchToFillPaymentMethodMediator implements AutofillImageFetcher.Observer 
         RecordHistogram.recordEnumeratedHistogram(
                 TOUCH_TO_FILL_LOYALTY_CARD_SOURCE_HISTOGRAM,
                 source,
-                TouchToFillLoyaltyCardSource.MAX_VALUE);
+                TouchToFillLoyaltyCardSource.MAX_VALUE + 1);
     }
 
     private static void recordTouchToFillBnplIssuerUserAction(String issuerId, boolean isLinked) {

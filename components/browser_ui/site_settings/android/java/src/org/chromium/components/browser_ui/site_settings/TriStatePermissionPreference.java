@@ -102,21 +102,21 @@ public class TriStatePermissionPreference extends ContainedRadioButtonGroupPrefe
             RecordHistogram.recordEnumeratedHistogram(
                     "Permissions.CPSS.SiteSettingsChanged.Quiet",
                     type,
-                    ContentSettingsType.MAX_VALUE);
+                    ContentSettingsType.MAX_VALUE + 1);
             mPrefService.setBoolean(mQuietUiPref, true);
             mPrefService.setBoolean(mCpssPref, false);
         } else if (mCpss.isChecked()) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Permissions.CPSS.SiteSettingsChanged.CPSS",
                     type,
-                    ContentSettingsType.MAX_VALUE);
+                    ContentSettingsType.MAX_VALUE + 1);
             mPrefService.setBoolean(mQuietUiPref, false);
             mPrefService.setBoolean(mCpssPref, true);
         } else {
             RecordHistogram.recordEnumeratedHistogram(
                     "Permissions.CPSS.SiteSettingsChanged.Loud",
                     type,
-                    ContentSettingsType.MAX_VALUE);
+                    ContentSettingsType.MAX_VALUE + 1);
             mPrefService.setBoolean(mQuietUiPref, false);
             mPrefService.setBoolean(mCpssPref, false);
         }

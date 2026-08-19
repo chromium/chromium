@@ -128,7 +128,7 @@ public class PageZoomUma {
         RecordHistogram.recordEnumeratedHistogram(
                 PAGE_ZOOM_APP_MENU_ENABLED_STATE_HISTOGRAM,
                 value,
-                AccessibilityPageZoomAppMenuEnabledState.MAX_VALUE);
+                AccessibilityPageZoomAppMenuEnabledState.MAX_VALUE + 1);
     }
 
     /** Log that the user opened the slider from the app menu. */
@@ -212,6 +212,6 @@ public class PageZoomUma {
 
     private static void recordUsageMetric(@AccessibilityPageZoomUsageType int usageType) {
         RecordHistogram.recordEnumeratedHistogram(
-                PAGE_ZOOM_FEATURE_USAGE, usageType, AccessibilityPageZoomUsageType.MAX_VALUE);
+                PAGE_ZOOM_FEATURE_USAGE, usageType, AccessibilityPageZoomUsageType.MAX_VALUE + 1);
     }
 }

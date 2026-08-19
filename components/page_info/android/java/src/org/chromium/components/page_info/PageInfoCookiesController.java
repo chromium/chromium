@@ -154,7 +154,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         RecordHistogram.recordEnumeratedHistogram(
                 "Privacy.DeleteBrowsingData.Action",
                 DeleteBrowsingDataAction.COOKIES_IN_USE_DIALOG,
-                DeleteBrowsingDataAction.MAX_VALUE);
+                DeleteBrowsingDataAction.MAX_VALUE + 1);
 
         SiteDataCleaner.clearData(
                 getDelegate().getSiteSettingsDelegate(), mWebsite, mMainController::exitSubpage);

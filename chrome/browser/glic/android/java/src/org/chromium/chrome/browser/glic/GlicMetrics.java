@@ -36,6 +36,6 @@ public class GlicMetrics {
     public static void recordEntryPointClick(@GlicInvocationSource int source, boolean isNtp) {
         String tabContext = isNtp ? "Ntp" : "Other";
         RecordHistogram.recordEnumeratedHistogram(
-                "Glic.EntryPoint.Click." + tabContext, source, GlicInvocationSource.MAX_VALUE);
+                "Glic.EntryPoint.Click." + tabContext, source, GlicInvocationSource.MAX_VALUE + 1);
     }
 }

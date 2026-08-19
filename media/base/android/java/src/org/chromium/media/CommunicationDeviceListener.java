@@ -492,7 +492,7 @@ class CommunicationDeviceListener {
 
     private static void recordConnectionHistogram(String name, @ConnectionStatus int value) {
         RecordHistogram.recordEnumeratedHistogram(
-                CONNECTION_HISTOGRAM_PREFIX + name, value, ConnectionStatus.MAX_VALUE);
+                CONNECTION_HISTOGRAM_PREFIX + name, value, ConnectionStatus.MAX_VALUE + 1);
     }
 
     /** Trivial helper method for debug logging */
