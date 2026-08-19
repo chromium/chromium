@@ -7,9 +7,6 @@ component("startup_metric_utils") {
     "//components/startup_metric_utils/browser",
     "//components/startup_metric_utils/common",
     "//components/startup_metric_utils/gpu",
+    "//components/startup_metric_utils/renderer",
   ]
-
-  if (is_win) {
-    public_deps += [ "//components/startup_metric_utils/renderer" ]
-  }
 }

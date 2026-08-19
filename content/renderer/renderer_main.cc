@@ -34,6 +34,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/performance_manager/scenario_api/performance_scenario_memory.h"
+#include "components/startup_metric_utils/renderer/startup_metric_utils.h"
 #include "content/child/memory_coordinator/child_memory_coordinator.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
@@ -60,10 +61,6 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
 #include "ui/base/ui_base_switches.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "components/startup_metric_utils/renderer/startup_metric_utils.h"
-#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/library_loader/library_loader_hooks.h"
@@ -117,9 +114,7 @@ std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
 
 void LogTimeToStartRunLoop(const base::CommandLine& command_line,
                            base::TimeTicks run_loop_start_time) {
-#if BUILDFLAG(IS_WIN)
   startup_metric_utils::GetRenderer().RecordRunLoopStart(run_loop_start_time);
-#endif
 
   if (!command_line.HasSwitch(switches::kRendererProcessLaunchTimeTicks)) {
     return;

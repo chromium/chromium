@@ -1742,6 +1742,21 @@
             ]
         }
     ],
+    "AperitifHelpers": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AperitifHelpers"
+                    ]
+                }
+            ]
+        }
+    ],
     "ApiGlicAccessFromPromotionPage": [
         {
             "platforms": [
