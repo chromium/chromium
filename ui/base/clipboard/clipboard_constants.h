@@ -23,9 +23,11 @@ inline constexpr char16_t kMimeTypePlainText16[] = u"text/plain";
 inline constexpr char kMimeTypeUtf8PlainText[] = "text/plain;charset=utf-8";
 inline constexpr char kMimeTypeUriList[] = "text/uri-list";
 inline constexpr char16_t kMimeTypeUriList16[] = u"text/uri-list";
-// Non-standard type for downloading files after drop events. Only works on
-// Windows. See https://crbug.com/41399675 and https://crbug.com/40390016.
+// Non-standard drag types for downloading files after drop events. Currently
+// supported on Windows and Mac. See https://crbug.com/41399675 and
+// https://crbug.com/40390016.
 inline constexpr char kMimeTypeDownloadUrl[] = "downloadurl";
+inline constexpr char kMimeTypeDownloadUrlList[] = "downloadurl-list";
 inline constexpr char kMimeTypeMozillaUrl[] = "text/x-moz-url";
 inline constexpr char16_t kMimeTypeMozillaUrl16[] = u"text/x-moz-url";
 inline constexpr char kMimeTypeHtml[] = "text/html";

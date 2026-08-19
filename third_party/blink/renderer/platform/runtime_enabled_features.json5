@@ -2503,6 +2503,14 @@
       status: "stable",
     },
     {
+      // https://chromestatus.com/feature/4909387902746624
+      // Enables dragging multiple files out of a web page via the
+      // DownloadURL-list drag type.
+      name: "DragAndDropDownloadURLList",
+      public: true,
+      status: "test",
+    },
+    {
       // Enables JS-constructed File objects (e.g. new File([bytes], 'photo.jpg'))
       // to carry their blob contents through the drag-and-drop pipeline.
       // When disabled, only the filename is sent as text/plain (legacy behavior).

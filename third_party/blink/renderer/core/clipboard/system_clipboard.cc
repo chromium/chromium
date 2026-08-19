@@ -405,7 +405,10 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
         clipboard_->WriteText(NonNullString(string_item->data));
       } else if (string_item->type == ui::kMimeTypeHtml) {
         clipboard_->WriteHtml(NonNullString(string_item->data), NullUrl());
-      } else if (string_item->type != ui::kMimeTypeDownloadUrl) {
+      } else if (string_item->type != ui::kMimeTypeDownloadUrl &&
+                 (!RuntimeEnabledFeatures::
+                      DragAndDropDownloadURLListEnabled() ||
+                  string_item->type != ui::kMimeTypeDownloadUrlList)) {
         custom_data.insert(string_item->type, NonNullString(string_item->data));
       }
     }
