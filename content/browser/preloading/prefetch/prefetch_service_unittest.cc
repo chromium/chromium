@@ -8062,7 +8062,7 @@ TEST_P(PrefetchServiceTest,
       kAddedToURLRequestStartLatency, 1);
   histogram_tester().ExpectUniqueSample(
       base::StrCat(
-          {"Prefetch.PrefetchContainer.AddedToDomainLookupStarted.Embedder_",
+          {"Prefetch.PrefetchContainer.AddedToDomainLookupStarted2.Embedder_",
            test::kPreloadingEmbedderHistogramSuffixForTesting}),
       kAddedToURLRequestStartLatency +
           url_request_to_domain_lookup.InMilliseconds(),

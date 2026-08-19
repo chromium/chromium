@@ -147,9 +147,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prefetch.PrefetchContainer.AddedToDomainLookupStarted.{TriggerTypeAndEagerness}"
+    name="Prefetch.PrefetchContainer.AddedToDomainLookupStarted2.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2027-01-17">
   <owner>yoichio@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
@@ -158,7 +159,7 @@ chromium-metrics-reviews@google.com.
     request is started.
 
     This metric is recorded when `PrefetchContainer::dtor()` is called if it
-    received a non-redirect header.
+    received a non-redirect header and domain lookup was performed.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
   </summary>
@@ -360,9 +361,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Prefetch.PrefetchContainer.PrefetchStartedToDomainLookupStarted.{TriggerTypeAndEagerness}"
+    name="Prefetch.PrefetchContainer.PrefetchStartedToDomainLookupStarted2.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2026-11-12">
   <owner>yoichio@chromium.org</owner>
+  <owner>taiyo@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
@@ -371,7 +373,7 @@ chromium-metrics-reviews@google.com.
     lookup for the corresponding URL request is started.
 
     This metric is recorded when `PrefetchContainer::dtor()` is called if it
-    received a non-redirect header.
+    received a non-redirect header and domain lookup was performed.
 
     This histogram is only recorded for prefetches of {TriggerTypeAndEagerness}.
   </summary>

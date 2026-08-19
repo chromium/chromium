@@ -1953,8 +1953,14 @@ void PrefetchContainer::NotifyPrefetchResponseReceived(
 
   prefetch_container_metrics_.time_url_request_started =
       head.load_timing.request_start;
-  prefetch_container_metrics_.time_domain_lookup_started =
-      head.load_timing.connect_timing.domain_lookup_start;
+
+  // `connect_timing.domain_lookup_start` is null if the request reused an
+  // existing connection (e.g. socket reuse, Multiplexing of HTTP/2,3),
+  // or was served from the HTTP cache.
+  if (!head.load_timing.connect_timing.domain_lookup_start.is_null()) {
+    prefetch_container_metrics_.time_domain_lookup_started =
+        head.load_timing.connect_timing.domain_lookup_start;
+  }
 
   if (head.load_timing_internal_info.has_value()) {
     prefetch_container_metrics_.create_stream_delay =
@@ -2111,21 +2117,24 @@ void PrefetchContainer::RecordPrefetchDurationHistogram() {
       prefetch_container_metrics_.time_url_request_started.value() -
           prefetch_container_metrics_.time_prefetch_started.value());
 
-  CHECK(prefetch_container_metrics_.time_domain_lookup_started.has_value());
-  base::UmaHistogramTimes(
-      base::StrCat({
-          "Prefetch.PrefetchContainer.AddedToDomainLookupStarted.",
-          GetMetricsSuffix(),
-      }),
-      prefetch_container_metrics_.time_domain_lookup_started.value() -
-          prefetch_container_metrics_.time_added_to_prefetch_service.value());
-  base::UmaHistogramTimes(
-      base::StrCat({
-          "Prefetch.PrefetchContainer.PrefetchStartedToDomainLookupStarted.",
-          GetMetricsSuffix(),
-      }),
-      prefetch_container_metrics_.time_domain_lookup_started.value() -
-          prefetch_container_metrics_.time_prefetch_started.value());
+  // `time_domain_lookup_started` has no value if DNS resolution was not
+  // performed for this request (e.g. socket reuse or HTTP cache hit).
+  if (prefetch_container_metrics_.time_domain_lookup_started.has_value()) {
+    base::UmaHistogramTimes(
+        base::StrCat({
+            "Prefetch.PrefetchContainer.AddedToDomainLookupStarted2.",
+            GetMetricsSuffix(),
+        }),
+        prefetch_container_metrics_.time_domain_lookup_started.value() -
+            prefetch_container_metrics_.time_added_to_prefetch_service.value());
+    base::UmaHistogramTimes(
+        base::StrCat({
+            "Prefetch.PrefetchContainer.PrefetchStartedToDomainLookupStarted2.",
+            GetMetricsSuffix(),
+        }),
+        prefetch_container_metrics_.time_domain_lookup_started.value() -
+            prefetch_container_metrics_.time_prefetch_started.value());
+  }
 
   if (prefetch_container_metrics_.create_stream_delay.has_value()) {
     base::UmaHistogramTimes(base::StrCat({

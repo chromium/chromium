@@ -53,7 +53,9 @@ struct CONTENT_EXPORT PrefetchContainerMetrics final {
 
   // Timing information for metrics
   //
-  // Constraint: That earlier one is null implies that later one is null.
+  // Constraint: That earlier one is null implies that later one is null,
+  // except for `time_domain_lookup_started`, which can be null if DNS
+  // resolution was not performed (e.g. socket reuse or HTTP cache hit).
   // E.g. `time_prefetch_start` is null implies
   // `time_header_determined_successfully` is null.
   std::optional<base::TimeTicks> time_added_to_prefetch_service;
