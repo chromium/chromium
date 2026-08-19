@@ -6,9 +6,6 @@ zmo@chromium.org
 blundell@chromium.org
 kylechar@chromium.org
 
-# GPU memory buffer implementations.
-per-file *gpu_memory_buffer*=dcastagna@chromium.org
-
 # Passthrough command decoder
 per-file *passthrough*=geofflang@chromium.org
 
