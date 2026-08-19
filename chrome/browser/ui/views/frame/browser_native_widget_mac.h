@@ -116,8 +116,6 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   NSView* __strong background_view_;
   NSView* __strong tint_view_;
 
-  std::optional<ui::NativeTheme::PreferredColorScheme>
-      last_preferred_color_scheme_;
   std::optional<SkColor> last_theme_color_;
   std::optional<bool> last_is_vertical_tabs_;
   std::optional<bool> last_is_glass_eligible_;
