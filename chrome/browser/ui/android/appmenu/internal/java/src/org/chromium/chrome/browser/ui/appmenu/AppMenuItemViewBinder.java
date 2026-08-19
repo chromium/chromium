@@ -248,11 +248,6 @@ class AppMenuItemViewBinder {
                 }
             }
 
-            boolean isMenuIconAtStart = model.get(AppMenuItemProperties.MENU_ICON_AT_START);
-            view.setTag(
-                    R.id.menu_item_enter_anim_id,
-                    AppMenuUtil.buildIconItemEnterAnimator(buttons, isMenuIconAtStart));
-
             view.setEnabled(false);
         }
     }
