@@ -21,7 +21,10 @@ if (!is_android) {
       "signin_util.h",
     ]
 
-    deps = [ "//chrome/browser/ui/webui/signin:test_support_ui" ]
+    deps = [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/webui/signin:test_support_ui",
+    ]
 
     public_deps = [
       "//base",

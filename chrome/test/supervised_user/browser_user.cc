@@ -45,9 +45,10 @@ BrowserUser::BrowserUser(
       identity_manager_(identity_manager),
       browser_(browser),
       profile_(profile),
-      sign_in_functions_(base::BindLambdaForTesting(
-                             [&browser]() -> Browser* { return &browser; }),
-                         add_tab_function) {}
+      sign_in_functions_(
+          base::BindLambdaForTesting(
+              [&browser]() -> BrowserWindowInterface* { return &browser; }),
+          add_tab_function) {}
 BrowserUser::~BrowserUser() = default;
 
 void BrowserUser::SignInToBrowser() {

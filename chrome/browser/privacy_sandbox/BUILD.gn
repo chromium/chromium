@@ -91,6 +91,7 @@ if (!is_android) {
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/privacy_sandbox:features",

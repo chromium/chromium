@@ -25,6 +25,7 @@
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
@@ -119,7 +120,7 @@ class LiveSignInTestBase : public LiveTest {
 
   SignInFunctions sign_in_functions = SignInFunctions(
       base::BindLambdaForTesting(
-          [this]() -> Browser* { return this->browser(); }),
+          [this]() -> BrowserWindowInterface* { return this->browser(); }),
       base::BindLambdaForTesting([this](int index,
                                         const GURL& url,
                                         ui::PageTransition transition) -> bool {
@@ -362,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
   GURL settings_url("chrome://settings");
   ASSERT_TRUE(AddTabAtIndex(0, settings_url,
                             ui::PageTransition::PAGE_TRANSITION_TYPED));
-  auto* settings_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* settings_tab = browser()->GetTabStripModel()->GetActiveWebContents();
   std::string start_syncing_script = base::StringPrintf(
       "settings.SyncBrowserProxyImpl.getInstance()."
       "startSyncingWithEmail(\"%s\", true);",
@@ -462,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
   EXPECT_TRUE(login_ui_test_utils::CompleteSigninEmailConfirmationDialog(
       browser(), kDialogTimeout,
       SigninEmailConfirmationDialog::CREATE_NEW_USER));
-  Browser* new_browser = ui_test_utils::WaitForBrowserToOpen();
+  BrowserWindowInterface* new_browser = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2U);
   EXPECT_NE(browser()->GetProfile(), new_browser->GetProfile());
@@ -730,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync, MANUAL_CreateSignedInProfile) {
 
   // Wait for browser to open.
   profiles::testing::WaitForPickerClosed();
-  Browser* new_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* new_browser = browser_created_observer.Wait();
   EXPECT_EQ(new_browser->GetProfile(), new_profile);
   EXPECT_EQ(GetPrimaryAccountConsentLevel(identity_manager),
             signin::ConsentLevel::kSync);
@@ -757,8 +758,8 @@ IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
 
   sign_in_functions.SignInFromSettings(test_account.value(), 0,
                                        /*complete_signin_operation=*/false);
-  int current_tab_count = browser()->tab_strip_model()->count();
-  auto* signin_tab = browser()->tab_strip_model()->GetActiveWebContents();
+  int current_tab_count = browser()->GetTabStripModel()->count();
+  auto* signin_tab = browser()->GetTabStripModel()->GetActiveWebContents();
   DiceTabHelper* dice_tab_helper = DiceTabHelper::FromWebContents(signin_tab);
   ASSERT_TRUE(dice_tab_helper->IsSyncSigninInProgress());
 
@@ -768,7 +769,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false);
   content::WebContents* contents =
       signin_tab->OpenURL(params, /*navigation_handle_callback=*/{});
-  ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
+  ASSERT_EQ(current_tab_count, browser()->GetTabStripModel()->count());
   ASSERT_EQ(signin_tab, contents);
 
   GURL interception_bubble_url(
@@ -794,7 +795,7 @@ IN_PROC_BROWSER_TEST_P(LiveSignInGaiaIntegrationTest,
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
-  ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
+  ASSERT_EQ(current_tab_count, browser()->GetTabStripModel()->count());
   interception_bubble_observer.Wait();
   histogram_tester.ExpectBucketCount(
       "Signin.Intercept.HeuristicOutcome",

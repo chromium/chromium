@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/test_support/account_repository.h"

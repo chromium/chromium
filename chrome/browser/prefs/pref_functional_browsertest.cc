@@ -13,9 +13,9 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -52,7 +52,7 @@ class PrefsFunctionalTest : public InProcessBrowserTest {
   // Create a DownloadTestObserverTerminal that will wait for the
   // specified number of downloads to finish.
   std::unique_ptr<content::DownloadTestObserver> CreateWaiter(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       int num_downloads) {
     DownloadManager* download_manager =
         browser->GetProfile()->GetDownloadManager();
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
       "});";
   EXPECT_EQ(true,
             content::EvalJs(
-                browser()->tab_strip_model()->GetActiveWebContents(), script));
+                browser()->GetTabStripModel()->GetActiveWebContents(), script));
 
   browser()->GetProfile()->GetPrefs()->SetInteger(
       content_settings::WebsiteSettingsRegistry::GetInstance()
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
 
   EXPECT_EQ(false,
             content::EvalJs(
-                browser()->tab_strip_model()->GetActiveWebContents(), script));
+                browser()->GetTabStripModel()->GetActiveWebContents(), script));
 }
 
 // Verify that enabling/disabling Javascript in prefs works.
@@ -135,13 +135,13 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestJavascriptEnableDisable) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
   EXPECT_EQ(u"Title from script javascript enabled",
-            browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetTitle());
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kWebKitJavascriptEnabled, false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
   EXPECT_EQ(u"This is html title",
-            browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+            browser()->GetTabStripModel()->GetActiveWebContents()->GetTitle());
 }
 
 class LegacyBookmarkBarPrefsTest : public PrefsFunctionalTest {
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(SimplifiedBookmarkBarPrefsTest,
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImagesNotBlockedInIncognito) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/settings/image_page.html");
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
 
   std::string script =
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImagesNotBlockedInIncognito) {
       "});";
   EXPECT_EQ(true,
             content::EvalJs(
-                incognito_browser->tab_strip_model()->GetActiveWebContents(),
+                incognito_browser->GetTabStripModel()->GetActiveWebContents(),
                 script));
 }
 

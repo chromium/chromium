@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -32,23 +33,33 @@
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace signin::test {
 
-signin::IdentityManager* identity_manager(Browser* browser) {
+signin::IdentityManager* identity_manager(BrowserWindowInterface* browser) {
   return IdentityManagerFactory::GetForProfile(browser->GetProfile());
 }
 
-syncer::SyncService* sync_service(Browser* browser) {
+syncer::SyncService* sync_service(BrowserWindowInterface* browser) {
   return SyncServiceFactory::GetForProfile(browser->GetProfile());
 }
 
-AccountReconcilor* account_reconcilor(Browser* browser) {
+AccountReconcilor* account_reconcilor(BrowserWindowInterface* browser) {
   return AccountReconcilorFactory::GetForProfile(browser->GetProfile());
 }
+
+SignInFunctions::SignInFunctions(
+    const base::RepeatingCallback<BrowserWindowInterface*()> browser,
+    const base::RepeatingCallback<bool(int, const GURL&, ui::PageTransition)>
+        add_tab_function)
+    : browser_(browser), add_tab_function_(add_tab_function) {}
 
 SignInFunctions::SignInFunctions(
     const base::RepeatingCallback<Browser*()> browser,
     const base::RepeatingCallback<bool(int, const GURL&, ui::PageTransition)>
         add_tab_function)
-    : browser_(browser), add_tab_function_(add_tab_function) {}
+    : browser_(base::BindRepeating(
+          [](base::RepeatingCallback<Browser*()> cb)
+              -> BrowserWindowInterface* { return cb.Run(); },
+          browser)),
+      add_tab_function_(add_tab_function) {}
 
 SignInFunctions::~SignInFunctions() = default;
 
@@ -59,7 +70,7 @@ void SignInFunctions::SignInFromWeb(
                                     GaiaUrls::GetInstance()->add_account_url(),
                                     ui::PageTransition::PAGE_TRANSITION_TYPED));
   SignInFromCurrentPage(
-      browser_.Run()->tab_strip_model()->GetActiveWebContents(), test_account,
+      browser_.Run()->GetTabStripModel()->GetActiveWebContents(), test_account,
       previously_signed_in_accounts);
 }
 
@@ -68,11 +79,11 @@ void SignInFunctions::SignInFromSettings(
     int previously_signed_in_accounts,
     bool complete_signin_operation) {
   GURL settings_url("chrome://settings");
-  Browser* browser = browser_.Run();
+  BrowserWindowInterface* browser = browser_.Run();
   ASSERT_TRUE(add_tab_function_.Run(0, settings_url,
                                     ui::PageTransition::PAGE_TRANSITION_TYPED));
   ui_test_utils::TabAddedWaiter signin_tab_waiter(browser);
-  auto* settings_tab = browser->tab_strip_model()->GetActiveWebContents();
+  auto* settings_tab = browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::ExecJs(
       settings_tab,
       base::StringPrintf(
@@ -81,7 +92,7 @@ void SignInFunctions::SignInFromSettings(
           "startSignIn(settings.ChromeSigninAccessPoint.SETTINGS);")));
   signin_tab_waiter.Wait();
   // Ensure the gaia login tab is loaded before proceeding.
-  auto* gaia_login_tab = browser->tab_strip_model()->GetActiveWebContents();
+  auto* gaia_login_tab = browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(gaia_login_tab));
   if (complete_signin_operation) {
     SignInFromCurrentPage(gaia_login_tab, test_account,
@@ -195,7 +206,7 @@ void SignInFunctions::TurnOffSync() {
   SignInTestObserver observer(identity_manager(browser_.Run()),
                               account_reconcilor(browser_.Run()));
   auto* settings_tab =
-      browser_.Run()->tab_strip_model()->GetActiveWebContents();
+      browser_.Run()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::ExecJs(
       settings_tab,
       base::StringPrintf(
