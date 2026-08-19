@@ -143,11 +143,17 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 - (BOOL)shouldShowBrandingHeaderForFirstRunType:
     (GeminiFirstRunType)firstRunType {
-  return firstRunType != GeminiFirstRunType::kLive;
+  return !IsGeminiVisualRichFREEnabled() &&
+         firstRunType != GeminiFirstRunType::kLive;
 }
 
 - (std::vector<GeminiFirstRunStepIdentifier>)stepsForFirstRunType:
     (GeminiFirstRunType)firstRunType {
+  // Visual rich FRE should not be used for live entry point.
+  if (firstRunType != GeminiFirstRunType::kLive &&
+      IsGeminiVisualRichFREEnabled()) {
+    return {GeminiFirstRunStepIdentifier::kVisualRich};
+  }
   // Using std::vector to avoid boxing C++ enum class values into NSNumber.
   std::vector<GeminiFirstRunStepIdentifier> steps;
   if ([self shouldShowPromoForFirstRunType:firstRunType]) {

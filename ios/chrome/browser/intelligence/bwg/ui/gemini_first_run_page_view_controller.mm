@@ -212,13 +212,27 @@ const CGFloat kInsetAdjustment = 20;
   // Not used.
 }
 
+- (BOOL)shouldUseFullscreenForStep:(UIViewController<GeminiFirstRunStep>*)step {
+  // A step will determine whether it wants to opt into using fullscreen
+  // presentation, allowing us to preserve sheet detents unless the step
+  // decides otherwise.
+  return [step respondsToSelector:@selector(shouldUseFullscreenPresentation)] &&
+         [step shouldUseFullscreenPresentation];
+}
+
 #pragma mark - GeminiFirstRunStepDelegate
 
 - (void)stepContentHeightDidChange:(UIViewController<GeminiFirstRunStep>*)step {
   if (step == _currentStep) {
-    [self.sheetPresentationController animateChanges:^{
+    if ([self shouldUseFullscreenForStep:step]) {
+      // Sheet is fixed at largeDetent, only update internal scrollable content
+      // height constraint.
       [self updateContentHeightConstraint];
-    }];
+    } else {
+      [self.sheetPresentationController animateChanges:^{
+        [self updateContentHeightConstraint];
+      }];
+    }
   }
 }
 
@@ -230,7 +244,10 @@ const CGFloat kInsetAdjustment = 20;
   CGFloat newHeight = [_currentStep contentHeight];
   if (newHeight != _contentHeightConstraint.constant) {
     _contentHeightConstraint.constant = newHeight;
-    [self.sheetPresentationController invalidateDetents];
+    if (![self shouldUseFullscreenForStep:_currentStep]) {
+      // Only invalidate detents when the sheet is not fixed at largeDetent.
+      [self.sheetPresentationController invalidateDetents];
+    }
   }
 }
 
@@ -287,8 +304,9 @@ const CGFloat kInsetAdjustment = 20;
   wrapperStackView.axis = UILayoutConstraintAxisVertical;
   wrapperStackView.layoutMarginsRelativeArrangement = YES;
   wrapperStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  CGFloat topMargin = _showBrandingHeader ? kLogoTopGap : 0;
   wrapperStackView.directionalLayoutMargins =
-      NSDirectionalEdgeInsetsMake(kLogoTopGap, 0, 0, 0);
+      NSDirectionalEdgeInsetsMake(topMargin, 0, 0, 0);
   wrapperStackView.accessibilityIdentifier =
       kGeminiFirstRunWrapperStackAccessibilityIdentifier;
   [self.contentView addSubview:wrapperStackView];
@@ -307,6 +325,7 @@ const CGFloat kInsetAdjustment = 20;
   _horizontalScrollView.translatesAutoresizingMaskIntoConstraints = NO;
   _horizontalScrollView.showsHorizontalScrollIndicator = NO;
   _horizontalScrollView.scrollEnabled = NO;
+  _horizontalScrollView.clipsToBounds = NO;
   [wrapperStackView addArrangedSubview:_horizontalScrollView];
 
   _horizontalStackView = [[UIStackView alloc] init];
@@ -348,6 +367,18 @@ const CGFloat kInsetAdjustment = 20;
 // Configures modal presentation settings. We use a custom detent with a height
 // based on the visible content while taking into account the scrollview inset.
 - (void)configureSheetPresentation {
+  self.modalInPresentation = YES;
+  self.modalPresentationStyle = UIModalPresentationPageSheet;
+  [self configureCornerRadius];
+
+  // Steps opting into fullscreen presentation use a fixed large sheet detent
+  // instead of dynamic content-fitting detents.
+  if ([self shouldUseFullscreenForStep:_currentStep]) {
+    self.sheetPresentationController.detents =
+        @[ [UISheetPresentationControllerDetent largeDetent] ];
+    return;
+  }
+
   __weak __typeof(self) weakSelf = self;
   auto resolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
@@ -376,10 +407,7 @@ const CGFloat kInsetAdjustment = 20;
           customDetentWithIdentifier:kGeminiPromoConsentFullDetentIdentifier
                             resolver:resolver];
   self.sheetPresentationController.detents = @[ detent ];
-  self.modalInPresentation = YES;
-  self.modalPresentationStyle = UIModalPresentationPageSheet;
   self.sheetPresentationController.selectedDetentIdentifier = detent.identifier;
-  [self configureCornerRadius];
 }
 
 // Configures the correct preferred corner radius given the form factor.

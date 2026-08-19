@@ -29,12 +29,15 @@ source_set("ui") {
     "gemini_promo_view_controller.mm",
     "gemini_ui_utils.h",
     "gemini_ui_utils.mm",
+    "gemini_visual_rich_view_controller.h",
+    "gemini_visual_rich_view_controller.mm",
   ]
   deps = [
     "//base",
     "//build:branding_buildflags",
     "//components/feature_engagement/public",
     "//components/feature_engagement/public:feature_constants",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/intelligence/bwg/metrics",
@@ -123,11 +126,13 @@ source_set("unit_tests") {
     "gemini_first_run_wrapper_view_controller_unittest.mm",
     "gemini_promo_view_controller_unittest.mm",
     "gemini_ui_utils_unittest.mm",
+    "gemini_visual_rich_view_controller_unittest.mm",
   ]
   deps = [
     ":ui",
     "//base",
     "//base/test:test_support",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",

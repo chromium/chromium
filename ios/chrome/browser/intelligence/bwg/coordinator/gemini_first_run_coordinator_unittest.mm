@@ -431,4 +431,23 @@ TEST_F(GeminiFirstRunCoordinatorTest, TestMediatorStepsAndBrandingHeader) {
   EXPECT_EQ(liveSteps, expected_live_steps);
   EXPECT_FALSE([mediator
       shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kLive]);
+
+  // When Visual Rich is enabled, NewUser presents only the single VisualRich
+  // step.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{kGeminiFRERefactor, {}},
+         {kGeminiFREExperiment,
+          {{kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}}}},
+        {});
+    std::vector<GeminiFirstRunStepIdentifier> visualRichSteps =
+        [mediator stepsForFirstRunType:GeminiFirstRunType::kNewUser];
+    std::vector<GeminiFirstRunStepIdentifier> expected_visual_rich_steps = {
+        GeminiFirstRunStepIdentifier::kVisualRich,
+    };
+    EXPECT_EQ(visualRichSteps, expected_visual_rich_steps);
+    EXPECT_FALSE([mediator
+        shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kNewUser]);
+  }
 }

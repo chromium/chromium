@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_step.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_first_run_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_promo_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_visual_rich_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -308,6 +309,13 @@
       consentVC.mutator = _mediator;
       consentVC.firstRunType = _firstRunType;
       return consentVC;
+    }
+    case GeminiFirstRunStepIdentifier::kVisualRich: {
+      GeminiVisualRichViewController* visualRichVC =
+          [[GeminiVisualRichViewController alloc]
+              initWithConfiguration:consentConfig];
+      visualRichVC.mutator = _mediator;
+      return visualRichVC;
     }
   }
 }

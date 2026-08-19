@@ -9,6 +9,30 @@ NSString* const kGeminiPromoConsentFullDetentIdentifier =
 
 NSString* const kLottieAnimationFirstRunBannerName = @"FRE_Banner";
 
+NSString* const kLottieAnimationFRESummarizeSlideName = @"FRE_Summarize_Slide";
+NSString* const kLottieAnimationFRESummarizeSlideDarkName =
+    @"FRE_Summarize_Slide_Dark";
+NSString* const kLottieAnimationFRESummarizeSlideRTLName =
+    @"FRE_Summarize_Slide_RTL";
+NSString* const kLottieAnimationFRESummarizeSlideDarkRTLName =
+    @"FRE_Summarize_Slide_Dark_RTL";
+
+NSString* const kLottieAnimationFREShoppingSlideName = @"FRE_Shopping_Slide";
+NSString* const kLottieAnimationFREShoppingSlideDarkName =
+    @"FRE_Shopping_Slide_Dark";
+NSString* const kLottieAnimationFREShoppingSlideRTLName =
+    @"FRE_Shopping_Slide_RTL";
+NSString* const kLottieAnimationFREShoppingSlideDarkRTLName =
+    @"FRE_Shopping_Slide_Dark_RTL";
+
+NSString* const kLottieAnimationFREPlanningSlideName = @"FRE_Planning_Slide";
+NSString* const kLottieAnimationFREPlanningSlideDarkName =
+    @"FRE_Planning_Slide_Dark";
+NSString* const kLottieAnimationFREPlanningSlideRTLName =
+    @"FRE_Planning_Slide_RTL";
+NSString* const kLottieAnimationFREPlanningSlideDarkRTLName =
+    @"FRE_Planning_Slide_Dark_RTL";
+
 const char kLastInteractionTimestampDictKey[] = "last_interaction_timestamp";
 const char kURLOnLastInteractionDictKey[] = "url_on_last_interaction";
 

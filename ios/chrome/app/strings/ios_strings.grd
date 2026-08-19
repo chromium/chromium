@@ -1576,6 +1576,9 @@
       <message name="IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_SHARING_TITLE" desc="The title text of page content sharing row in BWG settings page.">
         Share current tab
       </message>
+      <message name="IDS_IOS_BWG_VISUAL_RICH_PRIMARY_BUTTON" desc="Primary button text for the Visual Rich Gemini FRE page.">
+          Start using Gemini
+      </message>
       <message name="IDS_IOS_CALL_OMNIBOX_ACTION" desc="Call suggestion action button [iOS only]">
         Call
       </message>
