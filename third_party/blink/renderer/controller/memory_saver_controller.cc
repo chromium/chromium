@@ -26,7 +26,7 @@ MemorySaverController::MemorySaverController() {
       Thread::MainThread()->Scheduler()->ToMainThreadScheduler();
   DCHECK(scheduler);
   sample_timer_.SetTaskRunner(scheduler->NonWakingTaskRunner());
-  if (base::SysInfo::AmountOfTotalPhysicalMemory() >= base::MiBU(4000)) {
+  if (base::SysInfo::AmountOfTotalPhysicalMemory() >= base::MiB(4000)) {
     return;
   }
   if (base::FeatureList::IsEnabled(features::kMemorySaverModeRenderTuning)) {

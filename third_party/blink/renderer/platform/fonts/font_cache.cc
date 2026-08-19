@@ -358,7 +358,7 @@ void FontCache::MaybePreloadSystemFonts() {
   }
 
   if (base::SysInfo::AmountOfTotalPhysicalMemory() <
-      base::GiBU(base::saturated_cast<uint64_t>(
+      base::GiB(base::saturated_cast<uint64_t>(
           features::kPreloadSystemFontsRequiredMemoryGB.Get()))) {
     return;
   }
