@@ -496,13 +496,16 @@ source_set("unit_tests") {
   } else {
     sources += [
       "generated_password_leak_detection_pref_unittest.cc",
+      "password_change/glic_password_change_actuator_unittest.cc",
       "password_change/password_change_from_checkup_delegate_unittest.cc",
       "password_change/script_password_change_actuator_unittest.cc",
       "password_change_delegate_impl_unittest.cc",
       "remote_actor/remote_actor_credential_sharing_impl_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/actor:test_support",
       "//chrome/browser/extensions:test_support",
+      "//chrome/browser/glic/test_support",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/password_manager/remote_actor",
       "//chrome/browser/signin",

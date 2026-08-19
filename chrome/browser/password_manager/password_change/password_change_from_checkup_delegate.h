@@ -71,6 +71,8 @@ class PasswordChangeFromCheckupDelegate
   }
 #endif
 
+  PasswordChangeActuator* get_actuator_for_testing() { return actuator_.get(); }
+
  private:
   std::unique_ptr<PasswordChangeActuator> actuator_;
   StateChangeCallback state_change_callback_;

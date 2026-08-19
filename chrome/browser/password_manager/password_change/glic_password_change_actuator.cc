@@ -16,6 +16,8 @@
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/glic/actor/glic_actor_task_manager.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -148,6 +150,29 @@ bool IsTaskInterrupted(actor::ActorTask::State new_state) {
   return (new_state == actor::ActorTask::State::kWaitingOnUser ||
           new_state == actor::ActorTask::State::kPausedByActor ||
           new_state == actor::ActorTask::State::kPausedByUser);
+}
+
+std::optional<GlicPasswordChangeActuator::TaskResult> ParseVerificationResult(
+    const std::string& response_text) {
+  std::string clean_text = base::CollapseWhitespaceASCII(
+      response_text, /*trim_sequences_with_line_breaks=*/true);
+
+  if (clean_text.find("PASSWORD_CHANGE_FINISHED_SUCCESSFULLY") !=
+      std::string::npos) {
+    return GlicPasswordChangeActuator::TaskResult::
+        kPasswordChangeFinishedSuccessfully;
+  }
+  if (clean_text.find("FAILED_TO_CHANGE_PASSWORD") != std::string::npos) {
+    return GlicPasswordChangeActuator::TaskResult::kFailedToChangePassword;
+  }
+  if (clean_text.find("USER_INTERVENTION_REQUIRED") != std::string::npos) {
+    return GlicPasswordChangeActuator::TaskResult::kUserInterventionRequired;
+  }
+  if (clean_text.find("UNKNOWN_FAILURE") != std::string::npos) {
+    return GlicPasswordChangeActuator::TaskResult::kUnknownFailure;
+  }
+
+  return std::nullopt;
 }
 
 }  // namespace
@@ -463,9 +488,6 @@ void GlicPasswordChangeActuator::OnChangePasswordFormFilled(
     return;
   }
 
-  verification_task_id_ = std::nullopt;
-  verification_task_created_ = false;
-
   std::string post_submission_prompt = GetPostSubmissionPrompt();
 
   if (post_submission_prompt.empty()) {
@@ -506,92 +528,14 @@ void GlicPasswordChangeActuator::InvokeVerificationFlow(
   options.prompts.push_back(std::move(post_submission_prompt));
   options.target.actuation_target =
       glic::mojom::ActuationTarget::kTargetSurface;
+  options.on_client_connected =
+      base::BindOnce(&GlicPasswordChangeActuator::SubscribeForTriggeringUpdates,
+                     weak_ptr_factory_.GetWeakPtr());
   glic::GlicInvokeWithAutoSubmitOptions auto_submit_options;
   auto_submit_options.show_panel = false;
   glic_instance_ = glic_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
       std::move(options), std::move(auto_submit_options));
-
-  actor::ActorKeyedService* actor_service =
-      actor::ActorKeyedService::Get(Profile::FromBrowserContext(
-          actuation_web_contents_->GetBrowserContext()));
-  if (actor_service) {
-    actor_task_state_subscription_ =
-        actor_service->AddTaskStateChangedCallback(base::BindRepeating(
-            &GlicPasswordChangeActuator::OnVerificationTaskStateChanged,
-            base::Unretained(this)));
-  }
-
-  verification_timer_.Start(
-      FROM_HERE, base::Seconds(90),
-      base::BindOnce(&GlicPasswordChangeActuator::OnVerificationTimeout,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GlicPasswordChangeActuator::OnVerificationTaskStateChanged(
-    actor::ActorTask& task) {
-  const actor::ActorTask::State new_state = task.GetState();
-  tabs::TabInterface* actuation_tab =
-      tabs::TabInterface::MaybeGetFromContents(actuation_web_contents_.get());
-  if (!actuation_tab) {
-    return;
-  }
-
-  if (!verification_task_id_ &&
-      task.GetTabs().contains(actuation_tab->GetHandle())) {
-    verification_task_id_ = task.id();
-    verification_task_created_ = true;
-    task.GetExecutionEngine().SetActorLoginService(
-        std::make_unique<
-            actor_login::PasswordChangeFromCheckupActorLoginService>(
-            password_manager::CloneStoredCredential(credential_)));
-    if (auto logger = GetLoggerIfAvailable(originator_.get())) {
-      logger->LogMessage(
-          Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_CREATED);
-    }
-    // A task was created, so stopping the timer to not trigger
-    // the password being saved.
-    verification_timer_.Stop();
-  }
-
-  // Ignore unrelated tasks.
-  if (verification_task_id_ != task.id()) {
-    return;
-  }
-
-  if (IsTaskInterrupted(new_state)) {
-    if (auto logger = GetLoggerIfAvailable(originator_.get())) {
-      logger->LogMessage(
-          Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_CANCEL_FLOW);
-    }
-    task.Stop(actor::ActorTask::StoppedReason::kShutdown);
-    actor_task_state_subscription_ = {};
-    saved_form_manager_.reset();
-    verification_timer_.Stop();
-    CloseGlicSession();
-    NotifyStateChanged(PasswordChangeActuator::State::kOtpDetected);
-    return;
-  }
-
-  // If the task for verification finishes, we assume success.
-  if (new_state == actor::ActorTask::State::kFinished) {
-    actor_task_state_subscription_ = {};
-    if (auto logger = GetLoggerIfAvailable(originator_.get())) {
-      logger->LogMessage(
-          Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_FINISHED);
-    }
-    CloseGlicSession();
-    HandleMaybeSuccessfulPasswordChange();
-  }
-}
-
-void GlicPasswordChangeActuator::OnVerificationTimeout() {
-  if (auto logger = GetLoggerIfAvailable(originator_.get())) {
-    logger->LogMessage(Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_TIMEOUT);
-  }
-  actor_task_state_subscription_ = {};
-  CloseGlicSession();
-  HandleMaybeSuccessfulPasswordChange();
 }
 
 void GlicPasswordChangeActuator::HandleMaybeSuccessfulPasswordChange() {
@@ -607,6 +551,7 @@ void GlicPasswordChangeActuator::HandleMaybeSuccessfulPasswordChange() {
 }
 
 void GlicPasswordChangeActuator::CloseGlicSession() {
+  updates_receiver_.reset();
   if (glic_instance_) {
     glic_instance_->CancelInvoke();
   }
@@ -636,8 +581,8 @@ void GlicPasswordChangeActuator::ResetInternalState(
   form_filler_.reset();
   form_waiter_.reset();
   saved_form_manager_.reset();
-  verification_timer_.Stop();
   actor_task_state_subscription_ = {};
+  updates_receiver_.reset();
 
   find_form_task_id_ = std::nullopt;
   verification_task_id_ = std::nullopt;
@@ -647,4 +592,112 @@ void GlicPasswordChangeActuator::NotifyStateChanged(
     PasswordChangeActuator::State new_state) {
   observers_.Notify(&PasswordChangeActuator::Observer::OnActuationStateChanged,
                     new_state);
+}
+
+void GlicPasswordChangeActuator::SubscribeForTriggeringUpdates(
+    base::WeakPtr<glic::GlicInstance> instance) {
+  if (!instance) {
+    if (auto logger = GetLoggerIfAvailable(originator_.get())) {
+      logger->LogMessage(
+          Logger::STRING_PASSWORD_CHANGE_GLIC_INSTANCE_NOT_AVAILABLE);
+    }
+    CloseGlicSession();
+    NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
+    return;
+  }
+
+  if (auto* manager = instance->GetExperimentalTriggeringManager()) {
+    mojo::PendingRemote<glic::mojom::ExperimentalTriggeringUpdatesHandler>
+        remote;
+    if (updates_receiver_.is_bound()) {
+      updates_receiver_.reset();
+    }
+    updates_receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+    updates_receiver_.set_disconnect_handler(base::BindOnce(
+        &GlicPasswordChangeActuator::OnUpdatesReceiverDisconnected,
+        weak_ptr_factory_.GetWeakPtr()));
+    manager->GetExperimentalTriggeringUpdates(
+        std::move(remote),
+        base::BindOnce(
+            &GlicPasswordChangeActuator::OnExperimentalTriggeringRegistered,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void GlicPasswordChangeActuator::OnExperimentalTriggeringRegistered(
+    bool success) {
+  if (!success) {
+    if (auto logger = GetLoggerIfAvailable(originator_.get())) {
+      logger->LogMessage(
+          Logger::
+              STRING_PASSWORD_CHANGE_FAILED_TO_REGISTER_EXPERIMENTAL_TRIGGERING);
+    }
+    CloseGlicSession();
+    NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
+  }
+}
+
+void GlicPasswordChangeActuator::OnUpdatesReceiverDisconnected() {
+  CloseGlicSession();
+  NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
+}
+
+void GlicPasswordChangeActuator::OnUpdate(
+    glic::mojom::ExperimentalTriggeringUpdatePtr update,
+    glic::mojom::SubscriberObservationType observation) {
+  if (!verification_task_id_ && glic_instance_ &&
+      glic_instance_->GetActorTaskManager() &&
+      glic_instance_->GetActorTaskManager()->current_task_id()) {
+    verification_task_id_ = actor::TaskId(
+        *glic_instance_->GetActorTaskManager()->current_task_id());
+  }
+
+  if (auto logger = GetLoggerIfAvailable(originator_.get())) {
+    logger->LogNumber(Logger::STRING_PASSWORD_CHANGE_STATUS_UPDATE,
+                      static_cast<int>(observation));
+    if (update && update->type ==
+                      glic::mojom::ExperimentalTriggeringUpdateType::kWorklog) {
+      logger->LogString(Logger::STRING_PASSWORD_CHANGE_WORKLOG, update->data);
+    }
+  }
+
+  if (observation == glic::mojom::SubscriberObservationType::kError) {
+    CloseGlicSession();
+    NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
+    return;
+  }
+
+  if (!update) {
+    return;
+  }
+
+  switch (update->type) {
+    case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalFailed:
+    case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalStopped:
+      CloseGlicSession();
+      NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
+      return;
+    case glic::mojom::ExperimentalTriggeringUpdateType::kYieldToUser:
+    case glic::mojom::ExperimentalTriggeringUpdateType::kPaused:
+      CloseGlicSession();
+      NotifyStateChanged(PasswordChangeActuator::State::kOtpDetected);
+      return;
+    case glic::mojom::ExperimentalTriggeringUpdateType::kUnknown:
+    case glic::mojom::ExperimentalTriggeringUpdateType::kWorklog:
+    case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion:
+    case glic::mojom::ExperimentalTriggeringUpdateType::kResumed:
+      std::optional<TaskResult> parsed = ParseVerificationResult(update->data);
+      if (!parsed.has_value()) {
+        return;
+      }
+
+      CloseGlicSession();
+      if (*parsed == TaskResult::kPasswordChangeFinishedSuccessfully) {
+        HandleMaybeSuccessfulPasswordChange();
+      } else {
+        NotifyStateChanged(
+            PasswordChangeActuator::State::kPasswordChangeFailed);
+      }
+      return;
+  }
 }
