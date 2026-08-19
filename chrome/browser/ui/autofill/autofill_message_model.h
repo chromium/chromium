@@ -12,10 +12,6 @@
 #include "base/types/pass_key.h"
 #include "components/messages/android/message_wrapper.h"
 
-namespace content {
-class WebContents;
-}
-
 namespace autofill {
 
 class AutofillMessageControllerImpl;

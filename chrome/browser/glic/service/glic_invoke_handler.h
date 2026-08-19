@@ -21,7 +21,6 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/web_contents_observer.h"
 
 class Profile;
 

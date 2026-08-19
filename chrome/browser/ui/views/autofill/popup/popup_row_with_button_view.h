@@ -15,10 +15,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
 
-namespace content {
-struct NativeWebKeyboardEvent;
-}  // namespace content
-
 namespace views {
 class ImageButton;
 }  // namespace views

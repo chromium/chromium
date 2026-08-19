@@ -13,7 +13,6 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/webui/flags/feature_entry.h"
-#include "content/public/common/content_features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/gpu/buildflags.h"

@@ -9,7 +9,6 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "chrome/browser/ui/autofill/autofill_message_model.h"
-#include "content/public/browser/web_contents.h"
 
 namespace autofill {
 

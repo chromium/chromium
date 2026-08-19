@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
-#include "content/public/browser/push_messaging_service.h"
 
 // This class enables push subscription refreshes as defined in the docs:
 // https://w3c.github.io/push-api/#subscription-refreshes

@@ -15,6 +15,7 @@
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_job_worker_oop.h"
 #include "components/device_event_log/device_event_log.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/buildflags/buildflags.h"

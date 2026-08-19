@@ -32,6 +32,7 @@
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/child_process_id.h"
 #include "content/public/common/content_constants.h"
+#include "content/public/common/process_type.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/global_memory_dump.h"

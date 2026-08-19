@@ -18,10 +18,6 @@ class DownloadHistory;
 class DownloadUIController;
 class Profile;
 
-namespace content {
-class DownloadManager;
-}
-
 namespace extensions {
 class ExtensionDownloadsEventRouter;
 }

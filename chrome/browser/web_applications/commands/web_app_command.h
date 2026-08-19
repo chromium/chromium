@@ -26,10 +26,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
 
-namespace content {
-class WebContents;
-}
-
 namespace web_app {
 
 class LockDescription;

@@ -7,7 +7,6 @@
 
 #include "chrome/browser/devtools/protocol/extensions.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/common/extension.h"
 

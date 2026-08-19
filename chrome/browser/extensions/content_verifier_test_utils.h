@@ -16,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
-#include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/content_verify_job.h"
 #include "extensions/browser/external_provider_interface.h"

@@ -22,7 +22,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/actions/actions.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/window_open_disposition.h"

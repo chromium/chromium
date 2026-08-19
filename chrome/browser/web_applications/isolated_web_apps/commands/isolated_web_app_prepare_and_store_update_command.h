@@ -37,10 +37,6 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace web_app {
 
 // Represents a successful preparation and storage of a pending IWA update.

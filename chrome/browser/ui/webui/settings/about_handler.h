@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/policy/core/common/policy_service.h"
-#include "content/public/browser/web_ui_message_handler.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/callback_list.h"

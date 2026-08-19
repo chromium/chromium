@@ -27,7 +27,6 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync_device_info/device_info.h"
-#include "content/public/browser/web_contents.h"
 
 class AccountCapabilities;
 class Profile;

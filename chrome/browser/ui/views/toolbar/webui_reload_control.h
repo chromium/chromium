@@ -9,7 +9,6 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/toolbar/reload_control.h"
-#include "content/public/browser/context_menu_params.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/metrics.h"

@@ -14,10 +14,6 @@
 class ChromeDownloadManagerDelegate;
 class DownloadUIController;
 
-namespace content {
-class DownloadManager;
-}
-
 namespace extensions {
 class ExtensionDownloadsEventRouter;
 }

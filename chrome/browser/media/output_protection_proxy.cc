@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/types/display_constants.h"

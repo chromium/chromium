@@ -14,7 +14,6 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 

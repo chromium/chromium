@@ -12,7 +12,6 @@
 #include "chrome/browser/glic/browser_ui/animated_effect_view.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_controller.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/gpu_data_manager_observer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"

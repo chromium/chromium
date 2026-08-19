@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_CHROME_OS_EXTENSION_WRAPPER_H_
 
 #include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/extension_service.h"

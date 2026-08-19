@@ -15,10 +15,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace content {
-class WebContents;
-}
-
 namespace glic {
 
 enum class GlicPinnedTabContextEventType { kConversationTurnSubmitted };

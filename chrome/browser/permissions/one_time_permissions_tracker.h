@@ -15,7 +15,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/visibility.h"
 #include "url/origin.h"
 
 // This observable class keeps track of one-time permission related browsing
