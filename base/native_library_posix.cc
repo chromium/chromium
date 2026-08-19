@@ -40,6 +40,12 @@ NativeLibrary LoadNativeLibrary(const FilePath& library_path,
   return dl;
 }
 
+NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
+                                           const NativeLibraryOptions& options,
+                                           NativeLibraryLoadError* error) {
+  return LoadNativeLibrary(library_path, error);
+}
+
 void UnloadNativeLibrary(NativeLibrary library) {
   int ret = dlclose(library);
   if (ret < 0) {

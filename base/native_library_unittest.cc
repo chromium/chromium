@@ -7,8 +7,13 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif
 
 namespace base {
 
@@ -24,6 +29,14 @@ TEST(NativeLibraryTest, LoadFailure) {
 // |error| is optional and can be null.
 TEST(NativeLibraryTest, LoadFailureWithNullError) {
   EXPECT_FALSE(LoadNativeLibrary(FilePath(kDummyLibraryPath), nullptr));
+}
+
+TEST(NativeLibraryTest, LoadWithOptionsFailure) {
+  NativeLibraryLoadError error;
+  NativeLibraryOptions options;
+  EXPECT_FALSE(LoadNativeLibraryWithOptions(FilePath(kDummyLibraryPath),
+                                            options, &error));
+  EXPECT_FALSE(error.ToString().empty());
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -125,6 +138,73 @@ TEST(NativeLibraryTest, LoadLibrary) {
   TestLibrary library;
   EXPECT_EQ(5, library.Call<int>("GetSimpleTestValue"));
 }
+
+#if BUILDFLAG(IS_WIN)
+
+// Verifies that loading an unsigned test library succeeds when signature
+// verification is disabled (`verify_signature = false`).
+TEST(NativeLibraryTest, LoadWithOptions_VerifySignatureDisabled) {
+  base::FilePath exe_path;
+  CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
+  base::FilePath library_path = exe_path.AppendASCII(kTestLibraryName);
+
+  NativeLibraryLoadError error;
+  NativeLibraryOptions options;
+  options.verify_signature = false;
+  NativeLibrary library =
+      LoadNativeLibraryWithOptions(library_path, options, &error);
+  EXPECT_TRUE(library);
+  if (library) {
+    UnloadNativeLibrary(library);
+  }
+}
+
+// Verifies that loading an unsigned test library fails with
+// `TRUST_E_SUBJECT_NOT_TRUSTED` when signature verification is explicitly
+// forced (`force_verify_in_dev_builds = true`).
+TEST(NativeLibraryTest, LoadWithOptions_VerifySignatureForcedFailure) {
+  base::FilePath exe_path;
+  CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
+  base::FilePath library_path = exe_path.AppendASCII(kTestLibraryName);
+
+  NativeLibraryLoadError error;
+  NativeLibraryOptions options;
+  options.verify_signature = true;
+  options.force_verify_in_dev_builds = true;
+  NativeLibrary library =
+      LoadNativeLibraryWithOptions(library_path, options, &error);
+  EXPECT_FALSE(library);
+  EXPECT_EQ(error.code, static_cast<DWORD>(TRUST_E_SUBJECT_NOT_TRUSTED));
+}
+
+// Verifies that with default signature verification
+// (`force_verify_in_dev_builds = false`), official release branded builds
+// enforce verification by default (rejecting the unsigned library with
+// `TRUST_E_SUBJECT_NOT_TRUSTED`), whereas non-branded or debug builds bypass
+// verification by default (allowing the library to load).
+TEST(NativeLibraryTest, LoadWithOptions_VerifySignatureDefault) {
+  base::FilePath exe_path;
+  CHECK(base::PathService::Get(base::DIR_EXE, &exe_path));
+  base::FilePath library_path = exe_path.AppendASCII(kTestLibraryName);
+
+  NativeLibraryLoadError error;
+  NativeLibraryOptions options;
+  options.verify_signature = true;
+  options.force_verify_in_dev_builds = false;
+  NativeLibrary library =
+      LoadNativeLibraryWithOptions(library_path, options, &error);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(NDEBUG)
+  EXPECT_FALSE(library);
+  EXPECT_EQ(error.code, static_cast<DWORD>(TRUST_E_SUBJECT_NOT_TRUSTED));
+#else
+  EXPECT_TRUE(library);
+  if (library) {
+    UnloadNativeLibrary(library);
+  }
+#endif
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -57,11 +57,28 @@ struct BASE_EXPORT NativeLibraryLoadError {
 #endif  // BUILDFLAG(IS_WIN)
 };
 
+struct BASE_EXPORT NativeLibraryOptions {
+#if BUILDFLAG(IS_WIN)
+  // If true, verifies the Authenticode signature and publisher before loading
+  // the DLL.
+  bool verify_signature = false;
+  // If true, enforces verification in non-release branded builds.
+  bool force_verify_in_dev_builds = false;
+#endif
+};
+
 // Loads a native library from disk.  Release it with UnloadNativeLibrary when
 // you're done.  Returns NULL on failure.
 // If |error| is not NULL, it may be filled in on load error.
 BASE_EXPORT NativeLibrary LoadNativeLibrary(const FilePath& library_path,
                                             NativeLibraryLoadError* error);
+
+// Loads a native library from disk with custom options (such as signature
+// verification).
+BASE_EXPORT NativeLibrary
+LoadNativeLibraryWithOptions(const FilePath& library_path,
+                             const NativeLibraryOptions& options,
+                             NativeLibraryLoadError* error);
 
 #if BUILDFLAG(IS_WIN)
 // Loads a native library from the system directory using the appropriate flags.

@@ -57,6 +57,12 @@ NativeLibrary LoadNativeLibrary(const FilePath& library_path,
   return native_lib;
 }
 
+NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
+                                           const NativeLibraryOptions& options,
+                                           NativeLibraryLoadError* error) {
+  return LoadNativeLibrary(library_path, error);
+}
+
 void UnloadNativeLibrary(NativeLibrary library) {
   if (library->type == BUNDLE) {
     CFRelease(library->bundle);

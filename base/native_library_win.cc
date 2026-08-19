@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/win/trust_util.h"
 
 namespace base {
 
@@ -117,6 +118,21 @@ std::string NativeLibraryLoadError::ToString() const {
 
 NativeLibrary LoadNativeLibrary(const FilePath& library_path,
                                 NativeLibraryLoadError* error) {
+  return LoadNativeLibraryHelper(library_path, error);
+}
+
+NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
+                                           const NativeLibraryOptions& options,
+                                           NativeLibraryLoadError* error) {
+  if (options.verify_signature) {
+    if (!win::IsBinaryTrusted(library_path, /*verify_publisher=*/true,
+                              options.force_verify_in_dev_builds)) {
+      if (error) {
+        error->code = static_cast<DWORD>(TRUST_E_SUBJECT_NOT_TRUSTED);
+      }
+      return nullptr;
+    }
+  }
   return LoadNativeLibraryHelper(library_path, error);
 }
 

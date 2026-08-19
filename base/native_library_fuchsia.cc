@@ -89,6 +89,12 @@ NativeLibrary LoadNativeLibrary(const FilePath& library_path,
   return result;
 }
 
+NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
+                                           const NativeLibraryOptions& options,
+                                           NativeLibraryLoadError* error) {
+  return LoadNativeLibrary(library_path, error);
+}
+
 void UnloadNativeLibrary(NativeLibrary library) {
   // dlclose() is a no-op on Fuchsia, so do nothing here.
 }
