@@ -17,7 +17,7 @@
 namespace content {
 
 // The maximum length of string as data url.
-inline constexpr base::ByteSize kMaxLengthOfDataURLString = base::MiBU(20);
+inline constexpr base::ByteSize kMaxLengthOfDataURLString = base::MiB(20);
 
 // Accept header used for frame requests.
 // Note: JXL inclusion is determined at runtime via features::kJXLImageFormat.

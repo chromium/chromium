@@ -229,7 +229,7 @@ std::string GetNoSpareRendererAllocationForCOOPUMAName(
 // trial is not activated on excluded machines.
 size_t GetSpareRPHCount() {
   // Exclude machines with less than 4gigs of ram.
-  if (base::SysInfo::AmountOfTotalPhysicalMemory() < base::GiBU(4)) {
+  if (base::SysInfo::AmountOfTotalPhysicalMemory() < base::GiB(4)) {
     return 1u;
   }
   return features::kMultipleSpareRPHsCount.Get();

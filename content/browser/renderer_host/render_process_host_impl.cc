@@ -3527,7 +3527,7 @@ bool RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() {
   // ensure that devices with exactly 1GB of RAM won't get included because of
   // inaccuracies or off-by-one errors.
   if (base::SysInfo::AmountOfTotalPhysicalMemory() <=
-      base::MiBU(base::saturated_cast<uint64_t>(
+      base::MiB(base::saturated_cast<uint64_t>(
           features::kAndroidSpareRendererMemoryThreshold.Get()))) {
     return false;
   }

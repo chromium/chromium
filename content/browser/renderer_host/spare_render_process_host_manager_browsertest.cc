@@ -961,7 +961,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerMemoryThresholdBrowserTest,
 
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        base::MiBU(2048));
+        base::MiB(2048));
     EXPECT_FALSE(
         spare_manager.ShouldCreateSpareRendererWithAvailableMemory(50));
     EXPECT_TRUE(
@@ -970,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerMemoryThresholdBrowserTest,
 
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-        base::MiBU(8192));
+        base::MiB(8192));
     EXPECT_FALSE(
         spare_manager.ShouldCreateSpareRendererWithAvailableMemory(120));
     EXPECT_TRUE(
@@ -1105,7 +1105,7 @@ class ExtraSpareRenderProcessHostManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 
   base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{base::GiBU(8)};
+      scoped_amount_of_physical_memory_override_{base::GiB(8)};
 };
 
 IN_PROC_BROWSER_TEST_F(ExtraSpareRenderProcessHostManagerTest, ExtraSpares) {
@@ -1198,7 +1198,7 @@ class LowMemoryExtraSpareRenderProcessHostManagerTest
 
  private:
   base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{base::GiBU(2)};
+      scoped_amount_of_physical_memory_override_{base::GiB(2)};
 };
 
 IN_PROC_BROWSER_TEST_F(LowMemoryExtraSpareRenderProcessHostManagerTest,
@@ -1252,7 +1252,7 @@ class SpareRenderProcessHostManagerMemoryPressureParamTest
       enabled_features.push_back(
           {features::kMultipleSpareRPHs,
            {{features::kMultipleSpareRPHsCount.name, "2"}}});
-      memory_override_.emplace(base::GiBU(8));
+      memory_override_.emplace(base::GiB(8));
     } else {
       disabled_features.push_back(features::kMultipleSpareRPHs);
     }
