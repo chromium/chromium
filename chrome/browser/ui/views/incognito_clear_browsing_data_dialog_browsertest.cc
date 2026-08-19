@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -41,7 +40,7 @@ class IncognitoClearBrowsingDataDialogTest : public InProcessBrowserTest {
     EXPECT_TRUE(coordinator->IsShowing());
   }
 
-  Browser* GetIncognitoBrowser() { return incognito_browser_; }
+  BrowserWindowInterface* GetIncognitoBrowser() { return incognito_browser_; }
 
   IncognitoClearBrowsingDataDialog* GetDialogView() {
     return GetCoordinator()->GetIncognitoClearBrowsingDataDialogForTesting();
@@ -58,7 +57,8 @@ class IncognitoClearBrowsingDataDialogTest : public InProcessBrowserTest {
   }
 
  private:
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>
+      incognito_browser_ = nullptr;
 };
 
 // Used to test that the bubble widget is destroyed before the host browser.
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
                        ClearBrowsingDataNavigationInIncognito) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
   ui_test_utils::SendToOmniboxAndSubmit(incognito_browser,
                                         "chrome://settings/clearBrowserData");
   std::u16string current_tab_title;

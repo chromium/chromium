@@ -7,8 +7,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/sad_tab.h"
@@ -65,7 +65,7 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
  protected:
   void KillRendererForActiveWebContentsSync() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     content::RenderProcessHost* process =
         web_contents->GetPrimaryMainFrame()->GetProcess();
     content::RenderProcessHostWatcher crash_observer(
@@ -127,7 +127,7 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
   }
 
   void ClickOnActionButtonInSadTab() {
-    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     content::WebContents* web_contents =
         tab_strip_model->GetActiveWebContents();
     while (!IsFocusedViewOnActionButtonInSadTab()) {
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
   KillRendererForActiveWebContentsSync();
 
   // Switch back to the first tab.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   EXPECT_EQ(1, tab_strip_model->active_index());
   tab_strip_model->ActivateTabAt(
       0, TabStripUserGestureDetails(

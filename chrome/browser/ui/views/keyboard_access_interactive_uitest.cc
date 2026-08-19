@@ -11,9 +11,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -43,7 +43,7 @@ namespace {
 
 // An async version of SendKeyPressSync since we don't get notified when a
 // menu is showing.
-void SendKeyPress(Browser* browser, ui::KeyboardCode key) {
+void SendKeyPress(BrowserWindowInterface* browser, ui::KeyboardCode key) {
   ASSERT_TRUE(ui_controls::SendKeyPress(browser->GetWindow()->GetNativeWindow(),
                                         key, false, false, false, false));
 }
@@ -89,7 +89,7 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
 class SendKeysMenuListener : public AppMenuButtonObserver {
  public:
   SendKeysMenuListener(AppMenuButton* app_menu_button,
-                       Browser* browser,
+                       BrowserWindowInterface* browser,
                        bool test_dismiss_menu)
       : browser_(browser),
         menu_open_count_(0),
@@ -127,7 +127,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
   int menu_open_count() const { return menu_open_count_; }
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   // Keeps track of the number of times the menu was opened.
   int menu_open_count_;
   // If this is set then on receiving a notification that the menu was opened
@@ -227,7 +227,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
       browser(), false);
 
   if (focus_omnibox) {
-    BrowserWindow::FromBrowser(browser())->GetLocationBar()->FocusLocation(
+    browser_view->GetLocationBar()->FocusLocation(
         /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
   }
 
@@ -404,7 +404,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
               kToolbarAppMenuButtonElementId,
               views::ElementTrackerViews::GetContextForView(browser_view))),
       browser(), true);
-  BrowserWindow::FromBrowser(browser())->GetLocationBar()->FocusLocation(
+  browser_view->GetLocationBar()->FocusLocation(
       /*is_user_initiated=*/false, /*clear_focus_if_failed=*/false);
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F10, false,

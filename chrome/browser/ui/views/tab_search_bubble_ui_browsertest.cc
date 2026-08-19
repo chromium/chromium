@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

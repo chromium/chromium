@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/status_bubble_views_browsertest_mac.h"
 #include "chrome/test/base/in_process_browser_test.h"

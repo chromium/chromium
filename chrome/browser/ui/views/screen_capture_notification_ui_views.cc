@@ -41,7 +41,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_win.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "content/public/browser/web_contents.h"
@@ -447,14 +447,12 @@ void ScreenCaptureNotificationUIImpl::SetWindowsAppId(views::Widget* widget) {
   if (!browser) {
     return;
   }
-  Browser* raw_browser = browser->GetBrowserForMigrationOnly();
   const base::FilePath profile_path = browser->GetProfile()->GetPath();
   std::wstring app_user_model_id =
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP
           ? shell_integration::win::GetAppUserModelIdForApp(
-                base::UTF8ToWide(BrowserInitState::From(raw_browser)
-                                     ->create_params()
-                                     .app_name),
+                base::UTF8ToWide(
+                    BrowserInitState::From(browser)->create_params().app_name),
                 profile_path)
           : shell_integration::win::GetAppUserModelIdForBrowser(profile_path);
   if (!app_user_model_id.empty()) {

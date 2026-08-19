@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/bluetooth/bluetooth_dialogs.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "components/constrained_window/constrained_window_views.h"

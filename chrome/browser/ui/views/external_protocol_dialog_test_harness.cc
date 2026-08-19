@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/external_protocol_dialog_test_harness.h"
 
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/ui/browser.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace test {

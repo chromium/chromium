@@ -7,7 +7,6 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/external_protocol_dialog.h"
 #include "chrome/browser/ui/views/external_protocol_dialog_test_harness.h"

@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "base/check.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -70,7 +70,7 @@ class WebViewBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_.Start());
 
     scoped_accessibility_mode_.emplace(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         ui::kAXModeComplete | ui::AXMode::kLabelImages);
   }
 
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(WebViewBrowserTest, DISABLED_ResizeWebView) {
       browser(), https_server_.GetURL("/fixed_size_document.html")));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::WebView* contents_web_view = browser_view->contents_web_view();

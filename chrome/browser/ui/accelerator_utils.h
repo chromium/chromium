@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ACCELERATOR_UTILS_H_
 #define CHROME_BROWSER_UI_ACCELERATOR_UTILS_H_
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace ui {
 class Accelerator;
@@ -17,6 +17,7 @@ class AcceleratorProvider;
 bool IsChromeAccelerator(const ui::Accelerator& accelerator);
 // Returns the AcceleratorProvider associated with |browser|, or nullptr
 // if one is not available.
-ui::AcceleratorProvider* AcceleratorProviderForBrowser(Browser* browser);
+ui::AcceleratorProvider* AcceleratorProviderForBrowser(
+    BrowserWindowInterface* browser);
 
 #endif  // CHROME_BROWSER_UI_ACCELERATOR_UTILS_H_

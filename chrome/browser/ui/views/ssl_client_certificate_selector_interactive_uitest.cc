@@ -11,8 +11,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/ssl_client_auth_requestor_mock.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -62,12 +62,12 @@ class SSLClientCertificateSelectorTest : public InProcessBrowserTest {
         new StrictMock<SSLClientAuthRequestorMock>(cert_request_info_);
 
     EXPECT_TRUE(content::WaitForLoadStop(
-        browser()->tab_strip_model()->GetActiveWebContents()));
+        browser()->GetTabStripModel()->GetActiveWebContents()));
     net::ClientCertIdentityList cert_identity_list;
     cert_identity_list.push_back(cert_identity_1_->Copy());
     cert_identity_list.push_back(cert_identity_2_->Copy());
     selector_ = new SSLClientCertificateSelector(
-        browser()->tab_strip_model()->GetActiveWebContents(),
+        browser()->GetTabStripModel()->GetActiveWebContents(),
         auth_requestor_->cert_request_info_, std::move(cert_identity_list),
         auth_requestor_->CreateDelegate());
     selector_->Init();
@@ -117,19 +117,19 @@ class SSLClientCertificateSelectorMultiTabTest
         AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
     ASSERT_TRUE(
         AddTabAtIndex(2, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
-    ASSERT_TRUE(nullptr != browser()->tab_strip_model()->GetWebContentsAt(0));
-    ASSERT_TRUE(nullptr != browser()->tab_strip_model()->GetWebContentsAt(1));
-    ASSERT_TRUE(nullptr != browser()->tab_strip_model()->GetWebContentsAt(2));
+    ASSERT_TRUE(nullptr != browser()->GetTabStripModel()->GetWebContentsAt(0));
+    ASSERT_TRUE(nullptr != browser()->GetTabStripModel()->GetWebContentsAt(1));
+    ASSERT_TRUE(nullptr != browser()->GetTabStripModel()->GetWebContentsAt(2));
     EXPECT_TRUE(content::WaitForLoadStop(
-        browser()->tab_strip_model()->GetWebContentsAt(1)));
+        browser()->GetTabStripModel()->GetWebContentsAt(1)));
     EXPECT_TRUE(content::WaitForLoadStop(
-        browser()->tab_strip_model()->GetWebContentsAt(2)));
+        browser()->GetTabStripModel()->GetWebContentsAt(2)));
 
     net::ClientCertIdentityList cert_identity_list_1;
     cert_identity_list_1.push_back(cert_identity_1_->Copy());
     cert_identity_list_1.push_back(cert_identity_2_->Copy());
     selector_1_ = new SSLClientCertificateSelector(
-        browser()->tab_strip_model()->GetWebContentsAt(1),
+        browser()->GetTabStripModel()->GetWebContentsAt(1),
         auth_requestor_1_->cert_request_info_, std::move(cert_identity_list_1),
         auth_requestor_1_->CreateDelegate());
     selector_1_->Init();
@@ -139,13 +139,13 @@ class SSLClientCertificateSelectorMultiTabTest
     cert_identity_list_2.push_back(cert_identity_1_->Copy());
     cert_identity_list_2.push_back(cert_identity_2_->Copy());
     selector_2_ = new SSLClientCertificateSelector(
-        browser()->tab_strip_model()->GetWebContentsAt(2),
+        browser()->GetTabStripModel()->GetWebContentsAt(2),
         auth_requestor_2_->cert_request_info_, std::move(cert_identity_list_2),
         auth_requestor_2_->CreateDelegate());
     selector_2_->Init();
     selector_2_->Show();
 
-    EXPECT_EQ(2, browser()->tab_strip_model()->active_index());
+    EXPECT_EQ(2, browser()->GetTabStripModel()->active_index());
     ASSERT_TRUE(selector_1_->GetSelectedCert());
     EXPECT_EQ(cert_identity_1_->certificate(),
               selector_1_->GetSelectedCert()->certificate());
@@ -207,7 +207,7 @@ class SSLClientCertificateSelectorMultiProfileTest
     cert_identity_list.push_back(cert_identity_1_->Copy());
     cert_identity_list.push_back(cert_identity_2_->Copy());
     selector_1_ = new SSLClientCertificateSelector(
-        browser_1_->tab_strip_model()->GetActiveWebContents(),
+        browser_1_->GetTabStripModel()->GetActiveWebContents(),
         auth_requestor_1_->cert_request_info_, std::move(cert_identity_list),
         auth_requestor_1_->CreateDelegate());
     selector_1_->Init();
@@ -224,7 +224,7 @@ class SSLClientCertificateSelectorMultiProfileTest
   }
 
  protected:
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_1_;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> browser_1_;
   scoped_refptr<net::SSLCertRequestInfo> cert_request_info_1_;
   scoped_refptr<StrictMock<SSLClientAuthRequestorMock>> auth_requestor_1_;
   raw_ptr<SSLClientCertificateSelector, AcrossTasksDanglingUntriaged>
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorTest, SelectDefault) {
 IN_PROC_BROWSER_TEST_F(SSLClientCertificateSelectorTest, CloseTab) {
   EXPECT_CALL(*auth_requestor_, CancelCertificateSelection());
 
-  browser()->tab_strip_model()->CloseAllTabs();
+  browser()->GetTabStripModel()->CloseAllTabs();
   auth_requestor_->WaitForCompletion();
 
   Mock::VerifyAndClear(auth_requestor_.get());

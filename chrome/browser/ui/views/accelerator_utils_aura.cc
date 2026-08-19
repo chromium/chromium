@@ -33,6 +33,7 @@ bool IsChromeAccelerator(const ui::Accelerator& accelerator) {
   return false;
 }
 
-ui::AcceleratorProvider* AcceleratorProviderForBrowser(Browser* browser) {
+ui::AcceleratorProvider* AcceleratorProviderForBrowser(
+    BrowserWindowInterface* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser);
 }

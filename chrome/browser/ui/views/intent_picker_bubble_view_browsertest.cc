@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -101,7 +100,7 @@ class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
                                    const std::string& rel = "") {
     chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
 
     EXPECT_TRUE(DoAndWaitForIntentPickerIconUpdate(
         [this] { NavigateToLaunchingPage(browser()); }));
@@ -121,7 +120,7 @@ class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
   }
 
   content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   IntentPickerBubbleView* intent_picker_bubble() {
@@ -374,7 +373,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, PushStateURLChangeTest) {
   EXPECT_TRUE(intent_picker_view->GetVisible());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(DoAndWaitForIntentPickerIconUpdate([web_contents] {
     ASSERT_TRUE(content::ExecJs(
         web_contents,
@@ -511,7 +510,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest, RememberOpenWebApp) {
   intent_picker_bubble()->AcceptDialog();
 
   // Accepting the bubble should open the app.
-  Browser* app_browser = browser_created_observer.Wait();
+  BrowserWindowInterface* app_browser = browser_created_observer.Wait();
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
                                                          test_web_app_id()));
 

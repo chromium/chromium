@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/javascript_tab_modal_dialog_view_views.h"
 
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -148,12 +150,12 @@ JavaScriptTabModalDialogViewViews::JavaScriptTabModalDialogViewViews(
 // static
 JavaScriptTabModalDialogViewViews*
 JavaScriptTabModalDialogViewViews::CreateAlertDialogForTesting(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::u16string title,
     std::u16string message) {
   return new JavaScriptTabModalDialogViewViews(
-      browser->tab_strip_model()->GetActiveWebContents(),
-      browser->tab_strip_model()->GetActiveWebContents(), title,
+      browser->GetTabStripModel()->GetActiveWebContents(),
+      browser->GetTabStripModel()->GetActiveWebContents(), title,
       content::JAVASCRIPT_DIALOG_TYPE_ALERT, message, std::u16string(),
       base::NullCallback(), base::NullCallback());
 }

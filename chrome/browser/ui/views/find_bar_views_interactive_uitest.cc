@@ -9,7 +9,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -1183,7 +1182,7 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
   }
 #endif
   // Browser A: The browser window that comes with the test fixture.
-  Browser* browser_a = browser();
+  BrowserWindowInterface* browser_a = browser();
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser_a));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1201,7 +1200,7 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest,
   ASSERT_TRUE(textfield->GetText().empty());
 
   // Create browser B and make it active with focus in the omnibox.
-  Browser* browser_b = CreateBrowser(browser_a->GetProfile());
+  BrowserWindowInterface* browser_b = CreateBrowser(browser_a->GetProfile());
   ASSERT_NE(nullptr, browser_b);
 
   views::Widget* browser_a_widget =

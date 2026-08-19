@@ -8,10 +8,10 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -157,19 +157,18 @@ IN_PROC_BROWSER_TEST_F(HungRendererDialogViewBrowserTest, TwoHungBrowsers) {
     return;
   }
 
-  Browser* browser1 = browser();
+  BrowserWindowInterface* browser1 = browser();
   content::WebContents* web_contents1 =
-      browser1->tab_strip_model()->GetActiveWebContents();
+      browser1->GetTabStripModel()->GetActiveWebContents();
   content::RenderWidgetHost* widget_host1 =
       web_contents1->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
 
-  Browser* browser2 =
-      CreateBrowserWindow(BrowserWindowCreateParams(browser1->GetProfile(),
-                                                    /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* browser2 = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser1->GetProfile(),
+                                /*from_user_gesture=*/true));
   chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
   content::WebContents* web_contents2 =
-      browser2->tab_strip_model()->GetActiveWebContents();
+      browser2->GetTabStripModel()->GetActiveWebContents();
   content::RenderWidgetHost* widget_host2 =
       web_contents2->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
 

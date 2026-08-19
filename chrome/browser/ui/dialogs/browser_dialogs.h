@@ -73,7 +73,7 @@ namespace chrome {
 // Returns a pointer to the underlying TableModel, which can be ignored, or used
 // for testing.
 task_manager::TaskManagerTableModel* ShowTaskManager(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     task_manager::StartAction start_action = task_manager::StartAction::kOther);
 void HideTaskManager();
 
@@ -128,7 +128,7 @@ gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
 
 // Bridging methods that show/hide the toolkit-views based Task Manager on Mac.
 task_manager::TaskManagerTableModel* ShowTaskManagerViews(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     task_manager::StartAction start_action = task_manager::StartAction::kOther);
 void HideTaskManagerViews();
 

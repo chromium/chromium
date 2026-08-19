@@ -8,7 +8,6 @@
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
 #include "chrome/browser/media/webrtc/select_audio_output_picker.h"
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -49,7 +48,7 @@ std::unique_ptr<SelectAudioOutputPicker> SelectAudioOutputPicker::Create(
 namespace chrome {
 
 task_manager::TaskManagerTableModel* ShowTaskManager(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     task_manager::StartAction start_action) {
   return task_manager::TaskManagerView::Show(browser, start_action);
 }

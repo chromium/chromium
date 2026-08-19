@@ -8,12 +8,13 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
+
+class BrowserWindowInterface;
 
 namespace views {
 class MessageBoxView;
@@ -51,7 +52,7 @@ class JavaScriptTabModalDialogViewViews
   // TODO(crbug.com/40843165): We cannot use unique_ptr because ownership of
   // this object gets passed to Views.
   static JavaScriptTabModalDialogViewViews* CreateAlertDialogForTesting(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       std::u16string title,
       std::u16string message);
 

@@ -9,8 +9,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
@@ -39,23 +39,23 @@
 namespace {
 
 void ShowChooserBubble(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::unique_ptr<permissions::ChooserController> controller) {
-  auto* contents = browser->tab_strip_model()->GetActiveWebContents();
+  auto* contents = browser->GetTabStripModel()->GetActiveWebContents();
   chrome::ShowDeviceChooserDialog(contents->GetPrimaryMainFrame(),
                                   std::move(controller));
 }
 
 void ShowChooserModal(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::unique_ptr<permissions::ChooserController> controller) {
-  auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = browser->GetTabStripModel()->GetActiveWebContents();
   constrained_window::ShowWebModalDialogViews(
       new ChooserDialogView(std::move(controller)), web_contents);
 }
 
 void ShowChooser(const std::string& test_name,
-                 Browser* browser,
+                 BrowserWindowInterface* browser,
                  std::unique_ptr<permissions::ChooserController> controller) {
   if (base::EndsWith(test_name, "Modal", base::CompareCase::SENSITIVE)) {
     ShowChooserModal(browser, std::move(controller));

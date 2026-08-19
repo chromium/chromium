@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(SadTabSplitViewBrowserTest,
 
   // Crash the second tab (Tab 1).
   content::WebContents* crash_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(1);
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
   content::RenderProcessHost* process =
       crash_contents->GetPrimaryMainFrame()->GetProcess();
   content::RenderProcessHostWatcher crash_observer(
@@ -51,17 +51,17 @@ IN_PROC_BROWSER_TEST_F(SadTabSplitViewBrowserTest,
   ASSERT_TRUE(sad_tab_helper->sad_tab());
 
   // Activate Tab 0 (the healthy one).
-  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
 
   // Enter split view with Tab 0 as primary and Tab 1 (crashed) as secondary.
-  browser()->tab_strip_model()->AddToNewSplit(
+  browser()->GetTabStripModel()->AddToNewSplit(
       {1},
       split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide,
                                      1.0f),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
   // Verify split view is active.
-  EXPECT_TRUE(browser()->tab_strip_model()->GetActiveTab()->IsSplit());
+  EXPECT_TRUE(browser()->GetTabStripModel()->GetActiveTab()->IsSplit());
 
   // Find SadTabView among the visible ContentsWebViews.
   SadTabView* sad_tab_view = nullptr;

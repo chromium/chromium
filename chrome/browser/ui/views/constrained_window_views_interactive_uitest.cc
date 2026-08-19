@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tab_modal_confirm_dialog_views.h"
@@ -71,14 +71,14 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
 
   ~ConstrainedWindowViewTest() override = default;
 
-  void CreateNewTabAndLayout(Browser* browser) {
+  void CreateNewTabAndLayout(BrowserWindowInterface* browser) {
     chrome::NewTab(browser, NewTabTypes::kNoUserAction);
     // Layout can trigger changes in web content visibility which in turn
     // affects the visibility of tab modal dialogs.
     RunScheduledLayouts();
   }
 
-  void CloseTabAndLayout(Browser* browser) {
+  void CloseTabAndLayout(BrowserWindowInterface* browser) {
     chrome::CloseTab(browser);
     // Layout can trigger changes in web content visibility which in turn
     // affects the visibility of tab modal dialogs.
@@ -100,7 +100,7 @@ class ConstrainedWindowViewTest : public InProcessBrowserTest {
 // accelerator targets until they are displayed.
 IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_FocusTest) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   ConstrainedWindowTestDialog* const dialog1 = ShowModalDialog(web_contents);
   views::ViewTracker tracker1(dialog1);
@@ -134,13 +134,13 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_FocusTest) {
   EXPECT_EQ(dialog2->GetContentsView(), focus_manager->GetFocusedView());
 
   // Creating a new tab should take focus away from the other tab's dialog.
-  const int tab_with_dialog = browser()->tab_strip_model()->active_index();
+  const int tab_with_dialog = browser()->GetTabStripModel()->active_index();
   CreateNewTabAndLayout(browser());
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_NE(dialog2->GetContentsView(), focus_manager->GetFocusedView());
 
   // Activating the previous tab should bring focus to the dialog.
-  browser()->tab_strip_model()->ActivateTabAt(tab_with_dialog);
+  browser()->GetTabStripModel()->ActivateTabAt(tab_with_dialog);
   EXPECT_FALSE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
   EXPECT_EQ(dialog2->GetContentsView(), focus_manager->GetFocusedView());
 
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_FocusTest) {
 // Tests that the tab-modal window is closed properly when its tab is closed.
 IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
   ConstrainedWindowTestDialog* const dialog =
-      ShowModalDialog(browser()->tab_strip_model()->GetActiveWebContents());
+      ShowModalDialog(browser()->GetTabStripModel()->GetActiveWebContents());
   views::ViewTracker tracker(dialog);
   EXPECT_EQ(dialog, tracker.view());
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, TabCloseTest) {
 #endif
 IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabSwitchTest) {
   ConstrainedWindowTestDialog* const dialog =
-      ShowModalDialog(browser()->tab_strip_model()->GetActiveWebContents());
+      ShowModalDialog(browser()->GetTabStripModel()->GetActiveWebContents());
   views::ViewTracker tracker(dialog);
   EXPECT_EQ(dialog, tracker.view());
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabSwitchTest) {
 #endif
 IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   ConstrainedWindowTestDialog* const dialog = ShowModalDialog(web_contents);
   views::ViewTracker tracker(dialog);
   EXPECT_EQ(dialog, tracker.view());
@@ -218,11 +218,11 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
   // Move the tab to a second browser window; but first create another tab.
   // That prevents the first browser window from closing when its tab is moved.
   CreateNewTabAndLayout(browser());
-  Browser* browser2 = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
   std::unique_ptr<tabs::TabModel> detached_tab =
-      browser()->tab_strip_model()->DetachTabAtForInsertion(
-          browser()->tab_strip_model()->GetIndexOfWebContents(web_contents));
-  browser2->tab_strip_model()->AppendTab(std::move(detached_tab), true);
+      browser()->GetTabStripModel()->DetachTabAtForInsertion(
+          browser()->GetTabStripModel()->GetIndexOfWebContents(web_contents));
+  browser2->GetTabStripModel()->AppendTab(std::move(detached_tab), true);
   EXPECT_TRUE(dialog->GetWidget()->IsVisible());
 
   // Close the original hosting browser window, this should close the dialog.
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, MAYBE_TabMoveTest) {
 // Tests that the dialog closes when the escape key is pressed.
 IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewTest, ClosesOnEscape) {
   ConstrainedWindowTestDialog* const dialog =
-      ShowModalDialog(browser()->tab_strip_model()->GetActiveWebContents());
+      ShowModalDialog(browser()->GetTabStripModel()->GetActiveWebContents());
   views::ViewTracker tracker(dialog);
   EXPECT_EQ(dialog, tracker.view());
   // On Mac, animations cause this test to be flaky.

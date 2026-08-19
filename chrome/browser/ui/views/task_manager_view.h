@@ -23,7 +23,7 @@
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ChromeLayoutProvider;
 
 namespace views {
@@ -61,7 +61,7 @@ class TaskManagerView : public TableViewDelegate,
 
   // Shows the Task Manager window, or re-activates an existing one.
   static task_manager::TaskManagerTableModel* Show(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       StartAction start_action = StartAction::kOther);
 
   // Hides the Task Manager if it is showing.
@@ -156,7 +156,7 @@ class TaskManagerView : public TableViewDelegate,
   void ActivateSelectedTab();
 
   // Selects the active tab in the specified browser window.
-  void SelectTaskOfActiveTab(Browser* browser);
+  void SelectTaskOfActiveTab(BrowserWindowInterface* browser);
 
   // Restores saved "always on top" state from a previous session.
   void RetrieveSavedAlwaysOnTopState();
