@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -459,19 +460,27 @@ void PdfPrinterHandler::OnSaveLocationReady(
   }
 
   // Get default download directory. This will be used as a fallback if the
-  // save directory does not exist.
+  // save directory does not exist. Use USER_BLOCKING priority because this
+  // blocks the appearance of the save dialog, which is a direct user
+  // interaction.
   DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(profile_);
   base::FilePath default_path = download_prefs->DownloadPath();
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&SelectSaveDirectory, path, default_path),
       base::BindOnce(&PdfPrinterHandler::OnDirectorySelected,
                      weak_ptr_factory_.GetWeakPtr(), default_filename));
 }
 
 void PdfPrinterHandler::PostPrintToPdfTask() {
+  // USER_VISIBLE instead of USER_BLOCKING because this generates an output file
+  // (equivalent to "Downloading a file requested by the user", an example of
+  // USER_VISIBLE priority in base/task/task_traits.h).
+  const base::TaskPriority task_priority =
+      SilentPrintingEnabled() ? base::TaskPriority::BEST_EFFORT
+                              : base::TaskPriority::USER_VISIBLE;
   base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), task_priority},
       base::BindOnce(&PrintToPdfCallback, print_data_, print_to_pdf_path_),
       base::BindOnce(&OnPdfPrintedCallback, GetAccountId(profile_),
                      print_to_pdf_path_, std::move(pdf_file_saved_closure_)));
