@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/check.h"
 #include "components/browser_apis/tab_drag/destinations/drop_target.h"
 #include "components/browser_apis/tab_drag/destinations/drop_target_registry.h"
+#include "components/browser_apis/tab_drag/tab_drag_types.h"
 
 namespace tabs_api {
 
@@ -17,16 +17,13 @@ TabDragEventRouter::TabDragEventRouter(DropTargetRegistry& registry)
 
 TabDragEventRouter::~TabDragEventRouter() = default;
 
-void TabDragEventRouter::OnSessionStarted(
-    std::vector<tabs_api::NodeId> dragged_tabs,
-    TabDragWindowId source_window_id,
-    const gfx::Point& start_point,
-    int32_t tab_original_offset_x) {
-  CHECK(source_window_id);
-  dragged_tabs_ = std::move(dragged_tabs);
-  tab_original_offset_x_ = tab_original_offset_x;
-  DropTargetId source_target = registry_->FindTargetForWindow(source_window_id);
-  TransitionToTarget(source_target, start_point);
+void TabDragEventRouter::OnSessionStarted(const TabDragSessionParams& params) {
+  CHECK(params.source_window_id);
+  dragged_tabs_ = params.source_tab_ids;
+  mouse_to_tab_x_ratio_ = params.mouse_to_tab_x_ratio;
+  DropTargetId source_target =
+      registry_->FindTargetForWindow(params.source_window_id);
+  TransitionToTarget(source_target, params.start_point);
 }
 
 void TabDragEventRouter::OnTargetChanged(DropTargetId new_target,
@@ -82,7 +79,7 @@ void TabDragEventRouter::DispatchEvent(DropTargetId target_id,
 
   switch (event) {
     case DropTargetEvent::kEntered:
-      target->DragEnter(dragged_tabs_, screen_point, tab_original_offset_x_);
+      target->DragEnter(dragged_tabs_, screen_point, mouse_to_tab_x_ratio_);
       break;
     case DropTargetEvent::kDrag:
       target->DragOver(screen_point);

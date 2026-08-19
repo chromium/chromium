@@ -124,7 +124,9 @@ class TabDragServiceImplBrowserTest : public InProcessBrowserTest {
                         const std::vector<tabs_api::NodeId>& tab_ids,
                         const gfx::Point& start_point) {
     base::RunLoop drag_start_loop;
-    remote->StartDrag(tab_ids, start_point, /*tab_original_offset_x=*/0,
+    remote->StartDrag(tab_ids, start_point,
+                      /*tab_original_offset_x=*/50,
+                      /*mouse_to_tab_x_ratio=*/0.5f,
                       base::BindLambdaForTesting(
                           [&](mojom::TabDragService::StartDragResult result) {
                             ASSERT_TRUE(result.has_value());

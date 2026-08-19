@@ -11,6 +11,7 @@
 #include "components/browser_apis/tab_drag/sessions/tab_drag_session.h"
 #include "components/browser_apis/tab_drag/sessions/tab_drag_session_injector.h"
 #include "components/browser_apis/tab_drag/sessions/tab_drag_session_manager.h"
+#include "components/browser_apis/tab_drag/tab_drag_types.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 
 namespace tabs_api {
@@ -44,9 +45,16 @@ void TabDragServiceImpl::Accept(
 mojom::TabDragService::StartDragResult TabDragServiceImpl::StartDrag(
     const std::vector<tabs_api::NodeId>& source_tab_ids,
     const gfx::Point& start_point,
-    int32_t tab_original_offset_x) {
-  return session_manager_->StartDrag(window_adapter_.get(), source_tab_ids,
-                                     start_point, tab_original_offset_x);
+    int tab_original_offset_x,
+    float mouse_to_tab_x_ratio) {
+  TabDragSessionParams params{
+      .source_window_id = window_adapter_->GetWindowId(),
+      .source_tab_ids = source_tab_ids,
+      .start_point = start_point,
+      .tab_original_offset_x = tab_original_offset_x,
+      .mouse_to_tab_x_ratio = mouse_to_tab_x_ratio,
+  };
+  return session_manager_->StartDrag(std::move(params));
 }
 
 mojom::TabDragService::RegisterDropTargetResult

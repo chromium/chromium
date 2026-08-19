@@ -49,7 +49,7 @@ class DropTarget {
   // conversion internally using the window handle.
   void DragEnter(const std::vector<tabs_api::NodeId>& dragged_tabs,
                  const gfx::Point& screen_point,
-                 int32_t tab_original_offset_x);
+                 float mouse_to_tab_x_ratio);
   void DragOver(const gfx::Point& screen_point);
   void DragLeave();
   void DragCancel();

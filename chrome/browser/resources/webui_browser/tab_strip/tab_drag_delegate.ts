@@ -11,7 +11,7 @@ import type {TabDragHost} from './tab_drag_host.js';
 interface DragSession {
   draggedTabId: string;
   initialTabStripItems: TabStripItem[];
-  mouseXOffset: number;
+  mouseToTabXRatio: number;
   lastMouseX: number;
   containerBounds: DOMRect;
   trailingElementRect: DOMRect|null;
@@ -77,8 +77,10 @@ export class TabDragDelegate {
       const startPoint = {x: Math.round(e.screenX), y: Math.round(e.screenY)};
       const tabRect = tabElement.getBoundingClientRect();
       const tabOriginalOffsetX = Math.round(e.clientX - tabRect.left);
+      const mouseToTabXRatio =
+          (e.clientX - tabRect.left) / Math.max(1, tabRect.width);
       this.host_.tabDragService.startDrag(
-          [nodeId], startPoint, tabOriginalOffsetX);
+          [nodeId], startPoint, tabOriginalOffsetX, mouseToTabXRatio);
     }
   }
 
@@ -93,7 +95,7 @@ export class TabDragDelegate {
   // Mojo Drag Callbacks
   onMojoDragEntered(
       nodeId: NodeId, localPoint: {x: number, y: number},
-      tabOriginalOffsetX: number) {
+      mouseToTabXRatio: number) {
     this.host_.setDragInProgressForDrag(true);
     this.host_.setTabStripNoDrag(true);
     this.host_.activateTabForDrag(nodeId);
@@ -105,7 +107,7 @@ export class TabDragDelegate {
     const session: DragSession = {
       draggedTabId: nodeId,
       initialTabStripItems: [...this.host_.itemsForDrag],
-      mouseXOffset: tabOriginalOffsetX,
+      mouseToTabXRatio: mouseToTabXRatio,
       lastMouseX: localPoint.x,
       containerBounds: this.host_.getDragContainerBounds(),
       trailingElementRect: newTabButton ? newTabButton.getBoundingClientRect() :
@@ -219,6 +221,8 @@ export class TabDragDelegate {
     if (!this.session_) {
       return items.length;
     }
+    const draggedMidpoint = localX +
+        this.session_.draggedTabWidth * (0.5 - this.session_.mouseToTabXRatio);
     const tabItems = items.filter(
         item => item.type === 'tab' && item.id !== this.session_!.draggedTabId);
     for (let i = 0; i < tabItems.length; ++i) {
@@ -226,7 +230,7 @@ export class TabDragDelegate {
       if (midpoint === undefined) {
         continue;
       }
-      if (localX < midpoint) {
+      if (draggedMidpoint < midpoint) {
         return items.findIndex(item => item.id === tabItems[i]!.id);
       }
     }
@@ -262,7 +266,8 @@ export class TabDragDelegate {
     if (!tabElement) {
       return 0;
     }
-    const deltaX = localX - session.draggedTabOriginX - session.mouseXOffset;
+    const mouseXOffset = session.draggedTabWidth * session.mouseToTabXRatio;
+    const deltaX = localX - session.draggedTabOriginX - mouseXOffset;
 
     // Left boundary clamp:
     const minDeltaX = session.containerBounds.left - session.draggedTabOriginX;

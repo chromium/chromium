@@ -4,8 +4,7 @@
 
 #include "components/browser_apis/tab_drag/testing/toy_tab_drag_session_listener.h"
 
-#include <utility>
-
+#include "components/browser_apis/tab_drag/tab_drag_types.h"
 
 namespace tabs_api {
 
@@ -13,15 +12,12 @@ ToyTabDragSessionListener::ToyTabDragSessionListener() = default;
 ToyTabDragSessionListener::~ToyTabDragSessionListener() = default;
 
 void ToyTabDragSessionListener::OnSessionStarted(
-    std::vector<tabs_api::NodeId> dragged_tabs,
-    TabDragWindowId source_window_id,
-    const gfx::Point& start_point,
-    int32_t tab_original_offset_x) {
-  CHECK(source_window_id);
+    const TabDragSessionParams& params) {
+  CHECK(params.source_window_id);
   events_.push_back({.type = Event::Type::kStarted,
-                     .window_id = source_window_id,
-                     .point = start_point,
-                     .dragged_tabs = std::move(dragged_tabs)});
+                     .window_id = params.source_window_id,
+                     .point = params.start_point,
+                     .dragged_tabs = params.source_tab_ids});
 }
 
 void ToyTabDragSessionListener::OnTargetChanged(

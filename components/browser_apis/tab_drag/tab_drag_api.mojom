@@ -15,7 +15,8 @@ interface TabDragService {
   // Initiates a global drag session for specified node ids.
   StartDrag(array<NodeId> node_ids,
             gfx.mojom.Point start_point,
-            int32 tab_original_offset_x)
+            int32 tab_original_offset_x,
+            float mouse_to_tab_x_ratio)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Registers the drop target for this service's window. The registration is
@@ -45,7 +46,7 @@ interface DropTarget {
   // `OnDrag` updates.
   OnDragEntered(array<NodeId> source_tab_ids,
                 gfx.mojom.Point local_point,
-                int32 tab_original_offset_x);
+                float mouse_to_tab_x_ratio);
 
   // Called in high frequency as dragging cursor moves across this
   // target.

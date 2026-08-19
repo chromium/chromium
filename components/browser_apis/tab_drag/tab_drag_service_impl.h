@@ -39,7 +39,8 @@ class TabDragServiceImpl : public mojom::TabDragServiceDirectReturnStub {
   mojom::TabDragService::StartDragResult StartDrag(
       const std::vector<tabs_api::NodeId>& source_tab_ids,
       const gfx::Point& start_point,
-      int32_t tab_original_offset_x) override;
+      int tab_original_offset_x,
+      float mouse_to_tab_x_ratio) override;
   mojom::TabDragService::RegisterDropTargetResult RegisterDropTarget(
       mojo::PendingAssociatedRemote<mojom::DropTarget> target,
       mojo::PendingAssociatedReceiver<mojom::DropTargetRegistration>

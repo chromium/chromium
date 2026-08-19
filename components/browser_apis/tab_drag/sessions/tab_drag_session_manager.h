@@ -6,21 +6,17 @@
 #define COMPONENTS_BROWSER_APIS_TAB_DRAG_SESSIONS_TAB_DRAG_SESSION_MANAGER_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "components/browser_apis/tab_strip/types/node_id.h"
+#include "components/browser_apis/tab_drag/tab_drag_types.h"
 #include "mojo/public/mojom/base/error.mojom-forward.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_ui_types.h"
 
 namespace tabs_api {
 
-class TabDragSessionInjector;
-class TabDragSession;
 class DropTargetRegistry;
-class TabDragWindowAdapter;
+class TabDragSession;
+class TabDragSessionInjector;
 class TabDragWindowRegistry;
 
 // Browser-process-wide manager that owns and coordinates the active
@@ -36,10 +32,7 @@ class TabDragSessionManager {
 
   // Starts a global drag session. Returns monostate if successful, or an error.
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> StartDrag(
-      TabDragWindowAdapter* source_window,
-      const std::vector<tabs_api::NodeId>& source_tab_ids,
-      const gfx::Point& start_point,
-      int32_t tab_original_offset_x);
+      TabDragSessionParams params);
 
   TabDragSession* active_session() { return active_session_.get(); }
 

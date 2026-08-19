@@ -18,14 +18,13 @@
 namespace tabs_api {
 
 TabDragSession::TabDragSession(TabDragSessionParams params,
+                               base::OnceClosure end_callback,
                                TabDragSessionInjector* injector)
-    : dragged_tabs_(std::move(params.source_tab_ids)),
+    : params_(std::move(params)),
       injector_(CHECK_DEREF(injector)),
-      end_callback_(std::move(params.end_callback)),
-      start_point_in_screen_(params.start_point),
-      last_mouse_screen_point_(params.start_point),
-      dragged_window_(params.source_window_id),
-      tab_original_offset_x_(params.tab_original_offset_x) {
+      end_callback_(std::move(end_callback)),
+      last_mouse_screen_point_(params_.start_point),
+      dragged_window_(params_.source_window_id) {
   CHECK(registry());
   CHECK(dragged_window_);
   TabDragWindowAdapter* source_window = registry()->Get(dragged_window_);
@@ -44,12 +43,10 @@ base::expected<void, mojo_base::mojom::ErrorPtr> TabDragSession::Start() {
     return result;
   }
 
-  injector_->GetSessionListener().OnSessionStarted(
-      dragged_tabs_, dragged_window_, start_point_in_screen_,
-      tab_original_offset_x_);
+  injector_->GetSessionListener().OnSessionStarted(params_);
 
   if (ShouldDragWholeWindow()) {
-    StartWindowDrag(dragged_window_, start_point_in_screen_);
+    StartWindowDrag(dragged_window_, params_.start_point);
   }
 
   return base::ok();
@@ -167,7 +164,7 @@ bool TabDragSession::ShouldDragWholeWindow() const {
   if (!source_window) {
     return false;
   }
-  return source_window->ShouldDragWholeWindow(dragged_tabs_.size());
+  return source_window->ShouldDragWholeWindow(params_.source_tab_ids.size());
 }
 
 bool TabDragSession::ShouldTearOff(const gfx::Point& screen_point) const {
@@ -196,7 +193,8 @@ bool TabDragSession::ShouldTearOff(const gfx::Point& screen_point) const {
   // Prevent tab from invading left-side controls (e.g. traffic lights).
   // If the tab's leading visual edge crosses past the drop target origin minus
   // threshold, trigger tear-off.
-  const int tab_leading_edge_x = local_point.x() - tab_original_offset_x_;
+  const int tab_leading_edge_x =
+      local_point.x() - params_.tab_original_offset_x;
   if (tab_leading_edge_x < (bounds_opt->x() - kTearThreshold)) {
     return true;
   }
@@ -242,15 +240,15 @@ void TabDragSession::DetachAndStartWindowDrag(const gfx::Point& screen_point) {
     // boundary), the tab is set as the 1st tab of the new window (at
     // drop_target_x).
     const int drop_target_x = bounds_opt ? bounds_opt->x() : 0;
-    detach_x = drop_target_x + tab_original_offset_x_;
+    detach_x = drop_target_x + params_.tab_original_offset_x;
   }
 
   gfx::Vector2d detach_window_offset(
       detach_x,
-      start_point_in_screen_.y() - source_window->GetBoundsInScreen().y());
+      params_.start_point.y() - source_window->GetBoundsInScreen().y());
 
   auto detach_result = source_window->DetachToNewWindow(
-      dragged_tabs_, screen_point, detach_window_offset);
+      params_.source_tab_ids, screen_point, detach_window_offset);
   if (!detach_result.has_value()) {
     drag_mode_ = DragMode::kAttachedToWindow;
     injector_->GetSessionListener().OnSessionCancelled();
@@ -361,7 +359,8 @@ bool TabDragSession::CanReattachToTarget(DropTarget* target,
   // This ensures that upon reattachment, ShouldTearOff (which triggers at
   // bounds.x() - kTearThreshold) will NOT immediately fire, preventing
   // detach/reattach oscillation and jitter.
-  const int tab_leading_edge_x = local_point.x() - tab_original_offset_x_;
+  const int tab_leading_edge_x =
+      local_point.x() - params_.tab_original_offset_x;
   if (tab_leading_edge_x < bounds_opt->x()) {
     return false;
   }
@@ -389,7 +388,7 @@ void TabDragSession::CompleteReattachment() {
   }
 
   auto migrate_result =
-      detached_window->MigrateTabs(target.window_id, dragged_tabs_);
+      detached_window->MigrateTabs(target.window_id, params_.source_tab_ids);
   if (!migrate_result.has_value()) {
     drag_mode_ = DragMode::kRunningWindowMoveLoop;
     injector_->GetSessionListener().OnSessionCancelled();

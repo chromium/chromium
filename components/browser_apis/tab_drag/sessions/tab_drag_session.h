@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "components/browser_apis/tab_drag/adapters/tab_drag_window_adapter.h"
 #include "components/browser_apis/tab_drag/destinations/drop_target_id.h"
+#include "components/browser_apis/tab_drag/tab_drag_types.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
 #include "mojo/public/mojom/base/error.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
@@ -27,20 +28,14 @@ class TabDragSessionInjector;
 class TabDragWindowRegistry;
 struct TabDragInputEvent;
 
-struct TabDragSessionParams {
-  TabDragWindowId source_window_id;
-  std::vector<tabs_api::NodeId> source_tab_ids;
-  gfx::Point start_point;
-  int32_t tab_original_offset_x = 0;
-  base::OnceClosure end_callback;
-};
-
 // Platform-agnostic coordinator for tab dragging.
 // Managed and owned by TabDragSessionManager.
 class TabDragSession {
  public:
   // `injector` must outlive this session.
-  TabDragSession(TabDragSessionParams params, TabDragSessionInjector* injector);
+  TabDragSession(TabDragSessionParams params,
+                 base::OnceClosure end_callback,
+                 TabDragSessionInjector* injector);
   TabDragSession(const TabDragSession&) = delete;
   TabDragSession& operator=(const TabDragSession&) = delete;
   ~TabDragSession();
@@ -58,16 +53,10 @@ class TabDragSession {
 
   TabDragWindowId dragged_window() const { return dragged_window_; }
 
-  const gfx::Point& start_point_in_screen() const {
-    return start_point_in_screen_;
-  }
   const gfx::Point& last_mouse_screen_point() const {
     return last_mouse_screen_point_;
   }
-  const std::vector<tabs_api::NodeId>& dragged_tabs() const {
-    return dragged_tabs_;
-  }
-  int32_t tab_original_offset_x() const { return tab_original_offset_x_; }
+  const TabDragSessionParams& params() const { return params_; }
   TabDragSessionInjector* injector() const { return &*injector_; }
 
   enum class DragMode {
@@ -106,7 +95,7 @@ class TabDragSession {
   void TransferDragToWindow(TabDragWindowId target_window_id,
                             bool activate_target_window);
 
-  std::vector<tabs_api::NodeId> dragged_tabs_;
+  const TabDragSessionParams params_;
   const raw_ref<TabDragSessionInjector> injector_;
 
   base::OnceClosure end_callback_;
@@ -117,12 +106,10 @@ class TabDragSession {
     gfx::Point screen_point;
   };
 
-  const gfx::Point start_point_in_screen_;
   gfx::Point last_mouse_screen_point_;
   TabDragWindowId dragged_window_;
   TabDragWindowRegistry* registry() const;
   DragMode drag_mode_ = DragMode::kAttachedToWindow;
-  int32_t tab_original_offset_x_ = 0;
   std::optional<PendingReattachment> pending_reattachment_;
 
   base::WeakPtrFactory<TabDragSession> weak_factory_{this};

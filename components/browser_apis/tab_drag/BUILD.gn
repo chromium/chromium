@@ -15,6 +15,16 @@ mojom("mojom") {
   webui_module_path = "/"
 }
 
+source_set("types") {
+  sources = [ "tab_drag_types.h" ]
+
+  public_deps = [
+    "//components/browser_apis/tab_drag/adapters",
+    "//components/browser_apis/tab_strip/types",
+    "//ui/gfx/geometry",
+  ]
+}
+
 source_set("tab_drag") {
   sources = [
     "tab_drag_service_impl.cc",
@@ -23,6 +33,7 @@ source_set("tab_drag") {
 
   public_deps = [
     ":mojom",
+    ":types",
     "//components/browser_apis/tab_strip:mojom",
     "//components/browser_apis/tab_strip/adapters",
   ]
