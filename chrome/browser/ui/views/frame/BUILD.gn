@@ -225,3 +225,32 @@ source_set("windows_icon_painter") {
     "//ui/gfx/geometry",
   ]
 }
+
+source_set("browser_view_layout_params") {
+  public = [ "layout/browser_view_layout_params.h" ]
+  sources = [ "layout/browser_view_layout_params.cc" ]
+  public_deps = [
+    "//base",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("opaque_browser_frame_view_layout_delegate") {
+  public = [ "opaque_browser_frame_view_layout_delegate.h" ]
+  sources = [ "opaque_browser_frame_view_layout_delegate.cc" ]
+  public_deps = [ "//ui/base" ]
+}
+
+source_set("immersive_mode_controller_stub") {
+  public = [ "immersive_mode_controller_stub.h" ]
+  sources = [ "immersive_mode_controller_stub.cc" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+  ]
+}
+
+source_set("web_contents_close_handler_delegate") {
+  public = [ "web_contents_close_handler_delegate.h" ]
+}
