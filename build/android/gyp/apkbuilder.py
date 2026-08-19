@@ -341,10 +341,8 @@ def _GetAssetsToAdd(path_tuples, disable_compression=False, apk_root_dir=''):
                     apk_path = posixpath.join(apk_root_dir, dest_path[3:])
                 else:
                     apk_path = 'assets/' + dest_path
-                # Assets are default-aligned in the APK, so `alignment` here is
-                # always None. Setting it this way allows us to feed
-                # this function's return value directly to `_AddFiles()`.
-                assets_to_add.append((apk_path, src_path, compress, None))
+                alignment = None if compress else _DEFAULT_ZIP_ALIGNMENT
+                assets_to_add.append((apk_path, src_path, compress, alignment))
     return assets_to_add
 
 
