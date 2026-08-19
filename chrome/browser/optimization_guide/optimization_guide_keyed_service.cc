@@ -242,10 +242,6 @@ void OptimizationGuideKeyedService::BindModelBroker(
           optimization_guide::features::kOptimizationGuideModelExecution)) {
     return;
   }
-  if (!base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
-    return;
-  }
   GetGlobalState().on_device_capability().BindModelBroker(std::move(receiver));
 }
 

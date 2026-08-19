@@ -1326,24 +1326,6 @@ const FeatureEntry::Choice kMemlogSamplingRateChoices[] = {
      heap_profiling::kMemlogSamplingRate5MB},
 };
 
-const FeatureEntry::FeatureParam
-    kOptimizationGuideOnDeviceModelBypassPerfParams[] = {
-        {"compatible_on_device_performance_classes", "*"},
-};
-const FeatureEntry::FeatureParam
-    kOptimizationGuideOnDeviceModelBypassPerfSmallModelParams[] = {
-        {"compatible_on_device_performance_classes", "*"},
-        {"compatible_low_tier_on_device_performance_classes", "*"},
-};
-const FeatureEntry::FeatureVariation
-    kOptimizationGuideOnDeviceModelVariations[] = {
-        {"BypassPerfRequirement",
-         kOptimizationGuideOnDeviceModelBypassPerfParams, nullptr},
-        {"Force Small Model",
-         kOptimizationGuideOnDeviceModelBypassPerfSmallModelParams, nullptr},
-};
-
-
 #if BUILDFLAG(IS_WIN)
 const FeatureEntry::FeatureParam kStartupLaunchForegroundEnabledParams[] = {
     {features::kLaunchOnStartupModeParam.name, "foreground"},
@@ -7039,14 +7021,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOptimizationGuideDebugLogsName,
      flag_descriptions::kOptimizationGuideDebugLogsDescription, kOsAll,
      SINGLE_VALUE_TYPE(optimization_guide::switches::kDebugLoggingEnabled)},
-
-    {"optimization-guide-on-device-model",
-     flag_descriptions::kOptimizationGuideOnDeviceModelName,
-     flag_descriptions::kOptimizationGuideOnDeviceModelDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         optimization_guide::features::kOnDeviceModelPerformanceParams,
-         kOptimizationGuideOnDeviceModelVariations,
-         "OptimizationGuideOnDeviceModel")},
 
     {"organic-repeatable-queries",
      flag_descriptions::kOrganicRepeatableQueriesName,

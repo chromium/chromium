@@ -261,25 +261,15 @@ TEST(OnDeviceModelFeatureAdapterTest, ShouldParseResponseAlways) {
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, GetSamplingParamsConfig_AllMissing) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_topk", "10"}, {"on_device_model_temperature", "0.5"}});
-
   proto::OnDeviceModelExecutionFeatureConfig config;
   auto adapter = base::MakeRefCounted<OnDeviceModelFeatureAdapter>(config);
 
   SamplingParamsConfig params = adapter->GetSamplingParamsConfig();
-  EXPECT_EQ(params.default_top_k, 10u);
-  EXPECT_EQ(params.default_temperature, 0.5f);
+  EXPECT_EQ(params.default_top_k, 64u);
+  EXPECT_EQ(params.default_temperature, 1.0f);
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, GetSamplingParamsConfig_MissingTopK) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_topk", "10"}, {"on_device_model_temperature", "0.5"}});
-
   proto::OnDeviceModelExecutionFeatureConfig config;
   auto* sampling_params = config.mutable_sampling_params();
   sampling_params->set_temperature(0.7f);
@@ -291,11 +281,6 @@ TEST(OnDeviceModelFeatureAdapterTest, GetSamplingParamsConfig_MissingTopK) {
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, GetSamplingParamsConfig_MissingTemp) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_topk", "10"}, {"on_device_model_temperature", "0.5"}});
-
   proto::OnDeviceModelExecutionFeatureConfig config;
   auto* sampling_params = config.mutable_sampling_params();
   sampling_params->set_top_k(8);

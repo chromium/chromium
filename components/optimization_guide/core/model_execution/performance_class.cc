@@ -85,9 +85,6 @@ const char kOverridePerformanceClassSwitch[] =
     "optimization-guide-performance-class";
 
 bool NeedsPerformanceClassUpdate(const PrefService& local_state) {
-  if (!features::CanLaunchOnDeviceModelService()) {
-    return false;
-  }
   if (base::FeatureList::IsEnabled(
           features::kOnDeviceModelFetchPerformanceClassEveryStartup)) {
     return true;
@@ -344,8 +341,6 @@ void PerformanceClassifier::EnsurePerformanceClassAvailable(
   if (performance_class_state_ != PerformanceClassState::kNotStarted) {
     return;
   }
-
-  CHECK(features::CanLaunchOnDeviceModelService());
 
   performance_class_state_ = PerformanceClassState::kComputing;
   service_client_->Get()->GetDeviceAndPerformanceInfo(

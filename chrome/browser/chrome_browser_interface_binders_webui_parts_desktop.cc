@@ -533,12 +533,9 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
         multistep_filter_internals::mojom::PageHandlerFactory,
         multistep_filter_internals::MultistepFilterInternalsUI>(map);
   }
-  if (base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
-    RegisterWebUIControllerInterfaceBinder<
-        on_device_internals::mojom::PageHandlerFactory,
-        on_device_internals::OnDeviceInternalsUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      on_device_internals::mojom::PageHandlerFactory,
+      on_device_internals::OnDeviceInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<
       guest_contents::mojom::GuestContentsHost, WebUIBrowserUI>(map);
 

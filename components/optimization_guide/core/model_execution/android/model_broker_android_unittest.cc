@@ -49,7 +49,6 @@ class ModelBrokerAndroidFeatureDisabledList {
     feature_list_.InitWithFeaturesAndParameters(
         {}, {
                 {features::kOptimizationGuideModelExecution},
-                {features::kOptimizationGuideOnDeviceModel},
             });
   }
   ~ModelBrokerAndroidFeatureDisabledList() = default;
@@ -64,7 +63,6 @@ class RequirePersistentModeForScamDetectionEnabledFeatureList {
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kOptimizationGuideModelExecution, {}},
-            {features::kOptimizationGuideOnDeviceModel, {}},
             {features::kAICorePrompt, {}},
             {features::kAICoreScamDetection, {}},
             {features::kAICoreTest, {}},

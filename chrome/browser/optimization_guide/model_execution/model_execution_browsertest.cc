@@ -406,8 +406,7 @@ class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kOptimizationGuideModelExecution,
-         features::kModelQualityLogging,
-         features::kOptimizationGuideOnDeviceModel},
+         features::kModelQualityLogging},
         {});
   }
 

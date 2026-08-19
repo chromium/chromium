@@ -143,11 +143,9 @@ TEST_F(ManifestSolutionFactoryTest, ExecuteTestGpuCacheFeature) {
   base::test::ScopedFeatureList feature_list;
   // TODO(crbug.com/461547475): GPU cache flag is experimental for now, remove
   // once it's no longer needed.
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kOptimizationGuideOnDeviceModel,
-        {{"on_device_model_topk", "1"}, {"on_device_model_temperature", "0"}}},
-       {on_device_model::features::kOnDeviceModelGpuProgramCache, {}},
-       {on_device_model::features::kOnDeviceModelGpuWeightCache, {}}},
+  feature_list.InitWithFeatures(
+      {on_device_model::features::kOnDeviceModelGpuProgramCache,
+       on_device_model::features::kOnDeviceModelGpuWeightCache},
       {});
   ScenarioBuilder(fake_.component_state())
       .AddBaseModel(
@@ -187,7 +185,8 @@ TEST_F(ManifestSolutionFactoryTest, ExecuteTestGpuCacheFeature) {
        "Encoder cache weight: 1016"
        "Adapter cache weight: 1017"
        "Shader cache data: 0xcafebabe"
-       "hello max:1024");
+       "hello max:1024"
+       "TopK: 64, Temp: 1");
   EXPECT_EQ(*response.value(), expected_response);
 }
 

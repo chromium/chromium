@@ -73,8 +73,6 @@ BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideModelExecution);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kOptimizationGuideOnDeviceModel);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kModelQualityLogging);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kLogOnDeviceMetricsOnStartup);
@@ -301,36 +299,39 @@ GetPredictionModelVersionsInKillSwitch();
 // Returns whether the on-device config should be loaded with higher priority.
 // If true, all tasks for the on-device model execution config interpreter
 // will be run with user visible priority.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority();
+inline constexpr bool
+ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority() {
+  return true;
+}
 
 // Returns the idle timeout before the on device model service shuts down.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetOnDeviceModelIdleTimeout();
+inline constexpr base::TimeDelta GetOnDeviceModelIdleTimeout() {
+  return base::Minutes(1);
+}
 
 // Returns the delay before starting the on device model inference when
 // running validation.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetOnDeviceModelExecutionValidationStartupDelay();
+inline constexpr base::TimeDelta
+GetOnDeviceModelExecutionValidationStartupDelay() {
+  return base::Seconds(5);
+}
 
 // Returns the number of crashes without a successful response before the
 // on-device model won't be used.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelCrashCountBeforeDisable();
+inline constexpr int GetOnDeviceModelCrashCountBeforeDisable() {
+  return 3;
+}
 
 // Feature params for handling exponential backoff after crashes.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetOnDeviceModelMaxCrashBackoffTime();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime();
+inline constexpr base::TimeDelta GetOnDeviceModelMaxCrashBackoffTime() {
+  return base::Hours(1);
+}
+inline constexpr base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime() {
+  return base::Minutes(1);
+}
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceStartupMetricDelay();
-
-// Whether any features are enabled that allow launching the on-device
-// service.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool CanLaunchOnDeviceModelService();
 
 // Whether on-device execution is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -339,8 +340,10 @@ bool IsOnDeviceExecutionEnabled();
 // The amount of grace period to use from the last time the feature was used to
 // consider it as recently used. Recent usage is one of the criteria for the
 // base and adaptation on-device models to be downloaded.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetOnDeviceEligibleModelFeatureRecentUsePeriod();
+inline constexpr base::TimeDelta
+GetOnDeviceEligibleModelFeatureRecentUsePeriod() {
+  return base::Days(30);
+}
 
 // The on-device model is fetched when the device is considered eligible for
 // on-device execution. When the device stops being eligible, the model is
@@ -348,28 +351,33 @@ base::TimeDelta GetOnDeviceEligibleModelFeatureRecentUsePeriod();
 // downloading the model in the event eligibility fluctuates. for on-device
 // evaluation
 // See on_device_model_component.cc for how eligibility is computed.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta GetOnDeviceModelRetentionTime();
+inline constexpr base::TimeDelta GetOnDeviceModelRetentionTime() {
+  return base::Days(30);
+}
 
 // Return the disk space required for on device model install.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::ByteSize GetDiskSpaceRequiredForOnDeviceModelInstall();
+inline constexpr base::ByteSize GetDiskSpaceRequiredForOnDeviceModelInstall() {
+  return base::GiB(20);
+}
 
 // Return the disk space required to retain the on device model.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::ByteSize GetDiskSpaceRequiredForOnDeviceModelRetain();
+inline constexpr base::ByteSize GetDiskSpaceRequiredForOnDeviceModelRetain() {
+  return base::GiB(5);
+}
 
 // Whether there is enough free disk space to allow on-device model
 // installation.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-    base::ByteSize free_disk_space_bytes);
+inline constexpr bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
+    base::ByteSize free_disk_space_bytes) {
+  return GetDiskSpaceRequiredForOnDeviceModelInstall() <= free_disk_space_bytes;
+}
 
 // Whether there is too little disk space to retain the on-device model
 // installation.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
-    base::ByteSize free_disk_space_bytes);
+inline constexpr bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
+    base::ByteSize free_disk_space_bytes) {
+  return GetDiskSpaceRequiredForOnDeviceModelRetain() >= free_disk_space_bytes;
+}
 
 // Whether on-device model session creation is gated on sufficient disk space to
 // build execution caches.
@@ -392,26 +400,32 @@ bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
 // repetition_checker.h for explanation. A value of 2 for num repeats and 16 for
 // min repeat chars would mean we will halt a response once it repeats at least
 // 16 chars 2 times at the end of the response.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelNumRepeats();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelMinRepeatChars();
+inline constexpr int GetOnDeviceModelNumRepeats() {
+  return 2;
+}
+inline constexpr int GetOnDeviceModelMinRepeatChars() {
+  return 16;
+}
 
 // Whether the response should be retracted if repeats are detected.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool GetOnDeviceModelRetractRepeats();
+inline constexpr bool GetOnDeviceModelRetractRepeats() {
+  return true;
+}
 
 // Settings to control output sampling.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelDefaultTopK();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelMaxTopK();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-double GetOnDeviceModelDefaultTemperature();
+inline constexpr int GetOnDeviceModelDefaultTopK() {
+  return 64;
+}
+inline constexpr int GetOnDeviceModelMaxTopK() {
+  return 128;
+}
+inline constexpr double GetOnDeviceModelDefaultTemperature() {
+  return 1.0;
+}
 
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks();
-
+inline std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks() {
+  return {32};
+}
 
 // Returns what the timeout for calls to GetAIPageContent should be for
 // subframes. An empty return value indicates no timeout should be applied.

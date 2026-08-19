@@ -228,24 +228,18 @@ TEST_F(OnDeviceModelComponentTest, NotYetInstalledFlow) {
 }
 
 TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
-  // It should not install if any of these features are disabled.
-  for (const base::Feature* feature :
-       {&features::kOptimizationGuideModelExecution,
-        &features::kOptimizationGuideOnDeviceModel}) {
-    SCOPED_TRACE(feature->name);
-    base::HistogramTester histograms;
-    SimulateShutdown();
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(*feature);
+  base::HistogramTester histograms;
+  SimulateShutdown();
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kOptimizationGuideModelExecution);
 
-    DoStartup();
-    EnsurePerformanceClassAvailable();
-    ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
-    histograms.ExpectUniqueSample(
-        "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
-        "AtRegistration.EnabledByFeature",
-        false, 1);
-  }
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
+  histograms.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByFeature",
+      false, 1);
 }
 
 TEST_F(OnDeviceModelComponentTest,

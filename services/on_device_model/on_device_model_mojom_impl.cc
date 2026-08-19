@@ -31,7 +31,7 @@ constexpr char kIdleDisconnectReason[] = "Disconnected due to idle timeout.";
 
 // The amount of time a session can remain inactive before the model unloads.
 const base::FeatureParam<base::TimeDelta> kModelIdleTimeout{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOptimizationGuideModelExecution,
     "on_device_model_active_session_idle_timeout", kDefaultModelIdleTimeout};
 
 constexpr base::TimeDelta kAsrIdleTimerUpdateInterval = base::Seconds(10);

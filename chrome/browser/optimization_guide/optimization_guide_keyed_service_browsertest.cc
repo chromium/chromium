@@ -510,18 +510,6 @@ class DogfoodOptimizationGuideKeyedServiceBrowserTest
   }
 };
 
-class OptimizationGuideKeyedServiceOnDeviceModelDisabledBrowserTest
-    : public OptimizationGuideKeyedServiceBrowserTest {
- public:
-  OptimizationGuideKeyedServiceOnDeviceModelDisabledBrowserTest() {
-    feature_list_.InitWithFeatures({},
-                                   {features::kOptimizationGuideOnDeviceModel,
-                                    features::kLogOnDeviceMetricsOnStartup});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                        RemoteFetchingDisabled) {

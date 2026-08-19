@@ -78,13 +78,6 @@ std::string GenerateExecutionId() {
   return "on-device:" + base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
-bool GetOnDeviceModelWithholdNewlines() {
-  static const base::FeatureParam<bool> kOnDeviceModelWitholdNewlines{
-      &features::kOptimizationGuideOnDeviceModel,
-      "on_device_model_withhold_newlines", true};
-  return kOnDeviceModelWitholdNewlines.Get();
-}
-
 // Returns whether the feature tracks repetition.
 // TODO(crbug.com/512149280): Move repetition checker to manifest config.
 bool IsRepetitionTrackedFeature(mojom::OnDeviceFeature feature) {
@@ -251,19 +244,13 @@ void OnDeviceExecution::OnResponse(
         telemetry_logger_.GetTimeToFirstResponse().InMilliseconds());
   }
 
-  if (GetOnDeviceModelWithholdNewlines()) {
-    NewlineBuffer::Chunk trimmed_chunk = newline_buffer_.Append(chunk->text);
-    if (trimmed_chunk.text.empty()) {
-      return;
-    }
-    current_response_ += trimmed_chunk.text;
-    num_unchecked_response_tokens_ += trimmed_chunk.num_tokens;
-    num_response_tokens_ += trimmed_chunk.num_tokens;
-  } else {
-    current_response_ += chunk->text;
-    num_unchecked_response_tokens_++;
-    num_response_tokens_++;
+  NewlineBuffer::Chunk trimmed_chunk = newline_buffer_.Append(chunk->text);
+  if (trimmed_chunk.text.empty()) {
+    return;
   }
+  current_response_ += trimmed_chunk.text;
+  num_unchecked_response_tokens_ += trimmed_chunk.num_tokens;
+  num_response_tokens_ += trimmed_chunk.num_tokens;
 
   if (IsRepetitionTrackedFeature(feature_) &&
       HasRepeatingSuffix(current_response_)) {

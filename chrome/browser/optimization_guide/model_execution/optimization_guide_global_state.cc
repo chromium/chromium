@@ -30,7 +30,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "content/public/browser/service_process_host.h"
@@ -48,7 +47,6 @@ namespace {
 void LaunchService(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
         pending_receiver) {
-  CHECK(features::CanLaunchOnDeviceModelService());
   content::ServiceProcessHost::Launch<
       on_device_model::mojom::OnDeviceModelService>(
       std::move(pending_receiver),

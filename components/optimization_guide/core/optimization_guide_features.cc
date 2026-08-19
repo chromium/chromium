@@ -98,15 +98,6 @@ BASE_FEATURE(kOptimizationGuidePredictionModelKillswitch,
 BASE_FEATURE(kOptimizationGuideModelExecution,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether to use the on device model service in optimization guide.
-BASE_FEATURE(kOptimizationGuideOnDeviceModel,
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Whether the on device service is launched after a delay on startup to log
 // metrics.
 BASE_FEATURE(kLogOnDeviceMetricsOnStartup, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -443,51 +434,6 @@ GetPredictionModelVersionsInKillSwitch() {
   return killswitch_model_versions;
 }
 
-bool ShouldLoadOnDeviceModelExecutionConfigWithHigherPriority() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kOptimizationGuideOnDeviceModel, "ondevice_config_high_priority", true);
-}
-
-base::TimeDelta GetOnDeviceModelIdleTimeout() {
-  static const base::FeatureParam<base::TimeDelta>
-      kOnDeviceModelServiceIdleTimeout{&kOptimizationGuideOnDeviceModel,
-                                       "on_device_model_service_idle_timeout",
-                                       base::Minutes(1)};
-  return kOnDeviceModelServiceIdleTimeout.Get();
-}
-
-base::TimeDelta GetOnDeviceModelExecutionValidationStartupDelay() {
-  static const base::FeatureParam<base::TimeDelta>
-      kOnDeviceModelExecutionValidationStartupDelay{
-          &kOptimizationGuideOnDeviceModel,
-          "on_device_model_execution_validation_startup_delay",
-          base::Seconds(5)};
-  return kOnDeviceModelExecutionValidationStartupDelay.Get();
-}
-
-int GetOnDeviceModelCrashCountBeforeDisable() {
-  static const base::FeatureParam<int> kOnDeviceModelDisableCrashCount{
-      &kOptimizationGuideOnDeviceModel, "on_device_model_disable_crash_count",
-      3};
-  return kOnDeviceModelDisableCrashCount.Get();
-}
-
-base::TimeDelta GetOnDeviceModelMaxCrashBackoffTime() {
-  static const base::FeatureParam<base::TimeDelta>
-      kOnDeviceModelMaxCrashBackoffTime{
-          &kOptimizationGuideOnDeviceModel,
-          "on_device_model_max_crash_backoff_time", base::Hours(1)};
-  return kOnDeviceModelMaxCrashBackoffTime.Get();
-}
-
-base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime() {
-  static const base::FeatureParam<base::TimeDelta>
-      kOnDeviceModelCrashBackoffBaseTime{
-          &kOptimizationGuideOnDeviceModel,
-          "on_device_model_crash_backoff_base_time", base::Minutes(1)};
-  return kOnDeviceModelCrashBackoffBaseTime.Get();
-}
-
 base::TimeDelta GetOnDeviceStartupMetricDelay() {
   static const base::FeatureParam<base::TimeDelta> kOnDeviceStartupMetricDelay{
       &kLogOnDeviceMetricsOnStartup, "on_device_startup_metric_delay",
@@ -495,53 +441,9 @@ base::TimeDelta GetOnDeviceStartupMetricDelay() {
   return kOnDeviceStartupMetricDelay.Get();
 }
 
-bool CanLaunchOnDeviceModelService() {
-  return base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel) ||
-         base::FeatureList::IsEnabled(kLogOnDeviceMetricsOnStartup);
-}
-
 bool IsOnDeviceExecutionEnabled() {
   return base::FeatureList::IsEnabled(
-             features::kOptimizationGuideModelExecution) &&
-         base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel);
-}
-
-base::TimeDelta GetOnDeviceEligibleModelFeatureRecentUsePeriod() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kOptimizationGuideOnDeviceModel,
-      "on_device_model_feature_recent_use_period", base::Days(30));
-}
-
-base::TimeDelta GetOnDeviceModelRetentionTime() {
-  return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kOptimizationGuideOnDeviceModel, "on_device_model_retention_time",
-      base::Days(30));
-}
-
-base::ByteSize GetDiskSpaceRequiredForOnDeviceModelInstall() {
-  return base::MiB(
-      base::saturated_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
-          kOptimizationGuideOnDeviceModel,
-          "on_device_model_free_space_mb_required_to_install",
-          base::GiB(20).InMiB())));
-}
-
-bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-    base::ByteSize free_disk_space_bytes) {
-  return GetDiskSpaceRequiredForOnDeviceModelInstall() <= free_disk_space_bytes;
-}
-
-base::ByteSize GetDiskSpaceRequiredForOnDeviceModelRetain() {
-  return base::MiB(
-      base::saturated_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
-          kOptimizationGuideOnDeviceModel,
-          "on_device_model_free_space_mb_required_to_retain",
-          base::GiB(5).InMiB())));
-}
-
-bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
-    base::ByteSize free_disk_space_bytes) {
-  return GetDiskSpaceRequiredForOnDeviceModelRetain() >= free_disk_space_bytes;
+      features::kOptimizationGuideModelExecution);
 }
 
 BASE_FEATURE(kOnDeviceModelCachesDiskSpaceCheck,
@@ -573,65 +475,6 @@ bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
   return GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() <=
          free_disk_space_bytes;
 }
-
-int GetOnDeviceModelNumRepeats() {
-  static const base::FeatureParam<int> kOnDeviceModelNumRepeats{
-      &kOptimizationGuideOnDeviceModel, "on_device_model_num_repeats", 2};
-  return kOnDeviceModelNumRepeats.Get();
-}
-
-int GetOnDeviceModelMinRepeatChars() {
-  static const base::FeatureParam<int> kOnDeviceModelMinRepeatChars{
-      &kOptimizationGuideOnDeviceModel, "on_device_model_min_repeat_chars", 16};
-  return kOnDeviceModelMinRepeatChars.Get();
-}
-
-bool GetOnDeviceModelRetractRepeats() {
-  static const base::FeatureParam<bool> kOnDeviceModelRetractRepeats{
-      &kOptimizationGuideOnDeviceModel, "on_device_model_retract_repeats",
-      true};
-  return kOnDeviceModelRetractRepeats.Get();
-}
-
-int GetOnDeviceModelDefaultTopK() {
-  static const base::FeatureParam<int> kTopK{
-      &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-      "on_device_model_topk", 64};
-  return kTopK.Get();
-}
-
-int GetOnDeviceModelMaxTopK() {
-  static const base::FeatureParam<int> kMaxTopK{
-      &optimization_guide::features::kOptimizationGuideOnDeviceModel,
-      "on_device_model_max_topk", 128};
-  return kMaxTopK.Get();
-}
-
-double GetOnDeviceModelDefaultTemperature() {
-  static const base::FeatureParam<double> kTemperature{
-      &kOptimizationGuideOnDeviceModel, "on_device_model_temperature", 1.0};
-  return kTemperature.Get();
-}
-
-std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks() {
-  static const base::FeatureParam<std::string>
-      kOnDeviceModelAllowedAdaptationRanks{&kOptimizationGuideOnDeviceModel,
-                                           "allowed_adaptation_ranks", "32"};
-  std::vector<uint32_t> ranks;
-  const auto ranks_str = kOnDeviceModelAllowedAdaptationRanks.Get();
-  auto rank_strs = base::SplitStringPiece(
-      ranks_str, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_NONEMPTY);
-  ranks.reserve(rank_strs.size());
-  for (const auto& rank_str : rank_strs) {
-    uint32_t rank;
-    if (base::StringToUint(rank_str, &rank)) {
-      ranks.push_back(rank);
-    }
-  }
-  return ranks;
-}
-
 
 std::optional<base::TimeDelta> GetSubframeGetAIPageContentTimeout() {
   if (!base::FeatureList::IsEnabled(kGetAIPageContentSubframeTimeoutEnabled)) {

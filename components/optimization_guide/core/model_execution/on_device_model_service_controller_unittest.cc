@@ -83,8 +83,16 @@ using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::ResultOf;
 
-auto UnsafeComposeConfig() {
+auto SimpleComposeConfigForTesting() {
   auto cfg = SimpleComposeConfig();
+  auto* sampling = cfg.mutable_sampling_params();
+  sampling->set_top_k(1);
+  sampling->set_temperature(0);
+  return cfg;
+}
+
+auto UnsafeComposeConfig() {
+  auto cfg = SimpleComposeConfigForTesting();
   cfg.set_can_skip_text_safety(true);
   return cfg;
 }
@@ -99,7 +107,7 @@ auto UnsafeTestConfig() {
 struct StandardAssets {
   FakeBaseModelAsset::Content base_model_content;
   FakeAdaptationAsset compose{{
-      .config = SimpleComposeConfig(),
+      .config = SimpleComposeConfigForTesting(),
   }};
   FakeSafetyModelAsset safety{ComposeSafetyConfig()};
   FakeLanguageModelAsset language;
@@ -132,12 +140,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
-         {features::kOptimizationGuideOnDeviceModel,
-          {{"on_device_model_topk", "1"},
-           {"on_device_model_temperature", "0"},
-           {"on_device_model_disable_crash_count", "3"},
-           {"on_device_model_crash_backoff_base_time", "1m"},
-           {"on_device_model_max_crash_backoff_time", "1h"}}},
          {features::kOnDeviceModelPerformanceParams,
           {{"compatible_on_device_performance_classes", "3,4,5,6"},
            {"compatible_low_tier_on_device_performance_classes", "3"}}},
@@ -238,7 +240,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
 
 TEST_F(OnDeviceModelServiceControllerTest, BaseModelExecutionSuccess) {
   FakeAdaptationAsset compose_asset({
-      .config = SimpleComposeConfig(),
+      .config = SimpleComposeConfigForTesting(),
       // No weight, so will use base model.
   });
   Initialize(InitializeParams{
@@ -312,11 +314,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CacheWeightExecutionSuccess) {
   // for GPU or just CPU only. Stop setting this feature flag once that's no
   // longer the case.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kOptimizationGuideOnDeviceModel,
-        {{"on_device_model_topk", "1"}, {"on_device_model_temperature", "0"}}},
-       {on_device_model::features::kOnDeviceModelForceCpuBackend, {}}},
-      {});
+  feature_list.InitAndEnableFeature(
+      on_device_model::features::kOnDeviceModelForceCpuBackend);
 
   Initialize(InitializeParams{
       .base_model_content =
@@ -352,11 +351,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   base::test::ScopedFeatureList feature_list;
   // TODO(crbug.com/461547475): GPU cache flag is experimental for now, remove
   // once it's no longer needed.
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kOptimizationGuideOnDeviceModel,
-        {{"on_device_model_topk", "1"}, {"on_device_model_temperature", "0"}}},
-       {on_device_model::features::kOnDeviceModelGpuProgramCache, {}}},
-      {});
+  feature_list.InitAndEnableFeature(
+      on_device_model::features::kOnDeviceModelGpuProgramCache);
 
   broker_.InstallBaseModel(std::make_unique<FakeBaseModelAsset>(
       std::vector<proto::OnDeviceModelPerformanceHint>{
@@ -395,7 +391,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 
 TEST_F(OnDeviceModelServiceControllerTest, AdaptationModelExecutionSuccess) {
   FakeAdaptationAsset compose_asset({
-      .config = SimpleComposeConfig(),
+      .config = SimpleComposeConfigForTesting(),
       .weight = 1015,
   });
   Initialize(InitializeParams{
@@ -425,7 +421,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AdaptationModelExecutionSuccess) {
 TEST_F(OnDeviceModelServiceControllerTest,
        MultipleModelAdaptationExecutionSuccess) {
   FakeAdaptationAsset compose_asset({
-      .config = SimpleComposeConfig(),
+      .config = SimpleComposeConfigForTesting(),
       .weight = 1015,
   });
   FakeAdaptationAsset test_asset({
@@ -477,7 +473,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 // with one using and adaptation.
 TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
   FakeAdaptationAsset compose_asset({
-      .config = SimpleComposeConfig(),
+      .config = SimpleComposeConfigForTesting(),
       .weight = 1015,
   });
   FakeAdaptationAsset test_asset({
@@ -622,7 +618,8 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionFailsForInvalidFeature) {
 TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
   // Verifies that when we start a session before safety is available, that
   // future session that require a safety model still get one.
-  FakeAdaptationAsset compose_asset({.config = SimpleComposeConfig()});
+  FakeAdaptationAsset compose_asset(
+      {.config = SimpleComposeConfigForTesting()});
   FakeAdaptationAsset test_asset({.config = UnsafeTestConfig()});
   Initialize({
       .base_model_content = standard_assets_.base_model_content,
@@ -962,11 +959,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
-  const base::TimeDelta idle_timeout = base::Seconds(10);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_service_idle_timeout", "10s"}});
+  const base::TimeDelta idle_timeout = features::GetOnDeviceModelIdleTimeout();
   Initialize(standard_assets_);
   auto session = CreateSession(SessionConfigParams{});
   ASSERT_TRUE(session);
@@ -1671,15 +1664,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, EvictModelForRankUpdate) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {
-          {features::kOptimizationGuideOnDeviceModel,
-           {{"allowed_adaptation_ranks", "1,32"}}},
-      },
-      /*disabled_features=*/{});
-  std::vector<uint32_t> initial_ranks = {1, 32};
+  std::vector<uint32_t> initial_ranks = {32};
 
   auto get_current_ranks =
       [launcher = &broker_.launcher()]() -> std::vector<uint32_t> {
@@ -1700,7 +1685,7 @@ TEST_F(OnDeviceModelServiceControllerTest, EvictModelForRankUpdate) {
           []() {
             auto config = SimpleComposeConfig();
             config.set_can_skip_text_safety(true);
-            config.set_adaptation_rank(1);
+            config.set_adaptation_rank(32);
             config.mutable_sampling_params()->set_top_k(1);
             config.mutable_sampling_params()->set_temperature(0);
             return config;
@@ -1752,7 +1737,7 @@ TEST_F(OnDeviceModelServiceControllerTest, EvictModelForRankUpdate) {
             "ctx: max:8192"
             "execute:input max:1024");
 
-  std::vector<uint32_t> expected_ranks{1, 32, 2};
+  std::vector<uint32_t> expected_ranks{32, 2};
   EXPECT_EQ(get_current_ranks(), expected_ranks);
 }
 

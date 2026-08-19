@@ -88,8 +88,16 @@ using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::ResultOf;
 
-auto UnsafeComposeConfig() {
+auto SimpleComposeConfigForTesting() {
   auto cfg = SimpleComposeConfig();
+  auto* sampling = cfg.mutable_sampling_params();
+  sampling->set_top_k(1);
+  sampling->set_temperature(0);
+  return cfg;
+}
+
+auto UnsafeComposeConfig() {
+  auto cfg = SimpleComposeConfigForTesting();
   cfg.set_can_skip_text_safety(true);
   return cfg;
 }
@@ -114,12 +122,6 @@ class SessionImplTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationGuideModelExecution, {}},
-         {features::kOptimizationGuideOnDeviceModel,
-          {{"on_device_model_topk", "1"},
-           {"on_device_model_temperature", "0"},
-           {"on_device_model_disable_crash_count", "3"},
-           {"on_device_model_crash_backoff_base_time", "1m"},
-           {"on_device_model_max_crash_backoff_time", "1h"}}},
          {features::kOnDeviceModelPerformanceParams,
           {{"compatible_on_device_performance_classes", "3,4,5,6"},
            {"compatible_low_tier_on_device_performance_classes", "3"}}},
@@ -180,7 +182,7 @@ class SessionImplTest : public testing::Test {
 
   void Initialize() {
     proto::SolutionConfig config;
-    *config.mutable_feature() = SimpleComposeConfig();
+    *config.mutable_feature() = SimpleComposeConfigForTesting();
     *config.mutable_safety() = ComposeSafetyConfig();
     Initialize(std::move(config));
   }
@@ -613,11 +615,6 @@ TEST_F(SessionImplTest, FailsWithInvalidResponseSafetyCheck) {
 }
 
 TEST_F(SessionImplTest, ReturnsErrorOnServiceDisconnect) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_fallback_to_server_on_disconnect", "false"}});
-
   Initialize();
 
   auto session = CreateSession(SessionConfigParams{});
@@ -847,60 +844,8 @@ TEST_F(SessionImplTest, DestroySessionWhileWaitingForResponse) {
       total_time, 1);
 }
 
-TEST_F(SessionImplTest, DetectsRepeats) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_retract_repeats", "false"}});
-
-  base::HistogramTester histogram_tester;
-  Initialize([]() {
-    proto::SolutionConfig config;
-    *config.mutable_feature() = UnsafeComposeConfig();
-    return config;
-  }());
-
-  broker_.settings().set_execute_result({
-      "some text",
-      " some more repeating text",
-      " some more repeating text",
-      " more stuff",
-  });
-  auto session = CreateSession(SessionConfigParams{});
-  ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"),
-                        response_.GetStreamingCallback());
-  task_environment_.RunUntilIdle();
-  const std::vector<std::string> expected_responses = {
-      "some text",
-      " some more repeating text",
-  };
-  EXPECT_EQ(*response_.value(),
-            ConcatResponses(expected_responses) + " some more repeating text");
-  EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
-
-  ASSERT_TRUE(response_.model_execution_info());
-  EXPECT_GT(response_.model_execution_info()
-                ->on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_TRUE(response_.model_execution_info()
-                  ->on_device_model_execution_info()
-                  .execution_infos(0)
-                  .response()
-                  .on_device_model_service_response()
-                  .has_repeats());
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Test",
-      true, 1);
-}
 
 TEST_F(SessionImplTest, DetectsRepeatsAndCancelsResponse) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_retract_repeats", "true"}});
-
   base::HistogramTester histogram_tester;
   Initialize([]() {
     proto::SolutionConfig config;
@@ -1000,11 +945,6 @@ TEST_F(SessionImplTest, ExcusedFeaturesIgnoreRepeats) {
 }
 
 TEST_F(SessionImplTest, DetectsRepeatsAcrossResponses) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_retract_repeats", "false"}});
-
   base::HistogramTester histogram_tester;
   Initialize([]() {
     proto::SolutionConfig config;
@@ -1025,15 +965,10 @@ TEST_F(SessionImplTest, DetectsRepeatsAcrossResponses) {
   session->ExecuteModel(UserInputRequest("foo"),
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
-  const std::vector<std::string> partial_responses = {
-      "some text",
-      " some more repeating",
-      " text",
-      " some more ",
-  };
-  EXPECT_EQ(*response_.value(),
-            ConcatResponses(partial_responses) + "repeating text");
-  EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
+
+  EXPECT_FALSE(response_.value());
+  ASSERT_TRUE(response_.error());
+  EXPECT_EQ(*response_.error(), OnDeviceError::kResponseLowQuality);
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_GT(response_.model_execution_info()
@@ -1048,16 +983,11 @@ TEST_F(SessionImplTest, DetectsRepeatsAcrossResponses) {
                   .has_repeats());
 
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Test",
-      true, 1);
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Test",
+      ExecuteModelResult::kResponseHadRepeats, 1);
 }
 
 TEST_F(SessionImplTest, IgnoresNonRepeatingText) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_retract_repeats", "false"}});
-
   base::HistogramTester histogram_tester;
   Initialize([]() {
     proto::SolutionConfig config;
@@ -1166,51 +1096,6 @@ TEST_F(SessionImplTest, WithholdsTrailingNewlinesNoTrailingNewlines) {
   EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
 }
 
-TEST_F(SessionImplTest, NoWithholdsTrailingNewlines) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_withhold_newlines", "false"}});
-  Initialize([]() {
-    proto::SolutionConfig config;
-    *config.mutable_feature() = UnsafeComposeConfig();
-    return config;
-  }());
-
-  broker_.settings().set_execute_result({
-      "some text",
-      " texts with newlines\n\n",
-      "\n",
-      "\n\n",
-      "\n",
-      "\n",
-      "\n no trailing newline",
-      "\n more trailing newlines\n\n",
-      "\n\n",
-      "\n",
-      "",
-  });
-  auto session = CreateSession(SessionConfigParams{});
-  ASSERT_TRUE(session);
-  session->ExecuteModel(UserInputRequest("foo"),
-                        response_.GetStreamingCallback());
-  ASSERT_TRUE(response_.GetFinalStatus());
-  const std::vector<std::string> partial_responses = {
-      "some text",
-      " texts with newlines\n\n",
-      "\n",
-      "\n\n",
-      "\n",
-      "\n",
-      "\n no trailing newline",
-      "\n more trailing newlines\n\n",
-      "\n\n",
-      "\n",
-      "",
-  };
-  EXPECT_EQ(*response_.value(), ConcatResponses(partial_responses));
-  EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
-}
 
 TEST_F(SessionImplTest, UsesSessionTopKAndTemperature) {
   // Session sampling params should have precedence over feature ones.
@@ -1406,11 +1291,6 @@ class SessionImplTsIntervalTest : public SessionImplTest,
 
 TEST_P(SessionImplTsIntervalTest, DetectsRepeatsWithSafetyModel) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
-      {{"on_device_model_retract_repeats", "false"}});
-
   Initialize([&]() {
     proto::SolutionConfig config;
     *config.mutable_feature() = SimpleComposeConfig();
@@ -1435,9 +1315,9 @@ TEST_P(SessionImplTsIntervalTest, DetectsRepeatsWithSafetyModel) {
                         response_.GetStreamingCallback());
   task_environment_.RunUntilIdle();
 
-  EXPECT_TRUE(response_.value());
-  EXPECT_EQ(*response_.value(),
-            "some text some more repeating text some more repeating text");
+  EXPECT_FALSE(response_.value());
+  ASSERT_TRUE(response_.error());
+  EXPECT_EQ(*response_.error(), OnDeviceError::kResponseLowQuality);
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_GT(response_.model_execution_info()
@@ -1451,8 +1331,8 @@ TEST_P(SessionImplTsIntervalTest, DetectsRepeatsWithSafetyModel) {
                   .on_device_model_service_response()
                   .has_repeats());
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats.Test",
-      true, 1);
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Test",
+      ExecuteModelResult::kResponseHadRepeats, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(SessionImplTsIntervalTests,
@@ -1485,6 +1365,9 @@ TEST_F(SessionImplTest, ImageExecutionSuccess) {
          ->mutable_proto_field() = ProtoField(
         {RequestProto::kNested2FieldNumber, NestedProto::kMediaFieldNumber});
   }
+  auto* sampling = config->mutable_sampling_params();
+  sampling->set_top_k(1);
+  sampling->set_temperature(0);
   *config->mutable_output_config() = ResponseHolderOutputConfig();
   *solution_config.mutable_safety() = ComposeSafetyConfig();
   Initialize(std::move(solution_config));
@@ -1539,6 +1422,9 @@ TEST_F(SessionImplTest, KeepInputOnExtension) {
   Initialize([]() {
     proto::SolutionConfig config;
     auto* feature = config.mutable_feature();
+    auto* sampling = feature->mutable_sampling_params();
+    sampling->set_top_k(1);
+    sampling->set_temperature(0);
     *feature->mutable_input_config() = TestInputConfig(
         ForEachRepeated(FormatTestMessage()), EmptySubstitution());
     *feature->mutable_output_config() = ResponseHolderOutputConfig();
@@ -1629,6 +1515,9 @@ TEST_F(SessionImplTest, OmitEmptyInputs) {
   Initialize([]() {
     proto::SolutionConfig config;
     auto* feature = config.mutable_feature();
+    auto* sampling = feature->mutable_sampling_params();
+    sampling->set_top_k(1);
+    sampling->set_temperature(0);
     auto& input_config = *feature->mutable_input_config();
     input_config.set_request_base_name(
         proto::ExampleForTestingRequest().GetTypeName());
@@ -1966,7 +1855,7 @@ TEST_F(SessionImplTest, ResponseConstraintOnExecute) {
 TEST_F(SessionImplTest, ResponseConstraintConfigJson) {
   Initialize([]() {
     proto::SolutionConfig config;
-    *config.mutable_feature() = SimpleComposeConfig();
+    *config.mutable_feature() = SimpleComposeConfigForTesting();
     config.mutable_feature()
         ->mutable_output_config()
         ->mutable_response_constraint()
@@ -1990,7 +1879,7 @@ TEST_F(SessionImplTest, ResponseConstraintConfigJson) {
 TEST_F(SessionImplTest, ResponseConstraintConfigRegex) {
   Initialize([]() {
     proto::SolutionConfig config;
-    *config.mutable_feature() = SimpleComposeConfig();
+    *config.mutable_feature() = SimpleComposeConfigForTesting();
     config.mutable_feature()
         ->mutable_output_config()
         ->mutable_response_constraint()

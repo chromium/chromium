@@ -28,7 +28,7 @@ namespace on_device_model {
 namespace {
 
 const base::FeatureParam<bool> kForceFastestInference{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOptimizationGuideModelExecution,
     "on_device_model_force_fastest_inference", false};
 
 scoped_refptr<Backend> DefaultImpl() {

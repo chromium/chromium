@@ -3973,11 +3973,6 @@ inline constexpr char kOptimizationGuideEnableDogfoodLoggingDescription[] =
     "policy to enable model quality logs. Googlers: See "
     "go/chrome-mqls-debug-logging for details.";
 
-inline constexpr char kOptimizationGuideOnDeviceModelName[] =
-    "Enables optimization guide on device";
-inline constexpr char kOptimizationGuideOnDeviceModelDescription[] =
-    "Enables the optimization guide to execute models on device.";
-
 inline constexpr char kOrganicRepeatableQueriesName[] =
     "Organic repeatable queries in Most Visited tiles";
 inline constexpr char kOrganicRepeatableQueriesDescription[] =

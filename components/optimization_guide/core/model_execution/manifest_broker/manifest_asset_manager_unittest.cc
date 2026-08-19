@@ -149,8 +149,7 @@ class ManifestAssetManagerTest : public testing::Test {
  public:
   ManifestAssetManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kOptimizationGuideModelExecution,
-         features::kOptimizationGuideOnDeviceModel},
+        {features::kOptimizationGuideModelExecution},
         {features::kAIModelUnloadableProgress});
   }
 
@@ -830,7 +829,6 @@ TEST_F(ManifestAssetManagerTest, BackgroundDownloadForManifestEnabledUseCase) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {features::kOptimizationGuideModelExecution,
-       features::kOptimizationGuideOnDeviceModel,
        features::kOnDeviceModelBackgroundDownload},
       {});
 

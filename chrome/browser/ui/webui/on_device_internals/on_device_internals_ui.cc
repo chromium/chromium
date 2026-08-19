@@ -12,18 +12,11 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/on_device_internals_resources.h"
 #include "chrome/grit/on_device_internals_resources_map.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
 
 namespace on_device_internals {
-
-bool OnDeviceInternalsUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(
-      optimization_guide::features::kOptimizationGuideOnDeviceModel);
-}
 
 OnDeviceInternalsUI::OnDeviceInternalsUI(content::WebUI* web_ui)
     : MojoWebUIController(web_ui) {

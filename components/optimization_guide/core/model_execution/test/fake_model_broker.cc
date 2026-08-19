@@ -23,7 +23,6 @@ namespace optimization_guide {
 ScopedModelBrokerFeatureList::ScopedModelBrokerFeatureList() {
   feature_list_.InitWithFeaturesAndParameters(
       {{features::kOptimizationGuideModelExecution, {}},
-       {features::kOptimizationGuideOnDeviceModel, {}},
        {features::kOnDeviceModelPerformanceParams,
         {{"compatible_on_device_performance_classes", "3,4,5,6"},
          {"compatible_low_tier_on_device_performance_classes", "3"}}},

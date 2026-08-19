@@ -85,17 +85,8 @@ class OnDeviceAssets {
   ManifestOverrideFile manifest_override_;
 };
 
-class OnDeviceModelExecutionDisabledBrowserTest : public InProcessBrowserTest {
+class OnDeviceModelBrowserTestBase : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates({
-        {features::kOptimizationGuideModelExecution, true},
-        {features::kOptimizationGuideOnDeviceModel, false},
-        {kOptimizationGuideManifestBroker, true},
-    });
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* cmd) override {
     // This test depends on the disk information being available in a timely
     // manner (see crbug.com/346579988). Use this flag to have the information
@@ -116,38 +107,14 @@ class OnDeviceModelExecutionDisabledBrowserTest : public InProcessBrowserTest {
   OnDeviceAssets assets_;
 };
 
-IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionDisabledBrowserTest,
-                       GetOnDeviceModelEligibilityExecutionDisabled) {
-  // With kOptimizationGuideOnDeviceModel disabled, should not be eligible.
-  EXPECT_EQ(GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kTest),
-            OnDeviceModelEligibilityReason::kFeatureNotEnabled);
-}
-
-IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionDisabledBrowserTest,
-                       PerformanceClassNotComputed) {
-  auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(
-      browser()->GetProfile());
-  base::HistogramTester histogram_tester;
-  base::RunLoop loop;
-  // The call should exit early because the service is not enabled.
-  service->GetOnDeviceModelEligibilityAsync(
-      mojom::OnDeviceFeature::kTest,
-      /*capabilities=*/{},
-      base::IgnoreArgs<OnDeviceModelEligibilityReason>(loop.QuitClosure()));
-  loop.Run();
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 0);
-}
-
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
 class OnDeviceModelExecutionEnabledBrowserTest
-    : public OnDeviceModelExecutionDisabledBrowserTest {
+    : public OnDeviceModelBrowserTestBase {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates({
         {features::kOptimizationGuideModelExecution, true},
-        {features::kOptimizationGuideOnDeviceModel, true},
         {kOptimizationGuideManifestBroker, true},
         {features::kLogOnDeviceMetricsOnStartup, false},
     });
@@ -172,12 +139,11 @@ IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
 }
 
 class LogOnDeviceMetricsOnStartupEnabledBrowserTest
-    : public OnDeviceModelExecutionDisabledBrowserTest {
+    : public OnDeviceModelBrowserTestBase {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates({
         {features::kOptimizationGuideModelExecution, true},
-        {features::kOptimizationGuideOnDeviceModel, true},
         {kOptimizationGuideManifestBroker, true},
         {features::kLogOnDeviceMetricsOnStartup, true},
     });
@@ -192,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(LogOnDeviceMetricsOnStartupEnabledBrowserTest,
   base::HistogramTester histogram_tester;
 
   base::RunLoop loop;
-  // The call should exit early because the service is not enabled.
+  // Verify that startup metric logging computes the performance class.
   service->GetOnDeviceModelEligibilityAsync(
       mojom::OnDeviceFeature::kTest,
       /*capabilities=*/{},

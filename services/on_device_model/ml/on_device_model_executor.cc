@@ -58,19 +58,19 @@ using odmm::LoadModelResult;
 constexpr uint32_t kReserveTokensForSafety = 2;
 
 const base::FeatureParam<bool> kPreferTextureWeights{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOptimizationGuideModelExecution,
     "on_device_model_prefer_texture_weights", true};
 
 const base::FeatureParam<bool> kEnableHostMappedPointer{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOptimizationGuideModelExecution,
     "on_device_model_enable_host_mapped_pointer", true};
 
 const base::FeatureParam<bool> kUseLowPower{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOptimizationGuideModelExecution,
     "on_device_model_use_low_power", false};
 
 const base::FeatureParam<bool> kAllowFp16{
-    &optimization_guide::features::kOptimizationGuideOnDeviceModel,
+    &optimization_guide::features::kOptimizationGuideModelExecution,
     "on_device_model_allow_fp16", true};
 
 // Helper to bind object methods as weak task-posting callback functions.
