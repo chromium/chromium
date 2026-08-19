@@ -136,6 +136,7 @@ if (!is_android) {
       "//chrome/browser/permissions",
       "//chrome/browser/permissions:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
       "//components/browsing_data/content",
       "//components/push_messaging:test_support",

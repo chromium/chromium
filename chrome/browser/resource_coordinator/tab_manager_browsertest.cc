@@ -29,10 +29,10 @@
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -262,7 +262,7 @@ class TabManagerTest : public InProcessBrowserTest,
   }
 
   TabManager* tab_manager() { return g_browser_process->GetTabManager(); }
-  TabStripModel* tsm() { return browser()->tab_strip_model(); }
+  TabStripModel* tsm() { return browser()->GetTabStripModel(); }
 
   content::WebContents* GetWebContentsAt(int index) {
     return tsm()->GetWebContentsAt(index);
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, TabManagerBasics) {
   // Select the first tab.  It should reload.
   chrome::SelectNumberedTab(browser(), 0);
   content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   // Make sure the FindBarController gets the right WebContents.
   EXPECT_EQ(browser()->GetFeatures().GetFindBarController()->web_contents(),
             tsm()->GetActiveWebContents());
@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, TabManagerBasics) {
   // Select the third tab. It should reload.
   chrome::SelectNumberedTab(browser(), 2);
   content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_EQ(2, tsm()->active_index());
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(0)));
   EXPECT_FALSE(IsTabDiscarded(GetWebContentsAt(1)));
@@ -413,12 +413,12 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, TabManagerBasics) {
   EXPECT_FALSE(chrome::CanGoForward(browser()));
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_TRUE(chrome::CanGoForward(browser()));
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   content::WaitForLoadStop(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      browser()->GetTabStripModel()->GetActiveWebContents());
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_TRUE(chrome::CanGoForward(browser()));
 }
@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, InvalidOrEmptyURL) {
   EXPECT_FALSE(UrgentDiscardTabImmediately());
 
   // Wait for the background tab to load which then allows it to be discarded.
-  content::WaitForLoadStop(browser()->tab_strip_model()->GetWebContentsAt(1));
+  content::WaitForLoadStop(browser()->GetTabStripModel()->GetWebContentsAt(1));
   EXPECT_TRUE(UrgentDiscardTabImmediately());
 }
 
@@ -1026,17 +1026,17 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
 
   // Active tabs cannot be discarded.
   EXPECT_FALSE(
-      IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
+      IsTabDiscarded(browser()->GetTabStripModel()->GetWebContentsAt(0)));
 
   // Non-active tabs can be discarded.
   EXPECT_TRUE(
-      IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(1)));
+      IsTabDiscarded(browser()->GetTabStripModel()->GetWebContentsAt(1)));
 
   // Showing the browser again should reload the active tab.
   browser()->GetWindow()->Show();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(
-      IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
+      IsTabDiscarded(browser()->GetTabStripModel()->GetWebContentsAt(0)));
 }
 
 // Do not run in debug or ASAN builds to avoid timeouts due to multiple
@@ -1063,11 +1063,11 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabsWithOccludedWindow) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(
-      IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
+      IsTabDiscarded(browser()->GetTabStripModel()->GetWebContentsAt(0)));
 
   // Non-active tabs can be discarded on all platforms.
   EXPECT_TRUE(
-      IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(1)));
+      IsTabDiscarded(browser()->GetTabStripModel()->GetWebContentsAt(1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1118,7 +1118,7 @@ INSTANTIATE_TEST_SUITE_P(
 //   its tab strip.
 IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
   // Create 2 windows. Simulate the second window being hidden/not active.
-  Browser* browser1 = browser();
+  BrowserWindowInterface* browser1 = browser();
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser1, GURL("https://www.example.com")));
@@ -1127,7 +1127,7 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  Browser* browser2 = CreateBrowser(browser1->GetProfile());
+  BrowserWindowInterface* browser2 = CreateBrowser(browser1->GetProfile());
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser2, GURL("https://www.example.com")));
   ui_test_utils::NavigateToURLWithDisposition(
@@ -1135,8 +1135,8 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, MAYBE_DiscardTabWithNonVisibleTabs) {
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  TabStripModel* tab_strip1 = browser1->tab_strip_model();
-  TabStripModel* tab_strip2 = browser2->tab_strip_model();
+  TabStripModel* tab_strip1 = browser1->GetTabStripModel();
+  TabStripModel* tab_strip2 = browser2->GetTabStripModel();
 
   ASSERT_EQ(2, tab_strip1->count());
   ASSERT_EQ(2, tab_strip2->count());
