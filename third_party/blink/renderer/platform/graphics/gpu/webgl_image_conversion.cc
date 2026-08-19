@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
 
@@ -14,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/bit_cast.h"
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
@@ -427,8 +424,7 @@ const std::array<unsigned char, 512> g_shift_table = {
 };
 
 uint16_t ConvertFloatToHalfFloat(float f) {
-  unsigned temp;
-  std::memcpy(&temp, &f, 4);
+  uint32_t temp = base::bit_cast<uint32_t>(f);
   uint16_t signexp = (temp >> 23) & 0x1ff;
   return g_base_table[signexp] +
          ((temp & 0x007fffff) >> g_shift_table[signexp]);
@@ -849,10 +845,11 @@ float ConvertHalfFloatToFloat(uint16_t half) {
   uint32_t temp =
       g_mantissa_table[g_offset_table[half >> 10] + (half & 0x3ff)] +
       g_exponent_table[half >> 10];
-  float ret;
-  std::memcpy(&ret, &temp, 4);
-  return ret;
+  return base::bit_cast<float>(temp);
 }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
 
 /* BEGIN CODE SHARED WITH MOZILLA FIREFOX */
 
@@ -3246,6 +3243,8 @@ unsigned TexelBytesForFormat(WebGLImageConversion::DataFormat format) {
 
 /* END CODE SHARED WITH MOZILLA FIREFOX */
 
+#pragma clang diagnostic pop
+
 class FormatConverter {
   STACK_ALLOCATED();
 
@@ -3482,9 +3481,9 @@ void FormatConverter::Convert() {
   DCHECK(!kTrivialUnpack || !kTrivialPack);
 
   const SrcType* src_row_start =
-      static_cast<const SrcType*>(static_cast<const void*>(
+      static_cast<const SrcType*>(static_cast<const void*>(UNSAFE_TODO(
           static_cast<const uint8_t*>(src_start_) +
-          ((src_stride_ * src_sub_rectangle_.y()) + src_row_offset_)));
+          ((src_stride_ * src_sub_rectangle_.y()) + src_row_offset_))));
 
   // If packing multiple images into a 3D texture, and flipY is true,
   // then the sub-rectangle is pointing at the start of the
@@ -3492,8 +3491,8 @@ void FormatConverter::Convert() {
   // the positive direction, we need to back it up to point at the
   // last, or "topmost", of these images.
   if (dst_stride_ < 0 && depth_ > 1) {
-    src_row_start -=
-        (depth_ - 1) * src_stride_in_elements * unpack_image_height_;
+    UNSAFE_TODO(src_row_start -=
+                (depth_ - 1) * src_stride_in_elements * unpack_image_height_);
   }
 
   DstType* dst_row_start = static_cast<DstType*>(dst_start_);
@@ -3502,22 +3501,28 @@ void FormatConverter::Convert() {
       for (int i = 0; i < src_sub_rectangle_.height(); ++i) {
         Pack<DstFormat, alphaOp>(src_row_start, dst_row_start,
                                  src_sub_rectangle_.width());
-        src_row_start += src_stride_in_elements;
-        dst_row_start += dst_stride_in_elements;
+        UNSAFE_TODO({
+          src_row_start += src_stride_in_elements;
+          dst_row_start += dst_stride_in_elements;
+        });
       }
-      src_row_start += src_stride_in_elements *
-                       (unpack_image_height_ - src_sub_rectangle_.height());
+      UNSAFE_TODO(src_row_start +=
+                  src_stride_in_elements *
+                  (unpack_image_height_ - src_sub_rectangle_.height()));
     }
   } else if (kTrivialPack) {
     for (int d = 0; d < depth_; ++d) {
       for (int i = 0; i < src_sub_rectangle_.height(); ++i) {
         Unpack<SrcFormat>(src_row_start, dst_row_start,
                           src_sub_rectangle_.width());
-        src_row_start += src_stride_in_elements;
-        dst_row_start += dst_stride_in_elements;
+        UNSAFE_TODO({
+          src_row_start += src_stride_in_elements;
+          dst_row_start += dst_stride_in_elements;
+        });
       }
-      src_row_start += src_stride_in_elements *
-                       (unpack_image_height_ - src_sub_rectangle_.height());
+      UNSAFE_TODO(src_row_start +=
+                  src_stride_in_elements *
+                  (unpack_image_height_ - src_sub_rectangle_.height()));
     }
   } else {
     for (int d = 0; d < depth_; ++d) {
@@ -3529,11 +3534,14 @@ void FormatConverter::Convert() {
         Pack<DstFormat, alphaOp>(reinterpret_cast<IntermType*>(
                                      unpacked_intermediate_src_data_.get()),
                                  dst_row_start, src_sub_rectangle_.width());
-        src_row_start += src_stride_in_elements;
-        dst_row_start += dst_stride_in_elements;
+        UNSAFE_TODO({
+          src_row_start += src_stride_in_elements;
+          dst_row_start += dst_stride_in_elements;
+        });
       }
-      src_row_start += src_stride_in_elements *
-                       (unpack_image_height_ - src_sub_rectangle_.height());
+      UNSAFE_TODO(src_row_start +=
+                  src_stride_in_elements *
+                  (unpack_image_height_ - src_sub_rectangle_.height()));
     }
   }
   success_ = true;
@@ -3942,7 +3950,7 @@ bool WebGLImageConversion::ExtractTextureData(
     return false;
   const uint8_t* src_data = static_cast<const uint8_t*>(pixels);
   if (skip_size_in_bytes) {
-    src_data += skip_size_in_bytes;
+    UNSAFE_TODO(src_data += skip_size_in_bytes);
   }
 
   if (!PackPixels(src_data, source_data_format,
@@ -3988,9 +3996,9 @@ bool WebGLImageConversion::PackPixels(
   int dst_stride =
       source_data_sub_rectangle.width() * TexelBytesForFormat(dst_data_format);
   if (flip_y) {
-    destination_data =
+    destination_data = UNSAFE_TODO(
         static_cast<uint8_t*>(destination_data) +
-        dst_stride * ((depth * source_data_sub_rectangle.height()) - 1);
+        dst_stride * ((depth * source_data_sub_rectangle.height()) - 1));
     dst_stride = -dst_stride;
   }
   if (!HasAlpha(source_data_format) || !HasColor(source_data_format) ||
@@ -3998,10 +4006,12 @@ bool WebGLImageConversion::PackPixels(
     alpha_op = kAlphaDoNothing;
 
   if (source_data_format == dst_data_format && alpha_op == kAlphaDoNothing) {
-    const uint8_t* base_ptr = static_cast<const uint8_t*>(source_data) +
-                              src_stride * source_data_sub_rectangle.y();
-    const uint8_t* base_end = static_cast<const uint8_t*>(source_data) +
-                              src_stride * source_data_sub_rectangle.bottom();
+    const uint8_t* base_ptr =
+        UNSAFE_TODO(static_cast<const uint8_t*>(source_data) +
+                    src_stride * source_data_sub_rectangle.y());
+    const uint8_t* base_end =
+        UNSAFE_TODO(static_cast<const uint8_t*>(source_data) +
+                    src_stride * source_data_sub_rectangle.bottom());
 
     // If packing multiple images into a 3D texture, and flipY is true,
     // then the sub-rectangle is pointing at the start of the
@@ -4011,8 +4021,10 @@ bool WebGLImageConversion::PackPixels(
     if (flip_y && depth > 1) {
       const ptrdiff_t distance_to_top_image =
           (depth - 1) * src_stride * unpack_image_height;
-      base_ptr -= distance_to_top_image;
-      base_end -= distance_to_top_image;
+      UNSAFE_TODO({
+        base_ptr -= distance_to_top_image;
+        base_end -= distance_to_top_image;
+      });
     }
 
     unsigned row_size = (dst_stride > 0) ? dst_stride : -dst_stride;
@@ -4022,12 +4034,16 @@ bool WebGLImageConversion::PackPixels(
       const uint8_t* ptr = base_ptr;
       const uint8_t* ptr_end = base_end;
       while (ptr < ptr_end) {
-        memcpy(dst, ptr + src_row_offset, row_size);
-        ptr += src_stride;
-        dst += dst_stride;
+        UNSAFE_TODO({
+          memcpy(dst, ptr + src_row_offset, row_size);
+          ptr += src_stride;
+          dst += dst_stride;
+        });
       }
-      base_ptr += unpack_image_height * src_stride;
-      base_end += unpack_image_height * src_stride;
+      UNSAFE_TODO({
+        base_ptr += unpack_image_height * src_stride;
+        base_end += unpack_image_height * src_stride;
+      });
     }
     return true;
   }
