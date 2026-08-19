@@ -856,9 +856,6 @@ const char kChromeAppStoreUrl[] =
       initWithBaseViewController:_baseViewController
                          browser:_browser
                     errorContext:std::move(errorContext)];
-  // TODO(crbug.com/544605683): Don't pass the handler to the coordinator.
-  _autofillErrorDialogCoordinator.autofillCommandsHandler =
-      HandlerForProtocol(self.dispatcher, AutofillCommands);
   [_autofillErrorDialogCoordinator start];
 }
 

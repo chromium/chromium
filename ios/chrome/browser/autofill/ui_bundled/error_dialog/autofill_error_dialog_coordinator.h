@@ -9,8 +9,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@protocol AutofillCommands;
-
 namespace autofill {
 struct AutofillErrorDialogContext;
 }  // namespace autofill
@@ -18,9 +16,6 @@ struct AutofillErrorDialogContext;
 // The coordinator responsible for managing the autofill error dialog. This
 // dialog is shown when some error/alert state should be presented.
 @interface AutofillErrorDialogCoordinator : ChromeCoordinator
-
-// Handler for Autofill commands.
-@property(nonatomic, weak) id<AutofillCommands> autofillCommandsHandler;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
