@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -442,7 +443,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
     intersection_observer_sample_period_ = period;
   }
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock, UnprotectedInRelease | DanglingUntriaged>
+      clock_;
 
   // Event and metric data
   AbsoluteMetricRecord primary_metric_;

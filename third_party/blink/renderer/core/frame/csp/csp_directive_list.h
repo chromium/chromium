@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_CSP_DIRECTIVE_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_CSP_DIRECTIVE_LIST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/platform/crypto.h"
@@ -20,7 +21,9 @@ enum class ResourceType : uint8_t;
 
 struct CORE_EXPORT CSPOperativeDirective {
   CSPDirectiveName type;
-  const network::mojom::blink::CSPSourceList* source_list;
+  raw_ptr<const network::mojom::blink::CSPSourceList,
+          UnprotectedInRelease | DanglingUntriaged>
+      source_list;
 };
 
 CORE_EXPORT

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -2719,7 +2720,7 @@ class EventHandlingWebFrameWidgetSimTest : public SimTest {
     int64_t GetTraceId() const override { return 0; }
 
    private:
-    State* const state_;
+    const raw_ptr<State, UnprotectedInRelease | DanglingUntriaged> state_;
   };
 
   // A test `WebFrameWidget` implementation that fakes handling of an event.

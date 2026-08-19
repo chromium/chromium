@@ -34,6 +34,7 @@
 
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -1161,7 +1162,8 @@ class CORE_EXPORT LocalFrame final
 
   HistoryUserActivationState history_user_activation_state_;
 
-  InterfaceRegistry* const interface_registry_;
+  const raw_ptr<InterfaceRegistry, UnprotectedInRelease | DanglingUntriaged>
+      interface_registry_;
 
   mojom::blink::ViewportIntersectionState intersection_state_;
 

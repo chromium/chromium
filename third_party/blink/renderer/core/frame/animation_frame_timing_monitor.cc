@@ -377,7 +377,7 @@ void AnimationFrameTimingMonitor::FinalizeCongestedMoment() {
     info->SetScripts(congestion_scripts_);
     info->SetScriptCount(congestion_script_count_);
     info->SetTotalBlockingDuration(span - kCongestionThreshold);
-    client_.ReportCongestedMoment(info);
+    client_->ReportCongestedMoment(info);
   }
 
   congestion_run_start_ = base::TimeTicks();
@@ -434,7 +434,7 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
       attributed_window = task_attributed_window_.Get();
     }
     if (attributed_window) {
-      client_.ReportLongTaskTiming(start_time, end_time, attributed_window);
+      client_->ReportLongTaskTiming(start_time, end_time, attributed_window);
       task_longtask_reported_ = true;
     }
   }
@@ -449,7 +449,7 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
     return;
   }
 
-  bool should_report = client_.ShouldReportLongAnimationFrameTiming();
+  bool should_report = client_->ShouldReportLongAnimationFrameTiming();
 
   // Changing the focused frame mid-task should also schedule rendering.
   // Marking as DUMP_WILL_BE_CHECK because failing this assumption is not
@@ -457,9 +457,9 @@ void AnimationFrameTimingMonitor::OnMainThreadTaskCompleted(
   // TODO(crbug/352077677): Verify this assumption if no dumps are created and
   // turn into a CHECK.
   DUMP_WILL_BE_CHECK(!multiple_focused_frames_in_same_task_ ||
-                     client_.RequestedMainFramePending());
+                     client_->RequestedMainFramePending());
 
-  if (client_.RequestedMainFramePending() && should_report) {
+  if (client_->RequestedMainFramePending() && should_report) {
     current_frame_timing_info_ =
         MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
     state_ = State::kPendingFrame;
@@ -679,8 +679,8 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     return;
   }
 
-  ukm::UkmRecorder* recorder = client_.MainFrameUkmRecorder();
-  ukm::SourceId source_id = client_.MainFrameUkmSourceId();
+  ukm::UkmRecorder* recorder = client_->MainFrameUkmRecorder();
+  ukm::SourceId source_id = client_->MainFrameUkmSourceId();
   if (!recorder || source_id == ukm::kInvalidSourceId) {
     return;
   }
@@ -800,7 +800,7 @@ bool AnimationFrameTimingMonitor::PushScriptEntryPoint(
   // script (entry_point_depth is 1), and the client wants long animation frame
   // timing reported.
   if (!enabled_ || entry_point_depth_ != 1 ||
-      !client_.ShouldReportLongAnimationFrameTiming()) {
+      !client_->ShouldReportLongAnimationFrameTiming()) {
     return false;
   }
 
@@ -851,7 +851,7 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPointInternal(
     const PendingScriptInfo& script_info) {
   // Worker contexts are not windows; allow them through in worker mode.
   if (!enabled_ || !context || (!context->IsWindow() && IsMainThread()) ||
-      !client_.ShouldReportLongAnimationFrameTiming()) {
+      !client_->ShouldReportLongAnimationFrameTiming()) {
     return nullptr;
   }
 

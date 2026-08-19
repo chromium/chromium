@@ -32,6 +32,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -387,7 +388,9 @@ class MultiResourcePacker : public GarbageCollected<MultiResourcePacker> {
   // This hashset is only used for de-duplicating resources to be serialized.
   HashSet<KURL> resource_urls_;
   Deque<ResourceEntry> resources_;
-  WebFrameSerializer::MHTMLPartsGenerationDelegate* web_delegate_;
+  raw_ptr<WebFrameSerializer::MHTMLPartsGenerationDelegate,
+          UnprotectedInRelease | DanglingUntriaged>
+      web_delegate_;
   // Whether `Finish()` has been called.
   bool finished_ = false;
   // Number of `ResourceWaiter`s that have completed.

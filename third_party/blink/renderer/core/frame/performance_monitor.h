@@ -7,6 +7,7 @@
 
 #include <array>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -157,14 +158,14 @@ class CORE_EXPORT PerformanceMonitor final
   unsigned script_depth_ = 0;
   unsigned layout_depth_ = 0;
   unsigned user_callback_depth_ = 0;
-  const void* user_callback_;
+  raw_ptr<const void, UnprotectedInRelease | DanglingUntriaged> user_callback_;
 
   std::array<base::TimeDelta, kAfterLast> thresholds_;
 
   Member<LocalFrame> local_root_;
   Member<ExecutionContext> task_execution_context_;
   // This is needed for calling v8::metrics::LongTaskStats::Reset.
-  v8::Isolate* const isolate_;
+  const raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_;
   bool task_has_multiple_contexts_ = false;
   bool task_should_be_reported_ = false;
   using ClientThresholds = GCedHeapHashMap<WeakMember<Client>, base::TimeDelta>;

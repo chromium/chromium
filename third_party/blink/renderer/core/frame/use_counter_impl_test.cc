@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheme_registry.h"
@@ -413,7 +414,8 @@ class DeprecationTest : public testing::Test {
 
   test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_;
-  Deprecation& deprecation_;
+  const raw_ref<Deprecation, UnprotectedInRelease | DanglingUntriaged>
+      deprecation_;
 };
 
 TEST_F(DeprecationTest, InspectorDisablesDeprecation) {
@@ -421,19 +423,19 @@ TEST_F(DeprecationTest, InspectorDisablesDeprecation) {
   WebFeature feature =
       WebFeature::kCSSSelectorInternalMediaControlsOverlayCastButton;
 
-  deprecation_.MuteForInspector();
+  deprecation_->MuteForInspector();
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
   EXPECT_FALSE(use_counter().IsCounted(feature));
 
-  deprecation_.MuteForInspector();
+  deprecation_->MuteForInspector();
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
   EXPECT_FALSE(use_counter().IsCounted(feature));
 
-  deprecation_.UnmuteForInspector();
+  deprecation_->UnmuteForInspector();
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
   EXPECT_FALSE(use_counter().IsCounted(feature));
 
-  deprecation_.UnmuteForInspector();
+  deprecation_->UnmuteForInspector();
   Deprecation::CountDeprecation(GetFrame()->DomWindow(), feature);
   EXPECT_TRUE(use_counter().IsCounted(feature));
 }

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_FRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_REMOTE_FRAME_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
@@ -295,7 +296,8 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   // The WebFrameWidget of the nearest ancestor local root. If the proxy has no
   // local root ancestor (eg it is a proxy of the root frame) then the pointer
   // is null.
-  WebFrameWidget* ancestor_widget_;
+  raw_ptr<WebFrameWidget, UnprotectedInRelease | DanglingUntriaged>
+      ancestor_widget_;
 
   // True when the process rendering the child's frame contents has terminated
   // and ChildProcessGone() is called.

@@ -8,6 +8,7 @@
 #include <optional>
 #include <variant>
 
+#include "base/memory/raw_ref.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -194,7 +195,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   std::optional<PendingScriptInfo> pending_script_info_;
   HashMap<size_t, PendingScriptInfo> user_entry_points_;
-  Client& client_;
+  const raw_ref<Client, UnprotectedInRelease | DanglingUntriaged> client_;
 
   enum class State {
     // No task running, no pending frames.

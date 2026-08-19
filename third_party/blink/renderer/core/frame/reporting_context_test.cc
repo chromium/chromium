@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 
+#include "base/memory/raw_ref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,14 +40,14 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
   MockReportingServiceProxy(const BrowserInterfaceBrokerProxy& broker,
                             base::OnceClosure reached_callback)
       : broker_(broker), reached_callback_(std::move(reached_callback)) {
-    broker_.SetBinderForTesting(
+    broker_->SetBinderForTesting(
         ReportingServiceProxy::Name_,
         BindRepeating(&MockReportingServiceProxy::BindReceiver,
                       Unretained(this)));
   }
 
   ~MockReportingServiceProxy() override {
-    broker_.SetBinderForTesting(ReportingServiceProxy::Name_, {});
+    broker_->SetBinderForTesting(ReportingServiceProxy::Name_, {});
   }
 
   std::optional<base::Time> DeprecationReportAnticipatedRemoval() const {
@@ -182,7 +183,9 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
     }
   }
 
-  const BrowserInterfaceBrokerProxy& broker_;
+  const raw_ref<const BrowserInterfaceBrokerProxy,
+                UnprotectedInRelease | DanglingUntriaged>
+      broker_;
   mojo::ReceiverSet<ReportingServiceProxy> receivers_;
   base::OnceClosure reached_callback_;
 
