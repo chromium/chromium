@@ -73,7 +73,12 @@ class BotPlatformTest(unittest.TestCase):
         config = bot_configs[0]
         self.assertEqual(config.name, 'speedometer3.crossbench')
         self.assertSequenceEqual(
-          config.flags, ("--extra-flag", "--other", "--enable-field-trials")
+          config.flags,
+          (
+              "--extra-flag",
+              "--other",
+              "--enable-field-trials=benchmarking",
+          ),
         )
 
   def testLoadScheduleFileWithFlagValues(self):
@@ -96,7 +101,11 @@ class BotPlatformTest(unittest.TestCase):
         self.assertEqual(config.name, 'speedometer3.crossbench')
         self.assertSequenceEqual(
           config.flags,
-          ("--extra-flag=1", "--other=value", "--enable-field-trials"),
+          (
+            "--extra-flag=1",
+            "--other=value",
+            "--enable-field-trials=benchmarking",
+          ),
         )
 
   def testLoadScheduleFileWithFlagValuesCommas(self):
@@ -127,7 +136,7 @@ class BotPlatformTest(unittest.TestCase):
             "--extra-flag=1",
             "--other=value",
             "--js-flags=--no-opt,--sparkplug",
-            "--enable-field-trials",
+            "--enable-field-trials=benchmarking",
           ),
         )
 

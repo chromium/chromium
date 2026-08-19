@@ -252,7 +252,7 @@ class CrossbenchConfig(BenchmarkConfig):
       if "--disable-field-trials" not in flags and (
         "--disable-field-trial-config" not in flags
       ):
-        flags += ("--enable-field-trials",)
+        flags += ("--enable-field-trials=benchmarking",)
     assert len(flags) == len(set(flags)), (
       f"Found duplicate arguments in {flags}"
     )

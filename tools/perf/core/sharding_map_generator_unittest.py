@@ -294,7 +294,7 @@ class TestShardingMapGenerator(unittest.TestCase):
       sharding_map['2']['crossbench']['cb_benchmark_0']['crossbench_name'],
     )
     self.assertEqual(
-      ['--my_arg', '--enable-field-trials'],
+      ['--my_arg', '--enable-field-trials=benchmarking'],
       sharding_map['2']['crossbench']['cb_benchmark_0']['arguments'],
     )
 
