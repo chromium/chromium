@@ -264,7 +264,7 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
  public:
   ReadAnythingUntrustedPageHandlerTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
-        features::kReadAnythingLineFocus};
+        features::kReadAnythingLineFocus, features::kReadAnythingImprovedUi};
     std::vector<base::test::FeatureRef> disabled_features;
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     // `TestReadAnythingUntrustedPageHandler` disables ScreenAI service, which
@@ -2270,6 +2270,109 @@ IN_PROC_BROWSER_TEST_F(
   SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
   Activate(true, &trigger);
   page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    ListenToThisPage_AudioStartsWithin5SecondsAndSustained_LogsTrue) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  SidePanelOpenTrigger trigger =
+      SidePanelOpenTrigger::kReadAnythingListenToThisPageContextMenu;
+  Activate(true, &trigger);
+
+  // Phase 1: Audio starts before timeout.
+  handler_->OnReadAloudAudioStateChange(true);
+
+  // Metric is not logged immediately; waiting for sustained 2s playback.
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.ListenToThisPage."
+      "AudioPlaybackStartedWithin5Seconds",
+      0);
+
+  // Phase 2: Sustained timer expires (simulating 2 seconds continuous
+  // playback).
+  handler_->RecordListenToThisPagePlaybackMetricForTesting(
+      /*successful_playback=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ListenToThisPage."
+      "AudioPlaybackStartedWithin5Seconds",
+      true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.ListenToThisPage."
+      "AudioPlaybackStartedWithin5Seconds",
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    ListenToThisPage_AudioStartsWithin5Seconds_NotSustained_LogsFalse) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  SidePanelOpenTrigger trigger =
+      SidePanelOpenTrigger::kReadAnythingListenToThisPageContextMenu;
+  Activate(true, &trigger);
+
+  // Phase 1: Audio starts.
+  handler_->OnReadAloudAudioStateChange(true);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.ListenToThisPage."
+      "AudioPlaybackStartedWithin5Seconds",
+      0);
+
+  // Phase 2: Audio stops before 2 seconds sustained duration.
+  handler_->OnReadAloudAudioStateChange(false);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ListenToThisPage."
+      "AudioPlaybackStartedWithin5Seconds",
+      false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    ListenToThisPage_AudioStartsAfterTimeout_LogsFalseAndIgnoresLateAudio) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  SidePanelOpenTrigger trigger =
+      SidePanelOpenTrigger::kReadAnythingListenToThisPageContextMenu;
+  Activate(true, &trigger);
+
+  // Simulate timeout (5 seconds elapsed without audio playback).
+  handler_->RecordListenToThisPagePlaybackMetricForTesting(
+      /*successful_playback=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ListenToThisPage."
+      "AudioPlaybackStartedWithin5Seconds",
+      false, 1);
+
+  // Late audio arrives after timeout has concluded.
+  handler_->OnReadAloudAudioStateChange(true);
+
+  // Verifies that late audio does not log a redundant true sample.
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ListenToThisPage."
+      "AudioPlaybackStartedWithin5Seconds",
+      false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       ListenToThisPage_ClosedBeforeAudioStarts_LogsFalse) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+  SidePanelOpenTrigger trigger =
+      SidePanelOpenTrigger::kReadAnythingListenToThisPageContextMenu;
+  Activate(true, &trigger);
+
+  // User closes reading mode before audio begins.
+  Activate(false);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ListenToThisPage."
+      "AudioPlaybackStartedWithin5Seconds",
+      false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
