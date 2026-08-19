@@ -17,18 +17,6 @@ source_set("test_switches") {
   ]
 }
 
-if (toolkit_views) {
-  source_set("test_theme_provider") {
-    testonly = true
-    sources = [
-      "test_theme_provider.cc",
-      "test_theme_provider.h",
-    ]
-    public_deps = [ "//ui/base" ]
-    deps = [ "//ui/gfx" ]
-  }
-}
-
 source_set("tracing") {
   testonly = true
   sources = [
@@ -80,34 +68,6 @@ source_set("web_ui_test_data_source") {
   ]
   if (is_chromeos) {
     deps += [ "//ash/webui/common:trusted_types_util" ]
-  }
-}
-
-if (is_chrome_branded && (is_mac || is_win || is_linux)) {
-  source_set("scoped_channel_override") {
-    testonly = true
-    sources = [ "scoped_channel_override.h" ]
-    public_deps = [ "//build:branding_buildflags" ]
-    if (is_mac) {
-      sources += [ "scoped_channel_override_mac.cc" ]
-      deps = [ "//chrome/common" ]
-    } else if (is_win) {
-      sources += [ "scoped_channel_override_win.cc" ]
-      public_deps += [ "//chrome/install_static/test:test_support" ]
-      deps = [ "//chrome/install_static:install_static_util" ]
-    } else {
-      sources += [ "scoped_channel_override_posix.cc" ]
-      public_deps += [ "//base/test:test_support" ]
-      deps = [ "//base" ]
-    }
-  }
-}
-
-if (!is_android) {
-  source_set("platform_browser_test") {
-    testonly = true
-    sources = [ "platform_browser_test.h" ]
-    public_deps = [ "//chrome/test/base:in_process_browser_test" ]
   }
 }
 
@@ -570,7 +530,75 @@ source_set("chrome_test_suite") {
   }
 }
 
+source_set("web_ui_mocha_browser_test") {
+  testonly = true
+  sources = [
+    "web_ui_mocha_browser_test.cc",
+    "web_ui_mocha_browser_test.h",
+  ]
+  public_deps = [
+    "//base",
+    "//testing/gtest",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/test/base:chrome_test_utils",
+    "//chrome/test/base:test_switches",
+    "//chrome/test/base:web_ui_test_data_source",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/base",
+    "//url",
+  ]
+  if (is_android) {
+    public_deps += [
+      "//base/test:test_support",
+      "//chrome/test:test_support_ui_android",
+      "//content/public/common",
+    ]
+    deps += [ "//chrome/test/base:android_ui_test_utils" ]
+  } else {
+    public_deps += [
+      "//chrome/test/base:devtools_coverage",
+      "//chrome/test/base:platform_browser_test",
+    ]
+    deps += [
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test/base:ui_test_utils",
+      "//content/public/common",
+    ]
+  }
+}
+
+if (is_chrome_branded && (is_mac || is_win || is_linux)) {
+  source_set("scoped_channel_override") {
+    testonly = true
+    sources = [ "scoped_channel_override.h" ]
+    public_deps = [ "//build:branding_buildflags" ]
+    if (is_mac) {
+      sources += [ "scoped_channel_override_mac.cc" ]
+      deps = [ "//chrome/common" ]
+    } else if (is_win) {
+      sources += [ "scoped_channel_override_win.cc" ]
+      public_deps += [ "//chrome/install_static/test:test_support" ]
+      deps = [ "//chrome/install_static:install_static_util" ]
+    } else {
+      sources += [ "scoped_channel_override_posix.cc" ]
+      public_deps += [ "//base/test:test_support" ]
+      deps = [ "//base" ]
+    }
+  }
+}
+
 if (!is_android) {
+  source_set("platform_browser_test") {
+    testonly = true
+    sources = [ "platform_browser_test.h" ]
+    public_deps = [ "//chrome/test/base:in_process_browser_test" ]
+  }
+
   source_set("in_process_browser_test") {
     testonly = true
     sources = [
@@ -822,9 +850,7 @@ if (!is_android) {
       "//ui/views/controls/webview",
     ]
   }
-}
 
-if (!is_android) {
   source_set("devtools_coverage") {
     testonly = true
     sources = [
@@ -878,6 +904,40 @@ if (!is_android) {
       "//ui/views",
     ]
   }
+
+  source_set("save_desktop_snapshot") {
+    testonly = true
+    sources = [
+      "save_desktop_snapshot.cc",
+      "save_desktop_snapshot.h",
+    ]
+    public_deps = [ "//base" ]
+    deps = [
+      "//base/test:test_support",
+      "//content/public/browser",
+      "//skia",
+      "//ui/gfx",
+      "//ui/gfx/codec",
+    ]
+  }
+
+  source_set("test_chrome_web_ui_controller_factory") {
+    testonly = true
+    sources = [
+      "test_chrome_web_ui_controller_factory.cc",
+      "test_chrome_web_ui_controller_factory.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
+      "//content/public/browser",
+    ]
+    deps = [
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/test/base:web_ui_test_data_source",
+    ]
+  }
 }
 
 if (is_mac) {
@@ -922,6 +982,30 @@ if (is_win) {
       "//chrome/test/base:process_inspector_win",
     ]
   }
+
+  source_set("always_on_top_window_killer_win") {
+    testonly = true
+    sources = [
+      "always_on_top_window_killer_win.cc",
+      "always_on_top_window_killer_win.h",
+    ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/test/base:process_lineage_win",
+      "//chrome/test/base:save_desktop_snapshot",
+      "//ui/display",
+    ]
+  }
+
+  source_set("window_contents_as_string_win") {
+    testonly = true
+    sources = [
+      "window_contents_as_string_win.cc",
+      "window_contents_as_string_win.h",
+    ]
+    deps = [ "//base" ]
+  }
 }
 
 if (is_android) {
@@ -938,68 +1022,6 @@ if (is_android) {
       "//content/public/browser",
       "//content/test:test_support",
     ]
-  }
-}
-
-if (!is_android) {
-  source_set("save_desktop_snapshot") {
-    testonly = true
-    sources = [
-      "save_desktop_snapshot.cc",
-      "save_desktop_snapshot.h",
-    ]
-    public_deps = [ "//base" ]
-    deps = [
-      "//base/test:test_support",
-      "//content/public/browser",
-      "//skia",
-      "//ui/gfx",
-      "//ui/gfx/codec",
-    ]
-  }
-
-  source_set("test_chrome_web_ui_controller_factory") {
-    testonly = true
-    sources = [
-      "test_chrome_web_ui_controller_factory.cc",
-      "test_chrome_web_ui_controller_factory.h",
-    ]
-    public_deps = [
-      "//base",
-      "//chrome/browser/ui/webui:chrome_web_ui_controller_factory",
-      "//content/public/browser",
-    ]
-    deps = [
-      "//chrome/browser/profiles:profile",
-      "//chrome/common",
-      "//chrome/test/base:web_ui_test_data_source",
-    ]
-  }
-
-  if (is_win) {
-    source_set("always_on_top_window_killer_win") {
-      testonly = true
-      sources = [
-        "always_on_top_window_killer_win.cc",
-        "always_on_top_window_killer_win.h",
-      ]
-      deps = [
-        "//base",
-        "//base/test:test_support",
-        "//chrome/test/base:process_lineage_win",
-        "//chrome/test/base:save_desktop_snapshot",
-        "//ui/display",
-      ]
-    }
-
-    source_set("window_contents_as_string_win") {
-      testonly = true
-      sources = [
-        "window_contents_as_string_win.cc",
-        "window_contents_as_string_win.h",
-      ]
-      deps = [ "//base" ]
-    }
   }
 }
 
@@ -1060,48 +1082,6 @@ if (is_chromeos) {
   }
 }
 
-source_set("web_ui_mocha_browser_test") {
-  testonly = true
-  sources = [
-    "web_ui_mocha_browser_test.cc",
-    "web_ui_mocha_browser_test.h",
-  ]
-  public_deps = [
-    "//base",
-    "//testing/gtest",
-  ]
-  deps = [
-    "//chrome/browser/profiles:profile",
-    "//chrome/common",
-    "//chrome/test/base:chrome_test_utils",
-    "//chrome/test/base:test_switches",
-    "//chrome/test/base:web_ui_test_data_source",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//ui/base",
-    "//url",
-  ]
-  if (is_android) {
-    public_deps += [
-      "//base/test:test_support",
-      "//chrome/test:test_support_ui_android",
-      "//content/public/common",
-    ]
-    deps += [ "//chrome/test/base:android_ui_test_utils" ]
-  } else {
-    public_deps += [
-      "//chrome/test/base:devtools_coverage",
-      "//chrome/test/base:platform_browser_test",
-    ]
-    deps += [
-      "//base/test:test_support",
-      "//chrome/browser/ui",
-      "//chrome/test/base:ui_test_utils",
-      "//content/public/common",
-    ]
-  }
-}
-
 if (use_aura) {
   source_set("test_browser_window_aura") {
     testonly = true
@@ -1144,5 +1124,17 @@ if (use_aura) {
     if (is_win) {
       deps += [ "//ui/base" ]
     }
+  }
+}
+
+if (toolkit_views) {
+  source_set("test_theme_provider") {
+    testonly = true
+    sources = [
+      "test_theme_provider.cc",
+      "test_theme_provider.h",
+    ]
+    public_deps = [ "//ui/base" ]
+    deps = [ "//ui/gfx" ]
   }
 }
