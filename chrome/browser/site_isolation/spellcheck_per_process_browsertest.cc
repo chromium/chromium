@@ -19,7 +19,7 @@
 #include "chrome/browser/spellchecker/spell_check_host_chrome_impl.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -281,7 +281,7 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
     spell_check_helper.RunUntilBind();
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     content::RenderFrameHost* cross_site_subframe =
         ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
@@ -316,7 +316,7 @@ class ChromeSitePerProcessSpellCheckTest : public ChromeSitePerProcessTest {
     spell_check_helper.RunUntilBindOrTimeout();
 
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     content::RenderFrameHost* cross_site_subframe =
         ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessSpellCheckTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   content::RenderFrameHost* cross_site_subframe =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
 

@@ -19,8 +19,8 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -115,7 +115,7 @@ class SitePerProcessInteractiveBrowserTest : public InProcessBrowserTest {
 
   gfx::Size GetScreenSize() {
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        browser()->GetTabStripModel()->GetActiveWebContents();
     const display::Display display =
         display::Screen::Get()->GetDisplayNearestView(
             web_contents->GetRenderWidgetHostView()->GetNativeView());
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest, DocumentHasFocus) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child1 = ChildFrameAt(main_frame, 0);
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
       "a.com", "/frame_tree/page_with_one_frame.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   GURL frame_url(
       embedded_test_server()->GetURL("b.com", "/page_with_input_field.html"));
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child1 = nullptr;
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
 
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child = nullptr;
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child1 = nullptr;
@@ -672,7 +672,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractiveFencedFrameBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child1 = nullptr;
@@ -760,7 +760,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child1 = ChildFrameAt(main_frame, 0);
@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child = ChildFrameAt(main_frame, 0);
@@ -1172,7 +1172,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
       "a.com", "/page_with_allowfullscreen_frame.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Navigate the subframe cross-site to a page with a fullscreenable <div>.
   GURL frame_url(
@@ -1258,7 +1258,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
                                                "allowfullscreen}))"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child = ChildFrameAt(main_frame, 0);
@@ -1402,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
       "allowfullscreen}(c{allowfullscreen}(c{allowfullscreen}))))"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* a_top = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* a_bottom = ChildFrameAt(a_top, 0);
@@ -1525,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
   content::RenderFrameHost* child = ChildFrameAt(main_frame, 0);
@@ -1589,14 +1589,14 @@ class SitePerProcessInteractivePDFTest
     return std::get<std::unique_ptr<pdf::TestMimeHandlerStreamManagerFactory>>(
                factory_)
         ->GetTestMimeHandlerStreamManager(
-            browser()->tab_strip_model()->GetActiveWebContents());
+            browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   void CreateTestMimeHandlerStreamManager() const {
     std::get<std::unique_ptr<pdf::TestMimeHandlerStreamManagerFactory>>(
         factory_)
         ->CreateMimeHandlerStreamManager(
-            browser()->tab_strip_model()->GetActiveWebContents());
+            browser()->GetTabStripModel()->GetActiveWebContents());
   }
 
   void WaitUntilPdfLoaded(content::RenderFrameHost* embedder_host) {
@@ -1608,7 +1608,7 @@ class SitePerProcessInteractivePDFTest
           GetTestGuestViewManager()->WaitForSingleGuestViewCreated();
       ASSERT_TRUE(guest_view);
       auto* embedder_web_contents =
-          browser()->tab_strip_model()->GetActiveWebContents();
+          browser()->GetTabStripModel()->GetActiveWebContents();
       EXPECT_NE(embedder_web_contents->GetPrimaryMainFrame(),
                 guest_view->GetGuestMainFrame());
 
@@ -1649,7 +1649,7 @@ IN_PROC_BROWSER_TEST_P(
   }
 
   content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Change the position of the <iframe> inside the page.
   EXPECT_TRUE(ExecJs(active_web_contents,
@@ -1704,7 +1704,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractivePDFTest,
   GURL main_url(embedded_test_server()->GetURL("/pdf/two_iframes.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   auto* embedder_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Make sure we can see the iframe's document.
   ASSERT_TRUE(
@@ -1803,7 +1803,7 @@ class SitePerProcessAutofillTest : public SitePerProcessInteractiveBrowserTest {
     std::unique_ptr<content::WebContents> new_contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(browser()
-                                                   ->tab_strip_model()
+                                                   ->GetTabStripModel()
                                                    ->GetActiveWebContents()
                                                    ->GetBrowserContext()));
     ASSERT_TRUE(new_contents);
@@ -1816,8 +1816,8 @@ class SitePerProcessAutofillTest : public SitePerProcessInteractiveBrowserTest {
     ASSERT_TRUE(
         ChromePasswordManagerClient::FromWebContents(new_contents.get()));
 
-    browser()->tab_strip_model()->AppendWebContents(std::move(new_contents),
-                                                    true);
+    browser()->GetTabStripModel()->AppendWebContents(std::move(new_contents),
+                                                     true);
   }
 
  private:
@@ -1854,7 +1854,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   content::RenderFrameHost* child_frame =
       ChildFrameAt(browser()
-                       ->tab_strip_model()
+                       ->GetTabStripModel()
                        ->GetActiveWebContents()
                        ->GetPrimaryMainFrame(),
                    0);
@@ -1951,7 +1951,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   GURL subframe_url(embedded_test_server()->GetURL(
       "bar.com", "/frame_tree/anchor_to_same_site_location.html"));
   content::WebContents* old_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
   ASSERT_TRUE(NavigateIframeToURL(old_contents, "test", subframe_url));
   content::RenderFrameHost* subframe = ChildFrameAt(old_contents, 0);
   ASSERT_TRUE(subframe);
@@ -1982,12 +1982,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
             new_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
   // Verify that the anchor opened in a new background tab.
-  EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
   EXPECT_EQ(0,
-            browser()->tab_strip_model()->GetIndexOfWebContents(old_contents));
+            browser()->GetTabStripModel()->GetIndexOfWebContents(old_contents));
   EXPECT_EQ(1,
-            browser()->tab_strip_model()->GetIndexOfWebContents(new_contents));
+            browser()->GetTabStripModel()->GetIndexOfWebContents(new_contents));
 }
 
 // Check that window.focus works for cross-process popups.
@@ -2009,7 +2009,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // Set window.name on main page.  This will be used to identify the page
   // later when it sends messages from its focus/blur events.
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(ExecJs(web_contents, "window.name = 'main'",
                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
@@ -2021,15 +2021,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   EXPECT_TRUE(
       ExecJs(web_contents, "openPopup('" + popup_url.spec() + "','popup')"));
   popup_observer.Wait();
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
   content::WebContents* popup =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   EXPECT_EQ(popup_url, popup->GetLastCommittedURL());
   EXPECT_NE(popup, web_contents);
 
   // Switch focus to the original tab, since opening a popup also focused it.
   web_contents->GetDelegate()->ActivateContents(web_contents);
-  EXPECT_EQ(web_contents, browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(web_contents,
+            browser()->GetTabStripModel()->GetActiveWebContents());
 
   // Focus the popup via window.focus(), this needs user gesture.
   content::DOMMessageQueue main_queue(web_contents);
@@ -2051,7 +2052,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   }
 
   // The popup should be focused now.
-  EXPECT_EQ(popup, browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_EQ(popup, browser()->GetTabStripModel()->GetActiveWebContents());
 }
 
 INSTANTIATE_TEST_SUITE_P(
