@@ -510,4 +510,9 @@ void VideoCaptureDeviceDeckLinkMac::StopAndDeAllocate() {
     decklink_capture_delegate_->StopAndDeAllocate();
 }
 
+void VideoCaptureDeviceDeckLinkMac::InvalidateBuffers() {
+  base::AutoLock lock(lock_);
+  client_->InvalidateBuffers();
+}
+
 }  // namespace media

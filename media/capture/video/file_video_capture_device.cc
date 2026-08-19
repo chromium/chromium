@@ -764,4 +764,8 @@ void FileVideoCaptureDevice::OnCaptureTask() {
       next_frame_time_ - current_time);
 }
 
+void FileVideoCaptureDevice::InvalidateBuffers() {
+  client_->InvalidateBuffers();
+}
+
 }  // namespace media

@@ -331,6 +331,9 @@ class CAPTURE_EXPORT VideoCaptureDevice
 
     // VideoCaptureDevice reports it's successfully started.
     virtual void OnStarted() = 0;
+
+    // Invalidates all used buffers.
+    virtual void InvalidateBuffers() = 0;
   };
 
   ~VideoCaptureDevice() override;
@@ -438,6 +441,10 @@ class CAPTURE_EXPORT VideoCaptureDevice
   // where TakePhoto() was called.
   using TakePhotoCallback = base::OnceCallback<void(mojom::BlobPtr blob)>;
   virtual void TakePhoto(TakePhotoCallback callback);
+
+  // Invalidates all used buffers. Ensures that no more frames will be
+  // put in the previously used shared buffers.
+  virtual void InvalidateBuffers() {}
 
   // Gets the power line frequency, either from the params if specified by the
   // user or from the current system time zone.

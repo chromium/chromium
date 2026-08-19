@@ -52,4 +52,8 @@ void VideoCaptureDeviceChromeOSHalv3::SetPhotoOptions(
   vcd_delegate_->SetPhotoOptions(std::move(settings), std::move(callback));
 }
 
+void VideoCaptureDeviceChromeOSHalv3::InvalidateBuffers() {
+  vcd_delegate_->InvalidateBuffers(client_type_);
+}
+
 }  // namespace media

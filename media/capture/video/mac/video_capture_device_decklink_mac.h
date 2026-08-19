@@ -78,6 +78,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceDeckLinkMac : public VideoCaptureDevice {
       const VideoCaptureParams& params,
       std::unique_ptr<VideoCaptureDevice::Client> client) override;
   void StopAndDeAllocate() override;
+  void InvalidateBuffers() override;
 
   // Protects concurrent setting and using of |client_|.
   base::Lock lock_;

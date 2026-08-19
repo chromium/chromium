@@ -146,6 +146,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
   void OnLog(const std::string& message) override;
   double GetBufferPoolUtilization() const override;
   void OnStarted() override;
+  void InvalidateBuffers() override;
 
  private:
   VideoCaptureDevice::Client::ReserveResult CreateReadyFrameFromExternalBuffer(

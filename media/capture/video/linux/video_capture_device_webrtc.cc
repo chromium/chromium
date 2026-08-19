@@ -162,3 +162,9 @@ int32_t VideoCaptureDeviceWebRtc::OnRawFrame(
 }
 
 }  // namespace media
+
+namespace media {
+void VideoCaptureDeviceWebRtc::InvalidateBuffers() {
+  client_->InvalidateBuffers();
+}
+}  // namespace media

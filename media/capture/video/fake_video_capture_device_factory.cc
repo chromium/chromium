@@ -97,6 +97,7 @@ class ErrorFakeDevice : public media::VideoCaptureDevice {
   void SetPhotoOptions(media::mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override {}
   void TakePhoto(TakePhotoCallback callback) override {}
+  void InvalidateBuffers() override {}
 };
 
 }  // anonymous namespace

@@ -96,6 +96,7 @@ class MockV4l2GpuClient : public VideoCaptureDevice::Client {
                     const std::string&));
 
   MOCK_METHOD1(OnFrameDropped, void(VideoCaptureFrameDropReason));
+  MOCK_METHOD0(InvalidateBuffers, void());
 
   double GetBufferPoolUtilization() const override { return 0.0; }
 

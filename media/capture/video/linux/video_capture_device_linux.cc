@@ -154,4 +154,12 @@ void VideoCaptureDeviceLinux::StopAndDeAllocateInternal(
   waiter->Signal();
 }
 
+void VideoCaptureDeviceLinux::InvalidateBuffers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(capture_impl_);
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&V4L2CaptureDelegate::InvalidateBuffers,
+                                        capture_impl_->GetWeakPtr()));
+}
+
 }  // namespace media

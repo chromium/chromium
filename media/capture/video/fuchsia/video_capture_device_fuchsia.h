@@ -43,6 +43,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFuchsia final
   void AllocateAndStart(const VideoCaptureParams& params,
                         std::unique_ptr<Client> client) override;
   void StopAndDeAllocate() override;
+  void InvalidateBuffers() override;
 
  private:
   // Disconnects the |stream_| and resets related state.

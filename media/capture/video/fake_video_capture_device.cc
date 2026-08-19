@@ -216,6 +216,11 @@ class FrameDeliverer {
   }
   virtual void PaintAndDeliverNextFrame(base::TimeDelta timestamp_to_paint) = 0;
 
+  void InvalidateBuffers() {
+    CHECK(client_);
+    client_->InvalidateBuffers();
+  }
+
  protected:
   base::TimeDelta CalculateTimeSinceFirstInvocation(base::TimeTicks now) {
     if (first_ref_time_.is_null())
@@ -985,6 +990,12 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
       std::move(capture_buffer), modified_format, now,
       CalculateTimeSinceFirstInvocation(now),
       /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
+}
+
+void FakeVideoCaptureDevice::InvalidateBuffers() {
+  if (frame_deliverer_) {
+    frame_deliverer_->InvalidateBuffers();
+  }
 }
 
 void FakeVideoCaptureDevice::BeepAndScheduleNextCapture(

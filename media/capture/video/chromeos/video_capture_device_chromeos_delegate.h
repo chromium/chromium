@@ -49,6 +49,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate {
                         std::unique_ptr<VideoCaptureDevice::Client> client,
                         ClientType client_type);
   void StopAndDeAllocate(ClientType client_type);
+  void InvalidateBuffers(ClientType client_type);
   void TakePhoto(VideoCaptureDevice::TakePhotoCallback callback);
   void GetPhotoState(VideoCaptureDevice::GetPhotoStateCallback callback);
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,

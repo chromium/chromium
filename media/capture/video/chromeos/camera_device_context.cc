@@ -199,4 +199,11 @@ void CameraDeviceContext::OnGotHardwareInfo(
   }
 }
 
+void CameraDeviceContext::InvalidateBuffers(ClientType client_type) {
+  base::AutoLock lock(client_lock_);
+  if (clients_.count(client_type)) {
+    clients_[client_type]->InvalidateBuffers();
+  }
+}
+
 }  // namespace media

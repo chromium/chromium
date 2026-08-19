@@ -1091,3 +1091,10 @@ void VideoCaptureDeviceAndroid::DoSetPhotoOptions(
 }  // namespace media
 
 DEFINE_JNI(VideoCapture)
+
+void VideoCaptureDeviceAndroid::InvalidateBuffers() {
+  base::AutoLock lock(lock_);
+  if (client_) {
+    client_->InvalidateBuffers();
+  }
+}

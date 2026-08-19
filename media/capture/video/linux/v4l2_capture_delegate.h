@@ -71,6 +71,7 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
                         float frame_rate,
                         std::unique_ptr<VideoCaptureDevice::Client> client);
   void StopAndDeAllocate();
+  void InvalidateBuffers();
 
   void TakePhoto(VideoCaptureDevice::TakePhotoCallback callback);
 

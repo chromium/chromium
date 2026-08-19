@@ -113,6 +113,7 @@ class CAPTURE_EXPORT CameraDeviceContext {
   bool AddClient(ClientType client_type,
                  std::unique_ptr<VideoCaptureDevice::Client> client);
   void RemoveClient(ClientType client_type);
+  void InvalidateBuffers(ClientType client_type);
   void SetState(State state);
 
   State GetState();

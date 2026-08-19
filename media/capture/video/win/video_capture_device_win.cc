@@ -978,4 +978,9 @@ void VideoCaptureDeviceWin::SetErrorState(media::VideoCaptureError error,
   state_ = kError;
   client_->OnError(error, from_here, reason);
 }
+void VideoCaptureDeviceWin::InvalidateBuffers() {
+  base::AutoLock lock(lock_);
+  client_->InvalidateBuffers();
+}
+
 }  // namespace media

@@ -28,6 +28,7 @@ class MockVideoCaptureClient : public VideoCaptureDevice::Client {
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason reason));
   MOCK_CONST_METHOD0(GetBufferPoolUtilization, double(void));
   MOCK_METHOD0(OnStarted, void(void));
+  MOCK_METHOD0(InvalidateBuffers, void());
 
   explicit MockVideoCaptureClient();
 

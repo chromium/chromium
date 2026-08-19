@@ -43,6 +43,7 @@ class MockDevice : public media::VideoCaptureDevice {
   void SetPhotoOptions(media::mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
   void TakePhoto(TakePhotoCallback callback) override;
+  void InvalidateBuffers() override;
 
   std::unique_ptr<Client> TakeOutClient() { return std::move(client_); }
 

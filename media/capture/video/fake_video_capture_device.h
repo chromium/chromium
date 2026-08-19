@@ -83,6 +83,7 @@ class FakeVideoCaptureDevice : public VideoCaptureDevice {
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
   void TakePhoto(TakePhotoCallback callback) override;
+  void InvalidateBuffers() override;
 
  private:
   void BeepAndScheduleNextCapture(base::TimeTicks expected_execution_time);

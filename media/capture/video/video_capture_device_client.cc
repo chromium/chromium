@@ -932,4 +932,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
   OnIncomingCapturedBuffer(std::move(buffer), output_format, reference_time,
                            timestamp, capture_begin_timestamp, metadata);
 }
+
+void VideoCaptureDeviceClient::InvalidateBuffers() {
+  CHECK(buffer_pool_);
+  buffer_pool_->InvalidateBuffers();
+}
 }  // namespace media

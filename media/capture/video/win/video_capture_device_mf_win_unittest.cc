@@ -136,6 +136,7 @@ class MockClient : public VideoCaptureDevice::Client {
   double GetBufferPoolUtilization() const override { return 0.0; }
 
   MOCK_METHOD0(OnStarted, void());
+  MOCK_METHOD0(InvalidateBuffers, void());
 };
 
 class MockImageCaptureClient

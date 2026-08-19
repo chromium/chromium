@@ -46,6 +46,7 @@ class VideoCaptureDeviceWebRtc : public VideoCaptureDevice,
   void GetPhotoState(GetPhotoStateCallback callback) override;
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
+  void InvalidateBuffers() override;
 
   int32_t OnRawFrame(uint8_t* video_frame,
                      size_t video_frame_length,

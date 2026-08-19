@@ -61,3 +61,10 @@ void MockDevice::TakePhoto(TakePhotoCallback callback) {
 }
 
 }  // namespace media
+
+namespace media {
+void MockDevice::InvalidateBuffers() {
+  client_->InvalidateBuffers();
+}
+
+}  // namespace media

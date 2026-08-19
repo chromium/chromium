@@ -107,6 +107,7 @@ class TestVideoCaptureClient final : public VideoCaptureDevice::Client {
  private:
   // VideoCaptureDevice::Client implementation.
   void OnCaptureConfigurationChanged() override {}
+  void InvalidateBuffers() final {}
 
   void OnStarted() final {
     EXPECT_FALSE(started_);

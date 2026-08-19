@@ -117,6 +117,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
   void TakePhoto(TakePhotoCallback callback) override;
+  void InvalidateBuffers() override;
 
   // VideoCaptureGpuContextLostObserver implementation.
   void OnContextLost() override;

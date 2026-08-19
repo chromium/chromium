@@ -343,4 +343,12 @@ void VideoCaptureDeviceChromeOSDelegate::SetRotation(int rotation) {
   }
 }
 
+void VideoCaptureDeviceChromeOSDelegate::InvalidateBuffers(
+    ClientType client_type) {
+  DCHECK(capture_task_runner_->BelongsToCurrentThread());
+  if (device_context_) {
+    device_context_->InvalidateBuffers(client_type);
+  }
+}
+
 }  // namespace media

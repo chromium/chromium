@@ -471,4 +471,10 @@ void VideoCaptureDeviceFuchsia::ProcessNewFrame(
   // Frame buffer is returned to the device by dropping the |frame_info|.
 }
 
+void VideoCaptureDeviceFuchsia::InvalidateBuffers() {
+  if (client_) {
+    client_->InvalidateBuffers();
+  }
+}
+
 }  // namespace media

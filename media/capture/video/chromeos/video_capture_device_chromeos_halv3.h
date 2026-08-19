@@ -37,6 +37,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSHalv3 final
   void AllocateAndStart(const VideoCaptureParams& params,
                         std::unique_ptr<Client> client) final;
   void StopAndDeAllocate() final;
+  void InvalidateBuffers() final;
   void TakePhoto(TakePhotoCallback callback) final;
   void GetPhotoState(GetPhotoStateCallback callback) final;
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
