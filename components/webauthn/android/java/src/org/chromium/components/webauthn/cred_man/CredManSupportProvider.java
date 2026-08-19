@@ -14,6 +14,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.base.TriState;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
@@ -34,17 +35,17 @@ public class CredManSupportProvider {
     private static @CredManSupport int sCredManSupport;
 
     private static @Nullable Integer sOverrideAndroidVersion;
-    private static @Nullable Boolean sOverrideForcesGpm;
+    private static @TriState int sOverrideForcesGpm;
 
     public static void setupForTesting(
-            @Nullable Integer overrideAndroidVersion, @Nullable Boolean overrideForcesGpm) {
+            @Nullable Integer overrideAndroidVersion, @TriState int overrideForcesGpm) {
         sOverrideAndroidVersion = overrideAndroidVersion;
         sOverrideForcesGpm = overrideForcesGpm;
         sCredManSupport = CredManSupport.NOT_EVALUATED;
         ResettersForTesting.register(
                 () -> {
                     sOverrideAndroidVersion = null;
-                    sOverrideForcesGpm = null;
+                    sOverrideForcesGpm = TriState.NOT_SET;
 
                     // While this is not a test-specific value, the state shouldn't leak between
                     // tests.
@@ -101,7 +102,9 @@ public class CredManSupportProvider {
                 ServiceLoaderUtil.maybeCreate(CredManUiRecommender.class);
         boolean customUiRecommended = recommender != null && recommender.recommendsCustomUi();
         boolean gpmInCredMan =
-                sOverrideForcesGpm != null ? sOverrideForcesGpm : customUiRecommended;
+                sOverrideForcesGpm != TriState.NOT_SET
+                        ? sOverrideForcesGpm == TriState.TRUE
+                        : customUiRecommended;
         boolean isChrome3pPwmMode =
                 WebauthnModeProvider.getInstance().getGlobalWebauthnMode()
                         == WebauthnMode.CHROME_3PP_ENABLED;
@@ -150,7 +153,7 @@ public class CredManSupportProvider {
     }
 
     private static boolean notSkippedBecauseInTests() {
-        return sOverrideForcesGpm == null && sOverrideAndroidVersion == null;
+        return sOverrideForcesGpm == TriState.NOT_SET && sOverrideAndroidVersion == null;
     }
 
     private static int getMinGmsVersionForCurrentChannel() {

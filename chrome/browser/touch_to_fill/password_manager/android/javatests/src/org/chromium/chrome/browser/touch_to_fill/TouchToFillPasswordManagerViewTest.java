@@ -58,6 +58,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -1039,7 +1040,7 @@ public class TouchToFillPasswordManagerViewTest {
                                         R.string.touch_to_fill_sheet_passkey_credential_context)));
 
         CredManSupportProvider.setupForTesting(
-                /* overrideAndroidVersion= */ null, /* overrideForcesGpm= */ null);
+                /* overrideAndroidVersion= */ null, /* overrideForcesGpm= */ TriState.NOT_SET);
     }
 
     @Test

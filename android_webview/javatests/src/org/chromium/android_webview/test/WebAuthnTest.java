@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.base.TriState;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -201,7 +202,7 @@ public class WebAuthnTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testWebAuthnBlockedOnSslError() throws Throwable {
-        CredManSupportProvider.setupForTesting(Build.VERSION_CODES.TIRAMISU, false);
+        CredManSupportProvider.setupForTesting(Build.VERSION_CODES.TIRAMISU, TriState.FALSE);
         TestFido2ApiCallHelper testHelper = new TestFido2ApiCallHelper();
         Fido2ApiCallHelper.overrideInstanceForTesting(testHelper);
 

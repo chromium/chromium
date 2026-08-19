@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
@@ -150,7 +151,7 @@ public class AuthenticatorImplTest {
 
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.TIRAMISU,
-                /* overrideForcesGpm= */ false);
+                /* overrideForcesGpm= */ TriState.FALSE);
     }
 
     @After

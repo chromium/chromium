@@ -113,6 +113,7 @@ android_library("test_java") {
     ":public_java",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:tristate_java",
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_util_java",
     "//chrome/android/javatests:chrome_test_java_helper",

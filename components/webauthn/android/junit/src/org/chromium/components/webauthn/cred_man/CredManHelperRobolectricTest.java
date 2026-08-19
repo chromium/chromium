@@ -46,6 +46,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.blink.mojom.Authenticator.GetCredential_Response;
@@ -757,7 +758,7 @@ public class CredManHelperRobolectricTest {
 
         CredManSupportProvider.setupForTesting(
                 /* overrideAndroidVersion= */ Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
-                /* overrideForcesGpm= */ true);
+                /* overrideForcesGpm= */ TriState.TRUE);
 
         Runnable stopImmediateTimer = Mockito.mock(Runnable.class);
 
