@@ -148,8 +148,6 @@ RequestOutcome RequestOutcomeFromPrompt(PermissionDecision decision,
 
 void RecordOutcomeSample(RequestOutcome outcome,
                          const net::SchemefulSite& requesting_site) {
-  base::UmaHistogramEnumeration("API.StorageAccess.RequestOutcome", outcome);
-
   dwa::builders::StorageAccess_RequestOutcome()
       .SetOutcome(static_cast<int>(outcome))
       .SetContent(requesting_site.GetURL().spec())
