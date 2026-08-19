@@ -33,13 +33,52 @@ public class BottomBarUtils {
      */
     public static @ColorInt int getBottomBarBackgroundColor(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
+        return getBottomBarBackgroundColor(
+                context, brandedColorScheme == BrandedColorScheme.INCOGNITO);
+    }
+
+    /**
+     * Returns the background color for the bottom bar.
+     *
+     * @param context The context used to resolve the color.
+     * @param isIncognito Whether the color is for incognito mode.
+     * @return The background color int.
+     */
+    public static @ColorInt int getBottomBarBackgroundColor(Context context, boolean isIncognito) {
         return IncognitoColors.getColorSurfaceContainerHigh(context, isIncognito);
     }
 
     /** Gets the height of the bottom bar. */
     public static int getBottomBarHeight(Context context) {
         return context.getResources().getDimensionPixelSize(R.dimen.bottom_bar_height);
+    }
+
+    /**
+     * Returns the color state list for bottom bar action icons given an onSurface color and
+     * disabled alpha.
+     *
+     * @param onSurface The onSurface color int.
+     * @param disabledAlpha The alpha component to use for the disabled state.
+     * @return The color state list.
+     */
+    public static ColorStateList getIconColorStateListFromOnSurface(
+            @ColorInt int onSurface, float disabledAlpha) {
+        int disabledColor = ColorUtils.setAlphaComponentWithFloat(onSurface, disabledAlpha);
+        return new ColorStateList(DISABLED_AND_NORMAL_STATES, new int[] {disabledColor, onSurface});
+    }
+
+    /**
+     * Returns the color state list for bottom bar action icons given an onSurface color.
+     *
+     * @param context The context used to resolve the color.
+     * @param onSurface The onSurface color int.
+     * @return The color state list.
+     */
+    public static ColorStateList getIconColorStateListFromOnSurface(
+            Context context, @ColorInt int onSurface) {
+        float disabledAlpha =
+                ValueUtils.getFloat(context.getResources(), R.dimen.default_disabled_alpha);
+        return getIconColorStateListFromOnSurface(onSurface, disabledAlpha);
     }
 
     /**
@@ -53,10 +92,7 @@ public class BottomBarUtils {
             Context context, @BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
         int onSurface = IncognitoColors.getColorOnSurface(context, isIncognito);
-        float disabledAlpha =
-                ValueUtils.getFloat(context.getResources(), R.dimen.default_disabled_alpha);
-        int disabledColor = ColorUtils.setAlphaComponentWithFloat(onSurface, disabledAlpha);
-        return new ColorStateList(DISABLED_AND_NORMAL_STATES, new int[] {disabledColor, onSurface});
+        return getIconColorStateListFromOnSurface(context, onSurface);
     }
 
     /**
@@ -69,7 +105,17 @@ public class BottomBarUtils {
      */
     public static @ColorInt int getColorSurfaceBright(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
+        return getColorSurfaceBright(context, brandedColorScheme == BrandedColorScheme.INCOGNITO);
+    }
+
+    /**
+     * Returns the bright surface color for bottom bar elements.
+     *
+     * @param context The context used to resolve the color.
+     * @param isIncognito Whether the color is for incognito mode.
+     * @return The bright surface color int.
+     */
+    public static @ColorInt int getColorSurfaceBright(Context context, boolean isIncognito) {
         return IncognitoColors.getColorSurfaceBright(context, isIncognito);
     }
 
@@ -103,7 +149,18 @@ public class BottomBarUtils {
      */
     public static @ColorInt int getRippleColorNoBackground(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
+        return getRippleColorNoBackground(
+                context, brandedColorScheme == BrandedColorScheme.INCOGNITO);
+    }
+
+    /**
+     * Returns the ripple color for bottom bar elements with no background.
+     *
+     * @param context The context used to resolve the color.
+     * @param isIncognito Whether the color is for incognito mode.
+     * @return The ripple color int.
+     */
+    public static @ColorInt int getRippleColorNoBackground(Context context, boolean isIncognito) {
         int onSurface = IncognitoColors.getColorOnSurface(context, isIncognito);
         return ColorUtils.setAlphaComponentWithFloat(onSurface, 0.10f);
     }
@@ -117,7 +174,18 @@ public class BottomBarUtils {
      */
     public static @ColorInt int getRippleColorBackground(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito = brandedColorScheme == BrandedColorScheme.INCOGNITO;
+        return getRippleColorBackground(
+                context, brandedColorScheme == BrandedColorScheme.INCOGNITO);
+    }
+
+    /**
+     * Returns the ripple color for bottom bar elements with a background.
+     *
+     * @param context The context used to resolve the color.
+     * @param isIncognito Whether the color is for incognito mode.
+     * @return The ripple color int.
+     */
+    public static @ColorInt int getRippleColorBackground(Context context, boolean isIncognito) {
         int onSurface = IncognitoColors.getColorOnSurface(context, isIncognito);
         return ColorUtils.setAlphaComponentWithFloat(onSurface, 0.08f);
     }

@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
@@ -24,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarView;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -32,10 +35,11 @@ public class HubBottomBarBottomToolbarDelegateImplUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Rule public final MockitoRule mockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private PaneManager mPaneManager;
     @Mock private HubColorMixer mHubColorMixer;
+    @Mock private BottomBarView mBottomBarView;
 
     private Activity mActivity;
     private ViewGroup mContainer;
@@ -97,5 +101,24 @@ public class HubBottomBarBottomToolbarDelegateImplUnitTest {
         assertEquals(childView, parentView.getChildAt(0));
 
         delegate.destroy();
+    }
+
+    @Test
+    public void testAttachBottomBarView_bottomBarView_createsAndDestroysAdapter() {
+        HubBottomBarBottomToolbarDelegateImpl delegate =
+                new HubBottomBarBottomToolbarDelegateImpl(mActivity);
+        HubBottomToolbarView parentView =
+                delegate.initializeBottomToolbarView(
+                        mActivity, mContainer, mPaneManager, mHubColorMixer);
+
+        when(mBottomBarView.getContext()).thenReturn(mActivity);
+        delegate.attachBottomBarView(mBottomBarView);
+
+        assertEquals(1, parentView.getChildCount());
+        assertEquals(mBottomBarView, parentView.getChildAt(0));
+        assertNotNull(delegate.getBottomBarColorMixerAdapterForTesting());
+
+        delegate.destroy();
+        assertNull(delegate.getBottomBarColorMixerAdapterForTesting());
     }
 }

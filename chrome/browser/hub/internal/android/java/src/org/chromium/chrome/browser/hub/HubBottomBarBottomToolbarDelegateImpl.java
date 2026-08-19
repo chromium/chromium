@@ -13,6 +13,8 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarView;
 
 /**
  * Implementation of {@link HubBottomToolbarDelegate} that provides bottom bar functionality for the
@@ -27,6 +29,8 @@ public class HubBottomBarBottomToolbarDelegateImpl implements HubBottomToolbarDe
 
     // Non-null after {@link #initializeBottomToolbarView} is called.
     private HubBottomToolbarView mHubBottomToolbarView;
+    private @Nullable HubColorMixer mHubColorMixer;
+    private @Nullable BottomBarHubColorMixerAdapter mColorMixerAdapter;
 
     /**
      * @param context The context.
@@ -43,7 +47,7 @@ public class HubBottomBarBottomToolbarDelegateImpl implements HubBottomToolbarDe
             ViewGroup container,
             PaneManager paneManager,
             HubColorMixer hubColorMixer) {
-
+        mHubColorMixer = hubColorMixer;
         // Inflate the basic bottom toolbar layout. We assume it attaches an externally
         // provided view to the container as the prompt dictates.
         mHubBottomToolbarView =
@@ -66,6 +70,12 @@ public class HubBottomBarBottomToolbarDelegateImpl implements HubBottomToolbarDe
     @Override
     public void attachBottomBarView(View view) {
         mHubBottomToolbarView.addView(view);
+        if (view instanceof BottomBarView bottomBarView) {
+            if (mColorMixerAdapter != null) {
+                mColorMixerAdapter.destroy();
+            }
+            mColorMixerAdapter = new BottomBarHubColorMixerAdapter(bottomBarView, mHubColorMixer);
+        }
     }
 
     @Override
@@ -79,5 +89,14 @@ public class HubBottomBarBottomToolbarDelegateImpl implements HubBottomToolbarDe
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        if (mColorMixerAdapter != null) {
+            mColorMixerAdapter.destroy();
+            mColorMixerAdapter = null;
+        }
+    }
+
+    @Nullable BottomBarHubColorMixerAdapter getBottomBarColorMixerAdapterForTesting() {
+        return mColorMixerAdapter;
+    }
 }

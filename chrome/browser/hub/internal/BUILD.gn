@@ -19,6 +19,7 @@ android_library("java") {
   ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/hub/ApplyButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/BottomBarHubColorMixerAdapter.java",
     "android/java/src/org/chromium/chrome/browser/hub/EmptyHubBottomToolbarDelegate.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactory.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImpl.java",
@@ -181,6 +182,7 @@ android_library("unit_device_javatests") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.hub"
   sources = [
+    "android/java/src/org/chromium/chrome/browser/hub/BottomBarHubColorMixerAdapterUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/FadeHubLayoutAnimationFactoryImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonMediatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubActionButtonViewUnitTest.java",
