@@ -323,7 +323,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
     return thread_alloc_stats_;
   }
   size_t bucket_count_for_testing(size_t index) const {
-    return PA_UNSAFE_TODO(buckets_[index]).count;
+    return buckets_[index].count;
   }
 
   internal::base::PlatformThreadId thread_id() const { return thread_id_; }
@@ -375,9 +375,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 
   PartitionRoot* GetRoot();
 
-  Bucket& bucket_for_testing(size_t index) {
-    return PA_UNSAFE_TODO(buckets_[index]);
-  }
+  Bucket& bucket_for_testing(size_t index) { return buckets_[index]; }
   void ClearBucketForTesting(Bucket& bucket, size_t limit) {
     ClearBucket(bucket, limit);
   }
@@ -484,7 +482,7 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
     return std::nullopt;
   }
 
-  auto& bucket = PA_UNSAFE_TODO(buckets_[bucket_index]);
+  auto& bucket = buckets_[bucket_index];
 
   PA_DCHECK(bucket.count != 0 || bucket.freelist_head == nullptr);
 
@@ -525,7 +523,7 @@ PA_ALWAYS_INLINE internal::UntaggedSlotStart ThreadCache::GetFromCache(
     return internal::UntaggedSlotStart();
   }
 
-  auto& bucket = PA_UNSAFE_TODO(buckets_[bucket_index]);
+  auto& bucket = buckets_[bucket_index];
   if (bucket.freelist_head) [[likely]] {
     PA_INCREMENT_COUNTER(stats_.alloc_hits);
   } else {
