@@ -22,6 +22,7 @@ class ProfileAttributesEntry;
 class ProfileAttributesStorage;
 
 namespace signin {
+class AccountPreviewDataService;
 class IdentityManager;
 }
 
@@ -107,22 +108,27 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account);
 
-// Returns the list of all accounts that have a token. The unconsented primary
-// account will be the first account in the list. If
-// |restrict_to_accounts_eligible_for_sync| is true, removes the account that
-// are not suitable for sync promos.
+// Returns the list of all accounts that have a token. The default (first
+// account in the cookie jar) account will be the first account in the list. If
+// `restrict_to_accounts_eligible_for_signin` is true, removes the account that
+// are not suitable for signin promos. If `account_preview_data_service` is
+// provided and has a preferred account for promo, that account is placed at the
+// front of the list.
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     const signin::IdentityManager* identity_manager,
-    bool restrict_to_accounts_eligible_for_sync);
-
-#if !BUILDFLAG(IS_CHROMEOS)
-// Returns single account to use in promos.
-AccountInfo GetSingleAccountForPromos(
-    const signin::IdentityManager* identity_manager);
-
-#endif
+    bool restrict_to_accounts_eligible_for_signin,
+    const signin::AccountPreviewDataService* account_preview_data_service =
+        nullptr);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Returns single account to use in promos. If `account_preview_data_service` is
+// provided and has a preferred account for promo, that account is returned.
+// Otherwise, returns the default account for promo.
+AccountInfo GetSingleAccountForPromos(
+    const signin::IdentityManager* identity_manager,
+    const signin::AccountPreviewDataService* account_preview_data_service =
+        nullptr);
+
 // Returns an existing re-usable Dice signin tab with the given access point.
 content::WebContents* GetSignInTabWithAccessPoint(
     BrowserWindowInterface* browser_window_interface,

@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -42,6 +43,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -398,19 +400,43 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
     const signin::IdentityManager* identity_manager,
-    bool restrict_to_accounts_eligible_for_sync) {
-  const PrefService* prefs = restrict_to_accounts_eligible_for_sync
+    bool restrict_to_accounts_eligible_for_signin,
+    const signin::AccountPreviewDataService* account_preview_data_service) {
+  const PrefService* prefs = restrict_to_accounts_eligible_for_signin
                                  ? g_browser_process->local_state()
                                  : nullptr;
-  return signin::GetOrderedAccountsForDisplay(identity_manager, prefs);
+  std::vector<AccountInfo> accounts =
+      signin::GetOrderedAccountsForDisplay(identity_manager, prefs);
+
+  if (account_preview_data_service) {
+    std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
+        preferred_preference =
+            account_preview_data_service->GetPreferredAccountForPromo();
+    if (preferred_preference.has_value()) {
+      auto it = std::ranges::find(accounts, preferred_preference->gaia_id,
+                                  &AccountInfo::gaia);
+      if (it != accounts.end()) {
+        // Rotate the subrange [begin, it + 1) so the preferred account at `it`
+        // moves to the front while preserving the relative order of all other
+        // accounts.
+        std::rotate(accounts.begin(), it, it + 1);
+      }
+    }
+  }
+
+  return accounts;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
 AccountInfo GetSingleAccountForPromos(
-    const signin::IdentityManager* identity_manager) {
-  return signin::GetDefaultAccountForPromo(identity_manager,
-                                           g_browser_process->local_state());
+    const signin::IdentityManager* identity_manager,
+    const signin::AccountPreviewDataService* account_preview_data_service) {
+  std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
+      identity_manager,
+      /*restrict_to_accounts_eligible_for_signin=*/true,
+      account_preview_data_service);
+  return accounts.empty() ? AccountInfo() : accounts[0];
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

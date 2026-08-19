@@ -14,7 +14,7 @@ TestAccountPreviewDataService::~TestAccountPreviewDataService() = default;
 
 std::optional<AccountPreviewDataService::AccountPreviewPreference>
 TestAccountPreviewDataService::GetPreferredAccountForPromo() const {
-  return std::nullopt;
+  return preferred_account_for_promo_;
 }
 
 void TestAccountPreviewDataService::GetPreviewPreferenceForAccount(
