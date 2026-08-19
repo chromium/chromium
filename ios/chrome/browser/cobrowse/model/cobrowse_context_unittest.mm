@@ -46,8 +46,6 @@ TEST_F(CobrowseContextTest, InitWithDefaultURL) {
   EXPECT_EQ(context.url.path(), "/search");
 
   std::string value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "gsc", &value));
-  EXPECT_EQ(value, "2");
   EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "sourceid", &value));
   EXPECT_EQ(value, "chrome-mobile");
   EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "gsas", &value));
@@ -69,8 +67,6 @@ TEST_F(CobrowseContextTest, InitWithOverrideURL) {
   EXPECT_EQ(context.url.path(), "/search");
 
   std::string value;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "gsc", &value));
-  EXPECT_EQ(value, "2");
   EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "sourceid", &value));
   EXPECT_EQ(value, "chrome-mobile");
   EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "gsas", &value));

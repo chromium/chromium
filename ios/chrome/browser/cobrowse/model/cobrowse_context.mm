@@ -40,9 +40,6 @@ const char kContextualInputTokensKey[] = "cinpts";
 const char kConversationRestoreKey[] = "csuir";
 const char kConversationSearchUIRestoreValue[] = "1";
 
-const char kGoogleSearchClientKey[] = "gsc";
-const char kGoogleSearchClientValue[] = "2";
-
 const char kSourceIDKey[] = "sourceid";
 const char kSourceIDValue[] = "chrome-mobile";
 
@@ -82,8 +79,7 @@ const char kGoogleSearchAppStateValue[] = "4";
     } else {
       _url = url;
     }
-    _url = net::AppendOrReplaceQueryParameter(_url, kGoogleSearchClientKey,
-                                              kGoogleSearchClientValue);
+
     _url =
         net::AppendOrReplaceQueryParameter(_url, kSourceIDKey, kSourceIDValue);
     _url = net::AppendOrReplaceQueryParameter(_url, kGoogleSearchAppStateKey,
