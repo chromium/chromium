@@ -14,6 +14,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/logging/log_receiver.h"
+#include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
@@ -40,6 +43,8 @@ namespace autofill {
 
 namespace {
 
+using ::testing::_;
+using ::testing::HasSubstr;
 using ::testing::Return;
 
 // A helper PrefStore that allows us to count how many times a specific
@@ -721,6 +726,34 @@ TEST_F(AtMemoryEnablementUtilsWithGroupsTest,
       autofill_client().GetLastCommittedPrimaryMainFrameURL()));
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+
+class MockLogReceiver : public LogReceiver {
+ public:
+  MockLogReceiver() = default;
+  ~MockLogReceiver() override = default;
+  MOCK_METHOD(void, LogEntry, (const base::DictValue&), (override));
+};
+
+TEST_F(AtMemoryEnablementUtilsTest, LogAtMemorySuppression) {
+  LogRouter log_router;
+  MockLogReceiver receiver;
+  log_router.RegisterReceiver(&receiver);
+  std::unique_ptr<LogManager> log_manager =
+      LogManager::Create(&log_router, base::NullCallback());
+
+  EXPECT_CALL(receiver, LogEntry(_)).WillOnce([](const base::DictValue& entry) {
+    EXPECT_THAT(entry.DebugString(), HasSubstr("AtMemory"));
+    EXPECT_THAT(entry.DebugString(), HasSubstr("TriggerSearchUI"));
+    EXPECT_THAT(entry.DebugString(), HasSubstr("Reason: "));
+    EXPECT_THAT(entry.DebugString(),
+                HasSubstr("User is not eligible for Personal Context"));
+  });
+
+  LogAtMemorySuppression(AtMemoryAction::kTriggerSearchUI, log_manager.get(),
+                         "User is not eligible for Personal Context");
+
+  log_router.UnregisterReceiver(&receiver);
+}
 
 }  // namespace
 }  // namespace autofill

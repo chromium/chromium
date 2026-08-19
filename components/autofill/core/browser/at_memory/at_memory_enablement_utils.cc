@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
@@ -20,9 +21,14 @@
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_internals/log_message.h"
+#include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
+#include "components/autofill/core/common/logging/log_macros.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
@@ -85,10 +91,23 @@ AutofillClient::AutofillPolicyDataCategory GetPolicyCategory(
   }
   using enum personal_context::PersonalContextEligibilityState;
   switch (personal_context_service->GetEligibilityState()) {
-    case kDisabledNotEligible:
-      MaybeOutputReason(debug_message,
-                        "User is not eligible for Personal Context.");
+    case kDisabledNotEligible: {
+      if (std::optional<personal_context::PersonalContextNonEligibilityReason>
+              reason = personal_context_service->GetNonEligibilityReason();
+          reason.has_value() &&
+          *reason != personal_context::PersonalContextNonEligibilityReason::
+                         kEligible) {
+        MaybeOutputReason(
+            debug_message,
+            base::StrCat(
+                {"User is not eligible for Personal Context: ",
+                 PersonalContextNonEligibilityReasonToString(*reason)}));
+      } else {
+        MaybeOutputReason(debug_message,
+                          "User is not eligible for Personal Context.");
+      }
       return false;
+    }
     case kEligible:
       return true;
   }
@@ -264,7 +283,49 @@ std::optional<AtMemoryAction> MapCategoryToAtMemoryAction(
   return true;
 }
 
+std::string_view AtMemoryActionToString(AtMemoryAction action) {
+  switch (action) {
+    case AtMemoryAction::kTriggerSearchUI:
+      return "TriggerSearchUI";
+    case AtMemoryAction::kShowAtMemoryInSettings:
+      return "ShowAtMemoryInSettings";
+    case AtMemoryAction::kAllowCustomizeAtMemoryShortcut:
+      return "AllowCustomizeAtMemoryShortcut";
+    case AtMemoryAction::kShowIph:
+      return "ShowIph";
+    case AtMemoryAction::kShowAutocompleteAtMemoryButton:
+      return "ShowAutocompleteAtMemoryButton";
+    case AtMemoryAction::kRetrievePaymentsForFilling:
+      return "RetrievePaymentsForFilling";
+    case AtMemoryAction::kRetrieveContactInfoForFilling:
+      return "RetrieveContactInfoForFilling";
+    case AtMemoryAction::kRetrieveIdentityDocsForFilling:
+      return "RetrieveIdentityDocsForFilling";
+    case AtMemoryAction::kRetrieveTravelDataForFilling:
+      return "RetrieveTravelDataForFilling";
+    case AtMemoryAction::kRetrieveShoppingDataForFilling:
+      return "RetrieveShoppingDataForFilling";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
+
+void LogAtMemorySuppression(AtMemoryAction action,
+                            LogManager* log_manager,
+                            std::string_view debug_reason) {
+  if (!log_manager || !IsLoggingActive(log_manager)) {
+    return;
+  }
+  LogBuffer table_rows;
+  LOG_AF(table_rows) << Tr{} << "Action: " << AtMemoryActionToString(action);
+  if (!debug_reason.empty()) {
+    LOG_AF(table_rows) << Tr{} << "Reason: " << debug_reason;
+  }
+  LOG_AF(log_manager) << LoggingScope::kAtMemory << LogMessage::kAtMemory
+                      << "Action suppressed." << Tag{"table"}
+                      << std::move(table_rows) << CTag{"table"};
+}
 
 [[nodiscard]] bool IsRetrieveForFillingAction(AtMemoryAction action) {
   switch (action) {
@@ -330,6 +391,7 @@ bool MayPerformAtMemoryAction(
       const GURL& target_url =
           url ? *url : client.GetLastCommittedPrimaryMainFrameURL();
       if (client.IsAutofillTypeBlockedByPolicy(target_url, category)) {
+        MaybeOutputReason(debug_message, "Autofill type is blocked by policy.");
         return false;
       }
     }

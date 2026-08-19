@@ -355,12 +355,19 @@ bool ShouldEraseMemorySearchResult(MemoryDataType type,
   if (!action) {
     return false;
   }
-  return !MayPerformAtMemoryAction(
+  std::string debug_reason;
+  const bool may_perform = MayPerformAtMemoryAction(
       *action, client,
       /*url=*/std::nullopt,
       RetrieveForFillingParams{.is_spii = IsSpiiMemoryDataType(type),
                                .sources = sources,
-                               .is_context_secure = is_context_secure});
+                               .is_context_secure = is_context_secure},
+      &debug_reason);
+  if (!may_perform) {
+    LogAtMemorySuppression(*action, client.GetCurrentLogManager(),
+                           debug_reason);
+  }
+  return !may_perform;
 }
 
 }  // namespace

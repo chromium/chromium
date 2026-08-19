@@ -1156,10 +1156,18 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   if (IsAtMemoryTriggerSource(trigger_source)) {
     const GURL& main_frame_url = client().GetLastCommittedPrimaryMainFrameURL();
     const GURL& field_url = field.origin().GetURL();
+    std::string debug_reason;
     if (!MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, client(),
-                                  main_frame_url) ||
-        !MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, client(),
-                                  field_url)) {
+                                  main_frame_url, std::nullopt,
+                                  &debug_reason)) {
+      LogAtMemorySuppression(AtMemoryAction::kTriggerSearchUI, log_manager(),
+                             debug_reason);
+      return;
+    }
+    if (!MayPerformAtMemoryAction(AtMemoryAction::kTriggerSearchUI, client(),
+                                  field_url, std::nullopt, &debug_reason)) {
+      LogAtMemorySuppression(AtMemoryAction::kTriggerSearchUI, log_manager(),
+                             debug_reason);
       return;
     }
   }

@@ -78,6 +78,12 @@ struct RetrieveForFillingParams {
 };
 
 class AutofillOptimizationGuideDecider;
+class LogManager;
+
+// Logs an AtMemory action suppression event to `chrome://autofill-internals`.
+void LogAtMemorySuppression(AtMemoryAction action,
+                            LogManager* log_manager,
+                            std::string_view debug_reason = {});
 
 // Returns true if the action retrieves data for filling.
 [[nodiscard]] bool IsRetrieveForFillingAction(AtMemoryAction action);
