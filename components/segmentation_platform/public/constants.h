@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "components/segmentation_platform/public/proto/output_config.pb.h"
-#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
-
 namespace segmentation_platform {
+namespace proto {
+enum SegmentId : int;
+}  // namespace proto
 
 // SEGMENTATION_CLIENT_KEYS_BEGIN
 

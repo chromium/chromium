@@ -19,6 +19,7 @@
 #include "components/reporting/metrics/sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/protos/app_types.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

@@ -37,7 +37,6 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/syncable_service.h"
-#include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -628,11 +627,6 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Clears the session token. Should be called when the user clears browsing
   // data.
   void ClearSessionToken();
-
-  // Explicitly converts from ActiveStatus enum in TemplateURLData to enum in
-  // sync protos.
-  static sync_pb::SearchEngineSpecifics_ActiveStatus ActiveStatusToSync(
-      TemplateURLData::ActiveStatus is_active);
 
   // Returns a SyncData with a sync representation of the search engine data
   // from `data`.

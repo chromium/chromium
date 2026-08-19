@@ -10,9 +10,13 @@
 
 #include "base/component_export.h"
 #include "components/services/app_service/public/cpp/macros.h"
-#include "components/services/app_service/public/protos/app_types.pb.h"
 
 namespace apps {
+
+enum ApplicationType : int;
+enum ApplicationInstallReason : int;
+enum ApplicationInstallSource : int;
+enum ApplicationUninstallSource : int;
 
 // When updating the enum below, update the ApplicationType enum in
 // //components/services/app_service/public/protos/app_types.proto.

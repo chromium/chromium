@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_CLIENT_BASE_H_
 #define CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_CLIENT_BASE_H_
 
+#include <map>
+
 #include "ash/system/video_conference/video_conference_common.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"

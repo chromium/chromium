@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_SUGGESTION_GROUP_UTIL_H_
 #define COMPONENTS_OMNIBOX_BROWSER_SUGGESTION_GROUP_UTIL_H_
 
-#include "components/omnibox/browser/autocomplete_input.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+
+class AutocompleteInput;
 
 namespace omnibox {
 

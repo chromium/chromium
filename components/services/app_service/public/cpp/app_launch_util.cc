@@ -4,6 +4,8 @@
 
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
+#include "components/services/app_service/public/protos/app_types.pb.h"
+
 namespace apps {
 
 WindowInfo::WindowInfo(int64_t display_id) : display_id(display_id) {}

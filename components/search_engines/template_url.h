@@ -28,7 +28,6 @@
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/suggest_inventory.pb.h"
-#include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"

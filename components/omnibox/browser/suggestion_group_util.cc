@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
-#include "build/buildflag.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"

@@ -8,10 +8,11 @@
 #include <optional>
 
 #include "base/component_export.h"
-#include "components/services/app_service/public/protos/app_types.pb.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace apps {
+
+enum ApplicationLaunchSource : int;
 
 // Enumeration of possible app launch sources. When adding a new entry to this
 // enum:

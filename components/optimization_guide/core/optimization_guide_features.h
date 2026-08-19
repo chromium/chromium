@@ -40,7 +40,6 @@
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "net/nqe/effective_connection_type.h"

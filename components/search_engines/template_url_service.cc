@@ -2435,9 +2435,9 @@ void TemplateURLService::ClearSessionToken() {
   token_expiration_time_ = base::TimeTicks();
 }
 
-// static
-sync_pb::SearchEngineSpecifics_ActiveStatus
-TemplateURLService::ActiveStatusToSync(
+namespace {
+
+sync_pb::SearchEngineSpecifics_ActiveStatus ActiveStatusToSync(
     TemplateURLData::ActiveStatus is_active) {
   switch (is_active) {
     case TemplateURLData::ActiveStatus::kUnspecified:
@@ -2451,6 +2451,8 @@ TemplateURLService::ActiveStatusToSync(
           SearchEngineSpecifics_ActiveStatus_ACTIVE_STATUS_FALSE;
   }
 }
+
+}  // namespace
 
 // static
 syncer::SyncData TemplateURLService::CreateSyncDataFromTemplateURLData(
