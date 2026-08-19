@@ -1235,6 +1235,11 @@
         "version": "1.1.0"
     },
     {
+        "name": "web",
+        "group": "androidx.web",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
         "name": "webkit",
         "group": "androidx.webkit",
         "version": "1.18.0-SNAPSHOT"

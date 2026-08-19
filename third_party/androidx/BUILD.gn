@@ -1812,6 +1812,21 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_web_web_java") {
+    aar_path = "../androidx/cipd/libs/androidx_web_web/web.aar"
+    info_path =
+        "../androidx/committed/libs/androidx_web_web/androidx_web_web.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_webkit_webkit_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_webkit_webkit_java") {
     aar_path = "../androidx/cipd/libs/androidx_webkit_webkit/webkit.aar"
     info_path = "../androidx/committed/libs/androidx_webkit_webkit/androidx_webkit_webkit.info"
@@ -2500,6 +2515,7 @@ if (!limit_android_deps) {
       ":androidx_lifecycle_lifecycle_runtime_compose_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
       ":androidx_lifecycle_lifecycle_viewmodel_ktx_java",
+      ":androidx_navigationevent_navigationevent_java",
       ":androidx_savedstate_savedstate_compose_java",
       ":androidx_savedstate_savedstate_ktx_java",
       ":androidx_window_window_java",

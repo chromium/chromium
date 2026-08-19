@@ -1,0 +1,20 @@
+Name: web:web
+Short Name: web
+URL: https://androidx.dev/snapshots/builds/16119360/artifacts/repository/androidx/web/web/1.0.0-SNAPSHOT/web-1.0.0-20260819.122917-1.aar
+Version: 1.0.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Web is a collection of modern APIs that can be used with android.webkit and androidx.webkit.
+
+See also: https://developer.android.com/jetpack/androidx/releases/web#1.0.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.
