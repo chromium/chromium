@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_INFOBAR_DELEGATE_H_
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
+#include "content/public/browser/reload_type.h"
 
 namespace infobars {
 class ContentInfoBarManager;

@@ -23,6 +23,10 @@
 class Browser;
 class ContentSettingImageModel;
 
+namespace content {
+class WebContents;
+}
+
 namespace gfx {
 class FontList;
 }

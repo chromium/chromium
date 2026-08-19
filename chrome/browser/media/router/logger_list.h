@@ -8,6 +8,7 @@
 #include <set>
 
 #include "components/media_router/browser/logger_impl.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace media_router {
 

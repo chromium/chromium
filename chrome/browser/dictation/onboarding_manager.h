@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/target.h"
+#include "content/public/browser/global_dom_node_id.h"
 
 class PrefService;
 

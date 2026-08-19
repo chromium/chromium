@@ -24,6 +24,10 @@ namespace base {
 class DictValue;
 }
 
+namespace content {
+class WebContents;
+}
+
 namespace web_app {
 
 enum class MigrationTargetInstallJobResult;

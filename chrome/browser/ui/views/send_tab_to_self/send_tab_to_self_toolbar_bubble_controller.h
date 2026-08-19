@@ -12,6 +12,10 @@
 
 class BrowserWindowInterface;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace send_tab_to_self {
 
 class SendTabToSelfEntry;

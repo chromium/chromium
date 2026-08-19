@@ -23,6 +23,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+namespace content {
+struct NativeWebKeyboardEvent;
+}  // namespace content
+
 namespace autofill {
 
 class AutofillPopupController;

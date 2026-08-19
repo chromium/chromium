@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
+#include "content/public/browser/web_contents.h"
 
 namespace autofill {
 

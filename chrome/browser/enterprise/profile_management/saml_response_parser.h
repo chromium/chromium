@@ -10,6 +10,8 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace profile_management {

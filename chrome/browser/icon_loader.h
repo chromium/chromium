@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/gfx/image/image.h"
 
 ////////////////////////////////////////////////////////////////////////////////

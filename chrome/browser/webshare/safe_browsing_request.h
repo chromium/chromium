@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {

@@ -18,6 +18,10 @@
 #include "ui/gfx/native_ui_types.h"
 #include "url/origin.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace password_manager {
 class PasskeyCredential;
 class UiCredential;
