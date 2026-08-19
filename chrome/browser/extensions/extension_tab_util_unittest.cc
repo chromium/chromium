@@ -14,6 +14,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -59,6 +60,19 @@ TEST(ExtensionTabUtilTest, ScrubTabBehaviorForHostPermission) {
       ExtensionTabUtil::GetScrubTabBehavior(
           extension.get(), mojom::ContextType::kUnspecified,
           GURL("http://www.google.com/some/path"));
+  EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
+  EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.pending_info);
+}
+
+TEST(ExtensionTabUtilTest, ScrubTabBehaviorForExtensionOwnOrigin_GURL) {
+  auto extension = ExtensionBuilder("Extension with activeTab permission")
+                       .AddAPIPermission("activeTab")
+                       .Build();
+  GURL options_url = extension->GetResourceURL("options.html");
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(
+          extension.get(), mojom::ContextType::kPrivilegedExtension,
+          options_url);
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
   EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.pending_info);
 }
@@ -245,6 +259,36 @@ TEST_F(ChromeExtensionNavigationTest,
       extension.get(), mojom::ContextType::kUnspecified, web_contents.get());
   EXPECT_EQ(ExtensionTabUtil::kScrubTabFully,
             scrub_tab_behavior.committed_info);
+}
+
+// Tests that an extension without global "tabs" or explicit host permissions
+// (such as an extension with only activeTab) does NOT have its own origin URLs
+// scrubbed when navigating or querying tabs.
+TEST_F(ChromeExtensionNavigationTest,
+       ScrubTabBehaviorForExtensionOwnOrigin_WebContents) {
+  auto extension = ExtensionBuilder("Extension without permissions").Build();
+  ExtensionRegistrar::Get(profile())->AddExtension(extension);
+
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+
+  GURL options_url = extension->GetResourceURL("options.html");
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(options_url);
+
+  ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
+      ExtensionTabUtil::GetScrubTabBehavior(
+          extension.get(), mojom::ContextType::kPrivilegedExtension,
+          web_contents.get());
+  EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
+
+  // Also verify with GURL overload.
+  scrub_tab_behavior = ExtensionTabUtil::GetScrubTabBehavior(
+      extension.get(), mojom::ContextType::kPrivilegedExtension, options_url);
+  EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.committed_info);
+  EXPECT_EQ(ExtensionTabUtil::kDontScrubTab, scrub_tab_behavior.pending_info);
 }
 
 TEST_F(ChromeExtensionNavigationTest,
