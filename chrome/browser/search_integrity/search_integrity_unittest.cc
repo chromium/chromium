@@ -51,7 +51,7 @@ class SearchIntegrityTest : public testing::Test {
   }
 
   void TriggerAllowlistInitialized() {
-    search_integrity_->OnAllowlistInitialized("");
+    search_integrity_->OnAllowlistInitialized({});
   }
 
   TemplateURL* AddSearchEngine(const std::u16string& short_name,

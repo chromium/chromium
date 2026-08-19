@@ -129,19 +129,12 @@ void SearchIntegrity::CheckSearchEngines() {
           IDR_SEARCH_ENGINE_PREPOPULATED_ENGINES_JSON);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
-          [](const base::FilePath& profile_path, const std::string& json_data) {
-            // Construct the path to the bloom filter file, which is stored in
-            // the user's profile directory.
-            base::FilePath bloom_filter_path =
-                profile_path.AppendASCII(kSearchEngineAllowlistFileName);
-
-            // Load or build the bloom filter data.
-            return SearchEngineAllowlist::LoadBloomFilterData(
-                json_data, bloom_filter_path);
+          [](std::string json_data) {
+            return SearchEngineAllowlist::BuildAllowlist(json_data);
           },
-          profile_->GetPath(), std::move(json_data)),
+          std::move(json_data)),
 
       // Once the background task is complete, run OnAllowlistInitialized on the
       // original (UI) thread.
@@ -150,12 +143,12 @@ void SearchIntegrity::CheckSearchEngines() {
 }
 
 void SearchIntegrity::OnAllowlistInitialized(
-    const std::string& bloom_filter_data) {
+    absl::flat_hash_set<std::string> allowed_urls) {
   if (!template_url_service_) {
     return;
   }
 
-  SearchEngineAllowlist::GetInstance()->Initialize(bloom_filter_data);
+  SearchEngineAllowlist::GetInstance()->Initialize(std::move(allowed_urls));
 
   if (template_url_service_->loaded()) {
     OnTemplateURLServiceLoaded();

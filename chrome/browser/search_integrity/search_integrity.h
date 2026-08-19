@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SEARCH_INTEGRITY_SEARCH_INTEGRITY_H_
 
 #include <optional>
+#include <string>
 
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
@@ -13,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 class Profile;
 class TemplateURLService;
@@ -74,10 +76,8 @@ struct SearchIntegrityReport {
 class SearchIntegrity : public KeyedService {
  public:
   // Constructs a SearchIntegrity service instance.
-  // `template_url_service`: The service for accessing the
-  // engines.
-  // `profile_path`: The path to the profile directory, used for storing
-  // the bloom filter.
+  // `template_url_service`: The service for accessing search engines.
+  // `profile`: The profile to check for management status.
   SearchIntegrity(TemplateURLService* template_url_service, Profile* profile);
   ~SearchIntegrity() override;
 
@@ -94,7 +94,7 @@ class SearchIntegrity : public KeyedService {
 
   // Callback executed after the allowlist has been initialized. This method
   // proceeds with checking and recording metrics.
-  void OnAllowlistInitialized(const std::string& bloom_filter_data);
+  void OnAllowlistInitialized(absl::flat_hash_set<std::string> allowed_urls);
 
   // Callback executed after the TemplateURLService has finished loading.
   void OnTemplateURLServiceLoaded();
@@ -107,8 +107,7 @@ class SearchIntegrity : public KeyedService {
 
   // The template URL service, used to access se list.
   raw_ptr<TemplateURLService> template_url_service_;
-  // The profile, used to check management status and locate the bloom filter
-  // file.
+  // The profile, used to check management status.
   raw_ptr<Profile> profile_;
 
   // Subscription for the TemplateURLService loaded callback.
