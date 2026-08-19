@@ -12,7 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -54,7 +54,7 @@ public class TabUnderlineManager {
         mContextualTasksBridgeObserver = this::onContextualTasksBridgeReady;
         mNativePtr = TabUnderlineManagerJni.get().init(this);
 
-        if (ChromeFeatureList.sContextualTasks.isEnabled()) {
+        if (ContextualTasksUtils.isContextualTasksUiEnabled()) {
             ContextualTasksBridge.getSupplier(mWindowAndroid)
                     .addSyncObserverAndCallIfNonNull(mContextualTasksBridgeObserver);
         } else {
@@ -83,7 +83,7 @@ public class TabUnderlineManager {
     public void destroy() {
         mObservers.clear();
         mTabsPendingContextualTasksBridge.clear();
-        if (ChromeFeatureList.sContextualTasks.isEnabled()) {
+        if (ContextualTasksUtils.isContextualTasksUiEnabled()) {
             ContextualTasksBridge.getSupplier(mWindowAndroid)
                     .removeObserver(mContextualTasksBridgeObserver);
         }

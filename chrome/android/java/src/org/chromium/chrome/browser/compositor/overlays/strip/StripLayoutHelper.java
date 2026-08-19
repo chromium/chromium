@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDele
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.TabStripDragHandler;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -862,7 +863,7 @@ public class StripLayoutHelper
 
         if (!mIncognito
                 && (GlicEnabling.isEnabledByFlags()
-                        || ChromeFeatureList.sContextualTasks.isEnabled())) {
+                        || ContextualTasksUtils.isContextualTasksUiEnabled())) {
             mTabUnderlineManager = new TabUnderlineManager(windowAndroid);
             mTabUnderlineObserver =
                     new TabUnderlineManager.Observer() {

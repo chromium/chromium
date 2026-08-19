@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.FeatureList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -68,13 +69,15 @@ public final class ContextualTasksUtils {
     }
 
     /**
-     * Returns whether the Contextual Tasks UI is enabled. Must be called after native is
-     * initialized.
+     * Returns whether the Contextual Tasks UI is enabled. If called before native init, it will
+     * look at the values of cached flags from earlier session.
      *
      * @return True if Contextual Tasks UI is enabled.
      */
     public static boolean isContextualTasksUiEnabled() {
-        assert FeatureList.isNativeInitialized();
+        if (!FeatureList.isNativeInitialized()) {
+            return ChromeFeatureList.sContextualTasksSidePanel.isEnabled();
+        }
         return ContextualTasksUtilsJni.get().isContextualTasksUiEnabled();
     }
 

@@ -38,7 +38,7 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for {@link TabUnderlineManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS)
+@EnableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS_SIDE_PANEL)
 public class TabUnderlineManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -77,7 +77,7 @@ public class TabUnderlineManagerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS)
+    @DisableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS_SIDE_PANEL)
     public void testRegisterAndUnregisterTab_contextualTasksDisabled() {
         verify(mMockJni).init(mManager);
 
