@@ -109,7 +109,7 @@ bool DeviceHasEnoughMemoryForPrerender() {
       kDefaultMemoryThresholdMb);
 
   return base::SysInfo::AmountOfTotalPhysicalMemory() >
-         base::MiBU(base::saturated_cast<uint64_t>(memory_threshold_mb));
+         base::MiB(base::saturated_cast<uint64_t>(memory_threshold_mb));
 }
 
 // Create a resource request for `back_url` that only checks whether the
