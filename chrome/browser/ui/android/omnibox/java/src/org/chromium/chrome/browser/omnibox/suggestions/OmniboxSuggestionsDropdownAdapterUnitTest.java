@@ -27,7 +27,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -80,7 +79,6 @@ public class OmniboxSuggestionsDropdownAdapterUnitTest {
                 new PropertyModel.Builder(SuggestionCommonProperties.ALL_KEYS)
                         .with(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider)
                         .with(SuggestionCommonProperties.SHOW_DIVIDER, true)
-                        .with(SuggestionCommonProperties.BG_POSITIONAL_MODE, PositionalMode.MIDDLE)
                         .build();
 
         for (@OmniboxSuggestionUiType int type = OmniboxSuggestionUiType.DEFAULT;

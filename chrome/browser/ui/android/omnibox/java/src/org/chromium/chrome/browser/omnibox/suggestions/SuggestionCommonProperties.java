@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntDefPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -71,22 +74,28 @@ public @interface SuggestionCommonProperties {
     WritableBooleanPropertyKey APPLY_SIDE_SPACING = new WritableBooleanPropertyKey();
 
     /** The positional mode of the suggestion in its group, used for corner rounding. */
-    WritableIntPropertyKey BG_POSITIONAL_MODE = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<PositionalMode> BG_POSITIONAL_MODE =
+            new WritableIntDefPropertyKey<>(PositionalMode.MIDDLE);
 
     /** The sides of the suggestion background that are allowed to be rounded. */
-    WritableIntPropertyKey BG_ROUND_SIDES = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<RoundSides> BG_ROUND_SIDES =
+            new WritableIntDefPropertyKey<>(RoundSides.NONE);
 
     /** Whether dark colors should be applied to text, icons. */
-    WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<BrandedColorScheme> COLOR_SCHEME =
+            new WritableIntDefPropertyKey<>(BrandedColorScheme.APP_DEFAULT);
 
     /** The device type for calculating the tile margin in the suggestion view. */
-    WritableIntPropertyKey DEVICE_FORM_FACTOR = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<FormFactor> DEVICE_FORM_FACTOR =
+            new WritableIntDefPropertyKey<>(FormFactor.UNKNOWN);
 
     /** The fusebox layout mode (TOOLBAR vs SUGGESTIONS_POPOVER). */
-    WritableIntPropertyKey FUSEBOX_LAYOUT_MODE = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<FuseboxLayoutMode> FUSEBOX_LAYOUT_MODE =
+            new WritableIntDefPropertyKey<>(FuseboxLayoutMode.TOOLBAR);
 
     /** The type of group separator to show before this item. */
-    WritableIntPropertyKey GROUP_SEPARATOR_TYPE = new WritableIntPropertyKey();
+    WritableIntDefPropertyKey<GroupSeparatorType> GROUP_SEPARATOR_TYPE =
+            new WritableIntDefPropertyKey<>(GroupSeparatorType.NONE);
 
     /** The title text of the header above this item. */
     WritableObjectPropertyKey<String> HEADER_TITLE = new WritableObjectPropertyKey<>();
