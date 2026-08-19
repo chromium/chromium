@@ -199,10 +199,10 @@ void SystemInfoCardProvider::OnMemoryUsageUpdated(bool create_result,
     return;
   }
 
-  std::u16string available_memory_gb = ui::FormatBytes(base::KiBU(
+  std::u16string available_memory_gb = ui::FormatBytes(base::KiB(
       base::checked_cast<uint64_t>(memory_info_->available_memory_kib)));
   std::u16string total_memory_gb = ui::FormatBytes(
-      base::KiBU(base::checked_cast<uint64_t>(memory_info_->total_memory_kib)));
+      base::KiB(base::checked_cast<uint64_t>(memory_info_->total_memory_kib)));
 
   double used_memory_kb =
       memory_info_->total_memory_kib - memory_info_->available_memory_kib;
