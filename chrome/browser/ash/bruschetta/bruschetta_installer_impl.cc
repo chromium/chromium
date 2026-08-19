@@ -47,7 +47,7 @@ namespace {
 // Should be synced with the value in the chromiumos repo:
 // src/platform2/vtpm/backends/attested_virtual_endorsement.cc
 constexpr char kVtpmEkLabel[] = "vtpm-ek";
-constexpr base::ByteSize kBruschettaRequiredMemory = base::GiBU(12);
+constexpr base::ByteSize kBruschettaRequiredMemory = base::GiB(12);
 
 std::unique_ptr<BruschettaInstallerImpl::Fds> OpenFdsBlocking(
     base::FilePath boot_disk_path,
