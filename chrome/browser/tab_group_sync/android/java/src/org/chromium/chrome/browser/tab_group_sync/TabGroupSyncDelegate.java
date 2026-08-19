@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,20 +61,24 @@ public class TabGroupSyncDelegate implements TabWindowManager.Observer {
     }
 
     @CalledByNative
-    private int[] getSelectedTabs() {
+    @JniType("std::vector<int32_t>")
+    int[] getSelectedTabs() {
         // Find selected tabs across all windows.
         List<Integer> selectedTabIdList = new ArrayList<>();
         for (TabModelSelector tabModelSelector : mTabWindowManager.getAllTabModelSelectors()) {
             TabModel tabModel = tabModelSelector.getModel(/* incognito= */ false);
-            selectedTabIdList.add(TabModelUtils.getCurrentTabId(tabModel));
+            if (tabModel == null) continue;
+            int currentTabId = TabModelUtils.getCurrentTabId(tabModel);
+            if (currentTabId != Tab.INVALID_TAB_ID) {
+                selectedTabIdList.add(currentTabId);
+            }
         }
 
-        int[] selectedTabIdArray = new int[selectedTabIdList.size()];
+        int[] selectedTabs = new int[selectedTabIdList.size()];
         for (int i = 0; i < selectedTabIdList.size(); i++) {
-            selectedTabIdArray[i] = selectedTabIdList.get(i);
+            selectedTabs[i] = selectedTabIdList.get(i);
         }
-
-        return selectedTabIdArray;
+        return selectedTabs;
     }
 
     @CalledByNative

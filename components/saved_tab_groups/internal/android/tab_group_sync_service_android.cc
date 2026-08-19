@@ -332,16 +332,17 @@ int32_t TabGroupSyncServiceAndroid::GetArchivedGroupCount(JNIEnv* env) {
   return count;
 }
 
-ScopedJavaLocalRef<jobjectArray> TabGroupSyncServiceAndroid::GetDeletedGroupIds(
-    JNIEnv* env) {
+std::vector<ScopedJavaLocalRef<jobject>>
+TabGroupSyncServiceAndroid::GetDeletedGroupIds(JNIEnv* env) {
   auto group_ids = tab_group_sync_service_->GetDeletedGroupIds();
   std::vector<ScopedJavaLocalRef<jobject>> j_group_ids;
+  j_group_ids.reserve(group_ids.size());
   for (const auto& group_id : group_ids) {
     auto j_group_id =
         TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, group_id);
     j_group_ids.emplace_back(j_group_id);
   }
-  return base::android::ToJavaArrayOfObjects(env, j_group_ids);
+  return j_group_ids;
 }
 
 void TabGroupSyncServiceAndroid::UpdateLocalTabGroupMapping(

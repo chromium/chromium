@@ -5,7 +5,6 @@
 #include "chrome/browser/tab_group_sync/android/tab_group_sync_delegate_android.h"
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_utils.h"
@@ -71,13 +70,9 @@ std::vector<LocalTabID> TabGroupSyncDelegateAndroid::GetLocalTabIdsForTabGroup(
 
 std::set<LocalTabID> TabGroupSyncDelegateAndroid::GetSelectedTabs() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_selected_tabs_array =
+  std::vector<int32_t> selected_tabs =
       Java_TabGroupSyncDelegate_getSelectedTabs(env, java_obj_);
-  std::vector<int> selected_tabs_vector;
-  base::android::JavaIntArrayToIntVector(env, j_selected_tabs_array,
-                                         &selected_tabs_vector);
-  return std::set<LocalTabID>(selected_tabs_vector.begin(),
-                              selected_tabs_vector.end());
+  return std::set<LocalTabID>(selected_tabs.begin(), selected_tabs.end());
 }
 
 std::u16string TabGroupSyncDelegateAndroid::GetTabTitle(
