@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Sec-GPC header is present at worklet script load</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const kWorkletScript =
+    '/wpt_internal/global-privacy-control/resources/gpc-worklet-script-header.py';
+
+promise_test(async () => {
+  await CSS.paintWorklet.addModule(kWorkletScript);
+}, 'Paint worklet script load includes the Sec-GPC header');
+</script>
