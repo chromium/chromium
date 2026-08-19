@@ -787,6 +787,23 @@ if (!is_android) {
       "//chrome/test/base:in_process_browser_test_mixin",
     ]
   }
+
+  source_set("fake_gaia_mixin") {
+    testonly = true
+    sources = [
+      "fake_gaia_mixin.cc",
+      "fake_gaia_mixin.h",
+    ]
+    public_deps = [
+      "//chrome/test/base:mixin_based_in_process_browser_test",
+      "//google_apis:test_support",
+    ]
+    deps = [
+      "//base",
+      "//chrome/test/supervised_user:child_accounts",
+      "//net:test_support",
+    ]
+  }
 }
 
 if (!is_android) {

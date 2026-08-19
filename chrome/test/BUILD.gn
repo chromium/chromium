@@ -8041,8 +8041,6 @@ if (!is_android) {
       "../browser/ui/views/web_apps/web_app_link_capturing_test_utils.h",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
-      "base/fake_gaia_mixin.cc",
-      "base/fake_gaia_mixin.h",
       "base/web_view_focus_helper.cc",
       "base/web_view_focus_helper.h",
     ]
@@ -8050,9 +8048,9 @@ if (!is_android) {
     configs += [ "//build/config:precompiled_headers" ]
 
     allow_circular_includes_from = [
-      # TODO(crbug.com/353332589): Remove these circular dependencies when the
-      # remaining blocked headers (fake_gaia_mixin.h, web_view_focus_helper.h,
-      # etc.) are fully componentized.
+      # TODO(crbug.com/353332589): Remove these circular dependencies when
+      # the remaining blocked headers (web_view_focus_helper.h, etc.) are
+      # fully componentized.
       "//chrome/browser/privacy_sandbox:attestations_mixin",
       "//chrome/browser/ui/test:dialog",
       "//chrome/test/interaction",
@@ -8077,6 +8075,7 @@ if (!is_android) {
       "//chrome/test/base:browser_feature_test_waiters",
       "//chrome/test/base:chrome_test_utils",
       "//chrome/test/base:devtools_coverage",
+      "//chrome/test/base:fake_gaia_mixin",
       "//chrome/test/base:in_process_browser_test",
       "//chrome/test/base:in_process_browser_test_mixin",
       "//chrome/test/base:interactive_test_utils",
