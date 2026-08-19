@@ -105,8 +105,22 @@ enum class TransitionState {
                                  delegate:
                                      (id<AssistantContainerDelegate>)delegate {
   if (_containerViewController) {
-    // Already presented.
-    return;
+    if (_transitionState == TransitionState::kDismissing) {
+      if (_contentViewController == viewController) {
+        // Abort the dismissal and keep the exact same content.
+        [_containerViewController.view.layer removeAllAnimations];
+        _containerViewController.assistantContainerView.transform =
+            CGAffineTransformIdentity;
+        _transitionState = TransitionState::kIdle;
+        return;
+      } else {
+        // Force complete the dismissal immediately to present the new content.
+        [self didCompleteDismissalAnimationAnimated:NO];
+      }
+    } else {
+      // Already presented.
+      return;
+    }
   }
 
   _transitionState = TransitionState::kPresenting;

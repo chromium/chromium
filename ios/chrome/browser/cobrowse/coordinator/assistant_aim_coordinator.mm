@@ -241,6 +241,7 @@ class AssistantAIMUIStateProvider
 
 - (void)setVisible:(BOOL)visible inMinimizedState:(BOOL)minimized {
   if (visible) {
+    _isHiding = NO;
     [self dismissSnackbars];
     if (_viewController) {
       [_mediator updateContext];
