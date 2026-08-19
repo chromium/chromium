@@ -103,6 +103,9 @@ class PopupViewViews : public PopupBaseView,
   // The maximum width of the popup.
   static constexpr int kAutofillPopupMaxWidth = 456;
 
+  // The maximum width of an Autofill AI sub-popup.
+  static constexpr int kAutofillAiSubPopupMaxWidth = 320;
+
   // The width of the @memory popup.
   static constexpr int kAtMemoryPopupWidth = 320;
 

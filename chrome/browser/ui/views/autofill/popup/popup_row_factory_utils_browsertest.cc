@@ -401,6 +401,15 @@ IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, FreeformFooter) {
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, AutofillAiSourceAttribution) {
+  Suggestion suggestion(u"From Photos · LR1234567 · Sweden",
+                        SuggestionType::kAutofillAiSourceAttribution);
+  suggestion.trailing_icon = Suggestion::Icon::kOpenInNew;
+  CreateRowView(std::move(suggestion), /*selected_cell=*/std::nullopt,
+                /*filter_match=*/std::nullopt);
+  ShowAndVerifyUi();
+}
+
 IN_PROC_BROWSER_TEST_F(CreatePopupRowViewTest, PasswordWithFaviconPlaceholder) {
   Suggestion suggestion = CreatePasswordSuggestion(u"Password_entry");
   suggestion.custom_icon =

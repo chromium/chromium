@@ -337,7 +337,8 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
   main_text_label->SetEnabled(!suggestion.is_loading);
 
   if (suggestion.type == SuggestionType::kPendingStateSignin ||
-      suggestion.type == SuggestionType::kFreeformFooter) {
+      suggestion.type == SuggestionType::kFreeformFooter ||
+      suggestion.type == SuggestionType::kAutofillAiSourceAttribution) {
     main_text_label->SetMultiLine(true);
     main_text_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
     view->SetInsideBorderInsets(

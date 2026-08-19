@@ -1806,9 +1806,15 @@ int PopupViewViews::GetPopupMinWidth() const {
 }
 
 int PopupViewViews::GetPopupMaxWidth() const {
-  if (controller_ &&
-      controller_->GetMainFillingProduct() == FillingProduct::kAtMemory) {
+  if (!controller_) {
+    return kAutofillPopupMaxWidth;
+  }
+  if (controller_->GetMainFillingProduct() == FillingProduct::kAtMemory) {
     return kAtMemoryPopupWidth;
+  }
+  if (parent_ &&
+      controller_->GetMainFillingProduct() == FillingProduct::kAutofillAi) {
+    return kAutofillAiSubPopupMaxWidth;
   }
   return kAutofillPopupMaxWidth;
 }

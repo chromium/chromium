@@ -411,12 +411,15 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   std::pair<std::unique_ptr<NiceMock<MockAutofillPopupController>>,
             PopupViewViews*>
   OpenSubView(PopupViewViews& view,
-              const std::vector<Suggestion>& suggestions = {
-                  Suggestion(u"Suggestion",
-                             SuggestionType::kAutocompleteEntry)}) {
+              const std::vector<Suggestion>& suggestions = {Suggestion(
+                  u"Suggestion",
+                  SuggestionType::kAutocompleteEntry)},
+              FillingProduct filling_product = FillingProduct::kNone) {
     auto sub_controller =
         std::make_unique<NiceMock<MockAutofillPopupController>>();
     sub_controller->set_suggestions(suggestions);
+    ON_CALL(*sub_controller, GetMainFillingProduct)
+        .WillByDefault(Return(filling_product));
     ON_CALL(*sub_controller, OpenSubPopup)
         .WillByDefault(Return(autofill_popup_sub_controller_.GetWeakPtr()));
     base::WeakPtr<AutofillPopupView> sub_view_ptr =
@@ -3750,6 +3753,19 @@ TEST_F(PopupViewViewsHeightLimitTest, CutOffLastEntryForPopupSuggestionLimit) {
   // ... but not show the full entry.
   EXPECT_LT(second_resize_height, first_resize_height + full_entry_height -
                                       kNoticableChangeThreshold);
+}
+
+TEST_F(PopupViewViewsTest, SubPopupMaxWidth) {
+  Suggestion suggestion(
+      u"Very long suggestion text that would exceed the default submenu max "
+      u"width and force multi-line text wrapping",
+      SuggestionType::kAutofillAiSourceAttribution);
+  controller().set_suggestions({suggestion});
+  CreateAndShowView();
+  auto [sub_controller, sub_view] =
+      OpenSubView(view(), {suggestion}, FillingProduct::kAutofillAi);
+  EXPECT_LE(sub_view->GetWidget()->GetWindowBoundsInScreen().width(),
+            PopupViewViews::kAutofillAiSubPopupMaxWidth);
 }
 
 }  // namespace
