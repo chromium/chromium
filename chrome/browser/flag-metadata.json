@@ -6590,17 +6590,17 @@
   {
     "name": "lens-camera-no-still-output-required",
     "owners": ["cmyang@google.com", "aruslan@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 165
   },
   {
     "name": "lens-camera-unbinned-capture-formats-preferred",
     "owners": ["cmyang@google.com", "aruslan@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 165
   },
   {
     "name": "lens-continuous-zoom-enabled",
     "owners": ["cmyang@google.com", "aruslan@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 165
   },
   {
     "name": "lens-enable-raw-file-media-types",
@@ -6651,12 +6651,12 @@
   {
     "name": "lens-initial-lvf-zoom-level-90-percent",
     "owners": ["cmyang@google.com", "aruslan@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 165
   },
   {
     "name": "lens-load-aim-in-lens-result-page",
     "owners": [ "cmyang@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 165
   },
   {
     "name": "lens-omnient-shader-v2-enabled",
@@ -6664,7 +6664,7 @@
       "aboodmufti@google.com",
       "cmyang@google.com"
     ],
-    "expiry_milestone": 147
+    "expiry_milestone": 165
   },
   {
     "name": "lens-overlay-custom-bottom-sheet",
@@ -6729,7 +6729,7 @@
   {
     "name": "lens-stream-service-web-channel-transport-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
-    "expiry_milestone": 152
+    "expiry_milestone": 165
   },
   {
     "name": "lens-strokes-api-enabled",
@@ -6744,7 +6744,7 @@
   {
     "name": "lens-triple-camera-enabled",
     "owners": ["cmyang@google.com", "aruslan@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 165
   },
   {
     "name": "lens-unary-api-salient-text-enabled",
