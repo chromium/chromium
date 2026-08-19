@@ -45,6 +45,7 @@ cargo_crate("lib") {
   ]
   features = [
     "compiled_data",
+    "default",
     "utf16_iter",
     "utf8_iter",
   ]

@@ -70,7 +70,10 @@ artifact = "bin"
 
 [dependencies.harfrust]
 version = "0.13.0"
-features = ["experimental_font_api"]
+features = [
+    "experimental_font_api",
+    "icu",
+]
 
 [dependencies.icu_capi]
 version = "2.2"

@@ -713,6 +713,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags",
  "bytemuck",
+ "icu_normalizer",
+ "icu_properties",
  "read-fonts",
  "smallvec",
 ]

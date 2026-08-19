@@ -101,12 +101,15 @@ cargo_crate("lib") {
   deps = [
     "//third_party/rust/bitflags/v2:lib",
     "//third_party/rust/bytemuck/v1:lib",
+    "//third_party/rust/icu_normalizer/v2:lib",
+    "//third_party/rust/icu_properties/v2:lib",
     "//third_party/rust/read_fonts/v0_43:lib",
     "//third_party/rust/smallvec/v1:lib",
   ]
   features = [
     "default",
     "experimental_font_api",
+    "icu",
     "std",
   ]
 

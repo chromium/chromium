@@ -51,6 +51,7 @@ cargo_crate("lib") {
   features = [
     "alloc",
     "compiled_data",
+    "default",
   ]
 
   #####################################################################
