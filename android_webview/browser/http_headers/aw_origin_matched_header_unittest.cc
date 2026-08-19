@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/aw_origin_matched_header.h"
+#include "android_webview/browser/http_headers/aw_origin_matched_header.h"
 
 #include "base/memory/scoped_refptr.h"
 #include "components/origin_matcher/origin_matcher.h"

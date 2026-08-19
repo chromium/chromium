@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "android_webview/browser/aw_origin_matched_header.h"
+#include "android_webview/browser/http_headers/aw_origin_matched_header.h"
 #include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
