@@ -154,20 +154,18 @@ LayoutTable* LayoutTableColumn::Table() const {
 
 void LayoutTableColumn::UpdateFromElement() {
   NOT_DESTROYED();
-  unsigned old_span = span_;
-  if (const auto* tc = DynamicTo<HTMLTableColElement>(GetNode())) {
-    span_ = tc->span();
-  } else {
-    span_ = 1;
+  const auto* col_element = DynamicTo<HTMLTableColElement>(GetNode());
+  const unsigned old_span = span_;
+  span_ = col_element ? col_element->span() : 1u;
+  if (span_ == old_span) {
+    return;
   }
-  if (span_ != old_span && Style() && Parent()) {
+  if (LayoutTable* table = Table()) {
     SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kAttributeChanged);
-    if (LayoutTable* table = Table()) {
-      table->GridBordersChanged();
-      if (StyleRef().HasBackground() || TableHasColumnsWithBackground(table)) {
-        table->SetBackgroundNeedsFullPaintInvalidation();
-      }
+    table->GridBordersChanged();
+    if (StyleRef().HasBackground() || TableHasColumnsWithBackground(table)) {
+      table->SetBackgroundNeedsFullPaintInvalidation();
     }
   }
 }
