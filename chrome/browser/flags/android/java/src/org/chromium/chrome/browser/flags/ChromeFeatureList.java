@@ -742,6 +742,8 @@ public abstract class ChromeFeatureList {
     public static final String SEND_TAB_TO_SELF_POST_SEND_TOAST = "SendTabToSelfPostSendToast";
     public static final String SEND_TAB_TO_SELF_PROPAGATE_SCROLL_POSITION =
             "SendTabToSelfPropagateScrollPosition";
+    public static final String SEND_TAB_TO_SELF_RECORD_SNACKBAR_ACTIVATION =
+            "SendTabToSelfRecordSnackbarActivation";
     public static final String SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID =
             "SendTabToSelfSupportAutoOpenInTabGrid";
     public static final String SENSITIVE_CONTENT = "SensitiveContent";
@@ -1729,6 +1731,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SCHEDULE_WINDOW_CLEANING, false);
     public static final MutableFlagWithSafeDefault sSendTabToSelfDynamicShortcuts =
             newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_DYNAMIC_SHORTCUTS, false);
+    public static final MutableFlagWithSafeDefault sSendTabToSelfRecordSnackbarActivation =
+            newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_RECORD_SNACKBAR_ACTIVATION, true);
     public static final MutableFlagWithSafeDefault sSendTabToSelfSupportAutoOpenInTabGrid =
             newMutableFlagWithSafeDefault(SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID, false);
     public static final MutableFlagWithSafeDefault sShowTabListAnimations =

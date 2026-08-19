@@ -134,6 +134,20 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
     }
 
     @Test
+    public void testUserData_RemoveAndDestroy() {
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        SendTabToSelfTabCardLabelData data = createAndSetLabelData();
+        verify(mTab).addObserver(captor.capture());
+
+        assertNotNull(SendTabToSelfTabCardLabelData.get(mTab));
+
+        data.removeAndDestroy();
+
+        assertNull(mUserDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
+        verify(mTab).removeObserver(captor.getValue());
+    }
+
+    @Test
     public void testUserData_ClosedWithoutActivation() {
         // Attach active label data and capture the registered TabObserver.
         ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);

@@ -200,7 +200,8 @@ public class SendTabToSelfAndroidBridgeTest {
         verify(mNativeMock).getEntryPointDisplayReason(eq(mProfile), eq(URL));
     }
 
-    // Tests that adding a target device list waiter invokes the native JNI method and returns the native pointer.
+    // Tests that adding a target device list waiter invokes the native JNI method and returns the
+    // native pointer.
     @Test
     @SmallTest
     public void testAddTargetDeviceListWaiter() {
@@ -213,7 +214,8 @@ public class SendTabToSelfAndroidBridgeTest {
         Assert.assertEquals(12345L, waiterPtr);
     }
 
-    // Tests that removing a target device list waiter invokes the native JNI method with the expected pointer.
+    // Tests that removing a target device list waiter invokes the native JNI method with the
+    // expected pointer.
     @Test
     @SmallTest
     public void testRemoveTargetDeviceListWaiter() {
@@ -666,6 +668,7 @@ public class SendTabToSelfAndroidBridgeTest {
         when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
         when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
         when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
+        when(normalTabModel.getProfile()).thenReturn(mProfile);
 
         // Create a single tab matching search criteria.
         Tab tab = mock(Tab.class);
@@ -673,6 +676,7 @@ public class SendTabToSelfAndroidBridgeTest {
         UserDataHost userDataHost = new UserDataHost();
         when(tab.getUserDataHost()).thenReturn(userDataHost);
         SendTabToSelfAndroidBridge.attachTabLabel(tab, "guid", "Pixel 10");
+        Assert.assertNotNull(SendTabToSelfTabCardLabelData.get(tab));
 
         when(normalTabModel.getCount()).thenReturn(1);
         when(normalTabModel.getTabAt(0)).thenReturn(tab);
@@ -686,6 +690,13 @@ public class SendTabToSelfAndroidBridgeTest {
         Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, result);
         // Verify tab is selected (index 0 for id 100).
         verify(normalTabModel).setIndex(eq(0), eq(TabSelectionType.FROM_USER));
+        // Verify label data was removed and entry was marked as activated.
+        Assert.assertNull(SendTabToSelfTabCardLabelData.get(tab));
+        verify(mNativeMock)
+                .markEntryActivated(
+                        eq(mProfile),
+                        eq("guid"),
+                        eq(ShareActivatedEntryPoint.MOBILE_MESSAGE_BANNER));
         // Verify that the tab switcher is not opened.
         verify(layoutManager, never()).showLayout(any(Integer.class), any(Boolean.class));
 
@@ -718,6 +729,7 @@ public class SendTabToSelfAndroidBridgeTest {
         when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
         when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
         when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
+        when(normalTabModel.getProfile()).thenReturn(mProfile);
 
         // Create two tabs matching search criteria, with different timestamps.
         // The second tab was added later (higher timestamp).
@@ -756,10 +768,130 @@ public class SendTabToSelfAndroidBridgeTest {
         verify(normalTabModel).setIndex(eq(1), eq(TabSelectionType.FROM_USER));
         // Verify older tab (id 101) is NEVER selected.
         verify(normalTabModel, never()).setIndex(eq(0), any(Integer.class));
+        // Verify newest tab label was removed, while older tab label remains.
+        Assert.assertNull(SendTabToSelfTabCardLabelData.get(tab2));
+        Assert.assertNotNull(SendTabToSelfTabCardLabelData.get(tab1));
+        // Verify newest tab entry was marked as activated via snackbar, but older tab was not.
+        verify(mNativeMock)
+                .markEntryActivated(
+                        eq(mProfile),
+                        eq("guid2"),
+                        eq(ShareActivatedEntryPoint.MOBILE_MESSAGE_BANNER));
+        verify(mNativeMock, never()).markEntryActivated(any(), eq("guid1"), any(Integer.class));
         // Verify that the tab switcher is not opened.
         verify(layoutManager, never()).showLayout(any(Integer.class), any(Boolean.class));
 
         // Clean up.
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
+        MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_RECORD_SNACKBAR_ACTIVATION)
+    public void testShowMessageBanner_ClickAction_RecordSnackbarActivationDisabled() {
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 2);
+
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
+
+        Supplier<Integer> onPrimaryAction =
+                messageCaptor.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION);
+
+        // Mock Activity elements.
+        LayoutManagerChrome layoutManager = mock(LayoutManagerChrome.class);
+        TabModelSelector tabModelSelector = mock(TabModelSelector.class);
+        TabModel normalTabModel = mock(TabModel.class);
+
+        when(mTabbedActivity.getLayoutManager()).thenReturn(layoutManager);
+        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
+        when(normalTabModel.getProfile()).thenReturn(mProfile);
+
+        // Create two tabs matching search criteria, with different timestamps.
+        // The second tab was added later (higher timestamp).
+        Tab tab1 = mock(Tab.class);
+        UserDataHost userDataHost1 = new UserDataHost();
+        when(tab1.getUserDataHost()).thenReturn(userDataHost1);
+        SendTabToSelfAndroidBridge.attachTabLabel(tab1, "guid1", "Pixel 10");
+        // Manipulate timestamp to make it older (e.g. 10s ago).
+        SendTabToSelfTabCardLabelData data1 =
+                userDataHost1.getUserData(SendTabToSelfTabCardLabelData.class);
+        data1.setAdditionTimestampMsForTesting(System.currentTimeMillis() - 10000);
+
+        Tab tab2 = mock(Tab.class);
+        UserDataHost userDataHost2 = new UserDataHost();
+        when(tab2.getUserDataHost()).thenReturn(userDataHost2);
+        SendTabToSelfAndroidBridge.attachTabLabel(tab2, "guid2", "Pixel 10");
+        // Maintain a newer timestamp on tab2 (e.g. 5s ago).
+        SendTabToSelfTabCardLabelData data2 =
+                userDataHost2.getUserData(SendTabToSelfTabCardLabelData.class);
+        data2.setAdditionTimestampMsForTesting(System.currentTimeMillis() - 5000);
+
+        when(normalTabModel.getCount()).thenReturn(2);
+        when(normalTabModel.getTabAt(0)).thenReturn(tab1);
+        when(normalTabModel.getTabAt(1)).thenReturn(tab2);
+
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.CREATED);
+
+        // Execute primary action.
+        int result = onPrimaryAction.get();
+
+        // Verify result.
+        Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, result);
+        // Verify newest tab is selected (index 1).
+        verify(normalTabModel).setIndex(eq(1), eq(TabSelectionType.FROM_USER));
+        // Verify older tab (index 0) is NEVER selected.
+        verify(normalTabModel, never()).setIndex(eq(0), any(Integer.class));
+        // When the feature is disabled, neither tab's label is removed by the snackbar action.
+        Assert.assertNotNull(SendTabToSelfTabCardLabelData.get(tab2));
+        Assert.assertNotNull(SendTabToSelfTabCardLabelData.get(tab1));
+        // Verify no entry was marked as activated via snackbar. (It'll eventually get marked as
+        // activated via SendTabToSelfTabCardLabelData's tab observer if/when the user switches to
+        // the tab.)
+        verify(mNativeMock, never()).markEntryActivated(any(), any(), any(Integer.class));
+        // Verify that the tab switcher is not opened.
+        verify(layoutManager, never()).showLayout(any(Integer.class), any(Boolean.class));
+
+        // Clean up.
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
+        MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowMessageBanner_ClickActionNoMatchingTabs_DoesNothing() {
+        SendTabToSelfAndroidBridge.showMessageBanner(mWebContents, "Pixel 10", 1);
+
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mMessageDispatcher).enqueueWindowScopedMessage(messageCaptor.capture(), eq(false));
+
+        Supplier<Integer> onPrimaryAction =
+                messageCaptor.getValue().get(MessageBannerProperties.ON_PRIMARY_ACTION);
+
+        TabModelSelector tabModelSelector = mock(TabModelSelector.class);
+        TabModel normalTabModel = mock(TabModel.class);
+        when(mTabbedActivity.getTabModelSelector()).thenReturn(tabModelSelector);
+        when(tabModelSelector.getModel(false)).thenReturn(normalTabModel);
+        when(normalTabModel.getProfile()).thenReturn(mProfile);
+
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(100);
+        UserDataHost userDataHost = new UserDataHost();
+        when(tab.getUserDataHost()).thenReturn(userDataHost);
+        // No SendTabToSelfTabCardLabelData attached.
+
+        when(normalTabModel.getCount()).thenReturn(1);
+        when(normalTabModel.getTabAt(0)).thenReturn(tab);
+
+        ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.CREATED);
+
+        int result = onPrimaryAction.get();
+
+        Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, result);
+        verify(normalTabModel, never()).setIndex(any(Integer.class), any(Integer.class));
+        verify(mNativeMock, never()).markEntryActivated(any(), any(), any(Integer.class));
+
         ApplicationStatus.onStateChangeForTesting(mTabbedActivity, ActivityState.DESTROYED);
         MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
     }

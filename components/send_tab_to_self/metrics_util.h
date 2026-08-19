@@ -149,7 +149,9 @@ enum class ShareActivatedEntryPoint {
   kTabOrBrowserClosedWithoutActivation = 6,
   // The entry expired in the database before it was activated.
   kSTTSEntryExpiredWithoutActivation = 7,
-  kMaxValue = kSTTSEntryExpiredWithoutActivation,
+  // Activated via the mobile message banner.
+  kMobileMessageBanner = 8,
+  kMaxValue = kMobileMessageBanner,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfShareActivatedEntryPoint)
 

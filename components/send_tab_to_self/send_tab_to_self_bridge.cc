@@ -78,6 +78,7 @@ bool IsActivationUserVisible(ShareActivatedEntryPoint entry_point) {
     case ShareActivatedEntryPoint::kMobileNotification:
     case ShareActivatedEntryPoint::kTabStrip:
     case ShareActivatedEntryPoint::kChromeOSBirch:
+    case ShareActivatedEntryPoint::kMobileMessageBanner:
       return true;
     case ShareActivatedEntryPoint::kTabOrBrowserClosedWithoutActivation:
     case ShareActivatedEntryPoint::kSTTSEntryExpiredWithoutActivation:

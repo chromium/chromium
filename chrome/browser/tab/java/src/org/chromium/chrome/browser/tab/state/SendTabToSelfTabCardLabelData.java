@@ -87,7 +87,7 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
             };
 
     /** Removes the data from the host and destroys the instance. */
-    private void removeAndDestroy() {
+    public void removeAndDestroy() {
         UserDataHost host = mTab.getUserDataHost();
         // A race-condition is possible due to the asynchronous nature of PersistedTabData.from().
         if (host != null && host.getUserData(SendTabToSelfTabCardLabelData.class) == this) {
@@ -285,7 +285,7 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
                 @ShareActivatedEntryPoint int entryPoint);
     }
 
-    public String getGuidForTesting() {
+    public String getGuid() {
         return mGuid;
     }
 
@@ -297,8 +297,6 @@ public class SendTabToSelfTabCardLabelData extends PersistedTabData {
     public String getSenderDeviceNameForTesting() {
         return mSenderDeviceName;
     }
-
-
 
     /**
      * Sets the addition timestamp for testing purposes.

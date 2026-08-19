@@ -421,6 +421,7 @@ public class SendTabToSelfAndroidBridge {
         TabModel normalTabModel = selector.getModel(/* incognito= */ false);
         int newestNewTabIndex = TabModel.INVALID_TAB_INDEX;
         long maxTimestamp = -1;
+        SendTabToSelfTabCardLabelData newestLabelData = null;
 
         // Iterate through all tabs in the standard model to find all unread/new
         // Send-Tab-to-Self tabs and identify the most recently added one by checking addition
@@ -438,11 +439,30 @@ public class SendTabToSelfAndroidBridge {
             if (timestamp > maxTimestamp) {
                 maxTimestamp = timestamp;
                 newestNewTabIndex = i;
+                newestLabelData = data;
             }
         }
 
         // Highlight and focus the newly received tab by setting it as the active tab.
         if (newestNewTabIndex != TabModel.INVALID_TAB_INDEX) {
+            if (ChromeFeatureList.sSendTabToSelfRecordSnackbarActivation.isEnabled()) {
+                assert newestLabelData != null;
+
+                // The entry is going to be activated, so drop any label data. This also prevents
+                // the entry from being marked activated again upon tab activation.
+                newestLabelData.removeAndDestroy();
+
+                // Mark the entry as activated.
+                Profile profile = normalTabModel.getProfile();
+                if (profile != null) {
+                    SendTabToSelfAndroidBridge.markEntryActivated(
+                            profile,
+                            newestLabelData.getGuid(),
+                            ShareActivatedEntryPoint.MOBILE_MESSAGE_BANNER);
+                }
+            }
+
+            // Finally, activate the tab.
             normalTabModel.setIndex(newestNewTabIndex, TabSelectionType.FROM_USER);
         }
 

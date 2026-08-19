@@ -181,6 +181,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="ChromeOS Birch"/>
   <int value="6" label="Tab or Browser Closed Without Activation"/>
   <int value="7" label="STTS Entry Expired Without Activation"/>
+  <int value="8" label="Mobile Message Banner"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:SendTabToSelfShareActivatedEntryPoint) -->

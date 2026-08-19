@@ -58,6 +58,9 @@ BASE_FEATURE(kSendTabToSelfEnhancedDesktopUIv2,
 BASE_FEATURE(kSendTabToSelfGesture, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfOpenNativeApp, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSendTabToSelfRecordSnackbarActivation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

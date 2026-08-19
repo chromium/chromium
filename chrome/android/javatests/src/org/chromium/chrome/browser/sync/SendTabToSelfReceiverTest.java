@@ -415,8 +415,7 @@ public class SendTabToSelfReceiverTest {
 
         Assert.assertNotNull(data);
         // Verify all fields of the persisted data
-        Assert.assertEquals(
-                guid, ThreadUtils.runOnUiThreadBlocking(() -> data.getGuidForTesting()));
+        Assert.assertEquals(guid, ThreadUtils.runOnUiThreadBlocking(() -> data.getGuid()));
         Assert.assertEquals(
                 deviceName,
                 ThreadUtils.runOnUiThreadBlocking(() -> data.getSenderDeviceNameForTesting()));
