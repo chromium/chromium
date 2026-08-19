@@ -55,6 +55,8 @@ constexpr std::string_view kMultilevelHarnessUrl =
 constexpr std::string_view kMultilevelParentUrl =
     "/surface_embed/multilevel_parent.html";
 constexpr std::string_view kInnerPageUrl = "/surface_embed/inner_page.html";
+constexpr std::string_view kIntersectionObserverTargetUrl =
+    "/surface_embed/intersection_observer_target.html";
 constexpr size_t kSingleEmbedCount = 1;
 constexpr float kTestDeviceScaleFactor = 1.5f;
 
@@ -580,6 +582,134 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, DisplayNonePropagates) {
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return child_contents->GetVisibility() == content::Visibility::VISIBLE;
   }));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SurfaceEmbedBrowserTest,
+    IntersectionObserverIgnoresEmbedderViewportUnlikeIframe) {
+  auto child_contents =
+      SetupHarnessAndChildWithContent(kIntersectionObserverTargetUrl);
+  AttachChildToEmbed(child_contents.get());
+
+  // Move the SurfaceEmbed host outside of the outer viewport.
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    const embed = document.querySelector('embed');
+    embed.style.top = '10000px';
+    new Promise(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+  )"));
+
+  // Confirm that the SurfaceEmbed host is outside of the outer viewport.
+  EXPECT_TRUE(
+      content::EvalJs(web_contents(),
+                      "document.querySelector('embed').getBoundingClientRect()."
+                      "top >= window.innerHeight")
+          .ExtractBool());
+
+  // SurfaceEmbed uses the guest's viewport, ignoring the outer viewport. If
+  // this were an iframe, it would use the outer viewport and be non-
+  // intersecting.
+  EXPECT_TRUE(
+      content::EvalJs(child_contents.get(), "observeViewport()").ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SurfaceEmbedBrowserTest,
+    IntersectionObserverIgnoresEmbedderScrollOffsetUnlikeIframe) {
+  auto child_contents =
+      SetupHarnessAndChildWithContent(kIntersectionObserverTargetUrl);
+  AttachChildToEmbed(child_contents.get());
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    const embed = document.querySelector('embed');
+    const scroller = document.createElement('div');
+    scroller.id = 'embed_scroller';
+    scroller.style.cssText = 'width: 100px; height: 100px; overflow: hidden';
+    const spacer = document.createElement('div');
+    spacer.style.height = '200px';
+    embed.style.position = 'static';
+    embed.style.left = '';
+    embed.style.top = '';
+    embed.style.display = 'block';
+    scroller.append(spacer, embed);
+    document.body.appendChild(scroller);
+    scroller.scrollTop = 200;
+    new Promise(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+  )"));
+
+  // Start with the SurfaceEmbed host fully in view.
+  EXPECT_TRUE(content::EvalJs(web_contents(), R"(
+    (() => {
+      const embed = document.querySelector('embed').getBoundingClientRect();
+      const scroller = document.querySelector('#embed_scroller')
+          .getBoundingClientRect();
+      return embed.top >= scroller.top && embed.bottom <= scroller.bottom;
+    })()
+  )")
+                  .ExtractBool());
+  EXPECT_TRUE(
+      content::EvalJs(child_contents.get(), "observeViewport()").ExtractBool());
+
+  // Scroll so the SurfaceEmbed host is partially clipped.
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    document.querySelector('#embed_scroller').scrollTop = 150;
+    new Promise(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+  )"));
+
+  // Verify the SurfaceEmbed host is partially outside the scroller's viewport.
+  EXPECT_TRUE(content::EvalJs(web_contents(), R"(
+    (() => {
+      const embed = document.querySelector('embed').getBoundingClientRect();
+      const scroller = document.querySelector('#embed_scroller')
+          .getBoundingClientRect();
+      return embed.top > scroller.top && embed.top < scroller.bottom &&
+          embed.bottom > scroller.bottom;
+    })()
+  )")
+                  .ExtractBool());
+  // Even though the SurfaceEmbed host (embed) is partially clipped, its
+  // guest/contents remains fully intersecting. This is different from an iframe
+  // where the iframe contents would be partially intersecting.
+  EXPECT_TRUE(
+      content::EvalJs(child_contents.get(), "observeViewport()").ExtractBool());
+  EXPECT_NEAR(1.0,
+              content::EvalJs(child_contents.get(),
+                              "observeViewportIntersectionRatio()")
+                  .ExtractDouble(),
+              0.01);
+
+  // Scroll so the SurfaceEmbed host is fully out of view.
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    document.querySelector('#embed_scroller').scrollTop = 0;
+    new Promise(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+  )"));
+
+  // Verify the host is fully outside the scroller's viewport.
+  EXPECT_TRUE(content::EvalJs(web_contents(), R"(
+    (() => {
+      const embed = document.querySelector('embed').getBoundingClientRect();
+      const scroller = document.querySelector('#embed_scroller')
+          .getBoundingClientRect();
+      return embed.top >= scroller.bottom;
+    })()
+  )")
+                  .ExtractBool());
+  // SurfaceEmbed remains fully intersecting. An iframe would become non-
+  // intersecting.
+  EXPECT_TRUE(
+      content::EvalJs(child_contents.get(), "observeViewport()").ExtractBool());
+  EXPECT_NEAR(1.0,
+              content::EvalJs(child_contents.get(),
+                              "observeViewportIntersectionRatio()")
+                  .ExtractDouble(),
+              0.01);
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,

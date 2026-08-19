@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<style>
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+#target {
+  height: 100%;
+  width: 100%;
+}
+</style>
+<div id="target"></div>
+<script>
+function observeViewport() {
+  return new Promise(resolve => {
+    const observer = new IntersectionObserver(([entry]) => {
+      observer.disconnect();
+      resolve(entry.isIntersecting);
+    });
+    observer.observe(document.querySelector('#target'));
+  });
+}
+
+function observeViewportIntersectionRatio() {
+  return new Promise(resolve => {
+    const observer = new IntersectionObserver(([entry]) => {
+      observer.disconnect();
+      resolve(entry.intersectionRatio);
+    });
+    observer.observe(document.querySelector('#target'));
+  });
+}
+</script>
