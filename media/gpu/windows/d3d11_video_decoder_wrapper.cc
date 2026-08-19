@@ -56,7 +56,7 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
     HRESULT hr = video_decoder_->GetCreationParameters(&desc, &config);
     if (FAILED(hr)) {
       MEDIA_PLOG(ERROR, hr, media_log_)
-          << "D3D11VideoDecoder GetCreationParameters failed";
+          << "ID3D11VideoDecoder::GetCreationParameters failed";
       return std::nullopt;
     }
     // Prefer whatever the config tells us about whether to use one Texture2D

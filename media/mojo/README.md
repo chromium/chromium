@@ -398,7 +398,7 @@ in the browser process. They must defend against compromised media components.
 * MediaService (in progress)
     * `MediaService` in the GPU process (registered in `GpuServiceFactory` with
       `GpuMojoMediaClient`)
-    * `MojoVideoDecoder` + hardware video decoders such as D3D11VideoDecoder
+    * `MojoVideoDecoder` + hardware video decoders such as D3DVideoDecoder
 
 ## Other Services
 

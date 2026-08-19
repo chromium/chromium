@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_H_
-#define MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D_VIDEO_DECODER_H_
+#define MEDIA_GPU_WINDOWS_D3D_VIDEO_DECODER_H_
 
 #include <list>
 #include <vector>
@@ -43,14 +43,14 @@ class CommandBufferStub;
 namespace media {
 
 class D3D11PictureBuffer;
-class D3D11VideoDecoderTest;
+class D3DVideoDecoderTest;
 class MediaLog;
 
-// Video decoder that uses D3D11 directly.  It is intended that this class will
-// run the decoder on whatever thread it lives on.  However, at the moment, it
-// only works if it's on the gpu main thread.
-class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
-                                           public D3DVideoDecoderClient {
+// Video decoder that uses D3D. It is intended that this class will run the
+// decoder on whatever thread it lives on. However, at the moment, it only works
+// if it's on the GPU main thread.
+class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
+                                         public D3DVideoDecoderClient {
  public:
   enum class D3DVersion { kD3D11, kD3D12 };
 
@@ -72,8 +72,8 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       GetD3DDeviceCB get_d3d_device_cb,
       SupportedConfigs supported_configs);
 
-  D3D11VideoDecoder(const D3D11VideoDecoder&) = delete;
-  D3D11VideoDecoder& operator=(const D3D11VideoDecoder&) = delete;
+  D3DVideoDecoder(const D3DVideoDecoder&) = delete;
+  D3DVideoDecoder& operator=(const D3DVideoDecoder&) = delete;
 
   // VideoDecoder implementation:
   VideoDecoderType GetDecoderType() const override;
@@ -96,7 +96,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
                     D3D11PictureBuffer* picture_buffer) override;
   D3DVideoDecoderWrapper* GetWrapper() override;
 
-  bool ResetD3DVideoDecoder();
+  bool RecreateDecoderWrapper();
 
   bool SubmitBitstreamBufferForTesting(base::span<const uint8_t> bitstream);
 
@@ -113,20 +113,19 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Owners should call Destroy(). This is automatic via
   // std::default_delete<media::VideoDecoder> when held by a
   // std::unique_ptr<media::VideoDecoder>.
-  ~D3D11VideoDecoder() override;
+  ~D3DVideoDecoder() override;
 
  private:
-  friend class D3D11VideoDecoderTest;
+  friend class D3DVideoDecoderTest;
 
-  D3D11VideoDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-      std::unique_ptr<MediaLog> media_log,
-      const gpu::GpuPreferences& gpu_preferences,
-      const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
-          get_helper_cb,
-      GetD3DDeviceCB get_d3d_device_cb,
-      SupportedConfigs supported_configs);
+  D3DVideoDecoder(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+                  std::unique_ptr<MediaLog> media_log,
+                  const gpu::GpuPreferences& gpu_preferences,
+                  const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
+                  base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
+                      get_helper_cb,
+                  GetD3DDeviceCB get_d3d_device_cb,
+                  SupportedConfigs supported_configs);
 
   // Receive |buffer|, that is now unused by the client.
   void ReceivePictureBufferFromClient(scoped_refptr<D3D11PictureBuffer> buffer);
@@ -196,7 +195,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   void PostDecoderStatus(DecoderStatus status);
 
   // Mailbox release helper; which lives on the GPU main thread. Note: This must
-  // be ref counted to outlive D3D11VideoDecoder since each output VideoFrame
+  // be ref counted to outlive D3DVideoDecoder since each output VideoFrame
   // uses it to wait on a SyncToken during mailbox release.
   scoped_refptr<D3D11VideoFrameMailboxReleaseHelper> mailbox_release_helper_;
 
@@ -295,9 +294,9 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // unused picture buffers.
   int decode_count_until_picture_buffer_measurement_ = 0;
 
-  base::WeakPtrFactory<D3D11VideoDecoder> weak_factory_{this};
+  base::WeakPtrFactory<D3DVideoDecoder> weak_factory_{this};
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D_VIDEO_DECODER_H_

@@ -91,7 +91,7 @@ D3D11Status D3D12Fence::WaitGPU(ID3D11DeviceContext& device_context,
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     device_context.GetDevice(&device);
     Microsoft::WRL::ComPtr<ID3D11Device5> device5;
-    // We have checked that D3D11Fence is supported in d3d11_video_decoder.cc
+    // We have checked that D3D11Fence is supported in d3d_video_decoder.cc
     CHECK_EQ(device.As(&device5), S_OK);
 
     hr = device5->OpenSharedFence(scoped_handle.get(),
@@ -105,7 +105,7 @@ D3D11Status D3D12Fence::WaitGPU(ID3D11DeviceContext& device_context,
   CHECK(d3d11_fence_);
 
   Microsoft::WRL::ComPtr<ID3D11DeviceContext4> device_context4;
-  // We have checked that D3D11Fence is supported in d3d11_video_decoder.cc
+  // We have checked that D3D11Fence is supported in d3d_video_decoder.cc
   CHECK_EQ(device_context.QueryInterface(IID_PPV_ARGS(&device_context4)), S_OK);
   hr = device_context4->Wait(d3d11_fence_.Get(), fence_value);
   if (FAILED(hr)) {

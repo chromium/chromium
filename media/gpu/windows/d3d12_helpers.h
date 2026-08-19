@@ -80,7 +80,7 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
       UINT current_output_subresource);
 
  private:
-  // Max size of picture_buffers_ that D3D11VideoDecoder may create.
+  // Max size of picture_buffers_ that D3DVideoDecoder may create.
   static constexpr size_t kMaxSize =
       std::max({static_cast<size_t>(H264DPB::kDPBMaxSize),
                 static_cast<size_t>(/*H265*/ kMaxDpbSize),
@@ -93,7 +93,7 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
   // D3D12_VIDEO_DECODE_REFERENCE_FRAMES has ID3D12Resource** ppTexture2Ds, so
   // we have to store raw pointer array here. The pointers are only passed to
   // D3D12 API and we never dereference it in Chromium.
-  // The lifetime of these |resources_| is managed by |D3D11VideoDecoder|'s
+  // The lifetime of these |resources_| is managed by |D3DVideoDecoder|'s
   // |picture_buffers_|. When picture buffers are invalidated, the
   // D3D12VideoDecoderWrapper and its ID3D12VideoDecoder instance will be
   // destroyed ensuring these values are no longer referenced.
@@ -104,7 +104,7 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
   std::array<ID3D12VideoDecoderHeap*, kMaxSize> heaps_;
   // The raw pointer array for converting to
   // D3D12_VIDEO_DECODE_REFERENCE_FRAMES. We only store the references here. The
-  // lifetime of |D3D11PictureBuffer|'s is managed by the |D3D11VideoDecoder|.
+  // lifetime of |D3D11PictureBuffer|'s is managed by the |D3DVideoDecoder|.
   std::array<raw_ptr<D3D11PictureBuffer>, kMaxSize> picture_buffers_;
 };
 

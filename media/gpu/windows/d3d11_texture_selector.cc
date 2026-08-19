@@ -81,12 +81,12 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
   switch (decoder_output_format) {
     case DXGI_FORMAT_YUY2:
     case DXGI_FORMAT_AYUV: {
-      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
+      MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder producing "
                                  << DxgiFormatToString(decoder_output_format);
       // YUY2/AYUV output from decoder is always 8-bit 4:2:2/4:4:4 which we
       // prefer to be rendered in ARGB formats to avoid chroma downsampling. For
       // HDR contents, we should not let YUV to RGB conversion happens inside
-      // D3D11VideoDecoder, the only place for the conversion should be
+      // D3DVideoDecoder, the only place for the conversion should be
       // Gfx::ColorTransform or SwapChainPresenter. For color spaces that VP
       // isn't able to handle the correct color conversion, the current
       // workaround is to output a 4:2:0 YUV format and let viz handle the
@@ -97,11 +97,11 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
           supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
         output_pixel_format = PIXEL_FORMAT_ARGB;
         output_si_format = viz::SinglePlaneFormat::kBGRA_8888;
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
+        MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder: Selected ARGB";
       } else if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_NV12)) {
         output_pixel_format = PIXEL_FORMAT_NV12;
         output_si_format = viz::MultiPlaneFormat::kNV12;
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected NV12";
+        MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder: Selected NV12";
       } else {
         MEDIA_LOG(INFO, media_log)
             << DxgiFormatToString(decoder_output_format) << " not supported";
@@ -110,16 +110,16 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       break;
     }
     case DXGI_FORMAT_NV12: {
-      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
+      MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder producing "
                                  << DxgiFormatToString(decoder_output_format);
       if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_NV12)) {
         output_pixel_format = PIXEL_FORMAT_NV12;
         output_si_format = viz::MultiPlaneFormat::kNV12;
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected NV12";
+        MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder: Selected NV12";
       } else if (supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
         output_pixel_format = PIXEL_FORMAT_ARGB;
         output_si_format = viz::SinglePlaneFormat::kBGRA_8888;
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
+        MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder: Selected ARGB";
       } else {
         MEDIA_LOG(INFO, media_log)
             << DxgiFormatToString(decoder_output_format) << " not supported";
@@ -131,12 +131,12 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     case DXGI_FORMAT_Y216:
     case DXGI_FORMAT_Y410:
     case DXGI_FORMAT_Y210: {
-      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
+      MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder producing "
                                  << DxgiFormatToString(decoder_output_format);
       // Y416/Y216/Y410/Y210 output from decoder is always 10/12-bit 4:2:2/4:4:4
       // which we prefer to be rendered in ARGB formats to avoid chroma
       // downsampling. For HDR contents, we should not let YUV to RGB conversion
-      // happens inside D3D11VideoDecoder, the only place for the conversion
+      // happens inside D3DVideoDecoder, the only place for the conversion
       // should be Gfx::ColorTransform or SwapChainPresenter. For color spaces
       // that VP isn't able to handle the correct color conversion, the current
       // workaround is to output a 4:2:0 YUV format and let viz handle the
@@ -147,15 +147,15 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
           supports_fmt(DXGI_FORMAT_R10G10B10A2_UNORM)) {
         output_si_format = viz::SinglePlaneFormat::kRGBA_1010102;
         output_pixel_format = PIXEL_FORMAT_XB30;
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected XB30";
+        MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder: Selected XB30";
       } else if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_P010)) {
         output_si_format = viz::MultiPlaneFormat::kP010;
         output_pixel_format = PIXEL_FORMAT_P010LE;
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected P010LE";
+        MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder: Selected P010LE";
       } else if (supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
         output_si_format = viz::SinglePlaneFormat::kBGRA_8888;
         output_pixel_format = PIXEL_FORMAT_ARGB;
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
+        MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder: Selected ARGB";
       } else {
         MEDIA_LOG(INFO, media_log)
             << DxgiFormatToString(decoder_output_format) << " not supported";
@@ -165,21 +165,21 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     }
     case DXGI_FORMAT_P010:
     case DXGI_FORMAT_P016: {
-      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
+      MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder producing "
                                  << DxgiFormatToString(decoder_output_format);
       // If device support P010 zero copy, then try P010 firstly.
       if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_P010)) {
         output_si_format = viz::MultiPlaneFormat::kP010;
         output_pixel_format = PIXEL_FORMAT_P010LE;
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected P010LE";
+        MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder: Selected P010LE";
       } else if (supports_fmt(DXGI_FORMAT_R10G10B10A2_UNORM)) {
         output_si_format = viz::SinglePlaneFormat::kRGBA_1010102;
         output_pixel_format = PIXEL_FORMAT_XB30;
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected XB30";
+        MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder: Selected XB30";
       } else if (supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
         output_si_format = viz::SinglePlaneFormat::kBGRA_8888;
         output_pixel_format = PIXEL_FORMAT_ARGB;
-        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
+        MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder: Selected ARGB";
       } else {
         MEDIA_LOG(INFO, media_log)
             << DxgiFormatToString(decoder_output_format) << " not supported";
@@ -189,7 +189,7 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
     }
     default: {
       MEDIA_LOG(INFO, media_log)
-          << "D3D11VideoDecoder does not support " << decoder_output_format;
+          << "D3DVideoDecoder does not support " << decoder_output_format;
       return nullptr;
     }
   }
@@ -201,12 +201,12 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
                          SharedImageFormatToDXGIFormat(output_si_format));
 
   if (needs_texture_copy) {
-    MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is copying textures";
+    MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder is copying textures";
     return std::make_unique<CopyTextureSelector>(
         output_pixel_format, output_si_format, std::move(video_device),
         std::move(device_context), shared_image_use_shared_handle);
   } else {
-    MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is binding textures";
+    MEDIA_LOG(INFO, media_log) << "D3DVideoDecoder is binding textures";
     return std::make_unique<TextureSelector>(
         output_pixel_format, output_si_format, std::move(video_device),
         std::move(device_context), shared_image_use_shared_handle);

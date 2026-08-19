@@ -22,7 +22,7 @@ namespace media {
 
 class MediaLog;
 
-// Waits for SyncTokens during mailbox release for D3D11VideoDecoder frames. May
+// Waits for SyncTokens during mailbox release for D3DVideoDecoder frames. May
 // only be used on the GPU main thread. May destruct on any thread.
 class MEDIA_GPU_EXPORT D3D11VideoFrameMailboxReleaseHelper
     : public base::RefCountedThreadSafe<D3D11VideoFrameMailboxReleaseHelper> {

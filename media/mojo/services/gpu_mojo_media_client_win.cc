@@ -26,8 +26,8 @@
 #include "media/base/win/mf_initializer.h"
 #include "media/filters/win/media_foundation_audio_decoder.h"
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
-#include "media/gpu/windows/d3d11_video_decoder.h"
 #include "media/gpu/windows/d3d12_helpers.h"
+#include "media/gpu/windows/d3d_video_decoder.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
 
 namespace media {
@@ -52,7 +52,7 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
       return nullptr;
     }
 
-    return D3D11VideoDecoder::Create(
+    return D3DVideoDecoder::Create(
         gpu_task_runner_, traits.media_log->Clone(), gpu_preferences_,
         gpu_workarounds_, traits.get_command_buffer_stub_cb,
         GetD3DDeviceCallback(), traits.get_cached_configs_cb.Run());
@@ -117,7 +117,7 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
       return supported_configs;
     }
     if (!gpu_workarounds_.disable_d3d11_video_decoder) {
-      supported_configs = D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
+      supported_configs = D3DVideoDecoder::GetSupportedVideoDecoderConfigs(
           gpu_preferences_, gpu_workarounds_, GetD3DDeviceCallback());
     }
     return supported_configs;
@@ -153,15 +153,15 @@ class GpuMojoMediaClientWin final : public GpuMojoMediaClient {
     }
   }
 
-  D3D11VideoDecoder::GetD3DDeviceCB GetD3DDeviceCallback() {
+  D3DVideoDecoder::GetD3DDeviceCB GetD3DDeviceCallback() {
     return base::BindRepeating(
         [](Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
            Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
-           D3D11VideoDecoder::D3DVersion d3d_version)
+           D3DVideoDecoder::D3DVersion d3d_version)
             -> Microsoft::WRL::ComPtr<IUnknown> {
-          if (d3d_version == D3D11VideoDecoder::D3DVersion::kD3D11) {
+          if (d3d_version == D3DVideoDecoder::D3DVersion::kD3D11) {
             return d3d11_device;
-          } else if (d3d_version == D3D11VideoDecoder::D3DVersion::kD3D12) {
+          } else if (d3d_version == D3DVideoDecoder::D3DVersion::kD3D12) {
             return d3d12_device;
           }
           NOTREACHED();

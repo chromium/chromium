@@ -96,7 +96,7 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
       GetOutputDXGIFormat(bit_depth, chroma_sampling);
   if (decoder_dxgi_format == DXGI_FORMAT_UNKNOWN) {
     MEDIA_LOG(WARNING, media_log)
-        << "D3D11VideoDecoder does not support bit depth "
+        << "D3DVideoDecoder does not support bit depth "
         << base::strict_cast<int>(bit_depth)
         << " with chroma subsampling format "
         << VideoChromaSamplingToString(chroma_sampling);
@@ -128,19 +128,19 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
   if (decoder_guid == GUID()) {
     if (config.profile() == HEVCPROFILE_REXT) {
       MEDIA_LOG(INFO, media_log)
-          << "D3D11VideoDecoder does not support HEVC range extension "
+          << "D3DVideoDecoder does not support HEVC range extension "
           << config.codec() << " with chroma subsampling format "
           << VideoChromaSamplingToString(chroma_sampling) << " and bit depth "
           << base::strict_cast<int>(bit_depth);
     } else {
       MEDIA_LOG(INFO, media_log)
-          << "D3D11VideoDecoder does not support codec " << config.codec();
+          << "D3DVideoDecoder does not support codec " << config.codec();
     }
     return nullptr;
   }
 
   MEDIA_LOG(INFO, media_log)
-      << "D3D11VideoDecoder is using " << GetProfileName(config.profile())
+      << "D3DVideoDecoder is using " << GetProfileName(config.profile())
       << " / " << VideoChromaSamplingToString(chroma_sampling);
 
   return std::make_unique<D3D11DecoderConfigurator>(

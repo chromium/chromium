@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/windows/d3d11_video_decoder.h"
+#include "media/gpu/windows/d3d_video_decoder.h"
 
 #include <initguid.h>
 
@@ -44,7 +44,7 @@ using ::testing::SetArgPointee;
 
 namespace media {
 
-class D3D11VideoDecoderTest : public ::testing::Test {
+class D3DVideoDecoderTest : public ::testing::Test {
  public:
   const std::pair<uint16_t, uint16_t> LegacyIntelGPU = {0x8086, 0x102};
   const std::pair<uint16_t, uint16_t> RecentIntelGPU = {0x8086, 0x100};
@@ -133,7 +133,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
 
     ON_CALL(*mock_d3d11_video_device_.Get(), GetVideoDecoderConfigCount(_, _))
         .WillByDefault(DoAll(
-            Invoke(this, &D3D11VideoDecoderTest::GetVideoDecoderConfigCount),
+            Invoke(this, &D3DVideoDecoderTest::GetVideoDecoderConfigCount),
             Return(S_OK)));
 
     video_decoder_config_.ConfigBitstreamRaw =
@@ -175,29 +175,29 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   // use it.  Otherwise, we'll use the list that's autodetected by the
   // decoder based on the current device mock.
   void CreateDecoder(
-      std::optional<D3D11VideoDecoder::SupportedConfigs> supported_configs =
-          std::optional<D3D11VideoDecoder::SupportedConfigs>()) {
+      std::optional<D3DVideoDecoder::SupportedConfigs> supported_configs =
+          std::optional<D3DVideoDecoder::SupportedConfigs>()) {
     auto get_device_cb = base::BindRepeating(
         [](ComD3D11Device device,
-           D3D11VideoDecoder::D3DVersion version) -> ComUnknown {
-          EXPECT_EQ(version, D3D11VideoDecoder::D3DVersion::kD3D11);
+           D3DVideoDecoder::D3DVersion version) -> ComUnknown {
+          EXPECT_EQ(version, D3DVideoDecoder::D3DVersion::kD3D11);
           return device;
         },
         mock_d3d11_device_);
 
     // Autodetect the supported configs, unless it's being overridden.
     if (!supported_configs) {
-      supported_configs = D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
+      supported_configs = D3DVideoDecoder::GetSupportedVideoDecoderConfigs(
           gpu_preferences_, gpu_workarounds_, get_device_cb);
     }
 
     // We store it in a std::unique_ptr<VideoDecoder> so that the default
     // deleter works.  The dtor is protected.
     decoder_ = base::WrapUnique<VideoDecoder>(
-        d3d11_decoder_raw_ = new D3D11VideoDecoder(
+        d3d_decoder_raw_ = new D3DVideoDecoder(
             gpu_task_runner_, std::make_unique<NullMediaLog>(),
             gpu_preferences_, gpu_workarounds_,
-            base::BindRepeating(&D3D11VideoDecoderTest::GetCommandBufferHelper,
+            base::BindRepeating(&D3DVideoDecoderTest::GetCommandBufferHelper,
                                 base::Unretained(this)),
             get_device_cb, *supported_configs));
   }
@@ -234,7 +234,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
         .WillOnce(Return(S_OK));
 
     const std::array<uint8_t, 1> bitstream = {0};
-    EXPECT_TRUE(d3d11_decoder_raw_->SubmitBitstreamBufferForTesting(bitstream));
+    EXPECT_TRUE(d3d_decoder_raw_->SubmitBitstreamBufferForTesting(bitstream));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -244,7 +244,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   scoped_refptr<FakeCommandBufferHelper> fake_command_buffer_helper_;
 
   std::unique_ptr<VideoDecoder> decoder_;
-  raw_ptr<D3D11VideoDecoder, DanglingUntriaged> d3d11_decoder_raw_ = nullptr;
+  raw_ptr<D3DVideoDecoder, DanglingUntriaged> d3d_decoder_raw_ = nullptr;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 
@@ -263,7 +263,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   base::win::ScopedCOMInitializer com_initializer_;
 };
 
-TEST_F(D3D11VideoDecoderTest, SupportsVP9Profile0WithDecoderEnabled) {
+TEST_F(D3DVideoDecoderTest, SupportsVP9Profile0WithDecoderEnabled) {
   VideoDecoderConfig configuration = TestVideoConfig::NormalCodecProfile(
       VideoCodec::kVP9, VP9PROFILE_PROFILE0);
 
@@ -272,7 +272,7 @@ TEST_F(D3D11VideoDecoderTest, SupportsVP9Profile0WithDecoderEnabled) {
   InitializeDecoder(configuration, /*expect_success=*/true);
 }
 
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithGPUWorkaroundDisableVPX) {
+TEST_F(D3DVideoDecoderTest, DoesNotSupportVP9WithGPUWorkaroundDisableVPX) {
   gpu_workarounds_.disable_accelerated_vp9_decode = true;
   VideoDecoderConfig configuration = TestVideoConfig::NormalCodecProfile(
       VideoCodec::kVP9, VP9PROFILE_PROFILE0);
@@ -282,7 +282,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithGPUWorkaroundDisableVPX) {
   InitializeDecoder(configuration, /*expect_success=*/false);
 }
 
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithoutDecoderEnabled) {
+TEST_F(D3DVideoDecoderTest, DoesNotSupportVP9WithoutDecoderEnabled) {
   VideoDecoderConfig configuration = TestVideoConfig::NormalCodecProfile(
       VideoCodec::kVP9, VP9PROFILE_PROFILE0);
 
@@ -292,7 +292,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithoutDecoderEnabled) {
   InitializeDecoder(configuration, false);
 }
 
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportsH264HIGH10Profile) {
+TEST_F(D3DVideoDecoderTest, DoesNotSupportsH264HIGH10Profile) {
   CreateDecoder();
 
   VideoDecoderConfig high10 = TestVideoConfig::NormalCodecProfile(
@@ -301,7 +301,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportsH264HIGH10Profile) {
   InitializeDecoder(high10, false);
 }
 
-TEST_F(D3D11VideoDecoderTest, SupportsH264WithAutodetectedConfig) {
+TEST_F(D3DVideoDecoderTest, SupportsH264WithAutodetectedConfig) {
   CreateDecoder();
 
   VideoDecoderConfig normal =
@@ -311,14 +311,14 @@ TEST_F(D3D11VideoDecoderTest, SupportsH264WithAutodetectedConfig) {
   // TODO(liberato): Check |last_video_decoder_desc_| for sanity.
 }
 
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
+TEST_F(D3DVideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
   // This is identical to SupportsH264, except that we initialize with an empty
   // list of supported configs.  This should match nothing.  Assuming that
   // SupportsH264WithSupportedConfig passes, then this checks that the supported
   // config check kinda works.
   // For whatever reason, Optional<SupportedConfigs>({}) results in one that
   // doesn't have a value, rather than one that has an empty vector.
-  std::optional<D3D11VideoDecoder::SupportedConfigs> empty_configs;
+  std::optional<D3DVideoDecoder::SupportedConfigs> empty_configs;
   empty_configs.emplace(std::vector<SupportedVideoDecoderConfig>());
   CreateDecoder(empty_configs);
 
@@ -331,7 +331,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
   InitializeDecoder(normal, expect_success);
 }
 
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptedConfig) {
+TEST_F(D3DVideoDecoderTest, DoesNotSupportEncryptedConfig) {
   CreateDecoder();
   VideoDecoderConfig encrypted_config =
       TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN);
@@ -339,7 +339,7 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptedConfig) {
   InitializeDecoder(encrypted_config, false);
 }
 
-TEST_F(D3D11VideoDecoderTest, WorkaroundTurnsOffDecoder) {
+TEST_F(D3DVideoDecoderTest, WorkaroundTurnsOffDecoder) {
   //  We shouldn't be able to decode if the decoder is off via gpu workaround.
   gpu_workarounds_.disable_d3d11_video_decoder = true;
   CreateDecoder();
@@ -348,7 +348,7 @@ TEST_F(D3D11VideoDecoderTest, WorkaroundTurnsOffDecoder) {
       false);
 }
 
-TEST_F(D3D11VideoDecoderTest, CanReadWithoutStalling) {
+TEST_F(D3DVideoDecoderTest, CanReadWithoutStalling) {
   CreateDecoder();
 
   VideoDecoderConfig normal =
@@ -360,7 +360,7 @@ TEST_F(D3D11VideoDecoderTest, CanReadWithoutStalling) {
   EXPECT_TRUE(decoder_->CanReadWithoutStalling());
 }
 
-TEST_F(D3D11VideoDecoderTest, SubmitsDecoderBuffers) {
+TEST_F(D3DVideoDecoderTest, SubmitsDecoderBuffers) {
   CreateDecoder();
   InitializeDecoder(
       TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN),

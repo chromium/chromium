@@ -38,7 +38,7 @@ class D3DVideoDecoderWrapper {
   // Clear all internal states.
   virtual void Reset() = 0;
 
-  // Set the initialized picture buffers that the D3D11VideoDecoder class is
+  // Set the initialized picture buffers that the D3DVideoDecoder class is
   // using.
   virtual D3D11Status SetPictureBuffers(
       base::span<scoped_refptr<D3D11PictureBuffer>> picture_buffers) = 0;
