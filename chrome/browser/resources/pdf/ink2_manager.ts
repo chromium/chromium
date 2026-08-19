@@ -429,6 +429,13 @@ export class Ink2Manager extends EventTarget {
     this.fireAttributesChanged_();
   }
 
+  toggleTextStyle(style: TextStyle) {
+    const current = this.getCurrentTextAttributes();
+    const newStyles = Object.assign({}, current.styles);
+    newStyles[style] = !newStyles[style];
+    this.setTextStyles(newStyles);
+  }
+
   getKnownFontIds(): number[] {
     return [...this.knownFontIds_];
   }

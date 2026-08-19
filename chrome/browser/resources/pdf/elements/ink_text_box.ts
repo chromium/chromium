@@ -12,7 +12,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {TextAnnotation, TextAttributes, TextBoxRect} from '../constants.js';
-import {TextTypeface} from '../constants.js';
+import {TextStyle, TextTypeface} from '../constants.js';
 import {Ink2Manager, MIN_TEXTBOX_SIZE_PX, stylesEqual} from '../ink2_manager.js';
 import {convertRotatedCoordinates, screenToPageCoordinates} from '../ink_text_annotation_utils.js';
 import {record, UserAction} from '../metrics.js';
@@ -563,6 +563,18 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   private onKeyDown_(e: KeyboardEvent) {
     if (this.state_ === TextBoxState.INACTIVE) {
       return;
+    }
+
+    // Handle text styling shortcuts.
+    if (hasCtrlModifierOnly(e)) {
+      const key = e.key.toLowerCase();
+      if (key === 'b' || key === 'i') {
+        e.preventDefault();
+        e.stopPropagation();
+        const style = key === 'b' ? TextStyle.BOLD : TextStyle.ITALIC;
+        Ink2Manager.getInstance().toggleTextStyle(style);
+        return;
+      }
     }
 
     const target = e.composedPath()[0];

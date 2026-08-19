@@ -49,9 +49,7 @@ export class TextStylesSelectorElement extends TextStylesSelectorElementBase {
 
   protected onStyleButtonClick_(e: Event) {
     const style = (e.target as HTMLElement).dataset['style'] as TextStyle;
-    const newStyles = Object.assign({}, this.currentStyles_);
-    newStyles[style] = !newStyles[style];
-    Ink2Manager.getInstance().setTextStyles(newStyles);
+    Ink2Manager.getInstance().toggleTextStyle(style);
   }
 
   protected getActiveClass_(style: TextStyle) {

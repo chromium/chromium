@@ -380,11 +380,26 @@ chrome.test.runTests([
     expectedAttributes.color = blue;
     assertTextUpdate(3, expectedAttributes);
 
-    // Set style to bold + italic.
+    // Toggle bold style on.
+    manager.toggleTextStyle(TextStyle.BOLD);
+    expectedAttributes.styles = {bold: true, italic: false};
+    assertTextUpdate(4, expectedAttributes);
+
+    // Toggle italic style on.
+    manager.toggleTextStyle(TextStyle.ITALIC);
+    expectedAttributes.styles = {bold: true, italic: true};
+    assertTextUpdate(5, expectedAttributes);
+
+    // Toggle bold style off.
+    manager.toggleTextStyle(TextStyle.BOLD);
+    expectedAttributes.styles = {bold: false, italic: true};
+    assertTextUpdate(6, expectedAttributes);
+
+    // Set style to bold + italic explicitly.
     const boldItalic = {bold: true, italic: true};
     manager.setTextStyles(boldItalic);
     expectedAttributes.styles = boldItalic;
-    assertTextUpdate(4, expectedAttributes);
+    assertTextUpdate(7, expectedAttributes);
 
     chrome.test.succeed();
   },

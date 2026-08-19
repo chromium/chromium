@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationMode, PdfViewerPrivateProxyImpl, PluginController, PluginControllerEventType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationMode, Ink2Manager, PdfViewerPrivateProxyImpl, PluginController, PluginControllerEventType, TextStyle, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {getCtrlModifier} from './ink2_text_box_test_utils.js';
 import {getNewTestBeforeUnloadProxy} from './test_before_unload_proxy.js';
 import {TestPdfViewerPrivateProxy} from './test_pdf_viewer_private_proxy.js';
 import {createTextBox, getRequiredElement, getTextBox, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
@@ -482,6 +484,49 @@ chrome.test.runTests([
     // Empty new textbox is visible.
     chrome.test.assertTrue(isVisible(textbox));
     chrome.test.assertEq('', textbox.$.textbox.value);
+
+    chrome.test.succeed();
+  },
+
+  // Test bold and italic keyboard shortcuts toggle styles in text mode.
+  async function testTextAnnotationStyleKeyboardShortcuts() {
+    await enableTextAnnotations(true);
+    await setAnnotationMode(AnnotationMode.OFF);
+    const manager = Ink2Manager.getInstance();
+
+    // Shortcuts are ignored when not in text annotation mode.
+    keyDownOn(viewer, 0, getCtrlModifier(), 'b');
+    keyDownOn(viewer, 0, getCtrlModifier(), 'i');
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.BOLD]);
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.ITALIC]);
+
+    // Enable text annotation mode.
+    await setAnnotationMode(AnnotationMode.TEXT);
+
+    // Toggle bold on and off.
+    keyDownOn(viewer, 0, getCtrlModifier(), 'b');
+    await microtasksFinished();
+    chrome.test.assertTrue(
+        manager.getCurrentTextAttributes().styles[TextStyle.BOLD]);
+
+    keyDownOn(viewer, 0, getCtrlModifier(), 'b');
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.BOLD]);
+
+    // Toggle italic on and off.
+    keyDownOn(viewer, 0, getCtrlModifier(), 'i');
+    await microtasksFinished();
+    chrome.test.assertTrue(
+        manager.getCurrentTextAttributes().styles[TextStyle.ITALIC]);
+
+    keyDownOn(viewer, 0, getCtrlModifier(), 'i');
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.ITALIC]);
 
     chrome.test.succeed();
   },

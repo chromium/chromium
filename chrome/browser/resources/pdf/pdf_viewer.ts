@@ -39,7 +39,7 @@ import type {BrowserApi} from './browser_api.js';
 import type {Attachment, DocumentMetadata, Point} from './constants.js';
 // <if expr="enable_pdf_ink2">
 import type {ExtendedKeyEvent} from './constants.js';
-import {AnnotationMode} from './constants.js';
+import {AnnotationMode, TextStyle} from './constants.js';
 // </if>
 import {FittingType, FormFieldFocusType} from './constants.js';
 // <if expr="enable_pdf_save_to_drive">
@@ -566,10 +566,24 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         }
         return;
       // <if expr="enable_pdf_ink2">
+      case 'b':
+      case 'B':
+        if (hasCtrlModifierOnly(e) && this.isInTextAnnotationMode_()) {
+          Ink2Manager.getInstance().toggleTextStyle(TextStyle.BOLD);
+          e.preventDefault();
+        }
+        return;
       case 'Enter':
         if ((e as ExtendedKeyEvent).fromPlugin &&
             this.isInTextAnnotationMode_()) {
           this.maybeCreateTextAnnotation_();
+        }
+        return;
+      case 'i':
+      case 'I':
+        if (hasCtrlModifierOnly(e) && this.isInTextAnnotationMode_()) {
+          Ink2Manager.getInstance().toggleTextStyle(TextStyle.ITALIC);
+          e.preventDefault();
         }
         return;
       case 'v':

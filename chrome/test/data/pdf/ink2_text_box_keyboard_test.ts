@@ -4,6 +4,7 @@
 
 import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
+import {TextStyle} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {InkTextBoxElement, TextAnnotation, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
@@ -507,6 +508,72 @@ chrome.test.runTests([
 
     manager.removeEventListener(
         'saved-annotation-to-clipboard-for-testing', listener);
+    chrome.test.succeed();
+  },
+
+  async function testStylesShortcutsIgnoredWhenInactive() {
+    const {textbox, manager} = await setupTextBoxTest();
+    chrome.test.assertTrue(textbox.hidden);
+
+    // Text box is INACTIVE. Shortcuts should be ignored.
+    keyDownOn(textbox, 0, getCtrlModifier(), 'b');
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.BOLD]);
+
+    keyDownOn(textbox, 0, getCtrlModifier(), 'i');
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.ITALIC]);
+
+    chrome.test.succeed();
+  },
+
+  async function testBoldShortcut() {
+    const {textbox, manager} = await setupTextBoxTest();
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+
+    // Initial style is not bold.
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.BOLD]);
+
+    // Ctrl+B on the textarea should toggle bold on.
+    keyDownOn(textbox.$.textbox, 0, getCtrlModifier(), 'b');
+    await microtasksFinished();
+    chrome.test.assertTrue(
+        manager.getCurrentTextAttributes().styles[TextStyle.BOLD]);
+
+    // Ctrl+B on the textarea again should toggle bold off.
+    keyDownOn(textbox.$.textbox, 0, getCtrlModifier(), 'b');
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.BOLD]);
+
+    chrome.test.succeed();
+  },
+
+  async function testItalicShortcut() {
+    const {textbox, manager} = await setupTextBoxTest();
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+
+    // Initial style is not italic.
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.ITALIC]);
+
+    // Ctrl+I on the textarea should toggle italic on.
+    keyDownOn(textbox.$.textbox, 0, getCtrlModifier(), 'i');
+    await microtasksFinished();
+    chrome.test.assertTrue(
+        manager.getCurrentTextAttributes().styles[TextStyle.ITALIC]);
+
+    // Ctrl+I on the textarea again should toggle italic off.
+    keyDownOn(textbox.$.textbox, 0, getCtrlModifier(), 'i');
+    await microtasksFinished();
+    chrome.test.assertFalse(
+        manager.getCurrentTextAttributes().styles[TextStyle.ITALIC]);
+
     chrome.test.succeed();
   },
 ]);
