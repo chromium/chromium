@@ -162,6 +162,7 @@ source_set("browser_test_support") {
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/notifications:system_notification_helper",
+      "//chrome/browser/ui/browser_window",
       "//extensions:test_support",
       "//extensions/common",
     ]
