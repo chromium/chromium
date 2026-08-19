@@ -38,6 +38,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Pure multi-tab FlatBuffer storage engine. Manages asynchronous FlatBuffer serialization,
  * zero-copy mmap deserialization, CipherFactory incognito encryption, and multi-key preloading. Has
  * zero dependency on TabModelSelector or UI observables.
+ *
+ * <p>Note: TabCache cannot be profile-scoped since it is meant to be available pre-native. Storage
+ * is logically partitioned per arbitrary tag and regular/incognito state via {@link TabCacheKey}
+ * and {@link CipherFactory} rather than native {@code Profile} objects. Do NOT introduce
+ * dependencies on {@code Profile}.
  */
 @NullMarked
 public class TabCache {

@@ -19,6 +19,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 /**
  * Responsible for caching the active tab's state by coordinating window active-tab tracking and
  * delegating disk/FlatBuffer persistence to {@link TabCache}.
+ *
+ * <p>Note: ActiveTabCache cannot be profile-scoped since it is meant to be available pre-native.
+ * Instead, it is logically partitioned per window and per model type using {@link TabCacheKey}
+ * (keyed by {@code windowTag} and {@code isIncognito} boolean) with {@link CipherFactory} providing
+ * incognito encryption. Do NOT introduce dependencies on {@code Profile}.
  */
 @NullMarked
 public class ActiveTabCache {
