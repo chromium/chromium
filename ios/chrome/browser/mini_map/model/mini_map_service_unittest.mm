@@ -34,7 +34,6 @@ class MiniMapServiceTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    feature_list_.InitAndEnableFeature(kIOSMiniMapUniversalLink);
 
     MiniMapServiceFactory::GetInstance();
     TestProfileIOS::Builder test_profile_builder;
@@ -54,7 +53,6 @@ class MiniMapServiceTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<MiniMapService> mini_map_service_;
@@ -126,24 +124,12 @@ class MiniMapUniversalLinkTest : public PlatformTest {
 
 // Tests for IsMiniMapUniversalLinkEnabled behavior.
 TEST_F(MiniMapUniversalLinkTest, TestMiniMapUniversalLinkEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kIOSMiniMapUniversalLink);
   scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
   EXPECT_TRUE(IsMiniMapUniversalLinkEnabled());
 }
 
 TEST_F(MiniMapUniversalLinkTest,
-       TestMiniMapUniversalLinkDisabledWhenFlagIsOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kIOSMiniMapUniversalLink);
-  scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
-  EXPECT_FALSE(IsMiniMapUniversalLinkEnabled());
-}
-
-TEST_F(MiniMapUniversalLinkTest,
        TestMiniMapUniversalLinkDisabledWhenCountryExcluded) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kIOSMiniMapUniversalLink);
   scoped_variations_service_.Get()->OverrideStoredPermanentCountry("fr");
   EXPECT_FALSE(IsMiniMapUniversalLinkEnabled());
 }
@@ -153,8 +139,7 @@ using MiniMapServiceCounterfactualTest = PlatformTest;
 TEST_F(MiniMapServiceCounterfactualTest,
        TestServiceCreationWithCounterfactualFlag) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kIOSMiniMapUniversalLinkCounterfactual},
-                                {kIOSMiniMapUniversalLink});
+  feature_list.InitAndEnableFeature(kIOSMiniMapUniversalLinkCounterfactual);
 
   web::WebTaskEnvironment task_environment;
   TestProfileIOS::Builder test_profile_builder;

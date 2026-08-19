@@ -16215,21 +16215,6 @@
             ]
         }
     ],
-    "MapsNativePreviewUniversalLink": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSMiniMapUniversalLink"
-                    ]
-                }
-            ]
-        }
-    ],
     "MediaFoundationBatchRead": [
         {
             "platforms": [

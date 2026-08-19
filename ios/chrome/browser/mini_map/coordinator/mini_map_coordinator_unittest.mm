@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/providers/mini_map/test_mini_map.h"
@@ -394,9 +393,6 @@ TEST_F(MiniMapCoordinatorTest, TestFooterButtons) {
 
 // Tests that Native Preview is presented when initialized with a URL.
 TEST_F(MiniMapCoordinatorTest, TestPresentNativePreview) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kIOSMiniMapUniversalLink);
-
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 
@@ -432,9 +428,6 @@ TEST_F(MiniMapCoordinatorTest, TestPresentNativePreview) {
 // Tests that Native Preview is presented when initialized with a URL in
 // Incognito mode.
 TEST_F(MiniMapCoordinatorTest, TestPresentNativePreviewIncognito) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kIOSMiniMapUniversalLink);
-
   id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
   factory_.controller = mini_map_controller;
 

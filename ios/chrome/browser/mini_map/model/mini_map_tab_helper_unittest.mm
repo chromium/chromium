@@ -86,7 +86,6 @@ class MiniMapTabHelperTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
-    feature_list_.InitAndEnableFeature(kIOSMiniMapUniversalLink);
 
     factory_ = [[MiniMapTabHelperTestMiniMapControllerFactory alloc] init];
     ios::provider::test::SetMiniMapControllerFactory(factory_);
@@ -435,8 +434,7 @@ TEST_F(MiniMapTabHelperTest, TestReentrancy) {
 // Test that the counterfactual flag causes the URL to be modified and opened.
 TEST_F(MiniMapTabHelperTest, TestCounterfactualLogging) {
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({kIOSMiniMapUniversalLinkCounterfactual},
-                                 {kIOSMiniMapUniversalLink});
+  feature_list_.InitAndEnableFeature(kIOSMiniMapUniversalLinkCounterfactual);
 
   NSString* const kGoogleMapsLink =
       @"https://www.google.com/maps/foo?valid=true";
@@ -474,8 +472,7 @@ TEST_F(MiniMapTabHelperTest, TestCounterfactualLogging) {
 // even when the transition type includes qualifiers (e.g. redirect).
 TEST_F(MiniMapTabHelperTest, TestCounterfactualLoggingWithRedirect) {
   feature_list_.Reset();
-  feature_list_.InitWithFeatures({kIOSMiniMapUniversalLinkCounterfactual},
-                                 {kIOSMiniMapUniversalLink});
+  feature_list_.InitAndEnableFeature(kIOSMiniMapUniversalLinkCounterfactual);
 
   NSString* const kGoogleMapsLink =
       @"https://www.google.com/maps/foo?valid=true";
@@ -500,14 +497,10 @@ TEST_F(MiniMapTabHelperTest, TestCounterfactualLoggingWithRedirect) {
       "https://www.google.com/maps/foo?valid=true&utm_campaign=as-npc-bling");
 }
 
-// Test that when both the experiment feature and counterfactual are disabled,
-// the request is not intercepted at all.
-TEST_F(MiniMapTabHelperTest, TestExperimentDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kIOSMiniMapUniversalLink,
-                             kIOSMiniMapUniversalLinkCounterfactual});
+// Test that when in an excluded country and counterfactual is disabled, the
+// request is not intercepted at all.
+TEST_F(MiniMapTabHelperTest, TestFeatureDisabledInExcludedCountry) {
+  scoped_variations_service_.Get()->OverrideStoredPermanentCountry("fr");
 
   NSString* const kGoogleMapsLink =
       @"https://www.google.com/maps/foo?valid=true";

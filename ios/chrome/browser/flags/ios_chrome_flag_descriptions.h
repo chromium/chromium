@@ -1092,12 +1092,6 @@ inline constexpr char kIOSMiniMapUniversalLinkCounterfactualDescription[] =
     "universal link in Maps Lite so that subsequent iGMM installs would be "
     "logged.";
 
-inline constexpr char kIOSMiniMapUniversalLinkName[] =
-    "Open Maps Universal links in native view.";
-inline constexpr char kIOSMiniMapUniversalLinkDescription[] =
-    "When enabled, maps universal links on Google Page are opened in "
-    "native views (under conditions).";
-
 inline constexpr char kIOSOmniboxAimServerEligibilityEnName[] =
     "AIM Server Eligibility EN locales";
 inline constexpr char kIOSOmniboxAimServerEligibilityEnDescription[] =
