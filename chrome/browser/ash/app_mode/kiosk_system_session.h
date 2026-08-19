@@ -24,6 +24,7 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class BrowserDelegate;
 class NetworkConnectivityMetricsService;
 
 // Maintains system-level services tied to a Kiosk session.
@@ -49,7 +50,7 @@ class KioskSystemSession {
 
   bool is_shutting_down() const;
 
-  Browser* GetSettingsBrowserForTesting();
+  BrowserDelegate* GetSettingsBrowserForTesting();
 
   void SetOnHandleBrowserCallbackForTesting(
       base::RepeatingCallback<void(bool)> callback);

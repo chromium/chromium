@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_metrics_service.h"
@@ -319,11 +320,11 @@ void KioskBrowserSession::Shutdown() {
   std::move(attempt_user_exit_).Run();
 }
 
-Browser* KioskBrowserSession::GetSettingsBrowserForTesting() {
-  if (browser_window_handler_) {
-    return browser_window_handler_->GetSettingsBrowserForTesting();  // IN-TEST
-  }
-  return nullptr;
+ash::BrowserDelegate* KioskBrowserSession::GetSettingsBrowserForTesting() {
+  return browser_window_handler_
+             ? browser_window_handler_
+                   ->GetSettingsBrowserForTesting()  // IN-TEST
+             : nullptr;
 }
 
 }  // namespace chromeos

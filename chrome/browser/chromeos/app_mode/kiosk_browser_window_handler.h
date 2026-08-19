@@ -7,20 +7,24 @@
 
 #include <map>
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/webapps/common/web_app_id.h"
 
-class Browser;
-class BrowserWindowInterface;
 class Profile;
+
+namespace ash {
+class BrowserDelegate;
+}
 
 namespace chromeos {
 
@@ -54,7 +58,7 @@ enum class KioskBrowserWindowType {
 // If the last browser window gets closed, the session gets ended.
 //
 // It also manages showing required settings pages in a consistent browser.
-class KioskBrowserWindowHandler : public BrowserCollectionObserver {
+class KioskBrowserWindowHandler : public ash::BrowserController::Observer {
  public:
   KioskBrowserWindowHandler(
       Profile* profile,
@@ -67,53 +71,54 @@ class KioskBrowserWindowHandler : public BrowserCollectionObserver {
       delete;
   ~KioskBrowserWindowHandler() override;
 
-  Browser* GetSettingsBrowserForTesting() { return settings_browser_; }
+  ash::BrowserDelegate* GetSettingsBrowserForTesting() {
+    return settings_browser_;
+  }
 
  private:
-  void OnCompleteBrowserAdded(Browser* browser);
+  void OnCompleteBrowserAdded(ash::BrowserDelegate* browser);
 
   // Signals the end of the navigation monitoring phase.
   // Invoked in one of the two scenarios:
   // 1. The browser navigation has successfully started.
   // 2. An unexpected event changed the window visibility (e.g. new tab being
   // opened).
-  void OnBrowserNavigationWatchEnded(Browser* browser,
+  void OnBrowserNavigationWatchEnded(ash::BrowserDelegate* browser,
                                      const std::string& url = std::string());
   // Returns true if the browser window is allowed to be opened in kiosk mode
   // independent of the navigation URL with no need to wait for navigation to
   // happen.
-  bool PreTriageNewBrowserWindowWithoutUrl(Browser* browser);
+  bool PreTriageNewBrowserWindowWithoutUrl(ash::BrowserDelegate* browser);
   // Returns true if it's a valid settings window and closes the browser window
   // otherwise.
   // Once the navigation has started or is considered not necessary to wait for,
   // triage the settings browser window, since all other cases have been triaged
   // in scope of `PreTriageNewBrowserWindowWithoutUrl`.
-  bool TriageNewSettingsBrowserWindow(Browser* browser,
+  bool TriageNewSettingsBrowserWindow(ash::BrowserDelegate* browser,
                                       const std::string& url = std::string());
-  void HandleNewSettingsWindow(Browser* browser, const std::string& url_string);
+  void HandleNewSettingsWindow(ash::BrowserDelegate* browser,
+                               const std::string& url_string);
 
   void CloseBrowserWindowsIf(
-      base::FunctionRef<bool(const BrowserWindowInterface&)> filter);
-  void CloseBrowserAndSetTimer(
-      BrowserWindowInterface* browser_window_interface);
+      base::FunctionRef<bool(const ash::BrowserDelegate&)> filter);
+  void CloseBrowserAndSetTimer(ash::BrowserDelegate* browser);
   void OnCloseBrowserTimeout();
   void CloseAllUnexpectedBrowserWindows();
 
-  // BrowserCollectionObserver
-  void OnBrowserCreated(
-      BrowserWindowInterface* browser_window_interface) override;
-  void OnBrowserClosed(
-      BrowserWindowInterface* browser_window_interface) override;
+  // ash::BrowserController::Observer
+  void OnBrowserCreated(ash::BrowserDelegate* browser) override;
+  void OnBrowserClosed(ash::BrowserDelegate* browser) override;
 
   // Returns true if open by web application and allowed by policy.
-  bool IsNewBrowserWindowAllowed(Browser* browser) const;
+  bool IsNewBrowserWindowAllowed(ash::BrowserDelegate* browser) const;
 
   // Returns true if open devtools browser and it is allowed by policy.
-  bool IsDevToolsAllowedBrowser(Browser* browser) const;
+  bool IsDevToolsAllowedBrowser(ash::BrowserDelegate* browser) const;
 
   // Returns true if open normal browser and it is allowed by troubleshooting
   // policy.
-  bool IsNormalTroubleshootingBrowserAllowed(Browser* browser) const;
+  bool IsNormalTroubleshootingBrowserAllowed(
+      ash::BrowserDelegate* browser) const;
 
   // Returns true in case of the initial browser window existed for web kiosks.
   bool ShouldExitKioskWhenLastBrowserRemoved() const;
@@ -121,6 +126,8 @@ class KioskBrowserWindowHandler : public BrowserCollectionObserver {
   // Checks that there is no app browser and only `settings_browser_` remains
   // open.
   bool IsOnlySettingsBrowserRemainOpen() const;
+
+  void CloseSettingsBrowser();
 
   // Calls `shutdown_kiosk_browser_session_callback_` once.
   void Shutdown();
@@ -138,21 +145,23 @@ class KioskBrowserWindowHandler : public BrowserCollectionObserver {
 
   // Browser in which settings are shown, restricted by
   // KioskSettingsNavigationThrottle.
-  raw_ptr<Browser> settings_browser_ = nullptr;
+  raw_ptr<ash::BrowserDelegate> settings_browser_ = nullptr;
 
   // Provides access to app session related policies.
   KioskPolicies kiosk_policies_;
 
   // Map that keeps track of all unexpected browser windows until they are
-  // confirmed to be closed via `OnBrowserRemoved`. If they did not get closed
+  // confirmed to be closed via `OnBrowserClosed`. If they did not get closed
   // before the timer fires, we will crash as we consider the kiosk session
   // compromised.
-  std::map<BrowserWindowInterface*, base::OneShotTimer> closing_browsers_;
+  std::map<ash::BrowserDelegate*, base::OneShotTimer> closing_browsers_;
 
-  std::map<Browser*, std::unique_ptr<NavigationWaiter>> url_waiters_;
+  std::map<ash::BrowserDelegate*, std::unique_ptr<NavigationWaiter>>
+      url_waiters_;
 
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
+  base::ScopedObservation<ash::BrowserController,
+                          ash::BrowserController::Observer>
+      browser_controller_observation_{this};
 
   base::WeakPtrFactory<KioskBrowserWindowHandler> weak_ptr_factory_{this};
 };

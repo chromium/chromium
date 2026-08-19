@@ -20,26 +20,22 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_policies.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_troubleshooting_controller_ash.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/aura/window.h"
 #include "ui/base/base_window.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
-
-namespace aura {
-class Window;
-}
 
 namespace chromeos {
 
@@ -56,36 +52,31 @@ void MakeWindowResizable(aura::Window* window) {
   }
 }
 
-content::WebContents* GetActiveWebContents(
-    const BrowserWindowInterface* browser_window_interface) {
-  return browser_window_interface->GetTabStripModel()->GetActiveWebContents();
-}
-
-std::string GetUrlOfActiveTab(
-    const BrowserWindowInterface* browser_window_interface) {
-  content::WebContents* active_tab =
-      GetActiveWebContents(browser_window_interface);
+std::string GetUrlOfActiveTab(ash::BrowserDelegate* browser) {
+  content::WebContents* active_tab = browser->GetActiveWebContents();
   return active_tab ? active_tab->GetVisibleURL().spec() : std::string();
 }
 
-void CloseBrowser(BrowserWindowInterface* browser_window_interface) {
-  // We prefer to use `CloseAllTabs`, because
-  // `GetWindow()->Close()` can silently fail if the window is currently
-  // being dragged. However, `CloseAllTabs` becomes a no-op if no tabs are
-  // present, so we fall back to `GetWindow()->Close()` for that case.
-  if (!browser_window_interface->GetTabStripModel()->empty()) {
-    browser_window_interface->GetTabStripModel()->CloseAllTabs();
+void CloseBrowser(ash::BrowserDelegate* browser) {
+  // We prefer to close all tabs individually, because `Close()` can silently
+  // fail if the window is currently being dragged. However, closing tabs is a
+  // no-op if no tabs are present, so we fall back to `Close()` for that case.
+  if (size_t count = browser->GetWebContentsCount(); count > 0) {
+    for (size_t i = count; i-- > 0;) {
+      browser->CloseWebContentsAt(i, ash::BrowserDelegate::UserGesture::kNo);
+    }
   } else {
-    browser_window_interface->GetWindow()->Close();
+    browser->Close();
   }
 }
 
 size_t GetBrowserCount() {
   size_t browser_count = 0;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& browser) {
         browser_count++;
-        return true;
+        return ash::BrowserController::kContinueIteration;
       });
   return browser_count;
 }
@@ -97,10 +88,10 @@ const char kKioskNewBrowserWindowHistogram[] = "Kiosk.NewBrowserWindow";
 class NavigationWaiter : public content::WebContentsObserver,
                          public views::WidgetObserver {
  public:
-  NavigationWaiter(Browser* browser,
+  NavigationWaiter(ash::BrowserDelegate* browser,
                    base::OnceCallback<void(const std::string&)> callback)
-      : browser_(browser), callback_(std::move(callback)) {
-    content::WebContents* web_contents = GetActiveWebContents(browser);
+      : callback_(std::move(callback)) {
+    content::WebContents* web_contents = browser->GetActiveWebContents();
     if (!web_contents) {
       // If no WebContents is present, we'll continue to triaging without a url.
       // This is more restrictive and will likely result in the browser window
@@ -114,12 +105,11 @@ class NavigationWaiter : public content::WebContentsObserver,
     if (web_contents->GetVisibleURL().is_empty()) {
       LOG(WARNING)
           << "New browser with empty url detected, Waiting for navigation.";
-      Observe(GetActiveWebContents(browser));
+      Observe(web_contents);
       // Observe the browser's widget visibility changes if someone wants to
       // show it in between.
       widget_observation_.Observe(
-          CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser))
-              .GetWidget());
+          views::Widget::GetWidgetForNativeWindow(browser->GetNativeWindow()));
     } else {
       RunCallback(web_contents->GetVisibleURL().spec());
     }
@@ -159,7 +149,6 @@ class NavigationWaiter : public content::WebContentsObserver,
     widget_observation_.Reset();
   }
 
-  raw_ptr<Browser> browser_;
   base::ScopedObservation<views::Widget, WidgetObserver> widget_observation_{
       this};
   base::OnceCallback<void(const std::string&)> callback_;
@@ -185,14 +174,14 @@ KioskBrowserWindowHandler::KioskBrowserWindowHandler(
 
   CloseAllUnexpectedBrowserWindows();
 
-  browser_collection_observation_.Observe(
-      GlobalBrowserCollection::GetInstance());
+  browser_controller_observation_.Observe(
+      ash::BrowserController::GetInstance());
 }
 
 KioskBrowserWindowHandler::~KioskBrowserWindowHandler() = default;
 
 bool KioskBrowserWindowHandler::TriageNewSettingsBrowserWindow(
-    Browser* browser,
+    ash::BrowserDelegate* browser,
     const std::string& url) {
   url_waiters_.erase(browser);
   // It is safe to assume that no other tabs are present in `browser`, because
@@ -218,21 +207,20 @@ bool KioskBrowserWindowHandler::TriageNewSettingsBrowserWindow(
 }
 
 bool KioskBrowserWindowHandler::PreTriageNewBrowserWindowWithoutUrl(
-    Browser* browser) {
+    ash::BrowserDelegate* browser) {
   if (IsNewBrowserWindowAllowed(browser)) {
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
         KioskBrowserWindowType::kOpenedRegularBrowser);
     LOG(WARNING)
         << "Open additional fullscreen browser window in kiosk session";
-    ash::BrowserController::GetInstance()->GetDelegate(browser)->SetFullscreen(
-        true);
+    browser->SetFullscreen(true);
     on_browser_window_added_callback_.Run(/*is_closing=*/false);
     return WINDOW_ALLOWED;
   }
 
   if (IsDevToolsAllowedBrowser(browser)) {
-    MakeWindowResizable(browser->GetWindow()->GetNativeWindow());
+    MakeWindowResizable(browser->GetNativeWindow());
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
         KioskBrowserWindowType::kOpenedDevToolsBrowser);
@@ -241,7 +229,7 @@ bool KioskBrowserWindowHandler::PreTriageNewBrowserWindowWithoutUrl(
   }
 
   if (IsNormalTroubleshootingBrowserAllowed(browser)) {
-    MakeWindowResizable(browser->GetWindow()->GetNativeWindow());
+    MakeWindowResizable(browser->GetNativeWindow());
     base::UmaHistogramEnumeration(
         kKioskNewBrowserWindowHistogram,
         KioskBrowserWindowType::kOpenedTroubleshootingNormalBrowser);
@@ -253,7 +241,7 @@ bool KioskBrowserWindowHandler::PreTriageNewBrowserWindowWithoutUrl(
 }
 
 void KioskBrowserWindowHandler::HandleNewSettingsWindow(
-    Browser* browser,
+    ash::BrowserDelegate* browser,
     const std::string& url_string) {
   if (settings_browser_) {
     // If another settings browser exist, navigate to `url_string` in the
@@ -261,17 +249,16 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
     CloseBrowserAndSetTimer(browser);
     // Navigate in the existing browser.
     NavigateParams nav_params(
-        settings_browser_, GURL(url_string),
+        &settings_browser_->GetBrowser(), GURL(url_string),
         ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
     nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
     Navigate(&nav_params);
     return;
   }
 
-  bool app_browser =
-      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP ||
-      browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP ||
-      browser->GetType() == BrowserWindowInterface::Type::TYPE_POPUP;
+  bool app_browser = browser->GetType() == ash::BrowserType::kApp ||
+                     browser->GetType() == ash::BrowserType::kAppPopup ||
+                     browser->GetType() == ash::BrowserType::kPopup;
   if (!app_browser) {
     // If this browser is not an app browser, create a new app browser if none
     // yet exists.
@@ -295,36 +282,28 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
   // TODO(crbug.com/40103687): Figure out how to do it more cleanly.
   browser->GetWindow()->Restore();
   browser->GetWindow()->Maximize();
+  browser->Show();
 }
 
 void KioskBrowserWindowHandler::CloseAllUnexpectedBrowserWindows() {
-  CloseBrowserWindowsIf(
-      [&web_app_id = web_app_id_](
-          const BrowserWindowInterface& browser_window_interface) {
-        // Do not close the main web app window (if any).
-        bool is_web_app = web_app_id.has_value();
-        bool is_web_app_window =
-            is_web_app &&
-            (ash::BrowserController::GetInstance()
-                 ->GetDelegate(const_cast<BrowserWindowInterface*>(
-                     &browser_window_interface))
-                 ->GetAppId() == web_app_id);
-        return !is_web_app_window;
-      });
+  CloseBrowserWindowsIf([this](const ash::BrowserDelegate& browser) {
+    // Do not close the main web app window (if any).
+    return !web_app_id_.has_value() || browser.GetAppId() != web_app_id_;
+  });
 }
 
 void KioskBrowserWindowHandler::OnBrowserCreated(
-    BrowserWindowInterface* browser_window_interface) {
+    ash::BrowserDelegate* browser) {
   // At this point no WebContents has been added to the browser, so we need to
   // post once to ensure we have a WebContents.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&KioskBrowserWindowHandler::OnCompleteBrowserAdded,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     browser_window_interface->GetBrowserForMigrationOnly()));
+                     weak_ptr_factory_.GetWeakPtr(), browser));
 }
 
-void KioskBrowserWindowHandler::OnCompleteBrowserAdded(Browser* browser) {
+void KioskBrowserWindowHandler::OnCompleteBrowserAdded(
+    ash::BrowserDelegate* browser) {
   // URL may not be properly loaded yet. Pre-triage without it.
   // If the window is allowed to be shown, do not wait for navigation.
   if (PreTriageNewBrowserWindowWithoutUrl(browser)) {
@@ -343,19 +322,14 @@ void KioskBrowserWindowHandler::OnCompleteBrowserAdded(Browser* browser) {
 }
 
 void KioskBrowserWindowHandler::OnBrowserNavigationWatchEnded(
-    Browser* browser,
+    ash::BrowserDelegate* browser,
     const std::string& url) {
-  if (TriageNewSettingsBrowserWindow(browser, url)) {
-    browser->GetWindow()->Show();
-  }
+  TriageNewSettingsBrowserWindow(browser, url);
 }
 
-void KioskBrowserWindowHandler::OnBrowserClosed(
-    BrowserWindowInterface* browser_window_interface) {
-  Browser* browser = browser_window_interface->GetBrowserForMigrationOnly();
-
+void KioskBrowserWindowHandler::OnBrowserClosed(ash::BrowserDelegate* browser) {
   url_waiters_.erase(browser);
-  closing_browsers_.erase(browser_window_interface);
+  closing_browsers_.erase(browser);
 
   // Exit the kiosk session if the last browser was closed.
   if (ShouldExitKioskWhenLastBrowserRemoved() && GetBrowserCount() == 0) {
@@ -369,30 +343,31 @@ void KioskBrowserWindowHandler::OnBrowserClosed(
              IsOnlySettingsBrowserRemainOpen()) {
     // Only `settings_browser_` is opened and there are no app browsers anymore.
     // So we should close `settings_browser_` and it will end the kiosk session.
-    CloseBrowserAndSetTimer(settings_browser_);
+    // Post a task to avoid observer reentrancy.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&KioskBrowserWindowHandler::CloseSettingsBrowser,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
 bool KioskBrowserWindowHandler::IsNewBrowserWindowAllowed(
-    Browser* browser) const {
+    ash::BrowserDelegate* browser) const {
   return kiosk_policies_.IsWindowCreationAllowed() &&
-         browser->GetType() == BrowserWindowInterface::Type::TYPE_APP_POPUP &&
-         web_app_id_.has_value() &&
-         ash::BrowserController::GetInstance()
-                 ->GetDelegate(browser)
-                 ->GetAppId() == web_app_id_.value();
+         browser->GetType() == ash::BrowserType::kAppPopup &&
+         web_app_id_.has_value() && browser->GetAppId() == web_app_id_;
 }
 
 bool KioskBrowserWindowHandler::IsDevToolsAllowedBrowser(
-    Browser* browser) const {
-  return browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS &&
+    ash::BrowserDelegate* browser) const {
+  return browser->GetType() == ash::BrowserType::kDevTools &&
          kiosk_troubleshooting_controller_
              ->AreKioskTroubleshootingToolsEnabled();
 }
 
 bool KioskBrowserWindowHandler::IsNormalTroubleshootingBrowserAllowed(
-    Browser* browser) const {
-  return browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL &&
+    ash::BrowserDelegate* browser) const {
+  return browser->GetType() == ash::BrowserType::kNormal &&
          kiosk_troubleshooting_controller_
              ->AreKioskTroubleshootingToolsEnabled();
 }
@@ -403,8 +378,14 @@ bool KioskBrowserWindowHandler::ShouldExitKioskWhenLastBrowserRemoved() const {
 
 bool KioskBrowserWindowHandler::IsOnlySettingsBrowserRemainOpen() const {
   return settings_browser_ && GetBrowserCount() == 1 &&
-         GetLastActiveBrowserWindowInterfaceWithAnyProfile() ==
+         ash::BrowserController::GetInstance()->GetLastUsedBrowser() ==
              settings_browser_;
+}
+
+void KioskBrowserWindowHandler::CloseSettingsBrowser() {
+  if (IsOnlySettingsBrowserRemainOpen()) {
+    CloseBrowserAndSetTimer(settings_browser_);
+  }
 }
 
 void KioskBrowserWindowHandler::Shutdown() {
@@ -414,33 +395,29 @@ void KioskBrowserWindowHandler::Shutdown() {
 }
 
 void KioskBrowserWindowHandler::CloseBrowserWindowsIf(
-    base::FunctionRef<bool(const BrowserWindowInterface&)> filter) {
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&filter, this](BrowserWindowInterface* browser_window_interface) {
-        if (filter(*browser_window_interface)) {
+    base::FunctionRef<bool(const ash::BrowserDelegate&)> filter) {
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::kAscendingActivationTime,
+      [&filter, this](ash::BrowserDelegate& browser) {
+        if (filter(browser)) {
           LOG(WARNING) << "kiosk: Closing unexpected browser window with url "
-                       << GetUrlOfActiveTab(browser_window_interface)
-                       << " of app "
-                       << ash::BrowserController::GetInstance()
-                              ->GetDelegate(browser_window_interface)
-                              ->GetAppId()
-                              .value_or("<none>");
-          CloseBrowserAndSetTimer(browser_window_interface);
+                       << GetUrlOfActiveTab(&browser) << " of app "
+                       << browser.GetAppId().value_or("<none>");
+          CloseBrowserAndSetTimer(&browser);
         }
-        return true;
+        return ash::BrowserController::kContinueIteration;
       });
 }
 
 void KioskBrowserWindowHandler::CloseBrowserAndSetTimer(
-    BrowserWindowInterface* browser_window_interface) {
-  closing_browsers_.emplace(std::piecewise_construct,
-                            std::make_tuple(browser_window_interface),
+    ash::BrowserDelegate* browser) {
+  closing_browsers_.emplace(std::piecewise_construct, std::make_tuple(browser),
                             std::make_tuple());
-  closing_browsers_[browser_window_interface].Start(
+  closing_browsers_[browser].Start(
       FROM_HERE, kCloseBrowserTimeout,
       base::BindOnce(&KioskBrowserWindowHandler::OnCloseBrowserTimeout,
                      weak_ptr_factory_.GetWeakPtr()));
-  CloseBrowser(browser_window_interface);
+  CloseBrowser(browser);
 }
 
 void KioskBrowserWindowHandler::OnCloseBrowserTimeout() {

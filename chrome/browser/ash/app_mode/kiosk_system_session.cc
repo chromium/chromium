@@ -148,7 +148,7 @@ bool KioskSystemSession::is_shutting_down() const {
   return browser_session_.is_shutting_down();
 }
 
-Browser* KioskSystemSession::GetSettingsBrowserForTesting() {
+BrowserDelegate* KioskSystemSession::GetSettingsBrowserForTesting() {
   return browser_session_.GetSettingsBrowserForTesting();  // IN-TEST
 }
 

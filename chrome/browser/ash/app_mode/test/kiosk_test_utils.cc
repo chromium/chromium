@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/app_mode/kiosk_test_helper.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -306,7 +307,7 @@ bool PressBailoutAccelerator() {
       LoginAcceleratorAction::kAppLaunchBailout);
 }
 
-Browser* OpenA11ySettings(const user_manager::User& user) {
+BrowserWindowInterface* OpenA11ySettings(const user_manager::User& user) {
   auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
   auto& settings_manager = CHECK_DEREF(ash::SettingsAppManager::Get());
 
@@ -316,9 +317,9 @@ Browser* OpenA11ySettings(const user_manager::User& user) {
 
   EXPECT_FALSE(DidKioskCloseNewWindow());
 
-  Browser& settings_browser =
+  BrowserDelegate& settings_browser =
       CHECK_DEREF(session.GetSettingsBrowserForTesting());
-  return &settings_browser;
+  return &settings_browser.GetBrowser();
 }
 
 bool DidKioskCloseNewWindow() {

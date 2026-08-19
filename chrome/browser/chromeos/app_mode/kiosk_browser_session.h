@@ -19,7 +19,10 @@
 class PrefRegistrySimple;
 class PrefService;
 class Profile;
-class Browser;
+
+namespace ash {
+class BrowserDelegate;
+}
 
 namespace content {
 class WebContents;
@@ -71,7 +74,7 @@ class KioskBrowserSession {
   // Invoked when GuestViewManager adds a guest web contents.
   void OnGuestAdded(content::WebContents* guest_web_contents);
 
-  Browser* GetSettingsBrowserForTesting();
+  ash::BrowserDelegate* GetSettingsBrowserForTesting();
   void SetOnHandleBrowserCallbackForTesting(
       base::RepeatingCallback<void(bool is_closing)> callback);
 

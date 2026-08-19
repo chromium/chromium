@@ -15,6 +15,7 @@ enum class BrowserType {
   kAppPopup,
   kDevTools,
   kNormal,
+  kPopup,
   kOther,
 };
 

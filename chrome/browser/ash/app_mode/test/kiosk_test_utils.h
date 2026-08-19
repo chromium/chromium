@@ -19,6 +19,8 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "url/gurl.h"
 
+class BrowserWindowInterface;
+
 namespace user_manager {
 class User;
 }  // namespace user_manager
@@ -109,10 +111,10 @@ void WaitNetworkScreen();
 [[nodiscard]] bool PressBailoutAccelerator();
 
 // Opens accessibility settings, waits to make sure the `KioskSystemSession`
-// does not close it, and returns the corresponding `Browser`.
+// does not close it, and returns the corresponding `BrowserWindowInterface`.
 //
 // Checks if `KioskSystemSession` closes the browser, or if it is null.
-Browser* OpenA11ySettings(const user_manager::User& user);
+BrowserWindowInterface* OpenA11ySettings(const user_manager::User& user);
 
 // Waits for the next new browser window to be created and returns true if
 // `KioskSystemSession` decides to close it.

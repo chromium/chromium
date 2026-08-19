@@ -18,6 +18,8 @@ BrowserWindowInterface::Type ToInternalBrowserType(ash::BrowserType type) {
       return BrowserWindowInterface::TYPE_DEVTOOLS;
     case BrowserType::kNormal:
       return BrowserWindowInterface::TYPE_NORMAL;
+    case BrowserType::kPopup:
+      return BrowserWindowInterface::TYPE_POPUP;
     case BrowserType::kOther:
       NOTREACHED();
   }
@@ -34,6 +36,8 @@ BrowserType FromInternalBrowserType(
       return BrowserType::kDevTools;
     case BrowserWindowInterface::TYPE_NORMAL:
       return BrowserType::kNormal;
+    case BrowserWindowInterface::TYPE_POPUP:
+      return BrowserType::kPopup;
     default:
       return BrowserType::kOther;
   }
