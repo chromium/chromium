@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TAB_HELPER_H_
 
+#import "base/callback_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -19,6 +20,11 @@ class ActorTabHelperObserver;
 // `ActorTask` on a `WebState`.
 class ActorTabHelper : public web::WebStateUserData<ActorTabHelper> {
  public:
+  // When actuation state changes, this callback is invoked with whether the
+  // associated tab is actively being actuated.
+  using ActuationStateCallbackList = base::RepeatingCallbackList<void(bool)>;
+  using ActuationStateCallback = ActuationStateCallbackList::CallbackType;
+
   ActorTabHelper(const ActorTabHelper&) = delete;
   ActorTabHelper& operator=(const ActorTabHelper&) = delete;
   ActorTabHelper(ActorTabHelper&&) = delete;
@@ -31,6 +37,12 @@ class ActorTabHelper : public web::WebStateUserData<ActorTabHelper> {
 
   // Returns true if the tab is currently being actuated.
   bool IsActuating() const;
+
+  // Registers a callback to be invoked when the actuation state changes.
+  // The returned subscription manages the lifetime of the registration and
+  // must be retained by callers.
+  [[nodiscard]] base::CallbackListSubscription AddActuationStateChangedCallback(
+      ActuationStateCallback callback);
 
   // Adds an observer that will be called on actuating state changes.
   void AddObserver(ActorTabHelperObserver* observer);
@@ -52,6 +64,9 @@ class ActorTabHelper : public web::WebStateUserData<ActorTabHelper> {
 
   // The list of observers registered to receive notifications.
   base::ObserverList<ActorTabHelperObserver> observers_;
+
+  // The list of callbacks registered to receive actuation state changes.
+  ActuationStateCallbackList actuation_state_callbacks_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_TAB_HELPER_H_

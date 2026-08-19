@@ -8,6 +8,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
+#import "base/test/test_future.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper_observer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -153,6 +154,44 @@ TEST_F(ActorTabHelperTest, MultipleObserversAndDeregistration) {
   EXPECT_TRUE(observer2.on_actuation_state_changed_called_);
   EXPECT_EQ(observer2.last_web_state_value_, web_state_.get());
   EXPECT_FALSE(observer2.last_actuating_value_);
+}
+
+// Test that callbacks registered via `AddActuationStateChangedCallback` are
+// notified when the state changes and that unregistering stops notifications.
+TEST_F(ActorTabHelperTest, ActuationStateChanges_NotifiesSubscriptions) {
+  ActorTabHelper* helper = ActorTabHelper::FromWebState(web_state_.get());
+  ASSERT_NE(helper, nullptr);
+
+  base::test::TestFuture<bool> future1;
+  base::test::TestFuture<bool> future2;
+
+  base::CallbackListSubscription subscription1 =
+      helper->AddActuationStateChangedCallback(future1.GetRepeatingCallback());
+  base::CallbackListSubscription subscription2 =
+      helper->AddActuationStateChangedCallback(future2.GetRepeatingCallback());
+
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+
+  helper->SetActuating(true);
+  ASSERT_TRUE(future1.IsReady());
+  EXPECT_TRUE(future1.Take());
+  ASSERT_TRUE(future2.IsReady());
+  EXPECT_TRUE(future2.Take());
+
+  // Duplicate state changes do not notify subscribers.
+  helper->SetActuating(true);
+  EXPECT_FALSE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+
+  // Resetting `subscription1` stops its notifications while `subscription2`
+  // remains active.
+  subscription1 = {};
+
+  helper->SetActuating(false);
+  EXPECT_FALSE(future1.IsReady());
+  ASSERT_TRUE(future2.IsReady());
+  EXPECT_FALSE(future2.Take());
 }
 
 }  // namespace

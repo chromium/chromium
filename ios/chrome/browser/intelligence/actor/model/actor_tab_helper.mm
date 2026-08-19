@@ -16,6 +16,7 @@ void ActorTabHelper::SetActuating(bool actuating) {
     return;
   }
   is_actuating_ = actuating;
+  actuation_state_callbacks_.Notify(is_actuating_);
   for (ActorTabHelperObserver& observer : observers_) {
     observer.OnActuationStateChanged(this, web_state_, is_actuating_);
   }
@@ -23,6 +24,11 @@ void ActorTabHelper::SetActuating(bool actuating) {
 
 bool ActorTabHelper::IsActuating() const {
   return is_actuating_;
+}
+
+base::CallbackListSubscription ActorTabHelper::AddActuationStateChangedCallback(
+    ActuationStateCallback callback) {
+  return actuation_state_callbacks_.Add(std::move(callback));
 }
 
 void ActorTabHelper::AddObserver(ActorTabHelperObserver* observer) {
