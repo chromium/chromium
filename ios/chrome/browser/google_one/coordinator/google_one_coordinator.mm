@@ -67,8 +67,7 @@ enum class GoogleOneOutcomeMetrics {
   kUserWillLeaveApp = 8,
   kLaunchFailed = 9,
   kInvalidParameters = 10,
-  kInvalidParametersFallbackToOpeningURLInNewTab = 11,
-  kMaxValue = kInvalidParametersFallbackToOpeningURLInNewTab
+  kMaxValue = kInvalidParameters
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:GoogleOneOutcome)
 
@@ -101,10 +100,6 @@ GoogleOneOutcomeMetrics HistogramOutcomeBucket(GoogleOneOutcome outcome,
     case GoogleOneOutcome::kGoogleOneEntryOutcomeLaunchFailed:
       return GoogleOneOutcomeMetrics::kLaunchFailed;
     case GoogleOneOutcome::kGoogleOneEntryOutcomeInvalidParameters:
-      if (opened_url) {
-        return GoogleOneOutcomeMetrics::
-            kInvalidParametersFallbackToOpeningURLInNewTab;
-      }
       return GoogleOneOutcomeMetrics::kInvalidParameters;
   }
 }
@@ -171,12 +166,8 @@ GoogleOneOutcomeMetrics HistogramOutcomeBucket(GoogleOneOutcome outcome,
   }
 
   // If the user is not signed in and there is no valid account specified in the
-  // URL, there is no account to show settings for. If there is an input URL,
-  // open it in a new tab. Otherwise, cancel the action.
+  // URL, there is no account to show settings for. Cancel the action.
   if (!identityToUse) {
-    if (_inputURL.is_valid()) {
-      [self openURL:net::NSURLWithGURL(_inputURL)];
-    }
     [self flowDidCompleteWithOutcome:GoogleOneOutcome::
                                          kGoogleOneEntryOutcomeInvalidParameters
                                error:nil];
