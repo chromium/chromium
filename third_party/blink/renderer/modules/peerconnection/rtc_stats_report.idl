@@ -283,7 +283,7 @@ dictionary RTCTransportStats : RTCStats {
   RTCDtlsRole           dtlsRole;
   DOMString             srtpCipher;
   unsigned long         selectedCandidatePairChanges;
-  unsigned long         ccbfMessagesReceived;
+  unsigned long         ccfbMessagesReceived;
   // https://w3c.github.io/webrtc-provisional-stats/#RTCTransportStats-dict*
   DOMString rtcpTransportStatsId;
 };

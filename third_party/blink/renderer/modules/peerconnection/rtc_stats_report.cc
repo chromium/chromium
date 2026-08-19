@@ -482,7 +482,7 @@ RTCTransportStats* ToV8Stat(ScriptState* script_state,
   SET_STAT(webrtc_stat.selected_candidate_pair_changes,
            v8_stat->setSelectedCandidatePairChanges);
   SET_STAT(webrtc_stat.ccfb_messages_received,
-           v8_stat->setCcbfMessagesReceived);
+           v8_stat->setCcfbMessagesReceived);
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtctransportstats-rtcptransportstatsid
   SET_STAT(webrtc_stat.rtcp_transport_stats_id,
            v8_stat->setRtcpTransportStatsId);
