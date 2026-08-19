@@ -289,7 +289,6 @@ source_set("unit_tests") {
       "device_attestation/android/device_attestation_service_android_unittest.cc",
     ]
     deps += [
-      "//components/enterprise/device_attestation:test_support",
       "//components/enterprise/device_attestation/android",
       "//components/enterprise/device_attestation/android:jni_headers",
     ]
