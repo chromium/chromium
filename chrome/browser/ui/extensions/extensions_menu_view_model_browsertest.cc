@@ -5,9 +5,14 @@
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 
 #include <string>
+#include <string_view>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -32,6 +37,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
@@ -124,6 +130,12 @@ class ExtensionsMenuViewModelBrowserTest
   // Navigates the active web contents to a URL on `host_name`.
   void NavigateTo(std::string_view host_name);
 
+  // Writes a test page into a temporary directory owned by this fixture and
+  // returns its file:// URL with `suffix` appended (e.g. "#section" or
+  // "?foo=bar"). The temporary directory outlives the call, so the file
+  // remains readable for the duration of the test.
+  GURL CreateTempFileUrl(std::string_view suffix);
+
   ExtensionsMenuViewModel* menu_model() { return menu_model_.get(); }
   SitePermissionsHelper* permissions_helper() {
     return permissions_helper_.get();
@@ -135,6 +147,7 @@ class ExtensionsMenuViewModelBrowserTest
   void TearDownOnMainThread() override;
 
  private:
+  base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestExtensionsMenuDelegate> menu_delegate_;
   std::unique_ptr<ExtensionsMenuViewModel> menu_model_;
   std::unique_ptr<SitePermissionsHelper> permissions_helper_;
@@ -202,6 +215,24 @@ void ExtensionsMenuViewModelBrowserTest::NavigateTo(
     std::string_view host_name) {
   const GURL url = embedded_test_server()->GetURL(host_name, "/simple.html");
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+}
+
+GURL ExtensionsMenuViewModelBrowserTest::CreateTempFileUrl(
+    std::string_view suffix) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  if (!temp_dir_.IsValid()) {
+    CHECK(temp_dir_.CreateUniqueTempDir());
+  }
+
+  constexpr char kTestHtml[] = "<html>test</html>";
+
+  const base::FilePath file_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("page.html"));
+
+  CHECK(base::WriteFile(file_path, kTestHtml));
+
+  return GURL(net::FilePathToFileURL(file_path).spec() + std::string(suffix));
 }
 
 void ExtensionsMenuViewModelBrowserTest::SetUpOnMainThread() {
@@ -1478,4 +1509,62 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   requests = menu_model()->host_access_requests();
   ASSERT_EQ(1u, requests.size());
   EXPECT_EQ(extension_C->id(), requests[0]);
+}
+
+// Tests that GetSiteSettingsState strips '#' fragment from file:// URLs.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       GetSiteSettingsState_FileUrl_StripFragment) {
+#if BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "file:// navigation unsupported on Android browsertests";
+#else
+  AddExtensionWithHostPermission("Extension", "<all_urls>");
+
+  const GURL url = CreateTempFileUrl("#section");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+  ExtensionsMenuViewModel::SiteSettingsState state =
+      menu_model()->GetSiteSettingsState();
+  // Label should contain full file path including .html, without '#section'.
+  EXPECT_TRUE(state.label.find(u"page.html") != std::u16string::npos);
+  EXPECT_EQ(state.label.find(u'#'), std::u16string::npos);
+#endif
+}
+
+// Tests that GetSiteSettingsState strips '?' query from file:// URLs.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       GetSiteSettingsState_FileUrl_StripQuery) {
+#if BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "file:// navigation unsupported on Android browsertests";
+#else
+  AddExtensionWithHostPermission("Extension", "<all_urls>");
+
+  const GURL url = CreateTempFileUrl("?foo=bar");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+  ExtensionsMenuViewModel::SiteSettingsState state =
+      menu_model()->GetSiteSettingsState();
+  // Label should contain full file path including .html, without '?foo=bar'.
+  EXPECT_TRUE(state.label.find(u"page.html") != std::u16string::npos);
+  EXPECT_EQ(state.label.find(u'?'), std::u16string::npos);
+#endif
+}
+
+// Tests that GetSiteSettingsState does not modify a clean file:// URL.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
+                       GetSiteSettingsState_FileUrl_Clean) {
+#if BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "file:// navigation unsupported on Android browsertests";
+#else
+  AddExtensionWithHostPermission("Extension", "<all_urls>");
+
+  const GURL url = CreateTempFileUrl(/*suffix=*/"");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+  ExtensionsMenuViewModel::SiteSettingsState state =
+      menu_model()->GetSiteSettingsState();
+  // Label should remain unchanged — no #, no ?
+  EXPECT_TRUE(state.label.find(u"page.html") != std::u16string::npos);
+  EXPECT_EQ(state.label.find(u'?'), std::u16string::npos);
+  EXPECT_EQ(state.label.find(u'#'), std::u16string::npos);
+#endif
 }

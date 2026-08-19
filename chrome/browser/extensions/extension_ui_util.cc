@@ -16,6 +16,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/cws_info_service.h"
@@ -131,10 +132,20 @@ bool HasManageableExtensions(content::BrowserContext* browser_context) {
 
 std::u16string GetFormattedHostForDisplay(content::WebContents& web_contents) {
   auto url = web_contents.GetLastCommittedURL();
-  // Hide the scheme when necessary (e.g hide "https://" but don't
-  // "chrome://").
+
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  replacements.ClearRef();
+
+  GURL fixed_url = url.ReplaceComponents(replacements);
+
+  // Format the URL for display by omitting the scheme (http/https), stripping
+  // fragment(#), query string, trivial subdomains (like 'www') from the
+  // resulting string to prevent visual clutter or origin confusion. Explicitly
+  // convert the resulting string_view back to std::u16string for the return
+  // value.
   return url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-      url);
+      fixed_url);
 }
 
 bool ShouldShowReviewPrompt(const Extension& extension, Profile& profile) {
