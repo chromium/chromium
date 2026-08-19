@@ -490,10 +490,7 @@ luci.bucket(
             groups = "all",
         ),
         acl.entry(
-            roles = [
-                acl.BUILDBUCKET_TRIGGERER,
-                acl.SCHEDULER_TRIGGERER,
-            ],
+            roles = [acl.SCHEDULER_OWNER],
             groups = ["mdb/chrome-troopers", "mdb/chops-security-oncallers"],
         ),
     ],
