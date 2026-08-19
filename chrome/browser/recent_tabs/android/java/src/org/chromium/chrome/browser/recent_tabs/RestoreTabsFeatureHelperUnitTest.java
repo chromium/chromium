@@ -8,13 +8,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,6 +31,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -35,15 +39,20 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -252,5 +261,93 @@ public class RestoreTabsFeatureHelperUnitTest {
         verify(mDelegate, never()).showPromo(anyList());
         verify(mForeignSessionHelperJniMock, never()).init(any(Profile.class));
         verify(mForeignSessionHelperJniMock, never()).destroy(anyLong());
+    }
+
+    @Test
+    public void testOpenForeignSessionTabsAsBackgroundTabs_emptyList() {
+        ForeignSessionHelper foreignSessionHelper = new ForeignSessionHelper(mProfile);
+        ForeignSession session =
+                new ForeignSession(
+                        "tag", "John's iPhone 6", 32L, Collections.emptyList(), FormFactor.PHONE);
+        int result =
+                foreignSessionHelper.openForeignSessionTabsAsBackgroundTabs(
+                        Collections.emptyList(), session, mTabCreatorManager);
+
+        Assert.assertEquals(0, result);
+        verify(mTabCreatorManager, never()).getTabCreator(/* incognito= */ false);
+        verify(mForeignSessionHelperJniMock, never())
+                .openForeignSessionTabsAsBackgroundTabs(anyLong(), any(), any(), any());
+    }
+
+    @Test
+    public void testOpenForeignSessionTabsAsBackgroundTabs_nonEmptyList() {
+        ForeignSessionHelper foreignSessionHelper = new ForeignSessionHelper(mProfile);
+        TabCreator tabCreator = mock(TabCreator.class);
+        Tab newTab = mock(Tab.class);
+        when(mTabCreatorManager.getTabCreator(/* incognito= */ false)).thenReturn(tabCreator);
+        when(tabCreator.createNewTab(
+                        any(LoadUrlParams.class), eq(TabLaunchType.FROM_RESTORE_TABS_UI), isNull()))
+                .thenReturn(newTab);
+
+        ForeignSessionTab tab1 =
+                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title1", 32L, 32L, 101);
+        ForeignSessionTab tab2 =
+                new ForeignSessionTab(JUnitTestGURLs.URL_2, "title2", 33L, 33L, 102);
+        List<ForeignSessionTab> sessionTabs = List.of(tab1, tab2);
+
+        ForeignSession session =
+                new ForeignSession(
+                        "test_tag",
+                        "John's iPhone 6",
+                        32L,
+                        Collections.emptyList(),
+                        FormFactor.PHONE);
+
+        when(mForeignSessionHelperJniMock.openForeignSessionTabsAsBackgroundTabs(
+                        eq(1L), eq(newTab), eq(new int[] {101, 102}), eq("test_tag")))
+                .thenReturn(2);
+
+        var userActionTester = new UserActionTester();
+        int result =
+                foreignSessionHelper.openForeignSessionTabsAsBackgroundTabs(
+                        sessionTabs, session, mTabCreatorManager);
+
+        Assert.assertEquals(2, result);
+        Assert.assertEquals(2, userActionTester.getActionCount("MobileCrossDeviceTabJourney"));
+        userActionTester.tearDown();
+
+        verify(mForeignSessionHelperJniMock)
+                .openForeignSessionTabsAsBackgroundTabs(
+                        eq(1L), eq(newTab), eq(new int[] {101, 102}), eq("test_tag"));
+    }
+
+    @Test
+    public void testOpenForeignSessionTabsAsBackgroundTabs_nullTab() {
+        ForeignSessionHelper foreignSessionHelper = new ForeignSessionHelper(mProfile);
+        TabCreator tabCreator = mock(TabCreator.class);
+        when(mTabCreatorManager.getTabCreator(/* incognito= */ false)).thenReturn(tabCreator);
+        when(tabCreator.createNewTab(
+                        any(LoadUrlParams.class), eq(TabLaunchType.FROM_RESTORE_TABS_UI), isNull()))
+                .thenReturn(null);
+
+        ForeignSessionTab tab1 =
+                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title1", 32L, 32L, 101);
+        List<ForeignSessionTab> sessionTabs = List.of(tab1);
+
+        ForeignSession session =
+                new ForeignSession(
+                        "test_tag",
+                        "John's iPhone 6",
+                        32L,
+                        Collections.emptyList(),
+                        FormFactor.PHONE);
+
+        int result =
+                foreignSessionHelper.openForeignSessionTabsAsBackgroundTabs(
+                        sessionTabs, session, mTabCreatorManager);
+
+        Assert.assertEquals(0, result);
+        verify(mForeignSessionHelperJniMock, never())
+                .openForeignSessionTabsAsBackgroundTabs(anyLong(), any(), any(), any());
     }
 }
