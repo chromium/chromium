@@ -146,9 +146,6 @@ void AccessibilityPrefsMergeConflictDialog::BuildDialog() {
           IDS_ASH_ACCESSIBILITY_PREFS_CONFLICT_RESOLUTION_DIALOG_DESCRIPTION))
       .SetAcceptButtonText(l10n_util::GetStringUTF16(
           IDS_ASH_ACCESSIBILITY_PREFS_CONFLICT_RESOLUTION_DIALOG_ACCEPT_BUTTON_TEXT))
-      .SetAcceptCallback(base::BindOnce(
-          &AccessibilityPrefsMergeConflictDialog::OnResolvePrefsAccepted,
-          weak_factory_.GetWeakPtr()))
       .SetCancelButtonText(l10n_util::GetStringUTF16(
           IDS_ASH_ACCESSIBILITY_PREFS_CONFLICT_RESOLUTION_DIALOG_CANCEL_BUTTON_TEXT))
       .SetCancelCallback(base::BindOnce(
@@ -313,13 +310,8 @@ void AccessibilityPrefsMergeConflictDialog::WindowClosing() {
   }
 }
 
-void AccessibilityPrefsMergeConflictDialog::OnResolvePrefsAccepted() {
-  GetWidget()->Close();
-}
-
 void AccessibilityPrefsMergeConflictDialog::OnShowAccessibilitySettings() {
   Shell::Get()->system_tray_model()->client()->ShowAccessibilitySettings();
-  GetWidget()->Close();
 }
 
 void AccessibilityPrefsMergeConflictDialog::OnPrefRowPressed(

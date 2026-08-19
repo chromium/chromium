@@ -90,6 +90,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowPointingStickSettings() override;
   void ShowNearbyShareSettings() override;
 
+  int show_accessibility_settings_count() const {
+    return show_accessibility_settings_count_;
+  }
+
   int show_account_settings_count() const {
     return show_account_settings_count_;
   }
@@ -245,6 +249,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   }
 
  private:
+  int show_accessibility_settings_count_ = 0;
   int show_account_settings_count_ = 0;
   int show_network_settings_count_ = 0;
   int show_bluetooth_settings_count_ = 0;

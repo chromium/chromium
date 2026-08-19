@@ -7,6 +7,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_prefs_merge_conflict_controller.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/style/switch.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -225,7 +226,10 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest,
   auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
 
+  // The accept ("Confirm") button applies the choices and closes the dialog
+  // without opening Settings.
   LeftClickOn(dialog->GetAcceptButtonForTesting());
+  EXPECT_EQ(GetSystemTrayClient()->show_accessibility_settings_count(), 0);
 }
 
 TEST_F(AccessibilityPrefsMergeConflictDialogTest,
@@ -241,7 +245,10 @@ TEST_F(AccessibilityPrefsMergeConflictDialogTest,
   auto controller = std::make_unique<FakeController>(std::move(conflicts));
   auto* dialog = ShowDialog(std::move(controller));
 
+  // The dialog uses its cancel button slot for the "Go to settings" button,
+  // which opens the OS Accessibility Settings page.
   LeftClickOn(dialog->GetCancelButtonForTesting());
+  EXPECT_EQ(GetSystemTrayClient()->show_accessibility_settings_count(), 1);
 }
 
 }  // namespace ash

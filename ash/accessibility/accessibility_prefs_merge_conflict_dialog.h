@@ -62,7 +62,6 @@ class ASH_EXPORT AccessibilityPrefsMergeConflictDialog
   // WidgetDelegate:
   void WindowClosing() override;
 
-  void OnResolvePrefsAccepted();
   void OnShowAccessibilitySettings();
   void OnPrefRowPressed(HoverHighlightView* item, std::string_view pref_name);
 
