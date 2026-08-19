@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.browser_window.AndroidBrowserWindowObserver.AndroidBrowserWindowInfo;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.ActivityScopedObjects;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskFeature.InitInfo;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskImpl.State;
@@ -388,13 +389,13 @@ public class ChromeAndroidTaskImplUnitTest {
                         never().description(
                                         "Window should not be removed when re-adding the same"
                                                 + " activity"))
-                .onBrowserWindowRemoved(any(Long.class));
+                .onBrowserWindowRemoved(any());
         verify(
                         observer,
                         never().description(
                                         "A new window should not be added when re-adding the same"
                                                 + " activity"))
-                .onBrowserWindowAdded(any(Long.class));
+                .onBrowserWindowAdded(any());
 
         // Final check: Ensure the task still has exactly 1 window and 1 activity.
         assertEquals(1, chromeAndroidTask.getActivityScopedObjectsListForTesting().size());
@@ -873,7 +874,10 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.removeActivityScopedObjects(activityScopedObjects.mActivityWindowAndroid);
 
         // Assert.
-        verify(observer, times(1)).onBrowserWindowRemoved(nativePtr);
+        verify(observer, times(1))
+                .onBrowserWindowRemoved(
+                        new AndroidBrowserWindowInfo(
+                                nativePtr, profile, activityScopedObjects.mActivityWindowAndroid));
         verify(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives, times(1))
                 .destroy(nativePtr);
     }
@@ -3987,7 +3991,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
 
         // Assert.
-        verify(observer, never()).onBrowserWindowAdded(any(Long.class));
+        verify(observer, never()).onBrowserWindowAdded(any());
     }
 
     @Test
@@ -4003,7 +4007,14 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.destroy();
 
         // Assert.
-        verify(observer, times(1)).onBrowserWindowRemoved(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(1))
+                .onBrowserWindowRemoved(
+                        new AndroidBrowserWindowInfo(
+                                FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                                chromeAndroidTaskWithMockDeps.mMockProfile,
+                                chromeAndroidTaskWithMockDeps
+                                        .mActivityScopedObjects
+                                        .mActivityWindowAndroid));
     }
 
     @Test
@@ -4037,8 +4048,13 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert
         verify(observer, times(1))
                 .onBrowserWindowAdded(
-                        ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                        new AndroidBrowserWindowInfo(
+                                ChromeAndroidTaskUnitTestSupport
+                                        .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                                incognitoProfile,
+                                chromeAndroidTaskWithMockDeps
+                                        .mActivityScopedObjects
+                                        .mActivityWindowAndroid));
     }
 
     @Test
@@ -4055,7 +4071,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.destroy();
 
         // Assert.
-        verify(observer, never()).onBrowserWindowRemoved(any(Long.class));
+        verify(observer, never()).onBrowserWindowRemoved(any());
     }
 
     @Test
@@ -4098,11 +4114,24 @@ public class ChromeAndroidTaskImplUnitTest {
         when(tabModelSelector.getCurrentModel()).thenReturn(incognitoTabModel);
         incognitoObserverCaptor.getValue().onIncognitoModelCreated();
 
-        // Assert activated incognito window
-        verify(observer, times(1))
-                .onBrowserWindowActivated(
+        var normalWindowInfo =
+                new AndroidBrowserWindowInfo(
+                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        chromeAndroidTaskWithMockDeps.mMockProfile,
+                        chromeAndroidTaskWithMockDeps
+                                .mActivityScopedObjects
+                                .mActivityWindowAndroid);
+        var incognitoWindowInfo =
+                new AndroidBrowserWindowInfo(
                         ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        incognitoProfile,
+                        chromeAndroidTaskWithMockDeps
+                                .mActivityScopedObjects
+                                .mActivityWindowAndroid);
+
+        // Assert activated incognito window
+        verify(observer, times(1)).onBrowserWindowActivated(incognitoWindowInfo);
 
         // Act: Switch back to normal tab model
         var normalTabModel = mock(TabModel.class);
@@ -4113,11 +4142,8 @@ public class ChromeAndroidTaskImplUnitTest {
                 .set(normalTabModel);
 
         // Assert deactivated incognito window and activated normal window
-        verify(observer, times(1))
-                .onBrowserWindowDeactivated(
-                        ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
-        verify(observer, times(2)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(1)).onBrowserWindowDeactivated(incognitoWindowInfo);
+        verify(observer, times(2)).onBrowserWindowActivated(normalWindowInfo);
     }
 
     @Test
@@ -4155,10 +4181,23 @@ public class ChromeAndroidTaskImplUnitTest {
         when(tabModelSelector.getCurrentModel()).thenReturn(incognitoTabModel);
         incognitoObserverCaptor.getValue().onIncognitoModelCreated();
 
-        verify(observer, times(1))
-                .onBrowserWindowActivated(
+        var normalWindowInfo =
+                new AndroidBrowserWindowInfo(
+                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        chromeAndroidTaskWithMockDeps.mMockProfile,
+                        chromeAndroidTaskWithMockDeps
+                                .mActivityScopedObjects
+                                .mActivityWindowAndroid);
+        var incognitoWindowInfo =
+                new AndroidBrowserWindowInfo(
                         ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        incognitoProfile,
+                        chromeAndroidTaskWithMockDeps
+                                .mActivityScopedObjects
+                                .mActivityWindowAndroid);
+
+        verify(observer, times(1)).onBrowserWindowActivated(incognitoWindowInfo);
 
         // Simulate switching getCurrentModel back to normal tab model when incognito profile is
         // destroyed.
@@ -4170,11 +4209,8 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert: incognito window removed (no deactivation event), normal window activated
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer)
-                .onBrowserWindowRemoved(
-                        ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
-        inOrder.verify(observer).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        inOrder.verify(observer).onBrowserWindowRemoved(incognitoWindowInfo);
+        inOrder.verify(observer).onBrowserWindowActivated(normalWindowInfo);
     }
 
     @Test
@@ -4213,10 +4249,23 @@ public class ChromeAndroidTaskImplUnitTest {
         when(tabModelSelector.getCurrentModel()).thenReturn(incognitoTabModel);
         incognitoObserverCaptor.getValue().onIncognitoModelCreated();
 
-        verify(observer, times(1))
-                .onBrowserWindowActivated(
+        var normalWindowInfo =
+                new AndroidBrowserWindowInfo(
+                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        chromeAndroidTaskWithMockDeps.mMockProfile,
+                        chromeAndroidTaskWithMockDeps
+                                .mActivityScopedObjects
+                                .mActivityWindowAndroid);
+        var incognitoWindowInfo =
+                new AndroidBrowserWindowInfo(
                         ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        incognitoProfile,
+                        chromeAndroidTaskWithMockDeps
+                                .mActivityScopedObjects
+                                .mActivityWindowAndroid);
+
+        verify(observer, times(1)).onBrowserWindowActivated(incognitoWindowInfo);
 
         // Simulate switching getCurrentModel back to normal tab model when incognito tabs become
         // empty.
@@ -4228,11 +4277,8 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert: incognito window removed (no deactivation event), normal window activated
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer)
-                .onBrowserWindowRemoved(
-                        ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
-        inOrder.verify(observer).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        inOrder.verify(observer).onBrowserWindowRemoved(incognitoWindowInfo);
+        inOrder.verify(observer).onBrowserWindowActivated(normalWindowInfo);
     }
 
     @Test
@@ -4270,18 +4316,21 @@ public class ChromeAndroidTaskImplUnitTest {
         var normalTabModel = tabModelSelector.getModel(false);
         when(tabModelSelector.getCurrentModel()).thenReturn(normalTabModel);
 
+        var incognitoWindowInfo =
+                new AndroidBrowserWindowInfo(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        incognitoProfile,
+                        chromeAndroidTaskWithMockDeps
+                                .mActivityScopedObjects
+                                .mActivityWindowAndroid);
+
         // Act
         incognitoObserverCaptor.getValue().onIncognitoModelCreated();
 
         // Assert: incognito window added but NOT activated
-        verify(observer, times(1))
-                .onBrowserWindowAdded(
-                        ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
-        verify(observer, never())
-                .onBrowserWindowActivated(
-                        ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(1)).onBrowserWindowAdded(incognitoWindowInfo);
+        verify(observer, never()).onBrowserWindowActivated(incognitoWindowInfo);
     }
 
     @Test
@@ -4301,13 +4350,21 @@ public class ChromeAndroidTaskImplUnitTest {
         var observer = mock(AndroidBrowserWindowObserver.class);
         chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
 
+        var normalWindowInfo =
+                new AndroidBrowserWindowInfo(
+                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        chromeAndroidTaskWithMockDeps.mMockProfile,
+                        chromeAndroidTaskWithMockDeps
+                                .mActivityScopedObjects
+                                .mActivityWindowAndroid);
+
         // 1. Start in foreground/active state.
         when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
                 .thenReturn(true);
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
 
         // Verify normal window is immediately activated since it's in the foreground.
-        verify(observer, times(1)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(1)).onBrowserWindowActivated(normalWindowInfo);
 
         // 2. Act: Move task to background.
         when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
@@ -4315,8 +4372,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.onTopResumedActivityChangedWithNative(false);
 
         // Assert: normal window is deactivated.
-        verify(observer, times(1))
-                .onBrowserWindowDeactivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(1)).onBrowserWindowDeactivated(normalWindowInfo);
 
         // 3. Act: Move task back to foreground.
         when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
@@ -4324,7 +4380,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert: normal window is activated again.
-        verify(observer, times(2)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(2)).onBrowserWindowActivated(normalWindowInfo);
     }
 
     @Test
@@ -4345,13 +4401,21 @@ public class ChromeAndroidTaskImplUnitTest {
         var observer = mock(AndroidBrowserWindowObserver.class);
         chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
 
+        var normalWindowInfo =
+                new AndroidBrowserWindowInfo(
+                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR,
+                        chromeAndroidTaskWithMockDeps.mMockProfile,
+                        chromeAndroidTaskWithMockDeps
+                                .mActivityScopedObjects
+                                .mActivityWindowAndroid);
+
         // 1. Start in foreground/active state.
         when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
                 .thenReturn(true);
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
 
         // Verify normal window is immediately activated since it's in the foreground.
-        verify(observer, times(1)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(1)).onBrowserWindowActivated(normalWindowInfo);
 
         // 2. Act: Move task to background. Event ordering is important.
         when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
@@ -4359,8 +4423,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.onTopResumedActivityChangedWithNative(false);
 
         // Assert: normal window is deactivated correctly.
-        verify(observer, times(1))
-                .onBrowserWindowDeactivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(1)).onBrowserWindowDeactivated(normalWindowInfo);
 
         // 3. Act: Move task back to foreground. Event ordering is important.
         when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
@@ -4368,7 +4431,7 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
 
         // Assert: normal window is activated again correctly.
-        verify(observer, times(2)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(2)).onBrowserWindowActivated(normalWindowInfo);
     }
 
     private static final class TestChromeAndroidTaskFeature implements ChromeAndroidTaskFeature {
