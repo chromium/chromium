@@ -7671,11 +7671,39 @@ be describing additional metrics about the same event.
   <owner>picarella@google.com</owner>
   <owner>mmaryia@google.com</owner>
   <summary>
-    Recorded when either a copy/cut or a subsequent paste event occurs. A
-    separate event entry is logged for each action: a copy or cut from a tab
-    records an entry with `CopyFromTabNonce`, while a subsequent paste of that
-    data from a different tab and within 10 minutes, records a separate entry
-    with `PasteFromTabNonce`.
+    As of M153, recorded when either a copy/cut or a subsequent paste event
+    occurs for a user with the AutofillAtMemory feature disabled (prior to M153,
+    it was recorded regardless of the feature status). A separate event entry is
+    logged for each action: a copy or cut from a tab records an entry with
+    `CopyFromTabNonce`, while a subsequent paste of that data from a different
+    tab and within 10 minutes, records a separate entry with
+    `PasteFromTabNonce`.
+  </summary>
+  <metric name="CopyFromTabNonce">
+    <summary>
+      A random 64-bit integer recorded when a user copies or cuts data from a
+      non-incognito tab.
+    </summary>
+  </metric>
+  <metric name="PasteFromTabNonce">
+    <summary>
+      The 64-bit nonce of the matching copy event, recorded when the user pastes
+      the copied data into a different tab within 10 minutes. Used to link the
+      copy and paste events.
+    </summary>
+  </metric>
+</event>
+
+<event name="Clipboard.CopyPasteEvent.WithAtMemory">
+  <owner>picarella@google.com</owner>
+  <owner>mmaryia@google.com</owner>
+  <summary>
+    Added in M153. Recorded when either a copy/cut or a subsequent paste event
+    occurs for a user with the AutofillAtMemory feature enabled. A separate
+    event entry is logged for each action: a copy or cut from a tab records an
+    entry with `CopyFromTabNonce`, while a subsequent paste of that data from a
+    different tab and within 10 minutes, records a separate entry with
+    `PasteFromTabNonce`.
   </summary>
   <metric name="CopyFromTabNonce">
     <summary>

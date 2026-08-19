@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_CROSS_TAB_COPY_PASTE_TRACKER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_CROSS_TAB_COPY_PASTE_TRACKER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_CROSS_TAB_COPY_PASTE_TRACKER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_CROSS_TAB_COPY_PASTE_TRACKER_H_
 
 #include <optional>
 
@@ -15,14 +15,12 @@
 namespace autofill {
 
 // Tracks cross-tab copy-paste events.
-class AtMemoryCrossTabCopyPasteTracker : public KeyedService {
+class CrossTabCopyPasteTracker : public KeyedService {
  public:
-  AtMemoryCrossTabCopyPasteTracker();
-  AtMemoryCrossTabCopyPasteTracker(const AtMemoryCrossTabCopyPasteTracker&) =
-      delete;
-  AtMemoryCrossTabCopyPasteTracker& operator=(
-      const AtMemoryCrossTabCopyPasteTracker&) = delete;
-  ~AtMemoryCrossTabCopyPasteTracker() override;
+  CrossTabCopyPasteTracker();
+  CrossTabCopyPasteTracker(const CrossTabCopyPasteTracker&) = delete;
+  CrossTabCopyPasteTracker& operator=(const CrossTabCopyPasteTracker&) = delete;
+  ~CrossTabCopyPasteTracker() override;
 
   // KeyedService:
   void Shutdown() override;
@@ -60,4 +58,4 @@ class AtMemoryCrossTabCopyPasteTracker : public KeyedService {
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_CROSS_TAB_COPY_PASTE_TRACKER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_CROSS_TAB_COPY_PASTE_TRACKER_H_

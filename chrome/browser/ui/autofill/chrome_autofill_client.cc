@@ -30,7 +30,6 @@
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/autofill/at_memory/at_memory_query_service_factory.h"
-#include "chrome/browser/autofill/at_memory_cross_tab_copy_paste_tracker_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
 #include "chrome/browser/autofill/autofill_ai_model_executor_factory.h"
@@ -39,6 +38,7 @@
 #include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_decider_factory.h"
 #include "chrome/browser/autofill/autofill_policy_service_factory.h"
+#include "chrome/browser/autofill/cross_tab_copy_paste_tracker_factory.h"
 #include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -105,7 +105,6 @@
 #include "components/autofill/core/browser/actor/actor_key_metrics_recorder.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
-#include "components/autofill/core/browser/at_memory_cross_tab_copy_paste_tracker.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -125,6 +124,7 @@
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
+#include "components/autofill/core/browser/metrics/cross_tab_copy_paste_tracker.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/permissions/autofill_policy_service.h"
@@ -305,8 +305,8 @@ ChromeAutofillClient::AtMemoryCopyPasteObserver::AtMemoryCopyPasteObserver(
 void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnTextCopiedToClipboard(
     content::RenderFrameHost* render_frame_host,
     const std::u16string& copied_text) {
-  AtMemoryCrossTabCopyPasteTracker* tracker =
-      AtMemoryCrossTabCopyPasteTrackerFactory::GetForBrowserContext(
+  CrossTabCopyPasteTracker* tracker =
+      CrossTabCopyPasteTrackerFactory::GetForBrowserContext(
           client_->web_contents()->GetBrowserContext());
   if (!tracker) {
     return;
@@ -317,8 +317,8 @@ void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnTextCopiedToClipboard(
 }
 
 void ChromeAutofillClient::AtMemoryCopyPasteObserver::OnPaste() {
-  AtMemoryCrossTabCopyPasteTracker* tracker =
-      AtMemoryCrossTabCopyPasteTrackerFactory::GetForBrowserContext(
+  CrossTabCopyPasteTracker* tracker =
+      CrossTabCopyPasteTrackerFactory::GetForBrowserContext(
           client_->web_contents()->GetBrowserContext());
   if (!tracker) {
     return;

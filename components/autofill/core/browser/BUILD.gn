@@ -1562,8 +1562,8 @@ static_library("browser") {
 
   if (is_win || is_mac || is_linux || is_chromeos || is_android) {
     sources += [
-      "at_memory_cross_tab_copy_paste_tracker.cc",
-      "at_memory_cross_tab_copy_paste_tracker.h",
+      "metrics/cross_tab_copy_paste_tracker.cc",
+      "metrics/cross_tab_copy_paste_tracker.h",
     ]
   }
 }
@@ -2445,7 +2445,7 @@ source_set("unit_tests") {
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_android) {
-    sources += [ "at_memory_cross_tab_copy_paste_tracker_unittest.cc" ]
+    sources += [ "metrics/cross_tab_copy_paste_tracker_unittest.cc" ]
     deps += [ "//ui/base/clipboard:clipboard_test_support" ]
   }
 

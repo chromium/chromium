@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/at_memory_cross_tab_copy_paste_tracker.h"
+#include "components/autofill/core/browser/metrics/cross_tab_copy_paste_tracker.h"
 
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/sessions/core/session_id.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -24,41 +26,52 @@ constexpr base::TimeDelta kUkmLoggingSequenceDuration = base::Minutes(10);
 
 }  // namespace
 
-AtMemoryCrossTabCopyPasteTracker::AtMemoryCrossTabCopyPasteTracker() = default;
+CrossTabCopyPasteTracker::CrossTabCopyPasteTracker() = default;
 
-AtMemoryCrossTabCopyPasteTracker::~AtMemoryCrossTabCopyPasteTracker() = default;
+CrossTabCopyPasteTracker::~CrossTabCopyPasteTracker() = default;
 
 // static
-void AtMemoryCrossTabCopyPasteTracker::OnClipboardTextRead(
-    ActionRecord last_copy,
-    ukm::SourceId source_id,
-    std::u16string text) {
+void CrossTabCopyPasteTracker::OnClipboardTextRead(ActionRecord last_copy,
+                                                   ukm::SourceId source_id,
+                                                   std::u16string text) {
   // If the paste is within the time window, is from a different tab, and the
   // content hash matches then log the UKM paste event.
   if (base::FastHash(base::as_byte_span(text)) != last_copy.hash) {
     return;
   }
-  ukm::builders::Clipboard_CopyPasteEvent(source_id)
-      .SetPasteFromTabNonce(last_copy.nonce)
-      .Record(ukm::UkmRecorder::Get());
+  if (base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
+    ukm::builders::Clipboard_CopyPasteEvent_WithAtMemory(source_id)
+        .SetPasteFromTabNonce(last_copy.nonce)
+        .Record(ukm::UkmRecorder::Get());
+  } else {
+    ukm::builders::Clipboard_CopyPasteEvent(source_id)
+        .SetPasteFromTabNonce(last_copy.nonce)
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
-void AtMemoryCrossTabCopyPasteTracker::Shutdown() {
+void CrossTabCopyPasteTracker::Shutdown() {
   last_copy_.reset();
 }
 
-void AtMemoryCrossTabCopyPasteTracker::OnCopy(SessionID tab_id,
-                                              size_t content_hash,
-                                              ukm::SourceId source_id) {
+void CrossTabCopyPasteTracker::OnCopy(SessionID tab_id,
+                                      size_t content_hash,
+                                      ukm::SourceId source_id) {
   last_copy_.emplace(base::TimeTicks::Now(), content_hash,
                      static_cast<int64_t>(base::RandUint64()), tab_id);
-  ukm::builders::Clipboard_CopyPasteEvent(source_id)
-      .SetCopyFromTabNonce(last_copy_->nonce)
-      .Record(ukm::UkmRecorder::Get());
+  if (base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
+    ukm::builders::Clipboard_CopyPasteEvent_WithAtMemory(source_id)
+        .SetCopyFromTabNonce(last_copy_->nonce)
+        .Record(ukm::UkmRecorder::Get());
+  } else {
+    ukm::builders::Clipboard_CopyPasteEvent(source_id)
+        .SetCopyFromTabNonce(last_copy_->nonce)
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
-bool AtMemoryCrossTabCopyPasteTracker::OnPaste(SessionID tab_id,
-                                               ukm::SourceId source_id) {
+bool CrossTabCopyPasteTracker::OnPaste(SessionID tab_id,
+                                       ukm::SourceId source_id) {
   if (!last_copy_.has_value()) {
     return false;
   }
@@ -76,7 +89,7 @@ bool AtMemoryCrossTabCopyPasteTracker::OnPaste(SessionID tab_id,
         ui::ClipboardBuffer::kCopyPaste,
         ui::DataTransferEndpoint(ui::EndpointType::kDefault,
                                  {.notify_if_restricted = false}),
-        base::BindOnce(&AtMemoryCrossTabCopyPasteTracker::OnClipboardTextRead,
+        base::BindOnce(&CrossTabCopyPasteTracker::OnClipboardTextRead,
                        *last_copy_, source_id));
   }
   last_copy_.reset();
