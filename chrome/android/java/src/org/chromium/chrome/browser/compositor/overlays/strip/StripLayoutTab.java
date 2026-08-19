@@ -414,6 +414,13 @@ public class StripLayoutTab extends StripLayoutView {
 
     /** Returns whether a tab indicator (actuation or media alert) should be shown. */
     public boolean shouldShowIndicator() {
+        if (mAlertState != null
+                && (mAlertState == TabAlert.GLIC_ACCESSING
+                        || mAlertState == TabAlert.GLIC_SHARING)) {
+            // Tab underlines replace the alert indicator for Glic accessing and sharing states on
+            // the tab strip.
+            return false;
+        }
         return TabUtils.getTabAlertDrawable(mAlertState) != Resources.ID_NULL
                 && !shouldHideMediaIndicator();
     }
