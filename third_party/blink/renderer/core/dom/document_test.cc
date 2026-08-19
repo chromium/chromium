@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1785,7 +1786,8 @@ class DocumentURLCacheTest : public DocumentTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  Document::URLCache* cache_ = nullptr;
+  raw_ptr<Document::URLCache, UnprotectedInRelease | DanglingUntriaged> cache_ =
+      nullptr;
 };
 
 TEST_F(DocumentURLCacheTest, Get) {

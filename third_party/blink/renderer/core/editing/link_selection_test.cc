@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -52,7 +53,8 @@ class LinkSelectionTestBase : public testing::Test {
   test::TaskEnvironment task_environment_;
 
   frame_test_helpers::WebViewHelper helper_;
-  WebViewImpl* web_view_ = nullptr;
+  raw_ptr<WebViewImpl, UnprotectedInRelease | DanglingUntriaged> web_view_ =
+      nullptr;
   Persistent<WebLocalFrameImpl> main_frame_ = nullptr;
 };
 

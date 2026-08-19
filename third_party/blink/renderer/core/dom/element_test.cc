@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -652,7 +653,8 @@ class ScriptOnDestroyPlugin : public GarbageCollected<ScriptOnDestroyPlugin>,
   bool DestroyCalled() const { return destroy_called_; }
 
  private:
-  WebPluginContainer* container_;
+  raw_ptr<WebPluginContainer, UnprotectedInRelease | DanglingUntriaged>
+      container_;
   bool destroy_called_ = false;
 };
 

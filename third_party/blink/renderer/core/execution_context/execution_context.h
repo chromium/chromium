@@ -30,6 +30,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -530,7 +531,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   void AddConsoleMessageImpl(ConsoleMessage*,
                              bool discard_duplicates) override = 0;
 
-  v8::Isolate* const isolate_;
+  const raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_;
 
   SecurityContext security_context_;
 

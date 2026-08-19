@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_AGENT_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -115,7 +116,7 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent>,
   // scheduler::EventLoopDelegate overrides:
   void NotifyRejectedPromises() override;
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_;
   scoped_refptr<RejectedPromises> rejected_promises_;
   scoped_refptr<scheduler::EventLoop> event_loop_;
   const base::UnguessableToken cluster_id_;

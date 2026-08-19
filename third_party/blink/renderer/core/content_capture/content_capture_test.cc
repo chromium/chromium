@@ -5,6 +5,7 @@
 
 #include <array>
 
+#include "base/memory/raw_ref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
@@ -149,11 +150,13 @@ class ContentCaptureLocalFrameClientHelper : public EmptyLocalFrameClient {
       : client_(client) {}
 
   WebContentCaptureClient* GetWebContentCaptureClient() const override {
-    return &client_;
+    return &*client_;
   }
 
  private:
-  WebContentCaptureClient& client_;
+  const raw_ref<WebContentCaptureClient,
+                UnprotectedInRelease | DanglingUntriaged>
+      client_;
 };
 
 class ContentCaptureTest : public PageTestBase,

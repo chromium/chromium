@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
@@ -93,7 +94,8 @@ class ExecutionContextClipboardEventState
   virtual ~ExecutionContextClipboardEventState() = default;
 
   struct State {
-    const AtomicString* event_type = nullptr;
+    raw_ptr<const AtomicString, UnprotectedInRelease | DanglingUntriaged>
+        event_type = nullptr;
     std::optional<EditorCommandSource> source;
     std::optional<absl::uint128> sequence_number = 0;
   };

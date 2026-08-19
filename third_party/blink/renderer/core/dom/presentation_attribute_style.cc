@@ -32,6 +32,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -46,7 +47,7 @@ namespace blink {
 
 struct PresentationAttributeCacheKey {
   PresentationAttributeCacheKey() : tag_name(nullptr) {}
-  StringImpl* tag_name;
+  raw_ptr<StringImpl, UnprotectedInRelease | DanglingUntriaged> tag_name;
   Vector<std::pair<StringImpl*, AtomicString>, 3> attributes_and_values;
 };
 
