@@ -44,8 +44,7 @@ namespace remoting {
 
 namespace {
 
-constexpr std::string_view kTmux2Path = "/usr/bin/tmx2";
-constexpr std::string_view kTmuxPath = "/usr/bin/tmux";
+constexpr std::string_view kTmx2Path = "/usr/bin/tmx2";
 constexpr std::string_view kTmuxSessionPrefix = "chrome-remote-desktop-";
 constexpr std::string_view kTmuxSocketName = "chrome-remote-desktop";
 
@@ -53,26 +52,21 @@ std::string GetTmuxSessionName(int32_t id) {
   return base::StrCat({kTmuxSessionPrefix, base::NumberToString(id)});
 }
 
-base::FilePath FindTmuxOrTmx2Path() {
-  // Prefer tmx2 over tmux. It is impossible to have tmx2 installed without
-  // tmux also being installed.
-  base::FilePath tmx2_path(kTmux2Path);
+base::FilePath FindTmx2Path() {
+  // Only tmx2 is supported for terminal sessions. It's impossible to have tmx2
+  // installed without tmux also being installed.
+  base::FilePath tmx2_path(kTmx2Path);
   if (base::PathExists(tmx2_path)) {
     return tmx2_path;
-  }
-
-  base::FilePath tmx_path(kTmuxPath);
-  if (base::PathExists(tmx_path)) {
-    return tmx_path;
   }
   return base::FilePath();
 }
 
 void KillTmuxSession(int32_t id) {
-  base::FilePath path = FindTmuxOrTmx2Path();
-  if (!path.empty()) {
+  base::FilePath tmx2_path = FindTmx2Path();
+  if (!tmx2_path.empty()) {
     std::vector<std::string> tmux_args = {
-        path.value(), "-L", std::string(kTmuxSocketName),
+        tmx2_path.value(), "-L", std::string(kTmuxSocketName),
         "kill-session", "-t", GetTmuxSessionName(id)};
     base::Process process =
         base::LaunchProcess(tmux_args, base::LaunchOptions());
@@ -88,14 +82,14 @@ void TerminateProcessInBackground(base::Process process) {
 }
 
 std::optional<pid_t> GetTmuxPaneShellPid(int32_t id) {
-  base::FilePath tmux_path = FindTmuxOrTmx2Path();
-  if (tmux_path.empty()) {
+  base::FilePath tmx2_path = FindTmx2Path();
+  if (tmx2_path.empty()) {
     return std::nullopt;
   }
 
   std::string output;
   std::vector<std::string> args = {
-      tmux_path.value(), "-L", std::string(kTmuxSocketName),
+      tmx2_path.value(), "-L", std::string(kTmuxSocketName),
       "display-message", "-p", "-t",
       GetTmuxSessionName(id), "-F", "#{pane_pid}"};
 
@@ -125,16 +119,16 @@ class TerminalPreExecDelegate : public base::LaunchOptions::PreExecDelegate {
 };
 
 base::Process LaunchShellProcess(int32_t id, base::ScopedFD subsidiary_fd) {
-  base::FilePath tmux_path = FindTmuxOrTmx2Path();
-  // If tmux is not available, then we cannot launch the terminal session.
-  if (tmux_path.empty()) {
+  base::FilePath tmx2_path = FindTmx2Path();
+  // If tmx2 is not available, then we cannot launch the terminal session.
+  if (tmx2_path.empty()) {
     LOG(ERROR)
-        << "tmux / tmx2 binary not found. Cannot launch terminal session.";
+        << "tmx2 binary not found. Cannot launch terminal session.";
     return base::Process();
   }
 
   std::vector<std::string> tmux_cmd = {
-    tmux_path.value(),
+    tmx2_path.value(),
     "-L", std::string(kTmuxSocketName),
     "new-session", "-A", "-s", GetTmuxSessionName(id), ";",
     "set-option", "set-titles", "on", ";",
@@ -487,14 +481,14 @@ std::unique_ptr<TerminalSession> TerminalSession::Create(
 // static
 std::vector<int32_t> TerminalSession::GetPersistentTerminalIds() {
   // This is a blocking call (uses PathExists and GetAppOutput).
-  base::FilePath tmux_path = FindTmuxOrTmx2Path();
-  if (tmux_path.empty()) {
+  base::FilePath tmx2_path = FindTmx2Path();
+  if (tmx2_path.empty()) {
     return {};
   }
 
   std::string output;
   std::vector<std::string> args = {
-      tmux_path.value(), "-L", std::string(kTmuxSocketName),
+      tmx2_path.value(), "-L", std::string(kTmuxSocketName),
       "list-sessions",   "-F", "#{session_name}"};
   if (!base::GetAppOutput(args, &output)) {
     return {};
