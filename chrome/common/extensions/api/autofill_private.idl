@@ -12,6 +12,20 @@ namespace autofillPrivate {
     boolean isEligibleForAddressAccountStorage;
   };
 
+  // State of the user data processing consent.
+  enum UserDataProcessingConsentState {
+    UNDEFINED,
+    UNKNOWN,
+    ENABLED,
+    DISABLED
+  };
+
+  // Consent states for Gmail OTP filling.
+  dictionary UserDataProcessingConsentStates {
+    UserDataProcessingConsentState commsApps;
+    UserDataProcessingConsentState googleApps;
+  };
+
   // A copy of FieldType from components/autofill/core/browser/field_types.h.
   enum FieldType {
     NO_SERVER_DATA,
@@ -490,6 +504,7 @@ namespace autofillPrivate {
   callback SetWalletablePassDetectionOptInStatusCallback = void(boolean success);
   callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
   callback AuthenticateUserBeforeViewingEntityDataCallback = void(boolean success);
+  callback UserDataProcessingConsentCallback = void(UserDataProcessingConsentStates states);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -664,6 +679,10 @@ namespace autofillPrivate {
     static void setWalletablePassDetectionOptInStatus(
       boolean optedIn,
       SetWalletablePassDetectionOptInStatusCallback callback);
+
+    // Gets the user data processing consent states for the current user.
+    static void fetchUserDataProcessingConsent(
+      UserDataProcessingConsentCallback callback);
   };
 
   interface Events {

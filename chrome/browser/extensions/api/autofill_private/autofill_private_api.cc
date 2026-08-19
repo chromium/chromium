@@ -1626,4 +1626,31 @@ void AutofillPrivateToggleAutofillAiReauthRequirementFunction::
   Respond(NoArguments());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// AutofillPrivateFetchUserDataProcessingConsentFunction
+
+ExtensionFunction::ResponseAction
+AutofillPrivateFetchUserDataProcessingConsentFunction::Run() {
+  autofill::ContentAutofillClient* client = autofill_client();
+  if (!client) {
+    return RespondNow(
+        Error(base::StrCat({"Fetch user data processing consent - ",
+                            kErrorAutofillClientUnavailable})));
+  }
+
+  autofill_private::UserDataProcessingConsentStates states;
+  if (autofill::prefs::IsAutofillGmailOtpFillingEnabled(client->GetPrefs())) {
+    states.comms_apps =
+        autofill_private::UserDataProcessingConsentState::kEnabled;
+    states.google_apps =
+        autofill_private::UserDataProcessingConsentState::kEnabled;
+  } else {
+    states.comms_apps =
+        autofill_private::UserDataProcessingConsentState::kDisabled;
+    states.google_apps =
+        autofill_private::UserDataProcessingConsentState::kDisabled;
+  }
+  return RespondNow(WithArguments(states.ToValue()));
+}
+
 }  // namespace extensions

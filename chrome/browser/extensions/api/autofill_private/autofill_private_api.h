@@ -719,6 +719,24 @@ class AutofillPrivateToggleAutofillAiReauthRequirementFunction
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 };
 
+class AutofillPrivateFetchUserDataProcessingConsentFunction
+    : public AutofillPrivateExtensionFunction {
+ public:
+  AutofillPrivateFetchUserDataProcessingConsentFunction() = default;
+  AutofillPrivateFetchUserDataProcessingConsentFunction(
+      const AutofillPrivateFetchUserDataProcessingConsentFunction&) = delete;
+  AutofillPrivateFetchUserDataProcessingConsentFunction& operator=(
+      const AutofillPrivateFetchUserDataProcessingConsentFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.fetchUserDataProcessingConsent",
+                             AUTOFILLPRIVATE_FETCHUSERDATAPROCESSINGCONSENT)
+
+ protected:
+  ~AutofillPrivateFetchUserDataProcessingConsentFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_

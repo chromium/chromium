@@ -450,6 +450,44 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
       RunAutofillSubtest("verifyUserOptedOutOfWalletablePassDetection"));
 }
 
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
+                       FetchUserDataProcessingConsent) {
+  autofill::prefs::SetAutofillGmailOtpFillingEnabled(
+      autofill_client()->GetPrefs(), true);
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  std::optional<base::Value> result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[]", profile());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_dict());
+  EXPECT_THAT(result->GetDict().FindString("commsApps"),
+              Pointee(Eq("ENABLED")));
+  EXPECT_THAT(result->GetDict().FindString("googleApps"),
+              Pointee(Eq("ENABLED")));
+
+  autofill::prefs::SetAutofillGmailOtpFillingEnabled(
+      autofill_client()->GetPrefs(), false);
+
+  function = base::MakeRefCounted<
+      extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  result = extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[]", profile());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_dict());
+  EXPECT_THAT(result->GetDict().FindString("commsApps"),
+              Pointee(Eq("DISABLED")));
+  EXPECT_THAT(result->GetDict().FindString("googleApps"),
+              Pointee(Eq("DISABLED")));
+}
+
 IN_PROC_BROWSER_TEST_F(
     AutofillPrivateApiBrowserTest,
     SetWalletablePassDetectionOptInStatus_SwitchEligibility) {
