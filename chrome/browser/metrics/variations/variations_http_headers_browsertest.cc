@@ -370,26 +370,6 @@ class VariationsHttpHeadersBrowserTest : public PlatformBrowserTest {
 
   ~VariationsHttpHeadersBrowserTest() override = default;
 
-  void TearDownOnMainThread() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/480962318): Remove this workaround when fixed.
-    // On Android there seems to be a race between deinitialization of the
-    // FeatureList through the browsertest and Android actual UI thread.
-    // This results in rare crash in
-    // BluetoothNotificationManager.clearBluetoothNotifications().
-    // The workaround is to drain the RunLoop before allowing the test
-    // to tear down.
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-    sync();
-#endif
-    PlatformBrowserTest::TearDownOnMainThread();
-  }
-
   // TODO(crbug.com/452922329): Share the helpers around Android Incognito in
   // more general helper library if it actually doesn't flake for a while.
   void CreateIncognitoTab() {
