@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
+#include "components/tabs/public/tab_interface.h"
 
 FramebustBlockTabHelper::~FramebustBlockTabHelper() = default;
 
@@ -42,10 +43,19 @@ void FramebustBlockTabHelper::OnBlockedUrlClicked(size_t index) {
   web_contents()->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
+DEFINE_USER_DATA(FramebustBlockTabHelper);
+
 FramebustBlockTabHelper::FramebustBlockTabHelper(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<FramebustBlockTabHelper>(*web_contents) {}
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
+
+// static
+FramebustBlockTabHelper* FramebustBlockTabHelper::From(
+    tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
 
 void FramebustBlockTabHelper::PrimaryPageChanged(content::Page& page) {
   blocked_urls_.clear();
@@ -54,5 +64,3 @@ void FramebustBlockTabHelper::PrimaryPageChanged(content::Page& page) {
 
   content_settings::UpdateLocationBarUiForWebContents(web_contents());
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FramebustBlockTabHelper);

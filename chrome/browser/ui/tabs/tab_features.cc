@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/autofill/payments/payments_churned_users_page_action_controller.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_page_action_controller.h"
+#include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
@@ -509,6 +510,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   focus_tab_after_navigation_helper_ =
       std::make_unique<FocusTabAfterNavigationHelper>(tab.GetContents());
 
+  framebust_block_tab_helper_ =
+      GetUserDataFactory().CreateInstance<FramebustBlockTabHelper>(
+          tab, tab, tab.GetContents());
+
   zero_suggest_prefetch_tab_helper_ =
       std::make_unique<ZeroSuggestPrefetchTabHelper>(tab.GetContents());
 
@@ -724,6 +729,14 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   focus_tab_after_navigation_helper_ =
       std::make_unique<FocusTabAfterNavigationHelper>(new_contents);
+
+  // The reset() must happen first so that the old instance deregisters
+  // itself from the UnownedUserDataHost before the new instance registers
+  // itself.
+  framebust_block_tab_helper_.reset();
+  framebust_block_tab_helper_ =
+      GetUserDataFactory().CreateInstance<FramebustBlockTabHelper>(
+          *tab, *tab, new_contents);
 
   zero_suggest_prefetch_tab_helper_ =
       std::make_unique<ZeroSuggestPrefetchTabHelper>(new_contents);

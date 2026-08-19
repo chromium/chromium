@@ -69,6 +69,7 @@
 #include "components/printing/browser/print_composite_client.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -490,8 +491,10 @@ void BrowserWebContentsDelegate::OnDidBlockNavigation(
     blink::mojom::NavigationBlockedReason reason) {
   if (reason ==
       blink::mojom::NavigationBlockedReason::kRedirectWithNoUserGesture) {
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents);
     if (auto* framebust_helper =
-            FramebustBlockTabHelper::FromWebContents(web_contents)) {
+            tab ? FramebustBlockTabHelper::From(tab) : nullptr) {
       auto on_click = [](const GURL& url, size_t index, size_t total_elements) {
         UMA_HISTOGRAM_ENUMERATION(
             "WebCore.Framebust.ClickThroughPosition",

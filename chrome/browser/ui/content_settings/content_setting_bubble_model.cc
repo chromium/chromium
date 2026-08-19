@@ -71,6 +71,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/vector_icons/vector_icons.h"
@@ -1714,7 +1715,8 @@ ContentSettingFramebustBlockBubbleModel::
                                      page,
                                      ContentSettingsType::POPUPS) {
   set_title(l10n_util::GetStringUTF16(IDS_REDIRECT_BLOCKED_MESSAGE));
-  auto* helper = FramebustBlockTabHelper::FromWebContents(web_contents());
+  auto* helper = FramebustBlockTabHelper::From(
+      tabs::TabInterface::GetFromContents(web_contents()));
 
   // Build the blocked urls list.
   for (const auto& blocked_url : helper->blocked_urls()) {
@@ -1730,7 +1732,8 @@ ContentSettingFramebustBlockBubbleModel::
 void ContentSettingFramebustBlockBubbleModel::OnListItemClicked(
     int index,
     const ui::Event& event) {
-  FramebustBlockTabHelper::FromWebContents(web_contents())
+  FramebustBlockTabHelper::From(
+      tabs::TabInterface::GetFromContents(web_contents()))
       ->OnBlockedUrlClicked(index);
 }
 

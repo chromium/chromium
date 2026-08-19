@@ -15,7 +15,9 @@ source_set("content_settings") {
     "//components/content_settings/browser",
     "//components/content_settings/core/common",
     "//components/custom_handlers",
+    "//components/tabs:public",
     "//services/device/public/cpp/geolocation:buildflags",
+    "//skia",
     "//ui/base/interaction",
   ]
 
@@ -105,6 +107,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/subresource_filter/core/browser",
+    "//components/tabs:public",
     "//ui/events:test_support",
   ]
 }

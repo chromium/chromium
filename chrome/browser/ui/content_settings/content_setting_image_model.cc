@@ -44,6 +44,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -1182,9 +1183,13 @@ ContentSettingFramebustBlockImageModel::ContentSettingFramebustBlockImageModel()
 
 bool ContentSettingFramebustBlockImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
-  // Early exit if no blocked Framebust.
-  if (!FramebustBlockTabHelper::FromWebContents(web_contents)
-           ->HasBlockedUrls()) {
+  // Early exit if no blocked Framebust. Non-tab WebContents have no
+  // FramebustBlockTabHelper.
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  FramebustBlockTabHelper* helper =
+      tab ? FramebustBlockTabHelper::From(tab) : nullptr;
+  if (!helper || !helper->HasBlockedUrls()) {
     return false;
   }
 

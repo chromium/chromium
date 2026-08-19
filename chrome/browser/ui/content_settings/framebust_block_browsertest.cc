@@ -35,6 +35,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
@@ -73,9 +74,7 @@ class FramebustBlockBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     current_browser_ = InProcessBrowserTest::browser();
-    FramebustBlockTabHelper::FromWebContents(GetWebContents())
-        ->manager()
-        ->AddObserver(this);
+    GetFramebustTabHelper()->manager()->AddObserver(this);
   }
 
   // UrlListManager::Observer:
@@ -90,7 +89,8 @@ class FramebustBlockBrowserTest
   }
 
   FramebustBlockTabHelper* GetFramebustTabHelper() {
-    return FramebustBlockTabHelper::FromWebContents(GetWebContents());
+    return FramebustBlockTabHelper::From(
+        tabs::TabInterface::GetFromContents(GetWebContents()));
   }
 
   void OnClick(const GURL& url, size_t index, size_t total_size) {

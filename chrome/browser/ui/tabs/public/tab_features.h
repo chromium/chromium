@@ -42,6 +42,7 @@ class CommitLimitOOMRecoveryTracker;
 class CookieControlsPageActionController;
 class FileSystemAccessPageActionController;
 class FocusTabAfterNavigationHelper;
+class FramebustBlockTabHelper;
 class FromGWSNavigationAndKeepAliveRequestObserver;
 class HttpAuthCacheStatus;
 class IntentPickerTabHelper;
@@ -553,6 +554,9 @@ class TabFeatures {
   // navigations.
   std::unique_ptr<FocusTabAfterNavigationHelper>
       focus_tab_after_navigation_helper_;
+
+  // Tracks blocked framebusts on the current page for the omnibox UI.
+  std::unique_ptr<FramebustBlockTabHelper> framebust_block_tab_helper_;
 
   std::unique_ptr<FromGWSNavigationAndKeepAliveRequestObserver>
       from_gws_navigation_and_keep_alive_request_observer_;

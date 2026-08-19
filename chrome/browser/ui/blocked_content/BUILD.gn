@@ -19,10 +19,12 @@ source_set("blocked_content") {
     "//base",
     "//chrome/browser/ui/navigator",
     "//components/blocked_content",
+    "//components/tabs:public",
     "//content/public/browser",
     "//content/public/common",
     "//third_party/blink/public/common",
     "//ui/base:types",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 
@@ -131,7 +133,10 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
     "//components/content_settings/browser",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
     "//components/ukm/content",
+    "//ui/base/unowned_user_data",
   ]
   if (is_android) {
     deps += [

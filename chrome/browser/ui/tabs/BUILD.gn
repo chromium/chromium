@@ -511,6 +511,7 @@ if (!is_android) {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/actions:actions_util",
       "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/blocked_content",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/context_highlight",
