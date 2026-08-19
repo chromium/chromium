@@ -288,6 +288,10 @@ void SharedMemoryVirtualDeviceMojoAdapter::RequestRefreshFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void SharedMemoryVirtualDeviceMojoAdapter::InvalidateBuffers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
 void SharedMemoryVirtualDeviceMojoAdapter::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (video_frame_handler_.is_bound()) {

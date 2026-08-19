@@ -48,4 +48,7 @@ interface Device {
   // however, should provide an implementation of this method that makes
   // reasonable attempts to honor these requests.
   RequestRefreshFrame();
+
+  // Instructs the device to drop all buffers from its buffer pool.
+  InvalidateBuffers();
 };

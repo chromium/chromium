@@ -243,6 +243,11 @@ void DeviceMediaToMojoAdapter::RequestRefreshFrame() {
   device_->RequestRefreshFrame();
 }
 
+void DeviceMediaToMojoAdapter::InvalidateBuffers() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  device_->InvalidateBuffers();
+}
+
 void DeviceMediaToMojoAdapter::Stop() {
   DCHECK(thread_checker_.CalledOnValidThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),

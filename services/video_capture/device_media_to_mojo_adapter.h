@@ -62,6 +62,7 @@ class DeviceMediaToMojoAdapter : public Device {
   void TakePhoto(TakePhotoCallback callback) override;
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) override;
   void RequestRefreshFrame() override;
+  void InvalidateBuffers() override;
 
   void Stop();
   void OnClientConnectionErrorOrClose();

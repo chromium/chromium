@@ -60,6 +60,10 @@ interface PushVideoStreamSubscription {
   // |feedback| contains consumer feedback like resource utilization,
   // maximum requested frame-rate and resolution.
   ProcessFeedback(media.mojom.VideoCaptureFeedback feedback);
+
+  // Instructs the service to drop and invalidate all buffers currently in
+  // the buffer pool, forcing buffer rotation.
+  InvalidateBuffers();
 };
 
 // Provides shared access to a specific video source to potentially multiple

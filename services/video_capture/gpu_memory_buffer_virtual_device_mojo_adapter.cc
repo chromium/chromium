@@ -136,6 +136,10 @@ void GpuMemoryBufferVirtualDeviceMojoAdapter::RequestRefreshFrame() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void GpuMemoryBufferVirtualDeviceMojoAdapter::InvalidateBuffers() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
 void GpuMemoryBufferVirtualDeviceMojoAdapter::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!video_frame_handler_.is_bound())

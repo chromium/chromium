@@ -20,6 +20,7 @@ class Device : public mojom::Device {
       const media::VideoCaptureParams& requested_settings,
       const base::WeakPtr<media::VideoFrameReceiver>& frame_handler) {}
   virtual void StopInProcess() {}
+  void InvalidateBuffers() override {}
 };
 
 }  // namespace video_capture

@@ -336,6 +336,7 @@ class FakeCameraDevice::Subscription
     owner_device_->OnSubscriptionActivationChanged(this);
   }
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) override {}
+  void InvalidateBuffers() override {}
 
  private:
   void OnSubscriberDisconnected() {
