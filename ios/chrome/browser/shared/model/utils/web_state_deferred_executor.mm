@@ -6,7 +6,14 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_multi_source_observation.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+
+namespace {
+// The maximum duration to wait for the WebState to finish loading.
+constexpr base::TimeDelta kWebStateDeferredExecutionTimeout = base::Seconds(10);
+}  // namespace
 
 @implementation WebStateDeferredExecutor {
   // Observer for the web state loading.
@@ -22,6 +29,9 @@
   std::unique_ptr<
       base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>>
       _scopedObservations;
+  // Stores timeout timers for web states being loaded.
+  std::unordered_map<web::WebStateID, std::unique_ptr<base::OneShotTimer>>
+      _timers;
 }
 
 - (instancetype)init {
@@ -69,6 +79,19 @@
 
   if (webState->IsLoading()) {
     [self observeWebState:webState];
+
+    web::WebStateID webStateID = webState->GetUniqueIdentifier();
+    auto timer = std::make_unique<base::OneShotTimer>();
+    timer->Start(FROM_HERE, kWebStateDeferredExecutionTimeout,
+                 base::BindOnce(
+                     [](base::WeakPtr<web::WebState> weak_web_state,
+                        __weak WebStateDeferredExecutor* weak_executor) {
+                       if (web::WebState* web_state = weak_web_state.get()) {
+                         [weak_executor handleTimeoutForWebState:web_state];
+                       }
+                     },
+                     weakWebState, weakSelf));
+    _timers[webStateID] = std::move(timer);
     return;
   }
 
@@ -106,6 +129,13 @@
 
 #pragma mark - Private
 
+// Called when the load for `webState` times out. Stops observing and triggers
+// the loaded callbacks with a failure status.
+- (void)handleTimeoutForWebState:(web::WebState*)webState {
+  [self removeObserverForWebState:webState];
+  [self webStateLoaded:webState success:NO];
+}
+
 - (void)observeWebState:(web::WebState*)webState {
   if (_scopedObservations->IsObservingSource(webState)) {
     return;
@@ -126,6 +156,7 @@
 
 - (void)webStateLoaded:(web::WebState*)webState success:(BOOL)success {
   const web::WebStateID webStateID = webState->GetUniqueIdentifier();
+  _timers.erase(webStateID);
   if (auto block = _loadedCallbacks[webStateID]) {
     _loadedCallbacks.erase(webStateID);
     block(webState, success);
@@ -147,6 +178,13 @@
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   [self removeObserverForWebState:webState];
   [self webStateLoaded:webState success:success];
+}
+
+- (void)webStateDidStopLoading:(web::WebState*)webState {
+  if (_loadedCallbacks.contains(webState->GetUniqueIdentifier())) {
+    [self removeObserverForWebState:webState];
+    [self webStateLoaded:webState success:NO];
+  }
 }
 
 - (void)webStateRealized:(web::WebState*)webState {

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/utils/web_state_deferred_executor.h"
 
+#import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -12,7 +13,11 @@
 
 namespace {
 
-using WebStateDeferredExecutorTest = PlatformTest;
+class WebStateDeferredExecutorTest : public PlatformTest {
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+};
 
 // Tests that if the web state is already realized and loaded, the completion
 // block is called immediately.
@@ -87,6 +92,51 @@ TEST_F(WebStateDeferredExecutorTest, UnrealizedTriggersLoadAndCompletes) {
   EXPECT_TRUE(future.Wait());
   // Get<1>() extracts the second argument from the callback (the success BOOL).
   EXPECT_TRUE(future.Get<1>());
+}
+
+// Tests that if the web state stops loading without success, the completion
+// block is called with success = NO.
+TEST_F(WebStateDeferredExecutorTest, LoadAbortedCompletesWithFailure) {
+  web::FakeWebState web_state;
+  web_state.SetIsRealized(true);
+  web_state.SetLoading(true);
+
+  WebStateDeferredExecutor* executor = [[WebStateDeferredExecutor alloc] init];
+
+  base::test::TestFuture<web::WebState*, BOOL> future;
+  [executor ensureWebStateIsLoaded:&web_state
+                    withCompletion:base::CallbackToBlock(future.GetCallback())];
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Simulate page load being stopped/aborted (not a success).
+  web_state.SetLoading(false);
+
+  // The completion block should now be called with success = NO.
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get<1>());
+}
+
+// Tests that if the web state takes too long to load, the timeout fires
+// and the completion block is called with success = NO.
+TEST_F(WebStateDeferredExecutorTest, LoadTimesOut) {
+  web::FakeWebState web_state;
+  web_state.SetIsRealized(true);
+  web_state.SetLoading(true);
+
+  WebStateDeferredExecutor* executor = [[WebStateDeferredExecutor alloc] init];
+
+  base::test::TestFuture<web::WebState*, BOOL> future;
+  [executor ensureWebStateIsLoaded:&web_state
+                    withCompletion:base::CallbackToBlock(future.GetCallback())];
+
+  EXPECT_FALSE(future.IsReady());
+
+  // Fast forward by 10 seconds to trigger the timeout.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get<1>());
 }
 
 }  // namespace
