@@ -2694,7 +2694,6 @@ source_set("browser_tests") {
   if (enable_extensions) {
     sources += [
       # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
-      "//chrome/browser/chrome_service_worker_browsertest.cc",
       "//chrome/browser/controlled_frame/controlled_frame_apitest.cc",
       "//chrome/browser/controlled_frame/controlled_frame_contextmenus_browsertest.cc",
       "//chrome/browser/controlled_frame/controlled_frame_dialog_browsertest.cc",
@@ -3088,6 +3087,7 @@ source_set("browser_tests") {
       "//chrome/browser/password_manager:test_support",
       "//chrome/browser/pdf:pdf_extension_test_utils",
       "//chrome/browser/prefetch",
+      "//chrome/browser/service_worker:browser_tests",
       "//chrome/browser/sync_file_system",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui/global_error:test_support",

@@ -1,7 +1,7 @@
 # Service Worker OWNERS
 #
 # This file also covers ownership of the following:
-#   //chrome/browser/chrome_service_worker_browsertest.cc
+#   //chrome/browser/service_worker/
 #   //components/services/storage/service_worker/
 #   //content/browser/resources/service_worker/
 #   //content/renderer/service_worker/

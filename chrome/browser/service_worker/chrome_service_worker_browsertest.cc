@@ -121,8 +121,8 @@ class ChromeServiceWorkerTest : public InProcessBrowserTest {
   ChromeServiceWorkerTest() {
     EXPECT_TRUE(service_worker_dir_.CreateUniqueTempDir());
     EXPECT_TRUE(base::CreateDirectoryAndGetError(
-        service_worker_dir_.GetPath().Append(
-            FILE_PATH_LITERAL("scope")), nullptr));
+        service_worker_dir_.GetPath().Append(FILE_PATH_LITERAL("scope")),
+        nullptr));
   }
   ~ChromeServiceWorkerTest() override = default;
 
@@ -712,8 +712,9 @@ class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
   ~FaviconUpdateWaiter() override = default;
 
   void Wait() {
-    if (updated_)
+    if (updated_) {
       return;
+    }
 
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -727,8 +728,9 @@ class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
                         bool icon_url_changed,
                         const gfx::Image& image) override {
     updated_ = true;
-    if (!quit_closure_.is_null())
+    if (quit_closure_) {
       std::move(quit_closure_).Run();
+    }
   }
 
   bool updated_ = false;
@@ -1087,8 +1089,9 @@ class ChromeServiceWorkerNavigationPreloadTest : public InProcessBrowserTest {
                         const std::string& name) const {
     const auto& iter = request.headers.find(name);
     EXPECT_TRUE(iter != request.headers.end());
-    if (iter == request.headers.end())
+    if (iter == request.headers.end()) {
       return std::string();
+    }
     return iter->second;
   }
 

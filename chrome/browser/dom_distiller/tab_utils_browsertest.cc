@@ -80,7 +80,7 @@ std::unique_ptr<content::WebContents> NewContentsWithSameParamsAs(
 
 // FaviconUpdateWaiter waits for favicons to be changed after navigation.
 // TODO(crbug.com/40123662): Combine with FaviconUpdateWaiter in
-// chrome/browser/chrome_service_worker_browsertest.cc.
+// chrome/browser/service_worker/chrome_service_worker_browsertest.cc.
 class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
  public:
   explicit FaviconUpdateWaiter(content::WebContents* web_contents) {

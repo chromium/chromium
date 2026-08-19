@@ -46,8 +46,6 @@ per-file chrome_origin_trials_browsertest.cc=file://third_party/blink/common/ori
 
 per-file chrome_security_exploit_browsertest.cc=file://content/OWNERS
 
-per-file chrome_service_worker_browsertest.cc=file://content/browser/service_worker/OWNERS
-
 per-file chrome_webusb_browser_client*=file://chrome/browser/usb/OWNERS
 
 per-file chrome_worker_browsertest.cc=file://content/browser/worker_host/OWNERS
