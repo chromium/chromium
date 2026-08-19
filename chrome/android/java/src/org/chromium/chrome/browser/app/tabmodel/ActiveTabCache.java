@@ -5,59 +5,23 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
-import static org.chromium.chrome.browser.tab.Tab.INVALID_TAB_ID;
-import static org.chromium.chrome.browser.tabpersistence.TabStateFileManager.FLATBUFFER_PREFIX;
-
-import android.content.Context;
-import android.content.SharedPreferences;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.NullableObservableSupplier;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.SequencedTaskRunner;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabId;
-import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
-
-import java.io.File;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Responsible for caching the active tab's state. This allows for loading the active tab's state
- * pre-native, which the database is unable to do.
+ * Responsible for caching the active tab's state by coordinating window active-tab tracking and
+ * delegating disk/FlatBuffer persistence to {@link TabCache}.
  */
 @NullMarked
 public class ActiveTabCache {
-    private static final String TAG = "active_tab_cache";
-
-    /** The name of the base directory where the state is saved. */
-    private static final String CACHE_DIR_NAME = "active_tabs";
-
-    private static final String REGULAR_SUFFIX = "_regular";
-    private static final String INCOGNITO_SUFFIX = "_incognito";
-
-    private static @Nullable File sActiveTabDirectory;
-    private static @Nullable SequencedTaskRunner sTaskRunner;
-    private static final Object sCacheDirLock = new Object();
-
-    // Global counter used to invalidate outdated tasks.
-    private static final AtomicInteger sClearCounter = new AtomicInteger(0);
-
     /** Creates an instance of {@link ActiveTabCache}. */
     @FunctionalInterface
     public interface Factory {
@@ -70,137 +34,71 @@ public class ActiveTabCache {
                 String windowTag, TabModelSelector selector, @Nullable CipherFactory cipherFactory);
     }
 
-    public Callback<@Nullable Tab> mOnRegularActiveTabChanged =
-            tab -> onActiveTabChanged(/* isModelOtr= */ false, tab);
-    public Callback<@Nullable Tab> mOnIncognitoActiveTabChanged =
-            tab -> onActiveTabChanged(/* isModelOtr= */ true, tab);
+    private final Callback<@Nullable Tab> mOnRegularActiveTabChanged =
+            (tab) -> onActiveTabChanged(false, tab);
+    private final Callback<@Nullable Tab> mOnIncognitoActiveTabChanged =
+            (tab) -> onActiveTabChanged(true, tab);
 
     private final TabModelSelector mTabModelSelector;
     private final @Nullable CipherFactory mCipherFactory;
 
-    private final String mRegularTabFileName;
-    private final String mIncognitoTabFileName;
-
-    private @Nullable FutureTask<@Nullable LoadedTabState> mRegularTabTask;
-    private @Nullable FutureTask<@Nullable LoadedTabState> mIncognitoTabTask;
+    private final TabCacheKey mRegularTabCacheKey;
+    private final TabCacheKey mIncognitoTabCacheKey;
+    private final TabCache mTabCache;
 
     /**
      * @param windowTag The tag for the window being tracked.
-     * @param selector The selector associated with the window.
-     * @param cipherFactory The cipher factory for the store.
+     * @param selector The {@link TabModelSelector} to track.
+     * @param cipherFactory The {@link CipherFactory} used to encrypt the incognito file.
      */
     public ActiveTabCache(
             String windowTag, TabModelSelector selector, @Nullable CipherFactory cipherFactory) {
         assertOnUiThread();
         mTabModelSelector = selector;
         mCipherFactory = cipherFactory;
-
-        mRegularTabFileName = getFileName(windowTag, /* incognito= */ false);
-        mIncognitoTabFileName = getFileName(windowTag, /* incognito= */ true);
+        mRegularTabCacheKey = new TabCacheKey(windowTag, /* isIncognito= */ false);
+        mIncognitoTabCacheKey = new TabCacheKey(windowTag, /* isIncognito= */ true);
+        mTabCache = new TabCache(cipherFactory);
 
         if (cipherFactory == null) {
             clearActiveTab(/* incognito= */ true);
         }
 
-        Callable<@Nullable LoadedTabState> regularTabCallable =
-                () -> restoreActiveTab(/* incognito= */ false);
-        Callable<@Nullable LoadedTabState> incognitoTabCallable =
-                () -> restoreActiveTab(/* incognito= */ true);
-
-        mRegularTabTask = new FutureTask<@Nullable LoadedTabState>(regularTabCallable);
-        getTaskRunner().execute(mRegularTabTask);
-
+        mTabCache.preloadTab(mRegularTabCacheKey);
         if (cipherFactory != null) {
-            mIncognitoTabTask = new FutureTask<@Nullable LoadedTabState>(incognitoTabCallable);
-            getTaskRunner().execute(mIncognitoTabTask);
+            mTabCache.preloadTab(mIncognitoTabCacheKey);
         }
     }
 
     /**
-     * Saves the active tab's state to the cache.
+     * Saves the active tab's state.
      *
-     * <p>Note that there is one file per window/otr-status combination, so we atomically "swap" the
-     * active tab each time it is updated.
-     *
-     * @param tab The active tab.
+     * @param tab The active tab whose state is being saved.
      */
     public void saveActiveTab(Tab tab) {
         assertOnUiThread();
-        cancelTasks();
-
         boolean isOffTheRecord = tab.isOffTheRecord();
         assert !isOffTheRecord || mCipherFactory != null;
 
-        TabState tabState = TabStateExtractor.from(tab);
-        String fileName = isOffTheRecord ? mIncognitoTabFileName : mRegularTabFileName;
-        if (tabState == null || tabState.contentsState == null) {
-            deleteFileAndPref(fileName);
-            return;
-        }
-
-        getSharedPreferences().edit().putInt(fileName, tab.getId()).apply();
-        getTaskRunner()
-                .execute(
-                        () -> {
-                            File file = new File(getOrCreateCacheDirectory(), fileName);
-                            TabStateFileManager.saveStateInternal(
-                                    file, tabState, isOffTheRecord, mCipherFactory);
-                        });
+        TabCacheKey key = isOffTheRecord ? mIncognitoTabCacheKey : mRegularTabCacheKey;
+        mTabCache.saveTab(key, tab);
     }
 
     /**
      * Restores the active tab from the cache. If it doesn't exist or failed to restore, return
      * null.
      *
-     * @param isOffTheRecord Whether to restore the incognito active tab.
+     * @param incognito Whether to restore the incognito active tab.
      */
     public @Nullable LoadedTabState getPreLoadedActiveTabOrLoad(boolean incognito) {
         assertOnUiThread();
-        FutureTask<@Nullable LoadedTabState> task = maybeTakeTask(incognito);
-        if (task != null && !task.isCancelled()) {
-            try {
-                return task.get();
-            } catch (ExecutionException | InterruptedException e) {
-                // Ignore and attempt to restore on the UI thread.
-            }
-        }
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return restoreActiveTab(incognito);
-        }
-    }
-
-    private @Nullable FutureTask<@Nullable LoadedTabState> maybeTakeTask(boolean incognito) {
-        FutureTask<@Nullable LoadedTabState> task;
-        if (incognito) {
-            task = mIncognitoTabTask;
-            mIncognitoTabTask = null;
-        } else {
-            task = mRegularTabTask;
-            mRegularTabTask = null;
-        }
-        return task;
-    }
-
-    private @Nullable LoadedTabState restoreActiveTab(boolean incognito) {
-        assert !incognito || mCipherFactory != null;
-
-        String fileName = incognito ? mIncognitoTabFileName : mRegularTabFileName;
-        File file = new File(getOrCreateCacheDirectory(), fileName);
-        if (!file.exists()) return null;
-
-        @TabId int tabId = getSharedPreferences().getInt(fileName, INVALID_TAB_ID);
-        if (tabId == INVALID_TAB_ID) return null;
-
-        TabState tabState =
-                TabStateFileManager.restoreTabStateInternal(file, incognito, mCipherFactory);
-        if (tabState == null) return null;
-
-        return new LoadedTabState(tabId, tabState);
+        TabCacheKey key = incognito ? mIncognitoTabCacheKey : mRegularTabCacheKey;
+        return mTabCache.getPreLoadedTabOrLoad(key);
     }
 
     public void startTracking(boolean incognito) {
         assertOnUiThread();
-        cancelTasks();
+        mTabCache.cancelAllTasks();
 
         TabModel model = mTabModelSelector.getModel(incognito);
 
@@ -225,9 +123,8 @@ public class ActiveTabCache {
      */
     public void clearActiveTab(boolean incognito) {
         assertOnUiThread();
-        cancelTasks();
-
-        deleteFileAndPref(incognito ? mIncognitoTabFileName : mRegularTabFileName);
+        TabCacheKey key = incognito ? mIncognitoTabCacheKey : mRegularTabCacheKey;
+        mTabCache.clear(key);
     }
 
     /** Clears all active tab cache for the current window. */
@@ -236,124 +133,31 @@ public class ActiveTabCache {
         clearActiveTab(true);
     }
 
-    private void cancelTasks() {
-        if (mRegularTabTask != null) {
-            mRegularTabTask.cancel(false);
-            mRegularTabTask = null;
-        }
-        if (mIncognitoTabTask != null) {
-            mIncognitoTabTask.cancel(false);
-            mIncognitoTabTask = null;
-        }
-    }
-
     /**
      * Cleans up the active tab cache for the given window tag.
      *
      * @param windowTag The window tag to clean up.
      */
     public static void cleanupWindow(String windowTag) {
-        String regularFileName = getFileName(windowTag, false);
-        String incognitoFileName = getFileName(windowTag, true);
-
-        deleteFileAndPref(regularFileName);
-        deleteFileAndPref(incognitoFileName);
+        TabCache.cleanup(new TabCacheKey(windowTag, false));
+        TabCache.cleanup(new TabCacheKey(windowTag, true));
     }
 
     /** Clears all active tab cache global state. */
     public static void clearGlobalState() {
         assertOnUiThread();
-
-        sClearCounter.incrementAndGet();
-        synchronized (sCacheDirLock) {
-            sActiveTabDirectory = null;
-        }
-        getSharedPreferences().edit().clear().apply();
-        getTaskRunner().execute(ActiveTabCache::clearGlobalStateInternal);
-    }
-
-    private static void clearGlobalStateInternal() {
-        File directory = getCacheDirectory();
-        if (directory.exists()) {
-            File[] files = directory.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (!f.delete()) {
-                        Log.e(TAG, "Failed to delete file: " + f);
-                    }
-                }
-            }
-            if (!directory.delete()) {
-                Log.e(TAG, "Failed to delete directory: " + directory);
-            }
-        }
-    }
-
-    private static SequencedTaskRunner getTaskRunner() {
-        assertOnUiThread();
-        if (sTaskRunner == null) {
-            sTaskRunner = PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE_MAY_BLOCK);
-        }
-        return sTaskRunner;
-    }
-
-    private static File getOrCreateCacheDirectory() {
-        synchronized (sCacheDirLock) {
-            if (sActiveTabDirectory == null) {
-                sActiveTabDirectory = getCacheDirectory();
-                if (!sActiveTabDirectory.exists() && !sActiveTabDirectory.mkdirs()) {
-                    Log.e(
-                            TAG,
-                            "Failed to create active tab cache directory: " + sActiveTabDirectory);
-                }
-            }
-            return sActiveTabDirectory;
-        }
-    }
-
-    private static File getCacheDirectory() {
-        return ContextUtils.getApplicationContext().getDir(CACHE_DIR_NAME, Context.MODE_PRIVATE);
-    }
-
-    private static String getFileName(String windowTag, boolean incognito) {
-        String suffix = incognito ? INCOGNITO_SUFFIX : REGULAR_SUFFIX;
-        // This prefix is required to ensure FlatBuffer is used during serialization and
-        // deserialization.
-        return FLATBUFFER_PREFIX + windowTag + suffix;
-    }
-
-    private static void deleteFileAndPref(String fileName) {
-        getSharedPreferences().edit().remove(fileName).apply();
-
-        int currClearCount = sClearCounter.get();
-        getTaskRunner()
-                .execute(
-                        () -> {
-                            if (currClearCount != sClearCounter.get()) return;
-
-                            File file = new File(getCacheDirectory(), fileName);
-                            if (file.exists() && !file.delete()) {
-                                Log.e(TAG, "Failed to delete cache file: " + file);
-                            }
-                        });
+        TabCache.clearGlobalState();
     }
 
     private void onActiveTabChanged(boolean isModelOtr, @Nullable Tab tab) {
-        if (tab == null) {
-            clearActiveTab(isModelOtr);
-        } else {
-            boolean isOffTheRecord = tab.isOffTheRecord();
-            assert isModelOtr == isOffTheRecord;
+        if (tab != null) {
             saveActiveTab(tab);
+        } else {
+            clearActiveTab(isModelOtr);
         }
     }
 
     private Callback<@Nullable Tab> getActiveTabChangedCallback(boolean incognito) {
         return incognito ? mOnIncognitoActiveTabChanged : mOnRegularActiveTabChanged;
-    }
-
-    private static SharedPreferences getSharedPreferences() {
-        return ContextUtils.getApplicationContext()
-                .getSharedPreferences(CACHE_DIR_NAME, Context.MODE_PRIVATE);
     }
 }
