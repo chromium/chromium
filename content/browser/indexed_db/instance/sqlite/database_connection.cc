@@ -137,7 +137,7 @@ const char* g_vfs_name_override = nullptr;
 // range of a few million if that is possible".
 // https://www.sqlite.org/limits.html
 base::ByteSize GetMaxBlobSize() {
-  return g_max_blob_size_override.value_or(base::MiBU(5));
+  return g_max_blob_size_override.value_or(base::MiB(5));
 }
 
 // For a given path, extracts the blob ID if the path matches the pattern for
