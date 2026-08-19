@@ -74,22 +74,77 @@ You can provide one or multiple profile sources:
    vpython3 agents/skills/chrome-performance-optimizer/scripts/analyze_profile.py "pprof/?id=EXP_ID" --base="pprof/?id=BASE_ID" --mode=cum
    ```
 
-5. **Classify the Bottleneck Pattern**: Consult
-   [Macro-Optimization Patterns](references/optimization_patterns.md) for proven
-   solutions:
+5. **Classify the Bottleneck Pattern & Search for High-Impact Levers**: You
+   **MUST** thoroughly study
+   [Macro-Optimization Patterns](references/optimization_patterns.md) before
+   formulating optimizations or writing code. Examine the historical top 20 CL
+   wins (+0.5% to +2.0% total score) to design changes of comparable structural
+   impact:
 
-   - **DOM / Layout**: FlatTree iteration, slot distribution, style recalc tree
-     walks.
-   - **Canvas 2D**: API call dispatch overhead, `SkPathBuilder` allocations,
-     disconnected strokes.
-   - **V8 ICs**: StubCache evictions, megamorphic dispatch thrashing.
-   - **Compiler**: Maglev/Turboshaft loop unrolling for dense high-order array
-     callbacks.
-   - consider other places based on the profile provided.
+   - **Blink Style & Cascade**:
+     - *RuleSet deduplication* in `MatchRequest` (+1.5% SP3).
+     - *Matched Properties Cache (MPC)* by-value inherited property comparison &
+       multi-candidate full entries (+1.0%, +0.71%).
+     - *Selector Bucketing Maps* for frequent tag/attribute rules like
+       `input[type="..."]` (+0.9%).
+     - *UA stylesheet pruning* & replacing global rule walks with direct bit
+       flags (+0.5%).
+   - **Blink Layout, Text & Font Shaping**:
+     - *HarfBuzz AAT shaping* state machine pruning & ligature pair caching
+       (+1.2%, +0.7%).
+     - *Global/thread-local `ShapeCache` (`NSShapeCache`)* for short repeated
+       text (+0.8%).
+     - *`LazyLineBreakIterator`* ICU iterator reset on min-max & Latin-1 table
+       extension (+1.2%).
+     - *Devirtualizing `LayoutObject`/`Node` type checks* into base class
+       bitfields (+1.1%).
+   - **Blink DOM Parsing, Construction & Mutation**:
+     - *`HTMLFastPathParser` routing* for `DOMParser.parseFromString` (+1.0%).
+     - *Lazy initialization* of `DocumentToken`, `VisitedLinkState`, and Form
+       `Editor`s (+1.0%).
+     - *Vector-backed `HeapObserverSet`* to optimize synchronous DOM mutation
+       loops (+0.5%).
+     - *SVG Path parsing LRU cache* (+0.4%).
+   - **V8 & Memory Management (GC / Oilpan)**:
+     - *Oilpan (cppgc) idle & concurrent sweeping* to clear allocation blocking
+       (+2.0%).
+     - *Minor GC on context disposal* & embedder marking speed normalization
+       (+1.0%).
+     - *Sparkplug+ Embedded Feedback (EFB)* in bytecode operands (+0.7%).
+     - *Darwin `absl::Mutex`* replacing `std::shared_mutex` (+0.6%).
+     - *MicrotaskQueue copy-on-write* for completion callbacks (+0.4%).
+   - **2D Canvas, Graphics & Memory Primitives**:
+     - *Dedicated `PaintOp`s / `SkPath` bypass* for primitive shapes (arcs,
+       ovals, line segments) (+0.53%).
+     - *High-performance SIMD / `rapidhash`* string and token hashing (+0.5%).
+     - *Eliminating `HeapVector` inline storage zeroing* in constructors
+       (+0.5%).
+   - **Toolchain & PGO**:
+     - *LLVM Clang `-vp-counters-per-site`* value profiling on macOS (+0.8%).
+     - *Speedometer 3 iteration weighting* on PGO profile builders (+0.7%).
 
 ______________________________________________________________________
 
-## Step 2: Formulate Hypothesis & Create Isolated Branch
+## Step 2: Formulate Macro Hypothesis & Create Isolated Branch
+
+> [!IMPORTANT] **Mandatory High-Impact Standard**: Do NOT propose trivial
+> micro-tweaks (such as isolated bounds checks, micro-inlining of small helpers,
+> or single variable renames) that produce `< 0.1%` change and vanish in
+> Pinpoint noise.
+>
+> Every optimization hypothesis MUST aim for **architectural leverage**:
+>
+> - **Allocation Elimination**: Eliminate heap / GC allocations in hot
+>   per-element or per-token loops.
+> - **Invariant Caching**: Cache expensive cross-iteration computations (e.g.
+>   style match trees, parsed SVG/path byte streams, shaped word glyphs).
+> - **Fast-Path Short-Circuits**: Bypass heavy multi-layer framework code (e.g.
+>   ICU, HarfBuzz, SkPath, full CSS cascade) for common-case inputs.
+> - **Concurrency / Deferral**: Defer non-critical work to idle tasks or worker
+>   threads (e.g. sweeping, lazy state initialization).
+>
+> Continue iterating through candidate profiles and patterns autonomously until
+> a statistically significant win ($p < 0.05$) is confirmed on Pinpoint.
 
 1. Create a dedicated branch for the optimization:
    ```bash
