@@ -3078,30 +3078,19 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_FALSE(model().reset_draw_timer());
 }
 
-class ReadAnythingAppControllerImmersiveTest
+class ReadAnythingAppControllerScreen2xTest
     : public ReadAnythingAppControllerTest {
  public:
-  void SetUp() override {
-    ReadAnythingAppControllerTest::SetUp();
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({features::kImmersiveReadAnything},
-                                          {});
-    page_handler_.FlushForTesting();
-    Mock::VerifyAndClearExpectations(&page_handler_);
-  }
-};
-
-class ReadAnythingAppControllerImmersiveScreen2xTest
-    : public ReadAnythingAppControllerImmersiveTest {
- public:
-  ReadAnythingAppControllerImmersiveScreen2xTest() {
+  ReadAnythingAppControllerScreen2xTest() {
     forced_distillation_method_ =
         ReadAnythingAppModel::DistillationMethod::kScreen2x;
   }
-  ~ReadAnythingAppControllerImmersiveScreen2xTest() override = default;
+  ~ReadAnythingAppControllerScreen2xTest() override = default;
 };
-TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        OnDistillationStateChanged_CalledAfterDistillationEmpty) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   model().set_distillation_state(
       read_anything::mojom::ReadAnythingDistillationState::kNotAttempted);
 
@@ -3114,8 +3103,10 @@ TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
   page_handler_.FlushForTesting();
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        OnDistillationStateChanged_CalledAfterDistillationWithContent) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
                   read_anything::mojom::ReadAnythingDistillationState::
@@ -3125,8 +3116,10 @@ TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
   page_handler_.FlushForTesting();
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        OnActiveAXTreeIDChanged_SetsDistillationInProgress) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
                   read_anything::mojom::ReadAnythingDistillationState::
@@ -3137,8 +3130,9 @@ TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
   page_handler_.FlushForTesting();
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveTest,
-       Distill_SetsDistillationInProgress) {
+TEST_F(ReadAnythingAppControllerTest, Distill_SetsDistillationInProgress) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   EXPECT_CALL(page_handler_,
               OnDistillationStateChanged(
                   read_anything::mojom::ReadAnythingDistillationState::
@@ -3148,7 +3142,7 @@ TEST_F(ReadAnythingAppControllerImmersiveTest,
   page_handler_.FlushForTesting();
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveTest,
+TEST_F(ReadAnythingAppControllerTest,
        ReadingModeHidden_UpdateProcessingPaused) {
   // Hide reading mode
   controller().OnGetPresentationState(
@@ -3156,8 +3150,10 @@ TEST_F(ReadAnythingAppControllerImmersiveTest,
   EXPECT_TRUE(controller().IsUpdateProcessingPaused());
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        ImmersiveModeWithGoodDistillation_UpdateProcessingPaused) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   // Set to Immersive.
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
@@ -3177,8 +3173,10 @@ TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
   EXPECT_TRUE(controller().IsUpdateProcessingPaused());
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        SidePanelWithGoodDistillation_DoesNotPauseUpdateProcessing) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   // Set to Side Panel.
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
@@ -3198,8 +3196,10 @@ TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
   EXPECT_FALSE(controller().IsUpdateProcessingPaused());
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        ImmersiveModeWithEmptyDistillation_DoesNotPauseUpdateProcessing) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   // Set to Immersive
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
@@ -3221,8 +3221,10 @@ TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
   EXPECT_FALSE(controller().IsUpdateProcessingPaused());
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        DistillationPausedInImmersive_ResumesOnSwitchToSidePanel) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   // Set to Immersive.
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
@@ -3258,8 +3260,10 @@ TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        DistillationPausedInImmersive_ResumesOnTreeChange) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   // Set to Immersive.
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
@@ -3302,8 +3306,10 @@ TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        ImmersiveMode_UnpausesOnReopenWithPendingSelection) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   // 1. Start in immersive overlay with a good distillation.
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
@@ -3351,8 +3357,10 @@ TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
   EXPECT_TRUE(controller().IsUpdateProcessingPaused());
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
+TEST_F(ReadAnythingAppControllerScreen2xTest,
        ImmersiveMode_ResetsReadingModeSelectionCountOnUserSelection) {
+  page_handler_.FlushForTesting();
+  Mock::VerifyAndClearExpectations(&page_handler_);
   // 1. Start in immersive overlay with a good distillation.
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
@@ -3404,7 +3412,7 @@ TEST_F(ReadAnythingAppControllerImmersiveScreen2xTest,
   EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 0);
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveTest,
+TEST_F(ReadAnythingAppControllerTest,
        OnAXTreeDistilled_PdfDebouncerRunning_DoesNotSetDistillationState) {
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
@@ -3427,7 +3435,7 @@ TEST_F(ReadAnythingAppControllerImmersiveTest,
   page_handler_.FlushForTesting();
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveTest,
+TEST_F(ReadAnythingAppControllerTest,
        OnPdfDebounceFinished_UpdatesDistillationState) {
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
@@ -3460,7 +3468,7 @@ TEST_F(ReadAnythingAppControllerImmersiveTest,
   page_handler_.FlushForTesting();
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveTest,
+TEST_F(ReadAnythingAppControllerTest,
        OnActiveAXTreeIDChanged_StartsDebouncerIfHidden) {
   // Start in inactive state (hidden).
   controller().OnGetPresentationState(
@@ -3486,7 +3494,7 @@ TEST_F(ReadAnythingAppControllerImmersiveTest,
   page_handler_.FlushForTesting();
 }
 
-TEST_F(ReadAnythingAppControllerImmersiveTest,
+TEST_F(ReadAnythingAppControllerTest,
        OnPdfDebounceFinished_DoesNotDrawOrUpdateStateIfHidden) {
   // Start in immersive overlay (not hidden).
   controller().OnGetPresentationState(
@@ -5106,22 +5114,6 @@ TEST_F(
   EXPECT_TRUE(model().requires_post_process_selection());
 }
 
-// Explicitly tests behavior when Screen2x is the next distillation method.
-class ReadAnythingAppControllerScreen2xTest
-    : public ReadAnythingAppControllerTest {
- public:
-  ReadAnythingAppControllerScreen2xTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingWithReadability}, {});
-    forced_distillation_method_ =
-        ReadAnythingAppModel::DistillationMethod::kScreen2x;
-  }
-  ~ReadAnythingAppControllerScreen2xTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 TEST_F(ReadAnythingAppControllerScreen2xTest,
        AccessibilityReceivedAfterDistillingOnSameTree_DoesNotCrash) {
   std::vector<int> child_ids = SendSimpleUpdateAndGetChildIds();
@@ -5502,9 +5494,6 @@ TEST_F(ReadAnythingAppControllerScreen2xTest,
 
 TEST_F(ReadAnythingAppControllerScreen2xTest,
        Screen2xDistillationStatus_LogsIfClosedBeforeTimer) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kImmersiveReadAnything);
-
   // Set to active (visible)
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
@@ -5969,8 +5958,6 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        OnIsSpeechActiveChanged_LogsPlaybackContext) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kImmersiveReadAnything);
   base::HistogramTester histograms;
   const char* histogram_name =
       "Accessibility.ReadAnything.ReadAloud.PlaybackContext";
@@ -5992,18 +5979,6 @@ TEST_F(ReadAnythingAppControllerTest,
       histogram_name,
       ReadAloudAppModel::ReadAnythingPlaybackContext::kImmersive, 1);
   histograms.ExpectTotalCount(histogram_name, 2);
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       OnIsSpeechActiveChanged_NoLogWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kImmersiveReadAnything);
-  base::HistogramTester histograms;
-  const char* histogram_name =
-      "Accessibility.ReadAnything.ReadAloud.PlaybackContext";
-
-  controller().OnIsSpeechActiveChanged(true);
-  histograms.ExpectTotalCount(histogram_name, 0);
 }
 
 TEST_F(ReadAnythingAppControllerTest, LogPageDuration_PdfInSidePanel) {
@@ -6052,9 +6027,6 @@ TEST_F(ReadAnythingAppControllerTest, LogPageDuration_NoStartTimeNoLog) {
 
 TEST_F(ReadAnythingAppControllerTest,
        Screen2xDistillationStatus_NotLoggedWhenHidden) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kImmersiveReadAnything);
-
   // Set to inactive (hidden)
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInactive);
@@ -6073,9 +6045,6 @@ TEST_F(ReadAnythingAppControllerTest,
 
 TEST_F(ReadAnythingAppControllerTest,
        Screen2xDistillationStatus_DoesNotRelogOnReopenWithoutRedistillation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kImmersiveReadAnything);
-
   // 1. Open RM
   controller().OnGetPresentationState(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
