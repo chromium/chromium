@@ -275,7 +275,7 @@ void UpdateLayoutForGeometryNodes(const Node* source, const Node* target) {
     source->GetDocument().UpdateStyleAndLayoutForNode(
         source, DocumentUpdateReason::kJavaScript);
   }
-  if (target && (!source || &target->GetDocument() != &source->GetDocument())) {
+  if (target) {
     target->GetDocument().UpdateStyleAndLayoutForNode(
         target, DocumentUpdateReason::kJavaScript);
   }
