@@ -189,6 +189,24 @@ partition_alloc::PartitionRoot* OriginalAllocator(AllocToken alloc_token) {
   return g_original_roots[alloc_token.value()].load(std::memory_order_relaxed);
 }
 
+class IntendedLeakRootConstructor {
+ public:
+  static partition_alloc::PartitionRoot* New(void* buffer) {
+    partition_alloc::PartitionOptions opts;
+    opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
+    opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
+    auto* new_root = new (buffer) partition_alloc::PartitionRoot(opts);
+    return new_root;
+  }
+};
+
+LeakySingleton<partition_alloc::PartitionRoot, IntendedLeakRootConstructor>
+    g_intended_leak_root = {};
+
+partition_alloc::PartitionRoot* IntendedLeakAllocator() {
+  return g_intended_leak_root.Get();
+}
+
 bool AllocatorConfigurationFinalized() {
   return g_roots_finalized.load();
 }
@@ -736,6 +754,12 @@ partition_alloc::PartitionRoot* PartitionAllocMalloc::Allocator(
 partition_alloc::PartitionRoot* PartitionAllocMalloc::OriginalAllocator(
     AllocToken alloc_token) {
   return ::allocator_shim::OriginalAllocator(alloc_token);
+}
+
+// static
+partition_alloc::PartitionRoot*
+PartitionAllocMalloc::IntendedLeakAllocator() {
+  return ::allocator_shim::IntendedLeakAllocator();
 }
 
 }  // namespace internal

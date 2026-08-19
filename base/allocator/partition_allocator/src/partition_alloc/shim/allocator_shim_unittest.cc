@@ -1936,6 +1936,21 @@ TEST_F(AllocatorShimTest, InstallDispatchToPartitionAllocWithAdvancedChecks) {
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
+
+TEST_F(AllocatorShimTest, IntendedLeakAllocator) {
+  auto* intended_leak_root =
+      internal::PartitionAllocMalloc::IntendedLeakAllocator();
+  ASSERT_NE(intended_leak_root, nullptr);
+  // It must be a singleton.
+  EXPECT_EQ(intended_leak_root,
+            internal::PartitionAllocMalloc::IntendedLeakAllocator());
+  // Distinct from all malloc roots (note: with auto-partitioning disabled,
+  // Allocator(token) defaults to the main root across all tokens).
+  for (size_t i = 0; i < kNumPartitions; ++i) {
+    EXPECT_NE(intended_leak_root,
+              internal::PartitionAllocMalloc::Allocator(AllocToken(i)));
+  }
+}
 #endif
 
 }  // namespace

@@ -37,6 +37,11 @@ class PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) PartitionAllocMalloc {
   // May return |nullptr|, will never return the same pointer as  |Allocator()|.
   static partition_alloc::PartitionRoot* OriginalAllocator(
       AllocToken alloc_token = AllocToken(kDefaultPartitionIndex));
+  // Returns the dedicated PartitionRoot for allocations that are intended to be
+  // quarantined and leaked upon free. Will never return nullptr, and will never
+  // return the same pointer as |Allocator()|. Allocations routed here are never
+  // reused after being freed.
+  static partition_alloc::PartitionRoot* IntendedLeakAllocator();
 };
 
 template <partition_alloc::AllocFlags base_alloc_flags,
