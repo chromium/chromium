@@ -99,6 +99,7 @@
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
+#include "chrome/browser/ui/views/toolbar/overflow_menu.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
@@ -1619,7 +1620,7 @@ void ToolbarView::InitLayout() {
 
     // TODO(crbug.com/40929989): Ignore containers till issue addressed.
     toolbar_controller_ = std::make_unique<ToolbarController>(
-        ToolbarController::GetDefaultResponsiveElements(browser_),
+        OverflowMenu::GetDefaultResponsiveElements(browser_),
         ToolbarController::GetDefaultOverflowOrder(), kToolbarFlexOrderStart,
         this, toolbar_webview_.get(), overflow_button_, pinned_toolbar_actions_,
         PinnedToolbarActionsModel::Get(browser_view_->GetProfile()));

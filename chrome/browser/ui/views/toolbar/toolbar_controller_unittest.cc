@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
+#include "chrome/browser/ui/views/toolbar/overflow_menu.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/testing_profile.h"
@@ -315,19 +316,20 @@ class TestToolbarController : public ToolbarController {
                           webui_toolbar_controller_delegate,
                           overflow_button,
                           delegate,
-                          model) {}
-
-  std::u16string GetMenuText(const ToolbarController::ResponsiveElementInfo&
-                                 element_info) const override {
-    static const base::flat_map<ui::ElementIdentifier, std::u16string>
-        kToolbarToMenuTextMap = {{kDummyButton1, u"DummyButton1"},
-                                 {kDummyButton2, u"DummyButton2"},
-                                 {kDummyButton3, u"DummyButton3"},
-                                 {kDummyButton4, u"DummyButton4"}};
-
-    return kToolbarToMenuTextMap.at(
-        std::get<ToolbarController::ElementIdInfo>(element_info.overflow_id)
-            .overflow_identifier);
+                          model) {
+    overflow_menu_for_testing().set_menu_text_callback_for_testing(
+        base::BindRepeating(
+            [](const ToolbarController::ResponsiveElementInfo& element_info) {
+              static const base::flat_map<ui::ElementIdentifier, std::u16string>
+                  kToolbarToMenuTextMap = {{kDummyButton1, u"DummyButton1"},
+                                           {kDummyButton2, u"DummyButton2"},
+                                           {kDummyButton3, u"DummyButton3"},
+                                           {kDummyButton4, u"DummyButton4"}};
+              return kToolbarToMenuTextMap.at(
+                  std::get<ToolbarController::ElementIdInfo>(
+                      element_info.overflow_id)
+                      .overflow_identifier);
+            }));
   }
 };
 
@@ -447,8 +449,9 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
   const std::vector<raw_ptr<views::View, VectorExperimental>>& test_buttons() {
     return test_buttons_;
   }
-  const ui::SimpleMenuModel* overflow_menu() {
-    return toolbar_controller_->menu_model_for_testing();
+  const ui::SimpleMenuModel* overflow_menu_for_testing() {
+    return toolbar_controller_->overflow_menu_for_testing()
+        .menu_model_for_testing();
   }
   std::vector<const ToolbarController::ResponsiveElementInfo*>
   GetOverflowedElements() {
@@ -456,29 +459,33 @@ class ToolbarControllerUnitTest : public ChromeViewsTestBase {
   }
   const std::vector<ToolbarController::ResponsiveElementInfo>&
   GetResponsiveElements(const ToolbarController* toolbar_controller) {
-    return toolbar_controller->responsive_elements_;
+    return toolbar_controller->overflow_menu_for_testing()
+        .responsive_elements();
   }
   bool IsOverflowed(const ToolbarController::ResponsiveElementInfo& element) {
-    return toolbar_controller_->IsOverflowed(element);
+    return toolbar_controller_->IsOverflowed(element.overflow_id);
   }
   bool IsOverflowed(const ToolbarController* controller,
                     const ToolbarController::ResponsiveElementInfo& element) {
-    return controller->IsOverflowed(element);
+    return controller->IsOverflowed(element.overflow_id);
   }
   bool IsCommandIdEnabled(const ToolbarController* controller,
                           int command_id) const {
-    return controller->IsCommandIdEnabled(command_id);
+    return controller->overflow_menu_for_testing().IsCommandIdEnabled(
+        command_id);
   }
   void ExecuteCommand(ToolbarController* controller,
                       int command_id,
                       int event_flags) {
-    controller->ExecuteCommand(command_id, event_flags);
+    controller->overflow_menu_for_testing().ExecuteCommand(command_id,
+                                                           event_flags);
   }
 
   std::vector<ToolbarController::ResponsiveElementInfo>
   GetResponsiveElementsWithOrderedActions(
       const ToolbarController* toolbar_controller) const {
-    return toolbar_controller->GetResponsiveElementsWithOrderedActions();
+    return toolbar_controller->overflow_menu_for_testing()
+        .GetResponsiveElementsWithOrderedActions();
   }
   PinnedToolbarActionsModel* GetPinnedToolbarActionsModel() {
     return PinnedToolbarActionsModel::Get(testing_profile_.get());
@@ -525,7 +532,7 @@ TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
       overflow_button()->GetBoundsInScreen().CenterPoint());
   event_generator()->PressLeftButton();
 
-  const ui::SimpleMenuModel* menu = overflow_menu();
+  const ui::SimpleMenuModel* menu = overflow_menu_for_testing();
   const auto overflowed_buttons = GetOverflowedElements();
 
   // Overflowed buttons should match overflow menu.
@@ -533,7 +540,8 @@ TEST_F(ToolbarControllerUnitTest, OverflowedButtonsMatchMenu) {
   const auto& responsive_elements = GetResponsiveElements(toolbar_controller());
   for (size_t i = 0; i < responsive_elements.size(); ++i) {
     if (IsOverflowed(responsive_elements[i])) {
-      EXPECT_EQ(toolbar_controller()->GetMenuText(responsive_elements[i]),
+      EXPECT_EQ(toolbar_controller()->overflow_menu_for_testing().GetMenuText(
+                    responsive_elements[i]),
                 menu->GetLabelAt(menu->GetIndexOfCommandId(i).value()));
     }
   }
@@ -550,7 +558,7 @@ TEST_F(ToolbarControllerUnitTest, RunningMenuAddsStatusIndicator) {
       overflow_button()->GetBoundsInScreen().CenterPoint());
   event_generator()->PressLeftButton();
 
-  const ui::SimpleMenuModel* menu = overflow_menu();
+  const ui::SimpleMenuModel* menu = overflow_menu_for_testing();
 
   // Overflowed buttons should match overflow menu.
   EXPECT_TRUE(menu);
@@ -578,7 +586,8 @@ TEST_F(ToolbarControllerUnitTest, MenuSeparator) {
 
   // All 3 buttons overflowed.
   EXPECT_EQ(GetOverflowedElements().size(), static_cast<size_t>(3));
-  const auto menu = toolbar_controller()->CreateOverflowMenuModel();
+  const auto menu =
+      toolbar_controller()->overflow_menu_for_testing().CreateMenuModel();
   EXPECT_TRUE(menu);
 
   // There is no separator between button1 and 2 because button1 is not a menu
@@ -647,7 +656,8 @@ TEST_F(ToolbarControllerUnitTest, InValidFirstSectionAddsNoLeadingSeparator) {
   EXPECT_FALSE(button2->GetVisible());
   EXPECT_FALSE(button3->GetVisible());
   EXPECT_EQ(GetOverflowedElements().size(), static_cast<size_t>(2));
-  const auto menu = test_controller->CreateOverflowMenuModel();
+  const auto menu =
+      test_controller->overflow_menu_for_testing().CreateMenuModel();
   EXPECT_TRUE(menu);
 
   // The first section (contains Button1) is invalid. It should not add a
@@ -709,7 +719,8 @@ TEST_F(ToolbarControllerUnitTest, InValidSectionInMiddleAddsNoExtraSeparator) {
   EXPECT_TRUE(button2->GetVisible());
   EXPECT_FALSE(button3->GetVisible());
   EXPECT_EQ(GetOverflowedElements().size(), static_cast<size_t>(2));
-  const auto menu = test_controller->CreateOverflowMenuModel();
+  const auto menu =
+      test_controller->overflow_menu_for_testing().CreateMenuModel();
   EXPECT_TRUE(menu);
 
   // The second section (contains Button2) is invalid. It should not add a
@@ -771,7 +782,8 @@ TEST_F(ToolbarControllerUnitTest, InValidLastSectionAddsNoTrailingSeparator) {
   EXPECT_FALSE(button2->GetVisible());
   EXPECT_TRUE(button3->GetVisible());
   EXPECT_EQ(GetOverflowedElements().size(), static_cast<size_t>(2));
-  const auto menu = test_controller->CreateOverflowMenuModel();
+  const auto menu =
+      test_controller->overflow_menu_for_testing().CreateMenuModel();
   EXPECT_TRUE(menu);
 
   // The third section (contains Button3) is invalid. It should not add a
@@ -959,7 +971,7 @@ TEST_F(ToolbarControllerUnitTest, MenuItemUsability) {
       overflow_button()->GetBoundsInScreen().CenterPoint());
   event_generator()->PressLeftButton();
 
-  const ui::SimpleMenuModel* menu = overflow_menu();
+  const ui::SimpleMenuModel* menu = overflow_menu_for_testing();
   const auto overflowed_buttons = GetOverflowedElements();
 
   EXPECT_TRUE(menu);
@@ -1281,7 +1293,8 @@ TEST_F(ToolbarControllerUnitTest, SupportActionIds) {
       test_controller->ShouldShowOverflowButton(widget()->GetSize()));
   EXPECT_TRUE(overflow_button()->GetVisible());
 
-  const auto menu = test_controller->CreateOverflowMenuModel();
+  const auto menu =
+      test_controller->overflow_menu_for_testing().CreateMenuModel();
   EXPECT_TRUE(menu);
   EXPECT_EQ(menu->GetItemCount(),
             static_cast<size_t>(test_delegate->get_overflowed_count()));
@@ -1292,7 +1305,8 @@ TEST_F(ToolbarControllerUnitTest, SupportActionIds) {
   for (size_t i = 0; i < responsive_elements.size(); ++i) {
     if (IsOverflowed(responsive_elements[i])) {
       size_t index = menu->GetIndexOfCommandId(i).value();
-      EXPECT_EQ(test_controller->GetMenuText(responsive_elements[i]),
+      EXPECT_EQ(test_controller->overflow_menu_for_testing().GetMenuText(
+                    responsive_elements[i]),
                 menu->GetLabelAt(index));
       EXPECT_CALL(*test_delegate, DummyAction);
       menu->ActivatedAt(index);

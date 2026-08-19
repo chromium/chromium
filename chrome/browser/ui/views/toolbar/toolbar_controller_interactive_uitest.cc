@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
+
 #include <optional>
 #include <sstream>
 #include <variant>
@@ -28,8 +30,8 @@
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/overflow_menu.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/common/chrome_features.h"
@@ -342,8 +344,10 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
       EXPECT_GT(menu->GetItemCount(), size_t(0));
       const auto& responsive_elements = get_responsive_elements();
       for (size_t i = 0; i < responsive_elements.size(); ++i) {
-        if (toolbar_controller_->IsOverflowed(responsive_elements[i])) {
-          if (toolbar_controller_->GetMenuText(responsive_elements[i]) !=
+        if (toolbar_controller_->IsOverflowed(
+                responsive_elements[i].overflow_id)) {
+          if (toolbar_controller_->overflow_menu_for_testing().GetMenuText(
+                  responsive_elements[i]) !=
               menu->GetLabelAt(menu->GetIndexOfCommandId(i).value())) {
             return false;
           }
@@ -527,7 +531,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
   int element_flex_order_start() const { return element_flex_order_start_; }
   const std::vector<ToolbarController::ResponsiveElementInfo>&
   get_responsive_elements() const {
-    return toolbar_controller_->responsive_elements_;
+    return toolbar_controller_->overflow_menu_for_testing()
+        .responsive_elements();
   }
   std::optional<int> overflow_threshold_width() const {
     return overflow_threshold_width_;
@@ -537,7 +542,8 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
     return toolbar_controller_->GetOverflowedElements();
   }
   const ui::SimpleMenuModel* GetOverflowMenu() {
-    return toolbar_controller_->menu_model_for_testing();
+    return toolbar_controller_->overflow_menu_for_testing()
+        .menu_model_for_testing();
   }
   BrowserView* browser_view() { return browser_view_.get(); }
 
@@ -1129,7 +1135,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest,
 
 IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest,
                        EveryElementHasActionMetricName) {
-  for (auto& it : ToolbarController::GetDefaultResponsiveElements(browser())) {
+  for (auto& it : OverflowMenu::GetDefaultResponsiveElements(browser())) {
     std::visit(
         absl::Overload(
             [](actions::ActionId id) {

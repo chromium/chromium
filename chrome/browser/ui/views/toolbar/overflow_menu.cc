@@ -1,0 +1,546 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/toolbar/overflow_menu.h"
+
+#include <algorithm>
+#include <optional>
+#include <variant>
+#include <vector>
+
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/vector_icons.h"
+#include "components/vector_icons/vector_icons.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
+#include "ui/views/controls/menu/submenu_view.h"
+
+namespace {
+
+// Status indicator of a menu item.
+constexpr gfx::Rect kStatusRect(10, 2);
+// Padding between the image container and the status indicator.
+constexpr int kImageContainerLowerPadding = 1;
+
+}  // namespace
+
+OverflowMenu::ElementIdInfo::ElementIdInfo(
+    ui::ElementIdentifier overflow_identifier,
+    int menu_text_id,
+    raw_ptr<const gfx::VectorIcon> menu_icon,
+    ui::ElementIdentifier activate_identifier,
+    std::optional<ui::ElementIdentifier> observed_identifier)
+    : overflow_identifier(overflow_identifier),
+      menu_text_id(menu_text_id),
+      menu_icon(menu_icon),
+      activate_identifier(activate_identifier),
+      observed_identifier(observed_identifier) {}
+
+OverflowMenu::ResponsiveElementInfo::ResponsiveElementInfo(
+    OverflowableElement overflow_id,
+    bool is_section_end)
+    : overflow_id(overflow_id), is_section_end(is_section_end) {}
+
+OverflowMenu::ResponsiveElementInfo::ResponsiveElementInfo(
+    const ResponsiveElementInfo& info) = default;
+OverflowMenu::ResponsiveElementInfo::~ResponsiveElementInfo() = default;
+
+OverflowMenu::OverflowMenu(
+    const std::vector<ResponsiveElementInfo>& responsive_elements,
+    Delegate* delegate,
+    PinnedActionsInfo* pinned_actions_info,
+    PinnedToolbarActionsModel* pinned_actions_model)
+    : responsive_elements_(responsive_elements),
+      delegate_(*delegate),
+      pinned_actions_info_(pinned_actions_info),
+      pinned_actions_model_(pinned_actions_model) {
+  for (auto& responsive_element : responsive_elements_) {
+    if (std::holds_alternative<actions::ActionId>(
+            responsive_element.overflow_id)) {
+      actions::ActionId action_id =
+          std::get<actions::ActionId>(responsive_element.overflow_id);
+      actions::ActionItem* action_item =
+          pinned_actions_info_->GetActionItemFor(action_id);
+
+      action_changed_subscription_.push_back(
+          action_item->AddActionChangedCallback(
+              base::BindRepeating(&OverflowMenu::ActionItemChanged,
+                                  base::Unretained(this), action_item)));
+    }
+  }
+
+  responsive_elements_ = GetResponsiveElementsWithOrderedActions();
+  pinned_actions_model_->AddObserver(this);
+}
+
+OverflowMenu::~OverflowMenu() {
+  CloseMenu();
+  pinned_actions_model_->RemoveObserver(this);
+}
+
+std::vector<OverflowMenu::ResponsiveElementInfo>
+OverflowMenu::GetDefaultResponsiveElements(Browser* browser) {
+  bool is_incognito = browser->GetProfile()->IsIncognitoProfile();
+  // TODO(crbug.com/40912482): Fill in observed identifier.
+  // Order matters because it should match overflow menu order top to bottom.
+  std::vector<ResponsiveElementInfo> elements = {
+      ResponsiveElementInfo(
+          ElementIdInfo{
+              kToolbarForwardButtonElementId,
+              IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD,
+              &(features::IsRoundedIconsEnabled()
+                    ? vector_icons::kArrowForwardIcon
+                    : vector_icons::kForwardArrowChromeRefreshOldIcon),
+              kToolbarForwardButtonElementId},
+          /*is_section_end=*/false),
+      ResponsiveElementInfo(
+          ElementIdInfo{kToolbarHomeButtonElementId,
+                        IDS_OVERFLOW_MENU_ITEM_TEXT_HOME,
+                        &(features::IsRoundedIconsEnabled()
+                              ? kHomeIcon
+                              : kNavigateHomeChromeRefreshOldIcon),
+                        kToolbarHomeButtonElementId},
+          /*is_section_end=*/false),
+      ResponsiveElementInfo(
+          ElementIdInfo{
+              kToolbarSplitTabsToolbarButtonElementId,
+              IDS_OVERFLOW_MENU_ITEM_TEXT_SPLIT_VIEW,
+              &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
+                                                  : kSplitSceneOldIcon),
+              kToolbarSplitTabsToolbarButtonElementId,
+              kToolbarSplitTabsMenuElementId},
+          /*is_section_end=*/true),
+      ResponsiveElementInfo(
+          ElementIdInfo{
+              kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+              IDS_OVERFLOW_MENU_ITEM_TEXT_CONTEXTUAL_TASKS,
+              &(features::IsRoundedIconsEnabled()
+                    ? omnibox::kSearchSparkIcon
+                    : omnibox::kSearchSparkOldIcon),
+              kPinnedToolbarActionShowSidePanelContextualTasksElementId},
+          /*is_section_end=*/false),
+  };
+
+  // Support actions items.
+  const auto* const browser_actions = BrowserActions::From(browser);
+  if (browser_actions) {
+    auto* root_item = browser_actions->root_action_item();
+    if (root_item) {
+      PinnedToolbarActionsModel* const pinned_actions_model =
+          PinnedToolbarActionsModel::Get(browser->GetProfile());
+      for (const auto& item : root_item->GetChildren().children()) {
+        auto* action_item = item->GetActionItem();
+        auto id = action_item->GetActionId();
+        // Add an item if it is pinnable and/or pinned. The tab search item may
+        // be pinned but not pinnable in the event of a race condition after
+        // action item initialization but before the bubble host has been
+        // initialized by TabSearchToolbarButtonController.
+        // TODO(b/471062209): Remove the pinned check as part of
+        // cleanup of the tab search toolbar button feature.
+        if (id.has_value() &&
+            (item->GetProperty(actions::kActionItemPinnableKey) ==
+                 std::underlying_type_t<actions::ActionPinnableState>(
+                     actions::ActionPinnableState::kPinnable) ||
+             pinned_actions_model->Contains(id.value()))) {
+          elements.emplace_back(id.value());
+        }
+      }
+      // Section end for the pinned actions is handled in
+      // GetResponsiveElementsWithOrderedActions().
+    }
+  }
+
+  elements.insert(
+      elements.end(),
+      {ResponsiveElementInfo(
+           ElementIdInfo(kToolbarBatterySaverButtonElementId,
+                         IDS_OVERFLOW_MENU_ITEM_TEXT_ENERGY_SAVER,
+                         &kBatterySaverRefreshCustomIcon,
+                         kToolbarBatterySaverButtonElementId,
+                         kToolbarBatterySaverBubbleElementId),
+           /*is_section_end=*/false),
+       ResponsiveElementInfo(
+           ElementIdInfo(kToolbarMediaButtonElementId,
+                         IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
+                         &(features::IsRoundedIconsEnabled()
+                               ? kQueueMusicIcon
+                               : kMediaToolbarButtonChromeRefreshOldIcon),
+                         kToolbarMediaButtonElementId,
+                         kToolbarMediaBubbleElementId),
+           /*is_section_end=*/true),
+       ResponsiveElementInfo(
+           ElementIdInfo(
+               kToolbarAvatarButtonElementId,
+               IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
+               is_incognito ? (&(features::IsRoundedIconsEnabled()
+                                     ? kIncognitoIcon
+                                     : kIncognitoRefreshMenuOldIcon))
+                            : (&(features::IsRoundedIconsEnabled()
+                                     ? kAccountCircleIcon
+                                     : kUserAccountAvatarRefreshOldIcon)),
+               kToolbarAvatarButtonElementId, kToolbarAvatarBubbleElementId),
+           /*is_section_end=*/false)});
+
+  if (base::FeatureList::IsEnabled(features::kToolbarGlicButtonResizing)) {
+    elements.emplace_back(
+        ElementIdInfo(kGlicButtonElementId,
+                      IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL, nullptr,
+                      kGlicButtonElementId),
+        /*is_section_end=*/false);
+  }
+
+  return elements;
+}
+
+std::u16string OverflowMenu::GetMenuText(
+    const ResponsiveElementInfo& element_info) const {
+  if (menu_text_callback_for_testing_) {
+    return menu_text_callback_for_testing_.Run(element_info);
+  }
+  return std::visit(
+      absl::Overload{
+          [this](actions::ActionId id) {
+            return std::u16string(
+                pinned_actions_info_->GetActionItemFor(id)->GetText());
+          },
+          [](OverflowMenu::ElementIdInfo id) {
+            return l10n_util::GetStringUTF16(id.menu_text_id);
+          }},
+      element_info.overflow_id);
+}
+
+std::optional<ui::ImageModel> OverflowMenu::GetMenuIcon(
+    const ResponsiveElementInfo& element_info) const {
+  return std::visit(
+      absl::Overload{
+          [this](actions::ActionId id) {
+            // Resize the vector icon to `kDefaultIconSize`.
+            const ui::ImageModel& pinned_icon_image =
+                pinned_actions_info_->GetActionItemFor(id)->GetImage();
+            if (!pinned_icon_image.IsEmpty() &&
+                pinned_icon_image.IsVectorIcon()) {
+              ui::VectorIconModel vector_icon_model =
+                  pinned_icon_image.GetVectorIcon();
+              return std::make_optional(ui::ImageModel::FromVectorIcon(
+                  *vector_icon_model.vector_icon(), vector_icon_model.color(),
+                  ui::SimpleMenuModel::kDefaultIconSize));
+            } else {
+              return std::make_optional(pinned_icon_image);
+            }
+          },
+          [&](OverflowMenu::ElementIdInfo info)
+              -> std::optional<ui::ImageModel> {
+            if (!info.menu_icon) {
+              return std::nullopt;
+            }
+            return std::make_optional(ui::ImageModel::FromVectorIcon(
+                *info.menu_icon, ui::kColorMenuIcon,
+                ui::SimpleMenuModel::kDefaultIconSize));
+          }},
+      element_info.overflow_id);
+}
+
+void OverflowMenu::OnActionsChanged() {
+  responsive_elements_ = GetResponsiveElementsWithOrderedActions();
+}
+
+// This function returns responsive_elements_ but with some portions reordered.
+// It rearranges any consecutive sequence of elements that have overflow_id
+// of type ActionId.
+// Elements with overflow_id of type ElementIdInfo are left in their original
+// position. pinned_actions_delegate_->PinnedActionIds() determines the new
+// order for the ActionId elements. ActionId elements that aren't in
+// PinnedActionIds() are sorted to the front (i.e. placed closer to index 0).
+std::vector<OverflowMenu::ResponsiveElementInfo>
+OverflowMenu::GetResponsiveElementsWithOrderedActions() const {
+  std::vector<ResponsiveElementInfo> ordered_responsive_elements(
+      responsive_elements_);
+  const std::vector<actions::ActionId>& ordered_pinned_action_ids =
+      pinned_actions_info_->PinnedActionIds();
+
+  auto actions_sorting_function = [&ordered_pinned_action_ids](
+                                      const ResponsiveElementInfo& a,
+                                      const ResponsiveElementInfo& b) -> bool {
+    CHECK(std::holds_alternative<actions::ActionId>(a.overflow_id));
+    CHECK(std::holds_alternative<actions::ActionId>(b.overflow_id));
+    actions::ActionId a_action_id = std::get<actions::ActionId>(a.overflow_id);
+    actions::ActionId b_action_id = std::get<actions::ActionId>(b.overflow_id);
+
+    if (a_action_id == b_action_id) {
+      return false;
+    }
+    for (int ordered_pinned_action_id : ordered_pinned_action_ids) {
+      if (a_action_id == ordered_pinned_action_id) {
+        return true;
+      }
+      if (b_action_id == ordered_pinned_action_id) {
+        return false;
+      }
+    }
+    return false;
+  };
+
+  size_t element_index = 0;
+  while (element_index < ordered_responsive_elements.size()) {
+    // If the element is not an Action, continue
+    if (!std::holds_alternative<actions::ActionId>(
+            ordered_responsive_elements[element_index].overflow_id)) {
+      element_index++;
+      continue;
+    }
+    // If the current element is an Action, look at the next elements to find
+    // what's the next one that is not an Action.
+    // The elements in the [element_index, next_non_action_element_index) range
+    // will all be Actions and need to be sorted.
+    size_t next_non_action_element_index = element_index + 1;
+    while (next_non_action_element_index < ordered_responsive_elements.size() &&
+           std::holds_alternative<actions::ActionId>(
+               ordered_responsive_elements[next_non_action_element_index]
+                   .overflow_id)) {
+      next_non_action_element_index++;
+    }
+    std::sort(
+        ordered_responsive_elements.begin() + element_index,
+        ordered_responsive_elements.begin() + next_non_action_element_index,
+        actions_sorting_function);
+
+    std::optional<size_t> last_pinned_index;
+    std::optional<size_t> last_ephemeral_index;
+
+    // Set the last pinned and last unpinned ActionItem elements as section
+    // ends.
+    for (size_t i = element_index; i < next_non_action_element_index; ++i) {
+      const auto& element = ordered_responsive_elements[i];
+      actions::ActionId action_id =
+          std::get<actions::ActionId>(element.overflow_id);
+      bool is_pinned = std::find(ordered_pinned_action_ids.begin(),
+                                 ordered_pinned_action_ids.end(),
+                                 action_id) != ordered_pinned_action_ids.end();
+      if (is_pinned) {
+        last_pinned_index = i;
+      } else {
+        last_ephemeral_index = i;
+      }
+    }
+
+    if (last_pinned_index.has_value()) {
+      ordered_responsive_elements[*last_pinned_index].is_section_end = true;
+    }
+    if (last_ephemeral_index.has_value()) {
+      ordered_responsive_elements[*last_ephemeral_index].is_section_end = true;
+    }
+
+    element_index = next_non_action_element_index;
+  }
+  return ordered_responsive_elements;
+}
+
+std::unique_ptr<ui::SimpleMenuModel> OverflowMenu::CreateMenuModel() {
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
+
+  // True if the separator belonging to previous section has not been added yet.
+  bool pre_separator_pending = false;
+  for (size_t i = 0; i < responsive_elements_.size(); ++i) {
+    const auto& element = responsive_elements_[i];
+    if (delegate_->IsCurrentlyOverflowed(element.overflow_id)) {
+      if (pre_separator_pending && menu_model->GetItemCount() > 0) {
+        menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
+      }
+      const auto image_model = GetMenuIcon(element);
+      if (image_model.has_value()) {
+        menu_model->AddItemWithIcon(i, GetMenuText(element),
+                                    image_model.value());
+      } else {
+        menu_model->AddItem(i, GetMenuText(element));
+      }
+      pre_separator_pending = false;
+    }
+    if (element.is_section_end) {
+      pre_separator_pending = true;
+    }
+  }
+  return menu_model;
+}
+
+bool OverflowMenu::IsCommandIdEnabled(int command_id) const {
+  const auto& element = responsive_elements_.at(command_id);
+  return delegate_->IsEnabled(element.overflow_id);
+}
+
+void OverflowMenu::ExecuteCommand(int command_id, int event_flags) {
+  const auto& element_info = responsive_elements_.at(command_id);
+  delegate_->ExecuteCommand(element_info.overflow_id);
+}
+
+void OverflowMenu::ShowStatusIndicator() {
+  views::SubmenuView* sub_menu = root_menu_item_->GetSubmenu();
+
+  // Install the status indicator and show it if it is active.
+  for (auto* menu_item : sub_menu->GetMenuItems()) {
+    if (!menu_item->icon_view()) {
+      continue;
+    }
+
+    // Layout of the status indicator.
+    PinnedToolbarButtonStatusIndicator* status_indicator =
+        PinnedToolbarButtonStatusIndicator::Install(menu_item->icon_view());
+    status_indicator->SetColorId(kColorToolbarActionItemEngaged,
+                                 kColorToolbarButtonIconInactive);
+
+    gfx::Rect status_rect = kStatusRect;
+    const gfx::Rect image_container_bounds =
+        menu_item->icon_view()->GetLocalBounds();
+
+    const int new_x =
+        image_container_bounds.x() +
+        (image_container_bounds.width() - status_rect.width()) / 2;
+    const int new_y =
+        image_container_bounds.bottom() + kImageContainerLowerPadding;
+
+    // Set the new origin for status_rect
+    status_rect.set_origin(gfx::Point(new_x, new_y));
+    status_indicator->SetBoundsRect(status_rect);
+
+    if (std::holds_alternative<actions::ActionId>(
+            responsive_elements_.at(menu_item->GetCommand()).overflow_id)) {
+      actions::ActionId action_id = std::get<actions::ActionId>(
+          responsive_elements_.at(menu_item->GetCommand()).overflow_id);
+      actions::ActionItem* action_item =
+          pinned_actions_info_->GetActionItemFor(action_id);
+
+      if (action_item &&
+          action_item->GetProperty(kActionItemUnderlineIndicatorKey)) {
+        const ui::ImageModel& pinned_icon_image = action_item->GetImage();
+        if (!pinned_icon_image.IsEmpty() && pinned_icon_image.IsVectorIcon()) {
+          menu_item->SetIconColor(kColorToolbarActionItemEngaged);
+        }
+        status_indicator->Show();
+      }
+    }
+  }
+}
+
+void OverflowMenu::ActionItemChanged(actions::ActionItem* action_item) {
+  if (!IsMenuRunning()) {
+    return;
+  }
+
+  std::optional<int> command_id;
+  for (size_t i = 0; i < responsive_elements_.size(); ++i) {
+    const auto& element = responsive_elements_[i];
+    if (std::holds_alternative<actions::ActionId>(element.overflow_id)) {
+      actions::ActionId element_action_id =
+          std::get<actions::ActionId>(element.overflow_id);
+      if (element_action_id == action_item->GetActionId().value()) {
+        command_id = static_cast<int>(i);
+        break;
+      }
+    }
+  }
+
+  if (!delegate_->IsCurrentlyOverflowed(
+          responsive_elements_.at(command_id.value()).overflow_id)) {
+    return;
+  }
+
+  views::MenuItemView* menu_item =
+      root_menu_item_->GetMenuItemByID(command_id.value());
+
+  if (!menu_item || !menu_item->icon_view()) {
+    return;
+  }
+
+  PinnedToolbarButtonStatusIndicator* status_indicator =
+      PinnedToolbarButtonStatusIndicator::GetStatusIndicator(
+          menu_item->icon_view());
+
+  if (!status_indicator) {
+    return;
+  }
+
+  if (action_item->GetProperty(kActionItemUnderlineIndicatorKey)) {
+    const ui::ImageModel& pinned_icon_image = action_item->GetImage();
+    if (!pinned_icon_image.IsEmpty() && pinned_icon_image.IsVectorIcon()) {
+      menu_item->SetIconColor(kColorToolbarActionItemEngaged);
+    }
+    status_indicator->Show();
+  } else {
+    const ui::ImageModel& pinned_icon_image = action_item->GetImage();
+    if (!pinned_icon_image.IsEmpty() && pinned_icon_image.IsVectorIcon()) {
+      menu_item->SetIconColor(std::nullopt);
+    }
+    status_indicator->Hide();
+  }
+}
+
+void OverflowMenu::PopulateMenu(views::MenuItemView* parent) {
+  if (parent->HasSubmenu()) {
+    parent->GetSubmenu()->RemoveAllChildViews();
+  }
+
+  if (menu_model_) {
+    menu_model_->Clear();
+  }
+
+  menu_model_ = CreateMenuModel();
+  CHECK(menu_model_);
+
+  for (size_t i = 0; i < menu_model_->GetItemCount(); ++i) {
+    views::MenuItemView* menu_item =
+        views::MenuModelAdapter::AppendMenuItemFromModel(
+            menu_model_.get(), i, parent, menu_model_->GetCommandIdAt(i));
+
+    // `menu_item` can be nullptr if it is a separator.
+    if (menu_item &&
+        menu_item->GetType() == views::MenuItemView::Type::kNormal) {
+      menu_item->SetEnabled(IsCommandIdEnabled(menu_item->GetCommand()));
+    }
+  }
+
+  if (parent->HasSubmenu()) {
+    parent->GetSubmenu()->InvalidateLayout();
+  }
+}
+
+void OverflowMenu::ShowMenu(views::Widget* parent,
+                            views::MenuButtonController* button_controller,
+                            const gfx::Rect& bounds) {
+  auto root = std::make_unique<views::MenuItemView>(this);
+  root_menu_item_ = root.get();
+  PopulateMenu(root_menu_item_);
+
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      std::move(root), views::MenuRunner::HAS_MNEMONICS);
+  menu_runner_->RunMenuAt(parent, button_controller, bounds,
+                          views::MenuAnchorPosition::kTopRight,
+                          ui::mojom::MenuSourceType::kNone);
+  ShowStatusIndicator();
+}
+
+bool OverflowMenu::IsMenuRunning() const {
+  return menu_runner_ && menu_runner_->IsRunning();
+}
+
+void OverflowMenu::CloseMenu() {
+  root_menu_item_ = nullptr;
+  menu_model_.reset();
+  menu_runner_.reset();
+}
