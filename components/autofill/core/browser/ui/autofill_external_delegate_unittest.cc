@@ -595,7 +595,8 @@ class AutofillExternalDelegateTest : public testing::Test,
 
   void OnSuggestionsReturned(const FormFieldData& field,
                              const std::vector<Suggestion>& input_suggestions) {
-    external_delegate().OnSuggestionsReturned(field, input_suggestions);
+    external_delegate().OnSuggestionsReturned(field, input_suggestions,
+                                              /*prefilled_query=*/{});
   }
 
   FormData CreateTestFormWithBounds(

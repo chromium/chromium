@@ -23,6 +23,10 @@ class AtMemoryManagerTestApi {
                : nullptr;
   }
 
+  AtMemoryPersistedStateManager* state_manager() {
+    return &manager_->state_manager_;
+  }
+
  private:
   raw_ref<AtMemoryManager> manager_;
 };

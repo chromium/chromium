@@ -118,7 +118,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // to be displayed. Called when an Autofill query result is available.
   virtual void OnSuggestionsReturned(
       const FormFieldData& trigger_field,
-      const std::vector<Suggestion>& input_suggestions);
+      const std::vector<Suggestion>& input_suggestions,
+      std::u16string prefilled_query);
 
   // Returns true if there is a screen reader installed on the machine.
   virtual bool HasActiveScreenReader() const;
@@ -169,7 +170,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
       std::vector<Suggestion> suggestions,
       AutofillSuggestionTriggerSource trigger_source,
       base::optional_ref<const FormFieldData> trigger_field,
-      AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss);
+      AutofillSuggestionsIgnoreFocusLoss ignore_focus_loss,
+      std::u16string prefilled_query = {});
 
   // Returns a callback that, when run, attempts to update the currently shown
   // suggestions. If the `SuggestionUiSessionId` of the currently showing UI

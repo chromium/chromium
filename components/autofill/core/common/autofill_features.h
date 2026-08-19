@@ -219,6 +219,8 @@ BASE_DECLARE_FEATURE(kAutofillAtMemoryInactivityNudge);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemoryPreviouslyFilled);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAtMemorySearchStatefulness);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemorySupportContenteditableOnAndroid);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAtMemoryTriggerShortcut);

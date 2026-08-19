@@ -562,6 +562,10 @@ BASE_FEATURE(kAutofillAtMemoryInactivityNudge,
 BASE_FEATURE(kAutofillAtMemoryPreviouslyFilled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables search statefulness for AtMemory.
+BASE_FEATURE(kAutofillAtMemorySearchStatefulness,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether contenteditable fields on Android are supported for
 // AtMemory.
 BASE_FEATURE(kAutofillAtMemorySupportContenteditableOnAndroid,

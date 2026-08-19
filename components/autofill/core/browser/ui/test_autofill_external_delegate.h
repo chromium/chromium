@@ -38,9 +38,9 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
                const FormFieldData& field,
                const gfx::Rect& caret_bounds,
                AutofillSuggestionTriggerSource trigger_source) override;
-  void OnSuggestionsReturned(
-      const FormFieldData& trigger_field,
-      const std::vector<Suggestion>& suggestions) override;
+  void OnSuggestionsReturned(const FormFieldData& trigger_field,
+                             const std::vector<Suggestion>& suggestions,
+                             std::u16string prefilled_query) override;
   bool HasActiveScreenReader() const override;
   void OnAutofillAvailabilityEvent(
       mojom::AutofillSuggestionAvailability suggestion_availability) override;

@@ -49,6 +49,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
+#include "components/autofill/core/browser/at_memory/at_memory_persisted_state_manager.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -1176,10 +1177,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   if (AtMemoryManager* am = client().GetAtMemoryManager();
       am && IsAtMemoryTriggerSource(trigger_source)) {
     am->set_target_field_origin(field.origin());
-    std::vector<Suggestion> suggestions = am->GetEmptyQuerySuggestions();
+    AtMemoryManagerState state = am->GetInitialStateForField(field.global_id());
 
     // Show suggestions with a search bar to start the flow.
-    external_delegate_->OnSuggestionsReturned(field, suggestions);
+    external_delegate_->OnSuggestionsReturned(
+        field, std::move(state.suggestions), std::move(state.filter));
     return;
   }
 
@@ -1779,7 +1781,8 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
   if (show_suggestions) {
     MaybeShowPrivateInferenceNotice(suggestions);
     // Send Autofill suggestions (could be an empty list).
-    external_delegate_->OnSuggestionsReturned(trigger_field, suggestions);
+    external_delegate_->OnSuggestionsReturned(trigger_field, suggestions,
+                                              /*prefilled_query=*/{});
   }
 }
 

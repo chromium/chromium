@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager_test_api.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder_test_api.h"
+#include "components/autofill/core/browser/at_memory/at_memory_persisted_state_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -2922,6 +2923,96 @@ TEST_F(AtMemoryManagerTest,
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
                                       uncached_form_id, uncached_field_id,
                                       final_suggestions[0]);
+}
+
+// Tests that when search statefulness is enabled, search results are persisted
+// across popup hide and show on the same field, but reset when navigating to a
+// different field.
+TEST_F(AtMemoryManagerTest, SearchStatefulness_PersistsAndResetsState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  FieldGlobalId other_field_id = test::MakeFieldGlobalId();
+
+  // 1. Initial state for a new field returns default 0-state suggestions.
+  EXPECT_TRUE(manager().GetInitialStateForField(field_id).filter.empty());
+
+  // Opening and closing without editing still leaves 0-state suggestions.
+  manager().OnPopupShown(
+      form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
+      ukm::kInvalidSourceId);
+  manager().OnPopupHidden();
+  EXPECT_TRUE(manager().GetInitialStateForField(field_id).filter.empty());
+
+  manager().OnPopupShown(
+      form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
+      ukm::kInvalidSourceId);
+
+  // 2. Perform a search query on field_id.
+  std::vector<Suggestion> final_suggestions;
+  MemorySearchResult entry(MemoryDataType::kNameFull, u"John Doe", u"John Doe");
+  entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+  manager().OnFilterChanged(u"john");
+  MockQueryResultsAndExpectCallback(u"john",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    {entry}, final_suggestions);
+  manager().OnSearchSubmitted(u"john");
+  ASSERT_FALSE(final_suggestions.empty());
+
+  // 3. Hide popup without accepting. State should be preserved.
+  manager().OnPopupHidden();
+
+  AtMemoryManagerState restored_state =
+      manager().GetInitialStateForField(field_id);
+  EXPECT_EQ(restored_state.filter, u"john");
+  ASSERT_EQ(restored_state.suggestions.size(), 1u);
+  EXPECT_EQ(restored_state.suggestions[0].main_text.value, u"John Doe");
+
+  // 4. Accessing a different field resets state.
+  EXPECT_TRUE(manager().GetInitialStateForField(other_field_id).filter.empty());
+
+  // 5. Going back to the original field initializes a new empty state.
+  EXPECT_TRUE(manager().GetInitialStateForField(field_id).filter.empty());
+}
+
+// Tests that when search statefulness is enabled and a suggestion is accepted,
+// the persisted state for the field is cleared.
+TEST_F(AtMemoryManagerTest, SearchStatefulness_SuggestionAcceptedResetsState) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  EXPECT_TRUE(manager().GetInitialStateForField(field_id).filter.empty());
+
+  manager().OnPopupShown(
+      form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryTriggerString,
+      /*parent_suggestion_metadata=*/std::nullopt, update_callback_.Get(),
+      ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  MemorySearchResult entry(MemoryDataType::kNameFull, u"John Doe", u"John Doe");
+  entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+  manager().OnFilterChanged(u"john");
+  MockQueryResultsAndExpectCallback(u"john",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    {entry}, final_suggestions);
+  manager().OnSearchSubmitted(u"john");
+  ASSERT_FALSE(final_suggestions.empty());
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
+                                      field_id, final_suggestions[0]);
+
+  // After suggestion acceptance, state for field_id is reset.
+  EXPECT_TRUE(manager().GetInitialStateForField(field_id).filter.empty());
 }
 
 }  // namespace

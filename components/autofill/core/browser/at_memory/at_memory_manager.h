@@ -22,6 +22,7 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
+#include "components/autofill/core/browser/at_memory/at_memory_persisted_state_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
@@ -37,6 +38,7 @@
 
 namespace autofill {
 
+struct AtMemoryManagerState;
 struct MemorySearchResults;
 class AutofillClient;
 class BrowserAutofillManager;
@@ -56,6 +58,11 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
   AtMemoryManager& operator=(const AtMemoryManager&) = delete;
 
   ~AtMemoryManager() override;
+
+  // Returns the initial state (suggestions and filter) for `field_id`.
+  // If search statefulness is enabled and persisted state exists, returns
+  // the persisted state. Otherwise, returns empty query suggestions.
+  AtMemoryManagerState GetInitialStateForField(const FieldGlobalId& field_id);
 
   // Called when suggestions are shown. The manager initiates an @memory
   // session if the `trigger_source` is an @memory one.
@@ -312,14 +319,22 @@ class AtMemoryManager : public CreditCardAccessManager::Observer {
 
   std::optional<PopupState> popup_state_;
 
+  // TODO(crbug.com/535486238): Consider moving `ccam_observation_` into
+  // `state_manager_`.
   base::ScopedObservation<CreditCardAccessManager,
                           CreditCardAccessManager::Observer>
       ccam_observation_{this};
 
+  // TODO(crbug.com/535486238): Consider moving `credit_card_fetch_in_progress_`
+  // into `state_manager_`.
   bool credit_card_fetch_in_progress_ = false;
 
   // Origin of the target field for the active search session.
+  // TODO(crbug.com/535486238): Consider moving `target_field_origin_` into
+  // `state_manager_`.
   url::Origin target_field_origin_;
+
+  AtMemoryPersistedStateManager state_manager_;
   // Factory for search queries, used to identify currently active query and
   // discard the old ones.
   base::WeakPtrFactory<AtMemoryManager> query_weak_ptr_factory_{this};

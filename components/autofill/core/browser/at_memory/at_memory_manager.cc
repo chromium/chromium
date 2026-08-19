@@ -25,7 +25,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
+#include "components/autofill/core/browser/at_memory/at_memory_manager_state.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
+#include "components/autofill/core/browser/at_memory/at_memory_persisted_state_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -388,6 +390,18 @@ AtMemoryManager::AtMemoryManager(AutofillClient* client)
 
 AtMemoryManager::~AtMemoryManager() = default;
 
+AtMemoryManagerState AtMemoryManager::GetInitialStateForField(
+    const FieldGlobalId& field_id) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySearchStatefulness)) {
+    if (const std::optional<AtMemoryManagerState>& state =
+            state_manager_.GetInitialStateForField(field_id)) {
+      return *state;
+    }
+  }
+  return {.suggestions = GetEmptyQuerySuggestions()};
+}
+
 BrowserAutofillManager* AtMemoryManager::GetBrowserAutofillManager(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id) {
@@ -435,6 +449,8 @@ void AtMemoryManager::OnPopupShown(
         client_->GetMqlsUploadService(), client_->GetUkmRecorder(),
         ukm_source_id, client_->GetLastCommittedPrimaryMainFrameURL(),
         client_->GetPageTitle(), field_id, form_signature, field_signature);
+    // TODO(crbug.com/535486238): Restart `fetching_timer` if search is still
+    // in progress when reopening the popup.
   }
 
   if (popup_state_ && popup_state_->metrics_recorder) {
@@ -446,6 +462,10 @@ void AtMemoryManager::OnPopupShown(
 bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
   if (!popup_state_ || !IsAtMemoryTriggerSource(popup_state_->trigger_source)) {
     return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySearchStatefulness)) {
+    state_manager_.OnFilterChanged(filter);
   }
   if (filter.empty()) {
     CancelPendingQueries();
@@ -468,8 +488,14 @@ bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
 }
 
 void AtMemoryManager::OnPopupHidden() {
-  CancelPendingQueries();
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySearchStatefulness)) {
+    CancelPendingQueries();
+  }
   popup_state_.reset();
+  // TODO(crbug.com/535486238): Consider moving `target_field_origin_`,
+  // `credit_card_fetch_in_progress_`, and `ccam_observation_` into
+  // `state_manager_`.
   target_field_origin_ = url::Origin();
   credit_card_fetch_in_progress_ = false;
   ccam_observation_.Reset();
@@ -516,6 +542,10 @@ IsAsync AtMemoryManager::FillSearchResult(
   if (popup_state_ && popup_state_->metrics_recorder) {
     popup_state_->metrics_recorder->OnSuggestionAccepted(
         payload.memory_data_type, payload.sources_bitmask, metadata);
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySearchStatefulness)) {
+    state_manager_.OnSuggestionAccepted();
   }
   // Transfer ownership of the metrics session to the filling path.
   // Ensures that the metrics will be properly recorded once the suggestion
@@ -721,6 +751,10 @@ void AtMemoryManager::RecordAutofillAiEntityUse(
 }
 
 bool AtMemoryManager::IsSearching() const {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySearchStatefulness)) {
+    return state_manager_.IsSearching();
+  }
   return popup_state_ && popup_state_->is_searching;
 }
 
@@ -786,7 +820,12 @@ void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
     return;
   }
 
-  popup_state_->is_searching = true;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySearchStatefulness)) {
+    state_manager_.OnFilterSubmitted(filter);
+  } else {
+    popup_state_->is_searching = true;
+  }
   popup_state_->fetching_string_index = 0;
   ShowFetchingStateSuggestions();
   popup_state_->fetching_timer.Start(
@@ -884,12 +923,21 @@ void AtMemoryManager::CancelPendingQueries() {
   if (popup_state_) {
     popup_state_->fetching_timer.Stop();
     popup_state_->fetching_string_index = 0;
-    popup_state_->is_searching = false;
   }
   query_weak_ptr_factory_.InvalidateWeakPtrs();
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySearchStatefulness)) {
+    state_manager_.StopSearching();
+  } else if (popup_state_) {
+    popup_state_->is_searching = false;
+  }
 }
 
 void AtMemoryManager::SendSuggestions(std::vector<Suggestion> suggestions) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAtMemorySearchStatefulness)) {
+    state_manager_.OnSuggestionsChanged(suggestions);
+  }
   if (popup_state_ && popup_state_->update_callback) {
     popup_state_->update_callback.Run(std::move(suggestions),
                                       popup_state_->trigger_source);
@@ -978,8 +1026,9 @@ void AtMemoryManager::ShowNoResultsStateSuggestions(
 
 void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
                                               MemorySearchResults result) {
-  if (!popup_state_ || !IsAtMemoryTriggerSource(popup_state_->trigger_source) ||
-      !popup_state_->update_callback || !popup_state_->is_searching) {
+  if ((!popup_state_ && !base::FeatureList::IsEnabled(
+                            features::kAutofillAtMemorySearchStatefulness)) ||
+      !IsSearching()) {
     return;
   }
 
@@ -989,7 +1038,9 @@ void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
     CancelPendingQueries();
   }
 
-  if (popup_state_->metrics_recorder) {
+  // TODO(crbug.com/535486238): Handle metrics recording when background query
+  // finishes with the popup closed.
+  if (popup_state_ && popup_state_->metrics_recorder) {
     popup_state_->metrics_recorder->OnQueryResponseReceived(result);
   }
 
@@ -1018,7 +1069,6 @@ void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
   // suggestion based on the status.
   ShowNoResultsStateSuggestions(query, result);
 }
-
 IsAsync AtMemoryManager::FillIban(
     const std::variant<Iban::Guid, Iban::InstrumentId>& identifier,
     const FormGlobalId& form_id,
