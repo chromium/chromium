@@ -434,6 +434,15 @@
   <message name="IDS_AUTOFILL_GMAIL_OTP_FILLING_TOGGLE_DESCRIPTION" desc="Description for the toggle that enables autofilling verification codes from Gmail.">
     Autofill verification codes sites use to improve your security. Chrome can get these codes from your Gmail. <ph name="BEGIN_LINK">&lt;a href="$1" tabindex="0" aria-description="$2" target="_blank"&gt;</ph>Learn more about this feature<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_REQUIRED_TITLE" desc="Title of the dialog informing the user that smart features must be turned on in Gmail to use autofill for verification codes from Gmail.">
+    To use this feature, first turn on smart features in Gmail
+  </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_REQUIRED_STEP_1" desc="First step in the Gmail OTP settings required dialog prompting the user to turn on smart features in Gmail settings.">
+    Turn on “Smart features” in <ph name="BEGIN_LINK">&lt;a href="$1" tabindex="0" aria-description="$2" target="_blank"&gt;</ph>Gmail settings<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_REQUIRED_STEP_2" desc="Second step in the Gmail OTP settings required dialog prompting the user to turn on smart features in other Google products.">
+    Turn on “<ph name="BEGIN_LINK">&lt;a href="$1" tabindex="0" aria-description="$2" target="_blank"&gt;</ph>Smart features in other Google products<ph name="LINK_END">&lt;/a&gt;</ph>”
+  </message>
   <message name="IDS_AUTOFILL_DISABLE_SETTINGS_EXPLANATION_TITLE" desc="Title of the card explaining why the settings page was disabled. Sentence-Cased." formatter_data="android_java">
     Google isn’t your autofill provider
   </message>
