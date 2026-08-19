@@ -703,6 +703,29 @@ void ContextHubService::ClearTabGroupChatHistory() {
   tab_group_chat_history_cache_.Clear();
 }
 
+void ContextHubService::SetPendingMemoryBankEntry(MemoryBankEntry entry) {
+  pending_memory_bank_entry_ = std::move(entry);
+}
+
+std::optional<MemoryBankEntry> ContextHubService::GetPendingMemoryBankEntry()
+    const {
+  return pending_memory_bank_entry_;
+}
+
+bool ContextHubService::SavePendingMemoryBankEntry(
+    const std::vector<std::string>& tags) {
+  if (!pending_memory_bank_entry_.has_value()) {
+    return false;
+  }
+  MemoryBankEntry entry = std::move(*pending_memory_bank_entry_);
+  pending_memory_bank_entry_.reset();
+
+  entry.tags = tags;
+  // TODO(crbug.com/523377643): Add support for notes and collections.
+  SaveMemoryBankEntry(std::move(entry), base::DoNothing());
+  return true;
+}
+
 void ContextHubService::SaveMemoryBankEntry(
     MemoryBankEntry entry,
     MemoryBank::OperationCompleteCallback callback) {

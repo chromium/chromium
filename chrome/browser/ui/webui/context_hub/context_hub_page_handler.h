@@ -76,11 +76,16 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
                           DeleteTodoFeedbackCallback callback) override;
   void ClearTodoFeedbacks(ClearTodoFeedbacksCallback callback) override;
   void GetTodoFeedbacks(GetTodoFeedbacksCallback callback) override;
+  void GetSaveToMemoryBankContext(
+      GetSaveToMemoryBankContextCallback callback) override;
   void GetAllMemoryBankEntries(
       GetAllMemoryBankEntriesCallback callback) override;
   void DeleteMemoryBankEntries(
       const std::vector<int64_t>& ids,
       DeleteMemoryBankEntriesCallback callback) override;
+  void SaveMemoryBankEntry(
+      browser::context_hub::mojom::MemoryBankEntryAnnotationsPtr annotations,
+      SaveMemoryBankEntryCallback callback) override;
   void GetTabs(GetTabsCallback callback) override;
   void RetrieveAndGroupTabs(const std::string& user_command,
                             RetrieveAndGroupTabsCallback callback) override;

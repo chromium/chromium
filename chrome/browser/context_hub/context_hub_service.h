@@ -187,6 +187,16 @@ class ContextHubService : public KeyedService,
   // Clears all tab group chat history turns from the LRU cache.
   void ClearTabGroupChatHistory();
 
+  // Sets the pending memory bank entry waiting to be saved by the user.
+  void SetPendingMemoryBankEntry(MemoryBankEntry entry);
+
+  // Retrieves the current pending memory bank entry, if present.
+  std::optional<MemoryBankEntry> GetPendingMemoryBankEntry() const;
+
+  // Commits the current pending memory bank entry to the memory bank with the
+  // provided tags, and clears the pending entry.
+  bool SavePendingMemoryBankEntry(const std::vector<std::string>& tags);
+
   // Memory bank wrappers that forward operations to the underlying storage
   // backend.
   // Saves an entry in the memory bank.
@@ -379,6 +389,10 @@ class ContextHubService : public KeyedService,
   // Auto Todo item in question and the value is whether the item was liked or
   // disliked by the user. This cache is to gather teamfood feedback only.
   base::LRUCache<std::string, bool> todo_feedback_cache_;
+
+  // Single pending memory bank entry waiting to be saved by the active WebUI
+  // dialog.
+  std::optional<MemoryBankEntry> pending_memory_bank_entry_;
 
   // Backend storage engine for SQLite operations. May be null if DB storage is
   // disabled.

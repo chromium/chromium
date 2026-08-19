@@ -1881,5 +1881,48 @@ TEST_F(ContextHubServiceTest, AutoTodosTimer_TriggersAfterIntervalElapsed) {
             start_time + base::Hours(24));
 }
 
+TEST_F(ContextHubServiceTest, PendingMemoryBankEntryLifecycle) {
+  ContextHubService service(
+      &profile_, &mock_personal_context_service_, &mock_remote_model_executor_,
+      &fake_tab_group_sync_service_, &mock_page_content_extraction_service_,
+      std::make_unique<InMemoryMemoryBank>(),
+      std::make_unique<InMemoryTabGroupStore>(),
+      /*context_hub_backend=*/nullptr,
+      std::make_unique<InMemoryAutoTodosStore>());
+
+  // When no pending entry is set, GetPendingMemoryBankEntry returns nullopt.
+  EXPECT_FALSE(service.GetPendingMemoryBankEntry().has_value());
+
+  MemoryBankEntry pending(MemoryBankType::kTextSelection,
+                          GURL("https://example.com/pending"), "Pending Title",
+                          "Pending selected text");
+
+  service.SetPendingMemoryBankEntry(std::move(pending));
+
+  auto fetched = service.GetPendingMemoryBankEntry();
+  ASSERT_TRUE(fetched.has_value());
+  EXPECT_EQ(fetched->type, MemoryBankType::kTextSelection);
+  EXPECT_EQ(fetched->url, GURL("https://example.com/pending"));
+  EXPECT_EQ(fetched->tab_title, "Pending Title");
+  EXPECT_EQ(fetched->selected_text, "Pending selected text");
+
+  // Save pending entry with tags.
+  bool saved = service.SavePendingMemoryBankEntry({"tag1", "tag2"});
+  EXPECT_TRUE(saved);
+
+  // After saving, the pending entry should no longer exist.
+  EXPECT_FALSE(service.GetPendingMemoryBankEntry().has_value());
+
+  // Verify the entry was committed to the memory bank.
+  base::test::TestFuture<std::vector<MemoryBankEntry>> entries_future;
+  service.GetAllEntries(entries_future.GetCallback());
+  auto entries = entries_future.Take();
+  ASSERT_EQ(entries.size(), 1u);
+  EXPECT_EQ(entries[0].url, GURL("https://example.com/pending"));
+  EXPECT_EQ(entries[0].tab_title, "Pending Title");
+  EXPECT_EQ(entries[0].selected_text, "Pending selected text");
+  EXPECT_THAT(entries[0].tags, UnorderedElementsAre("tag1", "tag2"));
+}
+
 }  // namespace
 }  // namespace context_hub

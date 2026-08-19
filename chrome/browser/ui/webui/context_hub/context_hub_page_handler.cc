@@ -178,6 +178,35 @@ void ContextHubPageHandler::GetTodoFeedbacks(
   std::move(callback).Run({});
 }
 
+void ContextHubPageHandler::GetSaveToMemoryBankContext(
+    GetSaveToMemoryBankContextCallback callback) {
+  auto* service = ContextHubServiceFactory::GetForProfile(profile_);
+  if (service) {
+    if (auto pending = service->GetPendingMemoryBankEntry()) {
+      auto mojo_context =
+          browser::context_hub::mojom::SaveToMemoryBankContext::New();
+      mojo_context->url = pending->url;
+      mojo_context->tab_title = pending->tab_title;
+      bool is_text_selection =
+          pending->type == context_hub::MemoryBankType::kTextSelection;
+      if (is_text_selection && pending->selected_text.has_value()) {
+        // Truncate the snippet to a reasonable length since we only need a
+        // preview in the UI.
+        static constexpr size_t kMaxSnippetPreviewLength = 300;
+        std::string preview = *pending->selected_text;
+        if (preview.length() > kMaxSnippetPreviewLength) {
+          preview.resize(kMaxSnippetPreviewLength);
+        }
+        mojo_context->selected_text = std::move(preview);
+      }
+      mojo_context->is_text_selection = is_text_selection;
+      std::move(callback).Run(std::move(mojo_context));
+      return;
+    }
+  }
+  std::move(callback).Run(nullptr);
+}
+
 void ContextHubPageHandler::GetAllMemoryBankEntries(
     GetAllMemoryBankEntriesCallback callback) {
   auto* service = ContextHubServiceFactory::GetForProfile(profile_);
@@ -227,6 +256,20 @@ void ContextHubPageHandler::DeleteMemoryBankEntries(
   service->DeleteEntries(ids, base::IgnoreArgs<bool>(std::move(callback)));
 }
 
+void ContextHubPageHandler::SaveMemoryBankEntry(
+    browser::context_hub::mojom::MemoryBankEntryAnnotationsPtr annotations,
+    SaveMemoryBankEntryCallback callback) {
+  auto* service = ContextHubServiceFactory::GetForProfile(profile_);
+  if (service && annotations) {
+    std::vector<std::string> tags =
+        annotations->tags.value_or(std::vector<std::string>{});
+    bool success = service->SavePendingMemoryBankEntry(tags);
+    std::move(callback).Run(success);
+    return;
+  }
+  std::move(callback).Run(/*success=*/false);
+}
+
 namespace {
 
 std::vector<context_hub::TabData> GetOpenUngroupedTabs(
@@ -236,8 +279,7 @@ std::vector<context_hub::TabData> GetOpenUngroupedTabs(
   if (tab_provider) {
     for (content::WebContents* tab_contents :
          tab_provider->GetUngroupedTabs()) {
-      SessionID session_id =
-          sessions::SessionTabHelper::IdForTab(tab_contents);
+      SessionID session_id = sessions::SessionTabHelper::IdForTab(tab_contents);
       if (session_id.is_valid()) {
         tabs.push_back({session_id.id(),
                         base::UTF16ToUTF8(tab_contents->GetTitle()),
@@ -301,7 +343,8 @@ void ContextHubPageHandler::GenerateTabBasedTodos(
 }
 
 void ContextHubPageHandler::GetTabs(GetTabsCallback callback) {
-  std::move(callback).Run(ToMojoTabs(GetOpenUngroupedTabs(tab_provider_.get())));
+  std::move(callback).Run(
+      ToMojoTabs(GetOpenUngroupedTabs(tab_provider_.get())));
 }
 
 void ContextHubPageHandler::RetrieveAndGroupTabs(
@@ -320,8 +363,8 @@ void ContextHubPageHandler::RetrieveAndGroupTabs(
       GetOpenUngroupedTabs(tab_provider_.get()), user_command,
       base::BindOnce(
           [](RetrieveAndGroupTabsCallback callback,
-              std::vector<context_hub::TabGroupEntry> groups,
-              std::vector<context_hub::TabData> ungrouped_tabs) {
+             std::vector<context_hub::TabGroupEntry> groups,
+             std::vector<context_hub::TabData> ungrouped_tabs) {
             std::vector<browser::context_hub::mojom::TabGroupPtr> mojo_groups;
             for (const auto& group : groups) {
               auto mojo_group = browser::context_hub::mojom::TabGroup::New();

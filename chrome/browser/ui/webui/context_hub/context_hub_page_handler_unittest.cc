@@ -1607,5 +1607,98 @@ TEST_F(ContextHubPageHandlerTest, RemoveAllConfirmedTabGroups) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(ContextHubPageHandlerTest, GetSaveToMemoryBankContext_NotFound) {
+  base::test::TestFuture<
+      browser::context_hub::mojom::SaveToMemoryBankContextPtr>
+      future;
+  handler_->GetSaveToMemoryBankContext(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       GetSaveToMemoryBankContext_WithTextSelectionContext) {
+  auto* service = ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  MemoryBankEntry entry(MemoryBankType::kTextSelection,
+                        GURL("https://example.com/test"), "Test Title",
+                        "Test Snippet");
+  service->SetPendingMemoryBankEntry(std::move(entry));
+
+  base::test::TestFuture<
+      browser::context_hub::mojom::SaveToMemoryBankContextPtr>
+      future;
+  handler_->GetSaveToMemoryBankContext(future.GetCallback());
+
+  browser::context_hub::mojom::SaveToMemoryBankContextPtr context =
+      future.Take();
+  ASSERT_TRUE(context);
+  EXPECT_EQ(context->url, GURL("https://example.com/test"));
+  EXPECT_EQ(context->tab_title, "Test Title");
+  EXPECT_EQ(context->selected_text, "Test Snippet");
+  EXPECT_TRUE(context->is_text_selection);
+}
+
+TEST_F(ContextHubPageHandlerTest, GetSaveToMemoryBankContext_WithTabContext) {
+  auto* service = ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  MemoryBankEntry entry(MemoryBankType::kTab, GURL("https://example.com/test"),
+                        "Test Title", "Page Inner Text");
+  service->SetPendingMemoryBankEntry(std::move(entry));
+
+  base::test::TestFuture<
+      browser::context_hub::mojom::SaveToMemoryBankContextPtr>
+      future;
+  handler_->GetSaveToMemoryBankContext(future.GetCallback());
+
+  browser::context_hub::mojom::SaveToMemoryBankContextPtr context =
+      future.Take();
+  ASSERT_TRUE(context);
+  EXPECT_EQ(context->url, GURL("https://example.com/test"));
+  EXPECT_EQ(context->tab_title, "Test Title");
+  EXPECT_FALSE(context->selected_text.has_value());
+  EXPECT_FALSE(context->is_text_selection);
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       GetSaveToMemoryBankContext_TruncatesLargeSnippet) {
+  auto* service = ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  std::string long_snippet(500, 'a');
+  MemoryBankEntry entry(MemoryBankType::kTextSelection,
+                        GURL("https://example.com/test"), "Test Title",
+                        long_snippet);
+  service->SetPendingMemoryBankEntry(std::move(entry));
+
+  base::test::TestFuture<
+      browser::context_hub::mojom::SaveToMemoryBankContextPtr>
+      future;
+  handler_->GetSaveToMemoryBankContext(future.GetCallback());
+
+  browser::context_hub::mojom::SaveToMemoryBankContextPtr context =
+      future.Take();
+  ASSERT_TRUE(context);
+  EXPECT_EQ(context->selected_text->length(), 300u);
+  EXPECT_EQ(context->selected_text, std::string(300, 'a'));
+}
+
+TEST_F(ContextHubPageHandlerTest, SaveMemoryBankEntry_WithContext) {
+  auto* service = ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+  MemoryBankEntry entry(MemoryBankType::kTextSelection,
+                        GURL("https://example.com/test"), "Test Title",
+                        "Test Snippet");
+  service->SetPendingMemoryBankEntry(std::move(entry));
+
+  auto annotations =
+      browser::context_hub::mojom::MemoryBankEntryAnnotations::New();
+  annotations->note = "Test Note";
+  annotations->collection = "Test Collection";
+  annotations->tags = std::vector<std::string>{"tag1"};
+
+  base::test::TestFuture<bool> future;
+  handler_->SaveMemoryBankEntry(std::move(annotations), future.GetCallback());
+  EXPECT_TRUE(future.Get());
+}
+
 }  // namespace
 }  // namespace context_hub

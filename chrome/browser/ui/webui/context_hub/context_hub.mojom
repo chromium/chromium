@@ -122,6 +122,21 @@ struct ChatMessage {
   string content;
 };
 
+// Context provided to the WebUI dialog for previewing the item to be saved.
+struct SaveToMemoryBankContext {
+  url.mojom.Url url;
+  string tab_title;
+  string? selected_text;
+  bool is_text_selection;
+};
+
+// User-specified annotations when saving a context item to the memory bank.
+struct MemoryBankEntryAnnotations {
+  string? collection;
+  string? note;
+  array<string>? tags;
+};
+
 // Represents feedback on an Auto Todo item.
 struct AutoTodoItemFeedback {
   // The ID of the Auto Todo item in question.
@@ -195,11 +210,17 @@ interface PageHandler {
   [RuntimeFeature=kAutoTodos]
   GetTodoFeedbacks() => (array<AutoTodoItemFeedback> feedbacks);
 
+  // Returns initial context details for saving to memory bank.
+  GetSaveToMemoryBankContext() => (SaveToMemoryBankContext? context);
+
   // Returns all entries currently stored in the memory bank.
   GetAllMemoryBankEntries() => (array<MemoryBankEntry> entries);
 
   // Deletes entries from the memory bank.
   DeleteMemoryBankEntries(array<int64> ids) => ();
+
+  // Saves the current context entry to the memory bank with user annotations.
+  SaveMemoryBankEntry(MemoryBankEntryAnnotations annotations) => (bool success);
 
   // Returns the list of open ungrouped tabs in the current window.
   [RuntimeFeature=kAutoTabGroups]
