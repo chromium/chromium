@@ -88,8 +88,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
       return privacy_filtering_enabled_;
     }
 
+    base::TimeDelta sampling_interval() const { return sampling_interval_; }
+
    private:
     bool privacy_filtering_enabled_ = false;
+    base::TimeDelta sampling_interval_;
   };
   using TracePacketHandle = DataSource::TraceContext::TracePacketHandle;
 
@@ -229,7 +232,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
       const base::RepeatingClosure& sample_callback_for_testing);
 
   void StartTracing(std::unique_ptr<perfetto::TraceWriterBase> trace_writer,
-                    bool should_enable_filtering);
+                    bool should_enable_filtering,
+                    base::TimeDelta sampling_interval = base::TimeDelta());
 
   void StopTracing();
 

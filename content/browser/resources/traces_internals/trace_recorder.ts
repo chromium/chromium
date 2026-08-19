@@ -11,16 +11,19 @@ import '//resources/cr_elements/cr_slider/cr_slider.js';
 
 import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+import {assert} from '//resources/js/assert.js';
 import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {Token} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import {TraceConfig, TraceConfig_BufferConfig_FillPolicy} from './perfetto_config.js';
-import type {DataSourceConfig, TraceConfig_BufferConfig, TrackEventConfig} from './perfetto_config.js';
+import type {ChromiumSamplingHeapProfilerConfig, ChromiumStackSamplingProfilerConfig, DataSourceConfig, TraceConfig_BufferConfig, TrackEventConfig} from './perfetto_config.js';
+// clang-format off
 // <if expr="is_win">
 import type {EtwConfig} from './perfetto_config.js';
 // </if>
+// clang-format on
 import {getCss} from './trace_recorder.css.js';
 import {getHtml} from './trace_recorder.html.js';
 import {downloadTraceData} from './trace_util.js';
@@ -42,7 +45,44 @@ export interface TraceRecorderElement {
 
 // <if expr="is_win">
 type EtwProviderType = 'scheduler'|'memory'|'system_io';
+const ETW_DATA_SOURCE_NAME = 'org.chromium.etw_system';
 // </if>
+
+const SAMPLER_PROFILER_DATA_SOURCE_NAME = 'org.chromium.sampler_profiler';
+const NATIVE_HEAP_PROFILER_DATA_SOURCE_NAME =
+    'org.chromium.native_heap_profiler';
+
+const BUFFER_SIZE_TICKS: number[] = [4, 8, 16, 32, 64, 128, 256, 512];
+const STACK_SAMPLING_INTERVAL_TICKS: number[] =
+    [2, 5, 10, 20, 50, 100, 200, 500];
+const HEAP_SAMPLING_RATE_TICKS: number[] =
+    Array.from({length: 20}, (_, i) => 1 << i);
+const HEAP_SAMPLING_INTERVAL_TICKS: number[] = [
+  0,
+  1,
+  2,
+  5,
+  10,
+  20,
+  50,
+  100,
+  200,
+  500,
+  1000,
+  2000,
+  5000,
+  10000,
+  30000,
+  60000,
+];
+
+function findClosestTickIndex(ticks: number[], value: number): number {
+  return ticks.reduce(
+      (bestIdx, tick, i) =>
+          Math.abs(tick - value) < Math.abs(ticks[bestIdx]! - value) ? i :
+                                                                       bestIdx,
+      0);
+}
 
 export class TraceRecorderElement extends CrLitElement {
   static get is() {
@@ -77,6 +117,17 @@ export class TraceRecorderElement extends CrLitElement {
       buffersExpanded_: {type: Boolean},
       categoriesExpanded_: {type: Boolean},
       tagsExpanded_: {type: Boolean},
+      stackSamplingExpanded_: {type: Boolean},
+      stackSamplingEnabled: {type: Boolean},
+      stackSamplingIntervalMs: {type: Number},
+      heapProfilingExpanded_: {type: Boolean},
+      heapProfilingEnabled: {type: Boolean},
+      heapSamplingIntervalKb: {type: Number},
+      heapSamplingIntervalMs: {type: Number},
+      bufferSizeTicks_: {type: Array},
+      stackSamplingIntervalTicks_: {type: Array},
+      heapSamplingRateTicks_: {type: Array},
+      heapSamplingIntervalTicks_: {type: Array},
       bufferUsage: {type: Number},
       hadDataLoss: {type: Boolean},
     };
@@ -138,6 +189,29 @@ export class TraceRecorderElement extends CrLitElement {
   protected accessor buffersExpanded_: boolean = false;
   protected accessor categoriesExpanded_: boolean = false;
   protected accessor tagsExpanded_: boolean = false;
+
+  protected stackSamplingConfig: ChromiumStackSamplingProfilerConfig|undefined;
+  protected accessor stackSamplingExpanded_: boolean = false;
+  protected accessor stackSamplingEnabled: boolean = false;
+  protected accessor stackSamplingIntervalMs: number = 50;
+
+  protected heapProfilingConfig: ChromiumSamplingHeapProfilerConfig|undefined;
+  protected accessor heapProfilingExpanded_: boolean = false;
+  protected accessor heapProfilingEnabled: boolean = false;
+  protected accessor heapSamplingIntervalKb: number = 128;
+  protected accessor heapSamplingIntervalMs: number = 50;
+
+  protected accessor bufferSizeTicks_: number[] = BUFFER_SIZE_TICKS;
+  protected accessor stackSamplingIntervalTicks_: number[] =
+      STACK_SAMPLING_INTERVAL_TICKS;
+  protected accessor heapSamplingRateTicks_: number[] =
+      HEAP_SAMPLING_RATE_TICKS;
+  protected accessor heapSamplingIntervalTicks_: number[] =
+      HEAP_SAMPLING_INTERVAL_TICKS;
+
+  protected getTickIndex_(ticks: number[], value: number): number {
+    return findClosestTickIndex(ticks, value);
+  }
 
   protected accessor bufferUsage: number = 0;
   protected accessor hadDataLoss: boolean = false;
@@ -297,8 +371,7 @@ export class TraceRecorderElement extends CrLitElement {
   }
 
   protected onBufferSizeCrSliderValueChanged_(e: Event): void {
-    const slider = e.target as CrSliderElement;
-    this.bufferSizeMb = Math.floor(slider.value);
+    this.bufferSizeMb = this.getSliderTickValue_(e);
     this.updateBufferConfigField_('sizeKb', this.bufferSizeMb * 1024);
   }
 
@@ -369,13 +442,12 @@ export class TraceRecorderElement extends CrLitElement {
             .every((value) => value.size === 0)) {
       this.enabledEtwEvents[provider] = new Set();
       this.etwConfig = undefined;
-      this.traceConfig.dataSources = this.traceConfig.dataSources?.filter(
-          ds => ds.config?.etwConfig === undefined);
+      this.removeDataSourceConfig_(ETW_DATA_SOURCE_NAME, 'etwConfig');
     } else {
       if (!this.etwConfig) {
         this.etwConfig = {};
         this.addDataSourceConfig_({
-          name: 'org.chromium.etw_system',
+          name: ETW_DATA_SOURCE_NAME,
           targetBuffer: 0,
           etwConfig: this.etwConfig,
         });
@@ -425,6 +497,88 @@ export class TraceRecorderElement extends CrLitElement {
     this.disabledTags = new Set(this.trackEventConfig.disabledTags);
 
     this.updateUrlFromConfig_();
+  }
+
+  protected onStackSamplingExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.stackSamplingExpanded_ = e.detail.value;
+  }
+
+  protected onStackSamplingToggleChange_(event: CustomEvent<boolean>) {
+    if (!this.traceConfig) {
+      return;
+    }
+    this.stackSamplingEnabled = event.detail;
+
+    if (this.stackSamplingEnabled && !this.stackSamplingConfig) {
+      this.stackSamplingConfig = {
+        samplingIntervalMs: this.stackSamplingIntervalMs,
+      };
+      this.addDataSourceConfig_({
+        name: SAMPLER_PROFILER_DATA_SOURCE_NAME,
+        targetBuffer: 0,
+        chromiumStackSamplingProfiler: this.stackSamplingConfig,
+      });
+    } else if (!this.stackSamplingEnabled) {
+      this.stackSamplingConfig = undefined;
+      this.removeDataSourceConfig_(
+          SAMPLER_PROFILER_DATA_SOURCE_NAME, 'chromiumStackSamplingProfiler');
+    }
+    this.updateUrlFromConfig_();
+  }
+
+  protected onStackSamplingIntervalCrSliderValueChanged_(e: Event): void {
+    this.stackSamplingIntervalMs = this.getSliderTickValue_(e);
+    if (this.stackSamplingConfig) {
+      this.stackSamplingConfig.samplingIntervalMs =
+          this.stackSamplingIntervalMs;
+      this.updateUrlFromConfig_();
+    }
+  }
+
+  protected onHeapProfilingExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.heapProfilingExpanded_ = e.detail.value;
+  }
+
+  protected onHeapProfilingToggleChange_(event: CustomEvent<boolean>) {
+    if (!this.traceConfig) {
+      return;
+    }
+    this.heapProfilingEnabled = event.detail;
+
+    if (this.heapProfilingEnabled && !this.heapProfilingConfig) {
+      this.heapProfilingConfig = {
+        samplingIntervalBytes: this.heapSamplingIntervalKb * 1024,
+        samplingIntervalMs: this.heapSamplingIntervalMs,
+      };
+      this.addDataSourceConfig_({
+        name: NATIVE_HEAP_PROFILER_DATA_SOURCE_NAME,
+        targetBuffer: 0,
+        chromiumSamplingHeapProfiler: this.heapProfilingConfig,
+      });
+    } else if (!this.heapProfilingEnabled) {
+      this.heapProfilingConfig = undefined;
+      this.removeDataSourceConfig_(
+          NATIVE_HEAP_PROFILER_DATA_SOURCE_NAME,
+          'chromiumSamplingHeapProfiler');
+    }
+    this.updateUrlFromConfig_();
+  }
+
+  protected onHeapSamplingIntervalCrSliderValueChanged_(e: Event): void {
+    this.heapSamplingIntervalKb = this.getSliderTickValue_(e);
+    if (this.heapProfilingConfig) {
+      this.heapProfilingConfig.samplingIntervalBytes =
+          this.heapSamplingIntervalKb * 1024;
+      this.updateUrlFromConfig_();
+    }
+  }
+
+  protected onHeapSamplingIntervalMsCrSliderValueChanged_(e: Event): void {
+    this.heapSamplingIntervalMs = this.getSliderTickValue_(e);
+    if (this.heapProfilingConfig) {
+      this.heapProfilingConfig.samplingIntervalMs = this.heapSamplingIntervalMs;
+      this.updateUrlFromConfig_();
+    }
   }
 
   private downloadData_(traceData: BigBuffer|null, uuid: Token|null): void {
@@ -598,12 +752,15 @@ export class TraceRecorderElement extends CrLitElement {
         }
 
         // <if expr="is_win">
-        const etwDataSource = this.traceConfig.dataSources?.find(
-            ds => ds.config?.etwConfig !== undefined);
-        if (etwDataSource) {
-          this.etwConfig = etwDataSource.config?.etwConfig;
-        }
+        this.etwConfig =
+            this.getOrInitDataSourceConfig_(ETW_DATA_SOURCE_NAME, 'etwConfig');
         // </if>
+
+        this.stackSamplingConfig = this.getOrInitDataSourceConfig_(
+            SAMPLER_PROFILER_DATA_SOURCE_NAME, 'chromiumStackSamplingProfiler');
+        this.heapProfilingConfig = this.getOrInitDataSourceConfig_(
+            NATIVE_HEAP_PROFILER_DATA_SOURCE_NAME,
+            'chromiumSamplingHeapProfiler');
       } catch (e) {
         this.showToast_(`Could not parse trace config: ${e}`);
         this.initializeDefaultConfig_();
@@ -637,6 +794,8 @@ export class TraceRecorderElement extends CrLitElement {
   }
 
   private initializeDefaultConfig_(): void {
+    this.stackSamplingConfig = undefined;
+    this.heapProfilingConfig = undefined;
     this.trackEventConfig = this.createDefaultTrackEventConfig_();
     this.traceConfig = {
       buffers: this.createDefaultBufferConfig_(),
@@ -692,6 +851,35 @@ export class TraceRecorderElement extends CrLitElement {
     this.traceConfig.dataSources.push({config: config});
   }
 
+  private removeDataSourceConfig_(
+      name: string, fieldKey?: keyof DataSourceConfig): void {
+    if (!this.traceConfig?.dataSources) {
+      return;
+    }
+    this.traceConfig.dataSources = this.traceConfig.dataSources.filter(
+        ds => ds.config?.name !== name &&
+            (!fieldKey || ds.config?.[fieldKey] === undefined));
+  }
+
+  private getOrInitDataSourceConfig_<K extends keyof DataSourceConfig>(
+      name: string, fieldKey: K): NonNullable<DataSourceConfig[K]>|undefined {
+    const dataSource = this.traceConfig?.dataSources?.find(
+        ds => ds.config?.[fieldKey] !== undefined || ds.config?.name === name);
+    if (!dataSource) {
+      return undefined;
+    }
+    assert(dataSource.config);
+    if (!dataSource.config[fieldKey]) {
+      dataSource.config[fieldKey] = {} as NonNullable<DataSourceConfig[K]>;
+    }
+    return dataSource.config[fieldKey] as NonNullable<DataSourceConfig[K]>;
+  }
+
+  private getSliderTickValue_(e: Event): number {
+    const slider = e.target as CrSliderElement;
+    return (slider.ticks as number[])[slider.value]!;
+  }
+
   private updatePropertiesFromConfig_(): void {
     const mainBuffer = this.traceConfig?.buffers?.[0];
     if (mainBuffer) {
@@ -705,6 +893,25 @@ export class TraceRecorderElement extends CrLitElement {
     this.enabledCategories = new Set(this.trackEventConfig?.enabledCategories);
     this.enabledTags = new Set(this.trackEventConfig?.enabledTags);
     this.disabledTags = new Set(this.trackEventConfig?.disabledTags);
+
+    if (this.stackSamplingConfig) {
+      this.stackSamplingEnabled = true;
+      this.stackSamplingIntervalMs =
+          this.stackSamplingConfig.samplingIntervalMs ?? 50;
+    } else {
+      this.stackSamplingEnabled = false;
+    }
+
+    if (this.heapProfilingConfig) {
+      this.heapProfilingEnabled = true;
+      this.heapSamplingIntervalKb = Math.floor(
+          (this.heapProfilingConfig.samplingIntervalBytes ?? (1024 * 128)) /
+          1024);
+      this.heapSamplingIntervalMs =
+          this.heapProfilingConfig.samplingIntervalMs ?? 50;
+    } else {
+      this.heapProfilingEnabled = false;
+    }
 
     // <if expr="is_win">
     if (this.etwConfig) {

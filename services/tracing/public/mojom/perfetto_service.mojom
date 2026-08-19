@@ -115,6 +115,7 @@ struct DataSourceConfig {
   mojo_base.mojom.ByteString system_metrics_config_raw;
   mojo_base.mojom.ByteString histogram_samples_config_raw;
   mojo_base.mojom.ByteString chromium_sampling_heap_profiler_raw;
+  mojo_base.mojom.ByteString chromium_stack_sampling_profiler_raw;
 };
 
 struct DataSourceRegistration {

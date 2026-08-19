@@ -38,6 +38,8 @@
 #include "services/tracing/tracing_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/protos/perfetto/config/chrome/stack_sampling_profiler.gen.h"
+#include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pb.h"
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
@@ -128,11 +130,19 @@ class TracingSampleProfilerTest : public testing::Test {
 #endif
   }
 
-  void BeginTrace() {
+  void BeginTrace(base::TimeDelta sampling_interval = base::TimeDelta()) {
     perfetto::TraceConfig trace_config;
     trace_config.add_buffers()->set_size_kb(1024);
     auto* ds_cfg = trace_config.add_data_sources()->mutable_config();
     ds_cfg->set_name(kSamplerProfilerSourceName);
+    if (!sampling_interval.is_zero()) {
+      perfetto::protos::gen::ChromiumStackSamplingProfilerConfig
+          profiler_config;
+      profiler_config.set_sampling_interval_ms(
+          sampling_interval.InMilliseconds());
+      ds_cfg->set_chromium_stack_sampling_profiler_raw(
+          profiler_config.SerializeAsString());
+    }
     ds_cfg = trace_config.add_data_sources()->mutable_config();
     ds_cfg->set_name("track_event");
 
@@ -266,6 +276,16 @@ TEST_F(TracingSampleProfilerTest, OnSampleCompleted) {
       TracingSamplerProfiler::CreateOnMainThread(base::BindRepeating(
           [] { return MakeMockUnwinderFactoryWithExpectations(); }));
   BeginTrace();
+  WaitForEvents();
+  EndTracing();
+  ValidateReceivedEvents();
+}
+
+TEST_F(TracingSampleProfilerTest, CustomSamplingInterval) {
+  auto profiler =
+      TracingSamplerProfiler::CreateOnMainThread(base::BindRepeating(
+          [] { return MakeMockUnwinderFactoryWithExpectations(); }));
+  BeginTrace(base::Milliseconds(10));
   WaitForEvents();
   EndTracing();
   ValidateReceivedEvents();

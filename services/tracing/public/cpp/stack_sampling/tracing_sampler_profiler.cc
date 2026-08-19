@@ -34,6 +34,8 @@
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_descriptor.h"
 #include "third_party/perfetto/include/perfetto/tracing/platform.h"
+#include "third_party/perfetto/protos/perfetto/config/chrome/stack_sampling_profiler.gen.h"
+#include "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_common.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/profile_packet.pbzero.h"
@@ -92,6 +94,8 @@ uintptr_t executable_start_addr() {
 // Pointer to the main thread instance, if any.
 TracingSamplerProfiler* g_main_thread_instance = nullptr;
 
+constexpr base::TimeDelta kDefaultSamplingInterval = base::Milliseconds(50);
+
 // A random UUID for the track used to emit streaming profile packets, to avoid
 // collisions with other tracks.
 constexpr uint64_t kStreamingProfileTrackUuid = 0x6A7E8A54C18B7778ul;
@@ -109,7 +113,8 @@ class TracingSamplerProfilerManager {
     data_source_ = data_source;
     for (TracingSamplerProfiler* profiler : profilers_) {
       profiler->StartTracing(data_source_->CreateTraceWriter(),
-                             data_source_->privacy_filtering_enabled());
+                             data_source_->privacy_filtering_enabled(),
+                             data_source_->sampling_interval());
     }
   }
   void OnDataSourceStop(TracingSamplerProfiler::DataSource* data_source) {
@@ -137,7 +142,8 @@ class TracingSamplerProfilerManager {
 
     if (data_source_) {
       profiler->StartTracing(data_source_->CreateTraceWriter(),
-                             data_source_->privacy_filtering_enabled());
+                             data_source_->privacy_filtering_enabled(),
+                             data_source_->sampling_interval());
     }
   }
 
@@ -294,6 +300,16 @@ TracingSamplerProfiler::DataSource::~DataSource() = default;
 void TracingSamplerProfiler::DataSource::OnSetup(const SetupArgs& args) {
   privacy_filtering_enabled_ =
       args.config->chrome_config().privacy_filtering_enabled();
+  const std::string& raw_config =
+      args.config->chromium_stack_sampling_profiler_raw();
+  if (!raw_config.empty()) {
+    perfetto::protos::gen::ChromiumStackSamplingProfilerConfig config;
+    if (config.ParseFromArray(raw_config.data(), raw_config.size()) &&
+        config.has_sampling_interval_ms() &&
+        config.sampling_interval_ms() > 0) {
+      sampling_interval_ = base::Milliseconds(config.sampling_interval_ms());
+    }
+  }
 }
 
 void TracingSamplerProfiler::DataSource::OnStart(const StartArgs&) {
@@ -711,7 +727,8 @@ void TracingSamplerProfiler::SetAuxUnwinderFactory(
 
 void TracingSamplerProfiler::StartTracing(
     std::unique_ptr<perfetto::TraceWriterBase> trace_writer,
-    bool should_enable_filtering) {
+    bool should_enable_filtering,
+    base::TimeDelta sampling_interval) {
   base::AutoLock lock(lock_);
   DCHECK_EQ(profiler_, nullptr);
 
@@ -721,7 +738,9 @@ void TracingSamplerProfiler::StartTracing(
 
   base::StackSamplingProfiler::SamplingParams params;
   params.samples_per_profile = std::numeric_limits<int>::max();
-  params.sampling_interval = base::Milliseconds(50);
+  params.sampling_interval = sampling_interval.is_zero()
+                                 ? kDefaultSamplingInterval
+                                 : sampling_interval;
 
   auto profile_builder = std::make_unique<TracingProfileBuilder>(
       sampled_thread_token_.id, std::move(trace_writer),
