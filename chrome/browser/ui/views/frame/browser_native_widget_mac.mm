@@ -761,6 +761,10 @@ void BrowserNativeWidgetMac::OnWidgetInitDone() {
   if (!GetWidget()->HasObserver(this)) {
     GetWidget()->AddObserver(this);
   }
+  paint_as_active_subscription_ =
+      GetWidget()->RegisterPaintAsActiveChangedCallback(
+          base::BindRepeating(&BrowserNativeWidgetMac::UpdateBackgroundColor,
+                              base::Unretained(this)));
   // GlassFrameService is only available if glass frame is enabled.
   if (auto* const glass_frame_service = GlassFrameService::GetInstance()) {
     glass_frame_service_subscription_ =
@@ -1051,7 +1055,7 @@ void BrowserNativeWidgetMac::UpdateBackgroundColor() {
 
   const ui::NativeTheme::PreferredColorScheme color_scheme =
       browser_view_->GetNativeTheme()->preferred_color_scheme();
-  const bool is_active = GetWidget()->IsActive();
+  const bool is_active = GetWidget()->ShouldPaintAsActive();
   const SkColor theme_color = browser_view_->GetColorProvider()->GetColor(
       is_active ? ui::kColorFrameActive : ui::kColorFrameInactive);
 

@@ -175,6 +175,91 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest, ActiveInactiveTintOpacit
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
+                       PaintAsActiveLockMaintainsActiveTint) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP() << "Glass frame feature is disabled.";
+  }
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* widget = browser_view->GetWidget();
+  NSWindow* ns_window = widget->GetNativeWindow().GetNativeNSWindow();
+  NSView* content_view = [ns_window contentView];
+
+  // Bring browser to front to ensure it is active.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ASSERT_TRUE(widget->IsActive());
+
+  auto [glass_view, tint_view] = GetGlassViews(content_view);
+
+  // Get active and inactive colors.
+  const ui::ColorProvider* color_provider = browser_view->GetColorProvider();
+  SkColor active_color = color_provider->GetColor(ui::kColorFrameActive);
+  SkColor inactive_color = color_provider->GetColor(ui::kColorFrameInactive);
+
+  auto get_sk_color = [](CGColorRef cg_color) {
+    if (!cg_color) {
+      return SK_ColorTRANSPARENT;
+    }
+    NSColor* ns_color = [NSColor colorWithCGColor:cg_color];
+    NSColor* srgb_color =
+        [ns_color colorUsingColorSpace:[NSColorSpace sRGBColorSpace]];
+    return SkColorSetARGB(static_cast<U8CPU>(srgb_color.alphaComponent * 255),
+                          static_cast<U8CPU>(srgb_color.redComponent * 255),
+                          static_cast<U8CPU>(srgb_color.greenComponent * 255),
+                          static_cast<U8CPU>(srgb_color.blueComponent * 255));
+  };
+
+  auto get_color_from_views = [&](NSView* t_view, NSView* g_view) {
+    if (t_view) {
+      return get_sk_color(t_view.layer.backgroundColor);
+    }
+    CHECK(g_view);
+    NSColor* t_color = [(id)g_view tintColor];
+    NSColor* srgb_color =
+        [t_color colorUsingColorSpace:[NSColorSpace sRGBColorSpace]];
+    return SkColorSetARGB(static_cast<U8CPU>(srgb_color.alphaComponent * 255),
+                          static_cast<U8CPU>(srgb_color.redComponent * 255),
+                          static_cast<U8CPU>(srgb_color.greenComponent * 255),
+                          static_cast<U8CPU>(srgb_color.blueComponent * 255));
+  };
+
+  // Lock paint-as-active on the widget (e.g. as a child bubble/widget would).
+  std::unique_ptr<views::Widget::PaintAsActiveLock> lock =
+      widget->LockPaintAsActive();
+
+  // Deactivate the native widget (simulating a child window becoming key).
+  views::NativeWidgetMac* native_widget =
+      static_cast<views::NativeWidgetMac*>(widget->native_widget());
+  static_cast<remote_cocoa::mojom::NativeWidgetNSWindowHost*>(
+      TestNativeWidgetMac::GetHost(native_widget))
+      ->OnWindowKeyStatusChanged(/*is_key=*/false,
+                                 /*is_content_first_responder=*/false,
+                                 /*full_keyboard_access_enabled=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !widget->IsActive(); }));
+
+  // Widget is natively inactive, but ShouldPaintAsActive() is true due to the
+  // lock.
+  EXPECT_FALSE(widget->IsActive());
+  EXPECT_TRUE(widget->ShouldPaintAsActive());
+
+  auto [glass_view_locked, tint_view_locked] = GetGlassViews(content_view);
+  SkColor locked_color =
+      get_color_from_views(tint_view_locked, glass_view_locked);
+  EXPECT_EQ(SkColorSetA(locked_color, 255), SkColorSetA(active_color, 255));
+
+  // Release the lock. The widget should now transition to inactive tint.
+  lock.reset();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !widget->ShouldPaintAsActive(); }));
+
+  EXPECT_FALSE(widget->ShouldPaintAsActive());
+  auto [glass_view_unlocked, tint_view_unlocked] = GetGlassViews(content_view);
+  SkColor unlocked_color =
+      get_color_from_views(tint_view_unlocked, glass_view_unlocked);
+  EXPECT_EQ(SkColorSetA(unlocked_color, 255), SkColorSetA(inactive_color, 255));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest,
                        GlassViewGeometryRestrictedToTopChrome) {
   if (!features::IsGlassFrameEnabled()) {
     GTEST_SKIP() << "Glass frame feature is disabled.";

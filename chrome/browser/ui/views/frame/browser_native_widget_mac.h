@@ -126,6 +126,7 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   base::CallbackListSubscription vertical_tab_collapse_subscription_;
   base::CallbackListSubscription vertical_tab_resizing_subscription_;
   base::CallbackListSubscription glass_frame_service_subscription_;
+  base::CallbackListSubscription paint_as_active_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NATIVE_WIDGET_MAC_H_
