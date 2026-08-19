@@ -19,10 +19,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/win/scoped_com_initializer.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
@@ -158,10 +158,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   std::optional<D3D11_VIDEO_DECODER_DESC> last_video_decoder_desc_;
   D3D11_VIDEO_DECODER_CONFIG video_decoder_config_;
 
-  void TearDown() override {
-    decoder_.reset();
-    base::RunLoop().RunUntilIdle();
-  }
+  void TearDown() override { decoder_.reset(); }
 
   void EnableFeature(const base::Feature& feature) {
     scoped_feature_list_.emplace();
@@ -193,7 +190,6 @@ class D3D11VideoDecoderTest : public ::testing::Test {
       supported_configs = D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
           gpu_preferences_, gpu_workarounds_, get_device_cb);
     }
-    task_environment_.RunUntilIdle();
 
     // We store it in a std::unique_ptr<VideoDecoder> so that the default
     // deleter works.  The dtor is protected.
@@ -210,12 +206,13 @@ class D3D11VideoDecoderTest : public ::testing::Test {
                          bool expect_success) {
     const bool low_delay = false;
     CdmContext* cdm_context = nullptr;
+    base::test::TestFuture<DecoderStatus> init_future;
 
     decoder_->Initialize(config, low_delay, cdm_context,
-                         base::BindOnce(&D3D11VideoDecoderTest::CheckStatus,
-                                        base::Unretained(this), expect_success),
-                         base::DoNothing(), base::DoNothing());
-    task_environment_.RunUntilIdle();
+                         init_future.GetCallback(), base::DoNothing(),
+                         base::DoNothing());
+    ASSERT_EQ(expect_success, init_future.Get().is_ok())
+        << "Unexpected initialization result: " << init_future.Get();
   }
 
   void SubmitBitstreamBuffer() {
@@ -238,10 +235,6 @@ class D3D11VideoDecoderTest : public ::testing::Test {
 
     const std::array<uint8_t, 1> bitstream = {0};
     EXPECT_TRUE(d3d11_decoder_raw_->SubmitBitstreamBufferForTesting(bitstream));
-  }
-
-  void CheckStatus(bool expect_success, DecoderStatus actual) {
-    ASSERT_EQ(expect_success, actual.is_ok());
   }
 
   base::test::TaskEnvironment task_environment_;
