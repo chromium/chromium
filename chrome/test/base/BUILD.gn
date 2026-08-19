@@ -766,6 +766,14 @@ if (!is_android) {
         "//ui/aura",
       ]
     }
+    if (is_win) {
+      sources += [ "interactive_test_utils_win.cc" ]
+      deps += [
+        "//chrome/test/base:process_lineage_win",
+        "//chrome/test/base:save_desktop_snapshot",
+        "//chrome/test/base:window_contents_as_string_win",
+      ]
+    }
   }
 }
 
