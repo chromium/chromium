@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {HostCapability, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {FocusedTabData, TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
+import type {TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
-import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, sleep, testMain} from './browser_test_base.js';
+import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, sleep, testMain} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
 
 // Test cases here correspond to test cases in glic_api_browsertest.cc.
@@ -48,25 +48,6 @@ class ApiTests extends ApiTestFixtureBase {
   async testPanelActiveWithMicrophone() {
     await this.advanceToNextStep();
     await this.advanceToNextStep();
-  }
-
-  async testGetContextFromFocusedTabWithUnFocusablePage() {
-    assertDefined(this.host.getFocusedTabStateV2);
-    assertDefined(this.host.getContextFromFocusedTab);
-    assertDefined(this.host.setTabContextPermissionState);
-
-    // Confirms that the current tab has an un-focusable page.
-    const focusSequence =
-        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
-    const focus = await focusSequence.next();
-    assertDefined(focus.hasNoFocus);
-    assertTrue(focusSequence.isEmpty());
-
-    // Focused tab extraction should fail for an un-focusable page.
-    await this.host.setTabContextPermissionState(true);
-    await assertRejects(this.host.getContextFromFocusedTab({}), {
-      withErrorMessage: 'tabContext failed: permission denied',
-    });
   }
 
   // TODO(crbug.com/422544382): add test for getContextForActorFromTab for the

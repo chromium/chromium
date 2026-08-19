@@ -495,6 +495,25 @@ class ApiTests extends ApiTestFixtureBase {
     assertFalse(result.pdfDocumentData!.pdfSizeLimitExceeded);
   }
 
+  async testGetContextFromFocusedTabWithUnFocusablePage() {
+    assertDefined(this.host.getFocusedTabStateV2);
+    assertDefined(this.host.getContextFromFocusedTab);
+    assertDefined(this.host.setTabContextPermissionState);
+
+    // Confirms that the current tab has an un-focusable page.
+    const focusSequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
+    const focus = await focusSequence.next();
+    assertDefined(focus.hasNoFocus);
+    assertTrue(focusSequence.isEmpty());
+
+    // Focused tab extraction should fail for an un-focusable page.
+    await this.host.setTabContextPermissionState(true);
+    await assertRejects(this.host.getContextFromFocusedTab({}), {
+      withErrorMessage: 'tabContext failed: permission denied',
+    });
+  }
+
   async testIsOnboardingCompleted() {
     assertDefined(this.host.isOnboardingCompleted);
     const completedSequence =
