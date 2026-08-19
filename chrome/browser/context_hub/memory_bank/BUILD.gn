@@ -23,13 +23,21 @@ source_set("impl") {
     "in_memory_memory_bank.h",
     "noop_memory_bank.cc",
     "noop_memory_bank.h",
+    "tab_context_sync_memory_bank.cc",
+    "tab_context_sync_memory_bank.h",
   ]
 
   public_deps = [
     ":memory_bank",
     "//base",
     "//chrome/browser/context_hub/storage",
+    "//components/sync_tab_context",
     "//url",
+  ]
+
+  deps = [
+    "//chrome/browser/context_hub:prefs",
+    "//components/prefs",
   ]
 }
 
@@ -38,6 +46,7 @@ source_set("unit_tests") {
   sources = [
     "database_memory_bank_unittest.cc",
     "in_memory_memory_bank_unittest.cc",
+    "tab_context_sync_memory_bank_unittest.cc",
   ]
 
   deps = [
@@ -45,7 +54,11 @@ source_set("unit_tests") {
     ":memory_bank",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/context_hub:prefs",
     "//chrome/browser/context_hub/storage",
+    "//components/prefs:test_support",
+    "//components/sync_tab_context",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]

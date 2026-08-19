@@ -12,6 +12,8 @@ namespace context_hub::prefs {
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kContextHubLastAutoTodosGenerationTime,
                              base::Time());
+  registry->RegisterStringPref(kContextHubTabContextSyncContainerId,
+                               std::string());
 }
 
 }  // namespace context_hub::prefs

@@ -56,4 +56,7 @@ BASE_FEATURE_PARAM(size_t,
 
 BASE_FEATURE(kContextHubDatabaseStorage, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextHubTabContextSyncStorage,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace context_hub::features

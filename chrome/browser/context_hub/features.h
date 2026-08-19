@@ -43,6 +43,12 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kMaxTabGroupChatHistoryTurns);
 // feature is enabled.
 BASE_DECLARE_FEATURE(kContextHubDatabaseStorage);
 
+// The feature flag for using TabContextSyncService storage for Memory Banks.
+// When enabled alongside Memory Banks feature, Memory Banks will use
+// TabContextSyncMemoryBank. If Memory Banks is enabled but this flag is false,
+// the impl will proceed to check the kContextHubDatabaseStorage flag above.
+BASE_DECLARE_FEATURE(kContextHubTabContextSyncStorage);
+
 }  // namespace context_hub::features
 
 #endif  // CHROME_BROWSER_CONTEXT_HUB_FEATURES_H_

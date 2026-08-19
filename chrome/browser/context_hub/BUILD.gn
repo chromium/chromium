@@ -13,18 +13,30 @@ source_set("features") {
   deps = [ "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared" ]
 }
 
-source_set("context_hub") {
+source_set("prefs") {
   sources = [
-    "context_hub_service.cc",
-    "context_hub_service.h",
-    "context_hub_service_factory.cc",
-    "context_hub_service_factory.h",
     "prefs.cc",
     "prefs.h",
   ]
 
   public_deps = [
     ":features",
+    "//base",
+    "//components/pref_registry",
+  ]
+}
+
+source_set("context_hub") {
+  sources = [
+    "context_hub_service.cc",
+    "context_hub_service.h",
+    "context_hub_service_factory.cc",
+    "context_hub_service_factory.h",
+  ]
+
+  public_deps = [
+    ":features",
+    ":prefs",
     "//base",
     "//chrome/browser/context_hub/auto_todos",
     "//chrome/browser/context_hub/auto_todos:impl",

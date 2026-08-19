@@ -12,6 +12,9 @@ namespace context_hub::prefs {
 inline constexpr char kContextHubLastAutoTodosGenerationTime[] =
     "context_hub.last_auto_todos_generation_time";
 
+inline constexpr char kContextHubTabContextSyncContainerId[] =
+    "context_hub.tab_context_sync.container_id";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace context_hub::prefs
