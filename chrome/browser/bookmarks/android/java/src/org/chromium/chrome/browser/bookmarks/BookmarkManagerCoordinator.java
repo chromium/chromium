@@ -579,6 +579,7 @@ public class BookmarkManagerCoordinator
     View buildEmptyStateView(ViewGroup parent) {
         ViewGroup emptyStateView = (ViewGroup) inflate(parent, R.layout.empty_state_view);
         emptyStateView.setTouchscreenBlocksFocus(true);
+        emptyStateView.setFocusable(false);
         // Adjust the empty state view height dynamically to fill the remaining space in the
         // RecyclerView. Since R.layout.empty_state_view is a shared layout of height match_parent,
         // displaying it alongside the search box in the RecyclerView would exceed the viewport
