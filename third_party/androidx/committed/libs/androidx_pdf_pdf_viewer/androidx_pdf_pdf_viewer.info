@@ -29,7 +29,6 @@ resources = [
   "res/layout/fastscroll_handle.xml",
   "res/layout/page_indicator.xml",
   "res/layout/pdf_content_layout.xml",
-  "res/layout/find_in_file.xml",
   "res/layout/annotation_tools.xml",
   "res/layout/loading_view.xml",
   "res/layout/annotation_toolbar_layout.xml",
