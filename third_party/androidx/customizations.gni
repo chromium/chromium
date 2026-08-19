@@ -152,6 +152,12 @@ template("_androidx_prebuilt") {
       visibility = [
         "//android_webview/tools/system_webview_shell:*",
         "//third_party/android_deps:*",
+        "//third_party/androidx:*",
+      ]
+    } else if (target_name == "androidx_web_web_java") {
+      visibility = [
+        "//android_webview/tools/system_webview_shell:*",
+        "//third_party/android_deps:*",
       ]
     } else if (target_name == "androidx_datastore_datastore_core_android_java") {
       ignore_native_libraries = true

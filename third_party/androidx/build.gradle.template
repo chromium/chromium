@@ -169,6 +169,7 @@ dependencies {
     compile "androidx.media3:media3-ui:${media3Version}"
 
     compileLatest 'androidx.webkit:webkit:+'
+    compileLatest 'androidx.web:web:+'
     compileLatest 'androidx.constraintlayout:constraintlayout:+'
 
     // Used by LeakCanary.
