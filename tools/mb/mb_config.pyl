@@ -80,6 +80,7 @@
       'android_arm64_high_end-builder-perf': 'official_remoteexec_minimal_symbols_android_arm64_high_end',
       'android_arm64_high_end-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo',
       'chromecast-linux-builder-perf': 'cast_binary_size_remoteexec',
+      'linux-arm-builder-perf': 'official_linux_perf_arm64',
       'linux-builder-perf': 'official_linux_perf',
       'linux-builder-perf-pgo': 'official_remoteexec_perf_pgo',
       'linux-builder-perf-rel': 'official_linux_perf',
@@ -114,6 +115,7 @@
       'android_arm64_high_end-builder-perf': 'official_remoteexec_minimal_symbols_android_arm64_high_end',
       'android_arm64_high_end-builder-perf-pgo': 'official_remoteexec_minimal_symbols_android_arm64_high_end_pgo',
       'chromecast-linux-builder-perf': 'cast_binary_size_remoteexec',
+      'linux-arm-builder-perf': 'official_linux_perf_arm64',
       'linux-builder-perf': 'official_linux_perf',
       'linux-builder-perf-pgo': 'official_remoteexec_perf_pgo',
       'linux-builder-perf-rel': 'official_linux_perf',
@@ -467,6 +469,10 @@
 
     'official_linux_perf': [
       'official', 'remoteexec', 'minimal_symbols', 'pgo_phase_0',
+    ],
+
+    'official_linux_perf_arm64': [
+      'official', 'remoteexec', 'arm64', 'minimal_symbols', 'pgo_phase_0',
     ],
 
     'official_linux_pgo': [
