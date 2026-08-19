@@ -408,8 +408,9 @@ class HostProcess : public ConfigWatcher::Delegate,
   void ShutdownOnNetworkThread();
 
 #if BUILDFLAG(IS_POSIX)
-  // Callback passed to RegisterSignalHandler() to handle SIGTERM events.
+  // Callbacks passed to RegisterSignalHandler().
   void SigTermHandler(int signal_number);
+  void SigUsr2Handler(int signal_number);
 #endif
 
   // Called to initialize resources on the UI thread.
@@ -925,6 +926,9 @@ void HostProcess::StartOnNetworkThread() {
   remoting::RegisterSignalHandler(
       SIGTERM, base::BindRepeating(&HostProcess::SigTermHandler,
                                    base::Unretained(this)));
+  remoting::RegisterSignalHandler(
+      SIGUSR2, base::BindRepeating(&HostProcess::SigUsr2Handler,
+                                   base::Unretained(this)));
 #endif  // BUILDFLAG(IS_POSIX)
 }
 
@@ -938,10 +942,24 @@ void HostProcess::ShutdownOnNetworkThread() {
 
 #if BUILDFLAG(IS_POSIX)
 void HostProcess::SigTermHandler(int signal_number) {
-  DCHECK(signal_number == SIGTERM);
+  DCHECK_EQ(signal_number, SIGTERM);
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
   HOST_LOG << "Caught SIGTERM: Shutting down...";
   ShutdownHost(kSuccessExitCode);
+}
+
+void HostProcess::SigUsr2Handler(int signal_number) {
+  DCHECK_EQ(signal_number, SIGUSR2);
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  if (host_) {
+    host_->DisconnectAllClients(ErrorCode::SOFTWARE_UPGRADED);
+  }
+
+  // Delay the shutdown to ensure the disconnect reason is sent to the client.
+  context_->network_task_runner()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&HostProcess::ShutdownHost, this, kSuccessExitCode),
+      base::Seconds(1));
 }
 #endif  // BUILDFLAG(IS_POSIX)
 
@@ -2252,7 +2270,6 @@ void HostProcess::RestartHost(const std::string& host_offline_reason) {
 
 void HostProcess::ShutdownHost(HostExitCodes exit_code) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-
   *exit_code_out_ = exit_code;
 
   switch (state_) {

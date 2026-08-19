@@ -61,6 +61,8 @@ ExtendedStartCrdSessionResultCode ToExtendedStartCrdSessionResultCode(
     case ErrorCode::ELEVATION_ERROR:
     // This error is only reported on Mac.
     case ErrorCode::LOGIN_SCREEN_NOT_SUPPORTED:
+    // This error is only reported on Linux.
+    case ErrorCode::SOFTWARE_UPGRADED:
       return ExtendedStartCrdSessionResultCode::kFailureUnknownError;
     case ErrorCode::REAUTHZ_POLICY_CHECK_FAILED:
       return ExtendedStartCrdSessionResultCode::
