@@ -78,7 +78,10 @@ class ProfileManagementFlowController
     // part of any profile creation flow.
     kDeviceSignalsDisclaimer = 12,
 
-    kMaxValue = kDeviceSignalsDisclaimer,
+    // Renders the welcome step at the beginning of the First Run Experience.
+    kWelcome = 13,
+
+    kMaxValue = kWelcome,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileManagementFlowStep)
 

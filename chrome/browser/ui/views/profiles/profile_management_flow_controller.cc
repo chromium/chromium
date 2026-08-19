@@ -52,6 +52,8 @@ std::string_view GetStepHistogramSuffix(
       return ".FinishOrContinue";
     case ProfileManagementFlowController::Step::kDeviceSignalsDisclaimer:
       return ".DeviceSignalsDisclaimer";
+    case ProfileManagementFlowController::Step::kWelcome:
+      return ".Welcome";
   }
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/histograms.xml:StepName)

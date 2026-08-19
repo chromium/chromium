@@ -8,12 +8,14 @@
 
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
+#include "base/json/json_reader.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
@@ -22,9 +24,9 @@
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,6 +37,7 @@
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -60,6 +63,12 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/mock_policy_service.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_service.h"
+#include "components/policy/policy_constants.h"
 #include "components/regional_capabilities/enums.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -170,7 +179,9 @@ struct FirstRunVersion {
     bool sound_enabled = true;
   };
 
-  using Value = std::variant<Legacy, Refreshed, Revamped>;
+  struct PreFirstRunRefreshed {};
+
+  using Value = std::variant<Legacy, Refreshed, Revamped, PreFirstRunRefreshed>;
 };
 
 struct TestParam {
@@ -250,7 +261,11 @@ std::string VersionSuffix(const FirstRunVersion::Value& version) {
                 break;
             }
             return base_suffix + (revamped.sound_enabled ? "" : "NoSound");
-          }},
+          },
+          [](FirstRunVersion::PreFirstRunRefreshed) -> std::string {
+            return "PreFirstRunRefreshedView";
+          },
+      },
       version);
   NOTREACHED();
 }
@@ -281,8 +296,8 @@ const std::vector<TestParam>& GetTestParams() {
          .with_sync_engine_ready = false},
     };
 
-    // Triplicate each test param to cover the legacy, refreshed, and revamped
-    // views.
+    // Multiply each test param to cover the legacy, refreshed, revamped, and
+    // pre first run refreshed views.
     std::vector<TestParam> test_params;
     test_params.reserve(std::size(base_test_params) *
                         std::variant_size<FirstRunVersion::Value>());
@@ -298,6 +313,11 @@ const std::vector<TestParam>& GetTestParams() {
       test_param_revamped.flow_version = FirstRunVersion::Revamped{
           .variant = switches::FirstRunDesktopSignInPromoVariation::kDefault};
       test_params.push_back(std::move(test_param_revamped));
+
+      TestParam test_param_pre_first_run_refreshed = test_param;
+      test_param_pre_first_run_refreshed.flow_version =
+          FirstRunVersion::PreFirstRunRefreshed{};
+      test_params.push_back(std::move(test_param_pre_first_run_refreshed));
     }
     return test_params;
   }());
@@ -359,7 +379,18 @@ class FirstRunInteractiveUiBaseTest
                 disabled_features.push_back(
                     switches::kFirstRunDesktopRevampSound);
               }
-            }},
+            },
+            [&](FirstRunVersion::PreFirstRunRefreshed) {
+              enabled_features.push_back(
+                  {switches::kFirstRunDesktopRefresh, {}});
+              enabled_features.push_back(
+                  {switches::kFirstRunDesktopRevamp, {}});
+              enabled_features.push_back(
+                  {switches::kFirstRunDesktopChoiceScreenRefresh, {}});
+              enabled_features.push_back(
+                  {switches::kPreFirstRunDesktopRefresh, {}});
+            },
+        },
         params_.flow_version);
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
@@ -538,6 +569,17 @@ class FirstRunInteractiveUiBaseTest
         "showcase", base::ToString(!GetForcedFeatureShowcaseSteps().empty()));
   }
 
+  GURL GetWelcomeURL() {
+    return GURL(chrome::kChromeUIIntroURL)
+        .Resolve(chrome::kChromeUIIntroWelcomeSubPage);
+  }
+
+  const DeepQuery& GetWelcomeAcceptButtonQuery() {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"welcome-app", "#acceptButton"});
+    return *kQuery;
+  }
+
   virtual std::vector<std::string> GetForcedFeatureShowcaseSteps() const {
     return {};
   }
@@ -652,8 +694,13 @@ class FirstRunInteractiveUiBaseTest
     const DeepQuery& button =
         sign_in ? GetSignInButtonQuery() : GetDontSignInButtonQuery();
     return Steps(
-        WaitForWebContentsReady(kWebContentsId,
-                                GURL(chrome::kChromeUIIntroURL)),
+        If([this] { return UsePreFirstRunRefreshedView(); },
+           // If the pre-FRE-refreshed view is used, the intro step isn't the
+           // first one, we need to wait for the navigation before asserting.
+           Then(WaitForWebContentsNavigation(kWebContentsId,
+                                             GURL(chrome::kChromeUIIntroURL))),
+           Else(WaitForWebContentsReady(kWebContentsId,
+                                        GURL(chrome::kChromeUIIntroURL)))),
 
         // Waiting for the animation to complete so we can start interacting
         // with the button.
@@ -823,6 +870,13 @@ class FirstRunInteractiveUiBaseTest
 
   bool UseRevampedView() const {
     return std::holds_alternative<FirstRunVersion::Revamped>(
+               params_.flow_version) ||
+           std::holds_alternative<FirstRunVersion::PreFirstRunRefreshed>(
+               params_.flow_version);
+  }
+
+  bool UsePreFirstRunRefreshedView() const {
+    return std::holds_alternative<FirstRunVersion::PreFirstRunRefreshed>(
         params_.flow_version);
   }
 
@@ -834,6 +888,12 @@ class FirstRunInteractiveUiBaseTest
         WaitForWebContentsNavigation(kWebContentsId, GetFinishOrContinueURL()),
         EnsurePresent(kWebContentsId, button),
         PressJsButton(kWebContentsId, button));
+  }
+
+  auto CompleteWelcomeStep() {
+    return Steps(WaitForWebContentsReady(kWebContentsId, GetWelcomeURL()),
+                 EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+                 PressJsButton(kWebContentsId, GetWelcomeAcceptButtonQuery()));
   }
 
  private:
@@ -867,9 +927,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTest, SignInError) {
   OpenFirstRun(proceed_future.GetCallback());
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
-      // Wait for the profile picker to show the intro.
+      // Wait for the profile picker to show the intro or the welcome page.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/true),
       // Wait for switch to the Gaia sign-in page to complete.
       WaitForWebContentsNavigation(kWebContentsId,
@@ -900,9 +962,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTest, ExitAtSignIn) {
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
 
-      // Wait for the profile picker to show the intro.
+      // Wait for the profile picker to show the intro or the welcome page.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/true),
       // Wait for switch to the Gaia sign-in page to complete.
       // Note: kPickerWebContentsId now points to the new profile's WebContents.
@@ -930,7 +994,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          FirstRunInteractiveUiTest,
                          Values(FirstRunVersion::Legacy{},
                                 FirstRunVersion::Refreshed{},
-                                FirstRunVersion::Revamped{}),
+                                FirstRunVersion::Revamped{},
+                                FirstRunVersion::PreFirstRunRefreshed{}),
                          [](const TestParamInfo<FirstRunVersion::Value>& info) {
                            return VersionSuffix(info.param);
                          });
@@ -982,10 +1047,23 @@ IN_PROC_BROWSER_TEST_P(FirstRunBackNavigationInteractiveUiTest,
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
 
-      // Intro step: back navigation should be ignored.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
-      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(
+             // Welcome step: back navigation should be ignored.
+             WaitForWebContentsReady(kWebContentsId, GetWelcomeURL()),
+             EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+             SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+             EnsurePresent(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+             PressJsButton(kWebContentsId, GetWelcomeAcceptButtonQuery()),
+             WaitForWebContentsNavigation(kWebContentsId,
+                                          GURL(chrome::kChromeUIIntroURL))),
+         Else(WaitForWebContentsReady(kWebContentsId,
+                                      GURL(chrome::kChromeUIIntroURL)))),
+
+      // Intro step: back navigation should be ignored.
       WaitForStateChange(kWebContentsId, IsVisible(GetDontSignInButtonQuery())),
       EnsurePresent(kWebContentsId, GetDontSignInButtonQuery()),
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
@@ -1033,7 +1111,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          FirstRunBackNavigationInteractiveUiTest,
                          Values(FirstRunVersion::Legacy{},
                                 FirstRunVersion::Refreshed{},
-                                FirstRunVersion::Revamped{}),
+                                FirstRunVersion::Revamped{},
+                                FirstRunVersion::PreFirstRunRefreshed{}),
                          [](const TestParamInfo<FirstRunVersion::Value>& info) {
                            return VersionSuffix(info.param);
                          });
@@ -1073,9 +1152,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTestWithSyncService, MAYBE_SignIn) {
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
 
-      // Wait for the profile picker to show the intro.
+      // Wait for the profile picker to show the intro or the welcome page.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/true),
       // Wait for switch to the Gaia sign-in page to complete.
       // Note: kPickerWebContentsId now points to the new profile's WebContents.
@@ -1160,6 +1241,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTestWithSyncService, MAYBE_SignIn) {
   } else {
     ExpectStepHistograms(Step::kDefaultBrowser, /*shown=*/false);
   }
+  if (UsePreFirstRunRefreshedView()) {
+    ExpectStepHistograms(Step::kWelcome, /*shown=*/true);
+    ++expected_step_shown_duration_count;
+    ++expected_step_total_duration_count;
+  }
   ExpectStepHistograms(Step::kSearchEngineChoice, /*shown=*/false);
   ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
@@ -1172,7 +1258,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          FirstRunInteractiveUiTestWithSyncService,
                          Values(FirstRunVersion::Legacy{},
                                 FirstRunVersion::Refreshed{},
-                                FirstRunVersion::Revamped{}),
+                                FirstRunVersion::Revamped{},
+                                FirstRunVersion::PreFirstRunRefreshed{}),
                          [](const TestParamInfo<FirstRunVersion::Value>& info) {
                            return VersionSuffix(info.param);
                          });
@@ -1260,10 +1347,14 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, CloseWindow) {
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
 
-      // Wait for the profile picker to show the intro.
+      // Wait for the profile picker to show the intro or the welcome page.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
-      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+
+      If([this]() { return UsePreFirstRunRefreshedView(); },
+         Then(WaitForWebContentsReady(kWebContentsId, GetWelcomeURL())),
+         Else(WaitForWebContentsReady(kWebContentsId,
+                                      GURL(chrome::kChromeUIIntroURL)))),
 
       // Send "Close window" keyboard shortcut and wait for view to close.
       SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_CLOSE_WINDOW))
@@ -1274,17 +1365,21 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, CloseWindow) {
   ASSERT_TRUE(IsProfileNameDefault());
 
   // Checking the expected metrics from this flow.
-  histogram_tester().ExpectUniqueSample(
-      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kForYouFre, 1);
   histogram_tester().ExpectBucketCount(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kQuitAtEnd, 1);
-
-  ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/true);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
                                       1);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
                                       1);
+
+  if (UsePreFirstRunRefreshedView()) {
+    ExpectStepHistograms(Step::kWelcome, /*shown=*/true, /*with_exit=*/true);
+  } else {
+    ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/true);
+    histogram_tester().ExpectUniqueSample(
+        "Signin.SignIn.Offered", signin_metrics::AccessPoint::kForYouFre, 1);
+  }
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1296,10 +1391,14 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
 
-      // Wait for the profile picker to show the intro.
+      // Wait for the profile picker to show the intro or the welcome page.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
-      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+
+      If([this]() { return UsePreFirstRunRefreshedView(); },
+         Then(WaitForWebContentsReady(kWebContentsId, GetWelcomeURL())),
+         Else(WaitForWebContentsReady(kWebContentsId,
+                                      GURL(chrome::kChromeUIIntroURL)))),
 
       // Send "Close app" keyboard shortcut. Note that this may synchronously
       // close the dialog so we need to let the step know that this is ok.
@@ -1312,12 +1411,16 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   histogram_tester().ExpectBucketCount(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kAbandonedFlow, 1);
-
-  ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/true);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
                                       1);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
                                       1);
+
+  if (UsePreFirstRunRefreshedView()) {
+    ExpectStepHistograms(Step::kWelcome, /*shown=*/true, /*with_exit=*/true);
+  } else {
+    ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/true);
+  }
 }
 #endif
 
@@ -1334,9 +1437,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest, GoToSettings) {
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
 
-      // Wait for the profile picker to show the intro.
+      // Wait for the profile picker to show the intro or the welcome page.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this]() { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/true),
       // Wait for switch to the Gaia sign-in page to complete.
       // Note: kPickerWebContentsId now points to the new profile's WebContents.
@@ -1439,9 +1544,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
 
-      // Wait for the profile picker to show the intro.
+      // Wait for the profile picker to show the intro or the welcome page.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/true),
       // Wait for switch to the Gaia sign-in page to complete.
       // Note: kPickerWebContentsId now points to the new profile's
@@ -1496,9 +1603,15 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   } else {
     ExpectStepHistograms(Step::kDefaultBrowser, /*shown=*/true);
   }
+  int expected_step_shown_duration_count = 6;
+  if (UsePreFirstRunRefreshedView()) {
+    ExpectStepHistograms(Step::kWelcome, /*shown=*/true);
+    ++expected_step_total_duration_count;
+    ++expected_step_shown_duration_count;
+  }
   ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
-                                      6);
+                                      expected_step_shown_duration_count);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
                                       expected_step_total_duration_count);
   // Sign in was never completed - step is not even attempted.
@@ -1526,10 +1639,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
 
-      // Wait for the profile picker to show the intro.
+      // Wait for the profile picker to show the intro or the welcome page.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
 
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/true),
 
       // Wait for switch to the Gaia sign-in page to complete.
@@ -1628,9 +1743,15 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTest,
   } else {
     ExpectStepHistograms(Step::kDefaultBrowser, /*shown=*/true);
   }
+  int expected_step_shown_duration_count = 6;
+  if (UsePreFirstRunRefreshedView()) {
+    ExpectStepHistograms(Step::kWelcome, /*shown=*/true);
+    ++expected_step_shown_duration_count;
+    ++expected_step_total_duration_count;
+  }
   ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
-                                      6);
+                                      expected_step_shown_duration_count);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
                                       expected_step_total_duration_count);
 }
@@ -1674,7 +1795,13 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
       // Wait for the profile picker to show the intro.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
-      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep(),
+              WaitForWebContentsNavigation(kWebContentsId,
+                                           GURL(chrome::kChromeUIIntroURL))),
+         Else(WaitForWebContentsReady(kWebContentsId,
+                                      GURL(chrome::kChromeUIIntroURL)))),
 
       // Waiting for the animation to complete so we can start interacting with
       // the button.
@@ -1835,9 +1962,15 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
         "ProfilePicker.FirstRun.DefaultBrowser",
         DefaultBrowserChoice::kClickSetAsDefault, 1);
   }
+  int expected_step_shown_duration_count = 6;
+  if (UsePreFirstRunRefreshedView()) {
+    ExpectStepHistograms(Step::kWelcome, /*shown=*/true);
+    ++expected_step_total_duration_count;
+    ++expected_step_shown_duration_count;
+  }
   ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
-                                      6);
+                                      expected_step_shown_duration_count);
   histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
                                       expected_step_total_duration_count);
 
@@ -1875,9 +2008,11 @@ IN_PROC_BROWSER_TEST_P(FirstRunParameterizedInteractiveUiTestWithSyncService,
   RunTestSequenceInContext(
       views::ElementTrackerViews::GetContextForView(view()),
 
-      // Wait for the profile picker to show the intro.
+      // Wait for the profile picker to show the intro or the welcome page.
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/true),
       // Wait for switch to the Gaia sign-in page to complete.
       // Note: kPickerWebContentsId now points to the new profile's WebContents.
@@ -2093,6 +2228,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTest,
       views::ElementTrackerViews::GetContextForView(view()),
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/false),
       If([this]() { return UseRevampedView(); },
          Then(If(
@@ -2173,6 +2310,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTestWithSyncService,
       views::ElementTrackerViews::GetContextForView(view()),
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/true),
       WaitForWebContentsNavigation(kWebContentsId,
                                    GetSigninChromeSyncDiceUrl()));
@@ -2231,6 +2370,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTestWithSyncService,
       views::ElementTrackerViews::GetContextForView(view()),
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/true),
       WaitForWebContentsNavigation(kWebContentsId,
                                    GetSigninChromeSyncDiceUrl()));
@@ -2321,6 +2462,8 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsAndUnrelatedFeatureSetInteractiveUiTest,
       views::ElementTrackerViews::GetContextForView(view()),
       WaitForShow(kProfilePickerViewId),
       InstrumentNonTabWebView(kWebContentsId, web_view()),
+      If([this] { return UsePreFirstRunRefreshedView(); },
+         Then(CompleteWelcomeStep())),
       CompleteIntroStep(/*sign_in=*/true),
       WaitForWebContentsNavigation(kWebContentsId,
                                    GetSigninChromeSyncDiceUrl()));
@@ -3334,3 +3477,187 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(proceed_future.Get());
 }
+
+class PreFirstRunRefreshInteractiveUiTest
+    : public FirstRunInteractiveUiBaseTest {
+ public:
+  PreFirstRunRefreshInteractiveUiTest()
+      : FirstRunInteractiveUiBaseTest(TestParam{
+            .flow_version = FirstRunVersion::PreFirstRunRefreshed{}}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(PreFirstRunRefreshInteractiveUiTest,
+                       InitSoundsOnFlowStart) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  auto mock_sounds_manager = std::make_unique<StrictMock<MockSoundsManager>>();
+  MockSoundsManager* mock_sounds_manager_ptr = mock_sounds_manager.get();
+
+  // Set the factory to return the `MockSoundsManager`.
+  base::AutoReset<FirstRunFlowController::SoundsManagerFactory>
+      sounds_factory_reset =
+          FirstRunFlowController::SetSoundsManagerFactoryForTesting(
+              base::BindLambdaForTesting(
+                  [&mock_sounds_manager](
+                      audio::SoundsManager::StreamFactoryBinder)
+                      -> std::unique_ptr<audio::SoundsManager> {
+                    return std::move(mock_sounds_manager);
+                  }));
+
+  // Verify that the ambient, logo, welcome back and feature showcase sounds are
+  // initialized at the start.
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Initialize(FirstRunFlowController::kAmbientSoundKey,
+                         IDR_INTRO_SOUND_AMBIENT_FLAC, media::AudioCodec::kFLAC,
+                         /*loop=*/true))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Initialize(FirstRunFlowController::kLogoSoundKey,
+                         IDR_INTRO_SOUND_LOGO_FLAC, media::AudioCodec::kFLAC,
+                         /*loop=*/false))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Initialize(FirstRunFlowController::kWelcomeBackSoundKey,
+                         IDR_INTRO_SOUND_WELCOME_BACK_FLAC,
+                         media::AudioCodec::kFLAC, /*loop=*/false))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      *mock_sounds_manager_ptr,
+      Initialize(FirstRunFlowController::kFeatureShowcaseAmbientSoundKey,
+                 IDR_INTRO_SOUND_FEATURE_SHOWCASE_AMBIENT_FLAC,
+                 media::AudioCodec::kFLAC, /*loop=*/true))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      *mock_sounds_manager_ptr,
+      Initialize(FirstRunFlowController::kFeatureShowcaseProgressSoundKey,
+                 IDR_INTRO_SOUND_FEATURE_SHOWCASE_PROGRESS_FLAC,
+                 media::AudioCodec::kFLAC,
+                 /*loop=*/false))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Initialize(FirstRunFlowController::kAllSetSoundKey,
+                         IDR_INTRO_SOUND_ALL_SET_FLAC, media::AudioCodec::kFLAC,
+                         /*loop=*/false))
+      .WillOnce(Return(true));
+
+  // Only the ambient sound starts playing immediately.
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Play(FirstRunFlowController::kAmbientSoundKey))
+      .WillOnce(Return(true));
+
+  OpenFirstRun();
+
+  Mock::VerifyAndClearExpectations(mock_sounds_manager_ptr);
+
+  base::RunLoop run_loop;
+
+  // The logo sound plays for the intro step.
+  EXPECT_CALL(*mock_sounds_manager_ptr,
+              Play(FirstRunFlowController::kLogoSoundKey))
+      .WillOnce([&run_loop](audio::SoundsManager::SoundKey key) {
+        run_loop.Quit();
+        return true;
+      });
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteWelcomeStep());
+
+  run_loop.Run();
+}
+
+namespace {
+
+struct PolicyTestParam {
+  std::string_view key;
+  std::string_view value;
+};
+
+const PolicyTestParam kPreFirstRunPolicyTestParams[] = {
+    {.key = policy::key::kSyncDisabled, .value = "true"},
+    {.key = policy::key::kBrowserSignin, .value = "0"},
+#if !BUILDFLAG(IS_LINUX)
+    {.key = policy::key::kBrowserSignin, .value = "2"},
+#endif  // !BUILDFLAG(IS_LINUX)
+    {.key = policy::key::kPromotionalTabsEnabled, .value = "false"},
+};
+
+}  // namespace
+
+class PreFirstRunRefreshPolicyInteractiveUiTest
+    : public WithParamInterface<PolicyTestParam>,
+      public PreFirstRunRefreshInteractiveUiTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    FirstRunInteractiveUiBaseTest::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  void SetPolicy(std::string_view key, std::string_view value) {
+    policy::PolicyMap policy;
+    policy.Set(
+        std::string(key), policy::POLICY_LEVEL_MANDATORY,
+        policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
+        base::JSONReader::Read(value, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+        /*external_data_fetcher=*/nullptr);
+
+    base::RunLoop run_loop;
+    policy::MockPolicyServiceObserver observer;
+    EXPECT_CALL(observer, OnPolicyUpdated)
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+    policy::PolicyService& policy_service =
+        CHECK_DEREF(g_browser_process->policy_service());
+    policy_service.AddObserver(policy::POLICY_DOMAIN_CHROME, &observer);
+    policy_provider_.UpdateChromePolicy(policy);
+    run_loop.Run();
+    policy_service.RemoveObserver(policy::POLICY_DOMAIN_CHROME, &observer);
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_P(PreFirstRunRefreshPolicyInteractiveUiTest,
+                       SkipFlowEnforcedByPolicy) {
+  signin_util::ResetForceSigninForTesting();
+  SetPolicy(GetParam().key, GetParam().value);
+
+  base::test::TestFuture<bool> proceed_future;
+  ASSERT_TRUE(IsProfileNameDefault());
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteWelcomeStep());
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+  ExpectStepHistograms(Step::kWelcome, /*shown=*/true, /*with_exit=*/true);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepShownDuration",
+                                      1);
+  histogram_tester().ExpectTotalCount("ProfilePicker.FREFlow.StepTotalDuration",
+                                      1);
+  histogram_tester().ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         PreFirstRunRefreshPolicyInteractiveUiTest,
+                         ValuesIn(kPreFirstRunPolicyTestParams),
+                         [](const TestParamInfo<PolicyTestParam>& info) {
+                           return base::StrCat(
+                               {info.param.key, info.param.value});
+                         });

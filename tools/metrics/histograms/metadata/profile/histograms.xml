@@ -1212,6 +1212,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".SearchEngineChoice"
         summary="the search engine choice screen step"/>
     <variant name=".SigninFlow" summary="the sign in flow step"/>
+    <variant name=".Welcome" summary="the welcome step"/>
 <!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/profile_management_flow_controller.cc:GetStepHistogramSuffix) -->
 
   </token>
