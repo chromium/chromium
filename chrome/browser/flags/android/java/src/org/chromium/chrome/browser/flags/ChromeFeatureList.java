@@ -1360,7 +1360,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sThreeDotMenuBackButton =
             newCachedFlag(
                     THREE_DOT_MENU_BACK_BUTTON,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sToolbarCaptureFixForSPAs =
             newCachedFlag(
