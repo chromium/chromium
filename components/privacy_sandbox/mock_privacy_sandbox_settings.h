@@ -23,18 +23,6 @@ class MockPrivacySandboxSettings
       (const url::Origin&,
        privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api),
       (override, const));
-  MOCK_METHOD(bool,
-              IsSharedStorageAllowed,
-              (const url::Origin&,
-               const url::Origin&,
-               std::string*,
-               content::RenderFrameHost*,
-               bool*),
-              (override, const));
-  MOCK_METHOD(bool,
-              IsSharedStorageSelectURLAllowed,
-              (const url::Origin&, const url::Origin&, std::string*, bool*),
-              (override, const));
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(bool, AreRelatedWebsiteSetsEnabled, (), (override, const));

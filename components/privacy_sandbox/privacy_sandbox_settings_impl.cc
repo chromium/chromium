@@ -77,23 +77,6 @@ bool PrivacySandboxSettingsImpl::IsEventReportingDestinationAttested(
   return false;
 }
 
-bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
-    const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin,
-    std::string* out_debug_message,
-    content::RenderFrameHost* console_frame,
-    bool* out_block_is_site_setting_specific) const {
-  return false;
-}
-
-bool PrivacySandboxSettingsImpl::IsSharedStorageSelectURLAllowed(
-    const url::Origin& top_frame_origin,
-    const url::Origin& accessing_origin,
-    std::string* out_debug_message,
-    bool* out_block_is_site_setting_specific) const {
-  return false;
-}
-
 void PrivacySandboxSettingsImpl::OnRelatedWebsiteSetsEnabledPrefChanged() {
   for (auto& observer : observers_) {
     observer.OnRelatedWebsiteSetsEnabledChanged(AreRelatedWebsiteSetsEnabled());

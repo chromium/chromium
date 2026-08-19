@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 
-#include <set>
-
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -47,17 +45,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
       const url::Origin& destination_origin,
       privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api)
       const override;
-  bool IsSharedStorageAllowed(
-      const url::Origin& top_frame_origin,
-      const url::Origin& accessing_origin,
-      std::string* out_debug_message,
-      content::RenderFrameHost* console_frame,
-      bool* out_block_is_site_setting_specific) const override;
-  bool IsSharedStorageSelectURLAllowed(
-      const url::Origin& top_frame_origin,
-      const url::Origin& accessing_origin,
-      std::string* out_debug_message,
-      bool* out_block_is_site_setting_specific) const override;
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

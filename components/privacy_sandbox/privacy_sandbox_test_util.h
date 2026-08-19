@@ -89,29 +89,17 @@ enum class InputKey {
   // TODO(crbug.com/474716334): Remove this enum.
   kPromptAction = 10,
   kEventReportingDestinationOrigin = 11,
-  kOutSharedStorageDebugMessage = 12,
-  kOutSharedStorageSelectURLDebugMessage = 13,
-  kOutSharedStorageBlockIsSiteSettingSpecific = 14,
-  kOutSharedStorageSelectURLBlockIsSiteSettingSpecific = 15,
 };
 
 // Defines the expected output of the functions under test, when the profile is
 // setup as per defined state, and they are provided the defined inputs.
 enum class OutputKey {
-  kIsSharedStorageAllowed = 6,
-  kIsSharedStorageSelectURLAllowed = 7,
-  kIsSharedStorageAllowedMetric = 14,
-  kIsSharedStorageSelectURLAllowedMetric = 15,
   // kPromptType and kM1PromptSuppressedReason are Obsolete.
   // TODO(crbug.com/474716334): Remove obsolete enums.
   kPromptType = 21,
   kM1TopicsEnabled = 26,
   kM1FledgeEnabled = 27,
   kM1AdMeasurementEnabled = 28,
-  kIsSharedStorageAllowedDebugMessage = 48,
-  kIsSharedStorageSelectURLAllowedDebugMessage = 49,
-  kIsSharedStorageBlockSiteSettingSpecific = 50,
-  kIsSharedStorageSelectURLBlockSiteSettingSpecific = 51,
 };
 
 // To allow multiple input keys to map to the same value, without having to
