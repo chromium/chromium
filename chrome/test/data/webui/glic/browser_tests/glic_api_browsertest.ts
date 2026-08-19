@@ -1,8 +1,8 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {HostCapability, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {TabData, UserProfileInfo} from '/glic/glic_api/glic_api.js';
+import {HostCapability, MetricUserInputReactionType, PanelStateKind, ResponseStopCause, WebClientMode} from '/glic/glic_api/glic_api.js';
+import type {TabData} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertTrue, checkDefined, mapObservable, observeSequence, sleep, testMain} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
@@ -65,20 +65,6 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
 
-
-  async testGetUserProfileInfoDoesNotDeferWhenInactive() {
-    assertDefined(this.host.getUserProfileInfo);
-    assertDefined(this.host.closePanel);
-    assertDefined(this.host.getPlatform);
-    await this.closePanelAndWaitUntilInactive();
-    const profileInfo: UserProfileInfo = await this.host.getUserProfileInfo();
-    const platform = await this.host.getPlatform();
-    assertEquals('glic-test@example.com', profileInfo.email);
-    if (platform !== Platform.CHROME_OS) {
-      // Can be 'Your Chrome' or 'Your Chromium'.
-      assertEquals('Your C', profileInfo.localProfileName?.substring(0, 6));
-    }
-  }
 
   async testMetrics() {
     assertDefined(this.host.getMetrics);
@@ -378,13 +364,6 @@ class ApiTests extends ApiTestFixtureBase {
   async testPanelWillOpenHasPromptSuggestion() {
     const invokeOptions = await observeSequence(this.client.invokeData).next();
     assertEquals('Prompt Suggestion', invokeOptions.prompts?.[0]);
-  }
-
-
-  private async closePanelAndWaitUntilInactive() {
-    assertDefined(this.host.closePanel);
-    await this.host.closePanel();
-    await observeSequence(this.host.panelActive()).waitForValue(false);
   }
 }
 

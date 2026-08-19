@@ -1005,6 +1005,20 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
+  async testGetUserProfileInfoDoesNotDeferWhenInactive() {
+    assertDefined(this.host.getUserProfileInfo);
+    assertDefined(this.host.closePanel);
+    assertDefined(this.host.getPlatform);
+    await this.closePanelAndWaitUntilInactive();
+    const profileInfo: UserProfileInfo = await this.host.getUserProfileInfo();
+    const platform = await this.host.getPlatform();
+    assertEquals('glic-test@example.com', profileInfo.email);
+    if (platform !== Platform.CHROME_OS) {
+      // Can be 'Your Chrome' or 'Your Chromium'.
+      assertEquals('Your C', profileInfo.localProfileName?.substring(0, 6));
+    }
+  }
+
   async testRequestHeader() {
     const rpcUrls: string[] = this.testParams.rpcUrls;
     await Promise.all(rpcUrls.map(url => fetch(url)));

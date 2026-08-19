@@ -736,11 +736,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
 }
 
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
-                       testGetUserProfileInfoDoesNotDeferWhenInactive) {
-  ExecuteJsTest();
-}
-
 // TODO(crbug.com/438812885): This is flaky.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
   browser()->GetProfile()->GetPrefs()->SetBoolean(

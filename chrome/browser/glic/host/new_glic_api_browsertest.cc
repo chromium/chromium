@@ -1620,6 +1620,13 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithCachedUserProfile,
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testGetUserProfileInfoDoesNotDeferWhenInactive) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  PreventDeletionOnClose();
+  ExecuteJsTest();
+}
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testGetTabById) {
   ASSERT_OK(OpenGlicForActiveTab());
   tabs::TabInterface* new_tab = CreateBackgroundTab(
