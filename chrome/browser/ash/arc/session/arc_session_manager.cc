@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
@@ -506,12 +507,14 @@ class ArcSessionManager::ScopedOptInFlowTracker {
 ArcSessionManager::ArcSessionManager(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    metrics::MetricsService* metrics_service,
     std::unique_ptr<ArcSessionRunner> arc_session_runner,
     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
         adb_sideloading_availability_delegate,
     ArcDlcInstaller* arc_dlc_installer)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      metrics_service_(metrics_service),
       arc_session_runner_(std::move(arc_session_runner)),
       adb_sideloading_availability_delegate_(
           std::move(adb_sideloading_availability_delegate)),
@@ -520,6 +523,10 @@ ArcSessionManager::ArcSessionManager(
       arc_dlc_installer_(arc_dlc_installer),
       attempt_restart_callback_(base::BindRepeating(
           []() { session_manager::SessionManager::Get()->RequestRestart(); })) {
+  if (!metrics_service_) {
+    CHECK_IS_TEST();
+  }
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!g_arc_session_manager);
   g_arc_session_manager = this;
@@ -970,6 +977,7 @@ void ArcSessionManager::Shutdown() {
   fast_app_reinstall_starter_.reset();
   arc_ui_availability_reporter_.reset();
   profile_ = nullptr;
+  metrics_service_ = nullptr;
   state_ = State::NOT_INITIALIZED;
   if (scoped_opt_in_tracker_) {
     scoped_opt_in_tracker_->TrackShutdown();
@@ -1506,7 +1514,8 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
   skipped_terms_of_service_negotiation_ =
       !is_terms_of_service_negotiation_needed;
   requirement_checker_ = std::make_unique<ArcRequirementChecker>(
-      profile_, support_host_.get(), android_management_checker_factory_);
+      metrics_service_, profile_, support_host_.get(),
+      android_management_checker_factory_);
   requirement_checker_->AddObserver(this);
   requirement_checker_->StartRequirementChecks(
       is_terms_of_service_negotiation_needed,
@@ -1592,7 +1601,8 @@ void ArcSessionManager::StartBackgroundRequirementChecks() {
   }
 
   requirement_checker_ = std::make_unique<ArcRequirementChecker>(
-      profile_, support_host_.get(), android_management_checker_factory_);
+      metrics_service_, profile_, support_host_.get(),
+      android_management_checker_factory_);
   requirement_checker_->StartBackgroundChecks(
       base::BindOnce(&ArcSessionManager::OnBackgroundRequirementChecksDone,
                      weak_ptr_factory_.GetWeakPtr()));

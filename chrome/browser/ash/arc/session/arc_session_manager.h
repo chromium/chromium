@@ -42,6 +42,10 @@ class ArcAppLauncher;
 class PrefService;
 class Profile;
 
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
+
 namespace arc {
 
 // The file exists only when ARC container is in use.
@@ -142,8 +146,11 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // `local_state` and `application_locale_storage` must be non-null and must
   // outlive `this`.
+  // `metrics_service` may be null in tests. If non-null, it must remain valid
+  // until Shutdown() is called.
   ArcSessionManager(PrefService* local_state,
                     const ApplicationLocaleStorage* application_locale_storage,
+                    metrics::MetricsService* metrics_service,
                     std::unique_ptr<ArcSessionRunner> arc_session_runner,
                     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
                         adb_sideloading_availability_delegate,
@@ -531,6 +538,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  raw_ptr<metrics::MetricsService> metrics_service_ = nullptr;
 
   std::unique_ptr<ArcSessionRunner> arc_session_runner_;
   std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>

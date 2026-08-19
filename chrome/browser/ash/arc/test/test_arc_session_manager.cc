@@ -20,6 +20,7 @@ std::unique_ptr<ArcSessionManager> CreateTestArcSessionManager(
       TestingBrowserProcess::GetGlobal()
           ->GetFeatures()
           ->application_locale_storage(),
+      TestingBrowserProcess::GetGlobal()->metrics_service(),
       std::move(arc_session_runner),
       std::make_unique<AdbSideloadingAvailabilityDelegateImpl>(),
       arc_dlc_installer);

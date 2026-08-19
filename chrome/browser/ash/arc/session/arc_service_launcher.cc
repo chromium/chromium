@@ -145,9 +145,12 @@ ArcSessionRunner* g_arc_session_runner_for_testing = nullptr;
 
 // `local_state` and `application_locale_storage` must be non-null and must
 // outlive the returned object.
+// `metrics_service` may be null in tests. If non-null, it must remain valid
+// until Shutdown() of the returned object is called.
 std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    metrics::MetricsService* metrics_service,
     ArcBridgeService* arc_bridge_service,
     version_info::Channel channel,
     ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager,
@@ -161,8 +164,8 @@ std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
                             scheduler_configuration_manager, delegate.get()));
   }
   return std::make_unique<ArcSessionManager>(
-      local_state, application_locale_storage, std::move(runner),
-      std::move(delegate), arc_dlc_installer);
+      local_state, application_locale_storage, metrics_service,
+      std::move(runner), std::move(delegate), arc_dlc_installer);
 }
 
 }  // namespace
@@ -170,15 +173,18 @@ std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
 ArcServiceLauncher::ArcServiceLauncher(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    metrics::MetricsService* metrics_service,
     ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      metrics_service_(metrics_service),
       arc_service_manager_(std::make_unique<ArcServiceManager>()),
       scheduler_configuration_manager_(scheduler_configuration_manager),
       arc_dlc_installer_(std::make_unique<ArcDlcInstaller>()),
       arc_session_manager_(
           CreateArcSessionManager(&local_state_.get(),
                                   &application_locale_storage_.get(),
+                                  metrics_service_,
                                   arc_service_manager_->arc_bridge_service(),
                                   ash::GetChannel(),
                                   scheduler_configuration_manager,
@@ -423,21 +429,24 @@ void ArcServiceLauncher::Shutdown() {
   web_apk_manager_.reset();
   arc_net_url_opener_.reset();
   arc_icon_cache_delegate_provider_.reset();
+  metrics_service_ = nullptr;
 }
 
 void ArcServiceLauncher::ResetForTesting() {
   // First destroy the internal states, then re-initialize them.
   // These are for workaround of singletonness DCHECK in their ctors/dtors.
+  metrics::MetricsService* metrics_service = metrics_service_.get();
   Shutdown();
   arc_session_manager_.reset();
 
+  metrics_service_ = metrics_service;
   arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
 
   // No recreation of arc_service_manager. Pointers to its ArcBridgeService
   // may be referred from existing KeyedService, so destoying it would cause
   // unexpected behavior, specifically on test teardown.
   arc_session_manager_ = CreateArcSessionManager(
-      &local_state_.get(), &application_locale_storage_.get(),
+      &local_state_.get(), &application_locale_storage_.get(), metrics_service_,
       arc_service_manager_->arc_bridge_service(), ash::GetChannel(),
       scheduler_configuration_manager_, arc_dlc_installer_.get());
 }

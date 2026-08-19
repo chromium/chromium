@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
 
+#include "base/check.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_default_negotiator.h"
@@ -81,10 +82,12 @@ ArcRequirementChecker::GetDefaultAndroidManagementCheckerFactory() {
 }
 
 ArcRequirementChecker::ArcRequirementChecker(
+    metrics::MetricsService* metrics_service,
     Profile* profile,
     ArcSupportHost* support_host,
     AndroidManagementCheckerFactory android_management_checker_factory)
-    : profile_(profile),
+    : metrics_service_(metrics_service),
+      profile_(profile),
       support_host_(support_host),
       android_management_checker_factory_(android_management_checker_factory) {}
 
@@ -156,10 +159,10 @@ void ArcRequirementChecker::StartRequirementChecks(
         std::make_unique<ArcTermsOfServiceOobeNegotiator>();
   } else if (support_host_) {
     VLOG(1) << "Use default negotiator.";
+    CHECK(metrics_service_);
     terms_of_service_negotiator_ =
         std::make_unique<ArcTermsOfServiceDefaultNegotiator>(
-            profile_->GetPrefs(), support_host_,
-            g_browser_process->metrics_service());
+            profile_->GetPrefs(), support_host_, metrics_service_);
   } else {
     DCHECK(!g_ui_enabled) << "Negotiator is not created on production.";
     return;

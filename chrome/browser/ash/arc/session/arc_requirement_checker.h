@@ -18,6 +18,10 @@
 
 class Profile;
 
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
+
 namespace arc {
 
 class ArcTermsOfServiceNegotiator;
@@ -44,7 +48,10 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
   static AndroidManagementCheckerFactory
   GetDefaultAndroidManagementCheckerFactory();
 
+  // `metrics_service` and `support_host` must outlive `this`.
+  // `metrics_service` must be non-null if `support_host` is non-null.
   ArcRequirementChecker(
+      metrics::MetricsService* metrics_service,
       Profile* profile,
       ArcSupportHost* support_host,
       AndroidManagementCheckerFactory android_management_checker_factory);
@@ -117,6 +124,7 @@ class ArcRequirementChecker : public policy::PolicyService::Observer {
   // expires.
   void OnFirstPoliciesLoadedOrTimeout();
 
+  const raw_ptr<metrics::MetricsService> metrics_service_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<ArcSupportHost> support_host_;
   const AndroidManagementCheckerFactory android_management_checker_factory_;
