@@ -13,4 +13,8 @@ BASE_FEATURE(kSiteTokenProviderEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kSiteTokenOAuth2Scope{
     &kSiteTokenProviderEnabled, "oauth2_scope", ""};
 
+// The URL endpoint used to retrieve site tokens. Configured via Finch.
+const base::FeatureParam<std::string> kSiteTokenEndpointUrl{
+    &kSiteTokenProviderEnabled, "site_token_endpoint_url", ""};
+
 }  // namespace site_token_provider::features

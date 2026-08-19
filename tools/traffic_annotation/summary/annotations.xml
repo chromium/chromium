@@ -189,6 +189,7 @@ Refer to README.md for content description and update process.
  <item id="shared_storage_worklet_module_script_downloader" added_in_milestone="95" content_hash_code="072bbf71" os_list="linux,windows,chromeos,android" file_path="third_party/blink/common/shared_storage/module_script_downloader.cc" />
  <item id="sigined_exchange_cert_fetcher" added_in_milestone="66" content_hash_code="007c2dac" os_list="linux,windows,chromeos,android" file_path="content/browser/web_package/signed_exchange_cert_fetcher.cc" />
  <item id="signed_in_profile_avatar" added_in_milestone="62" content_hash_code="064a36f4" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_downloader.cc" />
+ <item id="site_token_fetcher" added_in_milestone="153" content_hash_code="027859dc" os_list="linux,windows,chromeos,android" file_path="components/site_token_provider/site_token_provider.cc" />
  <item id="socket_bio_adapter" added_in_milestone="66" content_hash_code="014a4058" os_list="linux,windows,chromeos,android" file_path="net/socket/socket_bio_adapter.cc" />
  <item id="spdy_session_control" added_in_milestone="66" content_hash_code="01c6f3f0" os_list="linux,windows,chromeos,android" file_path="net/spdy/spdy_session.cc" />
  <item id="speech_recognition_downstream" added_in_milestone="123" content_hash_code="07a72205" os_list="linux,windows,chromeos" file_path="content/browser/speech/network_speech_recognition_engine_impl.cc" />

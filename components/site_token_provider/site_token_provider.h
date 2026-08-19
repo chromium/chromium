@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_SITE_TOKEN_PROVIDER_SITE_TOKEN_PROVIDER_H_
 #define COMPONENTS_SITE_TOKEN_PROVIDER_SITE_TOKEN_PROVIDER_H_
 
+#include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -22,15 +23,25 @@ class IdentityManager;
 
 namespace site_token_provider {
 
+// Normalizes domain by converting to lowercase and stripping the "www." prefix
+// so that "www.domain.com" and "domain.com" match the same token, while
+// preserving subdomain isolation for other subdomains (e.g. "news.domain.com").
+std::string NormalizeDomain(std::string_view domain);
+
 // Interface for the core logic of managing site-specific tokens.
 class SiteTokenProvider {
  public:
+  using TokenUpdateCallback =
+      base::RepeatingCallback<void(std::map<std::string, std::string>)>;
+
   static std::unique_ptr<SiteTokenProvider> Create(
       signin::IdentityManager* identity_manager,
-      mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   virtual ~SiteTokenProvider();
+
+  // Registers the callback to receive site token updates.
+  virtual void SetTokenUpdateCallback(TokenUpdateCallback callback) = 0;
 
   // Triggers local state synchronization updates.
   virtual void UpdateState() = 0;

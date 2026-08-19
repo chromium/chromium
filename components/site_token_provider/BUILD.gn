@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [ "proto/site_token_data.proto" ]
+}
+
 source_set("site_token_provider") {
   sources = [
     "features.cc",
@@ -12,7 +18,9 @@ source_set("site_token_provider") {
     "site_token_provider_service.h",
   ]
   deps = [
+    ":proto",
     "//base",
+    "//components/endpoint_fetcher",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
     "//mojo/public/cpp/bindings",
@@ -26,9 +34,11 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "site_token_provider_unittest.cc" ]
   deps = [
+    ":proto",
     ":site_token_provider",
     "//base",
     "//base/test:test_support",
+    "//components/endpoint_fetcher",
     "//components/signin/public/identity_manager:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",

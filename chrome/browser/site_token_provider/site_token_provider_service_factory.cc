@@ -56,12 +56,8 @@ SiteTokenProviderServiceFactory::BuildServiceInstanceForBrowserContext(
   content::StoragePartition* storage_partition =
       profile->GetDefaultStoragePartition();
 
-  mojo::PendingRemote<network::mojom::CookieManager> cookie_manager;
-  storage_partition->GetNetworkContext()->GetCookieManager(
-      cookie_manager.InitWithNewPipeAndPassReceiver());
-
   auto provider = SiteTokenProvider::Create(
-      IdentityManagerFactory::GetForProfile(profile), std::move(cookie_manager),
+      IdentityManagerFactory::GetForProfile(profile),
       storage_partition->GetURLLoaderFactoryForBrowserProcess());
 
   return std::make_unique<SiteTokenProviderService>(

@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package site_token_provider.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+message SiteToken {
+  string domain = 1;
+  string token = 2;
+}
+
+message GeneratePlatformSiteTokensRequest {}
+
+message GeneratePlatformSiteTokensResponse {
+  repeated SiteToken site_tokens = 1;
+}

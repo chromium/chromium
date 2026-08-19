@@ -13,6 +13,8 @@ BASE_DECLARE_FEATURE(kSiteTokenProviderEnabled);
 
 extern const base::FeatureParam<std::string> kSiteTokenOAuth2Scope;
 
+extern const base::FeatureParam<std::string> kSiteTokenEndpointUrl;
+
 }  // namespace site_token_provider::features
 
 #endif  // COMPONENTS_SITE_TOKEN_PROVIDER_FEATURES_H_
