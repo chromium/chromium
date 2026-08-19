@@ -120,12 +120,9 @@ std::optional<AdProvenance> AdTracker::CalculateIfAdSubresource(
     if (isolate) {
       v8::HandleScope handle_scope(isolate);
       LazyStackTrace stack_trace(isolate);
-      std::optional<V8ScriptId> ancestor_ad_script;
-
-      if (IsMarkedScriptInStack(
-              StackType::kTopOnly, stack_trace, &ancestor_ad_script,
-              /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild) &&
-          ancestor_ad_script.has_value()) {
+      if (std::optional<V8ScriptId> ancestor_ad_script = GetMarkedScriptInStack(
+              StackType::kTopOnly, stack_trace,
+              /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild)) {
         known_ad_provenance = AdProvenance(*ancestor_ad_script);
       }
     }
@@ -267,14 +264,13 @@ bool AdTracker::IsAdScriptInStack(StackType stack_type,
     }
   }
 
-  std::optional<V8ScriptId> out_ad_script;
   std::optional<v8::HandleScope> handle_scope;
   if (isolate) {
     handle_scope.emplace(isolate);
   }
   LazyStackTrace stack_trace(isolate);
-  bool is_ad_script_in_stack = IsMarkedScriptInStack(
-      stack_type, stack_trace, &out_ad_script, ignore_monkey_patch);
+  std::optional<V8ScriptId> out_ad_script =
+      GetMarkedScriptInStack(stack_type, stack_trace, ignore_monkey_patch);
 
   if (out_ad_script_ancestry) {
     *out_ad_script_ancestry = AdScriptAncestry();
@@ -283,7 +279,7 @@ bool AdTracker::IsAdScriptInStack(StackType stack_type,
     }
   }
 
-  return is_ad_script_in_stack;
+  return out_ad_script.has_value();
 }
 
 void AdTracker::Shutdown() {

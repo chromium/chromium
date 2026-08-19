@@ -47,8 +47,8 @@ bool ExtensionScriptTracker::IsExtensionScriptInStack(
     return false;
   }
   LazyStackTrace stack_trace(isolate);
-  return IsMarkedScriptInStack(stack_type, stack_trace, nullptr,
-                               ignore_monkey_patch);
+  return GetMarkedScriptInStack(stack_type, stack_trace, ignore_monkey_patch)
+      .has_value();
 }
 
 void ExtensionScriptTracker::Shutdown() {

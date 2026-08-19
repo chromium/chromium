@@ -112,6 +112,9 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
       AdScriptAncestry* out_ad_script_ancestry = nullptr);
 
   // ScriptAncestryTracker overrides:
+  ScriptAncestryTrackerType GetTrackerType() const override {
+    return ScriptAncestryTrackerType::kAd;
+  }
   void Shutdown() override;
   bool IsMarkedScript(V8ScriptId) const override;
   void OnScriptRegistered(ExecutionContext& execution_context,

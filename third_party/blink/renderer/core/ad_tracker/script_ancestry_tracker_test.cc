@@ -39,6 +39,10 @@ class TestScriptAncestryTracker final : public ScriptAncestryTracker {
       : ScriptAncestryTracker(frame, monitor) {}
   ~TestScriptAncestryTracker() override = default;
 
+  ScriptAncestryTrackerType GetTrackerType() const override {
+    return ScriptAncestryTrackerType::kAd;
+  }
+
   using ScriptAncestryTracker::GetScriptMetadata;
   using ScriptAncestryTracker::RegisterScript;
 

@@ -30,7 +30,7 @@ v8_inspector::V8DebuggerId GetDebuggerIdForContext(
 
 String GenerateFakeUrlFromScriptId(V8ScriptId script_id) {
   // Null string is used to represent scripts with neither a name nor an ID.
-  if (script_id == AdScriptIdentifier::kEmptyId) {
+  if (script_id.value() == v8::Message::kNoScriptIdInfo) {
     return String();
   }
 
@@ -81,9 +81,8 @@ void ScriptAncestryTracker::WillExecuteScript(
   String url =
       is_inline_script ? GenerateFakeUrlFromScriptId(script_id) : script_url;
 
-  std::optional<V8ScriptId> marked_script_id;
-  IsMarkedScriptInStack(
-      StackType::kTopOnly, stack_trace, &marked_script_id,
+  std::optional<V8ScriptId> marked_script_id = GetMarkedScriptInStack(
+      StackType::kTopOnly, stack_trace,
       /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild);
 
   // Since this is our first time running the script, this is the first we've
@@ -131,8 +130,8 @@ void ScriptAncestryTracker::DidRegisterDynamicScript(
   if (!async_script_stack_.empty() && async_script_stack_.back().has_value()) {
     marked_script_id = async_script_stack_.back();
   } else {
-    IsMarkedScriptInStack(
-        StackType::kTopOnly, stack_trace, &marked_script_id,
+    marked_script_id = GetMarkedScriptInStack(
+        StackType::kTopOnly, stack_trace,
         /*ignore_monkey_patch=*/MonkeyPatchableApi::kNodeAppendChild);
   }
 
@@ -184,40 +183,26 @@ void ScriptAncestryTracker::DidCreateAsyncTask(
     // TODO(jkarlin): Restrict the kNodeAppendChild monkeypatch exception
     // specifically to script element creation tasks (e.g., PendingScript) by
     // passing the async task name/type to DidCreateAsyncTask.
-    // Note: We do this check separately from IsMarkedScriptInStack because we
+    // Note: We do this check separately from GetMarkedScriptInStack because we
     // don't want to count it against the 1-call-per-sync-stack budget in case
-    // downstream callers want to call IsMarkedScriptInStack.
+    // downstream callers want to call GetMarkedScriptInStack.
     if (WasApiCalledByNonAttributedScript(
             isolate, MonkeyPatchableApi::kNodeAppendChild, stack_trace)) {
       return;
     }
   }
 
-  std::optional<V8ScriptId> script_id;
-  IsMarkedScriptInStack(StackType::kTopOnly, stack_trace, &script_id);
-  if (script_id.has_value()) {
-    if (const auto* metadata = GetScriptMetadata(*script_id)) {
-      v8_inspector::V8DebuggerId debugger_id;
-      if (isolate && !isolate->GetCurrentContext().IsEmpty()) {
-        debugger_id = GetDebuggerIdForContext(isolate->GetCurrentContext());
-      }
-      // TODO: Generalize this call to support multiple trackers when
-      // AsyncTaskContext is generalized to store generic ScriptIdentifier
-      // instead of AdScriptIdentifier.
-      task_context->SetAdTask(
-          AdScriptIdentifier(debugger_id, *script_id, metadata->url));
-    }
+  if (std::optional<V8ScriptId> script_id =
+          GetMarkedScriptInStack(StackType::kTopOnly, stack_trace)) {
+    task_context->SetMarkedScript(GetTrackerType(), *script_id);
   }
 }
 
 void ScriptAncestryTracker::DidStartAsyncTask(
     probe::AsyncTaskContext* task_context) {
   DCHECK(task_context);
-  if (task_context->ad_identifier().has_value()) {
-    async_script_stack_.push_back(task_context->ad_identifier()->id);
-  } else {
-    async_script_stack_.push_back(std::nullopt);
-  }
+  async_script_stack_.emplace_back(
+      task_context->GetMarkedScript(GetTrackerType()));
 }
 
 void ScriptAncestryTracker::DidFinishAsyncTask(
@@ -226,32 +211,25 @@ void ScriptAncestryTracker::DidFinishAsyncTask(
   async_script_stack_.pop_back();
 }
 
-bool ScriptAncestryTracker::IsMarkedScriptInStack(
+std::optional<V8ScriptId> ScriptAncestryTracker::GetMarkedScriptInStack(
     StackType stack_type,
     LazyStackTrace& stack_trace,
-    std::optional<V8ScriptId>* out_script,
     MonkeyPatchableApi ignore_monkey_patch) {
   if (stack_type == StackType::kBottomOnly) {
     if (bottom_most_script_.has_value() &&
         IsMarkedScript(*bottom_most_script_)) {
-      if (out_script) {
-        *out_script = *bottom_most_script_;
-      }
-      return true;
+      return *bottom_most_script_;
     }
     for (auto& script : async_script_stack_) {
       if (script.has_value() && IsMarkedScript(*script)) {
-        if (out_script) {
-          *out_script = *script;
-        }
-        return true;
+        return *script;
       }
     }
-    return false;
+    return std::nullopt;
   }
 
   if (script_metadata_.empty()) {
-    return false;
+    return std::nullopt;
   }
 
   v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
@@ -268,13 +246,10 @@ bool ScriptAncestryTracker::IsMarkedScriptInStack(
         async_script_stack_.back().has_value()) {
       V8ScriptId script_id = *async_script_stack_.back();
       if (IsMarkedScript(script_id)) {
-        if (out_script) {
-          *out_script = script_id;
-        }
-        return true;
+        return script_id;
       }
     }
-    return false;
+    return std::nullopt;
   }
 
   std::optional<V8ScriptId> matched_script;
@@ -283,7 +258,7 @@ bool ScriptAncestryTracker::IsMarkedScriptInStack(
   for (size_t i = 0; i < stack.size(); ++i) {
     V8ScriptId script_id(stack[i].id);
     if (script_id.value() <= 0) {
-      return false;
+      return std::nullopt;
     }
 
     if (IsMarkedScript(script_id)) {
@@ -300,7 +275,7 @@ bool ScriptAncestryTracker::IsMarkedScriptInStack(
     // If the top scripts on the stack are non-marked, then we consider the
     // stack to be non-marked related, as publisher script may be running an
     // event callback.
-    return false;
+    return std::nullopt;
   }
 
   if (ignore_monkey_patch != MonkeyPatchableApi::kNone) {
@@ -314,15 +289,12 @@ bool ScriptAncestryTracker::IsMarkedScriptInStack(
       if (result.is_api_in_stack) {
         if (result.marked_caller_id.has_value()) {
           // The API was invoked by a marked script. Attribute the call to it.
-          if (out_script) {
-            *out_script = result.marked_caller_id;
-          }
-          return true;
+          return result.marked_caller_id;
         } else {
           // The API was invoked by a non-marked script. Allow this to bypass
           // the marked-script-in-stack check once per synchronous task.
           if (IsFirstMonkeyPatchCall(ignore_monkey_patch)) {
-            return false;
+            return std::nullopt;
           }
         }
       }
@@ -334,15 +306,11 @@ bool ScriptAncestryTracker::IsMarkedScriptInStack(
 
   // Top script is non-marked.
   if (matched_script_index > 0) {
-    return false;
+    return std::nullopt;
   }
 
   // Top script is marked. Attribute to marked script.
-  if (out_script) {
-    *out_script = *matched_script;
-  }
-
-  return true;
+  return matched_script;
 }
 
 void ScriptAncestryTracker::Shutdown() {

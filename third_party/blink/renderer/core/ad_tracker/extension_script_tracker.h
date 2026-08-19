@@ -37,6 +37,9 @@ class CORE_EXPORT ExtensionScriptTracker : public ScriptAncestryTracker {
       MonkeyPatchableApi ignore_monkey_patch = MonkeyPatchableApi::kNone);
 
   // ScriptAncestryTracker overrides:
+  ScriptAncestryTrackerType GetTrackerType() const override {
+    return ScriptAncestryTrackerType::kExtension;
+  }
   void Shutdown() override;
   bool IsMarkedScript(V8ScriptId) const override;
   void OnScriptRegistered(ExecutionContext& execution_context,

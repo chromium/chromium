@@ -7,9 +7,10 @@
 #include <memory>
 #include <optional>
 
-#include "base/test/run_until.h"
+#include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/ad_tracker/script_initiation_monitor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -50,15 +52,6 @@ class TestExtensionScriptTracker final : public ExtensionScriptTracker {
       }
     }
     return V8ScriptId();
-  }
-
-  V8ScriptId WaitAndFindScriptIdByUrl(const String& url_substring) const {
-    V8ScriptId found_id;
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      found_id = FindScriptIdByUrl(url_substring);
-      return found_id != V8ScriptId();
-    }));
-    return found_id;
   }
 
  private:
@@ -155,15 +148,21 @@ TEST_F(ExtensionScriptTrackerTest, ScriptLoadedWhileExecutingExtensionScript) {
     document.body.appendChild(script);
     )SCRIPT");
 
+  // Wait for script to run and initiate subresource request.
+  base::RunLoop().RunUntilIdle();
+
   V8ScriptId extension_script_id =
-      tracker_->WaitAndFindScriptIdByUrl("abcdefghijklmnop/script.js");
+      tracker_->FindScriptIdByUrl("abcdefghijklmnop/script.js");
   EXPECT_NE(V8ScriptId(), extension_script_id);
   EXPECT_TRUE(tracker_->IsMarkedScript(extension_script_id));
 
   vanilla_script.Complete("");
 
+  // Wait for vanilla_script to compile and run.
+  base::RunLoop().RunUntilIdle();
+
   V8ScriptId vanilla_script_id =
-      tracker_->WaitAndFindScriptIdByUrl("vanilla_script.js");
+      tracker_->FindScriptIdByUrl("vanilla_script.js");
   EXPECT_NE(V8ScriptId(), vanilla_script_id);
   EXPECT_TRUE(tracker_->IsMarkedScript(vanilla_script_id));
 }
@@ -186,6 +185,88 @@ TEST_F(ExtensionScriptTrackerTest, InjectedExtensionScriptExecutionScope) {
   }
 
   EXPECT_TRUE(tracker_->IsMarkedScript(script_id));
+}
+
+TEST_F(ExtensionScriptTrackerTest, AsyncAdTrackerSideEffect) {
+  GetDocument().GetFrame()->SetAdTrackerForTesting(
+      MakeGarbageCollected<AdTracker>(
+          GetDocument().GetFrame(),
+          GetDocument().GetFrame()->GetOrCreateScriptInitiationMonitor()));
+
+  const char kExtensionUrl[] = "chrome-extension://abcdefghijklmnop/script.js";
+  SimSubresourceRequest extension_resource(kExtensionUrl, "text/javascript");
+
+  main_resource_->Complete(
+      "<body></body><script "
+      "src='chrome-extension://abcdefghijklmnop/script.js'></script>");
+
+  extension_resource.Complete(R"SCRIPT(
+    setTimeout(() => {
+      const btn = document.createElement('button');
+      btn.id = 'mybtn';
+      btn.setAttribute('onclick', 'console.log("button clicked");');
+      document.body.appendChild(btn);
+      btn.dispatchEvent(new Event('click'));
+    }, 0);
+    )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  V8ScriptId inline_id = tracker_->FindScriptIdByUrl("{ id ");
+  EXPECT_NE(V8ScriptId(), inline_id);
+  EXPECT_TRUE(tracker_->IsMarkedScript(inline_id));
+
+  AdTracker* ad_tracker = GetDocument().GetFrame()->GetAdTracker();
+  ASSERT_TRUE(ad_tracker);
+
+  // AdTracker should not incorrectly read the extension's async context and
+  // tag it as an ad.
+  EXPECT_FALSE(ad_tracker->IsMarkedScript(inline_id));
+}
+
+TEST_F(ExtensionScriptTrackerTest, AsyncExtensionTrackerSideEffect) {
+  AdTracker* ad_tracker = MakeGarbageCollected<AdTracker>(
+      GetDocument().GetFrame(),
+      GetDocument().GetFrame()->GetOrCreateScriptInitiationMonitor());
+  GetDocument().GetFrame()->SetAdTrackerForTesting(ad_tracker);
+
+  SimRequest iframe_resource("https://example.com/ad_frame.html", "text/html");
+  main_resource_->Complete(
+      "<body><iframe src='https://example.com/ad_frame.html'></iframe></body>");
+
+  LocalFrame* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+
+  FrameAdEvidence ad_evidence(/*parent_is_ad=*/false);
+  ad_evidence.set_created_by_ad_script(
+      mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+  ad_evidence.set_is_complete();
+  child_frame->SetAdEvidence(ad_evidence);
+
+  iframe_resource.Complete(R"HTML(
+    <script>
+    setTimeout(() => {
+      const btn = document.createElement('button');
+      btn.id = 'mybtn';
+      btn.setAttribute('onclick', 'console.log("button clicked");');
+      document.body.appendChild(btn);
+      btn.dispatchEvent(new Event('click'));
+    }, 0);
+    </script>
+  )HTML");
+
+  base::RunLoop().RunUntilIdle();
+
+  V8ScriptId inline_id = tracker_->FindScriptIdByUrl("{ id ");
+  EXPECT_NE(V8ScriptId(), inline_id);
+
+  // AdTracker should have tagged the async inline script as an ad.
+  EXPECT_TRUE(ad_tracker->IsMarkedScript(inline_id));
+
+  // ExtensionScriptTracker should not incorrectly read the ad tracker's async
+  // context and tag it as an extension script.
+  EXPECT_FALSE(tracker_->IsMarkedScript(inline_id));
 }
 
 }  // namespace blink
