@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 
 import * as ObjectUI from 'devtools/ui/legacy/components/object_ui/object_ui.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
   TestRunner.addResult(`Test that ObjectPropertiesSection works with local remote objects.\n`);
@@ -16,11 +17,20 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   var object = {a: 'b', c: d};
   var localObject = SDK.RemoteObject.RemoteObject.fromLocalObject(object);
 
-  var propertiesSection = new ObjectUI.ObjectPropertiesSection.ObjectPropertiesSection(localObject, 'local object');
-  propertiesSection.expand();
-  await new Promise(resolve => setTimeout(resolve, 0));
-  propertiesSection.objectTreeElement().childAt(1).expand();
-  await new Promise(resolve => setTimeout(resolve, 0));
+  var propertiesSection = new ObjectUI.ObjectPropertiesSection.ObjectPropertiesSectionWidget();
+  propertiesSection.markAsRoot();
+  propertiesSection.root = localObject;
+  const titleSpan = document.createElement('span');
+  titleSpan.textContent = 'local object';
+  propertiesSection.title = titleSpan;
+  propertiesSection.show(document.body);
+  propertiesSection.objectTree.expanded = true;
+  await UI.Widget.Widget.allUpdatesComplete;
+
+  const treeOutline = propertiesSection.element.querySelector('devtools-tree')?.getInternalTreeOutlineForTest();
+  const rootElement = treeOutline.firstChild();
+  await rootElement.childAt(1).expand();
+  await UI.Widget.Widget.allUpdatesComplete;
 
   TestRunner.addResult(TestRunner.textContentWithLineBreaks(propertiesSection.element));
   TestRunner.completeTest();
