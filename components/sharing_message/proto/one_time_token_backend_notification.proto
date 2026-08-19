@@ -28,14 +28,27 @@ message OneTimeTokenBackendNotification {
 }
 
 // Reference to an email that contains a one time token.
+//
+// Example timeline for an incoming OTP email:
+// 1. 12:00:00 - Sender generates and sends OTP email (setting the "Date"
+//    header).
+//    -> otp_created_timestamp = 12:00:00
+// 2. 12:00:02 - Gmail SMTP edge server receives email.
+//    -> email_received_timestamp = 12:00:02
+// 3. 12:00:04 - Gmail finishes processing and stores email in mail store.
+//    -> email_delivered_timestamp = 12:00:04
 message GmailMessageReference {
   // Encrypted reference to the email that contains the OTP.
   // Clients should treat this as an opaque blob and pass it to the backend.
   bytes encrypted_message_reference = 1;
 
-  // Time when the OTP message was created on the email sender's side.
+  // Time when the OTP message was created on the email sender's side
+  // ("Date" header field of the email).
   Timestamp otp_created_timestamp = 2;
 
-  // Time when the OTP message was received by the Gmail SMTP servers.
+  // Time when the OTP message was received by the Gmail SMTP edge server.
   Timestamp email_received_timestamp = 3;
+
+  // Time when the OTP message was stored in the mail store.
+  Timestamp email_delivered_timestamp = 4;
 }
