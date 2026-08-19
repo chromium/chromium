@@ -8,30 +8,17 @@
 #import "base/no_destructor.h"
 #import "components/prefs/pref_service.h"
 #import "components/supervised_user/core/browser/device_parental_controls.h"
-#import "components/supervised_user/core/browser/family_link_settings_service.h"
-#import "components/supervised_user/core/browser/family_link_url_filter.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
-#import "components/supervised_user/core/browser/supervised_user_url_checker_client.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
-#import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_platform_delegate.h"
 #import "ios/chrome/common/channel_info.h"
 #import "url/gurl.h"
 
 namespace supervised_user {
-namespace {
-
-// Implementation of the supervised user filter delegate interface.
-class FilterDelegateImpl : public FamilyLinkUrlFilter::Delegate {
- public:
-  bool SupportsWebstoreURL(const GURL& url) const override { return false; }
-};
-
-}  // namespace
 
 // static
 SupervisedUserService* SupervisedUserServiceFactory::GetForProfile(
@@ -49,7 +36,6 @@ SupervisedUserServiceFactory* SupervisedUserServiceFactory::GetInstance() {
 SupervisedUserServiceFactory::SupervisedUserServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SupervisedUserService") {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(FamilyLinkSettingsServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -61,20 +47,8 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile->GetSharedURLLoaderFactory();
-  FamilyLinkSettingsService& family_link_settings_service =
-      CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetForProfile(profile));
   return std::make_unique<SupervisedUserService>(
       identity_manager, url_loader_factory, CHECK_DEREF(profile->GetPrefs()),
-      // TODO(crbug.com/469335277): remove after migration to
-      // SupervisedUserUrlFilteringService.
-      std::make_unique<FamilyLinkUrlFilter>(
-          family_link_settings_service, CHECK_DEREF(profile->GetPrefs()),
-          std::make_unique<FilterDelegateImpl>(),
-          std::make_unique<SupervisedUserUrlCheckerClient>(
-              identity_manager, url_loader_factory,
-              CHECK_DEREF(profile->GetPrefs()),
-              platform_delegate->GetCountryCode(),
-              platform_delegate->GetChannel())),
       std::move(platform_delegate),
       GetApplicationContext()->GetDeviceParentalControls());
 }

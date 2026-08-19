@@ -11,12 +11,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/metrics_service_accessor_delegate.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -52,7 +50,6 @@ SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   // Used for tracking web filter metrics.
-  DependsOn(supervised_user::SupervisedUserServiceFactory::GetInstance());
   DependsOn(
       supervised_user::SupervisedUserUrlFilteringServiceFactory::GetInstance());
 }
@@ -82,7 +79,6 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       profile->GetPrefs(),
-      CHECK_DEREF(supervised_user::SupervisedUserServiceFactory::GetForProfile(profile)),
       CHECK_DEREF(supervised_user::SupervisedUserUrlFilteringServiceFactory::
                       GetForProfile(profile)),
       g_browser_process->device_parental_controls(),

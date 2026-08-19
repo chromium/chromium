@@ -194,8 +194,9 @@ bool UrlFiltersAreConfigured(const FamilyLinkSettingsState::Services& services,
 }
 
 bool UrlFiltersAreEmpty(const FamilyLinkSettingsState::Services& services) {
-  return services.supervised_user_service->GetURLFilter()
-      ->GetFilteringStatistics()
+  return services.supervised_user_url_filtering_service
+      ->GetFamilyLinkUrlFilter()
+      .GetFilteringStatistics()
       .IsEmpty();
 }
 

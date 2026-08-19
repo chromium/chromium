@@ -229,6 +229,8 @@ class SupervisedUserUrlFilteringService : public KeyedService,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  const UrlFilteringDelegate& GetFamilyLinkUrlFilter() const;
+
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Test-only accessor for the family link url filter delegate. Used only in
   // integration tests on mobile platforms that cannot use testing factory

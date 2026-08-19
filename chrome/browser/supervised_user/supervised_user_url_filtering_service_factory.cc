@@ -14,7 +14,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/device_parental_controls_url_filter.h"
@@ -71,11 +70,6 @@ SupervisedUserUrlFilteringServiceFactory::
                                  BuildProfileSelectionsForRegularAndGuest()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(FamilyLinkSettingsServiceFactory::GetInstance());
-  // SupervisedUserService still primes FamilyLinkSettingsService, which
-  // configures the FamilyLinkUrlFilter.
-  // TODO(crbug.com/469336110): Figure out how FamilyLinkSettingsService could
-  // self-manage it's state.
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
 }
 
 SupervisedUserUrlFilteringServiceFactory::

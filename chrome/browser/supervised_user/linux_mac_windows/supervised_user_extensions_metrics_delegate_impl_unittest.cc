@@ -10,12 +10,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/supervised_user/core/browser/device_parental_controls_noop_impl.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
@@ -51,7 +49,6 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
     supervised_user_metrics_service_ =
         std::make_unique<supervised_user::SupervisedUserMetricsService>(
             profile()->GetPrefs(),
-            *supervised_user::SupervisedUserServiceFactory::GetForProfile(profile()),
             *supervised_user::SupervisedUserUrlFilteringServiceFactory::
                 GetForProfile(profile()),
             device_parental_controls_,

@@ -60,9 +60,7 @@ SupervisedUserInterstitial::SupervisedUserInterstitial(
       family_link_settings_service_(family_link_settings_service),
       web_content_handler_(std::move(web_content_handler)),
       filtering_result_(filtering_result),
-      supervised_user_name_(supervised_user_name) {
-  CHECK(supervised_user_service.GetURLFilter());
-}
+      supervised_user_name_(supervised_user_name) {}
 
 SupervisedUserInterstitial::~SupervisedUserInterstitial() {
   web_content_handler_->MaybeCloseLocalApproval();

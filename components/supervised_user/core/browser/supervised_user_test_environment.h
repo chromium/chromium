@@ -148,7 +148,7 @@ class SupervisedUserTestEnvironment {
   MockUrlCheckerClient& family_link_url_checker_client();
   MockUrlCheckerClient& device_parental_controls_url_checker_client();
 
-  FamilyLinkUrlFilter* family_link_url_filter() const;
+  const FamilyLinkUrlFilter* family_link_url_filter() const;
   FamilyLinkSettingsService* family_link_settings_service();
   ChildAccountService* child_account_service() const;
 

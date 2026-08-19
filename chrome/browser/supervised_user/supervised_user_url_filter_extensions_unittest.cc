@@ -5,30 +5,17 @@
 #include <map>
 #include <memory>
 
-#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
-#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
-#include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -38,43 +25,11 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace supervised_user {
 namespace {
 
-// URL filter delegate that verifies url extensions support.
-class FakeURLFilterDelegate : public FamilyLinkUrlFilter::Delegate {
- public:
-  bool SupportsWebstoreURL(const GURL& url) const override {
-    return IsSupportedChromeExtensionURL(url);
-  }
-};
-
-std::unique_ptr<KeyedService> BuildSupervisedUserService(
-    content::BrowserContext* browser_context) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  FamilyLinkSettingsService& settings_service =
-      CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
-          profile->GetProfileKey()));
-
-  return std::make_unique<SupervisedUserService>(
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      *profile->GetPrefs(),
-      std::make_unique<FamilyLinkUrlFilter>(
-          settings_service, *profile->GetPrefs(),
-          std::make_unique<FakeURLFilterDelegate>(),
-          std::make_unique<MockUrlCheckerClient>()),
-      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-      g_browser_process->device_parental_controls());
-}
-
 class SupervisedUserURLFilterExtensionsTest
     : public ChromeRenderViewHostTestHarness {
  protected:
   std::unique_ptr<TestingProfile> CreateTestingProfile() override {
-    return TestingProfile::Builder()
-        .SetIsSupervisedProfile()
-        .AddTestingFactory(SupervisedUserServiceFactory::GetInstance(),
-                           base::BindRepeating(&BuildSupervisedUserService))
-        .Build();
+    return TestingProfile::Builder().SetIsSupervisedProfile().Build();
   }
 
   SupervisedUserUrlFilteringService& filtering_service() {

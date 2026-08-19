@@ -43,22 +43,14 @@ namespace supervised_user {
 
 namespace {
 std::unique_ptr<KeyedService> BuildSupervisedUserService(
-    MockUrlCheckerClient& mock_url_checker_client,
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  FamilyLinkSettingsService& settings_service =
-      CHECK_DEREF(FamilyLinkSettingsServiceFactory::GetInstance()->GetForKey(
-          profile->GetProfileKey()));
 
   return std::make_unique<SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       *profile->GetPrefs(),
-      std::make_unique<FamilyLinkUrlFilter>(
-          settings_service, *profile->GetPrefs(),
-          std::make_unique<FakeURLFilterDelegate>(),
-          std::make_unique<UrlCheckerClientWrapper>(mock_url_checker_client)),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
       g_browser_process->device_parental_controls());
 }
@@ -108,8 +100,7 @@ void SupervisedUserBrowserTestBase::SetUpBrowserContextKeyedServices(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   SupervisedUserServiceFactory::GetInstance()->SetTestingFactory(
-      context, base::BindRepeating(&BuildSupervisedUserService,
-                                   std::ref(mock_url_checker_client_)));
+      context, base::BindRepeating(&BuildSupervisedUserService));
 
   SupervisedUserUrlFilteringServiceFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(&BuildSupervisedUserUrlFilteringService,

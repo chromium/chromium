@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_platform_delegate.h"
 #import "ios/chrome/common/channel_info.h"
 
@@ -52,11 +51,6 @@ SupervisedUserUrlFilteringServiceFactory::
     : ProfileKeyedServiceFactoryIOS("SupervisedUserUrlFilteringService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(FamilyLinkSettingsServiceFactory::GetInstance());
-  // SupervisedUserService still primes FamilyLinkSettingsService, which
-  // configures the FamilyLinkUrlFilter.
-  // TODO(crbug.com/469336110): Figure out how FamilyLinkSettingsService could
-  // self-manage its state.
-  DependsOn(SupervisedUserServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>

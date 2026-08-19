@@ -9,7 +9,6 @@
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_url_filtering_service_factory.h"
 
 // static
@@ -29,7 +28,6 @@ SupervisedUserMetricsServiceFactory::GetInstance() {
 
 SupervisedUserMetricsServiceFactory::SupervisedUserMetricsServiceFactory()
     : ProfileKeyedServiceFactoryIOS("SupervisedUserMetricsService") {
-  DependsOn(supervised_user::SupervisedUserServiceFactory::GetInstance());
   DependsOn(
       supervised_user::SupervisedUserUrlFilteringServiceFactory::GetInstance());
 }
@@ -39,7 +37,6 @@ SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       profile->GetPrefs(),
-      *supervised_user::SupervisedUserServiceFactory::GetForProfile(profile),
       *supervised_user::SupervisedUserUrlFilteringServiceFactory::GetForProfile(
           profile),
       GetApplicationContext()->GetDeviceParentalControls(),

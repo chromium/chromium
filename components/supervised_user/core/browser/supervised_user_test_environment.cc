@@ -178,7 +178,7 @@ void SupervisedUserPrefStoreTestEnvironment::Shutdown() {
 }
 
 FamilyLinkSettingsService*
-SupervisedUserPrefStoreTestEnvironment::settings_service()  {
+SupervisedUserPrefStoreTestEnvironment::settings_service() {
   return &settings_service_;
 }
 
@@ -223,12 +223,6 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
       *pref_store_environment_.pref_service(),
-      std::make_unique<FamilyLinkUrlFilter>(
-          *pref_store_environment_.settings_service(),
-          *pref_store_environment_.pref_service(),
-          std::make_unique<FakeURLFilterDelegate>(),
-          std::make_unique<UrlCheckerClientWrapper>(
-              family_link_url_checker_client_)),
       std::make_unique<FakePlatformDelegate>(),
       pref_store_environment_.device_parental_controls());
 
@@ -244,8 +238,7 @@ SupervisedUserTestEnvironment::SupervisedUserTestEnvironment(
           std::make_unique<UrlCheckerClientWrapper>(
               device_parental_controls_url_checker_client_)));
   metrics_service_ = std::make_unique<SupervisedUserMetricsService>(
-      pref_store_environment_.pref_service(), *service_.get(),
-      *url_filtering_service_.get(),
+      pref_store_environment_.pref_service(), *url_filtering_service_.get(),
       pref_store_environment_.device_parental_controls(),
       std::make_unique<SupervisedUserMetricsServiceExtensionDelegateFake>(),
       std::move(synthetic_field_trial_delegate));
@@ -330,9 +323,10 @@ void SupervisedUserTestEnvironment::SetManualFilterForUrl(
                   family_link_settings_service);
 }
 
-FamilyLinkUrlFilter* SupervisedUserTestEnvironment::family_link_url_filter()
-    const {
-  return service()->GetURLFilter();
+const FamilyLinkUrlFilter*
+SupervisedUserTestEnvironment::family_link_url_filter() const {
+  return static_cast<const FamilyLinkUrlFilter*>(
+      &url_filtering_service_->GetFamilyLinkUrlFilter());
 }
 FamilyLinkSettingsService*
 SupervisedUserTestEnvironment::family_link_settings_service() {

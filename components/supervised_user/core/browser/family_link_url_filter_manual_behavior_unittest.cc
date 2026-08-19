@@ -33,7 +33,7 @@ class FamilyLinkUrlFilterManualBehaviorTestBase : public ::testing::Test {
     supervised_user_test_environment_.Shutdown();
   }
 
-  FamilyLinkUrlFilter* under_test() {
+  const FamilyLinkUrlFilter* under_test() {
     return supervised_user_test_environment_.family_link_url_filter();
   }
 

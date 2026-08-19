@@ -17,7 +17,6 @@
 #include "components/supervised_user/core/browser/device_parental_controls.h"
 #include "components/supervised_user/core/browser/supervised_user_synthetic_field_trial_service_delegate.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
-#include "supervised_user_service.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -29,7 +28,7 @@ class Time;
 namespace supervised_user {
 
 // Service to initialize and control metric recorders of supervised users.
-// Records metrics daily, or when the SupervisedUserService changes.
+// Records metrics daily, or when supervision settings change.
 class SupervisedUserMetricsService
     : public KeyedService,
       public SupervisedUserUrlFilteringService::Observer {
@@ -75,7 +74,6 @@ class SupervisedUserMetricsService
 
   SupervisedUserMetricsService(
       PrefService* pref_service,
-      SupervisedUserService& supervised_user_service,
       SupervisedUserUrlFilteringService& url_filtering_service,
       DeviceParentalControls& device_parental_controls,
       std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
@@ -113,7 +111,6 @@ class SupervisedUserMetricsService
   void RecordCurrentDay();
 
   const raw_ptr<PrefService> pref_service_;
-  raw_ref<SupervisedUserService> supervised_user_service_;
   raw_ref<const SupervisedUserUrlFilteringService> url_filtering_service_;
   const raw_ref<const DeviceParentalControls> device_parental_controls_;
   std::unique_ptr<SupervisedUserMetricsServiceExtensionDelegate>
@@ -134,7 +131,6 @@ class SupervisedUserMetricsService
 
   base::CallbackListSubscription device_parental_controls_subscription_;
 };
-
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_METRICS_SERVICE_H_

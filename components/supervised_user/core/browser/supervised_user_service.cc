@@ -24,7 +24,6 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/family_link_url_filter.h"
 #include "components/supervised_user/core/browser/permission_request_creator_impl.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
@@ -81,10 +80,6 @@ SupervisedUserService::~SupervisedUserService() {
   DCHECK(did_shutdown_);
 }
 
-FamilyLinkUrlFilter* SupervisedUserService::GetURLFilter() const {
-  return url_filter_.get();
-}
-
 std::optional<Custodian> SupervisedUserService::GetCustodian() const {
   return GetCustodianFromPrefs(user_prefs_.get(),
                                prefs::kSupervisedUserCustodianEmail,
@@ -117,13 +112,11 @@ SupervisedUserService::SupervisedUserService(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService& user_prefs,
-    std::unique_ptr<FamilyLinkUrlFilter> url_filter,
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate,
     const DeviceParentalControls& device_parental_controls)
     : user_prefs_(user_prefs),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
-      url_filter_(std::move(url_filter)),
       platform_delegate_(std::move(platform_delegate)),
       // From here, the callbacks and observers can be added.
       device_parental_controls_(device_parental_controls) {
