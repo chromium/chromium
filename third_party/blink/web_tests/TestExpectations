@@ -2724,8 +2724,6 @@ crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-inter
 crbug.com/548482066 external/wpt/css/css-inline/text-box-trim/text-box-trim-first-line-pseudo-002.html [ Failure ]
 crbug.com/546278641 external/wpt/css/css-values/using-font-relative-units-in-font-properties.html [ Crash ]
 crbug.com/546159614 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
-crbug.com/546241037 external/wpt/css/css-borders/corner-shape/corner-shape-superellipse-concave.html [ Failure ]
-crbug.com/546241037 external/wpt/css/css-borders/corner-shape/corner-shape-superellipse-convex.html [ Failure ]
 crbug.com/546146009 external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-012.html [ Failure ]
 crbug.com/546146009 virtual/disable-css-line-clamp-line-breaking-ellipsis/external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-012.html [ Failure ]
 crbug.com/546146009 virtual/disable-css-line-clamp-longhands/external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-012.html [ Failure ]
