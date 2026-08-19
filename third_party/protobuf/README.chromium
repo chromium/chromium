@@ -280,3 +280,20 @@ Description of the patches:
   [[nodiscard]] on generated message and enum methods in message.cc and enum.cc
   to prevent cascading [[nodiscard]] compilation errors across Chromium and
   third-party callers (e.g. MediaPipe).
+
+- 0068-remove-arena-heavy-includes.patch
+
+  Removes `absl/strings/str_format.h` and `absl/hash/hash.h` from `arena.h`
+  and removes unused `AbslStringify`, `ArenaPtrContainerHash`, and
+  `AbslHashValue` implementations on `Arena::UniquePtr` and `Arena::Ptr` to
+  avoid massive compile size and build time bloat across every translation unit
+  that includes `.pb.h`.
+
+- 0069-remove-btree-map-includes.patch
+
+  Removes `absl/container/btree_map.h` from `extension_set.h` and `map.h` by
+  forward-declaring `struct LargeMap` in `extension_set.h` and out-of-lining
+  rare LargeMap iteration helpers to `extension_set.cc`. Eliminates btree_map
+  template overhead across all translation units that include `.pb.h`.
+
+

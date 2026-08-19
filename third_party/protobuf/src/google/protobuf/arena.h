@@ -33,9 +33,7 @@ using type_info = ::type_info;
 
 #include "absl/base/attributes.h"
 #include "absl/base/optimization.h"
-#include "absl/hash/hash.h"
 #include "absl/log/absl_check.h"
-#include "absl/strings/str_format.h"
 #include "google/protobuf/arena_align.h"
 #include "google/protobuf/arena_allocation_policy.h"
 #include "google/protobuf/port.h"
@@ -889,19 +887,6 @@ struct ArenaPtrCmpBase {
 
 };
 
-// Transparent hasher that supports the same types as equality above.
-// This allows for heterogeneous lookup on UniquePtr and Ptr keyed associative
-// containers.
-struct ArenaPtrContainerHash {
-  using is_transparent = void;
-
-  template <typename T>
-  auto operator()(const T& value) const
-      -> decltype(absl::HashOf(ArenaPtrCmpBase::Unpack(value))) {
-    return absl::HashOf(ArenaPtrCmpBase::Unpack(value));
-  }
-};
-
 // The deleter type used for implementing UniquePtr.
 // Only deletes an element if the Arena* passed at construction time is
 // nullptr.
@@ -1021,24 +1006,6 @@ class
     return ptr_.get_deleter().arena;
   }
 
-  template <typename Sink>
-  friend void AbslStringify(Sink& sink, const UniquePtr& ptr) {
-    if constexpr (std::is_base_of_v<MessageLite, T>) {
-      if (ptr != nullptr) {
-        absl::Format(&sink, "points to (%p) with value <%v>", ptr.get(), *ptr);
-        return;
-      }
-    }
-    absl::Format(&sink, "%p", ptr.get());
-  }
-
-  using absl_container_hash = internal::ArenaPtrContainerHash;
-
-  template <typename H>
-  friend H AbslHashValue(H h, const UniquePtr& u) {
-    return H::combine(std::move(h), u.ptr_);
-  }
-
  private:
   friend Arena;
 
@@ -1093,22 +1060,6 @@ class ABSL_MUST_USE_RESULT ABSL_ATTRIBUTE_TRIVIAL_ABI Arena::Ptr final
 
   // Return a pointer to the Arena pointer that owns the pointed to message.
   Arena* PROTOBUF_NONNULL GetOwningArena() const { return arena_; }
-
-  template <typename Sink>
-  friend void AbslStringify(Sink& sink, Ptr ptr) {
-    if constexpr (std::is_base_of_v<MessageLite, T>) {
-      absl::Format(&sink, "points to (%p) with value <%v>", ptr.get(), *ptr);
-    } else {
-      absl::Format(&sink, "%p", ptr.get());
-    }
-  }
-
-  using absl_container_hash = internal::ArenaPtrContainerHash;
-
-  template <typename H>
-  friend H AbslHashValue(H h, Ptr u) {
-    return H::combine(std::move(h), u.ptr_);
-  }
 
  private:
   friend Arena;

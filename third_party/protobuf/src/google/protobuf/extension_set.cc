@@ -25,6 +25,7 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/optimization.h"
+#include "absl/container/btree_map.h"
 #include "absl/container/flat_hash_set.h"
 #include "absl/functional/overload.h"
 #include "absl/hash/hash.h"
@@ -49,6 +50,10 @@
 namespace google {
 namespace protobuf {
 namespace internal {
+
+struct ExtensionSet::LargeMap : public absl::btree_map<int, Extension> {
+  using btree_map::btree_map;
+};
 namespace {
 
 inline WireFormatLite::FieldType real_type(FieldType type) {
@@ -1562,6 +1567,39 @@ ExtensionSet::InternalInsertIntoLargeMap(int key) {
   ABSL_DCHECK(is_large());
   auto maybe = map_.large->insert({key, Extension()});
   return {&maybe.first->second, maybe.second};
+}
+
+size_t ExtensionSet::LargeMapSize() const {
+  return map_.large->size();
+}
+
+void ExtensionSet::ForEachLargeMap(
+    absl::FunctionRef<void(int, Extension&)> func,
+    absl::FunctionRef<void(const void*)> prefetch_func) {
+  ForEachPrefetchImpl(map_.large->begin(), map_.large->end(), func,
+                      prefetch_func);
+}
+
+void ExtensionSet::ForEachLargeMap(
+    absl::FunctionRef<void(int, const Extension&)> func,
+    absl::FunctionRef<void(const void*)> prefetch_func) const {
+  ForEachPrefetchImpl(map_.large->begin(), map_.large->end(), func,
+                      prefetch_func);
+}
+
+void ExtensionSet::ForEachNoPrefetchLargeMap(
+    absl::FunctionRef<void(int, Extension&)> func) {
+  ForEachNoPrefetch(map_.large->begin(), map_.large->end(), func);
+}
+
+void ExtensionSet::ForEachNoPrefetchLargeMap(
+    absl::FunctionRef<void(int, const Extension&)> func) const {
+  ForEachNoPrefetch(map_.large->begin(), map_.large->end(), func);
+}
+
+bool ExtensionSet::AnyOfNoPrefetchLargeMap(
+    absl::FunctionRef<bool(int, const Extension&)> predicate) const {
+  return AnyOfNoPrefetch(map_.large->begin(), map_.large->end(), predicate);
 }
 
 std::pair<ExtensionSet::Extension*, bool> ExtensionSet::Insert(Arena* arena,
