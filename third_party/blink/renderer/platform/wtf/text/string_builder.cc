@@ -31,7 +31,6 @@
 
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
-#include "base/strings/span_printf.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
@@ -359,30 +358,6 @@ void StringBuilder::AppendNumber(float number) {
 void StringBuilder::AppendNumber(double number, unsigned precision) {
   DoubleToStringConverter converter;
   Append(converter.ToStringWithFixedPrecision(number, precision));
-}
-
-void StringBuilder::AppendFormat(const char* format, ...) {
-  va_list args;
-
-  static constexpr unsigned kDefaultSize = 256;
-  Vector<char, kDefaultSize> buffer(kDefaultSize);
-
-  va_start(args, format);
-  // SAFETY: The safety of this code depends on the content of `format`.
-  // Required from caller, Enforced by UNSAFE_BUFFER_USAGE in header.
-  int length = UNSAFE_BUFFERS(base::VSpanPrintf(buffer, format, args));
-  va_end(args);
-  DCHECK_GE(length, 0);
-
-  if (length >= static_cast<int>(kDefaultSize)) {
-    buffer.Grow(length + 1);
-    va_start(args, format);
-    // SAFETY: See the previous comment on base::VSpanPrintf().
-    length = UNSAFE_BUFFERS(base::VSpanPrintf(buffer, format, args));
-    va_end(args);
-  }
-
-  Append(base::as_byte_span(buffer).first(static_cast<wtf_size_t>(length)));
 }
 
 void StringBuilder::erase(unsigned index) {

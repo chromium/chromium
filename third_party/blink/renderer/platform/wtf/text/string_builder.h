@@ -193,10 +193,6 @@ class WTF_EXPORT StringBuilder {
 
   void AppendNumber(double, unsigned precision = 6);
 
-  // Like blink::String::Format, supports Latin-1 only.
-  PRINTF_FORMAT(2, 3)
-  void AppendFormat(const char* format, ...);
-
   // Append each elements in a collection `range`, separated by `delimiter`.
   // This adds nothing if `range` is empty.
   //

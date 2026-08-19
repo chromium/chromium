@@ -147,16 +147,16 @@ String ViewTransitionStyleBuilder::AddKeyframes(
 
   builder_.Append("@keyframes ");
   builder_.Append(keyframe_name);
-  builder_.AppendFormat(
-      R"CSS({
-        from {
-          transform: %s;
-          width: %.3fpx;
-          height: %3fpx;
+  FormatTo(builder_,
+           R"CSS({{
+        from {{
+          transform: {};
+          width: {:.3f}px;
+          height: {:3f}px;
       )CSS",
-      GetTransformString(source_properties, parent_transform).c_str(),
-      source_properties.GroupSize().width.ToFloat(),
-      source_properties.GroupSize().height.ToFloat());
+           GetTransformString(source_properties, parent_transform),
+           source_properties.GroupSize().width.ToFloat(),
+           source_properties.GroupSize().height.ToFloat());
 
   AppendProperties(animated_css_properties, builder_);
   builder_.Append("}}");
@@ -184,15 +184,15 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
     const CapturedCssProperties& captured_css_properties,
     const gfx::Transform& parent_transform) {
   StringBuilder group_rule_builder;
-  group_rule_builder.AppendFormat(
-      R"CSS(
-        width: %.3fpx;
-        height: %.3fpx;
-        transform: %s;
+  FormatTo(group_rule_builder,
+           R"CSS(
+        width: {:.3f}px;
+        height: {:.3f}px;
+        transform: {};
       )CSS",
-      properties.GroupSize().width.ToFloat(),
-      properties.GroupSize().height.ToFloat(),
-      GetTransformString(properties, parent_transform).c_str());
+           properties.GroupSize().width.ToFloat(),
+           properties.GroupSize().height.ToFloat(),
+           GetTransformString(properties, parent_transform));
 
   AppendProperties(captured_css_properties, group_rule_builder);
   AddRules(kGroupTagName, tag, group_rule_builder.ReleaseString());

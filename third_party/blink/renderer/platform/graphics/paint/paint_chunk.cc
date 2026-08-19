@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -78,18 +79,16 @@ static String ToStringImpl(const PaintChunk& c,
                            const String& id_string,
                            bool concise) {
   StringBuilder sb;
-  sb.AppendFormat("PaintChunk(%u-%u id=%s cacheable=%d bounds=%s from_cache=%d",
-                  c.begin_index, c.end_index, id_string.Utf8().c_str(),
-                  c.is_cacheable, c.bounds.ToString().c_str(),
-                  c.is_moved_from_cached_subsequence);
+  FormatTo(sb, "PaintChunk({}-{} id={} cacheable={} bounds={} from_cache={}",
+           c.begin_index, c.end_index, id_string, c.is_cacheable,
+           c.bounds.ToString(), c.is_moved_from_cached_subsequence);
   if (!concise) {
-    UNSAFE_TODO(sb.AppendFormat(
-        " props=(%s) rect_known_to_be_opaque=%s hit_test_opaqueness=%s "
-        "effectively_invisible=%d drawscontent=%d",
-        c.properties.ToString().Utf8().c_str(),
-        c.rect_known_to_be_opaque.ToString().c_str(),
-        cc::HitTestOpaquenessToString(c.hit_test_opaqueness),
-        c.effectively_invisible, c.DrawsContent()));
+    FormatTo(sb,
+             " props=({}) rect_known_to_be_opaque={} hit_test_opaqueness={} "
+             "effectively_invisible={} drawscontent={}",
+             c.properties.ToString(), c.rect_known_to_be_opaque.ToString(),
+             cc::HitTestOpaquenessToString(c.hit_test_opaqueness),
+             c.effectively_invisible, c.DrawsContent());
     if (c.hit_test_data) {
       sb.Append(" hit_test_data=");
       sb.Append(c.hit_test_data->ToString());

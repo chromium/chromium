@@ -1395,9 +1395,9 @@ void DocumentMarkerController::ShowMarkers() const {
           is_active_match = text_match->IsActiveMatch();
         }
 
-        builder.AppendFormat(
-            " %u:[%u:%u](%d)", static_cast<uint32_t>(marker->GetType()),
-            marker->StartOffset(), marker->EndOffset(), is_active_match);
+        FormatTo(builder, " {}:[{}:{}]({})",
+                 static_cast<uint32_t>(marker->GetType()),
+                 marker->StartOffset(), marker->EndOffset(), is_active_match);
       }
     }
     builder.Append("\n");

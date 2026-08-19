@@ -163,15 +163,15 @@ std::string GetTrackLogString(int32_t request_id,
 std::string GetTrackSourceLogString(blink::MediaStreamAudioSource* source) {
   const MediaStreamDevice& device = source->device();
   StringBuilder builder;
-  builder.AppendFormat("StartAudioTrack(source: {session_id=%s}, ",
-                       device.session_id().ToString().c_str());
-  builder.AppendFormat("{is_local_source=%d}, ", source->is_local_source());
-  builder.AppendFormat("{device=[id: %s", device.id.c_str());
+  FormatTo(builder,
+           "StartAudioTrack(source: {{session_id={}}}, {{is_local_source={}}}, "
+           "{{device=[id: {}",
+           device.session_id().ToString(), source->is_local_source(),
+           device.id);
   if (device.group_id.has_value()) {
-    builder.AppendFormat(", group_id: %s", device.group_id.value().c_str());
+    FormatTo(builder, ", group_id: {}", device.group_id.value());
   }
-  builder.AppendFormat(", name: %s", device.name.c_str());
-  builder.Append("]})");
+  FormatTo(builder, ", name: {}]}})", device.name);
   return StringView(builder).Utf8();
 }
 

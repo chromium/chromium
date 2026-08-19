@@ -169,8 +169,8 @@ void CheckShapeResultRange(const ShapeResult* result,
   }
 
   // Log the text to shape.
-  log.AppendFormat(": %u-%u -> %u-%u:", start, end, result->StartIndex(),
-                   result->EndIndex());
+  FormatTo(log, ": {}-{} -> {}-{}:", start, end, result->StartIndex(),
+           result->EndIndex());
   for (unsigned i = start; i < end; ++i) {
     FormatTo(log, " {:02X}", text[i]);
   }

@@ -998,18 +998,13 @@ String AXPosition::ToString() const {
   if (!IsValid())
     return "Invalid AXPosition";
 
-  StringBuilder builder;
   if (IsTextPosition()) {
-    builder.Append("AX text position in ");
-    builder.Append(container_object_->ToString(/*verbose*/false));
-    builder.AppendFormat(", %d", TextOffset());
-    return builder.ToString();
+    return Format("AX text position in {}, {}",
+                  container_object_->ToString(/*verbose*/ false), TextOffset());
   }
 
-  builder.Append("AX object anchored position in ");
-  builder.Append(container_object_->ToString(/*verbose*/false));
-  builder.AppendFormat(", %d", ChildIndex());
-  return builder.ToString();
+  return Format("AX object anchored position in {}, {}",
+                container_object_->ToString(/*verbose*/ false), ChildIndex());
 }
 
 // static

@@ -1341,13 +1341,15 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
           } else if (a == -1) {
             builder.Append("-n");
           } else {
-            builder.AppendFormat("%dn", a);
+            builder.AppendNumber(a);
+            builder.Append('n');
           }
 
           if (b < 0) {
             builder.Append(String::Number(b));
           } else if (b > 0) {
-            builder.AppendFormat("+%d", b);
+            builder.Append('+');
+            builder.AppendNumber(b);
           }
         }
 

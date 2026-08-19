@@ -134,11 +134,9 @@ network::mojom::blink::RestrictedCanonicalCookieParamsPtr ToCookieParams(
   const bool is_host_http_prefix =
       name.StartsWithIgnoringAsciiCase("__host-http-");
   if (is_http_prefix || is_host_http_prefix) {
-    StringBuilder builder;
-    UNSAFE_TODO(builder.AppendFormat(
-        "Cookies with \"%s\" prefix cannot be set using the CookieStore API.",
-        is_http_prefix ? "__Http-" : "__Host-Http-"));
-    exception_state.ThrowTypeError(builder.ToString());
+    exception_state.ThrowTypeError(
+        StrCat({"Cookies with \"", is_http_prefix ? "__Http-" : "__Host-Http-",
+                "\" prefix cannot be set using the CookieStore API."}));
     return nullptr;
   }
   const bool is_host_prefixed_cookie =

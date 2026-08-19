@@ -245,8 +245,7 @@ TEST_F(HTMLSelectElementTest,
   StringBuilder html;
   html.Append("<!DOCTYPE HTML><select id='sel' size='4'>");
   for (int i = 0; i < 20; ++i) {
-    html.AppendFormat("<option id='o%d' value='v%d'>option %d</option>", i, i,
-                      i);
+    FormatTo(html, "<option id='o{}' value='v{}'>option {}</option>", i, i, i);
   }
   html.Append("</select>");
   SetHtmlInnerHTML(html.ToString().Utf8());
