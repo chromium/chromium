@@ -22,7 +22,6 @@
 
 :host(:not([unbounded-menu-enabled])) #menu::part(dialog) {
   max-height: var(--contextual-menu-max-height, min(540px, 100vh - 16px));
-  min-height: var(--contextual-menu-min-height, 144px);
 }
 
 :host(:not([unbounded-menu-enabled])) .menu-outer-wrapper {
@@ -97,7 +96,6 @@
   display: flex;
   flex-direction: column;
   max-height: var(--contextual-menu-max-height, min(540px, 100vh - 16px));
-  min-height: var(--contextual-menu-min-height, 144px);
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px 0;
