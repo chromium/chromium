@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
@@ -41,10 +43,10 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
     private PolicyService.@Nullable Observer mPolicyServiceObserver;
 
     /**
-     * Whether app restriction is found on the device. This can be null when this information is not
-     * ready yet.
+     * Whether app restriction is found on the device. This is TriState.NOT_SET when this
+     * information is not ready yet.
      */
-    private @Nullable Boolean mHasRestriction;
+    private @TriState int mHasRestriction;
 
     /**
      * Create the instance and start listening to signals from policy service and app restrictions.
@@ -91,7 +93,7 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
         // Early return if policy value has been set.
         if (mMightHavePoliciesSupplier.get() != null) return;
 
-        boolean confirmedNoAppRestriction = mHasRestriction != null && !mHasRestriction;
+        boolean confirmedNoAppRestriction = mHasRestriction == TriState.FALSE;
         boolean policyServiceInitialized =
                 (mPolicyServiceSupplier.get() != null
                         && mPolicyServiceSupplier.get().isInitializationComplete());
@@ -111,7 +113,7 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
     }
 
     private void onAppRestrictionDetected(boolean hasAppRestriction) {
-        mHasRestriction = hasAppRestriction;
+        mHasRestriction = TriStateUtils.from(hasAppRestriction);
         setSupplierIfDecidable();
     }
 

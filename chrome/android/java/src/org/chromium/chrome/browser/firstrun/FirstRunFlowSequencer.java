@@ -21,6 +21,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -120,7 +122,7 @@ public abstract class FirstRunFlowSequencer {
 
     private boolean mIsFlowKnown;
     private boolean mAccountsAvailable;
-    private @Nullable Boolean mIsChild;
+    private @TriState int mIsChild;
 
     /**
      * Callback that is called once the flow is determined. If the properties is null, the First Run
@@ -169,22 +171,23 @@ public abstract class FirstRunFlowSequencer {
     }
 
     private boolean shouldShowHistorySyncOptIn() {
-        return mDelegate.shouldShowHistorySyncOptIn(assumeNonNull(mIsChild));
+        assert mIsChild != TriState.NOT_SET;
+        return mDelegate.shouldShowHistorySyncOptIn(mIsChild == TriState.TRUE);
     }
 
     private void setChildAccountStatus(boolean isChild) {
-        assert mIsChild == null;
-        mIsChild = isChild;
+        assert mIsChild == TriState.NOT_SET;
+        mIsChild = TriStateUtils.from(isChild);
         maybeProcessFreEnvironmentPreNative();
     }
 
     private void maybeProcessFreEnvironmentPreNative() {
         // Wait till both child account status and the list of accounts are available.
-        if (mIsChild == null || !mAccountsAvailable) return;
+        if (mIsChild == TriState.NOT_SET || !mAccountsAvailable) return;
 
         if (mIsFlowKnown) return;
         mIsFlowKnown = true;
-        onFlowIsKnown(mIsChild);
+        onFlowIsKnown(mIsChild == TriState.TRUE);
     }
 
     /**

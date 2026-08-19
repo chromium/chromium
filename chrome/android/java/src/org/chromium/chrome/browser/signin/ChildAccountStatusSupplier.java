@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.signin;
 import android.os.SystemClock;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -30,8 +32,8 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
     private final OneshotSupplierImpl<Boolean> mValue = new OneshotSupplierImpl<>();
     private final long mChildAccountStatusStartTime;
 
-    private @Nullable Boolean mHasRestriction;
-    private @Nullable Boolean mChildAccountStatusFromAccountManagerFacade;
+    private @TriState int mHasRestriction;
+    private @TriState int mChildAccountStatusFromAccountManagerFacade;
 
     /**
      * Creates ChildAccountStatusSupplier and starts fetching the child account status.
@@ -69,12 +71,12 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
     }
 
     private void onAppRestrictionDetected(boolean hasAppRestriction) {
-        mHasRestriction = hasAppRestriction;
+        mHasRestriction = TriStateUtils.from(hasAppRestriction);
         setSupplierIfDecidable();
     }
 
     private void onChildAccountStatusReady(boolean isChild) {
-        mChildAccountStatusFromAccountManagerFacade = isChild;
+        mChildAccountStatusFromAccountManagerFacade = TriStateUtils.from(isChild);
         setSupplierIfDecidable();
     }
 
@@ -82,29 +84,28 @@ public class ChildAccountStatusSupplier implements OneshotSupplier<Boolean> {
         // Early return if the value has been set.
         if (mValue.get() != null) return;
 
-        Boolean value = tryCalculateSupplierValue();
-        if (value == null) return;
+        @TriState int value = tryCalculateSupplierValue();
+        if (value == TriState.NOT_SET) return;
 
         RecordHistogram.recordTimesHistogram(
                 "MobileFre.ChildAccountStatusDuration",
                 SystemClock.elapsedRealtime() - mChildAccountStatusStartTime);
-        mValue.set(value);
+        mValue.set(value == TriState.TRUE);
     }
 
-    private @Nullable Boolean tryCalculateSupplierValue() {
-        if (mChildAccountStatusFromAccountManagerFacade != null) {
+    private @TriState int tryCalculateSupplierValue() {
+        if (mChildAccountStatusFromAccountManagerFacade != TriState.NOT_SET) {
             // Child account status from AccountManagerFacade is more reliable than app
             // restrictions, so use it if available.
             return mChildAccountStatusFromAccountManagerFacade;
         }
 
-        boolean confirmedNoAppRestriction = mHasRestriction != null && !mHasRestriction;
-        if (confirmedNoAppRestriction) {
+        if (mHasRestriction == TriState.FALSE) {
             // No app restriction is found. On real devices this means that there are no child
             // accounts on the device, as FamilyLink pushes some policies for supervised devices.
-            return false;
+            return TriState.FALSE;
         }
         // Otherwise, we can't determine the supplier value yet.
-        return null;
+        return TriState.NOT_SET;
     }
 }

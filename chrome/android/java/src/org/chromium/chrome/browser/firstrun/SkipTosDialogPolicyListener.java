@@ -4,18 +4,17 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.os.SystemClock;
 import android.text.TextUtils;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
@@ -74,16 +73,16 @@ public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
 
     /**
      * The value of whether the ToS dialog is enabled on the device. If the value is false, it means
-     * TosDialogBehavior policy is found and set to SKIP. This can be null when this information is
-     * not ready yet.
+     * TosDialogBehavior policy is found and set to SKIP. This can be TriState.NOT_SET when this
+     * information is not ready yet.
      */
-    private @MonotonicNonNull Boolean mTosDialogEnabled;
+    private @TriState int mTosDialogEnabled;
 
     /**
-     * Whether the current device is organization owned. This will start null before the check
-     * occurs. The FRE can only be skipped if the device is organization owned.
+     * Whether the current device is organization owned. This will start as TriState.NOT_SET before
+     * the check occurs. The FRE can only be skipped if the device is organization owned.
      */
-    private @MonotonicNonNull Boolean mIsDeviceOwned;
+    private @TriState int mIsDeviceOwned;
 
     /**
      * @param appRestrictionSupplier Source that providers app restriction information.
@@ -165,12 +164,12 @@ public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
     }
 
     private void onPolicyLoadListenerAvailable(boolean mightHavePolicy) {
-        if (mTosDialogEnabled != null) return;
+        if (mTosDialogEnabled != TriState.NOT_SET) return;
 
         if (!mightHavePolicy) {
-            mTosDialogEnabled = true;
+            mTosDialogEnabled = TriState.TRUE;
         } else {
-            mTosDialogEnabled = FirstRunUtils.isCctTosDialogEnabled();
+            mTosDialogEnabled = TriStateUtils.from(FirstRunUtils.isCctTosDialogEnabled());
             if (mHistNameProvider != null) {
                 String histogramOnPolicyLoaded =
                         mHistNameProvider.getOnPolicyAvailableTimeHistogramName();
@@ -185,9 +184,9 @@ public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
     }
 
     private void onIsDeviceOwnedDetected(EnterpriseInfo.OwnedState ownedState) {
-        if (mIsDeviceOwned != null) return;
+        if (mIsDeviceOwned != TriState.NOT_SET) return;
 
-        mIsDeviceOwned = ownedState != null && ownedState.mDeviceOwned;
+        mIsDeviceOwned = TriStateUtils.from(ownedState != null && ownedState.mDeviceOwned);
         if (mHistNameProvider != null) {
             String histogramOnEnterpriseInfoLoaded =
                     mHistNameProvider.getOnDeviceOwnedDetectedTimeHistogramName();
@@ -203,20 +202,20 @@ public class SkipTosDialogPolicyListener implements OneshotSupplier<Boolean> {
     private void setSupplierIfDecidable() {
         if (mSkipTosDialogPolicySupplier.get() != null) return;
 
-        boolean confirmedDeviceNotOwned = mIsDeviceOwned != null && !mIsDeviceOwned;
-        boolean confirmedTosDialogEnabled = mTosDialogEnabled != null && mTosDialogEnabled;
-        boolean hasOutstandingSignal = mIsDeviceOwned == null || mTosDialogEnabled == null;
+        boolean confirmedDeviceNotOwned = mIsDeviceOwned == TriState.FALSE;
+        boolean confirmedTosDialogEnabled = mTosDialogEnabled == TriState.TRUE;
+        boolean hasOutstandingSignal =
+                mIsDeviceOwned == TriState.NOT_SET || mTosDialogEnabled == TriState.NOT_SET;
 
         if (!hasOutstandingSignal) {
-            assumeNonNull(mIsDeviceOwned);
-            assumeNonNull(mTosDialogEnabled);
             Log.i(
                     TAG,
                     "Supplier available, <TosDialogEnabled>="
-                            + mTosDialogEnabled
+                            + (mTosDialogEnabled == TriState.TRUE)
                             + " <IsDeviceOwned>="
-                            + mIsDeviceOwned);
-            mSkipTosDialogPolicySupplier.set(!mTosDialogEnabled && mIsDeviceOwned);
+                            + (mIsDeviceOwned == TriState.TRUE));
+            mSkipTosDialogPolicySupplier.set(
+                    mTosDialogEnabled == TriState.FALSE && mIsDeviceOwned == TriState.TRUE);
         } else if (confirmedTosDialogEnabled || confirmedDeviceNotOwned) {
             Log.i(
                     TAG,
