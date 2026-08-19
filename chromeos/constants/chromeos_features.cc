@@ -414,7 +414,7 @@ bool IsRoundedWindowsEnabled() {
 }
 
 bool IsSystemBlurEnabled() {
-  constexpr base::ByteSize kMinimumMemoryThreshold = base::GiBU(4);  // 4GB
+  constexpr base::ByteSize kMinimumMemoryThreshold = base::GiB(4);  // 4GB
   return base::SysInfo::AmountOfTotalPhysicalMemory() > kMinimumMemoryThreshold;
 }
 
