@@ -161,8 +161,6 @@ class AutofillKeyboardAccessoryControllerImpl
   bool keep_popup_open_for_testing_ = false;
 
   // The `FillingProduct` that matches the suggestions shown in the popup.
-  // The first `IsStandaloneSuggestionType()` is used to define what the
-  // `FillingProduct` is.
   FillingProduct suggestions_filling_product_ = FillingProduct::kNone;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryControllerImpl>

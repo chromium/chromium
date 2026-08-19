@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -39,6 +40,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -587,10 +589,8 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   // TODO(crbug.com/535486238): Plumb search_bar_initial_value through to the
   // UI.
   ui_session_id_ = ui_session_id;
-  suggestions_filling_product_ =
-      !suggestions.empty() && IsStandaloneSuggestionType(suggestions[0].type)
-          ? GetFillingProductFromSuggestionType(suggestions[0].type)
-          : FillingProduct::kNone;
+  suggestions_filling_product_ = GetFillingProductFromSuggestionTypes(
+      base::ToVector(suggestions, &Suggestion::type), trigger_source);
   if (auto* rwhv = web_contents_->GetRenderWidgetHostView();
       !rwhv || !rwhv->HasFocus()) {
     Hide(SuggestionHidingReason::kNoFrameHasFocus);
