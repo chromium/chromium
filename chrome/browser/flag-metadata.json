@@ -2317,12 +2317,12 @@
   {
     "name": "cross-device-signin",
     "owners": ["lbarczynski@google.com", "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
-    "expiry_milestone": 154
+    "expiry_milestone": 156
   },
   {
     "name": "cross-device-signin-from-desktop",
     "owners": ["pmeuleman@chromium.org", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 154
+    "expiry_milestone": 156
   },
   {
     "name": "cross-device-task-handoff",
