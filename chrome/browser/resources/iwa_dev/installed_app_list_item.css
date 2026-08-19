@@ -24,6 +24,7 @@
   align-items: center;
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
 }
 
@@ -90,4 +91,8 @@
 #app-icon {
   width: 100%;
   height: 100%;
+}
+
+#actions cr-button {
+  min-width: 81px;
 }

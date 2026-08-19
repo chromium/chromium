@@ -34,7 +34,7 @@ ${!this.devModeEnabled_ ? html`
         </h2>
         <cr-button class="action-button" id="installButton"
             @click="${this.onOpenInstallDialogClick_}">
-          Install IWA
+          + Install
         </cr-button>
       </div>
       ${this.installedApps_.length === 0 ? html`
