@@ -4713,15 +4713,10 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-item-mixed-baseline-00
 crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-align-001.html [ Failure ]
 crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.html [ Failure ]
 
-# [css-animations]
-
-
 # [css-transitions]
 crbug.com/1289685 external/wpt/css/css-transitions/properties-value-inherit-001.html [ Failure Pass ]
 
 crbug.com/826419 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-remove-track-inband.html [ Crash Failure Pass Timeout ]
-
-crbug.com/825798 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-non-snap-to-lines.html [ Failure ]
 
 # These tests (erroneously) see a platform-specific User-Agent header
 crbug.com/595993 external/wpt/service-workers/service-worker/fetch-header-visibility.https.html [ Failure ]
