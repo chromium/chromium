@@ -14,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
@@ -46,7 +47,8 @@ IN_PROC_BROWSER_TEST_F(SadTabSplitViewBrowserTest,
   crash_observer.Wait();
 
   // Verify Sad Tab is created.
-  SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(crash_contents);
+  SadTabHelper* sad_tab_helper =
+      SadTabHelper::From(tabs::TabInterface::GetFromContents(crash_contents));
   ASSERT_TRUE(sad_tab_helper);
   ASSERT_TRUE(sad_tab_helper->sad_tab());
 

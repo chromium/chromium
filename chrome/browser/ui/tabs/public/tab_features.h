@@ -60,6 +60,7 @@ class QwacWebContentsObserver;
 class ReadAnythingController;
 class ReadAnythingSidePanelController;
 class RecordReplayPageActionController;
+class SadTabHelper;
 class SearchEngineChoiceTabHelper;
 class SearchPromotionNavigationObserver;
 class SecurityStateEventObserver;
@@ -624,6 +625,10 @@ class TabFeatures {
 
   std::unique_ptr<lens::TabContextualizationController>
       tab_contextualization_controller_;
+
+  // Manages the sad tab view shown when the tab's main frame has crashed.
+  // Null when the WebUI browser is enabled.
+  std::unique_ptr<SadTabHelper> sad_tab_helper_;
 
   // Watches for an opportunity to show the search engine choice dialog.
   // Only created when SearchEngineChoiceTabHelper::IsHelperNeeded().

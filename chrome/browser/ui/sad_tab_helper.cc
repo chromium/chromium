@@ -10,6 +10,7 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -37,9 +38,17 @@ SadTabKind SadTabKindFromTerminationStatus(base::TerminationStatus status) {
 
 SadTabHelper::~SadTabHelper() = default;
 
-SadTabHelper::SadTabHelper(content::WebContents* web_contents)
+DEFINE_USER_DATA(SadTabHelper);
+
+SadTabHelper::SadTabHelper(tabs::TabInterface& tab,
+                           content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<SadTabHelper>(*web_contents) {}
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
+
+// static
+SadTabHelper* SadTabHelper::From(tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
 
 void SadTabHelper::ReinstallInWebView() {
   if (sad_tab_) {
@@ -123,5 +132,3 @@ void SadTabHelper::InstallSadTab(base::TerminationStatus status) {
   sad_tab_ =
       SadTab::Create(web_contents(), SadTabKindFromTerminationStatus(status));
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SadTabHelper);

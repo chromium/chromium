@@ -23,6 +23,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/result_codes.h"
@@ -136,7 +137,8 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
 
     // SadTab has a DCHECK that it's been painted at least once
     // before the action button can be pressed, bypass that.
-    SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(web_contents);
+    SadTabHelper* sad_tab_helper =
+        SadTabHelper::From(tabs::TabInterface::GetFromContents(web_contents));
     SadTabController* sad_tab_controller =
         static_cast<SadTabController*>(sad_tab_helper->sad_tab());
     sad_tab_controller->RecordFirstPaint();

@@ -1434,7 +1434,7 @@ void TabDragController::AttachToNewContext(
       [](TabStripModel* model, size_t sad_index) {
         // If a sad tab is showing, the SadTabView needs to be updated.
         SadTabHelper* const sad_tab_helper =
-            SadTabHelper::FromWebContents(model->GetWebContentsAt(sad_index));
+            SadTabHelper::From(model->GetTabAtIndex(sad_index));
         if (sad_tab_helper) {
           sad_tab_helper->ReinstallInWebView();
         }

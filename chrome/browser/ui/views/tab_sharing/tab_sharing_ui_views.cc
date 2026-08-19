@@ -333,7 +333,7 @@ void TabSharingUIViews::OnTabChangedAt(tabs::TabInterface* tab,
                                        TabChangeType change_type) {
   content::WebContents* contents = tab->GetContents();
   // Sad tab cannot be shared so don't create an infobar for it.
-  auto* sad_tab_helper = SadTabHelper::FromWebContents(contents);
+  auto* sad_tab_helper = SadTabHelper::From(tab);
   if (sad_tab_helper && sad_tab_helper->sad_tab()) {
     return;
   }

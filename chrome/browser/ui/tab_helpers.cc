@@ -97,7 +97,6 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
-#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/buildflags.h"
@@ -191,7 +190,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_desktop.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
-#include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -739,9 +737,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     ManagePasswordsUIController::CreateForWebContents(web_contents);
   }
 
-  if (!webui_browser::IsWebUIBrowserEnabled()) {
-    SadTabHelper::CreateForWebContents(web_contents);
-  }
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
   UMABrowsingActivityObserver::TabHelper::CreateForWebContents(web_contents);

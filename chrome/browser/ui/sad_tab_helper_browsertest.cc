@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -145,9 +146,9 @@ IN_PROC_BROWSER_TEST_F(SadTabHelperBrowserTest,
   content::WebContents* prefetch_web_contents =
       prefetch_handle->contents()->no_state_prefetch_contents();
 
-  // Verify this WebContents has a SadTabHelper but is hidden and has no
-  // TabLifecycleUnitExternal (not in a TabStripModel).
-  ASSERT_TRUE(SadTabHelper::FromWebContents(prefetch_web_contents));
+  // Verify this WebContents is not a tab (so it has no SadTabHelper, which
+  // is owned by TabFeatures) and is hidden.
+  ASSERT_FALSE(tabs::TabInterface::MaybeGetFromContents(prefetch_web_contents));
   ASSERT_EQ(prefetch_web_contents->GetVisibility(),
             content::Visibility::HIDDEN);
 

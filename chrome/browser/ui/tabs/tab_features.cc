@@ -74,6 +74,7 @@
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
+#include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -110,6 +111,7 @@
 #include "chrome/browser/ui/views/zoom/zoom_view_controller.h"
 #include "chrome/browser/ui/web_applications/pwa_install_page_action.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
@@ -524,6 +526,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             tab, tab, tab.GetContents());
   }
 
+  if (!webui_browser::IsWebUIBrowserEnabled()) {
+    sad_tab_helper_ = GetUserDataFactory().CreateInstance<SadTabHelper>(
+        tab, tab, tab.GetContents());
+  }
+
   from_gws_navigation_and_keep_alive_request_observer_ =
       FromGWSNavigationAndKeepAliveRequestObserver::MaybeCreate(
           tab.GetContents());
@@ -746,6 +753,15 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     thumbnail_tab_helper_ =
         GetUserDataFactory().CreateInstance<ThumbnailTabHelper>(*tab, *tab,
                                                                 new_contents);
+  }
+
+  if (sad_tab_helper_) {
+    // The reset() must happen first so that the old instance deregisters
+    // itself from the UnownedUserDataHost before the new instance registers
+    // itself.
+    sad_tab_helper_.reset();
+    sad_tab_helper_ = GetUserDataFactory().CreateInstance<SadTabHelper>(
+        *tab, *tab, new_contents);
   }
 
   sync_sessions_router_.reset();

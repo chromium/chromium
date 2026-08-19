@@ -4438,6 +4438,7 @@ if (!is_android) {
       "//components/javascript_dialogs",
       "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
       "//components/site_isolation",
+      "//components/tabs:public",
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//pdf:features",

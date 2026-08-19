@@ -36,6 +36,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -270,7 +271,9 @@ void MultiContentsView::SetWebContentsAtIndex(
   }
 
   if (web_contents) {
-    if (auto* sad_tab_helper = SadTabHelper::FromWebContents(web_contents)) {
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents);
+    if (auto* sad_tab_helper = tab ? SadTabHelper::From(tab) : nullptr) {
       sad_tab_helper->ReinstallInWebView();
     }
   }
@@ -306,7 +309,9 @@ void MultiContentsView::CloseSplitView() {
   UpdateContentsBorderAndOverlay();
 
   if (auto* active_contents = GetActiveContentsView()->web_contents()) {
-    if (auto* sad_tab_helper = SadTabHelper::FromWebContents(active_contents)) {
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(active_contents);
+    if (auto* sad_tab_helper = tab ? SadTabHelper::From(tab) : nullptr) {
       sad_tab_helper->ReinstallInWebView();
     }
   }

@@ -26,8 +26,9 @@ ChromeWebContentsViewFocusHelper::ChromeWebContentsViewFocusHelper(
 ChromeWebContentsViewFocusHelper::~ChromeWebContentsViewFocusHelper() = default;
 
 bool ChromeWebContentsViewFocusHelper::Focus() {
-  SadTabHelper* sad_tab_helper =
-      SadTabHelper::FromWebContents(&GetWebContents());
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(&GetWebContents());
+  SadTabHelper* sad_tab_helper = tab ? SadTabHelper::From(tab) : nullptr;
   if (sad_tab_helper) {
     SadTabController* sad_tab =
         static_cast<SadTabController*>(sad_tab_helper->sad_tab());

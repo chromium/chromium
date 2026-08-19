@@ -43,6 +43,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/pref_names.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/variations/active_field_trials.h"
@@ -2008,8 +2009,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
       browser()->GetProfile()->GetDownloadManager();
   manager->GetAllDownloads(&download_items);
   for (download::DownloadItem* item : download_items) {
-    if (!item->IsDone())
+    if (!item->IsDone()) {
       item->Cancel(true);
+    }
   }
 }
 
@@ -2189,11 +2191,13 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 void ChromeNavigationBrowserTest::
     ExpectHideAndRestoreSadTabWhenNavigationCancels(bool cross_site) {
   // This test only applies when this policy is in place.
-  if (!content::ShouldSkipEarlyCommitPendingForCrashedFrame())
+  if (!content::ShouldSkipEarlyCommitPendingForCrashedFrame()) {
     return;
+  }
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(contents);
+  SadTabHelper* sad_tab_helper =
+      SadTabHelper::From(tabs::TabInterface::GetFromContents(contents));
 
   GURL url_start(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_hung =
@@ -2258,7 +2262,8 @@ void ChromeNavigationBrowserTest::ExpectHideSadTabWhenNavigationCompletes(
     bool cross_site) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(contents);
+  SadTabHelper* sad_tab_helper =
+      SadTabHelper::From(tabs::TabInterface::GetFromContents(contents));
 
   GURL url_start(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_succeed = embedded_test_server()->GetURL(
@@ -2571,8 +2576,9 @@ class SiteIsolationForPasswordSitesBrowserTest
     auto& list =
         prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins);
     std::vector<std::string> sites;
-    for (const base::Value& value : list)
+    for (const base::Value& value : list) {
       sites.push_back(value.GetString());
+    }
     return sites;
   }
 
@@ -2605,8 +2611,9 @@ class SiteIsolationForPasswordSitesBrowserTest
 IN_PROC_BROWSER_TEST_F(SiteIsolationForPasswordSitesBrowserTest,
                        SiteIsIsolatedAfterEnteringPassword) {
   // This test requires dynamic isolated origins to be enabled.
-  if (!content::SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled())
+  if (!content::SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
     return;
+  }
 
   GURL url(embedded_https_test_server().GetURL("sub.foo.com",
                                                "/password/password_form.html"));
@@ -3038,8 +3045,9 @@ class SiteIsolationForCOOPBrowserTest : public ChromeNavigationBrowserTest {
     auto& dict =
         prefs->GetDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins);
     std::vector<std::string> sites;
-    for (auto site_time_pair : dict)
+    for (auto site_time_pair : dict) {
       sites.push_back(site_time_pair.first);
+    }
     return sites;
   }
 
