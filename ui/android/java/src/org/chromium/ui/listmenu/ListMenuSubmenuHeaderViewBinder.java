@@ -53,6 +53,9 @@ class ListMenuSubmenuHeaderViewBinder {
                 textView.setTextAppearance(textAppearanceId);
                 // Force the typeface to be bold if it isn't already.
                 textView.setTypeface(textView.getTypeface(), Typeface.BOLD);
+            } else {
+                textView.setTextAppearance(
+                        R.style.TextAppearance_DensityAdaptive_ListMenuItem_Bold);
             }
         } else if (propertyKey == ICON_TINT_COLOR_STATE_LIST_ID) {
             @ColorRes int iconTintColorId = model.get(ICON_TINT_COLOR_STATE_LIST_ID);
