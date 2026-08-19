@@ -160,11 +160,11 @@ public class ToolbarProgressBarLayerTest {
 
         mLayer.onProgressBarInfoUpdate(drawingInfo);
 
-        assertEquals(240, drawingInfo.progressBarRect.left);
-        assertEquals(340, drawingInfo.progressBarRect.right);
-        assertEquals(340, drawingInfo.progressBarBackgroundRect.left);
-        assertEquals(740, drawingInfo.progressBarBackgroundRect.right);
-        assertEquals(240, drawingInfo.progressBarStaticBackgroundRect.left);
-        assertEquals(740, drawingInfo.progressBarStaticBackgroundRect.right);
+        assertEquals(0, drawingInfo.progressBarRect.left);
+        assertEquals(100, drawingInfo.progressBarRect.right);
+        assertEquals(100, drawingInfo.progressBarBackgroundRect.left);
+        assertEquals(500, drawingInfo.progressBarBackgroundRect.right);
+        assertEquals(0, drawingInfo.progressBarStaticBackgroundRect.left);
+        assertEquals(500, drawingInfo.progressBarStaticBackgroundRect.right);
     }
 }

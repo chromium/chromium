@@ -194,15 +194,9 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
                                 - hairlineHeight;
             }
         }
-        int xOffset = Math.round(mProgressBarContainer.getX());
-        if (xOffset == 0
-                && mProgressBarContainer.getLayoutParams()
-                        instanceof ViewGroup.MarginLayoutParams marginLayoutParams) {
-            xOffset = marginLayoutParams.leftMargin;
-        }
-        drawingInfo.progressBarRect.offset(xOffset, yOffset);
-        drawingInfo.progressBarBackgroundRect.offset(xOffset, yOffset);
-        drawingInfo.progressBarStaticBackgroundRect.offset(xOffset, yOffset);
+        drawingInfo.progressBarRect.offset(0, yOffset);
+        drawingInfo.progressBarBackgroundRect.offset(0, yOffset);
+        drawingInfo.progressBarStaticBackgroundRect.offset(0, yOffset);
     }
 
     // Progress bar should anchor at the bottom of the top controls.
