@@ -44,6 +44,9 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Attach File"/>
   <int value="13" label="School"/>
   <int value="14" label="Ink Pen"/>
+  <int value="15" label="Tab"/>
+  <int value="16" label="Photo Spark"/>
+  <int value="17" label="Bolt"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom:IconType) -->
