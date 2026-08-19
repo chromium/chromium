@@ -23045,6 +23045,18 @@ Called by update_net_error_codes.py.-->
   <int value="27" label="SearchResultPageOnCct"/>
   <int value="28" label="OtherOnCct"/>
   <int value="29" label="AndroidHub"/>
+  <int value="30" label="JumpStart"/>
+  <int value="31" label="NtpComposebox"/>
+  <int value="32" label="LensSidePanelComposebox"/>
+  <int value="33" label="NtpOmniboxComposebox"/>
+  <int value="34" label="SrpOmniboxComposebox"/>
+  <int value="35" label="OtherOmniboxComposebox"/>
+  <int value="36" label="CoBrowsingComposebox"/>
+  <int value="37" label="NtpComposeboxPrefetch"/>
+  <int value="38" label="OmniboxEverywhere"/>
+  <int value="39" label="ComposeboxEverywhere"/>
+  <int value="40" label="AndroidTabSearchOverlay"/>
+  <int value="41" label="NtpActionChips"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/metrics_proto/omnibox_event.proto:PageClassification) -->

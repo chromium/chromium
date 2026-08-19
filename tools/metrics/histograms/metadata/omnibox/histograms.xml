@@ -269,6 +269,7 @@ chromium-metrics-reviews@google.com.
       summary="Lens side panel searchbox"/>
   <variant name="NTP"
       summary="extension-replaced new tab page OR obsolete new tab page"/>
+  <variant name="NTP_ACTION_CHIPS" summary="New Tab Page Action Chips"/>
   <variant name="NTP_COMPOSEBOX"
       summary="New Tab Page with focus in the composebox"/>
   <variant name="NTP_COMPOSEBOX_PREFETCH"
