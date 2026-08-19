@@ -124,12 +124,13 @@
 }
 
 :host([small-chips-enabled]) .action-chip {
+  border-radius: 20px;
   box-sizing: border-box;
   gap: 6px;
   height: 40px;
   max-height: 40px;
   min-height: 40px;
-  padding: 8px 16px 8px 12px;
+  padding: 8px 16px;
   width: fit-content;
   max-width: 208px;
 }
