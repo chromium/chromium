@@ -225,7 +225,10 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
     PROTECTION_ENABLED_ALL
   };
 
-  PrefHashBrowserTestBase() : protection_level_(GetProtectionLevel()) {}
+  PrefHashBrowserTestBase() : protection_level_(GetProtectionLevel()) {
+    base_feature_list_.InitAndDisableFeature(
+        tracked::kDisallowLegacyPrefMacFallback);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
@@ -489,6 +492,8 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
 #if BUILDFLAG(IS_WIN)
   std::wstring registry_key_for_external_validation_;
 #endif
+
+  base::test::ScopedFeatureList base_feature_list_;
 };
 
 }  // namespace
@@ -1362,8 +1367,10 @@ PREF_HASH_BROWSER_TEST(PrefHashBrowserTestExtensionDictTypeChanged,
 class PrefHashBrowserTestAccountValueUntrustedAddition
     : public PrefHashBrowserTestBase {
  public:
-  PrefHashBrowserTestAccountValueUntrustedAddition()
-      : feature_list_(switches::kEnablePreferencesAccountStorage) {}
+  PrefHashBrowserTestAccountValueUntrustedAddition() {
+    feature_list_.InitWithFeatures({switches::kEnablePreferencesAccountStorage},
+                                   {tracked::kDisallowLegacyPrefMacFallback});
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PrefHashBrowserTestBase::SetUpCommandLine(command_line);
@@ -1595,11 +1602,14 @@ class PrefHashBrowserTestEncryptedFallbackAndGeneratingEH
   PrefHashBrowserTestEncryptedFallbackAndGeneratingEH() {
     if (content::IsPreTest()) {
       // PRE_ phase: Feature is explicitly OFF to write only legacy MACs.
-      feature_list_.InitWithFeatures({}, {tracked::kEncryptedPrefHashing});
+      feature_list_.InitWithFeatures({},
+                                     {tracked::kEncryptedPrefHashing,
+                                      tracked::kDisallowLegacyPrefMacFallback});
     } else {
       // Main phase: Feature is ON to trigger the fallback and the generation of
       // encrypted hash process.
-      feature_list_.InitWithFeatures({tracked::kEncryptedPrefHashing}, {});
+      feature_list_.InitWithFeatures({tracked::kEncryptedPrefHashing},
+                                     {tracked::kDisallowLegacyPrefMacFallback});
     }
   }
 
@@ -1714,10 +1724,13 @@ class PrefHashBrowserTestEncryptedSplitPrefFallbackAndGeneratingEH
   PrefHashBrowserTestEncryptedSplitPrefFallbackAndGeneratingEH() {
     if (content::IsPreTest()) {
       // PRE_ phase: Feature is OFF to write only legacy MACs.
-      feature_list_.InitWithFeatures({}, {tracked::kEncryptedPrefHashing});
+      feature_list_.InitWithFeatures({},
+                                     {tracked::kEncryptedPrefHashing,
+                                      tracked::kDisallowLegacyPrefMacFallback});
     } else {
       // Main phase: Feature is ON to trigger FallbackAndGeneratingEH.
-      feature_list_.InitWithFeatures({tracked::kEncryptedPrefHashing}, {});
+      feature_list_.InitWithFeatures({tracked::kEncryptedPrefHashing},
+                                     {tracked::kDisallowLegacyPrefMacFallback});
     }
   }
 
