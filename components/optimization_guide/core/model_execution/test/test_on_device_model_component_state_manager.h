@@ -61,7 +61,7 @@ class TestComponentState final {
  private:
   class DelegateImpl;
 
-  base::ByteSize free_disk_space_ = base::GiBU(100);
+  base::ByteSize free_disk_space_ = base::GiB(100);
   base::WeakPtr<OnDeviceModelComponentStateManager> registered_manager_;
   bool uninstall_called_ = false;
   bool requested_background_update_ = false;

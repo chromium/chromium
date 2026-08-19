@@ -260,7 +260,7 @@ TEST_F(ManifestBrokerStateTest,
   }));
 
   // Drop free space below 10 GiB required for building caches after install.
-  fake_.component_state().SetFreeDiskSpace(base::GiBU(8));
+  fake_.component_state().SetFreeDiskSpace(base::GiB(8));
   task_environment_.FastForwardBy(base::Seconds(11));
   // Request a different use case to trigger a fresh disk space evaluation.
   fake_.client().RequestAssetsFor("compose");
@@ -289,7 +289,7 @@ TEST_F(ManifestBrokerStateTest,
   }));
 
   // Drop free space below 10 GiB required for building caches.
-  fake_.component_state().SetFreeDiskSpace(base::GiBU(8));
+  fake_.component_state().SetFreeDiskSpace(base::GiB(8));
   task_environment_.FastForwardBy(base::Seconds(11));
   // Request a different use case to trigger a fresh disk space evaluation.
   fake_.client().RequestAssetsFor("compose");

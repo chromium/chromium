@@ -1648,7 +1648,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
 TEST_F(OnDeviceModelServiceControllerTest,
        BrokerCreateSessionFailedOnNotEnoughDiskSpace) {
   // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
-  broker_.component_state().SetFreeDiskSpace(base::GiBU(20) -
+  broker_.component_state().SetFreeDiskSpace(base::GiB(20) -
                                              base::ByteSizeDelta(1));
 
   mojo::PendingReceiver<mojom::ModelBroker> pending_broker;

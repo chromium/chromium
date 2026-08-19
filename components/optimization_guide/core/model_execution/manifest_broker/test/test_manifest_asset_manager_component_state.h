@@ -186,7 +186,7 @@ class TestManifestAssetManagerComponentState final {
       installable_components_;
 
   // The amount of free disk space we are pretending is available.
-  base::ByteSize free_disk_space_ = base::GiBU(30);
+  base::ByteSize free_disk_space_ = base::GiB(30);
   // The directories that we are pretending that the component updater has
   // installed, keyed by public key.
   absl::flat_hash_map<std::string, InstallableComponent> installed_components_;

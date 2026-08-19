@@ -328,7 +328,7 @@ TEST_F(OnDeviceModelComponentTest, DynamicOnDeviceAIEnabledChange) {
 
 TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
   // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
-  broker_.component_state().SetFreeDiskSpace(base::GiBU(20) -
+  broker_.component_state().SetFreeDiskSpace(base::GiB(20) -
                                              base::ByteSizeDelta(1));
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -439,7 +439,7 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
                                 base::Time::Now());
 
   // 10gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
-  broker_.component_state().SetFreeDiskSpace(base::GiBU(5) -
+  broker_.component_state().SetFreeDiskSpace(base::GiB(5) -
                                              base::ByteSizeDelta(1));
 
   // Should uninstall right away. Unlike most install requirements, the disk
@@ -468,7 +468,7 @@ TEST_F(OnDeviceModelComponentTest, InsufficientDiskSpaceForCaches) {
   EXPECT_EQ(manager().GetDebugState().status_, OnDeviceModelStatus::kReady);
 
   // Set free space below 10 GiB requirement for building caches.
-  broker_.component_state().SetFreeDiskSpace(base::GiBU(8));
+  broker_.component_state().SetFreeDiskSpace(base::GiB(8));
   SimulateShutdown();
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -495,7 +495,7 @@ TEST_F(OnDeviceModelComponentTest, CachesAlreadyExistWithLowDiskSpace) {
   task_environment_.RunUntilIdle();
 
   // Set free space below 10 GiB requirement for building caches.
-  broker_.component_state().SetFreeDiskSpace(base::GiBU(8));
+  broker_.component_state().SetFreeDiskSpace(base::GiB(8));
   SimulateShutdown();
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -871,7 +871,7 @@ TEST_F(OnDeviceModelComponentTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kOnDeviceModelBackgroundDownload);
   broker_.local_state().ClearPref(kLastUsageByFeature);
-  broker_.component_state().SetFreeDiskSpace(base::GiBU(49));
+  broker_.component_state().SetFreeDiskSpace(base::GiB(49));
   DoStartup();
 
   EnsurePerformanceClassAvailable();
@@ -884,7 +884,7 @@ TEST_F(OnDeviceModelComponentTest, BackgroundDownloadBlockedOnBattery) {
   broker_.local_state().ClearPref(kLastUsageByFeature);
   power_monitor_source_.SetBatteryPowerStatus(
       base::PowerStateObserver::BatteryPowerStatus::kBatteryPower);
-  broker_.component_state().SetFreeDiskSpace(base::GiBU(51));
+  broker_.component_state().SetFreeDiskSpace(base::GiB(51));
   DoStartup();
 
   EnsurePerformanceClassAvailable();

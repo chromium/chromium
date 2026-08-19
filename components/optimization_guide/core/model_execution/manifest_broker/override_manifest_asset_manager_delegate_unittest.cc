@@ -46,7 +46,7 @@ TEST_F(OverrideManifestAssetManagerDelegateTest, ParsesConfigAndNotifies) {
   // Verify GetFreeDiskSpace
   base::test::TestFuture<std::optional<base::ByteSize>> disk_space_future;
   delegate.GetFreeDiskSpace(disk_space_future.GetCallback());
-  EXPECT_EQ(disk_space_future.Get(), base::GiBU(100));
+  EXPECT_EQ(disk_space_future.Get(), base::GiB(100));
 }
 
 }  // namespace

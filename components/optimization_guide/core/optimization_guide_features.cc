@@ -519,11 +519,11 @@ base::TimeDelta GetOnDeviceModelRetentionTime() {
 }
 
 base::ByteSize GetDiskSpaceRequiredForOnDeviceModelInstall() {
-  return base::MiBU(
+  return base::MiB(
       base::saturated_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
           kOptimizationGuideOnDeviceModel,
           "on_device_model_free_space_mb_required_to_install",
-          base::GiBU(20).InMiB())));
+          base::GiB(20).InMiB())));
 }
 
 bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
@@ -532,11 +532,11 @@ bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
 }
 
 base::ByteSize GetDiskSpaceRequiredForOnDeviceModelRetain() {
-  return base::MiBU(
+  return base::MiB(
       base::saturated_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
           kOptimizationGuideOnDeviceModel,
           "on_device_model_free_space_mb_required_to_retain",
-          base::GiBU(5).InMiB())));
+          base::GiB(5).InMiB())));
 }
 
 bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
@@ -553,19 +553,19 @@ bool IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
   if (!base::FeatureList::IsEnabled(kOnDeviceModelCachesDiskSpaceCheck)) {
     return false;
   }
-  return base::MiBU(base::saturated_cast<uint64_t>(
+  return base::MiB(base::saturated_cast<uint64_t>(
              base::GetFieldTrialParamByFeatureAsInt(
                  kOnDeviceModelCachesDiskSpaceCheck,
                  "free_space_mb_required_to_build_caches",
-                 base::GiBU(10).InMiB()))) >= free_disk_space_bytes;
+                 base::GiB(10).InMiB()))) >= free_disk_space_bytes;
 }
 
 base::ByteSize GetDiskSpaceRequiredForBackgroundOnDeviceModelInstall() {
-  return base::MiBU(
+  return base::MiB(
       base::saturated_cast<uint64_t>(base::GetFieldTrialParamByFeatureAsInt(
           features::kOnDeviceModelBackgroundDownload,
           "on_device_model_free_space_mb_required_to_background_install",
-          base::GiBU(50).InMiB())));
+          base::GiB(50).InMiB())));
 }
 
 bool IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
