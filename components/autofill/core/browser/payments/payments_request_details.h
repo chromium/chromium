@@ -683,6 +683,18 @@ struct RecordLegalReminderAcknowledgmentRequestDetails {
       RecordLegalReminderAcknowledgmentRequestDetails&&);
   ~RecordLegalReminderAcknowledgmentRequestDetails();
 
+  // Represents the feature recording the legal reminder acknowledgment. It
+  // should stay consistent with the same enum in Google Payments server code.
+  enum class FlowType {
+    // Unknown (should not be used).
+    kUnknown = 0,
+    // The legal reminder flow was triggered by using a server card.
+    kChromeDownstream = 1,
+    // The legal reminder flow was triggered by using a Wallet pass.
+    kWalletPass = 2,
+    kMaxValue = kWalletPass,
+  };
+
   // `app_locale` is the Chrome locale.
   std::string app_locale;
   // The billing customer number for the account this request is sent to.
@@ -692,6 +704,8 @@ struct RecordLegalReminderAcknowledgmentRequestDetails {
   // An opaque token that will be sent back to the Payments server after the
   // user is shown the reminder.
   std::string legal_message_token;
+  // Represents the feature recording the legal reminder acknowledgment.
+  FlowType flow_type = FlowType::kUnknown;
 };
 
 }  // namespace autofill::payments

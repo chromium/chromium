@@ -55,6 +55,7 @@ std::string RecordLegalReminderAcknowledgmentRequest::GetRequestContent() {
   request_dict.Set("context", std::move(context));
   request_dict.Set("legal_message_token",
                    request_details_.legal_message_token);
+  request_dict.Set("flow_type", static_cast<int>(request_details_.flow_type));
 
   return base::WriteJson(request_dict).value();
 }

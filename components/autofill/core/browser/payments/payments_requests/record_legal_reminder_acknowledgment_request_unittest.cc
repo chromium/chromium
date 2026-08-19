@@ -32,6 +32,9 @@ class RecordLegalReminderAcknowledgmentRequestTest : public testing::Test {
     request_details.billable_service_number = kBillableServiceNumber;
     request_details.billing_customer_number = kBillingCustomerNumber;
     request_details.legal_message_token = kTrackedLegalMessageToken;
+    request_details.flow_type =
+        RecordLegalReminderAcknowledgmentRequestDetails::FlowType::
+            kChromeDownstream;
     request_ = std::make_unique<RecordLegalReminderAcknowledgmentRequest>(
         request_details, base::DoNothing());
   }
@@ -71,6 +74,11 @@ TEST_F(RecordLegalReminderAcknowledgmentRequestTest,
   EXPECT_NE(request_content.find("legal_message_token"),
             std::string::npos);
   EXPECT_NE(request_content.find(kTrackedLegalMessageToken), std::string::npos);
+  EXPECT_NE(request_content.find("flow_type"), std::string::npos);
+  EXPECT_NE(request_content.find(base::NumberToString(static_cast<int>(
+                RecordLegalReminderAcknowledgmentRequestDetails::FlowType::
+                    kChromeDownstream))),
+            std::string::npos);
 }
 
 TEST_F(RecordLegalReminderAcknowledgmentRequestTest, ParseResponse) {
