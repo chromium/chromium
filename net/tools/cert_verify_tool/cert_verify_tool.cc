@@ -219,6 +219,10 @@ class DummySystemTrustStore : public net::SystemTrustStore {
 
   int64_t chrome_root_store_version() const override { return 0; }
 
+  std::optional<base::Time> signer_set_timestamp() const override {
+    return std::nullopt;
+  }
+
   std::optional<base::Time> mtc_metadata_update_time() const override {
     return std::nullopt;
   }

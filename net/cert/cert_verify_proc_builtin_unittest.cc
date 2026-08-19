@@ -248,6 +248,14 @@ class MockSystemTrustStore : public SystemTrustStore {
     return mock_crs_version_;
   }
 
+  void SetMockSignerSetTimestamp(std::optional<base::Time> timestamp) {
+    mock_signer_set_timestamp_ = timestamp;
+  }
+
+  std::optional<base::Time> signer_set_timestamp() const override {
+    return mock_signer_set_timestamp_;
+  }
+
   void SetMockMtcMetadataUpdateTime(std::optional<base::Time> update_time) {
     mock_mtc_metadata_update_time_ = update_time;
   }
@@ -350,6 +358,7 @@ class MockSystemTrustStore : public SystemTrustStore {
   bool mock_is_known_mtc_anchor_ = false;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   int64_t mock_crs_version_ = 0;
+  std::optional<base::Time> mock_signer_set_timestamp_;
   std::optional<base::Time> mock_mtc_metadata_update_time_;
   std::optional<TrustStoreChrome::MtcAnchorExtraData>
       mock_mtc_anchor_extra_data_;
@@ -593,6 +602,10 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
 
   void SetMockCRSVersion(int64_t crs_version) {
     mock_system_trust_store_->SetMockCRSVersion(crs_version);
+  }
+
+  void SetMockSignerSetTimestamp(std::optional<base::Time> timestamp) {
+    mock_system_trust_store_->SetMockSignerSetTimestamp(timestamp);
   }
 
   void SetMockMtcMetadataUpdateTime(std::optional<base::Time> update_time) {
@@ -2943,37 +2956,50 @@ TEST_F(CertVerifyProcBuiltinTest, ChromeRootStoreVersionNetLog) {
 
   for (const bool has_crs_ver : {false, true}) {
     SCOPED_TRACE(has_crs_ver);
-    for (const bool has_mtc_metadata_time : {false, true}) {
-      SCOPED_TRACE(has_mtc_metadata_time);
+    for (const bool has_signerset_timestamp : {false, true}) {
+      SCOPED_TRACE(has_signerset_timestamp);
+      for (const bool has_mtc_metadata_time : {false, true}) {
+        SCOPED_TRACE(has_mtc_metadata_time);
 
-      const int64_t expected_crs_ver = has_crs_ver ? 42 : 0;
+        const int64_t expected_crs_ver = has_crs_ver ? 42 : 0;
 
-      SetMockCRSVersion(expected_crs_ver);
-      SetMockMtcMetadataUpdateTime(
-          has_mtc_metadata_time
-              ? std::make_optional(
-                    base::Time::FromMillisecondsSinceUnixEpoch(987000))
-              : std::nullopt);
+        SetMockCRSVersion(expected_crs_ver);
+        SetMockSignerSetTimestamp(
+            has_signerset_timestamp
+                ? std::make_optional(
+                      base::Time::FromMillisecondsSinceUnixEpoch(1234000))
+                : std::nullopt);
+        SetMockMtcMetadataUpdateTime(
+            has_mtc_metadata_time
+                ? std::make_optional(
+                      base::Time::FromMillisecondsSinceUnixEpoch(987000))
+                : std::nullopt);
 
-      RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
-      CertVerifyResult verify_result;
-      NetLogSource verify_net_log_source;
-      TestCompletionCallback verify_callback;
-      Verify(chain.get(), "www.example.com",
-             /*flags=*/0, &verify_result, &verify_net_log_source,
-             verify_callback.callback());
-      EXPECT_THAT(verify_callback.WaitForResult(), IsOk());
-      auto events = net_log_observer.GetEntriesWithType(
-          NetLogEventType::CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION);
-      if (!has_crs_ver && !has_mtc_metadata_time) {
-        ASSERT_EQ(0U, events.size());
-      } else {
-        ASSERT_EQ(1U, events.size());
-        ASSERT_TRUE(events[0].HasParams());
-        EXPECT_EQ(expected_crs_ver, events[0].params.FindInt("version_major"));
-        EXPECT_EQ(
-            has_mtc_metadata_time ? std::make_optional(987) : std::nullopt,
-            events[0].params.FindInt("mtc_metadata_update_time"));
+        RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
+        CertVerifyResult verify_result;
+        NetLogSource verify_net_log_source;
+        TestCompletionCallback verify_callback;
+        Verify(chain.get(), "www.example.com",
+               /*flags=*/0, &verify_result, &verify_net_log_source,
+               verify_callback.callback());
+        EXPECT_THAT(verify_callback.WaitForResult(), IsOk());
+        auto events = net_log_observer.GetEntriesWithType(
+            NetLogEventType::CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION);
+        if (!has_crs_ver && !has_signerset_timestamp &&
+            !has_mtc_metadata_time) {
+          ASSERT_EQ(0U, events.size());
+        } else {
+          ASSERT_EQ(1U, events.size());
+          ASSERT_TRUE(events[0].HasParams());
+          EXPECT_EQ(expected_crs_ver,
+                    events[0].params.FindInt("version_major"));
+          EXPECT_EQ(
+              has_signerset_timestamp ? std::make_optional(1234) : std::nullopt,
+              events[0].params.FindInt("signer_set_timestamp"));
+          EXPECT_EQ(
+              has_mtc_metadata_time ? std::make_optional(987) : std::nullopt,
+              events[0].params.FindInt("mtc_metadata_update_time"));
+        }
       }
     }
   }

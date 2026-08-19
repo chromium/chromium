@@ -130,9 +130,16 @@ base::DictValue NetLogAdditionalCert(const CRYPTO_BUFFER* cert_handle,
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 base::DictValue NetLogChromeRootStoreVersion(
     int64_t chrome_root_store_version,
+    std::optional<base::Time> signer_set_timestamp,
     std::optional<base::Time> mtc_metadata_update_time) {
   base::DictValue results;
   results.Set("version_major", NetLogNumberValue(chrome_root_store_version));
+  if (signer_set_timestamp.has_value()) {
+    results.Set(
+        "signer_set_timestamp",
+        NetLogNumberValue(signer_set_timestamp->InMillisecondsSinceUnixEpoch() /
+                          1000));
+  }
   if (mtc_metadata_update_time.has_value()) {
     results.Set(
         "mtc_metadata_update_time",
@@ -1688,12 +1695,16 @@ void CertVerifyProcBuiltin::LogChromeRootStoreVersion(
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   int64_t chrome_root_store_version =
       system_trust_store_->chrome_root_store_version();
+  std::optional<base::Time> signer_set_timestamp =
+      system_trust_store_->signer_set_timestamp();
   std::optional<base::Time> mtc_metadata_update_time =
       system_trust_store_->mtc_metadata_update_time();
-  if (chrome_root_store_version != 0 || mtc_metadata_update_time.has_value()) {
+  if (chrome_root_store_version != 0 || signer_set_timestamp.has_value() ||
+      mtc_metadata_update_time.has_value()) {
     net_log.AddEvent(
         NetLogEventType::CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION, [&] {
           return NetLogChromeRootStoreVersion(chrome_root_store_version,
+                                              signer_set_timestamp,
                                               mtc_metadata_update_time);
         });
   }

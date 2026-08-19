@@ -804,8 +804,11 @@ bool TrustStoreChrome::IsMtcCosignerPolicySatisfied(
     return true;
   }
 
-  if (current_time - signer_set_timestamp_ > kMaxSignerSetAge) {
-    // Fail open on old component data.
+  // It should be impossible to reach this method if the signerset wasn't
+  // initialized.
+  CHECK(signer_set_timestamp_.has_value());
+  if (current_time - *signer_set_timestamp_ > kMaxSignerSetAge) {
+    // Fail open on old SignerSet data.
     return true;
   }
 

@@ -4217,6 +4217,8 @@ EVENT_TYPE(CERT_VERIFY_PROC_INPUT_CERT)
 // The event parameters are:
 //   {
 //      "version_major": <The major version of the Chrome Root Store>
+//      "signer_set_timestamp": <Optionally, the timestamp of the SignerSet
+//                               in seconds since the unix epoch.>
 //      "mtc_metadata_update_time": <Optionally, the update time of the
 //                                   MtcMetadata in seconds since the unix
 //                                   epoch.>

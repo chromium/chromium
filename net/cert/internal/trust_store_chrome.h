@@ -479,6 +479,9 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
       base::span<const uint8_t> ca_id) const;
 
   int64_t version() const { return version_; }
+  std::optional<base::Time> signer_set_timestamp() const {
+    return signer_set_timestamp_;
+  }
   std::optional<base::Time> mtc_metadata_update_time() const {
     return mtc_metadata_update_time_;
   }
@@ -555,7 +558,10 @@ class NET_EXPORT TrustStoreChrome : public bssl::TrustStore {
 
   int64_t version_;
 
-  base::Time signer_set_timestamp_;
+  // The SignerSet timestamp may be nullopt if MTCs are not enabled.
+  // TODO(crbug.com/548727801): make this non-optional when MTCs are no longer
+  // feature-gated.
+  std::optional<base::Time> signer_set_timestamp_;
   absl::flat_hash_map<std::vector<uint8_t>,
                       Signer,
                       base::TransparentHashAs<base::span<const uint8_t>>,
