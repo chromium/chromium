@@ -96,7 +96,9 @@
 
   double easedProgress = 0.0;
   if (_duration > 0) {
-    // UIKit critically damped spring with settling factor ~9.2334.
+    // Matches UIKit's critically damped spring curve so viewport insets
+    // interpolate in lockstep with UIKit-animated browser toolbars.
+    // 9.2334 is the empirical settling factor for UIKit springs.
     constexpr double kSpringSettlingFactor = 9.233414;
     double omega = kSpringSettlingFactor / _duration;
     easedProgress = 1.0 - (1.0 + (omega - _initialVelocity) * elapsed) *
