@@ -73,10 +73,11 @@ GURL ConsentKitUrlBuilder::Build() {
 
   base::ListValue flow_params = base::ListValue().Append(flow_id_);
 
-  base::ListValue product_entry_point = base::ListValue::with_capacity(3)
-                                            .Append(product_id_)
-                                            .Append(1)  // DEMO_UI_SURFACE
-                                            .Append(entrypoint_id_);
+  base::ListValue product_entry_point =
+      base::ListValue::with_capacity(3)
+          .Append(product_id_)
+          .Append(76)  // CHROME_DESKTOP_NEW_TAB_PAGE
+          .Append(entrypoint_id_);
 
   base::ListValue shared_consent_session_id =
       base::ListValue::with_capacity(3)
