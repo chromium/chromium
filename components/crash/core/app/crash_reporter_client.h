@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <string>
+#include <vector>
 
+#include "base/memory/read_only_shared_memory_region.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_WIN)
@@ -190,6 +192,19 @@ class CrashReporterClient {
 
   // Returns true if breakpad should run in the given process type.
   virtual bool EnableBreakpadForProcess(const std::string& process_type);
+
+  // Returns a list of read-only shared memory regions containing user streams.
+  // These streams are extracted upon crash and attached to the minidump.
+  //
+  // This method is only ever called for the initial client during Crashpad
+  // handler startup to pass and inherit the shared memory handles/descriptors
+  // to the spawned handler process. It is not called for child processes.
+  //
+  // Each region must conform to the double-buffered binary layout defined in
+  // `components/crash/core/common/shared_memory_user_stream.h` (typically
+  // managed and written via `SharedMemoryUserStreamWriter`).
+  virtual std::vector<base::ReadOnlySharedMemoryRegion>
+  GetUserStreamSharedMemoryRegions();
 };
 
 }  // namespace crash_reporter
