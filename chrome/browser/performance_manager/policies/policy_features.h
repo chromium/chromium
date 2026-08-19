@@ -152,12 +152,6 @@ struct TrimOnMemoryPressureParams {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN)
-// Activates the `TerminationTargetPolicy`, which provides the handle of a
-// process to terminate on commit failure to partition_alloc.
-BASE_DECLARE_FEATURE(kTerminationTargetPolicy);
-#endif  // BUILDFLAG(IS_WIN)
-
 BASE_DECLARE_FEATURE(kSustainedPMUrgentDiscarding);
 
 BASE_DECLARE_FEATURE_PARAM(int,

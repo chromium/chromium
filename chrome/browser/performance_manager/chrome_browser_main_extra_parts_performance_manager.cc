@@ -185,10 +185,10 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   graph->PassToGraph(std::move(discard_eligibility_policy));
 
 #if BUILDFLAG(IS_WIN)
-  // TerminationTargetPolicy is incompatible with --single-process mode.
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kTerminationTargetPolicy) &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+  // TerminationTargetPolicy provides a renderer process handle to terminate on
+  // PartitionAlloc commit failure. It is incompatible with --single-process
+  // mode.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
     graph->PassToGraph(
         std::make_unique<performance_manager::TerminationTargetPolicy>());

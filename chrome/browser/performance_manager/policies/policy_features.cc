@@ -148,10 +148,6 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kTerminationTargetPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
-
 BASE_FEATURE(kSustainedPMUrgentDiscarding, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The percentage of available memory threshold under which it is considered
