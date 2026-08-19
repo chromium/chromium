@@ -338,7 +338,8 @@ class ContextualTasksComposeboxHandlerTest
     omnibox::SearchboxConfig config;
     auto model = std::make_unique<contextual_search::InputStateModel>(
         *session_handle_, config, GURL(), /*is_off_the_record=*/false,
-        /*is_signed_in=*/false);
+        /*is_signed_in=*/false,
+        /*browser_identity_matches_aim_identity=*/false);
     model->setActiveModel(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
     return model;
   }
@@ -1141,7 +1142,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
       std::make_unique<contextual_search::MockContextualSearchSessionHandle>();
   auto input_state_model = std::make_unique<contextual_search::InputStateModel>(
       *session_handle, config, GURL(), /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*is_signed_in=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_CALL(*mock_ui_, TakeInputStateModel())
       .WillOnce(testing::Return(testing::ByMove(std::move(input_state_model))));
@@ -3808,6 +3810,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
          const omnibox::SearchboxConfig config) {
         return std::make_unique<contextual_search::InputStateModel>(
             *session_handle, config, GURL(), /*is_off_the_record=*/false,
+            /*is_signed_in=*/false,
             /*browser_identity_matches_aim_identity=*/false);
       },
       session_handle_.get(), config);
@@ -4136,7 +4139,7 @@ IN_PROC_BROWSER_TEST_F(
   auto mock_session = std::make_unique<
       testing::NiceMock<contextual_search::MockContextualSearchSessionHandle>>();
   auto input_state_model = std::make_unique<contextual_search::InputStateModel>(
-      *mock_session, omnibox::SearchboxConfig(), GURL(), false, false);
+      *mock_session, omnibox::SearchboxConfig(), GURL(), false, false, false);
   input_state_model->SetSmartTabSharingActive(true);
 
   searchbox_page_receiver_.reset();

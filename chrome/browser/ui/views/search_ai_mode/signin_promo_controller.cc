@@ -141,6 +141,19 @@ bool ComposeboxDriveSignInPromoController::CanShowPromo(Profile& profile) {
   return signin::ShouldShowComposeboxDriveContextMenuOptionSignInPromo(profile);
 }
 
+bool ComposeboxDriveSignInPromoController::MaybeShowPromo(
+    BrowserWindowInterface* browser_window_interface) {
+  if (!browser_window_interface) {
+    return false;
+  }
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_window_interface);
+  if (!browser_view) {
+    return false;
+  }
+  return AIModeSignInPromoControllerBase::MaybeShowPromo(browser_view);
+}
+
 std::unique_ptr<AIModeSignInPromoViewBase>
 ComposeboxDriveSignInPromoController::CreatePromoView(
     views::BubbleAnchor anchor) {

@@ -119,6 +119,7 @@ source_set("impl") {
     "//components/omnibox/common:features",
     "//components/pref_registry",
     "//components/search_engines",
+    "//components/signin/public/base:signin_buildflags",
     "//components/signin/public/identity_manager",
     "//components/variations",
     "//components/version_info:channel",

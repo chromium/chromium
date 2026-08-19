@@ -46,11 +46,12 @@ class InputStateModel {
 
   // Constructor takes in a `ContextualSearchSessionHandle` to get uploaded file
   // info.
-  explicit InputStateModel(
+  InputStateModel(
       contextual_search::ContextualSearchSessionHandle& session_handle,
       const SearchboxConfig& config,
       const GURL& active_url,
       bool is_off_the_record,
+      bool is_signed_in,
       bool browser_identity_matches_aim_identity);
   InputStateModel(
       const InputStateModel& other,
@@ -113,6 +114,7 @@ class InputStateModel {
   // Methods for testing.
   void set_state_for_testing(const InputState& state) { state_ = state; }
   const InputState& get_state_for_testing() { return state_; }
+  bool is_signed_in_for_testing() const { return is_signed_in_; }
   bool browser_identity_matches_aim_identity_for_testing() const {
     return browser_identity_matches_aim_identity_;
   }
@@ -178,6 +180,7 @@ class InputStateModel {
   raw_ptr<PrefService> pref_service_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   const bool is_off_the_record_;
+  const bool is_signed_in_;
   const bool browser_identity_matches_aim_identity_;
   bool has_valid_config_ = false;
   GURL current_url_;
