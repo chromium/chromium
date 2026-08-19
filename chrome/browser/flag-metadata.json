@@ -9324,15 +9324,6 @@
       "//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com", "jaeone@google.com" ],
     "expiry_milestone": 159
   },
-
-  {
-    "name": "support-f11-and-f12-shortcuts",
-    "owners": [
-      "michaelcheco@chromium.org",
-      "jimmyxgong@chromium.org",
-      "cros-device-enablement@google.com"],
-    "expiry_milestone": 150
-  },
   {
     "name": "support-forced-signin-policy",
     "owners": [ "samarchehade@google.com", "chrome-signin-mobile@google.com" ],

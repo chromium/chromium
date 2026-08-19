@@ -136,9 +136,6 @@ BASE_DECLARE_FEATURE(kNotificationsIgnoreRequireInteraction);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsNotificationsIgnoreRequireInteractionEnabled();
 
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kSupportF11AndF12KeyShortcuts);
-
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool AreF11AndF12ShortcutsEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

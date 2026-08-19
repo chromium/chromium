@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "device/udev_linux/fake_udev_loader.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_info_metrics.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
@@ -105,7 +104,6 @@ class InputDeviceSettingsMetricsManagerTest : public AshTestBase {
     scoped_feature_list_.InitWithFeatures(
         {
             features::kAltClickAndSixPackCustomization,
-            ::features::kSupportF11AndF12KeyShortcuts,
         },
         /*disabled_features=*/{});
     AshTestBase::SetUp();

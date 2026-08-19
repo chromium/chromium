@@ -53,7 +53,6 @@
 #include "ui/base/ime/ash/mock_input_method_manager.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #include "ui/base/shortcut_mapping_pref_delegate.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/ash/caps_lock_event_rewriter.h"
 #include "ui/events/ash/discard_key_event_rewriter.h"
 #include "ui/events/ash/event_rewriter_ash.h"
@@ -4960,9 +4959,6 @@ TEST_F(EventRewriterSixPackKeysTest, TestRewriteSixPackKeysBlockedBySetting) {
 class EventRewriterExtendedFkeysTest : public EventRewriterTestBase {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kSupportF11AndF12KeyShortcuts}, {});
-
     EventRewriterTestBase::SetUp();
   }
 };

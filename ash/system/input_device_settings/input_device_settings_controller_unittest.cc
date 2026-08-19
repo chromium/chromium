@@ -56,7 +56,6 @@
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
@@ -664,8 +663,7 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     scoped_feature_list_.InitWithFeatures(
         {features::kPeripheralCustomization,
          features::kAltClickAndSixPackCustomization,
-         features::kPeripheralNotification,
-         ::features::kSupportF11AndF12KeyShortcuts},
+         features::kPeripheralNotification},
         {});
     NoSessionAshTestBase::SetUp();
     Shell::Get()->event_rewriter_controller()->Initialize(nullptr, nullptr);

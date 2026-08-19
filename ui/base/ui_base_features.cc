@@ -113,10 +113,7 @@ bool IsNotificationsIgnoreRequireInteractionEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsIgnoreRequireInteraction);
 }
 
-// Enables settings that allow users to remap the F11 and F12 keys in the
-// "Customize keyboard keys" page.
-BASE_FEATURE(kSupportF11AndF12KeyShortcuts, base::FEATURE_ENABLED_BY_DEFAULT);
-
+// TODO(b/544631920): To clean up the AreF11AndF12ShortcutsEnabled()
 bool AreF11AndF12ShortcutsEnabled() {
   // TODO(crbug.com/40203434): Remove this once kDeviceI18nShortcutsEnabled
   // policy is deprecated. This policy allows managed users to still be able to
@@ -125,12 +122,10 @@ bool AreF11AndF12ShortcutsEnabled() {
     ::ui::ShortcutMappingPrefDelegate* instance =
         ::ui::ShortcutMappingPrefDelegate::GetInstance();
     if (instance && instance->IsDeviceEnterpriseManaged()) {
-      return instance->IsI18nShortcutPrefEnabled() &&
-             base::FeatureList::IsEnabled(
-                 features::kSupportF11AndF12KeyShortcuts);
+      return instance->IsI18nShortcutPrefEnabled();
     }
   }
-  return base::FeatureList::IsEnabled(features::kSupportF11AndF12KeyShortcuts);
+  return true;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

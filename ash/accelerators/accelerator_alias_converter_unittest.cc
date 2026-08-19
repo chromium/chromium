@@ -20,7 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -1047,9 +1046,8 @@ class SixPackAliasAltTest
     : public AcceleratorAliasConverterTest,
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kAltClickAndSixPackCustomization},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
@@ -1147,9 +1145,8 @@ class SixPackAliasSearchTest
     : public AcceleratorAliasConverterTest,
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kAltClickAndSixPackCustomization},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
@@ -1289,10 +1286,8 @@ class ExtendedFKeysAliasAltTest
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kAltClickAndSixPackCustomization,
-         ::features::kSupportF11AndF12KeyShortcuts},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
@@ -1376,10 +1371,8 @@ class ExtendedFKeysAliasShiftTest
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kAltClickAndSixPackCustomization,
-         ::features::kSupportF11AndF12KeyShortcuts},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
@@ -1458,10 +1451,8 @@ class ExtendedFKeysAliasCtrlShiftTest
       public testing::WithParamInterface<AcceleratorAliasConverterTestData> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kAltClickAndSixPackCustomization,
-         ::features::kSupportF11AndF12KeyShortcuts},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
     AcceleratorAliasConverterTestData test_data = GetParam();
     accelerator_ = test_data.accelerator_;
@@ -1551,10 +1542,8 @@ TEST_P(ExtendedFKeysAliasCtrlShiftTest, CheckExtendedFKeysAliasCtrlShift) {
 class ExtendedFKeysAliasTest : public AcceleratorAliasConverterTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kAltClickAndSixPackCustomization,
-         ::features::kSupportF11AndF12KeyShortcuts},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kAltClickAndSixPackCustomization);
     AcceleratorAliasConverterTest::SetUp();
   }
 

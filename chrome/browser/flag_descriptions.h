@@ -8152,13 +8152,6 @@ inline constexpr char kSpectreVariant2MitigationDescription[] =
     "bootstrapping the Seccomp BPF sandbox. Can be overridden by "
     "#force-spectre-variant2-mitigation.";
 
-inline constexpr char kSupportF11AndF12ShortcutsName[] = "F11/F12 Shortcuts";
-inline constexpr char kSupportF11AndF12ShortcutsDescription[] =
-    "Enables settings that "
-    "allow users to use shortcuts to remap to the F11 and F12 keys in the "
-    "Customize keyboard keys "
-    "page.";
-
 inline constexpr char kSupportForcedSigninPolicyName[] =
     "Support Forced Sign-in";
 inline constexpr char kSupportForcedSigninPolicyDescription[] =
