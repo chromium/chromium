@@ -365,7 +365,7 @@ public class EdgeToEdgeInstrumentationTest {
     @DisableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL)
     @CommandLineFlags.Add(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS)
     public void testPadWithEdgeToEdgeLayout() throws IOException {
-        testPadWithEdgeToEdgeLayoutImpl("e2e-everywhere-no-bottom-padding");
+        testPadWithEdgeToEdgeLayoutImpl("e2e-everywhere-no-bottom-padding_v1");
     }
 
     @Test
@@ -385,7 +385,7 @@ public class EdgeToEdgeInstrumentationTest {
     @CommandLineFlags.Add(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS)
     public void testPadWithEdgeToEdgeLayout_withHomeButtonRemovalKeepOnNtp() throws IOException {
         testPadWithEdgeToEdgeLayoutImpl(
-                "e2e-everywhere-no-bottom-padding-with-home-button-removal");
+                "e2e-everywhere-no-bottom-padding-with-home-button-removal_v1");
     }
 
     private void testPadWithEdgeToEdgeLayoutImpl(String goldenId) throws IOException {

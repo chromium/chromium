@@ -997,6 +997,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.ntp") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/android:new_tab_page_utils_java",
     "//chrome/android/feed:chrome_feed_java_resources",
     "//chrome/browser/composeplate/android:java",
     "//chrome/browser/educational_tip:java",

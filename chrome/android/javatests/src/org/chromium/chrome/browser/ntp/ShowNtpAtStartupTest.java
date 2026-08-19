@@ -317,7 +317,7 @@ public class ShowNtpAtStartupTest {
         mActivityTestRule.startOnNtp();
         Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
-        int expectedTopMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        int expectedTopMargin = LogoUtils.getTopMarginForLogo(res);
         int expectedBottomMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
@@ -524,7 +524,7 @@ public class ShowNtpAtStartupTest {
 
         // Re-fetch view to avoid potential staleness after orientation change.
         mRenderTestRule.render(
-                getNtpLayout().findViewById(R.id.search_box), "ntp_search_box_landscape_v2");
+                getNtpLayout().findViewById(R.id.search_box), "ntp_search_box_landscape_v3");
 
         // Switch to portrait screen orientation.
         ActivityTestUtils.rotateActivityToOrientation(
@@ -532,7 +532,7 @@ public class ShowNtpAtStartupTest {
 
         // Re-fetch view to avoid potential staleness after orientation change.
         mRenderTestRule.render(
-                getNtpLayout().findViewById(R.id.search_box), "ntp_search_box_portrait_v2");
+                getNtpLayout().findViewById(R.id.search_box), "ntp_search_box_portrait_v3");
     }
 
     @Test
