@@ -41,7 +41,7 @@ public class PrintHelper {
         if (windowAndroid == null) return false;
 
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) return false;
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return false;
 
         PrintingController printingController = PrintingControllerImpl.getInstance(windowAndroid);
         if (printingController == null || printingController.isBusy()) return false;

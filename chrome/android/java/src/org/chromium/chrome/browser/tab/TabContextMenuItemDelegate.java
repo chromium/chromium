@@ -178,6 +178,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void startPrint() {
+        if (mActivity.isFinishing() || mActivity.isDestroyed()) return;
         WindowAndroid windowAndroid = mTab.getWindowAndroid();
         if (windowAndroid != null) {
             PrintingController printingController =

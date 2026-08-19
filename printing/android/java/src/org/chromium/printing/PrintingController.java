@@ -92,9 +92,14 @@ public interface PrintingController {
     /**
      * Starts printing, provided that the current object already has sufficient data to start the
      * process. (using {@link #setPendingPrint(Printable, PrintManagerDelegate)} for example)
+     *
+     * <p>If printing cannot be started (e.g. the Activity is finishing or destroyed, or the
+     * framework fails to initiate the print job), the callback set via {@link
+     * #setPendingPrintCallback(Runnable)} is invoked immediately. If the controller is already
+     * busy, this call is a no-op and the pending callback is neither consumed nor invoked.
      */
     void startPendingPrint();
 
-    /** Sets the callback to be run when the print dialog is completed or closed. */
+    /** Sets the callback to be run when the print dialog is completed, closed, or fails to open. */
     void setPendingPrintCallback(Runnable callback);
 }

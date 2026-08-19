@@ -115,9 +115,13 @@ public class PrintDocumentAdapterWrapper extends PrintDocumentAdapter {
         }
     }
 
-    /** Initiates the printing process within the framework */
-    public void print(PrintManagerDelegate printManager, String title) {
-        printManager.print(title, this, null);
+    /**
+     * Initiates the printing process within the framework
+     *
+     * @return true if the print job was successfully initiated, false otherwise.
+     */
+    public boolean print(PrintManagerDelegate printManager, String title) {
+        return printManager.print(title, this, null);
     }
 
     @Override

@@ -114,7 +114,7 @@ public class PrintingContext {
     private static void setPendingPrint(
             WindowAndroid window, Printable printable, int renderProcessId, int renderFrameId) {
         Activity activity = window.getActivity().get();
-        if (activity == null) return;
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
 
         PrintingController printingController = PrintingControllerImpl.getInstance(window);
         printingController.setPendingPrint(

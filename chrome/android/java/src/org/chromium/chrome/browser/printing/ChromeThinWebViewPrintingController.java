@@ -41,7 +41,7 @@ public class ChromeThinWebViewPrintingController implements ThinWebViewPrintingC
         if (window == null) return;
 
         Activity activity = window.getActivity().get();
-        if (activity == null) return;
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
 
         Printable printable = new WebContentsPrinter(webContents);
         PrintingController printingController = PrintingControllerImpl.getInstance(window);
