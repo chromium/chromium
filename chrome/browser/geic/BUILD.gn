@@ -6,9 +6,18 @@ import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
+  # Bound browser-side (and, in tests, from the browser); nothing in Blink C++
+  # binds it yet, so no Blink variant is needed. Disabling variants also keeps
+  # this target variant-consistent with the pwc :features target it imports for
+  # the [RuntimeFeature] reference. The TypeScript bindings generated here are
+  # consumed by a remote GE web app via the rollup bundle in
+  # //chrome/browser/resources/geic, not by Blink.
+  disable_variants = true
+
   sources = [ "geic.mojom" ]
 
   public_deps = [ "//chrome/browser/pwc:features" ]
+  webui_module_path = "/"
 }
 
 source_set("geic") {

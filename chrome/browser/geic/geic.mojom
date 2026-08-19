@@ -18,3 +18,43 @@ import "chrome/browser/pwc/pwc_features.mojom";
 // rule in this directory's OWNERS).
 [RuntimeFeature=pwc.mojom.features.kPrivilegedWebContents]
 interface GeicApi {};
+
+// GEiC Mojo Interface and Glic Fork Rationale:
+//
+// This interface is a fork of the Glic Mojo API, tailored for Gemini Enterprise
+// in Chrome (GEiC). We maintain a separate interface rather than reusing
+// Glic's directly for two primary reasons:
+//
+// 1. Semantic and architectural divergence: GEiC operates under distinct
+//    enterprise requirements (e.g., enterprise account constraints, a policy-
+//    driven configuration channel, and default StoragePartition handling).
+//    Additionally, Glic's API surface is API_OWNERS-gated, which would require
+//    cross-team review queues for GEiC-specific iterations. Owning the Mojo
+//    interface allows GEiC to evolve its contract independently, while sharing
+//    underlying browser machinery over time.
+//
+// 2. Embedding architecture (PrivilegedWebContents vs <webview>):
+//    Glic embeds its remote UI inside a <webview> hosted within a
+//    chrome-untrusted:// WebUI container. In Glic, the remote page communicates
+//    via window.postMessage with the WebUI host, which translates messages to
+//    Mojo IPCs. In contrast, GEiC leverages PrivilegedWebContents (see
+//    //chrome/browser/pwc), eliminating the intermediary WebUI host layer. The
+//    remote GE web app runs directly in the privileged main frame and speaks
+//    Mojo directly to the browser process. Consequently, this interface is
+//    designed as a direct Mojo IPC surface rather than a postMessage bridge
+//    API.
+//
+// TODO(crbug.com/547979281): Follow up on
+// sharing Glic data types and the underlying extraction machinery (e.g., tab
+// validity checks, inner text extraction, and screenshot capture in
+// //chrome/browser/glic/host/context/) rather than re-implementing them. These
+// live outside GEiC's OWNERS, so convergence is deferred to a follow-up.
+
+// Browser-side interface for the GE client running in a GEIC
+// PrivilegedWebContents. Methods and types are added alongside their
+// implementation in a follow-up CL.
+interface GeicBrowserHost {};
+
+// Client-side interface implemented by the GE client, for browser-initiated
+// notifications. Methods are added alongside their implementation.
+interface GeicClient {};
