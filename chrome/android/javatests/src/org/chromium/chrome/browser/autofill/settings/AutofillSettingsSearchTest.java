@@ -15,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -29,12 +30,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -323,6 +327,34 @@ public class AutofillSettingsSearchTest {
                         allOf(
                                 hasDescendant(
                                         withText(R.string.autofill_shopping_opt_in_toggle_label)),
+                                isHighlighted()))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSearchPersonalContextToggle() {
+        EntityDataManager entityDataManagerMock = Mockito.mock(EntityDataManager.class);
+        when(entityDataManagerMock.isPersonalContextPreferenceVisible()).thenReturn(true);
+        when(entityDataManagerMock.isPersonalContextEnabled()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(entityDataManagerMock);
+
+        searchSettings("find and fill");
+
+        onViewWaiting( // Wait for debounce and Search results to appear.
+                        allOf(
+                                withId(android.R.id.title),
+                                withText(
+                                        R.string
+                                                .personal_context_autofill_settings_switch_title_android)))
+                .perform(click());
+
+        onView(
+                        allOf(
+                                hasDescendant(
+                                        withText(
+                                                R.string
+                                                        .personal_context_autofill_settings_switch_title_android)),
                                 isHighlighted()))
                 .check(matches(isDisplayed()));
     }
