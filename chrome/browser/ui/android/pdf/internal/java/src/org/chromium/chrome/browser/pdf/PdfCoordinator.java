@@ -50,9 +50,11 @@ import org.json.JSONObject;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.Log;
+import org.chromium.base.MathUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriState;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -135,6 +137,8 @@ public class PdfCoordinator
     private String mTitle;
     private final String mUrl;
     private final boolean mIsIncognito;
+    private @TriState int mIsFitToPageActive;
+    private float mLastFitZoom = -1f;
 
     /** A unique id to identity the FragmentContainerView in the current PdfPage. */
     final int mFragmentContainerViewId;
@@ -309,6 +313,7 @@ public class PdfCoordinator
         private @Nullable ViewGroup mContainerView;
         private int mOriginalIndex;
         private boolean mShowToolBoxView = true;
+        private boolean mTwoPagesPerRowEnabled;
         @Nullable private String mFilePath;
         @Nullable private String mFileName;
 
@@ -401,14 +406,22 @@ public class PdfCoordinator
             int currentPage = firstVisiblePage;
             if (pageLocations != null && pdfView.getHeight() > 0) {
                 float threshold = pdfView.getHeight() / 2.0f;
+                RectF prevRect = null;
                 for (int i = 0; i < pageLocations.size(); i++) {
                     int pageIndex = pageLocations.keyAt(i);
                     RectF rect = pageLocations.valueAt(i);
-                    if (rect.top <= threshold) {
-                        currentPage = Math.max(currentPage, pageIndex);
-                    } else {
-                        break;
+                    boolean isNewRow =
+                            prevRect == null
+                                    || rect.left <= prevRect.left
+                                    || rect.top >= prevRect.bottom;
+                    if (isNewRow) {
+                        if (rect.top <= threshold) {
+                            currentPage = pageIndex;
+                        } else {
+                            break;
+                        }
                     }
+                    prevRect = rect;
                 }
             }
             return currentPage;
@@ -942,7 +955,7 @@ public class PdfCoordinator
                                         pageInfo,
                                         /* fitToPage= */ false,
                                         pdfView,
-                                        /* zoomRatio= */ viewportWidthDp >= 600 ? 0.6f : 1.0f);
+                                        /* zoomRatio= */ viewportWidthDp >= 600 ? 0.5f : 1.0f);
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
                                 () -> {
@@ -961,7 +974,9 @@ public class PdfCoordinator
                     });
         }
 
+
         void setPagesPerRow(boolean twoPagesPerRowEnabled) {
+            mTwoPagesPerRowEnabled = twoPagesPerRowEnabled;
             if (mPdfView != null) {
                 mPdfView.setPagesPerRow(twoPagesPerRowEnabled ? 2 : 1);
             }
@@ -984,7 +999,9 @@ public class PdfCoordinator
                     pdfView.getWidth() - pdfView.getPaddingLeft() - pdfView.getPaddingRight();
             if (viewportWidth <= 0) return 0f;
 
-            float zoomWidth = ((float) viewportWidth * zoomRatio) / contentWidth;
+            int pagesPerRow = mTwoPagesPerRowEnabled ? 2 : 1;
+            int totalContentWidth = contentWidth * pagesPerRow;
+            float zoomWidth = ((float) viewportWidth * zoomRatio) / totalContentWidth;
             float newZoom = zoomWidth;
 
             if (fitToPage) {
@@ -1041,13 +1058,26 @@ public class PdfCoordinator
         }
 
         void fitToPage(boolean fitToPage, int pageIndex) {
+            fitToPage(fitToPage, pageIndex, null);
+        }
+
+        void fitToPage(boolean fitToPage, int pageIndex, @Nullable Consumer<Float> onComplete) {
             PdfView pdfView = mPdfView;
-            if (pdfView == null) return;
+            if (pdfView == null) {
+                if (onComplete != null) {
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, () -> onComplete.accept(-1f));
+                }
+                return;
+            }
 
             runWithPageInfo(
                     pageIndex,
                     pageInfo -> {
                         if (pageInfo == null) {
+                            if (onComplete != null) {
+                                PostTask.postTask(
+                                        TaskTraits.UI_DEFAULT, () -> onComplete.accept(-1f));
+                            }
                             return;
                         }
                         float newZoom =
@@ -1056,6 +1086,9 @@ public class PdfCoordinator
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
                                 () -> {
+                                    if (onComplete != null) {
+                                        onComplete.accept(newZoom);
+                                    }
                                     pdfView.setZoom(newZoom);
                                     // Scroll to the top of the page after zooming.
                                     scrollToPage(pageIndex);
@@ -1175,6 +1208,8 @@ public class PdfCoordinator
     @Override
     public void resetLoadState() {
         mIsPdfLoaded = false;
+        mIsFitToPageActive = TriState.NOT_SET;
+        mLastFitZoom = -1f;
         if (mChromePdfViewerFragment != null) {
             if (mChromePdfViewerFragment.isAdded()) {
                 mChromePdfViewerFragment.setDocumentUri(null);
@@ -1427,6 +1462,8 @@ public class PdfCoordinator
      */
     @Override
     public void changeZoomLevel(float zoomLevel) {
+        mIsFitToPageActive = TriState.NOT_SET;
+        mLastFitZoom = -1f;
         mChromePdfViewerFragment.zoomTo(zoomLevel);
     }
 
@@ -1458,15 +1495,28 @@ public class PdfCoordinator
      */
     @Override
     public void toggleFitToPage(boolean fitToPage, int pageIndex) {
-        mChromePdfViewerFragment.fitToPage(fitToPage, pageIndex);
+        mIsFitToPageActive = fitToPage ? TriState.TRUE : TriState.FALSE;
+        mLastFitZoom = -1f;
+        mChromePdfViewerFragment.fitToPage(fitToPage, pageIndex, zoom -> mLastFitZoom = zoom);
     }
 
     @Override
     public void toggleTwoPagesPerRow(
             boolean twoPagesPerRowEnabled, float zoomLevel, int currentPageIndex) {
         assert mToolbarCoordinator != null;
+        @TriState int previousFitState = mIsFitToPageActive;
+        mLastFitZoom = -1f;
         mChromePdfViewerFragment.setPagesPerRow(twoPagesPerRowEnabled);
-        mChromePdfViewerFragment.zoomTo(zoomLevel);
+        if (previousFitState == TriState.NOT_SET) {
+            mIsFitToPageActive = TriState.NOT_SET;
+            mChromePdfViewerFragment.zoomTo(zoomLevel);
+        } else {
+            mIsFitToPageActive = previousFitState;
+            mChromePdfViewerFragment.fitToPage(
+                    previousFitState == TriState.TRUE,
+                    currentPageIndex,
+                    zoom -> mLastFitZoom = zoom);
+        }
         mChromePdfViewerFragment.scrollToPage(currentPageIndex);
     }
 
@@ -1584,6 +1634,12 @@ public class PdfCoordinator
                     return;
                 }
             }
+        }
+        if (mIsFitToPageActive != TriState.NOT_SET
+                && mLastFitZoom >= 0f
+                && !MathUtils.areFloatsEqual(zoomLevel, mLastFitZoom)) {
+            mIsFitToPageActive = TriState.NOT_SET;
+            mLastFitZoom = -1f;
         }
         mToolbarCoordinator.onViewportChanged(pageIndex, zoomLevel);
     }
@@ -1747,5 +1803,25 @@ public class PdfCoordinator
 
     @Nullable PdfToolbarCoordinator getToolbarCoordinatorForTesting() {
         return mToolbarCoordinator;
+    }
+
+    @TriState
+    int getIsFitToPageActiveForTesting() {
+        return mIsFitToPageActive;
+    }
+
+    @VisibleForTesting
+    void setIsFitToPageActiveForTesting(@TriState int isFitToPageActive) {
+        mIsFitToPageActive = isFitToPageActive;
+    }
+
+    @VisibleForTesting
+    float getLastFitZoomForTesting() {
+        return mLastFitZoom;
+    }
+
+    @VisibleForTesting
+    void setLastFitZoomForTesting(float lastFitZoom) {
+        mLastFitZoom = lastFitZoom;
     }
 }

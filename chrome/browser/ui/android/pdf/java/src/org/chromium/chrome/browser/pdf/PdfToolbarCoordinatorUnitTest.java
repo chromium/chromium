@@ -515,6 +515,45 @@ public class PdfToolbarCoordinatorUnitTest {
     }
 
     @Test
+    public void testTwoPagesPerRowToggle_landsOnFirstPage() {
+        // Assume pages 3 and 4 (0-indexed 2 and 3) are visible in two-page view.
+        // calculateCurrentPage sets firstVisiblePage to 2 (Page 3).
+        mPdfToolbarCoordinator.onViewportChanged(2, 1.0f);
+        TextView currentPage = mPdfPageView.findViewById(R.id.current_page);
+        assertEquals("3", currentPage.getText().toString());
+
+        // Toggle to two-page view
+        View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
+        moreMenuButton.performClick();
+        View contentView = mSpyPopupWindow.getContentView();
+        ListView listView = contentView.findViewById(R.id.menu_list);
+        View itemView = listView.getAdapter().getView(0, null, listView);
+        itemView.performClick();
+        verify(mDelegate).toggleTwoPagesPerRow(true, 1.0f, 2);
+
+        // In two-page view, viewport reports page 2 (page 3)
+        mPdfToolbarCoordinator.onViewportChanged(2, 1.0f);
+        assertEquals("3", currentPage.getText().toString());
+
+        // Reset spy popup for next click
+        mSpyPopupWindow = spy(new ChromePopupWindow(mActivity));
+        when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
+        doNothing()
+                .when(mSpyPopupWindow)
+                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+
+        // Toggle to single page view
+        moreMenuButton.performClick();
+        contentView = mSpyPopupWindow.getContentView();
+        listView = contentView.findViewById(R.id.menu_list);
+        itemView = listView.getAdapter().getView(0, null, listView);
+        itemView.performClick();
+
+        // Verify it switches to single page view landing on page 3 (0-indexed 2)
+        verify(mDelegate).toggleTwoPagesPerRow(false, 1.0f, 2);
+    }
+
+    @Test
     public void testTwoPagesPerRowToggle_beforeViewportChanged() {
         PdfToolbarCoordinator coordinator = new PdfToolbarCoordinator(mPdfPageView, mDelegate);
         View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
