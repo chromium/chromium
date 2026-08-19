@@ -22,7 +22,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.AdvancedProtectionTestRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -47,8 +47,8 @@ public class HttpsFirstModeSettingsFragmentTest {
             new AdvancedProtectionTestRule();
 
     @Rule
-    public SettingsActivityTestRule<HttpsFirstModeSettingsFragment> mSettingsTestRule =
-            new SettingsActivityTestRule<>(HttpsFirstModeSettingsFragment.class);
+    public SettingsTestRule<HttpsFirstModeSettingsFragment> mSettingsTestRule =
+            new SettingsTestRule<>(HttpsFirstModeSettingsFragment.class);
 
     @Before
     public void setUp() {
