@@ -1046,7 +1046,7 @@ TEST_P(PageContextWrapperTest, PopulatePageContextWithAriaCustomFormControls) {
   }
 }
 
-// Tests that the wrapper records a screenshot failures.
+// Tests that the wrapper records a screenshot failure as blocking.
 TEST_P(PageContextWrapperTest, PopulatePageContext_SnapshotFailure) {
   base::HistogramTester histogram_tester;
 
@@ -1063,13 +1063,16 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_SnapshotFailure) {
         wrapper.shouldGetSnapshot = YES;
       });
 
-  // Verify that the callback was called successfully even without screenshot.
-  ASSERT_TRUE(captured_response.has_value());
-  EXPECT_FALSE(captured_response.value()->has_tab_screenshot());
+  // Verify that the callback was called with a screenshot error.
+  ASSERT_FALSE(captured_response.has_value());
+  EXPECT_EQ(captured_response.error(),
+            PageContextWrapperError::kScreenshotError);
 
   // Verify that the screenshot failure metric was logged.
   histogram_tester.ExpectTotalCount(
       "IOS.PageContext.Screenshot.Failure.Latency", 1);
+  histogram_tester.ExpectTotalCount("IOS.PageContext.Overall.Failure.Latency",
+                                    1);
 }
 
 // Tests that the wrapper correctly handles a failure in one of the async tasks.
@@ -1092,26 +1095,6 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_InnerTextFailure) {
   ASSERT_FALSE(captured_response.has_value());
   EXPECT_EQ(captured_response.error(),
             PageContextWrapperError::kInnerTextError);
-}
-
-// Tests that the wrapper correctly handles a snapshot failure as non-blocking.
-TEST_P(PageContextWrapperTest, PopulatePageContext_SnapshotFailureNonBlocking) {
-  auto page_structure = HtmlPage("", Paragraph("Hello"));
-  std::string main_html = page_helper_->Build(page_structure);
-  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
-                      test_server_.GetURL(kMainPagePath), web_state());
-
-  // Set the snapshot delegate to cause a failure.
-  snapshot_delegate_.canTakeSnapshot = NO;
-
-  PageContextWrapperCallbackResponse captured_response =
-      RunPageContextWrapper(web_state(), ^(PageContextWrapper* wrapper) {
-        wrapper.shouldGetSnapshot = YES;
-      });
-
-  // Verify that the callback was called successfully even without screenshot.
-  ASSERT_TRUE(captured_response.has_value());
-  EXPECT_FALSE(captured_response.value()->has_tab_screenshot());
 }
 
 // Tests that the wrapper correctly handles a force detach signal from the

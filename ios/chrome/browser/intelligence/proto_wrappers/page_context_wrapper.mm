@@ -957,9 +957,6 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
     response = base::unexpected(PageContextWrapperError::kPDFDataError);
     completionStatus = PageContextCompletionStatus::kFailure;
   } else {
-    // TODO(crbug.com/483989948): Make screenshot failure blocking once
-    // 'aw, snap' snackbar is fixed.
-
     // TODO(crbug.com/509589346): CHECK `registrar` since it is known here that
     // there is a `_webState`.
     // Set the focused frame based on the collected data on the same origin and
@@ -979,8 +976,13 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
     if (_rawScreenshotImage) {
       [self applyRedactionsAndEncodeScreenshot:_rawScreenshotImage];
     }
-    response = base::ok(std::move(_pageContext));
-    completionStatus = PageContextCompletionStatus::kSuccess;
+    if (_shouldGetSnapshot && !_pageContext->has_tab_screenshot()) {
+      response = base::unexpected(PageContextWrapperError::kScreenshotError);
+      completionStatus = PageContextCompletionStatus::kFailure;
+    } else {
+      response = base::ok(std::move(_pageContext));
+      completionStatus = PageContextCompletionStatus::kSuccess;
+    }
   }
 
   [_pageContextMetrics executionFinishedForTask:PageContextTask::kOverall
