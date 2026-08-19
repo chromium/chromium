@@ -1,5 +1,6 @@
 bot,repeat,shard
 linux-falcon-rak-5070-perf,1,1
+linux-nvidia-dgx-spark-arm-perf,1,1
 linux-perf,1,1
 linux-perf-fyi,1,4
 linux-r350-perf,1,20

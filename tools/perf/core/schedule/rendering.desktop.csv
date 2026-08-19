@@ -1,6 +1,7 @@
 bot,repeat,shard,abridged
 chromeos-kevin-perf-fyi,1,1,False
 linux-falcon-rak-5070-perf,1,1,True
+linux-nvidia-dgx-spark-arm-perf,1,1,False
 linux-perf,1,1,False
 linux-perf-pgo,1,1,False
 mac-m1_mini_2020-perf,1,1,False

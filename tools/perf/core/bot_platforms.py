@@ -944,6 +944,12 @@ PLATFORM_INFO = {
     'platform_os': 'linux',
     'is_fyi': False,
   },
+  'linux-nvidia-dgx-spark-arm-perf': {
+    'description': 'Ubuntu-24.04, Nvidia DGX Spark',
+    'num_shards': 1,
+    'platform_os': 'linux',
+    'is_fyi': False
+  },
   'mac-intel-perf': {
     'description': 'Mac Mini 8,1, Core i7 3.2 GHz',
     'num_shards': 24,
