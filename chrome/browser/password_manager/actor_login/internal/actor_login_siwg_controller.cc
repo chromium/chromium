@@ -201,6 +201,11 @@ void ActorLoginSiwgController::StartFederatedLogin(
     std::unique_ptr<ActorLoginMetricsHelper> metrics_helper) {
   CHECK(credential_.federation_detail);
 
+  // `AttemptLoginTool` (the only caller) verifies that the primary main frame's
+  // token has not changed since credential selection before invoking
+  // `AttemptLogin`. Execution from that check down to `StartFederatedLogin` is
+  // synchronous on the UI thread, ensuring `web_contents()->GetPrimaryPage()`
+  // corresponds to the page where the credential was chosen.
   auto* source = content::webid::IdentityCredentialSource::FromPage(
       web_contents()->GetPrimaryPage());
 
