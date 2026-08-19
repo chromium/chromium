@@ -3377,9 +3377,6 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
       ReadAnythingAppModel::DistillationMethod::kReadability);
   model_.set_current_content_distillation_method(
       ReadAnythingAppModel::DistillationMethod::kReadability);
-  // Reset the distillation requirement flag since distillation is now complete
-  // and new content is ready to be displayed.
-  model_.set_requires_readability_distillation(false);
 
   if (IsReadabilitySelectTextEnabled()) {
     // Reset text blocks when content is updated and reset should map flag to
