@@ -20,10 +20,6 @@
 namespace optimization_guide {
 namespace switches {
 
-// TODO(crbug.com/514743962): Move to components/optimization_guide/core/delivery/prediction_model_override.h.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelOverride[];
-
 // TODO(crbug.com/514743962): Move to components/optimization_guide/core/inference/model_validator.h.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kModelValidate[];

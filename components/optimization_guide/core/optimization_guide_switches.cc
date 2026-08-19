@@ -21,18 +21,6 @@ const char kOptimizationGuideServiceModelExecutionDefaultURL[] =
 
 const char kDebugLoggingEnabled[] = "enable-optimization-guide-debug-logs";
 
-// Disables the fetching of models and overrides the file path and metadata to
-// be used for the session to use what's passed via command-line instead of what
-// is already stored.
-//
-// We expect that the string be a comma-separated string of model overrides with
-// each model override be: OPTIMIZATION_TARGET_STRING:file_path or
-// OPTIMIZATION_TARGET_STRING:file_path:base64_encoded_any_proto_model_metadata.
-//
-// It is possible this only works on Desktop since file paths are less easily
-// accessible on Android, but may work.
-const char kModelOverride[] = "optimization-guide-model-override";
-
 // Overrides the on-device model file paths for on-device model execution.
 const char kOnDeviceModelExecutionOverride[] =
     "optimization-guide-ondevice-model-execution-override";

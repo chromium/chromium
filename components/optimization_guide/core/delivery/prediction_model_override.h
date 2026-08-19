@@ -33,6 +33,19 @@ using UnzipperFactory =
 
 namespace optimization_guide {
 
+// Disables the fetching of models and overrides the file path and metadata to
+// be used for the session to use what's passed via command-line instead of what
+// is already stored.
+//
+// We expect that the string be a comma-separated string of model overrides with
+// each model override be: OPTIMIZATION_TARGET_STRING:file_path or
+// OPTIMIZATION_TARGET_STRING:file_path:base64_encoded_any_proto_model_metadata.
+//
+// It is possible this only works on Desktop since file paths are less easily
+// accessible on Android, but may work.
+inline constexpr char kModelOverrideSwitch[] =
+    "optimization-guide-model-override";
+
 // Return the separator used in the model override switch.
 std::string ModelOverrideSeparator();
 

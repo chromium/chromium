@@ -44,7 +44,7 @@ class PreloadingModelKeyedServiceTest : public InProcessBrowserTest {
             .AppendASCII("preloading_heuristics.tflite");
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        optimization_guide::switches::kModelOverride,
+        optimization_guide::kModelOverrideSwitch,
         base::StrCat({
             "OPTIMIZATION_TARGET_PRELOADING_HEURISTICS",
             optimization_guide::ModelOverrideSeparator(),

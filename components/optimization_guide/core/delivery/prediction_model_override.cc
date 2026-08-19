@@ -19,7 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/delivery/prediction_model_download_manager.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
@@ -239,7 +238,7 @@ const PredictionModelOverrides::Entry* PredictionModelOverrides::Get(
 PredictionModelOverrides PredictionModelOverrides::ParseFromCommandLine(
     base::CommandLine* command_line) {
   std::string switch_value =
-      command_line->GetSwitchValueASCII(switches::kModelOverride);
+      command_line->GetSwitchValueASCII(kModelOverrideSwitch);
   if (switch_value.empty()) {
     return PredictionModelOverrides({});
   }

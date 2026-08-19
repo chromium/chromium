@@ -19,9 +19,9 @@
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_store_metadata_entry.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
+#include "components/optimization_guide/core/delivery/prediction_model_override.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/prefs/pref_service.h"
 
 namespace optimization_guide {
@@ -164,7 +164,7 @@ void PredictionModelStore::Initialize(const base::FilePath& base_store_dir) {
   // model overrides. For now, we just skip it if any model overrides were
   // specified.
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kModelOverride)) {
+          kModelOverrideSwitch)) {
     background_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&RemoveInvalidModelDirs, base_store_dir_,
                                   ledger_.GetValidModelDirs()));

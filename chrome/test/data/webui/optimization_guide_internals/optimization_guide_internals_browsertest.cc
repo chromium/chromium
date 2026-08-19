@@ -26,7 +26,6 @@
 #include "components/optimization_guide/core/delivery/prediction_model_override.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/webui/chrome_urls/pref_names.h"
@@ -112,7 +111,7 @@ class OptimizationGuideInternalsModelsPageBrowserTest
     base::PathService::Get(chrome::DIR_TEST_DATA, &src_dir);
 
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        optimization_guide::switches::kModelOverride,
+        optimization_guide::kModelOverrideSwitch,
         base::StrCat({
             "OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD",
             optimization_guide::ModelOverrideSeparator(),

@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -37,7 +36,7 @@ TEST(PredictionModelOverridesTest, NotSet) {
 
 TEST(PredictionModelOverridesTest, EmptyInput) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kModelOverride);
+      kModelOverrideSwitch);
   auto overrides = PredictionModelOverrides::ParseFromCommandLine(
       base::CommandLine::ForCurrentProcess());
   EXPECT_EQ(0u, overrides.size());
@@ -45,7 +44,7 @@ TEST(PredictionModelOverridesTest, EmptyInput) {
 
 TEST(PredictionModelOverridesTest, BadInput) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kModelOverride, "whatever");
+      kModelOverrideSwitch, "whatever");
   auto overrides = PredictionModelOverrides::ParseFromCommandLine(
       base::CommandLine::ForCurrentProcess());
   EXPECT_EQ(0u, overrides.size());
@@ -53,7 +52,7 @@ TEST(PredictionModelOverridesTest, BadInput) {
 
 TEST(PredictionModelOverridesTest, InvalidOptimizationTarget) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kModelOverride,
+      kModelOverrideSwitch,
       "notanoptimizationtarget:" + std::string(kTestAbsoluteFilePath));
   auto overrides = PredictionModelOverrides::ParseFromCommandLine(
       base::CommandLine::ForCurrentProcess());
@@ -62,7 +61,7 @@ TEST(PredictionModelOverridesTest, InvalidOptimizationTarget) {
 
 TEST(PredictionModelOverridesTest, RelativeFilePath) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kModelOverride, "OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:" +
+      kModelOverrideSwitch, "OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:" +
                                     std::string(kTestRelativeFilePath));
   auto overrides = PredictionModelOverrides::ParseFromCommandLine(
       base::CommandLine::ForCurrentProcess());
@@ -77,7 +76,7 @@ TEST(PredictionModelOverridesTest, RelativeFilePathWithMetadata) {
   encoded_metadata = base::Base64Encode(encoded_metadata);
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kModelOverride,
+      kModelOverrideSwitch,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:%s:%s",
                          kTestRelativeFilePath, encoded_metadata));
   auto overrides = PredictionModelOverrides::ParseFromCommandLine(
@@ -93,12 +92,12 @@ TEST(PredictionModelOverridesTest, OneFilePath) {
   encoded_metadata = base::Base64Encode(encoded_metadata);
 #if BUILDFLAG(IS_WIN)
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kModelOverride,
+      kModelOverrideSwitch,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD|%s|%s",
                          kTestAbsoluteFilePath, encoded_metadata));
 #else
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kModelOverride,
+      kModelOverrideSwitch,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:%s:%s",
                          kTestAbsoluteFilePath, encoded_metadata));
 #endif
@@ -121,14 +120,14 @@ TEST(PredictionModelOverridesTest, MultipleFilePath) {
   encoded_metadata = base::Base64Encode(encoded_metadata);
 #if BUILDFLAG(IS_WIN)
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kModelOverride,
+      kModelOverrideSwitch,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD|%s,"
                          "OPTIMIZATION_TARGET_PAGE_TOPICS|%s|%s",
                          kTestAbsoluteFilePath, kOtherAbsoluteFilePath,
                          encoded_metadata));
 #else
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kModelOverride,
+      kModelOverrideSwitch,
       base::StringPrintf("OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:%s,"
                          "OPTIMIZATION_TARGET_PAGE_TOPICS:%s:%s",
                          kTestAbsoluteFilePath, kOtherAbsoluteFilePath,

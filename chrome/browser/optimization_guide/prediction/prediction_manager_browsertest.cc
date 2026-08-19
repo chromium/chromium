@@ -868,7 +868,7 @@ class PredictionManagerModelPackageOverrideTest : public InProcessBrowserTest {
     base::PathService::Get(chrome::DIR_TEST_DATA, &src_dir);
 
     cmd_line->AppendSwitchASCII(
-        switches::kModelOverride,
+        kModelOverrideSwitch,
         base::StrCat({
             "OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD",
             ModelOverrideSeparator(),
