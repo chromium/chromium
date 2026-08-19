@@ -86,7 +86,6 @@
 
     _cardMediator = [[ManualFillCardMediator alloc]
         initWithPersonalDataManager:_personalDataManager
-             reauthenticationModule:_reauthenticationModule
              showAutofillFormButton:showAutofillFormButton
                            webState:self.browser->GetWebStateList()
                                         ->GetActiveWebState()];

@@ -110,7 +110,6 @@ class ManualFillCardMediatorTest : public PlatformTest {
 
     mediator_ = [[ManualFillCardMediator alloc]
         initWithPersonalDataManager:&test_personal_data_manager_
-             reauthenticationModule:nil
              showAutofillFormButton:NO
                            webState:nullptr];
 
@@ -259,7 +258,6 @@ TEST_F(ManualFillCardMediatorTest,
   [mediator() disconnect];
   mediator_ = [[ManualFillCardMediator alloc]
       initWithPersonalDataManager:&test_personal_data_manager_
-           reauthenticationModule:nil
            showAutofillFormButton:NO
                          webState:web_state.get()];
   mediator_.consumer = consumer();

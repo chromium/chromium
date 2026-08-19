@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -99,17 +98,12 @@ std::vector<CreditCard> FetchCards(
   std::unique_ptr<autofill::PersonalDataManagerObserverBridge>
       _personalDataManagerObserver;
 
-  // Reauthentication Module used for re-authentication.
-  ReauthenticationModule* _reauthenticationModule;
-
   // Indicates whether to show the autofill button for the items.
   BOOL _showAutofillFormButton;
 }
 
 - (instancetype)initWithPersonalDataManager:
                     (autofill::PersonalDataManager*)personalDataManager
-                     reauthenticationModule:
-                         (ReauthenticationModule*)reauthenticationModule
                      showAutofillFormButton:(BOOL)showAutofillFormButton
                                    webState:(web::WebState*)webState {
   self = [super init];
@@ -120,7 +114,6 @@ std::vector<CreditCard> FetchCards(
         std::make_unique<autofill::PersonalDataManagerObserverBridge>(
             _personalDataManager, self);
     _cards = FetchCards(*_personalDataManager);
-    _reauthenticationModule = reauthenticationModule;
     _showAutofillFormButton = showAutofillFormButton;
   }
   return self;

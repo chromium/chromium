@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-@class LegacyChromeTableViewController;
 @class FallbackCoordinator;
 @class FallbackViewController;
 @class ManualFillInjectionHandler;
