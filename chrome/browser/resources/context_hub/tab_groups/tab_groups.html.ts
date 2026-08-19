@@ -5,6 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ChatRole} from '../context_hub.mojom-webui.js';
+import type {TabInfo} from '../context_hub.mojom-webui.js';
 
 import type {TabGroupsElement} from './tab_groups.js';
 
@@ -17,6 +18,13 @@ export function getHtml(this: TabGroupsElement) {
                 <h1>Tab Groups</h1>
                 ${this.isGrouped_ ? html`
                     <div class="header-buttons">
+                        <cr-button class="action-button"
+                            id="confirm-all-groups-button"
+                            title="Confirm groups to tab strip"
+                            ?disabled="${!this.autoTabGroupsEnabled_ || this.isGrouping_}"
+                            @click="${this.onConfirmAllGroupsClick_}">
+                            Confirm Groups
+                        </cr-button>
                         <cr-button class="action-button"
                             id="default-grouping-button"
                             ?disabled="${!this.autoTabGroupsEnabled_ || this.isGrouping_}"
@@ -47,7 +55,11 @@ export function getHtml(this: TabGroupsElement) {
                         <span>Clustering tabs with Gemini...</span>
                     </div>
                 ` : (this.isGrouped_ ? html`
-                    <div class="groups-container">
+                    <div class="unconfirmed-groups-section">
+                        <div class="unconfirmed-groups-header-row">
+                            <h2>Suggested Groups</h2>
+                        </div>
+                        <div class="groups-container">
                         ${this.groups_.map((group, index) => html`
                             <div class="group-card">
                                 <cr-expand-button
@@ -73,6 +85,7 @@ export function getHtml(this: TabGroupsElement) {
                                 </cr-collapse>
                             </div>
                         `)}
+                    </div>
                     </div>
 
                     ${this.ungroupedTabs_.length > 0 ? html`
@@ -100,6 +113,61 @@ export function getHtml(this: TabGroupsElement) {
                         `)}
                     </div>
                 `)}
+                ${this.confirmedGroupSummaries_.length > 0 ? html`
+                    <div class="saved-groups-section">
+                        <div class="saved-groups-header-row">
+                            <h2>Confirmed Groups</h2>
+                            <cr-button class="action-button"
+                                id="ungroup-all-confirmed-groups-button"
+                                title="Ungroup all confirmed groups"
+                                @click="${this.onUngroupAllConfirmedGroupsClick_}">
+                                Ungroup All
+                            </cr-button>
+                        </div>
+                        <div class="groups-container">
+                            ${this.confirmedGroupSummaries_.map((group, index) => html`
+                                <div class="group-card">
+                                    <div class="saved-group-top-row">
+                                        <cr-expand-button
+                                            class="saved-group-expand"
+                                            data-index="${index}"
+                                            ?expanded="${this.expandedConfirmedGroups_.has(group.savedGuid?.value || '')}"
+                                            @expanded-changed="${this.onConfirmedGroupExpandedChanged_}">
+                                            <div class="group-header">
+                                                <span class="group-label">${group.label}</span>
+                                                <span class="group-count">(${group.tabs.length} tabs)</span>
+                                            </div>
+                                        </cr-expand-button>
+                                        <div class="saved-group-actions">
+                                            <cr-icon-button class="close-one-group-btn"
+                                                iron-icon="cr:close"
+                                                title="Close confirmed group from window"
+                                                data-guid="${group.savedGuid?.value}"
+                                                @click="${this.onCloseConfirmedGroupClick_}">
+                                            </cr-icon-button>
+                                            <cr-icon-button class="ungroup-one-group-btn"
+                                                iron-icon="cr:open-in-new"
+                                                title="Ungroup confirmed group"
+                                                data-guid="${group.savedGuid?.value}"
+                                                @click="${this.onUngroupConfirmedGroupClick_}">
+                                            </cr-icon-button>
+                                        </div>
+                                    </div>
+                                    <cr-collapse ?opened="${this.expandedConfirmedGroups_.has(group.savedGuid?.value || '')}">
+                                        <div class="group-tabs-list">
+                                            ${group.tabs.map((tab: TabInfo) => html`
+                                                <div class="group-tab-item readonly-tab">
+                                                    <div class="tab-title">${tab.title}</div>
+                                                    <div class="tab-url">${tab.url}</div>
+                                                </div>
+                                            `)}
+                                        </div>
+                                    </cr-collapse>
+                                </div>
+                            `)}
+                        </div>
+                    </div>
+                ` : ''}
             </section>
         </div>
 

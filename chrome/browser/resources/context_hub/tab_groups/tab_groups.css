@@ -238,15 +238,28 @@ cr-expand-button {
   text-overflow: ellipsis;
 }
 
+.unconfirmed-groups-section {
+  margin-top: 8px;
+}
+
+.unconfirmed-groups-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
 .ungrouped-section {
   margin-top: 32px;
 }
 
-.ungrouped-section h2 {
+.ungrouped-section h2,
+.unconfirmed-groups-header-row h2,
+.saved-groups-header-row h2 {
   color: var(--cr-primary-text-color);
   font-size: 20px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin: 0;
 }
 
 .loading-container {
@@ -276,4 +289,51 @@ cr-expand-button {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.saved-groups-section {
+  margin-top: 32px;
+}
+
+.saved-groups-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.saved-group-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.saved-group-expand {
+  flex-grow: 1;
+}
+
+.saved-group-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 12px;
+}
+
+.close-one-group-btn,
+.ungroup-one-group-btn {
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+}
+
+.close-one-group-btn:hover,
+.ungroup-one-group-btn:hover {
+  --cr-icon-button-fill-color: var(--cr-primary-text-color);
+}
+
+.readonly-tab {
+  cursor: default;
+}
+
+.readonly-tab:hover {
+  background-color: transparent;
 }

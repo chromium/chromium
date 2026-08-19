@@ -14,7 +14,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory, ChatRole} from '../context_hub.mojom-webui.js';
-import type {ChatMessage, TabInfo} from '../context_hub.mojom-webui.js';
+import type {ChatMessage, TabGroup as TabGroupMojom, TabInfo} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './tab_groups.css.js';
 import {getHtml} from './tab_groups.html.js';
@@ -44,6 +44,8 @@ export class TabGroupsElement extends CrLitElement {
       groups_: {type: Array},
       ungroupedTabs_: {type: Array},
       chatHistory_: {type: Array},
+      confirmedGroupSummaries_: {type: Array},
+      expandedConfirmedGroups_: {type: Object},
       isGrouped_: {type: Boolean},
       isGrouping_: {type: Boolean},
       autoTabGroupsEnabled_: {type: Boolean},
@@ -55,6 +57,8 @@ export class TabGroupsElement extends CrLitElement {
   protected accessor groups_: TabGroup[] = [];
   protected accessor ungroupedTabs_: TabInfo[] = [];
   protected accessor chatHistory_: ChatMessage[] = [];
+  protected accessor confirmedGroupSummaries_: TabGroupMojom[] = [];
+  protected accessor expandedConfirmedGroups_: Set<string> = new Set();
   protected accessor isGrouped_: boolean = false;
   protected accessor isGrouping_: boolean = false;
   protected accessor autoTabGroupsEnabled_: boolean =
@@ -75,6 +79,16 @@ export class TabGroupsElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.fetchExistingTabGroupsAndChats_();
+    this.fetchConfirmedTabGroupSummaries_();
+  }
+
+  private async fetchConfirmedTabGroupSummaries_() {
+    if (!this.autoTabGroupsEnabled_) {
+      return;
+    }
+    const {groups} =
+        await browserProxyFactory.getInstance().handler.getConfirmedTabGroups();
+    this.confirmedGroupSummaries_ = groups;
   }
 
   private async fetchExistingTabGroupsAndChats_() {
@@ -182,6 +196,20 @@ export class TabGroupsElement extends CrLitElement {
     }
   }
 
+  protected async onConfirmAllGroupsClick_() {
+    if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
+      return;
+    }
+    const {success} =
+        await browserProxyFactory.getInstance().handler.confirmAllTabGroups();
+    if (success) {
+      this.groups_ = [];
+      this.isGrouped_ = false;
+      await this.fetchTabs_();
+      await this.fetchConfirmedTabGroupSummaries_();
+    }
+  }
+
   protected async onUngroupTabsClick_() {
     if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
       return;
@@ -189,6 +217,7 @@ export class TabGroupsElement extends CrLitElement {
     await browserProxyFactory.getInstance().handler.clearTabGroups();
     this.inputValue_ = '';
     await this.fetchTabs_();
+    await this.fetchConfirmedTabGroupSummaries_();
   }
 
   protected async onClearChatHistoryClick_() {
@@ -239,6 +268,66 @@ export class TabGroupsElement extends CrLitElement {
     if (e.key === 'Enter' && this.inputValue_.trim().length > 0) {
       this.onGroupTabsClick_();
     }
+  }
+
+  protected onConfirmedGroupExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    const target = e.currentTarget as HTMLElement;
+    const indexStr = target.dataset['index'];
+    if (indexStr === undefined) {
+      return;
+    }
+    const index = parseInt(indexStr, 10);
+    const summary = this.confirmedGroupSummaries_[index];
+    if (!summary || !summary.savedGuid) {
+      return;
+    }
+    const newSet = new Set(this.expandedConfirmedGroups_);
+    if (e.detail.value) {
+      newSet.add(summary.savedGuid.value);
+    } else {
+      newSet.delete(summary.savedGuid.value);
+    }
+    this.expandedConfirmedGroups_ = newSet;
+  }
+
+  protected async onUngroupAllConfirmedGroupsClick_() {
+    if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
+      return;
+    }
+    await browserProxyFactory.getInstance()
+        .handler.removeAllConfirmedTabGroups();
+    await this.fetchConfirmedTabGroupSummaries_();
+    await this.fetchTabs_();
+  }
+
+  protected async onUngroupConfirmedGroupClick_(e: Event) {
+    if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
+      return;
+    }
+    const target = e.currentTarget as HTMLElement;
+    const savedGuid = target.dataset['guid'];
+    if (!savedGuid) {
+      return;
+    }
+    await browserProxyFactory.getInstance().handler.removeConfirmedTabGroup(
+        {value: savedGuid});
+    await this.fetchConfirmedTabGroupSummaries_();
+    await this.fetchTabs_();
+  }
+
+  protected async onCloseConfirmedGroupClick_(e: Event) {
+    if (!this.autoTabGroupsEnabled_ || this.isGrouping_) {
+      return;
+    }
+    const target = e.currentTarget as HTMLElement;
+    const savedGuid = target.dataset['guid'];
+    if (!savedGuid) {
+      return;
+    }
+    await browserProxyFactory.getInstance().handler.closeConfirmedTabGroup(
+        {value: savedGuid});
+    await this.fetchConfirmedTabGroupSummaries_();
+    await this.fetchTabs_();
   }
 
   private scrollToBottom_() {
