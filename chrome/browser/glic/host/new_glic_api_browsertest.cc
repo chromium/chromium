@@ -2183,6 +2183,13 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
   EXPECT_EQ(fake_cueing_service()->pinned_tabs_call_count(), 1);
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
+                       testGetZeroStateSuggestionsUnsubscribeAndResubscribe) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+  EXPECT_EQ(fake_cueing_service()->pinned_tabs_call_count(), 1);
+}
+
 // This test doesn't work for multi-instance.
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithContextualCueing,
                        testGetZeroStateSuggestionsMultipleNavigations) {

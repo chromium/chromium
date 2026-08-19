@@ -424,7 +424,6 @@ void GlicZeroStateSuggestionsManager::Reset() {
   current_zero_state_suggestions_pinned_tab_change_subscription_ = {};
   current_zero_state_suggestions_pinned_tab_data_change_subscription_ = {};
   client_remote_.reset();
-  receiver_.reset();
 }
 base::WeakPtr<GlicZeroStateSuggestionsManager>
 GlicZeroStateSuggestionsManager::GetWeakPtr() {

@@ -1788,6 +1788,27 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(false, suggestions.isPending);
   }
 
+  async testGetZeroStateSuggestionsUnsubscribeAndResubscribe() {
+    assertDefined(this.host.getZeroStateSuggestions);
+    const sequence1 = observeSequence<ZeroStateSuggestionsV2>(
+        this.host.getZeroStateSuggestions());
+    const suggestions1 = await sequence1.next();
+    assertDefined(suggestions1);
+    assertEquals(3, suggestions1.suggestions.length);
+
+    // Unsubscribe.
+    sequence1.unsubscribe();
+
+    // Re-subscribing should work and fetch suggestions without hitting a closed
+    // pipe.
+    const sequence2 = observeSequence<ZeroStateSuggestionsV2>(
+        this.host.getZeroStateSuggestions());
+    const suggestions2 = await sequence2.next();
+    assertDefined(suggestions2);
+    assertEquals(3, suggestions2.suggestions.length);
+    assertEquals(false, suggestions2.isPending);
+  }
+
   async testGetZeroStateSuggestionsMultipleNavigations() {
     // Initial state.
     assertDefined(this.host.getZeroStateSuggestions);
