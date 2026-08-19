@@ -4988,7 +4988,7 @@ const ComputedStyle* AXObject::GetComputedStyle() const {
 
   // For elements with layout objects we can get their style directly.
   if (GetLayoutObject()) {
-    return GetLayoutObject()->Style();
+    return &GetLayoutObject()->StyleRef();
   }
   if (const Element* element = GetElement()) {
     return element->GetComputedStyle();
