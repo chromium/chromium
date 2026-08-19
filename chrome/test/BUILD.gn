@@ -3519,6 +3519,7 @@ if (!is_android) {
       sources += [
         "../browser/ui/views/create_application_shortcut_view_browsertest.cc",
       ]
+      deps += [ "//chrome/browser/ui/views:create_application_shortcut_view" ]
 
       data_deps += [ "//chrome:packed_resources" ]
     }

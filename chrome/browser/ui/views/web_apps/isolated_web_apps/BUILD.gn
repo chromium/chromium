@@ -39,3 +39,22 @@ source_set("installer_base") {
     "//url",
   ]
 }
+
+if (is_chromeos) {
+  source_set("multi_capture_notification_details_view") {
+    public = [ "multi_capture_notification_details_view.h" ]
+    sources = [ "multi_capture_notification_details_view.cc" ]
+    public_deps = [
+      "//base",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+    deps = [
+      "//chrome/app:generated_resources",
+      "//chrome/app/vector_icons",
+      "//components/vector_icons",
+      "//ui/base",
+      "//ui/color",
+    ]
+  }
+}

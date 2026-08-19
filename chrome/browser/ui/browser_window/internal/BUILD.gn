@@ -112,6 +112,7 @@ source_set("internal") {
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toolbar/chrome_labs",
+      "//chrome/browser/ui/views:color_provider_browser_helper",
       "//chrome/browser/ui/views/animations",
       "//chrome/browser/ui/views/contextual_tasks",
       "//chrome/browser/ui/views/data_sharing",

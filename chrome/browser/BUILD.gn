@@ -1535,6 +1535,7 @@ source_set("core") {
       "//chrome/browser/ui:browser_mac",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/cocoa",
+      "//chrome/browser/ui/views:color_provider_browser_helper",
       "//chrome/browser/web_applications/os_integration/mac:web_app_shortcut_copier_lib",
       "//chrome/browser/webshare",
       "//chrome/browser/webshare:impl",

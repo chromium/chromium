@@ -2602,8 +2602,6 @@ static_library("ui") {
       "views/chrome_views_delegate.h",
       "views/chrome_web_dialog_view.cc",
       "views/chrome_web_dialog_view.h",
-      "views/color_provider_browser_helper.cc",
-      "views/color_provider_browser_helper.h",
       "views/constrained_web_dialog_delegate_views.cc",
       "views/content_setting_bubble_contents.cc",
       "views/content_setting_bubble_contents.h",
@@ -2943,6 +2941,7 @@ static_library("ui") {
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
       "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views:bubble_menu_item_factory",
+      "//chrome/browser/ui/views:color_provider_browser_helper",
       "//chrome/browser/ui/views:confirm_bubble",
       "//chrome/browser/ui/views:device_chooser_content_view",
       "//chrome/browser/ui/views:elevation_icon_setter",
@@ -3426,10 +3425,7 @@ static_library("ui") {
         "//services/audio/public/cpp",
       ]
     } else {
-      sources += [
-        "views/create_application_shortcut_view.cc",
-        "views/create_application_shortcut_view.h",
-      ]
+      deps += [ "//chrome/browser/ui/views:create_application_shortcut_view" ]
     }
 
     if (is_win) {
@@ -3452,10 +3448,7 @@ static_library("ui") {
     }
 
     if (is_chromeos) {
-      sources += [
-        "views/web_apps/isolated_web_apps/multi_capture_notification_details_view.cc",
-        "views/web_apps/isolated_web_apps/multi_capture_notification_details_view.h",
-      ]
+      deps += [ "//chrome/browser/ui/views/web_apps/isolated_web_apps:multi_capture_notification_details_view" ]
     } else {
       sources += [
         "views/frame/opaque_browser_frame_view.cc",
