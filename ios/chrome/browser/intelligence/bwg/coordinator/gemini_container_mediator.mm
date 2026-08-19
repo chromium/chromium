@@ -224,6 +224,14 @@
 
 - (void)assistantContainer:(AssistantContainerViewController*)container
            didChangeDetent:(AssistantContainerDetent)newDetent {
+  // Ignore delegate notifications for detent changes that were triggered
+  // programmatically. We should not dismiss if the container was minimized
+  // programmatically.
+  if (newDetent == self.detentSize) {
+    return;
+  }
+
+  self.detentSize = newDetent;
   if (newDetent == AssistantContainerDetent::kMinimized && self.isZeroState &&
       IsChromeNextIaEnabled()) {
     [self.geminiHandler dismissGeminiFlowWithCompletion:nil];

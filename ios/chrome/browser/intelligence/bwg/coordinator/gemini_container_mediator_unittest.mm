@@ -752,4 +752,36 @@ TEST_F(GeminiContainerMediatorTest, TestAssistantContainerDidRequestDismissal) {
   [mediator_ assistantContainerDidRequestDismissal:nil];
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 }
+
+// Tests that when detent size is updated during a transition out of zero state
+// (e.g., switching to Live view mode) and the container delegate notifies of
+// the detent change, the Gemini flow is not dismissed.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidChangeDetentWhenSwitchingOutOfZeroStateDoesNotDismiss) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration, kChromeNextIa}, {});
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  EXPECT_TRUE(mediator_.isZeroState);
+
+  OCMStub([mock_container_handler_ animateAssistantContainerToDetent:
+                                       AssistantContainerDetent::kMinimized])
+      .andDo(^(NSInvocation* invocation) {
+        [mediator_ assistantContainer:nil
+                      didChangeDetent:AssistantContainerDetent::kMinimized];
+      });
+
+  __block BOOL dismissed = NO;
+  OCMStub([mock_gemini_handler_ dismissGeminiFlowWithCompletion:nil])
+      .andDo(^(NSInvocation* invocation) {
+        dismissed = YES;
+      });
+
+  [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
+  EXPECT_FALSE(dismissed);
+}
+
 }  // namespace
