@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,38 +13,39 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * A specialized FrameLayout that is capable of ignoring all user input based on the state of
- * the bottom sheet.
+ * A {@link FrameLayout} that can restrict touch events from reaching its children during sheet
+ * scrolling and animation sequences.
  */
 @NullMarked
-class TouchRestrictingFrameLayout extends FrameLayout {
-    /** A handle to the bottom sheet. */
-    private @Nullable BottomSheet mBottomSheet;
+public class TouchRestrictingFrameLayout extends FrameLayout {
+    private boolean mIsTouchEnabled = true;
 
-    public TouchRestrictingFrameLayout(Context context, AttributeSet atts) {
+    /**
+     * Constructor for inflating from XML.
+     *
+     * @param context The Context the view is running in.
+     * @param atts The attributes of the XML tag inflating the view.
+     */
+    public TouchRestrictingFrameLayout(Context context, @Nullable AttributeSet atts) {
         super(context, atts);
     }
 
-    /** @param sheet The bottom sheet. */
-    public void setBottomSheet(BottomSheet sheet) {
-        mBottomSheet = sheet;
-    }
-
-    /** @return Whether touch is enabled. */
-    private boolean isTouchDisabled() {
-        return mBottomSheet == null
-                || mBottomSheet.getSheetState() == BottomSheetController.SheetState.SCROLLING;
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (isTouchDisabled()) return true;
-        return super.onInterceptTouchEvent(event);
+    /**
+     * Sets whether touch events are enabled on this container.
+     *
+     * @param isTouchEnabled Whether touch events should be processed.
+     */
+    public void setIsTouchEnabled(boolean isTouchEnabled) {
+        mIsTouchEnabled = isTouchEnabled;
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (isTouchDisabled()) return true;
-        return super.onTouchEvent(event);
+    public boolean onInterceptTouchEvent(MotionEvent e) {
+        return !mIsTouchEnabled || super.onInterceptTouchEvent(e);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        return !mIsTouchEnabled || super.onTouchEvent(e);
     }
 }

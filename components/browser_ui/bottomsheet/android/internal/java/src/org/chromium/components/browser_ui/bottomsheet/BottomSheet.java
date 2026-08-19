@@ -479,10 +479,8 @@ class BottomSheet extends BottomSheetView
         setBottomMargin(bottomMargin);
 
         mToolbarHolder = findViewById(R.id.bottom_sheet_toolbar_container);
-        mToolbarHolder.setBottomSheet(this);
 
         mBottomSheetContentContainer = findViewById(R.id.bottom_sheet_content);
-        mBottomSheetContentContainer.setBottomSheet(this);
 
         mCloseButton = findViewById(R.id.bottom_sheet_close_button);
 
@@ -1320,6 +1318,20 @@ class BottomSheet extends BottomSheetView
         return mIsSheetOpen;
     }
 
+    /**
+     * Sets whether touch events are enabled on the content and toolbar containers.
+     *
+     * @param isTouchEnabled Whether touch is enabled.
+     */
+    public void setContainerTouchEnabled(boolean isTouchEnabled) {
+        if (mBottomSheetContentContainer != null) {
+            mBottomSheetContentContainer.setIsTouchEnabled(isTouchEnabled);
+        }
+        if (mToolbarHolder != null) {
+            mToolbarHolder.setIsTouchEnabled(isTouchEnabled);
+        }
+    }
+
     /** Returns the current visual presentation layout mode. */
     public @SheetLayoutMode int getSheetLayoutMode() {
         return mLayoutMode;
@@ -1497,6 +1509,7 @@ class BottomSheet extends BottomSheetView
                 state == SheetState.SCROLLING
                         ? mCurrentState != SheetState.SCROLLING ? mCurrentState : SheetState.NONE
                         : SheetState.NONE; // Not scrolling anymore.
+        setContainerTouchEnabled(state != SheetState.SCROLLING);
         mCurrentState = state;
 
         if (mCurrentState == SheetState.HALF || mCurrentState == SheetState.FULL) {
