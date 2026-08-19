@@ -2340,6 +2340,7 @@
                         "AutofillAtMemory",
                         "AutofillAtMemorySupportContenteditableOnAndroid",
                         "AutofillAtMemoryTriggerShortcut",
+                        "AutofillEnableKeyboardAccessoryOnSearchFields",
                         "IPH_AutofillAtMemory",
                         "PersonalContextForceEnablementState"
                     ]
