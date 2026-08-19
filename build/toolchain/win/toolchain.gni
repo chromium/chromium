@@ -140,10 +140,16 @@ template("msvc_toolchain") {
       sys_include_flags = ""
     }
 
-    linker_wrapper =
-        "\"$python_path\" $_tool_wrapper_path link-wrapper $env False "
-
     if (host_os != "win" || (use_lld && defined(invoker.sys_lib_flags))) {
+      # TODO(crbug.com/548717713): Find a better way to retrieve object files
+      # for the link step. At least, it doesn't need to use tool_wrapper.py.
+      if (is_official_build) {
+        linker_wrapper =
+            "$python_path $_tool_wrapper_path link-wrapper $env False "
+      } else {
+        linker_wrapper = ""
+      }
+
       sys_lib_flags = "${invoker.sys_lib_flags}"
 
       # TODO(thakis): Remove once crbug.com/1300005 is fixed
@@ -166,6 +172,9 @@ template("msvc_toolchain") {
     } else {
       # link.exe must be run under a wrapper to set up the environment
       # (it needs %LIB% set to find libraries), and to work around its bugs.
+      # Note trailing space:
+      linker_wrapper =
+          "\"$python_path\" $_tool_wrapper_path link-wrapper $env False "
       sys_lib_flags = ""
     }
 
