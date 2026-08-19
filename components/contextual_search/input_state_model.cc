@@ -352,8 +352,7 @@ InputStateModel::InputStateModel(
       is_signed_in_(new_input_state_model.is_signed_in_),
       browser_identity_matches_aim_identity_(
           new_input_state_model.browser_identity_matches_aim_identity_),
-      current_url_(new_input_state_model.current_url_),
-      drive_consent_state_(new_input_state_model.drive_consent_state_) {
+      current_url_(new_input_state_model.current_url_) {
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
   configured_input_types_ = new_input_state_model.configured_input_types_;
@@ -458,10 +457,6 @@ void InputStateModel::SetPrefService(PrefService* pref_service) {
   if (pref_service_) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
-        contextual_search::kDriveConsentState,
-        base::BindRepeating(&InputStateModel::OnPrefChanged,
-                            base::Unretained(this)));
-    pref_change_registrar_.Add(
         contextual_search::kSearchContentSharingSettings,
         base::BindRepeating(&InputStateModel::OnPrefChanged,
                             base::Unretained(this)));
@@ -475,9 +470,6 @@ void InputStateModel::OnPrefChanged() {
   if (!pref_service_) {
     return;
   }
-  int pref_value =
-      pref_service_->GetInteger(contextual_search::kDriveConsentState);
-  drive_consent_state_ = static_cast<DriveConsentState>(pref_value);
 
   updateDisabledState();
   notifySubscribers();
@@ -619,11 +611,12 @@ bool InputStateModel::IsDriveSupported() const {
   bool incognito = is_off_the_record_;
   bool feature_enabled =
       base::FeatureList::IsEnabled(omnibox::kComposeboxDriveContextMenuOption);
+  bool identity_matches = browser_identity_matches_aim_identity_;
+
   // TODO(545561312): When restricted, the option should still be visible but
   // greyed out (disabled).
-  bool is_restricted = drive_consent_state_ == DriveConsentState::kRestricted;
 
-  if (incognito || !feature_enabled || is_restricted) {
+  if (incognito || !feature_enabled) {
     return false;
   }
 
@@ -636,7 +629,11 @@ bool InputStateModel::IsDriveSupported() const {
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-  return browser_identity_matches_aim_identity_;
+  if (!is_signed_in_ || !identity_matches) {
+    return false;
+  }
+
+  return true;
 }
 
 // Helper to check if search content sharing is enabled based on the
