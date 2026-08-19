@@ -32,7 +32,7 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
                       ->GetContentVisibilityScore());
   EXPECT_TRUE(
       PageContentAnnotationsWebContentsObserver::GetOrCreateForWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents(),
+          browser()->GetTabStripModel()->GetActiveWebContents(),
           *PageContentAnnotationsServiceFactory::GetForProfile(
               browser()->GetProfile()))
           ->content_visibility_score()
@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
       future.GetRepeatingCallback());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -1375,7 +1375,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
                        Subframe) {
   base::HistogramTester histogram_tester;
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("/optimization_guide/iframe.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
   optimization_guide::RetryForHistogramUntilCountReached(
@@ -1440,7 +1440,7 @@ IN_PROC_BROWSER_TEST_P(
       future.GetRepeatingCallback());
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL initial_url(embedded_test_server()->GetURL("a.test", "/links.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, initial_url,
                                                       1);
@@ -1484,7 +1484,7 @@ IN_PROC_BROWSER_TEST_P(
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL initial_url(embedded_test_server()->GetURL("a.test", "/page404.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, initial_url,
                                                       1);
@@ -1594,7 +1594,7 @@ IN_PROC_BROWSER_TEST_P(
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -1641,7 +1641,7 @@ IN_PROC_BROWSER_TEST_P(
   service->AddObserver(&observer);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -1673,7 +1673,7 @@ IN_PROC_BROWSER_TEST_P(
   service->AddObserver(&observer);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -1720,7 +1720,7 @@ IN_PROC_BROWSER_TEST_P(
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -1750,7 +1750,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -1797,7 +1797,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -1841,7 +1841,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -1857,8 +1857,8 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
 
   // Destroy the WebContents, which should cancel pending extractions and
   // resolve the callback with nullopt.
-  browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabCloseTypes::CLOSE_NONE);
+  browser()->GetTabStripModel()->CloseWebContentsAt(0,
+                                                    TabCloseTypes::CLOSE_NONE);
 
   std::optional<page_content_annotations::ExtractedPageContentResult> result =
       refresh_future.Get();
@@ -1873,7 +1873,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTest,
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   ASSERT_TRUE(content::NavigateToURL(web_contents, url));
@@ -1930,7 +1930,7 @@ IN_PROC_BROWSER_TEST_P(
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url1(embedded_test_server()->GetURL("a.test",
                                            "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url1, 1);
@@ -1983,7 +1983,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTestHidden,
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -2013,7 +2013,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTestHidden,
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/simple.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -2037,7 +2037,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionTestHidden,
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test",
                                           "/optimization_guide/hello.html"));
   content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
@@ -2650,7 +2650,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionPdfTest,
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test", "/pdf/test.pdf"));
   content::NavigateToURLBlockUntilNavigationsComplete(
       web_contents, url, /*number_of_navigations=*/1);
@@ -2688,7 +2688,7 @@ IN_PROC_BROWSER_TEST_P(PageContentAnnotationsServiceContentExtractionPdfTest,
   observer.Observe(service);
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
   GURL url(embedded_test_server()->GetURL("a.test", "/pdf/test.pdf"));
   content::NavigateToURLBlockUntilNavigationsComplete(
       web_contents, url, /*number_of_navigations=*/1);
@@ -2763,7 +2763,7 @@ IN_PROC_BROWSER_TEST_P(
     PageContentAnnotationsServiceContentExtractionPdfHangingTest,
     PDFExtractionNotCompleteWebContentsWentAway) {
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      browser()->GetTabStripModel()->GetActiveWebContents();
 
   // Navigate to a PDF document.
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -2796,8 +2796,8 @@ IN_PROC_BROWSER_TEST_P(
   FetchPageContext(*web_contents, options, nullptr, future.GetCallback());
 
   // Close the tab to simulate the web content going away.
-  browser()->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabCloseTypes::CLOSE_NONE);
+  browser()->GetTabStripModel()->CloseWebContentsAt(0,
+                                                    TabCloseTypes::CLOSE_NONE);
 
   // Verify the callback is resolved with
   // `FetchPageContextError::kWebContentsWentAway`.

@@ -21,7 +21,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/optimization_guide/core/delivery/model_store_metadata_entry.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
@@ -305,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
 
   base::HistogramTester histogram_tester_otr;
   ModelFileObserver model_file_observer_otr;
-  Browser* otr_browser = CreateIncognitoBrowser(browser()->GetProfile());
+  BrowserWindowInterface* otr_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
   RegisterAndWaitForModelUpdate(&model_file_observer_otr,
                                 otr_browser->GetProfile());
 
