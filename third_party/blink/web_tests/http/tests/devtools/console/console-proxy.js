@@ -63,7 +63,11 @@ import * as Console from 'devtools/panels/console/console.js';
   }
 
   function dumpNoteVisible(element, name) {
-    var note = window.getComputedStyle(element.querySelector('.object-state-note.' + name)).display;
+    var note = window
+                   .getComputedStyle(element.querySelector('devtools-tree')
+                                         .shadowRoot.querySelector(
+                                             '.object-state-note.' + name))
+                   .display;
     TestRunner.addResult(name + ' display: ' + note);
   }
 })();

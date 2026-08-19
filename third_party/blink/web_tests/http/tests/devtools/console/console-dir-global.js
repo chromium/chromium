@@ -37,7 +37,7 @@ import * as ObjectUI from 'devtools/ui/legacy/components/object_ui/object_ui.js'
 
   function getPropertiesCallback(allProperties) {
     const properties = allProperties.properties;
-    properties.sort(ObjectUI.ObjectPropertiesSection.ObjectPropertiesSection.compareProperties);
+    properties.sort(ObjectUI.ObjectPropertiesSection.compareProperties);
 
     var golden = {
       'window': 1,
