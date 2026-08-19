@@ -96,15 +96,6 @@ namespace safe_browsing {
 
 namespace {
 
-// Probability value used to sample pings on CSD allowlist match. For other safe
-// browsing countermeasures, we sample at 1 in 100 rate, but in this, we hit the
-// allowlist 1000 times more than the rate at which we send a ping due to local
-// model verdict. Therefore, we sample at 1 in 100,000 rate instead.
-const float kProbabilityForSendingSampleRequest = 0.000001;
-// Probability value used to accept the high confidence allowlist match for
-// trigger and force request types. More information on why this value was
-// chosen can be found at go/crca-cspp-expand-allowlist.
-const float kProbabilityForAcceptingHCAllowlistTrigger = 0.9999;
 // How long to wait to run the user report callback.
 const int kUserReportCallbackTimer = 30;
 
@@ -232,15 +223,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       base::WeakPtr<ClientSideDetectionServiceBase> csd_service,
       SafeBrowsingDatabaseManager* database_manager,
       ClientSideDetectionType phishing_detection_request_type,
-      float probability_for_accepting_hc_allowlist_trigger,
       base::WeakPtr<ClientSideDetectionHost> host)
       : url_(url),
         web_contents_(web_contents),
         csd_service_(csd_service),
         database_manager_(database_manager),
         phishing_detection_request_type_(phishing_detection_request_type),
-        probability_for_accepting_hc_allowlist_trigger_(
-            probability_for_accepting_hc_allowlist_trigger),
         host_(host),
         start_phishing_classification_cb_(
             std::move(start_phishing_classification)) {
@@ -634,32 +622,13 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
   }
 
   bool CanSendSamplePing() {
-    return phishing_detection_request_type_ ==
-               ClientSideDetectionType::TRIGGER_MODELS &&
-           host_ && host_->IsEnhancedProtectionEnabled() &&
-           base::RandDouble() <= kProbabilityForSendingSampleRequest;
+    return host_ && host_->CanSendSamplePing(phishing_detection_request_type_);
   }
 
   bool ShouldAcceptHCAllowlist() {
-    // It can be inferred that it has value because it was set right before, but
-    // check again for sanity.
-    if (!did_match_high_confidence_allowlist_.has_value() ||
-        !did_match_high_confidence_allowlist_.value()) {
-      return false;
-    }
-
-    switch (phishing_detection_request_type_) {
-      case ClientSideDetectionType::TRIGGER_MODELS:
-        return base::RandDouble() <=
-               probability_for_accepting_hc_allowlist_trigger_;
-      case ClientSideDetectionType::CLIPBOARD_COPY_API:
-        return base::RandDouble() < kCsdClipboardCopyApiHCAcceptanceRate.Get();
-      case ClientSideDetectionType::CREDIT_CARD_FORM:
-        return base::RandDouble() < kCsdCreditCardFormHCAcceptanceRate.Get();
-      default:
-        break;
-    }
-    return false;
+    return host_ && host_->ShouldAcceptHCAllowlist(
+                        phishing_detection_request_type_,
+                        did_match_high_confidence_allowlist_.value_or(false));
   }
 
   ClientSideAllowlistMatchResult GetClientSideAllowlistMatchResult(
@@ -687,7 +656,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
   // database manager stays alive long enough.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   ClientSideDetectionType phishing_detection_request_type_;
-  float probability_for_accepting_hc_allowlist_trigger_;
   base::WeakPtr<ClientSideDetectionHost> host_;
   ShouldClassifyUrlCallback start_phishing_classification_cb_;
 
@@ -738,9 +706,7 @@ ClientSideDetectionHost::ClientSideDetectionHost(
       tab_(tab),
       classification_request_(nullptr),
       delegate_(std::move(delegate)),
-      account_signed_in_callback_(account_signed_in_callback),
-      probability_for_accepting_hc_allowlist_trigger_(
-          kProbabilityForAcceptingHCAllowlistTrigger) {
+      account_signed_in_callback_(account_signed_in_callback) {
   DCHECK(tab);
   DCHECK(pref_service);
   // Note: the CSD service will be nullptr here in testing.
@@ -927,8 +893,7 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
       base::BindOnce(&ClientSideDetectionHost::OnPhishingPreClassificationDone,
                      weak_factory_.GetWeakPtr(), request_type),
       web_contents(), GetClientSideDetectionService(), database_manager_.get(),
-      request_type, probability_for_accepting_hc_allowlist_trigger_,
-      weak_factory_.GetWeakPtr());
+      request_type, weak_factory_.GetWeakPtr());
   classification_request_->Start();
 }
 
@@ -1435,12 +1400,6 @@ void ClientSideDetectionHost::MaybeStartGeminiAntiscamProtection(
     std::optional<bool> did_match_high_confidence_allowlist) {
   delegate_->MaybeStartGeminiAntiscamProtection(
       url, request_type, did_match_high_confidence_allowlist);
-}
-
-void ClientSideDetectionHost::
-    set_high_confidence_allowlist_acceptance_rate_for_testing(
-        float acceptance_rate) {
-  probability_for_accepting_hc_allowlist_trigger_ = acceptance_rate;
 }
 
 ClientSideDetectionFeatureCacheBase*

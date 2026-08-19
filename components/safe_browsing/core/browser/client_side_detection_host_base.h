@@ -64,6 +64,16 @@ enum class ClientSideDetectionEvent {
 std::string_view GetRequestTypeName(
     ClientSideDetectionType client_side_detection_type);
 
+// Probability value used to sample pings on CSD allowlist match. For other safe
+// browsing countermeasures, we sample at 1 in 100 rate, but in this, we hit the
+// allowlist 1000 times more than the rate at which we send a ping due to local
+// model verdict. Therefore, we sample at 1 in 100,000 rate instead.
+inline constexpr float kProbabilityForSendingSampleRequest = 0.000001f;
+// Probability value used to accept the high confidence allowlist match for
+// trigger and force request types. More information on why this value was
+// chosen can be found at go/crca-cspp-expand-allowlist.
+inline constexpr float kProbabilityForAcceptingHCAllowlistTrigger = 0.9999f;
+
 class ClientSideDetectionFeatureCacheBase;
 class ClientSideDetectionServiceBase;
 class VerdictCacheManager;
@@ -214,6 +224,17 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // Sets a test tick clock only for testing.
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;
+  }
+
+  // Overrides the high-confidence allowlist acceptance rate for testing.
+  void set_high_confidence_allowlist_acceptance_rate_for_testing(
+      float acceptance_rate) {
+    probability_for_accepting_hc_allowlist_trigger_ = acceptance_rate;
+  }
+
+  // Overrides the sample ping rate for testing.
+  void set_sample_ping_rate_for_testing(float sample_ping_rate) {
+    probability_for_sending_sample_request_ = sample_ping_rate;
   }
 
  protected:
@@ -430,6 +451,13 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // Returns the tier value for the given request type.
   int GetTierValue(ClientSideDetectionType request_type);
 
+  // Returns whether a sample ping should be sent for allowlist-matching URLs.
+  bool CanSendSamplePing(ClientSideDetectionType request_type) const;
+
+  // Returns whether the High-Confidence allowlist match should be accepted.
+  bool ShouldAcceptHCAllowlist(ClientSideDetectionType request_type,
+                               bool url_on_high_confidence_allowlist) const;
+
   const GURL& current_url() const { return current_url_; }
   void set_current_url(const GURL& url) { current_url_ = url; }
 
@@ -547,6 +575,16 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   // The last text that was copied to the clipboard.
   std::u16string last_copied_text_;
   std::unique_ptr<ClipboardExtractedData> clipboard_extracted_data_;
+
+  // Modified through tests only. Initial value is set to the const
+  // kProbabilityForAcceptingHCAllowlistTrigger.
+  float probability_for_accepting_hc_allowlist_trigger_ =
+      kProbabilityForAcceptingHCAllowlistTrigger;
+
+  // Modified through tests only. Initial value is set to the const
+  // kProbabilityForSendingSampleRequest.
+  float probability_for_sending_sample_request_ =
+      kProbabilityForSendingSampleRequest;
 
   // Track the states of the processes running and the currently running
   // ClientSideDetectionType. This begins at the CLASSIFY bucket in

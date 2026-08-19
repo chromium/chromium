@@ -413,9 +413,6 @@ class ClientSideDetectionHost
     account_signed_in_callback_ = account_signed_in_callback;
   }
 
-  void set_high_confidence_allowlist_acceptance_rate_for_testing(
-      float acceptance_rate);
-
   void set_delegate_for_testing(std::unique_ptr<Delegate> delegate) {
     delegate_ = std::move(delegate);
   }
@@ -436,9 +433,6 @@ class ClientSideDetectionHost
   // triggering the classification. Detection should not go further than
   // recording metrics.
   bool ShouldStopAtPreClassification();
-
-  // Check if sample ping can be sent to Safe Browsing.
-  bool CanSendSamplePing();
 
   // The callback for the report a scam dialog.
   base::OnceClosure user_report_callback_;
@@ -495,10 +489,6 @@ class ClientSideDetectionHost
 
   // A boolean indicates whether TRIGGER_MODELS request is sent via
   // FORCE_REQUEST. This is used to decide whether async check is allowed to
-
-  // Modified through tests only. Initial value is set to the const
-  // kProbabilityForAcceptingHCAllowlistTrigger.
-  float probability_for_accepting_hc_allowlist_trigger_;
 
   base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
       async_check_observation_{this};

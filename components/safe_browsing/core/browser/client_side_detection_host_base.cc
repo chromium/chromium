@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -51,7 +52,7 @@ std::string NormalizeToken(std::u16string_view token) {
   return base::ToLowerASCII(filename);
 }
 
-bool IsPossibleURL(std::string token) {
+bool IsPossibleURL(const std::string& token) {
   GURL url = url_formatter::FixupURL(token, "");
   if (!url.is_valid()) {
     return false;
@@ -67,7 +68,7 @@ bool IsPossibleURL(std::string token) {
 }
 
 // Threshold value used to skip the intelligent scan.
-const int kInnerTextMinThresholdBytes = 5;
+constexpr int kInnerTextMinThresholdBytes = 5;
 
 void LogPhishingDetectionResult(ClientSideDetectionType request_type,
                                 PhishingDetectorResult result,
@@ -370,7 +371,7 @@ void ClientSideDetectionHostBase::PhishingDetectionDone(
     }
 
     MaybeSendClientPhishingRequest(
-        std::make_unique<ClientPhishingRequest>(*verdict),
+        std::make_unique<ClientPhishingRequest>(std::move(*verdict)),
         did_match_high_confidence_allowlist, is_invalid_ip, result);
   } else {
     is_csd_running_ = false;
@@ -527,7 +528,7 @@ bool ClientSideDetectionHostBase::HasForceRequestFromRtUrlLookup() {
   }
 
   bool redirect_chain_contains_force_request = false;
-  for (GURL url : redirect_chain) {
+  for (const GURL& url : redirect_chain) {
     if (cache_manager_->GetCachedRealTimeUrlClientSideDetectionType(url) ==
         safe_browsing::ClientSideDetectionType::FORCE_REQUEST) {
       redirect_chain_contains_force_request = true;
@@ -565,7 +566,7 @@ void ClientSideDetectionHostBase::CheckRedirectChainForLlamaForcedTriggerInfo(
       }
 
       bool redirect_chain_contains_forced_trigger_info = false;
-      for (GURL url : redirect_chain) {
+      for (const GURL& url : redirect_chain) {
         if (cache_manager_->GetCachedRealTimeLlamaForcedTriggerInfo(
                 url, &llama_forced_trigger_info)) {
           redirect_chain_contains_forced_trigger_info = true;
@@ -1070,6 +1071,36 @@ int ClientSideDetectionHostBase::GetTierValue(
     ClientSideDetectionType request_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return GetClientSideDetectionTypeTier(request_type);
+}
+
+bool ClientSideDetectionHostBase::CanSendSamplePing(
+    ClientSideDetectionType request_type) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return request_type == ClientSideDetectionType::TRIGGER_MODELS &&
+         IsEnhancedProtectionEnabled() &&
+         base::RandDouble() <= probability_for_sending_sample_request_;
+}
+
+bool ClientSideDetectionHostBase::ShouldAcceptHCAllowlist(
+    ClientSideDetectionType request_type,
+    bool url_on_high_confidence_allowlist) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!url_on_high_confidence_allowlist) {
+    return false;
+  }
+
+  switch (request_type) {
+    case ClientSideDetectionType::TRIGGER_MODELS:
+      return base::RandDouble() <=
+             probability_for_accepting_hc_allowlist_trigger_;
+    case ClientSideDetectionType::CLIPBOARD_COPY_API:
+      return base::RandDouble() < kCsdClipboardCopyApiHCAcceptanceRate.Get();
+    case ClientSideDetectionType::CREDIT_CARD_FORM:
+      return base::RandDouble() < kCsdCreditCardFormHCAcceptanceRate.Get();
+    default:
+      break;
+  }
+  return false;
 }
 
 void ClientSideDetectionHostBase::PhishingImageEmbeddingDone(
