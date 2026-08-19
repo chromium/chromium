@@ -119,4 +119,38 @@ TEST_F(SendTabToSelfActivationTrackerTest, TabDestroyedWithoutShowing) {
   EXPECT_EQ(model()->activated_call_count(), 1);
 }
 
+// Tests that destroying a WebContents due to tab discarding (e.g. Memory Saver)
+// does not record a false tab abandonment activation metric.
+TEST_F(SendTabToSelfActivationTrackerTest, DoNotRecordAbandonmentOnDiscard) {
+  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+  contents->WasHidden();
+  SendTabToSelfActivationTracker::CreateForWebContents(contents.get(),
+                                                       "discard_guid");
+
+  // Mark the WebContents as discarded before destroying it.
+  contents->SetWasDiscarded(true);
+  contents.reset();
+
+  // Verify that abandonment was not recorded.
+  EXPECT_EQ(model()->activated_call_count(), 0);
+}
+
+// Tests that restoring a tab in the foreground from session restore or discard
+// marks the entry as activated via the tab strip.
+TEST_F(SendTabToSelfActivationTrackerTest,
+       RestoreFromExtraDataInForegroundRecordsActivation) {
+  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+  contents->WasShown();
+
+  std::map<std::string, std::string> extra_data = {
+      {"send_tab_to_self.entry_guid", "restored_guid"}};
+  SendTabToSelfActivationTracker::RestoreFromExtraData(contents.get(),
+                                                       extra_data);
+
+  EXPECT_EQ(model()->last_activated_guid(), "restored_guid");
+  EXPECT_EQ(model()->last_activated_entry_point(),
+            ShareActivatedEntryPoint::kTabStrip);
+  EXPECT_EQ(model()->activated_call_count(), 1);
+}
+
 }  // namespace send_tab_to_self

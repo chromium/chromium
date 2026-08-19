@@ -35,7 +35,8 @@ SendTabToSelfActivationTracker::SendTabToSelfActivationTracker(
 SendTabToSelfActivationTracker::~SendTabToSelfActivationTracker() = default;
 
 void SendTabToSelfActivationTracker::WebContentsDestroyed() {
-  if (!metric_recorded_ && !browser_shutdown::HasShutdownStarted()) {
+  if (!metric_recorded_ && !GetWebContents().WasDiscarded() &&
+      !browser_shutdown::HasShutdownStarted()) {
     send_tab_to_self::MarkEntryMatchingGuidActivated(
         Profile::FromBrowserContext(GetWebContents().GetBrowserContext()),
         entry_guid_,
