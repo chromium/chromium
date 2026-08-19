@@ -235,7 +235,8 @@ GCedStaticRangeVector* RangesFromCurrentSelectionOrExtendCaret(
       frame, frame.Selection().GetSelectionInDomTree());
   selection_modifier.SetSelectionIsDirectional(
       frame.Selection().IsDirectional());
-  if (selection_modifier.Selection().IsCaret()) {
+  const bool extended_caret = selection_modifier.Selection().IsCaret();
+  if (extended_caret) {
     selection_modifier.Modify(SelectionModifyAlteration::kExtend, direction,
                               granularity);
   }
@@ -244,8 +245,17 @@ GCedStaticRangeVector* RangesFromCurrentSelectionOrExtendCaret(
   if (selection_modifier.Selection().IsNone()) {
     return ranges;
   }
-  ranges->push_back(StaticRange::Create(
-      FirstEphemeralRangeOf(selection_modifier.Selection())));
+  SelectionInDomTree selection = selection_modifier.Selection().AsSelection();
+  // Report only the code points backward deletion actually removes, which can
+  // be a part of the grapheme cluster the caret was extended over. This must
+  // match |AdjustSelectionForBackwardDelete()| in |TypingCommand|. See
+  // https://w3c.github.io/input-events/#dom-inputevent-getTargetRanges
+  if (RuntimeEnabledFeatures::TargetRangesForBackwardDeletionUnitEnabled() &&
+      extended_caret && direction == SelectionModifyDirection::kBackward &&
+      granularity == TextGranularity::kCharacter) {
+    selection = NarrowSelectionToBackwardDeletionUnit(selection);
+  }
+  ranges->push_back(StaticRange::Create(selection.ComputeRange()));
   return ranges;
 }
 

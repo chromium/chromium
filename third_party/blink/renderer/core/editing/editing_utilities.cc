@@ -843,6 +843,28 @@ PositionInFlatTree PreviousPositionOf(const PositionInFlatTree& position,
                                                                 move_type);
 }
 
+SelectionInDomTree NarrowSelectionToBackwardDeletionUnit(
+    const SelectionInDomTree& selection) {
+  if (!selection.IsRange()) {
+    return selection;
+  }
+  const Position& anchor = selection.Anchor();
+  const Position& focus = selection.Focus();
+  if (anchor.ComputeContainerNode() != focus.ComputeContainerNode()) {
+    return selection;
+  }
+  if (anchor.ComputeOffsetInContainerNode() -
+          focus.ComputeOffsetInContainerNode() <=
+      1) {
+    return selection;
+  }
+  const Position& end = selection.ComputeEndPosition();
+  return SelectionInDomTree::Builder()
+      .SetAsBackwardSelection(EphemeralRange(
+          PreviousPositionOf(end, PositionMoveType::kBackwardDeletion), end))
+      .Build();
+}
+
 template <typename Strategy>
 PositionTemplate<Strategy> NextPositionOfAlgorithm(
     const PositionTemplate<Strategy>& position,

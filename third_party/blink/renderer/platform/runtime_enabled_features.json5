@@ -6135,6 +6135,15 @@
       name: "TargetInShadowDeterminedBeforeListener",
       status: "stable",
     },
+    {
+      // Makes getTargetRanges() of a deleteContentBackward beforeinput event
+      // cover only the code points that are actually deleted, instead of the
+      // whole grapheme cluster behind the caret.
+      // Enabled in M153, safe to remove in M155.
+      // https://issues.chromium.org/issues/539754135
+      name: "TargetRangesForBackwardDeletionUnit",
+      status: "stable",
+    },
     // For unit tests.
     {
       // This is for testing copied_from_base_feature_if.

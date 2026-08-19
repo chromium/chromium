@@ -247,6 +247,13 @@ CORE_EXPORT wtf_size_t PreviousGraphemeBoundaryOf(const Node&,
                                                   wtf_size_t current);
 CORE_EXPORT wtf_size_t NextGraphemeBoundaryOf(const Node&, wtf_size_t current);
 
+// Narrows |selection|, a caret extended backward by character granularity, to
+// the code points a backward deletion actually removes, which can be only a
+// part of the grapheme cluster it covers. Returns |selection| as is when there
+// is nothing to narrow. See |PositionMoveType::kBackwardDeletion|.
+CORE_EXPORT SelectionInDomTree
+NarrowSelectionToBackwardDeletionUnit(const SelectionInDomTree&);
+
 // Comparison functions on Position
 // Note: These functions reside in "compare_positions.cc" instead of
 // "editing_utilities.cc".

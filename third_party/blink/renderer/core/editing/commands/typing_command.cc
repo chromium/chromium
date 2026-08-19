@@ -917,19 +917,14 @@ static SelectionForUndoStep AdjustSelectionForBackwardDelete(
     }
     return SelectionForUndoStep::From(selection);
   }
-  if (anchor.ComputeContainerNode() !=
-      selection.Focus().ComputeContainerNode()) {
+  const SelectionInDomTree& adjusted =
+      NarrowSelectionToBackwardDeletionUnit(selection);
+  if (adjusted == selection) {
     return SelectionForUndoStep::From(selection);
   }
-  if (anchor.ComputeOffsetInContainerNode() -
-          selection.Focus().ComputeOffsetInContainerNode() <=
-      1) {
-    return SelectionForUndoStep::From(selection);
-  }
-  const Position& end = selection.ComputeEndPosition();
+
   return SelectionForUndoStep::Builder()
-      .SetAnchorAndFocusAsBackwardSelection(
-          end, PreviousPositionOf(end, PositionMoveType::kBackwardDeletion))
+      .SetAnchorAndFocusAsBackwardSelection(adjusted.Anchor(), adjusted.Focus())
       .Build();
 }
 

@@ -74,6 +74,14 @@ class CORE_EXPORT EditorCommand {
 
   FRIEND_TEST_ALL_PREFIXES(EditingCommandTest,
                            DeleteSoftLineBackwardTargetRanges);
+  FRIEND_TEST_ALL_PREFIXES(EditingCommandTest,
+                           DeleteBackwardTargetRangesInGraphemeCluster);
+  FRIEND_TEST_ALL_PREFIXES(EditingCommandTest,
+                           DeleteBackwardTargetRangesInEmojiSequence);
+  FRIEND_TEST_ALL_PREFIXES(EditingCommandTest,
+                           DeleteBackwardTargetRangesWithRangeSelection);
+  FRIEND_TEST_ALL_PREFIXES(EditingCommandTest,
+                           DeleteForwardTargetRangesInGraphemeCluster);
   // Returns target ranges for the command, currently only supports delete
   // related commands. Used by InputEvent.
   const GCedStaticRangeVector* GetTargetRanges() const;

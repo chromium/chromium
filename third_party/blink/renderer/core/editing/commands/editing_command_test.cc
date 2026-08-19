@@ -167,6 +167,102 @@ TEST_F(EditingCommandTest, DeleteSoftLineBackwardTargetRanges) {
   EXPECT_EQ(3u, range.endOffset());
 }
 
+// http://crbug.com/539754135
+TEST_F(EditingCommandTest, DeleteBackwardTargetRangesInGraphemeCluster) {
+  Editor& editor = GetFrame().GetEditor();
+  const EditorCommand command = editor.CreateCommand("DeleteBackward");
+
+  // The Thai word "ที่" is a single grapheme cluster made of
+  // three code points, but Backspace deletes only its last code point.
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable>&#x0E17;&#x0E35;&#x0E48;|</div>"),
+      SetSelectionOptions());
+  Element* div = QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      div, FocusParams(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr));
+  const GCedStaticRangeVector* ranges = command.GetTargetRanges();
+  ASSERT_EQ(1u, ranges->size());
+  const StaticRange& range = *ranges->at(0);
+  EXPECT_EQ(div->firstChild(), range.startContainer());
+  EXPECT_EQ(2u, range.startOffset());
+  EXPECT_EQ(div->firstChild(), range.endContainer());
+  EXPECT_EQ(3u, range.endOffset());
+}
+
+// http://crbug.com/539754135
+TEST_F(EditingCommandTest, DeleteBackwardTargetRangesInEmojiSequence) {
+  Editor& editor = GetFrame().GetEditor();
+  const EditorCommand command = editor.CreateCommand("DeleteBackward");
+
+  // Unlike a grapheme cluster of combining characters, Backspace deletes the
+  // whole regional indicator pair "\U0001F1FA\U0001F1F8", so the target ranges
+  // should cover all of its four code units.
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>&#x1F1FA;&#x1F1F8;|</div>"),
+      SetSelectionOptions());
+  Element* div = QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      div, FocusParams(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr));
+  const GCedStaticRangeVector* ranges = command.GetTargetRanges();
+  ASSERT_EQ(1u, ranges->size());
+  const StaticRange& range = *ranges->at(0);
+  EXPECT_EQ(div->firstChild(), range.startContainer());
+  EXPECT_EQ(0u, range.startOffset());
+  EXPECT_EQ(div->firstChild(), range.endContainer());
+  EXPECT_EQ(4u, range.endOffset());
+}
+
+// http://crbug.com/539754135
+TEST_F(EditingCommandTest, DeleteBackwardTargetRangesWithRangeSelection) {
+  Editor& editor = GetFrame().GetEditor();
+  const EditorCommand command = editor.CreateCommand("DeleteBackward");
+
+  // A non-collapsed selection is deleted as is, even when it ends in the middle
+  // of a grapheme cluster.
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable>^&#x0E17;&#x0E35;&#x0E48;|</div>"),
+      SetSelectionOptions());
+  Element* div = QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      div, FocusParams(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr));
+  const GCedStaticRangeVector* ranges = command.GetTargetRanges();
+  ASSERT_EQ(1u, ranges->size());
+  const StaticRange& range = *ranges->at(0);
+  EXPECT_EQ(div->firstChild(), range.startContainer());
+  EXPECT_EQ(0u, range.startOffset());
+  EXPECT_EQ(div->firstChild(), range.endContainer());
+  EXPECT_EQ(3u, range.endOffset());
+}
+
+// http://crbug.com/539754135
+TEST_F(EditingCommandTest, DeleteForwardTargetRangesInGraphemeCluster) {
+  Editor& editor = GetFrame().GetEditor();
+  const EditorCommand command = editor.CreateCommand("DeleteForward");
+
+  // Forward deletion removes the whole grapheme cluster, hence the target
+  // ranges should cover all of its code points.
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<div contenteditable>|&#x0E17;&#x0E35;&#x0E48;</div>"),
+      SetSelectionOptions());
+  Element* div = QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      div, FocusParams(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr));
+  const GCedStaticRangeVector* ranges = command.GetTargetRanges();
+  ASSERT_EQ(1u, ranges->size());
+  const StaticRange& range = *ranges->at(0);
+  EXPECT_EQ(div->firstChild(), range.startContainer());
+  EXPECT_EQ(0u, range.startOffset());
+  EXPECT_EQ(div->firstChild(), range.endContainer());
+  EXPECT_EQ(3u, range.endOffset());
+}
+
 TEST_F(EditingCommandTest, RemoveFormatInPlaintextOnly) {
   Editor& editor = GetDocument().GetFrame()->GetEditor();
   const EditorCommand command = editor.CreateCommand("RemoveFormat");
