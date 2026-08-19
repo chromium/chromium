@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WIN_ISOLATED_BROWSER_TEST_SUPPORT_H_
-#define CHROME_BROWSER_WIN_ISOLATED_BROWSER_TEST_SUPPORT_H_
+#ifndef CHROME_BROWSER_WIN_ISOLATED_BROWSER_ISOLATED_BROWSER_TEST_SUPPORT_H_
+#define CHROME_BROWSER_WIN_ISOLATED_BROWSER_ISOLATED_BROWSER_TEST_SUPPORT_H_
 
 #include <memory>
 #include <string>
@@ -50,4 +50,4 @@ base::Process SpawnIsolatedMultiProcessTestChild(
 
 }  // namespace chrome
 
-#endif  // CHROME_BROWSER_WIN_ISOLATED_BROWSER_TEST_SUPPORT_H_
+#endif  // CHROME_BROWSER_WIN_ISOLATED_BROWSER_ISOLATED_BROWSER_TEST_SUPPORT_H_

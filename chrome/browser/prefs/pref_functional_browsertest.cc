@@ -40,7 +40,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
-#include "chrome/browser/win/isolated_browser_support.h"
+#include "chrome/browser/win/isolated_browser/isolated_browser_support.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #endif  // BUILDFLAG(IS_WIN)
 

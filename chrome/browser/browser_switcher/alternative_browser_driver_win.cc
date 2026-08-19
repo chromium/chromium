@@ -26,7 +26,7 @@
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
-#include "chrome/browser/win/isolated_browser_support.h"
+#include "chrome/browser/win/isolated_browser/isolated_browser_support.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"

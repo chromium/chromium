@@ -26,7 +26,7 @@
 #include "ui/native_theme/os_settings_provider.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/win/isolated_browser_support.h"
+#include "chrome/browser/win/isolated_browser/isolated_browser_support.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {

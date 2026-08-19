@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/win/isolated_browser_support.h"
+#include "chrome/browser/win/isolated_browser/isolated_browser_support.h"
 
 #include <objbase.h>
 
@@ -39,7 +39,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
-#include "chrome/browser/win/isolated_browser_test_support.h"
+#include "chrome/browser/win/isolated_browser/isolated_browser_test_support.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
@@ -392,8 +392,6 @@ TEST_P(IsolatedBrowserSupportSystemTestWithFailures, InjectFailures) {
 INSTANTIATE_TEST_SUITE_P(,
                          IsolatedBrowserSupportSystemTestWithFailures,
                          ::testing::Bool());
-
-
 
 class IsolatedBrowserSupportLaunchTest : public ::testing::Test {
  protected:

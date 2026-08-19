@@ -456,7 +456,7 @@ if (is_win) {
         "//chrome/browser:process_singleton",
         "//chrome/browser:startup_data",
         "//chrome/browser/lifetime",
-        "//chrome/browser/win:isolated_browser_support",
+        "//chrome/browser/win/isolated_browser:isolated_browser_support",
         "//chrome/chrome_elf",
         "//chrome/common:buildflags",
         "//chrome/common:version_header",

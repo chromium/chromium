@@ -31,7 +31,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/win/isolated_browser_support.h"
+#include "chrome/browser/win/isolated_browser/isolated_browser_support.h"
 #include "crypto/random.h"
 #include "net/base/file_stream.h"
 #include "net/base/net_errors.h"

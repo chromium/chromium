@@ -52,7 +52,7 @@ source_set("browser_tests") {
     ":test_support",
     "//base",
     "//chrome/browser:browser_features",
-    "//chrome/browser/win:isolated_browser_support",
+    "//chrome/browser/win/isolated_browser:isolated_browser_support",
     "//chrome/elevation_service:public_headers",
     "//chrome/test:test_support",
     "//chrome/windows_services/service_program/test_support",

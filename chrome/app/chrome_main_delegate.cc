@@ -130,7 +130,7 @@
 #if !defined(BUILDING_CHROME_RENDERER)
 #include "chrome/browser/chrome_browser_main_win.h"       // nogncheck
 #include "chrome/browser/win/browser_util.h"              // nogncheck
-#include "chrome/browser/win/isolated_browser_support.h"  // nogncheck
+#include "chrome/browser/win/isolated_browser/isolated_browser_support.h"  // nogncheck
 #include "chrome/chrome_elf/chrome_elf_main.h"
 #endif  // !defined(BUILDING_CHROME_RENDERER)
 #endif  // BUILDFLAG(IS_WIN)

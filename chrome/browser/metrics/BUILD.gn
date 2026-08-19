@@ -461,7 +461,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/win",
       "//chrome/browser/win:cloud_synced_folder_checker",
-      "//chrome/browser/win:isolated_browser_support",
+      "//chrome/browser/win/isolated_browser:isolated_browser_support",
       "//chrome/notification_helper:constants",
     ]
   }

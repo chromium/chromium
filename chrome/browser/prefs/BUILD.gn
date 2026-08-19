@@ -656,7 +656,7 @@ if (!is_android) {
 
     if (is_win) {
       deps += [
-        "//chrome/browser/win:isolated_browser_support",
+        "//chrome/browser/win/isolated_browser:isolated_browser_support",
         "//chrome/install_static:install_static_util",
       ]
     }
