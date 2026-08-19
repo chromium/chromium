@@ -24,9 +24,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/service_worker/service_worker_prewarm.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1192,7 +1192,7 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerNavigationPreloadTest,
 class ChromeServiceWorkerPrewarmForDSETest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    ChromeContentBrowserClient::
+    chrome_service_worker::
         PrewarmServiceWorkerRegistrationForDSECalledCountForTesting() = 0;
     // The following step starts the browser, and prewarms the registration of
     // ServiceWorker for DSE.
@@ -1200,15 +1200,16 @@ class ChromeServiceWorkerPrewarmForDSETest : public InProcessBrowserTest {
   }
 
   void TearDown() override {
-    ChromeContentBrowserClient::
+    chrome_service_worker::
         PrewarmServiceWorkerRegistrationForDSECalledCountForTesting() =
             std::nullopt;
   }
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerPrewarmForDSETest, PrewarmIsCalled) {
-  EXPECT_GE(*ChromeContentBrowserClient::
-                PrewarmServiceWorkerRegistrationForDSECalledCountForTesting(),
+  EXPECT_GE(chrome_service_worker::
+                PrewarmServiceWorkerRegistrationForDSECalledCountForTesting()
+                    .value(),
             1);
 }
 

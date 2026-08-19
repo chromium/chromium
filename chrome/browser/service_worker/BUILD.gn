@@ -4,6 +4,23 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
+source_set("service_worker") {
+  sources = [
+    "service_worker_prewarm.cc",
+    "service_worker_prewarm.h",
+  ]
+  public_deps = [ "//content/public/browser" ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//components/search_engines",
+    "//content/public/common",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+}
+
 if (enable_extensions) {
   source_set("browser_tests") {
     testonly = true
@@ -13,9 +30,9 @@ if (enable_extensions) {
     sources = [ "chrome_service_worker_browsertest.cc" ]
 
     deps = [
+      ":service_worker",
       "//base",
       "//base/test:test_support",
-      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",

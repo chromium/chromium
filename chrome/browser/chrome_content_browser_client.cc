@@ -164,6 +164,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sensor/chrome_sensor_delegate.h"
 #include "chrome/browser/serial/chrome_serial_delegate.h"
+#include "chrome/browser/service_worker/service_worker_prewarm.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher.h"
 #include "chrome/browser/signin/chrome_signin_proxying_url_loader_factory.h"
 #include "chrome/browser/signin/chrome_signin_url_loader_throttle.h"
@@ -363,7 +364,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/security_principal.h"
-#include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -382,7 +382,6 @@
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/origin_util.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
 #include "device/fido/public/features.h"
@@ -842,10 +841,6 @@ constexpr char kSecurePaymentConfirmationKeychainAccessGroup[] =
 // Whether to disable caching of the advanced-protection state in
 // ShouldEnableStrictSiteIsolation().
 bool g_disable_advanced_protection_caching_for_tests = false;
-
-// Warm up the ServiceWorker registration for DSE.
-BASE_FEATURE(kPrewarmServiceWorkerRegistrationForDSE,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
 // Kill-switch for the request integrity headers support for prefetches
@@ -3754,56 +3749,8 @@ bool ChromeContentBrowserClient::AreThirdPartyCookiesGenerallyAllowed(
 void ChromeContentBrowserClient::PrewarmServiceWorkerRegistrationForDSE(
     content::BrowserContext* browser_context,
     content::ServiceWorkerContext& service_worker_context) {
-  TRACE_EVENT(
-      "ServiceWorker",
-      "ChromeContentBrowserClient::PrewarmServiceWorkerRegistrationForDSE");
-
-  if (ChromeContentBrowserClient::
-          PrewarmServiceWorkerRegistrationForDSECalledCountForTesting()) {
-    CHECK_IS_TEST();
-    ++(*ChromeContentBrowserClient::
-           PrewarmServiceWorkerRegistrationForDSECalledCountForTesting());
-  }
-
-  if (!base::FeatureList::IsEnabled(kPrewarmServiceWorkerRegistrationForDSE)) {
-    return;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-
-  if (!profile) {
-    return;
-  }
-
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
-
-  if (!template_url_service) {
-    return;
-  }
-
-  GURL url =
-      template_url_service->GenerateSearchURLForDefaultSearchProvider(u"");
-
-  if (!content::OriginCanAccessServiceWorkers(url)) {
-    return;
-  }
-
-  const blink::StorageKey key =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
-
-  if (!service_worker_context.MaybeHasRegistrationForStorageKey(key)) {
-    return;
-  }
-
-  service_worker_context.CheckHasServiceWorker(url, key, base::DoNothing());
-}
-
-// static
-std::optional<int>& ChromeContentBrowserClient::
-    PrewarmServiceWorkerRegistrationForDSECalledCountForTesting() {
-  static std::optional<int> call_count;
-  return call_count;
+  chrome_service_worker::PrewarmServiceWorkerRegistrationForDSE(
+      browser_context, service_worker_context);
 }
 
 bool ChromeContentBrowserClient::CanSendSCTAuditingReport(
