@@ -105,8 +105,6 @@ std::pair<std::u16string, DenseSet<AttributeType>> GetValueAndTypesForLabel(
     if (!attribute) {
       return {u"", {type}};
     }
-    std::optional<std::u16string> localized_pattern =
-        data_util::LocalizePattern(date_format, app_locale);
     AutofillFormatString format_string(
         data_util::LocalizePattern(date_format, app_locale)
             .value_or(date_format),
