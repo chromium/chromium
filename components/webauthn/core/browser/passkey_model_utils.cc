@@ -374,7 +374,7 @@ std::optional<std::vector<uint8_t>> GenerateEcSignature(
     base::span<const uint8_t> signed_over_data) {
   auto ec_private_key =
       crypto::keypair::PrivateKey::FromPrivateKeyInfo(pkcs8_ec_private_key);
-  if (!ec_private_key || !ec_private_key->IsEc()) {
+  if (!ec_private_key || !ec_private_key->IsEcP256()) {
     return std::nullopt;
   }
 

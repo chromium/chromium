@@ -8,6 +8,7 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "crypto/keypair.h"
+#include "crypto/sign.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webauthn::passkey_model_utils {
@@ -182,7 +183,7 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyAndEncryptSecrets) {
   auto ec_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
       base::as_byte_span(encrypted_data.private_key()));
   ASSERT_TRUE(ec_key.has_value());
-  ASSERT_TRUE(ec_key->IsEc());
+  ASSERT_TRUE(ec_key->IsEcP256());
   std::vector<uint8_t> ec_key_pub = ec_key->ToSubjectPublicKeyInfo();
   EXPECT_EQ(ec_key_pub, public_key_spki_der);
 
@@ -224,7 +225,7 @@ TEST(PasskeyModelUtilsTest, GeneratePasskeyWithPRFAndEncryptSecrets) {
   auto ec_key = crypto::keypair::PrivateKey::FromPrivateKeyInfo(
       base::as_byte_span(encrypted_data.private_key()));
   ASSERT_TRUE(ec_key.has_value());
-  ASSERT_TRUE(ec_key->IsEc());
+  ASSERT_TRUE(ec_key->IsEcP256());
   std::vector<uint8_t> ec_key_pub = ec_key->ToSubjectPublicKeyInfo();
   EXPECT_EQ(ec_key_pub, public_key_spki_der);
 
@@ -363,6 +364,43 @@ TEST(PasskeyModelUtilsTest, ValidatesMissingEncryptedFields) {
   passkey.clear_encrypted();
   EXPECT_FALSE(IsPasskeyValid(passkey));
   EXPECT_FALSE(IsGpmPasskeyValid(passkey));
+}
+
+TEST(PasskeyModelUtilsTest, GenerateEcSignature_ValidP256) {
+  auto ec_p256_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  std::vector<uint8_t> pkcs8 = ec_p256_key.ToPrivateKeyInfo();
+  const std::vector<uint8_t> data = {1, 2, 3, 4, 5};
+
+  std::optional<std::vector<uint8_t>> signature =
+      GenerateEcSignature(pkcs8, data);
+  ASSERT_TRUE(signature.has_value());
+
+  auto public_key = crypto::keypair::PublicKey::FromPrivateKey(ec_p256_key);
+  EXPECT_TRUE(crypto::sign::Verify(crypto::sign::SignatureKind::ECDSA_SHA256,
+                                   public_key, data, *signature));
+}
+
+TEST(PasskeyModelUtilsTest, GenerateEcSignature_NonP256Key) {
+  const std::vector<uint8_t> data = {1, 2, 3, 4, 5};
+
+  // RSA key should be rejected.
+  auto rsa_key = crypto::keypair::PrivateKey::GenerateRsa2048();
+  EXPECT_FALSE(
+      GenerateEcSignature(rsa_key.ToPrivateKeyInfo(), data).has_value());
+
+  // Ed25519 key should be rejected.
+  auto ed25519_key = crypto::keypair::PrivateKey::GenerateEd25519();
+  EXPECT_FALSE(
+      GenerateEcSignature(ed25519_key.ToPrivateKeyInfo(), data).has_value());
+
+  // EC P-384 key should be rejected (only P-256 is supported for ES256).
+  auto ec_p384_key = crypto::keypair::PrivateKey::GenerateEcP384();
+  EXPECT_FALSE(
+      GenerateEcSignature(ec_p384_key.ToPrivateKeyInfo(), data).has_value());
+
+  // Invalid bytes should be rejected.
+  const std::vector<uint8_t> invalid_bytes = {0x01, 0x02, 0x03};
+  EXPECT_FALSE(GenerateEcSignature(invalid_bytes, data).has_value());
 }
 
 }  // namespace
