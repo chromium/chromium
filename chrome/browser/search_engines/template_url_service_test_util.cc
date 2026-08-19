@@ -320,7 +320,11 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
       web_data_service_.get(),
       std::unique_ptr<TemplateURLServiceClient>(
           new TestingTemplateURLServiceClient(
-              HistoryServiceFactory::GetForProfileIfExists(
+              // Use `GetForProfile()` rather than `GetForProfileIfExists()`:
+              // keyed services are created lazily in testing contexts, so the
+              // history service may not have been instantiated yet even when
+              // the test has registered a testing factory for it.
+              HistoryServiceFactory::GetForProfile(
                   profile(), ServiceAccessType::EXPLICIT_ACCESS),
               &search_term_)),
       base::BindLambdaForTesting([&] { ++dsp_set_to_google_callback_count_; }));
