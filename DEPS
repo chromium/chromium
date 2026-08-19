@@ -477,7 +477,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling crabbyavif
   # and whatever else without interference from each other.
-  'crabbyavif_revision': 'd9be24dd7b4138b9d76868bdb5378ac4cfaf5930',
+  'crabbyavif_revision': '45b8b958cc1242dcf6243244070a8702278eb9bd',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Speedometer main
   # and whatever else without interference from each other.
