@@ -288,6 +288,11 @@ SupervisedUserUrlFilteringService::Observer::~Observer() = default;
 UrlFilteringDelegate::UrlFilteringDelegate() = default;
 UrlFilteringDelegate::~UrlFilteringDelegate() = default;
 
+UrlFilteringDelegate::Statistics
+UrlFilteringDelegate::GetFilteringStatistics() const {
+  return {};
+}
+
 void UrlFilteringDelegate::NotifyUrlFilteringDelegateChanged() const {
   for (auto& observer : observers_) {
     observer.OnUrlFilteringDelegateChanged(*this);

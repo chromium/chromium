@@ -131,7 +131,7 @@ TEST_F(SupervisedUserMetricsServiceTest,
   histogram_tester_.ExpectUniqueSample(
       kManagedSiteListHistogramName,
       /*sample=*/
-      FamilyLinkUrlFilter::ManagedSiteList::kEmpty,
+      SupervisedUserMetricsService::ManagedSiteList::kEmpty,
       /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(kApprovedSitesCountHistogramName,
                                        /*sample=*/0,

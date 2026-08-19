@@ -42,31 +42,6 @@ namespace supervised_user {
 // state which transparently classifies all urls as allowed.
 class FamilyLinkUrlFilter : public UrlFilteringDelegate {
  public:
-  // This enum describes whether the approved list or blocked list is used on
-  // Chrome on Chrome OS, which is set by Family Link App or at
-  // families.google.com/families via "manage sites" setting. This is also
-  // referred to as manual behavior/filter as parent need to add everything one
-  // by one. These values are logged to UMA. Entries should not be renumbered
-  // and numeric values should never be reused. Please keep in sync with
-  // "FamilyLinkManagedSiteList" in src/tools/metrics/histograms/enums.xml.
-  enum class ManagedSiteList {
-    // The web filter has both empty blocked and approved list.
-    kEmpty = 0,
-
-    // The web filter has approved list only.
-    kApprovedListOnly = 1,
-
-    // The web filter has blocked list only.
-    kBlockedListOnly = 2,
-
-    // The web filter has both approved list and blocked list.
-    kBoth = 3,
-
-    // Used for UMA. Update kMaxValue to the last value. Add future entries
-    // above this comment. Sync with enums.xml.
-    kMaxValue = kBoth,
-  };
-
   // This enum describes the kind of conflicts between allow and block list
   // entries that match a given input host and resolve to different filtering
   // results.
@@ -83,17 +58,6 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
     kOtherConflictOnly = 1,
     kTrivialSubdomainConflictAndOtherConflict = 2,
     kMaxValue = kTrivialSubdomainConflictAndOtherConflict,
-  };
-
-  // Encapsulates statistics about this URL filter.
-  struct Statistics {
-    bool operator==(const Statistics& other) const = default;
-    ManagedSiteList GetManagedSiteList() const;
-
-    std::size_t allowed_hosts_count = 0;
-    std::size_t blocked_hosts_count = 0;
-    std::size_t allowed_urls_count = 0;
-    std::size_t blocked_urls_count = 0;
   };
 
   // Provides access to functionality from services on which we don't want
@@ -138,9 +102,6 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
   void UpdateManualHosts();
   void UpdateManualUrls();
 
-  // Returns summary of url filtering settings.
-  Statistics GetFilteringStatistics() const;
-
   // Substitutes the URL filter for testing. For use where TestingFactory cant
   // substitute the checker client.
   void SetURLCheckerClientForTesting(
@@ -159,6 +120,7 @@ class FamilyLinkUrlFilter : public UrlFilteringDelegate {
       WebFilteringResult::Callback callback,
       const WebFilterMetricsOptions& options) override;
   std::string_view GetName() const override;
+  Statistics GetFilteringStatistics() const override;
 
  private:
   // Allows proxying deprecated calls to the filter for the time of migration.

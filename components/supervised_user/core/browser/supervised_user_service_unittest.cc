@@ -100,7 +100,7 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   histogram_tester_.ExpectBucketCount(
       kManagedSiteListHistogramName,
       /*sample=*/
-      FamilyLinkUrlFilter::ManagedSiteList::kBlockedListOnly,
+      SupervisedUserMetricsService::ManagedSiteList::kBlockedListOnly,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(kApprovedSitesCountHistogramName,
                                       /*sample=*/0, /*expected_count=*/2);
@@ -112,7 +112,7 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   histogram_tester_.ExpectBucketCount(
       kManagedSiteListHistogramName,
       /*sample=*/
-      FamilyLinkUrlFilter::ManagedSiteList::kApprovedListOnly,
+      SupervisedUserMetricsService::ManagedSiteList::kApprovedListOnly,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(kApprovedSitesCountHistogramName,
                                       /*sample=*/1, /*expected_count=*/1);
@@ -127,7 +127,7 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   histogram_tester_.ExpectBucketCount(
       kManagedSiteListHistogramName,
       /*sample=*/
-      FamilyLinkUrlFilter::ManagedSiteList::kBoth,
+      SupervisedUserMetricsService::ManagedSiteList::kBoth,
       /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(kApprovedSitesCountHistogramName,
                                       /*sample=*/1, /*expected_count=*/2);

@@ -309,23 +309,6 @@ void FamilyLinkUrlFilter::OnFamilyLinkSettingsChanged(
   NotifyUrlFilteringDelegateChanged();
 }
 
-FamilyLinkUrlFilter::ManagedSiteList
-FamilyLinkUrlFilter::Statistics::GetManagedSiteList() const {
-  if (allowed_hosts_count + blocked_hosts_count + allowed_urls_count +
-          blocked_urls_count ==
-      0) {
-    return ManagedSiteList::kEmpty;
-  }
-  if (allowed_hosts_count + allowed_urls_count > 0 &&
-      blocked_hosts_count + blocked_urls_count > 0) {
-    return ManagedSiteList::kBoth;
-  }
-  if (allowed_hosts_count + allowed_urls_count > 0) {
-    return ManagedSiteList::kApprovedListOnly;
-  }
-  return ManagedSiteList::kBlockedListOnly;
-}
-
 // static
 // Note: The transformations applied to pattern (e.g. protocol/subdomain
 // stripping) should be kept in sync with those in the method
@@ -594,7 +577,7 @@ void FamilyLinkUrlFilter::UpdateManualUrls() {
   }
 }
 
-FamilyLinkUrlFilter::Statistics FamilyLinkUrlFilter::GetFilteringStatistics()
+UrlFilteringDelegate::Statistics FamilyLinkUrlFilter::GetFilteringStatistics()
     const {
   return statistics_;
 }

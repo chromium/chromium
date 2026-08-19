@@ -69,6 +69,23 @@ std::string GetWebFilterTypeHistogramName(bool is_family_link,
                        is_family_link ? ".FamilyLink" : ".LocallySupervised"});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/families/histograms.xml:supervised_user_web_filter_type_user_type)
 }
+
+SupervisedUserMetricsService::ManagedSiteList GetManagedSiteList(
+    const UrlFilteringDelegate::Statistics& statistics) {
+  if (statistics.allowed_hosts_count + statistics.blocked_hosts_count +
+          statistics.allowed_urls_count + statistics.blocked_urls_count ==
+      0) {
+    return SupervisedUserMetricsService::ManagedSiteList::kEmpty;
+  }
+  if (statistics.allowed_hosts_count + statistics.allowed_urls_count > 0 &&
+      statistics.blocked_hosts_count + statistics.blocked_urls_count > 0) {
+    return SupervisedUserMetricsService::ManagedSiteList::kBoth;
+  }
+  if (statistics.allowed_hosts_count + statistics.allowed_urls_count > 0) {
+    return SupervisedUserMetricsService::ManagedSiteList::kApprovedListOnly;
+  }
+  return SupervisedUserMetricsService::ManagedSiteList::kBlockedListOnly;
+}
 }  // namespace
 
 // static
@@ -199,7 +216,7 @@ bool SupervisedUserMetricsService::TryEmittingFamilyLinkMetrics() {
   if (!last_recorded_statistics_.has_value() ||
       *last_recorded_statistics_ !=
           supervised_user_service_->GetURLFilter()->GetFilteringStatistics()) {
-    FamilyLinkUrlFilter::Statistics statistics =
+    UrlFilteringDelegate::Statistics statistics =
         supervised_user_service_->GetURLFilter()->GetFilteringStatistics();
 
     base::UmaHistogramCounts1000(
@@ -209,7 +226,7 @@ bool SupervisedUserMetricsService::TryEmittingFamilyLinkMetrics() {
         kBlockedSitesCountHistogramName,
         statistics.blocked_hosts_count + statistics.blocked_urls_count);
     base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
-                                  statistics.GetManagedSiteList());
+                                  GetManagedSiteList(statistics));
     last_recorded_statistics_ = statistics;
     emitted = true;
   }
