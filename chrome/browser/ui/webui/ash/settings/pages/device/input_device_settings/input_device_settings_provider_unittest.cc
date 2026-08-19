@@ -586,8 +586,6 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
   ~InputDeviceSettingsProviderTest() override = default;
 
   void SetUp() override {
-    feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    feature_list_->InitWithFeatures({features::kPeripheralCustomization}, {});
     views::ViewsTestBase::SetUp();
     widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);

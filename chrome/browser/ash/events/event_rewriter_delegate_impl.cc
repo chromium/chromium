@@ -96,14 +96,12 @@ bool EventRewriterDelegateImpl::TopRowKeysAreFunctionKeys(int device_id) const {
     return settings->top_row_are_fkeys;
   }
 
-  if (ash::features::IsPeripheralCustomizationEnabled()) {
-    bool is_mouse_or_tablet =
-        input_device_settings_controller_->GetMouseSettings(device_id) ||
-        input_device_settings_controller_->GetGraphicsTabletSettings(device_id);
-    if (is_mouse_or_tablet) {
-      // If it is a mouse or graphics tablet, do not rewrite function keys.
-      return true;
-    }
+  bool is_mouse_or_tablet =
+      input_device_settings_controller_->GetMouseSettings(device_id) ||
+      input_device_settings_controller_->GetGraphicsTabletSettings(device_id);
+  if (is_mouse_or_tablet) {
+    // If it is a mouse or graphics tablet, do not rewrite function keys.
+    return true;
   }
 
   // If we really don't know what device this is, fall back to respecting the
@@ -174,14 +172,10 @@ bool EventRewriterDelegateImpl::RewriteMetaTopRowKeyComboEvents(
     return !settings->suppress_meta_fkey_rewrites;
   }
 
-  if (ash::features::IsPeripheralCustomizationEnabled()) {
-    // If it is a mouse or graphics tablet, do not rewrite function keys.
-    return !(input_device_settings_controller_->GetMouseSettings(device_id) ||
-             input_device_settings_controller_->GetGraphicsTabletSettings(
-                 device_id));
-  }
-
-  return true;
+  // If it is a mouse or graphics tablet, do not rewrite function keys.
+  return !(
+      input_device_settings_controller_->GetMouseSettings(device_id) ||
+      input_device_settings_controller_->GetGraphicsTabletSettings(device_id));
 }
 
 void EventRewriterDelegateImpl::SuppressMetaTopRowKeyComboRewrites(

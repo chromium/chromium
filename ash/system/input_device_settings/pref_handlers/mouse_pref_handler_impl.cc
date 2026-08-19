@@ -266,9 +266,7 @@ void UpdateMouseSettingsImpl(
   pref_service->SetDict(std::string(prefs::kMouseDeviceSettingsDictPref),
                         std::move(devices_dict));
 
-  if (features::IsPeripheralCustomizationEnabled()) {
-    UpdateButtonRemappingDictPref(pref_service, mouse, time_stamp);
-  }
+  UpdateButtonRemappingDictPref(pref_service, mouse, time_stamp);
 }
 
 mojom::MouseSettingsPtr GetMouseSettingsFromOldLocalStatePrefs(
@@ -356,21 +354,19 @@ void InitializeMouseSettingsImpl(PrefService* pref_service,
     PR_LOG(INFO, Feature::IDS)
         << GetMouseSettingsLog("First time connected", *mouse);
   }
-  if (features::IsPeripheralCustomizationEnabled()) {
-    const auto& button_remappings_dict =
-        pref_service->GetDict(prefs::kMouseButtonRemappingsDictPref);
-    const auto* button_remappings_list =
-        button_remappings_dict.FindList(mouse->device_key);
-    if (button_remappings_list) {
-      auto button_remappings = ConvertListToButtonRemappingArray(
-          *button_remappings_list, mouse->customization_restriction);
-      UpdateButtonRemappingsWithCompleteList(mouse->mouse_button_config,
-                                             button_remappings);
-      mouse->settings->button_remappings = std::move(button_remappings);
-    } else {
-      mouse->settings->button_remappings =
-          GetButtonRemappingListForConfig(mouse->mouse_button_config);
-    }
+  const auto& button_remappings_dict =
+      pref_service->GetDict(prefs::kMouseButtonRemappingsDictPref);
+  const auto* button_remappings_list =
+      button_remappings_dict.FindList(mouse->device_key);
+  if (button_remappings_list) {
+    auto button_remappings = ConvertListToButtonRemappingArray(
+        *button_remappings_list, mouse->customization_restriction);
+    UpdateButtonRemappingsWithCompleteList(mouse->mouse_button_config,
+                                           button_remappings);
+    mouse->settings->button_remappings = std::move(button_remappings);
+  } else {
+    mouse->settings->button_remappings =
+        GetButtonRemappingListForConfig(mouse->mouse_button_config);
   }
   DCHECK(mouse->settings);
   InitializeSettingsUpdateMetricInfo(pref_service, *mouse, category);
@@ -430,17 +426,14 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
     mouse->settings->swap_right = mouse_policies.swap_right_policy->value;
   }
 
-  if (features::IsPeripheralCustomizationEnabled()) {
-    const auto* button_remappings_list = GetLoginScreenButtonRemappingList(
-        local_state, account_id,
-        prefs::kMouseLoginScreenButtonRemappingListPref);
-    if (button_remappings_list) {
-      mouse->settings->button_remappings = ConvertListToButtonRemappingArray(
-          *button_remappings_list, mouse->customization_restriction);
-    } else {
-      mouse->settings->button_remappings =
-          GetButtonRemappingListForConfig(mouse->mouse_button_config);
-    }
+  const auto* button_remappings_list = GetLoginScreenButtonRemappingList(
+      local_state, account_id, prefs::kMouseLoginScreenButtonRemappingListPref);
+  if (button_remappings_list) {
+    mouse->settings->button_remappings = ConvertListToButtonRemappingArray(
+        *button_remappings_list, mouse->customization_restriction);
+  } else {
+    mouse->settings->button_remappings =
+        GetButtonRemappingListForConfig(mouse->mouse_button_config);
   }
 }
 
@@ -462,17 +455,15 @@ void MousePrefHandlerImpl::UpdateLoginScreenMouseSettings(
           std::make_optional<base::Value>(ConvertSettingsToDict(
               mouse, mouse_policies, /*force_persistence=*/{}, settings_dict)));
 
-  if (features::IsPeripheralCustomizationEnabled()) {
-    const auto* button_remapping_list_pref =
-        prefs::kMouseLoginScreenButtonRemappingListPref;
-    user_manager::KnownUser(local_state)
-        .SetPath(
-            account_id, button_remapping_list_pref,
-            std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
-                mouse.settings->button_remappings,
-                mouse.customization_restriction,
-                /*redact_button_names=*/true)));
-  }
+  const auto* button_remapping_list_pref =
+      prefs::kMouseLoginScreenButtonRemappingListPref;
+  user_manager::KnownUser(local_state)
+      .SetPath(
+          account_id, button_remapping_list_pref,
+          std::make_optional<base::Value>(ConvertButtonRemappingArrayToList(
+              mouse.settings->button_remappings,
+              mouse.customization_restriction,
+              /*redact_button_names=*/true)));
 }
 
 void MousePrefHandlerImpl::InitializeWithDefaultMouseSettings(

@@ -1981,9 +1981,6 @@ INSTANTIATE_TEST_SUITE_P(
                                              kVolumeButtonSideBottom)}));
 
 TEST_F(AcceleratorControllerTest, PressAndReleasePowerButtonWithFunctionKey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kPeripheralCustomization}, {});
-
   const int kKeyboardDeviceIdWithFunction = 123;
   const int kKeyboardDeviceId = 456;
   const ui::KeyboardDevice keyboard_with_function(
@@ -2047,9 +2044,6 @@ TEST_F(AcceleratorControllerTest, PressAndReleasePowerButtonWithFunctionKey) {
 }
 
 TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsWithFunctionKey) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kPeripheralCustomization}, {});
-
   AnchoredNudgeManagerImpl* nudge_manager =
       Shell::Get()->anchored_nudge_manager();
   ASSERT_TRUE(nudge_manager);
@@ -2094,7 +2088,6 @@ TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsWithFunctionKey) {
   // Notification showing caps lock blocked by function key should show up.
   EXPECT_TRUE(nudge_manager->GetNudgeIfShown(kCapsLockNoMatchNudgeId));
   nudge_manager->Cancel(kCapsLockNoMatchNudgeId);
-  feature_list.Reset();
 }
 
 // Tests the AcceleratorAction::kToggleCapsLock accelerator.

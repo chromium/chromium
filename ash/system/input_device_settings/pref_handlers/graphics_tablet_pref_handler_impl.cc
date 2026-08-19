@@ -148,10 +148,6 @@ void GraphicsTabletPrefHandlerImpl::InitializeLoginScreenGraphicsTabletSettings(
     PrefService* local_state,
     const AccountId& account_id,
     mojom::GraphicsTablet* graphics_tablet) {
-  // Verify if the flag is enabled.
-  if (!features::IsPeripheralCustomizationEnabled()) {
-    return;
-  }
   CHECK(local_state);
 
   mojom::GraphicsTabletSettingsPtr settings =

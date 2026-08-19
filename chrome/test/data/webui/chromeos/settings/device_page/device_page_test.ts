@@ -60,14 +60,6 @@ suite('<settings-device-page>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  /**
-   * Set enablePeripheralCustomization feature flag to true for tests.
-   */
-  function setPeripheralCustomizationEnabled(isEnabled: boolean): void {
-    loadTimeData.overrideValues({
-      enablePeripheralCustomization: isEnabled,
-    });
-  }
 
   /**
    * Set enableSpatialAudioToggle feature flag to true for tests.
@@ -99,7 +91,6 @@ suite('<settings-device-page>', () => {
     assertTrue(isVisible(
         devicePage.shadowRoot!.querySelector('#perDeviceKeyboardRow')));
 
-    // enablePeripheralCustomization feature flag by default is turned on.
     assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#tabletRow')));
   });
 
@@ -186,8 +177,6 @@ suite('<settings-device-page>', () => {
           setInputDeviceSettingsProviderForTesting(provider);
           provider.setFakeGraphicsTablets(fakeGraphicsTablets);
 
-          // Tests with flag on.
-          setPeripheralCustomizationEnabled(true);
           await init();
 
           assertTrue(isVisible(queryTabletRow()));
@@ -206,8 +195,6 @@ suite('<settings-device-page>', () => {
       setInputDeviceSettingsProviderForTesting(provider);
       provider.setFakeGraphicsTablets(fakeGraphicsTablets);
 
-      // Tests with flag on.
-      setPeripheralCustomizationEnabled(true);
       await init();
 
       const row = queryTabletRow();
@@ -1712,39 +1699,6 @@ suite('<settings-device-page>', () => {
   });
 
   suite('pointers subpage navigation', () => {
-    class AsyncInputDeviceSettingsProvider extends
-        FakeInputDeviceSettingsProvider {
-      private pointingStickObserver_:
-          {onPointingStickListUpdated(sticks: any): void}|null = null;
-      private touchpadObserver_: {onTouchpadListUpdated(touchpads: any): void}|
-          null = null;
-      private mouseObserver_: {onMouseListUpdated(mice: any): void}|null = null;
-
-      override observePointingStickSettings(observer: any): void {
-        this.pointingStickObserver_ = observer;
-      }
-
-      override observeTouchpadSettings(observer: any): void {
-        this.touchpadObserver_ = observer;
-      }
-
-      override observeMouseSettings(observer: any): void {
-        this.mouseObserver_ = observer;
-      }
-
-      emitPointingSticks(sticks: any): void {
-        this.pointingStickObserver_?.onPointingStickListUpdated(sticks);
-      }
-
-      emitTouchpads(touchpads: any): void {
-        this.touchpadObserver_?.onTouchpadListUpdated(touchpads);
-      }
-
-      emitMice(mice: any): void {
-        this.mouseObserver_?.onMouseListUpdated(mice);
-      }
-    }
-
     teardown(() => {
       const provider = new FakeInputDeviceSettingsProvider();
       provider.setFakeMice(fakeMice);
@@ -1765,86 +1719,6 @@ suite('<settings-device-page>', () => {
 
           Router.getInstance().navigateTo(routes.POINTERS);
           await init();
-
-          assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
-        });
-
-    test(
-        'pointer subpage remains on pointers route when a device is connected',
-        async () => {
-          if (loadTimeData.getBoolean('enablePeripheralCustomization')) {
-            return;
-          }
-
-          const provider = new FakeInputDeviceSettingsProvider();
-          provider.setFakeMice(fakeMice);
-          provider.setFakePointingSticks([]);
-          provider.setFakeTouchpads([]);
-          setInputDeviceSettingsProviderForTesting(provider);
-
-          Router.getInstance().navigateTo(routes.POINTERS);
-          await init();
-
-          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-        });
-
-    test(
-        'pointer subpage does not redirect prematurely when IPC calls ' +
-            'arrive out-of-order',
-        async () => {
-          if (loadTimeData.getBoolean('enablePeripheralCustomization')) {
-            return;
-          }
-
-          const provider = new AsyncInputDeviceSettingsProvider();
-          setInputDeviceSettingsProviderForTesting(provider);
-
-          Router.getInstance().navigateTo(routes.POINTERS);
-          await init();
-
-          // IPC 1: Pointing stick finishes first with an empty list.
-          provider.emitPointingSticks([]);
-          await flushTasks();
-          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-
-          // IPC 2: Touchpad finishes next with an empty list.
-          provider.emitTouchpads([]);
-          await flushTasks();
-          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-
-          // IPC 3: Mouse finishes last with a connected mouse.
-          provider.emitMice(fakeMice);
-          await flushTasks();
-          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-        });
-
-    test(
-        'pointer subpage redirects to device route only after ALL async ' +
-            'IPC calls complete empty',
-        async () => {
-          if (loadTimeData.getBoolean('enablePeripheralCustomization')) {
-            return;
-          }
-
-          const provider = new AsyncInputDeviceSettingsProvider();
-          setInputDeviceSettingsProviderForTesting(provider);
-
-          Router.getInstance().navigateTo(routes.POINTERS);
-          await init();
-
-          // IPC 1: Pointing stick finishes first with an empty list.
-          provider.emitPointingSticks([]);
-          await flushTasks();
-          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-
-          // IPC 2: Touchpad finishes next with an empty list.
-          provider.emitTouchpads([]);
-          await flushTasks();
-          assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-
-          // IPC 3: Mouse finishes last with []. Now all 3 IPCs complete empty.
-          provider.emitMice([]);
-          await flushTasks();
 
           assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
         });

@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -24,7 +23,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -807,8 +805,6 @@ TEST_F(PenTabletEventConverterEvdevTest, StylusButtonPress) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PenTabletEventConverterEvdevTest, TabletButtonPress) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({ash::features::kPeripheralCustomization}, {});
 
   std::unique_ptr<ui::MockPenTabletEventConverterEvdev> dev =
       CreateDevice(kWacomIntuos5SPen);

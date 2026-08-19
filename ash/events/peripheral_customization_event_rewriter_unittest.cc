@@ -512,8 +512,6 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
-                                          {});
     AshTestBase::SetUp();
     controller_scoped_resetter_ = std::make_unique<
         InputDeviceSettingsController::ScopedResetterForTest>();
@@ -567,7 +565,6 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
     controller_.reset();
     controller_scoped_resetter_.reset();
     AshTestBase::TearDown();
-    scoped_feature_list_.Reset();
     metrics_manager_.reset();
   }
 
@@ -756,7 +753,6 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
       controller_scoped_resetter_;
   std::unique_ptr<testing::NiceMock<TestInputDeviceSettingsController>>
       controller_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   mojom::KeyboardPtr keyboard_;
   mojom::MousePtr mouse_;
   mojom::GraphicsTabletPtr graphics_tablet_;

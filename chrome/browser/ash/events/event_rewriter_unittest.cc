@@ -5310,9 +5310,6 @@ TEST_F(EventRewriterRemapToRightClickTest, RemapToRightClickIsDisabled) {
 class FKeysRewritingPeripheralCustomizationTest : public EventRewriterTestBase {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
-                                          {});
-
     EventRewriterTestBase::SetUp();
   }
 

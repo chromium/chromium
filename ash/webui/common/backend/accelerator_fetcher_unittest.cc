@@ -77,10 +77,7 @@ class FakeAcceleratorFetcherObserver
 
 class AcceleratorFetcherTest : public AshTestBase {
  public:
-  AcceleratorFetcherTest() {
-    scoped_feature_list_.InitWithFeatures({features::kPeripheralCustomization},
-                                          {});
-  }
+  AcceleratorFetcherTest() = default;
 
   void SetUp() override {
     ui::ResourceBundle::CleanupSharedInstance();
