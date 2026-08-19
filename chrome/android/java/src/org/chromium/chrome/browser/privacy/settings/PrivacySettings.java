@@ -69,6 +69,7 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.safe_browsing.OsAdditionalSecurityProvider;
 import org.chromium.components.safe_browsing.OsAdditionalSecurityUtil;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -279,7 +280,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
             scrollToPreference(PREF_ADVANCED_PROTECTION_INFO);
         }
 
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)) {
+        if (!shouldShowUniversalOptOutSettings()) {
             getPreferenceScreen().removePreference(findPreference(PREF_UNIVERSAL_OPT_OUT));
         }
 
@@ -394,7 +395,7 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                             : R.string.text_off);
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)) {
+        if (shouldShowUniversalOptOutSettings()) {
             Preference universalOptOutPref = findPreference(PREF_UNIVERSAL_OPT_OUT);
             if (universalOptOutPref != null) {
                 universalOptOutPref.setSummary(
@@ -466,6 +467,16 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                                 getProfile(), ContentSettingsType.JAVASCRIPT_OPTIMIZER)
                         ? R.string.website_settings_category_javascript_optimizer_allowed_list
                         : R.string.website_settings_category_javascript_optimizer_blocked_list);
+    }
+
+    private boolean shouldShowUniversalOptOutSettings() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_OPT_OUT_SETTINGS)) {
+            return false;
+        }
+
+        PrefService userPrefs = UserPrefs.get(getProfile());
+        return userPrefs.getBoolean(Pref.UNIVERSAL_OPT_OUT_ENABLED)
+                || userPrefs.getBoolean(Pref.UNIVERSAL_OPT_OUT_ELIGIBLE);
     }
 
     /** Shows the advanced-protection-section if needed. */
