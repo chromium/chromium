@@ -118,7 +118,6 @@ class ColorProviderSource;
 }  // namespace ui
 
 namespace gfx {
-class Point;
 class PointF;
 class Rect;
 }  // namespace gfx
@@ -1196,9 +1195,9 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual const std::optional<gfx::Rect> GetTextSelectionBounds(
       RenderFrameHost* render_frame_host) const = 0;
 
-  // Returns the point of the focus selection in global screen coordinates in
+  // Returns the bounds of the focus selection in global screen coordinates in
   // DIPs.
-  virtual const std::optional<gfx::Point> GetFocusSelectionPoint(
+  virtual const std::optional<gfx::Rect> GetFocusSelectionBounds(
       RenderFrameHost* render_frame_host) const = 0;
 
   // Notifies when the selection bounds change. This is provided using a

@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -210,9 +211,9 @@ void DictationOverlayView::UpdatePosition(
     return;
   }
 
-  std::optional<gfx::Point> point =
-      web_contents->GetFocusSelectionPoint(target_rfh);
-  if (!point.has_value()) {
+  std::optional<gfx::Rect> bounds =
+      web_contents->GetFocusSelectionBounds(target_rfh);
+  if (!bounds.has_value()) {
     return;
   }
 
@@ -223,7 +224,8 @@ void DictationOverlayView::UpdatePosition(
     return;
   }
 
-  UpdatePosition(*point);
+  gfx::Point point = bounds->origin() + gfx::Vector2d(bounds->width(), 0);
+  UpdatePosition(point);
   Show();
 }
 

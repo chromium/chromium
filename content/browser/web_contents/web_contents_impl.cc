@@ -6682,7 +6682,7 @@ const std::optional<gfx::Rect> WebContentsImpl::GetTextSelectionBounds(
   return std::nullopt;
 }
 
-const std::optional<gfx::Point> WebContentsImpl::GetFocusSelectionPoint(
+const std::optional<gfx::Rect> WebContentsImpl::GetFocusSelectionBounds(
     RenderFrameHost* render_frame_host) const {
   if (text_input_manager_ && render_frame_host) {
     auto* view =
@@ -6696,8 +6696,7 @@ const std::optional<gfx::Point> WebContentsImpl::GetFocusSelectionPoint(
         gfx::Rect bounds = gfx::BoundingRect(start, end);
         gfx::Point origin = bounds.origin();
         origin += root_view->GetViewBounds().OffsetFromOrigin();
-        origin += gfx::Vector2d(bounds.width(), bounds.height());
-        return origin;
+        return gfx::Rect(origin, bounds.size());
       }
     }
   }
