@@ -20,7 +20,6 @@ struct CreditCardSaveStrikeDatabaseTraits {
   static constexpr std::optional<size_t> kMaxStrikeEntities;
   static constexpr std::optional<size_t> kMaxStrikeEntitiesAfterCleanup;
   static constexpr size_t kMaxStrikeLimit = 3;
-  static constexpr base::TimeDelta kRequiredDelayBetweenStrikes = base::Days(7);
   static constexpr base::TimeDelta kExpiryTimeDelta = base::Days(183);
   static constexpr bool kUniqueIdRequired = true;
 };

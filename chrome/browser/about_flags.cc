@@ -4914,6 +4914,18 @@ const FeatureEntry::FeatureVariation kAutofillAiWalletPassBranding2026Variations
      nullptr},
 };
 
+const FeatureEntry::FeatureParam kAutofillUpstreamEnforceStrikeDelay1Day[] = {
+    {"autofill_upstream_enforce_strike_delay_days", "1"}};
+const FeatureEntry::FeatureParam kAutofillUpstreamEnforceStrikeDelay3Days[] = {
+    {"autofill_upstream_enforce_strike_delay_days", "3"}};
+const FeatureEntry::FeatureParam kAutofillUpstreamEnforceStrikeDelay7Days[] = {
+    {"autofill_upstream_enforce_strike_delay_days", "7"}};
+const FeatureEntry::FeatureVariation
+    kAutofillUpstreamEnforceStrikeDelayVariations[] = {
+        {"1 day", kAutofillUpstreamEnforceStrikeDelay1Day, nullptr},
+        {"3 days", kAutofillUpstreamEnforceStrikeDelay3Days, nullptr},
+        {"7 days", kAutofillUpstreamEnforceStrikeDelay7Days, nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13203,8 +13215,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"autofill-upstream-enforce-strike-delay",
      flag_descriptions::kAutofillUpstreamEnforceStrikeDelayName,
      flag_descriptions::kAutofillUpstreamEnforceStrikeDelayDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUpstreamEnforceStrikeDelay)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         autofill::features::kAutofillUpstreamEnforceStrikeDelay,
+         kAutofillUpstreamEnforceStrikeDelayVariations,
+         "AutofillUpstreamEnforceStrikeDelay")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"exact-match-favicons", flag_descriptions::kExactMatchFaviconsName,

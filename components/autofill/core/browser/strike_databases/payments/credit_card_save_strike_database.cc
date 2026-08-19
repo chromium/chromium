@@ -16,9 +16,8 @@ std::optional<base::TimeDelta>
 CreditCardSaveStrikeDatabase::GetRequiredDelaySinceLastStrike() const {
   return base::FeatureList::IsEnabled(
              features::kAutofillUpstreamEnforceStrikeDelay)
-             ? std::optional<base::TimeDelta>(
-                   CreditCardSaveStrikeDatabaseTraits::
-                       kRequiredDelayBetweenStrikes)
+             ? std::optional<base::TimeDelta>(base::Days(
+                   features::kAutofillUpstreamEnforceStrikeDelayDays.Get()))
              : std::nullopt;
 }
 

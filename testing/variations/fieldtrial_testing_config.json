@@ -3534,6 +3534,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "autofill_upstream_enforce_strike_delay_days": "1"
+                    },
                     "enable_features": [
                         "AutofillUpstreamEnforceStrikeDelay"
                     ]

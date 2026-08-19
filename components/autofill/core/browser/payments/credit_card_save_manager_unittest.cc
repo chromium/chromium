@@ -6209,6 +6209,33 @@ TEST_F(CreditCardSaveManagerTest,
 }
 #endif
 
+class UpstreamStrikeDelayTest : public CreditCardSaveManagerTest,
+                                public testing::WithParamInterface<int> {
+ public:
+  void SetUp() override {
+    CreditCardSaveManagerTest::SetUp();
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAutofillUpstreamEnforceStrikeDelay,
+        {{"autofill_upstream_enforce_strike_delay_days",
+          base::NumberToString(GetParam())}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(UpstreamStrikeDelayTest, StrikeDelay) {
+  TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
+      TestCreditCardSaveStrikeDatabase(&strike_database());
+  EXPECT_EQ(base::Days(GetParam()),
+            credit_card_save_strike_database.GetRequiredDelaySinceLastStrike()
+                .value());
+}
+
+INSTANTIATE_TEST_SUITE_P(CreditCardSaveManagerTest,
+                         UpstreamStrikeDelayTest,
+                         testing::Values(1, 3, 7));
+
 // Tests that adding a card clears all strikes for that card.
 TEST_F(CreditCardSaveManagerTest, LocallySaveCreditCard_ClearStrikesOnAdd) {
   credit_card_save_manager().SetCreditCardUploadEnabled(false);

@@ -396,9 +396,13 @@ BASE_FEATURE(kAutofillTouchToFillShowManualFillForVcnFix,
 BASE_FEATURE(kAutofillUpstream, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, users should not see offers to save the same credit card twice
-// in a week, as the strike database enforces a 7-day delay between strikes.
+// in a short period of time, as the strike database enforces a 1/3/7-day delay
+// between strikes.
 BASE_FEATURE(kAutofillUpstreamEnforceStrikeDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAutofillUpstreamEnforceStrikeDelayDays{
+    &kAutofillUpstreamEnforceStrikeDelay,
+    "autofill_upstream_enforce_strike_delay_days", 1};
 
 bool ShouldShowImprovedUserConsentForCreditCardSave() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
