@@ -2836,6 +2836,18 @@ TEST_P(CSSAnimationsTriggerTest, CoordinatedTimelineTriggerDeclarations) {
         timeline-trigger-name: --trigger1, --trigger2;
         timeline-trigger-source: auto, view();
       }
+      .view_none {
+        timeline-trigger-name: --trigger1, --trigger2;
+        timeline-trigger-source: view(), none;
+      }
+      .none_view {
+        timeline-trigger-name: --trigger1, --trigger2;
+        timeline-trigger-source: none, view();
+      }
+      .none {
+        timeline-trigger-name: --trigger1, --trigger2;
+        timeline-trigger-source: none;
+      }
 
       #source {
         height: 50px;
@@ -2918,6 +2930,38 @@ TEST_P(CSSAnimationsTriggerTest, CoordinatedTimelineTriggerDeclarations) {
   test_timeline_type(get_trigger(AtomicString("--trigger2")),
                      /*is_view=*/true,
                      /*is_scroll=*/true, /*is_document=*/false);
+
+  source->classList().Remove(AtomicString("auto_view"));
+  source->classList().Add(AtomicString("view_none"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      window->getComputedStyle(source)->getPropertyValue("timeline-trigger"),
+      String("--trigger1 view(), --trigger2 none"));
+  test_timeline_type(get_trigger(AtomicString("--trigger1")),
+                     /*is_view=*/true, /*is_scroll=*/true,
+                     /*is_document=*/false);
+  EXPECT_EQ(get_trigger(AtomicString("--trigger2"))->Timeline(), nullptr);
+
+  source->classList().Remove(AtomicString("view_none"));
+  source->classList().Add(AtomicString("none_view"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      window->getComputedStyle(source)->getPropertyValue("timeline-trigger"),
+      String("--trigger1 none, --trigger2 view()"));
+  EXPECT_EQ(get_trigger(AtomicString("--trigger1"))->Timeline(), nullptr);
+  test_timeline_type(get_trigger(AtomicString("--trigger2")),
+                     /*is_view=*/true, /*is_scroll=*/true,
+                     /*is_document=*/false);
+
+  source->classList().Remove(AtomicString("none_view"));
+  source->classList().Add(AtomicString("none"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(
+      window->getComputedStyle(source)->getPropertyValue("timeline-trigger"),
+      String("--trigger1 none, --trigger2 none"));
+  EXPECT_EQ(source->NamedTriggers()->size(), 2);
+  EXPECT_EQ(get_trigger(AtomicString("--trigger1"))->Timeline(), nullptr);
+  EXPECT_EQ(get_trigger(AtomicString("--trigger2"))->Timeline(), nullptr);
 }
 
 TEST_P(CSSAnimationsTriggerTest, NestedScopeAvoidsTriggerUpdates) {

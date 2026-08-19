@@ -435,7 +435,7 @@ TimelineTriggerRange::ComputeState() {
 
 std::optional<TimelineTriggerRange::CcBoundaries>
 TimelineTriggerRange::ComputeCcBoundaries(cc::AnimationTimeline* cc_timeline) {
-  if (!timeline_->IsProgressBased()) {
+  if (!timeline_ || !timeline_->IsProgressBased()) {
     // Non progress based triggers are always in a tripped state,
     // no need to composite the trigger so we should not be in this function.
     return std::nullopt;

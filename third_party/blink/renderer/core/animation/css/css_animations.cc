@@ -1600,9 +1600,6 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
   AnimationTimeline* new_timeline =
       ComputeTimeline(element, data->GetTimelineTriggerSource(animation_index),
                       update, existing_timeline);
-  if (!new_timeline) {
-    new_timeline = &element->GetDocument().Timeline();
-  }
 
   const std::optional<TimelineOffset>& new_activation_start_offset =
       CSSAnimationData::GetRepeated(

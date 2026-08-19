@@ -2085,8 +2085,9 @@ String StylePropertySerializer::GetLayeredShorthandValue(
           const auto* timeline_identifier =
               DynamicTo<CSSIdentifierValue>(value);
           if (timeline_identifier) {
-            DCHECK(timeline_identifier->GetValueID() == CSSValueID::kAuto);
-            omit_value = true;
+            DCHECK(timeline_identifier->GetValueID() == CSSValueID::kAuto ||
+                   timeline_identifier->GetValueID() == CSSValueID::kNone);
+            omit_value = timeline_identifier->GetValueID() == CSSValueID::kAuto;
           }
         } else if (property->IDEquals(
                        CSSPropertyID::kTimelineTriggerActivationRangeStart)) {
