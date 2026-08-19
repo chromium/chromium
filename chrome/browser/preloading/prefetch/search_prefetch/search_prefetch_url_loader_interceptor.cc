@@ -114,7 +114,8 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   }
 
   if (is_prerender_main_frame_navigation) {
-    return service->MaybeCreateResponseReader(tentative_resource_request);
+    return service->MaybeCreateResponseReaderForPrerender(
+        tentative_resource_request);
   }
 
   DCHECK(is_primary_main_frame_navigation);

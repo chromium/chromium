@@ -503,7 +503,7 @@ void SearchPrefetchService::OnPrerenderedRequestUsed(
 }
 
 SearchPrefetchURLLoader::RequestHandler
-SearchPrefetchService::MaybeCreateResponseReader(
+SearchPrefetchService::MaybeCreateResponseReaderForPrerender(
     const network::ResourceRequest& tentative_resource_request) {
   SearchPrefetchServingReasonRecorder recorder{/*for_prerender=*/true};
   auto iter =

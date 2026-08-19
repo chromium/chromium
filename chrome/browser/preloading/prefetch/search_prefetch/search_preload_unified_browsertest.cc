@@ -271,7 +271,8 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
 
   SearchPrefetchURLLoader::RequestHandler CreatePrerenderRequestHandler(
       const network::ResourceRequest& request) {
-    return search_prefetch_service_->MaybeCreateResponseReader(request);
+    return search_prefetch_service_->MaybeCreateResponseReaderForPrerender(
+        request);
   }
 
   network::ResourceRequest CreateServingRequest(const GURL& url) {
