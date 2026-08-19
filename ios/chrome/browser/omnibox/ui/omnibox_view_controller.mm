@@ -564,7 +564,10 @@ using base::UserMetricsAction;
   [self.textInput updateTextDirection];
   self.semanticContentAttribute = [self.textInput bestSemanticContentAttribute];
 
-  [self.mutator onTextInputModeChange];
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf.mutator onTextInputModeChange];
+  });
 }
 
 - (void)updateCachedClipboardState {
