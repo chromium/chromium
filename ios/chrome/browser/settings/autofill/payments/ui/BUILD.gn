@@ -8,6 +8,7 @@ source_set("ui") {
     "autofill_add_credit_card_view_controller.mm",
     "autofill_add_credit_card_view_controller_delegate.h",
     "autofill_add_credit_card_view_controller_presentation_delegate.h",
+    "autofill_credit_card_navigation_commands.h",
     "autofill_cvc_storage_consumer.h",
     "autofill_cvc_storage_view_controller.h",
     "autofill_cvc_storage_view_controller.mm",

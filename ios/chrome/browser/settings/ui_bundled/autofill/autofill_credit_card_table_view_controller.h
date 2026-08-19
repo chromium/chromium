@@ -11,6 +11,8 @@
 class Browser;
 class ProfileIOS;
 
+@protocol AutofillCreditCardNavigationCommands;
+
 // The table view for the Autofill settings.
 @interface AutofillCreditCardTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
@@ -22,6 +24,10 @@ class ProfileIOS;
 - (instancetype)initWithProfile:(ProfileIOS*)profile NS_UNAVAILABLE;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+
+// Handler for navigation commands.
+@property(nonatomic, weak) id<AutofillCreditCardNavigationCommands>
+    navigationHandler;
 
 // Whether the Level Up Payment Methods Walkthrough IPH should be presented when
 // the view appears.

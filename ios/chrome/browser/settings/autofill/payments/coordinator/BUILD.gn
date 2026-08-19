@@ -70,10 +70,13 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/autofill/core/browser",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled/autofill",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
   ]
 }

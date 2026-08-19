@@ -26,12 +26,7 @@
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_add_credit_card_coordinator.h"
-#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_add_credit_card_coordinator_delegate.h"
-#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_cvc_storage_view_coordinator.h"
-#import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_cvc_storage_view_coordinator_delegate.h"
-#import "ios/chrome/browser/settings/autofill/payments/ui/autofill_cvc_storage_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_credit_card_edit_table_view_controller.h"
+#import "ios/chrome/browser/settings/autofill/payments/ui/autofill_credit_card_navigation_commands.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_card_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
@@ -92,8 +87,6 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 #pragma mark - AutofillCreditCardTableViewController
 
 @interface AutofillCreditCardTableViewController () <
-    AutofillAddCreditCardCoordinatorDelegate,
-    AutofillCvcStorageViewCoordinatorDelegate,
     PersonalDataManagerObserver,
     PopoverLabelViewControllerDelegate> {
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
@@ -103,12 +96,6 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
-
-  // Coordinator to add new credit card.
-  AutofillAddCreditCardCoordinator* _addCreditCardCoordinator;
-
-  // Coordinator for the CVC storage subpage.
-  AutofillCvcStorageViewCoordinator* _cvcStorageCoordinator;
 
   // Add button for the toolbar.
   UIBarButtonItem* _addButtonInToolbar;
@@ -164,6 +151,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   if (!parent) {
     [_levelUpPaymentMethodsWalkthroughIPHPresenter dismissAnimated:NO];
     _levelUpPaymentMethodsWalkthroughIPHPresenter = nil;
+    [self.navigationHandler handleDismiss];
   }
 }
 
@@ -434,9 +422,6 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 - (void)settingsWillBeDismissed {
   DCHECK(!_settingsAreDismissed);
 
-  [self stopAutofillAddCreditCardCoordinator];
-  [self stopCvcStorageCoordinator];
-
   // Remove observer bridges.
   _observer.reset();
 
@@ -675,7 +660,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   TableViewModel* model = self.tableViewModel;
   NSInteger type = [model itemTypeForIndexPath:indexPath];
   if (type == ItemTypeCVCStorageButton) {
-    [self openCvcStorageCoordinator];
+    [self.navigationHandler showCvcStorage];
     return;
   }
 
@@ -697,7 +682,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
       [_reauthenticationModule canAttemptReauth]) {
     [self attemptReauthenticationForEditCard:selectedCard];
   } else {
-    [self openCreditCardDetails:selectedCard];
+    [self.navigationHandler showCreditCardDetails:selectedCard];
   }
 }
 
@@ -705,6 +690,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 - (void)attemptReauthenticationForEditCard:(autofill::CreditCard)selectedCard {
   LogMandatoryReauthSettingsPageEditCardEvent(
       MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
+  __weak __typeof(self) weakSelf = self;
   auto completionHandler = ^(ReauthenticationResult result) {
     MandatoryReauthAuthenticationFlowEvent event =
         result == ReauthenticationResult::kFailure
@@ -713,7 +699,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
     LogMandatoryReauthSettingsPageEditCardEvent(event);
 
     if (result != ReauthenticationResult::kFailure) {
-      [self openCreditCardDetails:selectedCard];
+      [weakSelf.navigationHandler showCreditCardDetails:selectedCard];
     }
   };
   [_reauthenticationModule
@@ -724,27 +710,9 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
                                handler:completionHandler];
 }
 
-- (void)openCvcStorageCoordinator {
-  [self stopCvcStorageCoordinator];
-  _cvcStorageCoordinator = [[AutofillCvcStorageViewCoordinator alloc]
-      initWithBaseViewController:self.navigationController
-                         browser:_browser];
-  _cvcStorageCoordinator.delegate = self;
-  [_cvcStorageCoordinator start];
-}
-
 - (void)openPayOverTimeSettings {
   // TODO(crbug.com/517646489): Implement coordinator routing for Pay Over Time
   // subpage.
-}
-
-- (void)openCreditCardDetails:(autofill::CreditCard)creditCard {
-  AutofillCreditCardEditTableViewController* controller =
-      [[AutofillCreditCardEditTableViewController alloc]
-           initWithCreditCard:creditCard
-          personalDataManager:_personalDataManager];
-  [self configureHandlersForRootViewController:controller];
-  [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -884,21 +852,16 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
       }];
 }
 
-// Opens new view controller `AutofillAddCreditCardViewController` for fillig
-// credit card details.
+// Opens the "Add Credit Card" flow.
 - (void)handleAddPayment {
-  if (_settingsAreDismissed || _addCreditCardCoordinator) {
+  if (_settingsAreDismissed) {
     return;
   }
 
   base::RecordAction(
       base::UserMetricsAction("MobileAddCreditCard.AddPaymentMethodButton"));
 
-  _addCreditCardCoordinator = [[AutofillAddCreditCardCoordinator alloc]
-      initWithBaseViewController:self
-                         browser:_browser];
-  _addCreditCardCoordinator.delegate = self;
-  [_addCreditCardCoordinator start];
+  [self.navigationHandler showAddPaymentMethod];
 }
 
 #pragma mark PersonalDataManagerObserver
@@ -951,17 +914,6 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   [self handleAddPayment];
 }
 
-- (void)stopAutofillAddCreditCardCoordinator {
-  [_addCreditCardCoordinator stop];
-  _addCreditCardCoordinator.delegate = nil;
-  _addCreditCardCoordinator = nil;
-}
-
-- (void)stopCvcStorageCoordinator {
-  [_cvcStorageCoordinator stop];
-  _cvcStorageCoordinator = nil;
-}
-
 // Function that is invoked when the reauth is finished, and handles the reauth
 // result.
 - (void)handleReauthenticationResult:(ReauthenticationResult)result {
@@ -1001,22 +953,6 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 - (void)updateAutofillCreditCardPrefAndToolbarForState:(BOOL)enabled {
   [self setAutofillCreditCardEnabled:enabled];
   _addButtonInToolbar.enabled = [self isAutofillCreditCardEnabled];
-}
-
-#pragma mark - AutofillAddCreditCardCoordinatorDelegate
-
-- (void)autofillAddCreditCardCoordinatorWantsToBeStopped:
-    (AutofillAddCreditCardCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _addCreditCardCoordinator);
-  [self stopAutofillAddCreditCardCoordinator];
-}
-
-#pragma mark - AutofillCvcStorageViewCoordinatorDelegate
-
-- (void)autofillCvcStorageCoordinatorWantsToBeStopped:
-    (AutofillCvcStorageViewCoordinator*)coordinator {
-  DCHECK_EQ(coordinator, _cvcStorageCoordinator);
-  [self stopCvcStorageCoordinator];
 }
 
 #pragma mark - Private
