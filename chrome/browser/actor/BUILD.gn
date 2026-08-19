@@ -469,6 +469,7 @@ source_set("browser_tests") {
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/zoom",
     "//chrome/test:test_support",
     "//components/affiliations/core/browser:test_support",

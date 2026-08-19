@@ -12,7 +12,6 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -97,10 +96,7 @@ class PageToolToctouPopupBypassTest : public ActorToolsTest {
     // subframes. Forcing the window to fullscreen removes these decorations and
     // the 'Ask' flag, allowing synchronous hit-testing to successfully traverse
     // child FrameSinks.
-    Browser* browser = nullptr;
-    if (tab->GetBrowserWindowInterface()) {
-      browser = tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
-    }
+    BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
     if (browser && !browser->GetWindow()->IsFullscreen()) {
       ui_test_utils::ToggleFullscreenModeAndWait(browser);
     }
@@ -176,7 +172,8 @@ IN_PROC_BROWSER_TEST_F(PageToolToctouPopupBypassTest,
 
 IN_PROC_BROWSER_TEST_F(PageToolToctouPopupBypassTest,
                        PopupWindow_FrameSwapIsBlockedAfterFix) {
-  Browser* popup = CreateBrowserForPopup(browser()->GetProfile());
+  BrowserWindowInterface* popup =
+      CreateBrowserForPopup(browser()->GetProfile());
   ASSERT_NE(popup->GetType(), BrowserWindowInterface::Type::TYPE_NORMAL);
   tabs::TabInterface* popup_tab = popup->GetActiveTabInterface();
   ASSERT_TRUE(popup_tab);

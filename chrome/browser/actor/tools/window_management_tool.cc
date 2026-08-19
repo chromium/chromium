@@ -8,7 +8,6 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -71,7 +70,8 @@ void WindowManagementTool::Validate(ToolCallback callback) {
 }
 
 void WindowManagementTool::Invoke(ToolCallback callback) {
-  // The callback is invoked from observing changes to the Browser instance.
+  // The callback is invoked from observing changes to the
+  // BrowserWindowInterface instance.
   callback_ = std::move(callback);
 
   switch (action_) {
@@ -80,8 +80,7 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
                                        &tool_delegate().GetProfile(),
                                        /*from_user_gesture=*/false);
       params.initial_show_state = ::ui::mojom::WindowShowState::kNormal;
-      Browser* browser =
-          CreateBrowserWindow(std::move(params))->GetBrowserForMigrationOnly();
+      BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
       browser_did_become_active_subscription_ =
           browser->RegisterDidBecomeActive(base::BindRepeating(
               &WindowManagementTool::OnBrowserDidBecomeActive,
@@ -258,7 +257,7 @@ void WindowManagementTool::OnBrowserDidClose(BrowserWindowInterface* browser) {
 }
 
 void WindowManagementTool::OnBrowserDidBecomeActive(
-    BrowserWindowInterface* Browser) {
+    BrowserWindowInterface* browser) {
   OnInvokeFinished(MakeOkResult());
 }
 

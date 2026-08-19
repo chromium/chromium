@@ -11,7 +11,7 @@
 #include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -131,12 +131,12 @@ IN_PROC_BROWSER_TEST_F(ActorPopupBrowserTest,
                          new_url.spec().c_str())));
 
   // Wait for the new popup window to open.
-  Browser* popup_browser = popup_observer.Wait();
+  BrowserWindowInterface* popup_browser = popup_observer.Wait();
   ASSERT_TRUE(popup_browser);
 
   // Verify that the new window has the correct URL.
   content::WebContents* popup_contents =
-      popup_browser->tab_strip_model()->GetActiveWebContents();
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
   EXPECT_EQ(popup_contents->GetLastCommittedURL(), new_url);
 

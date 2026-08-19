@@ -39,7 +39,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -851,7 +851,7 @@ class ExecutionEngineFileSystemAccessApiBrowserTest
     return result;
   }
 
-  bool IsUsageIndicatorVisible(Browser* browser) {
+  bool IsUsageIndicatorVisible(BrowserWindowInterface* browser) {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     auto* provider = browser_view->toolbar_button_provider();
     auto* icon_view = page_actions::GetIconLabelBubbleViewForTesting(

@@ -26,8 +26,8 @@
 #include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -219,8 +219,8 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
 // navigation in each of those tabs.
 class TabNavigationObserver : public TabStripModelObserver {
  public:
-  explicit TabNavigationObserver(Browser* browser)
-      : tab_strip_model_(browser->tab_strip_model()),
+  explicit TabNavigationObserver(BrowserWindowInterface* browser)
+      : tab_strip_model_(browser->GetTabStripModel()),
         initial_tab_count_(tab_strip_model_->count()) {
     tab_strip_model_->AddObserver(this);
   }
@@ -625,7 +625,8 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   std::vector<GURL> urls = {url};
 
   // Create a second browser window for the tool to operate in.
-  Browser* second_browser = CreateBrowser(browser()->GetProfile());
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
   ASSERT_TRUE(second_browser);
 
   // We need a way to ensure the tool uses the second browser, the tool

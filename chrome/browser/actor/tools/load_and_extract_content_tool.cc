@@ -25,7 +25,6 @@
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/validate_url_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor.mojom.h"
@@ -398,8 +397,8 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
     // performing the "real" navigation, to avoid racing with the navigation
     // itself.
     content::WebContents* web_contents = chrome::AddAndReturnTabAt(
-        browser_window_interface->GetBrowserForMigrationOnly(), about_blank,
-        kIndexAppendToEnd, /*foreground=*/false);
+        browser_window_interface, about_blank, kIndexAppendToEnd,
+        /*foreground=*/false);
     if (!web_contents) {
       journal().Log(url, task_id(),
                     "LoadAndExtractContentTool::NewTabCreationFailed",

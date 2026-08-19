@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/base/window_open_disposition.h"
 
+class BrowserWindowInterface;
+
 namespace actor {
 
 class ObservationDelayController;
@@ -79,8 +81,8 @@ class TabManagementTool : public Tool, public TabStripModelObserver {
   // If creating a tab, the window in which to create the tab.
   std::optional<int32_t> window_id_;
 
-  // Subscription to the close event for the Browser corresponding to
-  // `window_id_`.
+  // Subscription to the close event for the BrowserWindowInterface
+  // corresponding to `window_id_`.
   base::CallbackListSubscription browser_did_close_subscription_;
 
   base::WeakPtrFactory<TabManagementTool> weak_ptr_factory_{this};
