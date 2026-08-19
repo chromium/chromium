@@ -169,7 +169,7 @@ const base::FeatureParam<base::TimeDelta> kObservationDelayLcp{
     &kPageSettledMonitor, "observation-delay-lcp", base::Seconds(1)};
 
 BASE_FEATURE(kPageContentExtractionUsingPageSettledMonitor,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kPageSettledCaptureDelay{
     &kPageContentExtractionUsingPageSettledMonitor, "capture_delay",
