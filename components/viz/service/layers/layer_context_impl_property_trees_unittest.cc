@@ -1090,6 +1090,18 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(),
             "Invalid parent_id for non-root property tree node");
+
+  // Verify that the parent_id of node 1 was NOT corrupted to -1.
+  cc::TransformNode* node_impl =
+      GetTransformNodeFromActiveTree(cc::kSecondaryRootPropertyNodeId);
+  ASSERT_TRUE(node_impl);
+  EXPECT_EQ(node_impl->parent_id, cc::kRootPropertyNodeId);
+
+  // Subsequent valid full update should succeed.
+  first_update_ = true;  // Force full update
+  auto update2 = CreateDefaultUpdate();
+  auto result2 = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  EXPECT_TRUE(result2.has_value()) << result2.error();
 }
 
 class LayerContextImplUpdateDisplayTreeClipNodeTest

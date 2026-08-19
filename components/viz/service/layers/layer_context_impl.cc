@@ -646,9 +646,12 @@ base::expected<bool, std::string> UpdatePropertyTree(
     }
 
     auto& node = tree.MutableNode(wire->id);
+    // Defer updating node ID and parent ID until validation succeeds to
+    // prevent corrupting the tree state on failure. See
+    // https://crbug.com/537935016
+    RETURN_IF_ERROR(UpdatePropertyTreeNode(trees, node, *wire));
     node.id = wire->id;
     node.parent_id = wire->parent_id;
-    RETURN_IF_ERROR(UpdatePropertyTreeNode(trees, node, *wire));
   }
 
   if (cc::kRootPropertyNodeId >= static_cast<int>(tree.size())) {
