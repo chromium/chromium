@@ -136,6 +136,7 @@ base::Process LaunchShellProcess(int32_t id, base::ScopedFD subsidiary_fd) {
   };
 
   base::LaunchOptions options;
+  options.allow_new_privs = true;
   options.fds_to_remap.emplace_back(subsidiary_fd.get(), STDIN_FILENO);
   options.fds_to_remap.emplace_back(subsidiary_fd.get(), STDOUT_FILENO);
   options.fds_to_remap.emplace_back(subsidiary_fd.get(), STDERR_FILENO);
