@@ -775,6 +775,18 @@ if (!is_android) {
       ]
     }
   }
+
+  source_set("mixin_based_in_process_browser_test") {
+    testonly = true
+    sources = [
+      "mixin_based_in_process_browser_test.cc",
+      "mixin_based_in_process_browser_test.h",
+    ]
+    public_deps = [
+      "//chrome/test/base:in_process_browser_test",
+      "//chrome/test/base:in_process_browser_test_mixin",
+    ]
+  }
 }
 
 if (!is_android) {
