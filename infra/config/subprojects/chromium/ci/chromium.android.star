@@ -4141,6 +4141,12 @@ ci.builder(
                     shards = 4,
                 ),
             ),
+            # TODO(https://crbug.com/548718762): Investigate the long runtime.
+            "android_webview_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
             "base_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter",
