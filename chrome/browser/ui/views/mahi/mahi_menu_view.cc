@@ -32,6 +32,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/aura/window.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -55,7 +56,6 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout.h"
@@ -69,6 +69,7 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/public/activation_client.h"
 
 namespace chromeos::mahi {
 
@@ -147,13 +148,17 @@ class MahiMenuWidget : public views::Widget {
 
  protected:
   const ui::ColorProvider* GetColorProvider() const override {
-    // Get the color provider for the active menu controller's owner if possible
-    // to match the color theme for the browser.
-    auto* active_menu_controller = views::MenuController::GetActiveInstance();
-
-    // The menu might already be closed.
-    if (active_menu_controller && active_menu_controller->owner()) {
-      return active_menu_controller->owner()->GetColorProvider();
+    // Get the color provider for the active window if possible to match the
+    // color theme for the browser.
+    aura::Window& native_window = CHECK_DEREF(GetNativeWindow());
+    aura::Window& root_window = CHECK_DEREF(native_window.GetRootWindow());
+    if (auto* activation_client = wm::GetActivationClient(&root_window)) {
+      if (auto* active_window = activation_client->GetActiveWindow()) {
+        if (auto* widget =
+                views::Widget::GetWidgetForNativeWindow(active_window)) {
+          return widget->GetColorProvider();
+        }
+      }
     }
 
     return views::Widget::GetColorProvider();

@@ -31,10 +31,12 @@ source_set("mahi") {
     "//chromeos/ui/vector_icons",
     "//components/application_locale_storage",
     "//ui/accessibility:ax_base",
+    "//ui/aura",
     "//ui/color",
     "//ui/display",
     "//ui/gfx",
     "//ui/views",
+    "//ui/wm/public",
   ]
 
   if (is_chrome_branded) {
