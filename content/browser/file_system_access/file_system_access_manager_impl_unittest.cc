@@ -1036,6 +1036,59 @@ TEST_F(FileSystemAccessManagerImplTest,
   EXPECT_EQ(PermissionStatus::GRANTED, token->GetWriteGrant()->GetStatus());
 }
 
+// Verifies that `DeserializeHandle()` rejects sandboxed file handles associated
+// with a storage bucket owned by a different `blink::StorageKey`.
+//
+// The test serializes a handle pointing to a custom bucket under an alternate
+// storage key, then attempts to deserialize it using the test caller's storage
+// key. The deserialization must drop the transfer token and fail to resolve.
+TEST_F(FileSystemAccessManagerImplTest,
+       DeserializeHandle_SandboxedFile_OtherStorageKeyBucket) {
+  // Create a non-default bucket owned by a different storage key.
+  const blink::StorageKey kOtherStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("https://other.example/");
+  base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
+      bucket_future;
+  quota_manager_proxy_->CreateBucketForTesting(
+      kOtherStorageKey, "custom_bucket",
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket_future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(auto other_bucket, bucket_future.Take());
+
+  // Serialize a sandboxed file handle that points at the other key's bucket.
+  // The handle must be constructed with a matching binding context to satisfy
+  // token origin validation during serialization.
+  auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
+      kOtherStorageKey, storage::kFileSystemTypeTemporary,
+      base::FilePath::FromUTF8Unsafe("test/foo/bar"));
+  test_file_url.SetBucket(other_bucket.ToBucketLocator());
+  const FileSystemAccessManagerImpl::BindingContext other_binding_context = {
+      kOtherStorageKey, GURL("https://other.example/"),
+      GlobalRenderFrameHostId()};
+  FileSystemAccessFileHandleImpl file(manager_.get(), other_binding_context,
+                                      test_file_url, "bar",
+                                      {ask_grant_, ask_grant_});
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  manager_->CreateTransferToken(file,
+                                token_remote.InitWithNewPipeAndPassReceiver());
+
+  base::test::TestFuture<std::vector<uint8_t>> serialize_future;
+  manager_->SerializeHandle(
+      std::move(token_remote),
+      serialize_future.GetCallback<const std::vector<uint8_t>&>());
+  std::vector<uint8_t> serialized = serialize_future.Take();
+  EXPECT_FALSE(serialized.empty());
+
+  // Deserializing under `kTestStorageKey`, which does not own the bucket, must
+  // drop the transfer token and fail to resolve.
+  manager_->DeserializeHandle(kTestStorageKey, serialized,
+                              token_remote.InitWithNewPipeAndPassReceiver());
+  base::test::TestFuture<FileSystemAccessTransferTokenImpl*> resolve_future;
+  manager_->ResolveTransferToken(std::move(token_remote),
+                                 resolve_future.GetCallback());
+  EXPECT_FALSE(resolve_future.Get());
+}
+
 TEST_F(FileSystemAccessManagerImplTest,
        SerializeHandle_SandboxedDirectory_CustomBucket) {
   auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(

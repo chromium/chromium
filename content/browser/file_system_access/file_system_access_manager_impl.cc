@@ -1250,16 +1250,18 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
       // Apply bucket information.
       auto bucket_callback = base::BindOnce(
           [](storage::FileSystemURL url,
+             const blink::StorageKey& expected_storage_key,
              base::OnceCallback<void(const storage::FileSystemURL&)> callback,
              storage::QuotaErrorOr<storage::BucketInfo> result) {
-            if (!result.has_value()) {
+            if (!result.has_value() ||
+                result->storage_key != expected_storage_key) {
               // Drop `token`, and directly return.
               return;
             }
             url.SetBucket(result->ToBucketLocator());
             std::move(callback).Run(url);
           },
-          url,
+          url, storage_key,
           base::BindOnce(&FileSystemAccessManagerImpl::
                              DidGetSandboxedBucketForDeserializeHandle,
                          weak_factory_.GetWeakPtr(), data, std::move(token),

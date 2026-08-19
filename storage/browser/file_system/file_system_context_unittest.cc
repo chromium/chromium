@@ -232,6 +232,49 @@ TEST_F(FileSystemContextTest, ResolveURLOnOpenFileSystem_CustomBucket) {
   ASSERT_EQ(last_resolved_url_.value().bucket(), bucket.ToBucketLocator());
 }
 
+// Verifies that `OpenFileSystem()` rejects attempts to open a filesystem when
+// the requested storage bucket belongs to a different `blink::StorageKey`.
+//
+// The test constructs a spoofed `storage::BucketLocator` pointing to a bucket
+// ID owned by another storage key and invokes `OpenFileSystem()`. The operation
+// must validate the bucket's actual owner from quota management and fail with
+// `base::File::FILE_ERROR_FAILED`.
+TEST_F(FileSystemContextTest, OpenFileSystem_OtherStorageKeyBucket) {
+  scoped_refptr<FileSystemContext> file_system_context =
+      CreateFileSystemContextForTest(/*external_mount_points=*/nullptr);
+  base::RunLoop run_loop;
+  base::File::Error open_error = base::File::FILE_OK;
+  const auto open_callback = base::BindLambdaForTesting(
+      [&](const FileSystemURL& root_url, const std::string& name,
+          base::File::Error error) {
+        open_error = error;
+        run_loop.Quit();
+      });
+  const auto storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://host/test.crswap");
+  const auto other_storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://other/test.crswap");
+  base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
+      bucket_future;
+  proxy()->CreateBucketForTesting(
+      other_storage_key, "custom_bucket",
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket_future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(auto bucket, bucket_future.Take());
+
+  // Construct a bucket locator spoofing ownership under `storage_key` while
+  // referencing the bucket ID registered to `other_storage_key`.
+  storage::BucketLocator spoofed_bucket = bucket.ToBucketLocator();
+  spoofed_bucket.storage_key = storage_key;
+
+  file_system_context->OpenFileSystem(
+      storage_key, spoofed_bucket, kFileSystemTypeTemporary,
+      OpenFileSystemMode::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
+      std::move(open_callback));
+  run_loop.Run();
+  EXPECT_EQ(base::File::FILE_ERROR_FAILED, open_error);
+}
+
 TEST_F(FileSystemContextTest, CrackFileSystemURL) {
   scoped_refptr<ExternalMountPoints> external_mount_points =
       ExternalMountPoints::CreateRefCounted();
