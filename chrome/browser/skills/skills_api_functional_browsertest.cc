@@ -4,12 +4,15 @@
 
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/skills/skills_functional_browsertest.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
+#include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -77,6 +80,37 @@ IN_PROC_BROWSER_TEST_F(SkillsApiFunctionalBrowserTest,
 
   auto result = GetSkill("some_id");
   EXPECT_THAT(result, ErrorHasSubstr("getSkill: failed"));
+}
+
+class SkillsApiFunctionalBrowserTestV2
+    : public SkillsFunctionalBrowserTestBase {
+ public:
+  SkillsApiFunctionalBrowserTestV2() {
+    feature_list_.InitAndEnableFeature(features::kSkillsWebViewV2Enabled);
+  }
+  ~SkillsApiFunctionalBrowserTestV2() override = default;
+
+  void SetUpOnMainThread() override {
+    SkillsFunctionalBrowserTestBase::SetUpOnMainThread();
+    RunTestSequence(OpenGlic());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that UpdateSkill in V2 launches the dialog without requiring the skill
+// to exist in SkillsService.
+IN_PROC_BROWSER_TEST_F(SkillsApiFunctionalBrowserTestV2,
+                       UpdateSkill_LaunchesDialogWithoutQueryingService) {
+  auto request = glic::mojom::UpdateSkillRequest::New("v2_skill_id");
+  UpdateSkill(std::move(request));
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* tab_controller = SkillsUiTabControllerInterface::From(tab);
+  ASSERT_TRUE(tab_controller);
+  EXPECT_TRUE(tab_controller->IsShowing());
 }
 
 }  // namespace
