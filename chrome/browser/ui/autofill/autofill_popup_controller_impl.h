@@ -272,8 +272,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   std::vector<std::optional<SuggestionFilterMatch>> suggestion_filter_matches_;
 
   // The `FillingProduct` that matches the suggestions shown in the popup.
-  // The first `IsStandaloneSuggestionType()` is used to define what the
-  // `FillingProduct` is.
   FillingProduct suggestions_filling_product_ = FillingProduct::kNone;
 
   // Whether any suggestion has been selected.

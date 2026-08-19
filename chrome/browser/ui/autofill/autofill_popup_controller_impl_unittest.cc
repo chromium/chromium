@@ -275,7 +275,9 @@ TEST_F(AutofillPopupControllerImplTest,
 
   base::WeakPtr<AutofillSuggestionController> sub_controller =
       client().suggestion_controller(manager()).OpenSubPopup(
-          {0, 0, 10, 10}, {Suggestion(SuggestionType::kAddressEntry)},
+          {0, 0, 10, 10},
+          {Suggestion(SuggestionType::kUndo),
+           Suggestion(SuggestionType::kAddressEntry)},
           AutoselectFirstSuggestion(false));
   ASSERT_TRUE(sub_controller);
   static_cast<AutofillPopupController&>(*sub_controller).OnPopupPainted();

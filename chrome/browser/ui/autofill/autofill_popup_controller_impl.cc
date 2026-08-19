@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
@@ -299,15 +300,8 @@ void AutofillPopupControllerImpl::Show(
   ui_session_id_ = ui_session_id;
   ignore_focus_loss_ = ignore_focus_loss;
   trigger_source_ = trigger_source;
-  if (IsAtMemoryTriggerSource(trigger_source_)) {
-    suggestions_filling_product_ = FillingProduct::kAtMemory;
-  } else if (!suggestions.empty() &&
-             IsStandaloneSuggestionType(suggestions[0].type)) {
-    suggestions_filling_product_ =
-        GetFillingProductFromSuggestionType(suggestions[0].type);
-  } else {
-    suggestions_filling_product_ = FillingProduct::kNone;
-  }
+  suggestions_filling_product_ = GetFillingProductFromSuggestionTypes(
+      base::ToVector(suggestions, &Suggestion::type), trigger_source_);
 
   if (suggestions.empty() && !IsAtMemoryTriggerSource(trigger_source_) &&
       base::FeatureList::IsEnabled(
