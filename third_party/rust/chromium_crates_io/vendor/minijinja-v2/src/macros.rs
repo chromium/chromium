@@ -23,24 +23,27 @@ macro_rules! some {
 /// Hidden utility module for the [`context!`](crate::context!) macro.
 #[doc(hidden)]
 pub mod __context {
-    use crate::value::Value;
+    use crate::value::{StaticKeyMap, Value};
     use crate::Environment;
-    use std::collections::BTreeMap;
     use std::rc::Rc;
 
     #[inline(always)]
-    pub fn make() -> BTreeMap<&'static str, Value> {
-        BTreeMap::default()
+    pub fn make() -> Vec<(&'static str, Value)> {
+        Vec::new()
     }
 
     #[inline(always)]
-    pub fn add(ctx: &mut BTreeMap<&'static str, Value>, key: &'static str, value: Value) {
-        ctx.insert(key, value);
+    pub fn add(ctx: &mut Vec<(&'static str, Value)>, key: &'static str, value: Value) {
+        if let Some((_, old_value)) = ctx.iter_mut().find(|(map_key, _)| *map_key == key) {
+            *old_value = value;
+        } else {
+            ctx.push((key, value));
+        }
     }
 
     #[inline(always)]
-    pub fn build(ctx: BTreeMap<&'static str, Value>) -> Value {
-        Value::from_object(ctx)
+    pub fn build(ctx: Vec<(&'static str, Value)>) -> Value {
+        Value::from_object(StaticKeyMap(ctx))
     }
 
     pub fn thread_local_env() -> Rc<Environment<'static>> {

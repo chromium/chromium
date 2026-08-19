@@ -3,6 +3,7 @@ use crate::value::merge_object::MergeSeq;
 use crate::value::{DynObject, ObjectRepr, Value, ValueKind, ValueRepr};
 
 const MIN_I128_AS_POS_U128: u128 = 170141183460469231731687303715884105728;
+const MAX_REPEATED_STRING_LEN: usize = 100_000_000;
 
 /// Iterator wrapper that provides exact size hints for iterators with known length.
 pub(crate) struct LenIterWrap<I: Send + Sync>(pub(crate) usize, pub(crate) I);
@@ -324,12 +325,19 @@ pub fn mul(lhs: &Value, rhs: &Value) -> Result<Value, Error> {
         .map(|s| (s, rhs))
         .or_else(|| rhs.as_str().map(|s| (s, lhs)))
     {
-        return Ok(Value::from(s.repeat(ok!(n.as_usize().ok_or_else(|| {
+        let n = ok!(n.as_usize().ok_or_else(|| {
             Error::new(
                 ErrorKind::InvalidOperation,
                 "strings can only be multiplied with integers",
             )
-        })))));
+        }));
+        if !matches!(s.len().checked_mul(n), Some(len) if len <= MAX_REPEATED_STRING_LEN) {
+            return Err(Error::new(
+                ErrorKind::InvalidOperation,
+                "repeated string is too large",
+            ));
+        }
+        return Ok(Value::from(s.repeat(n)));
     } else if let Some((seq, n)) = lhs
         .as_object()
         .map(|s| (s, rhs))
@@ -496,6 +504,21 @@ mod tests {
     fn test_neg() {
         let err = neg(&Value::from(i128::MIN)).unwrap_err();
         assert_eq!(err.to_string(), "invalid operation: overflow");
+    }
+
+    #[test]
+    fn test_string_repeat_size_limit() {
+        let err = mul(&Value::from("ab"), &Value::from(50_000_001usize)).unwrap_err();
+        assert_eq!(
+            err.to_string(),
+            "invalid operation: repeated string is too large"
+        );
+
+        let err = mul(&Value::from("ab"), &Value::from(usize::MAX)).unwrap_err();
+        assert_eq!(
+            err.to_string(),
+            "invalid operation: repeated string is too large"
+        );
     }
 
     #[test]

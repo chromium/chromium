@@ -220,6 +220,7 @@ pub use crate::value::argtypes::{
 };
 pub use crate::value::merge_object::merge_maps;
 pub use crate::value::object::{DynObject, Enumerator, Object, ObjectExt, ObjectRepr};
+pub(crate) use crate::value::serialize::StaticKeyMap;
 
 #[macro_use]
 mod type_erase;

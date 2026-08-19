@@ -11,7 +11,7 @@ use crate::value::{
 };
 
 #[derive(Debug)]
-struct StaticKeyMap(Vec<(&'static str, Value)>);
+pub(crate) struct StaticKeyMap(pub(crate) Vec<(&'static str, Value)>);
 
 impl Object for StaticKeyMap {
     fn get_value(self: &Arc<Self>, key: &Value) -> Option<Value> {
@@ -434,9 +434,7 @@ impl ser::SerializeStruct for SerializeStruct {
     }
 
     fn end(self) -> Result<Value, InvalidValue> {
-        let mut fields = self.fields;
-        fields.sort_unstable_by_key(|(a, _)| *a);
-        Ok(Value::from_object(StaticKeyMap(fields)))
+        Ok(Value::from_object(StaticKeyMap(self.fields)))
     }
 }
 
