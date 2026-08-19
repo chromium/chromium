@@ -39,12 +39,6 @@ id<GREYMatcher> NonModalShareTitleMatcher() {
   return grey_accessibilityLabel(a11yLabelText);
 }
 
-id<GREYMatcher> NonModalPasteTitleMatcher() {
-  NSString* a11yLabelText = l10n_util::GetNSString(
-      IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE);
-  return grey_accessibilityLabel(a11yLabelText);
-}
-
 id<GREYMatcher> NonModalPasteTitleMatcherForArm(int arm) {
   int title_id = 0;
   switch (arm) {
@@ -88,9 +82,24 @@ id<GREYMatcher> NonModalPasteTitleMatcherForArm(int arm) {
       title_id =
           IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE_EXP10;
       break;
+    default:
+      title_id = IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE;
+      break;
   }
   NSString* a11yLabelText = l10n_util::GetNSString(title_id);
   return grey_accessibilityLabel(a11yLabelText);
+}
+
+id<GREYMatcher> NonModalPasteTitleMatcher() {
+  return grey_anyOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE)),
+      NonModalPasteTitleMatcherForArm(1), NonModalPasteTitleMatcherForArm(2),
+      NonModalPasteTitleMatcherForArm(3), NonModalPasteTitleMatcherForArm(4),
+      NonModalPasteTitleMatcherForArm(5), NonModalPasteTitleMatcherForArm(6),
+      NonModalPasteTitleMatcherForArm(7), NonModalPasteTitleMatcherForArm(8),
+      NonModalPasteTitleMatcherForArm(9), NonModalPasteTitleMatcherForArm(10),
+      nil);
 }
 
 }  // namespace
