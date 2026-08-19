@@ -51,7 +51,7 @@ D3D11H265Picture::~D3D11H265Picture() {
   picture->set_in_picture_use(false);
 }
 
-D3DH265Accelerator::D3DH265Accelerator(D3D11VideoDecoderClient* client,
+D3DH265Accelerator::D3DH265Accelerator(D3DVideoDecoderClient* client,
                                        MediaLog* media_log,
                                        bool use_dxva_device_for_hevc_rext)
     : media_log_(media_log->Clone()),

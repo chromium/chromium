@@ -16,7 +16,7 @@ namespace media {
 
 using DecodeStatus = VP9Decoder::VP9Accelerator::Status;
 
-D3DVP9Accelerator::D3DVP9Accelerator(D3D11VideoDecoderClient* client,
+D3DVP9Accelerator::D3DVP9Accelerator(D3DVideoDecoderClient* client,
                                      MediaLog* media_log)
     : media_log_(media_log->Clone()), client_(client), status_feedback_(0) {
   DCHECK(client_);

@@ -14,7 +14,7 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/h264_dpb.h"
-#include "media/gpu/windows/d3d11_video_decoder_client.h"
+#include "media/gpu/windows/d3d_video_decoder_client.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
 
@@ -26,7 +26,7 @@ class MediaLog;
 
 class D3DH264Accelerator : public H264Decoder::H264Accelerator {
  public:
-  D3DH264Accelerator(D3D11VideoDecoderClient* client, MediaLog* media_log);
+  D3DH264Accelerator(D3DVideoDecoderClient* client, MediaLog* media_log);
 
   D3DH264Accelerator(const D3DH264Accelerator&) = delete;
   D3DH264Accelerator& operator=(const D3DH264Accelerator&) = delete;
@@ -75,7 +75,7 @@ class D3DH264Accelerator : public H264Decoder::H264Accelerator {
   void PicParamsFromPic(DXVA_PicParams_H264* pic_param, D3D11H264Picture* pic);
 
   std::unique_ptr<MediaLog> media_log_;
-  raw_ptr<D3D11VideoDecoderClient> client_;
+  raw_ptr<D3DVideoDecoderClient> client_;
 
   // This information set at the beginning of a frame and saved for processing
   // all the slices.

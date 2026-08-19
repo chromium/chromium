@@ -29,11 +29,11 @@
 #include "media/gpu/windows/d3d11_decoder_configurator.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_selector.h"
-#include "media/gpu/windows/d3d11_video_decoder_client.h"
 #include "media/gpu/windows/d3d11_video_decoder_wrapper.h"
 #include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
 #include "media/gpu/windows/d3d_com_defs.h"
 #include "media/gpu/windows/d3d_h264_accelerator.h"
+#include "media/gpu/windows/d3d_video_decoder_client.h"
 #include "media/gpu/windows/d3d_vp9_accelerator.h"
 
 namespace gpu {
@@ -50,7 +50,7 @@ class MediaLog;
 // run the decoder on whatever thread it lives on.  However, at the moment, it
 // only works if it's on the gpu main thread.
 class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
-                                           public D3D11VideoDecoderClient {
+                                           public D3DVideoDecoderClient {
  public:
   enum class D3DVersion { kD3D11, kD3D12 };
 
@@ -89,7 +89,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   bool CanReadWithoutStalling() const override;
   int GetMaxDecodeRequests() const override;
 
-  // D3D11VideoDecoderClient implementation.
+  // D3DVideoDecoderClient implementation.
   D3D11PictureBuffer* GetPicture() override;
   void UpdateTimestamp(D3D11PictureBuffer* picture_buffer) override;
   bool OutputResult(const CodecPicture* picture,

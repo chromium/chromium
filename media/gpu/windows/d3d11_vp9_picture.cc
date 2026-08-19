@@ -7,7 +7,7 @@
 namespace media {
 
 D3D11VP9Picture::D3D11VP9Picture(D3D11PictureBuffer* picture_buffer,
-                                 D3D11VideoDecoderClient* client)
+                                 D3DVideoDecoderClient* client)
     : picture_buffer_(picture_buffer),
       client_(client),
       picture_index_(picture_buffer_->picture_index()) {

@@ -17,7 +17,7 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/h265_decoder.h"
 #include "media/gpu/h265_dpb.h"
-#include "media/gpu/windows/d3d11_video_decoder_client.h"
+#include "media/gpu/windows/d3d_video_decoder_client.h"
 #include "third_party/angle/include/EGL/egl.h"
 #include "third_party/angle/include/EGL/eglext.h"
 
@@ -105,7 +105,7 @@ class D3DH265Accelerator : public H265Decoder::H265Accelerator {
   // When `use_dxva_device_for_hevc_rext` is true, the accelerator will follow
   // DXVA spec to submit picture buffers to driver for range extension profile;
   // otherwise it will use Intel specific structures to submit picture buffers.
-  D3DH265Accelerator(D3D11VideoDecoderClient* client,
+  D3DH265Accelerator(D3DVideoDecoderClient* client,
                      MediaLog* media_log,
                      bool use_dxva_device_for_hevc_rext);
 
@@ -174,7 +174,7 @@ class D3DH265Accelerator : public H265Decoder::H265Accelerator {
       const H265Picture::Vector& ref_pic_set_st_curr_before);
 
   std::unique_ptr<MediaLog> media_log_;
-  raw_ptr<D3D11VideoDecoderClient> client_;
+  raw_ptr<D3DVideoDecoderClient> client_;
 
   // This information set at the beginning of a frame and saved for processing
   // all the slices.

@@ -52,7 +52,7 @@ D3D11H264Picture::~D3D11H264Picture() {
   picture->set_in_picture_use(false);
 }
 
-D3DH264Accelerator::D3DH264Accelerator(D3D11VideoDecoderClient* client,
+D3DH264Accelerator::D3DH264Accelerator(D3DVideoDecoderClient* client,
                                        MediaLog* media_log)
     : media_log_(media_log->Clone()), client_(client) {
   DCHECK(client_);

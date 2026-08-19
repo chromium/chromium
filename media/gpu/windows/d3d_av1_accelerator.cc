@@ -24,7 +24,7 @@ using DecodeStatus = AV1Decoder::AV1Accelerator::Status;
 class D3D11AV1Picture : public AV1Picture {
  public:
   explicit D3D11AV1Picture(D3D11PictureBuffer* d3d11_picture,
-                           D3D11VideoDecoderClient* client,
+                           D3DVideoDecoderClient* client,
                            bool apply_grain)
       : picture_buffer_(d3d11_picture),
         client_(client),
@@ -48,12 +48,12 @@ class D3D11AV1Picture : public AV1Picture {
   }
 
   const raw_ptr<D3D11PictureBuffer> picture_buffer_;
-  const raw_ptr<D3D11VideoDecoderClient> client_;
+  const raw_ptr<D3DVideoDecoderClient> client_;
   const bool apply_grain_;
   const size_t picture_index_;
 };
 
-D3DAV1Accelerator::D3DAV1Accelerator(D3D11VideoDecoderClient* client,
+D3DAV1Accelerator::D3DAV1Accelerator(D3DVideoDecoderClient* client,
                                      MediaLog* media_log,
                                      bool disable_invalid_ref)
     : media_log_(media_log->Clone()),
