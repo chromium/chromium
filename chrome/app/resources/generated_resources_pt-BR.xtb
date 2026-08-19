@@ -1165,7 +1165,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1890026367080681123">Acessar as configurações de conteúdo incorporado</translation>
 <translation id="189210018541388520">Abrir tela cheia</translation>
 <translation id="1892341345406963517">Olá, <ph name="PARENT_NAME" /></translation>
-<translation id="1892453608039100484">1. Clique em <ph name="BUTTON_LABEL" /> abaixo
+<translation id="1892453608039100484">1. Clique abaixo em <ph name="BUTTON_LABEL" />
 2. Clique em <ph name="BUTTON_2" /> nas configurações do Windows</translation>
 <translation id="1895658205118569222">Encerramento</translation>
 <translation id="1896353439080510710">As conversas são analisadas e usadas para aprimorar a IA do Google. O Gemini é uma IA e pode cometer erros. Você pode <ph name="BEGIN_LINK_MANAGE_ACTIVITY" />gerenciar a sua atividade<ph name="END_LINK_MANAGE_ACTIVITY" />, incluindo informações sobre a sua localização. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais sobre suas escolhas<ph name="END_LINK_LEARN_MORE" />.</translation>
@@ -4240,7 +4240,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4241224519481557898">Categoria</translation>
 <translation id="4242245038391716252">Baixado pela extensão: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="4242344119782070019">Agora você pode expandir as guias ao passar o cursor sobre elas. Para ativar essa função, clique com o botão direito aqui.</translation>
-<translation id="4242533952199664413">Abrir configurações.</translation>
+<translation id="4242533952199664413">Abrir configurações</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Seu navegador e seu perfil são gerenciados<ph name="END_LINK" /> por <ph name="DOMAIN" /></translation>
 <translation id="424315890655130736">Digite a senha longa</translation>
 <translation id="4243504193894350135">A impressora está pausada</translation>

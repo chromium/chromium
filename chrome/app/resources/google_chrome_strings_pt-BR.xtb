@@ -162,7 +162,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="259935314519650377">Falha de cache após o download do instalador. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2608461706055011366">Confira uma visão geral rápida deste documento e faça perguntas com o Gemini no Chrome</translation>
 <translation id="2620436844016719705">Sistema</translation>
-<translation id="263447411082773721">Mantenha senhas, favoritos e histórico sincronizados em todos os dispositivos. Acesse com facilidade seus recursos favoritos definindo o Chrome como o navegador padrão. O Chrome será fixado na barra de tarefas para agilizar o acesso.</translation>
+<translation id="263447411082773721">Defina o Chrome como seu navegador padrão para acessar facilmente seus recursos preferidos e manter senhas, favoritos e histórico sincronizados em todos os dispositivos. O Chrome será fixado na barra de tarefas para agilizar o acesso.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">O Chrome verifica regularmente se o navegador tem as configurações mais seguras. Avisaremos se algo precisar da sua análise.</translation>
 <translation id="2652691236519827073">Abrir link em nova &amp;guia do Chrome</translation>
@@ -713,7 +713,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="8041795619940733262">Pergunte ao Google<ph name="LINE_BREAK" />sobre esta guia</translation>
 <translation id="80471789339884597">Agradecemos por fazer a instalação. É necessário reiniciar todos os navegadores antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
-<translation id="8064965390968184078">1. Clique em <ph name="BUTTON_LABEL" /> abaixo
+<translation id="8064965390968184078">1. Clique abaixo em <ph name="BUTTON_LABEL" />
 2. Clique em <ph name="BUTTON_2" /> nas configurações do Windows
 3. Clique em <ph name="BUTTON_3" /> na notificação do Windows para fixar o Chrome na barra de tarefas e ter acesso rápido</translation>
 <translation id="8069447462453318634">Selecione "Fixar na barra de ferramentas"</translation>
