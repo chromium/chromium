@@ -7267,8 +7267,16 @@ IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
 // versa). This test verifies that lazy events are properly scoped to the
 // originating browser context and neither service worker is unnecessarily
 // woken up.
+// TODO(crbug.com/548629160): Flaky on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_LazyDispatchDoesNotWakeIncognitoSplitModeWorker \
+  DISABLED_LazyDispatchDoesNotWakeIncognitoSplitModeWorker
+#else
+#define MAYBE_LazyDispatchDoesNotWakeIncognitoSplitModeWorker \
+  LazyDispatchDoesNotWakeIncognitoSplitModeWorker
+#endif
 IN_PROC_BROWSER_TEST_P(ManifestV3WebRequestApiDispatchModeTest,
-                       LazyDispatchDoesNotWakeIncognitoSplitModeWorker) {
+                       MAYBE_LazyDispatchDoesNotWakeIncognitoSplitModeWorker) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // Ensure an incognito browser exists before loading the extension so that
