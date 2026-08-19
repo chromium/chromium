@@ -591,24 +591,11 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 #endif
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        MAYBE_InvokeUi_AutofillAi_SubMenu) {
-  Suggestion source_attribution(
-      u"From Photos · Pippi Långstrump · Sweden · LR1234567",
-      SuggestionType::kAutofillAiSourceAttribution);
-  source_attribution.trailing_icon = Suggestion::Icon::kOpenInNew;
-
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
       SuggestionType::kRemoveAutofillAi);
   remove_suggestion.icon = Suggestion::Icon::kClose;
-
-  Suggestion manage_suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-      SuggestionType::kManageEnhancedAutofill);
-  manage_suggestion.icon = Suggestion::Icon::kSettings;
-
-  PrepareSuggestions(
-      {std::move(source_attribution), Suggestion(SuggestionType::kSeparator),
-       std::move(remove_suggestion), std::move(manage_suggestion)});
+  PrepareSuggestions({std::move(remove_suggestion)});
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 
@@ -621,25 +608,12 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 #endif
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        MAYBE_InvokeUi_AutofillAi_SubMenu_Selected) {
-  Suggestion source_attribution(
-      u"From Photos · Pippi Långstrump · Sweden · LR1234567",
-      SuggestionType::kAutofillAiSourceAttribution);
-  source_attribution.trailing_icon = Suggestion::Icon::kOpenInNew;
-
   Suggestion remove_suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
       SuggestionType::kRemoveAutofillAi);
   remove_suggestion.icon = Suggestion::Icon::kClose;
-
-  Suggestion manage_suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-      SuggestionType::kManageEnhancedAutofill);
-  manage_suggestion.icon = Suggestion::Icon::kSettings;
-
-  PrepareSuggestions(
-      {std::move(source_attribution), Suggestion(SuggestionType::kSeparator),
-       std::move(remove_suggestion), std::move(manage_suggestion)});
-  PrepareSelectedCell(CellIndex{3, CellType::kContent});
+  PrepareSuggestions({std::move(remove_suggestion)});
+  PrepareSelectedCell(CellIndex{0, CellType::kContent});
   ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 

@@ -595,23 +595,11 @@ std::vector<Suggestion> CreatePersonalContextSourceAttributionSuggestions(
   return suggestions;
 }
 
-Suggestion CreateManageEnhancedAutofillSuggestion() {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-      SuggestionType::kManageEnhancedAutofill);
-  suggestion.icon = Suggestion::Icon::kSettings;
-  return suggestion;
-}
-
 std::vector<Suggestion> CreateAmbientAutofillSubMenu(
     const EntityInstance& entity,
     std::string_view app_locale) {
   std::vector<Suggestion> submenu =
       CreatePersonalContextSourceAttributionSuggestions(entity, app_locale);
-
-  if (!submenu.empty()) {
-    submenu.emplace_back(SuggestionType::kSeparator);
-  }
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillAmbientAutofillSuppressionUI)) {
@@ -621,9 +609,6 @@ std::vector<Suggestion> CreateAmbientAutofillSubMenu(
     remove_info.icon = Suggestion::Icon::kClose;
     remove_info.payload = Suggestion::AutofillAiPayload(entity.guid());
     submenu.push_back(std::move(remove_info));
-  }
-  if (!submenu.empty()) {
-    submenu.push_back(CreateManageEnhancedAutofillSuggestion());
   }
   return submenu;
 }

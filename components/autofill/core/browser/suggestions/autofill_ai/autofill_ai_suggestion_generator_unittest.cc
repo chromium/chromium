@@ -578,23 +578,17 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetEntities({passport_personal_context});
   SetForm({PASSPORT_NUMBER, NAME_FULL});
 
-  EXPECT_THAT(
-      CreateAutofillAiFillingSuggestions(field(0)),
-      IdentityDocSuggestionsAre(AllOf(
-          EqualsSuggestion(
-              SuggestionType::kFillAutofillAi,
-              Suggestion::AutofillAiPayload(passport_personal_context.guid())),
-          ChildrenAre(
-              EqualsSuggestion(
-                  SuggestionType::kRemoveAutofillAi,
-                  l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
-                  Suggestion::Icon::kClose,
-                  Suggestion::AutofillAiPayload(
-                      passport_personal_context.guid())),
-              EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
-                               l10n_util::GetStringUTF16(
-                                   IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-                               Suggestion::Icon::kSettings)))));
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              IdentityDocSuggestionsAre(AllOf(
+                  EqualsSuggestion(SuggestionType::kFillAutofillAi,
+                                   Suggestion::AutofillAiPayload(
+                                       passport_personal_context.guid())),
+                  ChildrenAre(EqualsSuggestion(
+                      SuggestionType::kRemoveAutofillAi,
+                      l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
+                      Suggestion::Icon::kClose,
+                      Suggestion::AutofillAiPayload(
+                          passport_personal_context.guid()))))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
@@ -624,17 +618,11 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           EqualsSuggestion(
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
-          ChildrenAre(
-              AllOf(EqualsSuggestion(
-                        SuggestionType::kAutofillAiSourceAttribution,
-                        expected_source_label, Suggestion::Icon::kNoIcon,
-                        GURL("https://photos.example.com")),
-                    HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
-              EqualsSuggestion(SuggestionType::kSeparator),
-              EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
-                               l10n_util::GetStringUTF16(
-                                   IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-                               Suggestion::Icon::kSettings)))));
+          ChildrenAre(AllOf(
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               expected_source_label, Suggestion::Icon::kNoIcon,
+                               GURL("https://photos.example.com")),
+              HasTrailingIcon(Suggestion::Icon::kOpenInNew))))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
@@ -664,17 +652,11 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           EqualsSuggestion(
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
-          ChildrenAre(
-              AllOf(EqualsSuggestion(
-                        SuggestionType::kAutofillAiSourceAttribution,
-                        expected_source_label, Suggestion::Icon::kNoIcon,
-                        GURL("https://mail.example.com")),
-                    HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
-              EqualsSuggestion(SuggestionType::kSeparator),
-              EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
-                               l10n_util::GetStringUTF16(
-                                   IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-                               Suggestion::Icon::kSettings)))));
+          ChildrenAre(AllOf(
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               expected_source_label, Suggestion::Icon::kNoIcon,
+                               GURL("https://mail.example.com")),
+              HasTrailingIcon(Suggestion::Icon::kOpenInNew))))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
@@ -705,24 +687,18 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           EqualsSuggestion(
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
-          ChildrenAre(
-              AllOf(
-                  EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
-                                   u"From Photos · Pippi Långstrump · Sweden",
-                                   Suggestion::Icon::kNoIcon,
-                                   GURL("https://photos.example.com")),
-                  HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
-              AllOf(
-                  EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
-                                   u"From Gmail · Pippi Långstrump · Sweden",
-                                   Suggestion::Icon::kNoIcon,
-                                   GURL("https://mail.example.com")),
-                  HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
-              EqualsSuggestion(SuggestionType::kSeparator),
-              EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
-                               l10n_util::GetStringUTF16(
-                                   IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-                               Suggestion::Icon::kSettings)))));
+          ChildrenAre(AllOf(EqualsSuggestion(
+                                SuggestionType::kAutofillAiSourceAttribution,
+                                u"From Photos · Pippi Långstrump · Sweden",
+                                Suggestion::Icon::kNoIcon,
+                                GURL("https://photos.example.com")),
+                            HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
+                      AllOf(EqualsSuggestion(
+                                SuggestionType::kAutofillAiSourceAttribution,
+                                u"From Gmail · Pippi Långstrump · Sweden",
+                                Suggestion::Icon::kNoIcon,
+                                GURL("https://mail.example.com")),
+                            HasTrailingIcon(Suggestion::Icon::kOpenInNew))))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
@@ -757,18 +733,12 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
           EqualsSuggestion(
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
-          ChildrenAre(
-              AllOf(
-                  EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
-                                   u"From Photos · Pippi Långstrump · Sweden",
-                                   Suggestion::Icon::kNoIcon,
-                                   GURL("https://photos.example.com")),
-                  HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
-              EqualsSuggestion(SuggestionType::kSeparator),
-              EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
-                               l10n_util::GetStringUTF16(
-                                   IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-                               Suggestion::Icon::kSettings)))));
+          ChildrenAre(AllOf(
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               u"From Photos · Pippi Långstrump · Sweden",
+                               Suggestion::Icon::kNoIcon,
+                               GURL("https://photos.example.com")),
+              HasTrailingIcon(Suggestion::Icon::kOpenInNew))))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
@@ -807,17 +777,12 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                         expected_source_label, Suggestion::Icon::kNoIcon,
                         GURL("https://photos.example.com")),
                     HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
-              EqualsSuggestion(SuggestionType::kSeparator),
               EqualsSuggestion(
                   SuggestionType::kRemoveAutofillAi,
                   l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_REMOVE_INFO),
                   Suggestion::Icon::kClose,
                   Suggestion::AutofillAiPayload(
-                      passport_personal_context.guid())),
-              EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
-                               l10n_util::GetStringUTF16(
-                                   IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-                               Suggestion::Icon::kSettings)))));
+                      passport_personal_context.guid()))))));
 }
 
 TEST_F(AutofillAiSuggestionGeneratorTest,
@@ -901,17 +866,11 @@ TEST_F(
           EqualsSuggestion(
               SuggestionType::kFillAutofillAi,
               Suggestion::AutofillAiPayload(passport_personal_context.guid())),
-          ChildrenAre(
-              AllOf(EqualsSuggestion(
-                        SuggestionType::kAutofillAiSourceAttribution,
-                        expected_source_label, Suggestion::Icon::kNoIcon,
-                        GURL("https://photos.example.com")),
-                    HasTrailingIcon(Suggestion::Icon::kOpenInNew)),
-              EqualsSuggestion(SuggestionType::kSeparator),
-              EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
-                               l10n_util::GetStringUTF16(
-                                   IDS_AUTOFILL_MANAGE_ENHANCED_AUTOFILL),
-                               Suggestion::Icon::kSettings)))));
+          ChildrenAre(AllOf(
+              EqualsSuggestion(SuggestionType::kAutofillAiSourceAttribution,
+                               expected_source_label, Suggestion::Icon::kNoIcon,
+                               GURL("https://photos.example.com")),
+              HasTrailingIcon(Suggestion::Icon::kOpenInNew))))));
 }
 #endif
 
