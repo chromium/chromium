@@ -308,7 +308,7 @@ void BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
     }
 
     // Check file name.
-    if (file.find(hostname) != std::string::npos) {
+    if (file.contains(hostname)) {
       ADD_FAILURE() << "Found file name: " << file << " containing "
                     << hostname;
     }
@@ -348,7 +348,7 @@ void BrowsingDataRemoverBrowserTestBase::CheckUserDirectoryForString(
         for (it->SeekToFirst(); it->Valid(); it->Next()) {
           std::string entry =
               it->key().ToString() + ":" + it->value().ToString();
-          if (entry.find(hostname) != std::string::npos) {
+          if (entry.contains(hostname)) {
             ADD_FAILURE() << "Found leveldb entry: " << file << " " << entry;
           }
         }

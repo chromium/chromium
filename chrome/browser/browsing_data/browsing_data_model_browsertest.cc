@@ -187,7 +187,7 @@ class IdpTestServer {
       return BuildIdpHeaderResponse(request);
     }
 
-    if (request.all_headers.find(kIdpForbiddenHeader) != std::string::npos) {
+    if (request.all_headers.contains(kIdpForbiddenHeader)) {
       EXPECT_EQ(request.headers.at(kIdpForbiddenHeader), "?1");
     }
 
@@ -212,10 +212,9 @@ class IdpTestServer {
   std::unique_ptr<HttpResponse> BuildIdpHeaderResponse(
       const HttpRequest& request) {
     auto response = std::make_unique<BasicHttpResponse>();
-    if (request.relative_url.find("/header/signin") != std::string::npos) {
+    if (request.relative_url.contains("/header/signin")) {
       response->AddCustomHeader(kSetLoginHeader, kLoggedInHeaderValue);
-    } else if (request.relative_url.find("/header/signout") !=
-               std::string::npos) {
+    } else if (request.relative_url.contains("/header/signout")) {
       response->AddCustomHeader(kSetLoginHeader, kLoggedOutHeaderValue);
     } else {
       return nullptr;

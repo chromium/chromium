@@ -67,13 +67,13 @@ bool ShouldDeleteSerializedNavigationEntry(
 
 bool UrlMatcherForNavigationEntry(const base::flat_set<GURL>& urls,
                                   content::NavigationEntry* entry) {
-  return urls.find(entry->GetURL()) != urls.end();
+  return urls.contains(entry->GetURL());
 }
 
 bool UrlMatcherForSerializedNavigationEntry(
     const base::flat_set<GURL>& urls,
     const sessions::SerializedNavigationEntry& entry) {
-  return urls.find(entry.virtual_url()) != urls.end();
+  return urls.contains(entry.virtual_url());
 }
 
 base::flat_set<GURL> CreateUrlSet(const history::URLRows& deleted_rows) {

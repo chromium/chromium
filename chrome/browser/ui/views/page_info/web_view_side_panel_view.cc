@@ -224,8 +224,7 @@ GURL WebViewSidePanelView::CleanUpQueryParams(const GURL& url) {
   // Override eventual parameter for navigations to a real tab.
   if (url::IsSameOriginWith(url, last_url_) &&
       param_name_to_cleanup_.has_value() &&
-      url.query().find(param_name_to_cleanup_.value()) !=
-          std::string_view::npos) {
+      url.query().contains(param_name_to_cleanup_.value())) {
     return net::AppendOrReplaceQueryParameter(
         url, param_name_to_cleanup_.value(), std::string());
   }

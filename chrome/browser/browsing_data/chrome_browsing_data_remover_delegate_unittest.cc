@@ -3926,8 +3926,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, WipeCustomDictionaryData) {
 
   std::string contents;
   base::ReadFileToString(dict_path, &contents);
-  EXPECT_EQ(std::string::npos, contents.find("wug"));
-  EXPECT_EQ(std::string::npos, contents.find("spowing"));
+  EXPECT_FALSE(contents.contains("wug"));
+  EXPECT_FALSE(contents.contains("spowing"));
   EXPECT_FALSE(base::PathExists(backup_path));
 }
 

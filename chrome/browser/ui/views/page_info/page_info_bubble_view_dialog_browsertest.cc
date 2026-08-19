@@ -392,8 +392,7 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
       bubble_view->OpenSecurityPage();
     }
 
-    if (name != kInsecure && name.find(kInternal) == std::string::npos &&
-        name != kFile) {
+    if (name != kInsecure && !name.contains(kInternal) && name != kFile) {
       identity.site_identity = kSiteOrigin;
       // The bubble may be PageInfoBubbleView or InternalPageInfoBubbleView. The
       // latter is only used for |kInternal|, so it is safe to static_cast here.

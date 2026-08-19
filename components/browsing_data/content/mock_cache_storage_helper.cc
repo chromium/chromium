@@ -29,7 +29,7 @@ void MockCacheStorageHelper::StartFetching(FetchCallback callback) {
 void MockCacheStorageHelper::DeleteCacheStorage(
     const blink::StorageKey& storage_key) {
   ASSERT_TRUE(fetched_);
-  ASSERT_TRUE(storage_keys_.find(storage_key) != storage_keys_.end());
+  ASSERT_TRUE(storage_keys_.contains(storage_key));
   storage_keys_[storage_key] = false;
 }
 

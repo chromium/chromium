@@ -214,7 +214,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
   void OnDownloadStored(download::DownloadItem* item,
                         const history::DownloadRow& info) override {
     // Ignore any updates on items that we have already processed.
-    if (guids_to_add_.find(item->GetGuid()) == guids_to_add_.end()) {
+    if (!guids_to_add_.contains(item->GetGuid())) {
       return;
     }
 
