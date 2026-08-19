@@ -99,6 +99,7 @@
       </if>
       <if expr="enable_src_internal">
         <include name="IDR_APC_PROMPTS_JSON" file="../../internal/password_manager/apc_prompts.json" type="BINDATA" />
+        <include name="IDR_SEARCH_ENGINE_HISTORICAL_SEARCH_URLS_JSON" file="../../third_party/search_engines_data/resources_internal/definitions/historical_search_urls.json" type="BINDATA" />
       </if>
 
       <include name="IDR_SEARCH_ENGINE_PREPOPULATED_ENGINES_JSON" file="../../third_party/search_engines_data/resources/definitions/prepopulated_engines.json" type="BINDATA" />
