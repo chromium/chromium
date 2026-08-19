@@ -229,6 +229,7 @@ extension ObjectGroup {
                 .plain(
                     .function(
                         [
+                            .either(.integer, .undefined),
                             .plain(.jsGoldenDelegateOneRemote),
                         ] => .undefined))
             ] => .integer,

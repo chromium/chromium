@@ -15,6 +15,7 @@ struct LargeStruct {
   uint64 id;
   string value;
   SimpleStruct residence;
+  string? optional_field;
   bool valid;
   SimpleUnion data;
 };

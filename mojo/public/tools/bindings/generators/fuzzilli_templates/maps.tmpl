@@ -23,9 +23,25 @@ private let Mojo{{m|format_unique_name}}Generator = CodeGenerator(
     ),
     produces: [.{{m|format_il_type}}]
 ) { b, key, val in
+    var keys: [Variable] = [key]
+    var values: [Variable] = [val]
+{%- if m.value_kind.is_nullable %}
+
+    // Currently, maps do not encode in anyway that their element is an optional
+    // type. Since this map has an optional value type, pre-populate it with
+    // elements, with a chance of loading undefined for each.
+    for _ in 0..<10 {
+       keys.append(b.randomVariable(forUseAs: .{{m.key_kind|format_il_type}}))
+       if probability(0.5) {
+           values.append(b.loadUndefined())
+       } else {
+           values.append(b.randomVariable(forUseAs: .{{m.value_kind|format_il_type}}))
+       }
+    }
+{%- endif %}
     b.createMap(
-        withKeys: [key],
-        withValues: [val],
+        withKeys: keys,
+        withValues: values,
         keyGroupName: ObjectGroup.
             {{- m.key_kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
             .group.name,

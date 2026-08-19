@@ -186,16 +186,17 @@ extension ILType {
         .createJsArrayType(ofElementType: .jsIntegerElement)
 }
 
-/// Generate an array with only one element. As Fuzzilli runs, the
-/// OperationMutator and VariadicInputReducer will modify the
-/// `CreateArray` operation to increase  or decrease the element count.
+/// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
+/// the `CreateArray` operation to increase or decrease the element count. This
+/// allows arrays to be arbitrarily long.
 private let MojoGoldenEntryArrayGenerator = CodeGenerator(
     "MojoGoldenEntryArrayGenerator",
     inputs: .required(.jsGoldenEntry),
     produces: [.jsGoldenEntryArray]
 ) { b, elem in
+    var elements: [Variable] = [elem]
     b.createArray(
-        with: [elem],
+        with: elements,
         elementGroupName:
             ObjectGroup.goldenEntry.name)
 }
@@ -204,8 +205,9 @@ private let MojoBooleanArrayGenerator = CodeGenerator(
     inputs: .required(.boolean),
     produces: [.jsBooleanArray]
 ) { b, elem in
+    var elements: [Variable] = [elem]
     b.createArray(
-        with: [elem],
+        with: elements,
         elementGroupName:
             ObjectGroup.booleanElement.name)
 }
@@ -214,8 +216,9 @@ private let MojoStringArrayGenerator = CodeGenerator(
     inputs: .required(.string),
     produces: [.jsStringArray]
 ) { b, elem in
+    var elements: [Variable] = [elem]
     b.createArray(
-        with: [elem],
+        with: elements,
         elementGroupName:
             ObjectGroup.stringElement.name)
 }
@@ -224,8 +227,9 @@ private let MojoFloatArrayGenerator = CodeGenerator(
     inputs: .required(.float),
     produces: [.jsFloatArray]
 ) { b, elem in
+    var elements: [Variable] = [elem]
     b.createArray(
-        with: [elem],
+        with: elements,
         elementGroupName:
             ObjectGroup.floatElement.name)
 }
@@ -234,8 +238,9 @@ private let MojoIntegerArrayGenerator = CodeGenerator(
     inputs: .required(.integer),
     produces: [.jsIntegerArray]
 ) { b, elem in
+    var elements: [Variable] = [elem]
     b.createArray(
-        with: [elem],
+        with: elements,
         elementGroupName:
             ObjectGroup.integerElement.name)
 }

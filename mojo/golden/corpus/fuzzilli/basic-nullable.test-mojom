@@ -1,0 +1,27 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module golden;
+
+interface Primary {
+  SetStruct(SimpleStruct? input);
+  GetArrayValue(array<float?> arr, int32 index) => (float? result);
+  GetMapValue(map<string, uint64?> m, string token) => (uint64? result);
+  SendObserver(pending_associated_remote<Observer>? observer);
+
+  [Sync]
+  SyncGetArrayValue(array<float?> arr, int32 index) => (float? result);
+  SyncGetMapValue(map<string, uint64?> m, string token) => (uint64? result);
+};
+
+interface Observer {
+  SendDelegate(int32 data, bool? flag);
+};
+
+struct SimpleStruct {
+  string field;
+  string? optional_field;
+  Token? nested_struct;
+};
+
+struct Token {};

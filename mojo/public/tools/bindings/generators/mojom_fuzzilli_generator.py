@@ -24,6 +24,18 @@ PRIMITIVES_MAPPING = {
   mojom.FLOAT: "float",
   mojom.DOUBLE: "float",  # no dedicated `.double` type
   mojom.STRING: "string",
+  mojom.NULLABLE_BOOL: "boolean",
+  mojom.NULLABLE_INT8: "integer",
+  mojom.NULLABLE_INT16: "integer",
+  mojom.NULLABLE_INT32: "integer",
+  mojom.NULLABLE_INT64: "integer",
+  mojom.NULLABLE_UINT8: "integer",
+  mojom.NULLABLE_UINT16: "integer",
+  mojom.NULLABLE_UINT32: "integer",
+  mojom.NULLABLE_UINT64: "integer",
+  mojom.NULLABLE_FLOAT: "float",
+  mojom.NULLABLE_DOUBLE: "float",
+  mojom.NULLABLE_STRING: "string",
 }
 # List of types skipped during profile generation.
 # These types should be hand-defined in MojoCommonProfile.swift; its definitions
@@ -264,8 +276,6 @@ class Generator(generator.Generator):
   # The `primitive_with_suffix` argument determines whether the name returned
   # for primitives represents the primitive itself or a proxy `IL.object`
   # type. These proxy types are identified by their `Element` suffix.
-  # TODO(crbug.com/522372048): Handle nullable types explicitly. Currently, we
-  # silently generate non-nullables for nullable types.
   def _ILTypeName(self, kind, primitive_with_suffix=False):
     if kind in PRIMITIVES_MAPPING:
       name = PRIMITIVES_MAPPING[kind]

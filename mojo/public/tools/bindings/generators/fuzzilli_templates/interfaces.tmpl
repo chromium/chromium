@@ -1,3 +1,5 @@
+{%- import "macros.tmpl" as macros -%}
+
 extension ILType {
 {%- for remote in interface_remotes %}
     // {{remote.name}}
@@ -58,7 +60,7 @@ extension ObjectGroup {
         {%- for method in remote.methods %}
             "{{method.name}}": [
             {%- for parameter in method.parameters %}
-                .plain(.{{parameter.kind|format_il_type}}),
+                {{ macros.to_fuzzilli_parameter(parameter) }}
             {%- endfor %}
             {#-
                 The `{{ "" }}` preserves a whitespace between `=>` and the return type. The
@@ -135,7 +137,7 @@ extension ObjectGroup {
                     .function(
                         [
                         {%- for parameter in method.parameters %}
-                            .plain(.{{parameter.kind|format_il_type}}),
+                            {{ macros.to_fuzzilli_parameter(parameter) }}
                         {%- endfor %}
                         ] => .undefined))
             ] => .integer,

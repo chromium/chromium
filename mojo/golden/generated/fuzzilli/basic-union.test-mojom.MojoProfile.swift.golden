@@ -129,16 +129,17 @@ extension ILType {
         .createJsArrayType(ofElementType: .jsIntegerElement)
 }
 
-/// Generate an array with only one element. As Fuzzilli runs, the
-/// OperationMutator and VariadicInputReducer will modify the
-/// `CreateArray` operation to increase  or decrease the element count.
+/// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
+/// the `CreateArray` operation to increase or decrease the element count. This
+/// allows arrays to be arbitrarily long.
 private let MojoIntegerArrayGenerator = CodeGenerator(
     "MojoIntegerArrayGenerator",
     inputs: .required(.integer),
     produces: [.jsIntegerArray]
 ) { b, elem in
+    var elements: [Variable] = [elem]
     b.createArray(
-        with: [elem],
+        with: elements,
         elementGroupName:
             ObjectGroup.integerElement.name)
 }

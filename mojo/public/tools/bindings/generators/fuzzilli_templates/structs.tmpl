@@ -1,3 +1,5 @@
+{%- import "macros.tmpl" as macros -%}
+
 extension ILType {
 {%- for struct in structs %}
     fileprivate static let {{struct|format_il_type}}: ILType = .object(
@@ -9,7 +11,7 @@ extension ILType {
         ])
     fileprivate static let {{struct|format_il_type}}Constructor: ILType = .constructor([
     {%- for field in struct.fields %}
-        .plain(.{{field.kind|format_il_type}}),
+        {{ macros.to_fuzzilli_parameter(field) }}
     {%- endfor %}
     ] => .{{struct|format_il_type}})
 {%- endfor %}

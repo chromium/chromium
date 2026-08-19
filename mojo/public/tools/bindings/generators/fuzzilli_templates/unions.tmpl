@@ -1,3 +1,4 @@
+{#- TODO(crbug.com/532201584): Handle nullable union field types -#}
 extension ILType {
 {%- for union in unions %}
     fileprivate static let {{union|format_il_type}}: ILType =

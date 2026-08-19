@@ -44,7 +44,7 @@ extension ObjectGroup {
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_MethodResponse),
             "methodWithoutResponse": [
                 .plain(.string),
-                .plain(.boolean),
+                .either(.boolean, .undefined),
             ] => .undefined,
             "syncMethod": [
                 .plain(.boolean),

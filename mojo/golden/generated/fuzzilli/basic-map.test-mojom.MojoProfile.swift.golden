@@ -164,9 +164,11 @@ private let MojoString_GoldenEntryMapGenerator = CodeGenerator(
     ),
     produces: [.jsString_GoldenEntryMap]
 ) { b, key, val in
+    var keys: [Variable] = [key]
+    var values: [Variable] = [val]
     b.createMap(
-        withKeys: [key],
-        withValues: [val],
+        withKeys: keys,
+        withValues: values,
         keyGroupName: ObjectGroup.stringElement.group.name,
         valueGroupName: ObjectGroup.goldenEntry.group.name
     )
@@ -179,9 +181,11 @@ private let MojoInteger_String_GoldenEntryMapMapGenerator = CodeGenerator(
     ),
     produces: [.jsInteger_String_GoldenEntryMapMap]
 ) { b, key, val in
+    var keys: [Variable] = [key]
+    var values: [Variable] = [val]
     b.createMap(
-        withKeys: [key],
-        withValues: [val],
+        withKeys: keys,
+        withValues: values,
         keyGroupName: ObjectGroup.integerElement.group.name,
         valueGroupName: ObjectGroup.stringGoldenEntryMap.group.name
     )
@@ -194,9 +198,11 @@ private let MojoFloat_BooleanMapGenerator = CodeGenerator(
     ),
     produces: [.jsFloat_BooleanMap]
 ) { b, key, val in
+    var keys: [Variable] = [key]
+    var values: [Variable] = [val]
     b.createMap(
-        withKeys: [key],
-        withValues: [val],
+        withKeys: keys,
+        withValues: values,
         keyGroupName: ObjectGroup.floatElement.group.name,
         valueGroupName: ObjectGroup.booleanElement.group.name
     )

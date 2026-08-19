@@ -14,7 +14,7 @@ interface Primary {
 };
 
 interface ObserverOne {
-  SendDelegateTwo(pending_associated_remote<DelegateOne> remote) => (bool result);
+  SendDelegateTwo(int32? id, pending_associated_remote<DelegateOne> remote) => (bool result);
 };
 
 interface ObserverTwo {

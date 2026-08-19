@@ -8,17 +8,32 @@ extension ILType {
 {%- for array in arrays %}
     {%- if loop.first %}
 
-/// Generate an array with only one element. As Fuzzilli runs, the
-/// OperationMutator and VariadicInputReducer will modify the
-/// `CreateArray` operation to increase  or decrease the element count.
+/// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
+/// the `CreateArray` operation to increase or decrease the element count. This
+/// allows arrays to be arbitrarily long.
     {%- endif %}
 private let Mojo{{array|format_unique_name}}Generator = CodeGenerator(
     "Mojo{{array|format_unique_name}}Generator",
     inputs: .required(.{{array.kind|format_il_type}}),
     produces: [.{{array|format_il_type}}]
 ) { b, elem in
+    var elements: [Variable] = [elem]
+{%- if array.kind.is_nullable %}
+
+    // Currently, arrays do not encode in anyway that their element is an
+    // optional type. Since this array has an optional element type,
+    // pre-populate it with elements, with a chance of loading undefined
+    // for each.
+    for _ in 0..<10 {
+       if probability(0.5) {
+           elements.append(b.loadUndefined())
+       } else {
+           elements.append(b.randomVariable(forUseAs: .{{array.kind|format_il_type}}))
+       }
+    }
+{%- endif %}
     b.createArray(
-        with: [elem],
+        with: elements,
         elementGroupName:
             ObjectGroup.
                 {{- array.kind|format_unique_name(primitive_with_suffix=True)|to_camel(True) -}}
