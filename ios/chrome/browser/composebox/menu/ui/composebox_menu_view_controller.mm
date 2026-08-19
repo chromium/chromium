@@ -149,7 +149,7 @@ ComposeboxMenuItemType MenuItemTypeForModel(ComposeboxModelOption option) {
 UIImage* IconForModel(ComposeboxModelOption option) {
   switch (option) {
     case ComposeboxModelOption::kRegular:
-      return SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize);
+      return SymbolWithPointSize(SymbolAcute, kSymbolActionPointSize);
     case ComposeboxModelOption::kAuto:
       return SymbolWithPointSize(SymbolArrowTrianglehead2ClockwiseRotate90,
                                  kSymbolActionPointSize);
@@ -157,7 +157,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
     case ComposeboxModelOption::kThinkingNoGenUI:
       return SymbolWithPointSize(SymbolClock, kSymbolActionPointSize);
     case ComposeboxModelOption::kFlash:
-      return SymbolWithPointSize(SymbolAcute, kSymbolActionPointSize);
+      return SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize);
     case ComposeboxModelOption::kNone:
       return nil;
   }
