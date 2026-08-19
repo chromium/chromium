@@ -539,6 +539,95 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
+                       LinkClickIsNotReportedAsIgnored) {
+  base::HistogramTester histogram_tester;
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  std::vector<InfoBarResult> results;
+  manager()->Register(
+      InfoBarSpec::Builder(identifier)
+          .SetMessageTextTemplate(u"Go to $1")
+          .SetSubstitutionsCallback(
+              base::BindLambdaForTesting([](content::WebContents*) {
+                std::vector<MessageSubstitution> substitutions;
+                substitutions.emplace_back(u"example.com", /*is_link=*/true,
+                                           /*accessible_name=*/std::nullopt);
+                return substitutions;
+              }))
+          .SetInlineLinkCallback(base::BindLambdaForTesting(
+              [](content::WebContents*, size_t, WindowOpenDisposition) {
+                return true;  // Close the infobar.
+              }))
+          .SetResultCallback(base::BindLambdaForTesting(
+              [&](content::WebContents*, InfoBarResult result) {
+                results.push_back(result);
+              }))
+          .SetScope(InfoBarScope::kTab)
+          .Build());
+
+  // Show on a background tab so removal destroys the delegate synchronously.
+  tabs::TabInterface* background_tab =
+      browser()->tab_strip_model()->GetActiveTab();
+  content::WebContents* background_contents = background_tab->GetContents();
+  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
+  manager()->Show(background_tab, identifier);
+
+  auto* infobar_manager =
+      ContentInfoBarManager::FromWebContents(background_contents);
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  infobars::InfoBar* infobar = infobar_manager->infobars()[0];
+  auto* delegate = infobar->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+
+  // The click asks to close; the removal must report kLinkClicked as the
+  // terminal result, not kIgnored.
+  EXPECT_TRUE(delegate->InlineSubstitutionLinkClicked(
+      0u, WindowOpenDisposition::NEW_FOREGROUND_TAB));
+  infobar_manager->RemoveInfoBar(infobar);
+  ASSERT_EQ(1u, results.size());
+  EXPECT_EQ(InfoBarResult::kLinkClicked, results[0]);
+
+  // Second instance: a link click that leaves the infobar open, followed by
+  // closing the tab, must also report exactly one kLinkClicked (not
+  // kIgnored).
+  const auto second_identifier = InfoBarDelegate::DEV_TOOLS_INFOBAR_DELEGATE;
+  manager()->Register(
+      InfoBarSpec::Builder(second_identifier)
+          .SetMessageTextTemplate(u"Go to $1")
+          .SetSubstitutionsCallback(
+              base::BindLambdaForTesting([](content::WebContents*) {
+                std::vector<MessageSubstitution> substitutions;
+                substitutions.emplace_back(u"example.com", /*is_link=*/true,
+                                           /*accessible_name=*/std::nullopt);
+                return substitutions;
+              }))
+          .SetInlineLinkCallback(base::BindLambdaForTesting(
+              [](content::WebContents*, size_t, WindowOpenDisposition) {
+                return false;  // Keep the infobar open.
+              }))
+          .SetResultCallback(base::BindLambdaForTesting(
+              [&](content::WebContents*, InfoBarResult result) {
+                results.push_back(result);
+              }))
+          .SetScope(InfoBarScope::kTab)
+          .Build());
+
+  manager()->Show(background_tab, second_identifier);
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+  delegate =
+      infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+  EXPECT_FALSE(delegate->InlineSubstitutionLinkClicked(
+      0u, WindowOpenDisposition::CURRENT_TAB));
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
+  ASSERT_EQ(2u, results.size());
+  EXPECT_EQ(InfoBarResult::kLinkClicked, results[1]);
+
+  histogram_tester.ExpectTotalCount("InfoBar.Centralized.Ignored", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
                        ResultCallbackReportsIgnoredOnTabClose) {
   base::HistogramTester histogram_tester;
   const auto identifier = InfoBarDelegate::TEST_INFOBAR;

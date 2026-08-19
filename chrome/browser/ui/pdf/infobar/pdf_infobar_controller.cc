@@ -195,7 +195,8 @@ void PdfInfoBarController::RegisterInfoBarSpec() {
                         PdfInfoBarUserInteraction::kIgnored);
                     break;
                   case infobars::InfoBarResult::kCancelled:
-                    // The PDF infobar has no cancel button.
+                  case infobars::InfoBarResult::kLinkClicked:
+                    // The PDF infobar has no cancel button and no links.
                     break;
                 }
               }))

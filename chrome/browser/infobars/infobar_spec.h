@@ -44,6 +44,8 @@ enum class InfoBarResult {
   kDismissed,
   // Went away without the user touching it, e.g. the tab was closed.
   kIgnored,
+  // The only user interaction was a link click.
+  kLinkClicked,
 };
 
 // InfoBarSpec defines an InfoBar's appearance and behavior.

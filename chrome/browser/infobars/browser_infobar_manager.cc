@@ -55,9 +55,13 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
 
   ~RegistryInfoBarDelegate() override {
     // Reports whatever outcome is still owed. Interactions report eagerly
-    // and clear it; manager-initiated removals clear it too.
+    // and clear it; manager-initiated removals clear it too, and delegates
+    // that never made it on screen owe nothing.
     if (pending_result_) {
-      base::UmaHistogramSparse("InfoBar.Centralized.Ignored", GetIdentifier());
+      if (*pending_result_ == InfoBarResult::kIgnored) {
+        base::UmaHistogramSparse("InfoBar.Centralized.Ignored",
+                                 GetIdentifier());
+      }
       ReportResult(*pending_result_);
     }
   }
@@ -178,6 +182,9 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
   }
 
   bool LinkClicked(WindowOpenDisposition disposition) override {
+    if (pending_result_) {
+      pending_result_ = InfoBarResult::kLinkClicked;
+    }
     base::UmaHistogramSparse("InfoBar.Centralized.LinkClicked",
                              GetIdentifier());
     return ConfirmInfoBarDelegate::LinkClicked(disposition);
@@ -186,6 +193,9 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
   bool InlineSubstitutionLinkClicked(
       size_t index,
       WindowOpenDisposition disposition) override {
+    if (pending_result_) {
+      pending_result_ = InfoBarResult::kLinkClicked;
+    }
     base::UmaHistogramSparse("InfoBar.Centralized.LinkClicked",
                              GetIdentifier());
     const InfoBarSpec::InlineLinkCallback& callback =
