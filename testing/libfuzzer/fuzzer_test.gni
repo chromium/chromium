@@ -379,6 +379,10 @@ template("fuzzer_test") {
         sources += invoker.generated_sources
       }
 
+      if (is_win) {
+        sources += [ "//testing/libfuzzer/fuzzer_support_win.cc" ]
+      }
+
       if (is_ios) {
         info_plist =
             "//testing/libfuzzer/fuzzer_support_ios/fuzzer-engine-Info.plist"
