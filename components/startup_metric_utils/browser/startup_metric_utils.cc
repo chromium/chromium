@@ -217,7 +217,7 @@ BrowserStartupMetricRecorder::GetHardFaultCountForCurrentProcess() {
   // NOTE: The actual required size depends entirely on the number of
   // processes and threads running on the system. The initial guess suffices for
   // ~100s of processes and ~1000s of threads.
-  std::vector<uint8_t> buffer(base::KiBU(32).InBytes());
+  std::vector<uint8_t> buffer(base::KiB(32).InBytes());
   constexpr int kMaxNumBufferResize = 2;
   int num_buffer_resize = 0;
   for (;;) {
@@ -238,10 +238,10 @@ BrowserStartupMetricRecorder::GetHardFaultCountForCurrentProcess() {
       // to fill a large buffer just to record histograms.
 #if defined(_WIN64)
       constexpr ULONG kMaxLength =
-          base::MiBU(2).InBytes();  // 2 MB for 64-bit systems
+          base::MiB(2).InBytes();  // 2 MB for 64-bit systems
 #else
       constexpr ULONG kMaxLength =
-          base::KiBU(512).InBytes();  // 512 KB for 32-bit systems
+          base::KiB(512).InBytes();  // 512 KB for 32-bit systems
 #endif
       if (return_length >= kMaxLength) {
         return std::nullopt;

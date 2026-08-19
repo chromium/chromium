@@ -109,7 +109,7 @@ TEST_F(UnbufferedFileWriterTest, CommitChunks) {
 
 // Tests writing a very large file.
 TEST_F(UnbufferedFileWriterTest, VeryLarge) {
-  static constexpr auto kFileSize = base::GiBU(2.333);
+  static constexpr auto kFileSize = base::GiB(2.333);
   base::FilePath path = temp_dir().Append(FILE_PATH_LITERAL("very_large"));
   ASSERT_OK_AND_ASSIGN(UnbufferedFileWriter writer,
                        UnbufferedFileWriter::Create(path, kFileSize.InBytes()));
