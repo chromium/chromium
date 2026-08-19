@@ -59,11 +59,11 @@ public class OmniboxFacility extends Facility<CtaPageStation> {
         return mFakeSuggestions;
     }
 
-    /** Enter text into the omnibox char by char. */
-    public OmniboxEnteredTextFacility typeText(String textToTypeAndExpect) {
+    /** Enter text into the omnibox char by char, transitioning to OmniboxDraftingFacility. */
+    public OmniboxDraftingFacility typeText(String textToTypeAndExpect) {
         return urlBarElement
                 .typeTextTo(textToTypeAndExpect)
-                .enterFacility(new OmniboxEnteredTextFacility(this, textToTypeAndExpect));
+                .enterFacility(new OmniboxDraftingFacility(this, textToTypeAndExpect));
     }
 
     /** Set text into the omnibox as an atomic operation. */

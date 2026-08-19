@@ -93,4 +93,9 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
                 .exitFacilityAnd(this)
                 .enterFacility(new OmniboxEnteredTextFacility(mOmniboxFacility, ""));
     }
+
+    /** Presses Back to exit Omnibox completely, returning to host CtaPageStation (WEBSITE). */
+    public void pressBackToExit() {
+        pressBackTo().exitFacilityAnd().exitFacility(mOmniboxFacility);
+    }
 }
