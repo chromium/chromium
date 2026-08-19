@@ -553,7 +553,8 @@ void AutocompleteResult::SortAndCull(
           default:
             NOTREACHED();
         }
-      } else if (omnibox::IsNTPPage(page_classification)) {
+      } else if (omnibox::IsNTPPage(page_classification) ||
+                 page_classification == OmniboxEventProto::OMNIBOX_EVERYWHERE) {
         // IPH is shown for NTP ZPS in the Omnibox only.  If it is shown, reduce
         // the limit of the normal NTP ZPS Section to make room for the IPH.
         bool has_iph_match =

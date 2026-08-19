@@ -97,10 +97,12 @@ bool AllowLocalHistoryZeroSuggestSuggestions(AutocompleteProviderClient* client,
   }
 
   // Allow local history query suggestions only when the omnibox is empty and is
-  // focused from the NTP.
+  // focused from the NTP or Omnibox Everywhere.
   return input.focus_type() == metrics::OmniboxFocusType::INTERACTION_FOCUS &&
          input.type() == OmniboxInputType::EMPTY &&
-         omnibox::IsNTPPage(input.current_page_classification());
+         (omnibox::IsNTPPage(input.current_page_classification()) ||
+          input.current_page_classification() ==
+              metrics::OmniboxEventProto::OMNIBOX_EVERYWHERE);
 }
 
 }  // namespace

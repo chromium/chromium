@@ -389,6 +389,25 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsOnSearchActivity) {
       ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input));
 }
 
+TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsOnOmniboxEverywhere) {
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::OMNIBOX_EVERYWHERE,
+                          TestSchemeClassifier());
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  // Offer ZPS when the user focuses the omnibox.
+  EXPECT_EQ(
+      std::make_pair(ZeroSuggestProvider::ResultType::kRemoteNoURL, true),
+      ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input));
+
+  // Don't offer ZPS when the user is typing.
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
+  EXPECT_EQ(
+      std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
+      ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input));
+}
+
 // Tests whether zero-suggest is allowed on Web/SRP when the external request
 // conditions are met.
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
