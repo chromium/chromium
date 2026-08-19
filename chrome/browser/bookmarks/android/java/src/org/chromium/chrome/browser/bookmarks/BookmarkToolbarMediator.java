@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
@@ -286,13 +285,6 @@ class BookmarkToolbarMediator
         return false;
     }
 
-    public void onConfigurationChanged(Configuration newConfig) {
-        if (mCurrentUiMode != BookmarkUiMode.LOADING
-                && mCurrentUiMode != BookmarkUiMode.SEARCHING) {
-            onFolderStateSet(mCurrentFolder);
-        }
-    }
-
     // BookmarkUiObserver implementation.
 
     @Override
@@ -352,9 +344,6 @@ class BookmarkToolbarMediator
         @NavigationButton int navigationButton;
         Resources res = mContext.getResources();
         boolean isDesktopLayout = BookmarkUtils.isDesktopBookmarksLayoutEnabled();
-        boolean isNarrowScreen =
-                mContext.getResources().getConfiguration().screenWidthDp
-                        < BookmarkUtils.WIDE_DISPLAY_THRESHOLD_DP;
         boolean isRootFolder = mCurrentFolder.equals(mBookmarkModel.getRootFolderId());
         boolean isTopLevelFolder =
                 (folderItem.getParentId() != null
@@ -363,7 +352,7 @@ class BookmarkToolbarMediator
                                         .equals(mBookmarkModel.getRootFolderId()))
                         || mBookmarkModel.isReadingListFolder(mCurrentFolder);
 
-        if (isRootFolder || (isDesktopLayout && isTopLevelFolder && !isNarrowScreen)) {
+        if (isRootFolder || (isDesktopLayout && isTopLevelFolder)) {
             title = isRootFolder ? res.getString(R.string.bookmarks) : folderItem.getTitle();
             navigationButton = NavigationButton.NONE;
         } else if (mBookmarkModel.getTopLevelFolderIds().contains(folderItem.getParentId())

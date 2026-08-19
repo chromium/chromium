@@ -33,7 +33,6 @@ import java.util.function.BooleanSupplier;
 public class BookmarkToolbarCoordinator {
     private final BookmarkToolbar mToolbar;
     private final PropertyModel mModel;
-    private final BookmarkToolbarMediator mMediator;
 
     BookmarkToolbarCoordinator(
             Context context,
@@ -83,32 +82,29 @@ public class BookmarkToolbarCoordinator {
         mModel.set(BookmarkToolbarProperties.IS_DIALOG_UI, isDialogUi);
         mModel.set(BookmarkToolbarProperties.DRAG_ENABLED, false);
         mModel.set(BookmarkToolbarProperties.NEXT_FOCUSABLE_VIEW, nextFocusableView);
-        mMediator =
-                new BookmarkToolbarMediator(
-                        context,
-                        profile,
-                        mModel,
-                        dragTouchHandler,
-                        bookmarkDelegateSupplier,
-                        selectionDelegate,
-                        bookmarkModel,
-                        bookmarkOpener,
-                        bookmarkUiPrefs,
-                        new BookmarkAddNewFolderCoordinator(
-                                context, modalDialogManager, bookmarkModel),
-                        endSearchRunnable,
-                        incognitoEnabledSupplier,
-                        bookmarkManagerOpener,
-                        snackbarManager,
-                        Clipboard.getInstance(),
-                        bookmarkDeleteObserver);
+        new BookmarkToolbarMediator(
+                context,
+                profile,
+                mModel,
+                dragTouchHandler,
+                bookmarkDelegateSupplier,
+                selectionDelegate,
+                bookmarkModel,
+                bookmarkOpener,
+                bookmarkUiPrefs,
+                new BookmarkAddNewFolderCoordinator(context, modalDialogManager, bookmarkModel),
+                endSearchRunnable,
+                incognitoEnabledSupplier,
+                bookmarkManagerOpener,
+                snackbarManager,
+                Clipboard.getInstance(),
+                bookmarkDeleteObserver);
 
         PropertyModelChangeProcessor.create(mModel, mToolbar, BookmarkToolbarViewBinder::bind);
     }
 
     public void onConfigurationChanged(Configuration newConfig) {
         updateToolbarPadding(mToolbar.getContext());
-        mMediator.onConfigurationChanged(newConfig);
     }
 
     private void updateToolbarPadding(Context context) {

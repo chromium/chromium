@@ -37,7 +37,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
@@ -262,36 +261,16 @@ public class BookmarkToolbarMediatorTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
     public void testNavigationButton_topLevelFolder_desktop() {
         DeviceInfo.setIsDesktopForTesting(true);
-        RuntimeEnvironment.setQualifiers("w900dp"); // wide screen
         mMediator.onFolderStateSet(mBookmarkModel.getMobileFolderId());
         assertTrue(navigationButtonMatchesModel(NavigationButton.NONE));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
-    public void testNavigationButton_topLevelFolder_desktop_narrowScreen() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        RuntimeEnvironment.setQualifiers("w600dp"); // narrow screen
-        mMediator.onFolderStateSet(mBookmarkModel.getMobileFolderId());
-        assertTrue(navigationButtonMatchesModel(NavigationButton.NORMAL_VIEW_BACK));
     }
 
     @Test
     @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
     public void testNavigationButton_readingListFolder_desktop() {
         DeviceInfo.setIsDesktopForTesting(true);
-        RuntimeEnvironment.setQualifiers("w900dp"); // wide screen
         mMediator.onFolderStateSet(mBookmarkModel.getLocalOrSyncableReadingListFolder());
         assertTrue(navigationButtonMatchesModel(NavigationButton.NONE));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT})
-    public void testNavigationButton_readingListFolder_desktop_narrowScreen() {
-        DeviceInfo.setIsDesktopForTesting(true);
-        RuntimeEnvironment.setQualifiers("w600dp"); // narrow screen
-        mMediator.onFolderStateSet(mBookmarkModel.getLocalOrSyncableReadingListFolder());
-        assertTrue(navigationButtonMatchesModel(NavigationButton.NORMAL_VIEW_BACK));
     }
 
     @Test
