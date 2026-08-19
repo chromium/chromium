@@ -152,6 +152,7 @@ InProcessCategoryClassificationService::
 
 void InProcessCategoryClassificationService::Shutdown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
+  embedder_wrapper_.Reset();
   request_tracker_.CancelAll();
 }
 

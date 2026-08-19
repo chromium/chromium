@@ -61,23 +61,43 @@ TEST_F(PassageEmbedderImplTest, LoadValidModels) {
       kInputWindowSize));
 }
 
-TEST_F(PassageEmbedderImplTest, LoadModelsWithInvalidEmbeddingsModel) {
+TEST_F(PassageEmbedderImplTest, LoadModelsWithInvalidEmbeddingsModelFile) {
   PassageEmbedderImpl embedder(MakeEmbedderParams());
-  // LoadModels succeeds since it only validates the SentencePiece model and
-  // defers loading the embeddings model until the first execution.
+  // LoadModels fails immediately when given an invalid embeddings model file
+  // handle.
+  EXPECT_FALSE(embedder.LoadModels(
+      base::File(),
+      base::File(sp_path_, base::File::FLAG_OPEN | base::File::FLAG_READ),
+      kInputWindowSize));
+}
+
+TEST_F(PassageEmbedderImplTest, LoadModelsWithCorruptedEmbeddingsModel) {
+  PassageEmbedderImpl embedder(MakeEmbedderParams());
+  // LoadModels succeeds when file handles are valid, deferring flatbuffer
+  // verification until the first execution.
   EXPECT_TRUE(embedder.LoadModels(
       base::File(sp_path_, base::File::FLAG_OPEN | base::File::FLAG_READ),
       base::File(sp_path_, base::File::FLAG_OPEN | base::File::FLAG_READ),
       kInputWindowSize));
 
-  // Execution fails since the embeddings model is invalid.
+  // Execution fails since the embeddings model flatbuffer is invalid.
   std::vector<mojom::PassageEmbeddingsResultPtr> results =
       embedder.GenerateEmbeddings({"foo"},
                                   mojom::PassagePriority::kUserInitiated);
   EXPECT_EQ(results.size(), 0u);
 }
 
-TEST_F(PassageEmbedderImplTest, LoadModelsWithInvalidSpModel) {
+TEST_F(PassageEmbedderImplTest, LoadModelsWithInvalidSpModelFile) {
+  PassageEmbedderImpl embedder(MakeEmbedderParams());
+  // LoadModels fails immediately when given an invalid SentencePiece file
+  // handle.
+  EXPECT_FALSE(embedder.LoadModels(
+      base::File(embeddings_path_,
+                 base::File::FLAG_OPEN | base::File::FLAG_READ),
+      base::File(), kInputWindowSize));
+}
+
+TEST_F(PassageEmbedderImplTest, LoadModelsWithCorruptedSpModel) {
   PassageEmbedderImpl embedder(MakeEmbedderParams());
   EXPECT_FALSE(embedder.LoadModels(
       base::File(embeddings_path_,
