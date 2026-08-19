@@ -35,6 +35,10 @@ class MetricsProvider {
   // async initialization tasks.  The service will wait for the provider to
   // call |done_callback| before generating logs for the current session.
   // |done_callback| must be run on the same thread that calls |AsyncInit|.
+  // Providers are responsible for tracking their own initialization state and
+  // must safely handle (or exit early from) methods like
+  // ProvideSystemProfileMetrics() if they are called before |done_callback|
+  // has run.
   virtual void AsyncInit(base::OnceClosure done_callback);
 
   // Called by OnDidCreateMetricsLog() to provide histograms. If histograms

@@ -135,4 +135,81 @@ TEST_P(AntiVirusMetricsProviderTest, GetMetricsFullName) {
   histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
 }
 
+TEST_P(AntiVirusMetricsProviderTest, CallProvideMetricsBeforeAsyncInit) {
+  AntiVirusMetricsProvider provider;
+  metrics::SystemProfileProto system_profile;
+
+  // Returns an empty list.
+  provider.ProvideSystemProfileMetrics(&system_profile);
+  EXPECT_EQ(system_profile.antivirus_product_size(), 0);
+}
+
+TEST_P(AntiVirusMetricsProviderTest, CallAsyncInitAfterCacheIsPopulated) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+  base::win::ScopedCOMInitializer com_initializer;
+
+  ASSERT_TRUE(com_initializer.Succeeded());
+  ASSERT_TRUE(thread_checker_.CalledOnValidThread());
+  SetFullNamesFeatureEnabled(expect_unhashed_value_);
+
+  // Call first query to populate the cache.
+  provider_.AsyncInit(
+      base::BindOnce(&AntiVirusMetricsProviderTest::GetMetricsCallback,
+                     base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(got_results_);
+  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
+
+  // Call second query to return cached results.
+  bool callback_2 = false;
+  AntiVirusMetricsProvider provider_2;
+  provider_2.AsyncInit(
+      base::BindOnce([](bool* ran) { *ran = true; }, &callback_2));
+  EXPECT_TRUE(callback_2);
+
+  // Verifies that data is available to the second instance.
+  metrics::SystemProfileProto system_profile;
+  provider_2.ProvideSystemProfileMetrics(&system_profile);
+  EXPECT_GT(system_profile.antivirus_product_size(), 0);
+
+  // Verify that histogram count did not change.
+  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
+}
+
+TEST_P(AntiVirusMetricsProviderTest, CallAsyncInitConcurrently) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+  base::win::ScopedCOMInitializer com_initializer;
+
+  ASSERT_TRUE(com_initializer.Succeeded());
+  ASSERT_TRUE(thread_checker_.CalledOnValidThread());
+  SetFullNamesFeatureEnabled(expect_unhashed_value_);
+
+  bool callback_1 = false;
+  bool callback_2 = false;
+
+  AntiVirusMetricsProvider provider_1;
+  AntiVirusMetricsProvider provider_2;
+
+  // Start the first query.
+  provider_1.AsyncInit(
+      base::BindOnce([](bool* ran) { *ran = true; }, &callback_1));
+
+  // Start the second query while the first query is in-flight.
+  provider_2.AsyncInit(
+      base::BindOnce([](bool* ran) { *ran = true; }, &callback_2));
+
+  EXPECT_FALSE(callback_1);
+  EXPECT_FALSE(callback_2);
+
+  // Wait for the single Mojo query to finish.
+  task_environment_.RunUntilIdle();
+
+  // Both callers are updated.
+  EXPECT_TRUE(callback_1);
+  EXPECT_TRUE(callback_2);
+
+  // Verify that one histogram is recorded.
+  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
+}
+
 INSTANTIATE_TEST_SUITE_P(, AntiVirusMetricsProviderTest, ::testing::Bool());

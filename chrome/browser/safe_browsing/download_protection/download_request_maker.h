@@ -95,6 +95,14 @@ class DownloadRequestMaker {
   // Populates the tailored info field for tailored warnings.
   void PopulateTailoredInfo();
 
+  // Extracts and analyzes the download.
+  void StartFileAnalysis();
+
+#if BUILDFLAG(IS_WIN)
+  // Populates the antivirus product field.
+  void OnGotAntivirusProducts();
+#endif
+
   raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<ClientDownloadRequest> request_;
   const scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
