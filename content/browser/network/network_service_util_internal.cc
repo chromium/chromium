@@ -26,8 +26,7 @@ std::optional<bool> g_force_network_service_process_in_or_out;
 // Using 1077 rather than 1024 because it helps ensure that devices with
 // exactly 1GB of RAM won't get included because of inaccuracies or off-by-one
 // errors.
-constexpr base::ByteSize kNetworkServiceOutOfProcessThreshold =
-    base::MiBU(1077);
+constexpr base::ByteSize kNetworkServiceOutOfProcessThreshold = base::MiB(1077);
 #endif
 
 }  // namespace

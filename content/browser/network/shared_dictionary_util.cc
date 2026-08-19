@@ -19,10 +19,10 @@ namespace content {
 
 namespace {
 
-constexpr base::ByteSize kDefaultCacheMaxSizeForInMemory = base::MiBU(20);
-constexpr base::ByteSize kMaxCacheMaxSizeForInMemory = base::MiBU(400);
-constexpr base::ByteSize kDefaultCacheMaxSizeForOnDisk = base::MiBU(300);
-constexpr base::ByteSize kMaxCacheMaxSizeForOnDisk = base::MiBU(400);
+constexpr base::ByteSize kDefaultCacheMaxSizeForInMemory = base::MiB(20);
+constexpr base::ByteSize kMaxCacheMaxSizeForInMemory = base::MiB(400);
+constexpr base::ByteSize kDefaultCacheMaxSizeForOnDisk = base::MiB(300);
+constexpr base::ByteSize kMaxCacheMaxSizeForOnDisk = base::MiB(400);
 
 uint64_t CaliculateCacheMaxSizeForInMemory() {
   base::ByteSize cache_max_size = kDefaultCacheMaxSizeForInMemory;
