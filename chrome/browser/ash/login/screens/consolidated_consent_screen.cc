@@ -41,18 +41,19 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "components/account_id/account_id.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "crypto/obsolete/sha1.h"
 
@@ -421,16 +422,13 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
 }
 
 void ConsolidatedConsentScreen::RecordConsents(
+    const AccountId& account_id,
     const ConsentsParameters& params) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
   consent_auditor::ConsentAuditor* consent_auditor =
-      ConsentAuditorFactory::GetForProfile(profile);
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  // The account may or may not have consented to browser sync.
-  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  const GaiaId gaia_id =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
+      ConsentAuditorFactory::GetForProfile(Profile::FromBrowserContext(
+          ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+              account_id)));
+  const GaiaId gaia_id = account_id.GetGaiaId();
 
   ArcPlayTermsOfServiceConsent play_consent;
   play_consent.set_status(UserConsentTypes::GIVEN);
@@ -543,7 +541,12 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
   consents.tos_content = tos_content;
 
   // If the profile is affiliated, we don't show any ToS to the user.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  const auto& active_session =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
+  // TODO(hidehiko): Remove Profile use.
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session.account_id()));
   CHECK(profile);
   consents.record_arc_tos_consent =
       !enterprise_util::IsProfileAffiliated(profile) && !tos_content.empty();
@@ -551,7 +554,7 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
   consents.backup_accepted = enable_backup_restore;
   consents.record_location_consent = !location_services_managed_;
   consents.location_accepted = enable_location_services;
-  RecordConsents(consents);
+  RecordConsents(active_session.account_id(), consents);
 
   for (auto& observer : observer_list_)
     observer.OnConsolidatedConsentAccept();

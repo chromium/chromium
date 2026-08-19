@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 
+class AccountId;
 class ApplicationLocaleStorage;
 class PrefService;
 
@@ -133,7 +134,8 @@ class ConsolidatedConsentScreen
     bool location_accepted;
   };
 
-  void RecordConsents(const ConsentsParameters& params);
+  void RecordConsents(const AccountId& account_id,
+                      const ConsentsParameters& params);
 
   void OnOwnershipStatusCheckDone(
       DeviceSettingsService::OwnershipStatus status);

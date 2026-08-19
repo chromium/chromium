@@ -293,6 +293,7 @@ static_library("screens") {
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/assistant:buildflags",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/concierge:concierge_proto",
