@@ -11,6 +11,7 @@ import android.util.SparseIntArray;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -402,10 +403,20 @@ public class MediaNotificationManager {
     }
 
     public static void resetForTesting() {
-        sControllers.clear();
-        sUniqueIdMap.clear();
-        sActiveNotificationIds.clear();
-        sServices.clear();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (int i = 0; i < sControllers.size(); i++) {
+                        MediaNotificationController controller = sControllers.valueAt(i);
+                        if (controller != null) {
+                            controller.clearNotification();
+                            controller.onServiceDestroyed();
+                        }
+                    }
+                    sControllers.clear();
+                    sUniqueIdMap.clear();
+                    sActiveNotificationIds.clear();
+                    sServices.clear();
+                });
     }
 
     public static @Nullable MediaNotificationController getControllerByNotificationId(

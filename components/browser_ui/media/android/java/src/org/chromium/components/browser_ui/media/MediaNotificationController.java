@@ -764,9 +764,10 @@ public class MediaNotificationController {
 
     public void clearNotification() {
         mThrottler.clearPendingNotifications();
-        if (mMediaNotificationInfo == null) return;
-
-        BaseNotificationManagerProxyFactory.create().cancel(mMediaNotificationInfo.id);
+        if (mMediaNotificationInfo != null) {
+            BaseNotificationManagerProxyFactory.create().cancel(mMediaNotificationInfo.id);
+            mMediaNotificationInfo = null;
+        }
 
         if (mMediaSession != null) {
             mMediaSession.setCallback(null);
@@ -775,7 +776,6 @@ public class MediaNotificationController {
             mMediaSession = null;
         }
         stopListenerService();
-        mMediaNotificationInfo = null;
         mNotificationBuilder = null;
     }
 
