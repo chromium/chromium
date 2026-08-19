@@ -2699,7 +2699,6 @@ external/wpt/dom/events/scrolling/input-text-scroll-event-when-using-arrow-keys.
 external/wpt/dom/events/scrolling/scrollend-event-fires-on-visual-viewport.html [ Pass Timeout ]
 external/wpt/dom/events/scrolling/wheel-event-transactions-basic.html?include=scroll-over-scrollable-child [ Failure Pass ]
 external/wpt/dom/events/scrolling/wheel-event-transactions-basic.html?include=target-basic [ Failure Pass ]
-external/wpt/dom/events/scrolling/wheel-event-transactions-multiple-action-chains.html [ Failure Pass ]
 external/wpt/dom/events/scrolling/wheel-event-transactions-target-display-change.html?include=contents [ Failure Pass ]
 external/wpt/dom/events/scrolling/wheel-event-transactions-target-display-change.html?include=none [ Failure Pass ]
 external/wpt/dom/events/scrolling/wheel-event-transactions-target-elements.html [ Failure Pass ]
