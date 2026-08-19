@@ -66,6 +66,7 @@ class AngleProject : public Project {
     static const std::vector<FuncMapping> kFuncMappingTable = {};
     return kFuncMappingTable;
   }
+  bool UseExplicitSizeForImplicitArrays() const override { return true; }
   bool IsExcludedFromProject(const clang::Decl& Node) const override {
     const clang::SourceManager& source_manager =
         Node.getASTContext().getSourceManager();

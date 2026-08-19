@@ -2610,7 +2610,7 @@ std::pair<std::string, std::string> RewriteStdArrayWithInitList(
     const clang::ArrayType* array_type,
     const std::string& type,
     const std::string& var,
-    const std::string& size,
+    std::string size,
     const clang::InitListExpr* init_list_expr,
     const clang::SourceManager& source_manager,
     const clang::ASTContext& ast_context) {
@@ -2621,15 +2621,19 @@ std::pair<std::string, std::string> RewriteStdArrayWithInitList(
       init_list_expr->getSourceRange().getEnd(),
       init_list_expr->getSourceRange().getEnd().getLocWithOffset(1)};
 
-  // Implicitly sized arrays are rewritten to std::to_array. This is because the
-  // std::array constructor does not allow the size to be omitted.
-  if (size.empty()) {
+  // Implicitly sized arrays are rewritten to std::to_array for default
+  // projects.
+  if (size.empty() && !GetProject()->UseExplicitSizeForImplicitArrays()) {
     auto closing_brackets_replacement_directive = GetReplacementDirective(
         init_list_closing_brackets_range, needs_trailing_comma ? ",})" : "})",
         source_manager);
     return std::make_pair(
         llvm::formatv("auto {0} = std::to_array<{1}>(", var, type),
         closing_brackets_replacement_directive);
+  }
+
+  if (size.empty()) {
+    size = std::to_string(init_list_expr->getNumInits());
   }
 
   // Warn for array and initializer list size mismatch, except for empty lists.

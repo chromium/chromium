@@ -71,5 +71,6 @@ class Project {
   virtual const std::vector<FuncMapping>& GetFuncMappingTable() const = 0;
   virtual bool IsExcludedFromProject(const clang::Decl& Node) const = 0;
   virtual bool SupportsStaticExtent() const { return true; }
+  virtual bool UseExplicitSizeForImplicitArrays() const { return false; }
 };
 #endif  // TOOLS_CLANG_SPANIFY_PROJECT_H_

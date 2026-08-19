@@ -19,11 +19,32 @@ void f() {
 #define CUSTOM_MACRO(expr) (expr)
 
 void test_macro() {
-  auto buf = std::to_array<int>({1, 2, 3});
+  std::array<int, 3> buf = {1, 2, 3};
   // Buffer access leading to buf to be spanified:
   buf[0] = 0;
 
   // Expected rewrite:
   // ANGLE_UNSAFE_TODO(CUSTOM_MACRO(buf.data() + 1));
   ANGLE_UNSAFE_TODO(CUSTOM_MACRO(buf.data() + 1));
+}
+
+struct Point {
+  int x;
+  int y;
+};
+
+void test_struct_with_braces(int index) {
+  // Implicitly sized struct array with nested braces (elide_braces = false)
+  // Expected rewrite:
+  // std::array<Point, 2> points = {{{1, 2}, {3, 4}}};
+  std::array<Point, 2> points = {{{1, 2}, {3, 4}}};
+  points[index].x = 0;
+}
+
+void test_static_const_implicit_array(int index) {
+  // Implicitly sized static const array
+  // Expected rewrite:
+  // static const std::array<int, 3> kValues = {10, 20, 30};
+  static const std::array<int, 3> kValues = {10, 20, 30};
+  int val = kValues[index];
 }
