@@ -64,16 +64,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/cookie_settings.h:CookieControlsMode, //chrome/browser/resources/settings/site_settings/constants.ts:CookieControlsMode) -->
 
-<enum name="CookieDeprecationFacilitatedTestingProfileEligibility">
-  <int value="0" label="Eligible"/>
-  <int value="1" label="Ineligible: 3P Cookies blocked"/>
-  <int value="2" label="Ineligible: Has not seen Ads API GA notice"/>
-  <int value="3" label="Ineligible: New user"/>
-  <int value="4" label="Ineligible: Enterprise user"/>
-  <int value="5" label="Ineligible: PWA or TWA installed on Android"/>
-  <int value="6" label="Eligible: Forced via kForceEligibleForTesting"/>
-</enum>
-
 <!-- LINT.IfChange(DeleteBrowsingDataAction) -->
 
 <enum name="DeleteBrowsingDataAction">

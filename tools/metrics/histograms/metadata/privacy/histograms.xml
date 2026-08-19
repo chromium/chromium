@@ -675,23 +675,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
-<histogram
-    name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForEligibilityStoredInPrefs"
-    enum="CookieDeprecationFacilitatedTestingProfileEligibility"
-    expires_after="2026-05-10">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records the profile's computed eligibility which was used to set the
-    client's eligibility to cookie deprecation facilitated testing.
-
-    Once set, the eligibility is stored in the pref service local state.
-
-    For a given client, the metric will not be recorded again so long as the set
-    eligibility is available from the pref service local state.
-  </summary>
-</histogram>
-
 <histogram name="PrivacySandbox.ProtectedAudience.JoiningTopFrameDisplayed"
     enum="BooleanShown" expires_after="2025-01-05">
   <owner>sauski@google.com</owner>
