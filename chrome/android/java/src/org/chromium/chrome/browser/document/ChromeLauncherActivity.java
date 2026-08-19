@@ -130,6 +130,11 @@ public class ChromeLauncherActivity extends Activity {
             return;
         }
 
+        if (LaunchIntentDispatcher.dispatchToActorForegroundService(this, intent)
+                != LaunchIntentDispatcher.Action.CONTINUE) {
+            return;
+        }
+
         // b(357902796): Handle fall-back path for unbound WebAPKs.
         if (isWebApkIntent(intent) && launchWebApk(intent)) return;
 

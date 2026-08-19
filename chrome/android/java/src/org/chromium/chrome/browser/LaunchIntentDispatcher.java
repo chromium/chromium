@@ -41,13 +41,16 @@ import org.chromium.chrome.browser.customtabs.content.WebAppLaunchHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
+import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -63,6 +66,9 @@ public class LaunchIntentDispatcher {
     /** Extra indicating launch mode used. */
     public static final String EXTRA_LAUNCH_MODE =
             "com.google.android.apps.chrome.EXTRA_LAUNCH_MODE";
+
+    private static final String START_ACTOR_FOREGROUND_SERVICE =
+            "org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE";
 
     private static final String TAG = "ActivityDispatcher";
 
@@ -117,6 +123,41 @@ public class LaunchIntentDispatcher {
         } else {
             return Action.CONTINUE;
         }
+    }
+
+    /**
+     * Dispatches the intent to start ActorForegroundService securely. Synchronously loads native to
+     * ensure ActorForegroundServiceManager can bind and issue the Foreground Notification.
+     */
+    public static @Action int dispatchToActorForegroundService(
+            Activity currentActivity, Intent intent) {
+        Log.d(TAG, "dispatchToActorForegroundService");
+        if (!START_ACTOR_FOREGROUND_SERVICE.equals(intent.getAction())) {
+            return Action.CONTINUE;
+        }
+
+        String callingPackage = currentActivity.getCallingPackage();
+        // TODO(b/548542183): Check calling package.
+        if (ExternalAuthUtils.getInstance().isGoogleSigned(callingPackage)) {
+
+            // Load native before starting the service so the Manager acts on it.
+            // TODO(b/548905266): Should move to the foreground service imp.
+            ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+
+            Intent serviceIntent =
+                    new Intent(
+                            currentActivity,
+                            org.chromium.chrome.browser.actor.ActorForegroundService.class);
+            serviceIntent.setAction(START_ACTOR_FOREGROUND_SERVICE);
+            IntentUtils.addTrustedIntentExtras(serviceIntent);
+            ForegroundServiceUtils.getInstance().startForegroundService(serviceIntent);
+            // TODO(b/548905982): Ensure foreground service started before finishing activity.
+            currentActivity.setResult(Activity.RESULT_OK);
+        } else {
+            currentActivity.setResult(Activity.RESULT_CANCELED);
+        }
+
+        return Action.FINISH_ACTIVITY;
     }
 
     private LaunchIntentDispatcher(Activity activity, Intent intent) {
