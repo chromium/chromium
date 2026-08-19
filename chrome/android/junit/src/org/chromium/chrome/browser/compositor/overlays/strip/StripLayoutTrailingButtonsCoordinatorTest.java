@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicSplitButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicSplitButtonDelegateBridge;
 import org.chromium.chrome.browser.glic.GlicSplitButtonDelegateBridgeJni;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -163,28 +164,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         when(mSideUiStateProvider.canShowSideUi(SideUiId.SIDE_PANEL)).thenReturn(true);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
 
-        mCoordinator =
-                new StripLayoutTrailingButtonsCoordinator(
-                        mActivity,
-                        mUpdateHost,
-                        mRenderHost,
-                        mWindowAndroid,
-                        /* density= */ 1.0f,
-                        mToolbarContainerView,
-                        /* isAppInDesktopWindow= */ false,
-                        /* isTopResumedActivity= */ false,
-                        mTaskTracker,
-                        mIsIncognito,
-                        () -> mTabModelSelector,
-                        mSideUiStateProviderSupplier,
-                        () -> 100f,
-                        () -> {},
-                        (isFocused, view) -> {},
-                        mGlicClickHandler,
-                        (isFocused, view) -> {},
-                        () -> mGlicIphShowing,
-                        mGlicPanelStateObserver,
-                        mObserver);
+        mCoordinator = createCoordinator();
         ShadowLooper.idleMainLooper();
         mCoordinator.onProfileAvailable(mProfile);
         mCoordinator.getGlicSplitButtonDelegateForTesting().setGlicShowState(true);
@@ -194,6 +174,30 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         if (mGlicButton != null) mGlicDismissButton = mGlicButton.getDismissButton();
         mGlicActorButton = mCoordinator.getGlicActorButton();
         mModelSelectorButton = mCoordinator.getModelSelectorButton();
+    }
+
+    private StripLayoutTrailingButtonsCoordinator createCoordinator() {
+        return new StripLayoutTrailingButtonsCoordinator(
+                mActivity,
+                mUpdateHost,
+                mRenderHost,
+                mWindowAndroid,
+                /* density= */ 1.0f,
+                mToolbarContainerView,
+                /* isAppInDesktopWindow= */ false,
+                /* isTopResumedActivity= */ false,
+                mTaskTracker,
+                mIsIncognito,
+                () -> mTabModelSelector,
+                mSideUiStateProviderSupplier,
+                () -> 100f,
+                () -> {},
+                (isFocused, view) -> {},
+                mGlicClickHandler,
+                (isFocused, view) -> {},
+                () -> mGlicIphShowing,
+                mGlicPanelStateObserver,
+                mObserver);
     }
 
     @After
@@ -207,6 +211,39 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     // =========================================================================================
     // Model Selector Button (MSB) Unit Tests
     // =========================================================================================
+
+    @Test
+    public void testModelSelectorButton_VisibilityWhenIncognitoTabsExist() {
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
+        assertTrue(
+                "MSB should be visible when incognito tabs exist",
+                mCoordinator.shouldModelSelectorButtonBeVisible());
+        mCoordinator.updateTrailingButtons();
+        assertTrue("MSB view should be visible", mModelSelectorButton.isVisible());
+    }
+
+    @Test
+    public void testModelSelectorButton_VisibilityWhenNoIncognitoTabs() {
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+        assertFalse(
+                "MSB should not be visible when no incognito tabs exist",
+                mCoordinator.shouldModelSelectorButtonBeVisible());
+        mCoordinator.updateTrailingButtons();
+        assertFalse("MSB view should be hidden", mModelSelectorButton.isVisible());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testModelSelectorButton_NotCreatedWhenIncognitoAsWindowEnabled() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        StripLayoutTrailingButtonsCoordinator coordinator = createCoordinator();
+        assertNull(
+                "Model selector button should not be created when Incognito as window is enabled",
+                coordinator.getModelSelectorButton());
+        assertFalse(
+                "MSB should not be visible when Incognito as window is enabled",
+                coordinator.shouldModelSelectorButtonBeVisible());
+    }
 
     @Test
     public void testModelSelectorButtonDrawX() {

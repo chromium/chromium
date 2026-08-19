@@ -621,24 +621,8 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    public void testGetFadeTransitionThresholdDp_MsbShown() {
-        when(mStandardTabModel.getCount()).thenReturn(1);
-        int expectedThresholdDp = 284;
-        assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    public void testGetFadeTransitionThresholdDp_MsbHide_IncognitoMigrationEnabled() {
-        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        when(mStandardTabModel.getCount()).thenReturn(1);
-        int expectedThresholdDp = 236;
-        assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
-    }
-
-    @Test
-    public void testGetFadeTransitionThresholdDp_MsbHide_NoIncognitoTabs() {
-        when(mStandardTabModel.getCount()).thenReturn(0);
+    public void testGetFadeTransitionThresholdDp() {
+        // Base Tablet threshold: 2 * minTabWidth(108) - tabOverlap(28) + newTabButton(48) = 236dp.
         int expectedThresholdDp = 236;
         assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());
     }
@@ -646,7 +630,6 @@ public class StripLayoutHelperManagerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testGetFadeTransitionThresholdDp_TabSearchEnabled() {
-        when(mStandardTabModel.getCount()).thenReturn(0);
         // Base (236) + Tab Search Button (48) = 284
         int expectedThresholdDp = 284;
         assertEquals(expectedThresholdDp, mStripLayoutHelperManager.getFadeTransitionThresholdDp());

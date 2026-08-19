@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -1149,9 +1148,6 @@ public class StripLayoutHelperManager
     @Override
     public int getFadeTransitionThresholdDp() {
         if (mTabModelSelector == null) return 0;
-        TabModel incognitoTabModel = mTabModelSelector.getModel(/* incognito= */ true);
-        boolean hasIncognitoTabs = incognitoTabModel != null && incognitoTabModel.getCount() > 0;
-        boolean shouldShowMsb = !IncognitoUtils.shouldOpenIncognitoAsWindow() && hasIncognitoTabs;
 
         // The threshold is the minimum width required to start showing fade.
         // Base = 2 * minTabWidth - tabOverlap + newTabButton:
@@ -1159,9 +1155,9 @@ public class StripLayoutHelperManager
         //   Desktop Base: 2 * minTabWidth(76) - tabOverlap(28) + newTabButton (32) = 156dp
         // Optional Additions:
         //   + Tab Search Button: 48dp (Tablet) / 32dp (Desktop)
-        //   + Trailing Buttons (Glic, Glic actor): Dynamic (e.g. ~109dp in default state with only
-        //     Glic showing, ~96dp in collapsed state with both Glic and Glic actor showing)
-        //   + Model Selector Button (MSB): 48dp (Tablet) / 32dp (Desktop)
+        //   + Trailing Buttons (Glic, Glic actor, MSB): Dynamic (e.g. ~109dp in default state with
+        //     only Glic showing, ~96dp in collapsed state with both Glic and Glic actor showing,
+        //     +48dp (Tablet) / 32dp (Desktop) when MSB is showing)
 
         float thresholdDp =
                 (2 * MIN_TAB_WIDTH_DP)
@@ -1170,8 +1166,7 @@ public class StripLayoutHelperManager
                         + (getActiveStripLayoutHelper().getTabSearchButton().isVisible()
                                 ? BUTTON_TOUCH_TARGET_SIZE_DP
                                 : 0.f)
-                        + mTrailingButtonsCoordinator.getTrailingButtonsWidthWithPadding()
-                        + (shouldShowMsb ? BUTTON_TOUCH_TARGET_SIZE_DP : 0f);
+                        + mTrailingButtonsCoordinator.getTrailingButtonsWidthWithPadding();
         return Math.round(thresholdDp);
     }
 
