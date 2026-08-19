@@ -118,7 +118,7 @@ void IsolateOriginsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 #if BUILDFLAG(IS_ANDROID)
   if (IsFeatureEnabled(site_isolation::features::kIsolateOriginsShortlist)) {
     if (base::SysInfo::AmountOfTotalPhysicalMemory() <=
-        base::MiBU(kLowMemoryDeviceThresholdMiB)) {
+        base::MiB(kLowMemoryDeviceThresholdMiB)) {
       value_to_use = policies.GetValue(key::kIsolateOriginsShortlist,
                                        base::Value::Type::STRING);
     } else {

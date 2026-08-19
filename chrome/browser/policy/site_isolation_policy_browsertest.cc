@@ -179,7 +179,9 @@ class IsolateOriginsPolicyBrowserTest
       const IsolateOriginsPolicyBrowserTest&) = delete;
 
   IsolateOriginsPolicyBrowserTest()
-      : memory_override_(std::make_unique<base::test::ScopedAmountOfPhysicalMemoryOverride>(base::MiBU(4000))) {}
+      : memory_override_(
+            std::make_unique<base::test::ScopedAmountOfPhysicalMemoryOverride>(
+                base::MiB(4000))) {}
   ~IsolateOriginsPolicyBrowserTest() override = default;
 
  private:
@@ -253,7 +255,9 @@ class IsolateOriginsShortlistPolicyBrowserTest
       const IsolateOriginsShortlistPolicyBrowserTest&) = delete;
 
   IsolateOriginsShortlistPolicyBrowserTest()
-      : memory_override_(std::make_unique<base::test::ScopedAmountOfPhysicalMemoryOverride>(base::MiBU(2000))) {}  // 2GB
+      : memory_override_(
+            std::make_unique<base::test::ScopedAmountOfPhysicalMemoryOverride>(
+                base::MiB(2000))) {}  // 2GB
   ~IsolateOriginsShortlistPolicyBrowserTest() override = default;
 
  protected:
@@ -316,7 +320,9 @@ class IsolateOriginsMultipleHighEndPolicyBrowserTest
     : public IsolateOriginsMultiplePolicyBrowserTest {
  public:
   IsolateOriginsMultipleHighEndPolicyBrowserTest()
-      : memory_override_(std::make_unique<base::test::ScopedAmountOfPhysicalMemoryOverride>(base::MiBU(4000))) {}  // 4GB
+      : memory_override_(
+            std::make_unique<base::test::ScopedAmountOfPhysicalMemoryOverride>(
+                base::MiB(4000))) {}  // 4GB
   ~IsolateOriginsMultipleHighEndPolicyBrowserTest() override = default;
 
  private:
@@ -339,7 +345,9 @@ class IsolateOriginsMultipleLowEndPolicyBrowserTest
     : public IsolateOriginsMultiplePolicyBrowserTest {
  public:
   IsolateOriginsMultipleLowEndPolicyBrowserTest()
-      : memory_override_(std::make_unique<base::test::ScopedAmountOfPhysicalMemoryOverride>(base::MiBU(2000))) {}  // 2GB
+      : memory_override_(
+            std::make_unique<base::test::ScopedAmountOfPhysicalMemoryOverride>(
+                base::MiB(2000))) {}  // 2GB
   ~IsolateOriginsMultipleLowEndPolicyBrowserTest() override = default;
 
  private:
@@ -448,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
                 // TODO(crbug.com/429140103): Comments in the original code
                 // suggested that this was in KiB, but it was in fact in MiB.
                 // Needs investigation.
-                /*ram=*/base::MiBU(8000)),
+                /*ram=*/base::MiB(8000)),
             base::FeatureList::IsEnabled(features::kSitePerProcess));
 #else
   EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
@@ -466,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
       /*is_under_advanced_protection=*/true,
       // TODO(crbug.com/429140103): Comments in the original code suggested that
       // this was in KiB, but it was in fact in MiB. Needs investigation.
-      /*ram=*/base::MiBU(8000)));
+      /*ram=*/base::MiB(8000)));
 }
 
 IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
@@ -492,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationPolicyBrowserTest,
       /*is_under_advanced_protection=*/true,
       // TODO(crbug.com/429140103): Comments in the original code suggested that
       // this was in KiB, but it was in fact in MiB. Needs investigation.
-      /*ram=*/base::MiBU(1000)));
+      /*ram=*/base::MiB(1000)));
 }
 #endif
 

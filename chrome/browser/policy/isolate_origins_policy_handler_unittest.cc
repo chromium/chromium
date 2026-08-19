@@ -114,7 +114,7 @@ class IsolateOriginsPolicyHandlerShortlistTest
 // On a high-end device (> 3.2GB RAM), standard IsolateOrigins should be used.
 TEST_F(IsolateOriginsPolicyHandlerShortlistTest, HighEndDevice_UseStandard) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::MiBU(4000));  // 4GB
+      base::MiB(4000));  // 4GB
   SetPolicy(key::kIsolateOrigins, base::Value("https://domain-a.com"));
   SetPolicy(key::kIsolateOriginsShortlist, base::Value("https://domain-b.com"));
   SetPolicy(key::kIsolateOriginsAndroid, base::Value("https://domain-c.com"));
@@ -128,7 +128,7 @@ TEST_F(IsolateOriginsPolicyHandlerShortlistTest, HighEndDevice_UseStandard) {
 TEST_F(IsolateOriginsPolicyHandlerShortlistTest,
        HighEndDevice_IgnoreShortlist) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::MiBU(4000));  // 4GB
+      base::MiB(4000));  // 4GB
   SetPolicy(key::kIsolateOriginsShortlist, base::Value("https://example.com"));
   ApplyPolicies();
   EXPECT_FALSE(prefs_.GetValue(prefs::kIsolateOrigins, nullptr));
@@ -137,7 +137,7 @@ TEST_F(IsolateOriginsPolicyHandlerShortlistTest,
 // On a low-end device (<= 3.2GB RAM), IsolateOriginsShortlist should be used.
 TEST_F(IsolateOriginsPolicyHandlerShortlistTest, LowEndDevice_UseShortlist) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::MiBU(2000));  // 2GB
+      base::MiB(2000));  // 2GB
   SetPolicy(key::kIsolateOrigins, base::Value("https://domain-a.com"));
   SetPolicy(key::kIsolateOriginsShortlist, base::Value("https://domain-b.com"));
   ApplyPolicies();
@@ -149,7 +149,7 @@ TEST_F(IsolateOriginsPolicyHandlerShortlistTest, LowEndDevice_UseShortlist) {
 // Exactly at the memory threshold boundary (3200MB), shortlist should be used.
 TEST_F(IsolateOriginsPolicyHandlerShortlistTest, ExactlyThreshold_UseShortlist) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::MiBU(3200));  // 3200MB (3.2GB)
+      base::MiB(3200));  // 3200MB (3.2GB)
   SetPolicy(key::kIsolateOrigins, base::Value("https://domain-a.com"));
   SetPolicy(key::kIsolateOriginsShortlist, base::Value("https://domain-b.com"));
   ApplyPolicies();
@@ -161,7 +161,7 @@ TEST_F(IsolateOriginsPolicyHandlerShortlistTest, ExactlyThreshold_UseShortlist) 
 // On a low-end device, standard should be ignored.
 TEST_F(IsolateOriginsPolicyHandlerShortlistTest, LowEndDevice_IgnoreStandard) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::MiBU(2000));  // 2GB
+      base::MiB(2000));  // 2GB
   SetPolicy(key::kIsolateOrigins, base::Value("https://example.com"));
   ApplyPolicies();
   EXPECT_FALSE(prefs_.GetValue(prefs::kIsolateOrigins, nullptr));
@@ -172,7 +172,7 @@ TEST_F(IsolateOriginsPolicyHandlerShortlistTest, LowEndDevice_IgnoreStandard) {
 TEST_F(IsolateOriginsPolicyHandlerShortlistTest,
        LowEndAndroid_FallbackToLegacy) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::MiBU(2000));  // 2GB
+      base::MiB(2000));  // 2GB
   SetPolicy(key::kIsolateOriginsAndroid, base::Value("https://example.com"));
   ApplyPolicies();
   base::Value* value;
@@ -184,7 +184,7 @@ TEST_F(IsolateOriginsPolicyHandlerShortlistTest,
 TEST_F(IsolateOriginsPolicyHandlerShortlistTest,
        LowEndAndroid_ShortlistPrecedenceOverLegacy) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::MiBU(2000));  // 2GB
+      base::MiB(2000));  // 2GB
   SetPolicy(key::kIsolateOriginsShortlist, base::Value("https://domain-a.com"));
   SetPolicy(key::kIsolateOriginsAndroid, base::Value("https://domain-b.com"));
   ApplyPolicies();
@@ -198,7 +198,7 @@ TEST_F(IsolateOriginsPolicyHandlerShortlistTest,
 TEST_F(IsolateOriginsPolicyHandlerShortlistTest,
        HighEndAndroid_FallbackToLegacy) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::MiBU(4000));  // 4GB
+      base::MiB(4000));  // 4GB
   SetPolicy(key::kIsolateOriginsAndroid, base::Value("https://example.com"));
   ApplyPolicies();
   base::Value* value;
