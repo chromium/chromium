@@ -151,6 +151,39 @@ TEST(AiModeContextLibraryConverterTest, ConvertImageContext) {
   EXPECT_EQ(url_resources[0].context_id, 101u);
 }
 
+TEST(AiModeContextLibraryConverterTest,
+     ConvertImageContextFromTabPreservesTabUrlAndWebpageType) {
+  lens::UpdateThreadContextLibrary message;
+  auto* context = message.add_contexts();
+  context->set_context_id(101);
+  auto* image = context->mutable_image();
+  image->set_url("https://lens.google.com/image.png");
+  image->set_title("Image Document");
+  context->set_has_chrome_tab_data(true);
+
+  std::vector<contextual_search::FileInfo> local_contexts;
+  contextual_search::FileInfo file_info;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(101);
+  file_info.mime_type = lens::MimeType::kAnnotatedPageContent;
+  file_info.tab_url = GURL("https://example.com/page.html");
+  file_info.tab_title = "Webpage Title";
+  file_info.tab_session_id = SessionID::FromSerializedValue(30);
+  local_contexts.push_back(file_info);
+
+  std::vector<UrlResource> url_resources =
+      ConvertAiModeContextToUrlResources(message, local_contexts);
+
+  ASSERT_EQ(url_resources.size(), 1u);
+  EXPECT_EQ(url_resources[0].url, GURL("https://example.com/page.html"));
+  EXPECT_EQ(url_resources[0].title, "Image Document");
+  EXPECT_TRUE(url_resources[0].tab_id.has_value());
+  EXPECT_EQ(url_resources[0].tab_id->id(), 30);
+  EXPECT_EQ(url_resources[0].context_id, 101u);
+  EXPECT_EQ(url_resources[0].resource_type, ResourceType::kWebpage);
+  EXPECT_TRUE(url_resources[0].has_chrome_tab_data);
+}
+
 TEST(AiModeContextLibraryConverterTest, ConvertUnknownContext) {
   lens::UpdateThreadContextLibrary message;
   auto* context = message.add_contexts();
