@@ -54,6 +54,9 @@
 #include "components/omnibox/browser/geolocation_header_service.h"
 #include "components/omnibox/browser/geolocation_header_service_test_api.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/global_routing_id.h"
@@ -564,7 +567,79 @@ class SearchPrefetchXGeoEnabledBrowserTest
     xgeo_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+    SearchPrefetchServiceEnabledBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetDefaultGeolocationPolicy(int setting_value) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kDefaultGeolocationSetting,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(setting_value),
+                 nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+  void RunDefaultGeolocationPolicyTest(int policy_setting, bool expect_header) {
+    base::HistogramTester histogram_tester;
+    auto* search_prefetch_service =
+        SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
+    EXPECT_TRUE(search_prefetch_service);
+
+    std::string search_terms = "prefetch_content";
+
+    GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+    GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+    // Setup: Mock location.
+    device::ScopedGeolocationOverrider geolocation_overrider(20.3, 155.8);
+
+    // Clear site-specific exception so the default setting applies.
+    HostContentSettingsMap* settings_map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+    settings_map->SetContentSettingDefaultScope(
+        prefetch_url, prefetch_url, ContentSettingsType::GEOLOCATION,
+        CONTENT_SETTING_DEFAULT);
+
+    // Set user default content setting to an intentionally conflicting value
+    // (e.g. ALLOW if policy is BLOCK/ASK, BLOCK if policy is ALLOW) to verify
+    // that the enterprise policy takes precedence over the user setting.
+    ContentSetting conflicting_user_setting = (policy_setting == 1 /* Allow */)
+                                                  ? CONTENT_SETTING_BLOCK
+                                                  : CONTENT_SETTING_ALLOW;
+    settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
+                                           conflicting_user_setting);
+
+    SetDefaultGeolocationPolicy(policy_setting);
+
+    if (expect_header) {
+      GeolocationHeaderService* geo_service =
+          GeolocationHeaderServiceFactory::GetForProfile(
+              browser()->GetProfile());
+      ASSERT_TRUE(geo_service);
+      geo_service->PrimeLocation();
+      EXPECT_TRUE(base::test::RunUntil(
+          [&]() { return geo_service->HasCachedLocation(); }));
+    }
+
+    EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                          GetWebContents()));
+
+    WaitUntilStatusChangesTo(canonical_search_url,
+                             SearchPrefetchStatus::kComplete);
+
+    EXPECT_EQ(1u, search_server_requests().size());
+    auto headers = search_server_requests()[0].headers;
+    EXPECT_EQ(headers.contains("X-Geo"), expect_header);
+  }
+
  private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   base::test::ScopedFeatureList xgeo_feature_list_;
 };
 
@@ -651,6 +726,33 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
   EXPECT_EQ(1u, search_server_requests().size());
   auto headers = search_server_requests()[0].headers;
   ASSERT_FALSE(headers.contains("X-Geo"));
+}
+
+// Ensures that prefetch requests drop the X-Geo header if
+// DefaultGeolocationSetting policy is set to 2 (BLOCK).
+IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
+                       PrefetchNoXGeoHeader_DefaultGeolocationPolicyBlocked) {
+  RunDefaultGeolocationPolicyTest(2 /* Block */,
+                                  /*expect_header=*/false);
+}
+
+// Ensures that prefetch requests attach the X-Geo header if
+// DefaultGeolocationSetting policy is set to 1 (ALLOW) without requiring
+// origin-specific rules.
+IN_PROC_BROWSER_TEST_F(
+    SearchPrefetchXGeoEnabledBrowserTest,
+    PrefetchSendsXGeoHeader_DefaultGeolocationPolicyAllowed) {
+  RunDefaultGeolocationPolicyTest(1 /* Allow */,
+                                  /*expect_header=*/true);
+}
+
+// Ensures that prefetch requests drop the X-Geo header if
+// DefaultGeolocationSetting policy is set to 3 (ASK) without origin-specific
+// rules.
+IN_PROC_BROWSER_TEST_F(SearchPrefetchXGeoEnabledBrowserTest,
+                       PrefetchNoXGeoHeader_DefaultGeolocationPolicyAsk) {
+  RunDefaultGeolocationPolicyTest(3 /* Ask */,
+                                  /*expect_header=*/false);
 }
 
 // Validates that private browsing contexts (Incognito) suppress position state

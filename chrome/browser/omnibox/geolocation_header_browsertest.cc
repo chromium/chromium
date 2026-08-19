@@ -28,6 +28,9 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/omnibox/browser/geolocation_header_service.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_controller.h"
@@ -60,6 +63,15 @@ class GeolocationHeaderBrowserTest : public InProcessBrowserTest {
   GeolocationHeaderBrowserTest()
       : test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     feature_list_.InitAndEnableFeature(omnibox::kPlatformAgnosticXGeo);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -145,12 +157,107 @@ class GeolocationHeaderBrowserTest : public InProcessBrowserTest {
     return xgeo_header_;
   }
 
+  void SetDefaultGeolocationPolicy(int setting_value) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kDefaultGeolocationSetting,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                 policy::POLICY_SOURCE_CLOUD, base::Value(setting_value),
+                 nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
+  void RunDefaultPolicyTest(int policy_setting, bool expect_header) {
+    base::HistogramTester histogram_tester;
+    device::ScopedGeolocationOverrider overrider(
+        /*latitude=*/12.34, /*longitude=*/56.78);
+
+    Profile* profile = browser()->GetProfile();
+    HostContentSettingsMap* settings_map =
+        HostContentSettingsMapFactory::GetForProfile(profile);
+
+    // Clear site-specific exception so the default setting applies.
+    settings_map->SetContentSettingDefaultScope(
+        test_server_.GetURL("/"), test_server_.GetURL("/"),
+        ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT);
+
+    // Set user default content setting to an intentionally conflicting value
+    // (e.g. ALLOW if policy is BLOCK/ASK, BLOCK if policy is ALLOW) to verify
+    // that the enterprise policy takes precedence over the user setting.
+    ContentSetting conflicting_user_setting = (policy_setting == 1 /* Allow */)
+                                                  ? CONTENT_SETTING_BLOCK
+                                                  : CONTENT_SETTING_ALLOW;
+    settings_map->SetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
+                                           conflicting_user_setting);
+
+    SetDefaultGeolocationPolicy(policy_setting);
+
+    GeolocationHeaderService* geo_service =
+        GeolocationHeaderServiceFactory::GetForProfile(profile);
+    ASSERT_TRUE(geo_service);
+
+    if (expect_header) {
+      OmniboxView* omnibox_view = BrowserWindow::FromBrowser(browser())
+                                      ->GetLocationBar()
+                                      ->GetOmniboxView();
+      omnibox_view->OnBeforePossibleChange();
+      omnibox_view->SetUserText(u"test");
+      omnibox_view->OnAfterPossibleChange(true);
+
+      EXPECT_TRUE(base::test::RunUntil(
+          [&]() { return geo_service->HasCachedLocation(); }));
+    }
+
+    GURL search_url = test_server_.GetURL("/search?q=test");
+
+    content::OpenURLParams params(
+        search_url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
+                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+        false);
+
+    content::TestNavigationObserver navigation_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+
+    browser()->OpenURL(params, /*navigation_handle_callback=*/{});
+    navigation_observer.Wait();
+
+    std::string captured_header = GetXGeoHeader();
+
+    if (expect_header) {
+      EXPECT_FALSE(captured_header.empty())
+          << "X-Geo header should be present when DefaultGeolocationSetting is "
+             "ALLOW.";
+      EXPECT_TRUE(captured_header.starts_with("w "));
+    } else {
+      EXPECT_TRUE(captured_header.empty())
+          << "X-Geo header should not be present when "
+             "DefaultGeolocationSetting "
+             "is not ALLOW.";
+    }
+
+    histogram_tester.ExpectUniqueSample("Omnibox.Search.XGeoHeaderAttached",
+                                        expect_header, 1);
+
+    content_settings::PageSpecificContentSettings* pscs =
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame());
+    ASSERT_TRUE(pscs);
+    EXPECT_EQ(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION),
+              expect_header);
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer test_server_;
   base::Lock header_lock_;
   std::string xgeo_header_ GUARDED_BY(header_lock_);
   base::OnceClosure quit_closure_;
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 class GeolocationHeaderFencedFrameBrowserTest
@@ -567,6 +674,29 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
   EXPECT_FALSE(pscs->IsContentAllowed(ContentSettingsType::GEOLOCATION));
   histogram_tester.ExpectUniqueSample("Omnibox.Search.XGeoHeaderAttached", true,
                                       1);
+}
+
+// Tests that when the DefaultGeolocationSetting enterprise policy is set to
+// 2 (BLOCK), Omnibox searches do not attach the X-Geo header.
+IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
+                       DefaultGeolocationPolicyBlocked) {
+  RunDefaultPolicyTest(2 /* Block */, /*expect_header=*/false);
+}
+
+// Tests that when the DefaultGeolocationSetting enterprise policy is set to
+// 1 (ALLOW), Omnibox searches attach the X-Geo header without requiring site
+// exceptions.
+IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
+                       DefaultGeolocationPolicyAllowed) {
+  RunDefaultPolicyTest(1 /* Allow */, /*expect_header=*/true);
+}
+
+// Tests that when the DefaultGeolocationSetting enterprise policy is set to
+// 3 (ASK), Omnibox searches without site exceptions do not attach the X-Geo
+// header.
+IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
+                       DefaultGeolocationPolicyAsk) {
+  RunDefaultPolicyTest(3 /* Ask */, /*expect_header=*/false);
 }
 
 class GeolocationHeaderDisabledBrowserTest : public InProcessBrowserTest {
