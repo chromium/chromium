@@ -186,7 +186,7 @@ void RandomBitCorrelation(int random_bit) {
 
       // Enter the new random value into the history.
       for (int i = ago; i >= 0; i--) {
-        PA_UNSAFE_TODO(history[i]) = GetRandomBits();
+        history[i] = GetRandomBits();
       }
 
       // Find out how many of the bits are the same as the prediction bit.
@@ -194,13 +194,13 @@ void RandomBitCorrelation(int random_bit) {
       for (int i = 0; i < kRepeats; i++) {
         uintptr_t random = GetRandomBits();
         for (int j = ago - 1; j >= 0; j--) {
-          PA_UNSAFE_TODO(history[j + 1]) = PA_UNSAFE_TODO(history[j]);
+          history[j + 1] = history[j];
         }
         history[0] = random;
 
         int predicted;
         if (predictor_bit >= 0) {
-          predicted = (PA_UNSAFE_TODO(history[ago]) >> predictor_bit) & 1;
+          predicted = (history[ago] >> predictor_bit) & 1;
         } else {
           predicted = predictor_bit == -2 ? 0 : 1;
         }
