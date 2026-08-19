@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_INFOBARS_INFOBAR_SPEC_H_
 
 #include <cstddef>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -145,6 +146,39 @@ class InfoBarSpec {
   ActionCallback dismiss_callback_;
   ResultCallback result_callback_;
   BrowserFilter browser_filter_;
+};
+
+// Per-show overrides for values only known at show time. Anything set here
+// wins over the registered InfoBarSpec for that one instance.
+struct InfoBarShowParams {
+  InfoBarShowParams();
+  InfoBarShowParams(InfoBarShowParams&&);
+  InfoBarShowParams& operator=(InfoBarShowParams&&);
+  InfoBarShowParams(const InfoBarShowParams&) = delete;
+  InfoBarShowParams& operator=(const InfoBarShowParams&) = delete;
+  ~InfoBarShowParams();
+
+  // Overrides the spec's message text and suppresses its template.
+  std::optional<std::u16string> message_text;
+
+  // Substitutions for the spec's message template, computed by the caller.
+  std::optional<std::vector<MessageSubstitution>> substitutions;
+
+  // Overrides the spec's link text; empty suppresses the link.
+  std::optional<std::u16string> link_text;
+
+  // Overrides the spec's scope in Show().
+  //
+  // Limitation: while the override instance occupies a tab, an armed global
+  // instance is deduplicated away there and only reappears on the next
+  // active-tab change.
+  std::optional<InfoBarScope> scope;
+
+  // Override the spec's callbacks when non-null.
+  InfoBarSpec::ActionCallback ok_button_callback;
+  InfoBarSpec::ActionCallback cancel_button_callback;
+  InfoBarSpec::InlineLinkCallback inline_link_callback;
+  InfoBarSpec::ResultCallback result_callback;
 };
 
 class InfoBarSpec::Builder {

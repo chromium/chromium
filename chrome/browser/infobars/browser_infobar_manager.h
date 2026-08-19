@@ -57,6 +57,12 @@ class BrowserInfoBarManager : public BrowserCollectionObserver,
       tabs::TabInterface* tab,
       infobars::InfoBarDelegate::InfoBarIdentifier identifier);
 
+  // As above, with per-show overrides.
+  infobars::InfoBar* Show(
+      tabs::TabInterface* tab,
+      infobars::InfoBarDelegate::InfoBarIdentifier identifier,
+      InfoBarShowParams params);
+
   // Shows the infobar in every browser. Returns true if any instance was
   // added.
   bool ShowGlobally(infobars::InfoBarDelegate::InfoBarIdentifier identifier);
