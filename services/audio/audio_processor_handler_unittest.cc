@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
@@ -24,6 +25,8 @@
 #include "media/webrtc/voice_isolation/mock_voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "services/audio/ml_model_manager.h"
 #include "services/audio/voice_isolation_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -204,6 +207,124 @@ TEST_F(AudioProcessorHandlerTest, ProcessingWithVoiceIsolationHandler) {
 
   handler->StopProcessing();
 }
+
+TEST_F(AudioProcessorHandlerTest,
+       CallingSetVoiceIsolationWhileProcessingTogglesVoiceIsolation) {
+  media::AudioProcessingSettings settings;
+  settings.voice_isolation = true;
+
+  auto mock_component = std::make_unique<media::MockVoiceIsolation>();
+  media::MockVoiceIsolation* voice_isolation_mock_ptr = mock_component.get();
+
+  mojo::Remote<media::mojom::AudioProcessorControls> remote;
+  auto handler = std::make_unique<AudioProcessorHandler>(
+      settings, input_params_, output_params_, log_callback_.Get(),
+      base::NullCallback(), error_callback_.Get(),
+      remote.BindNewPipeAndPassReceiver(),
+      /*aecdump_recording_manager=*/nullptr,
+      /*ml_model_manager=*/nullptr,
+      CreateVoiceIsolationHandlerWithMock(
+          std::move(mock_component), output_params_, deliver_callback_.Get()));
+
+  handler->StartProcessing();
+  EXPECT_TRUE(HasVoiceIsolationHandler(*handler));
+
+  auto input_bus = media::AudioBus::Create(input_params_);
+  input_bus->Zero();
+
+  // 1. Voice isolation is enabled by default.
+  // We expect the mock component to be called when processing captured audio.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
+    EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+        .WillOnce([&](const media::AudioBus& processed_bus,
+                      base::TimeTicks capture_time,
+                      std::optional<double> volume,
+                      const media::AudioGlitchInfo& glitch_info) {
+          run_loop.Quit();
+        });
+    handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0,
+                                  media::AudioGlitchInfo());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+    testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+  }
+
+  // 2. Disable voice isolation.
+  remote->SetVoiceIsolation(false);
+  remote.FlushForTesting();
+
+  // With voice isolation disabled, the mock component should not be called.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(0);
+    EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+        .WillOnce([&](const media::AudioBus& processed_bus,
+                      base::TimeTicks capture_time,
+                      std::optional<double> volume,
+                      const media::AudioGlitchInfo& glitch_info) {
+          run_loop.Quit();
+        });
+    handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0,
+                                  media::AudioGlitchInfo());
+    run_loop.Run();
+    testing::Mock::VerifyAndClearExpectations(voice_isolation_mock_ptr);
+    testing::Mock::VerifyAndClearExpectations(&deliver_callback_);
+  }
+
+  // 3. Re-enable voice isolation.
+  remote->SetVoiceIsolation(true);
+  remote.FlushForTesting();
+
+  // With voice isolation re-enabled, the mock component should be called again.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*voice_isolation_mock_ptr, ProcessAudio(_, _)).Times(1);
+    EXPECT_CALL(deliver_callback_, Run(_, _, _, _))
+        .WillOnce([&](const media::AudioBus& processed_bus,
+                      base::TimeTicks capture_time,
+                      std::optional<double> volume,
+                      const media::AudioGlitchInfo& glitch_info) {
+          run_loop.Quit();
+        });
+    handler->ProcessCapturedAudio(*input_bus, base::TimeTicks::Now(), 1.0,
+                                  media::AudioGlitchInfo());
+    run_loop.Run();
+  }
+
+  handler->StopProcessing();
+}
+
+TEST_F(AudioProcessorHandlerTest,
+       CallingSetVoiceIsolationWithoutHandlerReportsBadMessage) {
+  media::AudioProcessingSettings settings;
+  mojo::Remote<media::mojom::AudioProcessorControls> remote;
+  auto handler = std::make_unique<AudioProcessorHandler>(
+      settings, input_params_, output_params_, log_callback_.Get(),
+      deliver_callback_.Get(), error_callback_.Get(),
+      remote.BindNewPipeAndPassReceiver(),
+      /*aecdump_recording_manager=*/nullptr,
+      /*ml_model_manager=*/nullptr,
+      /*voice_isolation_handler=*/nullptr);
+
+  std::string bad_message;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&](const std::string& error) { bad_message = error; }));
+
+  // Disabling voice isolation when it is not available is a no-op and should
+  // not report a bad message.
+  remote->SetVoiceIsolation(false);
+  remote.FlushForTesting();
+  EXPECT_TRUE(bad_message.empty());
+
+  // Enabling voice isolation when it is not available reports a bad message.
+  remote->SetVoiceIsolation(true);
+  remote.FlushForTesting();
+
+  EXPECT_EQ(bad_message, "Voice isolation cannot be enabled.");
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+}
 #endif
 
 TEST_F(AudioProcessorHandlerTest, NoVolumeAdjustmentOnSilence) {
@@ -332,7 +453,8 @@ TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulationWithFifo) {
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-TEST_F(AudioProcessorHandlerTest, GlitchInfoAccumulationWithVoiceIsolationHandler) {
+TEST_F(AudioProcessorHandlerTest,
+       GlitchInfoAccumulationWithVoiceIsolationHandler) {
   media::AudioProcessingSettings settings;
   settings.voice_isolation = true;
   mojo::PendingRemote<media::mojom::AudioProcessorControls> controls_remote;

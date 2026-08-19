@@ -54,6 +54,9 @@ class PLATFORM_EXPORT AudioServiceAudioProcessorProxy
   // threads.
   void MaybeUpdateNumPreferredCaptureChannels(int32_t num_channels);
 
+  // Called on the main thread.
+  void SetVoiceIsolation(bool enabled);
+
  protected:
   ~AudioServiceAudioProcessorProxy() override;
 

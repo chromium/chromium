@@ -5,6 +5,7 @@
 #ifndef SERVICES_AUDIO_VOICE_ISOLATION_HANDLER_H_
 #define SERVICES_AUDIO_VOICE_ISOLATION_HANDLER_H_
 
+#include <atomic>
 #include <memory>
 #include <optional>
 
@@ -58,6 +59,9 @@ class VoiceIsolationHandler {
                             std::optional<double> volume,
                             const media::AudioGlitchInfo& audio_glitch_info);
 
+  // Dynamic toggle for voice isolation. Thread-safe.
+  void SetVoiceIsolation(bool enabled);
+
  private:
   VoiceIsolationHandler(
       scoped_refptr<media::MlModelHandle> model_handle,
@@ -69,10 +73,19 @@ class VoiceIsolationHandler {
       const media::AudioParameters& output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback);
 
+  bool IsVoiceIsolationBypassed() const;
+
   const scoped_refptr<media::MlModelHandle> model_handle_;
   const std::unique_ptr<media::VoiceIsolation> voice_isolation_;
   const DeliverProcessedAudioCallback deliver_processed_audio_callback_;
   std::unique_ptr<media::AudioBus> output_bus_;
+
+  // Whether voice isolation is currently bypassed.
+  // Accessed on both the control/Mojo thread (via SetVoiceIsolation)
+  // and the real-time audio capture/processing thread
+  // (via ProcessCapturedAudio).
+  // std::atomic ensures thread-safe, lock-free toggling of voice isolation.
+  std::atomic<bool> bypass_voice_isolation_{false};
 };
 
 }  // namespace audio

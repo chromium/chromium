@@ -52,11 +52,30 @@ void VoiceIsolationHandler::ProcessCapturedAudio(
     std::optional<double> volume,
     const media::AudioGlitchInfo& audio_glitch_info) {
   TRACE_EVENT("audio", "VoiceIsolationHandler::ProcessCapturedAudio");
+  if (IsVoiceIsolationBypassed()) {
+    deliver_processed_audio_callback_.Run(audio_source, audio_capture_time,
+                                          volume, audio_glitch_info);
+    return;
+  }
   DCHECK_EQ(output_bus_->channels(), audio_source.channels());
   DCHECK_EQ(output_bus_->frames(), audio_source.frames());
   voice_isolation_->ProcessAudio(audio_source, *output_bus_);
   deliver_processed_audio_callback_.Run(*output_bus_, audio_capture_time,
                                         volume, audio_glitch_info);
+}
+
+void VoiceIsolationHandler::SetVoiceIsolation(bool enabled) {
+  // TODO(crbug.com/544689562): Disabling/bypassing voice isolation leaves
+  // stranded audio inside the internal lookahead buffers or FIFOs. When
+  // re-enabled, this stale audio can be delivered belatedly alongside new
+  // audio, yielding audible glitches or echoes. We must reset or flush the
+  // internal state of media::VoiceIsolation when voice isolation is re-enabled
+  // or bypassed.
+  bypass_voice_isolation_.store(!enabled, std::memory_order_release);
+}
+
+bool VoiceIsolationHandler::IsVoiceIsolationBypassed() const {
+  return bypass_voice_isolation_.load(std::memory_order_acquire);
 }
 
 std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::MaybeCreate(

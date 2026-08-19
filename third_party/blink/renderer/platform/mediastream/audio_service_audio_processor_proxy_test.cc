@@ -80,7 +80,13 @@ class MockAudioProcessorControls : public media::AudioProcessorControls {
     SetPreferredNumCaptureChannelsCalled(num_preferred_channels);
   }
 
+  void SetVoiceIsolation(bool enabled) override {
+    DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+    SetVoiceIsolationCalled(enabled);
+  }
+
   MOCK_METHOD1(SetPreferredNumCaptureChannelsCalled, void(int32_t));
+  MOCK_METHOD1(SetVoiceIsolationCalled, void(bool));
 
  private:
   media::AudioProcessingStats stats_;
@@ -191,6 +197,20 @@ TEST_F(AudioServiceAudioProcessorProxyTest,
   MaybeSetNumChannelsOnAnotherThread(proxy, -1);
   MaybeSetNumChannelsOnAnotherThread(proxy, 2);
   MaybeSetNumChannelsOnAnotherThread(proxy, -1);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AudioServiceAudioProcessorProxyTest, SetVoiceIsolation) {
+  scoped_refptr<AudioServiceAudioProcessorProxy> proxy =
+      new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+  StrictMock<MockAudioProcessorControls> controls;
+  EXPECT_CALL(controls, SetVoiceIsolationCalled(true));
+  EXPECT_CALL(controls, SetVoiceIsolationCalled(false));
+
+  proxy->SetControls(&controls);
+
+  proxy->SetVoiceIsolation(true);
+  proxy->SetVoiceIsolation(false);
   task_environment_.RunUntilIdle();
 }
 

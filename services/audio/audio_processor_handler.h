@@ -169,6 +169,7 @@ class AudioProcessorHandler final : public ReferenceOutput::Listener,
   // mojom::AudioProcessorControls implementation.
   void GetStats(GetStatsCallback callback) final;
   void SetPreferredNumCaptureChannels(int32_t num_preferred_channels) final;
+  void SetVoiceIsolation(bool enabled) final;
 
   // media::AecdumpRecordingSource implementation.
   void StartAecdump(base::File aecdump_file) final;

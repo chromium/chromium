@@ -186,6 +186,19 @@ void AudioProcessorHandler::SetPreferredNumCaptureChannels(
                                 std::memory_order_release);
 }
 
+void AudioProcessorHandler::SetVoiceIsolation(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
+  if (!voice_isolation_handler_) {
+    // Voice isolation cannot be enabled if it is not available (i.e. was not
+    // requested initially).
+    if (enabled) {
+      receiver_.ReportBadMessage("Voice isolation cannot be enabled.");
+    }
+    return;
+  }
+  voice_isolation_handler_->SetVoiceIsolation(enabled);
+}
+
 void AudioProcessorHandler::StartAecdump(base::File aecdump_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   audio_processor_->OnStartDump(std::move(aecdump_file));

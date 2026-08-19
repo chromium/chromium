@@ -68,6 +68,13 @@ void AudioServiceAudioProcessorProxy::MaybeUpdateNumPreferredCaptureChannels(
                           weak_this_, num_channels));
 }
 
+void AudioServiceAudioProcessorProxy::SetVoiceIsolation(bool enabled) {
+  DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
+  if (processor_controls_) {
+    processor_controls_->SetVoiceIsolation(enabled);
+  }
+}
+
 void AudioServiceAudioProcessorProxy::RequestStats() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   if (processor_controls_) {

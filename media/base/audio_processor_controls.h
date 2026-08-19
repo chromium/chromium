@@ -32,6 +32,9 @@ class MEDIA_EXPORT AudioProcessorControls {
   virtual void SetPreferredNumCaptureChannels(
       int32_t num_preferred_channels) = 0;
 
+  // Enables or disables voice isolation.
+  virtual void SetVoiceIsolation(bool enabled) = 0;
+
  protected:
   virtual ~AudioProcessorControls() = default;
 };

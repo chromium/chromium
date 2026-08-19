@@ -106,6 +106,13 @@ void MojoAudioInputIPC::SetPreferredNumCaptureChannels(
     processor_controls_->SetPreferredNumCaptureChannels(num_preferred_channels);
 }
 
+void MojoAudioInputIPC::SetVoiceIsolation(bool enabled) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (processor_controls_) {
+    processor_controls_->SetVoiceIsolation(enabled);
+  }
+}
+
 void MojoAudioInputIPC::StreamCreated(
     mojo::PendingRemote<media::mojom::blink::AudioInputStream> stream,
     mojo::PendingReceiver<media::mojom::blink::AudioInputStreamClient>

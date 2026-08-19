@@ -42,6 +42,9 @@ interface AudioProcessorControls {
   // Values less than 1 and greater than the input stream capacity are adjusted
   // to the nearest valid number.
   SetPreferredNumCaptureChannels(int32 num_preferred_channels);
+
+  // Enables or disables voice isolation.
+  SetVoiceIsolation(bool enabled);
 };
 
 struct AudioProcessingConfig {
