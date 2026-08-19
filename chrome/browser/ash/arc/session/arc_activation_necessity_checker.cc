@@ -123,7 +123,7 @@ void ArcActivationNecessityChecker::OnChecked(CheckCallback callback,
     is_app_recently_launched = last_launch.has_value();
   } else if (last_launch.has_value()) {
     base::ByteSize ram_size = base::SysInfo::AmountOfTotalPhysicalMemory();
-    bool is_4gb_device = ram_size < base::GiBU(4.5);
+    bool is_4gb_device = ram_size < base::GiB(4.5);
 
     base::TimeDelta inactive_interval =
         is_4gb_device ? kArcOnDemandInactiveIntervalFor4GiB.Get()

@@ -403,7 +403,7 @@ TEST_F(ArcActivationNecessityCheckerTest, CoralFeatureEnabled) {
 TEST_F(ArcActivationNecessityCheckerTest, InactiveDays4GbDeviceDefaultV2) {
   base::HistogramTester histogram_tester;
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(4));
+      base::GiB(4));
 
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
@@ -436,7 +436,7 @@ TEST_F(ArcActivationNecessityCheckerTest, InactiveDays4GbDeviceDefaultV2) {
 
 TEST_F(ArcActivationNecessityCheckerTest, InactiveDays4GbDeviceCustomParamV2) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(4));
+      base::GiB(4));
 
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;
@@ -480,7 +480,7 @@ TEST_F(ArcActivationNecessityCheckerTest, InactiveDays4GbDeviceCustomParamV2) {
 TEST_F(ArcActivationNecessityCheckerTest,
        InactiveDays8GbDeviceUsesExistingParamV2) {
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(8));
+      base::GiB(8));
 
   base::test::ScopedFeatureList feature_list;
   base::FieldTrialParams params;

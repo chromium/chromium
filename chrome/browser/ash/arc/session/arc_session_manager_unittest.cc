@@ -334,7 +334,7 @@ class ArcSessionManagerTestBase : public testing::Test {
     // of host test runner RAM size.
     memory_override_ =
         std::make_unique<base::test::ScopedAmountOfPhysicalMemoryOverride>(
-            base::GiBU(8));
+            base::GiB(8));
 
     ash::UpstartClient::InitializeFake();
 
@@ -1156,7 +1156,7 @@ TEST_F(ArcSessionManagerTest, PostOobeProvisioningShutdown_4GbDevice) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVm);
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(4));
+      base::GiB(4));
 
   SimulateOobeProvisioning();
 
@@ -1178,7 +1178,7 @@ TEST_F(ArcSessionManagerTest, PostOobeProvisioningShutdown_8GbDevice) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVm);
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(8));
+      base::GiB(8));
 
   SimulateOobeProvisioning();
 
@@ -1194,7 +1194,7 @@ TEST_F(ArcSessionManagerTest, PostOobeProvisioningShutdown_FeatureDisabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVm);
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
-      base::GiBU(4));
+      base::GiB(4));
 
   SimulateOobeProvisioning();
 
