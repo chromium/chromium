@@ -3153,24 +3153,23 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFastTimeout,
 #endif
 }
 
-// TODO(crbug.com/548845985): Re-enable this test after the bug fix.
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
-                       DISABLED_testPanelWillOpenBeforeClientReady) {
-  ToggleGlicForActiveTab(/*prevent_close=*/true);
-  auto* instance = GetOnlyGlicInstance();
-  ASSERT_TRUE(instance);
-  ASSERT_FALSE(instance->host().IsWebClientConnected());
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testPanelWillOpenBeforeClientReady) {
+  // Open Glic to create an instance bound to the active tab, then hibernate it
+  // to destroy the guest WebContents and disconnect the web client.
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  instance->Hibernate();
 
-  Host::PanelWillOpenOptions options;
-  options.conversation_info = mojom::ConversationInfo::New();
-  options.conversation_info->conversation_id = "test_conversation_id";
-  options.conversation_info->conversation_title = "Test Conversation Title";
-  options.conversation_info->client_data = "test_client_data_from_cc";
-  instance->host().PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
-                                 std::move(options));
+  // Register conversation metadata while the instance is offline/hibernated.
+  auto info = mojom::ConversationInfo::New();
+  info->conversation_id = "test_conversation_id";
+  info->conversation_title = "Test Conversation Title";
+  info->client_data = "test_client_data_from_cc";
+  instance->RegisterConversation(std::move(info), base::DoNothing());
 
-  ASSERT_OK(WaitForGlicOpen());
-  ASSERT_OK(WaitForGlicClient());
+  // Re-open Glic. This awakens the host and triggers NotifyPanelWillOpen with
+  // the registered conversation before the newly created guest web client is
+  // connected. ExecuteJsTest verifies the web client receives the queued data.
+  ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
 
