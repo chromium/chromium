@@ -46,20 +46,22 @@ void EmailVerifierImpl::Verify(
 
 void EmailVerifierImpl::CheckIfVerifiable(
     const std::string& email,
+    base::OnceClosure on_dns_resolved_callback,
     EmailVerifier::IsVerifiableCallback callback) {
   std::unique_ptr<EmailVerificationRequest> request = request_builder_.Run();
 
   EmailVerificationRequest* request_ptr = request.get();
   request_ptr->CheckIfVerifiable(
-      email, base::BindOnce(
-                 [](EmailVerifier::IsVerifiableCallback cb,
-                    std::unique_ptr<EmailVerificationRequest> req,
-                    std::optional<EmailVerifier::Result> result,
-                    blink::mojom::EmailVerificationRequestResult status,
-                    base::TimeDelta duration) {
-                   std::move(cb).Run(std::move(result), status, duration);
-                 },
-                 std::move(callback), std::move(request)));
+      email, std::move(on_dns_resolved_callback),
+      base::BindOnce(
+          [](EmailVerifier::IsVerifiableCallback cb,
+             std::unique_ptr<EmailVerificationRequest> req,
+             std::optional<EmailVerifier::Result> result,
+             blink::mojom::EmailVerificationRequestResult status,
+             base::TimeDelta duration) {
+            std::move(cb).Run(std::move(result), status, duration);
+          },
+          std::move(callback), std::move(request)));
 }
 
 void EmailVerifierImpl::OnRequestComplete(

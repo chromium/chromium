@@ -74,8 +74,11 @@ class CONTENT_EXPORT EmailVerificationRequest {
   EmailVerificationRequest& operator=(const EmailVerificationRequest&) = delete;
 
   // Checks if the given `email` is verifiable. This also checks if the user is
-  // logged in to the issuer.
+  // logged in to the issuer. `on_dns_resolved_callback` is invoked immediately
+  // after DNS TXT record lookup confirms the domain supports EVP, before
+  // well-known and account metadata fetches begin.
   virtual void CheckIfVerifiable(const std::string& email,
+                                 base::OnceClosure on_dns_resolved_callback,
                                  EmailVerifier::IsVerifiableCallback callback);
 
   // Issues the verification token.
@@ -86,6 +89,7 @@ class CONTENT_EXPORT EmailVerificationRequest {
  private:
   void OnDnsRequestComplete(
       const std::string& email,
+      base::OnceClosure on_dns_resolved_callback,
       EmailVerifier::IsVerifiableCallback callback,
       const std::optional<std::vector<std::string>>& text_records);
 
