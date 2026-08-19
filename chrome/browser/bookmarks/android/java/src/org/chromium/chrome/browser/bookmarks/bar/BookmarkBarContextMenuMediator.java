@@ -7,11 +7,15 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -31,10 +35,12 @@ import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -363,7 +369,23 @@ class BookmarkBarContextMenuMediator {
             return;
         }
 
-        // If the tri-state feature flag is enabled, we will use multiple options.
+        listItems.add(BasicListMenu.buildMenuDivider(isIncognito));
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+            listItems.add(
+                    buildContextMenuSubmenuItem(
+                            mContext.getString(R.string.bookmark_bar_settings_title),
+                            isIncognito,
+                            /* enabled= */ true,
+                            () -> buildVisibilityStateMenuItems(isIncognito)));
+        } else {
+            for (ListItem item : buildVisibilityStateMenuItems(isIncognito)) {
+                listItems.add(item);
+            }
+        }
+    }
+
+    private List<ListItem> buildVisibilityStateMenuItems(boolean isIncognito) {
         boolean isXrFullSpaceMode =
                 mXrSpaceModeObservableSupplier.get() != null
                         && mXrSpaceModeObservableSupplier.get();
@@ -371,34 +393,30 @@ class BookmarkBarContextMenuMediator {
         int currentState =
                 BookmarkBarUtils.getBookmarkBarVisibilityState(
                         mContext, mProfileSupplier.get(), isXrFullSpaceMode);
-        listItems.add(BasicListMenu.buildMenuDivider(isIncognito));
-        listItems.add(
-                buildContextMenuItem(
+
+        List<ListItem> items = new ArrayList<>(3);
+        items.add(
+                buildCheckableContextMenuItem(
                         mContext.getString(R.string.contextmenu_always_hide_bookmarks_bar),
-                        currentState == BookmarkBarVisibilityState.ALWAYS_HIDE
-                                ? R.drawable.material_ic_check_24dp
-                                : 0,
+                        currentState == BookmarkBarVisibilityState.ALWAYS_HIDE,
                         isIncognito,
                         /* enabled= */ true,
                         v -> alwaysHide()));
-        listItems.add(
-                buildContextMenuItem(
+        items.add(
+                buildCheckableContextMenuItem(
                         mContext.getString(R.string.contextmenu_always_show_bookmarks_bar),
-                        currentState == BookmarkBarVisibilityState.ALWAYS_SHOW
-                                ? R.drawable.material_ic_check_24dp
-                                : 0,
+                        currentState == BookmarkBarVisibilityState.ALWAYS_SHOW,
                         isIncognito,
                         /* enabled= */ true,
                         v -> alwaysShow()));
-        listItems.add(
-                buildContextMenuItem(
+        items.add(
+                buildCheckableContextMenuItem(
                         mContext.getString(R.string.contextmenu_only_show_bookmarks_bar_on_ntp),
-                        currentState == BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP
-                                ? R.drawable.material_ic_check_24dp
-                                : 0,
+                        currentState == BookmarkBarVisibilityState.ONLY_SHOW_ON_NTP,
                         isIncognito,
                         /* enabled= */ true,
                         v -> onlyShowOnNTP()));
+        return items;
     }
 
     private void openInNewTab(BookmarkId id) {
@@ -546,6 +564,59 @@ class BookmarkBarContextMenuMediator {
                     R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
         }
         return new ListItem(ListItemType.MENU_ITEM, builder.build());
+    }
+
+    private ListItem buildCheckableContextMenuItem(
+            String title,
+            boolean isChecked,
+            boolean isIncognito,
+            boolean enabled,
+            View.OnClickListener listener) {
+        Drawable startIcon =
+                isChecked
+                        ? AppCompatResources.getDrawable(
+                                mContext, R.drawable.material_ic_check_24dp)
+                        : new ColorDrawable(Color.TRANSPARENT);
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.TITLE, title)
+                        .with(ListMenuItemProperties.START_ICON_DRAWABLE, startIcon)
+                        .with(
+                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                                isIncognito
+                                        ? R.color.default_icon_color_light
+                                        : R.color.default_icon_color_secondary_tint_list)
+                        .with(ListMenuItemProperties.ENABLED, enabled)
+                        .with(ListMenuItemProperties.CLICK_LISTENER, listener);
+        if (isIncognito) {
+            builder.with(
+                    ListMenuItemProperties.TEXT_APPEARANCE_ID,
+                    R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
+        }
+        return new ListItem(ListItemType.MENU_ITEM, builder.build());
+    }
+
+    private ListItem buildContextMenuSubmenuItem(
+            String title,
+            boolean isIncognito,
+            boolean enabled,
+            Supplier<List<ListItem>> submenuSupplier) {
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                        .with(ListMenuItemProperties.TITLE, title)
+                        .with(ListMenuItemProperties.ENABLED, enabled)
+                        .with(ListMenuSubmenuItemProperties.SUBMENU_PROVIDER, submenuSupplier)
+                        .with(
+                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                                isIncognito
+                                        ? R.color.default_icon_color_light
+                                        : R.color.default_icon_color_secondary_tint_list);
+        if (isIncognito) {
+            builder.with(
+                    ListMenuItemProperties.TEXT_APPEARANCE_ID,
+                    R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
+        }
+        return new ListItem(ListItemType.MENU_ITEM_WITH_SUBMENU, builder.build());
     }
 
     private void recordAction(@BookmarkBarContextMenuAction int action) {
