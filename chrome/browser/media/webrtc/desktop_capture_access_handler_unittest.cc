@@ -26,6 +26,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/web_contents_tester.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "media/base/media_switches.h"
@@ -396,6 +397,36 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamSuccess) {
 
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
   EXPECT_TRUE(devices.video_device.has_value());
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest,
+       GenerateStreamReportsInsecureCaptureForOtherTabs) {
+  std::unique_ptr<content::WebContents> other_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  content::RenderFrameHost* other_rfh =
+      other_web_contents->GetPrimaryMainFrame();
+
+  const GURL origin(kOrigin);
+  const std::string id =
+      content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
+          web_contents()
+              ->GetPrimaryMainFrame()
+              ->GetProcess()
+              ->GetDeprecatedID(),
+          web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+          url::Origin::Create(origin),
+          content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                                  content::DesktopMediaID::kFakeId),
+          content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
+
+  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::StreamDevices devices;
+  ProcessGenerateStreamRequest({id}, origin, /*extension=*/nullptr, &result,
+                               &devices);
+  ASSERT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+
+  EXPECT_TRUE(access_handler_->IsInsecureCapturingInProgress(
+      other_rfh->GetProcess()->GetDeprecatedID(), other_rfh->GetRoutingID()));
 }
 
 TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessSuccess) {

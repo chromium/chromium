@@ -104,6 +104,7 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
   void OnDesktopCaptureDevicesObtained(
       base::WeakPtr<content::WebContents> web_contents,
       std::unique_ptr<PendingAccessRequest> pending_request,
+      const content::DesktopMediaID& media_id,
       blink::mojom::StreamDevices devices,
       std::unique_ptr<content::MediaStreamUI> ui);
 
