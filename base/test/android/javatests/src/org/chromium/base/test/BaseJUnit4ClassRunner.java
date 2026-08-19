@@ -166,9 +166,11 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
     /** Makes it more obvious that all tests are being marked as failed. */
     private static class BeforeClassException extends RuntimeException {
-        private BeforeClassException(boolean batchedTest, Throwable causedBy) {
+        private BeforeClassException(Class<?> testClass, boolean batchedTest, Throwable causedBy) {
             super(
-                    "Exception in @BeforeClass."
+                    "Exception in "
+                            + testClass.getName()
+                            + " @BeforeClass."
                             + (batchedTest
                                     ? " All tests in this class will be marked as failed."
                                     : ""),
@@ -178,9 +180,11 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
     /** Makes it more obvious that all tests are being marked as failed. */
     private static class AfterClassException extends RuntimeException {
-        private AfterClassException(boolean batchedTest, Throwable causedBy) {
+        private AfterClassException(Class<?> testClass, boolean batchedTest, Throwable causedBy) {
             super(
-                    "Exception in @AfterClass."
+                    "Exception in "
+                            + testClass.getName()
+                            + " @AfterClass."
                             + (batchedTest
                                     ? " All tests in this class will be marked as failed."
                                     : ""),
@@ -420,13 +424,14 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
+                Class<?> testClass = getTestClass().getJavaClass();
                 try {
                     onBeforeTestClass();
                 } catch (Throwable t) {
                     if (t instanceof AssumptionViolatedException) {
                         throw t;
                     }
-                    throw new BeforeClassException(isBatchedTest(getTestClass().getJavaClass()), t);
+                    throw new BeforeClassException(testClass, isBatchedTest(testClass), t);
                 }
                 Throwable exception = null;
                 try {
@@ -445,8 +450,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
                     }
                 }
                 if (exception != null) {
-                    throw new AfterClassException(
-                            isBatchedTest(getTestClass().getJavaClass()), exception);
+                    throw new AfterClassException(testClass, isBatchedTest(testClass), exception);
                 }
             }
         };
