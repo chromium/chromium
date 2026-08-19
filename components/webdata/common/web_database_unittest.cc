@@ -225,12 +225,20 @@ TEST_F(WebDatabaseTest, InitFailureMetaTableInitFailed) {
       1);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_InitFailureMigrationError DISABLED_InitFailureMigrationError
-#else
-#define MAYBE_InitFailureMigrationError InitFailureMigrationError
-#endif
-TEST_F(WebDatabaseTest, MAYBE_InitFailureMigrationError) {
+// A fake `WebDatabaseTable` that always fails upgrading to newer versions.
+class MigrationFailedTable : public WebDatabaseTable {
+ public:
+  WebDatabaseTable::TypeKey GetTypeKey() const override {
+    static int table_key = 0;
+    return reinterpret_cast<void*>(&table_key);
+  }
+  bool CreateTablesIfNecessary() override { return true; }
+  bool MigrateToVersion(int version, bool* update_compatible_version) override {
+    return false;
+  }
+};
+
+TEST_F(WebDatabaseTest, InitFailureMigrationError) {
   base::HistogramTester histogram_tester;
 
   // Create a database at an older version that requires migration.
@@ -243,13 +251,10 @@ TEST_F(WebDatabaseTest, MAYBE_InitFailureMigrationError) {
                                 WebDatabase::kDeprecatedVersionNumber + 1));
   }
 
-  sql::test::DriveErrorTestVfs vfs;
+  MigrationFailedTable table;
   WebDatabase db;
-
-  // Force disk writes to fail so migration fails when updating meta table.
-  vfs.set_drive_full(true);
+  db.AddTable(&table);
   EXPECT_EQ(db.Init(db_path_), sql::INIT_FAILURE);
-  vfs.set_drive_full(false);
 
   histogram_tester.ExpectUniqueSample(
       "WebDatabase.InitResult", WebDatabase::InitResult::kMigrationError, 1);
