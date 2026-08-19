@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/basic_shape_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/shape_property_functions.h"
@@ -82,10 +83,11 @@ class InheritedShapeChecker
                const InterpolationValue&) const final {
     return base::ValuesEquivalent(
         inherited_shape_.Get(),
-        GetBasicShapeInfo(property_, *state.ParentStyle()).shape);
+        GetBasicShapeInfo(*property_, *state.ParentStyle()).shape);
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   Member<const BasicShape> inherited_shape_;
 };
 

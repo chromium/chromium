@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/animation/interpolable_filter.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
@@ -100,11 +101,12 @@ class InheritedFilterListChecker
                const InterpolationValue&) const final {
     const FilterOperations& filter_operations =
         filter_operations_wrapper_->Operations();
-    return filter_operations == GetFilterList(property_, *state.ParentStyle());
+    return filter_operations == GetFilterList(*property_, *state.ParentStyle());
   }
 
  private:
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   Member<FilterOperationsWrapper> filter_operations_wrapper_;
 };
 

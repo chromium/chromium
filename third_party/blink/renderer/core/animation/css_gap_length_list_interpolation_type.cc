@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/css_gap_length_list_interpolation_type.h"
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/animation/css_length_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/gap_data_list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/interpolable_gap_data_auto_repeater.h"
@@ -280,12 +281,13 @@ class InheritedGapLengthListChecker final
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     GapDataList<int> inherited_list =
-        CSSGapLengthListInterpolationType::GetList(property_,
+        CSSGapLengthListInterpolationType::GetList(*property_,
                                                    *state.ParentStyle());
     return inherited_list_ == inherited_list;
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   GapDataList<int> inherited_list_;
 };
 

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/number_property_functions.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -116,10 +117,11 @@ class InheritedSuperellipseChecker
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     return value_ ==
-           ExtractSuperellipseValueFromStyle(property_, *state.ParentStyle());
+           ExtractSuperellipseValueFromStyle(*property_, *state.ParentStyle());
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   const std::optional<Superellipse> value_;
 };
 

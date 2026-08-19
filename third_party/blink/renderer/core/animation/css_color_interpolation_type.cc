@@ -8,6 +8,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/animation/color_property_functions.h"
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
@@ -231,10 +232,11 @@ class InheritedColorChecker
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     return color_ == ColorPropertyFunctions::GetUnvisitedColor(
-                         property_, *state.ParentStyle());
+                         *property_, *state.ParentStyle());
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   const OptionalStyleColor color_;
 };
 

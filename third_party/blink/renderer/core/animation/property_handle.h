@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_PROPERTY_HANDLE_H_
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -86,7 +87,8 @@ class CORE_EXPORT PropertyHandle {
   }
 
   HandleType handle_type_;
-  const CSSProperty* css_property_;
+  raw_ptr<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      css_property_;
   AtomicString property_name_;
 
   friend struct HashTraits<PropertyHandle>;

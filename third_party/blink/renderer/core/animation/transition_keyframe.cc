@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/transition_keyframe.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
@@ -33,7 +34,9 @@ class PropertyIterator : public Keyframe::VirtualPropertyIterator {
   bool AtEnd(const Keyframe*) const override { return !property_; }
 
  private:
-  const PropertyHandle* property_ = nullptr;
+  // Excluded for performance reasons: this iterator is short-lived, so BRP
+  // ref-count churn would cost more than the protection is worth.
+  RAW_PTR_EXCLUSION const PropertyHandle* property_ = nullptr;
 };
 
 }  // namespace

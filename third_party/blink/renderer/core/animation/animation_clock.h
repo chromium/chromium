@@ -33,6 +33,7 @@
 
 #include <limits>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -94,7 +95,8 @@ class CORE_EXPORT AnimationClock {
 
   // See |SetAllowedToDynamicallyUpdateTime| documentation for these members.
   bool can_dynamically_update_time_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock, UnprotectedInRelease | DanglingUntriaged>
+      clock_;
 
   // See |NotifyTaskStart| documentation for these members.
   unsigned task_for_which_time_was_calculated_;

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_IMAGE_SLICE_PROPERTY_FUNCTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_IMAGE_SLICE_PROPERTY_FUNCTIONS_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -17,7 +18,8 @@ namespace blink {
 struct ImageSlice {
   ImageSlice(const LengthBox& slices, bool fill) : slices(slices), fill(fill) {}
 
-  const LengthBox& slices;
+  const raw_ref<const LengthBox, UnprotectedInRelease | DanglingUntriaged>
+      slices;
   bool fill;
 };
 
@@ -49,11 +51,11 @@ class ImageSlicePropertyFunctions {
                             const ImageSlice& slice) {
     switch (property.PropertyID()) {
       case CSSPropertyID::kBorderImageSlice:
-        builder.SetBorderImageSlices(slice.slices);
+        builder.SetBorderImageSlices(*slice.slices);
         builder.SetBorderImageSlicesFill(slice.fill);
         break;
       case CSSPropertyID::kWebkitMaskBoxImageSlice:
-        builder.SetMaskBoxImageSlices(slice.slices);
+        builder.SetMaskBoxImageSlices(*slice.slices);
         builder.SetMaskBoxImageSlicesFill(slice.fill);
         break;
       default:

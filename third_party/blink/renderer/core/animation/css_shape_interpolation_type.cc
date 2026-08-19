@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/css_position_axis_list_interpolation_type.h"
@@ -469,11 +470,12 @@ class InheritedShapeChecker
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
-    auto info = GetShapeOrPath(property_, *state.ParentStyle());
+    auto info = GetShapeOrPath(*property_, *state.ParentStyle());
     return info.shape == shape_.Get() && info.box == box_;
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   const Member<const BasicShape> shape_;
   const ShapeReferenceBox box_;
 };

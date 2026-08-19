@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/length_property_functions.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
@@ -43,11 +44,12 @@ class InheritedLengthChecker
                const InterpolationValue& underlying) const final {
     Length parent_length;
     bool success = LengthPropertyFunctions::GetLength(
-        property_, *state.ParentStyle(), parent_length);
+        *property_, *state.ParentStyle(), parent_length);
     return get_length_success_ == success && parent_length == length_;
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   bool get_length_success_;
   const Length length_;
 };

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/animation/path_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/shape_property_functions.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
@@ -81,11 +82,12 @@ class InheritedPathChecker : public CSSInterpolationType::CSSConversionChecker {
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
-    auto parent_info = GetPathInfo(property_, *state.ParentStyle());
+    auto parent_info = GetPathInfo(*property_, *state.ParentStyle());
     return parent_info.shape == style_path_.Get() && parent_info.box == box_;
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   const Member<const StylePath> style_path_;
   const ShapeReferenceBox box_;
 };

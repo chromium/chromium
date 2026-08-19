@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/css_time_interpolation_type.h"
 
+#include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -158,10 +159,11 @@ class InheritedTimeChecker : public CSSInterpolationType::CSSConversionChecker {
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     std::optional<double> parent_seconds = CSSTimeInterpolationType::GetSeconds(
-        property_.PropertyID(), *state.ParentStyle());
+        property_->PropertyID(), *state.ParentStyle());
     return seconds_ == parent_seconds;
   }
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   const std::optional<double> seconds_;
 };
 

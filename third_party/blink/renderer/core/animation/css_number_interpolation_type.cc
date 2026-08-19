@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/animation/number_property_functions.h"
 #include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -28,11 +29,12 @@ class InheritedNumberChecker
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     std::optional<double> parent_number =
-        NumberPropertyFunctions::GetNumber(property_, *state.ParentStyle());
+        NumberPropertyFunctions::GetNumber(*property_, *state.ParentStyle());
     return number_ == parent_number;
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   const std::optional<double> number_;
 };
 

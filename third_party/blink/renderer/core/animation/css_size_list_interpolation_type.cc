@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/size_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/size_list_property_functions.h"
@@ -65,10 +66,11 @@ class InheritedSizeListChecker final
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue&) const final {
     return inherited_size_list_ == SizeListPropertyFunctions::GetSizeList(
-                                       property_, *state.ParentStyle());
+                                       *property_, *state.ParentStyle());
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   SizeList inherited_size_list_;
 };
 

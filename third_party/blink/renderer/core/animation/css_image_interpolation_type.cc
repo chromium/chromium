@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
@@ -237,7 +238,7 @@ class InheritedImageChecker final
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     const StyleImage* inherited_image =
-        GetStyleImage(property_, *state.ParentStyle());
+        GetStyleImage(*property_, *state.ParentStyle());
     if (!inherited_image_ && !inherited_image)
       return true;
     if (!inherited_image_ || !inherited_image)
@@ -245,7 +246,8 @@ class InheritedImageChecker final
     return *inherited_image_ == *inherited_image;
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   Member<StyleImage> inherited_image_;
 };
 

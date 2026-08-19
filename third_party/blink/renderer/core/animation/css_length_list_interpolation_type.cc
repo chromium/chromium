@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/length_list_property_functions.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
@@ -82,12 +83,13 @@ class InheritedLengthListChecker final
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     Vector<Length> inherited_length_list;
-    LengthListPropertyFunctions::GetLengthList(property_, *state.ParentStyle(),
+    LengthListPropertyFunctions::GetLengthList(*property_, *state.ParentStyle(),
                                                inherited_length_list);
     return inherited_length_list_ == inherited_length_list;
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   Vector<Length> inherited_length_list_;
 };
 

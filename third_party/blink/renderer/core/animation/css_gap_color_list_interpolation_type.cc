@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/css_gap_color_list_interpolation_type.h"
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/animation/color_property_functions.h"
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/gap_data_list_interpolation_functions.h"
@@ -288,12 +289,13 @@ class InheritedGapColorListChecker final
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     GapDataList<StyleColor> inherited_list =
-        CSSGapColorListInterpolationType::GetList(property_,
+        CSSGapColorListInterpolationType::GetList(*property_,
                                                   *state.ParentStyle());
     return inherited_list_ == inherited_list;
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   GapDataList<StyleColor> inherited_list_;
 };
 

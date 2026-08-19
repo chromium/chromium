@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/animation/css_image_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/image_list_property_functions.h"
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
@@ -90,12 +91,13 @@ class InheritedImageListChecker final
                const InterpolationValue& underlying) const final {
     StyleImageList* inherited_image_list =
         MakeGarbageCollected<StyleImageList>();
-    ImageListPropertyFunctions::GetImageList(property_, *state.ParentStyle(),
+    ImageListPropertyFunctions::GetImageList(*property_, *state.ParentStyle(),
                                              inherited_image_list);
     return inherited_image_list_ == inherited_image_list;
   }
 
-  const CSSProperty& property_;
+  const raw_ref<const CSSProperty, UnprotectedInRelease | DanglingUntriaged>
+      property_;
   Member<const StyleImageList> inherited_image_list_;
 };
 
