@@ -4,6 +4,7 @@
 
 module metrics.mojom;
 
+import "components/metrics/public/mojom/profile_params.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -16,13 +17,6 @@ struct SampledProfile {
   mojo_base.mojom.ProtoWrapper contents;
 };
 
-// The type of data that's sampled in a profile.
-enum ProfileType {
-  kCPU,
-  kHeap,
-  kHeapChurn,
-};
-
 // Passes SampledProfile reports from a sampling profiler running in a child
 // process to CallStackProfileMetricsProvider in the browser process, to be
 // included in metrics uploads.
@@ -30,14 +24,14 @@ interface CallStackProfileCollector {
 
   // Passes the report in `profile` to CallStackProfileMetricsProvider.
   // `start_timestamp` is the timestamp of the oldest sample in the report, and
-  // `profile_type` is the type of sampled data in the report.
+  // `trigger_event` is the event that triggered the profile collection. They're
+  // included so that the implementation doesn't need to deserialize `profile`
+  // to read them.
   //
-  // Note that the `trigger_event` field of the SampledProfile proto should be
-  // PERIODIC_HEAP_COLLECTION iff `profile_type` is kHeap, or
-  // PERIODIC_HEAP_CHURN_COLLECTION iff `profile_type` is kHeapChurn. But the
-  // profile comes from an untrusted process so the implementation must not
-  // depend on this.
+  // Note that the `trigger_event` field of the SampledProfile proto should
+  // match `trigger_event`. But the profile comes from an untrusted process so
+  // the implementation must not depend on this.
   Collect(mojo_base.mojom.TimeTicks start_timestamp,
-          ProfileType profile_type,
+          TriggerEvent trigger_event,
           SampledProfile profile);
 };

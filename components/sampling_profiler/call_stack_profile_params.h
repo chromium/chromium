@@ -6,25 +6,14 @@
 #define COMPONENTS_SAMPLING_PROFILER_CALL_STACK_PROFILE_PARAMS_H_
 
 #include "base/time/time.h"
+#include "components/metrics/public/mojom/profile_params.mojom.h"
 #include "components/sampling_profiler/process_type.h"
 
 namespace sampling_profiler {
 
 // Parameters to pass back to the metrics provider.
-// TODO(crbug.com/354124876): Revisit whether this type needs to live in //base,
-// once the core logic has been moved.
 struct CallStackProfileParams {
-  // The event that triggered the profile collection.
-  enum class Trigger {
-    kUnknown,
-    kProcessStartup,
-    kJankyTask,
-    kThreadHung,
-    kPeriodicCollection,
-    kPeriodicHeapCollection,
-    kPeriodicHeapChurnCollection,
-    kLast = kPeriodicHeapChurnCollection
-  };
+  using Trigger = metrics::mojom::TriggerEvent;
 
   // The default constructor is required for mojo and should not be used
   // otherwise. A valid trigger should always be specified.

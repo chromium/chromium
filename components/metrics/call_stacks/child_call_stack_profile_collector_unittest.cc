@@ -24,7 +24,7 @@ class ChildCallStackProfileCollectorTest : public ::testing::Test {
  protected:
   struct ReceivedProfile {
     base::TimeTicks start_timestamp;
-    mojom::ProfileType profile_type;
+    mojom::TriggerEvent trigger_event;
   };
 
   class Receiver : public mojom::CallStackProfileCollector {
@@ -39,9 +39,9 @@ class ChildCallStackProfileCollectorTest : public ::testing::Test {
     ~Receiver() override = default;
 
     void Collect(base::TimeTicks start_timestamp,
-                 mojom::ProfileType profile_type,
+                 mojom::TriggerEvent trigger_event,
                  mojom::SampledProfilePtr profile) override {
-      profiles_.push_back({start_timestamp, profile_type});
+      profiles_.push_back({start_timestamp, trigger_event});
     }
 
     std::vector<ReceivedProfile>& profiles() { return profiles_; }
@@ -61,29 +61,27 @@ class ChildCallStackProfileCollectorTest : public ::testing::Test {
       const ChildCallStackProfileCollectorTest&) = delete;
 
   // Collects a profile and returns its start timestamp.
-  base::TimeTicks CollectProfile(
-      SampledProfile::TriggerEvent trigger_event,
-      mojom::ProfileType profile_type = mojom::ProfileType::kCPU) {
+  base::TimeTicks CollectProfile(SampledProfile::TriggerEvent trigger_event) {
     base::TimeTicks start_timestamp = task_environment_.NowTicks();
     SampledProfile profile;
     profile.set_trigger_event(trigger_event);
-    child_collector_.Collect(start_timestamp, profile_type, std::move(profile));
+    child_collector_.Collect(start_timestamp, std::move(profile));
     return start_timestamp;
   }
 
   void ExpectProfile(const ReceivedProfile& profile,
                      base::TimeTicks expected_start_timestamp,
-                     mojom::ProfileType expected_profile_type) {
+                     mojom::TriggerEvent expected_trigger_event) {
     EXPECT_EQ(expected_start_timestamp, profile.start_timestamp);
-    EXPECT_EQ(expected_profile_type, profile.profile_type);
+    EXPECT_EQ(expected_trigger_event, profile.trigger_event);
   }
 
   void ExpectProfile(
       const ChildCallStackProfileCollector::ProfileState& profile,
       base::TimeTicks expected_start_timestamp,
-      mojom::ProfileType expected_profile_type) {
+      mojom::TriggerEvent expected_trigger_event) {
     EXPECT_EQ(expected_start_timestamp, profile.start_timestamp);
-    EXPECT_EQ(expected_profile_type, profile.profile_type);
+    EXPECT_EQ(expected_trigger_event, profile.trigger_event);
   }
 
   const std::vector<ChildCallStackProfileCollector::ProfileState>& profiles()
@@ -108,7 +106,8 @@ TEST_F(ChildCallStackProfileCollectorTest, InterfaceProvided) {
   base::TimeTicks start_timestamp =
       CollectProfile(SampledProfile::PERIODIC_COLLECTION);
   ASSERT_EQ(1u, profiles().size());
-  ExpectProfile(profiles()[0], start_timestamp, mojom::ProfileType::kCPU);
+  ExpectProfile(profiles()[0], start_timestamp,
+                mojom::TriggerEvent::kPeriodicCollection);
 
   // Set the interface. The profiles should be passed to it.
   child_collector_.SetParentProfileCollector(std::move(collector_remote_));
@@ -116,7 +115,7 @@ TEST_F(ChildCallStackProfileCollectorTest, InterfaceProvided) {
   EXPECT_EQ(0u, profiles().size());
   ASSERT_EQ(1u, receiver_impl_->profiles().size());
   ExpectProfile(receiver_impl_->profiles()[0], start_timestamp,
-                mojom::ProfileType::kCPU);
+                mojom::TriggerEvent::kPeriodicCollection);
 
   // Add a profile after providing the interface. It should also be passed.
   receiver_impl_->profiles().clear();
@@ -126,7 +125,7 @@ TEST_F(ChildCallStackProfileCollectorTest, InterfaceProvided) {
   EXPECT_EQ(0u, profiles().size());
   ASSERT_EQ(1u, receiver_impl_->profiles().size());
   ExpectProfile(receiver_impl_->profiles()[0], start_timestamp2,
-                mojom::ProfileType::kCPU);
+                mojom::TriggerEvent::kPeriodicCollection);
 }
 
 TEST_F(ChildCallStackProfileCollectorTest, InterfaceNotProvided) {
@@ -136,7 +135,8 @@ TEST_F(ChildCallStackProfileCollectorTest, InterfaceNotProvided) {
   base::TimeTicks start_timestamp =
       CollectProfile(SampledProfile::PERIODIC_COLLECTION);
   ASSERT_EQ(1u, profiles().size());
-  ExpectProfile(profiles()[0], start_timestamp, mojom::ProfileType::kCPU);
+  ExpectProfile(profiles()[0], start_timestamp,
+                mojom::TriggerEvent::kPeriodicCollection);
 
   // Set the null interface. The profile should be flushed.
   child_collector_.SetParentProfileCollector(mojo::NullRemote());
@@ -152,23 +152,44 @@ TEST_F(ChildCallStackProfileCollectorTest, InterfaceNotProvided) {
   EXPECT_EQ(0u, receiver_impl_->profiles().size());
 }
 
-// Tests that the `profile_type` parameter is set correctly when heap profiles
+// Tests that the `trigger_event` parameter is set correctly when heap profiles
 // pass through the interface.
 TEST_F(ChildCallStackProfileCollectorTest, HeapProfiles) {
   EXPECT_EQ(0u, profiles().size());
 
   // Add a profile before providing the interface.
-  base::TimeTicks start_timestamp = CollectProfile(
-      SampledProfile::PERIODIC_HEAP_COLLECTION, mojom::ProfileType::kHeap);
+  base::TimeTicks start_timestamp =
+      CollectProfile(SampledProfile::PERIODIC_HEAP_COLLECTION);
   ASSERT_EQ(1u, profiles().size());
-  ExpectProfile(profiles()[0], start_timestamp, mojom::ProfileType::kHeap);
+  ExpectProfile(profiles()[0], start_timestamp,
+                mojom::TriggerEvent::kPeriodicHeapCollection);
 
-  // Set the interface. The profile type should pass to it unchanged.
+  // Set the interface. The trigger event should pass to it unchanged.
   child_collector_.SetParentProfileCollector(std::move(collector_remote_));
   task_environment_.FastForwardBy(base::Milliseconds(1));
   ASSERT_EQ(1u, receiver_impl_->profiles().size());
   ExpectProfile(receiver_impl_->profiles()[0], start_timestamp,
-                mojom::ProfileType::kHeap);
+                mojom::TriggerEvent::kPeriodicHeapCollection);
+}
+
+// Tests that the `trigger_event` parameter is set correctly when heap churn
+// profiles pass through the interface.
+TEST_F(ChildCallStackProfileCollectorTest, HeapChurnProfiles) {
+  EXPECT_EQ(0u, profiles().size());
+
+  // Add a profile before providing the interface.
+  base::TimeTicks start_timestamp =
+      CollectProfile(SampledProfile::PERIODIC_HEAP_CHURN_COLLECTION);
+  ASSERT_EQ(1u, profiles().size());
+  ExpectProfile(profiles()[0], start_timestamp,
+                mojom::TriggerEvent::kPeriodicHeapChurnCollection);
+
+  // Set the interface. The trigger event should pass to it unchanged.
+  child_collector_.SetParentProfileCollector(std::move(collector_remote_));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  ASSERT_EQ(1u, receiver_impl_->profiles().size());
+  ExpectProfile(receiver_impl_->profiles()[0], start_timestamp,
+                mojom::TriggerEvent::kPeriodicHeapChurnCollection);
 }
 
 }  // namespace

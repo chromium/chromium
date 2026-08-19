@@ -4,8 +4,14 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+mojom("profile_params") {
+  sources = [ "profile_params.mojom" ]
+}
+
 mojom("call_stack_mojo_bindings") {
   sources = [ "call_stack_profile_collector.mojom" ]
+
+  public_deps = [ ":profile_params" ]
 
   deps = [
     "//mojo/public/mojom/base",

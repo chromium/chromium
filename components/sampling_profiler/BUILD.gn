@@ -28,5 +28,7 @@ source_set("profile_params") {
     "process_type.h",
   ]
 
+  public_deps = [ "//components/metrics/public/mojom:profile_params" ]
+
   deps = [ "//base" ]
 }

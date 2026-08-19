@@ -59,25 +59,51 @@ Thread ToExecutionContextThread(sampling_profiler::ProfilerThreadType thread) {
 }
 
 SampledProfile::TriggerEvent ToSampledProfileTriggerEvent(
-    sampling_profiler::CallStackProfileParams::Trigger trigger) {
-  switch (trigger) {
-    case sampling_profiler::CallStackProfileParams::Trigger::kUnknown:
+    mojom::TriggerEvent trigger_event) {
+  switch (trigger_event) {
+    case mojom::TriggerEvent::kUnknown:
       return SampledProfile::UNKNOWN_TRIGGER_EVENT;
-    case sampling_profiler::CallStackProfileParams::Trigger::kProcessStartup:
-      return SampledProfile::PROCESS_STARTUP;
-    case sampling_profiler::CallStackProfileParams::Trigger::kJankyTask:
-      return SampledProfile::JANKY_TASK;
-    case sampling_profiler::CallStackProfileParams::Trigger::kThreadHung:
-      return SampledProfile::THREAD_HUNG;
-    case sampling_profiler::CallStackProfileParams::Trigger::
-        kPeriodicCollection:
+    case mojom::TriggerEvent::kPeriodicCollection:
       return SampledProfile::PERIODIC_COLLECTION;
-    case sampling_profiler::CallStackProfileParams::Trigger::
-        kPeriodicHeapCollection:
+    case mojom::TriggerEvent::kResumeFromSuspend:
+      return SampledProfile::RESUME_FROM_SUSPEND;
+    case mojom::TriggerEvent::kRestoreSession:
+      return SampledProfile::RESTORE_SESSION;
+    case mojom::TriggerEvent::kProcessStartup:
+      return SampledProfile::PROCESS_STARTUP;
+    case mojom::TriggerEvent::kJankyTask:
+      return SampledProfile::JANKY_TASK;
+    case mojom::TriggerEvent::kThreadHung:
+      return SampledProfile::THREAD_HUNG;
+    case mojom::TriggerEvent::kPeriodicHeapCollection:
       return SampledProfile::PERIODIC_HEAP_COLLECTION;
-    case sampling_profiler::CallStackProfileParams::Trigger::
-        kPeriodicHeapChurnCollection:
+    case mojom::TriggerEvent::kPeriodicHeapChurnCollection:
       return SampledProfile::PERIODIC_HEAP_CHURN_COLLECTION;
+  }
+  NOTREACHED();
+}
+
+mojom::TriggerEvent ToMojomTriggerEvent(
+    SampledProfile::TriggerEvent trigger_event) {
+  switch (trigger_event) {
+    case SampledProfile::UNKNOWN_TRIGGER_EVENT:
+      return mojom::TriggerEvent::kUnknown;
+    case SampledProfile::PERIODIC_COLLECTION:
+      return mojom::TriggerEvent::kPeriodicCollection;
+    case SampledProfile::RESUME_FROM_SUSPEND:
+      return mojom::TriggerEvent::kResumeFromSuspend;
+    case SampledProfile::RESTORE_SESSION:
+      return mojom::TriggerEvent::kRestoreSession;
+    case SampledProfile::PROCESS_STARTUP:
+      return mojom::TriggerEvent::kProcessStartup;
+    case SampledProfile::JANKY_TASK:
+      return mojom::TriggerEvent::kJankyTask;
+    case SampledProfile::THREAD_HUNG:
+      return mojom::TriggerEvent::kThreadHung;
+    case SampledProfile::PERIODIC_HEAP_COLLECTION:
+      return mojom::TriggerEvent::kPeriodicHeapCollection;
+    case SampledProfile::PERIODIC_HEAP_CHURN_COLLECTION:
+      return mojom::TriggerEvent::kPeriodicHeapChurnCollection;
   }
   NOTREACHED();
 }

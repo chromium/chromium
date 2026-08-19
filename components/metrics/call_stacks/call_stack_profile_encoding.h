@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_ENCODING_H_
 #define COMPONENTS_METRICS_CALL_STACKS_CALL_STACK_PROFILE_ENCODING_H_
 
-#include "components/sampling_profiler/call_stack_profile_params.h"
+#include "components/metrics/public/mojom/profile_params.mojom.h"
 #include "components/sampling_profiler/process_type.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
@@ -20,10 +20,15 @@ Process ToExecutionContextProcess(
 // SampledProfile Thread.
 Thread ToExecutionContextThread(sampling_profiler::ProfilerThreadType thread);
 
-// Translates CallStackProfileParams's trigger to the corresponding
-// SampledProfile TriggerEvent.
+// Translates mojom::TriggerEvent to the corresponding SampledProfile
+// TriggerEvent.
 SampledProfile::TriggerEvent ToSampledProfileTriggerEvent(
-    sampling_profiler::CallStackProfileParams::Trigger trigger);
+    mojom::TriggerEvent trigger_event);
+
+// Translates SampledProfile TriggerEvent to the corresponding
+// mojom::TriggerEvent.
+mojom::TriggerEvent ToMojomTriggerEvent(
+    SampledProfile::TriggerEvent trigger_event);
 
 }  // namespace metrics
 

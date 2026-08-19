@@ -26,7 +26,7 @@ class CallStackProfileCollector : public mojom::CallStackProfileCollector {
 
   // mojom::CallStackProfileCollector:
   void Collect(base::TimeTicks start_timestamp,
-               mojom::ProfileType profile_type,
+               mojom::TriggerEvent trigger_event,
                mojom::SampledProfilePtr profile) override;
 };
 

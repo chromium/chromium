@@ -196,16 +196,21 @@ class TestCallStackProfileCollector final
 
   // metrics::mojom::CallStackProfileCollector
   void Collect(base::TimeTicks start_timestamp,
-               metrics::mojom::ProfileType profile_type,
+               metrics::mojom::TriggerEvent trigger_event,
                metrics::mojom::SampledProfilePtr profile) final {
     metrics::SampledProfile sampled_profile;
     ASSERT_TRUE(profile);
     ASSERT_TRUE(base::OptionalUnwrapTo(
         profile->contents.As<metrics::SampledProfile>(), sampled_profile));
-    EXPECT_TRUE((profile_type == metrics::mojom::ProfileType::kHeap ||
-                 profile_type == metrics::mojom::ProfileType::kHeapChurn) &&
-                sampled_profile.trigger_event() ==
-                    metrics::SampledProfile::PERIODIC_HEAP_COLLECTION);
+    EXPECT_TRUE(
+        (trigger_event ==
+             metrics::mojom::TriggerEvent::kPeriodicHeapCollection &&
+         sampled_profile.trigger_event() ==
+             metrics::SampledProfile::PERIODIC_HEAP_COLLECTION) ||
+        (trigger_event ==
+             metrics::mojom::TriggerEvent::kPeriodicHeapChurnCollection &&
+         sampled_profile.trigger_event() ==
+             metrics::SampledProfile::PERIODIC_HEAP_CHURN_COLLECTION));
     collector_callback_.Run(start_timestamp, std::move(sampled_profile));
   }
 

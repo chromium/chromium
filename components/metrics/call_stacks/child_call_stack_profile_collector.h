@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
+#include "components/metrics/public/mojom/profile_params.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -65,9 +66,7 @@ class ChildCallStackProfileCollector {
           parent_collector);
 
   // Collects |profile| whose collection start time is |start_timestamp|.
-  void Collect(base::TimeTicks start_timestamp,
-               mojom::ProfileType profile_type,
-               SampledProfile profile);
+  void Collect(base::TimeTicks start_timestamp, SampledProfile profile);
 
  private:
   friend class ChildCallStackProfileCollectorTest;
@@ -77,7 +76,7 @@ class ChildCallStackProfileCollector {
   struct ProfileState {
     ProfileState();
     ProfileState(base::TimeTicks start_timestamp,
-                 mojom::ProfileType profile_type,
+                 mojom::TriggerEvent trigger_event,
                  mojom::SampledProfilePtr profile);
 
     ProfileState(const ProfileState&) = delete;
@@ -90,7 +89,7 @@ class ChildCallStackProfileCollector {
     ProfileState& operator=(ProfileState&&);
 
     base::TimeTicks start_timestamp;
-    mojom::ProfileType profile_type;
+    mojom::TriggerEvent trigger_event;
 
     // The serialized sampled profile.
     mojom::SampledProfilePtr profile;
