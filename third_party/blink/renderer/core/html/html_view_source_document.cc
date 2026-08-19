@@ -167,7 +167,15 @@ void HTMLViewSourceDocument::CreateContainingTable() {
   form->setAttribute(html_names::kAutocompleteAttr, AtomicString("off"));
   form->ParserAppendChild(label);
   body->ParserAppendChild(form);
-  body->ParserAppendChild(table);
+
+  // Wrap the table in a `display:contents` container so it is always the first
+  // child of its parent, preventing spurious leading newlines on "select all +
+  // copy".
+  auto* source_container = MakeGarbageCollected<HTMLDivElement>(*this);
+  source_container->setAttribute(html_names::kClassAttr,
+                                 AtomicString("source-container"));
+  source_container->ParserAppendChild(table);
+  body->ParserAppendChild(source_container);
 }
 
 void HTMLViewSourceDocument::AddSource(

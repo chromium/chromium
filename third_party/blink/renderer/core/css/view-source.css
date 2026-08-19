@@ -26,6 +26,13 @@ body {
     margin: 0
 }
 
+.source-container {
+    /* Purely a DOM grouping for the source table, see
+       HTMLViewSourceDocument::CreateContainingTable(). It must not generate a
+       box of its own. */
+    display: contents;
+}
+
 table {
     width: max-content;
     min-width: 100vw;

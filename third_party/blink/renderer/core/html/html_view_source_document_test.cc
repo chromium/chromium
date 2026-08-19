@@ -9,6 +9,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -50,7 +52,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource1) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
       "class=\"html-doctype\">&lt;!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML "
@@ -76,7 +79,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource1) {
       "class=\"line-number\" value=\"7\"></td><td class=\"line-content\">      "
       "<span class=\"html-tag\">&lt;/div&gt;</span></td></tr><tr><td "
       "class=\"line-number\" value=\"8\"></td><td class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -104,7 +107,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource2) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
       "class=\"html-tag\">&lt;script&gt;</span></td></tr><tr><td "
@@ -137,7 +141,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource2) {
       "value=\"16\"></td><td class=\"line-content\">      <span "
       "class=\"html-tag\">&lt;/textarea&gt;</span></td></tr><tr><td "
       "class=\"line-number\" value=\"17\"></td><td class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -157,7 +161,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource3) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
       "class=\"html-tag\">&lt;head&gt;</span><span class=\"html-tag\">&lt;base "
@@ -203,7 +208,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource3) {
       "class=\"line-number\" value=\"8\"></td><td class=\"line-content\">      "
       "<span class=\"html-tag\">&lt;/body&gt;</span></td></tr><tr><td "
       "class=\"line-number\" value=\"9\"></td><td class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -223,7 +228,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource4) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
       "class=\"html-tag\">&lt;HEAD&gt;</span><span class=\"html-tag\">&lt;BASE "
@@ -269,7 +275,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource4) {
       "class=\"line-number\" value=\"8\"></td><td class=\"line-content\">      "
       "<span class=\"html-tag\">&lt;/BODY&gt;</span></td></tr><tr><td "
       "class=\"line-number\" value=\"9\"></td><td class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -292,7 +298,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource5) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\"><br></td></tr><tr><td "
       "class=\"line-number\" value=\"3\"></td><td "
@@ -316,7 +323,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource5) {
       "class=\"line-number\" value=\"11\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"12\"></td><td class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -328,12 +335,13 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource6) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\">"
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\">"
       "</td><td class=\"line-content\">      ");
   std::string expected_ending(
       " <span class=\"html-tag\">&lt;b&gt;</span>A<span "
       "class=\"html-tag\">&lt;/b&gt;</span>  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
   EXPECT_EQ(GetDocument().documentElement()->GetOuterHTMLString(),
             (expected_beginning + many_spaces + expected_ending).c_str());
@@ -347,9 +355,10 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource7) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\">"
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\">"
       "</td><td class=\"line-content\">1234567"
-      "</td></tr></tbody></table></"
+      "</td></tr></tbody></table></div></"
       "body></html>");
 }
 
@@ -371,7 +380,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource8) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
       "class=\"html-doctype\">&lt;!DOCTYPE html&gt;</span></td></tr><tr><td "
@@ -426,7 +436,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource8) {
       "class=\"line-number\" value=\"10\"></td><td class=\"line-content\">     "
       " <span class=\"html-tag\">&lt;/html&gt;</span></td></tr><tr><td "
       "class=\"line-number\" value=\"11\"></td><td class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -444,7 +454,8 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource9) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      <span "
       "class=\"html-doctype\">&lt;!DOCTYPE html&gt;</span></td></tr><tr><td "
@@ -461,7 +472,7 @@ TEST_F(HTMLViewSourceDocumentTest, ViewSource9) {
       "class=\"line-content\">      \"&lt;!--  "
       "--!&gt;&lt;script&gt;\";</td></tr><tr><td class=\"line-number\" "
       "value=\"7\"></td><td class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -477,7 +488,8 @@ TEST_F(HTMLViewSourceDocumentTest, IncompleteToken) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td><td "
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">      Incomplete token "
       "test</td></tr><tr><td class=\"line-number\" value=\"3\"></td><td "
@@ -489,7 +501,7 @@ TEST_F(HTMLViewSourceDocumentTest, IncompleteToken) {
       "view-source.</span></td></tr><tr><td class=\"line-number\" "
       "value=\"5\"></td><td class=\"line-content\"><span "
       "class=\"html-end-of-file\">  "
-      "</span></td></tr></tbody></table></body></html>");
+      "</span></td></tr></tbody></table></div></body></html>");
 }
 
 TEST_F(HTMLViewSourceDocumentTest, UnfinishedTextarea) {
@@ -501,12 +513,13 @@ TEST_F(HTMLViewSourceDocumentTest, UnfinishedTextarea) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td>"
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td>"
       "<td class=\"line-content\"><span "
       "class=\"html-tag\">&lt;textarea&gt;</span>foobar in "
       "textarea</td></tr><tr><td class=\"line-number\" value=\"2\"></td><td "
       "class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -519,12 +532,13 @@ TEST_F(HTMLViewSourceDocumentTest, UnfinishedScript) {
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label>"
-      "</form><table><tbody><tr><td class=\"line-number\" value=\"1\"></td>"
+      "</form><div class=\"source-container\"><table><tbody><tr><td "
+      "class=\"line-number\" value=\"1\"></td>"
       "<td class=\"line-content\"><span "
       "class=\"html-tag\">&lt;script&gt;</span>foobar in "
       "script</td></tr><tr><td class=\"line-number\" value=\"2\"></td><td "
       "class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -536,7 +550,7 @@ TEST_F(HTMLViewSourceDocumentTest, Linebreak) {
       "<body><div class=\"line-gutter-backdrop\"></div>"
       "<form autocomplete=\"off\"><label class=\"line-wrap-control\">"
       "<input type=\"checkbox\"></label></form>"
-      "<table><tbody>"
+      "<div class=\"source-container\"><table><tbody>"
       "<tr><td class=\"line-number\" value=\"1\"></td>"
       "<td class=\"line-content\">"
       "<span class=\"html-tag\">&lt;html&gt;</span></td></tr>"
@@ -561,7 +575,7 @@ TEST_F(HTMLViewSourceDocumentTest, Linebreak) {
       "<tr><td class=\"line-number\" value=\"11\"></td>"
       "<td class=\"line-content\">"
       "<span class=\"html-tag\">&lt;/html&gt;</span>"
-      "</td></tr></tbody></table></body></html>");
+      "</td></tr></tbody></table></div></body></html>");
 }
 
 TEST_F(HTMLViewSourceDocumentTest, DOMParts) {
@@ -572,7 +586,8 @@ TEST_F(HTMLViewSourceDocumentTest, DOMParts) {
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
-      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "type=\"checkbox\"></label></form><div "
+      "class=\"source-container\"><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td class=\"line-content\"><span "
       "class=\"html-tag\">&lt;div <span "
       "class=\"html-attribute-name\">parseparts</span>&gt;</span>{{#}}foo{{/"
@@ -580,7 +595,7 @@ TEST_F(HTMLViewSourceDocumentTest, DOMParts) {
       "class=\"html-attribute-name\">{{}}</span>&gt;</span>bar<span "
       "class=\"html-tag\">&lt;/span&gt;</span><span "
       "class=\"html-tag\">&lt;/div&gt;</span>"
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -608,7 +623,8 @@ TEST_F(HTMLViewSourceDocumentTest, LinebreakInTag) {
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
-      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "type=\"checkbox\"></label></form><div "
+      "class=\"source-container\"><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">    <span "
@@ -667,7 +683,7 @@ TEST_F(HTMLViewSourceDocumentTest, LinebreakInTag) {
       "class=\"line-number\" value=\"17\"></td><td class=\"line-content\">    "
       "<span class=\"html-tag\">&lt;/a&gt;</span></td></tr><tr><td "
       "class=\"line-number\" value=\"18\"></td><td class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -678,7 +694,8 @@ TEST_F(HTMLViewSourceDocumentTest, AttributeNameAtLineStart) {
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
-      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "type=\"checkbox\"></label></form><div "
+      "class=\"source-container\"><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td class=\"line-content\"><span "
       "class=\"html-tag\">&lt;input</span></td></tr><tr><td "
       "class=\"line-number\" value=\"2\"></td><td class=\"line-content\"><span "
@@ -694,7 +711,7 @@ TEST_F(HTMLViewSourceDocumentTest, AttributeNameAtLineStart) {
       "class=\"html-tag\"><span "
       "class=\"html-attribute-name\">type</span>=\"<span "
       "class=\"html-attribute-value\">text</span>\" /&gt;</span>"
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -705,7 +722,8 @@ TEST_F(HTMLViewSourceDocumentTest, MultiLineComment) {
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
-      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "type=\"checkbox\"></label></form><div "
+      "class=\"source-container\"><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td class=\"line-content\"><span "
       "class=\"html-comment\">&lt;!--</span></td></tr><tr><td "
       "class=\"line-number\" value=\"2\"></td><td class=\"line-content\">"
@@ -716,7 +734,7 @@ TEST_F(HTMLViewSourceDocumentTest, MultiLineComment) {
       "class=\"html-comment\">bar</span></td></tr><tr><td "
       "class=\"line-number\" value=\"5\"></td><td class=\"line-content\"><span "
       "class=\"html-comment\">--&gt;</span>"
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -733,7 +751,8 @@ TEST_F(HTMLViewSourceDocumentTest, LinebreakInLink) {
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
-      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "type=\"checkbox\"></label></form><div "
+      "class=\"source-container\"><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td "
       "class=\"line-content\"><br></td></tr><tr><td class=\"line-number\" "
       "value=\"2\"></td><td class=\"line-content\">    <span "
@@ -753,7 +772,7 @@ TEST_F(HTMLViewSourceDocumentTest, LinebreakInLink) {
       "class=\"line-content\">    <span "
       "class=\"html-tag\">&lt;/a&gt;</span></td></tr><tr><td "
       "class=\"line-number\" value=\"7\"></td><td class=\"line-content\">  "
-      "</td></tr></tbody></table></body></"
+      "</td></tr></tbody></table></div></body></"
       "html>");
 }
 
@@ -764,10 +783,21 @@ TEST_F(HTMLViewSourceDocumentTest, ProcessingInstruction) {
       "<html><head><meta name=\"color-scheme\" content=\"light "
       "dark\"></head><body><div class=\"line-gutter-backdrop\"></div><form "
       "autocomplete=\"off\"><label class=\"line-wrap-control\"><input "
-      "type=\"checkbox\"></label></form><table><tbody><tr><td "
+      "type=\"checkbox\"></label></form><div "
+      "class=\"source-container\"><table><tbody><tr><td "
       "class=\"line-number\" value=\"1\"></td><td class=\"line-content\">"
       "<span class=\"html-processing-instruction\">&lt;?foo bar?&gt;</span>"
-      "</td></tr></tbody></table></body></html>");
+      "</td></tr></tbody></table></div></body></html>");
+}
+
+// Selecting the whole view-source document and copying it must reproduce the
+// source exactly, without a leading newline for the gutter backdrop and the
+// line-wrap control that precede the source table.
+TEST_F(HTMLViewSourceDocumentTest, SelectAllHasNoLeadingNewline) {
+  LoadMainResource("<html>\n<body>hello</body>\n</html>");
+  GetDocument().GetFrame()->Selection().SelectAll();
+  EXPECT_EQ(GetDocument().GetFrame()->Selection().SelectedTextForClipboard(),
+            "<html>\n<body>hello</body>\n</html>");
 }
 
 }  // namespace blink
