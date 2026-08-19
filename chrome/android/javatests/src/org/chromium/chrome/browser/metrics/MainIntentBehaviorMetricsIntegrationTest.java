@@ -39,8 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.settings.SettingsActivity;
-import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -63,8 +62,8 @@ public class MainIntentBehaviorMetricsIntegrationTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
-    public SettingsActivityTestRule<PlaceholderSettingsForTest> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(PlaceholderSettingsForTest.class);
+    public SettingsTestRule<PlaceholderSettingsForTest> mSettingsActivityTestRule =
+            new SettingsTestRule<>(PlaceholderSettingsForTest.class);
 
     private UserActionTester mActionTester;
 
@@ -168,8 +167,8 @@ public class MainIntentBehaviorMetricsIntegrationTest {
 
             mActivityTestRule.startFromLauncherAtNtp();
 
-            SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();
-            settingsActivity.finish();
+            mSettingsActivityTestRule.startSettingsActivity();
+            mSettingsActivityTestRule.getActivity().finish();
             ChromeActivityTestRule.waitForActivityNativeInitializationComplete(
                     ChromeActivityTestRule.waitFor(ChromeTabbedActivity.class));
 
