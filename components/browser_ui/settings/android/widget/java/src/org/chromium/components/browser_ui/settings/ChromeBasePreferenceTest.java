@@ -66,6 +66,7 @@ public class ChromeBasePreferenceTest {
         mPreferenceScreen.addPreference(preference);
 
         Assert.assertTrue(preference.isEnabled());
+        Assert.assertFalse(preference.isIconSpaceReserved());
 
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
@@ -74,6 +75,7 @@ public class ChromeBasePreferenceTest {
         // view does not exist.
         onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
         onView(withId(android.R.id.icon)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.icon_frame)).check(matches(not(isDisplayed())));
     }
 
     @Test

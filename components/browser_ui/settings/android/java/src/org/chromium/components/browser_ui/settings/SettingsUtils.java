@@ -6,9 +6,11 @@ package org.chromium.components.browser_ui.settings;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.StrictMode;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver.OnScrollChangedListener;
 
@@ -156,5 +158,28 @@ public class SettingsUtils {
                 }
             }
         }
+    }
+
+    /**
+     * Initializes default attributes on the given preference.
+     *
+     * <p>AndroidX Preference defaults iconSpaceReserved to true. When hosted inside an Activity
+     * that does not define preferenceTheme in its theme (such as ChromeTabbedActivity in
+     * SettingsInTab), PreferenceFragmentCompat falls back to PreferenceThemeOverlay, which keeps
+     * iconSpaceReserved as true. Explicitly default iconSpaceReserved to false unless overridden in
+     * attrs so unused icon_frame space is collapsed.
+     *
+     * @param context The context for the preference.
+     * @param attrs The XML attribute set, or null if constructed programmatically.
+     * @param preference The preference to initialize.
+     */
+    public static void initializePreferenceDefaults(
+            Context context, @Nullable AttributeSet attrs, Preference preference) {
+        TypedArray preferenceAttrs = context.obtainStyledAttributes(attrs, R.styleable.Preference);
+        if (!preferenceAttrs.hasValue(R.styleable.Preference_iconSpaceReserved)
+                && !preferenceAttrs.hasValue(R.styleable.Preference_android_iconSpaceReserved)) {
+            preference.setIconSpaceReserved(false);
+        }
+        preferenceAttrs.recycle();
     }
 }

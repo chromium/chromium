@@ -88,6 +88,8 @@ public class ChromeImageViewPreference extends Preference {
         setWidgetLayoutResource(R.layout.preference_chrome_image_view);
         setSingleLineTitle(false);
         setImageColor(R.color.default_icon_color_tint_list);
+
+        SettingsUtils.initializePreferenceDefaults(context, attrs, this);
     }
 
     /** Sets the ManagedPreferenceDelegate which will determine whether this preference is managed. */

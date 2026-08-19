@@ -61,6 +61,8 @@ public class ChromeBasePreference extends Preference implements ContainmentItem 
 
         setSingleLineTitle(false);
 
+        SettingsUtils.initializePreferenceDefaults(context, attrs, this);
+
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChromeBasePreference);
         mIconTint = a.getColorStateList(R.styleable.ChromeBasePreference_iconTint);
         mUserAction = a.getString(R.styleable.ChromeBasePreference_userAction);
