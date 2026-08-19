@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
 
+#import "base/check.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "google_apis/gaia/gaia_id.h"
@@ -25,8 +26,10 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
   return SystemIdentityManager::IteratorResult::kContinueIteration;
 }
 
+// Completion callback for sign-out during profile change.
+// If `contexts` is not nil, sets `URLContextsToOpen` on the scene state of
+// `weak_browser` to `contexts` so the URLs are opened once sign-out completes.
 void ChangeProfileSignoutCompletion(base::WeakPtr<Browser> weak_browser,
-                                    BOOL openURL,
                                     NSSet<UIOpenURLContext*>* contexts,
                                     base::OnceClosure closure) {
   Browser* browser = weak_browser.get();
@@ -34,31 +37,31 @@ void ChangeProfileSignoutCompletion(base::WeakPtr<Browser> weak_browser,
     return;
   }
 
-  if (openURL) {
+  if (contexts) {
     browser->GetSceneState().URLContextsToOpen = contexts;
   }
   std::move(closure).Run();
 }
 
-// Sign out and open URL contexts.
+// Signs out and opens `contexts` if `contexts` is not nil.
 void SignoutAndOpenContexts(Browser* browser,
-                            BOOL openURL,
                             NSSet<UIOpenURLContext*>* contexts,
                             AuthenticationService* authentication_service,
                             base::OnceClosure closure) {
   base::OnceClosure completion =
       base::BindOnce(&ChangeProfileSignoutCompletion, browser->AsWeakPtr(),
-                     openURL, contexts, std::move(closure));
+                     contexts, std::move(closure));
 
   authentication_service->SignOut(
       signin_metrics::ProfileSignout::kSignoutFromWidgets,
       base::CallbackToBlock(std::move(completion)));
 }
 
-// Sign in profile to open the context.
+// Signs in to the profile to open `context`.
+// If `contexts` is not nil, `context.context` must belong to `contexts`, and
+// `scene_state.URLContextsToOpen` will be set to `contexts` upon completion.
 void SigninForContext(URLContext* context,
                       NSSet<UIOpenURLContext*>* contexts,
-                      BOOL openURL,
                       AuthenticationService* authentication_service,
                       SceneState* scene_state,
                       base::OnceClosure closure) {
@@ -68,6 +71,8 @@ void SigninForContext(URLContext* context,
     std::move(closure).Run();
     return;
   }
+  CHECK(!contexts || [contexts containsObject:context.context],
+        base::NotFatalUntil::M157);
 
   // Iterate over all identities on device because the newGaia could
   // be in a different profile.
@@ -89,18 +94,22 @@ void SigninForContext(URLContext* context,
 
   authentication_service->SignIn(new_identity,
                                  signin_metrics::AccessPoint::kWidget);
-  if (openURL) {
+  if (contexts) {
     scene_state.URLContextsToOpen = contexts;
   }
   std::move(closure).Run();
 }
 
 // Implementation of the continuation that starts the sign-in or sign-out flow.
+// If `contexts` is not nil, `context.context` must belong to `contexts`, and
+// `scene_state.URLContextsToOpen` will be set to `contexts` upon completion.
 void ChangeProfileAuthenticationContinuation(URLContext* context,
                                              NSSet<UIOpenURLContext*>* contexts,
-                                             BOOL openURL,
                                              SceneState* scene_state,
                                              base::OnceClosure closure) {
+  CHECK(!contexts || [contexts containsObject:context.context],
+        base::NotFatalUntil::M157);
+
   Browser* browser =
       scene_state.browserProviderInterface.mainBrowserProvider.browser;
   CHECK(browser);
@@ -111,29 +120,29 @@ void ChangeProfileAuthenticationContinuation(URLContext* context,
   if (context.type == AccountSwitchType::kSignOut) {
     // Perform sign-out only if there is a signed-in account in the profile.
     if (authentication_service->HasPrimaryIdentity()) {
-      SignoutAndOpenContexts(browser, openURL, contexts, authentication_service,
+      SignoutAndOpenContexts(browser, contexts, authentication_service,
                              std::move(closure));
     } else {
-      if (openURL) {
+      if (contexts) {
         scene_state.URLContextsToOpen = contexts;
       }
       std::move(closure).Run();
     }
   } else {
     if (!authentication_service->HasPrimaryIdentity()) {
-      SigninForContext(context, contexts, openURL, authentication_service,
-                       scene_state, std::move(closure));
+      SigninForContext(context, contexts, authentication_service, scene_state,
+                       std::move(closure));
     } else if (context.gaiaID !=
                    authentication_service->GetPrimaryIdentity().gaiaId &&
                !authentication_service->HasPrimaryIdentityManaged()) {
       base::OnceClosure completion = base::BindOnce(
-          &SigninForContext, context, contexts, openURL, authentication_service,
+          &SigninForContext, context, contexts, authentication_service,
           scene_state, std::move(closure));
       authentication_service->SignOut(
           signin_metrics::ProfileSignout::kSignoutFromWidgets,
           base::CallbackToBlock(std::move(completion)));
     } else {
-      if (openURL) {
+      if (contexts) {
         scene_state.URLContextsToOpen = contexts;
       }
       std::move(closure).Run();
@@ -145,8 +154,9 @@ void ChangeProfileAuthenticationContinuation(URLContext* context,
 
 ChangeProfileContinuation CreateChangeProfileAuthenticationContinuation(
     URLContext* context,
-    NSSet<UIOpenURLContext*>* contexts,
-    BOOL openURL) {
+    NSSet<UIOpenURLContext*>* contexts) {
+  CHECK(!contexts || [contexts containsObject:context.context],
+        base::NotFatalUntil::M157);
   return base::BindOnce(&ChangeProfileAuthenticationContinuation, context,
-                        contexts, openURL);
+                        contexts);
 }

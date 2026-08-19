@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
+#import "base/check.h"
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/i18n/message_formatter.h"
@@ -1088,7 +1089,10 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   // Find the first context that requires an account change.
   URLContext* firstContextForAccountChange =
       [self findContextRequiringAccountChange:contexts];
-  // Perform profile switching if needed.
+  // Perform profile switching if needed. `openURL` is NO because for
+  // multi-profile cold launches, external intent handling is done when the new
+  // profile scene connects. If the target profile matches the current one,
+  // `changeProfileForContext` will override `openURL` to YES.
   if ([self changeProfileForContext:firstContextForAccountChange
                            contexts:contexts
                             openURL:NO]) {
@@ -1198,7 +1202,9 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 
   // Find the first context that requires an account change.
   URLContext* context = [self findContextRequiringAccountChange:contexts];
-  // Perform profile switching if needed.
+  // Perform profile switching if needed. `openURL` is YES so that the URLs are
+  // scheduled to open in the target scene after the profile change continuation
+  // completes.
   if ([self changeProfileForContext:context contexts:contexts openURL:YES]) {
     // Don't open the URLs if the profile was changed.
     return;
@@ -1291,6 +1297,10 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   }
 }
 
+// Changes profile to handle `context` if needed.
+// `context.context` must belong to `contexts`.
+// `openURL`: Whether the URLs in `contexts` should be scheduled to open in the
+// scene via `URLContextsToOpen` when the profile or account change completes.
 // Returns YES if a profile change was triggered.
 - (BOOL)changeProfileForContext:(URLContext*)context
                        contexts:(NSSet<UIOpenURLContext*>*)contexts
@@ -1298,6 +1308,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   if (!context) {
     return NO;
   }
+  DCHECK([contexts containsObject:context.context]);
 
   // Perform profile switching if needed.
   id<ChangeProfileCommands> changeProfileHandler = HandlerForProtocol(
@@ -1348,7 +1359,7 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
            forScene:self.sceneState
              reason:reason
        continuation:CreateChangeProfileAuthenticationContinuation(
-                        context, contexts, openURL)];
+                        context, openURL ? contexts : nil)];
   return YES;
 }
 
