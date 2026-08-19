@@ -119,6 +119,10 @@ struct OmniboxActionTextInput {
   // selection changes as well.
   uint32 ui_version;
 
+  // If true, this text change was an unelision (and thus should not be
+  // viewed as actually changing the URL).
+  bool unelision = false;
+
   gfx.mojom.Range selection;
 };
 

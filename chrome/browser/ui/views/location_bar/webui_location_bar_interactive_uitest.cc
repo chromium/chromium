@@ -1069,6 +1069,31 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, ClickLocationIcon) {
       WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier));
 }
 
+// Clicking the location icon should still show the Page Info bubble if we
+// unelide.
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
+                       ClickLocationIconAfterUnelide) {
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      // about:blank will conveniently give us focus.
+      WaitTillOmniboxViewFocus(),
+      // Need a URL that will get trigger elision to test this
+      // (about:blank won't).
+      NavigateWebContents(kTabId, GURL("https://local.test")),
+      WaitTillOmniboxViewText("local.test"),
+      SendKeyPress(kWebUIToolbarId, ui::VKEY_LEFT),
+      WaitTillOmniboxViewText("https://local.test"),
+      // Close the popup
+      RemoveFocusFromPopup(),
+      // Now the location icon should be clickable.
+      ExecuteJsAt(
+          kWebUIToolbarId,
+          {"toolbar-app", "location-bar", "location-icon", "#container"},
+          "el => el.click()"),
+      WaitForShow(PageInfoBubbleViewBase::kPageInfoBubbleElementIdentifier));
+}
+
 // Interact with @tabs search keyword.
 IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, SearchAtKeyword) {
   RunTestSequence(

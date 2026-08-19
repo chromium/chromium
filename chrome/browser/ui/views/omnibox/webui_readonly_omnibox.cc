@@ -349,8 +349,8 @@ void WebUIReadOnlyOmnibox::OnBeforePossibleChange() {
   // User is editing or traversing the text, as opposed to moving
   // through suggestions. Clear the accessibility label
   // so that the screen reader reports the raw text in the field.
+  // This will be sent during OnAfterPossibleChange.
   ClearAccessibilityLabel();
-  RequestUpdateWebUI();
 }
 
 bool WebUIReadOnlyOmnibox::OnAfterPossibleChange(bool allow_keyword_ui_change) {
@@ -601,9 +601,26 @@ WebUIReadOnlyOmnibox::OnFocusChange(
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUIReadOnlyOmnibox::OnTextInput(
     const toolbar_ui_api::mojom::OmniboxActionTextInput& text_input) {
-  if (text_input.browser_version == browser_version_) {
+  if (text_input.browser_version != browser_version_) {
+    return base::ok(std::monostate());
+  }
+
+  ui_version_ = text_input.ui_version;
+  if (text_input.unelision) {
+    // Let the edit model unelide as well to match what we did on the
+    // WebUI side.
+    bool unelide_ok = controller()->edit_model()->Unelide();
+    DCHECK(unelide_ok);
+    // It should produce the same text (the 'formatted full URL').
+    DCHECK_EQ(text_, text_input.text);
+
+    // We want the WebUI-side selection, however, not Unelide()'s
+    // SelectAll();
+    selection_ = text_input.selection;
+    TextChanged();
+    RequestUpdateWebUI();
+  } else {
     OnBeforePossibleChange();
-    ui_version_ = text_input.ui_version;
     bool keep_additional_text =
         text_ + inline_autocompletion_ ==
         text_input.text + text_input.inline_autocompletion;
