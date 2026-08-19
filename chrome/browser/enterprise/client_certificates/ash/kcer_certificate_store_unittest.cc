@@ -83,9 +83,8 @@ class KcerCertificateStoreTest : public testing::Test {
 
   std::unique_ptr<KcerCertificateStore> MakeStore(
       base::WeakPtr<kcer::Kcer> kcer) {
-    return std::make_unique<KcerCertificateStore>(
-        &pref_service_, std::move(kcer),
-        task_environment_.GetMainThreadTaskRunner());
+    return std::make_unique<KcerCertificateStore>(&pref_service_,
+                                                  std::move(kcer));
   }
 
   // Generates a real EC key in NSS via the store under `identity_name` and

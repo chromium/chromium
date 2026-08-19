@@ -43,8 +43,7 @@ class KcerPrivateKeyFactoryTest : public testing::Test {
                                     /*device_slot=*/nullptr};
 
   std::unique_ptr<KcerPrivateKeyFactory> MakeFactory() {
-    return std::make_unique<KcerPrivateKeyFactory>(
-        kcer_holder_.GetKcer(), task_environment_.GetMainThreadTaskRunner());
+    return std::make_unique<KcerPrivateKeyFactory>(kcer_holder_.GetKcer());
   }
 };
 
@@ -93,8 +92,7 @@ TEST_F(KcerPrivateKeyFactoryTest, CreatePrivateKey_TagsKeyAsBrowserEnterprise) {
 }
 
 TEST_F(KcerPrivateKeyFactoryTest, CreatePrivateKey_NullKcer) {
-  KcerPrivateKeyFactory factory(/*kcer=*/base::WeakPtr<kcer::Kcer>(),
-                                task_environment_.GetMainThreadTaskRunner());
+  KcerPrivateKeyFactory factory{/*kcer=*/base::WeakPtr<kcer::Kcer>()};
 
   base::test::TestFuture<scoped_refptr<PrivateKey>> future;
   factory.CreatePrivateKey(future.GetCallback());

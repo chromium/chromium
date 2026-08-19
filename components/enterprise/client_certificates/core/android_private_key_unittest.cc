@@ -25,6 +25,7 @@ const std::array<device::PublicKeyCredentialParams::CredentialInfo, 1>
 namespace client_certificates {
 
 TEST(AndroidPrivateKeyTest, SupportedCreateKey) {
+  base::test::TaskEnvironment task_environment;
   auto bk_key_store = CreateBrowserKeyStoreInstance();
 
   std::vector<uint8_t> credential_id;
@@ -51,7 +52,9 @@ TEST(AndroidPrivateKeyTest, SupportedCreateKey) {
   EXPECT_GT(spki_bytes.size(), 0U);
   EXPECT_EQ(private_key->GetAlgorithm(),
             crypto::SignatureVerifier::ECDSA_SHA256);
-  EXPECT_TRUE(private_key->SignSlowly(spki_bytes).has_value());
+  base::test::TestFuture<std::optional<std::vector<uint8_t>>> test_future;
+  private_key->Sign(spki_bytes, test_future.GetCallback());
+  EXPECT_TRUE(test_future.Get().has_value());
 
   auto proto_key = private_key->ToProto();
   EXPECT_EQ(proto_key.source(),

@@ -60,9 +60,8 @@ class KcerPrivateKeyTest : public testing::Test {
   // PublicKey's public GetSpki() accessor.
   scoped_refptr<KcerPrivateKey> MakeKey(kcer::PublicKey public_key,
                                         PrivateKeySource source) {
-    return base::MakeRefCounted<KcerPrivateKey>(
-        kcer_holder_.GetKcer(), public_key.GetSpki(),
-        task_environment_.GetMainThreadTaskRunner(), source);
+    return base::MakeRefCounted<KcerPrivateKey>(kcer_holder_.GetKcer(),
+                                                public_key.GetSpki(), source);
   }
 
   // Fetches the KeyInfo for the key behind `spki` (needed for BindCert).
@@ -180,21 +179,8 @@ TEST_F(KcerPrivateKeyTest, SignSlowlyProducesSignature) {
 
   const std::vector<uint8_t> data = key->GetSubjectPublicKeyInfo();
 
-  // SignSlowly() CHECKs that it is NOT running on the Kcer (main UI) sequence,
-  // mirroring its production caller (KeyUploadClient on a worker thread). Drive
-  // it from the thread pool; TestFuture pumps the main loop so the posted Kcer
-  // sign request completes. SignSlowly() blocks on a base::WaitableEvent but
-  // scopes its own base::ScopedAllowBaseSyncPrimitives around the wait, so the
-  // posted task only needs MayBlock().
   base::test::TestFuture<std::optional<std::vector<uint8_t>>> sign_future;
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          [](scoped_refptr<KcerPrivateKey> key, std::vector<uint8_t> data) {
-            return key->SignSlowly(data);
-          },
-          key, data),
-      sign_future.GetCallback());
+  key->Sign(data, sign_future.GetCallback());
 
   std::optional<std::vector<uint8_t>> signature = sign_future.Take();
   ASSERT_TRUE(signature.has_value());

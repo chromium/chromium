@@ -11,7 +11,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
@@ -32,7 +31,6 @@ class KcerPrivateKey : public PrivateKey {
   // base class' `GetSource()`.
   KcerPrivateKey(base::WeakPtr<kcer::Kcer> kcer,
                  kcer::PublicKeySpki spki,
-                 scoped_refptr<base::SequencedTaskRunner> kcer_task_runner,
                  PrivateKeySource source);
 
   // Binds the Kcer-managed certificate and its `KeyInfo` to this key. After
@@ -43,8 +41,9 @@ class KcerPrivateKey : public PrivateKey {
   void BindCert(scoped_refptr<const kcer::Cert> cert, kcer::KeyInfo key_info);
 
   // PrivateKey:
-  std::optional<std::vector<uint8_t>> SignSlowly(
-      base::span<const uint8_t> data) const override;
+  void Sign(base::span<const uint8_t> data,
+            base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
+                callback) const override;
   std::vector<uint8_t> GetSubjectPublicKeyInfo() const override;
   crypto::SignatureVerifier::SignatureAlgorithm GetAlgorithm() const override;
   client_certificates_pb::PrivateKey ToProto() const override;
@@ -61,7 +60,6 @@ class KcerPrivateKey : public PrivateKey {
   // The SubjectPublicKeyInfo of the key. Used directly for the public-key
   // accessors and to rebuild a kcer::PrivateKeyHandle when signing.
   kcer::PublicKeySpki spki_;
-  scoped_refptr<base::SequencedTaskRunner> kcer_task_runner_;
   // The cert bound by BindCert(), exposed via GetBoundCert() so the certificate
   // store can build a ClientIdentity without re-listing Kcer's certs. Null
   // until a cert is bound.

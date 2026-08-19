@@ -5,6 +5,8 @@
 #include "components/enterprise/client_certificates/core/unexportable_private_key.h"
 
 #include "base/check.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/ssl_key_converter.h"
 #include "crypto/unexportable_key.h"
@@ -28,9 +30,19 @@ UnexportablePrivateKey::UnexportablePrivateKey(
 
 UnexportablePrivateKey::~UnexportablePrivateKey() = default;
 
-std::optional<std::vector<uint8_t>> UnexportablePrivateKey::SignSlowly(
-    base::span<const uint8_t> data) const {
-  return key_->SignSlowly(data);
+void UnexportablePrivateKey::Sign(
+    base::span<const uint8_t> data,
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback)
+    const {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          [](scoped_refptr<const UnexportablePrivateKey> key,
+             std::vector<uint8_t> data) { return key->key_->SignSlowly(data); },
+          base::WrapRefCounted(this),
+          std::vector<uint8_t>(data.begin(), data.end())),
+      std::move(callback));
 }
 
 std::vector<uint8_t> UnexportablePrivateKey::GetSubjectPublicKeyInfo() const {

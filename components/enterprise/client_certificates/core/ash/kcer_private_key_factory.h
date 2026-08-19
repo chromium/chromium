@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
@@ -26,11 +25,9 @@ class KcerPrivateKey;
 class KcerPrivateKeyFactory : public PrivateKeyFactory {
  public:
   // `kcer` is a weak pointer to the Kcer instance (must be accessed on
-  // `kcer_task_runner`). `kcer_task_runner` is the sequence where Kcer lives
+  // the UI thread where Kcer lives).
   // (typically the UI thread).
-  KcerPrivateKeyFactory(
-      base::WeakPtr<kcer::Kcer> kcer,
-      scoped_refptr<base::SequencedTaskRunner> kcer_task_runner);
+  explicit KcerPrivateKeyFactory(base::WeakPtr<kcer::Kcer> kcer);
 
   ~KcerPrivateKeyFactory() override;
 
@@ -102,7 +99,6 @@ class KcerPrivateKeyFactory : public PrivateKeyFactory {
                      base::flat_map<kcer::Token, kcer::Error> errors);
 
   base::WeakPtr<kcer::Kcer> kcer_;
-  scoped_refptr<base::SequencedTaskRunner> kcer_task_runner_;
   base::WeakPtrFactory<KcerPrivateKeyFactory> weak_factory_{this};
 };
 

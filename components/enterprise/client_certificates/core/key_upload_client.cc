@@ -61,19 +61,20 @@ BPKUR::KeyType AlgorithmToType(
   }
 }
 
-UploadClientErrorOr<enterprise_management::DeviceManagementRequest>
-CreateRequest(scoped_refptr<PrivateKey> private_key, bool create_certificate) {
-  if (!private_key) {
-    return base::unexpected(UploadClientError::kInvalidKeyParameter);
+void OnSignatureCreated(
+    scoped_refptr<PrivateKey> private_key,
+    bool create_certificate,
+    base::OnceCallback<void(
+        UploadClientErrorOr<enterprise_management::DeviceManagementRequest>)>
+        callback,
+    std::optional<std::vector<uint8_t>> signature) {
+  if (!signature.has_value()) {
+    std::move(callback).Run(
+        base::unexpected(UploadClientError::kSignatureCreationFailed));
+    return;
   }
 
-  // Generate the proof-of-possesion.
   std::vector<uint8_t> pubkey = private_key->GetSubjectPublicKeyInfo();
-  std::optional<std::vector<uint8_t>> signature =
-      private_key->SignSlowly(pubkey);
-  if (!signature.has_value()) {
-    return base::unexpected(UploadClientError::kSignatureCreationFailed);
-  }
 
   enterprise_management::DeviceManagementRequest overall_request;
   auto* mutable_upload_request =
@@ -86,7 +87,7 @@ CreateRequest(scoped_refptr<PrivateKey> private_key, bool create_certificate) {
       AlgorithmToType(private_key->GetAlgorithm()));
   mutable_upload_request->set_provision_certificate(create_certificate);
 
-  return overall_request;
+  std::move(callback).Run(std::move(overall_request));
 }
 
 bool VerifySPKI(const net::X509Certificate* cert,
@@ -204,22 +205,16 @@ void KeyUploadClientImpl::GetRequest(
     return;
   }
 
-  // CreateRequest() calls PrivateKey::SignSlowly(). The KcerPrivateKey variant
-  // (ChromeOS) blocks on a base::WaitableEvent while the signature is computed
-  // on the Kcer/UI sequence; it scopes a base::ScopedAllowBaseSyncPrimitives
-  // around that wait. The task therefore only needs MayBlock() here.
-  //
-  // TODO(b/524698801): This unconditionally posts to a worker thread, which
-  // forces the KcerPrivateKey variant to bounce back to the UI thread and block
-  // on a WaitableEvent. Delegate the posting / not-posting decision to the
-  // concrete PrivateKey implementation instead (e.g. a thread-safe
-  // PrivateKey::SignOnWorkerThread()), so Kcer keys can sign directly on the UI
-  // thread without the extra thread hop.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(CreateRequest, std::move(private_key), create_certificate),
-      std::move(callback));
+  if (!private_key) {
+    std::move(callback).Run(
+        base::unexpected(UploadClientError::kInvalidKeyParameter));
+    return;
+  }
+
+  std::vector<uint8_t> pubkey = private_key->GetSubjectPublicKeyInfo();
+  auto* key = private_key.get();
+  key->Sign(pubkey, base::BindOnce(&OnSignatureCreated, std::move(private_key),
+                                   create_certificate, std::move(callback)));
 }
 
 void KeyUploadClientImpl::OnCertificateRequestCreated(

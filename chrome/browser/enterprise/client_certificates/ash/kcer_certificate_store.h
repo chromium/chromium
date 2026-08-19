@@ -12,7 +12,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "components/enterprise/client_certificates/core/certificate_store.h"
 #include "components/enterprise/client_certificates/core/store_error.h"
@@ -47,10 +46,8 @@ class KcerCertificateStore : public CertificateStore {
   // thread.
   static std::unique_ptr<CertificateStore> CreateForProfile(Profile* profile);
 
-  KcerCertificateStore(
-      PrefService* pref_service,
-      base::WeakPtr<kcer::Kcer> kcer,
-      scoped_refptr<base::SequencedTaskRunner> kcer_task_runner);
+  KcerCertificateStore(PrefService* pref_service,
+                       base::WeakPtr<kcer::Kcer> kcer);
   ~KcerCertificateStore() override;
 
   // CertificateStore:
@@ -108,7 +105,6 @@ class KcerCertificateStore : public CertificateStore {
 
   raw_ptr<PrefService> pref_service_;
   base::WeakPtr<kcer::Kcer> kcer_;
-  scoped_refptr<base::SequencedTaskRunner> kcer_task_runner_;
   std::unique_ptr<KcerPrivateKeyFactory> key_factory_;
 
   base::WeakPtrFactory<KcerCertificateStore> weak_factory_{this};

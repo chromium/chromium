@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
-#include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "components/enterprise/client_certificates/core/ash/kcer_private_key.h"
 #include "components/enterprise/client_certificates/core/constants.h"
@@ -45,12 +44,8 @@ std::vector<uint8_t> ExtractCertSpki(const kcer::Cert& cert) {
 
 }  // namespace
 
-KcerPrivateKeyFactory::KcerPrivateKeyFactory(
-    base::WeakPtr<kcer::Kcer> kcer,
-    scoped_refptr<base::SequencedTaskRunner> kcer_task_runner)
-    : kcer_(std::move(kcer)), kcer_task_runner_(std::move(kcer_task_runner)) {
-  CHECK(kcer_task_runner_);
-}
+KcerPrivateKeyFactory::KcerPrivateKeyFactory(base::WeakPtr<kcer::Kcer> kcer)
+    : kcer_(std::move(kcer)) {}
 
 KcerPrivateKeyFactory::~KcerPrivateKeyFactory() = default;
 
@@ -201,8 +196,8 @@ void KcerPrivateKeyFactory::OnGeneratedKeyInfo(
       (key_info.has_value() && key_info->is_hardware_backed)
           ? PrivateKeySource::kChromeOsHwKey
           : PrivateKeySource::kChromeOsSwKey;
-  std::move(callback).Run(base::MakeRefCounted<KcerPrivateKey>(
-      kcer_, std::move(spki), kcer_task_runner_, source));
+  std::move(callback).Run(
+      base::MakeRefCounted<KcerPrivateKey>(kcer_, std::move(spki), source));
 }
 
 void KcerPrivateKeyFactory::LoadPrivateKeyImpl(
@@ -277,8 +272,7 @@ void KcerPrivateKeyFactory::OnListedCerts(
   // Pass a copy of `spki` into the handle so the original stays alive for the
   // SubjectPublicKeyInfo comparison below.
   scoped_refptr<KcerPrivateKey> private_key =
-      base::MakeRefCounted<KcerPrivateKey>(kcer_, spki, kcer_task_runner_,
-                                           source);
+      base::MakeRefCounted<KcerPrivateKey>(kcer_, spki, source);
   // Find the cert whose SubjectPublicKeyInfo matches our stored SPKI.
   const std::vector<uint8_t>& target_spki = spki.value();
   for (auto& cert : certs) {
@@ -291,7 +285,7 @@ void KcerPrivateKeyFactory::OnListedCerts(
     }
   }
   // If no matching cert was found the KcerPrivateKey is returned unbound:
-  // SignSlowly remains usable for CSR upload, and GetSSLPrivateKey will return
+  // Sign remains usable for CSR upload, and GetSSLPrivateKey will return
   // nullptr until BindCert is called (e.g. after a fresh cert is committed by
   // KcerCertificateStore).
   std::move(callback).Run(std::move(private_key));

@@ -65,8 +65,8 @@ std::vector<uint8_t> GetSpki(const net::X509Certificate* cert) {
 scoped_refptr<MockPrivateKey> CreateMockedKey(
     const net::X509Certificate* cert = nullptr) {
   auto private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
-  ON_CALL(*private_key, SignSlowly(_))
-      .WillByDefault(Return(ToBytes(kFakeSignature)));
+  ON_CALL(*private_key, Sign(_, _))
+      .WillByDefault(base::test::RunOnceCallback<1>(ToBytes(kFakeSignature)));
   std::vector<uint8_t> spki = ToBytes(kFakeSpki);
   if (cert) {
     spki = GetSpki(cert);
@@ -114,9 +114,9 @@ class KeyUploadClientTest : public testing::Test {
   scoped_refptr<PrivateKey> SetUpPrivateKey(
       const net::X509Certificate* cert = nullptr) {
     auto private_key = CreateMockedKey(cert);
-    EXPECT_CALL(*private_key, SignSlowly(_));
+    EXPECT_CALL(*private_key, Sign(_, _));
     EXPECT_CALL(*private_key, GetSubjectPublicKeyInfo())
-        .Times(testing::AtMost(2));
+        .Times(testing::AtMost(3));
     EXPECT_CALL(*private_key, GetAlgorithm());
     return private_key;
   }
@@ -352,7 +352,8 @@ TEST_F(KeyUploadClientTest, KeySync_FailSignature_Fail) {
   CreateUploadClient();
 
   auto private_key = CreateMockedKey();
-  EXPECT_CALL(*private_key, SignSlowly(_)).WillOnce(Return(std::nullopt));
+  EXPECT_CALL(*private_key, Sign(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
   EXPECT_CALL(*private_key, GetSubjectPublicKeyInfo());
 
   base::test::TestFuture<HttpCodeOrClientError> test_future;
@@ -390,13 +391,14 @@ namespace {
 scoped_refptr<StrictMock<MockPrivateKey>> CreateMockKeyWithSource(
     PrivateKeySource source) {
   auto key = base::MakeRefCounted<StrictMock<MockPrivateKey>>(source);
-  ON_CALL(*key, SignSlowly(_)).WillByDefault(Return(ToBytes(kFakeSignature)));
+  ON_CALL(*key, Sign(_, _))
+      .WillByDefault(base::test::RunOnceCallback<1>(ToBytes(kFakeSignature)));
   ON_CALL(*key, GetSubjectPublicKeyInfo())
       .WillByDefault(Return(ToBytes(kFakeSpki)));
   ON_CALL(*key, GetAlgorithm())
       .WillByDefault(Return(crypto::SignatureVerifier::RSA_PKCS1_SHA1));
-  EXPECT_CALL(*key, SignSlowly(_));
-  EXPECT_CALL(*key, GetSubjectPublicKeyInfo()).Times(testing::AtMost(2));
+  EXPECT_CALL(*key, Sign(_, _));
+  EXPECT_CALL(*key, GetSubjectPublicKeyInfo()).Times(testing::AtMost(3));
   EXPECT_CALL(*key, GetAlgorithm());
   return key;
 }

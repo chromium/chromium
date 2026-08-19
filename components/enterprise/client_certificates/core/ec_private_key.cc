@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/ssl_key_converter.h"
 #include "crypto/keypair.h"
@@ -25,10 +27,21 @@ ECPrivateKey::ECPrivateKey(crypto::keypair::PrivateKey key)
 
 ECPrivateKey::~ECPrivateKey() = default;
 
-std::optional<std::vector<uint8_t>> ECPrivateKey::SignSlowly(
-    base::span<const uint8_t> data) const {
-  return crypto::sign::Sign(crypto::sign::SignatureKind::ECDSA_SHA256, key_,
-                            data);
+void ECPrivateKey::Sign(
+    base::span<const uint8_t> data,
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback)
+    const {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          [](scoped_refptr<const ECPrivateKey> key, std::vector<uint8_t> data) {
+            return crypto::sign::Sign(crypto::sign::SignatureKind::ECDSA_SHA256,
+                                      key->key_, data);
+          },
+          base::WrapRefCounted(this),
+          std::vector<uint8_t>(data.begin(), data.end())),
+      std::move(callback));
 }
 
 std::vector<uint8_t> ECPrivateKey::GetSubjectPublicKeyInfo() const {

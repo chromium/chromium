@@ -10,14 +10,10 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
-#include "base/logging.h"
 #include "base/functional/bind.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread_restrictions.h"
+#include "base/logging.h"
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "chromeos/ash/components/kcer/ssl_private_key_kcer.h"
-#include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
@@ -26,57 +22,31 @@ namespace client_certificates {
 
 namespace {
 
-// Invokes Kcer::Sign on the Kcer sequence. Used by SignSlowly to bridge from
-// a worker thread to the UI thread.
-void SignOnKcerSequence(
-    base::WeakPtr<kcer::Kcer> kcer,
-    kcer::PublicKeySpki spki,
-    std::vector<uint8_t> data,
-    base::OnceCallback<void(base::expected<kcer::Signature, kcer::Error>)>
-        callback) {
-  if (!kcer) {
-    std::move(callback).Run(
-        base::unexpected(kcer::Error::kTokenIsNotAvailable));
-    return;
-  }
-  // Rebuild a handle from the SPKI on the user token. Managed client-cert keys
-  // are always generated and looked up on kcer::Token::kUser (see
-  // KcerPrivateKeyFactory), we scope the handle to that token to stay
-  // consistent with the rest of the load/generate flow.
-  kcer->Sign(kcer::PrivateKeyHandle(kcer::Token::kUser, std::move(spki)),
-             kcer::SigningScheme::kEcdsaSecp256r1Sha256,
-             kcer::DataToSign(std::move(data)), std::move(callback));
-}
-
-// Receives the sign result on the UI thread, stores it, and signals the
-// WaitableEvent so the blocked worker thread can proceed.
-void OnSignedForSlowSign(
-    base::WaitableEvent* event,
-    std::optional<std::vector<uint8_t>>* out_result,
+// Receives the sign result, unwraps the signature or logs the error, and
+// runs the user callback.
+void OnSigned(
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
     base::expected<kcer::Signature, kcer::Error> sign_result) {
+  std::optional<std::vector<uint8_t>> result;
   if (sign_result.has_value()) {
-    *out_result = sign_result->value();
+    result = std::move(sign_result->value());
   } else {
     LOG(ERROR) << "Kcer signing failed with error: "
                << static_cast<int>(sign_result.error());
   }
-  event->Signal();
+  std::move(callback).Run(std::move(result));
 }
 
 }  // namespace
 
-KcerPrivateKey::KcerPrivateKey(
-    base::WeakPtr<kcer::Kcer> kcer,
-    kcer::PublicKeySpki spki,
-    scoped_refptr<base::SequencedTaskRunner> kcer_task_runner,
-    PrivateKeySource source)
+KcerPrivateKey::KcerPrivateKey(base::WeakPtr<kcer::Kcer> kcer,
+                               kcer::PublicKeySpki spki,
+                               PrivateKeySource source)
     : PrivateKey(source, /*ssl_private_key=*/nullptr),
       kcer_(std::move(kcer)),
-      spki_(std::move(spki)),
-      kcer_task_runner_(std::move(kcer_task_runner)) {
+      spki_(std::move(spki)) {
   CHECK(source == PrivateKeySource::kChromeOsHwKey ||
         source == PrivateKeySource::kChromeOsSwKey);
-  CHECK(kcer_task_runner_);
   // GetSubjectPublicKeyInfo(), ToProto() and ToDict() return the SPKI, and
   // signing rebuilds a handle from it, so it must be non-empty.
   CHECK(!spki_.value().empty());
@@ -93,7 +63,7 @@ void KcerPrivateKey::BindCert(scoped_refptr<const kcer::Cert> cert,
   // A Kcer-managed cert and its KeyInfo are available, build the TLS
   // surface and hand it to the base class. GetSSLPrivateKey() returns this.
   // Before BindCert(), `ssl_private_key_` is nullptr, so the TLS
-  // surface is unusable; SignSlowly() (used for CSR upload) still works because
+  // surface is unusable; Sign() (used for CSR upload) still works because
   // it only needs the PublicKey. The KeyInfo is consumed here and not retained:
   // only `ssl_private_key_` needs it.
   ssl_private_key_ = base::MakeRefCounted<kcer::SSLPrivateKeyKcer>(
@@ -107,32 +77,24 @@ scoped_refptr<net::X509Certificate> KcerPrivateKey::GetBoundCert() const {
   return bound_cert_;
 }
 
-std::optional<std::vector<uint8_t>> KcerPrivateKey::SignSlowly(
-    base::span<const uint8_t> data) const {
-  // SignSlowly is called on a worker thread (from KeyUploadClient via
-  // ThreadPool::PostTaskAndReplyWithResult). Kcer operations must run on the
-  // UI thread. We post the sign request there and wait for the result.
-  //
-  // TODO(b/524698801): This back-and-forth (worker thread -> UI thread -> block
-  // on WaitableEvent) exists only because KeyUploadClient always posts signing
-  // to a worker thread. Once the posting decision is delegated to the PrivateKey
-  // implementation, this variant should sign directly on the Kcer/UI sequence.
-  CHECK(!kcer_task_runner_->RunsTasksInCurrentSequence());
-  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED);
-  std::optional<std::vector<uint8_t>> result;
-  kcer_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&SignOnKcerSequence, kcer_, spki_,
-                                std::vector<uint8_t>(data.begin(), data.end()),
-                                base::BindOnce(&OnSignedForSlowSign,
-                                               base::Unretained(&event),
-                                               base::Unretained(&result))));
-  // Blocking on the WaitableEvent is the whole point of SignSlowly(); allow it
-  // at the call site rather than via the deprecated WithBaseSyncPrimitives
-  // task trait. KcerPrivateKey is friended in thread_restrictions.h.
-  base::ScopedAllowBaseSyncPrimitives allow_wait;
-  event.Wait();
-  return result;
+void KcerPrivateKey::Sign(
+    base::span<const uint8_t> data,
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback)
+    const {
+  if (!kcer_) {
+    OnSigned(std::move(callback),
+             base::unexpected(kcer::Error::kTokenIsNotAvailable));
+    return;
+  }
+
+  // Rebuild a handle from the SPKI on the user token. Managed client-cert keys
+  // are always generated and looked up on kcer::Token::kUser (see
+  // KcerPrivateKeyFactory), we scope the handle to that token to stay
+  // consistent with the rest of the load/generate flow.
+  kcer_->Sign(kcer::PrivateKeyHandle(kcer::Token::kUser, spki_),
+              kcer::SigningScheme::kEcdsaSecp256r1Sha256,
+              kcer::DataToSign(std::vector<uint8_t>(data.begin(), data.end())),
+              base::BindOnce(&OnSigned, std::move(callback)));
 }
 
 std::vector<uint8_t> KcerPrivateKey::GetSubjectPublicKeyInfo() const {

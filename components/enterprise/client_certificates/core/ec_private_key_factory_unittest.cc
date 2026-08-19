@@ -51,7 +51,9 @@ TEST(ECPrivateKeyFactoryTest, SupportedCreateKey_LoadKey) {
   auto spki_bytes = ec_private_key->GetSubjectPublicKeyInfo();
   EXPECT_GT(spki_bytes.size(), 0U);
 
-  auto signature = ec_private_key->SignSlowly(spki_bytes);
+  base::test::TestFuture<std::optional<std::vector<uint8_t>>> test_future;
+  ec_private_key->Sign(spki_bytes, test_future.GetCallback());
+  auto signature = test_future.Get();
   ASSERT_TRUE(signature.has_value());
   EXPECT_GT(signature->size(), 0U);
 

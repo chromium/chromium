@@ -5,7 +5,8 @@
 #include "components/enterprise/client_certificates/core/android_private_key.h"
 
 #include "base/check.h"
-#include "base/synchronization/waitable_event.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/enterprise/client_certificates/android/browser_binding/browser_key_android.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "components/enterprise/client_certificates/core/ssl_key_converter.h"
@@ -24,9 +25,19 @@ AndroidPrivateKey::AndroidPrivateKey(std::unique_ptr<BrowserKey> key)
 
 AndroidPrivateKey::~AndroidPrivateKey() = default;
 
-std::optional<std::vector<uint8_t>> AndroidPrivateKey::SignSlowly(
-    base::span<const uint8_t> data) const {
-  return key_->Sign(data);
+void AndroidPrivateKey::Sign(
+    base::span<const uint8_t> data,
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback)
+    const {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(
+          [](scoped_refptr<const AndroidPrivateKey> key,
+             std::vector<uint8_t> data) { return key->key_->Sign(data); },
+          base::WrapRefCounted(this),
+          std::vector<uint8_t>(data.begin(), data.end())),
+      std::move(callback));
 }
 
 std::vector<uint8_t> AndroidPrivateKey::GetSubjectPublicKeyInfo() const {
