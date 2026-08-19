@@ -44,6 +44,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -291,6 +292,12 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   // Preview password on show in generation state.
   if (state_ == kOfferGeneration) {
     driver_->PreviewGenerationSuggestion(current_generated_password_);
+
+    // For screen reader users, select the accept button on show so that
+    // virtual focus announces the suggestion and popup content immediately.
+    if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
+      SelectElement(PasswordGenerationPopupElement::kAcceptButton);
+    }
   }
 
   if (observer_) {

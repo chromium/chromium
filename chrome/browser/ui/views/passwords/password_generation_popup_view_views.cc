@@ -126,6 +126,12 @@ class NudgePasswordButtons : public views::View {
         ax::mojom::Role::kListBoxOption);
     accept_button->GetViewAccessibility().SetName(
         base::JoinString({accept_button_label, controller_->password()}, u" "));
+    accept_button->GetViewAccessibility().SetDescription(
+        l10n_util::GetStringFUTF16(
+            IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
+            controller_->GetPrimaryAccountEmail()));
     accept_button->GetViewAccessibility().SetIsSelected(
         accept_button_has_focus_);
     accept_button_ = AddChildView(std::move(accept_button));
@@ -156,6 +162,26 @@ class NudgePasswordButtons : public views::View {
         cancel_button_has_focus_);
     views::FocusRing::Get(accept_button_)->Refresh();
     views::FocusRing::Get(cancel_button_)->Refresh();
+  }
+
+  void UpdateGeneratedPassword() {
+    if (!controller_) {
+      return;
+    }
+    const std::u16string accept_button_label = controller_->SuggestedText();
+    accept_button_->GetViewAccessibility().SetName(
+        base::JoinString({accept_button_label, controller_->password()}, u" "));
+  }
+
+  void reset_controller() {
+    controller_ = nullptr;
+    if (accept_button_) {
+      accept_button_->GetViewAccessibility().RemoveName();
+      accept_button_->GetViewAccessibility().RemoveDescription();
+    }
+    if (cancel_button_) {
+      cancel_button_->GetViewAccessibility().RemoveName();
+    }
   }
 
   views::View* GetAcceptButton() { return accept_button_; }
@@ -333,6 +359,10 @@ void PasswordGenerationPopupViewViews::Hide() {
   if (password_view_) {
     password_view_->reset_controller();
   }
+  if (nudge_password_buttons_view_) {
+    static_cast<NudgePasswordButtons*>(nudge_password_buttons_view_)
+        ->reset_controller();
+  }
 
   DoHide();
 }
@@ -347,6 +377,10 @@ void PasswordGenerationPopupViewViews::UpdateState() {
 void PasswordGenerationPopupViewViews::UpdateGeneratedPasswordValue() {
   if (password_view_) {
     password_view_->UpdateGeneratedPassword(controller_->password());
+  }
+  if (nudge_password_buttons_view_) {
+    static_cast<NudgePasswordButtons*>(nudge_password_buttons_view_)
+        ->UpdateGeneratedPassword();
   }
   DeprecatedLayoutImmediately();
 }

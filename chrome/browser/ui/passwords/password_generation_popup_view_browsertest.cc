@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
@@ -207,6 +208,45 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
   controller->SelectCancelButtonForTesting();
   CheckViewAccessibilitySelected(accept_button, /*selected=*/false);
   CheckViewAccessibilitySelected(cancel_button, /*selected=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
+                       NudgePasswordButtonsAccessibilityProperties) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "PasswordGenerationPopupViewViews");
+  ASSERT_TRUE(content::ExecJs(
+      WebContents(), "document.getElementById('password_field').focus()"));
+  auto* client = ChromePasswordManagerClient::FromWebContents(WebContents());
+  client->GeneratePassword(
+      autofill::password_generation::PasswordGenerationType::kManual);
+  waiter.WaitIfNeededAndGet();
+
+  base::WeakPtr<PasswordGenerationPopupController> controller =
+      client->generation_popup_controller();
+  auto* controller_impl =
+      static_cast<PasswordGenerationPopupControllerImpl*>(controller.get());
+  auto* popup_view =
+      static_cast<PasswordGenerationPopupViewViews*>(controller_impl->view());
+
+  controller_impl->Show(PasswordGenerationPopupController::kOfferGeneration);
+  const views::ViewAccessibility& accept_button =
+      popup_view->GetAcceptButtonViewAccessibilityForTest();
+  const views::ViewAccessibility& cancel_button =
+      popup_view->GetCancelButtonViewAccessibilityForTest();
+
+  EXPECT_EQ(
+      accept_button.GetCachedDescription(),
+      l10n_util::GetStringFUTF16(
+          IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER,
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT),
+          u""));
+  EXPECT_EQ(accept_button.GetCachedName(),
+            base::JoinString(
+                {controller->SuggestedText(), controller->password()}, u" "));
+  EXPECT_EQ(
+      cancel_button.GetCachedName(),
+      l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_NUDGE_CANCEL_BUTTON));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
