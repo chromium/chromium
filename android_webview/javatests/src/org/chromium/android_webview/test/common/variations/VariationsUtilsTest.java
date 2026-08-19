@@ -46,8 +46,8 @@ public class VariationsUtilsTest {
         }
     }
 
-    // Test writing a seed when an entropy source IS available.
-    // The resulting file should contain the entropy source.
+    // Test writing a seed when entropy sources ARE available.
+    // The resulting file should contain the entropy sources.
     @Test
     @MediumTest
     public void testWriteSeedWithEntropy() throws IOException {
@@ -56,22 +56,31 @@ public class VariationsUtilsTest {
             file = File.createTempFile("seed", null, null);
             SeedInfo mockSeed = VariationsTestUtils.createMockSeed();
             int testEntropy = 123;
+            String testLimitedEntropy = "0123456789ABCDEF0123456789ABCDEF";
 
             try (FileOutputStream out = new FileOutputStream(file)) {
-                VariationsUtils.writeSeed(out, mockSeed, testEntropy);
+                VariationsUtils.writeSeed(out, mockSeed, testEntropy, testLimitedEntropy);
             }
 
             AwVariationsSeed readProto = VariationsTestUtils.readProtoFromFile(file);
-            Assert.assertTrue("Seed should have entropy source", readProto.hasLowEntropySource());
+            Assert.assertTrue(
+                    "Seed should have low entropy source", readProto.hasLowEntropySource());
             Assert.assertEquals(
                     "Entropy source mismatch", testEntropy, readProto.getLowEntropySource());
+            Assert.assertTrue(
+                    "Seed should have limited entropy source",
+                    readProto.hasLimitedEntropyRandomizationSource());
+            Assert.assertEquals(
+                    "Limited entropy source mismatch",
+                    testLimitedEntropy,
+                    readProto.getLimitedEntropyRandomizationSource());
         } finally {
             if (file != null) file.delete();
         }
     }
 
-    // Test writing a seed when an entropy source is NOT available.
-    // The resulting file should not contain the entropy source.
+    // Test writing a seed when entropy sources are NOT available.
+    // The resulting file should not contain the entropy sources.
     @Test
     @MediumTest
     public void testWriteSeedWithoutEntropy() throws IOException {
@@ -81,13 +90,20 @@ public class VariationsUtilsTest {
             SeedInfo mockSeed = VariationsTestUtils.createMockSeed();
 
             try (FileOutputStream out = new FileOutputStream(file)) {
-                VariationsUtils.writeSeed(out, mockSeed, -1);
+                VariationsUtils.writeSeed(
+                        out,
+                        mockSeed,
+                        /* lowEntropySource= */ -1,
+                        /* limitedEntropyRandomizationSource= */ null);
             }
 
-            // Verify the file does NOT contain the entropy source.
+            // Verify the file does NOT contain the entropy sources.
             AwVariationsSeed readProto = VariationsTestUtils.readProtoFromFile(file);
             Assert.assertFalse(
-                    "Seed should not have entropy source", readProto.hasLowEntropySource());
+                    "Seed should not have low entropy source", readProto.hasLowEntropySource());
+            Assert.assertFalse(
+                    "Seed should not have limited entropy source",
+                    readProto.hasLimitedEntropyRandomizationSource());
         } finally {
             if (file != null) file.delete();
         }

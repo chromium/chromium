@@ -375,7 +375,7 @@ public class VariationsSeedHolderTest {
     }
 
     // Test that updateSeed() saves the seed to the service's internal storage
-    // without the low entropy source, as this is added when serving the seed.
+    // without the entropy sources, as they are added when serving the seed.
     @Test
     @MediumTest
     public void testUpdateSeed_NoEntropy() throws IOException, TimeoutException {
@@ -386,20 +386,25 @@ public class VariationsSeedHolderTest {
         Assert.assertTrue("Internal seed file should exist", internalSeedFile.exists());
         AwVariationsSeed readProto = VariationsTestUtils.readProtoFromFile(internalSeedFile);
 
-        // The internal file should NOT have the entropy source.
+        // The internal file should NOT have the entropy sources.
         Assert.assertFalse(
                 "Internal seed file should not contain low entropy source",
                 readProto.hasLowEntropySource());
+        Assert.assertFalse(
+                "Internal seed file should not contain limited entropy source",
+                readProto.hasLimitedEntropyRandomizationSource());
     }
 
-    // Test that writeSeedIfNewer() serves the seed to the app with the low
-    // entropy source included.
+    // Test that writeSeedIfNewer() serves the seed to the app with the entropy
+    // sources included.
     @Test
     @MediumTest
     public void testWriteSeed_HasEntropy() throws IOException, TimeoutException {
         TestHolder holder = new TestHolder();
-        int expectedEntropy = AwEntropyState.getLowEntropySource();
-        Assert.assertTrue(expectedEntropy >= 0);
+        int expectedLowEntropy = AwEntropyState.getLowEntropySource();
+        Assert.assertTrue(expectedLowEntropy >= 0);
+        String expectedLimitedEntropy = AwEntropyState.getLimitedEntropyRandomizationSource();
+        Assert.assertNotNull(expectedLimitedEntropy);
         holder.updateSeedBlocking(VariationsTestUtils.createMockSeed());
 
         File appSeedFile = null;
@@ -408,12 +413,16 @@ public class VariationsSeedHolderTest {
 
             holder.writeSeedIfNewerBlocking(appSeedFile, Long.MIN_VALUE);
 
-            // The file written for the app should have the entropy source.
+            // The file written for the app should have the entropy sources.
             AwVariationsSeed readProto = VariationsTestUtils.readProtoFromFile(appSeedFile);
             Assert.assertEquals(
-                    "App seed file has wrong entropy source",
-                    expectedEntropy,
+                    "App seed file has wrong low entropy source",
+                    expectedLowEntropy,
                     readProto.getLowEntropySource());
+            Assert.assertEquals(
+                    "App seed file has wrong limited entropy source",
+                    expectedLimitedEntropy,
+                    readProto.getLimitedEntropyRandomizationSource());
         } finally {
             if (appSeedFile != null) appSeedFile.delete();
         }

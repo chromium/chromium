@@ -78,7 +78,11 @@ public class VariationsTest extends AwParameterizedTest {
         seedInfo.date = new Date().getTime();
         seedInfo.seedData = seed.toByteArray();
         FileOutputStream out = new FileOutputStream(VariationsUtils.getNewSeedFile());
-        VariationsUtils.writeSeed(out, seedInfo, -1);
+        VariationsUtils.writeSeed(
+                out,
+                seedInfo,
+                /* lowEntropySource= */ -1,
+                /* limitedEntropyRandomizationSource= */ null);
 
         // Because our tests bypass WebView's glue layer, we need to load the seed manually.
         ThreadUtils.runOnUiThreadBlocking(

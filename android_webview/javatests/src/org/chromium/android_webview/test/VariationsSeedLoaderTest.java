@@ -404,9 +404,10 @@ public class VariationsSeedLoaderTest extends AwParameterizedTest {
             File oldFile = VariationsUtils.getSeedFile();
             Assert.assertTrue("Seed file already exists", oldFile.createNewFile());
 
-            // Write a seed with the new format, including a low_entropy_source.
+            // Write a seed with the new format, including entropy sources.
             SeedInfo mockSeed = VariationsTestUtils.createMockSeed();
             final int lowEntropySource = 123;
+            final String limitedEntropyRandomizationSource = "0123456789ABCDEF0123456789ABCDEF";
             FileOutputStream out = new FileOutputStream(oldFile);
             AwVariationsSeed proto =
                     AwVariationsSeed.newBuilder()
@@ -416,6 +417,7 @@ public class VariationsSeedLoaderTest extends AwParameterizedTest {
                             .setIsGzipCompressed(mockSeed.isGzipCompressed)
                             .setSeedData(ByteString.copyFrom(mockSeed.seedData))
                             .setLowEntropySource(lowEntropySource)
+                            .setLimitedEntropyRandomizationSource(limitedEntropyRandomizationSource)
                             .build();
             proto.writeTo(out);
             out.close();

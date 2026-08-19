@@ -687,7 +687,11 @@ public class AwVariationsSeedFetcherTest {
             seedInfo.seedData = seed.toByteArray();
 
             out = new FileOutputStream(VariationsUtils.getSeedFile());
-            VariationsUtils.writeSeed(out, seedInfo, -1);
+            VariationsUtils.writeSeed(
+                    out,
+                    seedInfo,
+                    /* lowEntropySource= */ -1,
+                    /* limitedEntropyRandomizationSource= */ null);
 
             fetcher.onStartJob(null);
             fetcher.helper.waitForCallback(
