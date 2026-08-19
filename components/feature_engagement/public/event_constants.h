@@ -456,6 +456,10 @@ extern const char kDefaultBrowserSettingsCellPromoUsed[];
 extern const char kPwaInstallMenuSelected[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// The user clicked on the Send Tab to Self entry point in the omnibox
+// long-press menu.
+extern const char kSendTabToSelfOmniboxUsed[];
+
 extern const char kTabSearchComboButtonUsed[];
 
 }  // namespace events

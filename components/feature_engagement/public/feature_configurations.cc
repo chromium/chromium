@@ -3531,7 +3531,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.event_configs.insert(
         EventConfig("send_tab_to_self_omnibox_iph_triggered",
                     Comparator(EQUAL, 0), 7, 360));
-    config.used = EventConfig("send_tab_to_self_omnibox_used",
+    config.used = EventConfig(events::kSendTabToSelfOmniboxUsed,
                               Comparator(EQUAL, 0), 360, 360);
     return config;
   }

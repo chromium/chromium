@@ -234,6 +234,8 @@ const char kDefaultBrowserSettingsCellPromoUsed[] =
 const char kPwaInstallMenuSelected[] = "pwa_install_menu_clicked";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const char kSendTabToSelfOmniboxUsed[] = "send_tab_to_self_omnibox_used";
+
 const char kTabSearchComboButtonUsed[] = "tab_search_combo_button_used";
 
 }  // namespace events

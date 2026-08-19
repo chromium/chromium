@@ -9,6 +9,7 @@
 #import <vector>
 
 #import "base/test/scoped_feature_list.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/feature_engagement/test/mock_tracker.h"
@@ -437,7 +438,7 @@ TEST_F(LocationBarCoordinatorTest, CanSendTabToSelfNoService) {
 }
 
 // Test that locationBarSendTabToSelfTapped triggers the browser coordinator
-// command to show the UI.
+// command to show the UI and notifies the feature engagement tracker.
 TEST_F(LocationBarCoordinatorTest, SendTabToSelfTapped) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -451,6 +452,13 @@ TEST_F(LocationBarCoordinatorTest, SendTabToSelfTapped) {
 
   id partial_mock_coordinator = OCMPartialMock(coordinator_);
   OCMStub([partial_mock_coordinator webState]).andReturn(fake_web_state.get());
+
+  feature_engagement::test::MockTracker* tracker =
+      static_cast<feature_engagement::test::MockTracker*>(
+          feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
+  EXPECT_CALL(
+      *tracker,
+      NotifyEvent(feature_engagement::events::kSendTabToSelfOmniboxUsed));
 
   // Note: `ignoringNonObjectArgs` because OCMock cannot handle C++ references.
   [[[mock_send_tab_to_self_handler_ expect] ignoringNonObjectArgs]
