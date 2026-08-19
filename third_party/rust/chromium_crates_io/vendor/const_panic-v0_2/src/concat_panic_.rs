@@ -1,7 +1,7 @@
 use crate::{
     fmt::FmtKind,
     panic_val::{PanicClass, PanicVal, StrFmt},
-    utils::{bytes_up_to, string_cap, WasTruncated},
+    utils::{bytes_up_to, min_usize, string_cap, WasTruncated},
 };
 
 /// Panics by concatenating the argument slice.
@@ -49,9 +49,22 @@ pub const fn concat_panic(args: &[&[PanicVal<'_>]]) -> ! {
     //
     // Also, given that most(?) panic messages are smaller than 1024 bytes long,
     // it's not going to be any less efficient in the common case.
-    if let Err(_) = panic_inner::<(), 1024>(args) {}
 
-    if let Err(_) = panic_inner::<(), { 1024 * 6 }>(args) {}
+    macro_rules! shorter_panic {
+        ($cap:expr) => {{
+            const CAP: usize = $cap;
+
+            if MAX_PANIC_MSG_LEN > CAP {
+                // using `min_usize` just in case monomorphizing `panic_inner` with
+                // too large an array type on 16 bit causes a compilation error,
+                if let Err(_) = panic_inner::<(), { min_usize(MAX_PANIC_MSG_LEN, $cap) }>(args) {}
+            }
+        }};
+    }
+
+    shorter_panic! {1024}
+
+    shorter_panic! {1024 * 6}
 
     match panic_inner::<_, MAX_PANIC_MSG_LEN>(args) {
         Ok(x) => x,
@@ -65,11 +78,46 @@ pub const fn concat_panic(args: &[&[PanicVal<'_>]]) -> ! {
     }
 }
 
+macro_rules! len_on_16_bit {
+    () => {
+        512
+    };
+}
+macro_rules! len_on_other_bits {
+    () => {
+        32768
+    };
+}
+
 /// The maximum length of panic messages (in bytes),
 /// after which the message is truncated.
-// this should probably be smaller on platforms where this
-// const fn is called at runtime, and the stack is finy.
-pub const MAX_PANIC_MSG_LEN: usize = 32768;
+///
+/// # Value
+///
+/// The value of this constant is determined by these things, from higher to lower priority:
+/// - the `CONST_PANIC_MAX_LENGTH` environment variable,
+///   in bytes and in base 10 (decimal).
+///   If the value of this env var is either an empty string or `_`,
+///   then it has the same effect as not defining it.
+/// - the amount of bits of the target platform:
+#[doc = concat!("    - on 16 bit: ", len_on_16_bit!(), " bytes")]
+#[doc = concat!("    - on any other bit count: ", len_on_other_bits!(), " bytes")]
+///
+pub const MAX_PANIC_MSG_LEN: usize = if let Some(cap) = {
+    match option_env!("CONST_PANIC_MAX_LENGTH") {
+        Some(var) if matches!(var.as_bytes(), b"" | b"_") => None,
+        var => var,
+    }
+} {
+    match crate::utils::parse_usize(cap) {
+        Some(x) => x,
+        None => panic!("`CONST_PANIC_MAX_LENGTH` environment variable is not a valid integer"),
+    }
+} else if cfg!(target_pointer_width = "16") {
+    len_on_16_bit!()
+} else {
+    len_on_other_bits!()
+};
 
 // writes a single PanicVal to an array
 macro_rules! write_panicval {

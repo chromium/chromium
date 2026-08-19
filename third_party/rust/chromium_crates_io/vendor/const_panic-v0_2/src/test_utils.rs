@@ -32,7 +32,7 @@ impl<const LEN: usize> Debug for TestString<LEN> {
 
 impl<const LEN: usize> PartialEq<str> for TestString<LEN> {
     fn eq(&self, str: &str) -> bool {
-        core::str::from_utf8(self.get()).map_or(false, |this| this == str)
+        core::str::from_utf8(self.get()) == Ok(str)
     }
 }
 impl<const LEN: usize> PartialEq<&str> for TestString<LEN> {

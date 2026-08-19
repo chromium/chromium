@@ -3,11 +3,11 @@
 //! Panic formatting for custom types can be done in these ways
 //! (in increasing order of verbosity):
 //! - Using the [`PanicFmt` derive] macro
-//! (requires the opt-in `"derive"` feature)
+//!   (requires the opt-in `"derive"` feature)
 //! - Using the [`impl_panicfmt`] macro
-//! (requires the default-enabled `"non_basic"` feature)
+//!   (requires the default-enabled `"non_basic"` feature)
 //! - Using the [`flatten_panicvals`] macro
-//! (requires the default-enabled `"non_basic"` feature)
+//!   (requires the default-enabled `"non_basic"` feature)
 //! - Manually implementing the [`PanicFmt`] trait as described in its docs.
 //!
 //! [`PanicFmt` derive]: derive@crate::PanicFmt
@@ -134,7 +134,7 @@ pub trait PanicFmt {
     const PROOF: IsPanicFmt<Self, Self::This, Self::Kind> = IsPanicFmt::NEW;
 }
 
-impl<'a, T: PanicFmt + ?Sized> PanicFmt for &'a T {
+impl<T: PanicFmt + ?Sized> PanicFmt for &T {
     type This = T::This;
     type Kind = T::Kind;
     const PV_COUNT: usize = T::PV_COUNT;

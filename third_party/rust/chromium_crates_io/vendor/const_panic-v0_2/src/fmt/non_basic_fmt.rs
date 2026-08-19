@@ -439,9 +439,9 @@ pub const COMMA_TERM: Separator<'_> = Separator::new(",", IsLast::Yes);
 #[derive(Copy, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "docsrs", doc(cfg(feature = "non_basic")))]
 pub enum IsLast {
-    ///
+    /// after the last field
     Yes,
-    ///
+    /// before the last field
     No,
 }
 
@@ -531,7 +531,7 @@ impl<'a> Separator<'a> {
     /// - the separator
     /// - a newline
     /// - [fmtarg.indentation](crate::FmtArg#structfield.indentation) amount of spaces
-    /// if constructed with [`IsLast::No`]
+    ///   if constructed with [`IsLast::No`]
     ///
     /// When the [alternate flag] is disabled,
     /// these methods output the separator and a single space

@@ -82,11 +82,11 @@ macro_rules! impl_panicfmt_array {
             #[cfg_attr(feature = "docsrs", doc(cfg(feature = "non_basic")))]
             impl<'s> StdWrapper<&'s [$ty]> {
                 /// Converts the slice to a single-element `PanicVal` array.
-                pub const fn to_panicvals(self: Self, f:FmtArg) -> [PanicVal<'s>;1] {
+                pub const fn to_panicvals(self, f:FmtArg) -> [PanicVal<'s>;1] {
                     [PanicVal::$panicval_ctor(self.0, f)]
                 }
                 /// Converts the slice to a `PanicVal`.
-                pub const fn to_panicval(self: Self, f:FmtArg) -> PanicVal<'s> {
+                pub const fn to_panicval(self, f:FmtArg) -> PanicVal<'s> {
                     PanicVal::$panicval_ctor(self.0, f)
                 }
             }
@@ -94,11 +94,11 @@ macro_rules! impl_panicfmt_array {
             #[cfg_attr(feature = "docsrs", doc(cfg(feature = "non_basic")))]
             impl<'s, const LEN: usize> StdWrapper<&'s [$ty; LEN]> {
                 /// Converts the array to a single-element `PanicVal` array.
-                pub const fn to_panicvals(self: Self, f:FmtArg) -> [PanicVal<'s>;1] {
+                pub const fn to_panicvals(self, f:FmtArg) -> [PanicVal<'s>;1] {
                     [PanicVal::$panicval_ctor(self.0, f)]
                 }
                 /// Converts the array to a `PanicVal`.
-                pub const fn to_panicval(self: Self, f:FmtArg) -> PanicVal<'s> {
+                pub const fn to_panicval(self, f:FmtArg) -> PanicVal<'s> {
                     PanicVal::$panicval_ctor(self.0, f)
                 }
             }

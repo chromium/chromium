@@ -78,7 +78,7 @@ impl<const CAP: usize> ArrayString<CAP> {
         while let [string, ref rem @ ..] = *mstrings {
             mstrings = rem;
             let mut bytes = string.as_bytes();
-            while let [x, ref rem @ ..] = *bytes {
+            while let [x, ref rem_inner @ ..] = *bytes {
                 if len == u32::MAX || len as usize >= CAP {
                     crate::concat_panic(&[&[
                         PanicVal::write_str("The input strings were longer than "),
@@ -90,7 +90,7 @@ impl<const CAP: usize> ArrayString<CAP> {
                     ]])
                 }
 
-                bytes = rem;
+                bytes = rem_inner;
                 buffer[len as usize] = x;
                 len += 1;
             }
@@ -173,6 +173,22 @@ impl<const CAP: usize> ArrayString<CAP> {
     /// ```
     pub const fn len(&self) -> usize {
         self.len as usize
+    }
+
+    /// Queries whether the string is empty.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use const_panic::ArrayString;
+    ///
+    /// assert_eq!(ArrayString::<16>::new("").is_empty(), true);
+    /// assert_eq!(ArrayString::<16>::new("foo").is_empty(), false);
+    /// assert_eq!(ArrayString::<16>::new("foo bar").is_empty(), false);
+    /// assert_eq!(ArrayString::<16>::new("Hello, world!").is_empty(), false);
+    /// ```
+    pub const fn is_empty(&self) -> bool {
+        self.len == 0
     }
 
     /// Accesses the string as a byte slice.

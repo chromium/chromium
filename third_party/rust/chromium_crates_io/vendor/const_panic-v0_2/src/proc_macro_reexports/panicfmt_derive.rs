@@ -21,10 +21,10 @@ from scratch, but requires repeating the type definition.
 Types with type parameters can't be generically formatted,
 to work around this you can use either or both of these attributes:
 - `#[pfmt(ignore(T))]`:
-if the type parameter(s) are only used in marker types (eg: `PhantomData`).
+  if the type parameter(s) are only used in marker types (eg: `PhantomData`).
 - `#[pfmt(impl Foo<Bar, Baz>)]`:
-to implement panic formatting with concrete type arguments
-(this attribute can be used multiple times to add impls).
+  to implement panic formatting with concrete type arguments
+  (this attribute can be used multiple times to add impls).
 
 This limitation is caused by:
 - the lack of trait bound support in stable const fns.
@@ -51,7 +51,7 @@ the generic arguments of `Self` in the above code must be replaced with concrete
 requiring:
 - Lifetime arguments to be replaced with `'_`
 - Type arguments to be replaced with concrete types 
-(usually `()` or the concrete types used in [`#[pfmt(impl ....)]`](#pfmt-impl-attr) attributes)
+  (usually `()` or the concrete types used in [`#[pfmt(impl ....)]`](#pfmt-impl-attr) attributes)
 - Const arguments to be replaced with concrete values (usually the default value for the type)
 
 
@@ -120,7 +120,7 @@ Tells the derive to generate an inherent `to_panicvals` method for the type in t
 examples:
 - `#[pfmt(impl Foo<u32, 10>)]`
 - `#[pfmt(impl<T> Foo<T, 'A'>)]`:
-this also requires a [`#[pfmt(ignored(T))]`](#pfmt-ignored-attr) attribute
+  this also requires a [`#[pfmt(ignored(T))]`](#pfmt-ignored-attr) attribute
 
 ([more conplete example](#type-parameter-example))
 

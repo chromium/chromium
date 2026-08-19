@@ -18,7 +18,7 @@ use crate::{
 /// - `&str`
 /// - Arrays/Slices of primitives (with the "non_basic" feature, enabled by default)
 /// - [`ShortString`](crate::fmt::ShortString)
-/// (with the "non_basic" feature, enabled by default)
+///   (with the "non_basic" feature, enabled by default)
 ///
 #[derive(Copy, Clone)]
 pub struct PanicVal<'a> {
@@ -186,6 +186,7 @@ impl<'a> PanicVal<'a> {
         Self { var }
     }
 
+    #[allow(clippy::wrong_self_convention)]
     pub(crate) const fn to_class(&self) -> (StrFmt, PanicClass<'_>) {
         match &self.var {
             &PanicVariant::Str(strfmt, Packed(str)) => {
@@ -209,6 +210,7 @@ impl<'a> PanicVal<'a> {
         }
     }
 
+    #[allow(clippy::wrong_self_convention)]
     pub(crate) const fn to_class_truncated(
         &self,
         mut truncate_to: usize,
@@ -287,7 +289,7 @@ pub(crate) struct IntVal {
 
 impl IntVal {
     pub(crate) const fn from_u128(n: u128, bits: u8, f: FmtArg) -> PanicVal<'static> {
-        Self::new(Sign::Positive, n, bits, f)
+        Self::new_pv(Sign::Positive, n, bits, f)
     }
     pub(crate) const fn from_i128(n: i128, bits: u8, f: FmtArg) -> PanicVal<'static> {
         let is_neg = if n < 0 {
@@ -295,10 +297,10 @@ impl IntVal {
         } else {
             Sign::Positive
         };
-        Self::new(is_neg, n.unsigned_abs(), bits, f)
+        Self::new_pv(is_neg, n.unsigned_abs(), bits, f)
     }
 
-    const fn new(sign: Sign, n: u128, bits: u8, fmtarg: FmtArg) -> PanicVal<'static> {
+    const fn new_pv(sign: Sign, n: u128, bits: u8, fmtarg: FmtArg) -> PanicVal<'static> {
         use crate::int_formatting::compute_len;
 
         let len = compute_len(sign, n, bits, fmtarg);

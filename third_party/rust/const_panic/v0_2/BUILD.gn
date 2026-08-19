@@ -50,6 +50,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/const_panic-v0_2/src/test_utils.rs",
     "//third_party/rust/chromium_crates_io/vendor/const_panic-v0_2/src/utils.rs",
     "//third_party/rust/chromium_crates_io/vendor/const_panic-v0_2/src/utils/non_basic_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/const_panic-v0_2/src/utils/usize_parsing_tests.rs",
     "//third_party/rust/chromium_crates_io/vendor/const_panic-v0_2/src/utils/utils_1_64_tests.rs",
     "//third_party/rust/chromium_crates_io/vendor/const_panic-v0_2/src/wrapper.rs",
   ]
@@ -61,7 +62,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "const_panic"
   cargo_pkg_description = "const panic with formatting"
   cargo_pkg_repository = "https://github.com/rodrimati1992/const_panic/"
-  cargo_pkg_version = "0.2.15"
+  cargo_pkg_version = "0.2.17"
 
   allow_unsafe = true
 

@@ -80,7 +80,6 @@ macro_rules! enum_prim {
         };
     )
 }
-use enum_prim;
 
 enum_prim! {
     FmtKind, 2;

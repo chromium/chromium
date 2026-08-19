@@ -132,6 +132,7 @@ pub struct FmtChar {
     len: u8,
 }
 
+#[allow(clippy::len_without_is_empty)]
 impl FmtChar {
     /// Array which contains the display/debug-formatted  `char`,
     /// and trailing `0` padding.

@@ -13,13 +13,13 @@
 /// (and must go in this order):
 ///
 /// - `#[pfmt(display_fmt = $display_fmt:expr)]`[**(example below)**](#display-example):
-/// Tells the macro to use the `$display_fmt` function to Display-format the type.
+///   Tells the macro to use the `$display_fmt` function to Display-format the type.
 ///
 ///
 /// - `#[pfmt(panicvals_lower_bound = $panicvals_lower_bound:expr)]`:
-/// Tells the macro to use at least `$panicvals_lower_bound` [`PanicVal`]s for
-/// formatting the type, useful for Display formatting with the
-/// `#[pfmt(display_fmt = ...)]` attribute.
+///   Tells the macro to use at least `$panicvals_lower_bound` [`PanicVal`]s for
+///   formatting the type, useful for Display formatting with the
+///   `#[pfmt(display_fmt = ...)]` attribute.
 ///
 ///
 /// # Limitations
@@ -429,6 +429,7 @@ macro_rules! impl_panicfmt {
     ) => (
         const _: () = {
             // for intra-doc links
+            #[allow(unused_imports)]
             use $crate::{self as __cp_bCj7dq3Pud};
 
             $crate::__impl_panicfmt_step_aaa!{
@@ -444,6 +445,7 @@ macro_rules! impl_panicfmt {
     ) => (
         const _: () = {
             // for intra-doc links
+            #[allow(unused_imports)]
             use $crate::{self as __cp_bCj7dq3Pud};
 
             $crate::__impl_panicfmt_step_aaa!{
@@ -1088,7 +1090,6 @@ macro_rules! __impl_to_panicvals_finish {
     ) => {
         /// Provides the required `to_panicvals` method for
         /// [`const_panic::fmt::PanicFmt` trait](trait@__cp_bCj7dq3Pud::fmt::PanicFmt)
-        #[automatically_derived]
         impl<$($impl_param)*> $type
         where
             $($where_preds)*
