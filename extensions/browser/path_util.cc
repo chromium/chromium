@@ -55,7 +55,7 @@ void OnDirectorySizeCalculated(
   base::ByteSize size =
       base::ByteSize(base::checked_cast<uint64_t>(size_in_bytes));
   std::u16string response =
-      size < base::MiBU(1)
+      size < base::MiB(1)
           ? l10n_util::GetStringUTF16(message_id)
           : ui::FormatBytesWithUnits(size, ui::DataUnits::kMebibyte,
                                      /*show_units=*/true);
