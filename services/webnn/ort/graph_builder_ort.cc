@@ -162,18 +162,32 @@ constexpr base::cstring_view kToEmulate = "ToEmulate";
 constexpr base::cstring_view kUnderscore = "_";
 constexpr std::string_view kNullCharacter("\0", 1);
 
+// Max length in bytes of a name coming from the caller. Backends copy the names
+// of the graph they are given into fixed-size buffers (the OpenVINO NPU plugin
+// uses a Level Zero `char[256]`, the DirectML execution provider a
+// `wchar_t[512]`), so bound the part we do not control to stay well clear of
+// them.
+constexpr size_t kMaxSanitizedNameLength = 200;
+
 std::string SanitizeName(std::string_view name) {
   std::string sanitized_name(name);
   base::ReplaceChars(sanitized_name, kNullCharacter, kUnderscore,
                      &sanitized_name);
+
+  if (sanitized_name.size() > kMaxSanitizedNameLength) {
+    sanitized_name.resize(kMaxSanitizedNameLength);
+  }
+
   return sanitized_name;
 }
 
+// Builds the ONNX name of an operand by prefixing the caller-supplied name with
+// the unique `id`.
 std::string GetOperandName(std::string_view name, OperandId id) {
   // ORT CreateValueInfo API rejects name starting with null character:
   // https://github.com/microsoft/onnxruntime/blob/7b5a93ef5f71ca58a1b6e4ae81b250e767756c68/onnxruntime/core/session/model_editor_c_api.cc#L29
   return base::JoinString(
-      {SanitizeName(name), base::NumberToString(id.value())}, kUnderscore);
+      {base::NumberToString(id.value()), SanitizeName(name)}, kUnderscore);
 }
 
 // Maps a DataType to a `ONNXTensorElementDataType`. Other `TensorTypeMap`
@@ -396,7 +410,7 @@ std::string GraphBuilderOrt::GetOperandNameById(OperandId operand_id) const {
 
 std::string GraphBuilderOrt::GenerateNodeName(std::string_view label) {
   return base::JoinString(
-      {SanitizeName(label), base::NumberToString(next_operation_id_++)},
+      {base::NumberToString(next_operation_id_++), SanitizeName(label)},
       kUnderscore);
 }
 
