@@ -148,6 +148,13 @@ import java.util.Map;
  */
 @NullMarked
 public final class UnownedUserDataHost {
+    private static Handler getHandler() {
+        if (ThreadUtils.runningOnUiThread()) {
+            return ThreadUtils.getUiThreadHandler();
+        }
+        return new Handler(retrieveNonNullLooperOrThrow());
+    }
+
     private static Looper retrieveNonNullLooperOrThrow() {
         Looper looper = Looper.myLooper();
         if (looper == null) throw new IllegalStateException();
@@ -169,7 +176,7 @@ public final class UnownedUserDataHost {
             new ArrayMap<>(4);
 
     public UnownedUserDataHost() {
-        this(new Handler(retrieveNonNullLooperOrThrow()));
+        this(getHandler());
     }
 
     @VisibleForTesting
@@ -282,6 +289,10 @@ public final class UnownedUserDataHost {
         checkState();
 
         return mUnownedUserDataMap.size();
+    }
+
+    /* package */ @Nullable Handler getHandlerForTesting() {
+        return mHandler;
     }
 
     @EnsuresNonNullIf(

@@ -4,7 +4,12 @@
 
 package org.chromium.base;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import android.os.Looper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,5 +54,33 @@ public class UnownedUserDataHostTest {
         t.join();
 
         assertTrue(illegalStateExceptionThrown.get());
+    }
+
+    @Test
+    public void testUiThreadHandlerReused() {
+        UnownedUserDataHost host = new UnownedUserDataHost();
+        assertSame(ThreadUtils.getUiThreadHandler(), host.getHandlerForTesting());
+    }
+
+    @Test
+    public void testBackgroundThreadPreparedLooper() throws InterruptedException {
+        AtomicBoolean success = new AtomicBoolean();
+        Thread t =
+                new Thread() {
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+                        UnownedUserDataHost host = new UnownedUserDataHost();
+                        assertNotSame(
+                                ThreadUtils.getUiThreadHandler(), host.getHandlerForTesting());
+                        assertEquals(
+                                Looper.myLooper(), host.getHandlerForTesting().getLooper());
+                        success.set(true);
+                    }
+                };
+        t.start();
+        t.join();
+
+        assertTrue(success.get());
     }
 }
