@@ -241,6 +241,15 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
       options.sanitizer_init() ||
       (config.sanitizer_mode == Sanitizer::Mode::kSafe);
 
+  if (should_sanitize &&
+      config.force_html != FragmentParserConfig::ForceHtml::kForce &&
+      config.context_element &&
+      config.context_element->GetDocument().IsXMLDocument()) {
+    exception_state.ThrowTypeError(
+        "Sanitization is not supported in XML documents.");
+    return nullptr;
+  }
+
   StreamingSanitizer* streaming_sanitizer = nullptr;
   if (should_sanitize && RuntimeEnabledFeatures::StreamingSanitizerEnabled()) {
     streaming_sanitizer = SanitizerAPI::CreateStreamingSanitizer(

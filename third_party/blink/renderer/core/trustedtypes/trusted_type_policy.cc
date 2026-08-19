@@ -216,8 +216,12 @@ TrustedParserOptions* TrustedTypePolicy::createParserOptions(
   ScriptValue out;
   auto result =
       policy_options_->createParserOptions()->Invoke(nullptr, callback_options);
-  if (!result.To(&out) || out.IsNull() || out.IsUndefined()) {
+  if (!result.To(&out)) {
     return nullptr;
+  }
+  if (out.IsNull() || out.IsUndefined()) {
+    return MakeGarbageCollected<TrustedParserOptions>(
+        nullptr, options ? options->runScripts() : false);
   }
 
   SetHTMLUnsafeOptions* new_options = SetHTMLUnsafeOptions::Create(
@@ -252,13 +256,6 @@ TrustedParserOptions* TrustedTypePolicy::createParserOptions(
   }
   if (exception_state.HadException()) {
     return nullptr;
-  }
-  if (!final_sanitizer) {
-    final_sanitizer =
-        Sanitizer::Create(nullptr, Sanitizer::Mode::kUnsafe, exception_state);
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
   }
 
   return MakeGarbageCollected<TrustedParserOptions>(
