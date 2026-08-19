@@ -10,7 +10,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing_test_utils.h"
+#include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -648,6 +650,144 @@ TEST_F(ContainerTimingPrepaintTraversalTest,
   TriggerPopulateEntries();
   // One entry per new root.
   EXPECT_EQ(2u, GetContainerEntryCount());
+}
+
+// In prepaint mode the legacy SelfOrAncestorHasContainerTiming() node flag must
+// not be maintained: the pre-paint attribution tracker is the sole source of
+// truth. This is the regression guard for the flag/tracker decoupling.
+TEST_F(ContainerTimingPrepaintTraversalTest, DoesNotMaintainNodeFlag) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="child">
+        <div id="grandchild">x</div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* root = GetDocument().getElementById(AtomicString("root"));
+  auto* child = GetDocument().getElementById(AtomicString("child"));
+  auto* grandchild = GetDocument().getElementById(AtomicString("grandchild"));
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(child);
+  ASSERT_TRUE(grandchild);
+
+  // Neither the root nor its descendants carry the node flag.
+  EXPECT_FALSE(root->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(child->SelfOrAncestorHasContainerTiming());
+  EXPECT_FALSE(grandchild->SelfOrAncestorHasContainerTiming());
+
+  // But the tracker still attributes the content to the root. The tracker keys
+  // the innermost box that directly contains text, i.e. `grandchild`.
+  EXPECT_EQ(root,
+            GetContainerTiming().PaintAttributionTracker()->GetContainerRootFor(
+                grandchild));
+}
+
+// A painted element that is not under any container root must be ignored, even
+// though OnElementPainted() is invoked for it (text records also exist for
+// LCP-only reasons). This is the load-bearing filter that replaces the node
+// flag gate inside OnElementPainted().
+TEST_F(ContainerTimingPrepaintTraversalTest, UnrelatedElementNotAttributed) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="inside">x</div>
+    </div>
+    <div id="outside">y</div>
+  )HTML");
+
+  auto* root = GetDocument().getElementById(AtomicString("root"));
+  auto* inside = GetDocument().getElementById(AtomicString("inside"));
+  auto* outside = GetDocument().getElementById(AtomicString("outside"));
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(inside);
+  ASSERT_TRUE(outside);
+
+  auto* tracker = GetContainerTiming().PaintAttributionTracker();
+  EXPECT_EQ(root, tracker->GetContainerRootFor(inside));
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(outside));
+
+  // Paint under the root: attributed. Paint the unrelated element: ignored.
+  SimulatePaint(inside, gfx::RectF(0, 0, 100, 100));
+  SimulatePaint(outside, gfx::RectF(200, 200, 100, 100));
+  TriggerPopulateEntries();
+  EXPECT_EQ(1u, GetContainerEntryCount());
+}
+
+// A subtree inserted under an existing root after initial layout must be
+// attributed by the next pre-paint walk, with no node-flag maintenance running.
+TEST_F(ContainerTimingPrepaintTraversalTest, InsertionUnderRootAttributed) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="existing">x</div>
+    </div>
+  )HTML");
+
+  auto* root = GetDocument().getElementById(AtomicString("root"));
+  ASSERT_TRUE(root);
+
+  auto* inserted = GetDocument().CreateRawElement(html_names::kDivTag);
+  inserted->setTextContent("z");
+  root->AppendChild(inserted);
+  UpdateAllLifecyclePhasesForTest();
+
+  // No node-flag maintenance ran, yet the tracker attributes the new subtree.
+  EXPECT_FALSE(inserted->SelfOrAncestorHasContainerTiming());
+  EXPECT_EQ(root,
+            GetContainerTiming().PaintAttributionTracker()->GetContainerRootFor(
+                inserted));
+
+  SimulatePaint(inserted, gfx::RectF(0, 0, 50, 50));
+  TriggerPopulateEntries();
+  EXPECT_EQ(1u, GetContainerEntryCount());
+}
+
+// Removing the containertiming attribute must clear the tracker attribution on
+// the next pre-paint walk (driven by MarkContainerTimingChanged(), not the node
+// flag).
+TEST_F(ContainerTimingPrepaintTraversalTest, RemovingRootClearsAttribution) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="inside">x</div>
+    </div>
+  )HTML");
+
+  auto* root = GetDocument().getElementById(AtomicString("root"));
+  auto* inside = GetDocument().getElementById(AtomicString("inside"));
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(inside);
+
+  auto* tracker = GetContainerTiming().PaintAttributionTracker();
+  EXPECT_EQ(root, tracker->GetContainerRootFor(inside));
+
+  root->removeAttribute(html_names::kContainertimingAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(inside));
+}
+
+// The text paint-timing gate must, in prepaint mode, consult the tracker rather
+// than the node flag: true under a root, false when unrelated, and always true
+// for elements explicitly registered for element timing.
+TEST_F(ContainerTimingPrepaintTraversalTest, TextGateUsesTracker) {
+  SetBodyContent(R"HTML(
+    <div id="root" containertiming="root">
+      <div id="inside">x</div>
+    </div>
+    <div id="outside">y</div>
+    <div id="et" elementtiming="et">z</div>
+  )HTML");
+
+  auto* inside = GetDocument().getElementById(AtomicString("inside"));
+  auto* outside = GetDocument().getElementById(AtomicString("outside"));
+  auto* et = GetDocument().getElementById(AtomicString("et"));
+  ASSERT_TRUE(inside);
+  ASSERT_TRUE(outside);
+  ASSERT_TRUE(et);
+
+  EXPECT_TRUE(TextElementTiming::NeededForTiming(*inside));
+  EXPECT_FALSE(TextElementTiming::NeededForTiming(*outside));
+  // elementtiming registration is independent of container timing.
+  EXPECT_TRUE(TextElementTiming::NeededForTiming(*et));
 }
 
 // Cross-frame isolation must hold identically under both attribution paths, so
