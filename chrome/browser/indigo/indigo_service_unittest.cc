@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
@@ -332,6 +333,8 @@ TEST_F(IndigoServiceTest, MultipleCallsConsecutively_TriggersOneFetch) {
   base::test::TestFuture<CombinedEligibility> future1;
   base::test::TestFuture<CombinedEligibility> future2;
 
+  base::HistogramTester histogram_tester;
+
   service_->GetCombinedEligibility(
       future1.GetCallback<const CombinedEligibility&>());
   service_->GetCombinedEligibility(
@@ -342,6 +345,8 @@ TEST_F(IndigoServiceTest, MultipleCallsConsecutively_TriggersOneFetch) {
   EXPECT_TRUE(future1.Get().remote_eligibility.has_value());
   EXPECT_TRUE(future2.Get().remote_eligibility.has_value());
   EXPECT_EQ(remote_eligibility_fetch_count_, 1);
+  histogram_tester.ExpectTotalCount(
+      "Indigo.Discovery.EligibilityCheck.RequestLatency", 1);
 }
 
 TEST_F(IndigoServiceTest, CallsAfterCompletion_TriggersNewFetch) {

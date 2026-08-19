@@ -175,6 +175,7 @@ class IndigoService : public KeyedService,
   LocalEligibility ComputeLocalEligibility() const;
   void UpdateLocalEligibilityAndNotify();
   void OnRemoteEligibilityReceived(
+      base::TimeTicks start_time,
       base::expected<RemoteEligibility, std::string> eligibility_or_error);
   void TriggerRemoteEligibilityFetch();
   void OnPromptsLoaded(base::flat_map<std::string, std::string> prompts);

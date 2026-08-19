@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -463,9 +464,10 @@ void IndigoService::GetCombinedEligibility(
 
 void IndigoService::TriggerRemoteEligibilityFetch() {
   remote_eligibility_fetch_in_progress_ = true;
+  base::TimeTicks start_time = base::TimeTicks::Now();
   RemoteEligibilityCallback on_rpc_status_received =
       base::BindOnce(&IndigoService::OnRemoteEligibilityReceived,
-                     remote_eligibility_weak_factory_.GetWeakPtr());
+                     remote_eligibility_weak_factory_.GetWeakPtr(), start_time);
 
   if (remote_eligibility_fetcher_) {
     remote_eligibility_fetcher_.Run(std::move(on_rpc_status_received));
@@ -487,9 +489,11 @@ void IndigoService::TriggerRemoteEligibilityFetch() {
       std::move(on_rpc_status_received)));
 }
 
-
 void IndigoService::OnRemoteEligibilityReceived(
+    base::TimeTicks start_time,
     base::expected<RemoteEligibility, std::string> eligibility_or_error) {
+  base::UmaHistogramTimes("Indigo.Discovery.EligibilityCheck.RequestLatency",
+                          base::TimeTicks::Now() - start_time);
   remote_eligibility_fetch_in_progress_ = false;
 
   std::vector<CombinedEligibilityCallback> callbacks;

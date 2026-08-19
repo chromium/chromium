@@ -205,9 +205,11 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
     explicit TestApi(IndigoPageActionController* controller)
         : controller_(controller) {}
 
-    void CheckEligibilityForOnboarding(bool skip_glic_invoke,
+    void CheckEligibilityForOnboarding(base::TimeTicks start_time,
+                                       bool skip_glic_invoke,
                                        const CombinedEligibility& eligibility) {
-      controller_->CheckEligibilityForOnboarding(skip_glic_invoke, eligibility);
+      controller_->CheckEligibilityForOnboarding(start_time, skip_glic_invoke,
+                                                 eligibility);
     }
 
     void CheckOnboardingResult(OnboardingDisposition disposition,
@@ -246,7 +248,8 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
                             bool skip_glic_invoke);
 
   // Called when the eligibility has been fetched.
-  void CheckEligibilityForOnboarding(bool skip_glic_invoke,
+  void CheckEligibilityForOnboarding(base::TimeTicks start_time,
+                                     bool skip_glic_invoke,
                                      const CombinedEligibility& eligibility);
 
   // Called when eligibility is known and onboarding is completed (if needed).

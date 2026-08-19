@@ -22,6 +22,53 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Indigo.Discovery.EligibilityCheck.Latency" units="ms"
+    expires_after="2027-05-13">
+  <owner>baranerf@google.com</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <summary>
+    Time taken from triggering the action to receiving the combined eligibility
+    result (local + remote). Monitors performance of the eligibility check flow,
+    which involves network calls for remote status.
+  </summary>
+</histogram>
+
+<histogram name="Indigo.Discovery.EligibilityCheck.RequestLatency" units="ms"
+    expires_after="2027-05-13">
+  <owner>baranerf@google.com</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <summary>
+    Measures how long the network request takes for the remote eligibility
+    check. Monitors the performance of the network call.
+  </summary>
+</histogram>
+
+<histogram name="Indigo.Discovery.MetadataKeywordHeuristic" enum="Boolean"
+    expires_after="2027-05-13">
+  <owner>baranerf@google.com</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <summary>
+    Records the decision returned by keyword heuristics. Helps track how often
+    pages are identified as eligible for Indigo by the heuristics.
+  </summary>
+</histogram>
+
+<histogram name="Indigo.Discovery.OptimizationGuideDecision"
+    enum="OptimizationGuideOptimizationGuideDecision"
+    expires_after="2027-05-13">
+  <owner>baranerf@google.com</owner>
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <summary>
+    Records the decision returned by the Optimization Guide for the current
+    page. Helps track how often pages are identified as eligible for Indigo by
+    the server-side hints.
+  </summary>
+</histogram>
+
 <histogram name="Indigo.ImageReplacement.TotalDuration" units="ms"
     expires_after="2027-05-13">
   <owner>baranerf@google.com</owner>

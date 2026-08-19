@@ -755,8 +755,11 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionTriggersEligibilityCheck) {
             std::move(callback).Run(RemoteEligibility{});
           }));
 
+  base::HistogramTester histogram_tester;
   controller_->InvokeAction(EntryPoint::kAnchoredMessage);
   EXPECT_TRUE(fetcher_called.Wait());
+  histogram_tester.ExpectTotalCount("Indigo.Discovery.EligibilityCheck.Latency",
+                                    1);
 }
 
 TEST_F(IndigoPageActionControllerTest, OnboardingSuccessTriggersContinuation) {
@@ -796,7 +799,8 @@ TEST_F(IndigoPageActionControllerTest, OnboardingSuccessTriggersContinuation) {
           }));
 
   IndigoPageActionController::TestApi(controller_.get())
-      .CheckEligibilityForOnboarding(/*skip_glic_invoke=*/false, eligibility);
+      .CheckEligibilityForOnboarding(base::TimeTicks::Now(),
+                                     /*skip_glic_invoke=*/false, eligibility);
 
   ASSERT_TRUE(!captured_callback.is_null());
   EXPECT_EQ(user_action_tester.GetActionCount("Indigo.Onboarding.Trigger"), 1);
@@ -1787,6 +1791,9 @@ TEST_F(IndigoPageActionControllerTest, TriggerSource_OptimizationGuide) {
   histogram_tester.ExpectUniqueSample("Indigo.PageAction.TriggerSource",
                                       IndigoTriggerSource::kOptimizationGuide,
                                       1);
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Discovery.OptimizationGuideDecision",
+      OptimizationGuideDecision::kTrue, 1);
 }
 
 TEST_F(IndigoPageActionControllerTest, TriggerSource_Heuristic) {
@@ -1837,6 +1844,8 @@ TEST_F(IndigoPageActionControllerTest, TriggerSource_Heuristic) {
   histogram_tester.ExpectUniqueSample(
       "Indigo.PageAction.TriggerSource",
       IndigoTriggerSource::kLocalProductKeywordHeuristic, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Discovery.MetadataKeywordHeuristic", true, 1);
 }
 
 TEST_F(IndigoPageActionControllerTest, TriggerSource_Both_PriorityToOptGuide) {

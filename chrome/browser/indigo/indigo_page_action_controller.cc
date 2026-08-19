@@ -264,13 +264,15 @@ void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {
     case EntryPoint::kAnchoredMessage:
       indigo_service_->GetCombinedEligibility(base::BindOnce(
           &IndigoPageActionController::CheckEligibilityForOnboarding,
-          invoke_weak_ptr_factory_.GetWeakPtr(), skip_glic_invoke));
+          invoke_weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+          skip_glic_invoke));
       return;
     case EntryPoint::kSuggestionChip:
       if (glic::GlicSidePanelCoordinator::IsShowing(&tab())) {
         indigo_service_->GetCombinedEligibility(base::BindOnce(
             &IndigoPageActionController::CheckEligibilityForOnboarding,
-            invoke_weak_ptr_factory_.GetWeakPtr(), skip_glic_invoke));
+            invoke_weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+            skip_glic_invoke));
         return;
       }
       ShowAnchoredMessage(
@@ -280,8 +282,11 @@ void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {
 }
 
 void IndigoPageActionController::CheckEligibilityForOnboarding(
+    base::TimeTicks start_time,
     bool skip_glic_invoke,
     const CombinedEligibility& eligibility) {
+  base::UmaHistogramTimes("Indigo.Discovery.EligibilityCheck.Latency",
+                          base::TimeTicks::Now() - start_time);
   if (eligibility.local_eligibility ==
       LocalEligibility::kRefreshTokenInPersistentErrorState) {
     RecordTransformationResultCannotGenerateImage(eligibility);
@@ -829,6 +834,8 @@ void IndigoPageActionController::OnOptimizationGuideDecision(
     return;
   }
   optimization_guide_decision_ = decision;
+  base::UmaHistogramEnumeration("Indigo.Discovery.OptimizationGuideDecision",
+                                optimization_guide_decision_);
   UpdateEntryPointsState();
 }
 
@@ -1085,6 +1092,8 @@ void IndigoPageActionController::OnProductClassified(
     page_has_allowed_category_by_heuristic_ =
         result->allowed_keyword_found && !result->blocked_keyword_found;
   }
+  base::UmaHistogramBoolean("Indigo.Discovery.MetadataKeywordHeuristic",
+                            page_has_allowed_category_by_heuristic_);
   UpdateEntryPointsState();
 }
 
