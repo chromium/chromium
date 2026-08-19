@@ -25,6 +25,44 @@ group("mac") {
 
 _packaging_dir = "$root_out_dir/$chrome_product_full_name Packaging"
 
+template("generate_dmg_dsstore") {
+  action(target_name) {
+    script = "generate_dsstore.py"
+    outputs = [ "$_packaging_dir/${invoker.output_name}" ]
+    args = [
+      "--output",
+      rebase_path(outputs[0], root_build_dir),
+      "--volume-name",
+      invoker.volume_name,
+      "--app-name",
+      invoker.app_name,
+    ]
+  }
+}
+
+if (is_chrome_branded) {
+  generate_dmg_dsstore("generate_chrome_dmg_dsstore") {
+    output_name = "chrome_dmg_dsstore"
+    volume_name = "Google Chrome"
+    app_name = "Google Chrome.app"
+  }
+  generate_dmg_dsstore("generate_chrome_beta_dmg_dsstore") {
+    output_name = "chrome_beta_dmg_dsstore"
+    volume_name = "Google Chrome Beta"
+    app_name = "Google Chrome Beta.app"
+  }
+  generate_dmg_dsstore("generate_chrome_dev_dmg_dsstore") {
+    output_name = "chrome_dev_dmg_dsstore"
+    volume_name = "Google Chrome Dev"
+    app_name = "Google Chrome Dev.app"
+  }
+  generate_dmg_dsstore("generate_chrome_canary_dmg_dsstore") {
+    output_name = "chrome_canary_dmg_dsstore"
+    volume_name = "Google Chrome Canary"
+    app_name = "Google Chrome Canary.app"
+  }
+}
+
 process_version_rc_template("sign_config") {
   visibility = [ ":copy_signing" ]
 
@@ -112,7 +150,13 @@ copy("copies") {
   ]
 
   if (is_chrome_branded) {
-    deps += [ ":copy_widevine_signing" ]
+    deps += [
+      ":copy_widevine_signing",
+      ":generate_chrome_beta_dmg_dsstore",
+      ":generate_chrome_canary_dmg_dsstore",
+      ":generate_chrome_dev_dmg_dsstore",
+      ":generate_chrome_dmg_dsstore",
+    ]
     sources += [
       "//chrome/app/theme/google_chrome/mac/Assets_beta.car",
       "//chrome/app/theme/google_chrome/mac/Assets_canary.car",
@@ -128,14 +172,10 @@ copy("copies") {
       "internal/Google_Chrome_Canary.e809e0e54407d4f3914b7883b7ed28650316ac2e.provisionprofile",
       "internal/Google_Chrome_Dev.765bb3620a0f7a33500da39b20122b1cec41140f.provisionprofile",
       "internal/Google_Chrome_Dev.e809e0e54407d4f3914b7883b7ed28650316ac2e.provisionprofile",
-      "internal/chrome_beta_dmg_dsstore",
       "internal/chrome_beta_dmg_icon.icns",
-      "internal/chrome_canary_dmg_dsstore",
       "internal/chrome_canary_dmg_icon.icns",
-      "internal/chrome_dev_dmg_dsstore",
       "internal/chrome_dev_dmg_icon.icns",
       "internal/chrome_dmg_background.png",
-      "internal/chrome_dmg_dsstore",
       "internal/chrome_dmg_icon.icns",
       "keystone_install.sh",
     ]
