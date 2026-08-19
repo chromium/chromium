@@ -7,6 +7,7 @@
 #include "base/stl_util.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
@@ -50,6 +51,8 @@ void RootTabCollectionNode::Init() {
   tab_strip_model_->Root()->AddObserver(this);
   tab_strip_model_->SetTabStripUI(this);
   add_node_view_to_parent_.Run(Initialize());
+
+  PostInit();
 }
 
 void RootTabCollectionNode::Reset() {
@@ -250,6 +253,13 @@ void RootTabCollectionNode::OnTabGroupFocusChanged(
 
   if (view()) {
     view()->InvalidateLayout();
+  }
+}
+
+void RootTabCollectionNode::PostInit() {
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    tab_strip_controller_->TabGroupFocusChanged(
+        tab_strip_model_->GetFocusedGroup(), std::nullopt);
   }
 }
 

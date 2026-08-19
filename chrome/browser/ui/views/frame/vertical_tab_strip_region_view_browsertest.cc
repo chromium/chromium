@@ -1639,6 +1639,46 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeLegacyTest,
   EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), group_id);
 }
 
+IN_PROC_BROWSER_TEST_F(VerticalTabStripFocusModeLegacyTest,
+                       ToggleOrientationUnfocusedHidesUnfocusButton) {
+  // Start in vertical mode, create tabs and group.
+  AppendTab();
+  AppendTab();
+  ASSERT_EQ(3, tab_strip_model()->count());
+
+  const tab_groups::TabGroupId group_id =
+      tab_strip_model()->AddToNewGroup({1, 2});
+  tab_strip_model()->ActivateTabAt(
+      1, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+
+  // Focus the group while in vertical mode.
+  tab_strip_model()->SetFocusedGroup(group_id);
+  EXPECT_TRUE(
+      region_view()->GetTopContainer()->GetUnfocusButton()->GetVisible());
+  EXPECT_FALSE(
+      region_view()->GetTopContainer()->GetCollapseButton()->GetVisible());
+
+  // Switch to horizontal mode.
+  ExitVerticalTabsMode();
+  EXPECT_FALSE(state_controller()->ShouldDisplayVerticalTabs());
+
+  // Unfocus the tab group while in horizontal mode.
+  tab_strip_model()->SetFocusedGroup(std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+
+  // Switch back to vertical mode.
+  EnterVerticalTabsMode();
+  EXPECT_TRUE(state_controller()->ShouldDisplayVerticalTabs());
+
+  // In vertical mode, the unfocus button must NOT be visible, and the
+  // collapse button MUST be visible.
+  EXPECT_FALSE(
+      region_view()->GetTopContainer()->GetUnfocusButton()->GetVisible());
+  EXPECT_TRUE(
+      region_view()->GetTopContainer()->GetCollapseButton()->GetVisible());
+}
+
 class VerticalTabStripFocusModeUnifiedTest
     : public VerticalTabStripRegionViewTest {
  public:

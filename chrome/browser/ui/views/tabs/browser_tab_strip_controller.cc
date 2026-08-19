@@ -200,7 +200,10 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
         service->IsBrowserWindowEligible(browser_view_->browser()));
   }
 
-  UpdateAllTabsFocusFreezing();
+  if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
+    UpdateAllTabsFocusFreezing();
+    OnTabGroupFocusChanged(model_->GetFocusedGroup(), std::nullopt);
+  }
 }
 
 void BrowserTabStripController::Reset() {
