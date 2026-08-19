@@ -58,10 +58,6 @@ constexpr size_t kVisibleSuffixLength = 4;
 // Extracts a `TypedValue` from `attribute` if there is a non-empty one.
 std::optional<TypedValue> GetAttributeTypedValue(
     const AttributeInstance& attribute) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAtMemoryTypedFetchPlan)) {
-    return std::nullopt;
-  }
   TypedValue typed_val = attribute.GetTypedValue();
   return typed_val.value_case() == TypedValue::VALUE_NOT_SET
              ? std::nullopt
@@ -70,10 +66,6 @@ std::optional<TypedValue> GetAttributeTypedValue(
 
 // Extracts the expiration date as a `TypedValue` if it is non-empty.
 std::optional<TypedValue> GetExpirationDateTypedValue(const CreditCard& card) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAtMemoryTypedFetchPlan)) {
-    return std::nullopt;
-  }
   const int expiration_year = card.expiration_year();
   const int expiration_month = card.expiration_month();
   if (expiration_year == 0 || expiration_month == 0) {
@@ -90,10 +82,6 @@ std::optional<TypedValue> GetExpirationDateTypedValue(const CreditCard& card) {
 // Extracts the home country as a `TypedValue` if it is non-empty.
 std::optional<TypedValue> GetHomeCountryTypedValue(
     const AutofillProfile& profile) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAtMemoryTypedFetchPlan)) {
-    return std::nullopt;
-  }
   std::string country_code =
       base::UTF16ToASCII(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
   if (country_code.length() != 2) {

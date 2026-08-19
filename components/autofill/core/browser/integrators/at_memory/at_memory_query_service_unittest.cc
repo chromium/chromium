@@ -252,7 +252,31 @@ class AtMemoryQueryServiceTest : public testing::Test,
       const std::vector<MemorySearchResult>& local_results) {
     AtMemoryQueryResponse response = CreateQueryResponse();
     AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-    plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+    for (const MemorySearchResult& local_result : local_results) {
+      personal_context::proto::MemoryDataType proto_type =
+          personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL;
+      if (local_result.type == MemoryDataType::kPassportName) {
+        proto_type = personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NAME;
+      } else if (local_result.type == MemoryDataType::kPassportNumber) {
+        proto_type = personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER;
+      } else if (local_result.type == MemoryDataType::kDriversLicenseNumber) {
+        proto_type =
+            personal_context::proto::MEMORY_DATA_TYPE_DRIVERS_LICENSE_NUMBER;
+      } else if (local_result.type ==
+                 MemoryDataType::kFlightReservationDepartureDate) {
+        proto_type = personal_context::proto::
+            MEMORY_DATA_TYPE_FLIGHT_RESERVATION_DEPARTURE_DATE;
+      } else if (local_result.type ==
+                 MemoryDataType::kFlightReservationFlightNumber) {
+        proto_type = personal_context::proto::
+            MEMORY_DATA_TYPE_FLIGHT_RESERVATION_FLIGHT_NUMBER;
+      } else if (local_result.type == MemoryDataType::kPhone) {
+        proto_type = personal_context::proto::MEMORY_DATA_TYPE_PHONE;
+      } else if (local_result.type == MemoryDataType::kAddressFull) {
+        proto_type = personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL;
+      }
+      plan->add_fetch_specifications()->set_data_type(proto_type);
+    }
     StubFetchContextResponse(std::move(response));
 
     auto service = CreateQueryProviderWithResults(local_results);
@@ -363,148 +387,12 @@ TEST_F(AtMemoryQueryServiceTest, Query_NoLocalProviderButHasRemote) {
   EXPECT_EQ(result.server_request_id, "server request id");
 }
 
-// Tests that the query service fetches correct local data types based on the
-// `AutofillFetchPlan`.
-TEST_F(AtMemoryQueryServiceTest, Query_FetchesAutofillFetchPlanTypes) {
-  AtMemoryQueryResponse response = CreateQueryResponse();
-  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PHONE);
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
-
-  StubFetchContextResponse(std::move(response));
-
-  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
-  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::move(data_provider), &mock_service(), "en-US",
-      /*personal_context_eligibility_service=*/nullptr,
-      /*subscription_eligibility_service=*/nullptr);
-
-  MemorySearchResult local_phone(MemoryDataType::kPhone, u"Phone", u"123-456");
-  MemorySearchResult local_name(MemoryDataType::kNameFull, u"Name",
-                                u"John Doe");
-  fake_data_provider->SetResults({local_phone, local_name});
-
-  TestFuture<MemorySearchResults> future;
-  service->Query(u"Alice's phone", GURL("https://example.com"), u"Page Title",
-                 future.GetRepeatingCallback());
-
-  ASSERT_TRUE(future.Wait());
-  const auto& result = future.Get();
-  EXPECT_THAT(fake_data_provider->last_types(),
-              ElementsAre(MemoryDataType::kPhone, MemoryDataType::kNameFull));
-  ASSERT_EQ(result.entries.size(), 2u);
-  EXPECT_EQ(result.entries[0].value, u"123-456");
-  EXPECT_EQ(result.entries[1].value, u"John Doe");
-  EXPECT_EQ(result.server_request_id, "server request id");
-}
-
-
-// Tests that rationalization handles multiple groups and deduplicates types
-// while preserving order.
-TEST_F(AtMemoryQueryServiceTest,
-       Query_RationalizesAutofillFetchPlanTypes_MultipleGroupsAndDuplicates) {
-  AtMemoryQueryResponse response = CreateQueryResponse();
-  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_VEHICLE);
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_VEHICLE_MAKE);
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NAME);
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_FULL);
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PHONE);
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PHONE);
-
-  StubFetchContextResponse(std::move(response));
-
-  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
-  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::move(data_provider), &mock_service(), "en-US",
-      /*personal_context_eligibility_service=*/nullptr,
-      /*subscription_eligibility_service=*/nullptr);
-
-  TestFuture<MemorySearchResults> future;
-  service->Query(u"my info", GURL("https://example.com"), u"Page Title",
-                 future.GetRepeatingCallback());
-
-  ASSERT_TRUE(future.Wait());
-  EXPECT_THAT(
-      fake_data_provider->last_types(),
-      ElementsAre(MemoryDataType::kVehiclePlateNumber,
-                  MemoryDataType::kPassportNumber, MemoryDataType::kPhone));
-}
-
-// Tests that `MemoryDataType::kUnknown` is filtered out of AutofillFetchPlan
-// types.
-TEST_F(AtMemoryQueryServiceTest,
-       Query_RationalizesAutofillFetchPlanTypes_FiltersUnknownType) {
-  AtMemoryQueryResponse response = CreateQueryResponse();
-  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_UNSPECIFIED);
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_PHONE);
-
-  StubFetchContextResponse(std::move(response));
-
-  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
-  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::move(data_provider), &mock_service(), "en-US",
-      /*personal_context_eligibility_service=*/nullptr,
-      /*subscription_eligibility_service=*/nullptr);
-
-  TestFuture<MemorySearchResults> future;
-  service->Query(u"phone number", GURL("https://example.com"), u"Page Title",
-                 future.GetRepeatingCallback());
-
-  ASSERT_TRUE(future.Wait());
-  EXPECT_THAT(fake_data_provider->last_types(),
-              ElementsAre(MemoryDataType::kPhone));
-}
-
-
-// Tests that the query service filters local data using `filter_keywords` in
-// the `AutofillFetchPlan`.
-TEST_F(AtMemoryQueryServiceTest, Query_FiltersLocalDataUsingFetchPlanKeywords) {
-  AtMemoryQueryResponse response = CreateQueryResponse();
-  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
-  plan->add_filter_keywords("home");
-
-  StubFetchContextResponse(std::move(response));
-
-  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
-  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::move(data_provider), &mock_service(), "en-US",
-      /*personal_context_eligibility_service=*/nullptr,
-      /*subscription_eligibility_service=*/nullptr);
-
-  MemorySearchResult home_address(MemoryDataType::kAddressFull, u"Address",
-                                  u"123 San Diego St Home San Diego");
-  MemorySearchResult work_address(MemoryDataType::kAddressFull, u"Address",
-                                  u"456 Mountain View Rd Work Mountain View");
-  fake_data_provider->SetResults({home_address, work_address});
-
-  TestFuture<MemorySearchResults> future;
-  service->Query(u"What's my home address", GURL("https://example.com"),
-                 u"Page Title", future.GetRepeatingCallback());
-
-  ASSERT_TRUE(future.Wait());
-  const auto& result = future.Get();
-  EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  EXPECT_THAT(result.entries,
-              ElementsAre(Field(&MemorySearchResult::value,
-                                u"123 San Diego St Home San Diego")));
-}
-
 // Tests that local Autofill results precede remote results in the final output.
 TEST_F(AtMemoryQueryServiceTest, Query_LocalResultsPrecedeRemoteResults) {
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+  plan->add_fetch_specifications()->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
 
   AtMemorySearchResult* remote_result = response.add_results();
   Attribute* primary = remote_result->mutable_primary_attribute();
@@ -543,100 +431,6 @@ TEST_F(AtMemoryQueryServiceTest, Query_LocalResultsPrecedeRemoteResults) {
                         Field(&MemorySearchResult::remote_response_index, 0))));
 }
 
-// Tests that results with the most matching filter words are retained, ties for
-// the highest match count keep all tied entries, and lower match entries are
-// filtered out. Also tests non-ASCII case-folding.
-TEST_F(AtMemoryQueryServiceTest,
-       Query_WithFilterWords_HighestMatchCountAndTie) {
-  AtMemoryQueryResponse response = CreateQueryResponse();
-  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
-  plan->add_filter_keywords("münchen");
-  plan->add_filter_keywords("karl");
-
-  StubFetchContextResponse(std::move(response));
-
-  // Entry with only 1 match ("München").
-  MemorySearchResult entry_a(MemoryDataType::kAddressFull, u"Address",
-                             u"Hauptstraße 742, München, DE");
-  entry_a.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
-                                     u"Homer Simpson");
-
-  // Entry with 0 matches.
-  MemorySearchResult entry_b(MemoryDataType::kAddressFull, u"Address",
-                             u"1st Avenue, Berlin, DE");
-  entry_b.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
-                                     u"Marge Simpson");
-
-  // Entry with 2 matches ("Karl" in metadata, "München" in value).
-  MemorySearchResult entry_c(MemoryDataType::kAddressFull, u"Address",
-                             u"Hauptstraße 742, München, DE");
-  entry_c.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
-                                     u"Karl");
-
-  // Entry with 2 matches ("Karl" in metadata, "München" in value) - tie with C.
-  MemorySearchResult entry_d(MemoryDataType::kAddressFull, u"Address",
-                             u"Marienplatz 100, München, DE");
-  entry_d.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
-                                     u"KARL HEINZ");
-
-  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
-  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
-  fake_data_provider->SetResults({entry_a, entry_b, entry_c, entry_d});
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::move(data_provider), &mock_service(), "de-DE",
-      /*personal_context_eligibility_service=*/nullptr,
-      /*subscription_eligibility_service=*/nullptr);
-  TestFuture<MemorySearchResults> future;
-  service->Query(u"Karl Adresse in MÜNCHEN", GURL("https://example.com"),
-                 u"Page Title", future.GetRepeatingCallback());
-
-  ASSERT_TRUE(future.Wait());
-  const auto& result = future.Get();
-  ASSERT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  // Highest match count is 2 (`entry_c` and `entry_d`). Both should be
-  // retained.
-  EXPECT_EQ(result.entries.size(), 2u);
-  EXPECT_THAT(
-      result.entries,
-      UnorderedElementsAre(
-          Field(&MemorySearchResult::value, u"Hauptstraße 742, München, DE"),
-          Field(&MemorySearchResult::value, u"Marienplatz 100, München, DE")));
-}
-
-// Tests that the query service returns no results if filter keywords are
-// provided and no entries match.
-TEST_F(AtMemoryQueryServiceTest, Query_WithFilterWords_NoMatch_ReturnsEmpty) {
-  AtMemoryQueryResponse response = CreateQueryResponse();
-  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
-  plan->add_filter_keywords("berlin");
-
-  StubFetchContextResponse(std::move(response));
-
-  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
-                           u"123 San Diego St Home San Diego");
-  auto data_provider = std::make_unique<FakeMemoryDataProvider>();
-  FakeMemoryDataProvider* fake_data_provider = data_provider.get();
-  fake_data_provider->SetResults({entry});
-
-  auto service = std::make_unique<AtMemoryQueryService>(
-      std::move(data_provider), &mock_service(), "en-US",
-      /*personal_context_eligibility_service=*/nullptr,
-      /*subscription_eligibility_service=*/nullptr);
-
-  TestFuture<MemorySearchResults> future;
-  service->Query(u"What's my home address in Berlin",
-                 GURL("https://example.com"), u"Page Title",
-                 future.GetRepeatingCallback());
-
-  ASSERT_TRUE(future.Wait());
-  const auto& result = future.Get();
-  EXPECT_EQ(result.status, MemorySearchStatus::kFinalResponseSuccess);
-  EXPECT_TRUE(result.entries.empty());
-}
-
 // Tests that the query service returns the appropriate error status when the
 // personal context resolver fails.
 TEST_F(AtMemoryQueryServiceTest, Query_PersonalContextResolverError) {
@@ -665,7 +459,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_PersonalContextResolverError) {
 TEST_F(AtMemoryQueryServiceTest, StaleResultsAreNotSent) {
   AtMemoryQueryResponse response;
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+  plan->add_fetch_specifications()->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
   response.set_query_classification(
       AtMemoryQueryResponse::QUERY_CLASSIFICATION_AT_MEMORY);
 
@@ -735,7 +530,8 @@ TEST_F(AtMemoryQueryServiceTest, StaleResultsAreNotSent) {
 TEST_F(AtMemoryQueryServiceTest, Query_DeduplicatesResults_PreservesOrder) {
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+  plan->add_fetch_specifications()->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
 
   StubFetchContextResponse(std::move(response));
 
@@ -819,7 +615,8 @@ TEST_F(AtMemoryQueryServiceTest,
        Query_DeduplicatesResults_RetainsFirstEntryFields) {
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+  plan->add_fetch_specifications()->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
 
   StubFetchContextResponse(std::move(response));
 
@@ -882,7 +679,7 @@ TEST_F(AtMemoryQueryServiceTest,
   result3.metadata_list.push_back(sd_meta);
 
   // Same value and metadata, different type
-  MemorySearchResult result4(MemoryDataType::kUnknown, u"Unknown", u"John Doe");
+  MemorySearchResult result4(MemoryDataType::kPhone, u"Phone", u"John Doe");
   result4.metadata_list.push_back(sd_meta);
 
   const MemorySearchResults& result = RunDeduplicationQueryWithLocalResults(
@@ -904,7 +701,7 @@ TEST_F(AtMemoryQueryServiceTest,
                       ElementsAre(Field(&EntryMetadata::value, u"San Diego")))),
           AllOf(
               Field(&MemorySearchResult::value, u"John Doe"),
-              Field(&MemorySearchResult::type, MemoryDataType::kUnknown),
+              Field(&MemorySearchResult::type, MemoryDataType::kPhone),
               Field(&MemorySearchResult::metadata_list,
                     ElementsAre(Field(&EntryMetadata::value, u"San Diego"))))));
 }
@@ -1141,7 +938,8 @@ TEST_F(AtMemoryQueryServiceTest, RecordsProviderResultCountMetric) {
 
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+  plan->add_fetch_specifications()->set_data_type(
+      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
 
   StubFetchContextResponse(std::move(response));
 
@@ -1284,8 +1082,9 @@ TEST_F(AtMemoryQueryServiceTest,
        Query_Ranking_AutofillPrioritizedForNonDynamicTypes) {
   AtMemoryQueryResponse response = CreateQueryResponseWithSchemafulKey(
       personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL, "Remote Name");
-  response.mutable_autofill_fetch_plan()->add_data_types(
-      personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
+  response.mutable_autofill_fetch_plan()
+      ->add_fetch_specifications()
+      ->set_data_type(personal_context::proto::MEMORY_DATA_TYPE_NAME_FULL);
 
   StubFetchContextResponse(std::move(response));
 
@@ -1323,8 +1122,10 @@ TEST_F(AtMemoryQueryServiceTest,
   AtMemoryQueryResponse response = CreateQueryResponseWithSchemafulKey(
       personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER,
       "Remote 1Z12345");
-  response.mutable_autofill_fetch_plan()->add_data_types(
-      personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER);
+  response.mutable_autofill_fetch_plan()
+      ->add_fetch_specifications()
+      ->set_data_type(
+          personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER);
 
   StubFetchContextResponse(std::move(response));
 
@@ -1360,8 +1161,9 @@ TEST_F(AtMemoryQueryServiceTest,
   AtMemoryQueryResponse response = CreateQueryResponseWithSchemafulKey(
       personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_TRACKING_NUMBER,
       "Remote 1Z12345");
-  response.mutable_autofill_fetch_plan()->add_data_types(
-      personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
+  response.mutable_autofill_fetch_plan()
+      ->add_fetch_specifications()
+      ->set_data_type(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
 
   StubFetchContextResponse(std::move(response));
 
@@ -1767,8 +1569,9 @@ class AtMemoryQueryServiceReorderMetadataTest
 // scores tie.
 TEST_P(AtMemoryQueryServiceReorderMetadataTest, ReordersSecondaryMetadata) {
   AtMemoryQueryResponse response = CreateQueryResponse();
-  response.mutable_autofill_fetch_plan()->add_data_types(
-      personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
+  response.mutable_autofill_fetch_plan()
+      ->add_fetch_specifications()
+      ->set_data_type(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
   StubFetchContextResponse(std::move(response));
 
   // Build input search results with metadata based on test parameters.
@@ -1970,9 +1773,6 @@ INSTANTIATE_TEST_SUITE_P(
 // specifications.
 TEST_F(AtMemoryQueryServiceTest,
        Query_FiltersLocalDataUsingFetchSpecifications_StringFilter) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   auto* spec = plan->add_fetch_specifications();
@@ -2000,9 +1800,6 @@ TEST_F(AtMemoryQueryServiceTest,
 // case-insensitively.
 TEST_F(AtMemoryQueryServiceTest,
        Query_FiltersLocalDataUsingFetchSpecifications_StringFilterExactMode) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   auto* spec = plan->add_fetch_specifications();
@@ -2031,9 +1828,6 @@ TEST_F(AtMemoryQueryServiceTest,
 // Tests that string filters apply Unicode and case normalization when matching.
 TEST_F(AtMemoryQueryServiceTest,
        Query_FiltersLocalDataUsingFetchSpecifications_StringFilterNormalized) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   auto* spec = plan->add_fetch_specifications();
@@ -2063,9 +1857,6 @@ TEST_F(AtMemoryQueryServiceTest,
 // missing words.
 TEST_F(AtMemoryQueryServiceTest,
        Query_FiltersLocalDataUsingFetchSpecifications_StringFilterFuzzyMode) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   auto* spec = plan->add_fetch_specifications();
@@ -2095,9 +1886,6 @@ TEST_F(AtMemoryQueryServiceTest,
 // specifications.
 TEST_F(AtMemoryQueryServiceTest,
        Query_FiltersLocalDataUsingFetchSpecifications_TypedFilter) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   auto* spec = plan->add_fetch_specifications();
@@ -2132,45 +1920,11 @@ TEST_F(AtMemoryQueryServiceTest,
               SuccessfulSearchResults(SearchResultWithValue(u"123 Main St")));
 }
 
-// Tests fallback to legacy data types and keywords when the typed fetch plan
-// feature is disabled.
-TEST_F(AtMemoryQueryServiceTest,
-       Query_FiltersLocalDataUsingFetchSpecifications_Fallback) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAutofillAtMemoryTypedFetchPlan);
-
-  AtMemoryQueryResponse response = CreateQueryResponse();
-  AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
-  plan->add_data_types(
-      personal_context::proto::MEMORY_DATA_TYPE_PASSPORT_NUMBER);
-  plan->add_filter_keywords("passport");
-
-  auto* spec = plan->add_fetch_specifications();
-  spec->set_data_type(personal_context::proto::MEMORY_DATA_TYPE_ADDRESS_FULL);
-  spec->add_filters()->mutable_string_filter()->set_value("nonmatching");
-
-  StubFetchContextResponse(std::move(response));
-
-  MemorySearchResult passport(MemoryDataType::kPassportNumber,
-                              u"Passport Number", u"Passport XYZ123");
-  auto service = CreateQueryProviderWithResults({passport});
-
-  TestFuture<MemorySearchResults> future;
-  service->Query(u"passport", GURL("https://example.com"), u"Title",
-                 future.GetRepeatingCallback());
-
-  EXPECT_THAT(future.Get(), SuccessfulSearchResults(
-                                SearchResultWithValue(u"Passport XYZ123")));
-}
-
 // Tests that date typed filters match entries when unset date components act as
 // wildcards.
 TEST_F(
     AtMemoryQueryServiceTest,
     Query_FiltersLocalDataUsingFetchSpecifications_TypedFilterDateWildcards) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   auto* spec = plan->add_fetch_specifications();
@@ -2217,9 +1971,6 @@ TEST_F(
 // GREATER_THAN, etc.)
 TEST_F(AtMemoryQueryServiceTest,
        Query_FiltersLocalDataUsingFetchSpecifications_FilterOperators) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   auto* spec = plan->add_fetch_specifications();
@@ -2268,9 +2019,6 @@ TEST_F(AtMemoryQueryServiceTest,
 TEST_F(
     AtMemoryQueryServiceTest,
     Query_FiltersLocalDataUsingFetchSpecifications_DateAndDateTimeCrossMatching) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   auto* spec = plan->add_fetch_specifications();
@@ -2322,9 +2070,6 @@ TEST_F(
 TEST_F(
     AtMemoryQueryServiceTest,
     Query_FiltersLocalDataUsingFetchSpecifications_DateTimeTimeWildcardVsZero) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   MemorySearchResult midnight_flight(
       MemoryDataType::kFlightReservationFlightNumber, u"Flight Number",
       u"FLIGHT_MIDNIGHT");
@@ -2412,9 +2157,6 @@ TEST_F(
 // filter's allowed data types.
 TEST_F(AtMemoryQueryServiceTest,
        Query_FiltersLocalDataUsingFetchSpecifications_DataTypesRestriction) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   auto* spec = plan->add_fetch_specifications();
@@ -2444,9 +2186,6 @@ TEST_F(AtMemoryQueryServiceTest,
 // returned.
 TEST_F(AtMemoryQueryServiceTest,
        Query_FiltersLocalDataUsingFetchSpecifications_MultipleFiltersAnd) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
   auto* spec = plan->add_fetch_specifications();
@@ -2489,9 +2228,6 @@ TEST_F(AtMemoryQueryServiceTest,
 TEST_F(
     AtMemoryQueryServiceTest,
     Query_FiltersLocalDataUsingFetchSpecifications_MultipleSpecificationsOr) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
-
   AtMemoryQueryResponse response = CreateQueryResponse();
   AutofillFetchPlan* plan = response.mutable_autofill_fetch_plan();
 

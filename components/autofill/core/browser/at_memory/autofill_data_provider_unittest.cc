@@ -577,8 +577,6 @@ TEST_F(AutofillDataProviderTest, RetrieveAll_MultipleTypes) {
 // Tests that RetrieveAll populates typed_value on entity instance metadata.
 TEST_F(AutofillDataProviderTest,
        RetrieveAll_PopulatesTypedValue_EntityInstance) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
   EntityInstance passport = test::GetPassportEntityInstance(
       {.number = u"XYZ123", .issue_date = u"2010-09-01", .use_count = 1});
   entity_data_manager().AddOrUpdateEntityInstance(passport);
@@ -601,8 +599,6 @@ TEST_F(AutofillDataProviderTest,
 // suggestions.
 TEST_F(AutofillDataProviderTest,
        RetrieveAll_PopulatesTypedValue_AddressProfile) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   client().GetPersonalDataManager().address_data_manager().AddProfile(profile);
@@ -616,8 +612,6 @@ TEST_F(AutofillDataProviderTest,
 
 // Tests that RetrieveAll populates typed_value on credit card expiration dates.
 TEST_F(AutofillDataProviderTest, RetrieveAll_PopulatesTypedValue_CreditCard) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillAtMemoryTypedFetchPlan);
   CreditCard card = test::GetCreditCard();
   card.SetExpirationYear(2028);
   card.SetExpirationMonth(5);
