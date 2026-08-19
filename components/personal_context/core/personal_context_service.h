@@ -35,9 +35,10 @@ class PersonalContextService : public KeyedService {
                                 FetchPiiContextCallback callback) = 0;
 
   // Decrypts the `encrypted_entity` field in `entity` using this device's
-  // private key. Returns the deserialized `DecryptedEntity` on success, or
-  // `std::nullopt` if decryption or parsing fails.
-  virtual std::optional<proto::DecryptedEntity> DecryptEntity(
+  // private key and converts it to an Entity. Returns the deserialized and
+  // converted `Entity` on success, or `std::nullopt` if decryption, parsing,
+  // or conversion fails.
+  virtual std::optional<proto::Entity> DecryptEntity(
       const proto::Entity& entity) = 0;
 };
 

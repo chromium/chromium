@@ -138,13 +138,19 @@ TEST_F(PersonalContextServiceImplTest, FetchPiiEntitiesDelegatesToManager) {
   EXPECT_EQ("test_id", result.response.value().server_request_id());
 }
 
-TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess) {
+TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_Passport) {
   PersonalContextKeyManager key_manager(&pref_service_);
 
   proto::DecryptedEntity decrypted_entity;
   decrypted_entity.mutable_passport()->set_full_name("Jane Doe");
   decrypted_entity.mutable_passport()->set_number("123456789");
   decrypted_entity.mutable_passport()->set_issuing_country("US");
+  decrypted_entity.mutable_passport()->mutable_issue_date()->set_year(2020);
+  decrypted_entity.mutable_passport()->mutable_issue_date()->set_month(1);
+  decrypted_entity.mutable_passport()->mutable_issue_date()->set_day(15);
+  decrypted_entity.mutable_passport()->mutable_expiration_date()->set_year(2030);
+  decrypted_entity.mutable_passport()->mutable_expiration_date()->set_month(1);
+  decrypted_entity.mutable_passport()->mutable_expiration_date()->set_day(15);
 
   proto::DecryptedReference* gmail_ref = decrypted_entity.add_references();
   gmail_ref->mutable_gmail_message()->set_subject("Your Passport Application");
@@ -166,20 +172,27 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess) {
       std::string(ciphertext->begin(), ciphertext->end()));
 
   base::HistogramTester histogram_tester;
-  std::optional<proto::DecryptedEntity> result =
+  std::optional<proto::Entity> result =
       personal_context_service()->DecryptEntity(entity);
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->passport().full_name(), "Jane Doe");
+  EXPECT_EQ(result->entity_case(), proto::Entity::kPassport);
+  EXPECT_EQ(result->passport().name(), "Jane Doe");
   EXPECT_EQ(result->passport().number(), "123456789");
   EXPECT_EQ(result->passport().issuing_country(), "US");
+  EXPECT_EQ(result->passport().issue_date().year(), 2020);
+  EXPECT_EQ(result->passport().issue_date().month(), 1);
+  EXPECT_EQ(result->passport().issue_date().day(), 15);
+  EXPECT_EQ(result->passport().expiration_date().year(), 2030);
+  EXPECT_EQ(result->passport().expiration_date().month(), 1);
+  EXPECT_EQ(result->passport().expiration_date().day(), 15);
 
-  ASSERT_EQ(result->references_size(), 2);
-  EXPECT_EQ(result->references(0).gmail_message().subject(),
+  ASSERT_EQ(result->source_references_size(), 2);
+  EXPECT_EQ(result->source_references(0).gmail().subject(),
             "Your Passport Application");
-  EXPECT_EQ(result->references(0).gmail_message().message_url(),
+  EXPECT_EQ(result->source_references(0).gmail().message_url(),
             "https://mail.google.com/mail/u/0/#inbox/123");
-  EXPECT_EQ(result->references(1).drive_file().name(), "passport_scan.pdf");
-  EXPECT_EQ(result->references(1).drive_file().url(),
+  EXPECT_EQ(result->source_references(1).drive().name(), "passport_scan.pdf");
+  EXPECT_EQ(result->source_references(1).drive().url(),
             "https://drive.google.com/file/d/456");
 
   histogram_tester.ExpectUniqueSample("PersonalContext.DecryptEntity.Result",
@@ -188,6 +201,172 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess) {
   histogram_tester.ExpectUniqueSample(
       "PersonalContext.DecryptEntity.Status",
       PersonalContextDecryptionStatus::kSuccess, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("PersonalContext.DecryptEntity.Latency", 1);
+}
+
+TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_DriversLicense) {
+  PersonalContextKeyManager key_manager(&pref_service_);
+
+  proto::DecryptedEntity decrypted_entity;
+  decrypted_entity.mutable_drivers_license()->set_full_name("John Smith");
+  decrypted_entity.mutable_drivers_license()->set_number("D1234567");
+  decrypted_entity.mutable_drivers_license()->set_issuing_region("CA");
+  decrypted_entity.mutable_drivers_license()->mutable_issue_date()->set_year(2021);
+  decrypted_entity.mutable_drivers_license()->mutable_issue_date()->set_month(6);
+  decrypted_entity.mutable_drivers_license()->mutable_issue_date()->set_day(1);
+  decrypted_entity.mutable_drivers_license()->mutable_expiration_date()->set_year(2026);
+  decrypted_entity.mutable_drivers_license()->mutable_expiration_date()->set_month(6);
+  decrypted_entity.mutable_drivers_license()->mutable_expiration_date()->set_day(1);
+
+  proto::DecryptedReference* photo_ref = decrypted_entity.add_references();
+  photo_ref->mutable_photo()->set_deeplink_url(
+      "https://photos.google.com/photo/123");
+
+  proto::DecryptedReference* video_ref = decrypted_entity.add_references();
+  video_ref->mutable_video()->set_deeplink_url(
+      "https://photos.google.com/video/456");
+
+  proto::DecryptedReference* album_ref = decrypted_entity.add_references();
+  album_ref->mutable_photos_album()->set_deeplink_url(
+      "https://photos.google.com/album/789");
+
+  std::string serialized_entity = decrypted_entity.SerializeAsString();
+  std::optional<std::vector<uint8_t>> ciphertext = key_manager.Seal(
+      key_manager.GetPublicKey(), base::as_byte_span(serialized_entity));
+  ASSERT_TRUE(ciphertext.has_value());
+
+  proto::Entity entity;
+  entity.set_encrypted_entity(
+      std::string(ciphertext->begin(), ciphertext->end()));
+
+  base::HistogramTester histogram_tester;
+  std::optional<proto::Entity> result =
+      personal_context_service()->DecryptEntity(entity);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->entity_case(), proto::Entity::kDriversLicense);
+  EXPECT_EQ(result->drivers_license().name(), "John Smith");
+  EXPECT_EQ(result->drivers_license().number(), "D1234567");
+  EXPECT_EQ(result->drivers_license().state(), "CA");
+  EXPECT_EQ(result->drivers_license().issue_date().year(), 2021);
+  EXPECT_EQ(result->drivers_license().issue_date().month(), 6);
+  EXPECT_EQ(result->drivers_license().issue_date().day(), 1);
+  EXPECT_EQ(result->drivers_license().expiration_date().year(), 2026);
+  EXPECT_EQ(result->drivers_license().expiration_date().month(), 6);
+  EXPECT_EQ(result->drivers_license().expiration_date().day(), 1);
+
+  ASSERT_EQ(result->source_references_size(), 3);
+  EXPECT_EQ(result->source_references(0).photos().photos_url(),
+            "https://photos.google.com/photo/123");
+  EXPECT_EQ(result->source_references(1).photos().photos_url(),
+            "https://photos.google.com/video/456");
+  EXPECT_EQ(result->source_references(2).photos().photos_url(),
+            "https://photos.google.com/album/789");
+
+  histogram_tester.ExpectUniqueSample("PersonalContext.DecryptEntity.Result",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.DecryptEntity.Status",
+      PersonalContextDecryptionStatus::kSuccess, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("PersonalContext.DecryptEntity.Latency", 1);
+}
+
+TEST_F(PersonalContextServiceImplTest, DecryptEntity_IgnoresUnspecifiedAndEmptyFields) {
+  PersonalContextKeyManager key_manager(&pref_service_);
+
+  proto::DecryptedEntity decrypted_entity;
+  decrypted_entity.mutable_passport()->set_full_name("UNSPECIFIED");
+  decrypted_entity.mutable_passport()->set_number("  unspecified  ");
+  decrypted_entity.mutable_passport()->set_issuing_country("");
+
+  // Gmail reference with unspecified message_url should be ignored.
+  proto::DecryptedReference* gmail_ref = decrypted_entity.add_references();
+  gmail_ref->mutable_gmail_message()->set_subject("Subject");
+  gmail_ref->mutable_gmail_message()->set_message_url("UNSPECIFIED");
+
+  // Drive reference with unspecified name should only set url.
+  proto::DecryptedReference* drive_ref = decrypted_entity.add_references();
+  drive_ref->mutable_drive_file()->set_name("   ");
+  drive_ref->mutable_drive_file()->set_url("https://drive.google.com/file/d/456");
+
+  std::string serialized_entity = decrypted_entity.SerializeAsString();
+  std::optional<std::vector<uint8_t>> ciphertext = key_manager.Seal(
+      key_manager.GetPublicKey(), base::as_byte_span(serialized_entity));
+  ASSERT_TRUE(ciphertext.has_value());
+
+  proto::Entity entity;
+  entity.set_encrypted_entity(
+      std::string(ciphertext->begin(), ciphertext->end()));
+
+  std::optional<proto::Entity> result =
+      personal_context_service()->DecryptEntity(entity);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->entity_case(), proto::Entity::kPassport);
+  EXPECT_TRUE(result->passport().name().empty());
+  EXPECT_TRUE(result->passport().number().empty());
+  EXPECT_TRUE(result->passport().issuing_country().empty());
+
+  ASSERT_EQ(result->source_references_size(), 1);
+  EXPECT_TRUE(result->source_references(0).drive().name().empty());
+  EXPECT_EQ(result->source_references(0).drive().url(),
+            "https://drive.google.com/file/d/456");
+}
+
+TEST_F(PersonalContextServiceImplTest, DecryptEntity_DeduplicatesReferences) {
+  PersonalContextKeyManager key_manager(&pref_service_);
+
+  proto::DecryptedEntity decrypted_entity;
+  decrypted_entity.mutable_passport()->set_full_name("Jane Doe");
+
+  // Add duplicate photo references.
+  proto::DecryptedReference* photo1 = decrypted_entity.add_references();
+  photo1->mutable_photo()->set_deeplink_url("https://photos.google.com/photo/123");
+
+  proto::DecryptedReference* photo2 = decrypted_entity.add_references();
+  photo2->mutable_photo()->set_deeplink_url("https://photos.google.com/photo/123");
+
+  std::string serialized_entity = decrypted_entity.SerializeAsString();
+  std::optional<std::vector<uint8_t>> ciphertext = key_manager.Seal(
+      key_manager.GetPublicKey(), base::as_byte_span(serialized_entity));
+  ASSERT_TRUE(ciphertext.has_value());
+
+  proto::Entity entity;
+  entity.set_encrypted_entity(
+      std::string(ciphertext->begin(), ciphertext->end()));
+
+  std::optional<proto::Entity> result =
+      personal_context_service()->DecryptEntity(entity);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->source_references_size(), 1);
+  EXPECT_EQ(result->source_references(0).photos().photos_url(),
+            "https://photos.google.com/photo/123");
+}
+
+TEST_F(PersonalContextServiceImplTest, DecryptEntity_EmptyDecryptedEntityReturnsNullopt) {
+  PersonalContextKeyManager key_manager(&pref_service_);
+
+  proto::DecryptedEntity decrypted_entity;
+  // Neither passport nor drivers_license set.
+
+  std::string serialized_entity = decrypted_entity.SerializeAsString();
+  std::optional<std::vector<uint8_t>> ciphertext = key_manager.Seal(
+      key_manager.GetPublicKey(), base::as_byte_span(serialized_entity));
+  ASSERT_TRUE(ciphertext.has_value());
+
+  proto::Entity entity;
+  entity.set_encrypted_entity(
+      std::string(ciphertext->begin(), ciphertext->end()));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(personal_context_service()->DecryptEntity(entity), std::nullopt);
+
+  histogram_tester.ExpectUniqueSample("PersonalContext.DecryptEntity.Result",
+                                      /*sample=*/false,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "PersonalContext.DecryptEntity.Status",
+      PersonalContextDecryptionStatus::kProtoParseFailed,
+      /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount("PersonalContext.DecryptEntity.Latency", 1);
 }
 

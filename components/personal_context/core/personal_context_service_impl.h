@@ -47,7 +47,7 @@ class PersonalContextServiceImpl : public PersonalContextService {
   void FetchPiiEntities(const proto::FetchPiiEntitiesRequest& request,
                         const ContextMemoryRequestOptions& options,
                         FetchPiiContextCallback callback) override;
-  std::optional<proto::DecryptedEntity> DecryptEntity(
+  std::optional<proto::Entity> DecryptEntity(
       const proto::Entity& entity) override;
 
  private:
