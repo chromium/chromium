@@ -726,6 +726,47 @@ if (!is_android) {
       ]
     }
   }
+
+  source_set("interactive_test_utils") {
+    testonly = true
+    sources = [
+      "interactive_test_utils.cc",
+      "interactive_test_utils.h",
+    ]
+    public_deps = [
+      "//base",
+      "//chrome/browser/ui:view_ids",
+      "//ui/base:test_support",
+      "//ui/display",
+      "//ui/gfx",
+      "//ui/views",
+    ]
+    deps = [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//ui/base",
+      "//ui/events",
+    ]
+    if (toolkit_views) {
+      sources += [ "interactive_test_utils_views.cc" ]
+      deps += [
+        "//ui/base:buildflags",
+        "//ui/compositor",
+      ]
+    }
+    if (use_aura) {
+      sources += [
+        "interactive_test_utils_aura.cc",
+        "interactive_test_utils_aura.h",
+      ]
+      public_deps += [
+        "//chrome/test/base:ui_test_utils",
+        "//ui/aura",
+      ]
+    }
+  }
 }
 
 if (!is_android) {

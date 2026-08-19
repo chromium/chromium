@@ -8042,9 +8042,6 @@ if (!is_android) {
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
       "base/fake_gaia_mixin.cc",
       "base/fake_gaia_mixin.h",
-      "base/interactive_test_utils.cc",
-      "base/interactive_test_utils.h",
-      "base/interactive_test_utils_views.cc",
       "base/mixin_based_in_process_browser_test.cc",
       "base/mixin_based_in_process_browser_test.h",
       "base/web_view_focus_helper.cc",
@@ -8055,8 +8052,8 @@ if (!is_android) {
 
     allow_circular_includes_from = [
       # TODO(crbug.com/353332589): Remove these circular dependencies when
-      # the remaining blocked headers (interactive_test_utils.h,
-      # mixin_based_in_process_browser_test.h, etc.) are fully componentized.
+      # the remaining blocked headers (mixin_based_in_process_browser_test.h,
+      # etc.) are fully componentized.
       "//chrome/browser/privacy_sandbox:attestations_mixin",
       "//chrome/browser/ui/test:dialog",
       "//chrome/test/interaction",
@@ -8083,6 +8080,7 @@ if (!is_android) {
       "//chrome/test/base:devtools_coverage",
       "//chrome/test/base:in_process_browser_test",
       "//chrome/test/base:in_process_browser_test_mixin",
+      "//chrome/test/base:interactive_test_utils",
       "//chrome/test/base:platform_browser_test",
       "//chrome/test/base:save_desktop_snapshot",
       "//chrome/test/base:test_chrome_web_ui_controller_factory",
@@ -8260,10 +8258,6 @@ if (!is_android) {
 
     if (use_aura) {
       deps += [ "//ui/aura:test_support" ]
-      sources += [
-        "base/interactive_test_utils_aura.cc",
-        "base/interactive_test_utils_aura.h",
-      ]
     }
 
     if (is_mac) {
