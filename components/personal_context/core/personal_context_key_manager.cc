@@ -32,9 +32,6 @@ crypto::keypair::PrivateKey GenerateAndStorePrivateKey(PrefService* prefs) {
   // TODO(b/544747336): Call DeviceInfoSyncService::RefreshLocalDeviceInfo()
   // when a new key is generated so that the public key is immediately committed
   // without delay.
-  // TODO(b/544747336): Add an integration test in
-  // SingleClientDeviceInfoSyncTest to verify public key upload to the sync
-  // server.
   return key;
 }
 

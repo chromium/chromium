@@ -48,6 +48,8 @@ source_set("sync_integration_tests_impl") {
     "//components/data_sharing/public",
     "//components/infobars/content",
     "//components/password_manager/core/browser/sharing",
+    "//components/personal_context/core",
+    "//components/personal_context/core:features",
     "//components/reading_list/core:test_support",
     "//components/saved_tab_groups/test_support",
     "//components/search_engines",
