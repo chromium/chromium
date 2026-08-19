@@ -1307,6 +1307,18 @@ inline constexpr char kBrowserLaunchMetadataReportingDescription[] =
     "Enables the collection and reporting of browser launch-related metadata "
     "for Chrome Enterprise, including CLI switches and launch timestamp";
 
+inline constexpr char kBrowserActuatorName[] = "Browser Actuator";
+inline constexpr char kBrowserActuatorDescription[] =
+    "Enables the Browser Actuator service for remote browser automation.";
+
+inline constexpr char
+    kEnableBrowserActuatorForGlicExperimentalTriggeringName[] =
+        "Enable Browser Actuator for Glic Experimental Triggering";
+inline constexpr char
+    kEnableBrowserActuatorForGlicExperimentalTriggeringDescription[] =
+        "Enables using the Browser Actuator transport for Glic experimental "
+        "triggering messages.";
+
 inline constexpr char kBorealisBigGlName[] = "Borealis Big GL";
 inline constexpr char kBorealisBigGlDescription[] =
     "Enable Big GL when running Borealis.";

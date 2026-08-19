@@ -8911,6 +8911,7 @@ from previous Chrome versions.
   <int value="-1788839946" label="YourSavedInfoSettingsPageAndroid:enabled"/>
   <int value="-1788763369" label="PrintingPpdChannel:disabled"/>
   <int value="-1788662002" label="MainNodeAnnotations:enabled"/>
+  <int value="-1788489755" label="BrowserActuator:disabled"/>
   <int value="-1787333474" label="FedCmError:disabled"/>
   <int value="-1786020274" label="AppSpecificHistory:enabled"/>
   <int value="-1785314304"
@@ -12834,6 +12835,8 @@ from previous Chrome versions.
   <int value="-566643324" label="PartitionAllocWithAdvancedChecks:disabled"/>
   <int value="-565368004" label="AutofillCenterAlignedSuggestions:disabled"/>
   <int value="-565155800" label="ImprovedScreenCaptureSettings:disabled"/>
+  <int value="-565003703"
+      label="EnableBrowserActuatorForGlicExperimentalTriggering:enabled"/>
   <int value="-563980787" label="disable-webrtc"/>
   <int value="-563600258" label="PhotoPickerVideoSupport:disabled"/>
   <int value="-563136351"
@@ -14656,6 +14659,7 @@ from previous Chrome versions.
   <int value="2814115" label="webview-mparch-fenced-frames"/>
   <int value="3001424" label="FeatureNotificationGuide:enabled"/>
   <int value="3058782" label="EnableGamepadMultitouch:enabled"/>
+  <int value="3354018" label="BrowserActuator:enabled"/>
   <int value="3428212" label="OmniboxAggregateShortcuts:disabled"/>
   <int value="3807825" label="MobilePromoOnDesktopWithQRCode:disabled"/>
   <int value="3826348" label="DarkenWebsitesCheckboxInThemesSetting:disabled"/>
@@ -18537,6 +18541,8 @@ from previous Chrome versions.
   <int value="1222309415" label="SplitCacheByNetworkIsolationKey:enabled"/>
   <int value="1222525128" label="FirstRunDesktopRevamp:disabled"/>
   <int value="1222808563" label="DisableInitialMostVisitedFadeIn:disabled"/>
+  <int value="1224614750"
+      label="EnableBrowserActuatorForGlicExperimentalTriggering:disabled"/>
   <int value="1224660785" label="ImeSwitchCheckConnectionStatus:disabled"/>
   <int value="1224806430" label="ConsumerAutoUpdateToggleAllowed:enabled"/>
   <int value="1226624874" label="Mus:disabled"/>

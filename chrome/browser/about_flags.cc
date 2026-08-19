@@ -94,6 +94,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/bookmarks/common/bookmark_features.h"
+#include "components/browser_actuator/public/features.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/browser_ui/contacts_picker/android/features.h"
 #include "components/browser_ui/modaldialog/android/features.h"
@@ -10926,6 +10927,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicExperimentalTriggeringDescription,
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kGlicExperimentalTriggering)},
+    {"browser-actuator", flag_descriptions::kBrowserActuatorName,
+     flag_descriptions::kBrowserActuatorDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(browser_actuator::kBrowserActuator)},
+    {"enable-browser-actuator-for-glic-experimental-triggering",
+     flag_descriptions::kEnableBrowserActuatorForGlicExperimentalTriggeringName,
+     flag_descriptions::
+         kEnableBrowserActuatorForGlicExperimentalTriggeringDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         browser_actuator::
+             kEnableBrowserActuatorForGlicExperimentalTriggering)},
     {"glic-settings-a11y-context-fix",
      flag_descriptions::kGlicSettingsA11yContextFixName,
      flag_descriptions::kGlicSettingsA11yContextFixDescription, kOsDesktop,
