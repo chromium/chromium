@@ -55,6 +55,7 @@ class NativePlayback implements Playback {
         mNativeBridge = nativeBridge;
         mWebContents = webContents;
         mMetadata = new NativeMetadata(languageCode, canonicalUrl, playbackMode);
+        mNativeBridge.setPlaybackMode(mMetadata.playbackMode().getValue());
         // Reused across progress updates to prevent heap allocations and GC pauses.
         mPlaybackData =
                 new PlaybackListener.PlaybackData() {

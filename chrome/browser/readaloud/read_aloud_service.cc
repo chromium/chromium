@@ -144,7 +144,9 @@ void ReadAloudService::StopVoicePreview() {
                                                   PlaybackState::kStopped);
   }
 }
-void ReadAloudService::SetPlaybackMode(PlaybackMode mode) {}
+void ReadAloudService::SetPlaybackMode(PlaybackMode mode) {
+  playback_mode_ = mode;
+}
 void ReadAloudService::SetHighlightingEnabled(bool enabled) {}
 void ReadAloudService::SendFeedback(FeedbackType feedback_type) {}
 void ReadAloudService::CheckReadability(const GURL& url) {}
@@ -238,6 +240,11 @@ void ReadAloudService::OnArticleReady(
 
   if (!utility_player_.is_bound()) {
     return;
+  }
+
+  if (playback_mode_ == PlaybackMode::kOverview) {
+    // TODO(b/548552257): Connect to the Page Summary API to summarize the
+    // distilled article before sending to utility_player_.
   }
 
   // Rule of Two Enforcement: Distilled webpage text originates from untrusted

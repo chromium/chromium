@@ -1883,14 +1883,18 @@ public class ReadAloudController
             return promise;
         }
 
-        // If native C++ Read Aloud is enabled and this is a classic article tab playback request,
-        // instantiate a NativePlayback session bridging UI controls to C++ via JNI.
+        // If native C++ Read Aloud is enabled and this is an article tab playback request
+        // (Classic or Overview mode), instantiate a NativePlayback session bridging UI controls
+        // to C++ via JNI.
         // TODO(b/542260163): Support native Overview playback for standalone URLs.
         // TODO(b/542261432): Support native Voice Preview sample playback.
         if (ReadAloudFeatures.isNativeEnabled()
                 && mNativeBridge.isInitialized()
-                && args.isSourceUrl()
-                && args.getPlaybackMode() == PlaybackMode.CLASSIC) {
+                && args.isSourceUrl()) {
+            PlaybackMode playbackMode =
+                    args.getPlaybackMode() != PlaybackMode.UNSPECIFIED
+                            ? args.getPlaybackMode()
+                            : PlaybackMode.CLASSIC;
             Tab activeTab = mActivePlaybackTabSupplier.get();
             WebContents webContents = activeTab != null ? activeTab.getWebContents() : null;
             // Resolve language from playback arguments, falling back to tab or default language.
@@ -1905,11 +1909,7 @@ public class ReadAloudController
             }
             Playback playback =
                     new NativePlayback(
-                            mNativeBridge,
-                            webContents,
-                            language,
-                            args.getSource(),
-                            args.getPlaybackMode());
+                            mNativeBridge, webContents, language, args.getSource(), playbackMode);
             promise.fulfill(playback);
             return promise;
         }

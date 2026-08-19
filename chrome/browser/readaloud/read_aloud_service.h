@@ -193,6 +193,7 @@ class ReadAloudService
 
   // Sets the playback mode (e.g., classic full read or summary overview).
   void SetPlaybackMode(PlaybackMode mode);
+  PlaybackMode playback_mode() const { return playback_mode_; }
 
   // Enables or disables synchronized word highlighting in the UI.
   void SetHighlightingEnabled(bool enabled);
@@ -270,6 +271,7 @@ class ReadAloudService
 
   std::unique_ptr<ReadAloudPlaybackSession> active_session_;
   std::unique_ptr<SpeechSynthesisBroker> speech_synthesis_broker_;
+  PlaybackMode playback_mode_ = PlaybackMode::kClassic;
 
   base::WeakPtrFactory<ReadAloudService> weak_factory_{this};
 };

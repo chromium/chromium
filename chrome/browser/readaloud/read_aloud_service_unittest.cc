@@ -733,4 +733,13 @@ TEST_F(ReadAloudServiceTest, SetPlaybackRateForwardedToUtility) {
   EXPECT_FLOAT_EQ(fake_controller()->last_playback_rate(), 1.5f);
 }
 
+TEST_F(ReadAloudServiceTest, SetPlaybackMode) {
+  EXPECT_EQ(ReadAloudService::PlaybackMode::kClassic,
+            service()->playback_mode());
+
+  service()->SetPlaybackMode(ReadAloudService::PlaybackMode::kOverview);
+  EXPECT_EQ(ReadAloudService::PlaybackMode::kOverview,
+            service()->playback_mode());
+}
+
 }  // namespace readaloud
