@@ -1327,6 +1327,38 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       ReadingShouldRestoreLastSessionAfterRestart) {
+  // Tests that StartupBrowserCreator::ShouldRestoreLastSession caches the
+  // value of kRestoreLastSession during initial startup and returns false
+  // once the StartupBrowserCreator instance destructs.
+  StartupBrowserCreator::was_restore_last_session_read_ = false;
+  StartupBrowserCreator::restore_last_session_active_ = false;
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kRestoreLastSession);
+
+  EXPECT_TRUE(StartupBrowserCreator::ShouldRestoreLastSession(command_line));
+  EXPECT_TRUE(StartupBrowserCreator::ShouldRestoreLastSession(command_line));
+
+  // Simulate destruction of the initial StartupBrowserCreator.
+  {
+    StartupBrowserCreator creator;
+  }
+  EXPECT_FALSE(StartupBrowserCreator::ShouldRestoreLastSession(command_line));
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       ReadingShouldRestoreLastSessionAfterNormalStart) {
+  // Tests that StartupBrowserCreator::ShouldRestoreLastSession returns false
+  // when kRestoreLastSession is absent.
+  StartupBrowserCreator::was_restore_last_session_read_ = false;
+  StartupBrowserCreator::restore_last_session_active_ = false;
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+
+  EXPECT_FALSE(StartupBrowserCreator::ShouldRestoreLastSession(command_line));
+  EXPECT_FALSE(StartupBrowserCreator::ShouldRestoreLastSession(command_line));
+}
+
 // If startup pref is set as LAST_AND_URLS, startup urls should be opened in a
 // new browser window separated from the last-session-restored browser. This
 // test does not apply to ChromeOS.

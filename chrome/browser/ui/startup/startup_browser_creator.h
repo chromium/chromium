@@ -151,6 +151,14 @@ class StartupBrowserCreator {
   // of the preference which is expected to be false as per above.
   static bool WasRestarted();
 
+  // Returns true during browser process startup if the last session should be
+  // restored from switches::kRestoreLastSession. Similar to WasRestarted(),
+  // this only returns true before the first StartupBrowserCreator destructs.
+  // After the first StartupBrowserCreator is destroyed, this function returns
+  // false to ensure subsequent profile launches in the same process honor
+  // their configured On Startup settings.
+  static bool ShouldRestoreLastSession(const base::CommandLine& command_line);
+
   static SessionStartupPref GetSessionStartupPref(
       const base::CommandLine& command_line,
       const Profile* profile);
@@ -178,6 +186,10 @@ class StartupBrowserCreator {
                            ReadingWasRestartedAfterNormalStart);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            ReadingWasRestartedAfterRestart);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
+                           ReadingShouldRestoreLastSessionAfterNormalStart);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
+                           ReadingShouldRestoreLastSessionAfterRestart);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, UpdateWithTwoProfiles);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, LastUsedProfileActivated);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
@@ -265,6 +277,15 @@ class StartupBrowserCreator {
   // member variable instead of a static variable inside WasRestarted because
   // of testing.)
   static bool was_restarted_read_;
+
+  // True if we have already read the kRestoreLastSession switch during process
+  // startup. (A member variable instead of a static variable inside
+  // ShouldRestoreLastSession because of testing.)
+  static bool was_restore_last_session_read_;
+
+  // Caches whether kRestoreLastSession was active during initial process
+  // startup before the initial StartupBrowserCreator is destroyed.
+  static bool restore_last_session_active_;
 
   static bool in_synchronous_profile_launch_;
 

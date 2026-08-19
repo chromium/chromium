@@ -661,10 +661,18 @@ StartupBrowserCreator::~StartupBrowserCreator() {
   // background-extension subsequent startups should not execute restarted
   // behaviors.
   was_restarted_read_ = false;
+  was_restore_last_session_read_ = true;
+  restore_last_session_active_ = false;
 }
 
 // static
 bool StartupBrowserCreator::was_restarted_read_ = false;
+
+// static
+bool StartupBrowserCreator::was_restore_last_session_read_ = false;
+
+// static
+bool StartupBrowserCreator::restore_last_session_active_ = false;
 
 // static
 bool StartupBrowserCreator::in_synchronous_profile_launch_ = false;
@@ -858,6 +866,24 @@ bool StartupBrowserCreator::WasRestarted() {
 }
 
 // static
+bool StartupBrowserCreator::ShouldRestoreLastSession(
+    const base::CommandLine& command_line) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, session restoration is handled by Ash FullRestore, which
+  // dynamically sets switches::kRestoreLastSession when launching a user's
+  // browser session post-login.
+  return command_line.HasSwitch(switches::kRestoreLastSession);
+#else
+  if (!was_restore_last_session_read_) {
+    restore_last_session_active_ =
+        command_line.HasSwitch(switches::kRestoreLastSession);
+    was_restore_last_session_read_ = true;
+  }
+  return restore_last_session_active_;
+#endif
+}
+
+// static
 SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
     const base::CommandLine& command_line,
     const Profile* profile) {
@@ -898,8 +924,7 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
   // However, new profiles can be created from a browser process that has this
   // switch so do not set the session pref to SessionStartupPref::LAST for
   // those as there is nothing to restore.
-  bool restore_last_session =
-      command_line.HasSwitch(switches::kRestoreLastSession);
+  bool restore_last_session = ShouldRestoreLastSession(command_line);
   if ((restore_last_session || did_restart) && !profile->IsNewProfile()) {
     pref.type = SessionStartupPref::LAST;
   }
@@ -929,6 +954,9 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
 // static
 void StartupBrowserCreator::ClearLaunchedProfilesForTesting() {
   ProfileLaunchObserver::ClearForTesting();  // IN-TEST
+  was_restarted_read_ = false;
+  was_restore_last_session_read_ = false;
+  restore_last_session_active_ = false;
 }
 
 // static
