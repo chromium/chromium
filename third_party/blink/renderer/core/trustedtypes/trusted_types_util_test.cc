@@ -126,4 +126,38 @@ TEST(TrustedTypesUtilTest, TrustedTypesCheckForScriptURL_String) {
   test::TaskEnvironment task_environment;
   TrustedTypesCheckForScriptURLThrows("A string");
 }
+
+// Spot checks for IsTrustedTypesEventHandlerAttribute.
+//
+// The main tests are in the WPT repository. Chrome assembles its event
+// handler list from several sources. We spot check a few names here, to
+// ensure that names from the relevant sources are included.
+TEST(TrustedTypesUtilTest, IsTrustedTypesEventHandlerAttribute) {
+  test::TaskEnvironment task_environment;
+
+  // Event handler names declared in IDL:
+  EXPECT_TRUE(IsTrustedTypesEventHandlerAttribute(
+      QualifiedName(g_empty_atom, AtomicString("onclick"), g_empty_atom)));
+  EXPECT_TRUE(IsTrustedTypesEventHandlerAttribute(
+      QualifiedName(g_empty_atom, AtomicString("onload"), g_empty_atom)));
+  EXPECT_TRUE(IsTrustedTypesEventHandlerAttribute(
+      QualifiedName(g_empty_atom, AtomicString("onfocus"), g_empty_atom)));
+
+  // Event handler names declared in event_handler_names:
+  EXPECT_TRUE(IsTrustedTypesEventHandlerAttribute(
+      QualifiedName(g_empty_atom, AtomicString("onfocusin"), g_empty_atom)));
+  EXPECT_TRUE(IsTrustedTypesEventHandlerAttribute(QualifiedName(
+      g_empty_atom, AtomicString("ondomfocusout"), g_empty_atom)));
+  EXPECT_TRUE(IsTrustedTypesEventHandlerAttribute(
+      QualifiedName(g_empty_atom, AtomicString("onunbounded"), g_empty_atom)));
+
+  // Not event handler names:
+  EXPECT_FALSE(IsTrustedTypesEventHandlerAttribute(
+      QualifiedName(g_empty_atom, AtomicString("one"), g_empty_atom)));
+  EXPECT_FALSE(IsTrustedTypesEventHandlerAttribute(
+      QualifiedName(g_empty_atom, AtomicString("two"), g_empty_atom)));
+  EXPECT_FALSE(IsTrustedTypesEventHandlerAttribute(QualifiedName(
+      g_empty_atom, AtomicString("onvrdisplayconnect"), g_empty_atom)));
+}
+
 }  // namespace blink

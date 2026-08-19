@@ -7,6 +7,7 @@ import optparse
 import sys
 
 import web_idl
+import json5
 
 
 # Read the WebIDL database and write a list of all event handler attributes.
@@ -25,9 +26,10 @@ def main(argv):
     parser = optparse.OptionParser()
     parser.add_option("--out")
     parser.add_option("--webidl")
+    parser.add_option("--event-handler-names")
     options, args = parser.parse_args(argv[1:])
 
-    for option in ("out", "webidl"):
+    for option in ("out", "webidl", "event_handler_names"):
         if not getattr(options, option):
             parser.error(f"--{option} is required.")
     if args:
@@ -40,6 +42,12 @@ def main(argv):
         for attribute in interface.attributes:
             if attribute.idl_type.is_event_handler:
                 event_handlers.add(attribute.identifier)
+
+    with open(options.event_handler_names) as f:
+        event_type_names = json5.load(f)
+        for entry in event_type_names["data"]:
+            event_handlers.add(f"on{entry.lower()}")
+
 
     license_and_header = """\
 // Copyright 2022 The Chromium Authors

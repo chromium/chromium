@@ -164,7 +164,7 @@ CORE_EXPORT bool RequireTrustedTypesCheck(const ExecutionContext*);
 // user-defined property names. But Trusted Types needs this for any built-in or
 // user-defined attribute/property, and thus must check against a list of known
 // event handlers.
-bool IsTrustedTypesEventHandlerAttribute(const QualifiedName&);
+CORE_EXPORT bool IsTrustedTypesEventHandlerAttribute(const QualifiedName&);
 
 // Return a string, if the passed-in script value is a literal. With "literal"
 // meaning it passes the checks for TrustedType's fromLiteral definition.

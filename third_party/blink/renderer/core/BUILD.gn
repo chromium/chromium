@@ -1454,6 +1454,7 @@ action("generate_eventhandler_names") {
              "//tools/idl_parser/idl_lexer.py",
              "//tools/idl_parser/idl_node.py",
              "//tools/idl_parser/idl_parser.py",
+             "events/event_type_names.json5",
              web_idl_database_filepath,
              real_script,
            ]
@@ -1468,6 +1469,8 @@ action("generate_eventhandler_names") {
     rebase_path(web_idl_database_filepath, root_build_dir),
     "--out",
     rebase_path(outputs[0], root_build_dir),
+    "--event-handler-names",
+    rebase_path("events/event_type_names.json5", root_build_dir),
   ]
 }
 
