@@ -6,6 +6,7 @@
 
 #include "ash/quick_insert/views/quick_insert_pseudo_focus_handler.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
@@ -96,7 +97,7 @@ TEST(QuickInsertKeyEventHandlerTest, HandlesShiftTabKeyEvent) {
 }
 
 TEST(QuickInsertKeyEventHandlerTest, HandlesLeftArrowLTR) {
-  base::i18n::SetRTLForTesting(false);
+  base::i18n::ScopedRTLForTesting scoped_rtl(false);
   QuickInsertKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
   key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
@@ -108,7 +109,7 @@ TEST(QuickInsertKeyEventHandlerTest, HandlesLeftArrowLTR) {
 }
 
 TEST(QuickInsertKeyEventHandlerTest, HandlesRightArrowLTR) {
-  base::i18n::SetRTLForTesting(false);
+  base::i18n::ScopedRTLForTesting scoped_rtl(false);
   QuickInsertKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
   key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
@@ -120,7 +121,7 @@ TEST(QuickInsertKeyEventHandlerTest, HandlesRightArrowLTR) {
 }
 
 TEST(QuickInsertKeyEventHandlerTest, HandlesLeftArrowRTL) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   QuickInsertKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
   key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);
@@ -132,7 +133,7 @@ TEST(QuickInsertKeyEventHandlerTest, HandlesLeftArrowRTL) {
 }
 
 TEST(QuickInsertKeyEventHandlerTest, HandlesRightArrowRTL) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   QuickInsertKeyEventHandler key_event_handler;
   MockPseudoFocusHandler pseudo_focus_handler;
   key_event_handler.SetActivePseudoFocusHandler(&pseudo_focus_handler);

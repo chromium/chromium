@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/extensions/settings_overridden_dialog.h"
+
 #include <algorithm>
 
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,7 +21,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_settings_overridden_dialog.h"
-#include "chrome/browser/ui/extensions/settings_overridden_dialog.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -395,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
                        ScreenshotRtlLayout) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   RunTestSequence(InstrumentTab(kWebContentsId),
                   SetNewSearchProvider(DefaultSearch::kUseDefault),
                   LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),

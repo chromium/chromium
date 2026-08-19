@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
@@ -138,12 +140,10 @@ TEST_F(TabGroupViewsTest, SingleEmojiHeaderTitleIsVisuallyCentered) {
 }
 
 TEST_F(TabGroupViewsTest, SingleEmojiHeaderTitleIsVisuallyCenteredInRtl) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   SetGroupTitle(u"\U0001F60A");
   EXPECT_EQ(CenteredTitleX() - 1, title_label()->x());
-
-  base::i18n::SetRTLForTesting(false);
 }
 
 // Skin-tone modifier sequence: thumbs-up + medium skin tone. Two codepoints,

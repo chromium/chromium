@@ -11,6 +11,7 @@
 #include "ash/system/focus_mode/focus_mode_tasks_provider.h"
 #include "ash/test/ash_test_base.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -195,7 +196,7 @@ TEST_F(FocusModeChipCarouselTest, GradientOnScroll) {
 
 // Tests that the gradient shows up on the correct side in RTL.
 TEST_F(FocusModeChipCarouselTest, GradientInRTL) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   focus_mode_chip_carousel()->SetTasks(GetTasks(kTestTaskTitles));
   views::test::RunScheduledLayout(focus_mode_chip_carousel());

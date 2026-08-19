@@ -7,6 +7,8 @@
 #include <tuple>
 #include <utility>
 
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/autofill/autofill_ai/mock_autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -47,12 +49,17 @@ class AutofillAiImportDataBubbleViewBrowsertest
   void SetUpOnMainThread() override {
     UiBrowserTest::SetUpOnMainThread();
 
-    base::i18n::SetRTLForTesting(IsBrowserLanguageRTL(this->GetParam()));
+    scoped_rtl_ = std::make_unique<base::i18n::ScopedRTLForTesting>(
+        IsBrowserLanguageRTL(this->GetParam()));
     ON_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
         .WillByDefault(
             Return(IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE));
     ON_CALL(mock_controller(), GetNoticeStringId())
         .WillByDefault(Return(IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE));
+  }
+  void TearDownOnMainThread() override {
+    scoped_rtl_.reset();
+    UiBrowserTest::TearDownOnMainThread();
   }
 
   void DismissUi() override { bubble_ = nullptr; }
@@ -111,6 +118,7 @@ class AutofillAiImportDataBubbleViewBrowsertest
   base::test::ScopedFeatureList features_;
   raw_ptr<AutofillAiImportDataBubbleView> bubble_ = nullptr;
   testing::NiceMock<MockAutofillAiImportDataController> mock_controller_;
+  std::unique_ptr<base::i18n::ScopedRTLForTesting> scoped_rtl_;
 };
 
 // `TypicalPassportCase` here and in other test(s) means that this test creates

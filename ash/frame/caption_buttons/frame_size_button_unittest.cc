@@ -23,6 +23,7 @@
 #include "ash/wm/workspace/phantom_window_controller.h"
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -768,7 +769,7 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuHalfFunctionality) {
 TEST_F(MultitaskMenuTest, HalfButtonRTL) {
   UpdateDisplay("800x600");
 
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   ShowMultitaskMenu();
   LeftClickOn(

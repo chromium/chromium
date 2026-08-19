@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -4344,7 +4345,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInExistingSplitTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInExistingSplitTabRTL) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   const GURL test_url("http://www.example.com/");
   TabStripModel* const tab_strip_model = browser()->GetTabStripModel();

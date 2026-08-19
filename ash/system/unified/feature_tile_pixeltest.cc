@@ -13,6 +13,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/ui_base_features.h"
@@ -168,7 +169,7 @@ TEST_F(FeatureTilePixelTest, PrimaryTileWithoutDiveInButton) {
 
 TEST_F(FeatureTilePixelTest, PrimaryTile_RTL) {
   // Turn on RTL mode.
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   EXPECT_TRUE(base::i18n::IsRTL());
 
   auto* tile = CreateQSFeatureTileBase(widget_.get());

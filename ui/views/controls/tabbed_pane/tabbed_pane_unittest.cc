@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -275,7 +276,7 @@ TEST_F(TabbedPaneWithWidgetTest, ArrowKeyBindings) {
 
 TEST_F(TabbedPaneWithWidgetTest, ArrowKeyBindingsWithRTL) {
   // Add several tabs; only the first should be selected automatically.
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   EXPECT_TRUE(base::i18n::IsRTL());
   for (size_t i = 0; i < 3; ++i) {
     tabbed_pane_->AddTab(DefaultTabTitle(), std::make_unique<View>());
@@ -307,8 +308,6 @@ TEST_F(TabbedPaneWithWidgetTest, ArrowKeyBindingsWithRTL) {
   // Right arrow again should wrap to tab 0:
   SendKeyPressToSelectedTab(ui::VKEY_RIGHT);
   EXPECT_EQ(0u, tabbed_pane_->GetSelectedTabIndex());
-
-  base::i18n::SetRTLForTesting(false);
 }
 
 // Use TabbedPane::HandleAccessibleAction() to select tabs and make sure their

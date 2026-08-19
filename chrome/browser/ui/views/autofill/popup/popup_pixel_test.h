@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_PIXEL_TEST_H_
 
 #include <concepts>
+#include <optional>
 #include <string>
 #include <tuple>
 
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
@@ -62,7 +64,7 @@ class PopupPixelTest : public UiBrowserTest,
 
   void SetUpOnMainThread() override {
     UiBrowserTest::SetUpOnMainThread();
-    base::i18n::SetRTLForTesting(IsBrowserLanguageRTL(this->GetParam()));
+    scoped_rtl_.emplace(IsBrowserLanguageRTL(this->GetParam()));
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -96,6 +98,7 @@ class PopupPixelTest : public UiBrowserTest,
   void TearDownOnMainThread() override {
     EXPECT_CALL(controller_, ViewDestroyed);
     view_ = nullptr;
+    scoped_rtl_.reset();
     UiBrowserTest::TearDownOnMainThread();
   }
 
@@ -107,6 +110,7 @@ class PopupPixelTest : public UiBrowserTest,
  private:
   testing::NiceMock<Controller> controller_;
   raw_ptr<View> view_ = nullptr;
+  std::optional<base::i18n::ScopedRTLForTesting> scoped_rtl_;
 };
 
 }  // namespace autofill

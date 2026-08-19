@@ -5,9 +5,11 @@
 #ifndef CHROME_TEST_DATA_WEBUI_WEBUI_COMPOSEBOX_PIXEL_TEST_H_
 #define CHROME_TEST_DATA_WEBUI_WEBUI_COMPOSEBOX_PIXEL_TEST_H_
 
+#include <optional>
 #include <string>
 
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
@@ -49,8 +51,11 @@ const char kDisableAnimationsJs[] = R"((el) => {
 // Base class for WebUI ComposeBox pixel tests.
 class WebUIComposeBoxPixelTest : public InteractiveBrowserTest {
  public:
-  void SetUpOnMainThread() override;
+  WebUIComposeBoxPixelTest();
+  ~WebUIComposeBoxPixelTest() override;
 
+  void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
   // Sets up the environment in the active tab. Disables animations
   // to prevent flakiness. Must pass in a ElementIdentifier for the tab to
   // instrument so it is accessible from the test body.
@@ -83,6 +88,8 @@ class WebUIComposeBoxPixelTest : public InteractiveBrowserTest {
   bool rtl_ = false;
   // Whether the test is running in dark mode.
   bool dark_mode_ = false;
+
+  std::optional<base::i18n::ScopedRTLForTesting> scoped_rtl_;
 };
 
 // Struct for ComposeBox pixel test params.

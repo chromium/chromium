@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -743,41 +744,46 @@ TEST_F(DownloadItemModelTest, GetBubbleStatusMessageWithBytes) {
     }
   };
 
-  base::i18n::SetRTLForTesting(true);
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
-  // Arabic
-  auto* arabic_bytes = L"5 \x062A";
-  auto* arabic_status = L"\x0645";
-  std::u16string arabic =
-      StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
-          base::WideToUTF16(arabic_bytes), base::WideToUTF16(arabic_status));
-  std::vector<int> expected_arabic =
+    // Arabic
+    auto* arabic_bytes = L"5 \x062A";
+    auto* arabic_status = L"\x0645";
+    std::u16string arabic =
+        StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
+            base::WideToUTF16(arabic_bytes), base::WideToUTF16(arabic_status));
+    std::vector<int> expected_arabic =
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_POSIX)
-      {8207, 8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236, 8207};
+        {8207, 8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236, 8207};
 #else
-      {8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236};
+        {8235, 53, 32, 1578, 32, 8226, 32, 1605, 8236};
 #endif
-  compare_results(arabic, expected_arabic);
+    compare_results(arabic, expected_arabic);
 
-  // Hebrew
-  auto* hebrew_status = L"\x05D0";
-  std::u16string hebrew =
-      StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
-          u"5 MB", base::WideToUTF16(hebrew_status));
-  std::vector<int> expected_hebrew =
+    // Hebrew
+    auto* hebrew_status = L"\x05D0";
+    std::u16string hebrew =
+        StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(
+            u"5 MB", base::WideToUTF16(hebrew_status));
+    std::vector<int> expected_hebrew =
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_POSIX)
-      {8207, 8235, 8234, 53, 32, 77, 66, 8236, 32, 8226, 32, 1488, 8236, 8207};
+        {8207, 8235, 8234, 53, 32,   77,   66,
+         8236, 32,   8226, 32, 1488, 8236, 8207};
 #else
-      {8235, 8234, 53, 32, 77, 66, 8236, 32, 8226, 32, 1488, 8236};
+        {8235, 8234, 53, 32, 77, 66, 8236, 32, 8226, 32, 1488, 8236};
 #endif
-  compare_results(hebrew, expected_hebrew);
+    compare_results(hebrew, expected_hebrew);
+  }
 
-  // English
-  base::i18n::SetRTLForTesting(false);
-  std::u16string english =
-      StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(u"5 MB", u"A");
-  std::vector<int> expected_english = {53, 32, 77, 66, 32, 8226, 32, 65};
-  compare_results(english, expected_english);
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(false);
+    // English
+    std::u16string english =
+        StatusTextBuilderUtils::GetBubbleStatusMessageWithBytes(u"5 MB", u"A");
+    std::vector<int> expected_english = {53, 32, 77, 66, 32, 8226, 32, 65};
+    compare_results(english, expected_english);
+  }
 }
 
 TEST_F(DownloadItemModelTest, ShouldShowInUi) {

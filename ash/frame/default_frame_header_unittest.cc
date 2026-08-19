@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/icu_test_util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -96,7 +97,7 @@ TEST_F(DefaultFrameHeaderTest, MinimumHeaderWidthRTL) {
       widget.get(), widget->non_client_view()->frame_view(), &container);
   frame_header.LayoutHeader();
   int ltr_minimum_width = frame_header.GetMinimumHeaderWidth();
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   frame_header.LayoutHeader();
   int rtl_minimum_width = frame_header.GetMinimumHeaderWidth();
   EXPECT_EQ(ltr_minimum_width, rtl_minimum_width);

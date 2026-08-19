@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -487,10 +488,7 @@ IN_PROC_BROWSER_TEST_P(NtpPromoVisualUiTest, Screenshots) {
 
   os_settings_provider().SetPreferredColorScheme(GetParam().color_scheme);
 
-  if (GetParam().rtl) {
-    base::i18n::SetRTLForTesting(true);
-  }
-
+  base::i18n::ScopedRTLForTesting scoped_rtl(GetParam().rtl);
   if (GetParam().long_text) {
     // Override promo text to very long (and short) strings, to exercise the
     // promos growing to fit (nor not shrinking unexpectedly).

@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
@@ -282,7 +283,7 @@ TEST_F(AutoclickMenuBubbleControllerTest, ScrollBubbleDefaultPositioning) {
   for (auto& test : kTestCases) {
     // These positions should be relative to the corners of the screen
     // whether we are in RTL or LTR.
-    base::i18n::SetRTLForTesting(test.is_RTL);
+    base::i18n::ScopedRTLForTesting scoped_rtl(test.is_RTL);
 
     // When the menu is in the top right, the scroll view should be directly
     // under it and along the right side of the screen.
@@ -340,7 +341,7 @@ TEST_F(AutoclickMenuBubbleControllerTest,
   };
   for (auto& test : kTestCases) {
     UpdateDisplay(test.display_spec);
-    base::i18n::SetRTLForTesting(test.is_RTL);
+    base::i18n::ScopedRTLForTesting scoped_rtl(test.is_RTL);
     gfx::Rect scroll_bounds = test.scroll_bounds;
     controller->SetAutoclickMenuPosition(FloatingMenuPosition::kTopRight);
 
@@ -474,7 +475,7 @@ TEST_F(AutoclickMenuBubbleControllerTest,
        false, false, true /* on bottom */},
   };
   for (auto& test : kTestCases) {
-    base::i18n::SetRTLForTesting(test.is_RTL);
+    base::i18n::ScopedRTLForTesting scoped_rtl(test.is_RTL);
     gfx::Rect scroll_bounds = test.scroll_bounds;
     gfx::Point scroll_point = test.scroll_point;
     GetBubbleController()->SetScrollPosition(scroll_bounds, scroll_point);

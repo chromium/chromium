@@ -60,6 +60,8 @@
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2548,7 +2550,7 @@ TEST_F(SavedDeskTest, TemplatesNameHitTest) {
 
   for (bool is_rtl : {true, false}) {
     SCOPED_TRACE(is_rtl ? "rtl" : "ltr");
-    base::i18n::SetRTLForTesting(is_rtl);
+    base::i18n::ScopedRTLForTesting scoped_rtl(is_rtl);
 
     AddEntry(base::Uuid::GenerateRandomV4(), "a", base::Time::Now(),
              DeskTemplateType::kTemplate);

@@ -6,6 +6,8 @@
 
 #include "base/check_deref.h"
 #include "base/containers/extend.h"
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -442,9 +444,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiScreenshotTest, MAYBE_Screenshots) {
 
   os_settings_provider().SetPreferredColorScheme(GetParam().color_scheme);
 
-  if (GetParam().rtl) {
-    base::i18n::SetRTLForTesting(true);
-  }
+  base::i18n::ScopedRTLForTesting scoped_rtl(GetParam().rtl);
 
   // Disable compose button animation to prevent screenshot variations.
   browser()->GetProfile()->GetPrefs()->SetInteger(

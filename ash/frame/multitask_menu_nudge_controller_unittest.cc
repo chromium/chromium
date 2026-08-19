@@ -23,6 +23,8 @@
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/ui/base/nudge_util.h"
@@ -338,7 +340,7 @@ TEST_F(MultitaskMenuNudgeControllerTest, ClamshellNudgeBounds) {
   test_clock_.Advance(base::Hours(26));
 
   // Test the same thing in RTL.
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   window = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300});
   WindowState::Get(window.get())->Maximize();
   nudge_widget = GetNudgeWidgetForWindow(window.get());

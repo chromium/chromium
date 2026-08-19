@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -574,11 +575,12 @@ class MenuControllerTest : public ViewsTestBase,
   std::unique_ptr<TestMenuControllerDelegate> menu_controller_delegate_;
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   raw_ptr<MenuController> menu_controller_ = nullptr;
+  std::optional<base::i18n::ScopedRTLForTesting> scoped_rtl_;
 };
 
 void MenuControllerTest::SetUp() {
   if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
-    base::i18n::SetRTLForTesting(GetParam());
+    scoped_rtl_.emplace(GetParam());
   }
 
   set_views_delegate(std::make_unique<test::ReleaseRefTestViewsDelegate>());
@@ -619,7 +621,7 @@ void MenuControllerTest::TearDown() {
   // factory that `TearDown()` will destroy.
   menu_item_.reset();
   ViewsTestBase::TearDown();
-  base::i18n::SetRTLForTesting(false);
+  scoped_rtl_.reset();
 }
 
 void MenuControllerTest::ReleaseTouchId(int id) {
@@ -2339,17 +2341,17 @@ TEST_F(MenuControllerTest, MenuAnchorPositionFlippedInRtl) {
               AdjustAnchorPositionForRtl(position.mirrored_position));
   }
 
-  base::i18n::SetRTLForTesting(true);
+  {
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
-  // Anchor positions are left/right flipped in RTL.
-  for (const auto& position : kPositions) {
-    EXPECT_EQ(position.mirrored_position,
-              AdjustAnchorPositionForRtl(position.original_position));
-    EXPECT_EQ(position.original_position,
-              AdjustAnchorPositionForRtl(position.mirrored_position));
+    // Anchor positions are left/right flipped in RTL.
+    for (const auto& position : kPositions) {
+      EXPECT_EQ(position.mirrored_position,
+                AdjustAnchorPositionForRtl(position.original_position));
+      EXPECT_EQ(position.original_position,
+                AdjustAnchorPositionForRtl(position.mirrored_position));
+    }
   }
-
-  base::i18n::SetRTLForTesting(false);
 }
 
 TEST_F(MenuControllerTest, CalculateMenuBoundsMonitorFitTest) {

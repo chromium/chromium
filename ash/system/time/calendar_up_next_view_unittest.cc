@@ -15,6 +15,8 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -300,7 +302,7 @@ TEST_F(CalendarUpNextViewTest,
   EXPECT_EQ(ScrollPosition(), 0);
 
   // Sets the UI to be RTL.
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   // Press scroll right. We should scroll past the first event + margin.
   const int first_event_width =

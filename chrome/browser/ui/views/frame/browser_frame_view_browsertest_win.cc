@@ -5,6 +5,8 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -165,7 +167,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(CaptionButtonContainerTest,
                        VerifyCaptionButtonHitTestResults) {
   const bool is_rtl = GetParam();
-  base::i18n::SetRTLForTesting(is_rtl);
+  base::i18n::ScopedRTLForTesting scoped_rtl(is_rtl);
 
   auto* frame_view = GetBrowserFrameViewWin();
   auto* maximize_button = GetMaximizeButton();
@@ -277,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, MaximizedLayout) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, RTLTopRightHitTest) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   InstallAndLaunchWebApp();
   RunScheduledLayouts();
 

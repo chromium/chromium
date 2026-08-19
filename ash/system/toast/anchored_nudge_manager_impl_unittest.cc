@@ -20,6 +20,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -302,37 +303,41 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithRTL) {
   int shelf_size = ShelfConfig::Get()->shelf_size();
   gfx::Rect nudge_bounds;
 
-  // Turn on RTL mode.
-  base::i18n::SetRTLForTesting(true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(base::i18n::IsRTL());
+  {
+    // Turn on RTL mode.
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(base::i18n::IsRTL());
 
-  // Show nudge on its default location by not providing an anchor view.
-  const std::string id("id");
-  auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
-  GetAnchoredNudgeManager()->Show(nudge_data);
+    // Show nudge on its default location by not providing an anchor view.
+    const std::string id("id");
+    auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
+    GetAnchoredNudgeManager()->Show(nudge_data);
 
-  // The nudge should be shown on the leading bottom corner of the work area,
-  // which for RTL languages is the bottom-right.
-  shelf->SetAlignment(ShelfAlignment::kBottom);
-  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
-  EXPECT_EQ(nudge_bounds.right(), display_bounds.right());
-  EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
+    // The nudge should be shown on the leading bottom corner of the work area,
+    // which for RTL languages is the bottom-right.
+    shelf->SetAlignment(ShelfAlignment::kBottom);
+    nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
+    EXPECT_EQ(nudge_bounds.right(), display_bounds.right());
+    EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 
-  shelf->SetAlignment(ShelfAlignment::kLeft);
-  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
-  EXPECT_EQ(nudge_bounds.right(), display_bounds.right());
-  EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
+    shelf->SetAlignment(ShelfAlignment::kLeft);
+    nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
+    EXPECT_EQ(nudge_bounds.right(), display_bounds.right());
+    EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
 
-  shelf->SetAlignment(ShelfAlignment::kRight);
-  nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
-  EXPECT_EQ(nudge_bounds.right(), display_bounds.right() - shelf_size);
-  EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
+    shelf->SetAlignment(ShelfAlignment::kRight);
+    nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
+    EXPECT_EQ(nudge_bounds.right(), display_bounds.right() - shelf_size);
+    EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom());
+  }
+  {
+    // Turn off RTL mode.
+    base::i18n::ScopedRTLForTesting scoped_rtl(false);
+    base::RunLoop().RunUntilIdle();
 
-  // Turn off RTL mode.
-  base::i18n::SetRTLForTesting(false);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(base::i18n::IsRTL());
+    EXPECT_FALSE(base::i18n::IsRTL());
+  }
 }
 
 // Tests that a nudge without an anchor view updates its baseline based on the
@@ -1415,45 +1420,48 @@ TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_BottomRight) {
 
 // Tests that a nudge with an anchor widget is placed on the right on RTL.
 TEST_F(AnchoredNudgeManagerImplTest, AnchorInsideWidget_WithRTL) {
-  // Turn on RTL mode.
-  base::i18n::SetRTLForTesting(true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(base::i18n::IsRTL());
+  {
+    // Turn on RTL mode.
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(base::i18n::IsRTL());
 
-  std::unique_ptr<views::Widget> anchor_widget =
-      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  anchor_widget->SetBounds(
-      gfx::Rect(gfx::Point(100, 100), gfx::Size(300, 200)));
+    std::unique_ptr<views::Widget> anchor_widget =
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    anchor_widget->SetBounds(
+        gfx::Rect(gfx::Point(100, 100), gfx::Size(300, 200)));
 
-  // Set up nudge data contents.
-  const std::string id("id");
-  auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
-  nudge_data.anchor_widget = anchor_widget.get();
-  nudge_data.arrow = views::BubbleBorder::Arrow::BOTTOM_LEFT;
+    // Set up nudge data contents.
+    const std::string id("id");
+    auto nudge_data = CreateBaseNudgeData(id, /*anchor_view=*/nullptr);
+    nudge_data.anchor_widget = anchor_widget.get();
+    nudge_data.arrow = views::BubbleBorder::Arrow::BOTTOM_LEFT;
 
-  // `anchor_widget` exists, will anchor inside the widget.
-  GetAnchoredNudgeManager()->Show(nudge_data);
-  auto* nudge = GetShownNudge(id);
-  EXPECT_TRUE(nudge);
+    // `anchor_widget` exists, will anchor inside the widget.
+    GetAnchoredNudgeManager()->Show(nudge_data);
+    auto* nudge = GetShownNudge(id);
+    EXPECT_TRUE(nudge);
 
-  auto* nudge_widget = nudge->GetWidget();
-  EXPECT_TRUE(nudge_widget);
+    auto* nudge_widget = nudge->GetWidget();
+    EXPECT_TRUE(nudge_widget);
 
-  auto nudge_bounds = nudge_widget->GetWindowBoundsInScreen();
-  auto anchor_widget_bounds = anchor_widget->GetWindowBoundsInScreen();
+    auto nudge_bounds = nudge_widget->GetWindowBoundsInScreen();
+    auto anchor_widget_bounds = anchor_widget->GetWindowBoundsInScreen();
 
-  // Compare the bounds alignment with the `kBubbleBorderInsets`.
-  // The nudge should be shown on the leading bottom corner of the
-  // `anchor_widget`, which for RTL languages is the bottom-right.
-  EXPECT_EQ(nudge_bounds.bottom_right(),
-            anchor_widget_bounds.bottom_right() +
-                gfx::Vector2d(-kBubbleBorderInsets.right(),
-                              -kBubbleBorderInsets.bottom()));
-
-  // Turn off RTL mode.
-  base::i18n::SetRTLForTesting(false);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(base::i18n::IsRTL());
+    // Compare the bounds alignment with the `kBubbleBorderInsets`.
+    // The nudge should be shown on the leading bottom corner of the
+    // `anchor_widget`, which for RTL languages is the bottom-right.
+    EXPECT_EQ(nudge_bounds.bottom_right(),
+              anchor_widget_bounds.bottom_right() +
+                  gfx::Vector2d(-kBubbleBorderInsets.right(),
+                                -kBubbleBorderInsets.bottom()));
+  }
+  {
+    // Turn off RTL mode.
+    base::i18n::ScopedRTLForTesting scoped_rtl(false);
+    base::RunLoop().RunUntilIdle();
+    EXPECT_FALSE(base::i18n::IsRTL());
+  }
 }
 
 // Tests that a nudge is anchored at the bottom left corner of its anchor

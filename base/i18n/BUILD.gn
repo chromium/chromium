@@ -84,8 +84,14 @@ source_set("time_formatting_types") {
 
 source_set("test_support") {
   testonly = true
-  public = [ "test/scoped_icu_locale.h" ]
-  sources = [ "test/scoped_icu_locale.cc" ]
+  public = [
+    "test/scoped_icu_locale.h",
+    "test/scoped_rtl_for_testing.h",
+  ]
+  sources = [
+    "test/scoped_icu_locale.cc",
+    "test/scoped_rtl_for_testing.cc",
+  ]
   public_deps = [ "//base:i18n" ]
 }
 

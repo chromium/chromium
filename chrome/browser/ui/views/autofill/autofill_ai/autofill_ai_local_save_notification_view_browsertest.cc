@@ -8,6 +8,8 @@
 #include <tuple>
 #include <utility>
 
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/autofill/autofill_ai/mock_autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -36,10 +38,15 @@ class AutofillAiLocalSaveNotificationViewBrowsertest
   // BrowserTestBase:
   void SetUpOnMainThread() override {
     UiBrowserTest::SetUpOnMainThread();
-    base::i18n::SetRTLForTesting(IsBrowserLanguageRTL(this->GetParam()));
+    scoped_rtl_.emplace(IsBrowserLanguageRTL(this->GetParam()));
   }
 
   void DismissUi() override { bubble_ = nullptr; }
+
+  void TearDownOnMainThread() override {
+    scoped_rtl_.reset();
+    UiBrowserTest::TearDownOnMainThread();
+  }
 
   static bool IsDarkModeOn(const TestParameterType& param) {
     return std::get<0>(param);
@@ -89,6 +96,7 @@ class AutofillAiLocalSaveNotificationViewBrowsertest
  private:
   NiceMock<MockAutofillAiImportDataController> mock_controller_;
   raw_ptr<AutofillAiLocalSaveNotificationView> bubble_ = nullptr;
+  std::optional<base::i18n::ScopedRTLForTesting> scoped_rtl_;
 };
 
 IN_PROC_BROWSER_TEST_P(AutofillAiLocalSaveNotificationViewBrowsertest,

@@ -7,6 +7,8 @@
 #include <optional>
 #include <string>
 
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -1233,9 +1235,11 @@ class PageActionAnchoredMessagePixelTest
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
-    if (GetParam().rtl) {
-      base::i18n::SetRTLForTesting(true);
-    }
+    scoped_rtl_.emplace(GetParam().rtl);
+  }
+  void TearDownOnMainThread() override {
+    scoped_rtl_.reset();
+    InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   std::optional<AnchoredMessageExpandableContent> GetExpandableContent() const {
@@ -1279,6 +1283,7 @@ class PageActionAnchoredMessagePixelTest
 
  private:
   ui::MockOsSettingsProvider os_settings_provider_;
+  std::optional<base::i18n::ScopedRTLForTesting> scoped_rtl_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

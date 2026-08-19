@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
@@ -683,34 +684,38 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
       ->GetProfile()
       ->GetPrefs()
       ->SetBoolean(prefs::kSidePanelHorizontalAlignment, true);
-  // Set UI direction to LTR
-  base::i18n::SetRTLForTesting(false);
-  coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
-                        SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   auto* const side_panel = GetSidePanel();
   const int starting_width = 500;
-  side_panel->SetPanelWidth(starting_width);
-  views::test::RunScheduledLayout(
-      BrowserView::GetBrowserViewForBrowser(browser()));
-  EXPECT_EQ(side_panel->width(), starting_width);
-
   const int increment = 20;
-  side_panel->OnResize(increment, true);
-  views::test::RunScheduledLayout(
-      BrowserView::GetBrowserViewForBrowser(browser()));
-  EXPECT_EQ(side_panel->width(), starting_width - increment);
+  {
+    // Set UI direction to LTR
+    base::i18n::ScopedRTLForTesting scoped_rtl(false);
+    coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
+                          SidePanelOpenTrigger::kPinnedEntryToolbarButton);
+    side_panel->SetPanelWidth(starting_width);
+    views::test::RunScheduledLayout(
+        BrowserView::GetBrowserViewForBrowser(browser()));
+    EXPECT_EQ(side_panel->width(), starting_width);
 
-  // Set UI direction to RTL
-  base::i18n::SetRTLForTesting(true);
-  side_panel->SetPanelWidth(starting_width);
-  views::test::RunScheduledLayout(
-      BrowserView::GetBrowserViewForBrowser(browser()));
-  EXPECT_EQ(side_panel->width(), starting_width);
+    side_panel->OnResize(increment, true);
+    views::test::RunScheduledLayout(
+        BrowserView::GetBrowserViewForBrowser(browser()));
+    EXPECT_EQ(side_panel->width(), starting_width - increment);
+  }
 
-  side_panel->OnResize(increment, true);
-  views::test::RunScheduledLayout(
-      BrowserView::GetBrowserViewForBrowser(browser()));
-  EXPECT_EQ(side_panel->width(), starting_width + increment);
+  {
+    // Set UI direction to RTL
+    base::i18n::ScopedRTLForTesting scoped_rtl(true);
+    side_panel->SetPanelWidth(starting_width);
+    views::test::RunScheduledLayout(
+        BrowserView::GetBrowserViewForBrowser(browser()));
+    EXPECT_EQ(side_panel->width(), starting_width);
+
+    side_panel->OnResize(increment, true);
+    views::test::RunScheduledLayout(
+        BrowserView::GetBrowserViewForBrowser(browser()));
+    EXPECT_EQ(side_panel->width(), starting_width + increment);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {

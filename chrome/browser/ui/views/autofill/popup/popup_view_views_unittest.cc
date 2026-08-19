@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -1024,7 +1026,7 @@ TEST_F(PopupViewViewsTest, KeyboardFocusIsNotCapturedAutomaticallyForSubPopup) {
 
 TEST_F(PopupViewViewsTest,
        KeyboardFocusIsNotCapturedAutomaticallyForSubPopupRTL) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   CreateAndShowView({SuggestionType::kAddressEntry});
   auto [sub_controller, sub_view] = OpenSubView(view());
@@ -1033,8 +1035,6 @@ TEST_F(PopupViewViewsTest,
   SimulateKeyPress(ui::VKEY_LEFT, *sub_view);
   SimulateKeyPress(ui::VKEY_DOWN, *sub_view);
   EXPECT_TRUE(sub_view->GetSelectedCell().has_value());
-
-  base::i18n::SetRTLForTesting(false);
 }
 
 TEST_F(PopupViewViewsTest, CursorUpDownForSelectableCells) {
@@ -1215,7 +1215,7 @@ TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandled) {
 }
 
 TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandledForRTL) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   // The control cell is present in suggestions with children.
   controller().set_suggestions({CreateSuggestionWithChildren(
@@ -1238,8 +1238,6 @@ TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandledForRTL) {
 
   EXPECT_FALSE(SimulateKeyPress(ui::VKEY_LEFT));
   EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
-
-  base::i18n::SetRTLForTesting(false);
 }
 
 TEST_F(PopupViewViewsTest, LeftAndRightKeyEventsAreHandledWithoutControl) {
@@ -1380,7 +1378,7 @@ TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs) {
 }
 
 TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs_RTL) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   AutofillPopupView::TabbedPaneConfig tabbed_pane_config(
       {{TabbedPaneTabType::kPayNow, u"Pay Now Test"},
@@ -1402,8 +1400,6 @@ TEST_F(PopupViewViewsTest, TabbedPane_HorizontalKeyEventsSwitchTabs_RTL) {
   // In RTL, pressing right should navigate to the previous tab.
   EXPECT_CALL(controller(), OnTabSelected(0, TabbedPaneTabType::kPayNow));
   SimulateKeyPress(ui::VKEY_RIGHT);
-
-  base::i18n::SetRTLForTesting(false);
 }
 
 TEST_F(PopupViewViewsTest, MovingSelectionSkipsSeparator) {
@@ -1744,7 +1740,7 @@ TEST_F(PopupViewViewsTest, ComposeSuggestion_LeftAndRightKeyEventsAreHandled) {
 
 TEST_F(PopupViewViewsTest,
        ComposeSuggestion_LeftAndRightKeyEventsAreHandledForRTL) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   controller().set_suggestions({CreateSuggestionWithChildren(
       SuggestionType::kComposeProactiveNudge,
@@ -1768,8 +1764,6 @@ TEST_F(PopupViewViewsTest,
 
   EXPECT_FALSE(SimulateKeyPress(ui::VKEY_LEFT));
   EXPECT_EQ(view().GetSelectedCell()->second, CellType::kControl);
-
-  base::i18n::SetRTLForTesting(false);
 }
 
 TEST_F(

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -319,7 +320,7 @@ TEST_F(PopupNoticeViewTest, NavigateToNoticeView) {
 // RIGHT/LEFT keyboard navigation moves it between the link and the accept
 // button in LTR.
 TEST_F(PopupNoticeViewTest, NavigateInsideOfNoticeView) {
-  base::i18n::SetRTLForTesting(false);
+  base::i18n::ScopedRTLForTesting scoped_rtl(false);
   ShowView();
 
   views::FocusRing* button_focus_ring =
@@ -360,7 +361,7 @@ TEST_F(PopupNoticeViewTest, NavigateInsideOfNoticeView) {
 // RIGHT/LEFT keyboard navigation moves it between the link and the accept
 // button in RTL.
 TEST_F(PopupNoticeViewTest, NavigateInsideOfNoticeViewRTL) {
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
   ShowView();
 
   views::FocusRing* button_focus_ring =
@@ -395,8 +396,6 @@ TEST_F(PopupNoticeViewTest, NavigateInsideOfNoticeViewRTL) {
   EXPECT_EQ(test_api(view()).accept_button()->GetState(),
             views::Button::STATE_NORMAL);
   EXPECT_FALSE(button_focus_ring->ShouldPaintForTesting());
-
-  base::i18n::SetRTLForTesting(false);
 }
 
 // Tests that when navigation focus leaves the notice view while the link is

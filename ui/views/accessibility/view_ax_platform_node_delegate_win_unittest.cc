@@ -12,6 +12,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/win/scoped_bstr.h"
@@ -1078,7 +1080,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_RTL) {
   constexpr gfx::Range kRange5 = gfx::Range(4, 5);
   constexpr gfx::Range kRange6 = gfx::Range(0, 5);
 
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   constexpr int kGlyphWidth = 5;
   gfx::Rect textfield_bounds = gfx::Rect(0, 0, 15 * kGlyphWidth, 100);
@@ -1175,7 +1177,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_RTL) {
   constexpr gfx::Range kRange5 = gfx::Range(4, 5);
   constexpr gfx::Range kRange6 = gfx::Range(0, 5);
 
-  base::i18n::SetRTLForTesting(true);
+  base::i18n::ScopedRTLForTesting scoped_rtl(true);
 
   label_->SetText(kText);
   label_->SetBoundsRect(gfx::Rect(0, 0, 10 * kGlyphWidth, 100));
@@ -1291,7 +1293,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
-  base::i18n::SetRTLForTesting(false);
+  base::i18n::ScopedRTLForTesting scoped_rtl(false);
 
   constexpr int kGlyphWidth = 5;
 

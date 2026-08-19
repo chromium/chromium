@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <string>
 #include <string_view>
@@ -16,6 +17,7 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -272,11 +274,12 @@ class OmniboxViewViewsTestBase : public ChromeViewsTestBase {
       bool is_rtl_ui_test = false) {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
-    base::i18n::SetRTLForTesting(is_rtl_ui_test);
+    scoped_rtl_.emplace(is_rtl_ui_test);
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<base::i18n::ScopedRTLForTesting> scoped_rtl_;
 };
 
 class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {

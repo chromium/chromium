@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -118,7 +121,7 @@ class PasswordBubbleBrowserTest
   void ShowUi(const std::string& name) override {
     const auto& [sync_config, is_rtl, experiment_feature] = GetParam();
     ConfigurePasswordSync(sync_config);
-    base::i18n::SetRTLForTesting(is_rtl);
+    scoped_rtl_.emplace(is_rtl);
     if (StartsWith(name, "PendingPasswordBubble",
                    base::CompareCase::SENSITIVE)) {
       SetupPendingPassword();
@@ -174,6 +177,7 @@ class PasswordBubbleBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<base::i18n::ScopedRTLForTesting> scoped_rtl_;
 };
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,

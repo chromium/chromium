@@ -5,6 +5,7 @@
 #ifndef BASE_I18N_TEST_SCOPED_ICU_LOCALE_H_
 #define BASE_I18N_TEST_SCOPED_ICU_LOCALE_H_
 
+#include "base/i18n/base_i18n_export.h"
 #include "base/i18n/language_tag.h"
 
 namespace base::i18n {

@@ -4,10 +4,21 @@
 
 #include "chrome/test/data/webui/webui_composebox_pixel_test.h"
 
+#include "base/i18n/rtl.h"
+#include "base/i18n/test/scoped_rtl_for_testing.h"
+
+WebUIComposeBoxPixelTest::WebUIComposeBoxPixelTest() = default;
+WebUIComposeBoxPixelTest::~WebUIComposeBoxPixelTest() = default;
+
 void WebUIComposeBoxPixelTest::SetUpOnMainThread() {
   InteractiveBrowserTest::SetUpOnMainThread();
-  base::i18n::SetRTLForTesting(rtl_);
+  scoped_rtl_.emplace(rtl_);
   os_settings_provider_.SetPreferredColorScheme(
       dark_mode_ ? ui::NativeTheme::PreferredColorScheme::kDark
                  : ui::NativeTheme::PreferredColorScheme::kLight);
+}
+
+void WebUIComposeBoxPixelTest::TearDownOnMainThread() {
+  scoped_rtl_.reset();
+  InteractiveBrowserTest::TearDownOnMainThread();
 }
