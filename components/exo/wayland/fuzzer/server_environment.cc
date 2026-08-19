@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
@@ -66,7 +67,7 @@ void ServerEnvironment::OneTimeSetupOnUiThread() {
 
   // Force unittests to run using en-US so if we test against string output,
   // it'll pass regardless of the system language.
-  base::i18n::SetICUDefaultLocale("en_US");
+  icu_locale_.emplace(base::i18n::GetKnownLanguageTag("en-US"));
 
   ash::AshTestSuite::LoadTestResources();
 

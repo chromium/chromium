@@ -125,6 +125,7 @@ source_set("server_environment") {
 
   deps = [
     "//base",
+    "//base/i18n:test_support",
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",
     "//components/exo",

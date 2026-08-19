@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EXO_WAYLAND_FUZZER_SERVER_ENVIRONMENT_H_
 #define COMPONENTS_EXO_WAYLAND_FUZZER_SERVER_ENVIRONMENT_H_
 
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "components/exo/wayland/clients/test/wayland_client_test_helper.h"
@@ -35,6 +36,7 @@ class ServerEnvironment : public WaylandClientTestHelper {
 
   std::unique_ptr<aura::Env> env_;
   base::test::TaskEnvironment task_environment_;
+  std::optional<base::i18n::ScopedDefaultIcuLocale> icu_locale_;
   base::Thread ui_thread_;
 };
 
