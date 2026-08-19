@@ -40,6 +40,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -17235,11 +17236,12 @@ error::Error GLES2DecoderImpl::HandleSetActiveURLCHROMIUM(
   }
 
   size_t size = url_bucket->size();
-  const char* url_str = url_bucket->GetDataAs<const char*>(0, size);
-  if (!url_str)
+  base::span<const uint8_t> url_bytes = url_bucket->GetDataAsByteSpan(0, size);
+  if (url_bytes.empty()) {
     return error::kInvalidArguments;
+  }
 
-  GURL url(std::string_view(url_str, size));
+  GURL url(base::as_string_view(url_bytes));
   client()->SetActiveURL(std::move(url));
   return error::kNoError;
 }

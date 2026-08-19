@@ -12,8 +12,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/buffer.h"
@@ -75,12 +77,33 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommonDecoder {
 
     // Gets a pointer to a section the bucket. Returns nullptr if offset or size
     // is out of range.
+    // TODO(crbug.com/40284755): Remove this unsafe method once all call sites
+    // have been migrated to GetDataAsSpan() or GetDataAsByteSpan().
     void* GetData(size_t offset, size_t size) const;
 
+    // TODO(crbug.com/40284755): Remove this unsafe method once all call sites
+    // have been migrated to GetDataAsSpan() or GetDataAsByteSpan().
     template <typename T>
     T GetDataAs(size_t offset, size_t size) const {
       return reinterpret_cast<T>(GetData(offset, size));
     }
+
+    // Gets a span over a section of the bucket, reinterpreted as `count`
+    // elements of type `T` starting at byte `offset`. Returns an empty span if
+    // the range is out of bounds. `T` must be trivially copyable.
+    template <typename T>
+    base::span<T> GetDataAsSpan(size_t offset, size_t count) {
+      static_assert(std::is_trivially_copyable_v<T>);
+      base::span<uint8_t> bytes = GetDataAsByteSpan(offset, count * sizeof(T));
+      // The bucket's storage is a raw byte buffer, so reinterpret_span() is the
+      // intended safe conversion here. It CHECKs alignment and that the byte
+      // size is a multiple of sizeof(T).
+      return base::subtle::reinterpret_span<T>(bytes);
+    }
+
+    // Gets a writable byte span over a section of the bucket. Returns an empty
+    // span if offset or size is out of range.
+    base::span<uint8_t> GetDataAsByteSpan(size_t offset, size_t size);
 
     // Sets the size of the bucket.
     void SetSize(size_t size);
@@ -109,7 +132,7 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT CommonDecoder {
     bool OffsetSizeValid(size_t offset, size_t size) const;
 
     size_t size_;
-    ::std::unique_ptr<int8_t[]> data_;
+    base::HeapArray<uint8_t> data_;
   };
 
   explicit CommonDecoder(DecoderClient* client,

@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
@@ -2767,11 +2768,12 @@ error::Error GLES2DecoderPassthroughImpl::HandleSetActiveURLCHROMIUM(
   }
 
   size_t size = url_bucket->size() - 1;
-  const char* url_str = url_bucket->GetDataAs<const char*>(0, size);
-  if (!url_str)
+  base::span<const uint8_t> url_bytes = url_bucket->GetDataAsByteSpan(0, size);
+  if (url_bytes.empty()) {
     return error::kInvalidArguments;
+  }
 
-  GURL url(std::string_view(url_str, size));
+  GURL url(base::as_string_view(url_bytes));
   client()->SetActiveURL(std::move(url));
   return error::kNoError;
 }

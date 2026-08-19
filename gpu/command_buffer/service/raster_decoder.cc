@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -30,6 +31,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -1854,11 +1856,12 @@ error::Error RasterDecoderImpl::HandleSetActiveURLCHROMIUM(
   }
 
   size_t size = url_bucket->size();
-  const char* url_str = url_bucket->GetDataAs<const char*>(0, size);
-  if (!url_str)
+  base::span<const uint8_t> url_bytes = url_bucket->GetDataAsByteSpan(0, size);
+  if (url_bytes.empty()) {
     return error::kInvalidArguments;
+  }
 
-  GURL url(std::string_view(url_str, size));
+  GURL url(base::as_string_view(url_bytes));
   client()->SetActiveURL(std::move(url));
   return error::kNoError;
 }

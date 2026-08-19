@@ -9,10 +9,13 @@
 #include <string.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span_reader.h"
 #include "base/numerics/safe_math.h"
 #include "base/pickle.h"
+#include "base/strings/string_view_util.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 
@@ -51,18 +54,24 @@ CommonDecoder::Bucket::~Bucket() = default;
 
 void* CommonDecoder::Bucket::GetData(size_t offset, size_t size) const {
   if (OffsetSizeValid(offset, size)) {
-    return UNSAFE_TODO(data_.get() + offset);
+    return const_cast<uint8_t*>(data_.subspan(offset).data());
   }
   return nullptr;
 }
 
+base::span<uint8_t> CommonDecoder::Bucket::GetDataAsByteSpan(size_t offset,
+                                                             size_t size) {
+  if (OffsetSizeValid(offset, size)) {
+    return data_.subspan(offset, size);
+  }
+  return {};
+}
+
 void CommonDecoder::Bucket::SetSize(size_t size) {
   if (size != size_) {
-    // Note: the `()` after `new[]` is significant: it ensures the elements are
-    // value-initialized (not to be confused with default *initialized*). In the
-    // case of int8_t, that means the returned buffer will be
+    // WithSize() value-initializes the elements, i.e. the buffer will be
     // zero-initialized.
-    data_.reset(size ? new int8_t[size]() : nullptr);
+    data_ = base::HeapArray<uint8_t>::WithSize(size);
     size_ = size;
   }
 }
@@ -70,8 +79,9 @@ void CommonDecoder::Bucket::SetSize(size_t size) {
 bool CommonDecoder::Bucket::SetData(
     const volatile void* src, size_t offset, size_t size) {
   if (OffsetSizeValid(offset, size)) {
-    UNSAFE_TODO(
-        memcpy(data_.get() + offset, const_cast<const void*>(src), size));
+    auto src_span = UNSAFE_TODO(
+        base::span(static_cast<const volatile uint8_t*>(src), size));
+    data_.subspan(offset, size).copy_from(src_span);
     return true;
   }
   return false;
@@ -83,9 +93,10 @@ void CommonDecoder::Bucket::SetFromString(const char* str) {
   if (!str) {
     SetSize(0);
   } else {
-    size_t size = strlen(str) + 1;
+    std::string_view str_view(str);
+    size_t size = str_view.size() + 1;
     SetSize(size);
-    SetData(str, 0, size);
+    SetData(str_view.data(), 0, size);
   }
 }
 
@@ -94,57 +105,62 @@ bool CommonDecoder::Bucket::GetAsString(std::string* str) {
   if (size_ == 0) {
     return false;
   }
-  str->assign(GetDataAs<const char*>(0, size_ - 1), size_ - 1);
+  base::span<const uint8_t> bytes = GetDataAsByteSpan(0, size_ - 1);
+  str->assign(base::as_string_view(bytes));
   return true;
 }
 
 bool CommonDecoder::Bucket::GetAsStrings(
     GLsizei* _count, std::vector<char*>* _string, std::vector<GLint>* _length) {
-  const size_t kMinBucketSize = sizeof(GLint);
-  // Each string has at least |length| in the header and a NUL character.
-  const size_t kMinStringSize = sizeof(GLint) + 1;
   const size_t bucket_size = this->size();
-  if (bucket_size < kMinBucketSize) {
+  if (bucket_size < sizeof(GLint)) {
     return false;
   }
-  char* bucket_data = this->GetDataAs<char*>(0, bucket_size);
-  GLint* header = reinterpret_cast<GLint*>(bucket_data);
-  GLsizei count = static_cast<GLsizei>(header[0]);
-  if (count < 0) {
+  base::SpanReader reader{GetDataAsByteSpan(0, bucket_size)};
+
+  std::optional<int32_t> count32 = reader.ReadI32NativeEndian();
+  if (!count32.has_value() || *count32 < 0) {
     return false;
   }
-  const size_t max_count = (bucket_size - kMinBucketSize) / kMinStringSize;
-  if (max_count < static_cast<size_t>(count)) {
-    return false;
-  }
-  GLint* length = UNSAFE_TODO(header + 1);
-  std::vector<char*> strs(count);
-  base::CheckedNumeric<size_t> total_size = sizeof(GLint);
-  total_size *= count + 1;  // Header size.
-  if (!total_size.IsValid())
-    return false;
+  const GLsizei count = static_cast<GLsizei>(*count32);
+
+  // Don't pre-size the vectors from the untrusted `count`: a bogus value would
+  // try to allocate a huge amount of memory. Reserve is bounded by the bucket
+  // size instead, and SpanReader fails gracefully once the bucket runs out of
+  // data.
+  const size_t reserve = bucket_size / (sizeof(GLint) + 1u);
+  std::vector<GLint> lengths;
+  lengths.reserve(reserve);
   for (GLsizei ii = 0; ii < count; ++ii) {
-    if (UNSAFE_TODO(length[ii]) < 0) {
+    std::optional<int32_t> length32 = reader.ReadI32NativeEndian();
+    if (!length32.has_value() || *length32 < 0) {
       return false;
     }
-    strs[ii] = bucket_data + total_size.ValueOrDefault(0);
-    total_size += UNSAFE_TODO(length[ii]);
-    total_size += 1;  // NUL char at the end of each char array.
-    if (!total_size.IsValid() || total_size.ValueOrDefault(0) > bucket_size ||
-        UNSAFE_TODO(strs[ii][length[ii]]) != 0) {
-      return false;
-    }
+    lengths.push_back(static_cast<GLint>(*length32));
   }
-  if (total_size.ValueOrDefault(0) != bucket_size) {
+
+  std::vector<char*> strs;
+  strs.reserve(reserve);
+  for (const GLint length : lengths) {
+    std::optional<base::span<uint8_t>> str =
+        reader.Read(static_cast<size_t>(length) + 1u);
+    if (!str.has_value()) {
+      return false;
+    }
+    if ((*str)[length] != 0) {
+      return false;
+    }
+    strs.push_back(base::as_writable_chars(*str).data());
+  }
+
+  if (reader.remaining() != 0u) {
     return false;
   }
+
   DCHECK(_count && _string && _length);
   *_count = count;
   *_string = strs;
-  _length->resize(count);
-  for (GLsizei ii = 0; ii < count; ++ii) {
-    (*_length)[ii] = UNSAFE_TODO(length[ii]);
-  }
+  *_length = lengths;
   return true;
 }
 

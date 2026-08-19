@@ -505,4 +505,32 @@ TEST_F(CommonDecoderTest, GetAsStrings_StringsSizeNegative) {
   EXPECT_FALSE(bucket.GetAsStrings(&count_out, &strings_out, &lengths_out));
 }
 
+// Test that GetAsStrings rejects strings that are not NUL-terminated.
+TEST_F(CommonDecoderTest, GetAsStrings_MissingNulTerminator) {
+  CommonDecoder::Bucket bucket;
+
+  // Layout: count=1, length0=2, followed by 3 bytes of string data where the
+  // byte at the expected NUL position is not zero.
+  const size_t kBucketSize = sizeof(GLint) + sizeof(GLint) + 3;
+  bucket.SetSize(kBucketSize);
+  size_t write_offset = 0;
+
+  const GLint count = 1;
+  bucket.SetData(&count, write_offset, sizeof(count));
+  write_offset += sizeof(count);
+
+  const GLint length0 = 2;
+  bucket.SetData(&length0, write_offset, sizeof(length0));
+  write_offset += sizeof(length0);
+
+  // "abc" instead of "ab\0", so the NUL terminator is missing.
+  const std::array<char, 3> str0 = {'a', 'b', 'c'};
+  bucket.SetData(&str0, write_offset, sizeof(str0));
+
+  GLsizei count_out;
+  std::vector<char*> strings_out;
+  std::vector<GLint> lengths_out;
+  EXPECT_FALSE(bucket.GetAsStrings(&count_out, &strings_out, &lengths_out));
+}
+
 }  // namespace gpu

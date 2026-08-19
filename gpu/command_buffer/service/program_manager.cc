@@ -20,6 +20,8 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
@@ -110,11 +112,6 @@ bool IsBuiltInInvariant(
   if (hit == varyings.end())
     return false;
   return hit->second.isInvariant;
-}
-
-uint32_t ComputeOffset(const void* start, const void* position) {
-  return static_cast<const uint8_t*>(position) -
-         static_cast<const uint8_t*>(start);
 }
 
 // This is used for vertex shader input variables and fragment shader output
@@ -1844,53 +1841,54 @@ void Program::GetProgramInfo(
                   total_string_size;
 
   bucket->SetSize(size);
-  ProgramInfoHeader* header = bucket->GetDataAs<ProgramInfoHeader*>(0, size);
-  ProgramInput* inputs = bucket->GetDataAs<ProgramInput*>(
-      sizeof(ProgramInfoHeader), input_size);
-  int32_t* locations = bucket->GetDataAs<int32_t*>(
-      sizeof(ProgramInfoHeader) + input_size, location_size);
-  char* strings = bucket->GetDataAs<char*>(
-      sizeof(ProgramInfoHeader) + input_size + location_size,
-      total_string_size);
-  DCHECK(header);
-  DCHECK(inputs);
-  DCHECK(locations);
-  DCHECK(strings);
+  const uint32_t inputs_offset = sizeof(ProgramInfoHeader);
+  const uint32_t locations_offset = inputs_offset + input_size;
+  const uint32_t strings_offset = locations_offset + location_size;
+  ProgramInfoHeader& header =
+      bucket->GetDataAsSpan<ProgramInfoHeader>(0, 1u)[0];
+  base::span<ProgramInput> inputs =
+      bucket->GetDataAsSpan<ProgramInput>(inputs_offset, num_inputs);
+  base::span<int32_t> locations =
+      bucket->GetDataAsSpan<int32_t>(locations_offset, num_locations);
+  base::span<uint8_t> strings =
+      bucket->GetDataAsByteSpan(strings_offset, total_string_size);
 
-  header->link_status = link_status_;
-  header->num_attribs = attrib_infos_.size();
-  header->num_uniforms = uniform_infos_.size();
+  header.link_status = link_status_;
+  header.num_attribs = attrib_infos_.size();
+  header.num_uniforms = uniform_infos_.size();
+
+  size_t input_index = 0;
+  size_t location_index = 0;
+  base::SpanWriter<uint8_t> string_writer(strings);
 
   for (size_t ii = 0; ii < attrib_infos_.size(); ++ii) {
     const VertexAttrib& info = attrib_infos_[ii];
-    inputs->size = info.size;
-    inputs->type = info.type;
-    inputs->location_offset = ComputeOffset(header, locations);
-    inputs->name_offset = ComputeOffset(header, strings);
-    inputs->name_length = info.name.size();
-    *UNSAFE_TODO(locations++) = info.location;
-    UNSAFE_TODO(memcpy(strings, info.name.c_str(), info.name.size()));
-    UNSAFE_TODO(strings += info.name.size());
-    UNSAFE_TODO(++inputs);
+    ProgramInput& input = inputs[input_index++];
+    input.size = info.size;
+    input.type = info.type;
+    input.location_offset = locations_offset + location_index * sizeof(int32_t);
+    input.name_offset = strings_offset + string_writer.num_written();
+    input.name_length = info.name.size();
+    locations[location_index++] = info.location;
+    CHECK(string_writer.Write(base::as_byte_span(info.name)));
   }
 
   for (const UniformInfo& info : uniform_infos_) {
-    inputs->size = info.size;
-    inputs->type = info.type;
-    inputs->location_offset = ComputeOffset(header, locations);
-    inputs->name_offset = ComputeOffset(header, strings);
-    inputs->name_length = info.name.size();
+    ProgramInput& input = inputs[input_index++];
+    input.size = info.size;
+    input.type = info.type;
+    input.location_offset = locations_offset + location_index * sizeof(int32_t);
+    input.name_offset = strings_offset + string_writer.num_written();
+    input.name_length = info.name.size();
     DCHECK(static_cast<size_t>(info.size) == info.element_locations.size());
     for (size_t jj = 0; jj < info.element_locations.size(); ++jj) {
       if (info.element_locations[jj] == -1)
-        *UNSAFE_TODO(locations++) = -1;
+        locations[location_index++] = -1;
       else
-        *UNSAFE_TODO(locations++) =
+        locations[location_index++] =
             ProgramManager::MakeFakeLocation(info.fake_location_base, jj);
     }
-    UNSAFE_TODO(memcpy(strings, info.name.c_str(), info.name.size()));
-    UNSAFE_TODO(strings += info.name.size());
-    UNSAFE_TODO(++inputs);
+    CHECK(string_writer.Write(base::as_byte_span(info.name)));
   }
   // NOTE: currently we do not pass inactive uniform binding locations
   // through the program info call.
@@ -1898,7 +1896,7 @@ void Program::GetProgramInfo(
   // NOTE: currently we do not pass fragment input infos through the program
   // info call, because they are not exposed through any getter function.
 
-  DCHECK_EQ(ComputeOffset(header, strings), size);
+  DCHECK_EQ(strings_offset + string_writer.num_written(), size);
 }
 
 bool Program::GetUniformBlocks(CommonDecoder::Bucket* bucket) const {
@@ -2004,39 +2002,36 @@ bool Program::GetUniformBlocks(CommonDecoder::Bucket* bucket) const {
   uint32_t data_size = total_size - header_size - entry_size;
 
   bucket->SetSize(total_size);
-  UniformBlocksHeader* header =
-      bucket->GetDataAs<UniformBlocksHeader*>(0, header_size);
-  UniformBlockInfo* entries = bucket->GetDataAs<UniformBlockInfo*>(
-      header_size, entry_size);
-  char* data = bucket->GetDataAs<char*>(header_size + entry_size, data_size);
-  DCHECK(header);
-  DCHECK(entries);
-  DCHECK(data);
+  UniformBlocksHeader& header =
+      bucket->GetDataAsSpan<UniformBlocksHeader>(0, 1u)[0];
+  base::span<UniformBlockInfo> entries =
+      bucket->GetDataAsSpan<UniformBlockInfo>(header_size, num_uniform_blocks);
+  base::span<uint8_t> data =
+      bucket->GetDataAsByteSpan(header_size + entry_size, data_size);
 
   // Copy over data for the header and entries.
-  header->num_uniform_blocks = num_uniform_blocks;
-  UNSAFE_TODO(memcpy(entries, &blocks[0], entry_size));
+  header.num_uniform_blocks = num_uniform_blocks;
+  entries.copy_from(base::span(blocks));
 
+  base::SpanWriter<uint8_t> data_writer(data);
   std::vector<GLint> params;
   for (uint32_t ii = 0; ii < num_uniform_blocks; ++ii) {
     // Get active uniform name.
-    UNSAFE_TODO(memcpy(data, names[ii].c_str(), names[ii].length() + 1));
-    UNSAFE_TODO(data += names[ii].length() + 1);
+    CHECK(data_writer.Write(base::as_byte_span(names[ii])));
+    CHECK(data_writer.Write(uint8_t{0}));
 
     // Get active uniform indices.
     if (params.size() < blocks[ii].active_uniforms)
       params.resize(blocks[ii].active_uniforms);
-    uint32_t num_bytes = blocks[ii].active_uniforms * sizeof(GLint);
-    UNSAFE_TODO(memset(&params[0], 0, num_bytes));
+    std::ranges::fill(base::span(params).first(blocks[ii].active_uniforms), 0);
     glGetActiveUniformBlockiv(
         program, ii, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, &params[0]);
-    uint32_t* indices = reinterpret_cast<uint32_t*>(data);
     for (uint32_t uu = 0; uu < blocks[ii].active_uniforms; ++uu) {
-      UNSAFE_TODO(indices[uu]) = static_cast<uint32_t>(params[uu]);
+      CHECK(
+          data_writer.WriteU32NativeEndian(static_cast<uint32_t>(params[uu])));
     }
-    UNSAFE_TODO(data += num_bytes);
   }
-  DCHECK_EQ(ComputeOffset(header, data), total_size);
+  DCHECK_EQ(header_size + entry_size + data_writer.num_written(), total_size);
   return true;
 }
 
@@ -2071,9 +2066,9 @@ bool Program::GetTransformFeedbackVaryings(
     num_transform_feedback_varyings = static_cast<uint32_t>(param);
   }
   if (num_transform_feedback_varyings == 0) {
-    TransformFeedbackVaryingsHeader* header =
-        bucket->GetDataAs<TransformFeedbackVaryingsHeader*>(0, header_size);
-    header->transform_feedback_buffer_mode = transform_feedback_buffer_mode;
+    TransformFeedbackVaryingsHeader& header =
+        bucket->GetDataAsSpan<TransformFeedbackVaryingsHeader>(0, 1u)[0];
+    header.transform_feedback_buffer_mode = transform_feedback_buffer_mode;
     return true;
   }
 
@@ -2116,25 +2111,25 @@ bool Program::GetTransformFeedbackVaryings(
   uint32_t data_size = total_size - header_size - entry_size;
 
   bucket->SetSize(total_size);
-  TransformFeedbackVaryingsHeader* header =
-      bucket->GetDataAs<TransformFeedbackVaryingsHeader*>(0, header_size);
-  TransformFeedbackVaryingInfo* entries =
-      bucket->GetDataAs<TransformFeedbackVaryingInfo*>(header_size, entry_size);
-  char* data = bucket->GetDataAs<char*>(header_size + entry_size, data_size);
-  DCHECK(header);
-  DCHECK(entries);
-  DCHECK(data);
+  TransformFeedbackVaryingsHeader& header =
+      bucket->GetDataAsSpan<TransformFeedbackVaryingsHeader>(0, 1u)[0];
+  base::span<TransformFeedbackVaryingInfo> entries =
+      bucket->GetDataAsSpan<TransformFeedbackVaryingInfo>(
+          header_size, num_transform_feedback_varyings);
+  base::span<uint8_t> data =
+      bucket->GetDataAsByteSpan(header_size + entry_size, data_size);
 
   // Copy over data for the header and entries.
-  header->transform_feedback_buffer_mode = transform_feedback_buffer_mode;
-  header->num_transform_feedback_varyings = num_transform_feedback_varyings;
-  UNSAFE_TODO(memcpy(entries, &varyings[0], entry_size));
+  header.transform_feedback_buffer_mode = transform_feedback_buffer_mode;
+  header.num_transform_feedback_varyings = num_transform_feedback_varyings;
+  entries.copy_from(base::span(varyings));
 
+  base::SpanWriter<uint8_t> data_writer(data);
   for (uint32_t ii = 0; ii < num_transform_feedback_varyings; ++ii) {
-    UNSAFE_TODO(memcpy(data, names[ii].c_str(), names[ii].length() + 1));
-    UNSAFE_TODO(data += names[ii].length() + 1);
+    CHECK(data_writer.Write(base::as_byte_span(names[ii])));
+    CHECK(data_writer.Write(uint8_t{0}));
   }
-  DCHECK_EQ(ComputeOffset(header, data), total_size);
+  DCHECK_EQ(header_size + entry_size + data_writer.num_written(), total_size);
   return true;
 }
 
@@ -2166,24 +2161,22 @@ bool Program::GetUniformsES3(CommonDecoder::Bucket* bucket) const {
 
   base::CheckedNumeric<uint32_t> size = sizeof(UniformES3Info);
   size *= count;
-  uint32_t entry_size = size.ValueOrDefault(0);
   size += header_size;
   if (!size.IsValid())
     return false;
   uint32_t total_size = size.ValueOrDefault(0);
   bucket->SetSize(total_size);
-  UniformsES3Header* header =
-      bucket->GetDataAs<UniformsES3Header*>(0, header_size);
-  DCHECK(header);
-  header->num_uniforms = static_cast<uint32_t>(count);
+  UniformsES3Header& header =
+      bucket->GetDataAsSpan<UniformsES3Header>(0, 1u)[0];
+  header.num_uniforms = static_cast<uint32_t>(count);
 
-  // Instead of GetDataAs<UniformES3Info*>, we do GetDataAs<int32_t>. This is
-  // because struct UniformES3Info is defined as five int32_t.
+  // Instead of GetDataAsSpan<UniformES3Info>, we do GetDataAsSpan<int32_t>.
+  // This is because struct UniformES3Info is defined as five int32_t.
   // By doing this, we can fill the structs through loops.
-  int32_t* entries =
-      bucket->GetDataAs<int32_t*>(header_size, entry_size);
-  DCHECK(entries);
   const size_t kStride = sizeof(UniformES3Info) / sizeof(int32_t);
+  base::span<int32_t> entries =
+      bucket->GetDataAsSpan<int32_t>(header_size, kStride * count);
+  DCHECK_EQ(entries.size(), kStride * static_cast<size_t>(count));
 
   const auto kPname = std::to_array<GLenum>({
       GL_UNIFORM_BLOCK_INDEX,
@@ -2206,7 +2199,7 @@ bool Program::GetUniformsES3(CommonDecoder::Bucket* bucket) const {
     glGetActiveUniformsiv(
         program, count, &indices[0], kPname[pname_index], &params[0]);
     for (GLsizei ii = 0; ii < count; ++ii) {
-      UNSAFE_TODO(entries[kStride * ii + pname_index]) = params[ii];
+      entries[kStride * ii + pname_index] = params[ii];
     }
   }
   return true;
