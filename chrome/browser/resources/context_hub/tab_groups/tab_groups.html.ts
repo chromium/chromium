@@ -29,7 +29,7 @@ export function getHtml(this: TabGroupsElement) {
                             id="default-grouping-button"
                             ?disabled="${!this.autoTabGroupsEnabled_ || this.isGrouping_}"
                             @click="${this.onDefaultGroupingClick_}">
-                            Default Grouping
+                            Regroup tabs
                         </cr-button>
                         <cr-button class="action-button"
                             id="ungroup-tabs-button"
