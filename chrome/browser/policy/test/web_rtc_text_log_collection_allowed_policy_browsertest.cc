@@ -10,7 +10,6 @@
 #include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"

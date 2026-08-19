@@ -7,7 +7,6 @@
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"

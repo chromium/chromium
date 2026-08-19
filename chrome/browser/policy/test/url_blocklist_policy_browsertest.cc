@@ -12,8 +12,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/policy/url_blocking_policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
@@ -44,7 +44,7 @@ namespace {
 
 // Verifies that the given url |spec| can be opened. This assumes that |spec|
 // points at empty.html in the test data dir.
-void CheckCanOpenURL(Browser* browser, const std::string& spec) {
+void CheckCanOpenURL(BrowserWindowInterface* browser, const std::string& spec) {
   GURL url(spec);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   content::WebContents* contents =
@@ -61,7 +61,8 @@ void CheckCanOpenURL(Browser* browser, const std::string& spec) {
   EXPECT_NE(blocked_page_title, contents->GetTitle());
 }
 
-void CheckCanOpenViewSourceURL(Browser* browser, const std::string& spec) {
+void CheckCanOpenViewSourceURL(BrowserWindowInterface* browser,
+                               const std::string& spec) {
   GURL view_source_url("view-source:" + spec);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, view_source_url));
   content::WebContents* contents =
@@ -218,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, URLBlocklistIncognito) {
   // Checks that URLs can be blocklisted, and that exceptions can be made to
   // the blocklist.
 
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
 
   ASSERT_TRUE(embedded_test_server()->Start());

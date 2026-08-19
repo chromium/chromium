@@ -6,7 +6,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"

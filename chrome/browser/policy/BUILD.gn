@@ -295,6 +295,7 @@ source_set("test_support") {
     deps += [
       "//chrome/browser/preloading:test_support",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/location_bar",
       "//chrome/common:constants",
       "//chrome/common/net",
@@ -707,6 +708,7 @@ source_set("browser_tests") {
       "//chrome/browser/search_engines",
       "//chrome/browser/site_protection:utils",
       "//chrome/browser/ui:browser_otr_state",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/usb",

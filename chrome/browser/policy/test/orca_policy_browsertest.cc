@@ -13,7 +13,6 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"

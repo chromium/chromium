@@ -4,8 +4,8 @@
 
 #include "chrome/browser/policy/safe_search_policy_test.h"
 
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -51,7 +51,7 @@ GURL SafeSearchPolicyTest::GetExpectedSearchURL(bool expect_safe_search) {
 }
 
 // static
-void SafeSearchPolicyTest::CheckSafeSearch(Browser* browser,
+void SafeSearchPolicyTest::CheckSafeSearch(BrowserWindowInterface* browser,
                                            bool expect_safe_search,
                                            const std::string& url) {
   content::WebContents* web_contents =

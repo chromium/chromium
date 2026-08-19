@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/policy/safe_search_policy_test.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -68,7 +68,7 @@ class PolicyTestGoogle : public SafeSearchPolicyTest,
     return urls_requested_;
   }
 
-  Browser* GetBrowser() {
+  BrowserWindowInterface* GetBrowser() {
     if (!is_incognito())
       return browser();
     if (!incognito_browser_)
@@ -118,7 +118,8 @@ class PolicyTestGoogle : public SafeSearchPolicyTest,
   net::EmbeddedTestServer https_server_;
   base::Lock lock_;
   std::map<std::string, net::HttpRequestHeaders> urls_requested_;
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged>
+      incognito_browser_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(, PolicyTestGoogle, ::testing::Bool());

@@ -18,6 +18,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -963,12 +964,10 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyEnabledByDefaultTest,
   EXPECT_FALSE(GetLocalStateBooleanPref(prefs::kTLS13EarlyDataEnabled));
   content::FlushNetworkServiceInstanceForTesting();
 
-  Browser* incognito_browser =
-      CreateBrowserWindow(BrowserWindowCreateParams(
-                              browser()->GetProfile()->GetPrimaryOTRProfile(
-                                  /*create_if_needed=*/true),
-                              /*from_user_gesture=*/true))
-          ->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
+      BrowserWindowCreateParams(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                    /*create_if_needed=*/true),
+                                /*from_user_gesture=*/true));
 
   auto* render_frame_host = ui_test_utils::NavigateToURLWithDisposition(
       incognito_browser, GetTestPageURL(),
@@ -1001,7 +1000,7 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyEnabledByDefaultTest,
                                       profile_future.GetCallback());
   Profile* new_profile = profile_future.Get();
 
-  Browser* new_browser = CreateBrowser(new_profile);
+  BrowserWindowInterface* new_browser = CreateBrowser(new_profile);
 
   auto* render_frame_host = ui_test_utils::NavigateToURLWithDisposition(
       new_browser, GetTestPageURL(), WindowOpenDisposition::CURRENT_TAB,

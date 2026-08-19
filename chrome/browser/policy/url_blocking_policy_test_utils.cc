@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -61,7 +61,7 @@ void UrlBlockingPolicyTest::CheckURLIsBlockedInWebContents(
 }
 
 void UrlBlockingPolicyTest::CheckURLIsBlocked(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& spec,
     bool is_blocked_by_incognito_policy) {
   GURL url(spec);
@@ -72,7 +72,7 @@ void UrlBlockingPolicyTest::CheckURLIsBlocked(
 }
 
 void UrlBlockingPolicyTest::CheckViewSourceURLIsBlocked(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& spec) {
   GURL url(spec);
   GURL view_source_url("view-source:" + spec);

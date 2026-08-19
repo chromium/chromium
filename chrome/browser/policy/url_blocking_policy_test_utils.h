@@ -11,7 +11,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 
 namespace content {
@@ -34,12 +34,13 @@ class UrlBlockingPolicyTest : public PolicyTest {
 
   // Verifies that access to the given url |spec| is blocked  and that
   // the correct error page is displayed.
-  void CheckURLIsBlocked(Browser* browser,
+  void CheckURLIsBlocked(BrowserWindowInterface* browser,
                          const std::string& spec,
                          bool is_blocked_by_incognito_policy = false);
 
   // Verifies that access to |view-source:spec| is blocked.
-  void CheckViewSourceURLIsBlocked(Browser* browser, const std::string& spec);
+  void CheckViewSourceURLIsBlocked(BrowserWindowInterface* browser,
+                                   const std::string& spec);
 
  private:
   // TODO(https://crbug.com/423465927): Explore a better approach to make the

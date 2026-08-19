@@ -6,7 +6,6 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/collaboration/public/collaboration_service.h"
 #include "components/collaboration/public/pref_names.h"
 #include "components/collaboration/public/service_status.h"

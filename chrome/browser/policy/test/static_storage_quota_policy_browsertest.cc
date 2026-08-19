@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
@@ -49,12 +49,12 @@ class StaticStorageQuotaPolicyTest : public PolicyTest {
   }
 
   // Navigates to an empty page.
-  void NavigateToEmptyPage(Browser* browser) {
+  void NavigateToEmptyPage(BrowserWindowInterface* browser) {
     CHECK(ui_test_utils::NavigateToURL(
         browser, embedded_test_server()->GetURL("/empty.html")));
   }
 
-  int64_t GetEstimatedQuota(Browser* browser) {
+  int64_t GetEstimatedQuota(BrowserWindowInterface* browser) {
     return content::EvalJs(
                browser->tab_strip_model()->GetActiveWebContents(),
                "(async () => { "
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(StaticStorageQuotaFeatureDisabledTest, RegularSession) {
 
 IN_PROC_BROWSER_TEST_F(IncognitoStaticStorageQuotaEnabledTest,
                        IncognitoSession) {
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   NavigateToEmptyPage(incognito_browser);
   // Expect reported quota to be exactly 10 GiB in Incognito mode with the
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoStaticStorageQuotaEnabledTest,
 
 IN_PROC_BROWSER_TEST_F(IncognitoStaticStorageQuotaDisabledTest,
                        IncognitoSession) {
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   NavigateToEmptyPage(incognito_browser);
   // Expect quota in Incognito to be trimmed to 1 GiB, minimal value for the

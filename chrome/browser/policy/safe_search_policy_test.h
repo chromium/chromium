@@ -14,7 +14,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "url/gurl.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace policy {
 
@@ -30,7 +30,7 @@ class SafeSearchPolicyTest : public PolicyTest {
 
   static GURL GetExpectedSearchURL(bool expect_safe_search);
 
-  static void CheckSafeSearch(Browser* browser,
+  static void CheckSafeSearch(BrowserWindowInterface* browser,
                               bool expect_safe_search,
                               const std::string& url = "http://google.com/");
 

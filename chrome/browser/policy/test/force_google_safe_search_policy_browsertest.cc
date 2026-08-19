@@ -10,7 +10,6 @@
 #include "base/values.h"
 #include "chrome/browser/policy/safe_search_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"

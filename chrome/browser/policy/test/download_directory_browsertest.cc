@@ -12,7 +12,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_item.h"
@@ -35,7 +35,7 @@ namespace policy {
 namespace {
 // Downloads a file named |file| and expects it to be saved to |dir|, which
 // must be empty.
-void DownloadAndVerifyFile(Browser* browser,
+void DownloadAndVerifyFile(BrowserWindowInterface* browser,
                            const base::FilePath& dir,
                            const base::FilePath& file) {
   net::EmbeddedTestServer embedded_test_server;

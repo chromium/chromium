@@ -9,7 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/policy/url_blocking_policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/features.h"
@@ -28,7 +28,7 @@ class IncognitoUrlBlockingPolicyTest
   bool IsBrowserInIncognitoMode() const { return GetParam(); }
 };
 
-void CheckCanOpenURL(Browser* browser, const std::string& spec) {
+void CheckCanOpenURL(BrowserWindowInterface* browser, const std::string& spec) {
   GURL url(spec);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   content::WebContents* contents =
@@ -49,7 +49,7 @@ INSTANTIATE_TEST_SUITE_P(All, IncognitoUrlBlockingPolicyTest, testing::Bool());
 
 // Checks that URLs can be blocklisted only in Incognito mode.
 IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest, IncognitoBlocklist) {
-  Browser* test_browser;
+  BrowserWindowInterface* test_browser;
   if (IsBrowserInIncognitoMode()) {
     test_browser =
         OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest, IncognitoBlocklist) {
 IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
                        IncognitoAllBlocklistAndAllowlist) {
   // Checks that the allowlist works as an exception to the blocklist.
-  Browser* test_browser =
+  BrowserWindowInterface* test_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
                        IncognitoBlocklistAndAllowlist) {
   // Checks that the allowlist works as an exception to specific blocklist
   // entries.
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(embedded_test_server()->Start());
   const std::string blocked_url1 =
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest,
                        IncognitoBlocklistAndUrlAllowlist) {
   // Checks that the Incognito blocklist takes precedence over the URL
   // allowlist in Incognito mode.
-  Browser* test_browser;
+  BrowserWindowInterface* test_browser;
   if (IsBrowserInIncognitoMode()) {
     test_browser =
         OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest,
                        UrlBlocklistAndIncognitoBlocklist) {
   // Checks the blocking rules and the resulting error messages for both regular
   // and Incognito mode blocklists.
-  Browser* test_browser;
+  BrowserWindowInterface* test_browser;
   if (IsBrowserInIncognitoMode()) {
     test_browser =
         OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
@@ -260,7 +260,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingPolicyTest,
 IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest, IncognitoAllowlistOnly) {
   // Checks that setting only the Incognito allowlist allows specific URLs
   // and blocks others in Incognito mode.
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(embedded_test_server()->Start());
   const std::string allowed_url =
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
                        IncognitoAllowlistAndIncognitoDisabled) {
   // Checks that the Incognito allowlist allows specific URLs even if
   // IncognitoModeAvailability is set to disabled.
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(embedded_test_server()->Start());
   const std::string allowed_url =
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoUrlBlockingPolicyTest,
                        IncognitoAllowlistBlocklistAndIncognitoDisabled) {
   // Checks that the Incognito allowlist allows specific URLs even if
   // IncognitoModeAvailability is set to disabled, and blocklist is set.
-  Browser* incognito_browser =
+  BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   ASSERT_TRUE(embedded_test_server()->Start());
   const std::string allowed_url =
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingFeatureEnabledTest,
   // Checks that the Incognito allowlist works as an exception to the
   // URL blocklist, but is ignored when the feature is enabled in Incognito
   // mode.
-  Browser* test_browser;
+  BrowserWindowInterface* test_browser;
   if (IsBrowserInIncognitoMode()) {
     test_browser =
         OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoUrlBlockingFeatureDisabledTest,
                        UrlBlocklistAndIncognitoAllowlistFeatureDisabled) {
   // Checks that the Incognito allowlist works as an exception to the
   // URL blocklist, but only in Incognito mode.
-  Browser* test_browser;
+  BrowserWindowInterface* test_browser;
   if (IsBrowserInIncognitoMode()) {
     test_browser =
         OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));

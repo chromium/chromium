@@ -16,7 +16,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedLanguages) {
 
   // Verifies that the default locale has been overridden by policy
   // (see |GetMandatoryPoliciesValue|)
-  Browser* browser = CreateBrowser(profile);
+  BrowserWindowInterface* browser = CreateBrowser(profile);
   EXPECT_EQ("fr", prefs->GetString(language::prefs::kApplicationLocale));
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser, chrome::ChromeUINewTabURLAsGURL()));
