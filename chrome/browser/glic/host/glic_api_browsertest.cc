@@ -487,42 +487,6 @@ class GlicApiTestWithDaisyChain : public GlicApiTest {
   base::test::ScopedFeatureList daisy_chain_features_;
 };
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest,
-                       testSwitchConversationToOldConversationInOldInstance) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-
-  ExecuteJsTest({.params = base::Value("step1")});
-
-  ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  TrackGlicInstanceWithTabIndex(1);
-  RunTestSequence(InstrumentTab(kSecondTab),
-                  OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-
-  ExecuteJsTest({.params = base::Value("step2")});
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester->GetBucketCount(
-               "Glic.Interaction.SwitchConversationTarget",
-               GlicSwitchConversationTarget::kSwitchedToNewInstance) == 1;
-  }));
-  ASSERT_TRUE(AddTabAtIndex(1, page_url(), ui::PAGE_TRANSITION_TYPED));
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  RunTestSequence(InstrumentTab(kThirdTab),
-                  OpenGlic(GlicInstrumentMode::kHostAndContents,
-                           /*conversation_id=*/std::nullopt));
-
-  ExecuteJsTest({.params = base::Value("step3")});
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return histogram_tester->GetBucketCount(
-               "Glic.Interaction.SwitchConversationTarget",
-               GlicSwitchConversationTarget::kSwitchedToExistingInstance) == 1;
-  }));
-  ContinueJsTest();
-}
-
 // TODO(crbug.com/454083080): Fix this, it hangs.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
   ExecuteJsTest();

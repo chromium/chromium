@@ -5020,6 +5020,37 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
   ContinueJsTest({.instance = tab0_instance});
 }
 
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest,
+                       testSwitchConversationToOldConversationInOldInstance) {
+  base::HistogramTester histogram_tester;
+  ASSERT_OK_AND_ASSIGN(auto* tab0_instance, OpenGlicForActiveTab());
+
+  ExecuteJsTest({.params = base::Value("step1"), .instance = tab0_instance});
+
+  CreateAndActivateTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  ASSERT_OK_AND_ASSIGN(auto* tab1_instance, OpenGlicForActiveTab());
+
+  ExecuteJsTest({.params = base::Value("step2"), .instance = tab1_instance});
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.Interaction.SwitchConversationTarget",
+               GlicSwitchConversationTarget::kSwitchedToNewInstance) == 1;
+  }));
+
+  CreateAndActivateTab(
+      embedded_test_server()->GetURL("/browser_tests/test.html"));
+  ASSERT_OK_AND_ASSIGN(auto* tab2_instance, OpenGlicForActiveTab());
+
+  ExecuteJsTest({.params = base::Value("step3"), .instance = tab2_instance});
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.Interaction.SwitchConversationTarget",
+               GlicSwitchConversationTarget::kSwitchedToExistingInstance) == 1;
+  }));
+  ContinueJsTest({.instance = tab0_instance});
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }
