@@ -901,33 +901,6 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-nougat-tests",
     ],
-    gn_args = "ci/android-cronet-x86-dbg",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-code-coverage-native",
-    mirrors = ["ci/android-cronet-code-coverage-native"],
-    gn_args = "ci/android-cronet-code-coverage-native",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-code-coverage-java",
-    mirrors = ["ci/android-cronet-code-coverage-java"],
-    gn_args = "ci/android-cronet-code-coverage-java",
-    contact_team_email = "cronet-team@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-cronet-x86-dbg-marshmallow-tests",
-    mirrors = [
-        "ci/android-cronet-x86-dbg",
-        "ci/android-cronet-x86-dbg-marshmallow-tests",
-    ],
     # Replicates "ci/android-cronet-x86-dbg", with code coverage related
     # arguments appended.
     gn_args = gn_args.config(
@@ -954,6 +927,33 @@ try_.builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
     use_clang_coverage = True,
     use_java_coverage = True,
+)
+
+try_.builder(
+    name = "android-cronet-code-coverage-native",
+    mirrors = ["ci/android-cronet-code-coverage-native"],
+    gn_args = "ci/android-cronet-code-coverage-native",
+    contact_team_email = "cronet-team@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-code-coverage-java",
+    mirrors = ["ci/android-cronet-code-coverage-java"],
+    gn_args = "ci/android-cronet-code-coverage-java",
+    contact_team_email = "cronet-team@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-cronet-x86-dbg-marshmallow-tests",
+    mirrors = [
+        "ci/android-cronet-x86-dbg",
+        "ci/android-cronet-x86-dbg-marshmallow-tests",
+    ],
+    gn_args = "ci/android-cronet-x86-dbg",
+    contact_team_email = "cronet-team@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
