@@ -52,6 +52,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/test/test_sync_service.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -1151,6 +1152,11 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   // Verify that the WebUI URL loaded successfully.
   EXPECT_EQ(web_contents->GetVisibleURL(),
             GURL(chrome::kChromeUICrossDeviceSigninQrBubbleURL));
+
+  // Verify that right-click context menu is disabled in this bubble.
+  content::ContextMenuParams params;
+  EXPECT_TRUE(web_contents->GetDelegate()->HandleContextMenu(
+      *web_contents->GetPrimaryMainFrame(), params));
 
   views::test::WidgetDestroyedWaiter waiter(bubble_widget);
   // Simulating a click on the avatar button should close the bubble because of

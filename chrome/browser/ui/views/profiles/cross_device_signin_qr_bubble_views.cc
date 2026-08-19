@@ -63,11 +63,36 @@ class CrossDeviceSigninQrWebView : public views::WebView,
 
   ~CrossDeviceSigninQrWebView() override = default;
 
+  // content::WebContentsDelegate:
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
+                         const content::ContextMenuParams& params) override {
+    // Suppresses the context menu because some features, such as inspecting
+    // elements, are not appropriate in a bubble.
+    return true;
+  }
+
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const input::NativeWebKeyboardEvent& event) override {
     return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
         event, GetFocusManager());
+  }
+
+  void ResizeDueToAutoResize(content::WebContents* source,
+                             const gfx::Size& new_size) override {
+    views::WebView::ResizeDueToAutoResize(source, new_size);
+    views::Widget* widget = GetWidget();
+    if (!widget) {
+      return;
+    }
+    if (auto* bubble_delegate =
+            widget->widget_delegate()->AsBubbleDialogDelegate()) {
+      bubble_delegate->SizeToContents();
+    }
+
+    if (!widget->IsVisible()) {
+      widget->Show();
+    }
   }
 
   // signin::IdentityManager::Observer:
@@ -115,24 +140,6 @@ class CrossDeviceSigninQrWebView : public views::WebView,
     // the placeholder or due to Wayland hidden state issues), ensure the
     // widget is shown to avoid deadlocks.
     if (widget && !widget->IsVisible()) {
-      widget->Show();
-    }
-  }
-
-  // content::WebContentsDelegate:
-  void ResizeDueToAutoResize(content::WebContents* source,
-                             const gfx::Size& new_size) override {
-    views::WebView::ResizeDueToAutoResize(source, new_size);
-    views::Widget* widget = GetWidget();
-    if (!widget) {
-      return;
-    }
-    if (auto* bubble_delegate =
-            widget->widget_delegate()->AsBubbleDialogDelegate()) {
-      bubble_delegate->SizeToContents();
-    }
-
-    if (!widget->IsVisible()) {
       widget->Show();
     }
   }
