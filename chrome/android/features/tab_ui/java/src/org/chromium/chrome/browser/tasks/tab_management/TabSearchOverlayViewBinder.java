@@ -8,9 +8,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageButton;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
@@ -61,9 +63,15 @@ public class TabSearchOverlayViewBinder {
         } else if (TabSearchOverlayProperties.VISIBLE == propertyKey) {
             boolean visible = model.get(TabSearchOverlayProperties.VISIBLE);
             if (visible) {
+                // Set the pane title so TalkBack announces panel context upon opening.
+                ViewCompat.setAccessibilityPaneTitle(
+                        view.panel,
+                        view.panel.getContext().getString(R.string.keyboard_shortcut_tab_search));
                 updateCloseButton(view, model.get(TabSearchOverlayProperties.IS_INCOGNITO));
                 runShowAnimation(view);
             } else {
+                // Clear the pane title to notify accessibility that the overlay is dismissed.
+                ViewCompat.setAccessibilityPaneTitle(view.panel, null);
                 if (view.panelContainer.getVisibility() == View.VISIBLE) {
                     runHideAnimation(model, view);
                 } else {
@@ -89,6 +97,14 @@ public class TabSearchOverlayViewBinder {
         view.panel.animate().cancel();
         // Make the container visible so Android can lay out and render the panel animation.
         view.panelContainer.setVisibility(View.VISIBLE);
+
+        // Direct initial accessibility focus to the close button so TalkBack highlights
+        // the top of the panel and announces it immediately upon opening.
+        View closeButton = view.panel.findViewById(R.id.tab_search_close_button);
+        if (closeButton != null) {
+            closeButton.requestFocus();
+            closeButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        }
 
         int width =
                 view.panel.getResources().getDimensionPixelSize(R.dimen.tab_search_overlay_width);

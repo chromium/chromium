@@ -34,6 +34,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.ViewCompat;
 
 import org.junit.After;
 import org.junit.Before;
@@ -1109,5 +1110,48 @@ public class TabSearchOverlayCoordinatorUnitTest {
         popupWindow.dismiss();
         watcher.assertExpected();
         assertOverlayHidden();
+    }
+
+    @Test
+    public void testAccessibility_layoutAttributes() {
+        View panel = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+        assertNotNull(panel);
+        assertFalse(panel.isFocusable());
+
+        View scrim = mPanelContainer.findViewById(R.id.tab_search_overlay_scrim);
+        assertNotNull(scrim);
+        assertFalse(scrim.isFocusable());
+        assertEquals(View.IMPORTANT_FOR_ACCESSIBILITY_NO, scrim.getImportantForAccessibility());
+
+        ImageButton closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
+        assertNotNull(closeButton);
+        assertTrue(closeButton.isFocusable());
+        assertTrue(closeButton.isClickable());
+        assertEquals(
+                View.IMPORTANT_FOR_ACCESSIBILITY_YES, closeButton.getImportantForAccessibility());
+        assertEquals(R.id.search_activity_container, closeButton.getAccessibilityTraversalBefore());
+        assertEquals(
+                mActivity.getString(R.string.close),
+                closeButton.getContentDescription().toString());
+    }
+
+    @Test
+    public void testAccessibility_paneTitleLifecycle() {
+        View panel = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);
+        ImageButton closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
+        assertNotNull(panel);
+        assertNotNull(closeButton);
+
+        assertNull(ViewCompat.getAccessibilityPaneTitle(panel));
+
+        showOverlay();
+
+        assertEquals(
+                mActivity.getString(R.string.keyboard_shortcut_tab_search),
+                ViewCompat.getAccessibilityPaneTitle(panel));
+
+        mCoordinator.hide(TabSearchDismissalReason.CLOSE_BUTTON);
+
+        assertNull(ViewCompat.getAccessibilityPaneTitle(panel));
     }
 }

@@ -27,7 +27,7 @@ found in the LICENSE file.
         android:clipToOutline="true"
         android:elevation="8dp"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="false">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -43,7 +43,11 @@ found in the LICENSE file.
                 android:padding="0dp"
                 android:scaleType="fitCenter"
                 android:background="@drawable/tab_close_button_bg_24dp"
-                android:contentDescription="@string/close" />
+                android:contentDescription="@string/close"
+                android:focusable="true"
+                android:clickable="true"
+                android:importantForAccessibility="yes"
+                android:accessibilityTraversalBefore="@id/search_activity_container" />
         </FrameLayout>
 
         <FrameLayout
@@ -76,6 +80,7 @@ found in the LICENSE file.
         android:layout_weight="1"
         android:background="@android:color/transparent"
         android:clickable="true"
-        android:focusable="true" />
+        android:focusable="false"
+        android:importantForAccessibility="no" />
 
 </LinearLayout>
