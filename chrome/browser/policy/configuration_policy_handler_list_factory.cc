@@ -3112,13 +3112,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::make_unique<ManagedAccountRestrictionsPolicyHandler>(chrome_schema));
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<URLSchemeListPolicyHandler>(
           key::kSaasUsageReportingDomainUrlsForProfiles,
           enterprise_reporting::kSaasUsageDomainUrlsForProfile)));
 #endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
   handlers->AddHandler(std::make_unique<URLSchemeListPolicyHandler>(
       key::kSaasUsageReportingDomainUrlsForBrowsers,
       enterprise_reporting::kSaasUsageDomainUrlsForBrowser));

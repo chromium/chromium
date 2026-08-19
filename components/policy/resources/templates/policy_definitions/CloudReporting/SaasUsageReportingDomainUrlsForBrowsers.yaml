@@ -25,6 +25,8 @@ features:
   cloud_only: true
 supported_on:
 - chrome.*:147-
+future_on:
+- android
 owners:
 - janzarzycki@google.com
 - igorruvinov@chromium.org

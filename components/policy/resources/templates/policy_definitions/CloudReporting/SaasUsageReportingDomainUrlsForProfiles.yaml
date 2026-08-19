@@ -29,6 +29,8 @@ features:
 supported_on:
 - chrome.*:147-
 - chrome_os:152-
+future_on:
+- android
 owners:
 - janzarzycki@google.com
 - igorruvinov@chromium.org
