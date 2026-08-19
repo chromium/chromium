@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
+#include "ash/public/cpp/reauth_reason.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/power_monitor_test.h"
@@ -42,6 +43,8 @@ namespace {
 
 constexpr char kTestGaiaUser[] = "user@example.com";
 constexpr char kTestSAMLUser[] = "user@saml.example.com";
+constexpr char kTestSecondaryGaiaUser[] = "secondary_user@example.com";
+constexpr char kTestSecondarySAMLUser[] = "secondary_user@saml.example.com";
 constexpr char kTestPassword[] = "password";
 
 void AddOnlinePassword(const AccountId& user) {
@@ -79,13 +82,18 @@ class OfflineSigninLimiterTest : public testing::TestWithParam<bool> {
 
   void DestroyLimiter();
   void CreateLimiter();
-  void SetLastOnlineSignIn(user_manager::User* user);
+  void DestroySecondaryLimiter();
+  void CreateSecondaryLimiter();
+  void SetLastOnlineSignIn(user_manager::User* user,
+                           Profile* profile = nullptr);
   void VerifyLastSignIn(user_manager::User* user, base::Time time);
 
   FakeChromeUserManager* GetFakeChromeUserManager();
 
   user_manager::User* AddGaiaUser();
   user_manager::User* AddSAMLUser();
+  user_manager::User* AddSecondaryGaiaUser();
+  user_manager::User* AddSecondarySAMLUser();
 
   void LockScreen();
   void UnlockScreen();
@@ -95,6 +103,10 @@ class OfflineSigninLimiterTest : public testing::TestWithParam<bool> {
       AccountId::FromUserEmail(kTestGaiaUser);
   const AccountId test_saml_account_id_ =
       AccountId::FromUserEmail(kTestSAMLUser);
+  const AccountId test_secondary_gaia_account_id_ =
+      AccountId::FromUserEmail(kTestSecondaryGaiaUser);
+  const AccountId test_secondary_saml_account_id_ =
+      AccountId::FromUserEmail(kTestSecondarySAMLUser);
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -105,12 +117,14 @@ class OfflineSigninLimiterTest : public testing::TestWithParam<bool> {
       fake_user_manager_;
 
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestingProfile> secondary_profile_;
 
   MockLockHandler lock_handler_;
 
   raw_ptr<base::WallClockTimer, DanglingUntriaged> timer_ = nullptr;
 
   std::unique_ptr<OfflineSigninLimiter> limiter_;
+  std::unique_ptr<OfflineSigninLimiter> secondary_limiter_;
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
 
   std::unique_ptr<user_manager::KnownUser> known_user_;
@@ -148,17 +162,33 @@ void OfflineSigninLimiterTest::CreateLimiter() {
   DCHECK(profile_.get());
 
   DestroyLimiter();
-  // OfflineSigninLimiter has a private constructor.
-  limiter_ = base::WrapUnique(new OfflineSigninLimiter(
+  limiter_ = std::make_unique<OfflineSigninLimiter>(
       TestingBrowserProcess::GetGlobal()->local_state(), profile_.get(),
-      task_environment_.GetMockClock()));
+      task_environment_.GetMockClock());
   timer_ = limiter_->GetTimerForTesting();
 }
 
-void OfflineSigninLimiterTest::SetLastOnlineSignIn(user_manager::User* user) {
+void OfflineSigninLimiterTest::DestroySecondaryLimiter() {
+  if (secondary_limiter_) {
+    secondary_limiter_->Shutdown();
+    secondary_limiter_.reset();
+  }
+}
+
+void OfflineSigninLimiterTest::CreateSecondaryLimiter() {
+  CHECK(secondary_profile_.get());
+
+  DestroySecondaryLimiter();
+  secondary_limiter_ = std::make_unique<OfflineSigninLimiter>(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      secondary_profile_.get(), task_environment_.GetMockClock());
+}
+
+void OfflineSigninLimiterTest::SetLastOnlineSignIn(user_manager::User* user,
+                                                   Profile* profile) {
   known_user_->SetLastOnlineSignin(user->GetAccountId(),
                                    task_environment_.GetMockClock()->Now());
-  PrefService* prefs = profile_->GetPrefs();
+  PrefService* prefs = (profile ? profile : profile_.get())->GetPrefs();
   prefs->SetTime(prefs::kLastOnlineSignInTime,
                  task_environment_.GetMockClock()->Now());
 }
@@ -183,7 +213,9 @@ void OfflineSigninLimiterTest::SetUp() {
 
 void OfflineSigninLimiterTest::TearDown() {
   DestroyLimiter();
+  DestroySecondaryLimiter();
   profile_.reset();
+  secondary_profile_.reset();
   session_manager_.reset();
   fake_user_manager_.Reset();
   FakeUserDataAuthClient::Shutdown();
@@ -206,6 +238,28 @@ user_manager::User* OfflineSigninLimiterTest::AddGaiaUser() {
 user_manager::User* OfflineSigninLimiterTest::AddSAMLUser() {
   auto* user = fake_user_manager_->AddSamlUser(test_saml_account_id_);
   profile_->set_profile_name(kTestSAMLUser);
+  fake_user_manager_->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
+  AddOnlinePassword(user->GetAccountId());
+  return user;
+}
+
+user_manager::User* OfflineSigninLimiterTest::AddSecondaryGaiaUser() {
+  secondary_profile_ = std::make_unique<TestingProfile>();
+  auto* user = fake_user_manager_->AddUser(test_secondary_gaia_account_id_);
+  secondary_profile_->set_profile_name(kTestSecondaryGaiaUser);
+  fake_user_manager_->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
+  AddOnlinePassword(user->GetAccountId());
+  return user;
+}
+
+user_manager::User* OfflineSigninLimiterTest::AddSecondarySAMLUser() {
+  secondary_profile_ = std::make_unique<TestingProfile>();
+  auto* user = fake_user_manager_->AddSamlUser(test_secondary_saml_account_id_);
+  secondary_profile_->set_profile_name(kTestSecondarySAMLUser);
   fake_user_manager_->UserLoggedIn(
       user->GetAccountId(),
       user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
@@ -675,6 +729,9 @@ TEST_P(OfflineSigninLimiterTest, GaiaLockscreenReauthZeroLimit) {
 
   VerifyLastSignIn(user, task_environment_.GetMockClock()->Now());
 
+  EXPECT_EQ(known_user_->FindReauthReason(test_gaia_account_id_),
+            static_cast<int>(ReauthReason::kGaiaLockScreenReauthPolicy));
+
   CheckAuthTypeOnLock(test_gaia_account_id_, true /*expect_online_auth*/);
 
   // Advance time by 2 hours.
@@ -818,6 +875,54 @@ TEST_P(OfflineSigninLimiterTest, GaiaLockscreenReauthMatchLoginWithLimit) {
   task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
   CheckAuthTypeOnLock(test_gaia_account_id_, true /*expect_online_auth*/);
+}
+
+TEST_P(OfflineSigninLimiterTest, GaiaSecondaryUserLockscreenReauthZeroLimit) {
+  // Test that when a secondary Gaia user logs in with a zero lock screen
+  // offline limit (reauth immediately required on lock screen),
+  // ForceOnlineLockScreenReauth() handles the absence of a
+  // LockScreenReauthManager (which is only created for the primary profile)
+  // without crashing, stops the lock screen timer, and does not record a lock
+  // screen reauth reason for the secondary user.
+  AddGaiaUser();
+  auto* secondary_user = AddSecondaryGaiaUser();
+  SetLastOnlineSignIn(secondary_user, secondary_profile_.get());
+
+  secondary_profile_->GetPrefs()->SetInteger(
+      prefs::kGaiaLockScreenOfflineSigninTimeLimitDays, 0);
+
+  CreateSecondaryLimiter();
+  secondary_limiter_->SignedIn(UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML);
+
+  // Lock screen timer should be stopped after reauth is triggered.
+  EXPECT_FALSE(secondary_limiter_->GetLockscreenTimerForTesting()->IsRunning());
+  // No lock screen reauth reason should be recorded for secondary users.
+  EXPECT_FALSE(known_user_->FindReauthReason(test_secondary_gaia_account_id_)
+                   .has_value());
+}
+
+TEST_P(OfflineSigninLimiterTest, GaiaSecondaryUserLockscreenReauthWithLimit) {
+  // Test that when a secondary Gaia user's lock screen offline limit timer
+  // expires, ForceOnlineLockScreenReauth() handles the absence of a
+  // LockScreenReauthManager without crashing, stops the timer, and does not
+  // record a lock screen reauth reason for the secondary user.
+  AddGaiaUser();
+  auto* secondary_user = AddSecondaryGaiaUser();
+  SetLastOnlineSignIn(secondary_user, secondary_profile_.get());
+
+  secondary_profile_->GetPrefs()->SetInteger(
+      prefs::kGaiaLockScreenOfflineSigninTimeLimitDays, 14);
+
+  CreateSecondaryLimiter();
+  secondary_limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
+  EXPECT_TRUE(secondary_limiter_->GetLockscreenTimerForTesting()->IsRunning());
+
+  // Advance time past limit so the timer fires.
+  task_environment_.FastForwardBy(base::Days(28));
+
+  EXPECT_FALSE(secondary_limiter_->GetLockscreenTimerForTesting()->IsRunning());
+  EXPECT_FALSE(known_user_->FindReauthReason(test_secondary_gaia_account_id_)
+                   .has_value());
 }
 
 TEST_P(OfflineSigninLimiterTest, NoSAMLDefaultLimit) {
@@ -1298,6 +1403,9 @@ TEST_P(OfflineSigninLimiterTest, SAMLLockscreenReauthZeroLimit) {
 
   VerifyLastSignIn(user, task_environment_.GetMockClock()->Now());
 
+  EXPECT_EQ(known_user_->FindReauthReason(test_saml_account_id_),
+            static_cast<int>(ReauthReason::kSamlLockScreenReauthPolicy));
+
   CheckAuthTypeOnLock(test_saml_account_id_, true /*expect_online_auth*/);
 
   // Advance time by 2 hours.
@@ -1440,6 +1548,56 @@ TEST_P(OfflineSigninLimiterTest, SAMLLockscreenReauthMatchLoginWithLimit) {
   task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
   CheckAuthTypeOnLock(test_saml_account_id_, true /*expect_online_auth*/);
+}
+
+TEST_P(OfflineSigninLimiterTest, SAMLSecondaryUserLockscreenReauthZeroLimit) {
+  // Test that when a secondary SAML user logs in with a zero lock screen
+  // offline limit, ForceOnlineLockScreenReauth() handles the absence of a
+  // LockScreenReauthManager without crashing, stops the lock screen timer, and
+  // does not record a lock screen reauth reason for the secondary user.
+  AddGaiaUser();
+  auto* secondary_user = AddSecondarySAMLUser();
+  SetLastOnlineSignIn(secondary_user, secondary_profile_.get());
+
+  secondary_profile_->GetPrefs()->SetInteger(
+      prefs::kSAMLOfflineSigninTimeLimit,
+      constants::kOfflineSigninTimeLimitNotSet);
+  secondary_profile_->GetPrefs()->SetInteger(
+      prefs::kSamlLockScreenOfflineSigninTimeLimitDays, 0);
+
+  CreateSecondaryLimiter();
+  secondary_limiter_->SignedIn(UserContext::AUTH_FLOW_GAIA_WITH_SAML);
+
+  EXPECT_FALSE(secondary_limiter_->GetLockscreenTimerForTesting()->IsRunning());
+  EXPECT_FALSE(known_user_->FindReauthReason(test_secondary_saml_account_id_)
+                   .has_value());
+}
+
+TEST_P(OfflineSigninLimiterTest, SAMLSecondaryUserLockscreenReauthWithLimit) {
+  // Test that when a secondary SAML user's lock screen offline limit timer
+  // expires, ForceOnlineLockScreenReauth() handles the absence of a
+  // LockScreenReauthManager without crashing, stops the timer, and does not
+  // record a lock screen reauth reason for the secondary user.
+  AddGaiaUser();
+  auto* secondary_user = AddSecondarySAMLUser();
+  SetLastOnlineSignIn(secondary_user, secondary_profile_.get());
+
+  secondary_profile_->GetPrefs()->SetInteger(
+      prefs::kSAMLOfflineSigninTimeLimit,
+      constants::kOfflineSigninTimeLimitNotSet);
+  secondary_profile_->GetPrefs()->SetInteger(
+      prefs::kSamlLockScreenOfflineSigninTimeLimitDays, 14);
+
+  CreateSecondaryLimiter();
+  secondary_limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
+  EXPECT_TRUE(secondary_limiter_->GetLockscreenTimerForTesting()->IsRunning());
+
+  // Advance time past limit so the timer fires.
+  task_environment_.FastForwardBy(base::Days(28));
+
+  EXPECT_FALSE(secondary_limiter_->GetLockscreenTimerForTesting()->IsRunning());
+  EXPECT_FALSE(known_user_->FindReauthReason(test_secondary_saml_account_id_)
+                   .has_value());
 }
 
 INSTANTIATE_TEST_SUITE_P(OfflineSigninLimiterTestInstantiation,
