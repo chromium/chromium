@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -142,9 +144,7 @@ class TabVerticalViewBinder {
         }
 
         if (TabProperties.TITLE == propertyKey) {
-            if (model.get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER) == null) {
-                view.setContentDescription(model.get(TabProperties.TITLE));
-            }
+            updateContentDescription(model, view);
         } else if (TabProperties.IS_SELECTED == propertyKey
                 || TabProperties.IS_MULTI_SELECTED == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
@@ -175,7 +175,7 @@ class TabVerticalViewBinder {
             updateAccessibilityDelegate(model, view);
         } else if (TabProperties.IS_COLLAPSED == propertyKey) {
             updateChevronRotation(model, view);
-            TabListViewBinderUtils.updateContentDescription(model, view);
+            updateContentDescription(model, view);
             updateAccessibilityDelegate(model, view);
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
             updateTabItemSize(
@@ -229,7 +229,7 @@ class TabVerticalViewBinder {
             TabListViewBinderUtils.setupActorIndicator(model, view);
             updateIcons(model, view);
         } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
-            TabListViewBinderUtils.updateContentDescription(model, view);
+            updateContentDescription(model, view);
         } else if (TabProperties.ACCESSIBILITY_DELEGATE == propertyKey) {
             view.setAccessibilityDelegate(model.get(TabProperties.ACCESSIBILITY_DELEGATE));
         } else if (TabProperties.IS_GLIC_ACTIVE == propertyKey) {
@@ -791,7 +791,20 @@ class TabVerticalViewBinder {
             titleView.setVisibility(View.VISIBLE);
             titleView.setText(model.get(TabProperties.TITLE));
         }
-        TabListViewBinderUtils.updateContentDescription(model, view);
+        updateContentDescription(model, view);
+    }
+
+    private static void updateContentDescription(PropertyModel model, View view) {
+        @Nullable TextResolver contentDescriptionTextResolver =
+                model.get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
+        @Nullable CharSequence contentDescriptionString =
+                contentDescriptionTextResolver != null
+                        ? contentDescriptionTextResolver.resolve(view.getContext())
+                        : null;
+        if (TextUtils.isEmpty(contentDescriptionString) && model.containsKey(TabProperties.TITLE)) {
+            contentDescriptionString = model.get(TabProperties.TITLE);
+        }
+        view.setContentDescription(contentDescriptionString);
     }
 
     // Row-Specific Layout Geometry & Rotation Helpers

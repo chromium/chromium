@@ -166,10 +166,11 @@ public class TabVerticalViewBinderUnitTest {
     @Test
     @SmallTest
     public void testBindTitle() {
-        mModel.set(TabProperties.TITLE, "Google");
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
         TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TITLE);
 
-        assertEquals("Google", mTitleView.getText());
+        assertEquals(TEST_TITLE, mTitleView.getText());
+        assertEquals(TEST_TITLE, mItemView.getContentDescription());
     }
 
     @Test
@@ -264,6 +265,17 @@ public class TabVerticalViewBinderUnitTest {
                 mModel, mItemView, TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
 
         assertEquals(TEST_ACCESSIBILITY_DESCRIPTION, mItemView.getContentDescription().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindContentDescription_EmptyResolver_FallsBackToTitle() {
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
+        mModel.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, _ -> "");
+        TabVerticalViewBinder.bindTab(
+                mModel, mItemView, TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
+
+        assertEquals(TEST_TITLE, mItemView.getContentDescription());
     }
 
     @Test
@@ -1650,6 +1662,22 @@ public class TabVerticalViewBinderUnitTest {
         int expectedMargin =
                 TabVerticalViewBinder.getCollapsedChildMarginStart(mItemView.getContext());
         assertEquals(expectedMargin, lp.getMarginStart());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTab_RailCollapsed_WithEmptyResolver() {
+        mItemView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mModel.set(TabProperties.TITLE, TEST_TITLE);
+        mModel.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, _ -> "");
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.COLLAPSED);
+
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
+
+        assertNotEquals(View.VISIBLE, mTitleView.getVisibility());
+        assertEquals(TEST_TITLE, mItemView.getContentDescription());
     }
 
     @Test
