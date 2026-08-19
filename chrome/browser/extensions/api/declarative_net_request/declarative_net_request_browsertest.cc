@@ -79,7 +79,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
-#include "content/public/test/privacy_sandbox_coordinator_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"

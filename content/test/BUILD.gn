@@ -300,8 +300,6 @@ static_library("test_support") {
     "../public/test/preloading_test_util.h",
     "../public/test/prerender_test_util.cc",
     "../public/test/prerender_test_util.h",
-    "../public/test/privacy_sandbox_coordinator_test_util.cc",
-    "../public/test/privacy_sandbox_coordinator_test_util.h",
     "../public/test/pwn_open_url_helper.cc",
     "../public/test/pwn_open_url_helper.h",
     "../public/test/render_frame_host_test_support.cc",
