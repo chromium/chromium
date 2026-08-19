@@ -30,6 +30,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_LAYER_TREE_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_LAYER_TREE_AGENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -114,7 +115,7 @@ class CORE_EXPORT InspectorLayerTreeAgent final
       std::unique_ptr<protocol::Array<protocol::LayerTree::Layer>>&);
 
   Member<InspectedFrames> inspected_frames_;
-  Client* client_;
+  raw_ptr<Client, UnprotectedInRelease | DanglingUntriaged> client_;
 
   typedef HashMap<String, scoped_refptr<PictureSnapshot>> SnapshotById;
   SnapshotById snapshot_by_id_;

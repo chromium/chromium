@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_agent.h"
 #include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
@@ -251,7 +252,9 @@ class PausedInDebuggerTool : public InspectTool {
   void OnAgentDisable() override;
   void ExecuteOnV8Session(Action action);
 
-  v8_inspector::V8InspectorSession* v8_session_;
+  raw_ptr<v8_inspector::V8InspectorSession,
+          UnprotectedInRelease | DanglingUntriaged>
+      v8_session_;
   String message_;
   WeakCellFactory<PausedInDebuggerTool> weak_factory_{this};
 };

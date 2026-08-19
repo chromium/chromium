@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_INJECTED_SCRIPT_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_INJECTED_SCRIPT_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
@@ -55,7 +56,9 @@ class CORE_EXPORT InspectorInjectedScriptManager final
                                          bool grant_universal_access);
 
   Member<InspectedFrames> inspected_frames_;
-  v8_inspector::V8InspectorSession* v8_session_;
+  raw_ptr<v8_inspector::V8InspectorSession,
+          UnprotectedInRelease | DanglingUntriaged>
+      v8_session_;
 
   HashMap<String, mojom::blink::ScriptToEvaluateOnNewDocumentPtr> scripts_;
 };

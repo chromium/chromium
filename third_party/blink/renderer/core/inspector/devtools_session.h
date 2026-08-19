@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -177,7 +178,7 @@ class CORE_EXPORT DevToolsSession
   // DevToolsSession is not tied to ExecutionContext
   HeapMojoAssociatedRemote<mojom::blink::DevToolsSessionHost> host_remote_{
       nullptr};
-  IOSession* io_session_;
+  raw_ptr<IOSession, UnprotectedInRelease | DanglingUntriaged> io_session_;
   V8SessionHolder v8_session_;
   std::unique_ptr<protocol::UberDispatcher> inspector_backend_dispatcher_;
   InspectorSessionState session_state_;

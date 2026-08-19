@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_WORKER_INSPECTOR_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_WORKER_INSPECTOR_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
@@ -100,8 +101,9 @@ class WorkerInspectorController final
   void DebuggerTaskFinished() override;
 
   Member<DevToolsAgent> agent_;
-  WorkerThreadDebugger* debugger_;
-  WorkerThread* thread_;
+  raw_ptr<WorkerThreadDebugger, UnprotectedInRelease | DanglingUntriaged>
+      debugger_;
+  raw_ptr<WorkerThread, UnprotectedInRelease | DanglingUntriaged> thread_;
   Member<InspectedFrames> inspected_frames_;
   Member<CoreProbeSink> probe_sink_;
   HeapHashMap<Member<DevToolsSession>, Member<InspectorInspectorAgent>>

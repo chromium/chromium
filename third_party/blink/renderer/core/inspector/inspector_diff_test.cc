@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_diff.h"
 
+#include "base/memory/raw_ref.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
@@ -30,17 +31,17 @@ class CompareArrayInput : public InspectorDiff::Input {
   CompareArrayInput(Vector<int>& list_a, Vector<int>& list_b)
       : list_a_(list_a), list_b_(list_b) {}
 
-  int GetLength1() override { return list_a_.size(); }
-  int GetLength2() override { return list_b_.size(); }
+  int GetLength1() override { return list_a_->size(); }
+  int GetLength2() override { return list_b_->size(); }
   bool Equals(int index1, int index2) override {
-    return list_a_.at(index1) == list_b_.at(index2);
+    return list_a_->at(index1) == list_b_->at(index2);
   }
 
   ~CompareArrayInput() override {}
 
  private:
-  Vector<int>& list_a_;
-  Vector<int>& list_b_;
+  const raw_ref<Vector<int>, UnprotectedInRelease | DanglingUntriaged> list_a_;
+  const raw_ref<Vector<int>, UnprotectedInRelease | DanglingUntriaged> list_b_;
 };
 
 class CompareArrayOutput : public InspectorDiff::Output {

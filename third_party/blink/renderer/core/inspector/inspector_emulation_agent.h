@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/cpu_performance.mojom-blink-forward.h"
@@ -148,7 +149,8 @@ class CORE_EXPORT InspectorEmulationAgent final
   void SetSystemThemeState();
 
   Member<WebLocalFrameImpl> web_local_frame_;
-  VirtualTimeController& virtual_time_controller_;
+  const raw_ref<VirtualTimeController, UnprotectedInRelease | DanglingUntriaged>
+      virtual_time_controller_;
   base::TimeTicks virtual_time_base_ticks_;
   HeapVector<Member<DocumentLoader>> pending_document_loaders_;
 

@@ -28,6 +28,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_feature_values_rule.h"
@@ -151,7 +152,7 @@ class InspectorStyleSheetBase
   friend class InspectorStyle;
 
   String id_;
-  Listener* listener_;
+  raw_ptr<Listener, UnprotectedInRelease | DanglingUntriaged> listener_;
   std::unique_ptr<LineEndings> line_endings_;
 };
 

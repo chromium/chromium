@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -70,7 +71,7 @@ class ThreadDebuggerCommonImpl : public ThreadDebugger {
   static mojom::ConsoleMessageLevel V8MessageLevelToMessageLevel(
       v8::Isolate::MessageErrorLevel);
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_;
 
  private:
   // V8InspectorClient implementation.

@@ -670,15 +670,15 @@ protocol::Response InspectorEmulationAgent::setVirtualTimePolicy(
           ? base::Time::FromSecondsSinceUnixEpoch(initial_virtual_time.value())
           : base::Time();
   virtual_time_base_ticks_ =
-      virtual_time_controller_.EnableVirtualTime(initial_time);
-  virtual_time_controller_.SetVirtualTimePolicy(scheduler_policy);
+      virtual_time_controller_->EnableVirtualTime(initial_time);
+  virtual_time_controller_->SetVirtualTimePolicy(scheduler_policy);
   if (virtual_time_budget_ms.value_or(0) > 0) {
     TRACE_EVENT_BEGIN("renderer.scheduler", "VirtualTimeBudget",
                       GetTracingTrack(this), "budget",
                       virtual_time_budget_ms.value());
     const base::TimeDelta budget_amount =
         base::Milliseconds(virtual_time_budget_ms.value());
-    virtual_time_controller_.GrantVirtualTimeBudget(
+    virtual_time_controller_->GrantVirtualTimeBudget(
         budget_amount,
         BindOnce(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
                  WrapWeakPersistent(this)));
@@ -695,7 +695,7 @@ protocol::Response InspectorEmulationAgent::setVirtualTimePolicy(
   }
 
   if (max_virtual_time_task_starvation_count.value_or(0)) {
-    virtual_time_controller_.SetMaxVirtualTimeTaskStarvationCount(
+    virtual_time_controller_->SetMaxVirtualTimeTaskStarvationCount(
         max_virtual_time_task_starvation_count.value());
   }
 
@@ -770,7 +770,7 @@ void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
   if (!enabled_) {
     return;
   }
-  virtual_time_controller_.SetVirtualTimePolicy(
+  virtual_time_controller_->SetVirtualTimePolicy(
       VirtualTimeController::VirtualTimePolicy::kPause);
   virtual_time_policy_.Set(protocol::Emulation::VirtualTimePolicyEnum::Pause);
   // We could have been detached while VT was still running.
