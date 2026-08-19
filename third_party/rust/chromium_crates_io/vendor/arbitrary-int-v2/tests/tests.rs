@@ -3577,6 +3577,92 @@ fn backward_checked_signed() {
 
 #[cfg(feature = "step_trait")]
 #[test]
+fn forward_overflowing_unsigned() {
+    // In range
+    assert_eq!(
+        (u7::new(121), false),
+        Step::forward_overflowing(u7::new(120), 1)
+    );
+    assert_eq!(
+        (u7::new(127), false),
+        Step::forward_overflowing(u7::new(120), 7)
+    );
+
+    // Out of range: the value is unspecified
+    assert!(Step::forward_overflowing(u7::new(120), 8).1);
+
+    // Out of range for the underlying type
+    assert!(Step::forward_overflowing(u7::new(120), 140).1);
+}
+
+#[cfg(feature = "step_trait")]
+#[test]
+fn forward_overflowing_signed() {
+    // In range
+    assert_eq!(
+        (i7::new(61), false),
+        Step::forward_overflowing(i7::new(60), 1)
+    );
+    assert_eq!(
+        (i7::new(63), false),
+        Step::forward_overflowing(i7::new(56), 7)
+    );
+    assert_eq!(
+        (i7::new(-60), false),
+        Step::forward_overflowing(i7::new(-64), 4)
+    );
+
+    // Out of range: the value is unspecified
+    assert!(Step::forward_overflowing(i7::new(60), 8).1);
+
+    // Out of range for the underlying type
+    assert!(Step::forward_overflowing(i7::new(60), 140).1);
+}
+
+#[cfg(feature = "step_trait")]
+#[test]
+fn backward_overflowing_unsigned() {
+    // In range
+    assert_eq!(
+        (u7::new(1), false),
+        Step::backward_overflowing(u7::new(10), 9)
+    );
+    assert_eq!(
+        (u7::new(0), false),
+        Step::backward_overflowing(u7::new(10), 10)
+    );
+
+    // Out of range: the value is unspecified
+    assert!(Step::backward_overflowing(u7::new(10), 11).1);
+}
+
+#[cfg(feature = "step_trait")]
+#[test]
+fn backward_overflowing_signed() {
+    // In range
+    assert_eq!(
+        (i7::new(1), false),
+        Step::backward_overflowing(i7::new(10), 9)
+    );
+    assert_eq!(
+        (i7::new(-10), false),
+        Step::backward_overflowing(i7::new(10), 20)
+    );
+    assert_eq!(
+        (i7::new(-64), false),
+        Step::backward_overflowing(i7::new(-60), 4)
+    );
+
+    // Out of range: the value is unspecified
+    assert!(Step::backward_overflowing(i7::new(-64), 1).1);
+    assert!(Step::backward_overflowing(i7::new(5), 70).1);
+
+    // Out of range for the underlying type
+    assert!(Step::backward_overflowing(i7::new(0), 129).1);
+}
+
+#[cfg(feature = "step_trait")]
+#[test]
 fn steps_between_unsigned() {
     assert_eq!(
         (0, Some(0)),
@@ -3710,11 +3796,85 @@ fn serde_signed() {
     assert_de_tokens(&i7::new(15), &[Token::U8(15)]);
     assert_de_tokens(&i7::MAX, &[Token::U8(i7::MAX.value() as u8)]);
 }
+#[cfg(feature = "rkyv")]
+mod rkyv {
+    use arbitrary_int::prelude::*;
+    use rkyv::rancor::Error as RkyvError;
+
+    #[test]
+    fn unisgned() {
+        let expected = u7::MAX;
+        let bytes = rkyv::to_bytes::<RkyvError>(&expected).unwrap();
+        let actual = rkyv::access::<ArchivedUInt<_, _>, RkyvError>(&bytes[..])
+            .and_then(rkyv::deserialize)
+            .unwrap();
+
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn signed() {
+        let expected = i7::MAX;
+        let bytes = rkyv::to_bytes::<RkyvError>(&expected).unwrap();
+        let actual = rkyv::access::<ArchivedInt<_, _>, RkyvError>(&bytes[..])
+            .and_then(rkyv::deserialize)
+            .unwrap();
+
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn invalid_out_of_range() {
+        let bytes = rkyv::to_bytes::<RkyvError>(&[123_u8, 123_u8]).unwrap();
+        rkyv::access::<ArchivedUInt<u16, 9>, RkyvError>(&bytes)
+            .and_then(rkyv::deserialize)
+            .unwrap_err();
+        rkyv::access::<ArchivedInt<i16, 9>, RkyvError>(&bytes)
+            .and_then(rkyv::deserialize)
+            .unwrap_err();
+    }
+
+    #[test]
+    fn multi_byte_roundtrip() {
+        // Multi-byte values are stored with a fixed endianness in the archive,
+        // so verification must convert to native before range-checking. On a
+        // mismatched-endian host (or with rkyv's `big_endian` feature on a
+        // little-endian one), reinterpreting the archived bytes natively would
+        // reject valid values like these and accept out-of-range ones.
+        let expected = u9::new(300);
+        let bytes = rkyv::to_bytes::<RkyvError>(&expected).unwrap();
+        let actual = rkyv::access::<ArchivedUInt<u16, 9>, RkyvError>(&bytes[..])
+            .and_then(rkyv::deserialize)
+            .unwrap();
+        assert_eq!(expected, actual);
+
+        let expected = i9::new(-200);
+        let bytes = rkyv::to_bytes::<RkyvError>(&expected).unwrap();
+        let actual = rkyv::access::<ArchivedInt<i16, 9>, RkyvError>(&bytes[..])
+            .and_then(rkyv::deserialize)
+            .unwrap();
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn endianness_shenanigans() {
+        // Rkyv internally use [rend](https://github.com/rkyv/rend) to deal with cross platform number endianness.
+        // This make sure that our implementation respect this.
+        // If it doesn't, compile fail on the derive of rkyv.
+        #[derive(rkyv::Archive, rkyv::Deserialize, rkyv::Serialize)]
+        struct Archivable {
+            uint: (u1, u9, u17, u33, u65, u127),
+            int: (i1, i9, i17, i33, i65, i127),
+        }
+    }
+}
 
 #[cfg(feature = "num-traits")]
 mod num_traits {
     use arbitrary_int::prelude::*;
-    use num_traits::{bounds::Bounded, SaturatingAdd, SaturatingSub, WrappingAdd, WrappingSub};
+    use num_traits::{
+        bounds::Bounded, SaturatingAdd, SaturatingSub, WrappingAdd, WrappingSub, Zero,
+    };
 
     #[test]
     fn wrapping_add_unsigned() {
@@ -3863,6 +4023,20 @@ mod num_traits {
         assert_eq!(increment_by_512(0i16), Ok(512i16));
         assert!(increment_by_512(i7::new(3)).is_err());
         assert_eq!(increment_by_512(i15::new(3)), Ok(i15::new(515)));
+    }
+
+    #[test]
+    fn zero_i6() {
+        assert_eq!(i6::zero(), i6::new(0));
+        assert_eq!(i6::new(0).is_zero(), true);
+        assert_eq!(i6::new(-1).is_zero(), false);
+    }
+
+    #[test]
+    fn zero_u34() {
+        assert_eq!(u34::zero(), u34::new(0));
+        assert_eq!(u34::new(0).is_zero(), true);
+        assert_eq!(u34::new(0x1000).is_zero(), false);
     }
 }
 
@@ -4192,6 +4366,112 @@ fn schemars_signed() {
     assert_eq!(i8, i9);
 }
 
+#[cfg(feature = "schemars1")]
+#[test]
+fn schemars1_unsigned() {
+    use schemars1::{generate::SchemaSettings, schema_for};
+    use serde_json::json;
+
+    let meta = SchemaSettings::default().meta_schema.unwrap();
+
+    assert_eq!(
+        schema_for!(u1).to_value(),
+        json!({
+            "$schema": meta,
+            "type": "integer",
+            "format": "uint1",
+            "title": "uint1",
+            "minimum": 0,
+            "maximum": 1,
+        })
+    );
+
+    assert_eq!(
+        schema_for!(u31).to_value(),
+        json!({
+            "$schema": meta,
+            "type": "integer",
+            "format": "uint31",
+            "title": "uint31",
+            "minimum": 0,
+            "maximum": 0x7fffffff,
+        })
+    );
+
+    assert_eq!(
+        schema_for!(u33).to_value(),
+        json!({
+            "$schema": meta,
+            "type": "integer",
+            "format": "uint33",
+            "title": "uint33"
+        })
+    );
+
+    assert_eq!(
+        schema_for!(u127).to_value(),
+        json!({
+            "$schema": meta,
+            "type": "integer",
+            "format": "uint127",
+            "title": "uint127"
+        })
+    );
+}
+
+#[cfg(feature = "schemars1")]
+#[test]
+fn schemars1_signed() {
+    use schemars1::{generate::SchemaSettings, schema_for};
+    use serde_json::json;
+
+    let meta = SchemaSettings::default().meta_schema.unwrap();
+
+    assert_eq!(
+        schema_for!(i1).to_value(),
+        json!({
+            "$schema": meta,
+            "type": "integer",
+            "format": "int1",
+            "title": "int1",
+            "minimum": -1,
+            "maximum": 0,
+        })
+    );
+
+    assert_eq!(
+        schema_for!(i31).to_value(),
+        json!({
+            "$schema": meta,
+            "type": "integer",
+            "format": "int31",
+            "title": "int31",
+            "minimum": -0x40000000,
+            "maximum": 0x3fffffff,
+        })
+    );
+
+    assert_eq!(
+        schema_for!(i33).to_value(),
+        json!({
+            "$schema": meta,
+            "type": "integer",
+            "format": "int33",
+            "title": "int33"
+        })
+    );
+
+    assert_eq!(
+        schema_for!(i127).to_value(),
+        json!({
+            "$schema": meta,
+            "type": "integer",
+            "format": "int127",
+            "title": "int127"
+        })
+    );
+}
+
 #[cfg(feature = "bytemuck")]
 mod bytemuck {
     use arbitrary_int::prelude::*;
@@ -4266,7 +4546,12 @@ mod bin_proto_tests {
             .encode::<_, LittleEndian>(&mut counter, &mut (), ())
             .unwrap();
         assert_eq!(T::BITS, counter.written().try_into().unwrap());
-        assert_eq!(expected_buffer, &data[0..n_bytes])
+        assert_eq!(expected_buffer, &data[0..n_bytes]);
+
+        assert_eq!(
+            (input, T::BITS as u64),
+            T::decode_bytes(expected_buffer, LittleEndian).unwrap()
+        );
     }
 
     #[test]
@@ -4405,6 +4690,40 @@ mod bin_proto_tests {
                 0xFF, 0xFF,
             ],
         );
+    }
+}
+
+#[cfg(feature = "bytecheck")]
+mod bytecheck_tests {
+    use super::*;
+    use bytecheck::{check_bytes, rancor};
+
+    #[test]
+    fn test_validity_unsigned() {
+        let good_u6_val = 0x3fu8;
+        unsafe { check_bytes::<u6, rancor::Failure>((&raw const good_u6_val).cast()).unwrap() };
+
+        let bad_u6_val = 0x40u8;
+        unsafe { check_bytes::<u6, rancor::Failure>((&raw const bad_u6_val).cast()).unwrap_err() };
+    }
+
+    #[test]
+    fn test_validity_signed() {
+        let good_i31_val = i31::MAX.value() as i32;
+        unsafe { check_bytes::<i31, rancor::Failure>((&raw const good_i31_val).cast()).unwrap() };
+
+        let good_i32_val2 = i31::MIN.value() as i32;
+        unsafe { check_bytes::<i31, rancor::Failure>((&raw const good_i32_val2).cast()).unwrap() };
+
+        let bad_i31_val = (i31::MAX.value() as i32) + 1;
+        unsafe {
+            check_bytes::<i31, rancor::Failure>((&raw const bad_i31_val).cast()).unwrap_err()
+        };
+
+        let bad_i31_val2 = (i31::MIN.value() as i32) - 1;
+        unsafe {
+            check_bytes::<i31, rancor::Failure>((&raw const bad_i31_val2).cast()).unwrap_err()
+        };
     }
 }
 

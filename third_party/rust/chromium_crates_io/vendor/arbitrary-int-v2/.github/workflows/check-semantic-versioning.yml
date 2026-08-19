@@ -14,5 +14,8 @@ jobs:
           # If we don't explicitly set which features to check `const_convert_and_const_trait_impl` will be used,
           # which fails on modern compilers (which cargo-semver-checks requires).
           # also, quickcheck was broken in 2.0.0, so we don't want that either.
+          # step_trait is excluded: it is nightly-only, and its `Step` impl tracks the
+          # current nightly `Step` trait, which doesn't compile on the stable toolchain
+          # this check runs on.
           feature-group: "only-explicit-features"
-          features: "std,step_trait,defmt,serde,borsh,schemars,arbitrary,num-traits"
+          features: "std,defmt,serde,borsh,schemars,arbitrary,num-traits"

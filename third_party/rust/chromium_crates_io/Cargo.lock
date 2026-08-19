@@ -75,7 +75,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "arbitrary-int"
-version = "2.1.1"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -1289,7 +1289,7 @@ version = "0.15.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "ahash",
- "arbitrary-int 2.1.1",
+ "arbitrary-int 2.2.0",
  "backtrace",
  "bincode",
  "bitbybit",

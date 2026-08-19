@@ -290,6 +290,45 @@ macro_rules! impl_schemars {
                 Schema::Object(schema_object)
             }
         }
+
+        #[cfg(feature = "schemars1")]
+        impl<T: BuiltinInteger + $trait, const BITS: usize> schemars1::JsonSchema for $type<T, BITS>
+        where
+            Self: Integer,
+        {
+            fn inline_schema() -> bool {
+                true
+            }
+
+            fn schema_name() -> alloc::borrow::Cow<'static, str> {
+                use alloc::string::ToString;
+                [$str_prefix, &BITS.to_string()].concat().into()
+            }
+
+            fn json_schema(_gen: &mut schemars1::SchemaGenerator) -> schemars1::Schema {
+                // The `schemars` crate only provides the `minimum` and `maximum` fields for "small"
+                // integers (i8/u8/i16/u16).
+                //
+                // The rationale for this choice is explained in this issue:
+                // https://github.com/GREsau/schemars/issues/298
+                //
+                // We mimic that behavior and only provide the `minimum` and `maximum` fields for
+                // integers smaller than 32 bits.
+                if BITS < 32 {
+                    schemars1::json_schema!({
+                        "type": "integer",
+                        "format": Self::schema_name(),
+                        "minimum": Self::MIN.as_i64(),
+                        "maximum": Self::MAX.as_i64(),
+                    })
+                } else {
+                    schemars1::json_schema!({
+                        "type": "integer",
+                        "format": Self::schema_name(),
+                    })
+                }
+            }
+        }
     };
 }
 
@@ -419,6 +458,18 @@ macro_rules! impl_step {
                 } else {
                     None
                 }
+            }
+
+            #[inline]
+            fn forward_overflowing(start: Self, count: usize) -> (Self, bool) {
+                let (res, overflow) = core::iter::Step::forward_overflowing(start.value, count);
+                (Self::masked_new(res), overflow || res > Self::MAX.value)
+            }
+
+            #[inline]
+            fn backward_overflowing(start: Self, count: usize) -> (Self, bool) {
+                let (res, overflow) = core::iter::Step::backward_overflowing(start.value, count);
+                (Self::masked_new(res), overflow || res < Self::MIN.value)
             }
         }
     };
@@ -555,6 +606,22 @@ macro_rules! impl_num_traits {
                 Self::MAX
             }
         }
+
+        #[cfg(feature = "num-traits")]
+        impl<T: BuiltinInteger + $trait, const BITS: usize> num_traits::Zero for $type<T, BITS>
+        where
+            Self: Integer,
+        {
+            #[inline]
+            fn zero() -> Self {
+                Self::ZERO
+            }
+
+            #[inline]
+            fn is_zero(&self) -> bool {
+                self == &Self::ZERO
+            }
+        }
     };
 }
 
@@ -665,12 +732,14 @@ macro_rules! impl_bin_proto {
                     R: bin_proto::BitRead,
                     E: bin_proto::Endianness,
                 {
-                    Ok(Self::new(
+                    Self::try_new(
                         <<Self as Integer>::UnderlyingType as bin_proto::BitDecode<_, _>>::decode::<
                             _,
                             E,
                         >(read, ctx, bin_proto::Bits::<$bits>)?,
-                    ))
+                    ).map_err(|_|
+                        bin_proto::Error::Other("Value too large to fit within this integer type")
+                    )
                 }
             }
         )+

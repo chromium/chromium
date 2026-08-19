@@ -1,4 +1,4 @@
-name: test serde
+name: test rkyv
 run-name: ${{ github.actor }}'s patch
 on: [push, pull_request]
 jobs:
@@ -11,7 +11,5 @@ jobs:
           cache: true
           toolchain: nightly
       - run: |
-          cargo test --no-default-features --features=serde
-          cargo test --no-default-features --features=serde,std
-          cargo test --no-default-features --features=schemars
-          cargo test --no-default-features --features=schemars1
+          cargo test --no-default-features --features=rkyv
+          cargo test --no-default-features --features=rkyv,std
