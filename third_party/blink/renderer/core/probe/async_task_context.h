@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_script_identifier.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -80,7 +81,8 @@ class CORE_EXPORT AsyncTaskContext {
   // when the entire execution context is considered ad related).
   std::optional<AdScriptIdentifier> ad_identifier_;
 
-  v8::Isolate* isolate_ = nullptr;
+  raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_ =
+      nullptr;
 };
 
 }  // namespace probe

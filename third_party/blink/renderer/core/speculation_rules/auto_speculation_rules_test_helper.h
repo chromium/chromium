@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SPECULATION_RULES_AUTO_SPECULATION_RULES_TEST_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SPECULATION_RULES_AUTO_SPECULATION_RULES_TEST_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_config.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -17,7 +18,8 @@ class AutoSpeculationRulesConfigOverride {
 
  private:
   std::unique_ptr<AutoSpeculationRulesConfig> current_override_;
-  AutoSpeculationRulesConfig* previous_override_;
+  raw_ptr<AutoSpeculationRulesConfig, UnprotectedInRelease | DanglingUntriaged>
+      previous_override_;
 };
 
 }  // namespace blink::test

@@ -38,6 +38,7 @@
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
@@ -374,13 +375,13 @@ class PendingErrorCallback final : public XMLDocumentParser::PendingCallback {
   ~PendingErrorCallback() override { xmlFree(message_); }
 
   void Call(XMLDocumentParser* parser) override {
-    parser->HandleError(type_, reinterpret_cast<char*>(message_),
+    parser->HandleError(type_, reinterpret_cast<char*>(message_.get()),
                         GetTextPosition());
   }
 
  private:
   XMLErrors::ErrorType type_;
-  xmlChar* message_;
+  raw_ptr<xmlChar, UnprotectedInRelease | DanglingUntriaged> message_;
 };
 
 void XMLDocumentParser::PushCurrentNode(ContainerNode* n) {

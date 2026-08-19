@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
@@ -198,7 +199,8 @@ class OriginTrialContextTest : public testing::Test {
 
  protected:
   test::TaskEnvironment task_environment_;
-  MockTokenValidator* token_validator_;
+  raw_ptr<MockTokenValidator, UnprotectedInRelease | DanglingUntriaged>
+      token_validator_;
   Persistent<NullExecutionContext> execution_context_;
 };
 

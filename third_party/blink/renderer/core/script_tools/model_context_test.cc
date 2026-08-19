@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -60,7 +61,8 @@ class MockScriptToolHost : public mojom::blink::ScriptToolHost {
  private:
   mojo::Receiver<mojom::blink::ScriptToolHost> receiver_{this};
   bool pause_called_ = false;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop, UnprotectedInRelease | DanglingUntriaged> run_loop_ =
+      nullptr;
 };
 
 class MockModelContextHost : public mojom::blink::ModelContextHost {
